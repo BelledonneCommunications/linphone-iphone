@@ -67,40 +67,11 @@
 }
 
 - (void)dealloc {
-    [pauseButton release];
-    [conferenceButton release];
-    [videoButton release];
-    [microButton release];
-    [speakerButton release];
-    [routesButton release];
-    [optionsButton release];
-    [routesBluetoothButton release];
-    [routesReceiverButton release];
-    [routesSpeakerButton release];
-    [optionsAddButton release];
-    [optionsTransferButton release];
-    [dialerButton release];
     
-    [oneButton release];
-	[twoButton release];
-	[threeButton release];
-	[fourButton release];
-	[fiveButton release];
-	[sixButton release];
-	[sevenButton release];
-	[eightButton release];
-	[nineButton release];
-	[starButton release];
-	[zeroButton release];
-	[sharpButton release];
     
-    [padView release];
-    [routesView release];
-    [optionsView release];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [super dealloc];
 }
 
 

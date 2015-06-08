@@ -37,39 +37,39 @@
     NSMutableArray *historyViews;
 }
 
-@property (nonatomic, retain) IBOutlet UIScrollView *contentView;
+@property (nonatomic, strong) IBOutlet UIScrollView *contentView;
 
-@property (nonatomic, retain) IBOutlet UIView *welcomeView;
-@property (nonatomic, retain) IBOutlet UIView *choiceView;
-@property (nonatomic, retain) IBOutlet UIView *createAccountView;
-@property (nonatomic, retain) IBOutlet UIView *connectAccountView;
-@property (nonatomic, retain) IBOutlet UIView *externalAccountView;
-@property (nonatomic, retain) IBOutlet UIView *validateAccountView;
-@property (retain, nonatomic) IBOutlet UIView *provisionedAccountView;
+@property (nonatomic, strong) IBOutlet UIView *welcomeView;
+@property (nonatomic, strong) IBOutlet UIView *choiceView;
+@property (nonatomic, strong) IBOutlet UIView *createAccountView;
+@property (nonatomic, strong) IBOutlet UIView *connectAccountView;
+@property (nonatomic, strong) IBOutlet UIView *externalAccountView;
+@property (nonatomic, strong) IBOutlet UIView *validateAccountView;
+@property (strong, nonatomic) IBOutlet UIView *provisionedAccountView;
 
-@property (nonatomic, retain) IBOutlet UIView *waitView;
+@property (nonatomic, strong) IBOutlet UIView *waitView;
 
-@property (nonatomic, retain) IBOutlet UIButton *backButton;
-@property (nonatomic, retain) IBOutlet UIButton *startButton;
-@property (nonatomic, retain) IBOutlet UIButton *createAccountButton;
-@property (nonatomic, retain) IBOutlet UIButton *connectAccountButton;
-@property (nonatomic, retain) IBOutlet UIButton *externalAccountButton;
-@property (retain, nonatomic) IBOutlet UIButton *remoteProvisioningButton;
-@property (retain, nonatomic) IBOutlet UILinphoneButton *registerButton;
-@property (retain, nonatomic) IBOutlet UILinphoneButton *purchaseButton;
+@property (nonatomic, strong) IBOutlet UIButton *backButton;
+@property (nonatomic, strong) IBOutlet UIButton *startButton;
+@property (nonatomic, strong) IBOutlet UIButton *createAccountButton;
+@property (nonatomic, strong) IBOutlet UIButton *connectAccountButton;
+@property (nonatomic, strong) IBOutlet UIButton *externalAccountButton;
+@property (strong, nonatomic) IBOutlet UIButton *remoteProvisioningButton;
+@property (strong, nonatomic) IBOutlet UILinphoneButton *registerButton;
+@property (strong, nonatomic) IBOutlet UILinphoneButton *purchaseButton;
 
-@property (retain, nonatomic) IBOutlet UILinphoneTextField *createAccountUsername;
-@property (retain, nonatomic) IBOutlet UILinphoneTextField *connectAccountUsername;
-@property (retain, nonatomic) IBOutlet UILinphoneTextField *externalAccountUsername;
+@property (strong, nonatomic) IBOutlet UILinphoneTextField *createAccountUsername;
+@property (strong, nonatomic) IBOutlet UILinphoneTextField *connectAccountUsername;
+@property (strong, nonatomic) IBOutlet UILinphoneTextField *externalAccountUsername;
 
-@property (retain, nonatomic) IBOutlet UITextField *provisionedUsername;
-@property (retain, nonatomic) IBOutlet UITextField *provisionedPassword;
-@property (retain, nonatomic) IBOutlet UITextField *provisionedDomain;
+@property (strong, nonatomic) IBOutlet UITextField *provisionedUsername;
+@property (strong, nonatomic) IBOutlet UITextField *provisionedPassword;
+@property (strong, nonatomic) IBOutlet UITextField *provisionedDomain;
 
-@property (nonatomic, retain) IBOutlet UIImageView *choiceViewLogoImageView;
-@property (retain, nonatomic) IBOutlet UISegmentedControl *transportChooser;
+@property (nonatomic, strong) IBOutlet UIImageView *choiceViewLogoImageView;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *transportChooser;
 
-@property (nonatomic, retain) IBOutlet UITapGestureRecognizer *viewTapGestureRecognizer;
+@property (nonatomic, strong) IBOutlet UITapGestureRecognizer *viewTapGestureRecognizer;
 
 - (void)reset;
 - (void)fillDefaultValues;

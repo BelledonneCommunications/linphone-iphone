@@ -23,15 +23,15 @@
 @interface UIMainBar : TPMultiLayoutViewController {
 }
 
-@property (nonatomic, retain) IBOutlet UIButton* historyButton;
-@property (nonatomic, retain) IBOutlet UIButton* contactsButton;
-@property (nonatomic, retain) IBOutlet UIButton* dialerButton;
-@property (nonatomic, retain) IBOutlet UIButton* settingsButton;
-@property (nonatomic, retain) IBOutlet UIButton* chatButton;
-@property (nonatomic, retain) IBOutlet UIView *historyNotificationView;
-@property (nonatomic, retain) IBOutlet UILabel *historyNotificationLabel;
-@property (nonatomic, retain) IBOutlet UIView *chatNotificationView;
-@property (nonatomic, retain) IBOutlet UILabel *chatNotificationLabel;
+@property (nonatomic, strong) IBOutlet UIButton* historyButton;
+@property (nonatomic, strong) IBOutlet UIButton* contactsButton;
+@property (nonatomic, strong) IBOutlet UIButton* dialerButton;
+@property (nonatomic, strong) IBOutlet UIButton* settingsButton;
+@property (nonatomic, strong) IBOutlet UIButton* chatButton;
+@property (nonatomic, strong) IBOutlet UIView *historyNotificationView;
+@property (nonatomic, strong) IBOutlet UILabel *historyNotificationLabel;
+@property (nonatomic, strong) IBOutlet UIView *chatNotificationView;
+@property (nonatomic, strong) IBOutlet UILabel *chatNotificationLabel;
 
 -(IBAction) onHistoryClick: (id) event;
 -(IBAction) onContactsClick: (id) event;

@@ -38,7 +38,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 	addressBook = ABAddressBookCreateWithOptions(nil, nil);
 
-	ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, self);
+	ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
 }
 
 - (id)init {
@@ -58,11 +58,8 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 }
 
 - (void)dealloc {
-	ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, self);
+	ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
 	CFRelease(addressBook);
-	[addressBookMap release];
-	[avatarMap release];
-	[super dealloc];
 }
 
 
@@ -133,10 +130,10 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 		// Reset Address book
 		[addressBookMap removeAllObjects];
 
-		NSArray *lContacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
+		NSArray *lContacts = (NSArray *)CFBridgingRelease(ABAddressBookCopyArrayOfAllPeople(addressBook));
 		for (id lPerson in lContacts) {
 			BOOL add = true;
-			ABRecordRef person = (ABRecordRef)lPerson;
+			ABRecordRef person = (__bridge ABRecordRef)lPerson;
 
 			// Do not add the contact directly if we set some filter
 			if([ContactSelection getSipFilter] || [ContactSelection emailFilterEnabled]) {
@@ -154,21 +151,22 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 			}
 
 			if(add) {
-				CFStringRef lFirstName = ABRecordCopyValue(person, kABPersonFirstNameProperty);
-				CFStringRef lLocalizedFirstName = (lFirstName != nil)? ABAddressBookCopyLocalizedLabel(lFirstName): nil;
-				CFStringRef lLastName = ABRecordCopyValue(person, kABPersonLastNameProperty);
-				CFStringRef lLocalizedLastName = (lLastName != nil)? ABAddressBookCopyLocalizedLabel(lLastName): nil;
-				CFStringRef lOrganization = ABRecordCopyValue(person, kABPersonOrganizationProperty);
-				CFStringRef lLocalizedlOrganization = (lOrganization != nil)? ABAddressBookCopyLocalizedLabel(lOrganization): nil;
+				NSString* lFirstName = CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty));
+				NSString* lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
+				NSString* lLastName = CFBridgingRelease(ABRecordCopyValue(person, kABPersonLastNameProperty));
+				NSString* lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
+				NSString* lOrganization = CFBridgingRelease(ABRecordCopyValue(person, kABPersonOrganizationProperty));
+				NSString* lLocalizedlOrganization = [FastAddressBook localizedLabel:lOrganization];
+
 				NSString *name = nil;
-				if(lLocalizedFirstName != nil && lLocalizedLastName != nil) {
-					name=[NSString stringWithFormat:@"%@ %@", [(NSString *)lLocalizedFirstName retain], [(NSString *)lLocalizedLastName retain]];
-				} else if(lLocalizedLastName != nil) {
-					name=[NSString stringWithFormat:@"%@",[(NSString *)lLocalizedLastName retain]];
-				} else if(lLocalizedFirstName != nil) {
-					name=[NSString stringWithFormat:@"%@",[(NSString *)lLocalizedFirstName retain]];
-				} else if(lLocalizedlOrganization != nil) {
-					name=[NSString stringWithFormat:@"%@",[(NSString *)lLocalizedlOrganization retain]];
+				if(lLocalizedFirstName.length && lLocalizedLastName.length ) {
+					name=[NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
+				} else if(lLocalizedLastName.length) {
+					name=[NSString stringWithFormat:@"%@",lLocalizedLastName];
+				} else if(lLocalizedFirstName.length) {
+					name=[NSString stringWithFormat:@"%@",lLocalizedFirstName];
+				} else if(lLocalizedlOrganization.length) {
+					name=[NSString stringWithFormat:@"%@",lLocalizedlOrganization];
 				}
 
 				if(name != nil && [name length] > 0) {
@@ -179,7 +177,7 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 						//Sort contacts by first letter. We need to translate the name to ASCII first, because of UTF-8 issues. For instance
 						// we expect order:  Alberta(A tilde) before ASylvano.
 						NSData *name2ASCIIdata = [name dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-						NSString *name2ASCII = [[[NSString alloc] initWithData:name2ASCIIdata encoding:NSASCIIStringEncoding] autorelease];
+						NSString *name2ASCII = [[NSString alloc] initWithData:name2ASCIIdata encoding:NSASCIIStringEncoding];
 						NSString *firstChar = [[name2ASCII substringToIndex:1] uppercaseString];
 
 						// Put in correct subDic
@@ -188,34 +186,20 @@ static int ms_strcmpfuz(const char * fuzzy_word, const char * sentence) {
 						}
 						OrderedDictionary *subDic =[addressBookMap objectForKey: firstChar];
 						if(subDic == nil) {
-							subDic = [[[OrderedDictionary alloc] init] autorelease];
+							subDic = [[OrderedDictionary alloc] init];
 							[addressBookMap insertObject:subDic forKey:firstChar selector:@selector(caseInsensitiveCompare:)];
 						}
 						[subDic insertObject:lPerson forKey:name2ASCII selector:@selector(caseInsensitiveCompare:)];
 					}
 				}
-				if(lLocalizedlOrganization != nil)
-					CFRelease(lLocalizedlOrganization);
-				if(lOrganization != nil)
-					CFRelease(lOrganization);
-				if(lLocalizedLastName != nil)
-					CFRelease(lLocalizedLastName);
-				if(lLastName != nil)
-					CFRelease(lLastName);
-				if(lLocalizedFirstName != nil)
-					CFRelease(lLocalizedFirstName);
-				if(lFirstName != nil)
-					CFRelease(lFirstName);
 			}
 		}
-		if (lContacts)
-			CFRelease(lContacts);
 	}
 	[self.tableView reloadData];
 }
 
 static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
-	ContactsTableViewController* controller = (ContactsTableViewController*)context;
+	ContactsTableViewController* controller = (__bridge ContactsTableViewController*)context;
 	ABAddressBookRevert(addressBook);
 	[controller->avatarMap removeAllObjects];
 	[controller loadData];
@@ -247,17 +231,17 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 	static NSString *kCellId = @"UIContactCell";
 	UIContactCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
-		cell = [[[UIContactCell alloc] initWithIdentifier:kCellId] autorelease];
+		cell = [[UIContactCell alloc] initWithIdentifier:kCellId];
 
 		// Background View
-		UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+		UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
 		cell.selectedBackgroundView = selectedBackgroundView;
 		[selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
 	}
 	OrderedDictionary *subDic = [addressBookMap objectForKey: [addressBookMap keyAtIndex: [indexPath section]]];
 
 	NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
-	ABRecordRef contact = [subDic objectForKey:key];
+	ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
 
 	// Cached avatar
 	UIImage *image = nil;
@@ -287,7 +271,7 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	OrderedDictionary *subDic = [addressBookMap objectForKey: [addressBookMap keyAtIndex: [indexPath section]]];
-	ABRecordRef lPerson = [subDic objectForKey: [subDic keyAtIndex:[indexPath row]]];
+	ABRecordRef lPerson = (__bridge ABRecordRef)([subDic objectForKey: [subDic keyAtIndex:[indexPath row]]]);
 
 	// Go to Contact details view
 	ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);

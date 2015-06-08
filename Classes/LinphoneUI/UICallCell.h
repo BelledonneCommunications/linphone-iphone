@@ -39,61 +39,61 @@ typedef enum _UICallCellOtherView {
 
 - (id)init:(LinphoneCall*) call minimized:(BOOL)minimized;
 
-@property (nonatomic, retain) UIImage *image;
-@property (nonatomic, retain) NSString *address;
+@property (nonatomic, strong) UIImage *image;
+@property (nonatomic, strong) NSString *address;
 
 @end
 
 @interface UICallCell : UITransparentTVCell {
 }
 
-@property (nonatomic, retain) UICallCellData *data;
+@property (nonatomic, strong) UICallCellData *data;
 
-@property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundImage;
-@property (nonatomic, retain) IBOutlet UIImageView* headerBackgroundHighlightImage;
+@property (nonatomic, strong) IBOutlet UIImageView* headerBackgroundImage;
+@property (nonatomic, strong) IBOutlet UIImageView* headerBackgroundHighlightImage;
 
-@property (nonatomic, retain) IBOutlet UILabel* addressLabel;
-@property (nonatomic, retain) IBOutlet UILabel* stateLabel;
-@property (nonatomic, retain) IBOutlet UIImageView* stateImage;
-@property (nonatomic, retain) IBOutlet UIImageView* avatarImage;
-@property (nonatomic, retain) IBOutlet UIButton *removeButton;
-@property (nonatomic, retain) IBOutlet UIPauseButton *pauseButton;
+@property (nonatomic, strong) IBOutlet UILabel* addressLabel;
+@property (nonatomic, strong) IBOutlet UILabel* stateLabel;
+@property (nonatomic, strong) IBOutlet UIImageView* stateImage;
+@property (nonatomic, strong) IBOutlet UIImageView* avatarImage;
+@property (nonatomic, strong) IBOutlet UIButton *removeButton;
+@property (nonatomic, strong) IBOutlet UIPauseButton *pauseButton;
 
-@property (nonatomic, retain) IBOutlet UIView* headerView;
-@property (nonatomic, retain) IBOutlet UIView* avatarView;
+@property (nonatomic, strong) IBOutlet UIView* headerView;
+@property (nonatomic, strong) IBOutlet UIView* avatarView;
 
-@property (nonatomic, retain) IBOutlet UIView* audioStatsView;
+@property (nonatomic, strong) IBOutlet UIView* audioStatsView;
 
-@property (nonatomic, retain) IBOutlet UILabel* audioCodecLabel;
-@property (nonatomic, retain) IBOutlet UILabel* audioCodecHeaderLabel;
-@property (nonatomic, retain) IBOutlet UILabel* audioUploadBandwidthLabel;
-@property (nonatomic, retain) IBOutlet UILabel* audioUploadBandwidthHeaderLabel;
-@property (nonatomic, retain) IBOutlet UILabel* audioDownloadBandwidthLabel;
-@property (nonatomic, retain) IBOutlet UILabel* audioDownloadBandwidthHeaderLabel;
-@property (nonatomic, retain) IBOutlet UILabel* audioIceConnectivityLabel;
-@property (nonatomic, retain) IBOutlet UILabel* audioIceConnectivityHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel* audioCodecLabel;
+@property (nonatomic, strong) IBOutlet UILabel* audioCodecHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel* audioUploadBandwidthLabel;
+@property (nonatomic, strong) IBOutlet UILabel* audioUploadBandwidthHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel* audioDownloadBandwidthLabel;
+@property (nonatomic, strong) IBOutlet UILabel* audioDownloadBandwidthHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel* audioIceConnectivityLabel;
+@property (nonatomic, strong) IBOutlet UILabel* audioIceConnectivityHeaderLabel;
 
-@property (nonatomic, retain) IBOutlet UIView* videoStatsView;
+@property (nonatomic, strong) IBOutlet UIView* videoStatsView;
 
-@property (nonatomic, retain) IBOutlet UILabel* videoCodecLabel;
-@property (nonatomic, retain) IBOutlet UILabel* videoCodecHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel* videoCodecLabel;
+@property (nonatomic, strong) IBOutlet UILabel* videoCodecHeaderLabel;
 
-@property (retain, nonatomic) IBOutlet UILabel *videoSentSizeHeaderLabel;
-@property (retain, nonatomic) IBOutlet UILabel *videoSentSizeLabel;
-@property (retain, nonatomic) IBOutlet UILabel *videoRecvSizeHeaderLabel;
-@property (retain, nonatomic) IBOutlet UILabel *videoRecvSizeLabel;
+@property (strong, nonatomic) IBOutlet UILabel *videoSentSizeHeaderLabel;
+@property (strong, nonatomic) IBOutlet UILabel *videoSentSizeLabel;
+@property (strong, nonatomic) IBOutlet UILabel *videoRecvSizeHeaderLabel;
+@property (strong, nonatomic) IBOutlet UILabel *videoRecvSizeLabel;
 
-@property (nonatomic, retain) IBOutlet UILabel* videoUploadBandwidthLabel;
-@property (nonatomic, retain) IBOutlet UILabel* videoUploadBandwidthHeaderLabel;
-@property (nonatomic, retain) IBOutlet UILabel* videoDownloadBandwidthLabel;
-@property (nonatomic, retain) IBOutlet UILabel* videoDownloadBandwidthHeaderLabel;
-@property (nonatomic, retain) IBOutlet UILabel* videoIceConnectivityLabel;
-@property (nonatomic, retain) IBOutlet UILabel* videoIceConnectivityHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel* videoUploadBandwidthLabel;
+@property (nonatomic, strong) IBOutlet UILabel* videoUploadBandwidthHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel* videoDownloadBandwidthLabel;
+@property (nonatomic, strong) IBOutlet UILabel* videoDownloadBandwidthHeaderLabel;
+@property (nonatomic, strong) IBOutlet UILabel* videoIceConnectivityLabel;
+@property (nonatomic, strong) IBOutlet UILabel* videoIceConnectivityHeaderLabel;
 
-@property (nonatomic, retain) IBOutlet UIView* otherView;
+@property (nonatomic, strong) IBOutlet UIView* otherView;
 
-@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *detailsLeftSwipeGestureRecognizer;
-@property (nonatomic, retain) IBOutlet UISwipeGestureRecognizer *detailsRightSwipeGestureRecognizer;
+@property (nonatomic, strong) IBOutlet UISwipeGestureRecognizer *detailsLeftSwipeGestureRecognizer;
+@property (nonatomic, strong) IBOutlet UISwipeGestureRecognizer *detailsRightSwipeGestureRecognizer;
 
 @property (assign) BOOL firstCell;
 @property (assign) BOOL conferenceCell;

@@ -13,8 +13,8 @@
 @interface InAppProductsViewController : UIViewController<UICompositeViewDelegate> {
 }
 
-@property (nonatomic, retain) IBOutlet InAppProductsTableViewController* tableController;
-@property (retain, nonatomic) IBOutlet UIView *waitView;
+@property (nonatomic, strong) IBOutlet InAppProductsTableViewController* tableController;
+@property (strong, nonatomic) IBOutlet UIView *waitView;
 - (IBAction)onRestoreClicked:(UIButton *)sender;
 
 @end

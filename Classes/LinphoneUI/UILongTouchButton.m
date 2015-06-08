@@ -33,7 +33,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-		[self initUILongTouchButton];
+		if (!(self = [self initUILongTouchButton])) return nil;
     }
     return self;
 }
@@ -41,7 +41,7 @@
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-		[self initUILongTouchButton];
+		if (!(self = [self initUILongTouchButton])) return nil;
     }
     return self;
 }
@@ -49,7 +49,7 @@
 - (id)initWithCoder:(NSCoder *)decoder {
     self = [super initWithCoder:decoder];
     if (self) {
-		[self initUILongTouchButton];
+		if (!(self = [self initUILongTouchButton])) return nil;
 	}
     return self;
 }	
@@ -57,7 +57,6 @@
 - (void)dealloc {
 	[self removeTarget:self action:@selector(___touchDown:) forControlEvents:UIControlEventTouchDown];
     [self removeTarget:self action:@selector(___touchUp:) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
-    [super dealloc];
 }
 
 - (void)___touchDown:(id) sender {

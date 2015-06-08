@@ -37,16 +37,10 @@
 }
 
 - (void)dealloc {
-	[loginButton release];
-	[siteButton release];
-	[usernameField release];
-    [passwordField release];
-	[waitView release];
     
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [super dealloc];
 }
 
 
@@ -174,7 +168,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 								 cancelButtonTitle:NSLocalizedString(@"Continue",nil) 
 								 otherButtonTitles:nil];
 		[error show];
-        [error release];
 	} else {
 		linphone_core_clear_all_auth_info([LinphoneManager getLc]);
 		linphone_core_clear_proxy_config([LinphoneManager getLc]);

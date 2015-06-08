@@ -48,9 +48,9 @@
 
 @interface RootViewManager : NSObject
 
-@property (nonatomic, retain) PhoneMainView* portraitViewController;
-@property (nonatomic, retain) PhoneMainView* rotatingViewController;
-@property (nonatomic, retain) NSMutableArray* viewDescriptionStack;
+@property (nonatomic, strong) PhoneMainView* portraitViewController;
+@property (nonatomic, strong) PhoneMainView* rotatingViewController;
+@property (nonatomic, strong) NSMutableArray* viewDescriptionStack;
 
 +(RootViewManager*)instance;
 + (void)setupWithPortrait:(PhoneMainView*)portrait;
@@ -63,12 +63,12 @@
     NSMutableArray *inhibitedEvents;
 }
 
-@property (nonatomic, retain) IBOutlet UIView *statusBarBG;
-@property (nonatomic, retain) IBOutlet UICompositeViewController *mainViewController;
+@property (nonatomic, strong) IBOutlet UIView *statusBarBG;
+@property (nonatomic, strong) IBOutlet UICompositeViewController *mainViewController;
 
-@property (nonatomic, retain) NSString* name;
-@property (readonly) UICompositeViewDescription *currentView;
-@property (readonly, retain) MPVolumeView* volumeView;
+@property (nonatomic, strong) NSString* name;
+@property (weak, readonly) UICompositeViewDescription *currentView;
+@property (readonly, strong) MPVolumeView* volumeView;
 
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView;
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;

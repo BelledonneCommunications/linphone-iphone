@@ -47,17 +47,7 @@ static NSString * const kDisappearAnimation = @"disappear";
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [historyButton release];
-    [contactsButton release];
-    [dialerButton release];
-    [settingsButton release];
-    [chatButton release];
-    [historyNotificationView release];
-    [historyNotificationLabel release];
-    [chatNotificationView release];
-    [chatNotificationLabel release];
 
-    [super dealloc];
 }
 
 

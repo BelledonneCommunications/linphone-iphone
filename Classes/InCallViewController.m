@@ -65,28 +65,11 @@ const NSInteger SECURE_BUTTON_TAG=5;
 }
 
 - (void)dealloc {
-    [callTableController release];
-    [callTableView release];
-
-    [videoGroup release];
-    [videoView release];
-    [videoPreview release];
-#ifdef TEST_VIDEO_VIEW_CHANGE
-    [testVideoView release];
-#endif
-    [videoCameraSwitch release];
-
-    [videoWaitingForFirstImage release];
-
-    [videoZoomHandler release];
-
     [[PhoneMainView instance].view removeGestureRecognizer:singleFingerTap];
-    [singleFingerTap release];
 
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [super dealloc];
 }
 
 
@@ -237,7 +220,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			} else {
 				[self displayTableCall:animated];
                 const LinphoneCallParams* param = linphone_call_get_current_params(call);
-				const LinphoneCallAppData* callAppData = linphone_call_get_user_pointer(call);
+				const LinphoneCallAppData* callAppData = (__bridge const LinphoneCallAppData *)(linphone_call_get_user_pointer(call));
 				if(state == LinphoneCallStreamsRunning
 				   && callAppData->videoRequested
 				   && linphone_call_params_low_bandwidth_enabled(param)) {
@@ -248,7 +231,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 														  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
 														  otherButtonTitles:nil];
 					[alert show];
-					[alert release];
 					callAppData->videoRequested=FALSE; /*reset field*/
 				}
             }
@@ -400,7 +382,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
     //linphone_call_params_get_used_video_codec return 0 if no video stream enabled
 	if (call != NULL && linphone_call_params_get_used_video_codec(linphone_call_get_current_params(call))) {
-        linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, self);
+        linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, (__bridge void *)(self));
     }
 }
 
@@ -456,7 +438,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 static void hideSpinner(LinphoneCall* call, void* user_data) {
-    InCallViewController* thiz = (InCallViewController*) user_data;
+    InCallViewController* thiz = (__bridge InCallViewController*) user_data;
     [thiz hideSpinnerIndicator:call];
 }
 
@@ -477,12 +459,12 @@ static void hideSpinner(LinphoneCall* call, void* user_data) {
         return;
 
     const char* lUserNameChars = linphone_address_get_username(linphone_call_get_remote_address(call));
-    NSString* lUserName = lUserNameChars?[[[NSString alloc] initWithUTF8String:lUserNameChars] autorelease]:NSLocalizedString(@"Unknown",nil);
+    NSString* lUserName = lUserNameChars?[[NSString alloc] initWithUTF8String:lUserNameChars]:NSLocalizedString(@"Unknown",nil);
     const char* lDisplayNameChars =  linphone_address_get_display_name(linphone_call_get_remote_address(call));
-	NSString* lDisplayName = [lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"" autorelease];
+	NSString* lDisplayName = lDisplayNameChars?[[NSString alloc] initWithUTF8String:lDisplayNameChars]:@"";
 
     NSString* title = [NSString stringWithFormat : NSLocalizedString(@"'%@' would like to enable video",nil), ([lDisplayName length] > 0)?lDisplayName:lUserName];
-    DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:title] autorelease];
+    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:title];
     NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(dismissVideoActionSheet:) userInfo:sheet repeats:NO];
     [sheet addButtonWithTitle:NSLocalizedString(@"Accept", nil)  block:^() {
         LOGI(@"User accept video proposal");

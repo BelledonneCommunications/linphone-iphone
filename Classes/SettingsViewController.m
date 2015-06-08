@@ -57,7 +57,7 @@
     NSString *_key;
 }
 
-@property (nonatomic, retain) NSString *key;
+@property (nonatomic, strong) NSString *key;
 
 @end
 
@@ -66,9 +66,8 @@
 @synthesize key=_key;
 
 - (void)dealloc {
-    [_key release], _key = nil;
+    _key = nil;
 
-    [super dealloc];
 }
 
 @end
@@ -115,7 +114,7 @@
     UITableViewCell * cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
 
     // Background View
-    UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+    UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
     cell.selectedBackgroundView = selectedBackgroundView;
     [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     return cell;
@@ -140,7 +139,7 @@
 	UITableViewCell *cell = nil;
 	if ([identifier isEqualToString:kIASKPSToggleSwitchSpecifier]) {
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kIASKPSToggleSwitchSpecifier];
-		cell.accessoryView = [[[IASKSwitchEx alloc] initWithFrame:CGRectMake(0, 0, 79, 27)] autorelease];
+		cell.accessoryView = [[IASKSwitchEx alloc] initWithFrame:CGRectMake(0, 0, 79, 27)];
 		[((IASKSwitchEx*)cell.accessoryView) addTarget:self action:@selector(toggledValue:) forControlEvents:UIControlEventValueChanged];
         [((IASKSwitchEx*)cell.accessoryView) setOnTintColor:LINPHONE_MAIN_COLOR];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -153,7 +152,7 @@
 }
 
 - (void)toggledValue:(id)sender {
-    IASKSwitchEx *toggle    = [[(IASKSwitchEx*)sender retain] autorelease];
+    IASKSwitchEx *toggle    = (IASKSwitchEx*)sender;
     IASKSpecifier *spec   = [_settingsReader specifierForKey:[toggle key]];
 
     if ([toggle isOn]) {
@@ -197,7 +196,6 @@
     // add the new view controller to the dictionary and then to the 'viewList' array
     [newItemDict setObject:targetViewController forKey:@"viewController"];
     [_viewList replaceObjectAtIndex:kIASKSpecifierValuesViewControllerIndex withObject:newItemDict];
-    [targetViewController release];
 }
 
 - (IASKSettingsReader*)settingsReader {
@@ -250,7 +248,6 @@
 
     UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"About", nil) style:UIBarButtonItemStyleBordered target:self action:@selector(onAboutClick:)];
     self.navigationItem.rightBarButtonItem = buttonItem;
-    [buttonItem release];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -268,7 +265,7 @@
     }
 
     // Background View
-    UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+    UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
     cell.selectedBackgroundView = selectedBackgroundView;
     [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     return cell;
@@ -365,7 +362,6 @@
     labelTitleView.text = viewController.title;
     [labelTitleView sizeToFit];
     viewController.navigationItem.titleView = labelTitleView;
-    [labelTitleView release];
     [super pushViewController:viewController animated:animated];
 }
 
@@ -401,10 +397,6 @@
 - (void)dealloc {
     // Remove all observer
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [settingsStore release];
-	[settingsController release];
-    [navigationController release];
-    [super dealloc];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -532,7 +524,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSMutableArray *titles = [NSMutableArray arrayWithObjects:title, title, nil];
     [dict setObject:titles forKey:kIASKTitles];
 
-    return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+    return [[IASKSpecifier alloc] initWithSpecifier:dict];
 }
 
 + (IASKSpecifier*)filterSpecifier:(IASKSpecifier *)specifier {
@@ -545,7 +537,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
         [values removeObject:@"tls"];
         [dict setObject:values forKey:@"Values"];
-        return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+        return [[IASKSpecifier alloc] initWithSpecifier:dict];
     }
 #else
     if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
@@ -574,7 +566,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[values removeObject:@"DTLS"];
 			[dict setObject:values forKey:@"Values"];
 		}
-        return [[[IASKSpecifier alloc] initWithSpecifier:dict] autorelease];
+        return [[IASKSpecifier alloc] initWithSpecifier:dict];
     }
 
 #endif //HAVE_SSL
@@ -732,7 +724,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                               cancelButtonTitle:NSLocalizedString(@"Cancel",nil)
                                               otherButtonTitles:NSLocalizedString(@"Launch Wizard",nil), nil];
         [alert show];
-        [alert release];
 	} else if ( [key isEqual:@"clear_proxy_button"] ) {
 		if ( linphone_core_get_default_proxy_config(lc) == NULL ) {
 			return;
@@ -749,7 +740,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 								[settingsController.tableView reloadData];
 							}];
 		[alert show];
-		[alert release];
 
 	} else if([key isEqual:@"about_button"]) {
         [[PhoneMainView instance] changeCurrentView:[AboutViewController compositeViewDescription] push:TRUE];
@@ -807,7 +797,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 										  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 										  otherButtonTitles:nil];
 	[error show];
-	[error release];
 #else
 	if ([MFMailComposeViewController canSendMail] == YES) {
 		MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
@@ -819,7 +808,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[picker addAttachmentData:attachment mimeType:type fileName:attachmentName];
 
 		[self presentViewController:picker animated:true completion:nil];
-		[picker release];
 	} else {
 		UIAlertView* error = [[UIAlertView alloc]	initWithTitle:NSLocalizedString(@"Cannot send email",nil)
 														message:NSLocalizedString(@"Your device is not configured to send emails. Please configure mail application prior to send logs.",nil)
@@ -827,7 +815,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 											  otherButtonTitles:nil];
 		[error show];
-		[error release];
 	}
 #endif
 }

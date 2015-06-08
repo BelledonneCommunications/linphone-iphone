@@ -54,11 +54,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [removeButton release];
-    
-    [super dealloc];
-}
 
 
 #pragma mark - Action Functions

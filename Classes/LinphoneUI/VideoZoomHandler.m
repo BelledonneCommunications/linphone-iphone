@@ -104,9 +104,6 @@
     UIPinchGestureRecognizer* pinchReco = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
     [videoView addGestureRecognizer:pinchReco];    
 
-    [doubleFingerTap release];
-    [pan release];
-    [pinchReco release];
     
     [self resetZoom];
 }

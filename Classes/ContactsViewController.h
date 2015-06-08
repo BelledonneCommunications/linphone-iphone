@@ -79,15 +79,15 @@ typedef enum _ContactSelectionMode {
     BOOL use_systemView;
 }
 
-@property (nonatomic, retain) IBOutlet ContactsTableViewController* tableController;
-@property (nonatomic, retain) IBOutlet UITableView *tableView;
-@property (nonatomic, retain) IBOutlet UINavigationController* sysViewController;
-@property (retain, nonatomic) IBOutlet UIView *toolBar;
-@property (nonatomic, retain) IBOutlet UIButton* allButton;
-@property (nonatomic, retain) IBOutlet UIButton* linphoneButton;
-@property (nonatomic, retain) IBOutlet UIButton *backButton;
-@property (nonatomic, retain) IBOutlet UIButton *addButton;
-@property (retain, nonatomic) IBOutlet UISearchBar *searchBar;
+@property (nonatomic, strong) IBOutlet ContactsTableViewController* tableController;
+@property (nonatomic, strong) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) IBOutlet UINavigationController* sysViewController;
+@property (strong, nonatomic) IBOutlet UIView *toolBar;
+@property (nonatomic, strong) IBOutlet UIButton* allButton;
+@property (nonatomic, strong) IBOutlet UIButton* linphoneButton;
+@property (nonatomic, strong) IBOutlet UIButton *backButton;
+@property (nonatomic, strong) IBOutlet UIButton *addButton;
+@property (strong, nonatomic) IBOutlet UISearchBar *searchBar;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onLinphoneClick:(id)event;

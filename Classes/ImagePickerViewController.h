@@ -30,7 +30,7 @@
     UIImagePickerController *pickerController;
 }
 
-@property(nonatomic, retain) id<ImagePickerDelegate> imagePickerDelegate;
+@property(nonatomic, strong) id<ImagePickerDelegate> imagePickerDelegate;
 @property(nonatomic)           UIImagePickerControllerSourceType     sourceType;
 @property(nonatomic,copy)      NSArray                              *mediaTypes;
 @property(nonatomic)           BOOL                                  allowsEditing;

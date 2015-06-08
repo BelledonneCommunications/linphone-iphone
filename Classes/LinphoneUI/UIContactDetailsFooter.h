@@ -24,8 +24,8 @@
 @interface UIContactDetailsFooter : UIViewController {
 }
 
-@property (nonatomic, retain) IBOutlet UIButton *removeButton;
-@property (nonatomic, retain) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
+@property (nonatomic, strong) IBOutlet UIButton *removeButton;
+@property (nonatomic, strong) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
 
 - (IBAction)onRemoveClick:(id)event;
 

@@ -122,7 +122,7 @@
 
     UIImage *decompressedImage = [[UIImage alloc] initWithCGImage:decompressedImageRef scale:image.scale orientation:image.imageOrientation];
     CGImageRelease(decompressedImageRef);
-    return [decompressedImage autorelease];
+    return decompressedImage;
 }
 
 @end

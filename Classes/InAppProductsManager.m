@@ -32,10 +32,10 @@
 #import "InAppProductsViewController.h"
 
 @interface InAppProductsManager()
-@property (retain, nonatomic) NSDate *expirationDate;
-@property (retain, nonatomic) NSDictionary *accountCreationData;
+@property (strong, nonatomic) NSDate *expirationDate;
+@property (strong, nonatomic) NSDictionary *accountCreationData;
 // needed because request:didFailWithError method is already used by SKProductsRequestDelegate...
-@property (nonatomic, retain) InAppProductsXMLRPCDelegate *xmlrpc;
+@property (nonatomic, strong) InAppProductsXMLRPCDelegate *xmlrpc;
 @end
 
 @implementation InAppProductsManager
@@ -65,7 +65,7 @@
 	if (!_enabled) return FALSE;
 
 	for (NSString *prod in _productsIDPurchased) {
-		NSDate *now = [[[NSDate alloc] init] autorelease];
+		NSDate *now = [[NSDate alloc] init];
 		// since multiple ID represent the same product, we must not check it
 		if (/*[prod isEqual: productID] &&*/[self.expirationDate earlierDate:now] == now) {
 			bool isBought = true;
@@ -101,7 +101,7 @@
 - (BOOL)purchaseAccount:(NSString *)phoneNumber withPassword:(NSString *)password andEmail:(NSString*)email monthly:(BOOL)monthly {
 	if (phoneNumber) {
 		NSString* productID = [[LinphoneManager instance] lpConfigStringForKey:(monthly?@"paid_account_id_monthly":@"paid_account_id") forSection:@"in_app_purchase"];
-		self.accountCreationData = @{ @"phoneNumber":[phoneNumber retain], @"password":[password retain], @"email":[email retain] };
+		self.accountCreationData = @{ @"phoneNumber":phoneNumber, @"password":password, @"email":email };
 
 		if (![self purchaseWitID:productID]) {
 			self.accountCreationData = nil;
@@ -130,7 +130,6 @@
 			XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
 			[manager spawnConnectionWithXMLRPCRequest: request delegate: self.xmlrpc];
 			LOGI(@"XMLRPC query %@", [request method]);
-			[request release];
 			return true;
 		} else {
 			LOGE(@"Trying to activate account but no receipt available yet (probably doing it too soon)");
@@ -182,7 +181,7 @@
 
 - (void)productsRequest:(SKProductsRequest *)request
 	 didReceiveResponse:(SKProductsResponse *)response {
-	_productsAvailable = [[NSMutableArray arrayWithArray: response.products] retain];
+	_productsAvailable = [NSMutableArray arrayWithArray: response.products];
 
 	LOGI(@"Found %lu products available", (unsigned long)_productsAvailable.count);
 	_initialized = true;
@@ -283,12 +282,11 @@
 				return;
 			}
 		}
-		latestReceiptMD5 = [[receiptBase64 md5] retain];
+		latestReceiptMD5 = [receiptBase64 md5];
 
 		XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
 		[manager spawnConnectionWithXMLRPCRequest: request delegate: self.xmlrpc];
 		LOGI(@"XMLRPC query %@", [request method]);
-		[request release];
 	} else {
 		LOGW(@"Not checking receipt since it has already been done!");
 		_available = true;
@@ -393,7 +391,7 @@
 			double timeinterval = [[response object] doubleValue];
 			if (timeinterval != 0.0f) {
 				self.expirationDate = [NSDate dateWithTimeIntervalSince1970:timeinterval/1000];
-				NSDate *now = [[[NSDate alloc] init] autorelease];
+				NSDate *now = [[NSDate alloc] init];
 				NSDictionary* dict = @{@"product_id": productID, @"expires_date": self.expirationDate};
 				if ([self.expirationDate earlierDate:now] == self.expirationDate) {
 					LOGW(@"Account has expired");
@@ -419,7 +417,7 @@
 				} else {
 					errorMsg=[NSString stringWithFormat:NSLocalizedString(@"Unknown error (%@).", nil), error];
 				}
-				NSDictionary* dict = @{@"product_id": productID, @"error_msg": NSLocalizedString(errorMsg, nil)};
+				NSDictionary* dict = @{@"product_id": productID, @"error_msg": errorMsg};
 				[self postNotificationforStatus:kIAPPurchaseFailed withDict:dict];
 			}
 		}
@@ -437,7 +435,6 @@
 												  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 												  otherButtonTitles:nil,nil];
 		[errorView show];
-		[errorView release];
 
 		latestReceiptMD5 = nil;
 		NSDictionary* dict = @{@"error_msg": errorString};
@@ -462,7 +459,6 @@
 											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
 											  otherButtonTitles:nil,nil];
 	[errorView show];
-	[errorView release];
 	latestReceiptMD5 = nil;
 	NSDictionary* dict = @{@"error_msg": errorString};
 	[self postNotificationforStatus:kIAPReceiptFailed withDict:dict];
@@ -510,6 +506,6 @@
 }
 
 - (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-	
+
 }
 @end

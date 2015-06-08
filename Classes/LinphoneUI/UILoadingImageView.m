@@ -76,11 +76,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [waitIndicatorView release];
-    
-    [super dealloc];
-}
 
 
 #pragma mark -

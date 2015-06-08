@@ -72,17 +72,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [avatarImage release];
-    [addressLabel release];
-    [normalView release];
-    [editView release];
-    [tableView release];
-
-    [propertyList release];
-
-    [super dealloc];
-}
 
 
 #pragma mark - ViewController Functions
@@ -183,13 +172,6 @@
     [contactDetailsDelegate onModification:nil];
 }
 
-+ (NSString*)localizeLabel:(NSString*)str {
-    CFStringRef lLocalizedLabel = ABAddressBookCopyLocalizedLabel((CFStringRef) str);
-    NSString * retStr = [NSString stringWithString:(NSString*) lLocalizedLabel];
-    CFRelease(lLocalizedLabel);
-    return retStr;
-}
-
 #pragma mark - UITableViewDataSource Functions
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -204,7 +186,7 @@
     static NSString *kCellId = @"ContactDetailsHeaderCell";
     UIEditableTableViewCell *cell = [atableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[[UIEditableTableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:kCellId] autorelease];
+        cell = [[UIEditableTableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:kCellId];
         [cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeWords];
         [cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
         [cell.detailTextField setKeyboardType:UIKeyboardTypeDefault];
@@ -225,11 +207,10 @@
 
     // setup values, if they exist
     if(contact) {
-        CFStringRef lValue = ABRecordCopyValue(contact, property);
+        NSString* lValue = CFBridgingRelease( ABRecordCopyValue(contact, property) );
         if(lValue != NULL) {
-            [cell.detailTextLabel setText:(NSString*)lValue];
-            [cell.detailTextField setText:(NSString*)lValue];
-            CFRelease(lValue);
+            [cell.detailTextLabel setText:lValue];
+            [cell.detailTextField setText:lValue];
         } else {
             [cell.detailTextLabel setText:@""];
             [cell.detailTextField setText:@""];
@@ -272,7 +253,7 @@
                 }
             }
         };
-        DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source",nil)] autorelease];
+        DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source",nil)];
         if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
             [sheet addButtonWithTitle:NSLocalizedString(@"Camera",nil) block:^(){
                 showAppropriateController(UIImagePickerControllerSourceTypeCamera);
@@ -285,9 +266,9 @@
         }
         if([FastAddressBook getContactImage:contact thumbnail:true] != nil) {
             [sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Remove", nil) block:^(){
-                NSError* error = NULL;
-                if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
-                    LOGI(@"Can't remove entry: %@", [error localizedDescription]);
+                CFErrorRef error = NULL;
+                if(!ABPersonRemoveImageData(contact, (CFErrorRef*)&error)) {
+                    LOGI(@"Can't remove entry: %@", [(__bridge NSError*)error localizedDescription]);
                 }
                 [self update];
             }];
@@ -314,17 +295,17 @@
         }
     }
 	FastAddressBook* fab = [LinphoneManager instance].fastAddressBook;
-    NSError* error = NULL;
-    if(!ABPersonRemoveImageData(contact, (CFErrorRef*)error)) {
-        LOGI(@"Can't remove entry: %@", [error localizedDescription]);
+    CFErrorRef error = NULL;
+    if(!ABPersonRemoveImageData(contact, (CFErrorRef*)&error)) {
+        LOGI(@"Can't remove entry: %@", [(__bridge NSError*)error localizedDescription]);
     }
     NSData *dataRef = UIImageJPEGRepresentation(image, 0.9f);
     CFDataRef cfdata = CFDataCreate(NULL,[dataRef bytes], [dataRef length]);
 
 	[fab saveAddressBook];
 
-	if(!ABPersonSetImageData(contact, cfdata, (CFErrorRef*)error)) {
-		LOGI(@"Can't add entry: %@", [error localizedDescription]);
+	if(!ABPersonSetImageData(contact, cfdata, (CFErrorRef*)&error)) {
+		LOGI(@"Can't add entry: %@", [(__bridge NSError*)error localizedDescription]);
 	} else {
 		[fab saveAddressBook];
 	}
@@ -367,10 +348,10 @@
         NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
         ABPropertyID property = [[propertyList objectAtIndex:[indexPath row]] intValue];
         [cell.detailTextLabel setText:[textField text]];
-        NSError* error = NULL;
-        ABRecordSetValue(contact, property, [textField text], (CFErrorRef*)&error);
+        CFErrorRef error = NULL;
+        ABRecordSetValue(contact, property, (__bridge CFTypeRef)([textField text]), (CFErrorRef*)&error);
         if (error != NULL) {
-            LOGE(@"Error when saving property %i in contact %p: Fail(%@)", property, contact, [error localizedDescription]);
+            LOGE(@"Error when saving property %i in contact %p: Fail(%@)", property, contact, [(__bridge NSError*)error localizedDescription]);
         }
     } else {
         LOGW(@"Not valid UIEditableTableViewCell");

@@ -35,8 +35,5 @@
     return linphone_core_is_mic_muted([LinphoneManager getLc]) == false;
 }
 
-- (void)dealloc {
-    [super dealloc];
-}
 
 @end

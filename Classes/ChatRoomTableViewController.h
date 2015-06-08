@@ -35,7 +35,7 @@
     MSList *messageList;
 }
 
-@property (nonatomic, retain) id<ChatRoomDelegate> chatRoomDelegate;
+@property (nonatomic, strong) id<ChatRoomDelegate> chatRoomDelegate;
 
 - (void)addChatEntry:(LinphoneChatMessage*)chat;
 - (void)scrollToBottom:(BOOL)animated;

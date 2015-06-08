@@ -33,14 +33,6 @@
 
 #pragma mark - Lifecycle Functions
 
-- (void)dealloc {
-    [selectedData release];
-    [dataList release];
-    [tableView release];
-    [delegate release];
-    
-    [super dealloc];
-}
 
 
 #pragma mark - ViewController Functions
@@ -87,16 +79,12 @@ static UICompositeViewDescription *compositeDescription = nil;
     if([dataList isEqualToDictionary:adatalist]) {
         return;
     }
-    [dataList release];
-    dataList = [adatalist retain];
+    dataList = adatalist;
     [tableView reloadData];
 }
 
 
 - (void)setSelectedData:(NSString *)aselectedData {
-    if (selectedData != nil) {
-        [selectedData release];
-    }
     selectedData = [[NSString alloc] initWithString:aselectedData];
     [tableView reloadData];
 }
@@ -116,10 +104,10 @@ static UICompositeViewDescription *compositeDescription = nil;
     static NSString *kCellId = @"ContactDetailsLabelCell";
     UITableViewCell *cell = [atableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {  
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kCellId] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kCellId];
         
         // Background View
-        UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+        UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
         cell.selectedBackgroundView = selectedBackgroundView;
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }

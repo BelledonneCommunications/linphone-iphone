@@ -20,8 +20,8 @@
 // Call directly to use with custom animation (override willRotateToInterfaceOrientation to disable the switch there)
 - (void)applyLayoutForInterfaceOrientation:(UIInterfaceOrientation)newOrientation;
 
-@property (nonatomic, retain) IBOutlet UIView *landscapeView;
-@property (nonatomic, retain) IBOutlet UIView *portraitView;
+@property (nonatomic, strong) IBOutlet UIView *landscapeView;
+@property (nonatomic, strong) IBOutlet UIView *portraitView;
 @property (assign) BOOL viewIsCurrentlyPortrait;
 
 @end

@@ -30,9 +30,9 @@
 }
 
 @property (nonatomic, copy) NSString *selectedData;
-@property (nonatomic, retain) NSDictionary *dataList;
-@property (nonatomic, retain) IBOutlet UITableView *tableView;
-@property (nonatomic, retain) id<ContactDetailsLabelViewDelegate> delegate;
+@property (nonatomic, strong) NSDictionary *dataList;
+@property (nonatomic, strong) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) id<ContactDetailsLabelViewDelegate> delegate;
 
 - (IBAction)onBackClick:(id)event;
 

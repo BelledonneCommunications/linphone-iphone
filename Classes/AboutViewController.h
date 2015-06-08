@@ -24,15 +24,15 @@
 @interface AboutViewController : UIViewController<UICompositeViewDelegate, UIWebViewDelegate> {
 }
 
-@property (nonatomic, retain) IBOutlet UILabel *linphoneLabel;
-@property (nonatomic, retain) IBOutlet UILabel *linphoneIphoneVersionLabel;
-@property (nonatomic, retain) IBOutlet UILabel *linphoneCoreVersionLabel;
-@property (nonatomic, retain) IBOutlet UIView *contentView;
-@property (nonatomic, retain) IBOutlet UILabel *linkLabel;
-@property (nonatomic, retain) IBOutlet UILabel *copyrightLabel;
-@property (nonatomic, retain) IBOutlet UILabel *licenseLabel;
-@property (nonatomic, retain) IBOutlet UIWebView *licensesView;
-@property (nonatomic, retain) IBOutlet UITapGestureRecognizer *linkTapGestureRecognizer;
+@property (nonatomic, strong) IBOutlet UILabel *linphoneLabel;
+@property (nonatomic, strong) IBOutlet UILabel *linphoneIphoneVersionLabel;
+@property (nonatomic, strong) IBOutlet UILabel *linphoneCoreVersionLabel;
+@property (nonatomic, strong) IBOutlet UIView *contentView;
+@property (nonatomic, strong) IBOutlet UILabel *linkLabel;
+@property (nonatomic, strong) IBOutlet UILabel *copyrightLabel;
+@property (nonatomic, strong) IBOutlet UILabel *licenseLabel;
+@property (nonatomic, strong) IBOutlet UIWebView *licensesView;
+@property (nonatomic, strong) IBOutlet UITapGestureRecognizer *linkTapGestureRecognizer;
 
 - (IBAction)onLinkTap:(id)sender;
 

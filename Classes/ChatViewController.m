@@ -36,11 +36,7 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [tableController release];
-    [editButton release];
-    [addressField release];
     
-    [super dealloc];
 }
 
 #pragma mark - ViewController Functions
@@ -123,7 +119,6 @@ static UICompositeViewDescription *compositeDescription = nil;
                                               cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
                                               otherButtonTitles:nil];
         [alert show];
-        [alert release];
     }
 	addressField.text = @"";
 	

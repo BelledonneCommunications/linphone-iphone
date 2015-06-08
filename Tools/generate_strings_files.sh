@@ -11,19 +11,24 @@ fi
 
 ##### 1. Generate Localizable.strings from source files (.m)
 function generate_localizable_from_sources {
+	#WARNING: in case of sed issue "extra characters at the end of g command", it means that
+	# we are trying to modify an UTF-16 file which is not supported..
+
 	localizable_en=$root_directory/Resources/en.lproj/Localizable.strings
 	# The 2 only specific cases of the application: since we are length limited for push
 	# notifications, the ID is not matching the English translation... so we must keep
 	# the translations!
-	IC_MSG_EN=$(sed -nE 's/"IC_MSG" = "(.*)";/\1/p' $localizable_en)
-	IM_MSG_EN=$(sed -nE 's/"IM_MSG" = "(.*)";/\1/p' $localizable_en)
-	rm -f $localizable_en
-	find $root_directory/Classes -name '*.m' | xargs genstrings -u -a -o $(dirname $localizable_en)
 	iconv -f utf-16 -t utf-8 $localizable_en > $localizable_en.tmp
-	mv $localizable_en.tmp $localizable_en
-	sed -i.bak "s/= \"IC_MSG\";/= \"$IC_MSG_EN\";/" $localizable_en
-	sed -i.bak "s/= \"IM_MSG\";/= \"$IM_MSG_EN\";/" $localizable_en
-	rm $localizable_en.bak
+	IC_MSG_EN=$(sed -nE 's/"IC_MSG" = "(.*)";/\1/p' $localizable_en.tmp)
+	IM_MSG_EN=$(sed -nE 's/"IM_MSG" = "(.*)";/\1/p' $localizable_en.tmp)
+	rm -f $localizable_en $localizable_en.tmp
+
+	find $root_directory/Classes -name '*.m' | xargs genstrings -u -a -o $(dirname $localizable_en)
+	iconv -f utf-16LE -t utf-8 $localizable_en > $localizable_en.tmp
+	sed -i.bak "s/= \"IC_MSG\";/= \"$IC_MSG_EN\";/" $localizable_en.tmp
+	sed -i.bak "s/= \"IM_MSG\";/= \"$IM_MSG_EN\";/" $localizable_en.tmp
+	iconv -f utf-8 -t utf-16LE $localizable_en.tmp > $localizable_en
+	rm $localizable_en.tmp.bak $localizable_en.tmp
 }
 
 ##### 2. Generate .strings for all XIB files
@@ -36,7 +41,7 @@ function generate_strings_from_xib {
 
 		# remove if empty
 		iconv -f utf-16 -t utf-8 "$stringsfile" > "$to_utf8_file"
-		if [ ! -s "$to_utf8_file" ]; then
+		if [ $(stat -f '%z' $to_utf8_file) -le 1 ]; then
 			echo "$(basename "$stringsfile") is empty, removing"
 			rm "$stringsfile"
 		else
@@ -84,6 +89,6 @@ source_lang = en
 	done
 }
 
-# generate_localizable_from_sources
-# generate_strings_from_xib
+generate_localizable_from_sources
+generate_strings_from_xib
 generate_strings_from_inappsettings_plist

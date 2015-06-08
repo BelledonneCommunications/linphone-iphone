@@ -70,31 +70,10 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [tableController release];
-    [messageField release];
-    [sendButton release];
-    [editButton release];
-    [addressLabel release];
-    [avatarImage release];
-    [headerView release];
-    [messageView release];
-    [messageBackgroundImage release];
-    [transferBackgroundImage release];
 
-    [listTapGestureRecognizer release];
-    [listSwipeGestureRecognizer release];
 
-	[transferView release];
-	[pictureButton release];
-	[imageTransferProgressBar release];
-	[cancelTransferButton release];
 
-    [imageQualities release];
-    [waitView release];
 
-    [composeLabel release];
-    [composeIndicatorView release];
-    [super dealloc];
 }
 
 
@@ -277,7 +256,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
 											  otherButtonTitles:nil];
 		[error show];
-		[error release];
         return;
     }
 	char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
@@ -309,7 +287,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
-	ChatRoomViewController* thiz = (ChatRoomViewController*)ud;
+	ChatRoomViewController* thiz = (__bridge ChatRoomViewController*)ud;
     const char*text = linphone_chat_message_get_text(msg);
 	LOGI(@"Delivery status for [%s] is [%s]",text,linphone_chat_message_state_to_string(state));
 	[thiz.tableController updateChatEntry:msg];
@@ -326,7 +304,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         linphone_chat_message_set_external_body_url(msg, [[externalUrl absoluteString] UTF8String]);
     }
 
-	linphone_chat_room_send_message2(chatRoom, msg, message_status, self);
+	linphone_chat_room_send_message2(chatRoom, msg, message_status, (__bridge void *)(self));
 
     if ( internalUrl ) {
         // internal url is saved in the appdata for display and later save
@@ -357,7 +335,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                                                     cancelButtonTitle:NSLocalizedString(@"Ok",nil)
                                                                     otherButtonTitles:nil ,nil];
                          [errorAlert show];
-                         [errorAlert release];
                          return;
                      }
                      LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
@@ -584,7 +561,7 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         }
     };
 
-    DTActionSheet *sheet = [[[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source",nil)] autorelease];
+    DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source",nil)];
     if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 	    [sheet addButtonWithTitle:NSLocalizedString(@"Camera",nil) block:^(){
             block(UIImagePickerControllerSourceTypeCamera);
@@ -643,7 +620,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 - (void)imageSharingAborted:(ImageSharing*)aimageSharing {
     [messageView setHidden:FALSE];
 	[transferView setHidden:TRUE];
-    [imageSharing release];
     imageSharing = nil;
 }
 
@@ -659,7 +635,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                                    cancelButtonTitle:NSLocalizedString(@"Ok",nil)
                                                    otherButtonTitles:nil ,nil];
 		[errorAlert show];
-        [errorAlert release];
 	} else {
 		LOGE(@"Cannot download file from [%@] because [%@]", url, [error localizedDescription]);
         UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
@@ -668,7 +643,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                                    cancelButtonTitle:NSLocalizedString(@"Continue", nil)
                                                    otherButtonTitles:nil, nil];
 		[errorAlert show];
-        [errorAlert release];
 	}
     imageSharing = nil;
 }
@@ -698,7 +672,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
                                                                                                              cancelButtonTitle:NSLocalizedString(@"Ok",nil)
                                                                                                              otherButtonTitles:nil ,nil];
                                                                   [errorAlert show];
-                                                                  [errorAlert release];
                                                                   return;
                                                               }
                                                               LOGI(@"Image saved to [%@]", [assetURL absoluteString]);

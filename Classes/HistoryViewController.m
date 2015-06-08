@@ -42,16 +42,6 @@ typedef enum _HistoryView {
     return [super initWithNibName:@"HistoryViewController" bundle:[NSBundle mainBundle]];
 }
 
-- (void)dealloc {
-    [tableController release];
-    [tableView release];
-    
-    [allButton release];
-    [missedButton release];
-    [editButton release];
-	[deleteButton release];
-    [super dealloc];
-}
 
 
 #pragma mark - UICompositeViewDelegate Functions

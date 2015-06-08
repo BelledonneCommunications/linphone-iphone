@@ -23,6 +23,6 @@
 @interface UICallButton : UIButton {
 }
 
-@property (nonatomic, retain) IBOutlet UITextField* addressField;
+@property (nonatomic, strong) IBOutlet UITextField* addressField;
 
 @end

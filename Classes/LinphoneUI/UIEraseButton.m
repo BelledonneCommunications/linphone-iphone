@@ -57,7 +57,6 @@
 
 - (void)dealloc {
 	addressField = nil;
-    [super dealloc];
 }
 
 

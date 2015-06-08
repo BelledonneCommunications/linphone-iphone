@@ -44,12 +44,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [pickerController release];
-    [popoverController release];
-    
-    [super dealloc];
-}
 
 
 #pragma mark - UICompositeViewDelegate Functions

@@ -24,8 +24,8 @@
 @interface UIConferenceHeader : UIViewController {
 }
 
-@property (nonatomic, retain) IBOutlet UIImageView* stateImage;
-@property (nonatomic, retain) IBOutlet UIPauseButton *pauseButton;
+@property (nonatomic, strong) IBOutlet UIImageView* stateImage;
+@property (nonatomic, strong) IBOutlet UIPauseButton *pauseButton;
 
 + (int)getHeight;
 - (void)update;

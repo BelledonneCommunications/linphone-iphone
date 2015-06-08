@@ -56,11 +56,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [backgroundNinePatch release];
-    
-    [super dealloc];
-}
 
 - (CGRect)textRectForBounds:(CGRect)bounds {
     return CGRectInset(bounds, 6, 4);

@@ -80,22 +80,6 @@ static UIFont *CELL_FONT = nil;
     return self;
 }
 
-- (void)dealloc {
-    [chatRoomDelegate release];
-    [backgroundImage release];
-    [innerView release];
-    [bubbleView release];
-    [messageText release];
-    [messageImageView release];
-    [deleteButton release];
-    [dateLabel release];
-    [statusImage release];
-    [downloadButton release];
-    [imageTapGestureRecognizer release];
-    [resendTapGestureRecognizer release];
-
-    [super dealloc];
-}
 
 #pragma mark -
 
@@ -150,7 +134,6 @@ static UIFont *CELL_FONT = nil;
                         [messageImageView setImage:image];
                         [messageImageView setFullImageUrl:asset];
                         [messageImageView stopLoading];
-                        [image release];
                     });
                 }
             });
@@ -174,7 +157,6 @@ static UIFont *CELL_FONT = nil;
                                              attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:17.0],
                                                           NSForegroundColorAttributeName:[UIColor darkGrayColor]}];
             messageText.attributedText = attr_text;
-            [attr_text release];
 
         } else {
             messageText.text = @"";
@@ -194,7 +176,6 @@ static UIFont *CELL_FONT = nil;
     NSLocale *locale = [NSLocale currentLocale];
     [dateFormatter setLocale:locale];
     [dateLabel setText:[dateFormatter stringFromDate:message_date]];
-    [dateFormatter release];
 
     LinphoneChatMessageState state = linphone_chat_message_get_state(chat);
     BOOL outgoing = linphone_chat_message_is_outgoing(chat);
@@ -218,7 +199,6 @@ static UIFont *CELL_FONT = nil;
                                            initWithString:NSLocalizedString(@"Resend", @"Resend")
                                            attributes:@{NSForegroundColorAttributeName: [UIColor redColor]}];
         [dateLabel setAttributedText:resend_text];
-        [resend_text release];
 	}
 
     if( outgoing){

@@ -26,11 +26,11 @@
 @interface UICompositeViewDescription: NSObject{
 }
 
-@property (retain) NSString *name;
-@property (retain) NSString *content;
-@property (retain) NSString *stateBar;
+@property (strong) NSString *name;
+@property (strong) NSString *content;
+@property (strong) NSString *stateBar;
 @property (assign) BOOL stateBarEnabled;
-@property (retain) NSString *tabBar;
+@property (strong) NSString *tabBar;
 @property (assign) BOOL tabBarEnabled;
 @property (assign) BOOL fullscreen;
 @property (assign) BOOL landscapeMode;
@@ -62,11 +62,11 @@
     UIInterfaceOrientation currentOrientation;
 }
 
-@property (retain) CATransition *viewTransition;
+@property (strong) CATransition *viewTransition;
 
-@property (nonatomic, retain) IBOutlet UIView* stateBarView;
-@property (nonatomic, retain) IBOutlet UIView* contentView;
-@property (nonatomic, retain) IBOutlet UIView* tabBarView;
+@property (nonatomic, strong) IBOutlet UIView* stateBarView;
+@property (nonatomic, strong) IBOutlet UIView* contentView;
+@property (nonatomic, strong) IBOutlet UIView* tabBarView;
 
 - (void)changeView:(UICompositeViewDescription *)description;
 - (void)setFullScreen:(BOOL) enabled;

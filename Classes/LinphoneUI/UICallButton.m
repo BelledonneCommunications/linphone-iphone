@@ -57,11 +57,6 @@
     return self;
 }	
 
-- (void)dealloc {
-	[addressField release];
-    
-    [super dealloc];
-}
 
 
 #pragma mark -

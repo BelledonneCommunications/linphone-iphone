@@ -45,26 +45,12 @@
     return self;
 }
 
-- (void)dealloc {
-    [linphoneCoreVersionLabel release];
-    [linphoneIphoneVersionLabel release];
-    [contentView release];
-    [linkTapGestureRecognizer release];
-    [linkLabel release];
-    [licensesView release];
-    
-    [super dealloc];
-}
 
 
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-	[linkLabel setText:NSLocalizedString(@"http://www.linphone.org", nil)];
-	[licenseLabel setText:NSLocalizedString(@"GNU General Public License V2 ", nil)];
-	[copyrightLabel setText:NSLocalizedString(@"© 2010 Belledonne Communications ", nil)];
 	
     [linkLabel addGestureRecognizer:linkTapGestureRecognizer];
     

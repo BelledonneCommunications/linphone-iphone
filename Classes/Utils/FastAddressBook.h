@@ -37,4 +37,9 @@
 + (NSString*)normalizePhoneNumber:(NSString*)number;
 + (NSString*)normalizeSipURI:(NSString*)address;
 
+
+// TOOLS
+
++(NSString*)localizedLabel:(NSString*)label;
+
 @end

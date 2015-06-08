@@ -66,8 +66,5 @@ if (au!=0) LOGE(@"UIBluetoothButton error for %s: ret=%ld",method,au)
 	return false;
 }
 
-- (void)dealloc {
-    [super dealloc];
-}
 
 @end

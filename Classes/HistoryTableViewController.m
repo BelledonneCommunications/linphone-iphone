@@ -52,10 +52,6 @@
     return self;
 }	
 
-- (void)dealloc {
-    [callLogs release];
-    [super dealloc];
-}
 
 
 #pragma mark - ViewController Functions 
@@ -138,9 +134,9 @@
     static NSString *kCellId = @"UIHistoryCell";
     UIHistoryCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[[UIHistoryCell alloc] initWithIdentifier:kCellId] autorelease];
+        cell = [[UIHistoryCell alloc] initWithIdentifier:kCellId];
         // Background View
-        UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+        UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
         cell.selectedBackgroundView = selectedBackgroundView;
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }

@@ -36,13 +36,13 @@ static void audioRouteChangeListenerCallback (
                                        const void             *inPropertyValue                             // 4
                                        ) {
     if (inPropertyID != kAudioSessionProperty_AudioRouteChange) return; // 5
-    UISpeakerButton* button = (UISpeakerButton*)inUserData;
+    UISpeakerButton* button = (__bridge UISpeakerButton*)inUserData;
     [button update];
 }
 
 - (void)initUISpeakerButton {
     AudioSessionInitialize(NULL, NULL, NULL, NULL);
-    OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
+    OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, (__bridge void *)(self));
     if (lStatus) {
         LOGE(@"cannot register route change handler [%ld]",lStatus);
     }
@@ -73,11 +73,10 @@ static void audioRouteChangeListenerCallback (
 }	
 
 - (void)dealloc {
-    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, self);
+    OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, (__bridge void *)(self));
 	if (lStatus) {
 		LOGE(@"cannot un register route change handler [%ld]", lStatus);
 	}
-	[super dealloc];
 }
 
 

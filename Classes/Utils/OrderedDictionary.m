@@ -28,7 +28,7 @@ NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 	NSString *objectString;
 	if ([object isKindOfClass:[NSString class]])
 	{
-		objectString = (NSString *)[[object retain] autorelease];
+		objectString = (NSString *)object;
 	}
 	else if ([object respondsToSelector:@selector(descriptionWithLocale:indent:)])
 	{
@@ -70,12 +70,6 @@ NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 	return self;
 }
 
-- (void)dealloc
-{
-	[dictionary release];
-	[array release];
-	[super dealloc];
-}
 
 - (id)copy
 {
@@ -126,8 +120,11 @@ NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 		[self removeObjectForKey:aKey];
 	}
     NSUInteger anIndex;
+	IMP imp = [aKey methodForSelector:comparator];
+	NSComparisonResult (*func)(id, SEL, id) = (void *)imp;
+
     for(anIndex = 0; anIndex < [array count]; ++anIndex) {
-        NSComparisonResult result = (NSComparisonResult) [aKey performSelector:comparator withObject:[array objectAtIndex: anIndex]];
+        NSComparisonResult result = (NSComparisonResult) func(aKey, comparator, [array objectAtIndex: anIndex]);
          if(result <= 0) {
             break;
         }

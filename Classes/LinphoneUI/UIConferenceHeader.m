@@ -33,11 +33,6 @@
     return [super initWithNibName:@"UIConferenceHeader" bundle:[NSBundle mainBundle]];
 }
 
-- (void)dealloc {
-    [stateImage release];
-    [pauseButton release];
-    [super dealloc];
-}
 
 
 #pragma mark - ViewController Functions

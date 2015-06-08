@@ -27,15 +27,24 @@
 #import "Utils.h"
 
 @implementation ChatTableViewController {
-    @private
     MSList* data;
 }
 
 
 #pragma mark - Lifecycle Functions
 
+-(instancetype)init {
+	self = super.init;
+	if( self ){
+		self->data = nil;
+	}
+	return self;
+}
+
 - (void)dealloc {
-    [super dealloc];
+	if( data != nil ) {
+		ms_list_free_with_data(data, chatTable_free_chatrooms);
+	}
 }
 
 #pragma mark - ViewController Functions 
@@ -45,6 +54,7 @@
     self.tableView.accessibilityIdentifier = @"ChatRoom list";
     [self loadData];
 }
+
 
 
 #pragma mark - 
@@ -77,7 +87,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         ms_list_free_with_data(history, (void (*)(void *))linphone_chat_message_unref);
 
         sorted = ms_list_insert_sorted(sorted,
-                                       linphone_chat_room_ref(iter->data),
+                                       iter->data,
                                        (MSCompareFunc)sorted_history_comparison);
 
         iter = iter->next;
@@ -88,10 +98,9 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 static void chatTable_free_chatrooms(void *data){
     LinphoneChatMessage* lastMsg = linphone_chat_room_get_user_data(data);
     if( lastMsg ){
-        linphone_chat_message_unref(linphone_chat_room_get_user_data(data));
+        linphone_chat_message_unref(lastMsg);
         linphone_chat_room_set_user_data(data, NULL);
     }
-    linphone_chat_room_unref(data);
 }
 
 - (void)loadData {
@@ -116,10 +125,10 @@ static void chatTable_free_chatrooms(void *data){
     static NSString *kCellId = @"UIChatCell";
     UIChatCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
     if (cell == nil) {
-        cell = [[[UIChatCell alloc] initWithIdentifier:kCellId] autorelease];
+        cell = [[UIChatCell alloc] initWithIdentifier:kCellId];
         
         // Background View
-        UACellBackgroundView *selectedBackgroundView = [[[UACellBackgroundView alloc] initWithFrame:CGRectZero] autorelease];
+        UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
         cell.selectedBackgroundView = selectedBackgroundView;
         [selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
     }
@@ -156,8 +165,14 @@ static void chatTable_free_chatrooms(void *data){
         [tableView beginUpdates];
 
         LinphoneChatRoom *chatRoom = (LinphoneChatRoom*)ms_list_nth_data(data, (int)[indexPath row]);
+		LinphoneChatMessage* last_msg = linphone_chat_room_get_user_data(chatRoom);
+		if( last_msg ){
+			linphone_chat_message_unref(last_msg);
+			linphone_chat_room_set_user_data(chatRoom, NULL);
+		}
         linphone_chat_room_delete_history(chatRoom);
         linphone_chat_room_unref(chatRoom);
+		data = ms_list_remove(data, chatRoom);
 
         // will force a call to [self loadData]
         [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];

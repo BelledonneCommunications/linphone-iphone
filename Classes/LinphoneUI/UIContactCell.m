@@ -44,13 +44,6 @@
     return self;
 }
 
-- (void) dealloc {
-    [firstNameLabel release];
-    [lastNameLabel release];
-    [avatarImage release];
-
-    [super dealloc];
-}
 
 
 #pragma mark - Property Functions
@@ -80,41 +73,21 @@
         return;
     }
 
-    CFStringRef lFirstName = ABRecordCopyValue(contact, kABPersonFirstNameProperty);
-    CFStringRef lLocalizedFirstName = (lFirstName != nil)?ABAddressBookCopyLocalizedLabel(lFirstName):nil;
-    CFStringRef lLastName = ABRecordCopyValue(contact, kABPersonLastNameProperty);
-    CFStringRef lLocalizedLastName = (lLastName != nil)?ABAddressBookCopyLocalizedLabel(lLastName):nil;
-    CFStringRef lOrganization = ABRecordCopyValue(contact, kABPersonOrganizationProperty);
-    CFStringRef lLocalizedOrganization = (lOrganization != nil)?ABAddressBookCopyLocalizedLabel(lOrganization):nil;
+	NSString* lFirstName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonFirstNameProperty));
+	NSString* lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
 
-    if(lLocalizedFirstName != nil){
-        [firstNameLabel setText: (NSString *)lLocalizedFirstName];
-    }
-    else
-        [firstNameLabel setText: @""];
+ 	NSString* lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
+	NSString* lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
 
-    if(lLocalizedLastName != nil){
-        [lastNameLabel setText: (NSString *)lLocalizedLastName];
-    }
-    else
-        [lastNameLabel setText: @""];
+	NSString* lOrganization = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonOrganizationProperty));
+	NSString* lLocalizedOrganization = [FastAddressBook localizedLabel:lOrganization];
 
-    if(lLocalizedFirstName == nil && lLocalizedLastName == nil) {
-        [firstNameLabel setText: (NSString *)lLocalizedOrganization];
-    }
+	[firstNameLabel setText:(NSString *)(lLocalizedFirstName)];
+	[lastNameLabel setText:(NSString *)(lLocalizedLastName)];
 
-    if(lLocalizedOrganization != nil)
-        CFRelease(lLocalizedOrganization);
-    if(lOrganization != nil)
-        CFRelease(lOrganization);
-    if(lLocalizedLastName != nil)
-        CFRelease(lLocalizedLastName);
-    if(lLastName != nil)
-        CFRelease(lLastName);
-    if(lLocalizedFirstName != nil)
-        CFRelease(lLocalizedFirstName);
-    if(lFirstName != nil)
-        CFRelease(lFirstName);
+	if(lLocalizedFirstName == nil && lLocalizedLastName == nil) {
+		[firstNameLabel setText:(NSString *)(lLocalizedOrganization)];
+	}
 }
 
 - (void)layoutSubviews {
