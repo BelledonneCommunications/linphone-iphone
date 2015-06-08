@@ -165,6 +165,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[callTableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 	[callTableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4
+
+	UIPanGestureRecognizer *dragndrop =
+		[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(moveVideoPreview:)];
+	dragndrop.minimumNumberOfTouches = 1;
+	[self.videoPreview addGestureRecognizer:dragndrop];
 }
 
 - (void)viewDidUnload {
@@ -488,6 +493,12 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 - (void)dismissVideoActionSheet:(NSTimer *)timer {
 	DTActionSheet *sheet = (DTActionSheet *)timer.userInfo;
 	[sheet dismissWithClickedButtonIndex:sheet.destructiveButtonIndex animated:TRUE];
+}
+
+#pragma mark VideoPreviewMoving
+
+- (void)moveVideoPreview:(UIPanGestureRecognizer *)dragndrop {
+	self.videoPreview.center = [dragndrop locationInView:videoPreview.superview];
 }
 
 @end

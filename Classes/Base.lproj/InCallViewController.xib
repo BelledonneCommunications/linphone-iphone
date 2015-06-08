@@ -35,6 +35,9 @@
                             <rect key="frame" x="0.0" y="0.0" width="320" height="460"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <accessibility key="accessibilityConfiguration">
+                                <accessibilityTraits key="traits" none="YES" notEnabled="YES"/>
+                            </accessibility>
                         </view>
                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
                             <rect key="frame" x="216.00000029802322" y="323.99999984561953" width="96" height="128"/>
