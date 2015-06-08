@@ -594,7 +594,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
             ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
             NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
             CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
-            NSString* valueRef = CFBridgingRelease(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
+            NSString* valueRef = (__bridge NSString*)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
             dest = [FastAddressBook normalizeSipURI:(NSString*) valueRef];
             CFRelease(lDict);
             CFRelease(lMap);
