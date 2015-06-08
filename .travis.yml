@@ -17,7 +17,7 @@ env:
 
 before_install:
     - brew update
-    - brew install autoconf automake pkg-config doxygen nasm gettext wget yasm optipng imagemagick coreutils intltool
+    - brew install doxygen nasm gettext yasm optipng imagemagick coreutils intltool
     - brew outdated cmake || brew upgrade cmake
     - brew link gettext --force
     - brew tap Gui13/linphone
