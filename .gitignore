@@ -8,3 +8,5 @@ Classes/LinphoneIOSVersion.h
 Pods/
 build
 test-reports
+WORK
+Makefile
