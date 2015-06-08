@@ -82,6 +82,7 @@ The next pieces need to be compiled manually.
 	git clone https://chromium.googlesource.com/webm/libvpx -b v1.3.0
 	cd libvpx
 	./configure --prefix=/opt/local \
+		--target=x86_64-darwin10-gcc \
 	        --enable-error-concealment \
 	        --enable-multithread \
 	        --enable-realtime-only \
