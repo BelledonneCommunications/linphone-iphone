@@ -141,7 +141,7 @@ static void parse_valid_xml_rpc_response(LinphoneXmlRpcRequest *request, const c
 	request->status = LinphoneXmlRpcStatusFailed;
 	xml_ctx->doc = xmlReadDoc((const unsigned char*)response_body, 0, NULL, 0);
 	if (xml_ctx->doc != NULL) {
-		const char *response_str;
+		const char *response_str = NULL;
 		if (linphone_create_xml_xpath_context(xml_ctx) < 0) goto end;
 		switch (request->response.type) {
 			case LinphoneXmlRpcArgInt:
@@ -161,7 +161,7 @@ static void parse_valid_xml_rpc_response(LinphoneXmlRpcRequest *request, const c
 			default:
 				break;
 		}
-		linphone_free_xml_text_content(response_str);
+		if (response_str) linphone_free_xml_text_content(response_str);
 	} else {
 		ms_warning("Wrongly formatted XML-RPC response: %s", xml_ctx->errorBuffer);
 	}
@@ -262,7 +262,7 @@ LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(const char *metho
 	va_list args;
 	LinphoneXmlRpcArgType arg_type;
 	LinphoneXmlRpcRequest *request = _linphone_xml_rpc_request_new(method, return_type, cb, user_data);
-	va_start(args, cb);
+	va_start(args, user_data);
 	while (cont) {
 		arg_type = va_arg(args, LinphoneXmlRpcArgType);
 		switch (arg_type) {
