@@ -139,14 +139,15 @@ def warning(platforms):
 
 def extract_libs_list():
     l = []
-    regex = re.compile("lib\S+\.a")
+    # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
+    regex = re.compile("name = (lib(\S+)\.a); path = \"liblinphone-sdk/apple-darwin/")
     f = open('linphone.xcodeproj/project.pbxproj', 'r')
     lines = f.readlines()
     f.close()
     for line in lines:
         m = regex.search(line)
         if m is not None:
-            l += [m.group(0)]
+            l += [m.group(1)]
     return list(set(l))
 
 
@@ -166,7 +167,7 @@ def main(argv=None):
                            dest='list_cmake_variables')
     argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=[
                            'x86_64', 'devices'],
-                           help="The platform to build for (default is 'x84_64 devices'). Space separated"
+                           help="The platform to build for (default is 'x86_64 devices'). Space separated"
                                 " architectures in list: {0}.".format(', '.join([repr(platform) for platform in platforms])))
     args, additional_args = argparser.parse_known_args()
 
@@ -276,7 +277,7 @@ def main(argv=None):
         makefile = """
 archs={archs}
 packages={packages}
-libs={libs}
+libs_list={libs_list}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
@@ -333,9 +334,15 @@ libs: $(addprefix all-,$(archs))
 		echo "[$$all_archs] Mixing `basename $$archive` in $$destpath"; \\
 		lipo -create $$all_paths -output $$destpath; \\
 	done && \\
-	for lib in $$libs ; do \\
-		if ! test -f liblinphone-sdk/apple-darwin/lib/$$lib ; then \\
-			cp -f submodules/binaries/libdummy.a liblinphone-sdk/apple-darwin/lib/$$lib ; \\
+	for lib in {libs_list} ; do \\
+		if [ $${{lib:0:5}} = "libms" ] ; then \\
+			library_path=liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/$$lib ; \\
+		else \\
+			library_path=liblinphone-sdk/apple-darwin/lib/$$lib ; \\
+		fi ; \\
+		if ! test -f $$library_path ; then \\
+			echo "[$$all_archs] Generating dummy $$lib static library." ; \\
+			cp -f submodules/binaries/libdummy.a $$library_path ; \\
 		fi \\
 	done
 
@@ -382,7 +389,8 @@ help:
 	@echo ""
 	@echo "   * sdk  : re-add all generated libraries to the SDK. Use this only after a full build."
 	@echo "   * libs : after a rebuild of a subpackage, will mix the new libs in liblinphone-sdk/apple-darwin directory"
-""".format(archs=' '.join(makefile_platforms), arch_opts='|'.join(makefile_platforms), first_arch=makefile_platforms[0], arch_targets=arch_targets, packages=' '.join(packages), libs=' '.join(libs_list), multiarch=multiarch)
+""".format(archs=' '.join(makefile_platforms), arch_opts='|'.join(makefile_platforms), first_arch=makefile_platforms[0],
+           arch_targets=arch_targets, packages=' '.join(packages), libs_list=' '.join(libs_list), multiarch=multiarch)
         f = open('Makefile', 'w')
         f.write(makefile)
         f.close()

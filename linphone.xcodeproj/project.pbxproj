@@ -892,7 +892,6 @@
 
 /* Begin PBXFileReference section */
 		045B5CB218D72E9A0088350C /* libbzrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbzrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libbzrtp.a"; sourceTree = "<group>"; };
-		15017E6F1773578400784ACB /* libxml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml2.a; path = "liblinphone-sdk/apple-darwin/lib/libxml2.a"; sourceTree = "<group>"; };
 		152F22331B15E83B008C0621 /* libilbcrfc3951.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbcrfc3951.a; path = "liblinphone-sdk/apple-darwin/lib/libilbcrfc3951.a"; sourceTree = "<group>"; };
 		152F22351B15E889008C0621 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		1560821E18EEF26100765332 /* libmsopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsopenh264.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsopenh264.a"; sourceTree = "<group>"; };
@@ -952,7 +951,6 @@
 		22276E8213C73D3100210156 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "liblinphone-sdk/apple-darwin/lib/libswscale.a"; sourceTree = "<group>"; };
 		22276E8613C73D8A00210156 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		22276E8813C73DC000210156 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		223148E31178A08200637D6A /* libilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbc.a; path = "liblinphone-sdk/apple-darwin/lib/libilbc.a"; sourceTree = "<group>"; };
 		223148E51178A09900637D6A /* libmsilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsilbc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsilbc.a"; sourceTree = "<group>"; };
 		2234C8E715EE2F7F00E18E83 /* chat_message_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_delivered.png; path = Resources/chat_message_delivered.png; sourceTree = "<group>"; };
 		2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_not_delivered.png; path = Resources/chat_message_not_delivered.png; sourceTree = "<group>"; };
@@ -2289,7 +2287,6 @@
 				F03A9B9718C0DB6F00C4D7FE /* libc++.dylib */,
 				F0BB8C111936240300974404 /* libcunit.a */,
 				220FAD2910765B400068D98F /* libgsm.a */,
-				223148E31178A08200637D6A /* libilbc.a */,
 				2211DB911475562600DEE054 /* liblinphone.a */,
 				F0BB8C0F193623F200974404 /* liblinphonetester.a */,
 				22405EE916006F0700B92522 /* libmediastreamer_base.a */,
@@ -2319,7 +2316,6 @@
 				D30BF33216A427BC00AF0026 /* libtunnel.a */,
 				7066FC0B13E830E400EFC6DC /* libvpx.a */,
 				22AA8AFB13D7125500B30535 /* libx264.a */,
-				15017E6F1773578400784ACB /* libxml2.a */,
 				F0B89C2118DC89E30050B60E /* MediaPlayer.framework */,
 				D37DC7171594AF3400B2A5EB /* MessageUI.framework */,
 				226EF06B15FA256B005865C7 /* MobileCoreServices.framework */,
