@@ -532,7 +532,7 @@ static GtkWidget * create_finish_page(void) {
 	return vbox;
 }
 
-void linphone_gtk_show_assistant(GtkWidget *parent) {
+void linphone_gtk_show_assistant(void) {
 	GtkWidget *w;
 	GtkWidget *page_0_intro;
 	GtkWidget *page_1_choice;
