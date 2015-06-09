@@ -182,6 +182,7 @@ install(TARGETS linphone EXPORT LinphoneTargets
 
 
 set(HEADER_FILES
+	account_creator.h
 	buffer.h
 	call_log.h
 	call_params.h
@@ -196,6 +197,7 @@ set(HEADER_FILES
 	lpconfig.h
 	sipsetup.h
 	xml2lpc.h
+	xmlrpc.h
 )
 
 install(FILES ${HEADER_FILES}
