@@ -60,19 +60,19 @@ void linphone_account_creator_cbs_set_existence_tested(LinphoneAccountCreatorCbs
 }
 
 LinphoneAccountCreatorCbsValidationTestedCb linphone_account_creator_cbs_get_validation_tested(const LinphoneAccountCreatorCbs *cbs) {
-	return cbs->existence_tested;
+	return cbs->validation_tested;
 }
 
 void linphone_account_creator_cbs_set_validation_tested(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsValidationTestedCb cb) {
-	cbs->existence_tested = cb;
+	cbs->validation_tested = cb;
 }
 
 LinphoneAccountCreatorCbsValidatedCb linphone_account_creator_cbs_get_validated(const LinphoneAccountCreatorCbs *cbs) {
-	return cbs->existence_tested;
+	return cbs->validated;
 }
 
 void linphone_account_creator_cbs_set_validated(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsValidatedCb cb) {
-	cbs->existence_tested = cb;
+	cbs->validated = cb;
 }
 
 

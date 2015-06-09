@@ -59,8 +59,8 @@ static void linphone_gtk_test_account_validation_cb(LinphoneAccountCreator *crea
 	}
 }
 
-static void check_account_validation(GtkWidget *page) {
-	LinphoneAccountCreator *creator = linphone_gtk_assistant_get_creator(gtk_widget_get_toplevel(page));
+static void check_account_validation(GtkWidget *assistant) {
+	LinphoneAccountCreator *creator = linphone_gtk_assistant_get_creator(assistant);
 	linphone_account_creator_test_validation(creator);
 }
 
@@ -325,15 +325,17 @@ static gboolean update_interface_with_username_availability(void *w) {
 }
 
 static void linphone_gtk_test_account_existence_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
-	GtkWidget *w = (GtkWidget *)linphone_account_creator_get_user_data(creator);
+	GtkWidget *assistant = (GtkWidget *)linphone_account_creator_get_user_data(creator);
+	GtkWidget *page = g_object_get_data(G_OBJECT(assistant), "linphone_account_creation_configuration");
 	int account_existing = (status == LinphoneAccountCreatorOk) ? 0 : 1;
-	g_object_set_data(G_OBJECT(w), "is_username_used", GINT_TO_POINTER(account_existing));
-	gdk_threads_add_idle((GSourceFunc)update_interface_with_username_availability, (void*)w);
+	g_object_set_data(G_OBJECT(page), "is_username_used", GINT_TO_POINTER(account_existing));
+	gdk_threads_add_idle((GSourceFunc)update_interface_with_username_availability, (void*)page);
 }
 
-static gboolean check_username_availability(void *w) {
-	LinphoneAccountCreator *creator = linphone_gtk_assistant_get_creator(gtk_widget_get_toplevel(GTK_WIDGET(w)));
-	g_object_set_data(G_OBJECT(w), "usernameAvailabilityTimerID", GUINT_TO_POINTER(0));
+static gboolean check_username_availability(GtkWidget *assistant) {
+	LinphoneAccountCreator *creator = linphone_gtk_assistant_get_creator(assistant);
+	GtkWidget *page = GUINT_TO_POINTER(g_object_get_data(G_OBJECT(assistant), "linphone_account_creation_configuration"));
+	g_object_set_data(G_OBJECT(page), "usernameAvailabilityTimerID", GUINT_TO_POINTER(0));
 	linphone_account_creator_test_existence(creator);
 	return FALSE;
 }
@@ -354,7 +356,7 @@ static void linphone_account_creation_username_changed(GtkEntry *entry, GtkWidge
 		if (timerID > 0) {
 			g_source_remove(timerID);
 		}
-		timerID = g_timeout_add(500, (GSourceFunc)check_username_availability, w);
+		timerID = g_timeout_add(500, (GSourceFunc)check_username_availability, assistant);
 		g_object_set_data(G_OBJECT(w), "usernameAvailabilityTimerID", GUINT_TO_POINTER(timerID));
 	} else {
 		GdkPixbuf *nok_pixbuf = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "nok_pixbuf"));
@@ -593,6 +595,7 @@ void linphone_gtk_show_assistant(GtkWidget *parent) {
 	gtk_assistant_append_page(GTK_ASSISTANT(w), page_4_linphone_account_creation_configuration);
 	gtk_assistant_set_page_type(GTK_ASSISTANT(w), page_4_linphone_account_creation_configuration, GTK_ASSISTANT_PAGE_CONFIRM);
 	gtk_assistant_set_page_title(GTK_ASSISTANT(w), page_4_linphone_account_creation_configuration, _("Enter account information (step 1/2)"));
+	g_object_set_data(G_OBJECT(w), "linphone_account_creation_configuration", page_4_linphone_account_creation_configuration);
 
 	gtk_assistant_append_page(GTK_ASSISTANT(w), page_5_linphone_account_creation_in_progress);
 	gtk_assistant_set_page_type(GTK_ASSISTANT(w), page_5_linphone_account_creation_in_progress, GTK_ASSISTANT_PAGE_PROGRESS);
