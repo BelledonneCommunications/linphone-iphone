@@ -33,71 +33,87 @@ import prepare
 
 
 class IOSTarget(prepare.Target):
-	def __init__(self, arch):
-		prepare.Target.__init__(self, 'ios-' + arch)
-		current_path = os.path.dirname(os.path.realpath(__file__))
-		self.config_file = 'configs/config-ios-' + arch + '.cmake'
-		self.toolchain_file = 'toolchains/toolchain-ios-' + arch + '.cmake'
-		self.output = 'liblinphone-sdk/' + arch + '-apple-darwin.ios'
-		self.additional_args = [
-			'-DLINPHONE_BUILDER_EXTERNAL_SOURCE_PATH=' + current_path + '/submodules'
-		]
 
-	def clean(self):
-		if os.path.isdir('WORK'):
-			shutil.rmtree('WORK', ignore_errors=False, onerror=self.handle_remove_read_only)
-		if os.path.isdir('liblinphone-sdk'):
-			shutil.rmtree('liblinphone-sdk', ignore_errors=False, onerror=self.handle_remove_read_only)
+    def __init__(self, arch):
+        prepare.Target.__init__(self, 'ios-' + arch)
+        current_path = os.path.dirname(os.path.realpath(__file__))
+        self.config_file = 'configs/config-ios-' + arch + '.cmake'
+        self.toolchain_file = 'toolchains/toolchain-ios-' + arch + '.cmake'
+        self.output = 'liblinphone-sdk/' + arch + '-apple-darwin.ios'
+        self.additional_args = [
+            '-DLINPHONE_BUILDER_EXTERNAL_SOURCE_PATH=' +
+            current_path + '/submodules'
+        ]
+
+    def clean(self):
+        if os.path.isdir('WORK'):
+            shutil.rmtree(
+                'WORK', ignore_errors=False, onerror=self.handle_remove_read_only)
+        if os.path.isdir('liblinphone-sdk'):
+            shutil.rmtree(
+                'liblinphone-sdk', ignore_errors=False, onerror=self.handle_remove_read_only)
 
 
 class IOSi386Target(IOSTarget):
-	def __init__(self):
-		IOSTarget.__init__(self, 'i386')
+
+    def __init__(self):
+        IOSTarget.__init__(self, 'i386')
+
 
 class IOSx8664Target(IOSTarget):
-	def __init__(self):
-		IOSTarget.__init__(self, 'x86_64')
+
+    def __init__(self):
+        IOSTarget.__init__(self, 'x86_64')
+
 
 class IOSarmv7Target(IOSTarget):
-	def __init__(self):
-		IOSTarget.__init__(self, 'armv7')
+
+    def __init__(self):
+        IOSTarget.__init__(self, 'armv7')
+
 
 class IOSarm64Target(IOSTarget):
-	def __init__(self):
-		IOSTarget.__init__(self, 'arm64')
+
+    def __init__(self):
+        IOSTarget.__init__(self, 'arm64')
 
 
 targets = {}
-targets[  'i386'] = IOSi386Target()
+targets['i386'] = IOSi386Target()
 targets['x86_64'] = IOSx8664Target()
-targets[ 'armv7'] = IOSarmv7Target()
-targets[ 'arm64'] = IOSarm64Target()
+targets['armv7'] = IOSarmv7Target()
+targets['arm64'] = IOSarm64Target()
 
 archs_device = ['arm64', 'armv7']
 archs_simu = ['i386', 'x86_64']
 platforms = ['all', 'devices', 'simulators'] + archs_device + archs_simu
 
+
 class PlatformListAction(argparse.Action):
-	def __call__(self, parser, namespace, values, option_string=None):
-		if values:
-			for value in values:
-				if value not in platforms:
-					message = ("invalid platform: {0!r} (choose from {1})".format(value, ', '.join([repr(platform) for platform in platforms])))
-					raise argparse.ArgumentError(self, message)
-			setattr(namespace, self.dest, values)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        if values:
+            for value in values:
+                if value not in platforms:
+                    message = ("invalid platform: {0!r} (choose from {1})".format(
+                        value, ', '.join([repr(platform) for platform in platforms])))
+                    raise argparse.ArgumentError(self, message)
+            setattr(namespace, self.dest, values)
+
 
 def warning(platforms):
-	gpl_third_parties_enabled = False
-	regex = re.compile("^ENABLE_GPL_THIRD_PARTIES:BOOL=ON")
-	f = open('WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0]), 'r')
-	for line in f:
-		if regex.match(line):
-			gpl_third_parties_enabled = True
-			break
-	f.close()
-	
-	if gpl_third_parties_enabled:
-		print("""
+    gpl_third_parties_enabled = False
+    regex = re.compile("^ENABLE_GPL_THIRD_PARTIES:BOOL=ON")
+    f = open(
+        'WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0]), 'r')
+    for line in f:
+        if regex.match(line):
+            gpl_third_parties_enabled = True
+            break
+    f.close()
+
+    if gpl_third_parties_enabled:
+        print("""
 ***************************************************************************
 ***************************************************************************
 ***** CAUTION, this liblinphone SDK is built using 3rd party GPL code *****
@@ -108,8 +124,8 @@ def warning(platforms):
 ***************************************************************************
 ***************************************************************************
 """)
-	else:
-		print("""
+    else:
+        print("""
 *****************************************************************
 *****************************************************************
 ***** Linphone SDK without 3rd party GPL software           *****
@@ -121,50 +137,60 @@ def warning(platforms):
 """)
 
 
-def main(argv = None):
-	if argv is None:
-		argv = sys.argv
-	argparser = argparse.ArgumentParser(description="Prepare build of Linphone and its dependencies.")
-	argparser.add_argument('-c', '-C', '--clean', help="Clean a previous build instead of preparing a build.", action='store_true')
-	argparser.add_argument('-d', '--debug', help="Prepare a debug build.", action='store_true')
-	argparser.add_argument('-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
-	argparser.add_argument('-L', '--list-cmake-variables', help="List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
-	argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=['all'], help="The platform to build for (default is all), one of: {0}.".format(', '.join([repr(platform) for platform in platforms])))
-	args, additional_args = argparser.parse_known_args()
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    argparser = argparse.ArgumentParser(
+        description="Prepare build of Linphone and its dependencies.")
+    argparser.add_argument(
+        '-c', '-C', '--clean', help="Clean a previous build instead of preparing a build.", action='store_true')
+    argparser.add_argument(
+        '-d', '--debug', help="Prepare a debug build.", action='store_true')
+    argparser.add_argument(
+        '-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
+    argparser.add_argument('-L', '--list-cmake-variables',
+                           help="List non-advanced CMake cache variables.", action='store_true',
+                           dest='list_cmake_variables')
+    argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=[
+                           'x86_64', 'devices'],
+                           help="The platform to build for (default is 'x84_64 devices'). Space separated"
+                                " architectures in list: {0}.".format(', '.join([repr(platform) for platform in platforms])))
+    args, additional_args = argparser.parse_known_args()
 
-	selected_platforms = []
-	for platform in args.platform:
-		if platform == 'all':
-			selected_platforms += archs_device + archs_simu
-		elif platform == 'devices':
-			selected_platforms += archs_device
-		elif platform == 'simulators':
-			selected_platforms += archs_simu
-		else:
-			selected_platforms += [platform]
-	selected_platforms = list(set(selected_platforms))
+    selected_platforms = []
+    for platform in args.platform:
+        if platform == 'all':
+            selected_platforms += archs_device + archs_simu
+        elif platform == 'devices':
+            selected_platforms += archs_device
+        elif platform == 'simulators':
+            selected_platforms += archs_simu
+        else:
+            selected_platforms += [platform]
+    selected_platforms = list(set(selected_platforms))
 
-	retcode = 0
-	makefile_platforms = []
-	for platform in selected_platforms:
-		target = targets[platform]
+    retcode = 0
+    makefile_platforms = []
+    for platform in selected_platforms:
+        target = targets[platform]
 
-		if args.clean:
-			target.clean()
-		else:
-			if args.debug:
-				additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
-			retcode = prepare.run(target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
-			if retcode != 0:
-				return retcode
-			makefile_platforms += [platform]
+        if args.clean:
+            target.clean()
+        else:
+            if args.debug:
+                additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
+            retcode = prepare.run(
+                target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
+            if retcode != 0:
+                return retcode
+            makefile_platforms += [platform]
 
-	if makefile_platforms:
-		packages = os.listdir('WORK/ios-' + makefile_platforms[0] + '/Build')
-		packages.sort()
-		arch_targets = ""
-		for arch in makefile_platforms:
-			arch_targets += """
+    if makefile_platforms:
+        packages = os.listdir('WORK/ios-' + makefile_platforms[0] + '/Build')
+        packages.sort()
+        arch_targets = ""
+        for arch in makefile_platforms:
+            arch_targets += """
 {arch}: all-{arch}
 
 {arch}-build:
@@ -223,17 +249,17 @@ def main(argv = None):
 	rm -f WORK/ios-{arch}/Stamp/EP_vpx/*; \\
 	echo "Run 'make {arch}-build-vpx' to rebuild vpx correctly.";
 """.format(arch=arch)
-		multiarch = ""
-		for arch in makefile_platforms[1:]:
-			multiarch += \
-"""		if test -f "$${arch}_path"; then \\
+        multiarch = ""
+        for arch in makefile_platforms[1:]:
+            multiarch += \
+                """		if test -f "$${arch}_path"; then \\
 			all_paths=`echo $$all_paths $${arch}_path`; \\
 			all_archs="$$all_archs,{arch}" ; \\
 		else \\
 			echo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
 		fi; \\
 """.format(first_arch=makefile_platforms[0], arch=arch)
-		makefile = """
+        makefile = """
 archs={archs}
 packages={packages}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
@@ -340,14 +366,14 @@ help:
 	@echo "   * sdk  : re-add all generated libraries to the SDK. Use this only after a full build."
 	@echo "   * libs : after a rebuild of a subpackage, will mix the new libs in liblinphone-sdk/apple-darwin directory"
 """.format(archs=' '.join(makefile_platforms), arch_opts='|'.join(makefile_platforms), first_arch=makefile_platforms[0], arch_targets=arch_targets, packages=' '.join(packages), multiarch=multiarch)
-		f = open('Makefile', 'w')
-		f.write(makefile)
-		f.close()
-		warning(makefile_platforms)
-	elif os.path.isfile('Makefile'):
-		os.remove('Makefile')
+        f = open('Makefile', 'w')
+        f.write(makefile)
+        f.close()
+        warning(makefile_platforms)
+    elif os.path.isfile('Makefile'):
+        os.remove('Makefile')
 
-	return retcode
+    return retcode
 
 if __name__ == "__main__":
-	sys.exit(main())
+    sys.exit(main())
