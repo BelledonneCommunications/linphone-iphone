@@ -21,30 +21,106 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 
 
-struct _LinphoneAccountCreator {
-	LinphoneXmlRpcSession *xmlrpc_session;
-	LinphoneAccountCreatorCb existence_test_cb;
-	LinphoneAccountCreatorCb validation_test_cb;
-	LinphoneAccountCreatorCb validate_cb;
-	LinphoneCore *core;
-	void *existence_test_cb_ud;
-	void *validation_test_cb_ud;
-	void *validate_cb_ud;
-	char *xmlrpc_url;
-	char *username;
-	char *password;
-	char *domain;
-	char *route;
-	char *email;
-	bool_t subscribe_to_newsletter;
-};
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreatorCbs);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneAccountCreatorCbs, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+static LinphoneAccountCreatorCbs * linphone_account_creator_cbs_new(void) {
+	return belle_sip_object_new(LinphoneAccountCreatorCbs);
+}
+
+LinphoneAccountCreatorCbs * linphone_account_creator_cbs_ref(LinphoneAccountCreatorCbs *cbs) {
+	belle_sip_object_ref(cbs);
+	return cbs;
+}
+
+void linphone_account_creator_cbs_unref(LinphoneAccountCreatorCbs *cbs) {
+	belle_sip_object_unref(cbs);
+}
+
+void *linphone_account_creator_cbs_get_user_data(const LinphoneAccountCreatorCbs *cbs) {
+	return cbs->user_data;
+}
+
+void linphone_account_creator_cbs_set_user_data(LinphoneAccountCreatorCbs *cbs, void *ud) {
+	cbs->user_data = ud;
+}
+
+LinphoneAccountCreatorCbsExistenceTestedCb linphone_account_creator_cbs_get_existence_tested(const LinphoneAccountCreatorCbs *cbs) {
+	return cbs->existence_tested;
+}
+
+void linphone_account_creator_cbs_set_existence_tested(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsExistenceTestedCb cb) {
+	cbs->existence_tested = cb;
+}
+
+LinphoneAccountCreatorCbsValidationTestedCb linphone_account_creator_cbs_get_validation_tested(const LinphoneAccountCreatorCbs *cbs) {
+	return cbs->existence_tested;
+}
+
+void linphone_account_creator_cbs_set_validation_tested(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsValidationTestedCb cb) {
+	cbs->existence_tested = cb;
+}
+
+LinphoneAccountCreatorCbsValidatedCb linphone_account_creator_cbs_get_validated(const LinphoneAccountCreatorCbs *cbs) {
+	return cbs->existence_tested;
+}
+
+void linphone_account_creator_cbs_set_validated(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsValidatedCb cb) {
+	cbs->existence_tested = cb;
+}
+
+
+static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
+	linphone_xml_rpc_session_unref(creator->xmlrpc_session);
+	linphone_account_creator_cbs_unref(creator->callbacks);
+	if (creator->username) ms_free(creator->username);
+	if (creator->password) ms_free(creator->password);
+	if (creator->domain) ms_free(creator->domain);
+	if (creator->route) ms_free(creator->route);
+	if (creator->email) ms_free(creator->email);
+	ms_free(creator);
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreator);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneAccountCreator, belle_sip_object_t,
+	(belle_sip_object_destroy_t)_linphone_account_creator_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
 
 LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url) {
 	LinphoneAccountCreator *creator;
-	creator = ms_new0(LinphoneAccountCreator, 1);
+	creator = belle_sip_object_new(LinphoneAccountCreator);
+	creator->callbacks = linphone_account_creator_cbs_new();
 	creator->core = core;
 	creator->xmlrpc_session = linphone_xml_rpc_session_new(core, xmlrpc_url);
 	return creator;
+}
+
+LinphoneAccountCreator * linphone_account_creator_ref(LinphoneAccountCreator *creator) {
+	belle_sip_object_ref(creator);
+	return creator;
+}
+
+void linphone_account_creator_unref(LinphoneAccountCreator *creator) {
+	belle_sip_object_unref(creator);
+}
+
+void *linphone_account_creator_get_user_data(const LinphoneAccountCreator *creator) {
+	return creator->user_data;
+}
+
+void linphone_account_creator_set_user_data(LinphoneAccountCreator *creator, void *ud) {
+	creator->user_data = ud;
 }
 
 void linphone_account_creator_set_username(LinphoneAccountCreator *creator, const char *username) {
@@ -95,30 +171,19 @@ bool_t linphone_account_creator_newsletter_subscription_enabled(const LinphoneAc
 	return creator->subscribe_to_newsletter;
 }
 
-void linphone_account_creator_set_test_existence_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorCb cb, void *user_data) {
-	creator->existence_test_cb = cb;
-	creator->existence_test_cb_ud = user_data;
+LinphoneAccountCreatorCbs * linphone_account_creator_get_callbacks(const LinphoneAccountCreator *creator) {
+	return creator->callbacks;
 }
 
-void linphone_account_creator_set_test_validation_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorCb cb, void *user_data) {
-	creator->validation_test_cb = cb;
-	creator->validation_test_cb_ud = user_data;
-}
-
-void linphone_account_creator_set_validate_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorCb cb, void *user_data) {
-	creator->validate_cb = cb;
-	creator->validate_cb_ud = user_data;
-}
-
-static void _test_existence_cb(LinphoneXmlRpcRequest *request, void *user_data) {
-	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)user_data;
-	if (creator->existence_test_cb != NULL) {
+static void _test_existence_cb(LinphoneXmlRpcRequest *request) {
+	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)linphone_xml_rpc_request_get_user_data(request);
+	if (creator->callbacks->existence_tested != NULL) {
 		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorFailed;
 		if ((linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk)
 			&& (linphone_xml_rpc_request_get_int_response(request) == 0)) {
 			status = LinphoneAccountCreatorOk;
 		}
-		creator->existence_test_cb(creator, status, creator->existence_test_cb_ud);
+		creator->callbacks->existence_tested(creator, status);
 	}
 }
 
@@ -130,24 +195,25 @@ LinphoneAccountCreatorStatus linphone_account_creator_test_existence(LinphoneAcc
 
 	identity = ms_strdup_printf("%s@%s", creator->username, creator->domain);
 	request = linphone_xml_rpc_request_new_with_args("check_account", LinphoneXmlRpcArgInt,
-		_test_existence_cb, creator,
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgNone);
+	linphone_xml_rpc_request_set_user_data(request, creator);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _test_existence_cb);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
 	ms_free(identity);
 	return LinphoneAccountCreatorOk;
 }
 
-static void _test_validation_cb(LinphoneXmlRpcRequest *request, void *user_data) {
-	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)user_data;
-	if (creator->validation_test_cb != NULL) {
+static void _test_validation_cb(LinphoneXmlRpcRequest *request) {
+	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)linphone_xml_rpc_request_get_user_data(request);
+	if (creator->callbacks->validation_tested != NULL) {
 		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorFailed;
 		if ((linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk)
 			&& (linphone_xml_rpc_request_get_int_response(request) == 1)) {
 			status = LinphoneAccountCreatorOk;
 		}
-		creator->validation_test_cb(creator, status, creator->validation_test_cb_ud);
+		creator->callbacks->validation_tested(creator, status);
 	}
 }
 
@@ -159,24 +225,25 @@ LinphoneAccountCreatorStatus linphone_account_creator_test_validation(LinphoneAc
 
 	identity = ms_strdup_printf("%s@%s", creator->username, creator->domain);
 	request = linphone_xml_rpc_request_new_with_args("check_account_validated", LinphoneXmlRpcArgInt,
-		_test_validation_cb, creator,
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgNone);
+	linphone_xml_rpc_request_set_user_data(request, creator);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _test_validation_cb);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
 	ms_free(identity);
 	return LinphoneAccountCreatorOk;
 }
 
-static void _validate_cb(LinphoneXmlRpcRequest *request, void *user_data) {
-	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)user_data;
-	if (creator->validate_cb != NULL) {
+static void _validate_cb(LinphoneXmlRpcRequest *request) {
+	LinphoneAccountCreator *creator = (LinphoneAccountCreator *)linphone_xml_rpc_request_get_user_data(request);
+	if (creator->callbacks->validated != NULL) {
 		LinphoneAccountCreatorStatus status = LinphoneAccountCreatorFailed;
 		if ((linphone_xml_rpc_request_get_status(request) == LinphoneXmlRpcStatusOk)
 			&& (linphone_xml_rpc_request_get_int_response(request) == 0)) {
 			status = LinphoneAccountCreatorOk;
 		}
-		creator->validate_cb(creator, status, creator->validate_cb_ud);
+		creator->callbacks->validated(creator, status);
 	}
 }
 
@@ -188,12 +255,13 @@ LinphoneAccountCreatorStatus linphone_account_creator_validate(LinphoneAccountCr
 
 	identity = ms_strdup_printf("%s@%s", creator->username, creator->domain);
 	request = linphone_xml_rpc_request_new_with_args("create_account", LinphoneXmlRpcArgInt,
-		_validate_cb, creator,
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgString, creator->password,
 		LinphoneXmlRpcArgString, creator->email,
 		LinphoneXmlRpcArgInt, (creator->subscribe_to_newsletter == TRUE) ? 1 : 0,
 		LinphoneXmlRpcArgNone);
+	linphone_xml_rpc_request_set_user_data(request, creator);
+	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _validate_cb);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
 	ms_free(identity);
@@ -243,14 +311,4 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 	linphone_core_remove_auth_info(creator->core, info);
 	linphone_proxy_config_unref(cfg);
 	return NULL;
-}
-
-void linphone_account_creator_destroy(LinphoneAccountCreator *creator){
-	linphone_xml_rpc_session_unref(creator->xmlrpc_session);
-	if (creator->username) ms_free(creator->username);
-	if (creator->password) ms_free(creator->password);
-	if (creator->domain) ms_free(creator->domain);
-	if (creator->route) ms_free(creator->route);
-	if (creator->email) ms_free(creator->email);
-	ms_free(creator);
 }

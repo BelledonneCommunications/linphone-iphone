@@ -55,6 +55,11 @@ typedef enum _LinphoneXmlRpcStatus {
 typedef struct _LinphoneXmlRpcRequest LinphoneXmlRpcRequest;
 
 /**
+ * An object to handle the callbacks for handling the LinphoneXmlRpcRequest operations.
+**/
+typedef struct _LinphoneXmlRpcRequestCbs LinphoneXmlRpcRequestCbs;
+
+/**
  * The LinphoneXmlRpcSession object used to send XML-RPC requests and handle their responses.
 **/
 typedef struct _LinphoneXmlRpcSession LinphoneXmlRpcSession;
@@ -62,32 +67,25 @@ typedef struct _LinphoneXmlRpcSession LinphoneXmlRpcSession;
 /**
  * Callback used to notify the response to an XML-RPC request.
  * @param[in] request LinphoneXmlRpcRequest object
- * @param[in] user_data A user data given when setting the callback upon creation of the XML-RPC request.
 **/
-typedef void (*LinphoneXmlRpcResponseCb)(LinphoneXmlRpcRequest *request, void *user_data);
+typedef void (*LinphoneXmlRpcRequestCbsResponseCb)(LinphoneXmlRpcRequest *request);
 
 
 /**
  * Create a new LinphoneXmlRpcRequest object.
  * @param[in] method The XML-RPC method to call.
  * @param[in] return_type The expected XML-RPC response type.
- * @param[in] cb The callback that will be called when the XML-RPC response is received or if an error occurs.
- * @param[in] user_data A user data that will be passed as a parameter to the callback.
  * @return A new LinphoneXmlRpcRequest object.
 **/
-LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, LinphoneXmlRpcArgType return_type,
-	LinphoneXmlRpcResponseCb cb, void *user_data);
+LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new(const char *method, LinphoneXmlRpcArgType return_type);
 
 /**
  * Create a new LinphoneXmlRpcRequest object giving the arguments to the method call.
  * @param[in] method The XML-RPC method to call.
  * @param[in] return_type The expected XML-RPC response type.
- * @param[in] cb The callback that will be called when the XML-RPC response is received or if an error occurs.
- * @param[in] user_data A user data that will be passed as a parameter to the callback.
  * @return A new LinphoneXmlRpcRequest object.
 **/
-LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(const char *method, LinphoneXmlRpcArgType return_type,
-	LinphoneXmlRpcResponseCb cb, void *user_data, ...);
+LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_request_new_with_args(const char *method, LinphoneXmlRpcArgType return_type, ...);
 
 /**
  * Acquire a reference to the XML-RPC request.
@@ -131,6 +129,13 @@ LINPHONE_PUBLIC void linphone_xml_rpc_request_add_int_arg(LinphoneXmlRpcRequest 
 LINPHONE_PUBLIC void linphone_xml_rpc_request_add_string_arg(LinphoneXmlRpcRequest *request, const char *value);
 
 /**
+ * Get the LinphoneXmlRpcRequestCbs object associated with a LinphoneXmlRpcRequest.
+ * @param[in] request LinphoneXmlRpcRequest object
+ * @return The LinphoneXmlRpcRequestCbs object associated with the LinphoneXmlRpcRequest.
+**/
+LINPHONE_PUBLIC LinphoneXmlRpcRequestCbs * linphone_xml_rpc_request_get_callbacks(const LinphoneXmlRpcRequest *request);
+
+/**
  * Get the content of the XML-RPC request.
  * @param[in] request LinphoneXmlRpcRequest object.
  * @return The string representation of the content of the XML-RPC request.
@@ -157,6 +162,7 @@ LINPHONE_PUBLIC int linphone_xml_rpc_request_get_int_response(const LinphoneXmlR
 * @return The string response to the XML-RPC request.
 **/
 LINPHONE_PUBLIC const char * linphone_xml_rpc_request_get_string_response(const LinphoneXmlRpcRequest *request);
+
 
 /**
  * Create a new LinphoneXmlRpcSession object.
@@ -199,6 +205,48 @@ LINPHONE_PUBLIC void linphone_xml_rpc_session_set_user_data(LinphoneXmlRpcSessio
  * @param[in] request The LinphoneXmlRpcRequest to be sent.
 **/
 LINPHONE_PUBLIC void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, LinphoneXmlRpcRequest *request);
+
+
+/**
+ * Acquire a reference to a LinphoneXmlRpcRequestCbs object.
+ * @param[in] cbs LinphoneXmlRpcRequestCbs object.
+ * @return The same LinphoneXmlRpcRequestCbs object.
+**/
+LINPHONE_PUBLIC LinphoneXmlRpcRequestCbs * linphone_xml_rpc_request_cbs_ref(LinphoneXmlRpcRequestCbs *cbs);
+
+/**
+ * Release a reference to a LinphoneXmlRpcRequestCbs object.
+ * @param[in] cbs LinphoneXmlRpcRequestCbs object.
+**/
+LINPHONE_PUBLIC void linphone_xml_rpc_request_cbs_unref(LinphoneXmlRpcRequestCbs *cbs);
+
+/**
+ * Retrieve the user pointer associated with a LinphoneXmlRpcRequestCbs object.
+ * @param[in] cbs LinphoneXmlRpcRequestCbs object.
+ * @return The user pointer associated with the LinphoneXmlRpcRequestCbs object.
+**/
+LINPHONE_PUBLIC void *linphone_xml_rpc_request_cbs_get_user_data(const LinphoneXmlRpcRequestCbs *cbs);
+
+/**
+ * Assign a user pointer to a LinphoneXmlRpcRequestCbs object.
+ * @param[in] cbs LinphoneXmlRpcRequestCbs object.
+ * @param[in] ud The user pointer to associate with the LinphoneXmlRpcRequestCbs object.
+**/
+LINPHONE_PUBLIC void linphone_xml_rpc_request_cbs_set_user_data(LinphoneXmlRpcRequestCbs *cbs, void *ud);
+
+/**
+ * Get the response callback.
+ * @param[in] cbs LinphoneXmlRpcRequestCbs object.
+ * @return The current response callback.
+**/
+LINPHONE_PUBLIC LinphoneXmlRpcRequestCbsResponseCb linphone_xml_rpc_request_cbs_get_response(const LinphoneXmlRpcRequestCbs *cbs);
+
+/**
+ * Set the response callback.
+ * @param[in] cbs LinphoneXmlRpcRequestCbs object.
+ * @param[in] cb The response callback to be used.
+**/
+LINPHONE_PUBLIC void linphone_xml_rpc_request_cbs_set_response(LinphoneXmlRpcRequestCbs *cbs, LinphoneXmlRpcRequestCbsResponseCb cb);
 
 /**
  * @}

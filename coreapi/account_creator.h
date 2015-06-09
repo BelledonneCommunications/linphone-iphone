@@ -45,12 +45,30 @@ typedef enum _LinphoneAccountCreatorStatus {
 typedef struct _LinphoneAccountCreator LinphoneAccountCreator;
 
 /**
- * Callback used to notify the end of a LinphoneAccountCreator operation.
- * @param[in] creator LinphoneAccountCreator object
- * @param[in] status The status of the LinphoneAccountCreator operation that has just finished
- * @param user_data A user data given when setting the callback.
+ * An object to handle the callbacks for handling the LinphoneAccountCreator operations.
 **/
-typedef void (*LinphoneAccountCreatorCb)(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status, void *user_data);
+typedef struct _LinphoneAccountCreatorCbs LinphoneAccountCreatorCbs;
+
+/**
+ * Callback used to notify the end of a LinphoneAccountCreator test existence operation.
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] status The status of the LinphoneAccountCreator test existence operation that has just finished
+**/
+typedef void (*LinphoneAccountCreatorCbsExistenceTestedCb)(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status);
+
+/**
+ * Callback used to notify the end of a LinphoneAccountCreator test validation operation.
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] status The status of the LinphoneAccountCreator test validation operation that has just finished
+**/
+typedef void (*LinphoneAccountCreatorCbsValidationTestedCb)(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status);
+
+/**
+ * Callback used to notify the end of a LinphoneAccountCreator validate operation.
+ * @param[in] creator LinphoneAccountCreator object
+ * @param[in] status The status of the LinphoneAccountCreator validate operation that has just finished
+**/
+typedef void (*LinphoneAccountCreatorCbsValidatedCb)(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status);
 
 /**
  * Create a LinphoneAccountCreator.
@@ -61,11 +79,31 @@ typedef void (*LinphoneAccountCreatorCb)(LinphoneAccountCreator *creator, Linpho
 LINPHONE_PUBLIC LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url);
 
 /**
- * Destroy a LinphoneAccountCreator.
- * @param[in] creator LinphoneAccountCreator object
- * @param
+ * Acquire a reference to the LinphoneAccountCreator.
+ * @param[in] creator LinphoneAccountCreator object.
+ * @return The same LinphoneAccountCreator object.
 **/
-LINPHONE_PUBLIC void linphone_account_creator_destroy(LinphoneAccountCreator *creator);
+LINPHONE_PUBLIC LinphoneAccountCreator * linphone_account_creator_ref(LinphoneAccountCreator *creator);
+
+/**
+ * Release reference to the LinphoneAccountCreator.
+ * @param[in] creator LinphoneAccountCreator object.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_unref(LinphoneAccountCreator *creator);
+
+/**
+ * Retrieve the user pointer associated with the LinphoneAccountCreator.
+ * @param[in] creator LinphoneAccountCreator object.
+ * @return The user pointer associated with the LinphoneAccountCreator.
+**/
+LINPHONE_PUBLIC void *linphone_account_creator_get_user_data(const LinphoneAccountCreator *creator);
+
+/**
+ * Assign a user pointer to the LinphoneAccountCreator.
+ * @param[in] creator LinphoneAccountCreator object.
+ * @param[in] ud The user pointer to associate with the LinphoneAccountCreator.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_set_user_data(LinphoneAccountCreator *creator, void *ud);
 
 /**
  * Set the username.
@@ -152,28 +190,11 @@ LINPHONE_PUBLIC void linphone_account_creator_enable_newsletter_subscription(Lin
 LINPHONE_PUBLIC bool_t linphone_account_creator_newsletter_subscription_enabled(const LinphoneAccountCreator *creator);
 
 /**
- * Set the callback called when the account existence test is finished.
+ * Get the LinphoneAccountCreatorCbs object associated with a LinphoneAccountCreator.
  * @param[in] creator LinphoneAccountCreator object
- * @param[in] cb The callback called when the account existence test is finished
- * @param[in] user_data The user data passed to the callback
+ * @return The LinphoneAccountCreatorCbs object associated with the LinphoneAccountCreator.
 **/
-LINPHONE_PUBLIC void linphone_account_creator_set_test_existence_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorCb cb, void *user_data);
-
-/**
- * Set the callback called when the account validation test is finished.
- * @param[in] creator LinphoneAccountCreator object
- * @param[in] cb The callback called when the account validation test is finished
- * @param[in] user_data The user data passed to the callback
-**/
-LINPHONE_PUBLIC void linphone_account_creator_set_test_validation_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorCb cb, void *user_data);
-
-/**
- * Set the callback called when the account creation is finished.
- * @param[in] creator LinphoneAccountCreator object
- * @param[in] cb The callback called when the account creation is finished
- * @param[in] user_data The user data passed to the callback
-**/
-LINPHONE_PUBLIC void linphone_account_creator_set_validate_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorCb cb, void *user_data);
+LINPHONE_PUBLIC LinphoneAccountCreatorCbs * linphone_account_creator_get_callbacks(const LinphoneAccountCreator *creator);
 
 /**
  * Send an XML-RPC request to test the existence of a Linphone account.
@@ -202,6 +223,76 @@ LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_validate(L
  * @return A LinphoneProxyConfig object if successful, NULL otherwise
 **/
 LINPHONE_PUBLIC LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator);
+
+
+/**
+ * Acquire a reference to a LinphoneAccountCreatorCbs object.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @return The same LinphoneAccountCreatorCbs object.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorCbs * linphone_account_creator_cbs_ref(LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Release a reference to a LinphoneAccountCreatorCbs object.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_cbs_unref(LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Retrieve the user pointer associated with a LinphoneAccountCreatorCbs object.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @return The user pointer associated with the LinphoneAccountCreatorCbs object.
+**/
+LINPHONE_PUBLIC void *linphone_account_creator_cbs_get_user_data(const LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Assign a user pointer to a LinphoneAccountCreatorCbs object.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @param[in] ud The user pointer to associate with the LinphoneAccountCreatorCbs object.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_user_data(LinphoneAccountCreatorCbs *cbs, void *ud);
+
+/**
+ * Get the existence tested callback.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @return The current existence tested callback.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsExistenceTestedCb linphone_account_creator_cbs_get_existence_tested(const LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Set the existence tested callback.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @param[in] cb The existence tested callback to be used.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_existence_tested(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsExistenceTestedCb cb);
+
+/**
+ * Get the validation tested callback.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @return The current validation tested callback.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsValidationTestedCb linphone_account_creator_cbs_get_validation_tested(const LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Set the validation tested callback.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @param[in] cb The validation tested callback to be used.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_validation_tested(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsValidationTestedCb cb);
+
+/**
+ * Get the validated callback.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @return The current validated callback.
+**/
+LINPHONE_PUBLIC LinphoneAccountCreatorCbsValidatedCb linphone_account_creator_cbs_get_validated(const LinphoneAccountCreatorCbs *cbs);
+
+/**
+ * Set the validated callback.
+ * @param[in] cbs LinphoneAccountCreatorCbs object.
+ * @param[in] cb The validated callback to be used.
+**/
+LINPHONE_PUBLIC void linphone_account_creator_cbs_set_validated(LinphoneAccountCreatorCbs *cbs, LinphoneAccountCreatorCbsValidatedCb cb);
 
 /**
  * @}

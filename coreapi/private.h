@@ -991,14 +991,21 @@ typedef struct _LinphoneXmlRpcArg {
 	} data;
 } LinphoneXmlRpcArg;
 
+struct _LinphoneXmlRpcRequestCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneXmlRpcRequestCbsResponseCb response;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcRequestCbs);
+
 struct _LinphoneXmlRpcRequest {
 	belle_sip_object_t base;
 	void *user_data;
+	LinphoneXmlRpcRequestCbs *callbacks;
 	belle_sip_list_t *arg_list;
 	char *content;	/**< The string representation of the XML-RPC request */
 	char *method;
-	LinphoneXmlRpcResponseCb cb;
-	void *cb_ud;
 	LinphoneXmlRpcStatus status;
 	LinphoneXmlRpcArg response;
 };
@@ -1013,6 +1020,38 @@ struct _LinphoneXmlRpcSession {
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneXmlRpcSession);
+
+
+/*****************************************************************************
+ * Account creator interface                                                 *
+ ****************************************************************************/
+
+struct _LinphoneAccountCreatorCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneAccountCreatorCbsExistenceTestedCb existence_tested;
+	LinphoneAccountCreatorCbsValidationTestedCb validation_tested;
+	LinphoneAccountCreatorCbsValidatedCb validated;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorCbs);
+
+struct _LinphoneAccountCreator {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneAccountCreatorCbs *callbacks;
+	LinphoneXmlRpcSession *xmlrpc_session;
+	LinphoneCore *core;
+	char *xmlrpc_url;
+	char *username;
+	char *password;
+	char *domain;
+	char *route;
+	char *email;
+	bool_t subscribe_to_newsletter;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);
 
 
 /*****************************************************************************
@@ -1106,6 +1145,8 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_sas_suites(LinphoneCore *lc, MSZrt
   */
 
 BELLE_SIP_DECLARE_TYPES_BEGIN(linphone,10000)
+BELLE_SIP_TYPE_ID(LinphoneAccountCreator),
+BELLE_SIP_TYPE_ID(LinphoneAccountCreatorCbs),
 BELLE_SIP_TYPE_ID(LinphoneBuffer),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
@@ -1121,6 +1162,7 @@ BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig),
 BELLE_SIP_TYPE_ID(LinphoneFriend),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
+BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession)
 BELLE_SIP_DECLARE_TYPES_END
 

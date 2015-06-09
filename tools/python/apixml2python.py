@@ -65,6 +65,7 @@ blacklisted_functions = [
 	'linphone_proxy_config_set_file_transfer_server',	# defined but not implemented in linphone core
 	'linphone_proxy_config_set_privacy',	# missing LinphonePrivacyMask
 	'linphone_tunnel_get_http_proxy',	# to be handwritten because of double pointer indirection
+	'linphone_xml_rpc_request_new_with_args',	# to be handwritten because of va_list
 	'lp_config_for_each_entry',	# to be handwritten because of callback
 	'lp_config_for_each_section',	# to be handwritten because of callback
 	'lp_config_get_range',	# to be handwritten because of result via arguments
