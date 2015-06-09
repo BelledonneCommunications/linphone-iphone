@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-30 10:13+0200\n"
-"PO-Revision-Date: 2015-04-30 08:13+0000\n"
+"POT-Creation-Date: 2015-06-09 11:47+0200\n"
+"PO-Revision-Date: 2015-06-09 09:47+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/linphone-gtk/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -19,57 +19,57 @@ msgstr ""
 "Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
+#: ../gtk/calllogs.c:149 ../gtk/friendlist.c:978
 #, c-format
 msgid "Call %s"
 msgstr "%s を呼び出し中"
 
-#: ../gtk/calllogs.c:149 ../gtk/friendlist.c:975
+#: ../gtk/calllogs.c:150 ../gtk/friendlist.c:979
 #, c-format
 msgid "Send text to %s"
 msgstr "%s に文章を送信"
 
-#: ../gtk/calllogs.c:232
+#: ../gtk/calllogs.c:233
 #, c-format
 msgid "<b>Recent calls (%i)</b>"
 msgstr "<b>通話時間 (%i)</b>"
 
-#: ../gtk/calllogs.c:314
+#: ../gtk/calllogs.c:315
 msgid "n/a"
 msgstr "n/a"
 
-#: ../gtk/calllogs.c:317
+#: ../gtk/calllogs.c:318
 msgid "Aborted"
 msgstr "中断"
 
-#: ../gtk/calllogs.c:320
+#: ../gtk/calllogs.c:321
 msgid "Missed"
 msgstr "失敗"
 
-#: ../gtk/calllogs.c:323
+#: ../gtk/calllogs.c:324
 msgid "Declined"
 msgstr "辞退"
 
-#: ../gtk/calllogs.c:329
+#: ../gtk/calllogs.c:330
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
 msgstr[0] "%i 分"
 
-#: ../gtk/calllogs.c:332
+#: ../gtk/calllogs.c:333
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
 msgstr[0] "%i 秒"
 
-#: ../gtk/calllogs.c:337
+#: ../gtk/calllogs.c:338
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
 msgstr "<small><i>%s</i>⇥<i>品質: %s</i></small>\n%s⇥%s⇥"
 
-#: ../gtk/calllogs.c:341
+#: ../gtk/calllogs.c:342
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
 msgstr "<big><b>%s</b></big>⇥%s"
@@ -87,45 +87,49 @@ msgstr "自分"
 msgid "Couldn't find pixmap file: %s"
 msgstr "pixmapファイルが見つかりません %s"
 
-#: ../gtk/main.c:137
+#: ../gtk/main.c:138
 msgid "log to stdout some debug information while running."
 msgstr "実行中にいくつかのデバッグ情報をstdoutに送信します。"
 
-#: ../gtk/main.c:138
+#: ../gtk/main.c:139
+msgid "display version and exit."
+msgstr ""
+
+#: ../gtk/main.c:140
 msgid "path to a file to write logs into."
 msgstr "ログを書き込むファイルへのパス。"
 
-#: ../gtk/main.c:139
+#: ../gtk/main.c:141
 msgid "Start linphone with video disabled."
 msgstr "ビデオを無効にしてLinphoneを開始します。"
 
-#: ../gtk/main.c:140
+#: ../gtk/main.c:142
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "主なインターフェイスを表示しないでシステムトレイに移動します。"
 
-#: ../gtk/main.c:141
+#: ../gtk/main.c:143
 msgid "address to call right now"
 msgstr "今すぐに呼び出す"
 
-#: ../gtk/main.c:142
+#: ../gtk/main.c:144
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: "
 "c:\\Program Files\\Linphone)"
 msgstr "作業ディレクトリをSpecifiy (インストールした時のベースである必要があります。例:c:\\Program Files\\Linphone)"
 
-#: ../gtk/main.c:143
+#: ../gtk/main.c:145
 msgid "Configuration file"
 msgstr "設定ファイル"
 
-#: ../gtk/main.c:144
+#: ../gtk/main.c:146
 msgid "Run the audio assistant"
 msgstr "オーディオアシスタントを実行"
 
-#: ../gtk/main.c:145
+#: ../gtk/main.c:147
 msgid "Run self test and exit 0 if succeed"
 msgstr ""
 
-#: ../gtk/main.c:1070
+#: ../gtk/main.c:1073
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -133,129 +137,129 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr "%s が連絡相手にあなたを追加しようとしています。\nあなたのステータスを参照させるか、もしくは連絡先リストに追加することができます。\nあなたが拒否すると、この人は一時的にブラックリストへ登録されます。"
 
-#: ../gtk/main.c:1147
+#: ../gtk/main.c:1150
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1268
+#: ../gtk/main.c:1271
 msgid "Call error"
 msgstr "呼出エラー"
 
-#: ../gtk/main.c:1271 ../coreapi/linphonecore.c:3846
+#: ../gtk/main.c:1274 ../coreapi/linphonecore.c:3889
 msgid "Call ended"
 msgstr "呼出終了"
 
-#: ../gtk/main.c:1274 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1277 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "着信"
 
-#: ../gtk/main.c:1276 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1279 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "応答"
 
-#: ../gtk/main.c:1278 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1281 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "拒否"
 
-#: ../gtk/main.c:1284
+#: ../gtk/main.c:1287
 msgid "Call paused"
 msgstr "呼び出しの一時停止"
 
-#: ../gtk/main.c:1284
+#: ../gtk/main.c:1287
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>%s</b>"
 
-#: ../gtk/main.c:1354
+#: ../gtk/main.c:1357
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr ""
 
-#: ../gtk/main.c:1509
+#: ../gtk/main.c:1512
 msgid "Website link"
 msgstr "ウェブサイトリンク"
 
-#: ../gtk/main.c:1568 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1571 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1569
+#: ../gtk/main.c:1572
 msgid "A video internet phone"
 msgstr ""
 
-#: ../gtk/main.c:1629
+#: ../gtk/main.c:1631
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (デフォルト)"
 
-#: ../gtk/main.c:1962 ../coreapi/callbacks.c:1063
+#: ../gtk/main.c:1964 ../coreapi/callbacks.c:1077
 #, c-format
 msgid "We are transferred to %s"
 msgstr "%s に転送しました"
 
-#: ../gtk/main.c:1972
+#: ../gtk/main.c:1974
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:2117
+#: ../gtk/main.c:2102
 msgid "A free SIP video-phone"
 msgstr "無料 SIP ビデオ-電話"
 
-#: ../gtk/main.c:2221
+#: ../gtk/main.c:2211
 #, c-format
 msgid "Hello\n"
 msgstr ""
 
-#: ../gtk/friendlist.c:505
+#: ../gtk/friendlist.c:506
 msgid "Add to addressbook"
 msgstr "電話帳に追加する"
 
-#: ../gtk/friendlist.c:691
+#: ../gtk/friendlist.c:692
 msgid "Presence status"
 msgstr "状態のステータス"
 
-#: ../gtk/friendlist.c:709 ../gtk/propertybox.c:569 ../gtk/contact.ui.h:1
+#: ../gtk/friendlist.c:710 ../gtk/propertybox.c:569 ../gtk/contact.ui.h:1
 msgid "Name"
 msgstr "名前"
 
-#: ../gtk/friendlist.c:721
+#: ../gtk/friendlist.c:722
 msgid "Call"
 msgstr "通話"
 
-#: ../gtk/friendlist.c:726
+#: ../gtk/friendlist.c:727
 msgid "Chat"
 msgstr "チャット"
 
-#: ../gtk/friendlist.c:756
+#: ../gtk/friendlist.c:757
 #, c-format
 msgid "Search in %s directory"
 msgstr "%s のディレクトリ内を検索"
 
-#: ../gtk/friendlist.c:924
+#: ../gtk/friendlist.c:928
 msgid "Invalid sip contact !"
 msgstr "無効なSIP接続です！"
 
-#: ../gtk/friendlist.c:976
+#: ../gtk/friendlist.c:980
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "'%s' の連絡先を編集"
 
-#: ../gtk/friendlist.c:977
+#: ../gtk/friendlist.c:981
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "'%s' の連絡先を削除"
 
-#: ../gtk/friendlist.c:978
+#: ../gtk/friendlist.c:982
 #, c-format
 msgid "Delete chat history of '%s'"
 msgstr "'%s' のチャット履歴を削除"
 
-#: ../gtk/friendlist.c:1029
+#: ../gtk/friendlist.c:1033
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr ""
@@ -418,133 +422,149 @@ msgid "Found %i contact"
 msgid_plural "Found %i contacts"
 msgstr[0] "%i 件発見"
 
-#: ../gtk/setupwizard.c:32
+#: ../gtk/setupwizard.c:169
 msgid ""
 "Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr "ようこそ！\nあなたの通話のためのSIPアカウント設定をお手伝いします。"
 
-#: ../gtk/setupwizard.c:41
+#: ../gtk/setupwizard.c:178
 msgid "Create an account on linphone.org"
 msgstr "linphone.orgのアカウントを作成"
 
-#: ../gtk/setupwizard.c:42
+#: ../gtk/setupwizard.c:179
 msgid "I have already a linphone.org account and I just want to use it"
 msgstr "linphone.orgのアカウントを持っているのでそれを使います"
 
-#: ../gtk/setupwizard.c:43
+#: ../gtk/setupwizard.c:180
 msgid "I have already a sip account and I just want to use it"
 msgstr "SIPアカウントを持っているのでそれを使います"
 
-#: ../gtk/setupwizard.c:44
+#: ../gtk/setupwizard.c:181
 msgid "I want to specify a remote configuration URI"
 msgstr ""
 
-#: ../gtk/setupwizard.c:87
-msgid "Enter your linphone.org username"
-msgstr "linphone.orgで取得したユーザー名を入力"
+#: ../gtk/setupwizard.c:215
+msgid "Enter your account information"
+msgstr ""
 
-#: ../gtk/setupwizard.c:100 ../gtk/parameters.ui.h:85 ../gtk/ldap.ui.h:4
-msgid "Username:"
-msgstr "ユーザー名:"
-
-#: ../gtk/setupwizard.c:102 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
-msgid "Password:"
-msgstr "パスワード:"
-
-#: ../gtk/setupwizard.c:122
-msgid "Enter your account informations"
-msgstr "アカウント情報を入力"
-
-#: ../gtk/setupwizard.c:138
+#: ../gtk/setupwizard.c:230
 msgid "Username*"
 msgstr "ユーザー名*"
 
-#: ../gtk/setupwizard.c:139
+#: ../gtk/setupwizard.c:231
 msgid "Password*"
 msgstr "パスワード*"
 
-#: ../gtk/setupwizard.c:142
+#: ../gtk/setupwizard.c:234
 msgid "Domain*"
 msgstr "ドメイン*"
 
-#: ../gtk/setupwizard.c:143
+#: ../gtk/setupwizard.c:235
 msgid "Proxy"
 msgstr "プロキシ*"
 
-#: ../gtk/setupwizard.c:322
+#: ../gtk/setupwizard.c:272
+msgid "Enter your linphone.org username"
+msgstr "linphone.orgで取得したユーザー名を入力"
+
+#: ../gtk/setupwizard.c:284 ../gtk/parameters.ui.h:85 ../gtk/ldap.ui.h:4
+msgid "Username:"
+msgstr "ユーザー名:"
+
+#: ../gtk/setupwizard.c:286 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
+msgid "Password:"
+msgstr "パスワード:"
+
+#: ../gtk/setupwizard.c:427
 msgid "(*) Required fields"
 msgstr "(*) 必須"
 
-#: ../gtk/setupwizard.c:323
+#: ../gtk/setupwizard.c:428
 msgid "Username: (*)"
 msgstr "ユーザー名: (*)"
 
-#: ../gtk/setupwizard.c:325
+#: ../gtk/setupwizard.c:430
 msgid "Password: (*)"
 msgstr "パスワード: (*)"
 
-#: ../gtk/setupwizard.c:327
+#: ../gtk/setupwizard.c:432
 msgid "Email: (*)"
 msgstr "メールアドレス: (*)"
 
-#: ../gtk/setupwizard.c:329
+#: ../gtk/setupwizard.c:434
 msgid "Confirm your password: (*)"
 msgstr "パスワードを再入力: (*)"
 
-#: ../gtk/setupwizard.c:343
+#: ../gtk/setupwizard.c:449
 msgid "Keep me informed with linphone updates"
 msgstr "アップデートでLinphoneを常に最新にする"
 
-#: ../gtk/setupwizard.c:399
-msgid ""
-"Error, account not validated, username already used or server unreachable.\n"
-"Please go back and try again."
+#: ../gtk/setupwizard.c:494
+msgid "Your account is being created, please wait."
 msgstr ""
 
-#: ../gtk/setupwizard.c:410
-msgid "Thank you. Your account is now configured and ready for use."
-msgstr "ありがとう。あなたのアカウントは無事に設定され、使用する準備ができました。"
-
-#: ../gtk/setupwizard.c:418
+#: ../gtk/setupwizard.c:502
 msgid ""
 "Please validate your account by clicking on the link we just sent you by email.\n"
 "Then come back here and press Next button."
 msgstr "送信されたメールの本文内にあるリンクをクリックしてアカウントを有効にしてください。\nその後こちらへ戻って「次へ」を押してください。"
 
-#: ../gtk/setupwizard.c:609
+#: ../gtk/setupwizard.c:512
+msgid "Checking if your account is been validated, please wait."
+msgstr ""
+
+#: ../gtk/setupwizard.c:520
+msgid ""
+"Error, account not validated, username already used or server unreachable.\n"
+"Please go back and try again."
+msgstr ""
+
+#: ../gtk/setupwizard.c:529
+msgid "Thank you. Your account is now configured and ready for use."
+msgstr "ありがとう。あなたのアカウントは無事に設定され、使用する準備ができました。"
+
+#: ../gtk/setupwizard.c:554
 msgid "SIP account configuration assistant"
 msgstr "SIPアカウント設定アシスタント"
 
-#: ../gtk/setupwizard.c:629
+#: ../gtk/setupwizard.c:575
 msgid "Welcome to the account setup assistant"
 msgstr "アカウント設定アシスタントへようこそ"
 
-#: ../gtk/setupwizard.c:634
+#: ../gtk/setupwizard.c:580
 msgid "Account setup assistant"
 msgstr "アカウント設定アシスタント"
 
-#: ../gtk/setupwizard.c:640
+#: ../gtk/setupwizard.c:585
 msgid "Configure your account (step 1/1)"
 msgstr "アカウントを設定します (1/1)"
 
-#: ../gtk/setupwizard.c:645
+#: ../gtk/setupwizard.c:589
 msgid "Enter your sip username (step 1/1)"
 msgstr "SIPのユーザー名を入力してください (1/1)"
 
-#: ../gtk/setupwizard.c:649
+#: ../gtk/setupwizard.c:593
 msgid "Enter account information (step 1/2)"
 msgstr "アカウント情報を入力してください (1/2)"
 
-#: ../gtk/setupwizard.c:658
+#: ../gtk/setupwizard.c:597
+msgid "Account creation in progress"
+msgstr ""
+
+#: ../gtk/setupwizard.c:601
 msgid "Validation (step 2/2)"
 msgstr "検証します (2/2)"
 
-#: ../gtk/setupwizard.c:663
+#: ../gtk/setupwizard.c:606
+msgid "Account validation check in progress"
+msgstr ""
+
+#: ../gtk/setupwizard.c:610
 msgid "Error"
 msgstr "エラー"
 
-#: ../gtk/setupwizard.c:667 ../gtk/audio_assistant.c:534
+#: ../gtk/setupwizard.c:614 ../gtk/audio_assistant.c:534
 msgid "Terminating"
 msgstr "終了"
 
@@ -1697,60 +1717,60 @@ msgstr ""
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1539
+#: ../coreapi/linphonecore.c:1547
 msgid "Ready"
 msgstr "準備"
 
-#: ../coreapi/linphonecore.c:2551
+#: ../coreapi/linphonecore.c:2563
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2725
+#: ../coreapi/linphonecore.c:2737
 msgid "Looking for telephone number destination..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2727
+#: ../coreapi/linphonecore.c:2739
 msgid "Could not resolve this number."
 msgstr ""
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:3013
+#: ../coreapi/linphonecore.c:3025
 msgid "Contacting"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3018
+#: ../coreapi/linphonecore.c:3030
 msgid "Could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3169
+#: ../coreapi/linphonecore.c:3181
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3327
+#: ../coreapi/linphonecore.c:3339
 msgid "is contacting you"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3328
+#: ../coreapi/linphonecore.c:3340
 msgid " and asked autoanswer."
 msgstr "と自動応答を尋ねる"
 
-#: ../coreapi/linphonecore.c:3452
+#: ../coreapi/linphonecore.c:3466
 msgid "Modifying call parameters..."
 msgstr "コールパラメーターの変更..."
 
-#: ../coreapi/linphonecore.c:3802
+#: ../coreapi/linphonecore.c:3845
 msgid "Connected."
 msgstr "接続しました。"
 
-#: ../coreapi/linphonecore.c:3827
+#: ../coreapi/linphonecore.c:3870
 msgid "Call aborted"
 msgstr "呼び出しを打ち切る"
 
-#: ../coreapi/linphonecore.c:4024
+#: ../coreapi/linphonecore.c:4067
 msgid "Could not pause the call"
 msgstr "呼び出しを一時停止できませんでした"
 
-#: ../coreapi/linphonecore.c:4027
+#: ../coreapi/linphonecore.c:4070
 msgid "Pausing the current call..."
 msgstr "現在の通話を一時停止..."
 
@@ -1826,131 +1846,131 @@ msgid ""
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr ""
 
-#: ../coreapi/proxy.c:1416
+#: ../coreapi/proxy.c:1429
 #, c-format
 msgid "Could not login as %s"
 msgstr ""
 
-#: ../coreapi/callbacks.c:428
+#: ../coreapi/callbacks.c:442
 msgid "Remote ringing."
 msgstr ""
 
-#: ../coreapi/callbacks.c:440
+#: ../coreapi/callbacks.c:454
 msgid "Remote ringing..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:461
+#: ../coreapi/callbacks.c:475
 msgid "Early media."
 msgstr "Early media."
 
-#: ../coreapi/callbacks.c:534
+#: ../coreapi/callbacks.c:548
 #, c-format
 msgid "Call with %s is paused."
 msgstr ""
 
-#: ../coreapi/callbacks.c:547
+#: ../coreapi/callbacks.c:561
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr ""
 
-#: ../coreapi/callbacks.c:557
+#: ../coreapi/callbacks.c:571
 msgid "Call resumed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:561
+#: ../coreapi/callbacks.c:575
 #, c-format
 msgid "Call answered by %s."
 msgstr ""
 
-#: ../coreapi/callbacks.c:584
+#: ../coreapi/callbacks.c:598
 msgid "Incompatible, check codecs or security settings..."
 msgstr ""
 
-#: ../coreapi/callbacks.c:589 ../coreapi/callbacks.c:906
+#: ../coreapi/callbacks.c:603 ../coreapi/callbacks.c:920
 msgid "Incompatible media parameters."
 msgstr ""
 
-#: ../coreapi/callbacks.c:619
+#: ../coreapi/callbacks.c:633
 msgid "We have been resumed."
 msgstr ""
 
 #. we are being paused
-#: ../coreapi/callbacks.c:628
+#: ../coreapi/callbacks.c:642
 msgid "We are paused by other party."
 msgstr ""
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:666
+#: ../coreapi/callbacks.c:680
 msgid "Call is updated by remote."
 msgstr ""
 
-#: ../coreapi/callbacks.c:782
+#: ../coreapi/callbacks.c:796
 msgid "Call terminated."
 msgstr "呼び出し終了。"
 
-#: ../coreapi/callbacks.c:810
+#: ../coreapi/callbacks.c:824
 msgid "User is busy."
 msgstr "相手はビジーです。"
 
-#: ../coreapi/callbacks.c:811
+#: ../coreapi/callbacks.c:825
 msgid "User is temporarily unavailable."
 msgstr "相手は、今出られません。"
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:813
+#: ../coreapi/callbacks.c:827
 msgid "User does not want to be disturbed."
 msgstr "相手は手が離せないようです。"
 
-#: ../coreapi/callbacks.c:814
+#: ../coreapi/callbacks.c:828
 msgid "Call declined."
 msgstr "通話は拒否されました。"
 
-#: ../coreapi/callbacks.c:829
+#: ../coreapi/callbacks.c:843
 msgid "Request timeout."
 msgstr "リクエストは時間切れです。"
 
-#: ../coreapi/callbacks.c:860
+#: ../coreapi/callbacks.c:874
 msgid "Redirected"
 msgstr ""
 
-#: ../coreapi/callbacks.c:915
+#: ../coreapi/callbacks.c:929
 msgid "Call failed."
 msgstr ""
 
-#: ../coreapi/callbacks.c:993
+#: ../coreapi/callbacks.c:1007
 #, c-format
 msgid "Registration on %s successful."
 msgstr ""
 
-#: ../coreapi/callbacks.c:994
+#: ../coreapi/callbacks.c:1008
 #, c-format
 msgid "Unregistration on %s done."
 msgstr ""
 
-#: ../coreapi/callbacks.c:1012
+#: ../coreapi/callbacks.c:1026
 msgid "no response timeout"
 msgstr ""
 
-#: ../coreapi/callbacks.c:1015
+#: ../coreapi/callbacks.c:1029
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr ""
 
-#: ../coreapi/callbacks.c:1022
+#: ../coreapi/callbacks.c:1036
 msgid "Service unavailable, retrying"
 msgstr ""
 
 #. if encryption is DTLS, no status to be displayed
-#: ../coreapi/linphonecall.c:180
+#: ../coreapi/linphonecall.c:181
 #, c-format
 msgid "Authentication token is %s"
 msgstr ""
 
-#: ../coreapi/linphonecall.c:1310
+#: ../coreapi/linphonecall.c:1312
 msgid "Call parameters were successfully modified."
 msgstr ""
 
-#: ../coreapi/linphonecall.c:3686
+#: ../coreapi/linphonecall.c:3754
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
