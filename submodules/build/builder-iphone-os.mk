@@ -155,7 +155,7 @@ init:
 	mkdir -p $(prefix)/include
 	mkdir -p $(prefix)/lib/pkgconfig
 
-veryclean: veryclean-linphone 
+veryclean: veryclean-linphone
 	rm -rf $(BUILDER_BUILD_DIR)
 
 list-packages:

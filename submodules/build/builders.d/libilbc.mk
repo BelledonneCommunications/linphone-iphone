@@ -15,7 +15,8 @@ $(LIBILBC_BUILD_DIR)/Makefile: $(LIBILBC_SRC_DIR)/configure
 	$(LIBILBC_SRC_DIR)/configure -prefix=$(prefix) --host=$(host) $(library_mode)
 
 build-libilbc: $(LIBILBC_BUILD_DIR)/Makefile
-	cd $(LIBILBC_BUILD_DIR) && make  && make install
+	cd $(LIBILBC_BUILD_DIR) && make  && make install && \
+	mv $(prefix)/lib/libilbc.a $(prefix)/lib/libilbcrfc3951.a
 
 clean-libilbc:
 	cd  $(LIBILBC_BUILD_DIR) && make clean
