@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-30 10:13+0200\n"
-"PO-Revision-Date: 2015-04-30 08:13+0000\n"
+"POT-Creation-Date: 2015-06-09 11:47+0200\n"
+"PO-Revision-Date: 2015-06-09 09:47+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/linphone-gtk/language/cs/)\n"
 "MIME-Version: 1.0\n"
@@ -19,38 +19,38 @@ msgstr ""
 "Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
+#: ../gtk/calllogs.c:149 ../gtk/friendlist.c:978
 #, c-format
 msgid "Call %s"
 msgstr "Volat komu: %s"
 
-#: ../gtk/calllogs.c:149 ../gtk/friendlist.c:975
+#: ../gtk/calllogs.c:150 ../gtk/friendlist.c:979
 #, c-format
 msgid "Send text to %s"
 msgstr "Poslat text komu: %s"
 
-#: ../gtk/calllogs.c:232
+#: ../gtk/calllogs.c:233
 #, c-format
 msgid "<b>Recent calls (%i)</b>"
 msgstr "<b>Nedávné hovory (%i)</b>"
 
-#: ../gtk/calllogs.c:314
+#: ../gtk/calllogs.c:315
 msgid "n/a"
 msgstr "–"
 
-#: ../gtk/calllogs.c:317
+#: ../gtk/calllogs.c:318
 msgid "Aborted"
 msgstr "Přerušen"
 
-#: ../gtk/calllogs.c:320
+#: ../gtk/calllogs.c:321
 msgid "Missed"
 msgstr "Zmeškán"
 
-#: ../gtk/calllogs.c:323
+#: ../gtk/calllogs.c:324
 msgid "Declined"
 msgstr "Odmítnut"
 
-#: ../gtk/calllogs.c:329
+#: ../gtk/calllogs.c:330
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
@@ -58,7 +58,7 @@ msgstr[0] "%i minuta"
 msgstr[1] "%i minuty"
 msgstr[2] "%i minut"
 
-#: ../gtk/calllogs.c:332
+#: ../gtk/calllogs.c:333
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
@@ -66,14 +66,14 @@ msgstr[0] "%i sekunda"
 msgstr[1] "%i sekundy"
 msgstr[2] "%i sekund"
 
-#: ../gtk/calllogs.c:337
+#: ../gtk/calllogs.c:338
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
 msgstr "<small><i>%s</i>\t<i>Kvalita: %s</i></small>\n%s\t%s\t"
 
-#: ../gtk/calllogs.c:341
+#: ../gtk/calllogs.c:342
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
 msgstr "<big><b>%s</b></big>\t%s"
@@ -91,45 +91,49 @@ msgstr "Já"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Nelze najít soubor s obrázkem: %s"
 
-#: ../gtk/main.c:137
+#: ../gtk/main.c:138
 msgid "log to stdout some debug information while running."
 msgstr "Za běhu vypisuje některé ladicí informace na standardní výstup."
 
-#: ../gtk/main.c:138
+#: ../gtk/main.c:139
+msgid "display version and exit."
+msgstr ""
+
+#: ../gtk/main.c:140
 msgid "path to a file to write logs into."
 msgstr "Soubor, kam zapisovat protokol."
 
-#: ../gtk/main.c:139
+#: ../gtk/main.c:141
 msgid "Start linphone with video disabled."
 msgstr "Spustí linphone se zakázaným obrazem."
 
-#: ../gtk/main.c:140
+#: ../gtk/main.c:142
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "Spustí se pouze do systémové oblasti, nezobrazí hlavní okno."
 
-#: ../gtk/main.c:141
+#: ../gtk/main.c:143
 msgid "address to call right now"
 msgstr "Zavolá právě teď na tuto adresu"
 
-#: ../gtk/main.c:142
+#: ../gtk/main.c:144
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: "
 "c:\\Program Files\\Linphone)"
 msgstr "Zadejte pracovní adresář (měl by být základní instalační adresář, například c:\\Program Files\\Linphone)"
 
-#: ../gtk/main.c:143
+#: ../gtk/main.c:145
 msgid "Configuration file"
 msgstr ""
 
-#: ../gtk/main.c:144
+#: ../gtk/main.c:146
 msgid "Run the audio assistant"
 msgstr ""
 
-#: ../gtk/main.c:145
+#: ../gtk/main.c:147
 msgid "Run self test and exit 0 if succeed"
 msgstr ""
 
-#: ../gtk/main.c:1070
+#: ../gtk/main.c:1073
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -137,129 +141,129 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr "%s si vás chce přidat do svého adresáře.\nDovolíte mu, aby viděl váš stav přítomnosti, nebo si ho také chcete přidat do svého adresáře?\nOdpovíte-li ne, tato osobo bude dočasně blokována."
 
-#: ../gtk/main.c:1147
+#: ../gtk/main.c:1150
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1268
+#: ../gtk/main.c:1271
 msgid "Call error"
 msgstr "Chyba hovoru"
 
-#: ../gtk/main.c:1271 ../coreapi/linphonecore.c:3846
+#: ../gtk/main.c:1274 ../coreapi/linphonecore.c:3889
 msgid "Call ended"
 msgstr "Hovor ukončen"
 
-#: ../gtk/main.c:1274 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1277 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "Příchozí hovor"
 
-#: ../gtk/main.c:1276 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1279 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "Odpovědět"
 
-#: ../gtk/main.c:1278 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1281 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "Odmítnout"
 
-#: ../gtk/main.c:1284
+#: ../gtk/main.c:1287
 msgid "Call paused"
 msgstr "Hovor odložen"
 
-#: ../gtk/main.c:1284
+#: ../gtk/main.c:1287
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>kým: %s</b>"
 
-#: ../gtk/main.c:1354
+#: ../gtk/main.c:1357
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%s navrhuje začít videohovor. Přijímáte?"
 
-#: ../gtk/main.c:1509
+#: ../gtk/main.c:1512
 msgid "Website link"
 msgstr "Odkaz na webovou stránku"
 
-#: ../gtk/main.c:1568 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1571 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1569
+#: ../gtk/main.c:1572
 msgid "A video internet phone"
 msgstr ""
 
-#: ../gtk/main.c:1629
+#: ../gtk/main.c:1631
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Výchozí)"
 
-#: ../gtk/main.c:1962 ../coreapi/callbacks.c:1063
+#: ../gtk/main.c:1964 ../coreapi/callbacks.c:1077
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Byly jsme přepojeni na %s"
 
-#: ../gtk/main.c:1972
+#: ../gtk/main.c:1974
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr "Na tomto počítači nebyla objevena žádná zvuková karta.\nNebudete moci vytáčet a přijímat a zvukové hovory."
 
-#: ../gtk/main.c:2117
+#: ../gtk/main.c:2102
 msgid "A free SIP video-phone"
 msgstr "Volný SIP videofon"
 
-#: ../gtk/main.c:2221
+#: ../gtk/main.c:2211
 #, c-format
 msgid "Hello\n"
 msgstr ""
 
-#: ../gtk/friendlist.c:505
+#: ../gtk/friendlist.c:506
 msgid "Add to addressbook"
 msgstr "Přidat do adresáře"
 
-#: ../gtk/friendlist.c:691
+#: ../gtk/friendlist.c:692
 msgid "Presence status"
 msgstr "Stav"
 
-#: ../gtk/friendlist.c:709 ../gtk/propertybox.c:569 ../gtk/contact.ui.h:1
+#: ../gtk/friendlist.c:710 ../gtk/propertybox.c:569 ../gtk/contact.ui.h:1
 msgid "Name"
 msgstr "Jméno"
 
-#: ../gtk/friendlist.c:721
+#: ../gtk/friendlist.c:722
 msgid "Call"
 msgstr "Zavolat"
 
-#: ../gtk/friendlist.c:726
+#: ../gtk/friendlist.c:727
 msgid "Chat"
 msgstr "Diskuze"
 
-#: ../gtk/friendlist.c:756
+#: ../gtk/friendlist.c:757
 #, c-format
 msgid "Search in %s directory"
 msgstr "Hledat v adresáři %s"
 
-#: ../gtk/friendlist.c:924
+#: ../gtk/friendlist.c:928
 msgid "Invalid sip contact !"
 msgstr "Neplatný sipový kontakt!"
 
-#: ../gtk/friendlist.c:976
+#: ../gtk/friendlist.c:980
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "Upravit kontakt „%s“"
 
-#: ../gtk/friendlist.c:977
+#: ../gtk/friendlist.c:981
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "Odstranit kontakt „%s“"
 
-#: ../gtk/friendlist.c:978
+#: ../gtk/friendlist.c:982
 #, c-format
 msgid "Delete chat history of '%s'"
 msgstr "Odstranit historii diskuze u kontaktu „%s“"
 
-#: ../gtk/friendlist.c:1029
+#: ../gtk/friendlist.c:1033
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "Přidat nový kontakt z adresáře %s"
@@ -424,133 +428,149 @@ msgstr[0] "Nalezen %i kontakt"
 msgstr[1] "Nalezeny %i kontakty"
 msgstr[2] "Nalezeno %i kontaktů"
 
-#: ../gtk/setupwizard.c:32
+#: ../gtk/setupwizard.c:169
 msgid ""
 "Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr ""
 
-#: ../gtk/setupwizard.c:41
+#: ../gtk/setupwizard.c:178
 msgid "Create an account on linphone.org"
 msgstr "Vytvořit účet na linphone.org"
 
-#: ../gtk/setupwizard.c:42
+#: ../gtk/setupwizard.c:179
 msgid "I have already a linphone.org account and I just want to use it"
 msgstr "Účet na linphone.org již mám a chci jej použít"
 
-#: ../gtk/setupwizard.c:43
+#: ../gtk/setupwizard.c:180
 msgid "I have already a sip account and I just want to use it"
 msgstr "SIP účet již mám a chci jej použít"
 
-#: ../gtk/setupwizard.c:44
+#: ../gtk/setupwizard.c:181
 msgid "I want to specify a remote configuration URI"
 msgstr ""
 
-#: ../gtk/setupwizard.c:87
-msgid "Enter your linphone.org username"
-msgstr "Zadejte uživatelské jméno na linphone.org"
+#: ../gtk/setupwizard.c:215
+msgid "Enter your account information"
+msgstr ""
 
-#: ../gtk/setupwizard.c:100 ../gtk/parameters.ui.h:85 ../gtk/ldap.ui.h:4
-msgid "Username:"
-msgstr "Uživatelské jméno:"
-
-#: ../gtk/setupwizard.c:102 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
-msgid "Password:"
-msgstr "Heslo:"
-
-#: ../gtk/setupwizard.c:122
-msgid "Enter your account informations"
-msgstr "Zadejte údaje o vašem účtu"
-
-#: ../gtk/setupwizard.c:138
+#: ../gtk/setupwizard.c:230
 msgid "Username*"
 msgstr "Uživatelské jméno*"
 
-#: ../gtk/setupwizard.c:139
+#: ../gtk/setupwizard.c:231
 msgid "Password*"
 msgstr "Heslo*"
 
-#: ../gtk/setupwizard.c:142
+#: ../gtk/setupwizard.c:234
 msgid "Domain*"
 msgstr "Doména*"
 
-#: ../gtk/setupwizard.c:143
+#: ../gtk/setupwizard.c:235
 msgid "Proxy"
 msgstr "Proxy"
 
-#: ../gtk/setupwizard.c:322
+#: ../gtk/setupwizard.c:272
+msgid "Enter your linphone.org username"
+msgstr "Zadejte uživatelské jméno na linphone.org"
+
+#: ../gtk/setupwizard.c:284 ../gtk/parameters.ui.h:85 ../gtk/ldap.ui.h:4
+msgid "Username:"
+msgstr "Uživatelské jméno:"
+
+#: ../gtk/setupwizard.c:286 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
+msgid "Password:"
+msgstr "Heslo:"
+
+#: ../gtk/setupwizard.c:427
 msgid "(*) Required fields"
 msgstr "(*) Povinné položky"
 
-#: ../gtk/setupwizard.c:323
+#: ../gtk/setupwizard.c:428
 msgid "Username: (*)"
 msgstr "Uživatelské jméno: (*)"
 
-#: ../gtk/setupwizard.c:325
+#: ../gtk/setupwizard.c:430
 msgid "Password: (*)"
 msgstr "Heslo: (*)"
 
-#: ../gtk/setupwizard.c:327
+#: ../gtk/setupwizard.c:432
 msgid "Email: (*)"
 msgstr "E-mail: (*)"
 
-#: ../gtk/setupwizard.c:329
+#: ../gtk/setupwizard.c:434
 msgid "Confirm your password: (*)"
 msgstr "Potvrďte heslo: (*)"
 
-#: ../gtk/setupwizard.c:343
+#: ../gtk/setupwizard.c:449
 msgid "Keep me informed with linphone updates"
 msgstr ""
 
-#: ../gtk/setupwizard.c:399
-msgid ""
-"Error, account not validated, username already used or server unreachable.\n"
-"Please go back and try again."
-msgstr "Došlo k chybě (účet nebyl ověřen, uživatelské jméno již existuje nebo server není dostupný).\nProsím, vraťte se a zkoste to znovu."
+#: ../gtk/setupwizard.c:494
+msgid "Your account is being created, please wait."
+msgstr ""
 
-#: ../gtk/setupwizard.c:410
-msgid "Thank you. Your account is now configured and ready for use."
-msgstr "Děkujeme vám. Váš účet je nyní nastaven a připraven k použití."
-
-#: ../gtk/setupwizard.c:418
+#: ../gtk/setupwizard.c:502
 msgid ""
 "Please validate your account by clicking on the link we just sent you by email.\n"
 "Then come back here and press Next button."
 msgstr "Prosím, ověřte svůj účet tak, že kliknete na odkaz, který jsme vám právě zaslali e-mailem.\nPak se sem vraťte a stiskněte tlačítko Další."
 
-#: ../gtk/setupwizard.c:609
+#: ../gtk/setupwizard.c:512
+msgid "Checking if your account is been validated, please wait."
+msgstr ""
+
+#: ../gtk/setupwizard.c:520
+msgid ""
+"Error, account not validated, username already used or server unreachable.\n"
+"Please go back and try again."
+msgstr "Došlo k chybě (účet nebyl ověřen, uživatelské jméno již existuje nebo server není dostupný).\nProsím, vraťte se a zkoste to znovu."
+
+#: ../gtk/setupwizard.c:529
+msgid "Thank you. Your account is now configured and ready for use."
+msgstr "Děkujeme vám. Váš účet je nyní nastaven a připraven k použití."
+
+#: ../gtk/setupwizard.c:554
 msgid "SIP account configuration assistant"
 msgstr ""
 
-#: ../gtk/setupwizard.c:629
+#: ../gtk/setupwizard.c:575
 msgid "Welcome to the account setup assistant"
 msgstr "Vítejte v průvodci nastavení účtu"
 
-#: ../gtk/setupwizard.c:634
+#: ../gtk/setupwizard.c:580
 msgid "Account setup assistant"
 msgstr "Průvodce nastavením účtu"
 
-#: ../gtk/setupwizard.c:640
+#: ../gtk/setupwizard.c:585
 msgid "Configure your account (step 1/1)"
 msgstr "Nastavit účet (krok 1/1)"
 
-#: ../gtk/setupwizard.c:645
+#: ../gtk/setupwizard.c:589
 msgid "Enter your sip username (step 1/1)"
 msgstr "Zadejte vaše sipové uživatelské jméno (krok 1/1)"
 
-#: ../gtk/setupwizard.c:649
+#: ../gtk/setupwizard.c:593
 msgid "Enter account information (step 1/2)"
 msgstr "Zadejte údaje o účtu (krok 1/2)"
 
-#: ../gtk/setupwizard.c:658
+#: ../gtk/setupwizard.c:597
+msgid "Account creation in progress"
+msgstr ""
+
+#: ../gtk/setupwizard.c:601
 msgid "Validation (step 2/2)"
 msgstr "Ověření (krok 2/2)"
 
-#: ../gtk/setupwizard.c:663
+#: ../gtk/setupwizard.c:606
+msgid "Account validation check in progress"
+msgstr ""
+
+#: ../gtk/setupwizard.c:610
 msgid "Error"
 msgstr "Chyba"
 
-#: ../gtk/setupwizard.c:667 ../gtk/audio_assistant.c:534
+#: ../gtk/setupwizard.c:614 ../gtk/audio_assistant.c:534
 msgid "Terminating"
 msgstr "Ukončuje se"
 
@@ -1703,60 +1723,60 @@ msgstr ""
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1539
+#: ../coreapi/linphonecore.c:1547
 msgid "Ready"
 msgstr "Připraven."
 
-#: ../coreapi/linphonecore.c:2551
+#: ../coreapi/linphonecore.c:2563
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2725
+#: ../coreapi/linphonecore.c:2737
 msgid "Looking for telephone number destination..."
 msgstr "Vyhledává se umístění čísla…"
 
-#: ../coreapi/linphonecore.c:2727
+#: ../coreapi/linphonecore.c:2739
 msgid "Could not resolve this number."
 msgstr "Toto číslo nelze vyhledat."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:3013
+#: ../coreapi/linphonecore.c:3025
 msgid "Contacting"
 msgstr "Navazuje se spojení"
 
-#: ../coreapi/linphonecore.c:3018
+#: ../coreapi/linphonecore.c:3030
 msgid "Could not call"
 msgstr "Nelze volat"
 
-#: ../coreapi/linphonecore.c:3169
+#: ../coreapi/linphonecore.c:3181
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Je nám líto, ale byl dosažen maximální počet současných hovorů."
 
-#: ../coreapi/linphonecore.c:3327
+#: ../coreapi/linphonecore.c:3339
 msgid "is contacting you"
 msgstr "vás volá"
 
-#: ../coreapi/linphonecore.c:3328
+#: ../coreapi/linphonecore.c:3340
 msgid " and asked autoanswer."
 msgstr " a požaduje automatickou zvednutí."
 
-#: ../coreapi/linphonecore.c:3452
+#: ../coreapi/linphonecore.c:3466
 msgid "Modifying call parameters..."
 msgstr "Upravují se parametry hovoru…"
 
-#: ../coreapi/linphonecore.c:3802
+#: ../coreapi/linphonecore.c:3845
 msgid "Connected."
 msgstr "Připojeno."
 
-#: ../coreapi/linphonecore.c:3827
+#: ../coreapi/linphonecore.c:3870
 msgid "Call aborted"
 msgstr "Hovor přerušen"
 
-#: ../coreapi/linphonecore.c:4024
+#: ../coreapi/linphonecore.c:4067
 msgid "Could not pause the call"
 msgstr "Hovor nebylo možné odložit"
 
-#: ../coreapi/linphonecore.c:4027
+#: ../coreapi/linphonecore.c:4070
 msgid "Pausing the current call..."
 msgstr "Současný hovor se odkládá…"
 
@@ -1832,131 +1852,131 @@ msgid ""
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr "SIP identita, kterou jste zadali, není platná.\nMěla by mít tvar sip:uživatel@proxydoména, například sip:alice@example.net"
 
-#: ../coreapi/proxy.c:1416
+#: ../coreapi/proxy.c:1429
 #, c-format
 msgid "Could not login as %s"
 msgstr "Nelze se přihlásit jako %s"
 
-#: ../coreapi/callbacks.c:428
+#: ../coreapi/callbacks.c:442
 msgid "Remote ringing."
 msgstr "Vyzvání na druhé straně."
 
-#: ../coreapi/callbacks.c:440
+#: ../coreapi/callbacks.c:454
 msgid "Remote ringing..."
 msgstr "Vyzvání na druhé straně…"
 
-#: ../coreapi/callbacks.c:461
+#: ../coreapi/callbacks.c:475
 msgid "Early media."
 msgstr "Časná média."
 
-#: ../coreapi/callbacks.c:534
+#: ../coreapi/callbacks.c:548
 #, c-format
 msgid "Call with %s is paused."
 msgstr "Hovor s %s je odložen."
 
-#: ../coreapi/callbacks.c:547
+#: ../coreapi/callbacks.c:561
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "Hovor přijat kým: %s – odložen."
 
-#: ../coreapi/callbacks.c:557
+#: ../coreapi/callbacks.c:571
 msgid "Call resumed."
 msgstr "Hovor obnoven."
 
-#: ../coreapi/callbacks.c:561
+#: ../coreapi/callbacks.c:575
 #, c-format
 msgid "Call answered by %s."
 msgstr "Hovor přijat kým: %s."
 
-#: ../coreapi/callbacks.c:584
+#: ../coreapi/callbacks.c:598
 msgid "Incompatible, check codecs or security settings..."
 msgstr "Není slučitelné. Zkontrolujte nastavení kodeků a zabezpečení…"
 
-#: ../coreapi/callbacks.c:589 ../coreapi/callbacks.c:906
+#: ../coreapi/callbacks.c:603 ../coreapi/callbacks.c:920
 msgid "Incompatible media parameters."
 msgstr "Neslučitelné parametry médií."
 
-#: ../coreapi/callbacks.c:619
+#: ../coreapi/callbacks.c:633
 msgid "We have been resumed."
 msgstr "Byli jsme obnoveni."
 
 #. we are being paused
-#: ../coreapi/callbacks.c:628
+#: ../coreapi/callbacks.c:642
 msgid "We are paused by other party."
 msgstr "Byli jsme odloženi protistranou."
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:666
+#: ../coreapi/callbacks.c:680
 msgid "Call is updated by remote."
 msgstr "Hovor byl aktualizován protistranou."
 
-#: ../coreapi/callbacks.c:782
+#: ../coreapi/callbacks.c:796
 msgid "Call terminated."
 msgstr "Hovor ukončen."
 
-#: ../coreapi/callbacks.c:810
+#: ../coreapi/callbacks.c:824
 msgid "User is busy."
 msgstr "Uživatel je zaneprázdněn."
 
-#: ../coreapi/callbacks.c:811
+#: ../coreapi/callbacks.c:825
 msgid "User is temporarily unavailable."
 msgstr "Uživatel je dočasně nedostupný."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:813
+#: ../coreapi/callbacks.c:827
 msgid "User does not want to be disturbed."
 msgstr "Uživatel si nepřeje být rušen."
 
-#: ../coreapi/callbacks.c:814
+#: ../coreapi/callbacks.c:828
 msgid "Call declined."
 msgstr "Volání odmítnuto."
 
-#: ../coreapi/callbacks.c:829
+#: ../coreapi/callbacks.c:843
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:860
+#: ../coreapi/callbacks.c:874
 msgid "Redirected"
 msgstr "Přesměrováno"
 
-#: ../coreapi/callbacks.c:915
+#: ../coreapi/callbacks.c:929
 msgid "Call failed."
 msgstr "Volání se nezdařilo."
 
-#: ../coreapi/callbacks.c:993
+#: ../coreapi/callbacks.c:1007
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Registrace na %s byla úspěšná."
 
-#: ../coreapi/callbacks.c:994
+#: ../coreapi/callbacks.c:1008
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Odregistrování z %s hotovo."
 
-#: ../coreapi/callbacks.c:1012
+#: ../coreapi/callbacks.c:1026
 msgid "no response timeout"
 msgstr "odpověď nedorazila včas"
 
-#: ../coreapi/callbacks.c:1015
+#: ../coreapi/callbacks.c:1029
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Registrace na %s selhala: %s"
 
-#: ../coreapi/callbacks.c:1022
+#: ../coreapi/callbacks.c:1036
 msgid "Service unavailable, retrying"
 msgstr ""
 
 #. if encryption is DTLS, no status to be displayed
-#: ../coreapi/linphonecall.c:180
+#: ../coreapi/linphonecall.c:181
 #, c-format
 msgid "Authentication token is %s"
 msgstr "Klíč k ověření totožnosti je %s"
 
-#: ../coreapi/linphonecall.c:1310
+#: ../coreapi/linphonecall.c:1312
 msgid "Call parameters were successfully modified."
 msgstr ""
 
-#: ../coreapi/linphonecall.c:3686
+#: ../coreapi/linphonecall.c:3754
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

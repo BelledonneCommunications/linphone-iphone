@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-30 10:13+0200\n"
-"PO-Revision-Date: 2015-04-30 08:13+0000\n"
+"POT-Creation-Date: 2015-06-09 11:47+0200\n"
+"PO-Revision-Date: 2015-06-09 09:47+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: Hebrew (http://www.transifex.com/projects/p/linphone-gtk/language/he/)\n"
 "MIME-Version: 1.0\n"
@@ -22,59 +22,59 @@ msgstr ""
 "Language: he\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
+#: ../gtk/calllogs.c:149 ../gtk/friendlist.c:978
 #, c-format
 msgid "Call %s"
 msgstr "התקשר אל %s"
 
-#: ../gtk/calllogs.c:149 ../gtk/friendlist.c:975
+#: ../gtk/calllogs.c:150 ../gtk/friendlist.c:979
 #, c-format
 msgid "Send text to %s"
 msgstr "שלח טקסט אל %s"
 
-#: ../gtk/calllogs.c:232
+#: ../gtk/calllogs.c:233
 #, c-format
 msgid "<b>Recent calls (%i)</b>"
 msgstr "<b>שיחות אחרונות (%i)</b>"
 
-#: ../gtk/calllogs.c:314
+#: ../gtk/calllogs.c:315
 msgid "n/a"
 msgstr "לא זמין (n/a)"
 
-#: ../gtk/calllogs.c:317
+#: ../gtk/calllogs.c:318
 msgid "Aborted"
 msgstr "ננטשה"
 
-#: ../gtk/calllogs.c:320
+#: ../gtk/calllogs.c:321
 msgid "Missed"
 msgstr "הוחמצה"
 
-#: ../gtk/calllogs.c:323
+#: ../gtk/calllogs.c:324
 msgid "Declined"
 msgstr "נדחתה"
 
-#: ../gtk/calllogs.c:329
+#: ../gtk/calllogs.c:330
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
 msgstr[0] "דקה %i"
 msgstr[1] "%i דקות"
 
-#: ../gtk/calllogs.c:332
+#: ../gtk/calllogs.c:333
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
 msgstr[0] "שניה %i"
 msgstr[1] "%i שניות"
 
-#: ../gtk/calllogs.c:337
+#: ../gtk/calllogs.c:338
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
 msgstr "<small><i>%s</i>\t<i>איכות: %s</i></small>\n%s\t%s\t"
 
-#: ../gtk/calllogs.c:341
+#: ../gtk/calllogs.c:342
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
 msgstr ""
@@ -92,45 +92,49 @@ msgstr "אני"
 msgid "Couldn't find pixmap file: %s"
 msgstr "לא ניתן למצוא קובץ ‫pixmap: ‫%s"
 
-#: ../gtk/main.c:137
+#: ../gtk/main.c:138
 msgid "log to stdout some debug information while running."
 msgstr ""
 
-#: ../gtk/main.c:138
-msgid "path to a file to write logs into."
-msgstr ""
-
 #: ../gtk/main.c:139
-msgid "Start linphone with video disabled."
+msgid "display version and exit."
 msgstr ""
 
 #: ../gtk/main.c:140
-msgid "Start only in the system tray, do not show the main interface."
+msgid "path to a file to write logs into."
 msgstr ""
 
 #: ../gtk/main.c:141
-msgid "address to call right now"
+msgid "Start linphone with video disabled."
 msgstr ""
 
 #: ../gtk/main.c:142
+msgid "Start only in the system tray, do not show the main interface."
+msgstr ""
+
+#: ../gtk/main.c:143
+msgid "address to call right now"
+msgstr ""
+
+#: ../gtk/main.c:144
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: "
 "c:\\Program Files\\Linphone)"
 msgstr ""
 
-#: ../gtk/main.c:143
+#: ../gtk/main.c:145
 msgid "Configuration file"
 msgstr ""
 
-#: ../gtk/main.c:144
+#: ../gtk/main.c:146
 msgid "Run the audio assistant"
 msgstr ""
 
-#: ../gtk/main.c:145
+#: ../gtk/main.c:147
 msgid "Run self test and exit 0 if succeed"
 msgstr ""
 
-#: ../gtk/main.c:1070
+#: ../gtk/main.c:1073
 #, c-format
 msgid ""
 "%s would like to add you to his contact list.\n"
@@ -138,129 +142,129 @@ msgid ""
 "If you answer no, this person will be temporarily blacklisted."
 msgstr "‫%s מעוניין להוסיפך אל רשימת אנשי הקשר שלו.\nהאם ברצונך להרשות להם לראות את מצב נוכחותך או להוסיפם אל רשימת אנשי הקשר שלך ?\nהיה ותשובתך תהיה לא, אדם זה יהיה מסומן באופן זמני ברשימה השחורה."
 
-#: ../gtk/main.c:1147
+#: ../gtk/main.c:1150
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr "אנא הזן סיסמה עבור משתמש <i>%s</i>\nבמתחם <i>%s</i>:"
 
-#: ../gtk/main.c:1268
+#: ../gtk/main.c:1271
 msgid "Call error"
 msgstr "שגיאת קריאה"
 
-#: ../gtk/main.c:1271 ../coreapi/linphonecore.c:3846
+#: ../gtk/main.c:1274 ../coreapi/linphonecore.c:3889
 msgid "Call ended"
 msgstr "שיחה הסתיימה"
 
-#: ../gtk/main.c:1274 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1277 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "קריאה נכנסת"
 
-#: ../gtk/main.c:1276 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1279 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "לענות"
 
-#: ../gtk/main.c:1278 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1281 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "לדחות"
 
-#: ../gtk/main.c:1284
+#: ../gtk/main.c:1287
 msgid "Call paused"
 msgstr "שיחה הושהתה"
 
-#: ../gtk/main.c:1284
+#: ../gtk/main.c:1287
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>על ידי %s</b>"
 
-#: ../gtk/main.c:1354
+#: ../gtk/main.c:1357
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "‏%s רוצה להתחיל וידאו. האם אתה מסכים ?"
 
-#: ../gtk/main.c:1509
+#: ../gtk/main.c:1512
 msgid "Website link"
 msgstr "קישור אתר רשת"
 
-#: ../gtk/main.c:1568 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1571 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1569
+#: ../gtk/main.c:1572
 msgid "A video internet phone"
 msgstr ""
 
-#: ../gtk/main.c:1629
+#: ../gtk/main.c:1631
 #, c-format
 msgid "%s (Default)"
 msgstr "‫%s (ברירת מחדל)"
 
-#: ../gtk/main.c:1962 ../coreapi/callbacks.c:1063
+#: ../gtk/main.c:1964 ../coreapi/callbacks.c:1077
 #, c-format
 msgid "We are transferred to %s"
 msgstr "אנחנו מועברים אל %s"
 
-#: ../gtk/main.c:1972
+#: ../gtk/main.c:1974
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr "לא אותרו כרטיסי קול במחשב זה.\nלא תהיה ביכולתך לשלוח או לקבל שיחות אודיו."
 
-#: ../gtk/main.c:2117
+#: ../gtk/main.c:2102
 msgid "A free SIP video-phone"
 msgstr "וידאופון SIP חופשי"
 
-#: ../gtk/main.c:2221
+#: ../gtk/main.c:2211
 #, c-format
 msgid "Hello\n"
 msgstr ""
 
-#: ../gtk/friendlist.c:505
+#: ../gtk/friendlist.c:506
 msgid "Add to addressbook"
 msgstr "הוסף אל ספר כתובות"
 
-#: ../gtk/friendlist.c:691
+#: ../gtk/friendlist.c:692
 msgid "Presence status"
 msgstr "מצב נוכחות"
 
-#: ../gtk/friendlist.c:709 ../gtk/propertybox.c:569 ../gtk/contact.ui.h:1
+#: ../gtk/friendlist.c:710 ../gtk/propertybox.c:569 ../gtk/contact.ui.h:1
 msgid "Name"
 msgstr "שם"
 
-#: ../gtk/friendlist.c:721
+#: ../gtk/friendlist.c:722
 msgid "Call"
 msgstr "קריאה"
 
-#: ../gtk/friendlist.c:726
+#: ../gtk/friendlist.c:727
 msgid "Chat"
 msgstr "שיחה"
 
-#: ../gtk/friendlist.c:756
+#: ../gtk/friendlist.c:757
 #, c-format
 msgid "Search in %s directory"
 msgstr "חיפוש במדור %s"
 
-#: ../gtk/friendlist.c:924
+#: ../gtk/friendlist.c:928
 msgid "Invalid sip contact !"
 msgstr "כתובת sip לא תקפה !"
 
-#: ../gtk/friendlist.c:976
+#: ../gtk/friendlist.c:980
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "ערוך איש קשר '%s'"
 
-#: ../gtk/friendlist.c:977
+#: ../gtk/friendlist.c:981
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "מחק איש קשר '%s'"
 
-#: ../gtk/friendlist.c:978
+#: ../gtk/friendlist.c:982
 #, c-format
 msgid "Delete chat history of '%s'"
 msgstr "מחק היסטוריית שיחה של '%s'"
 
-#: ../gtk/friendlist.c:1029
+#: ../gtk/friendlist.c:1033
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "הוסף איש קשר חדש מן מדור %s"
@@ -424,133 +428,149 @@ msgid_plural "Found %i contacts"
 msgstr[0] "נמצא איש קשר %i"
 msgstr[1] "נמצאו %i אנשי קשר"
 
-#: ../gtk/setupwizard.c:32
+#: ../gtk/setupwizard.c:169
 msgid ""
 "Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
 msgstr ""
 
-#: ../gtk/setupwizard.c:41
+#: ../gtk/setupwizard.c:178
 msgid "Create an account on linphone.org"
 msgstr "צור חשבון אצל linphone.org"
 
-#: ../gtk/setupwizard.c:42
+#: ../gtk/setupwizard.c:179
 msgid "I have already a linphone.org account and I just want to use it"
 msgstr "כבר קיים חשבון linphone.org ברשותי וברצוני לעשות בו שימוש"
 
-#: ../gtk/setupwizard.c:43
+#: ../gtk/setupwizard.c:180
 msgid "I have already a sip account and I just want to use it"
 msgstr "כבר קיים חשבון sip ברשותי וברצוני לעשות בו שימוש"
 
-#: ../gtk/setupwizard.c:44
+#: ../gtk/setupwizard.c:181
 msgid "I want to specify a remote configuration URI"
 msgstr ""
 
-#: ../gtk/setupwizard.c:87
-msgid "Enter your linphone.org username"
-msgstr "הזן את שם משתמשך אצל linphone.org"
+#: ../gtk/setupwizard.c:215
+msgid "Enter your account information"
+msgstr ""
 
-#: ../gtk/setupwizard.c:100 ../gtk/parameters.ui.h:85 ../gtk/ldap.ui.h:4
-msgid "Username:"
-msgstr "שם משתמש:"
-
-#: ../gtk/setupwizard.c:102 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
-msgid "Password:"
-msgstr "סיסמה:"
-
-#: ../gtk/setupwizard.c:122
-msgid "Enter your account informations"
-msgstr "הזן את מידע חשבונך"
-
-#: ../gtk/setupwizard.c:138
+#: ../gtk/setupwizard.c:230
 msgid "Username*"
 msgstr "שם משתמש*"
 
-#: ../gtk/setupwizard.c:139
+#: ../gtk/setupwizard.c:231
 msgid "Password*"
 msgstr "סיסמה*"
 
-#: ../gtk/setupwizard.c:142
+#: ../gtk/setupwizard.c:234
 msgid "Domain*"
 msgstr "מתחם*"
 
-#: ../gtk/setupwizard.c:143
+#: ../gtk/setupwizard.c:235
 msgid "Proxy"
 msgstr "פרוקסי"
 
-#: ../gtk/setupwizard.c:322
+#: ../gtk/setupwizard.c:272
+msgid "Enter your linphone.org username"
+msgstr "הזן את שם משתמשך אצל linphone.org"
+
+#: ../gtk/setupwizard.c:284 ../gtk/parameters.ui.h:85 ../gtk/ldap.ui.h:4
+msgid "Username:"
+msgstr "שם משתמש:"
+
+#: ../gtk/setupwizard.c:286 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
+msgid "Password:"
+msgstr "סיסמה:"
+
+#: ../gtk/setupwizard.c:427
 msgid "(*) Required fields"
 msgstr "(*) שדות חובה"
 
-#: ../gtk/setupwizard.c:323
+#: ../gtk/setupwizard.c:428
 msgid "Username: (*)"
 msgstr "שם משתמש: (*)"
 
-#: ../gtk/setupwizard.c:325
+#: ../gtk/setupwizard.c:430
 msgid "Password: (*)"
 msgstr "סיסמה: (*)"
 
-#: ../gtk/setupwizard.c:327
+#: ../gtk/setupwizard.c:432
 msgid "Email: (*)"
 msgstr "דוא״ל: (*)"
 
-#: ../gtk/setupwizard.c:329
+#: ../gtk/setupwizard.c:434
 msgid "Confirm your password: (*)"
 msgstr "אימות סיסמתך: (*)"
 
-#: ../gtk/setupwizard.c:343
+#: ../gtk/setupwizard.c:449
 msgid "Keep me informed with linphone updates"
 msgstr ""
 
-#: ../gtk/setupwizard.c:399
-msgid ""
-"Error, account not validated, username already used or server unreachable.\n"
-"Please go back and try again."
-msgstr "שגיאה, חשבון לא אומת, שם משתמש כבר בשימוש או שרת לא ניתן להשגה.\nנא לחזור ולנסות שוב."
+#: ../gtk/setupwizard.c:494
+msgid "Your account is being created, please wait."
+msgstr ""
 
-#: ../gtk/setupwizard.c:410
-msgid "Thank you. Your account is now configured and ready for use."
-msgstr "תודה לך. חשבונך מוגדר ומוכן לשימוש כעת."
-
-#: ../gtk/setupwizard.c:418
+#: ../gtk/setupwizard.c:502
 msgid ""
 "Please validate your account by clicking on the link we just sent you by email.\n"
 "Then come back here and press Next button."
 msgstr "נא לאמת את חשבונך באמצעות הקלקה על הקישור ששלחנו לך עתה באמצעות דוא״ל.\nאחרי כן נא לחזור לכאן וללחוץ על הלחצן 'קדימה'."
 
-#: ../gtk/setupwizard.c:609
+#: ../gtk/setupwizard.c:512
+msgid "Checking if your account is been validated, please wait."
+msgstr ""
+
+#: ../gtk/setupwizard.c:520
+msgid ""
+"Error, account not validated, username already used or server unreachable.\n"
+"Please go back and try again."
+msgstr "שגיאה, חשבון לא אומת, שם משתמש כבר בשימוש או שרת לא ניתן להשגה.\nנא לחזור ולנסות שוב."
+
+#: ../gtk/setupwizard.c:529
+msgid "Thank you. Your account is now configured and ready for use."
+msgstr "תודה לך. חשבונך מוגדר ומוכן לשימוש כעת."
+
+#: ../gtk/setupwizard.c:554
 msgid "SIP account configuration assistant"
 msgstr ""
 
-#: ../gtk/setupwizard.c:629
+#: ../gtk/setupwizard.c:575
 msgid "Welcome to the account setup assistant"
 msgstr "ברוך בואך אל אשף הגדרת החשבון"
 
-#: ../gtk/setupwizard.c:634
+#: ../gtk/setupwizard.c:580
 msgid "Account setup assistant"
 msgstr "אשף הגדרת חשבון"
 
-#: ../gtk/setupwizard.c:640
+#: ../gtk/setupwizard.c:585
 msgid "Configure your account (step 1/1)"
 msgstr "הגדרת חשבונך (צעד 1/1)"
 
-#: ../gtk/setupwizard.c:645
+#: ../gtk/setupwizard.c:589
 msgid "Enter your sip username (step 1/1)"
 msgstr "הזנת שם משתמש sip (צעד 1/1)"
 
-#: ../gtk/setupwizard.c:649
+#: ../gtk/setupwizard.c:593
 msgid "Enter account information (step 1/2)"
 msgstr "הזנת מידע חשבון (צעד 1/2)"
 
-#: ../gtk/setupwizard.c:658
+#: ../gtk/setupwizard.c:597
+msgid "Account creation in progress"
+msgstr ""
+
+#: ../gtk/setupwizard.c:601
 msgid "Validation (step 2/2)"
 msgstr "אימות (צעד 2/2)"
 
-#: ../gtk/setupwizard.c:663
+#: ../gtk/setupwizard.c:606
+msgid "Account validation check in progress"
+msgstr ""
+
+#: ../gtk/setupwizard.c:610
 msgid "Error"
 msgstr "שגיאה"
 
-#: ../gtk/setupwizard.c:667 ../gtk/audio_assistant.c:534
+#: ../gtk/setupwizard.c:614 ../gtk/audio_assistant.c:534
 msgid "Terminating"
 msgstr "מסיים כעת"
 
@@ -1703,60 +1723,60 @@ msgstr ""
 msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1539
+#: ../coreapi/linphonecore.c:1547
 msgid "Ready"
 msgstr "מוכן"
 
-#: ../coreapi/linphonecore.c:2551
+#: ../coreapi/linphonecore.c:2563
 msgid "Configuring"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:2725
+#: ../coreapi/linphonecore.c:2737
 msgid "Looking for telephone number destination..."
 msgstr "מחפש כעת עבור יעד מספר טלפון..."
 
-#: ../coreapi/linphonecore.c:2727
+#: ../coreapi/linphonecore.c:2739
 msgid "Could not resolve this number."
 msgstr "לא ניתן לפתור את מספר זה."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:3013
+#: ../coreapi/linphonecore.c:3025
 msgid "Contacting"
 msgstr "מתקשר כעת"
 
-#: ../coreapi/linphonecore.c:3018
+#: ../coreapi/linphonecore.c:3030
 msgid "Could not call"
 msgstr "לא ניתן להתקשר"
 
-#: ../coreapi/linphonecore.c:3169
+#: ../coreapi/linphonecore.c:3181
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "הגענו אל המספר המרבי של שיחות מקבילות, עמך הסליחה"
 
-#: ../coreapi/linphonecore.c:3327
+#: ../coreapi/linphonecore.c:3339
 msgid "is contacting you"
 msgstr "מתקשר/ת אליך"
 
-#: ../coreapi/linphonecore.c:3328
+#: ../coreapi/linphonecore.c:3340
 msgid " and asked autoanswer."
 msgstr " ומבקש/ת מענה אוטומטי."
 
-#: ../coreapi/linphonecore.c:3452
+#: ../coreapi/linphonecore.c:3466
 msgid "Modifying call parameters..."
 msgstr "מתאים כעת פרמטרים של שיחה..."
 
-#: ../coreapi/linphonecore.c:3802
+#: ../coreapi/linphonecore.c:3845
 msgid "Connected."
 msgstr "מקושר."
 
-#: ../coreapi/linphonecore.c:3827
+#: ../coreapi/linphonecore.c:3870
 msgid "Call aborted"
 msgstr "קריאה בוטלה"
 
-#: ../coreapi/linphonecore.c:4024
+#: ../coreapi/linphonecore.c:4067
 msgid "Could not pause the call"
 msgstr "לא ניתן להשהות את השיחה"
 
-#: ../coreapi/linphonecore.c:4027
+#: ../coreapi/linphonecore.c:4070
 msgid "Pausing the current call..."
 msgstr "משהה כעת שיחה נוכחית..."
 
@@ -1832,131 +1852,131 @@ msgid ""
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr "זהות sip שהוזנה הינה שגויה.\nזו צריכה להיראות כמו sip:username@proxydomain, למשל sip:alice@example.net"
 
-#: ../coreapi/proxy.c:1416
+#: ../coreapi/proxy.c:1429
 #, c-format
 msgid "Could not login as %s"
 msgstr "לא ניתן להתחבר בזהות %s"
 
-#: ../coreapi/callbacks.c:428
+#: ../coreapi/callbacks.c:442
 msgid "Remote ringing."
 msgstr "צלצול מרוחק."
 
-#: ../coreapi/callbacks.c:440
+#: ../coreapi/callbacks.c:454
 msgid "Remote ringing..."
 msgstr "צלצול מרוחק..."
 
-#: ../coreapi/callbacks.c:461
+#: ../coreapi/callbacks.c:475
 msgid "Early media."
 msgstr "מדיה מוקדמת."
 
-#: ../coreapi/callbacks.c:534
+#: ../coreapi/callbacks.c:548
 #, c-format
 msgid "Call with %s is paused."
 msgstr "שיחה עם %s מושהית."
 
-#: ../coreapi/callbacks.c:547
+#: ../coreapi/callbacks.c:561
 #, c-format
 msgid "Call answered by %s - on hold."
 msgstr "קריאה נענתה על ידי %s - בהמתנה."
 
-#: ../coreapi/callbacks.c:557
+#: ../coreapi/callbacks.c:571
 msgid "Call resumed."
 msgstr "קריאה חודשה."
 
-#: ../coreapi/callbacks.c:561
+#: ../coreapi/callbacks.c:575
 #, c-format
 msgid "Call answered by %s."
 msgstr "קריאה נענתה על ידי %s."
 
-#: ../coreapi/callbacks.c:584
+#: ../coreapi/callbacks.c:598
 msgid "Incompatible, check codecs or security settings..."
 msgstr "חוסר תאימות, בדוק קודקים או הגדרות אבטחה..."
 
-#: ../coreapi/callbacks.c:589 ../coreapi/callbacks.c:906
+#: ../coreapi/callbacks.c:603 ../coreapi/callbacks.c:920
 msgid "Incompatible media parameters."
 msgstr "פרמטריי מדיה חסרי תואמים."
 
-#: ../coreapi/callbacks.c:619
+#: ../coreapi/callbacks.c:633
 msgid "We have been resumed."
 msgstr "חזרנו."
 
 #. we are being paused
-#: ../coreapi/callbacks.c:628
+#: ../coreapi/callbacks.c:642
 msgid "We are paused by other party."
 msgstr "אנו מושהים על ידי צד אחר."
 
 #. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:666
+#: ../coreapi/callbacks.c:680
 msgid "Call is updated by remote."
 msgstr "שיחה עודכנה מרחוק."
 
-#: ../coreapi/callbacks.c:782
+#: ../coreapi/callbacks.c:796
 msgid "Call terminated."
 msgstr "קריאה הסתיימה."
 
-#: ../coreapi/callbacks.c:810
+#: ../coreapi/callbacks.c:824
 msgid "User is busy."
 msgstr "משתמש עסוק כעת."
 
-#: ../coreapi/callbacks.c:811
+#: ../coreapi/callbacks.c:825
 msgid "User is temporarily unavailable."
 msgstr "משתמש לא זמין זמנית."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:813
+#: ../coreapi/callbacks.c:827
 msgid "User does not want to be disturbed."
 msgstr "משתמש לא מעוניין שיפריעו לו."
 
-#: ../coreapi/callbacks.c:814
+#: ../coreapi/callbacks.c:828
 msgid "Call declined."
 msgstr "קריאה סורבה."
 
-#: ../coreapi/callbacks.c:829
+#: ../coreapi/callbacks.c:843
 msgid "Request timeout."
 msgstr ""
 
-#: ../coreapi/callbacks.c:860
+#: ../coreapi/callbacks.c:874
 msgid "Redirected"
 msgstr "מכוון מחדש"
 
-#: ../coreapi/callbacks.c:915
+#: ../coreapi/callbacks.c:929
 msgid "Call failed."
 msgstr "קריאה נכשלה."
 
-#: ../coreapi/callbacks.c:993
+#: ../coreapi/callbacks.c:1007
 #, c-format
 msgid "Registration on %s successful."
 msgstr "רישום אצל %s הושלם בהצלחה."
 
-#: ../coreapi/callbacks.c:994
+#: ../coreapi/callbacks.c:1008
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "אי רישום אצל %s סוים."
 
-#: ../coreapi/callbacks.c:1012
+#: ../coreapi/callbacks.c:1026
 msgid "no response timeout"
 msgstr "אין היענות תוך זמן מוגדר"
 
-#: ../coreapi/callbacks.c:1015
+#: ../coreapi/callbacks.c:1029
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "רישום אצל %s נכשל: %s"
 
-#: ../coreapi/callbacks.c:1022
+#: ../coreapi/callbacks.c:1036
 msgid "Service unavailable, retrying"
 msgstr ""
 
 #. if encryption is DTLS, no status to be displayed
-#: ../coreapi/linphonecall.c:180
+#: ../coreapi/linphonecall.c:181
 #, c-format
 msgid "Authentication token is %s"
 msgstr "אות האימות הינה %s"
 
-#: ../coreapi/linphonecall.c:1310
+#: ../coreapi/linphonecall.c:1312
 msgid "Call parameters were successfully modified."
 msgstr ""
 
-#: ../coreapi/linphonecall.c:3686
+#: ../coreapi/linphonecall.c:3754
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
