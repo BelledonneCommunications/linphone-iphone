@@ -322,9 +322,7 @@ static UIFont *CELL_FONT = nil;
 }
 
 - (IBAction)onDownloadClick:(id)event {
-    NSURL* url = [NSURL URLWithString:[NSString stringWithUTF8String:linphone_chat_message_get_external_body_url(chat)]];
-    [chatRoomDelegate chatRoomStartImageDownload:url userInfo:[NSValue valueWithPointer:chat]];
-
+    [chatRoomDelegate chatRoomStartImageDownload:chat];
 }
 
 - (IBAction)onImageClick:(id)event {

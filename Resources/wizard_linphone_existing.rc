@@ -22,7 +22,7 @@
 
 	<section name="app">
 		<entry name="pushnotification_preference" overwrite="true">1</entry>
-		<entry name="sharing_server_preference" overwrite="true">https://www.linphone.org:444/upload.php</entry>
+		<entry name="sharing_server_preference" overwrite="true">https://www.linphone.org:444/lft.php</entry>
 		<entry name="ice_preference" overwrite="true">1</entry>
 		<entry name="stun_preference" overwrite="true">stun.linphone.org</entry>
 		<entry name="random_port_preference" overwrite="true">1</entry>

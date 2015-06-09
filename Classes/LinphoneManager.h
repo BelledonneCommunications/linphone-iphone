@@ -98,6 +98,14 @@ struct NetworkReachabilityContext {
 };
 @end
 
+@protocol LinphoneChatContentTransferDelegate <NSObject>
+
+-(void)onProgressReport:(LinphoneChatMessage*)msg forContent:(const LinphoneContent*)content percent:(int)percent;
+-(void)onDataRequested:(LinphoneChatMessage*)msg forContent:(const LinphoneContent*)content buffer:(char*)buffer withSize:(size_t*)size;
+-(void)onDataReceived:(LinphoneChatMessage*)msg forContent:(const LinphoneContent*)content buffer:(const char*)buffer withSize:(size_t)size;
+
+@end
+
 typedef struct _LinphoneManagerSounds {
     SystemSoundID vibrate;
 } LinphoneManagerSounds;

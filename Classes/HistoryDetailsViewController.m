@@ -369,7 +369,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     char* lAddress = linphone_address_as_string_uri_only(addr);
     if(lAddress == NULL)
         return;
-
     // Go to ChatRoom view
     [[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
     ChatRoomViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE], ChatRoomViewController);

@@ -145,10 +145,10 @@ struct codec_name_pref_table codec_pref_table[]={
 	{ "mp4v-es", 90000, "mp4v-es_preference"},
 	{ "h264", 90000, "h264_preference"},
 	{ "vp8", 90000, "vp8_preference"},
-    { "mpeg4-generic", 16000, "aaceld_16k_preference"},
-    { "mpeg4-generic", 22050, "aaceld_22k_preference"},
-    { "mpeg4-generic", 32000, "aaceld_32k_preference"},
-    { "mpeg4-generic", 44100, "aaceld_44k_preference"},
+	{ "mpeg4-generic", 16000, "aaceld_16k_preference"},
+	{ "mpeg4-generic", 22050, "aaceld_22k_preference"},
+	{ "mpeg4-generic", 32000, "aaceld_32k_preference"},
+	{ "mpeg4-generic", 44100, "aaceld_44k_preference"},
 	{ "mpeg4-generic", 48000, "aaceld_48k_preference"},
 	{ "opus", 48000, "opus_preference"},
 	{ NULL,0,Nil }
@@ -194,9 +194,9 @@ struct codec_name_pref_table codec_pref_table[]={
 }
 
 + (BOOL)isRunningTests {
-    NSDictionary *environment = [[NSProcessInfo processInfo] environment];
-    NSString *injectBundle = environment[@"XCInjectBundle"];
-    return [[injectBundle pathExtension] isEqualToString:@"xctest"];
+	NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+	NSString *injectBundle = environment[@"XCInjectBundle"];
+	return [[injectBundle pathExtension] isEqualToString:@"xctest"];
 }
 
 + (BOOL)isNotIphone3G
@@ -244,12 +244,12 @@ struct codec_name_pref_table codec_pref_table[]={
 #endif
 
 + (BOOL)langageDirectionIsRTL {
-    static NSLocaleLanguageDirection dir = NSLocaleLanguageDirectionLeftToRight;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        dir = [NSLocale characterDirectionForLanguage:[[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode]];
-    });
-    return dir == NSLocaleLanguageDirectionRightToLeft;
+	static NSLocaleLanguageDirection dir = NSLocaleLanguageDirectionLeftToRight;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		dir = [NSLocale characterDirectionForLanguage:[[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode]];
+	});
+	return dir == NSLocaleLanguageDirectionRightToLeft;
 }
 
 #pragma mark - Lifecycle Functions
@@ -262,12 +262,12 @@ struct codec_name_pref_table codec_pref_table[]={
 			LOGE(@"cannot register route change handler [%ld]",lStatus);
 		}
 
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
-        self.messagePlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil];
+		NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
+		self.messagePlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil];
 
-        sounds.vibrate = kSystemSoundID_Vibrate;
+		sounds.vibrate = kSystemSoundID_Vibrate;
 
-        logs = [[NSMutableArray alloc] init];
+		logs = [[NSMutableArray alloc] init];
 		database = NULL;
 		speakerEnabled = FALSE;
 		bluetoothEnabled = FALSE;
@@ -543,9 +543,9 @@ static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message)
 
 - (void)displayStatus:(NSString*) message {
 	// Post event
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneDisplayStatusUpdate
-                                                        object:self
-                                                      userInfo:@{@"message":message}];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneDisplayStatusUpdate
+														object:self
+													  userInfo:@{@"message":message}];
 }
 
 
@@ -639,14 +639,14 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 				data->notification = [[UILocalNotification alloc] init];
 				if (data->notification) {
 
-                    // iOS8 doesn't need the timer trick for the local notification.
-                    if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
-                        data->notification.soundName = @"ring.caf";
-                        data->notification.category = @"incoming_call";
-                    } else {
-                        data->notification.soundName = @"shortring.caf";
-                        data->timer = [NSTimer scheduledTimerWithTimeInterval:4.0 target:self selector:@selector(localNotifContinue:) userInfo:data->notification repeats:TRUE];
-                    }
+					// iOS8 doesn't need the timer trick for the local notification.
+					if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
+						data->notification.soundName = @"ring.caf";
+						data->notification.category = @"incoming_call";
+					} else {
+						data->notification.soundName = @"shortring.caf";
+						data->timer = [NSTimer scheduledTimerWithTimeInterval:4.0 target:self selector:@selector(localNotifContinue:) userInfo:data->notification repeats:TRUE];
+					}
 
 					data->notification.repeatInterval = 0;
 
@@ -664,9 +664,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 							incallBgTask=0;
 						}];
 
-                        if( data->timer ){
-                            [[NSRunLoop currentRunLoop] addTimer:data->timer forMode:NSRunLoopCommonModes];
-                        }
+						if( data->timer ){
+							[[NSRunLoop currentRunLoop] addTimer:data->timer forMode:NSRunLoopCommonModes];
+						}
 					}
 
 				}
@@ -740,9 +740,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 		[self setupGSMInteraction];
 	}
 	// Post event
-    NSDictionary* dict = @{@"call":   [NSValue valueWithPointer:call],
-                           @"state":  [NSNumber numberWithInt:state],
-                           @"message":[NSString stringWithUTF8String:message]};
+	NSDictionary* dict = @{@"call":   [NSValue valueWithPointer:call],
+						   @"state":  [NSNumber numberWithInt:state],
+						   @"message":[NSString stringWithUTF8String:message]};
 	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallUpdate object:self userInfo:dict];
 }
 
@@ -845,12 +845,12 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		silentPushCompletion(UIBackgroundFetchResultNewData);
 		silentPushCompletion = nil;
 	}
-    const LinphoneAddress* remoteAddress = linphone_chat_message_get_from_address(msg);
-    char* c_address                      = linphone_address_as_string_uri_only(remoteAddress);
-    NSString* address                    = [NSString stringWithUTF8String:c_address];
-    NSString* remote_uri                 = [NSString stringWithUTF8String:c_address];
-    const char* call_id                  = linphone_chat_message_get_custom_header(msg, "Call-ID");
-    NSString* callID                     = [NSString stringWithUTF8String:call_id];
+	const LinphoneAddress* remoteAddress = linphone_chat_message_get_from_address(msg);
+	char* c_address                      = linphone_address_as_string_uri_only(remoteAddress);
+	NSString* address                    = [NSString stringWithUTF8String:c_address];
+	NSString* remote_uri                 = [NSString stringWithUTF8String:c_address];
+	const char* call_id                  = linphone_chat_message_get_custom_header(msg, "Call-ID");
+	NSString* callID                     = [NSString stringWithUTF8String:call_id];
 
 	ms_free(c_address);
 
@@ -874,9 +874,9 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		UILocalNotification* notif = [[UILocalNotification alloc] init];
 		if (notif) {
 			notif.repeatInterval = 0;
-            if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
-                notif.category       = @"incoming_msg";
-            }
+			if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
+				notif.category       = @"incoming_msg";
+			}
 			notif.alertBody      = [NSString  stringWithFormat:NSLocalizedString(@"IM_MSG",nil), address];
 			notif.alertAction    = NSLocalizedString(@"Show", nil);
 			notif.soundName      = @"msg.caf";
@@ -915,6 +915,29 @@ static void linphone_iphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev
 	[(__bridge LinphoneManager*)linphone_core_get_user_data(lc) onNotifyReceived:lc event:lev notifyEvent:notified_event content:body];
 }
 
+#pragma mark - FileTransfer functions
+
+static void linphone_iphone_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
+	id <LinphoneChatContentTransferDelegate> delegate = (__bridge id<LinphoneChatContentTransferDelegate>)linphone_chat_message_get_user_data(message);
+	LOGI(@"Transfer of %s, incoming data (%d bytes)", linphone_content_get_name(content), size);
+	[delegate onDataReceived:message forContent:content buffer:buff withSize:size];
+}
+
+static void linphone_iphone_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size){
+	id <LinphoneChatContentTransferDelegate> delegate = (__bridge id<LinphoneChatContentTransferDelegate>)linphone_chat_message_get_user_data(message);
+	LOGI(@"Transfer of %s, requesting data (%d bytes)", linphone_content_get_name(content), *size);
+	[delegate onDataRequested:message forContent:content buffer:buff withSize:size];
+}
+
+static void linphone_iphone_file_transfer_progress(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total){
+	id <LinphoneChatContentTransferDelegate> delegate = (__bridge id<LinphoneChatContentTransferDelegate>)linphone_chat_message_get_user_data(message);
+	float progress = offset*100.f/total;
+	LOGI(@"Progress of transfer %s: %d%%", linphone_content_get_name(content), progress);
+	[delegate onProgressReport:message forContent:content percent:progress];
+}
+
+
+
 #pragma mark - Message composition start
 
 - (void)onMessageComposeReceived:(LinphoneCore*)core forRoom:(LinphoneChatRoom*)room {
@@ -936,58 +959,58 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 }
 
 + (void)kickOffNetworkConnection {
-    static BOOL in_progress = FALSE;
-    if( in_progress ){
-        LOGW(@"Connection kickoff already in progress");
-        return;
-    }
-    in_progress = TRUE;
+	static BOOL in_progress = FALSE;
+	if( in_progress ){
+		LOGW(@"Connection kickoff already in progress");
+		return;
+	}
+	in_progress = TRUE;
 	/* start a new thread to avoid blocking the main ui in case of peer host failure */
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        static int sleep_us = 10000;
-        static int timeout_s = 5;
-        BOOL timeout_reached = FALSE;
-        int loop = 0;
+		static int sleep_us = 10000;
+		static int timeout_s = 5;
+		BOOL timeout_reached = FALSE;
+		int loop = 0;
 		CFWriteStreamRef writeStream;
 		CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)@"192.168.0.200"/*"linphone.org"*/, 15000, nil, &writeStream);
 		BOOL res = CFWriteStreamOpen (writeStream);
 		const char* buff="hello";
-        time_t start = time(NULL);
-        time_t loop_time;
+		time_t start = time(NULL);
+		time_t loop_time;
 
-        if( res == FALSE ){
-            LOGI(@"Could not open write stream, backing off");
-            CFRelease(writeStream);
-            in_progress = FALSE;
-            return;
-        }
+		if( res == FALSE ){
+			LOGI(@"Could not open write stream, backing off");
+			CFRelease(writeStream);
+			in_progress = FALSE;
+			return;
+		}
 
-        // check stream status and handle timeout
-        CFStreamStatus status = CFWriteStreamGetStatus(writeStream);
-        while (status != kCFStreamStatusOpen && status != kCFStreamStatusError ) {
-            usleep(sleep_us);
-            status = CFWriteStreamGetStatus(writeStream);
-            loop_time = time(NULL);
-            if( loop_time - start >= timeout_s){
-                timeout_reached = TRUE;
-                break;
-            }
-            loop++;
-        }
+		// check stream status and handle timeout
+		CFStreamStatus status = CFWriteStreamGetStatus(writeStream);
+		while (status != kCFStreamStatusOpen && status != kCFStreamStatusError ) {
+			usleep(sleep_us);
+			status = CFWriteStreamGetStatus(writeStream);
+			loop_time = time(NULL);
+			if( loop_time - start >= timeout_s){
+				timeout_reached = TRUE;
+				break;
+			}
+			loop++;
+		}
 
 
-        if (status == kCFStreamStatusOpen ) {
-            CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
-        } else if( !timeout_reached ){
-            CFErrorRef error = CFWriteStreamCopyError(writeStream);
-            LOGD(@"CFStreamError: %@", error);
-            CFRelease(error);
-        } else if( timeout_reached ){
-            LOGI(@"CFStream timeout reached");
-        }
+		if (status == kCFStreamStatusOpen ) {
+			CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
+		} else if( !timeout_reached ){
+			CFErrorRef error = CFWriteStreamCopyError(writeStream);
+			LOGD(@"CFStreamError: %@", error);
+			CFRelease(error);
+		} else if( timeout_reached ){
+			LOGI(@"CFStream timeout reached");
+		}
 		CFWriteStreamClose (writeStream);
 		CFRelease(writeStream);
-        in_progress = FALSE;
+		in_progress = FALSE;
 	});
 }
 
@@ -1185,7 +1208,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 
-#pragma mark -
+#pragma mark - VTable
 
 static LinphoneCoreVTable linphonec_vtable = {
 	.show =NULL,
@@ -1205,8 +1228,14 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.is_composing_received = linphone_iphone_is_composing_received,
 	.configuring_status = linphone_iphone_configuring_status_changed,
 	.global_state_changed = linphone_iphone_global_state_changed,
-	.notify_received = linphone_iphone_notify_received
+	.notify_received = linphone_iphone_notify_received,
+	.file_transfer_recv = linphone_iphone_file_transfer_recv,
+	.file_transfer_send = linphone_iphone_file_transfer_send,
+	.file_transfer_progress_indication = linphone_iphone_file_transfer_progress
+
 };
+
+#pragma mark -
 
 //scheduling loop
 - (void)iterate {
@@ -1298,6 +1327,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 		const char* imagePath = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		LOGI(@"Using '%s' as source image for no webcam", imagePath);
 		linphone_core_set_static_picture(theLinphoneCore, imagePath);
+	}
+
+	NSString *urlString = [self lpConfigStringForKey:@"sharing_server_preference"];
+	if( urlString ){
+		linphone_core_set_file_transfer_server(theLinphoneCore, [urlString UTF8String]);
 	}
 
 	/*DETECT cameras*/
@@ -1394,24 +1428,24 @@ static BOOL libStarted = FALSE;
 
 	connectivity=none;
 
-    ms_init(); // Need to initialize mediastreamer2 before loading the plugins
+	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
 
-    libmsilbc_init();
+	libmsilbc_init();
 #if defined (HAVE_SILK)
-    libmssilk_init();
+	libmssilk_init();
 #endif
 #ifdef HAVE_AMR
-    libmsamr_init(); //load amr plugin if present from the liblinphone sdk
+	libmsamr_init(); //load amr plugin if present from the liblinphone sdk
 #endif
 #ifdef HAVE_X264
-    libmsx264_init(); //load x264 plugin if present from the liblinphone sdk
+	libmsx264_init(); //load x264 plugin if present from the liblinphone sdk
 #endif
 #ifdef HAVE_OPENH264
-    libmsopenh264_init(); //load openh264 plugin if present from the liblinphone sdk
+	libmsopenh264_init(); //load openh264 plugin if present from the liblinphone sdk
 #endif
 
 #if HAVE_G729
-    libmsbcg729_init(); // load g729 plugin
+	libmsbcg729_init(); // load g729 plugin
 #endif
 
 	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
@@ -1490,39 +1524,39 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
 }
 
 - (void)cancelLocalNotifTimerForCallId:(NSString*)callid {
-    //first, make sure this callid is not already involved in a call
-    MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
-    MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
-    if (call != NULL) {
-        LinphoneCallAppData* data = (__bridge LinphoneCallAppData *)(linphone_call_get_user_data((LinphoneCall*)call->data));
-        if ( data->timer )
-            [data->timer invalidate];
-        data->timer = nil;
-        return;
-    }
+	//first, make sure this callid is not already involved in a call
+	MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
+	MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
+	if (call != NULL) {
+		LinphoneCallAppData* data = (__bridge LinphoneCallAppData *)(linphone_call_get_user_data((LinphoneCall*)call->data));
+		if ( data->timer )
+			[data->timer invalidate];
+		data->timer = nil;
+		return;
+	}
 }
 
 - (void)acceptCallForCallId:(NSString*)callid {
-    //first, make sure this callid is not already involved in a call
-    MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
-    MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
-    if (call != NULL) {
-        [self acceptCall:(LinphoneCall*)call->data];
-        return;
-    };
+	//first, make sure this callid is not already involved in a call
+	MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
+	MSList* call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
+	if (call != NULL) {
+		[self acceptCall:(LinphoneCall*)call->data];
+		return;
+	};
 }
 
 - (void)addPushCallId:(NSString*) callid {
    //first, make sure this callid is not already involved in a call
-    MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
-    if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
-        LOGW(@"Call id [%@] already handled",callid);
-        return;
-    };
-    if ([pushCallIDs count] > 10 /*max number of pending notif*/)
-        [pushCallIDs removeObjectAtIndex:0];
+	MSList* calls = (MSList*)linphone_core_get_calls(theLinphoneCore);
+	if (ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String])) {
+		LOGW(@"Call id [%@] already handled",callid);
+		return;
+	};
+	if ([pushCallIDs count] > 10 /*max number of pending notif*/)
+		[pushCallIDs removeObjectAtIndex:0];
 
-    [pushCallIDs addObject:callid];
+	[pushCallIDs addObject:callid];
 }
 
 - (BOOL)popPushCallID:(NSString*) callId {
@@ -1542,11 +1576,11 @@ static int comp_call_id(const LinphoneCall* call , const char *callid) {
 }
 
 - (void)playMessageSound {
-    BOOL success = [self.messagePlayer play];
-    if( !success ){
-        LOGE(@"Could not play the message sound");
-    }
-    AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
+	BOOL success = [self.messagePlayer play];
+	if( !success ){
+		LOGE(@"Could not play the message sound");
+	}
+	AudioServicesPlaySystemSound([LinphoneManager instance].sounds.vibrate);
 }
 
 static int comp_call_state_paused  (const LinphoneCall* call, const void* param) {
@@ -1559,7 +1593,7 @@ static int comp_call_state_paused  (const LinphoneCall* call, const void* param)
 		[[UIApplication sharedApplication] endBackgroundTask:pausedCallBgTask];
 	}];
 	LOGI(@"Long running task started, remaining [%g s] because at least one call is paused"
-	 	,[[UIApplication  sharedApplication] backgroundTimeRemaining]);
+		,[[UIApplication  sharedApplication] backgroundTimeRemaining]);
 }
 - (BOOL)enterBackgroundMode {
 	LinphoneProxyConfig* proxyCfg;
@@ -1864,18 +1898,18 @@ static void audioRouteChangeListenerCallback (
 	}
 	LinphoneCall* call=NULL;
 
-    BOOL addressIsASCII = [address canBeConvertedToEncoding:[NSString defaultCStringEncoding]];
+	BOOL addressIsASCII = [address canBeConvertedToEncoding:[NSString defaultCStringEncoding]];
 
 	if ([address length] == 0) return; //just return
-    if( !addressIsASCII ){
-        UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
-                                                        message:NSLocalizedString(@"The address should only contain ASCII data",nil)
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-                                              otherButtonTitles:nil];
-        [error show];
+	if( !addressIsASCII ){
+		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address",nil)
+														message:NSLocalizedString(@"The address should only contain ASCII data",nil)
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
+											  otherButtonTitles:nil];
+		[error show];
 
-    }
+	}
 	LinphoneAddress* linphoneAddress = linphone_core_interpret_url(theLinphoneCore, [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 
 	if (linphoneAddress) {
@@ -1901,7 +1935,7 @@ static void audioRouteChangeListenerCallback (
 											  otherButtonTitles:nil];
 		[error show];
 
-    }
+	}
 
 
 	if (call) {
@@ -1929,16 +1963,16 @@ static void audioRouteChangeListenerCallback (
 		pushNotificationToken = nil;
 	}
 
-    if(apushNotificationToken != nil) {
-        pushNotificationToken = apushNotificationToken;
-    }
-    LinphoneProxyConfig *cfg=nil;
-    linphone_core_get_default_proxy(theLinphoneCore, &cfg);
-    if (cfg ) {
-        linphone_proxy_config_edit(cfg);
-        [self configurePushTokenForProxyConfig: cfg];
-        linphone_proxy_config_done(cfg);
-    }
+	if(apushNotificationToken != nil) {
+		pushNotificationToken = apushNotificationToken;
+	}
+	LinphoneProxyConfig *cfg=nil;
+	linphone_core_get_default_proxy(theLinphoneCore, &cfg);
+	if (cfg ) {
+		linphone_proxy_config_edit(cfg);
+		[self configurePushTokenForProxyConfig: cfg];
+		linphone_proxy_config_done(cfg);
+	}
 }
 
 - (void)configurePushTokenForProxyConfig:(LinphoneProxyConfig*)proxyCfg{
@@ -1956,10 +1990,10 @@ static void audioRouteChangeListenerCallback (
 #else
 #define APPMODE_SUFFIX @"prod"
 #endif
-        NSString *params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-call-snd=ring.caf;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
+		NSString *params = [NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-call-snd=ring.caf;pn-msg-snd=msg.caf", [[NSBundle mainBundle] bundleIdentifier],APPMODE_SUFFIX,tokenString];
 
-        linphone_proxy_config_set_contact_uri_parameters(proxyCfg, [params UTF8String]);
-        linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
+		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, [params UTF8String]);
+		linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
 	} else {
 		// no push token:
 		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, NULL);
@@ -1990,22 +2024,22 @@ static void audioRouteChangeListenerCallback (
 	if (! [[NSFileManager defaultManager] fileExistsAtPath:cachePath isDirectory:&isDir] && isDir == NO) {
 		[[NSFileManager defaultManager] createDirectoryAtPath:cachePath withIntermediateDirectories:NO attributes:nil error:&error];
 	}
-    return cachePath;
+	return cachePath;
 }
 
 + (int)unreadMessageCount {
-    int count = 0;
-    MSList* rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
-    MSList* item = rooms;
-    while (item) {
-        LinphoneChatRoom* room = (LinphoneChatRoom*)item->data;
-        if( room ){
-            count += linphone_chat_room_get_unread_messages_count(room);
-        }
-        item = item->next;
-    }
+	int count = 0;
+	MSList* rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+	MSList* item = rooms;
+	while (item) {
+		LinphoneChatRoom* room = (LinphoneChatRoom*)item->data;
+		if( room ){
+			count += linphone_chat_room_get_unread_messages_count(room);
+		}
+		item = item->next;
+	}
 
-    return count;
+	return count;
 }
 
 + (BOOL)copyFile:(NSString*)src destination:(NSString*)dst override:(BOOL)override {
@@ -2038,16 +2072,16 @@ static void audioRouteChangeListenerCallback (
 - (void)configureVbrCodecs{
 	PayloadType *pt;
 	int bitrate=lp_config_get_int(configDb,"audio","codec_bitrate_limit",kLinphoneAudioVbrCodecDefaultBitrate);/*default value is in linphonerc or linphonerc-factory*/
-    const MSList *audio_codecs = linphone_core_get_audio_codecs(theLinphoneCore);
-    const MSList* codec = audio_codecs;
-    while (codec) {
-        pt = codec->data;
-        if( linphone_core_payload_type_is_vbr(theLinphoneCore, pt) ) {
-            linphone_core_set_payload_type_bitrate(theLinphoneCore, pt, bitrate);
-        }
+	const MSList *audio_codecs = linphone_core_get_audio_codecs(theLinphoneCore);
+	const MSList* codec = audio_codecs;
+	while (codec) {
+		pt = codec->data;
+		if( linphone_core_payload_type_is_vbr(theLinphoneCore, pt) ) {
+			linphone_core_set_payload_type_bitrate(theLinphoneCore, pt, bitrate);
+		}
 
-        codec = codec->next;
-    }
+		codec = codec->next;
+	}
 }
 
 -(void)setLogsEnabled:(BOOL)enabled {

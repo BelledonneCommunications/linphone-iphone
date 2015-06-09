@@ -86,7 +86,6 @@
 
 - (void)uploadImageTo:(NSURL*)url image:(UIImage*)image {
     LOGI(@"downloading [%@]", [url absoluteString]);
-
 	// setting up the request object now
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
 	[request setURL:url];
