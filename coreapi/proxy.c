@@ -702,7 +702,7 @@ static dial_plan_t const dial_plans[]={
 	{"Ireland"                      ,"IE"		, "353"     , 9		, "00"  },
 	{"Israel"                       ,"IL"		, "972"     , 9     , "00"	},
 	{"Italy"                        ,"IT"		, "39"      , 10	, "00"  },
-	{"Jersey"                       ,"JE"		, "44"      , 10	, "00"	},
+/*	{"Jersey"                       ,"JE"		, "44"      , 10	, "00"	},*/
 	{"Jamaica"                      ,"JM"		, "1"       , 10	, "011" },
 	{"Japan"                        ,"JP"		, "81"      , 10	, "010" },
 	{"Jordan"                       ,"JO"		, "962"     , 9     , "00"	},
@@ -818,7 +818,8 @@ static dial_plan_t const dial_plans[]={
 	{"Uganda"                       ,"UG"		, "256"     , 9     , "000" },
 	{"Ukraine"                      ,"UA"		, "380"     , 9		, "00"  },
 	{"United Arab Emirates"	        ,"AE"		, "971"     , 9     , "00"  },
-	{"United Kingdom"               ,"UK"		, "44"      , 10	, "00"	},
+	{"United Kingdom"               ,"GB"		, "44"      , 10	, "00"	},
+/*	{"United Kingdom"               ,"UK"		, "44"      , 10	, "00"	},*/
 	{"United States"                ,"US"		, "1"       , 10	, "011" },
 	{"Uruguay"                      ,"UY"		, "598"     , 8		, "00"  },
 	{"Uzbekistan"                   ,"UZ"		, "998"     , 9		, "8"	},
