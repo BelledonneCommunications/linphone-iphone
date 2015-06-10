@@ -167,7 +167,9 @@ def main(argv=None):
     argparser.add_argument(
         '-c', '-C', '--clean', help="Clean a previous build instead of preparing a build.", action='store_true')
     argparser.add_argument(
-        '-d', '--debug', help="Prepare a debug build.", action='store_true')
+        '-d', '--debug', help="Prepare a debug build, eg. add debug symbols and use no optimizations.", action='store_true')
+    argparser.add_argument(
+        '-dv', '--debug-verbose', help="Activate ms_debug logs.", action='store_true')
     argparser.add_argument(
         '-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
     argparser.add_argument('-L', '--list-cmake-variables',
@@ -201,7 +203,7 @@ def main(argv=None):
         if args.clean:
             target.clean()
         else:
-            if args.debug:
+            if args.debug_verbose:
                 additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
             retcode = prepare.run(
                 target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
