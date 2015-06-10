@@ -24,7 +24,7 @@
 #import "UITransparentTVCell.h"
 #import "UITextViewNoDefine.h"
 #include "linphone/linphonecore.h"
-
+#import "FileTransferDelegate.h"
 
 @interface UIChatRoomCell : UITransparentTVCell {
     LinphoneChatMessage* chat;
@@ -41,6 +41,8 @@
 @property (nonatomic, strong) IBOutlet UIButton* downloadButton;
 @property (nonatomic, strong) IBOutlet UITapGestureRecognizer* imageTapGestureRecognizer;
 @property (nonatomic, strong) IBOutlet UITapGestureRecognizer* resendTapGestureRecognizer;
+@property (weak, nonatomic) IBOutlet UIProgressView *fileTransferProgress;
+@property (weak, nonatomic) IBOutlet UIButton *cancelButton;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 + (CGFloat)height:(LinphoneChatMessage*)chatMessage width:(int)width;
@@ -50,7 +52,10 @@
 - (IBAction)onDeleteClick:(id)event;
 - (IBAction)onDownloadClick:(id)event;
 - (IBAction)onImageClick:(id)event;
+- (IBAction)onCancelDownloadClick:(id)sender;
 
 - (void)setChatMessage:(LinphoneChatMessage*)message;
+
+- (void)connectToFileDelegate:(FileTransferDelegate*)ftd;
 
 @end

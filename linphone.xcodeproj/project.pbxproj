@@ -120,6 +120,7 @@
 		636316D41A1DEC650009B839 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsViewController.xib */; };
 		636316D91A1DECC90009B839 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D71A1DECC90009B839 /* PhoneMainView.xib */; };
 		636316DE1A1DEF2F0009B839 /* UIButtonShrinkable.m in Sources */ = {isa = PBXBuildFile; fileRef = 636316DD1A1DEF2F0009B839 /* UIButtonShrinkable.m */; };
+		637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 637157A01B283FE200C91677 /* FileTransferDelegate.m */; };
 		639CEAFD1A1DF4D9004DE38F /* UIStateBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEAFF1A1DF4D9004DE38F /* UIStateBar.xib */; };
 		639CEB001A1DF4E4004DE38F /* UIHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB021A1DF4E4004DE38F /* UIHistoryCell.xib */; };
 		639CEB031A1DF4EB004DE38F /* UICompositeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB051A1DF4EB004DE38F /* UICompositeViewController.xib */; };
@@ -306,7 +307,6 @@
 		D36C43F7158F61EA0048BA40 /* call_state_play_over.png in Resources */ = {isa = PBXBuildFile; fileRef = D36C43F0158F61EA0048BA40 /* call_state_play_over.png */; };
 		D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
 		D37295DB158B3C9600D2C0C7 /* video_off_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D37295DA158B3C9600D2C0C7 /* video_off_disabled.png */; };
-		D374D3FD16071762003D25FF /* ImageSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = D374D3FC16071762003D25FF /* ImageSharing.m */; };
 		D377BBFA15A19DA6002B696B /* video_on_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = D377BBF915A19DA6002B696B /* video_on_disabled.png */; };
 		D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */; };
 		D378AB2A15DCDB4A0098505D /* ImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378AB2915DCDB490098505D /* ImagePickerViewController.m */; };
@@ -892,7 +892,6 @@
 
 /* Begin PBXFileReference section */
 		045B5CB218D72E9A0088350C /* libbzrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbzrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libbzrtp.a"; sourceTree = "<group>"; };
-		15017E6F1773578400784ACB /* libxml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml2.a; path = "liblinphone-sdk/apple-darwin/lib/libxml2.a"; sourceTree = "<group>"; };
 		152F22331B15E83B008C0621 /* libilbcrfc3951.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbcrfc3951.a; path = "liblinphone-sdk/apple-darwin/lib/libilbcrfc3951.a"; sourceTree = "<group>"; };
 		152F22351B15E889008C0621 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		1560821E18EEF26100765332 /* libmsopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsopenh264.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsopenh264.a"; sourceTree = "<group>"; };
@@ -1039,6 +1038,8 @@
 		636316DB1A1DEDD80009B839 /* ru */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/HistoryDetailsViewController.strings; sourceTree = "<group>"; };
 		636316DC1A1DEECB0009B839 /* UIButtonShrinkable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIButtonShrinkable.h; sourceTree = "<group>"; };
 		636316DD1A1DEF2F0009B839 /* UIButtonShrinkable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIButtonShrinkable.m; sourceTree = "<group>"; };
+		6371579F1B283FE200C91677 /* FileTransferDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileTransferDelegate.h; path = Utils/FileTransferDelegate.h; sourceTree = "<group>"; };
+		637157A01B283FE200C91677 /* FileTransferDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileTransferDelegate.m; path = Utils/FileTransferDelegate.m; sourceTree = "<group>"; };
 		639CEAFE1A1DF4D9004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIStateBar.xib; sourceTree = "<group>"; };
 		639CEB011A1DF4E4004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIHistoryCell.xib; sourceTree = "<group>"; };
 		639CEB041A1DF4EB004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICompositeViewController.xib; sourceTree = "<group>"; };
@@ -1258,8 +1259,6 @@
 		D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseButton.h; sourceTree = "<group>"; };
 		D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIPauseButton.m; sourceTree = "<group>"; };
 		D37295DA158B3C9600D2C0C7 /* video_off_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = video_off_disabled.png; path = Resources/video_off_disabled.png; sourceTree = "<group>"; };
-		D374D3FB16071762003D25FF /* ImageSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSharing.h; sourceTree = "<group>"; };
-		D374D3FC16071762003D25FF /* ImageSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageSharing.m; sourceTree = "<group>"; };
 		D377BBF915A19DA6002B696B /* video_on_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = video_on_disabled.png; path = Resources/video_on_disabled.png; sourceTree = "<group>"; };
 		D378906215AC373B00BD776C /* ContactDetailsLabelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsLabelViewController.h; sourceTree = "<group>"; };
 		D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailsLabelViewController.m; sourceTree = "<group>"; };
@@ -2041,8 +2040,6 @@
 				D38187D415FE346B00C3EDCA /* HistoryViewController.xib */,
 				D378AB2815DCDB480098505D /* ImagePickerViewController.h */,
 				D378AB2915DCDB490098505D /* ImagePickerViewController.m */,
-				D374D3FB16071762003D25FF /* ImageSharing.h */,
-				D374D3FC16071762003D25FF /* ImageSharing.m */,
 				22405EFD1601C19000B92522 /* ImageViewController.h */,
 				22405EFE1601C19100B92522 /* ImageViewController.m */,
 				D37EE11016035793003608A6 /* ImageViewController.xib */,
@@ -2319,7 +2316,6 @@
 				D30BF33216A427BC00AF0026 /* libtunnel.a */,
 				7066FC0B13E830E400EFC6DC /* libvpx.a */,
 				22AA8AFB13D7125500B30535 /* libx264.a */,
-				15017E6F1773578400784ACB /* libxml2.a */,
 				F0B89C2118DC89E30050B60E /* MediaPlayer.framework */,
 				D37DC7171594AF3400B2A5EB /* MessageUI.framework */,
 				226EF06B15FA256B005865C7 /* MobileCoreServices.framework */,
@@ -2345,6 +2341,8 @@
 				D37EE15F160377D7003608A6 /* DTFoundation */,
 				D32B9DFA15A2F131000B6DEC /* FastAddressBook.h */,
 				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
+				6371579F1B283FE200C91677 /* FileTransferDelegate.h */,
+				637157A01B283FE200C91677 /* FileTransferDelegate.m */,
 				D3ED40141602172200BF332B /* GrowingTextView */,
 				D3807FC715C2894A005BE9BC /* InAppSettingsKit */,
 				D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */,
@@ -4059,13 +4057,13 @@
 				D380800515C28A7A005BE9BC /* UILinphone.m in Sources */,
 				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
 				6359DE7F1ADEB54200EA15C0 /* InAppProductsViewController.m in Sources */,
+				637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */,
 				D378AB2A15DCDB4A0098505D /* ImagePickerViewController.m in Sources */,
 				6359DE841ADEB64100EA15C0 /* InAppProductsCell.m in Sources */,
 				22405F001601C19200B92522 /* ImageViewController.m in Sources */,
 				D3ED40191602172200BF332B /* HPGrowingTextView.m in Sources */,
 				D3ED401B1602172200BF332B /* HPTextViewInternal.m in Sources */,
 				D37EE162160377D7003608A6 /* DTActionSheet.m in Sources */,
-				D374D3FD16071762003D25FF /* ImageSharing.m in Sources */,
 				D35E91F4160CA10B0023116B /* UILinphoneTextField.m in Sources */,
 				D35E91F8160CA4FF0023116B /* UILinphoneButton.m in Sources */,
 				D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */,

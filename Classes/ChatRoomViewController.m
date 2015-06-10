@@ -21,20 +21,14 @@
 #import "PhoneMainView.h"
 #import "DTActionSheet.h"
 #import "UILinphone.h"
-//#import "UIAlertView+Blocks.h"
 #import "DTAlertView.h"
-
+#import "Utils/FileTransferDelegate.h"
 #import <NinePatch.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import "Utils.h"
+#import "UIChatRoomCell.h"
 
-@implementation ChatRoomViewController {
-    /* Message transfer transient storage */
-    NSData* upload_data;
-    size_t  upload_bytes_sent;
-
-    NSMutableData* download_data;
-}
+@implementation ChatRoomViewController
 
 @synthesize tableController;
 @synthesize sendButton;
@@ -52,32 +46,23 @@
 @synthesize listTapGestureRecognizer;
 @synthesize listSwipeGestureRecognizer;
 @synthesize pictureButton;
-@synthesize imageTransferProgressBar;
-@synthesize cancelTransferButton;
-@synthesize transferView;
-@synthesize waitView;
 
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-    self = [super initWithNibName:@"ChatRoomViewController" bundle:[NSBundle mainBundle]];
-    if (self != nil) {
-        self->scrollOnGrowingEnabled = TRUE;
-        self->chatRoom = NULL;
-        self->imageSharing = NULL;
-        self->listTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onListTap:)];
-        self.listSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onListSwipe:)];
-        self->imageQualities = [[OrderedDictionary alloc] initWithObjectsAndKeys:
-                                [NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
-                                [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
-                                [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
-        self->composingVisible = TRUE;
-
-        self->upload_data       = nil;
-        self->upload_bytes_sent = 0;
-        self->download_data     = nil;
-    }
-    return self;
+	self = [super initWithNibName:@"ChatRoomViewController" bundle:[NSBundle mainBundle]];
+	if (self != nil) {
+		self->scrollOnGrowingEnabled    = TRUE;
+		self->chatRoom                  = NULL;
+		self->listTapGestureRecognizer  = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onListTap:)];
+		self.listSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onListSwipe:)];
+		self->imageQualities            = [[OrderedDictionary alloc] initWithObjectsAndKeys:
+										   [NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
+										   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
+										   [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
+		self->composingVisible          = TRUE;
+	}
+	return self;
 }
 
 - (void)dealloc {
@@ -168,6 +153,7 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              selector:@selector(textComposeEvent:)
                                                  name:kLinphoneTextComposeEvent
                                                object:nil];
+
 	if([tableController isEditing])
         [tableController setEditing:FALSE animated:FALSE];
     [editButton setOff];
@@ -179,39 +165,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	BOOL fileSharingEnabled = [[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] != NULL
 								&& [[[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] length]>0;
     [pictureButton setEnabled:fileSharingEnabled];
-    [waitView setHidden:TRUE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
-    if(upload_data || download_data ) {
-        // TODO: when the API permits it, we should cancel the transfer.
-    }
-
     [messageField resignFirstResponder];
 
     [self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIApplicationDidBecomeActiveNotification
-                                                  object:nil];
-
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillShowNotification
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillHideNotification
-                                                  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kLinphoneTextReceived
-                                                    object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UITextViewTextDidChangeNotification
-												  object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:kLinphoneTextComposeEvent
-												  object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -298,9 +261,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) {
-	ChatRoomViewController* thiz = (__bridge ChatRoomViewController*)ud;
-    const char*text = linphone_chat_message_get_text(msg);
+	const char *text = (linphone_chat_message_get_file_transfer_information(msg) != NULL) ? "photo transfer" : linphone_chat_message_get_text(msg);
 	LOGI(@"Delivery status for [%s] is [%s]",text,linphone_chat_message_state_to_string(state));
+	ChatRoomViewController* thiz = (__bridge ChatRoomViewController*)ud;
 	[thiz.tableController updateChatEntry:msg];
 }
 
@@ -332,8 +295,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (void)chooseImageQuality:(UIImage*)image url:(NSURL*)url {
-    [waitView setHidden:FALSE];
-
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the image size", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         //UIImage *image = [original_image normalizedImage];
@@ -349,7 +310,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
         }
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [waitView setHidden:TRUE];
             [sheet showInView:[PhoneMainView instance].view];
         });
     });
@@ -482,20 +442,8 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-	if( upload_data != nil || download_data != nil ){
-		DTAlertView *alertView = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"Cancel transfer?", nil)
-															message:NSLocalizedString(@"You have a transfer in progress, leaving this view will cancel it. Are you sure?", nil)];
-		[alertView addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil)
-									  block:nil];
-		[alertView addButtonWithTitle:NSLocalizedString(@"Yes", nil)
-								block:^{
-									[self.tableController setChatRoom:NULL];
-									[[PhoneMainView instance] popCurrentView];
-								}];
-    } else {
-        [self.tableController setChatRoom:NULL];
-        [[PhoneMainView instance] popCurrentView];
-    }
+	[self.tableController setChatRoom:NULL];
+	[[PhoneMainView instance] popCurrentView];
 }
 
 - (IBAction)onEditClick:(id)event {
@@ -573,74 +521,19 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
     [sheet showInView:[PhoneMainView instance].view];
 }
 
-- (IBAction)onTransferCancelClick:(id)event {
-    if(imageSharing) {
-        [imageSharing cancel];
-    }
-}
-
-
 #pragma mark ChatRoomDelegate
 
-- (BOOL)chatRoomStartImageDownload:(LinphoneChatMessage*)msg {
-    if(self->download_data == nil) {
-        const char* url = linphone_chat_message_get_external_body_url(msg);
-        LOGI(@"Content to download: %s", url);
-
-        if( url == nil ) return FALSE;
-
-        download_data = [[NSMutableData alloc] init];
-
-        linphone_chat_message_set_user_data(msg, (void*)CFBridgingRetain(self));
-        linphone_chat_message_start_file_download(msg,NULL,NULL);
-
-        [messageView setHidden:TRUE];
-		[transferView setHidden:FALSE];
-		return TRUE;
-	}
-	return FALSE;
-}
-
 - (BOOL)chatRoomStartImageUpload:(UIImage*)image url:(NSURL*)url{
-	if( self->upload_data == nil) {
-		LinphoneContent* content = linphone_core_create_content(linphone_chat_room_get_lc(chatRoom));
-		self->upload_data = UIImageJPEGRepresentation(image, 1.0);
-		linphone_content_set_type(content, "image");
-		linphone_content_set_subtype(content, "jpeg");
-		linphone_content_set_name(content, [[NSString stringWithFormat:@"%li-%f.jpg", (long)[image hash],[NSDate timeIntervalSinceReferenceDate]] UTF8String]);
-		linphone_content_set_size(content, [self->upload_data length]);
-
-		LinphoneChatMessage* message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
-		linphone_chat_message_set_user_data(message, (void*)CFBridgingRetain(self));
-
-		if ( url ) {
-			// internal url is saved in the appdata for display and later save
-			[LinphoneManager setValueInMessageAppData:[url absoluteString] forKey:@"localimage" inMessage:message];
-		}
-
-        // TODO: in the user data, we should maybe put a standalone delegate alloced and retained, instead of self.
-        // This will make sure that when receiving a memory alert or go to another view, we still send the message
-        linphone_chat_room_send_message2(chatRoom, message, message_status, (void*)CFBridgingRetain(self));
-
-        [tableController addChatEntry:linphone_chat_message_ref(message)];
-        [tableController scrollToBottom:true];
-        [messageView setHidden:TRUE];
-        [transferView setHidden:FALSE];
-        return TRUE;
-    }
-    return FALSE;
+	FileTransferDelegate * fileTransfer = [[FileTransferDelegate alloc] init];
+	[[[LinphoneManager instance] fileTransferDelegates] addObject:fileTransfer];
+	[fileTransfer upload:image withURL:url forChatRoom:chatRoom];
+	[tableController addChatEntry:linphone_chat_message_ref(fileTransfer.message)];
+	[tableController scrollToBottom:true];
+	return TRUE;
 }
 
 - (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url {
     [self sendMessage:message withExterlBodyUrl:[NSURL URLWithString:url] withInternalURL:nil];
-}
-
-#pragma mark ImageSharingDelegate
-
-- (void)imageSharingAborted:(ImageSharing*)aimageSharing {
-    [messageView setHidden:FALSE];
-	[transferView setHidden:TRUE];
-    imageSharing = nil;
 }
 
 #pragma mark ImagePickerDelegate
@@ -657,94 +550,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
     NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
     [self chooseImageQuality:image url:url];
-}
-
-#pragma mark - LinphoneChatContentTransferDelegate
-
-- (void)onProgressReport:(LinphoneChatMessage *)msg forContent:(const LinphoneContent *)content percent:(int)percent {
-    [imageTransferProgressBar setProgress:percent/100.0f];
-}
-
-- (void)onDataRequested:(LinphoneChatMessage *)msg forContent:(const LinphoneContent *)content buffer:(char *)buffer withSize:(size_t *)size {
-    if( self->upload_data ){
-        size_t to_send   = *size;
-        size_t remaining = [upload_data length] - self->upload_bytes_sent;
-
-        LOGI(@"Asking %ld bytes, sent %ld of %d, %ld remaining", to_send, self->upload_bytes_sent, [upload_data length], remaining);
-
-        if( remaining < to_send ) to_send = remaining;
-
-        @try {
-            [upload_data getBytes:(void*)buffer range:NSMakeRange(upload_bytes_sent, to_send)];
-            upload_bytes_sent += to_send;
-            *size              = to_send;
-        }
-        @catch (NSException *exception) {
-            LOGE(@"Exception: %@", exception);
-        }
-
-
-        if( to_send == 0 || upload_bytes_sent == [upload_data length] ){
-            LOGI(@"Upload finished, cleanup..");
-            upload_data = nil;
-            upload_bytes_sent = 0;
-
-            // update UI
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [messageView setHidden:FALSE];
-                [transferView setHidden:TRUE];
-            });
-         }
-
-    } else {
-        LOGE(@"Error: no upload data in progress!");
-    }
-}
-
-- (void)onDataReceived:(LinphoneChatMessage *)msg forContent:(const LinphoneContent *)content buffer:(const char *)buffer withSize:(size_t)size {
-    if( download_data ){
-        LOGI(@"Receiving data for %s : %zu bytes, already got %d of %zu", linphone_content_get_name(content), size, [download_data length], linphone_content_get_size(content));
-
-        if( size != 0 ){
-            [download_data appendBytes:buffer length:size];
-        }
-
-        if( size == 0 && [download_data length] == linphone_content_get_size(content)){
-
-            LOGI(@"Transfer is finished, save image and update chat");
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //we're finished, save the image and update the message
-                [messageView setHidden:FALSE];
-                [transferView setHidden:TRUE];
-
-                UIImage* image = [UIImage imageWithData:download_data];
-
-                download_data = nil;
-
-                [[LinphoneManager instance].photoLibrary
-                 writeImageToSavedPhotosAlbum:image.CGImage
-                 orientation:(ALAssetOrientation)[image imageOrientation]
-                 completionBlock:^(NSURL *assetURL, NSError *error){
-                     if (error) {
-                         LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-
-                         UIAlertView* errorAlert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Transfer error", nil)
-                                                                              message:NSLocalizedString(@"Cannot write image to photo library", nil)
-                                                                             delegate:nil
-                                                                    cancelButtonTitle:NSLocalizedString(@"Ok",nil)
-                                                                    otherButtonTitles:nil ,nil];
-                         [errorAlert show];
-                         return;
-                     }
-                     LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
-                     [LinphoneManager setValueInMessageAppData:[assetURL absoluteString] forKey:@"localimage" inMessage:msg];
-                     [tableController updateChatEntry:msg];
-                 }];
-
-            });
-        }
-    }
 }
 
 #pragma mark - Keyboard Event Functions

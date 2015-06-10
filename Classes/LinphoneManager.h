@@ -52,6 +52,8 @@ extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
 extern NSString *const kLinphoneConfiguringStateUpdate;
 extern NSString *const kLinphoneGlobalStateUpdate;
 extern NSString *const kLinphoneNotifyReceived;
+extern NSString *const kLinphoneFileTransferSendUpdate;
+extern NSString *const kLinphoneFileTransferRecvUpdate;
 
 typedef enum _NetworkType {
     network_none = 0,
@@ -96,14 +98,6 @@ struct NetworkReachabilityContext {
 	bool_t videoRequested; /*set when user has requested for video*/
     NSTimer* timer;
 };
-@end
-
-@protocol LinphoneChatContentTransferDelegate <NSObject>
-
--(void)onProgressReport:(LinphoneChatMessage*)msg forContent:(const LinphoneContent*)content percent:(int)percent;
--(void)onDataRequested:(LinphoneChatMessage*)msg forContent:(const LinphoneContent*)content buffer:(char*)buffer withSize:(size_t*)size;
--(void)onDataReceived:(LinphoneChatMessage*)msg forContent:(const LinphoneContent*)content buffer:(const char*)buffer withSize:(size_t)size;
-
 @end
 
 typedef struct _LinphoneManagerSounds {
@@ -211,5 +205,6 @@ typedef struct _LinphoneManagerSounds {
 @property (readonly) BOOL wasRemoteProvisioned;
 @property (readonly) LpConfig *configDb;
 @property (readonly) InAppProductsManager *iapManager;
-@end
+@property(strong, nonatomic) NSMutableArray *fileTransferDelegates;
 
+@end

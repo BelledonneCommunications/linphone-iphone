@@ -693,7 +693,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 	NSString*  sharing_server = [self stringForKey:@"sharing_server_preference"];
 	[[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
-
+	linphone_core_set_file_transfer_server(lc, [sharing_server UTF8String]);
 
 	//Tunnel
 	if (linphone_core_tunnel_available()){

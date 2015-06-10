@@ -29,7 +29,10 @@
 	OrtpLogLevel ortp_severity;
 	int filesize = 20;
 	if (severity <= LinphoneLoggerDebug) {
-		ortp_severity = ORTP_DEBUG;
+		// lol: ortp_debug(XXX) can be disabled at compile time, but ortp_log(ORTP_DEBUG, xxx) will always be valid even
+		//      not in debug build...
+		ortp_debug("%*s:%3d - %s", filesize, file+MAX((int)strlen(file)-filesize,0), line, [str UTF8String]);
+		return;
 	} else if(severity <= LinphoneLoggerLog) {
 		ortp_severity = ORTP_MESSAGE;
 	} else if(severity <= LinphoneLoggerWarning) {

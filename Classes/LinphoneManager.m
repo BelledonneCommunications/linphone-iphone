@@ -68,7 +68,8 @@ NSString *const kLinphoneBluetoothAvailabilityUpdate = @"LinphoneBluetoothAvaila
 NSString *const kLinphoneConfiguringStateUpdate = @"LinphoneConfiguringStateUpdate";
 NSString *const kLinphoneGlobalStateUpdate = @"LinphoneGlobalStateUpdate";
 NSString *const kLinphoneNotifyReceived = @"LinphoneNotifyReceived";
-
+NSString *const kLinphoneFileTransferSendUpdate = @"LinphoneFileTransferSendUpdate";
+NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpdate";
 
 const int kLinphoneAudioVbrCodecDefaultBitrate=36; /*you can override this from linphonerc or linphonerc-factory*/
 
@@ -273,6 +274,7 @@ struct codec_name_pref_table codec_pref_table[]={
 		bluetoothEnabled = FALSE;
 		tunnelMode = FALSE;
 
+		_fileTransferDelegates = [[NSMutableArray alloc] init];
 
 		pushCallIDs = [[NSMutableArray alloc] init ];
 		photoLibrary = [[ALAssetsLibrary alloc] init];
@@ -915,29 +917,6 @@ static void linphone_iphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev
 	[(__bridge LinphoneManager*)linphone_core_get_user_data(lc) onNotifyReceived:lc event:lev notifyEvent:notified_event content:body];
 }
 
-#pragma mark - FileTransfer functions
-
-static void linphone_iphone_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
-	id <LinphoneChatContentTransferDelegate> delegate = (__bridge id<LinphoneChatContentTransferDelegate>)linphone_chat_message_get_user_data(message);
-	LOGI(@"Transfer of %s, incoming data (%d bytes)", linphone_content_get_name(content), size);
-	[delegate onDataReceived:message forContent:content buffer:buff withSize:size];
-}
-
-static void linphone_iphone_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size){
-	id <LinphoneChatContentTransferDelegate> delegate = (__bridge id<LinphoneChatContentTransferDelegate>)linphone_chat_message_get_user_data(message);
-	LOGI(@"Transfer of %s, requesting data (%d bytes)", linphone_content_get_name(content), *size);
-	[delegate onDataRequested:message forContent:content buffer:buff withSize:size];
-}
-
-static void linphone_iphone_file_transfer_progress(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total){
-	id <LinphoneChatContentTransferDelegate> delegate = (__bridge id<LinphoneChatContentTransferDelegate>)linphone_chat_message_get_user_data(message);
-	float progress = offset*100.f/total;
-	LOGI(@"Progress of transfer %s: %d%%", linphone_content_get_name(content), progress);
-	[delegate onProgressReport:message forContent:content percent:progress];
-}
-
-
-
 #pragma mark - Message composition start
 
 - (void)onMessageComposeReceived:(LinphoneCore*)core forRoom:(LinphoneChatRoom*)room {
@@ -1228,11 +1207,7 @@ static LinphoneCoreVTable linphonec_vtable = {
 	.is_composing_received = linphone_iphone_is_composing_received,
 	.configuring_status = linphone_iphone_configuring_status_changed,
 	.global_state_changed = linphone_iphone_global_state_changed,
-	.notify_received = linphone_iphone_notify_received,
-	.file_transfer_recv = linphone_iphone_file_transfer_recv,
-	.file_transfer_send = linphone_iphone_file_transfer_send,
-	.file_transfer_progress_indication = linphone_iphone_file_transfer_progress
-
+	.notify_received = linphone_iphone_notify_received
 };
 
 #pragma mark -

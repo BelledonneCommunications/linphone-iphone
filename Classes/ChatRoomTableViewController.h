@@ -23,7 +23,6 @@
 
 @protocol ChatRoomDelegate <NSObject>
 
-- (BOOL)chatRoomStartImageDownload:(LinphoneChatMessage*)msg;
 - (BOOL)chatRoomStartImageUpload:(UIImage*)image url:(NSURL*)url;
 - (void)resendChat:(NSString*)message withExternalUrl:(NSString*)url;
 

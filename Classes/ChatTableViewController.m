@@ -64,43 +64,44 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
     LinphoneChatMessage* last_elem_message = linphone_chat_room_get_user_data(elem);
 
     if( last_new_message && last_elem_message ){
-        time_t new = linphone_chat_message_get_time(last_new_message);
-        time_t old = linphone_chat_message_get_time(last_elem_message);
-        if ( new < old ) return 1;
-        else if ( new > old) return -1;
-    }
-    return 0;
+		time_t new = linphone_chat_message_get_time(last_new_message);
+		time_t old = linphone_chat_message_get_time(last_elem_message);
+		if (new < old)
+			return 1;
+		else if (new > old)
+			return -1;
+	}
+	return 0;
 }
 
 - (MSList*)sortChatRooms {
-    MSList* sorted   = nil;
-    MSList* unsorted = linphone_core_get_chat_rooms([LinphoneManager getLc]);
-    MSList* iter     = unsorted;
+	MSList *sorted = nil;
+	MSList *unsorted = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+	MSList *iter = unsorted;
 
-    while (iter) {
-        // store last message in user data
-        MSList*               history = linphone_chat_room_get_history(iter->data, 1);
-        LinphoneChatMessage* last_msg = history? history->data : NULL;
-        if( last_msg ){
-            linphone_chat_room_set_user_data(iter->data, linphone_chat_message_ref(last_msg));
-        }
-        ms_list_free_with_data(history, (void (*)(void *))linphone_chat_message_unref);
+	while (iter) {
+		// store last message in user data
+		LinphoneChatRoom *chat_room = iter->data;
+		MSList *history = linphone_chat_room_get_history(iter->data, 1);
+		assert(ms_list_size(history) <= 1);
+		LinphoneChatMessage *last_msg = history ? history->data : NULL;
+		if (last_msg) {
+			linphone_chat_message_ref(last_msg);
+			linphone_chat_room_set_user_data(chat_room, last_msg);
+		}
+		sorted = ms_list_insert_sorted(sorted, chat_room, (MSCompareFunc)sorted_history_comparison);
 
-        sorted = ms_list_insert_sorted(sorted,
-                                       iter->data,
-                                       (MSCompareFunc)sorted_history_comparison);
-
-        iter = iter->next;
-    }
-    return sorted;
+		iter = iter->next;
+	}
+	return sorted;
 }
 
 static void chatTable_free_chatrooms(void *data){
-    LinphoneChatMessage* lastMsg = linphone_chat_room_get_user_data(data);
-    if( lastMsg ){
-        linphone_chat_message_unref(lastMsg);
-        linphone_chat_room_set_user_data(data, NULL);
-    }
+	LinphoneChatMessage *lastMsg = linphone_chat_room_get_user_data(data);
+	if (lastMsg) {
+		linphone_chat_message_unref(lastMsg);
+		linphone_chat_room_set_user_data(data, NULL);
+	}
 }
 
 - (void)loadData {
