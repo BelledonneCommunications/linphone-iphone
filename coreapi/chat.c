@@ -52,124 +52,54 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatMessageCbs, belle_sip_object_t,
 	FALSE
 );
 
-
-/**
- * @addtogroup chatroom
- * @{
- */
-
-/**
- * Acquire a reference to the LinphoneChatMessageCbs object.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @return The same LinphoneChatMessageCbs object.
- */
 LinphoneChatMessageCbs * linphone_chat_message_cbs_ref(LinphoneChatMessageCbs *cbs) {
 	belle_sip_object_ref(cbs);
 	return cbs;
 }
 
-/**
- * Release reference to the LinphoneChatMessageCbs object.
- * @param[in] cbs LinphoneChatMessageCbs object.
- */
 void linphone_chat_message_cbs_unref(LinphoneChatMessageCbs *cbs) {
 	belle_sip_object_unref(cbs);
 }
 
-/**
- * Retrieve the user pointer associated with the LinphoneChatMessageCbs object.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @return The user pointer associated with the LinphoneChatMessageCbs object.
- */
 void *linphone_chat_message_cbs_get_user_data(const LinphoneChatMessageCbs *cbs) {
 	return cbs->user_data;
 }
 
-/**
- * Assign a user pointer to the LinphoneChatMessageCbs object.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @param[in] ud The user pointer to associate with the LinphoneChatMessageCbs object.
- */
 void linphone_chat_message_cbs_set_user_data(LinphoneChatMessageCbs *cbs, void *ud) {
 	cbs->user_data = ud;
 }
 
-/**
- * Get the message state changed callback.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @return The current message state changed callback.
- */
 LinphoneChatMessageCbsMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs) {
 	return cbs->msg_state_changed;
 }
 
-/**
- * Set the message state changed callback.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @param[in] cb The message state changed callback to be used.
- */
 void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsMsgStateChangedCb cb) {
 	cbs->msg_state_changed = cb;
 }
 
-/**
- * Get the file transfer receive callback.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @return The current file transfer receive callback.
- */
 LinphoneChatMessageCbsFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_recv;
 }
 
-/**
- * Set the file transfer receive callback.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @param[in] cb The file transfer receive callback to be used.
- */
 void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferRecvCb cb) {
 	cbs->file_transfer_recv = cb;
 }
 
-/**
- * Get the file transfer send callback.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @return The current file transfer send callback.
- */
 LinphoneChatMessageCbsFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_send;
 }
 
-/**
- * Set the file transfer send callback.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @param[in] cb The file transfer send callback to be used.
- */
 void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferSendCb cb) {
 	cbs->file_transfer_send = cb;
 }
 
-/**
- * Get the file transfer progress indication callback.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @return The current file transfer progress indication callback.
- */
 LinphoneChatMessageCbsFileTransferProgressIndicationCb linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_progress_indication;
 }
 
-/**
- * Set the file transfer progress indication callback.
- * @param[in] cbs LinphoneChatMessageCbs object.
- * @param[in] cb The file transfer progress indication callback to be used.
- */
 void linphone_chat_message_cbs_set_file_transfer_progress_indication(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferProgressIndicationCb cb) {
 	cbs->file_transfer_progress_indication = cb;
 }
-
-/**
- * @}
- */
-
 
 
 static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg);
@@ -217,10 +147,6 @@ static void process_auth_requested_download(void *data, belle_sip_auth_event_t *
 	}
 }
 
-/**
- * Callback called during upload or download of a file from server
- * It is just forwarding the call and some parameters to the vtable defined callback
- */
 static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, size_t total){
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	if (linphone_chat_message_cbs_get_file_transfer_progress_indication(chatMsg->callbacks)) {
@@ -231,17 +157,6 @@ static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handl
 	}
 }
 
-/**
- * Callback called when posting a file to server (following rcs5.1 recommendation)
- *
- * @param	bh		the body handler
- * @param	msg		the belle sip message
- * @param	data	the user data associated to the handler, contains the linphoneChatMessage we're working on
- * @param	offset	current position in the input buffer
- * @param	buffer	the ouput buffer we to copy the data to be uploaded
- * @param	size	size in byte of the data requested, as output it will contain the effective copied size
- *
- */
 static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, uint8_t *buffer, size_t *size){
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
@@ -249,7 +164,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 
 	/* if we've not reach the end of file yet, ask for more data*/
 	if (offset<linphone_content_get_size(chatMsg->file_transfer_information)){
-		
+
 		if (linphone_content_get_key(chatMsg->file_transfer_information) != NULL) { /* if we have a key to cipher the message, use it! */
 			char *plainBuffer;
 			/* get data from callback to a plainBuffer */
@@ -271,7 +186,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 				linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, plainBuffer, size);
 			}
 
-			lime_encryptFile(linphone_content_get_cryptoContext_address(chatMsg->file_transfer_information), (unsigned char *)linphone_content_get_key(chatMsg->file_transfer_information), *size, plainBuffer, (char*)buffer); 
+			lime_encryptFile(linphone_content_get_cryptoContext_address(chatMsg->file_transfer_information), (unsigned char *)linphone_content_get_key(chatMsg->file_transfer_information), *size, plainBuffer, (char*)buffer);
 			free(plainBuffer);
 			/* check if we reach the end of file */
 			if (offset+*size >= linphone_content_get_size(chatMsg->file_transfer_information)) {
@@ -298,14 +213,6 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	return BELLE_SIP_CONTINUE;
 }
 
-/**
- * Callback function called when we have a response from server during a file upload to server (rcs5.1 recommandation)
- * Note: The first post is empty and the server shall reply a 204 (No content) message, this will trigger a new post request to the server
- * to upoad the file. The server response to this second post is processed by this same function
- *
- * @param	data	the user define pointer associated with the request, it contains the linphoneChatMessage we're trying to send
- * @param	event	the response from server
- */
 static void linphone_chat_message_process_response_from_post_file(void *data, const belle_http_response_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
 
@@ -328,7 +235,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 				/* generate a random 192 bits key + 64 bits of initial vector and store it into the file_transfer_information->key field of the message */
 				sal_get_random_bytes((unsigned char *)keyBuffer, FILE_TRANSFER_KEY_SIZE);
 				linphone_content_set_key(msg->file_transfer_information, keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
-				/* temporary storage for the Content-disposition header value : use a generic filename to not leak it 
+				/* temporary storage for the Content-disposition header value : use a generic filename to not leak it
 				 * Actual filename stored in msg->file_transfer_information->name will be set in encrypted message sended to the  */
 				first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"filename.txt\"");
 			} else {
@@ -376,12 +283,12 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			belle_sip_object_unref(msg->http_request);
 			msg->http_request = NULL;
-			
+
 			/* if we have an encryption key for the file, we must insert it into the message and restore the correct filename */
-			if (linphone_content_get_key(msg->file_transfer_information) != NULL) { 
+			if (linphone_content_get_key(msg->file_transfer_information) != NULL) {
 				/* parse the message body */
 				xmlDocPtr xmlMessageBody = xmlParseDoc((const xmlChar *)body);
-	
+
 				xmlNodePtr cur = xmlDocGetRootElement(xmlMessageBody);
 				if (cur != NULL) {
 					cur = cur->xmlChildrenNode;
@@ -454,42 +361,17 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatMessage,belle_sip_object_t,
 	FALSE
 );
 
-
-/**
- * @addtogroup chatroom
- * @{
- */
-
-/**
- * Inconditionnaly disable incoming chat messages.
- * @param lc the core
- * @param deny_reason the deny reason (#LinphoneReasonNone has no effect).
-**/
 void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason){
 	lc->chat_deny_code=deny_reason;
 }
 
-/**
- * Enable reception of incoming chat messages.
- * By default it is enabled but it can be disabled with linphone_core_disable_chat().
- * @param lc the core
-**/
 void linphone_core_enable_chat(LinphoneCore *lc){
 	lc->chat_deny_code=LinphoneReasonNone;
 }
 
-/**
- * Returns whether chat is enabled.
-**/
 bool_t linphone_core_chat_enabled(const LinphoneCore *lc){
 	return lc->chat_deny_code!=LinphoneReasonNone;
 }
-
-/**
- * Returns an list of chat rooms
- * @param[in] lc #LinphoneCore object
- * @return \mslist{LinphoneChatRoom}
-**/
 MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
 	return lc->chatrooms;
 }
@@ -555,34 +437,14 @@ static LinphoneChatRoom * _linphone_core_get_or_create_chat_room(LinphoneCore* l
 	return ret;
 }
 
-/**
- * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org if not already existing, else return exisiting one
- * @param lc #LinphoneCore object
- * @param to destination address for messages
- * @return #LinphoneChatRoom where messaging can take place.
- * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
- */
 LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
 	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
-/**
- * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
- * @param lc #LinphoneCore object
- * @param to destination address for messages
- * @return #LinphoneChatRoom where messaging can take place.
- * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
- */
 LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to) {
 	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
-/**
- * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
- * @param lc the linphone core
- * @param addr a linphone address.
- * @return #LinphoneChatRoom where messaging can take place.
-**/
 LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
 	LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
 	if (!ret) {
@@ -591,12 +453,6 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 	return ret;
 }
 
-/**
- * Get a chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
- * @param lc The linphone core
- * @param to The destination address for messages.
- * @return #LinphoneChatRoom where messaging can take place.
-**/
 LinphoneChatRoom * linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
 	return _linphone_core_get_or_create_chat_room(lc, to);
 }
@@ -640,11 +496,6 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr){
 	ms_free(cr->peer);
 }
 
-/**
- * Destroy a LinphoneChatRoom.
- * @param cr #LinphoneChatRoom object
- * @deprecated Use linphone_chat_room_unref() instead.
- */
 void linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 	linphone_chat_room_unref(cr);
 }
@@ -1002,36 +853,18 @@ bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
 	return (cr->remote_is_composing == LinphoneIsComposingActive) ? TRUE : FALSE;
 }
 
-/**
- * Returns back pointer to LinphoneCore object.
- * @deprecated use linphone_chat_room_get_core()
-**/
 LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr){
 	return cr->lc;
 }
 
-/**
- * Returns back pointer to LinphoneCore object.
-**/
 LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr){
 	return cr->lc;
 }
 
-/**
- * get peer address \link linphone_core_create_chat_room() associated to \endlink this #LinphoneChatRoom
- * @param cr #LinphoneChatRoom object
- * @return #LinphoneAddress peer address
- */
 const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr) {
 	return cr->peer_url;
 }
 
-/**
- * Create a message attached to a dedicated chat room;
- * @param cr the chat room.
- * @param message text message, NULL if absent.
- * @return a new #LinphoneChatMessage
- */
 LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, const char* message) {
 	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
 	msg->callbacks=linphone_chat_message_cbs_new();
@@ -1044,17 +877,6 @@ LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 	return msg;
 }
 
-/**
- * Create a message attached to a dedicated chat room;
- * @param cr the chat room.
- * @param message text message, NULL if absent.
- * @param external_body_url the URL given in external body or NULL.
- * @param state the LinphoneChatMessage.State of the message.
- * @param time the time_t at which the message has been received/sent.
- * @param is_read TRUE if the message should be flagged as read, FALSE otherwise.
- * @param is_incoming TRUE if the message has been received, FALSE otherwise.
- * @return a new #LinphoneChatMessage
- */
 LinphoneChatMessage* linphone_chat_room_create_message_2(
 		LinphoneChatRoom *cr, const char* message, const char* external_body_url,
 		LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming) {
@@ -1082,15 +904,6 @@ LinphoneChatMessage* linphone_chat_room_create_message_2(
 	return msg;
 }
 
-/**
- * Send a message to peer member of this chat room.
- * @param cr #LinphoneChatRoom object
- * @param msg #LinphoneChatMessage message to be sent
- * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when message is delivered or could not be delivered. May be NULL
- * @param ud user data for the status cb.
- * @deprecated Use linphone_chat_room_send_chat_message() instead.
- * @note The LinphoneChatMessage must not be destroyed until the the callback is called.
- */
 void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb, void* ud) {
 	msg->cb=status_cb;
 	msg->cb_ud=ud;
@@ -1098,13 +911,6 @@ void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage*
 	_linphone_chat_room_send_message(cr, msg);
 }
 
-/**
- * Send a message to peer member of this chat room.
- * @param[in] cr LinphoneChatRoom object
- * @param[in] msg LinphoneChatMessage object
- * The state of the message sending will be notified via the callbacks defined in the LinphoneChatMessageCbs object that can be obtained
- * by calling linphone_chat_message_get_callbacks().
- */
 void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	msg->state = LinphoneChatMessageStateInProgress;
 	_linphone_chat_room_send_message(cr, msg);
@@ -1235,9 +1041,6 @@ void linphone_chat_room_compose(LinphoneChatRoom *cr) {
 	belle_sip_source_set_timeout(cr->composing_idle_timer, idle_timeout * 1000);
 }
 
-/**
- * Returns a #LinphoneChatMessageState as a string.
- */
 const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state) {
 	switch (state) {
 		case LinphoneChatMessageStateIdle:return "LinphoneChatMessageStateIdle";
@@ -1250,49 +1053,26 @@ const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState
 
 }
 
-/**
- * Returns the chatroom this message belongs to.
-**/
 LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg){
 	return msg->chat_room;
 }
 
-/**
- * Returns the peer (remote) address for the message.
-**/
 const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg) {
 	return linphone_chat_room_get_peer_address(msg->chat_room);
 }
 
-/**
- *User pointer set function
- */
 void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void* ud) {
 	message->message_userdata=ud;
 }
 
-/**
- * User pointer get function
- */
 void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message) {
 	return message->message_userdata;
 }
 
-/**
- * Linphone message can carry external body as defined by rfc2017
- * @param message #LinphoneChatMessage
- * @return external body url or NULL if not present.
- */
 const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message) {
 	return message->external_body_url;
 }
 
-/**
- * Linphone message can carry external body as defined by rfc2017
- *
- * @param message a LinphoneChatMessage
- * @param url ex: access-type=URL; URL="http://www.foo.com/file"
- */
 void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url) {
 	if (message->external_body_url) {
 		ms_free(message->external_body_url);
@@ -1301,26 +1081,10 @@ void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,co
 }
 
 
-/**
- * Linphone message has an app-specific field that can store a text. The application might want
- * to use it for keeping data over restarts, like thumbnail image path.
- * @param message #LinphoneChatMessage
- * @return the application-specific data or NULL if none has been stored.
- */
 const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message){
 	return message->appdata;
 }
 
-/**
- * Linphone message has an app-specific field that can store a text. The application might want
- * to use it for keeping data over restarts, like thumbnail image path.
- *
- * Invoking this function will attempt to update the message storage to reflect the changeif it is
- * enabled.
- *
- * @param message #LinphoneChatMessage
- * @param data the data to store into the message
- */
 void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data){
 	if( message->appdata ){
 		ms_free(message->appdata);
@@ -1330,12 +1094,6 @@ void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char*
 }
 
 
-/**
- * Get the file_transfer_information (used by call backs to recover informations during a rcs file transfer)
- *
- * @param message #LinphoneChatMessage
- * @return a pointer to the LinphoneContent structure or NULL if not present.
- */
 const LinphoneContent *linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage*message) {
 	return message->file_transfer_information;
 }
@@ -1464,10 +1222,6 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 	}
 }
 
-/**
- * Start the download of the file referenced in a LinphoneChatMessage from remote server.
- * @param[in] message LinphoneChatMessage object.
- */
 void linphone_chat_message_download_file(LinphoneChatMessage *message) {
 	belle_http_request_listener_callbacks_t cbs={0};
 	belle_http_request_listener_t *l;
@@ -1499,23 +1253,12 @@ void linphone_chat_message_download_file(LinphoneChatMessage *message) {
 	belle_http_provider_send_request(message->chat_room->lc->http_provider,message->http_request,l);
 }
 
-/**
- * Start the download of the file from remote server
- *
- * @param message #LinphoneChatMessage
- * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when file is downloaded or could not be downloaded
- * @deprecated Use linphone_chat_message_download_file() instead.
- */
 void linphone_chat_message_start_file_download(LinphoneChatMessage *message, LinphoneChatMessageStateChangedCb status_cb, void *ud) {
 	message->cb = status_cb;
 	message->cb_ud = ud;
 	linphone_chat_message_download_file(message);
 }
 
-/**
- * Cancel an ongoing file transfer attached to this message.(upload or download)
- * @param msg	#LinphoneChatMessage
- */
 void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 	if (!belle_http_request_is_cancelled(msg->http_request)) {
 		ms_message("Cancelled file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?linphone_core_get_file_transfer_server(msg->chat_room->lc):msg->external_body_url, msg, msg->chat_room);
@@ -1532,40 +1275,20 @@ void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 }
 
 
-/**
- * Set origin of the message
- * @param[in] message #LinphoneChatMessage obj
- * @param[in] from #LinphoneAddress origin of this message (copied)
- */
 void linphone_chat_message_set_from_address(LinphoneChatMessage* message, const LinphoneAddress* from) {
 	if(message->from) linphone_address_destroy(message->from);
 	message->from=linphone_address_clone(from);
 }
 
-/**
- * Get origin of the message
- * @param[in] message #LinphoneChatMessage obj
- * @return #LinphoneAddress
- */
 const LinphoneAddress* linphone_chat_message_get_from_address(const LinphoneChatMessage* message) {
 	return message->from;
 }
 
-/**
- * Set destination of the message
- * @param[in] message #LinphoneChatMessage obj
- * @param[in] to #LinphoneAddress destination of this message (copied)
- */
 void linphone_chat_message_set_to_address(LinphoneChatMessage* message, const LinphoneAddress* to) {
 	if(message->to) linphone_address_destroy(message->to);
 	message->to=linphone_address_clone(to);
 }
 
-/**
- * Get destination of the message
- * @param[in] message #LinphoneChatMessage obj
- * @return #LinphoneAddress
- */
 const LinphoneAddress* linphone_chat_message_get_to_address(const LinphoneChatMessage* message){
 	if (message->to) return message->to;
 	if (message->dir==LinphoneChatMessageOutgoing){
@@ -1574,86 +1297,42 @@ const LinphoneAddress* linphone_chat_message_get_to_address(const LinphoneChatMe
 	return NULL;
 }
 
-/**
- * Returns the origin address of a message if it was a outgoing message, or the destination address if it was an incoming message.
- *@param message #LinphoneChatMessage obj
- *@return #LinphoneAddress
- */
 LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage* message){
 	return message->dir==LinphoneChatMessageOutgoing ? message->from : message->to;
 }
 
-/**
- * Get the time the message was sent.
- */
 time_t linphone_chat_message_get_time(const LinphoneChatMessage* message) {
 	return message->time;
 }
 
-/**
- * Get the state of the message
- *@param message #LinphoneChatMessage obj
- *@return #LinphoneChatMessageState
- */
 LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message) {
 	return message->state;
 }
 
-/**
- * Get text part of this message
- * @return text or NULL if no text.
- */
 const char * linphone_chat_message_get_text(const LinphoneChatMessage* message) {
 	return message->message;
 }
 
-/**
- * Add custom headers to the message.
- * @param message the message
- * @param header_name name of the header_name
- * @param header_value header value
-**/
 void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value){
 	message->custom_headers=sal_custom_header_append(message->custom_headers,header_name,header_value);
 }
 
-/**
- * Retrieve a custom header value given its name.
- * @param message the message
- * @param header_name header name searched
-**/
 const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name){
 	return sal_custom_header_find(message->custom_headers,header_name);
 }
 
-/**
- * Returns TRUE if the message has been read, otherwise returns FALSE.
- * @param message the message
-**/
 bool_t linphone_chat_message_is_read(LinphoneChatMessage* message) {
 	return message->is_read;
 }
 
-/**
- * Returns TRUE if the message has been sent, returns FALSE if the message has been received.
- * @param message the message
-**/
 bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* message) {
 	return message->dir == LinphoneChatMessageOutgoing;
 }
 
-/**
- * Returns the id used to identify this message in the storage database
- * @param message the message
- * @return the id
- */
 unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage* message) {
 	return message->storage_id;
 }
 
-/**
- * Duplicate a LinphoneChatMessage
-**/
 LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg) {
 	/*struct _LinphoneChatMessage {
 	 char* message;
@@ -1682,17 +1361,10 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	return new_message;
 }
 
-/**
- * Destroys a LinphoneChatMessage.
-**/
 void linphone_chat_message_destroy(LinphoneChatMessage* msg){
 	belle_sip_object_unref(msg);
 }
 
-
-/**
- * Destroys a LinphoneChatMessage.
-**/
 static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	if (msg->op) sal_op_release(msg->op);
 	if (msg->message) ms_free(msg->message);
@@ -1712,30 +1384,15 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	ms_message("LinphoneChatMessage [%p] destroyed.",msg);
 }
 
-
-/**
- * Acquire a reference to the chat message.
- * @param msg the chat message
- * @return the same chat message
-**/
 LinphoneChatMessage * linphone_chat_message_ref(LinphoneChatMessage *msg){
 	belle_sip_object_ref(msg);
 	return msg;
 }
 
-/**
- * Release reference to the chat message.
- * @param msg the chat message.
-**/
 void linphone_chat_message_unref(LinphoneChatMessage *msg){
 	belle_sip_object_unref(msg);
 }
 
-/**
- * Get full details about delivery error of a chat message.
- * @param msg a LinphoneChatMessage
- * @return a LinphoneErrorInfo describing the details.
-**/
 const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg){
 	return linphone_error_info_from_sal_op(msg->op);
 }
@@ -1745,11 +1402,6 @@ LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage* msg) {
 }
 
 
-/**
- * Set the path to the file to read from or write to during the file transfer.
- * @param[in] msg LinphoneChatMessage object
- * @param[in] filepath The path to the file to use for the file transfer.
- */
 void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, const char *filepath) {
 	if (msg->file_transfer_filepath != NULL) {
 		ms_free(msg->file_transfer_filepath);
@@ -1757,31 +1409,13 @@ void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, 
 	msg->file_transfer_filepath = ms_strdup(filepath);
 }
 
-/**
- * Get the path to the file to read from or write to during the file transfer.
- * @param[in] msg LinphoneChatMessage object
- * @return The path to the file to use for the file transfer.
- */
 const char * linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg) {
 	return msg->file_transfer_filepath;
 }
 
-/**
- * Get the LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
- * @param[in] msg LinphoneChatMessage object
- * @return The LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
- */
 LinphoneChatMessageCbs * linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg) {
 	return msg->callbacks;
 }
-
-
-/**
- * Create a message attached to a dedicated chat room with a particular content. Use #linphone_chat_room_send_message2 to initiate the transfer
- * @param cr the chat room.
- * @param initial_content #LinphoneContent initial content. #LinphoneCoreVTable.file_transfer_send is invoked later to notify file transfer progress and collect next chunk of the message if #LinphoneContent.data is NULL.
- * @return a new #LinphoneChatMessage
- */
 
 LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, LinphoneContent* initial_content) {
 	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
@@ -1797,7 +1431,3 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	msg->http_request=NULL; /* this will store the http request during file upload to the server */
 	return msg;
 }
-
-/**
- * @}
- */
