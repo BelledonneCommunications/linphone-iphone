@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static bool_t running=TRUE;
 static bool_t print_stats=FALSE;
+static bool_t dump_stats=FALSE;
 
 static void stop(int signum){
 	running=FALSE;
@@ -39,6 +40,10 @@ static void stop(int signum){
 static void stats(int signum){
 	print_stats=TRUE;
 }
+static void dump_call_logs(int signum){
+	dump_stats=TRUE;
+}
+
 #endif
 #ifndef PACKAGE_DATA_DIR
 	#define PACKAGE_DATA_DIR  '.'
@@ -88,6 +93,7 @@ int main(int argc, char *argv[]){
 	signal(SIGINT,stop);
 #ifndef WIN32
 	signal(SIGUSR1,stats);
+	signal(SIGUSR2,dump_call_logs);
 #endif
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
@@ -120,6 +126,7 @@ int main(int argc, char *argv[]){
 
 	lp_config_set_string(lp_config,"sip","bind_address",linphone_address_get_domain(addr));
 	lp_config_set_string(lp_config,"rtp","bind_address",linphone_address_get_domain(addr));
+	lp_config_set_int(lp_config,"misc","history_max_size",100000);
 
 	vtable.call_state_changed=call_state_changed;
 
@@ -166,6 +173,17 @@ int main(int argc, char *argv[]){
 			ms_message("*Number of call until now [%10i]  *",ms_list_size(linphone_core_get_call_logs(lc)));
 			ms_message("*********************************");
 			print_stats=FALSE;
+		}
+		if (dump_stats) {
+			ms_message("*********************************");
+			for (iterator=linphone_core_get_call_logs(lc);iterator!=NULL;iterator=iterator->next) {
+				LinphoneCallLog *call_log=(LinphoneCallLog *)iterator->data;
+				char * tmp_str = linphone_call_log_to_str(call_log);
+				ms_message("\n%s",tmp_str);
+				ms_free(tmp_str);
+			}
+			dump_stats=FALSE;
+			ms_message("*********************************");
 		}
 		for (iterator=linphone_core_get_calls(lc);iterator!=NULL;iterator=iterator->next) {
 			LinphoneCall *call=(LinphoneCall *)iterator->data;
