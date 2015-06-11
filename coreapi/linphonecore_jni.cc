@@ -3805,8 +3805,16 @@ extern "C" jintArray Java_org_linphone_core_LinphoneCoreImpl_getPreferredVideoSi
 	return arr;
 }
 
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getDownloadBandwidth(JNIEnv *env, jobject thiz, jlong lc) {
+	return (jint) linphone_core_get_download_bandwidth((LinphoneCore *)lc);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDownloadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
 	linphone_core_set_download_bandwidth((LinphoneCore *)lc, (int) bw);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc) {
+	return (jint) linphone_core_get_upload_bandwidth((LinphoneCore *)lc);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setUploadBandwidth(JNIEnv *env, jobject thiz, jlong lc, jint bw){
@@ -6220,4 +6228,9 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setVideoPreset(JN
 	const char *char_preset = preset ? env->GetStringUTFChars(preset, NULL) : NULL;
 	linphone_core_set_video_preset((LinphoneCore *)lc, char_preset);
 	if (char_preset) env->ReleaseStringUTFChars(preset, char_preset);
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneCoreImpl_getVideoPreset(JNIEnv *env, jobject thiz, jlong lc) {
+	const char *tmp = linphone_core_get_video_preset((LinphoneCore *)lc);
+	return tmp ? env->NewStringUTF(tmp) : NULL;
 }

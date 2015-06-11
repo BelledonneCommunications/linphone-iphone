@@ -7371,7 +7371,11 @@ bool_t linphone_core_video_multicast_enabled(const LinphoneCore *lc) {
 }
 
 void linphone_core_set_video_preset(LinphoneCore *lc, const char *preset) {
-	lp_config_set_string(lc->config, "video", "preset", NULL);
+	lp_config_set_string(lc->config, "video", "preset", preset);
+}
+
+const char * linphone_core_get_video_preset(const LinphoneCore *lc) {
+	return lp_config_get_string(lc->config, "video", "preset", NULL);
 }
 
 #ifdef ANDROID

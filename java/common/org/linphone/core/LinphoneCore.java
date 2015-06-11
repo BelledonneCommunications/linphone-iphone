@@ -1064,7 +1064,18 @@ public interface LinphoneCore {
 	 */
 	void setRingback(String path);
 
+	/**
+	 * Retrieve the maximum available upload bandwidth.
+	**/
+	int getUploadBandwidth();
+
 	void setUploadBandwidth(int bw);
+
+	/**
+	 * Retrieve the maximum available download bandwidth.
+	**/
+	int getDownloadBandwidth();
+
 	/**
 	 * Sets maximum available download bandwidth
 	 *
@@ -2041,4 +2052,11 @@ public interface LinphoneCore {
 	 * @param preset The name of the video preset to be used (can be null to use the default video preset).
 	 */
 	public void setVideoPreset(String preset);
+
+	/**
+	 * Get the video preset used for video calls.
+	 * @param lc LinphoneCore object
+	 * @return The name of the video preset used for video calls (can be null if the default video preset is used).
+	 */
+	public String getVideoPreset();
 }
