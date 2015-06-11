@@ -1915,6 +1915,11 @@ static void linphone_gtk_init_main_window(){
 #endif
 	linphone_gtk_check_menu_items();
 	linphone_core_enable_video_preview(linphone_gtk_get_core(),FALSE);
+#ifdef BUILD_WIZARD
+	gtk_widget_set_visible(linphone_gtk_get_widget(main_window, "assistant_item"), TRUE);
+#else
+	gtk_widget_set_visible(linphone_gtk_get_widget(main_window, "assistant_item"), FALSE);
+#endif
 }
 
 void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
