@@ -26,7 +26,7 @@ include $(CLEAR_VARS)
 LOCAL_CPP_EXTENSION := .cc
 
 LOCAL_SRC_FILES := \
-	account_creator.c
+	account_creator.c \
 	address.c \
 	authentication.c \
 	bellesip_sal/sal_address_impl.c \
