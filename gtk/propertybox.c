@@ -603,7 +603,7 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 	gtk_tree_view_append_column (listview, column);
 	/* Setup the selection handler */
 	select = gtk_tree_view_get_selection (listview);
-	gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
+	gtk_tree_selection_set_mode (select, GTK_SELECTION_MULTIPLE);
 }
 
 
@@ -622,7 +622,7 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 	const MSList *elem;
 	GtkTreeIter iter;
 	GtkListStore *store=GTK_LIST_STORE(gtk_tree_view_get_model(listview));
-	GtkTreeSelection *selection;
+// 	GtkTreeSelection *selection;
 
 	gtk_list_store_clear(store);
 
@@ -659,8 +659,8 @@ static void linphone_gtk_show_codecs(GtkTreeView *listview, const MSList *codecl
 
 
 	/* Setup the selection handler */
-	selection = gtk_tree_view_get_selection (listview);
-	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
+// 	selection = gtk_tree_view_get_selection (listview);
+// 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
 	//gtk_tree_view_columns_autosize(GTK_TREE_VIEW (sec->interfaces));
 #if GTK_CHECK_VERSION(2,12,0)
 	gtk_tree_view_set_tooltip_column(listview,CODEC_INFO);
@@ -740,10 +740,15 @@ static void linphone_gtk_codec_move(GtkWidget *button, int dir){
 	GtkTreeIter iter;
 	PayloadType *pt=NULL;
 	LinphoneCore *lc=linphone_gtk_get_core();
-	if (gtk_tree_selection_get_selected(sel,&mod,&iter)){
+	
+	if (gtk_tree_selection_count_selected_rows(sel) == 1){
 		MSList *sel_elem,*before;
 		MSList *codec_list;
+		GList *selected_rows = gtk_tree_selection_get_selected_rows(sel, &mod);
+		gtk_tree_model_get_iter(mod, &iter, (GtkTreePath *)g_list_nth_data(selected_rows, 0));
 		gtk_tree_model_get(mod,&iter,CODEC_PRIVDATA,&pt,-1);
+		g_list_free_full(selected_rows, (GDestroyNotify)gtk_tree_path_free);
+		
 		if (pt->type==PAYLOAD_VIDEO)
 			codec_list=ms_list_copy(linphone_core_get_video_codecs(lc));
 		else codec_list=ms_list_copy(linphone_core_get_audio_codecs(lc));
@@ -767,21 +772,19 @@ static void linphone_gtk_codec_move(GtkWidget *button, int dir){
 	}
 }
 
-static void linphone_gtk_codec_set_enable(GtkWidget *button, gboolean enabled){
+static void linphone_gtk_codec_set_enable(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer data) {
+	PayloadType *pt=NULL;
+	gboolean *enabled = (gboolean *)data;
+	gtk_tree_model_get(model, iter, CODEC_PRIVDATA, &pt, -1);
+	linphone_core_enable_payload_type(linphone_gtk_get_core(), pt, *enabled);
+	gtk_list_store_set(GTK_LIST_STORE(model), iter, CODEC_STATUS, *enabled ? _("Enabled") : _("Disabled"),
+		CODEC_COLOR,(gpointer)get_codec_color(linphone_gtk_get_core(),pt), -1);
+}
+
+static void linphone_gtk_codec_set_enable_all_selected(GtkWidget *button, gboolean enabled){
 	GtkTreeView *v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"codec_list"));
 	GtkTreeSelection *sel=gtk_tree_view_get_selection(v);
-	GtkTreeModel *mod;
-	GtkListStore *store;
-	GtkTreeIter iter;
-	PayloadType *pt=NULL;
-
-	if (gtk_tree_selection_get_selected(sel,&mod,&iter)){
-		store=GTK_LIST_STORE(mod);
-		gtk_tree_model_get(mod,&iter,CODEC_PRIVDATA,&pt,-1);
-		linphone_core_enable_payload_type(linphone_gtk_get_core(),pt,enabled);
-		gtk_list_store_set(store,&iter,CODEC_STATUS, enabled ? _("Enabled") : _("Disabled"),
-		                   CODEC_COLOR,(gpointer)get_codec_color(linphone_gtk_get_core(),pt), -1);
-	}
+	gtk_tree_selection_selected_foreach(sel, linphone_gtk_codec_set_enable, &enabled);
 }
 
 void linphone_gtk_codec_up(GtkWidget *button){
@@ -793,11 +796,11 @@ void linphone_gtk_codec_down(GtkWidget *button){
 }
 
 void linphone_gtk_codec_enable(GtkWidget *button){
-	linphone_gtk_codec_set_enable(button,TRUE);
+	linphone_gtk_codec_set_enable_all_selected(button,TRUE);
 }
 
 void linphone_gtk_codec_disable(GtkWidget *button){
-	linphone_gtk_codec_set_enable(button,FALSE);
+	linphone_gtk_codec_set_enable_all_selected(button,FALSE);
 }
 
 void linphone_gtk_clear_passwords(GtkWidget *button){
