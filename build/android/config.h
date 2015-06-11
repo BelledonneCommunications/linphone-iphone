@@ -7,6 +7,9 @@
 /* Define if tools enabled */
 /* #undef BUILD_TOOLS */
 
+/* Define if wizard enabled */
+/* #undef BUILD_WIZARD */
+
 /* Tells whether localisation is possible */
 /* #undef ENABLE_NLS */
 

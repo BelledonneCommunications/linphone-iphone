@@ -729,6 +729,31 @@ if test "$has_sighandler_t" = "yes" ; then
 	AC_DEFINE( HAVE_SIGHANDLER_T, 1, [Define if sighandler_t available] )
 fi
 
+AC_ARG_ENABLE(assistant,
+	[AS_HELP_STRING([--enable-assistant], [Turn on assistant compiling])],
+	[case "${enableval}" in
+		yes)	build_wizard=true ;;
+		no)	build_wizard=false ;;
+		*)	AC_MSG_ERROR(bad value ${enableval} for --enable-assistant) ;;
+	esac],
+	[build_wizard=check]
+)
+
+if test "$build_wizard" != "false" ; then
+	PKG_CHECK_MODULES(LIBGTKWIZARD, [gtk+-2.0 >= 2.22.0],[],
+		[if test "$build_wizard" = "true" ; then
+			AC_MSG_ERROR([gtk+-2.0 < 2.22.0, assistant cannot be compiled.])
+		else
+			build_wizard=false
+		fi]
+	)
+fi
+AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard != xfalse)
+if test "$build_wizard" != "false" ; then
+	build_wizard=true
+	 AC_DEFINE(BUILD_WIZARD, 1, [Define if wizard enabled] )
+fi
+
 AC_CHECK_HEADERS(libudev.h)
 AC_CHECK_LIB(udev,udev_new)
 
@@ -1037,6 +1062,7 @@ echo "Linphone build configuration ended."
 echo "Summary of build options:"
 printf "* %-30s %s\n" "Video support"		$video
 printf "* %-30s %s\n" "GTK interface"		$gtk_ui
+printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"				$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage

@@ -20,11 +20,6 @@
 #
 ############################################################################
 
-if(WIN32)
-	set(GTK2_ADDITIONAL_SUFFIXES "../lib/glib-2.0/include" "../lib/gtk-2.0/include")
-endif()
-find_package(GTK2 2.18 COMPONENTS gtk)
-
 set(SOURCE_FILES
 	common/bc_tester_utils.c
 	accountmanager.c

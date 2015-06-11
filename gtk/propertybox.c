@@ -1584,6 +1584,11 @@ void linphone_gtk_show_parameters(void){
 			gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(pb,"username")),linphone_address_get_username(contact));
 		linphone_address_destroy(contact);
 	}
+#ifdef BUILD_WIZARD
+	gtk_widget_show(linphone_gtk_get_widget(pb,"wizard"));
+#else
+	gtk_widget_hide(linphone_gtk_get_widget(pb,"wizard"));
+#endif
 	linphone_gtk_show_sip_accounts(pb);
 	/* CODECS CONFIG */
 	linphone_gtk_init_codec_list(GTK_TREE_VIEW(codec_list));

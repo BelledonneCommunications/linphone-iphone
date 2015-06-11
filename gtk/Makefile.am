@@ -53,11 +53,15 @@ linphone_SOURCES=	\
 			singleinstance.c \
 			conference.c \
 			config-fetching.c \
-			setupwizard.c \
 			audio_assistant.c \
 			videowindow.c \
 			status_icon.c status_icon.h \
 			linphone.h
+
+if BUILD_WIZARD
+linphone_SOURCES+= \
+	setupwizard.c
+endif
 
 if BUILD_STATUS_NOTIFIER
 linphone_SOURCES+= \
