@@ -151,6 +151,14 @@ def extract_libs_list():
     return list(set(l))
 
 
+def install_git_hook():
+    git_hook_path = ".git{sep}hooks{sep}pre-commit".format(sep=os.sep)
+    if os.path.isdir(".git{sep}hooks".format(sep=os.sep)) and not os.path.isfile(git_hook_path):
+        print("Installing Git pre-commit hook")
+        shutil.copyfile(".git-pre-commit", git_hook_path)
+        os.chmod(git_hook_path, 0755)
+
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv
@@ -170,6 +178,8 @@ def main(argv=None):
                            help="The platform to build for (default is 'x86_64 devices'). Space separated"
                                 " architectures in list: {0}.".format(', '.join([repr(platform) for platform in platforms])))
     args, additional_args = argparser.parse_known_args()
+
+    install_git_hook()
 
     selected_platforms = []
     for platform in args.platform:

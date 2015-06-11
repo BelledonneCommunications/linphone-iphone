@@ -11,3 +11,4 @@ test-reports
 WORK
 Makefile
 OUTPUT
+git-clang-format.diff
