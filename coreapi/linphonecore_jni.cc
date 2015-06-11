@@ -6215,3 +6215,9 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableDnsSrv(JNIE
 JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_dnsSrvEnabled(JNIEnv *env, jobject thiz, jlong lc) {
 	return linphone_core_dns_srv_enabled((LinphoneCore *)lc);
 }
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setVideoPreset(JNIEnv *env, jobject thiz, jlong lc, jstring preset) {
+	const char *char_preset = preset ? env->GetStringUTFChars(preset, NULL) : NULL;
+	linphone_core_set_video_preset((LinphoneCore *)lc, char_preset);
+	if (char_preset) env->ReleaseStringUTFChars(preset, char_preset);
+}

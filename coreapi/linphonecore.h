@@ -3521,6 +3521,13 @@ LINPHONE_PUBLIC int linphone_core_set_network_simulator_params(LinphoneCore *lc,
 **/
 LINPHONE_PUBLIC const OrtpNetworkSimulatorParams *linphone_core_get_network_simulator_params(const LinphoneCore *lc);
 
+/**
+ * Set the video preset to be used for video calls.
+ * @param[in] lc LinphoneCore object
+ * @param[in] preset The name of the video preset to be used (can be NULL to use the default video preset).
+ */
+LINPHONE_PUBLIC void linphone_core_set_video_preset(LinphoneCore *lc, const char *preset);
+
 #ifdef __cplusplus
 }
 #endif

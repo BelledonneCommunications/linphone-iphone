@@ -1479,4 +1479,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public boolean dnsSrvEnabled() {
 		return dnsSrvEnabled(nativePtr);
 	}
+
+	private native void setVideoPreset(long nativePtr, String preset);
+	@Override
+	public void setVideoPreset(String preset) {
+		setVideoPreset(nativePtr, preset);
+	}
 }

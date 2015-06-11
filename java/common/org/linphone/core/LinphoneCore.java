@@ -2035,4 +2035,10 @@ public interface LinphoneCore {
 	 */
 	public boolean dnsSrvEnabled();
 
+	/**
+	 * Set the video preset to be used for video calls.
+	 * @param lc LinphoneCore object
+	 * @param preset The name of the video preset to be used (can be null to use the default video preset).
+	 */
+	public void setVideoPreset(String preset);
 }

@@ -7370,6 +7370,10 @@ bool_t linphone_core_video_multicast_enabled(const LinphoneCore *lc) {
 	return lc->rtp_conf.video_multicast_enabled;
 }
 
+void linphone_core_set_video_preset(LinphoneCore *lc, const char *preset) {
+	lp_config_set_string(lc->config, "video", "preset", NULL);
+}
+
 #ifdef ANDROID
 static int linphone_core_call_void_method(jobject obj, jmethodID id) {
 	JNIEnv *env=ms_get_jni_env();
