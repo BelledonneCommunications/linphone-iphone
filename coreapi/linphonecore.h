@@ -1555,7 +1555,6 @@ LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, Linp
  */
 LINPHONE_PUBLIC void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LINPHONE_PUBLIC void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
-LINPHONE_PUBLIC MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message);
 
 /**
  * Mark all messages of the conversation as read
@@ -1580,6 +1579,14 @@ LINPHONE_PUBLIC void linphone_chat_room_delete_history(LinphoneChatRoom *cr);
  * @return the number of messages.
  */
 LINPHONE_PUBLIC int linphone_chat_room_get_history_size(LinphoneChatRoom *cr);
+
+/**
+ * Gets nb_message most recent messages from cr chat room, sorted from oldest to most recent.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which messages should be retrieved
+ * @param[in] nb_message Number of message to retrieve. 0 means everything.
+ * @return \mslist{LinphoneChatMessage}
+ */
+LINPHONE_PUBLIC MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message);
 
 /**
  * Gets the partial list of messages in the given range, sorted from oldest to most recent.

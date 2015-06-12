@@ -106,44 +106,48 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 
 static void process_io_error_upload(void *data, const belle_sip_io_error_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+	msg->state = LinphoneChatMessageStateNotDelivered;
 	ms_error("I/O Error during file upload to %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
 	if (msg->cb) {
-		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->cb_ud);
+		msg->cb(msg, msg->state, msg->cb_ud);
 	}
 
 	if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, LinphoneChatMessageStateNotDelivered);
+		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
 	}
 }
 static void process_auth_requested_upload(void *data, belle_sip_auth_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+	msg->state = LinphoneChatMessageStateNotDelivered;
 	ms_error("Error during file upload : auth requested to connect %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
 	if (msg->cb) {
-		msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->cb_ud);
+		msg->cb(msg, msg->state, msg->cb_ud);
 	}
 	if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, LinphoneChatMessageStateNotDelivered);
+		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
 	}
 }
 
 static void process_io_error_download(void *data, const belle_sip_io_error_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
 	ms_error("I/O Error during file download %s - msg [%p] chat room[%p]", msg->external_body_url, msg, msg->chat_room);
+	msg->state = LinphoneChatMessageStateFileTransferError;
 	if (msg->cb) {
-		msg->cb(msg, LinphoneChatMessageStateFileTransferError, msg->cb_ud);
+		msg->cb(msg, msg->state, msg->cb_ud);
 	}
 	if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, LinphoneChatMessageStateFileTransferError);
+		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
 	}
 }
 static void process_auth_requested_download(void *data, belle_sip_auth_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+	msg->state = LinphoneChatMessageStateFileTransferError;
 	ms_error("Error during file download : auth requested to get %s - msg [%p] chat room[%p]", msg->external_body_url, msg, msg->chat_room);
 	if (msg->cb) {
-		msg->cb(msg, LinphoneChatMessageStateFileTransferError, msg->cb_ud);
+		msg->cb(msg, msg->state, msg->cb_ud);
 	}
 	if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, LinphoneChatMessageStateFileTransferError);
+		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
 	}
 }
 
@@ -164,48 +168,38 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 
 	/* if we've not reach the end of file yet, ask for more data*/
 	if (offset<linphone_content_get_size(chatMsg->file_transfer_information)){
+		char *plainBuffer = NULL;
 
 		if (linphone_content_get_key(chatMsg->file_transfer_information) != NULL) { /* if we have a key to cipher the message, use it! */
-			char *plainBuffer;
-			/* get data from callback to a plainBuffer */
 			/* if this chunk is not the last one, the lenght must be a multiple of block cipher size(16 bytes)*/
 			if (offset+*size < linphone_content_get_size(chatMsg->file_transfer_information)) {
 				*size -=(*size%16);
 			}
 			plainBuffer = (char *)malloc(*size);
-			if (linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)) {
-				LinphoneBuffer *lb = linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, offset, *size);
-				if (lb == NULL) *size = 0;
-				else {
-					*size = linphone_buffer_get_size(lb);
-					memcpy(plainBuffer, linphone_buffer_get_content(lb), *size);
-					linphone_buffer_unref(lb);
-				}
-			} else {
-				/* Legacy */
-				linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, plainBuffer, size);
-			}
+		}
 
+		/* get data from call back */
+		if (linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)) {
+			LinphoneBuffer *lb = linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, offset, *size);
+			if (lb == NULL) {
+				*size = 0;
+			} else {
+				*size = linphone_buffer_get_size(lb);
+				memcpy(plainBuffer?plainBuffer:buf, linphone_buffer_get_content(lb), *size);
+				linphone_buffer_unref(lb);
+			}
+		} else {
+			/* Legacy */
+			linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, plainBuffer?plainBuffer:buf, size);
+		}
+
+		if (linphone_content_get_key(chatMsg->file_transfer_information) != NULL) { /* if we have a key to cipher the message, use it! */
 			lime_encryptFile(linphone_content_get_cryptoContext_address(chatMsg->file_transfer_information), (unsigned char *)linphone_content_get_key(chatMsg->file_transfer_information), *size, plainBuffer, (char*)buffer);
 			free(plainBuffer);
 			/* check if we reach the end of file */
 			if (offset+*size >= linphone_content_get_size(chatMsg->file_transfer_information)) {
 				/* conclude file ciphering by calling it context with a zero size */
 				lime_encryptFile(linphone_content_get_cryptoContext_address(chatMsg->file_transfer_information), NULL, 0, NULL, NULL);
-			}
-		} else {
-			/* get data from call back */
-			if (linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)) {
-				LinphoneBuffer *lb = linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, offset, *size);
-				if (lb == NULL) *size = 0;
-				else {
-					*size = linphone_buffer_get_size(lb);
-					memcpy(buffer, linphone_buffer_get_content(lb), *size);
-					linphone_buffer_unref(lb);
-				}
-			} else {
-				/* Legacy */
-				linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, buf, size);
 			}
 		}
 	}
@@ -338,11 +332,12 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			}
 
 			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
+			msg->state = LinphoneChatMessageStateFileTransferDone;
 			if (msg->cb) {
-				msg->cb(msg, LinphoneChatMessageStateFileTransferDone, msg->cb_ud);
+				msg->cb(msg, msg->state, msg->cb_ud);
 			}
 			if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-				linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, LinphoneChatMessageStateFileTransferDone);
+				linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
 			}
 			_linphone_chat_room_send_message(msg->chat_room, msg);
 		}
@@ -1048,9 +1043,8 @@ const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState
 		case LinphoneChatMessageStateDelivered:return "LinphoneChatMessageStateDelivered";
 		case LinphoneChatMessageStateNotDelivered:return "LinphoneChatMessageStateNotDelivered";
 		case LinphoneChatMessageStateFileTransferError:return "LinphoneChatMessageStateFileTransferError";
-		default: return "Unknown state";
+		case LinphoneChatMessageStateFileTransferDone: return "LinphoneChatMessageStateFileTransferDone ";
 	}
-
 }
 
 LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg){
@@ -1212,11 +1206,12 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 			} else {
 				linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, NULL, 0);
 			}
+			chatMsg->state = LinphoneChatMessageStateFileTransferDone;
 			if (chatMsg->cb) {
-				chatMsg->cb(chatMsg, LinphoneChatMessageStateFileTransferDone, chatMsg->cb_ud);
+				chatMsg->cb(chatMsg, chatMsg->state, chatMsg->cb_ud);
 			}
 			if (linphone_chat_message_cbs_get_msg_state_changed(chatMsg->callbacks)) {
-				linphone_chat_message_cbs_get_msg_state_changed(chatMsg->callbacks)(chatMsg, LinphoneChatMessageStateFileTransferDone);
+				linphone_chat_message_cbs_get_msg_state_changed(chatMsg->callbacks)(chatMsg, chatMsg->state);
 			}
 		}
 	}
@@ -1260,17 +1255,22 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *message, Lin
 }
 
 void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
-	if (!belle_http_request_is_cancelled(msg->http_request)) {
-		ms_message("Cancelled file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?linphone_core_get_file_transfer_server(msg->chat_room->lc):msg->external_body_url, msg, msg->chat_room);
-		belle_http_provider_cancel_request(msg->chat_room->lc->http_provider, msg->http_request);
-		belle_sip_object_unref(msg->http_request);
-		msg->http_request = NULL;
-		if (msg->cb) {
-			msg->cb(msg, LinphoneChatMessageStateNotDelivered, msg->cb_ud);
+	if (msg->http_request) {
+		if (!belle_http_request_is_cancelled(msg->http_request)) {
+			ms_message("Cancelled file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?linphone_core_get_file_transfer_server(msg->chat_room->lc):msg->external_body_url, msg, msg->chat_room);
+			belle_http_provider_cancel_request(msg->chat_room->lc->http_provider, msg->http_request);
+			belle_sip_object_unref(msg->http_request);
+			msg->http_request = NULL;
+			msg->state = LinphoneChatMessageStateNotDelivered;
+			if (msg->cb) {
+				msg->cb(msg, msg->state, msg->cb_ud);
+			}
+			if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
+				linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
+			}
 		}
-		if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-			linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, LinphoneChatMessageStateNotDelivered);
-		}
+	} else {
+		ms_message("No existing file transfer - nothing to cancel");
 	}
 }
 
