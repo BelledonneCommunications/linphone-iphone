@@ -487,7 +487,6 @@ static void file_transfer_message(void) {
 		linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 		linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
 		linphone_chat_room_send_chat_message(chat_room,message);
-		linphone_chat_room_send_chat_message(chat_room,message);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
 		fclose(file_to_send);
 		if (marie->stat.last_received_chat_message ) {
