@@ -553,7 +553,7 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	GtkTreeSelection *select;
-	GValue editable = G_VALUE_INIT;
+	GValue editable = {0};
 
 	GtkListStore *store = gtk_list_store_new (CODEC_NCOLUMNS, G_TYPE_STRING,G_TYPE_INT,
 							G_TYPE_FLOAT,
