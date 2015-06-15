@@ -20,7 +20,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AudioToolbox/AudioServices.h>
 
-#import "InAppProductsViewController.h"
 #import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
 #import "Utils.h"

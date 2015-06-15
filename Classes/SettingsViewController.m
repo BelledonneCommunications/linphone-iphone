@@ -22,7 +22,6 @@
 #import "PhoneMainView.h"
 #import "UILinphone.h"
 #import "UACellBackgroundView.h"
-#import "InAppProductsViewController.h"
 
 #import "DCRoundSwitch.h"
 
@@ -770,8 +769,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		[self emailAttachment:[NSData dataWithContentsOfFile:[NSString stringWithUTF8String:filepath]] mimeType:mimeType name:filename];
 		ms_free(filepath);
-	} else if([key isEqual:@"in_app_products_button"]) {
-		[[PhoneMainView instance] changeCurrentView:[InAppProductsViewController compositeViewDescription] push:TRUE];
 	}
 }
 
