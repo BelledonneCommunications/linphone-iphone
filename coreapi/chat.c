@@ -1045,6 +1045,7 @@ const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState
 		case LinphoneChatMessageStateFileTransferError:return "LinphoneChatMessageStateFileTransferError";
 		case LinphoneChatMessageStateFileTransferDone: return "LinphoneChatMessageStateFileTransferDone ";
 	}
+	return NULL;
 }
 
 LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg){
