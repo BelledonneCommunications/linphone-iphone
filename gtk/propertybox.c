@@ -736,6 +736,11 @@ void linphone_gtk_adaptive_rate_control_toggled(GtkToggleButton *button){
 	linphone_core_enable_adaptive_rate_control(linphone_gtk_get_core(),active);
 }
 
+static void _g_list_func_destroy_tree_path(gpointer data, gpointer user_data) {
+	GtkTreePath *tree_path = (GtkTreePath *)data;
+	gtk_tree_path_free(tree_path);
+}
+
 static void linphone_gtk_codec_move(GtkWidget *button, int dir){
 	GtkTreeView *v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"codec_list"));
 	GtkTreeSelection *sel=gtk_tree_view_get_selection(v);
@@ -747,10 +752,12 @@ static void linphone_gtk_codec_move(GtkWidget *button, int dir){
 	if (gtk_tree_selection_count_selected_rows(sel) == 1){
 		MSList *sel_elem,*before;
 		MSList *codec_list;
+		
 		GList *selected_rows = gtk_tree_selection_get_selected_rows(sel, &mod);
 		gtk_tree_model_get_iter(mod, &iter, (GtkTreePath *)g_list_nth_data(selected_rows, 0));
 		gtk_tree_model_get(mod,&iter,CODEC_PRIVDATA,&pt,-1);
-		g_list_free_full(selected_rows, (GDestroyNotify)gtk_tree_path_free);
+		g_list_foreach(selected_rows, _g_list_func_destroy_tree_path, NULL);
+		g_list_free(selected_rows);
 		
 		if (pt->type==PAYLOAD_VIDEO)
 			codec_list=ms_list_copy(linphone_core_get_video_codecs(lc));
