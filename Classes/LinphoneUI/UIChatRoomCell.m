@@ -67,6 +67,7 @@ static UIFont *CELL_FONT = nil;
 
 		resendTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResendClick:)];
 		[dateLabel addGestureRecognizer:resendTapGestureRecognizer];
+		[statusImage addGestureRecognizer:resendTapGestureRecognizer];
 
 		[self addSubview:innerView];
 		[deleteButton setAlpha:0.0f];
@@ -368,17 +369,21 @@ static UIFont *CELL_FONT = nil;
 
 
 - (IBAction)onImageClick:(id)event {
-	//	if(![messageImageView isLoading]) {
-	//		ImageViewController *controller = DYNAMIC_CAST([[PhoneMainView instance]
-	// changeCurrentView:[ImageViewController compositeViewDescription] push:TRUE], ImageViewController);
-	//		if(controller != nil) {
-	//			CGImageRef fullScreenRef = [[messageImageView.fullImageUrl defaultRepresentation] fullScreenImage];
-	//			UIImage* fullScreen = [UIImage imageWithCGImage:fullScreenRef];
-	//			[controller setImage:fullScreen];
-	//		}
-	//	}
-
-	[LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:chat];
+	LinphoneChatMessageState state = linphone_chat_message_get_state(self->chat);
+	if (state == LinphoneChatMessageStateNotDelivered) {
+		[self onResendClick:nil];
+	} else {
+		if (![messageImageView isLoading]) {
+			ImageViewController *controller = DYNAMIC_CAST(
+				[[PhoneMainView instance] changeCurrentView:[ImageViewController compositeViewDescription] push:TRUE],
+				ImageViewController);
+			if (controller != nil) {
+				CGImageRef fullScreenRef = [[messageImageView.fullImageUrl defaultRepresentation] fullScreenImage];
+				UIImage *fullScreen = [UIImage imageWithCGImage:fullScreenRef];
+				[controller setImage:fullScreen];
+			}
+		}
+	}
 }
 
 - (IBAction)onResendClick:(id)event {
@@ -386,18 +391,36 @@ static UIFont *CELL_FONT = nil;
 
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self->chat);
 	if (state == LinphoneChatMessageStateNotDelivered) {
-		const char* text = linphone_chat_message_get_text(self->chat);
-		const char* url = linphone_chat_message_get_external_body_url(self->chat);
-		NSString* message = text ? [NSString stringWithUTF8String:text] : nil;
-		NSString* exturl  = url ? [NSString stringWithUTF8String:url] : nil;
+		if (linphone_chat_message_get_file_transfer_information(chat) != NULL) {
+			NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
+			NSURL *imageUrl = [NSURL URLWithString:localImage];
 
-		[self onDeleteClick:nil];
+			[self onDeleteClick:nil];
 
-		double delayInSeconds = 0.4;
-		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-		dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-			[chatRoomDelegate resendChat:message withExternalUrl:exturl];
-		});
+			[[LinphoneManager instance]
+					.photoLibrary assetForURL:imageUrl
+				resultBlock:^(ALAsset *asset) {
+				  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
+								 ^(void) {
+								   UIImage *image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
+								   [chatRoomDelegate chatRoomStartImageUpload:image url:imageUrl];
+								 });
+				}
+				failureBlock:^(NSError *error) {
+				  LOGE(@"Can't read image");
+				}];
+		} else {
+			const char *text = linphone_chat_message_get_text(self->chat);
+			NSString *message = text ? [NSString stringWithUTF8String:text] : nil;
+
+			[self onDeleteClick:nil];
+
+			double delayInSeconds = 0.4;
+			dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+			dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+			  [chatRoomDelegate resendChat:message withExternalUrl:nil];
+			});
+		}
 	}
 }
 

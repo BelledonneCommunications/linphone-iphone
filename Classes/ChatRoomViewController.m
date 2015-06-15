@@ -291,7 +291,31 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 }
 
 - (void)saveAndSend:(UIImage*)image url:(NSURL*)url {
-    [self chatRoomStartImageUpload:image url:url];
+	// photo from Camera, must be saved first
+	if (url == nil) {
+		[[LinphoneManager instance]
+				.photoLibrary
+			writeImageToSavedPhotosAlbum:image.CGImage
+							 orientation:(ALAssetOrientation)[image imageOrientation]
+						 completionBlock:^(NSURL *assetURL, NSError *error) {
+						   if (error) {
+							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+
+							   UIAlertView *errorAlert = [[UIAlertView alloc]
+									   initWithTitle:NSLocalizedString(@"Transfer error", nil)
+											 message:NSLocalizedString(@"Cannot write image to photo library", nil)
+											delegate:nil
+								   cancelButtonTitle:NSLocalizedString(@"Ok", nil)
+								   otherButtonTitles:nil, nil];
+							   [errorAlert show];
+						   } else {
+							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
+							   [self chatRoomStartImageUpload:image url:assetURL];
+						   }
+						 }];
+	} else {
+		[self chatRoomStartImageUpload:image url:url];
+	}
 }
 
 - (void)chooseImageQuality:(UIImage*)image url:(NSURL*)url {
