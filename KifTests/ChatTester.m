@@ -171,7 +171,9 @@
 	[tester tapViewWithAccessibilityLabel:LOCALIZED(@"Photo library")];
 	// if popup "Linphone would access your photo" pops up, click OK.
 	if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined) {
+#if TARGET_IPHONE_SIMULATOR
 		[tester acknowledgeSystemAlert];
+#endif
 	}
 
 	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 column:1];
