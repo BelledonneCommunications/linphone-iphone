@@ -1243,9 +1243,9 @@ void linphone_gtk_lang_changed(GtkComboBox *combo){
 
 static void linphone_gtk_ui_level_adapt(GtkWidget *top) {
 	gboolean ui_advanced;
-	const char *simple_ui = linphone_gtk_get_ui_config("simple_ui", "parameters.codec_tab parameters.transport_frame parameters.ports_frame");
+	const char *simple_ui = linphone_gtk_get_ui_config("simple_ui", "parameters.codec_tab parameters.transport_frame parameters.ports_frame parameters.bandwidth_frame");
 
-	ui_advanced = linphone_gtk_get_ui_config_int("advanced_ui", TRUE);
+	ui_advanced = linphone_gtk_get_ui_config_int("advanced_ui", FALSE);
 	if (ui_advanced) {
 		linphone_gtk_visibility_set(simple_ui, "parameters", top, TRUE);
 	} else {
