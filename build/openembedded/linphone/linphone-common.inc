@@ -6,80 +6,61 @@ SECTION_linphonec =  "console/network"
 
 SRC_URI_append_igep0020 = " file://alsa_8khz.patch"
 
-DEPENDS = "intltool-native readline speex alsa-lib spandsp belle-sip"
-DEPENDS_append_video = " libxv ffmpeg libv4l"
-DEPENDS_append_gtk = " gtk+"
-DEPENDS_append_gsm = " libgsm"
-DEPENDS_${PN} = "intltool liblinphone"
-DEPENDS_${PN}_append_gsm = " libgsm"
-DEPENDS_${PN}_append_gtk = " gtk+"
-DEPENDS_${PN}_append_video = " libxv"
-DEPENDS_${PN}c = "liblinphone readline"
-DEPENDS_liblinphone = "libmediastreamer libortp belle-sip"
+DEPENDS_${PN} = "intltool-native speex alsa-lib spandsp belle-sip liblinphone libxv ffmpeg libv4l libgsm"
+DEPENDS_liblinphone = "libmediastreamer libortp"
 DEPENDS_libmediastreamer = "speex alsa-lib libortp"
-DEPENDS_libmediastreamer_append_video = " ffmpeg libv4l"
 
-PROVIDES = "linphonec liblinphone libmediastreamer libortp"
-PROVIDES_gtk = "linphone linphonec liblinphone libmediastreamer libortp"
+PROVIDES = "linphone linphonec liblinphone libmediastreamer libortp"
 
 inherit autotools pkgconfig gettext
 
 INSANE_SKIP_linphone += "dev-deps"
 INSANE_SKIP_liblinphone += "dev-deps"
 
-LINPHONE_OE_ENABLE_TESTS = "--disable-tests"
-LINPHONE_OE_ENABLE_VIDEO = "--disable-video"
-LINPHONE_OE_ENABLE_VIDEO_video = "--with-ffmpeg=${STAGING_DIR_HOST}${layout_exec_prefix} --enable-video"
-LINPHONE_OE_ENABLE_X11 = "--disable-x11 --disable-xv"
-LINPHONE_OE_ENABLE_X11_x11 = ""
-LINPHONE_OE_ENABLE_GL = "--disable-glx"
-LINPHONE_OE_ENABLE_GL_gl = ""
-
-LINPHONE_OE_ENABLE_CONSOLE_UI = "no"
-LINPHONE_OE_ENABLE_CONSOLE_UI_console = "yes"
-
-LINPHONE_OE_ENABLE_GTK_UI = "no"
-LINPHONE_OE_ENABLE_GTK_UI_gtk = "yes"
-
 do_install_append(){
   install -d ${D}${bindir}
 }
 
 EXTRA_OECONF = " \
-                ${LINPHONE_OE_ENABLE_TESTS} \
-                ${LINPHONE_OE_ENABLE_VIDEO} \
-                ${LINPHONE_OE_ENABLE_X11} \
-                ${LINPHONE_OE_ENABLE_GL} \
+                --disable-tests \
+                --with-ffmpeg=${STAGING_DIR_HOST}${layout_exec_prefix} --enable-video --disable-vp8 \
+                --disable-glx \
                 --enable-alsa --disable-pulseaudio \
-                --with-osip=${STAGING_DIR_HOST}${layout_exec_prefix} \
-                --with-readline=${STAGING_DIR_HOST}${layout_exec_prefix} \
+                --without-readline \
                 --with-speex=${STAGING_DIR_HOST}${layout_exec_prefix} \
                 --disable-manual --enable-tests=yes \
-                --enable-console_ui=${LINPHONE_OE_ENABLE_CONSOLE_UI} \
-                --enable-gtk_ui=${LINPHONE_OE_ENABLE_GTK_UI} \
+                --enable-console_ui=no \
+                --enable-gtk_ui=no \
                 --with-realprefix=/usr \
                 "
 
 EXTRA_OEMAKE = " V=1"
 
-PACKAGES_gtk = "${PN}-dbg ${PN} ${PN}-doc ${PN}-dev ${PN}-locale ${PN}c linphone-rings liblinphone libmediastreamer-bin libmediastreamer libortp ${PN}-utils"
-PACKAGES = "${PN}-dbg ${PN}-dev ${PN}c linphone-rings liblinphone libmediastreamer-bin libmediastreamer libortp ${PN}-utils"
+PACKAGES = "${PN}-dbg ${PN}-dev ${PN}-doc ${PN}c ${PN}-common linphone-rings liblinphone libmediastreamer-bin libmediastreamer libortp ${PN}-utils ${PN}-tests"
 
-FILES_${PN} = " \ 
-            ${bindir}/linphone \
-            ${datadir}/linphone \
+FILES_${PN}-common = "\
+            ${bindir}/lp-gen-wrappers \
             ${datadir}/pixmaps \
             ${datadir}/applications \
-            ${datadir}/gnome/apps \
+            ${datadir}/gnome \
+            ${datadir}/tutorials \
+            ${datadir}/linphone \
             ${datadir}/sounds/linphone/hello8000.wav \
             ${datadir}/sounds/linphone/hello16000.wav \
+            ${datadir}/sounds/linphone/incoming_chat.wav \
+            ${datadir}/sounds/linphone/ringback.wav \
             ${datadir}/images/nowebcamCIF.jpg \
+            ${datadir}/appdata/linphone.appdata.xml \
+            ${datadir}/icons \ 
             "
-FILES_${PN}c = "${bindir}/linphonec ${bindir}/linphone-daemon ${bindir}/linphone-daemon-pipetest ${bindir}/linphonecsh ${bindir}/sipomatic ${datadir}/sounds/linphone/ringback.wav"
+FILES_${PN}-tests = "${bindir}/xml2lpc_test ${bindir}/lpc2xml_test"
+FILES_${PN} = "${bindir}/linphone"
+FILES_${PN}c = "${bindir}/linphonec ${bindir}/linphone-daemon ${bindir}/linphone-daemon-pipetest ${bindir}/linphonecsh ${bindir}/sipomatic ${bindir}/auto_answer"
 FILES_${PN}-rings = "${datadir}/sounds/linphone/rings"
 FILES_liblinphone = "${libdir}/liblinphone.so.*"
-FILES_libmediastreamer-bin = "${bindir}/mediastream"
-FILES_libmediastreamer = "${libdir}/libmediastreamer_base.so.* ${libdir}/libmediastreamer_voip.so.*"
+FILES_libmediastreamer-bin = "${bindir}/mediastream ${bindir}/msaudiocmp"
+FILES_libmediastreamer = "${libdir}/libmediastreamer_base.so.* ${libdir}/libmediastreamer_voip.so.* ${libdir}/mediastreamer/ ${libdir}/mediastreamer/plugins"
 FILES_libortp = "${libdir}/libortp.so.*"
 FILES_${PN}-dev += "${libdir}/*.a ${libdir}/*.la ${libdir}/pkgconfig ${includedir}"
 FILES_${PN}-utils = "${bindir}/test_ecc ${bindir}/test_lsd"
+FILES_${PN}-doc = "${docdir}/ortp-0.24.1 ${docdir}/mediastreamer-2.11.1 ${docdir}/linphone-3.8.1-linphone-daemon ${mandir}"
