@@ -73,7 +73,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 						   CFRelease((__bridge CFTypeRef)thiz);
 						 }];
 	} else {
-		LOGI(@"Transfer of %s (%d bytes): already %ld sent, adding %ld", linphone_content_get_name(content),
+		LOGD(@"Transfer of %s (%d bytes): already %ld sent, adding %ld", linphone_content_get_name(content),
 			 linphone_content_get_size(content), [thiz.data length], size);
 		[thiz.data appendBytes:linphone_buffer_get_string_content(buffer) length:size];
 		[[NSNotificationCenter defaultCenter]
@@ -97,7 +97,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 			@"state" : @(linphone_chat_message_get_state(message)),
 			@"progress" : @(offset * 1.f / total),
 		}];
-		LOGI(@"Transfer of %s (%d bytes): already sent %ld, remaining %ld", linphone_content_get_name(content), total,
+		LOGD(@"Transfer of %s (%d bytes): already sent %ld, remaining %ld", linphone_content_get_name(content), total,
 			 offset, remaining);
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneFileTransferSendUpdate
 															object:thiz

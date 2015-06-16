@@ -211,6 +211,13 @@
 
 - (void)downloadImage {
 	[self uploadImage];
+	// wait for the upload to terminate...
+	for (int i = 0; i < 15; i++) {
+		[tester waitForTimeInterval:1.f];
+		if ([[[LinphoneManager instance] fileTransferDelegates] count] == 0)
+			break;
+	}
+	[tester waitForViewWithAccessibilityLabel:LOCALIZED(@"Download")];
 	[tester tapViewWithAccessibilityLabel:LOCALIZED(@"Download")];
 	[tester waitForTimeInterval:.5f]; // just wait a few secs to start download
 	XCTAssertEqual([[[LinphoneManager instance] fileTransferDelegates] count], 1);

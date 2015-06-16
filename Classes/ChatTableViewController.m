@@ -20,6 +20,8 @@
 #import "ChatTableViewController.h"
 #import "UIChatCell.h"
 
+#import "FileTransferDelegate.h"
+
 #import "linphone/linphonecore.h"
 #import "PhoneMainView.h"
 #import "UACellBackgroundView.h"
@@ -171,8 +173,14 @@ static void chatTable_free_chatrooms(void *data){
 			linphone_chat_message_unref(last_msg);
 			linphone_chat_room_set_user_data(chatRoom, NULL);
 		}
-        linphone_chat_room_delete_history(chatRoom);
-        linphone_chat_room_unref(chatRoom);
+
+		for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+			if (linphone_chat_message_get_chat_room(ftd.message) == chatRoom) {
+				[ftd cancel];
+			}
+		}
+		linphone_chat_room_delete_history(chatRoom);
+		linphone_chat_room_unref(chatRoom);
 		data = ms_list_remove(data, chatRoom);
 
         // will force a call to [self loadData]

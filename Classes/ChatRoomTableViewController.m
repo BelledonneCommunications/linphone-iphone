@@ -194,7 +194,6 @@
         [tableView beginUpdates];
         LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
         if( chat ){
-
             linphone_chat_room_delete_message(chatRoom, chat);
             messageList = ms_list_remove(messageList, chat);
 
