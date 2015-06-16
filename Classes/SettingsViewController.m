@@ -680,6 +680,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"in_app_products_button"];
 	}
 
+	if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
+		[hiddenKeys addObject:@"repeat_call_notification_preference"];
+	}
+
 	return hiddenKeys;
 }
 

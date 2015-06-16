@@ -106,6 +106,16 @@
 			<key>IASKTextAlignment</key>
 			<string>IASKUITextAlignmentRight</string>
 		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>repeat_call_notification_preference</string>
+			<key>Title</key>
+			<string>Repeat call notification</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
 	</array>
 </dict>
 </plist>

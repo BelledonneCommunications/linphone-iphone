@@ -642,7 +642,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore * lc, const char
 				if (data->notification) {
 
 					// iOS8 doesn't need the timer trick for the local notification.
-					if( [[UIDevice currentDevice].systemVersion floatValue] >= 8){
+					if ([[UIDevice currentDevice].systemVersion floatValue] >= 8 &&
+						[self lpConfigBoolForKey:@"repeat_call_notification"] == NO) {
 						data->notification.soundName = @"ring.caf";
 						data->notification.category = @"incoming_call";
 					} else {

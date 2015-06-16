@@ -242,6 +242,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		[self setInteger:linphone_core_get_inc_timeout(lc) forKey:@"incoming_call_timeout_preference"];
 		[self setInteger:linphone_core_get_in_call_timeout(lc) forKey:@"in_call_timeout_preference"];
+
+		[self setBool:[lm lpConfigBoolForKey:@"repeat_call_notification"]
+			   forKey:@"repeat_call_notification_preference"];
 	}
 
 	// network section
@@ -644,8 +647,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_core_set_use_info_for_dtmf(lc, [self boolForKey:@"sipinfo_dtmf_preference"]);
 		linphone_core_set_inc_timeout(lc, [self integerForKey:@"incoming_call_timeout_preference"]);
 		linphone_core_set_in_call_timeout(lc, [self integerForKey:@"in_call_timeout_preference"]);
-		[[LinphoneManager instance] lpConfigSetString:[self stringForKey:@"voice_mail_uri_preference"]
-											   forKey:@"voice_mail_uri"];
+		[lm lpConfigSetString:[self stringForKey:@"voice_mail_uri_preference"] forKey:@"voice_mail_uri"];
+		[lm lpConfigSetBool:[self boolForKey:@"repeat_call_notification_preference"]
+					 forKey:@"repeat_call_notification"];
 	}
 
 	// network section
