@@ -1107,7 +1107,7 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 		MSList **default_list=(type==SalAudio) ? &lc->default_audio_codecs :  &lc->default_video_codecs;
 		if (type==SalAudio)
 			ms_warning("Codec %s/%i/%i read from conf is not in the default list.",mime,rate,channels);
-		else 
+		else
 			ms_warning("Codec %s/%i read from conf is not in the default list.",mime,rate);
 		pt=payload_type_new();
 		pt->type=(type==SalAudio) ? PAYLOAD_AUDIO_PACKETIZED :  PAYLOAD_VIDEO;
@@ -4923,7 +4923,7 @@ static void linphone_core_mute_audio_stream(LinphoneCore *lc, AudioStream *st, b
 	} else {
 		audio_stream_set_mic_gain_db(st, lc->sound_conf.soft_mic_lev);
 	}
-	
+
 	if ( linphone_core_get_rtp_no_xmit_on_audio_mute(lc) ){
 		audio_stream_mute_rtp(st,val);
 	}
@@ -5691,11 +5691,6 @@ static MSVideoSizeDef supported_resolutions[]={
 	{	{ 0,0 }			,	NULL	}
 };
 
-/**
- * Returns the zero terminated table of supported video resolutions.
- *
- * @ingroup media_parameters
-**/
 const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc){
 	return supported_resolutions;
 }
@@ -5746,13 +5741,6 @@ static void update_preview_size(LinphoneCore *lc, MSVideoSize oldvsize, MSVideoS
 	}
 }
 
-/**
- * Sets the preferred video size.
- *
- * @ingroup media_parameters
- * This applies only to the stream that is captured and sent to the remote party,
- * since we accept all standard video size on the receive path.
-**/
 void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize){
 	if (video_size_supported(vsize)){
 		MSVideoSize oldvsize=lc->video_conf.preview_vsize;
@@ -5768,15 +5756,6 @@ void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize)
 	}
 }
 
-/**
- * Sets the video size for the captured (preview) video.
- * This method is for advanced usage where a video capture must be set independently of the size of the stream actually sent through the call.
- * This allows for example to have the preview window with HD resolution even if due to bandwidth constraint the sent video size is small.
- * Using this feature increases the CPU consumption, since a rescaling will be done internally.
- * @ingroup media_parameters
- * @param lc the linphone core
- * @param vsize the video resolution choosed for capuring and previewing. It can be (0,0) to not request any specific preview size and let the core optimize the processing.
-**/
 void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
 	MSVideoSize oldvsize;
 	if (vsize.width==0 && vsize.height==0){
@@ -5796,25 +5775,10 @@ void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize){
 		lp_config_set_string(lc->config,"video","preview_size",video_size_get_name(vsize));
 }
 
-/**
- * Returns video size for the captured video if it was previously set by linphone_core_set_preview_video_size(), otherwise returns a 0,0 size.
- * @see linphone_core_set_preview_video_size()
- * @ingroup media_parameters
- * @param lc the core
- * @return a MSVideoSize
-**/
 MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc){
 	return lc->video_conf.preview_vsize;
 }
 
-/**
- * Returns the effective video size for the captured video as provided by the camera.
- * When preview is disabled or not yet started, this function returns a zeroed video size.
- * @see linphone_core_set_preview_video_size()
- * @ingroup media_parameters
- * @param lc the core
- * @return a MSVideoSize
-**/
 MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc){
 	MSVideoSize ret={0};
 #ifndef VIDEO_ENABLED
@@ -5827,25 +5791,11 @@ MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc)
 	return ret;
 }
 
-/**
- * Sets the preview video size by its name. See linphone_core_set_preview_video_size() for more information about this feature.
- *
- * @ingroup media_parameters
- * Video resolution names are: qcif, svga, cif, vga, 4cif, svga ...
-**/
 void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name){
 	MSVideoSize vsize=video_size_get_by_name(name);
 	linphone_core_set_preview_video_size(lc,vsize);
 }
 
-/**
- * Sets the preferred video size by its name.
- *
- * @ingroup media_parameters
- * This is identical to linphone_core_set_preferred_video_size() except
- * that it takes the name of the video resolution as input.
- * Video resolution names are: qcif, svga, cif, vga, 4cif, svga ...
-**/
 void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name){
 	MSVideoSize vsize=video_size_get_by_name(name);
 	MSVideoSize default_vsize={MS_VIDEO_SIZE_CIF_W,MS_VIDEO_SIZE_CIF_H};
@@ -5853,11 +5803,6 @@ void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char
 	else linphone_core_set_preferred_video_size(lc,default_vsize);
 }
 
-/**
- * Returns the current preferred video size for sending.
- *
- * @ingroup media_parameters
-**/
 MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc){
 	return lc->video_conf.vsize;
 }
@@ -5866,37 +5811,17 @@ char * linphone_core_get_preferred_video_size_name(const LinphoneCore *lc) {
 	return ms_strdup(video_size_get_name(lc->video_conf.vsize));
 }
 
-/**
- * Set the preferred frame rate for video.
- * Based on the available bandwidth constraints and network conditions, the video encoder
- * remains free to lower the framerate. There is no warranty that the preferred frame rate be the actual framerate.
- * used during a call. Default value is 0, which means "use encoder's default fps value".
- * @ingroup media_parameters
- * @param lc the LinphoneCore
- * @param fps the target frame rate in number of frames per seconds.
-**/
 void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps){
 	lc->video_conf.fps=fps;
 	if (linphone_core_ready(lc))
 		lp_config_set_float(lc->config,"video","framerate",fps);
 }
-/**
- * Returns the preferred video framerate, previously set by linphone_core_set_preferred_framerate().
- * @ingroup media_parameters
- * @param lc the linphone core
- * @return frame rate in number of frames per seconds.
-**/
+
 float linphone_core_get_preferred_framerate(LinphoneCore *lc){
 	return lc->video_conf.fps;
 }
 
 
-/**
- * Ask the core to stream audio from and to files, instead of using the soundcard.
- * @ingroup media_parameters
- * @param[in] lc LinphoneCore object
- * @param[in] yesno A boolean value asking to stream audio from and to files or not.
-**/
 void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
 }
@@ -5905,15 +5830,6 @@ const char * linphone_core_get_play_file(const LinphoneCore *lc) {
 	return lc->play_file;
 }
 
-/**
- * Sets a wav file to be played when putting somebody on hold,
- * or when files are used instead of soundcards (see linphone_core_set_use_files()).
- *
- * The file must be a 16 bit linear wav file.
- * @ingroup media_parameters
- * @param[in] lc LinphoneCore object
- * @param[in] file The path to the file to be played when putting somebody on hold.
-**/
 void linphone_core_set_play_file(LinphoneCore *lc, const char *file){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (lc->play_file!=NULL){
@@ -5931,16 +5847,6 @@ const char * linphone_core_get_record_file(const LinphoneCore *lc) {
 	return lc->rec_file;
 }
 
-/**
- * Sets a wav file where incoming stream is to be recorded,
- * when files are used instead of soundcards (see linphone_core_set_use_files()).
- *
- * This feature is different from call recording (linphone_call_params_set_record_file())
- * The file will be a 16 bit linear wav file.
- * @ingroup media_parameters
- * @param[in] lc LinphoneCore object
- * @param[in] file The path to the file where incoming stream is to be recorded.
-**/
 void linphone_core_set_record_file(LinphoneCore *lc, const char *file){
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (lc->rec_file!=NULL){
@@ -7017,7 +6923,7 @@ bool_t linphone_core_media_encryption_supported(const LinphoneCore *lc, Linphone
 int linphone_core_set_media_encryption(LinphoneCore *lc, LinphoneMediaEncryption menc) {
 	const char *type="none";
 	int ret=-1;
-	
+
 	switch(menc){
 		case LinphoneMediaEncryptionSRTP:
 			if (!ms_srtp_supported()){

@@ -3235,13 +3235,59 @@ typedef struct MSVideoSizeDef{
 	MSVideoSize vsize;
 	const char *name;
 }MSVideoSizeDef;
-/* returns a zero terminated table of MSVideoSizeDef*/
+/**
+ * Returns the zero terminated table of supported video resolutions.
+ *
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
-LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+
+/**
+ * Sets the preferred video size.
+ *
+ * @ingroup media_parameters
+ * This applies only to the stream that is captured and sent to the remote party,
+ * since we accept all standard video size on the receive path.
+**/LINPHONE_PUBLIC void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
+/**
+ * Sets the video size for the captured (preview) video.
+ * This method is for advanced usage where a video capture must be set independently of the size of the stream actually sent through the call.
+ * This allows for example to have the preview window with HD resolution even if due to bandwidth constraint the sent video size is small.
+ * Using this feature increases the CPU consumption, since a rescaling will be done internally.
+ * @ingroup media_parameters
+ * @param lc the linphone core
+ * @param vsize the video resolution choosed for capuring and previewing. It can be (0,0) to not request any specific preview size and let the core optimize the processing.
+**/
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
+/**
+ * Sets the preview video size by its name. See linphone_core_set_preview_video_size() for more information about this feature.
+ *
+ * @ingroup media_parameters
+ * Video resolution names are: qcif, svga, cif, vga, 4cif, svga ...
+**/
 LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *lc, const char *name);
+/**
+ * Returns video size for the captured video if it was previously set by linphone_core_set_preview_video_size(), otherwise returns a 0,0 size.
+ * @see linphone_core_set_preview_video_size()
+ * @ingroup media_parameters
+ * @param lc the core
+ * @return a MSVideoSize
+**/
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc);
+/**
+ * Returns the effective video size for the captured video as provided by the camera.
+ * When preview is disabled or not yet started, this function returns a zeroed video size.
+ * @see linphone_core_set_preview_video_size()
+ * @ingroup media_parameters
+ * @param lc the core
+ * @return a MSVideoSize
+**/
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc);
+/**
+ * Returns the current preferred video size for sending.
+ *
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc);
 
 /**
@@ -3250,8 +3296,31 @@ LINPHONE_PUBLIC MSVideoSize linphone_core_get_preferred_video_size(const Linphon
  * @return A string containing the name of the current preferred video size (to be freed with ms_free()).
  */
 LINPHONE_PUBLIC char * linphone_core_get_preferred_video_size_name(const LinphoneCore *lc);
+/**
+ * Sets the preferred video size by its name.
+ *
+ * @ingroup media_parameters
+ * This is identical to linphone_core_set_preferred_video_size() except
+ * that it takes the name of the video resolution as input.
+ * Video resolution names are: qcif, svga, cif, vga, 4cif, svga ...
+**/
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_size_by_name(LinphoneCore *lc, const char *name);
+/**
+ * Set the preferred frame rate for video.
+ * Based on the available bandwidth constraints and network conditions, the video encoder
+ * remains free to lower the framerate. There is no warranty that the preferred frame rate be the actual framerate.
+ * used during a call. Default value is 0, which means "use encoder's default fps value".
+ * @ingroup media_parameters
+ * @param lc the LinphoneCore
+ * @param fps the target frame rate in number of frames per seconds.
+**/
 LINPHONE_PUBLIC void linphone_core_set_preferred_framerate(LinphoneCore *lc, float fps);
+/**
+ * Returns the preferred video framerate, previously set by linphone_core_set_preferred_framerate().
+ * @ingroup media_parameters
+ * @param lc the linphone core
+ * @return frame rate in number of frames per seconds.
+**/
 LINPHONE_PUBLIC float linphone_core_get_preferred_framerate(LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc);
@@ -3343,7 +3412,12 @@ void linphone_core_show_video(LinphoneCore *lc, bool_t show);
 
 /** @deprecated Use linphone_core_set_use_files() instead. */
 #define linphone_core_use_files(lc, yesno) linphone_core_set_use_files(lc, yesno)
-/*play/record support: use files instead of soundcard*/
+/**
+ * Ask the core to stream audio from and to files, instead of using the soundcard.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @param[in] yesno A boolean value asking to stream audio from and to files or not.
+**/
 LINPHONE_PUBLIC void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno);
 
 /**
@@ -3357,6 +3431,15 @@ LINPHONE_PUBLIC void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno)
  */
 LINPHONE_PUBLIC const char * linphone_core_get_play_file(const LinphoneCore *lc);
 
+/**
+ * Sets a wav file to be played when putting somebody on hold,
+ * or when files are used instead of soundcards (see linphone_core_set_use_files()).
+ *
+ * The file must be a 16 bit linear wav file.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @param[in] file The path to the file to be played when putting somebody on hold.
+**/
 LINPHONE_PUBLIC void linphone_core_set_play_file(LinphoneCore *lc, const char *file);
 
 /**
@@ -3371,6 +3454,16 @@ LINPHONE_PUBLIC void linphone_core_set_play_file(LinphoneCore *lc, const char *f
 **/
 LINPHONE_PUBLIC const char * linphone_core_get_record_file(const LinphoneCore *lc);
 
+/**
+ * Sets a wav file where incoming stream is to be recorded,
+ * when files are used instead of soundcards (see linphone_core_set_use_files()).
+ *
+ * This feature is different from call recording (linphone_call_params_set_record_file())
+ * The file will be a 16 bit linear wav file.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @param[in] file The path to the file where incoming stream is to be recorded.
+**/
 LINPHONE_PUBLIC void linphone_core_set_record_file(LinphoneCore *lc, const char *file);
 
 LINPHONE_PUBLIC void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms);
