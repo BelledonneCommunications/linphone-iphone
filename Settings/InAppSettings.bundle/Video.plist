@@ -41,8 +41,28 @@
 			<string>preview_preference</string>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>video_preset_preference</string>
+			<key>Title</key>
+			<string>Video preset</string>
+			<key>Titles</key>
+			<array>
+				<string>Default</string>
+				<string>High FPS</string>
+				<string>Custom</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>default</string>
+				<string>high-fps</string>
+				<string>custom</string>
+			</array>
 			<key>DefaultValue</key>
-			<integer>1</integer>
+			<string>default</string>
+		</dict>
+		<dict>
 			<key>Key</key>
 			<string>video_preferred_size_preference</string>
 			<key>Title</key>
@@ -61,6 +81,56 @@
 				<integer>1</integer>
 				<integer>2</integer>
 			</array>
+			<key>DefaultValue</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>video_preferred_fps_preference</string>
+			<key>Title</key>
+			<string>Preferred FPS</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Titles</key>
+			<array>
+				<string>No preference</string>
+				<string>5</string>
+				<string>10</string>
+				<string>15</string>
+				<string>20</string>
+				<string>25</string>
+				<string>30</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>5</integer>
+				<integer>10</integer>
+				<integer>15</integer>
+				<integer>20</integer>
+				<integer>25</integer>
+				<integer>30</integer>
+			</array>
+			<key>DefaultValue</key>
+			<string>0</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>bandwidth_limit_preference</string>
+			<key>Title</key>
+			<string>Bandwidth limit in kbits/s</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+			<key>DefaultValue</key>
+			<integer>380</integer>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
 		</dict>
 		<dict>
 			<key>Title</key>

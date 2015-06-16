@@ -490,11 +490,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[LinphoneManager instance] setLogsEnabled:debugEnabled];
     } else if( [@"advanced_account_preference" compare:notif.object] == NSOrderedSame) {
 		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"advanced_account_preference"] boolValue];
-
 		[keys addObject:@"userid_preference"];
 		[keys addObject:@"proxy_preference"];
 		[keys addObject:@"outbound_proxy_preference"];
 		[keys addObject:@"avpf_preference"];
+	} else if ([@"video_preset_preference" compare:notif.object] == NSOrderedSame) {
+		NSString *video_preset = [notif.userInfo objectForKey:@"video_preset_preference"];
+		removeFromHiddenKeys = [video_preset isEqualToString:@"custom"];
+		[keys addObject:@"video_preferred_fps_preference"];
+		[keys addObject:@"bandwidth_limit_preference"];
 	}
 
 	for(NSString* key in keys){
@@ -640,26 +644,31 @@ static UICompositeViewDescription *compositeDescription = nil;
         [hiddenKeys addObject:@"video_menu"];
     }
 
+	if (!linphone_core_get_video_preset([LinphoneManager getLc]) ||
+		strcmp(linphone_core_get_video_preset([LinphoneManager getLc]), "custom") != 0) {
+		[hiddenKeys addObject:@"video_preferred_fps_preference"];
+		[hiddenKeys addObject:@"bandwidth_limit_preference"];
+	}
 
-    [hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];
+	[hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];
 
-    BOOL random_port = [lm lpConfigBoolForKey:@"random_port_preference"];
-    if(random_port) {
-        [hiddenKeys addObject:@"port_preference"];
-    }
+	BOOL random_port = [lm lpConfigBoolForKey:@"random_port_preference"];
+	if (random_port) {
+		[hiddenKeys addObject:@"port_preference"];
+	}
 
-    if(linphone_core_get_stun_server([LinphoneManager getLc]) == NULL) {
-        [hiddenKeys addObject:@"ice_preference"];
-    }
+	if (linphone_core_get_stun_server([LinphoneManager getLc]) == NULL) {
+		[hiddenKeys addObject:@"ice_preference"];
+	}
 
-    if(![lm lpConfigBoolForKey:@"debugenable_preference"]) {
-        [hiddenKeys addObject:@"console_button"];
-    }
+	if (![lm lpConfigBoolForKey:@"debugenable_preference"]) {
+		[hiddenKeys addObject:@"console_button"];
+	}
 
-    if(![LinphoneManager runningOnIpad]) {
-        [hiddenKeys addObject:@"preview_preference"];
-    }
-    if([lm lpConfigBoolForKey:@"hide_run_assistant_preference"]) {
+	if (![LinphoneManager runningOnIpad]) {
+		[hiddenKeys addObject:@"preview_preference"];
+	}
+	if ([lm lpConfigBoolForKey:@"hide_run_assistant_preference"]) {
 		[hiddenKeys addObject:@"wizard_button"];
 	}
 

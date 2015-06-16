@@ -218,6 +218,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setBool:linphone_core_self_view_enabled(lc) forKey:@"self_video_preference"];
 		BOOL previewEnabled = [lm lpConfigBoolForKey:@"preview_preference" withDefault:YES];
 		[self setBool:previewEnabled forKey:@"preview_preference"];
+
+		const char *preset = linphone_core_get_video_preset(lc);
+		[self setCString:preset ? preset : "default" forKey:@"video_preset_preference"];
 		MSVideoSize vsize = linphone_core_get_preferred_video_size(lc);
 		int index;
 		if ((vsize.width == MS_VIDEO_SIZE_720P_W) && (vsize.height == MS_VIDEO_SIZE_720P_H)) {
@@ -228,6 +231,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			index = 2;
 		}
 		[self setInteger:index forKey:@"video_preferred_size_preference"];
+		[self setInteger:linphone_core_get_preferred_framerate(lc) forKey:@"video_preferred_fps_preference"];
+		[self setInteger:linphone_core_get_download_bandwidth(lc) forKey:@"download_bandwidth_preference"];
 	}
 
 	// call section
@@ -603,6 +608,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_core_enable_self_view(lc, [self boolForKey:@"self_video_preference"]);
 		BOOL preview_preference = [self boolForKey:@"preview_preference"];
 		[lm lpConfigSetInt:preview_preference forKey:@"preview_preference"];
+
+		linphone_core_set_video_preset(lc, [[self stringForKey:@"video_preset_preference"] UTF8String]);
 		int bw;
 		MSVideoSize vsize;
 		switch ([self integerForKey:@"video_preferred_size_preference"]) {
@@ -623,9 +630,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			bw = 380;
 			break;
 		}
-		[self setInteger:bw forKey:@"upload_bandwidth_preference"];
-		[self setInteger:bw forKey:@"download_bandwidth_preference"];
 		linphone_core_set_preferred_video_size(lc, vsize);
+		if (![[self stringForKey:@"video_preset_preference"] isEqualToString:@"custom"]) {
+			[self setInteger:bw forKey:@"download_bandwidth_preference"];
+		}
+		linphone_core_set_preferred_framerate(lc, [self integerForKey:@"video_preferred_fps_preference"]);
+		linphone_core_set_download_bandwidth(lc, [self integerForKey:@"download_bandwidth_preference"]);
 	}
 
 	// call section

@@ -120,8 +120,8 @@
 @synthesize videoDownloadBandwidthLabel, videoDownloadBandwidthHeaderLabel;
 @synthesize videoIceConnectivityLabel, videoIceConnectivityHeaderLabel;
 
-@synthesize videoRecvSizeHeaderLabel, videoRecvSizeLabel;
-@synthesize videoSentSizeHeaderLabel, videoSentSizeLabel;
+@synthesize videoRecvSizeFPSHeaderLabel, videoRecvSizeFPSLabel;
+@synthesize videoSentSizeFPSHeaderLabel, videoSentSizeFPSLabel;
 
 @synthesize otherView;
 
@@ -433,24 +433,28 @@
 
         const LinphoneCallStats *stats = linphone_call_get_video_stats(call);
 
-        MSVideoSize sentSize = linphone_call_params_get_sent_video_size(params);
-        MSVideoSize recvSize = linphone_call_params_get_received_video_size(params);
+		if (stats != NULL && linphone_call_params_video_enabled(params)) {
+			MSVideoSize sentSize = linphone_call_params_get_sent_video_size(params);
+			MSVideoSize recvSize = linphone_call_params_get_received_video_size(params);
+			float sentFPS = linphone_call_params_get_sent_framerate(params);
+			float recvFPS = linphone_call_params_get_received_framerate(params);
 
-        if(stats != NULL) {
-            [videoUploadBandwidthLabel setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->upload_bandwidth]];
-            [videoDownloadBandwidthLabel setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->download_bandwidth]];
-            [videoIceConnectivityLabel setText:[UICallCell iceToString:stats->ice_state]];
-            [videoSentSizeLabel setText:[NSString stringWithFormat:@"%dx%d",sentSize.width, sentSize.height]];
-            [videoRecvSizeLabel setText:[NSString stringWithFormat:@"%dx%d",recvSize.width, recvSize.height]];
-        } else {
-            [videoUploadBandwidthLabel setText:@""];
-            [videoDownloadBandwidthLabel setText:@""];
-            [videoIceConnectivityLabel setText:@""];
-            [videoSentSizeLabel setText:@"0x0"];
-            [videoRecvSizeLabel setText:@"0x0"];
-
-        }
-    }
+			[videoUploadBandwidthLabel setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->upload_bandwidth]];
+			[videoDownloadBandwidthLabel
+				setText:[NSString stringWithFormat:@"%1.1f kbits/s", stats->download_bandwidth]];
+			[videoIceConnectivityLabel setText:[UICallCell iceToString:stats->ice_state]];
+			[videoSentSizeFPSLabel
+				setText:[NSString stringWithFormat:@"%dx%d (%.1fFPS)", sentSize.width, sentSize.height, sentFPS]];
+			[videoRecvSizeFPSLabel
+				setText:[NSString stringWithFormat:@"%dx%d (%.1fFPS)", recvSize.width, recvSize.height, recvFPS]];
+		} else {
+			[videoUploadBandwidthLabel setText:@""];
+			[videoDownloadBandwidthLabel setText:@""];
+			[videoIceConnectivityLabel setText:@""];
+			[videoSentSizeFPSLabel setText:@"0x0"];
+			[videoRecvSizeFPSLabel setText:@"0x0"];
+		}
+	}
 }
 
 

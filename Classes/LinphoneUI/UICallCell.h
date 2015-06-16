@@ -78,10 +78,10 @@ typedef enum _UICallCellOtherView {
 @property (nonatomic, strong) IBOutlet UILabel* videoCodecLabel;
 @property (nonatomic, strong) IBOutlet UILabel* videoCodecHeaderLabel;
 
-@property (strong, nonatomic) IBOutlet UILabel *videoSentSizeHeaderLabel;
-@property (strong, nonatomic) IBOutlet UILabel *videoSentSizeLabel;
-@property (strong, nonatomic) IBOutlet UILabel *videoRecvSizeHeaderLabel;
-@property (strong, nonatomic) IBOutlet UILabel *videoRecvSizeLabel;
+@property(strong, nonatomic) IBOutlet UILabel *videoSentSizeFPSHeaderLabel;
+@property(strong, nonatomic) IBOutlet UILabel *videoSentSizeFPSLabel;
+@property(strong, nonatomic) IBOutlet UILabel *videoRecvSizeFPSHeaderLabel;
+@property(strong, nonatomic) IBOutlet UILabel *videoRecvSizeFPSLabel;
 
 @property (nonatomic, strong) IBOutlet UILabel* videoUploadBandwidthLabel;
 @property (nonatomic, strong) IBOutlet UILabel* videoUploadBandwidthHeaderLabel;
