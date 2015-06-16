@@ -345,9 +345,6 @@ void linphone_proxy_config_enableregister(LinphoneProxyConfig *obj, bool_t val){
 	obj->reg_sendregister=val;
 }
 
-/**
- * Sets the registration expiration time in seconds.
-**/
 void linphone_proxy_config_set_expires(LinphoneProxyConfig *obj, int val){
 	if (val<0) val=600;
 	obj->expires=val;
