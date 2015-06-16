@@ -297,7 +297,6 @@ LINPHONE_PUBLIC void linphone_gtk_add_proxy(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_edit_proxy(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_remove_proxy(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_clear_passwords(GtkWidget *button);
-LINPHONE_PUBLIC void linphone_gtk_codec_view_changed(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_codec_up(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_codec_down(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_codec_enable(GtkWidget *button);

@@ -485,6 +485,26 @@ void linphone_gtk_video_renderer_changed(GtkWidget *w){
 	}
 }
 
+void linphone_gtk_video_preset_changed(GtkWidget *w) {
+	gchar *sel = gtk_combo_box_get_active_text(GTK_COMBO_BOX(w));
+	GtkSpinButton *framerate = GTK_SPIN_BUTTON(linphone_gtk_get_widget(gtk_widget_get_toplevel(w), "video_framerate"));
+	LinphoneCore *lc = linphone_gtk_get_core();
+	if (g_strcmp0(sel, "default") == 0) {
+		linphone_core_set_video_preset(lc, NULL);
+		gtk_spin_button_set_value(framerate, 0);
+		gtk_widget_set_sensitive(GTK_WIDGET(framerate), FALSE);
+	} else if (g_strcmp0(sel, "high-fps") == 0) {
+		linphone_core_set_video_preset(lc, "high-fps");
+		gtk_spin_button_set_value(framerate, 0);
+		gtk_widget_set_sensitive(GTK_WIDGET(framerate), FALSE);
+	} else if (g_strcmp0(sel, "custom") == 0) {
+		linphone_core_set_video_preset(lc, "custom");
+		gtk_spin_button_set_value(framerate, 30);
+		gtk_widget_set_sensitive(GTK_WIDGET(framerate), TRUE);
+	}
+	g_free(sel);
+}
+
 void linphone_gtk_ring_file_set(GtkWidget *w){
 	gchar *file=gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(w));
 	linphone_core_set_ring(linphone_gtk_get_core(),file);
@@ -711,24 +731,27 @@ static void linphone_gtk_draw_codec_list(GtkTreeView *v, int type){ /* 0=audio, 
 	linphone_gtk_show_codecs(v,list);
 }
 
-void linphone_gtk_codec_view_changed(GtkWidget *w){
-	GtkWidget *listview=linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"codec_list");
-	int active=gtk_combo_box_get_active(GTK_COMBO_BOX(w));
-	linphone_gtk_draw_codec_list(GTK_TREE_VIEW(listview),active);
-}
-
 void linphone_gtk_download_bw_changed(GtkWidget *w){
-	GtkTreeView *v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"codec_list"));
+	GtkTreeView *audiov=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"audio_codec_list"));
+	GtkTreeView *videov=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"video_codec_list"));
 	linphone_core_set_download_bandwidth(linphone_gtk_get_core(),
 				(int)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
-	linphone_gtk_check_codec_bandwidth(v);
+	linphone_gtk_check_codec_bandwidth(audiov);
+	linphone_gtk_check_codec_bandwidth(videov);
 }
 
 void linphone_gtk_upload_bw_changed(GtkWidget *w){
-	GtkTreeView *v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"codec_list"));
+	GtkTreeView *audiov=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"audio_codec_list"));
+	GtkTreeView *videov=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(w),"video_codec_list"));
 	linphone_core_set_upload_bandwidth(linphone_gtk_get_core(),
 				(int)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
-	linphone_gtk_check_codec_bandwidth(v);
+	linphone_gtk_check_codec_bandwidth(audiov);
+	linphone_gtk_check_codec_bandwidth(videov);
+}
+
+void linphone_gtk_video_framerate_changed(GtkWidget *w) {
+	linphone_core_set_preferred_framerate(linphone_gtk_get_core(),
+		(int)gtk_spin_button_get_value(GTK_SPIN_BUTTON(w)));
 }
 
 void linphone_gtk_adaptive_rate_control_toggled(GtkToggleButton *button){
@@ -741,14 +764,17 @@ static void _g_list_func_destroy_tree_path(gpointer data, gpointer user_data) {
 	gtk_tree_path_free(tree_path);
 }
 
-static void linphone_gtk_codec_move(GtkWidget *button, int dir){
-	GtkTreeView *v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"codec_list"));
-	GtkTreeSelection *sel=gtk_tree_view_get_selection(v);
+static void linphone_gtk_codec_move(GtkWidget *button, int dir, int type){ /* 0=audio, 1=video*/
+	GtkTreeView *v;
+	GtkTreeSelection *sel;
 	GtkTreeModel *mod;
 	GtkTreeIter iter;
 	PayloadType *pt=NULL;
 	LinphoneCore *lc=linphone_gtk_get_core();
-	
+
+	if (type == 0) v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"audio_codec_list"));
+	else v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"video_codec_list"));
+	sel=gtk_tree_view_get_selection(v);
 	if (gtk_tree_selection_count_selected_rows(sel) == 1){
 		MSList *sel_elem,*before;
 		MSList *codec_list;
@@ -791,26 +817,45 @@ static void linphone_gtk_codec_set_enable(GtkTreeModel *model, GtkTreePath *path
 		CODEC_COLOR,(gpointer)get_codec_color(linphone_gtk_get_core(),pt), -1);
 }
 
-static void linphone_gtk_codec_set_enable_all_selected(GtkWidget *button, gboolean enabled){
-	GtkTreeView *v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"codec_list"));
-	GtkTreeSelection *sel=gtk_tree_view_get_selection(v);
+static void linphone_gtk_codec_set_enable_all_selected(GtkWidget *button, gboolean enabled, int type){ /* 0=audio, 1=video*/
+	GtkTreeView *v;
+	GtkTreeSelection *sel;
+	if (type == 0) v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"audio_codec_list"));
+	else v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"video_codec_list"));
+	sel=gtk_tree_view_get_selection(v);
 	gtk_tree_selection_selected_foreach(sel, linphone_gtk_codec_set_enable, &enabled);
 }
 
-void linphone_gtk_codec_up(GtkWidget *button){
-	linphone_gtk_codec_move(button,+1);
+void linphone_gtk_audio_codec_up(GtkWidget *button){
+	linphone_gtk_codec_move(button,+1,0);
 }
 
-void linphone_gtk_codec_down(GtkWidget *button){
-	linphone_gtk_codec_move(button,-1);
+void linphone_gtk_audio_codec_down(GtkWidget *button){
+	linphone_gtk_codec_move(button,-1,0);
 }
 
-void linphone_gtk_codec_enable(GtkWidget *button){
-	linphone_gtk_codec_set_enable_all_selected(button,TRUE);
+void linphone_gtk_audio_codec_enable(GtkWidget *button){
+	linphone_gtk_codec_set_enable_all_selected(button,TRUE,0);
 }
 
-void linphone_gtk_codec_disable(GtkWidget *button){
-	linphone_gtk_codec_set_enable_all_selected(button,FALSE);
+void linphone_gtk_audio_codec_disable(GtkWidget *button){
+	linphone_gtk_codec_set_enable_all_selected(button,FALSE,0);
+}
+
+void linphone_gtk_video_codec_up(GtkWidget *button){
+	linphone_gtk_codec_move(button,+1,1);
+}
+
+void linphone_gtk_video_codec_down(GtkWidget *button){
+	linphone_gtk_codec_move(button,-1,1);
+}
+
+void linphone_gtk_video_codec_enable(GtkWidget *button){
+	linphone_gtk_codec_set_enable_all_selected(button,TRUE,1);
+}
+
+void linphone_gtk_video_codec_disable(GtkWidget *button){
+	linphone_gtk_codec_set_enable_all_selected(button,FALSE,1);
 }
 
 void linphone_gtk_clear_passwords(GtkWidget *button){
@@ -1394,6 +1439,29 @@ void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 #endif
 }
 
+void linphone_gtk_fill_video_presets(GtkWidget *pb) {
+	GtkComboBox *combo = GTK_COMBO_BOX(linphone_gtk_get_widget(pb, "video_preset"));
+	const char *preset = linphone_core_get_video_preset(linphone_gtk_get_core());
+	if (preset == NULL) {
+		gtk_combo_box_set_active(combo, -1);
+		gtk_combo_box_set_active(combo, 0);
+	} else {
+		gboolean valid;
+		GtkTreeIter iter;
+		gchar *str_data;
+		GtkTreeModel *model = gtk_combo_box_get_model(combo);
+		valid = gtk_tree_model_get_iter_first(model, &iter);
+		while (valid) {
+			gtk_tree_model_get(model, &iter, 0, &str_data, -1);
+			if (g_strcmp0(preset, str_data) == 0) {
+				gtk_combo_box_set_active_iter(combo, &iter);
+				break;
+			}
+			valid = gtk_tree_model_iter_next(model, &iter);
+		}
+	}
+}
+
 typedef struct {
 	guint timeout_id;
 	LCSipTransports tp;
@@ -1494,7 +1562,8 @@ void linphone_gtk_show_parameters(void){
 	const char *tmp;
 	LinphoneAddress *contact;
 	LinphoneFirewallPolicy pol;
-	GtkWidget *codec_list;
+	GtkWidget *audio_codec_list;
+	GtkWidget *video_codec_list;
 	int mtu;
 	int ui_advanced;
 	LCSipTransports tr;
@@ -1507,7 +1576,8 @@ void linphone_gtk_show_parameters(void){
 		gtk_widget_show(pb);
 		return;
 	}
-	codec_list=linphone_gtk_get_widget(pb,"codec_list");
+	audio_codec_list=linphone_gtk_get_widget(pb,"audio_codec_list");
+	video_codec_list=linphone_gtk_get_widget(pb,"video_codec_list");
 
 	/* NETWORK CONFIG */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"ipv6_enabled")),
@@ -1580,12 +1650,21 @@ void linphone_gtk_show_parameters(void){
 	linphone_gtk_fill_soundcards(pb);
 	linphone_gtk_fill_webcams(pb);
 	linphone_gtk_fill_video_renderers(pb);
+	linphone_gtk_fill_video_presets(pb);
 	linphone_gtk_fill_video_sizes(linphone_gtk_get_widget(pb,"video_size"));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"video_framerate")),
+				linphone_core_get_preferred_framerate(lc));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"echo_cancelation")),
 					linphone_core_echo_cancellation_enabled(lc));
 
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(linphone_gtk_get_widget(pb,"ring_chooser")),
 					linphone_core_get_ring(lc));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"download_bw")),
+				linphone_core_get_download_bandwidth(lc));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"upload_bw")),
+				linphone_core_get_upload_bandwidth(lc));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"adaptive_rate_control")),
+	                         linphone_core_adaptive_rate_control_enabled(lc));
 	/* SIP CONFIG */
 	contact=linphone_core_get_primary_contact_parsed(lc);
 	if (contact){
@@ -1604,15 +1683,10 @@ void linphone_gtk_show_parameters(void){
 #endif
 	linphone_gtk_show_sip_accounts(pb);
 	/* CODECS CONFIG */
-	linphone_gtk_init_codec_list(GTK_TREE_VIEW(codec_list));
-	linphone_gtk_draw_codec_list(GTK_TREE_VIEW(codec_list),0);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(linphone_gtk_get_widget(pb,"codec_view")),0);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"download_bw")),
-				linphone_core_get_download_bandwidth(lc));
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"upload_bw")),
-				linphone_core_get_upload_bandwidth(lc));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"adaptive_rate_control")),
-	                         linphone_core_adaptive_rate_control_enabled(lc));
+	linphone_gtk_init_codec_list(GTK_TREE_VIEW(audio_codec_list));
+	linphone_gtk_init_codec_list(GTK_TREE_VIEW(video_codec_list));
+	linphone_gtk_draw_codec_list(GTK_TREE_VIEW(audio_codec_list), 0);
+	linphone_gtk_draw_codec_list(GTK_TREE_VIEW(video_codec_list), 1);
 
 	/* CALL PARAMS CONFIG */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "auto_answer_checkbox")), linphone_gtk_get_ui_config_int("auto_answer", 0));
