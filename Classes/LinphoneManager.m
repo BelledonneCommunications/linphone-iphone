@@ -52,7 +52,7 @@ static void audioRouteChangeListenerCallback (
 static LinphoneCore* theLinphoneCore = nil;
 static LinphoneManager* theLinphoneManager = nil;
 
-const char *const LINPHONERC_APPLICATION_KEY = "app";
+NSString *const LINPHONERC_APPLICATION_KEY = @"app";
 
 NSString *const kLinphoneCoreUpdate = @"LinphoneCoreUpdate";
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
@@ -285,7 +285,7 @@ struct codec_name_pref_table codec_pref_table[]={
 		[self overrideDefaultSettings];
 
 		//set default values for first boot
-		if (lp_config_get_string(configDb,LINPHONERC_APPLICATION_KEY,"debugenable_preference",NULL)==NULL){
+		if ([self lpConfigStringForKey:@"debugenable_preference"] == nil) {
 #ifdef DEBUG
 			[self lpConfigSetBool:TRUE  forKey:@"debugenable_preference"];
 #else
@@ -449,11 +449,11 @@ exit_dbmigration:
 }
 
 - (void)migrateFromUserPrefs {
-	static const char* migration_flag = "userpref_migration_done";
+	static NSString *migration_flag = @"userpref_migration_done";
 
 	if( configDb == nil ) return;
 
-	if( lp_config_get_int(configDb, LINPHONERC_APPLICATION_KEY, migration_flag, 0) ){
+	if ([self lpConfigIntForKey:migration_flag withDefault:0]) {
 		LOGI(@"UserPrefs migration already performed, skip");
 		return;
 	}
@@ -470,12 +470,12 @@ exit_dbmigration:
 	for( NSString* userpref in values ){
 		if( [defaults_keys containsObject:userpref] ){
 			LOGI(@"Migrating %@ from user preferences: %d", userpref, [[defaults objectForKey:userpref] boolValue]);
-			lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], [[defaults objectForKey:userpref] boolValue]);
+			[self lpConfigSetBool:[[defaults objectForKey:userpref] boolValue] forKey:userpref];
 			[[NSUserDefaults standardUserDefaults] removeObjectForKey:userpref];
 			shouldSync = TRUE;
-		} else if ( lp_config_get_string(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], NULL) == NULL ){
+		} else if ([self lpConfigStringForKey:userpref] == nil) {
 			// no default value found in our linphonerc, we need to add them
-			lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, [userpref UTF8String], [[values objectForKey:userpref] boolValue]);
+			[self lpConfigSetBool:[[values objectForKey:userpref] boolValue] forKey:userpref];
 		}
 	}
 
@@ -484,7 +484,7 @@ exit_dbmigration:
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	// don't get back here in the future
-	lp_config_set_int(configDb, LINPHONERC_APPLICATION_KEY, migration_flag, 1);
+	[self lpConfigSetBool:YES forKey:migration_flag];
 }
 
 
@@ -1048,7 +1048,7 @@ static void networkReachabilityNotification(CFNotificationCenterRef center, void
 
 void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* nilCtx){
 	showNetworkFlags(flags);
-	LinphoneManager* lLinphoneMgr = [LinphoneManager instance];
+	LinphoneManager *lm = [LinphoneManager instance];
 	SCNetworkReachabilityFlags networkDownFlags=kSCNetworkReachabilityFlagsConnectionRequired |kSCNetworkReachabilityFlagsConnectionOnTraffic | kSCNetworkReachabilityFlagsConnectionOnDemand;
 
 	if (theLinphoneCore != nil) {
@@ -1058,30 +1058,28 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		struct NetworkReachabilityContext* ctx = nilCtx ? ((struct NetworkReachabilityContext*)nilCtx) : 0;
 		if ((flags == 0) || (flags & networkDownFlags)) {
 			linphone_core_set_network_reachable(theLinphoneCore, false);
-			lLinphoneMgr.connectivity = none;
+			lm.connectivity = none;
 			[LinphoneManager kickOffNetworkConnection];
 		} else {
 			LinphoneTunnel *tunnel = linphone_core_get_tunnel([LinphoneManager getLc]);
 			Connectivity  newConnectivity;
-			BOOL isWifiOnly = lp_config_get_int(lLinphoneMgr.configDb, LINPHONERC_APPLICATION_KEY, "wifi_only_preference",FALSE);
+			BOOL isWifiOnly = [lm lpConfigBoolForKey:@"wifi_only_preference" withDefault:FALSE];
 			if (!ctx || ctx->testWWan)
 				newConnectivity = flags & kSCNetworkReachabilityFlagsIsWWAN ? wwan:wifi;
 			else
 				newConnectivity = wifi;
 
-			if (newConnectivity == wwan
-				&& proxy
-				&& isWifiOnly
-				&& (lLinphoneMgr.connectivity == newConnectivity || lLinphoneMgr.connectivity == none)) {
+			if (newConnectivity == wwan && proxy && isWifiOnly &&
+				(lm.connectivity == newConnectivity || lm.connectivity == none)) {
 				linphone_proxy_config_expires(proxy, 0);
 			} else if (proxy){
-				NSInteger defaultExpire = [[LinphoneManager instance] lpConfigIntForKey:@"default_expires"];
+				NSInteger defaultExpire = [lm lpConfigIntForKey:@"default_expires"];
 				if (defaultExpire>=0)
 					linphone_proxy_config_expires(proxy, (int)defaultExpire);
 				//else keep default value from linphonecore
 			}
 
-			if (lLinphoneMgr.connectivity != newConnectivity) {
+			if (lm.connectivity != newConnectivity) {
 				if (tunnel) linphone_tunnel_reconnect(tunnel);
 				// connectivity has changed
 				linphone_core_set_network_reachable(theLinphoneCore,false);
@@ -1092,10 +1090,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 				linphone_core_iterate(theLinphoneCore);
 				LOGI(@"Network connectivity changed to type [%s]",(newConnectivity==wifi?"wifi":"wwan"));
 			}
-			lLinphoneMgr.connectivity=newConnectivity;
-			switch (lLinphoneMgr.tunnelMode) {
+			lm.connectivity = newConnectivity;
+			switch (lm.tunnelMode) {
 				case tunnel_wwan:
-					linphone_tunnel_enable(tunnel,lLinphoneMgr.connectivity == wwan);
+					linphone_tunnel_enable(tunnel, lm.connectivity == wwan);
 					break;
 				case tunnel_auto:
 					linphone_tunnel_auto_detect(tunnel);
@@ -1106,7 +1104,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			}
 		}
 		if (ctx && ctx->networkStateChanged) {
-			(*ctx->networkStateChanged)(lLinphoneMgr.connectivity);
+			(*ctx->networkStateChanged)(lm.connectivity);
 		}
 	}
 }
@@ -2103,63 +2101,70 @@ static void audioRouteChangeListenerCallback (
 #pragma mark - LPConfig Functions
 
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key {
-	[self lpConfigSetString:value forKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+	[self lpConfigSetString:value forKey:key forSection:LINPHONERC_APPLICATION_KEY];
 }
-
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString *)section {
 	if (!key) return;
 	lp_config_set_string(configDb, [section UTF8String], [key UTF8String], value?[value UTF8String]:NULL);
 }
-
 - (NSString*)lpConfigStringForKey:(NSString*)key {
-	return [self lpConfigStringForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+	return [self lpConfigStringForKey:key withDefault:nil];
 }
 - (NSString*)lpConfigStringForKey:(NSString*)key withDefault:(NSString*)defaultValue {
-	NSString* value = [self lpConfigStringForKey:key];
-	return value?value:defaultValue;
+	return [self lpConfigStringForKey:key forSection:LINPHONERC_APPLICATION_KEY withDefault:defaultValue];
 }
-
 - (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString *)section {
-	if (!key) return nil;
+	return [self lpConfigStringForKey:key forSection:section withDefault:nil];
+}
+- (NSString *)lpConfigStringForKey:(NSString *)key forSection:(NSString *)section withDefault:(NSString *)defaultValue {
+	if (!key)
+		return defaultValue;
 	const char* value = lp_config_get_string(configDb, [section UTF8String], [key UTF8String], NULL);
-	if (value)
-		return [NSString stringWithUTF8String:value];
-	else
-		return nil;
+	return value ? [NSString stringWithUTF8String:value] : defaultValue;
 }
 
-- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key {
-	[self lpConfigSetInt:value forKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+- (void)lpConfigSetInt:(int)value forKey:(NSString *)key {
+	[self lpConfigSetInt:value forKey:key forSection:LINPHONERC_APPLICATION_KEY];
 }
-
-- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key forSection:(NSString *)section {
+- (void)lpConfigSetInt:(int)value forKey:(NSString *)key forSection:(NSString *)section {
 	if (!key) return;
-	lp_config_set_int(configDb, [section UTF8String], [key UTF8String], (int)value );
+	lp_config_set_int(configDb, [section UTF8String], [key UTF8String], (int)value);
 }
-
-- (NSInteger)lpConfigIntForKey:(NSString*)key {
-	return [self lpConfigIntForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+- (int)lpConfigIntForKey:(NSString *)key {
+	return [self lpConfigIntForKey:key withDefault:-1];
 }
-
-- (NSInteger)lpConfigIntForKey:(NSString*)key forSection:(NSString *)section {
-	if (!key) return -1;
-	return lp_config_get_int(configDb, [section UTF8String], [key UTF8String], -1);
+- (int)lpConfigIntForKey:(NSString *)key withDefault:(int)defaultValue {
+	return [self lpConfigIntForKey:key forSection:LINPHONERC_APPLICATION_KEY withDefault:defaultValue];
+}
+- (int)lpConfigIntForKey:(NSString *)key forSection:(NSString *)section {
+	return [self lpConfigIntForKey:key forSection:section withDefault:-1];
+}
+- (int)lpConfigIntForKey:(NSString *)key forSection:(NSString *)section withDefault:(int)defaultValue {
+	if (!key)
+		return defaultValue;
+	return lp_config_get_int(configDb, [section UTF8String], [key UTF8String], (int)defaultValue);
 }
 
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key {
-	[self lpConfigSetBool:value forKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+	[self lpConfigSetBool:value forKey:key forSection:LINPHONERC_APPLICATION_KEY];
 }
-
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString *)section {
-	return [self lpConfigSetInt:(NSInteger)(value == TRUE) forKey:key forSection:section];
+	[self lpConfigSetInt:(int)(value == TRUE)forKey:key forSection:section];
 }
-
 - (BOOL)lpConfigBoolForKey:(NSString*)key {
-	return [self lpConfigBoolForKey:key forSection:[NSString stringWithUTF8String:LINPHONERC_APPLICATION_KEY]];
+	return [self lpConfigBoolForKey:key withDefault:FALSE];
 }
-
+- (BOOL)lpConfigBoolForKey:(NSString *)key withDefault:(BOOL)defaultValue {
+	return [self lpConfigBoolForKey:key forSection:LINPHONERC_APPLICATION_KEY withDefault:defaultValue];
+}
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString *)section {
-	return [self lpConfigIntForKey:key forSection:section] == 1;
+	return [self lpConfigBoolForKey:key forSection:section withDefault:FALSE];
+}
+- (BOOL)lpConfigBoolForKey:(NSString *)key forSection:(NSString *)section withDefault:(BOOL)defaultValue {
+	if (!key)
+		return defaultValue;
+	int val = [self lpConfigIntForKey:key forSection:section withDefault:-1];
+	return (val != -1) ? (val == 1) : defaultValue;
 }
 
 #pragma mark - GSM management

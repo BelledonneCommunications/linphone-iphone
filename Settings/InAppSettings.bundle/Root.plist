@@ -268,7 +268,7 @@
 			<key>Key</key>
 			<string>release_button</string>
 			<key>Title</key>
-			<string>Exit</string>
+			<string>Release core</string>
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>

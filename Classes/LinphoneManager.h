@@ -36,7 +36,7 @@
 #include "linphone/linphonecore.h"
 #include "linphone/linphone_tunnel.h"
 
-extern const char *const LINPHONERC_APPLICATION_KEY;
+extern NSString *const LINPHONERC_APPLICATION_KEY;
 
 extern NSString *const kLinphoneCoreUpdate;
 extern NSString *const kLinphoneDisplayStatusUpdate;
@@ -169,18 +169,26 @@ typedef struct _LinphoneManagerSounds {
 +(void)setValueInMessageAppData:(id)value forKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
 
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key;
-- (NSString*)lpConfigStringForKey:(NSString*)key;
-- (NSString*)lpConfigStringForKey:(NSString*)key withDefault:(NSString*)value;
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString*)section;
+- (NSString *)lpConfigStringForKey:(NSString *)key;
 - (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString*)section;
-- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key;
-- (NSInteger)lpConfigIntForKey:(NSString*)key;
-- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key forSection:(NSString*)section;
-- (NSInteger)lpConfigIntForKey:(NSString*)key forSection:(NSString*)section;
+- (NSString *)lpConfigStringForKey:(NSString *)key withDefault:(NSString *)value;
+- (NSString *)lpConfigStringForKey:(NSString *)key forSection:(NSString *)section withDefault:(NSString *)value;
+
+- (void)lpConfigSetInt:(int)value forKey:(NSString *)key;
+- (void)lpConfigSetInt:(int)value forKey:(NSString *)key forSection:(NSString *)section;
+- (int)lpConfigIntForKey:(NSString *)key;
+- (int)lpConfigIntForKey:(NSString *)key forSection:(NSString *)section;
+- (int)lpConfigIntForKey:(NSString *)key withDefault:(int)value;
+- (int)lpConfigIntForKey:(NSString *)key forSection:(NSString *)section withDefault:(int)value;
+
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key;
-- (BOOL)lpConfigBoolForKey:(NSString*)key;
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString*)section;
+- (BOOL)lpConfigBoolForKey:(NSString *)key;
 - (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString*)section;
+- (BOOL)lpConfigBoolForKey:(NSString *)key withDefault:(BOOL)value;
+- (BOOL)lpConfigBoolForKey:(NSString *)key forSection:(NSString *)section withDefault:(BOOL)value;
+
 - (void)silentPushFailed:(NSTimer*)timer;
 
 @property (readonly) BOOL isTesting;

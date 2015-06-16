@@ -156,31 +156,41 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>upload_bandwidth_preference</string>
+			<string>adaptive_rate_control_group</string>
 			<key>Title</key>
-			<string>Upload bandwidth</string>
+			<string>Adaptive rate control</string>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>KeyboardType</key>
-			<string>NumberPad</string>
-			<key>DefaultValue</key>
-			<integer>0</integer>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentRight</string>
+			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
-			<key>Key</key>
-			<string>download_bandwidth_preference</string>
-			<key>Title</key>
-			<string>Download bandwidth</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>KeyboardType</key>
-			<string>NumberPad</string>
 			<key>DefaultValue</key>
-			<integer>0</integer>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentRight</string>
+			<true/>
+			<key>Key</key>
+			<string>adaptive_rate_control_preference</string>
+			<key>Title</key>
+			<string>Adaptive rate control</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<string>Simple</string>
+			<key>Key</key>
+			<string>adaptive_rate_algorithm_preference</string>
+			<key>Title</key>
+			<string>Adaptive rate algorithm</string>
+			<key>Titles</key>
+			<array>
+				<string>Simple</string>
+				<string>Stateful</string>
+			</array>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>Simple</string>
+				<string>Stateful</string>
+			</array>
 		</dict>
 	</array>
 </dict>
