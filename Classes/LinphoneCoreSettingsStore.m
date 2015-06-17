@@ -641,6 +641,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 		linphone_core_set_preferred_framerate(lc, [self integerForKey:@"video_preferred_fps_preference"]);
 		linphone_core_set_download_bandwidth(lc, [self integerForKey:@"download_bandwidth_preference"]);
+		linphone_core_set_upload_bandwidth(lc, [self integerForKey:@"download_bandwidth_preference"]);
 	}
 
 	// call section
