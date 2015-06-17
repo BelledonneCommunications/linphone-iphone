@@ -27,12 +27,14 @@ import os
 import re
 import shutil
 import sys
+from subprocess import Popen
 sys.dont_write_bytecode = True
 sys.path.insert(0, 'submodules/cmake-builder')
 import prepare
 
 
 class IOSTarget(prepare.Target):
+
 	def __init__(self, arch):
 		prepare.Target.__init__(self, 'ios-' + arch)
 		current_path = os.path.dirname(os.path.realpath(__file__))
@@ -40,62 +42,77 @@ class IOSTarget(prepare.Target):
 		self.toolchain_file = 'toolchains/toolchain-ios-' + arch + '.cmake'
 		self.output = 'liblinphone-sdk/' + arch + '-apple-darwin.ios'
 		self.additional_args = [
-			'-DLINPHONE_BUILDER_EXTERNAL_SOURCE_PATH=' + current_path + '/submodules'
+			'-DLINPHONE_BUILDER_EXTERNAL_SOURCE_PATH=' +
+			current_path + '/submodules'
 		]
 
 	def clean(self):
 		if os.path.isdir('WORK'):
-			shutil.rmtree('WORK', ignore_errors=False, onerror=self.handle_remove_read_only)
+			shutil.rmtree(
+				'WORK', ignore_errors=False, onerror=self.handle_remove_read_only)
 		if os.path.isdir('liblinphone-sdk'):
-			shutil.rmtree('liblinphone-sdk', ignore_errors=False, onerror=self.handle_remove_read_only)
+			shutil.rmtree(
+				'liblinphone-sdk', ignore_errors=False, onerror=self.handle_remove_read_only)
 
 
 class IOSi386Target(IOSTarget):
+
 	def __init__(self):
 		IOSTarget.__init__(self, 'i386')
 
+
 class IOSx8664Target(IOSTarget):
+
 	def __init__(self):
 		IOSTarget.__init__(self, 'x86_64')
 
+
 class IOSarmv7Target(IOSTarget):
+
 	def __init__(self):
 		IOSTarget.__init__(self, 'armv7')
 
+
 class IOSarm64Target(IOSTarget):
+
 	def __init__(self):
 		IOSTarget.__init__(self, 'arm64')
 
 
 targets = {}
-targets[  'i386'] = IOSi386Target()
+targets['i386'] = IOSi386Target()
 targets['x86_64'] = IOSx8664Target()
-targets[ 'armv7'] = IOSarmv7Target()
-targets[ 'arm64'] = IOSarm64Target()
+targets['armv7'] = IOSarmv7Target()
+targets['arm64'] = IOSarm64Target()
 
 archs_device = ['arm64', 'armv7']
 archs_simu = ['i386', 'x86_64']
 platforms = ['all', 'devices', 'simulators'] + archs_device + archs_simu
 
+
 class PlatformListAction(argparse.Action):
+
 	def __call__(self, parser, namespace, values, option_string=None):
 		if values:
 			for value in values:
 				if value not in platforms:
-					message = ("invalid platform: {0!r} (choose from {1})".format(value, ', '.join([repr(platform) for platform in platforms])))
+					message = ("invalid platform: {0!r} (choose from {1})".format(
+						value, ', '.join([repr(platform) for platform in platforms])))
 					raise argparse.ArgumentError(self, message)
 			setattr(namespace, self.dest, values)
+
 
 def warning(platforms):
 	gpl_third_parties_enabled = False
 	regex = re.compile("^ENABLE_GPL_THIRD_PARTIES:BOOL=ON")
-	f = open('WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0]), 'r')
+	f = open(
+		'WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0]), 'r')
 	for line in f:
 		if regex.match(line):
 			gpl_third_parties_enabled = True
 			break
 	f.close()
-	
+
 	if gpl_third_parties_enabled:
 		print("""
 ***************************************************************************
@@ -121,16 +138,51 @@ def warning(platforms):
 """)
 
 
-def main(argv = None):
+def extract_libs_list():
+	l = []
+	# name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
+	regex = re.compile("name = (lib(\S+)\.a); path = \"liblinphone-sdk/apple-darwin/")
+	f = open('linphone.xcodeproj/project.pbxproj', 'r')
+	lines = f.readlines()
+	f.close()
+	for line in lines:
+		m = regex.search(line)
+		if m is not None:
+			l += [m.group(1)]
+	return list(set(l))
+
+
+def install_git_hook():
+	git_hook_path = ".git{sep}hooks{sep}pre-commit".format(sep=os.sep)
+	if os.path.isdir(".git{sep}hooks".format(sep=os.sep)) and not os.path.isfile(git_hook_path):
+		print("Installing Git pre-commit hook")
+		shutil.copyfile(".git-pre-commit", git_hook_path)
+		os.chmod(git_hook_path, 0755)
+
+
+def main(argv=None):
 	if argv is None:
 		argv = sys.argv
-	argparser = argparse.ArgumentParser(description="Prepare build of Linphone and its dependencies.")
-	argparser.add_argument('-c', '-C', '--clean', help="Clean a previous build instead of preparing a build.", action='store_true')
-	argparser.add_argument('-d', '--debug', help="Prepare a debug build.", action='store_true')
-	argparser.add_argument('-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
-	argparser.add_argument('-L', '--list-cmake-variables', help="List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
-	argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=['all'], help="The platform to build for (default is all), one of: {0}.".format(', '.join([repr(platform) for platform in platforms])))
+	argparser = argparse.ArgumentParser(
+		description="Prepare build of Linphone and its dependencies.")
+	argparser.add_argument(
+		'-c', '-C', '--clean', help="Clean a previous build instead of preparing a build.", action='store_true')
+	argparser.add_argument(
+		'-d', '--debug', help="Prepare a debug build, eg. add debug symbols and use no optimizations.", action='store_true')
+	argparser.add_argument(
+		'-dv', '--debug-verbose', help="Activate ms_debug logs.", action='store_true')
+	argparser.add_argument(
+		'-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
+	argparser.add_argument('-L', '--list-cmake-variables',
+						   help="List non-advanced CMake cache variables.", action='store_true',
+						   dest='list_cmake_variables')
+	argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=[
+						   'x86_64', 'devices'],
+						   help="The platform to build for (default is 'x86_64 devices'). Space separated"
+								" architectures in list: {0}.".format(', '.join([repr(platform) for platform in platforms])))
 	args, additional_args = argparser.parse_known_args()
+
+	install_git_hook()
 
 	selected_platforms = []
 	for platform in args.platform:
@@ -152,20 +204,30 @@ def main(argv = None):
 		if args.clean:
 			target.clean()
 		else:
-			if args.debug:
+			if args.debug_verbose:
 				additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
-			retcode = prepare.run(target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
+			retcode = prepare.run(
+				target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
 			if retcode != 0:
+				if retcode == 51:
+					p = Popen(["make", "help-prepare-options"])
 				return retcode
 			makefile_platforms += [platform]
 
 	if makefile_platforms:
+		libs_list = extract_libs_list()
 		packages = os.listdir('WORK/ios-' + makefile_platforms[0] + '/Build')
 		packages.sort()
 		arch_targets = ""
 		for arch in makefile_platforms:
 			arch_targets += """
 {arch}: all-{arch}
+
+package-in-list-%:
+	if ! grep -q " $* " <<< " $(packages) "; then \\
+		echo "$* not in list of available packages: $(packages)"; \\
+		exit 3; \\
+	fi
 
 {arch}-build:
 	@for package in $(packages); do \\
@@ -182,16 +244,16 @@ def main(argv = None):
 		$(MAKE) {arch}-veryclean-$$package; \\
 	done
 
-{arch}-build-%:
+{arch}-build-%: package-in-list-%
 	rm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-update; \\
 	$(MAKE) -C WORK/ios-{arch}/cmake EP_$*
 
-{arch}-clean-%:
+{arch}-clean-%: package-in-list-%
 	$(MAKE) -C WORK/ios-{arch}/Build/$* clean; \\
 	rm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-build; \\
 	rm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-install;
 
-{arch}-veryclean-%:
+{arch}-veryclean-%: package-in-list-%
 	cat WORK/ios-{arch}/Build/$*/install_manifest.txt | xargs rm; \\
 	rm -rf WORK/ios-{arch}/Build/$*/*; \\
 	rm -f WORK/ios-{arch}/Stamp/EP_$*/*; \\
@@ -226,7 +288,7 @@ def main(argv = None):
 		multiarch = ""
 		for arch in makefile_platforms[1:]:
 			multiarch += \
-"""		if test -f "$${arch}_path"; then \\
+				"""		if test -f "$${arch}_path"; then \\
 			all_paths=`echo $$all_paths $${arch}_path`; \\
 			all_archs="$$all_archs,{arch}" ; \\
 		else \\
@@ -236,6 +298,7 @@ def main(argv = None):
 		makefile = """
 archs={archs}
 packages={packages}
+libs_list={libs_list}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
@@ -249,19 +312,19 @@ all-%:
 	done
 	$(MAKE) -C WORK/ios-$*/cmake
 
-build-%:
+build-%: package-in-list-%
 	@for arch in $(archs); do \\
 		echo "==== starting build of $* for arch $$arch ===="; \\
 		$(MAKE) $$arch-build-$*; \\
 	done
 
-clean-%:
+clean-%: package-in-list-%
 	@for arch in $(archs); do \\
 		echo "==== starting clean of $* for arch $$arch ===="; \\
 		$(MAKE) $$arch-clean-$*; \\
 	done
 
-veryclean-%:
+veryclean-%: package-in-list-%
 	@for arch in $(archs); do \\
 		echo "==== starting veryclean of $* for arch $$arch ===="; \\
 		$(MAKE) $$arch-veryclean-$*; \\
@@ -292,9 +355,17 @@ libs: $(addprefix all-,$(archs))
 		echo "[$$all_archs] Mixing `basename $$archive` in $$destpath"; \\
 		lipo -create $$all_paths -output $$destpath; \\
 	done && \\
-	if ! test -f liblinphone-sdk/apple-darwin/lib/libtunnel.a ; then \\
-		cp -f submodules/binaries/libdummy.a liblinphone-sdk/apple-darwin/lib/libtunnel.a ; \\
-	fi
+	for lib in {libs_list} ; do \\
+		if [ $${{lib:0:5}} = "libms" ] ; then \\
+			library_path=liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/$$lib ; \\
+		else \\
+			library_path=liblinphone-sdk/apple-darwin/lib/$$lib ; \\
+		fi ; \\
+		if ! test -f $$library_path ; then \\
+			echo "[$$all_archs] Generating dummy $$lib static library." ; \\
+			cp -f submodules/binaries/libdummy.a $$library_path ; \\
+		fi \\
+	done
 
 ipa: build
 	xcodebuild -configuration Release \\
@@ -318,7 +389,12 @@ push-transifex:
 zipres:
 	@tar -czf ios_assets.tar.gz Resources iTunesArtwork
 
-help:
+help-prepare-options:
+	@echo "prepare.py was previously executed with the following options:"
+	@echo "   {options}"
+
+help: help-prepare-options
+	@echo ""
 	@echo "(please read the README.md file first)"
 	@echo ""
 	@echo "Available architectures: {archs}"
@@ -339,7 +415,9 @@ help:
 	@echo ""
 	@echo "   * sdk  : re-add all generated libraries to the SDK. Use this only after a full build."
 	@echo "   * libs : after a rebuild of a subpackage, will mix the new libs in liblinphone-sdk/apple-darwin directory"
-""".format(archs=' '.join(makefile_platforms), arch_opts='|'.join(makefile_platforms), first_arch=makefile_platforms[0], arch_targets=arch_targets, packages=' '.join(packages), multiarch=multiarch)
+""".format(archs=' '.join(makefile_platforms), arch_opts='|'.join(makefile_platforms),
+			first_arch=makefile_platforms[0], options=' '.join(sys.argv),
+		   arch_targets=arch_targets, packages=' '.join(packages), libs_list=' '.join(libs_list), multiarch=multiarch)
 		f = open('Makefile', 'w')
 		f.write(makefile)
 		f.close()

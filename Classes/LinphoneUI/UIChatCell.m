@@ -106,11 +106,12 @@
 
     if( last_message ){
 
-        const char* text                  = linphone_chat_message_get_text(last_message);
-        const char*  url                  = linphone_chat_message_get_external_body_url(last_message);
-        // Message
-        if(url) {
-            [chatContentLabel setText:@""];
+        const char* text                    = linphone_chat_message_get_text(last_message);
+        const char*  url                    = linphone_chat_message_get_external_body_url(last_message);
+        const LinphoneContent *last_content = linphone_chat_message_get_file_transfer_information(last_message);
+		// Message
+        if(url||last_content) {
+            [chatContentLabel setText:@"🗻"];
         } else if (text) {
             NSString *message = [NSString stringWithUTF8String:text];
             // shorten long messages

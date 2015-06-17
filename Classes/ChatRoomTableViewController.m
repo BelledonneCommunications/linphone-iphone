@@ -63,6 +63,16 @@
     if( !chatRoom ) return;
     [self clearMessageList];
     self->messageList = linphone_chat_room_get_history(chatRoom, 0);
+
+	// also append transient upload messages because they are not in history yet!
+	for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+		if (linphone_chat_room_get_peer_address(linphone_chat_message_get_chat_room(ftd.message)) ==
+				linphone_chat_room_get_peer_address(chatRoom) &&
+			linphone_chat_message_is_outgoing(ftd.message)) {
+			LOGI(@"Appending transient upload message %p", ftd.message);
+			self->messageList = ms_list_append(self->messageList, ftd.message);
+		}
+	}
 }
 
 - (void)reloadData {
@@ -76,9 +86,10 @@
     messageList = ms_list_append(messageList, linphone_chat_message_ref(chat));
     int pos = ms_list_size(messageList) - 1;
 
-    [self.tableView beginUpdates];
-    [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:pos inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-    [self.tableView endUpdates];
+	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:pos inSection:0];
+	[self.tableView beginUpdates];
+	[self.tableView insertRowsAtIndexPaths:@[ indexPath ] withRowAnimation:UITableViewRowAnimationFade];
+	[self.tableView endUpdates];
 }
 
 - (void)updateChatEntry:(LinphoneChatMessage*)chat {
@@ -183,7 +194,6 @@
         [tableView beginUpdates];
         LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
         if( chat ){
-
             linphone_chat_room_delete_message(chatRoom, chat);
             messageList = ms_list_remove(messageList, chat);
 

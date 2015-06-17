@@ -29,7 +29,6 @@
 #import "LinphoneManager.h"
 
 #import "PhoneMainView.h"
-#import "InAppProductsViewController.h"
 
 @interface InAppProductsManager()
 @property (strong, nonatomic) NSDate *expirationDate;

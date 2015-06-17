@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UICallCell">
@@ -33,10 +32,10 @@
                 <outlet property="videoDownloadBandwidthLabel" destination="109" id="125"/>
                 <outlet property="videoIceConnectivityHeaderLabel" destination="111" id="126"/>
                 <outlet property="videoIceConnectivityLabel" destination="112" id="127"/>
-                <outlet property="videoRecvSizeHeaderLabel" destination="nNJ-4U-pl2" id="r20-yj-TG9"/>
-                <outlet property="videoRecvSizeLabel" destination="RxS-YG-dqM" id="fPi-Uk-MHy"/>
-                <outlet property="videoSentSizeHeaderLabel" destination="6PM-O1-cYd" id="G8P-SK-lgu"/>
-                <outlet property="videoSentSizeLabel" destination="CCZ-g0-5g1" id="kgM-NY-RUy"/>
+                <outlet property="videoRecvSizeFPSHeaderLabel" destination="nNJ-4U-pl2" id="mMd-r3-eEC"/>
+                <outlet property="videoRecvSizeFPSLabel" destination="RxS-YG-dqM" id="paX-s0-Cjs"/>
+                <outlet property="videoSentSizeFPSHeaderLabel" destination="6PM-O1-cYd" id="I9e-1I-e8q"/>
+                <outlet property="videoSentSizeFPSLabel" destination="CCZ-g0-5g1" id="uzZ-aa-lnu"/>
                 <outlet property="videoStatsView" destination="99" id="128"/>
                 <outlet property="videoUploadBandwidthHeaderLabel" destination="107" id="129"/>
                 <outlet property="videoUploadBandwidthLabel" destination="108" id="130"/>
@@ -218,11 +217,11 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
-                                <view contentMode="scaleToFill" id="j5j-bZ-C2L" userLabel="videoSentSizeView">
+                                <view contentMode="scaleToFill" id="j5j-bZ-C2L" userLabel="videoSentSizeFPSView">
                                     <rect key="frame" x="10" y="80" width="310" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Size sent:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="6PM-O1-cYd" userLabel="videoSentSizeHeaderLabel">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Size sent (FPS):" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="6PM-O1-cYd" userLabel="videoSentSizeFPSHeaderLabel">
                                             <rect key="frame" x="0.0" y="0.0" width="160" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration">
@@ -231,7 +230,7 @@
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="320x240" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="CCZ-g0-5g1" userLabel="videoSentSizeLabel">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="320x240 (15FPS)" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="CCZ-g0-5g1" userLabel="videoSentSizeFPSLabel">
                                             <rect key="frame" x="168" y="0.0" width="142" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Video upload bandwidth">
@@ -243,11 +242,11 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
-                                <view contentMode="scaleToFill" id="6oX-23-Ivn" userLabel="videoRecvSizeView">
+                                <view contentMode="scaleToFill" id="6oX-23-Ivn" userLabel="videoRecvSizeFPSView">
                                     <rect key="frame" x="10" y="110" width="310" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Size received:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="nNJ-4U-pl2" userLabel="videoRecvSizeHeaderLabel">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Size received (FPS):" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="nNJ-4U-pl2" userLabel="videoRecvSizeFPSHeaderLabel">
                                             <rect key="frame" x="0.0" y="0.0" width="160" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration">
@@ -256,7 +255,7 @@
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="320x240" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="RxS-YG-dqM" userLabel="videoRecvSizeLabel">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="320x240 (15FPS)" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="RxS-YG-dqM" userLabel="videoRecvSizeFPSLabel">
                                             <rect key="frame" x="168" y="0.0" width="142" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Video upload bandwidth">

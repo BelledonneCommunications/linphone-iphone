@@ -24,14 +24,12 @@
 #import "ChatRoomTableViewController.h"
 #import "HPGrowingTextView.h"
 #import "ImagePickerViewController.h"
-#import "ImageSharing.h"
 #import "OrderedDictionary.h"
 
 #include "linphone/linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ImageSharingDelegate, ChatRoomDelegate> {
+@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatRoomDelegate> {
     LinphoneChatRoom *chatRoom;
-    ImageSharing *imageSharing;
     OrderedDictionary *imageQualities;
     BOOL scrollOnGrowingEnabled;
     BOOL composingVisible;
@@ -54,17 +52,12 @@
 @property (strong, nonatomic) IBOutlet UIView *composeIndicatorView;
 
 @property (nonatomic, strong) IBOutlet UIButton* pictureButton;
-@property (nonatomic, strong) IBOutlet UIButton* cancelTransferButton;
-@property (nonatomic, strong) IBOutlet UIProgressView* imageTransferProgressBar;
-@property (nonatomic, strong) IBOutlet UIView* transferView;
-@property (nonatomic, strong) IBOutlet UIView* waitView;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;
 - (IBAction)onMessageChange:(id)sender;
 - (IBAction)onSendClick:(id)event;
 - (IBAction)onPictureClick:(id)event;
-- (IBAction)onTransferCancelClick:(id)event;
 - (IBAction)onListTap:(id)sender;
 
 - (void)setChatRoom:(LinphoneChatRoom*)room;
