@@ -22,7 +22,7 @@ function git-clang-format-diffing {
     format_diff_options="--style=file"
 
     #only diffing commited files, ignored staged one
-    $format_diff $format_diff_options --diff $(git --no-pager diff --cached --name-only) > git-clang-format.diff
+    $format_diff $format_diff_options --diff $(git --no-pager diff --cached --name-status | grep -v '^D' | cut -f2) > git-clang-format.diff
 
     if ! grep -q -E '(no modified files to format|clang-format did not modify any files)' git-clang-format.diff; then
         invalid-format-detected "git apply git-clang-format.diff" "clang-format $format_diff_options -i <some_file.c>"
@@ -39,12 +39,13 @@ function clang-format-diff-diffing {
     fi
 }
 
+set -e
 if which git-clang-format &>/dev/null; then
     git-clang-format-diffing $@
 elif [ ! -z "$(find /usr/bin/ /usr/local/bin/ /opt/bin/ -name 'clang-format-diff*' -type f 2>/dev/null)" ]; then
     # Warning! We need at least version 1.6...
     clang-format-diff-diffing $@
 else
-    echo "$0: Please install clang-format (coding style checker) - could not find git-clang-format nor clang-format-diff in PATH."
-    exit 1
+    echo "$0: Please install clang-format (coding style checker) - could not find git-clang-format nor clang-format-diff in PATH. Skipping code verification..."
+    exit 0
 fi
