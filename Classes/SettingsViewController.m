@@ -491,7 +491,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		NSString *video_preset = [notif.userInfo objectForKey:@"video_preset_preference"];
 		removeFromHiddenKeys = [video_preset isEqualToString:@"custom"];
 		[keys addObject:@"video_preferred_fps_preference"];
-		[keys addObject:@"bandwidth_limit_preference"];
+		[keys addObject:@"download_bandwidth_preference"];
 	}
 
 	for (NSString *key in keys) {
@@ -640,7 +640,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (!linphone_core_get_video_preset([LinphoneManager getLc]) ||
 		strcmp(linphone_core_get_video_preset([LinphoneManager getLc]), "custom") != 0) {
 		[hiddenKeys addObject:@"video_preferred_fps_preference"];
-		[hiddenKeys addObject:@"bandwidth_limit_preference"];
+		[hiddenKeys addObject:@"download_bandwidth_preference"];
 	}
 
 	[hiddenKeys addObjectsFromArray:[[LinphoneManager unsupportedCodecs] allObjects]];

@@ -116,7 +116,7 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>bandwidth_limit_preference</string>
+			<string>download_bandwidth_preference</string>
 			<key>Title</key>
 			<string>Bandwidth limit in kbits/s</string>
 			<key>Type</key>
