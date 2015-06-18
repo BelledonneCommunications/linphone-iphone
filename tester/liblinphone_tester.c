@@ -175,7 +175,8 @@ static const char* liblinphone_helper =
 		"\t\t\t--config <config path>\n"
 		"\t\t\t--domain <test sip domain>\n"
 		"\t\t\t--auth-domain <test auth domain>\n"
-		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n";
+		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
+		"\t\t\t--keep-recorded-files\n";
 
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 int main (int argc, char *argv[])
@@ -220,6 +221,8 @@ int main (int argc, char *argv[])
 		}else if (strcmp(argv[i],"--dns-hosts")==0){
 			CHECK_ARG("--dns-hosts", ++i, argc);
 			userhostsfile=argv[i];
+		} else if (strcmp(argv[i],"--keep-recorded-files")==0){
+			liblinphone_tester_keep_recorded_files(TRUE);
 		} else {
 			int ret = bc_tester_parse_args(argc, argv, i);
 			if (ret>0) {

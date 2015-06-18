@@ -31,6 +31,7 @@
 
 static bool_t liblinphone_tester_ipv6_enabled=FALSE;
 static int liblinphone_tester_keep_accounts_flag = 0;
+static int liblinphone_tester_keep_record_files = FALSE;
 static int manager_count = 0;
 
 const char* test_domain="sipopen.example.org";
@@ -40,7 +41,7 @@ const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 const char *userhostsfile = "tester_hosts";
 
- static void network_reachable(LinphoneCore *lc, bool_t reachable) {
+static void network_reachable(LinphoneCore *lc, bool_t reachable) {
 	stats* counters;
 	ms_message("Network reachable [%s]",reachable?"TRUE":"FALSE");
 	counters = get_stats(lc);
@@ -349,7 +350,7 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	if (mgr->lc){
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
-		if (record_file){
+		if (!liblinphone_tester_keep_record_files && record_file){
 			if ((CU_get_number_of_failures()-mgr->number_of_cunit_error_at_creation)>0) {
 				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
 			} else {
@@ -385,6 +386,10 @@ int liblinphone_tester_ipv6_available(void){
 
 void liblinphone_tester_keep_accounts( int keep ){
 	liblinphone_tester_keep_accounts_flag = keep;
+}
+
+void liblinphone_tester_keep_recorded_files(int keep){
+	liblinphone_tester_keep_record_files = keep;
 }
 
 void liblinphone_tester_clear_accounts(void){

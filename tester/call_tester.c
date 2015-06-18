@@ -4074,7 +4074,7 @@ static void video_call_ice_params() {
 }
 #endif
 
-static void simple_stereo_call(const char *codec_name, int clock_rate, int bitrate_override) {
+static void simple_stereo_call(const char *codec_name, int clock_rate, int bitrate_override, bool_t stereo) {
 	int begin;
 	int leaked_objects;
 	LinphoneCoreManager* marie;
@@ -4096,10 +4096,10 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 		ms_warning("%s not available, stereo with %s not tested.",codec_name, codec_name);
 		goto end;
 	}
-	payload_type_set_recv_fmtp(pt, "stereo=1;sprop-stereo=1");
+	if (stereo) payload_type_set_recv_fmtp(pt, "stereo=1;sprop-stereo=1");
 	if (bitrate_override) linphone_core_set_payload_type_bitrate(marie->lc, pt, bitrate_override);
 	pt = linphone_core_find_payload_type(pauline->lc, codec_name, clock_rate, 2);
-	payload_type_set_recv_fmtp(pt, "stereo=1;sprop-stereo=1");
+	if (stereo) payload_type_set_recv_fmtp(pt, "stereo=1;sprop-stereo=1");
 	if (bitrate_override) linphone_core_set_payload_type_bitrate(pauline->lc, pt, bitrate_override);
 
 	disable_all_audio_codecs_except_one(marie->lc, codec_name, clock_rate);
@@ -4109,8 +4109,6 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	linphone_core_set_play_file(marie->lc, stereo_file);
 	linphone_core_set_use_files(pauline->lc, TRUE);
 	linphone_core_set_record_file(pauline->lc, recordpath);
-
-	remove(recordpath);
 
 	/*stereo is supported only without volume control, echo canceller...*/
 	lp_config_set_string(marie->lc->config,"sound","features","NONE");
@@ -4123,11 +4121,19 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	if (clock_rate!=48000) ms_warning("Similarity checking not implemented for files not having the same sampling rate");
 	else{
 #if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
-		double similar;
-		const double threshold = .7f;
-		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
-		BC_ASSERT_GREATER(similar, threshold, float, "%f");
-		BC_ASSERT_LOWER(similar, 1.f, float, "%f");
+		if (stereo){
+			double similar;
+			const double threshold = .7f;
+			BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
+			BC_ASSERT_GREATER(similar, threshold, float, "%f");
+			BC_ASSERT_LOWER(similar, 1.f, float, "%f");
+		}else{
+			double similar;
+			const double threshold = .7f;
+			BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
+			BC_ASSERT_LOWER(similar, threshold, float, "%f");
+			BC_ASSERT_LOWER(similar, 1.f, float, "%f");
+		}
 #endif
 	}
 
@@ -4146,11 +4152,16 @@ end:
 }
 
 static void simple_stereo_call_l16(void){
-	simple_stereo_call("L16", 44100, 0);
+	simple_stereo_call("L16", 44100, 0, TRUE);
 }
 
 static void simple_stereo_call_opus(void){
-	simple_stereo_call("opus", 48000, 150);
+	simple_stereo_call("opus", 48000, 150, TRUE);
+}
+
+static void simple_mono_call_opus(void){
+	/*actually a call where input/output is made with stereo but opus transmits everything as mono*/
+	simple_stereo_call("opus", 48000, 150, FALSE);
 }
 
 test_t call_tests[] = {
@@ -4274,7 +4285,8 @@ test_t call_tests[] = {
 	{ "Call with transport change after released", call_with_transport_change_after_released },
 	{ "Unsuccessful call with transport change after released",unsucessfull_call_with_transport_change_after_released},
 	{ "Simple stereo call with L16", simple_stereo_call_l16 },
-	{ "Simple stereo call with opus", simple_stereo_call_opus }
+	{ "Simple stereo call with opus", simple_stereo_call_opus },
+	{ "Simple mono call with opus", simple_mono_call_opus }
 };
 
 test_suite_t call_test_suite = {

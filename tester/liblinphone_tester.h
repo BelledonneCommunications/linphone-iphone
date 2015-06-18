@@ -69,6 +69,12 @@ extern int liblinphone_tester_ipv6_available(void);
 extern void liblinphone_tester_keep_accounts( int keep );
 
 /**
+ * @brief Tells the test whether to not remove recorded audio/video files after the tests.
+ * @details By default recorded files are erased after the test, unless the test is failed.
+**/
+void liblinphone_tester_keep_recorded_files(int keep);
+
+/**
  * @brief Clears the created accounts during the testing session.
  */
 extern void liblinphone_tester_clear_accounts(void);
