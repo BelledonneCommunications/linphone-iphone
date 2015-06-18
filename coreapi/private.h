@@ -222,6 +222,8 @@ struct _LinphoneCall{
 	SalMediaDescription *resultdesc;
 	struct _RtpProfile *audio_profile;
 	struct _RtpProfile *video_profile;
+	struct _RtpProfile *rtp_io_audio_profile;
+	struct _RtpProfile *rtp_io_video_profile;
 	struct _LinphoneCallLog *log;
 	LinphoneAddress *me; /*Either from or to based on call dir*/
 	SalOp *op;

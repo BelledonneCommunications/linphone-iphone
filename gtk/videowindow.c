@@ -292,17 +292,19 @@ void linphone_gtk_in_call_show_video(LinphoneCall *call){
 	GtkWidget *video_window=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"video_window");
 	const LinphoneCallParams *params=linphone_call_get_current_params(call);
 	LinphoneCore *lc=linphone_gtk_get_core();
-	
-	if (linphone_call_get_state(call)!=LinphoneCallPaused && params && linphone_call_params_video_enabled(params)){
-		if (video_window==NULL){
-			video_window=create_video_window(call);
-			g_object_set_data(G_OBJECT(callview),"video_window",video_window);
-		}
-		linphone_core_set_native_video_window_id(lc,get_native_handle(gtk_widget_get_window(video_window)));
-	}else{
-		if (video_window){
-			gtk_widget_destroy(video_window);
-			g_object_set_data(G_OBJECT(callview),"video_window",NULL);
+
+	if (((bool_t)lp_config_get_int(linphone_core_get_config(lc), "video", "rtp_io", FALSE)) == FALSE) {
+		if (linphone_call_get_state(call)!=LinphoneCallPaused && params && linphone_call_params_video_enabled(params)){
+			if (video_window==NULL){
+				video_window=create_video_window(call);
+				g_object_set_data(G_OBJECT(callview),"video_window",video_window);
+			}
+			linphone_core_set_native_video_window_id(lc,get_native_handle(gtk_widget_get_window(video_window)));
+		}else{
+			if (video_window){
+				gtk_widget_destroy(video_window);
+				g_object_set_data(G_OBJECT(callview),"video_window",NULL);
+			}
 		}
 	}
 }

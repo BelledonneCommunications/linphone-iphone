@@ -6527,6 +6527,7 @@ void linphone_core_soundcard_hint_check( LinphoneCore* lc){
 	MSList* the_calls = lc->calls;
 	LinphoneCall* call = NULL;
 	bool_t dont_need_sound = TRUE;
+	bool_t use_rtp_io = lp_config_get_int(lc->config, "sound", "rtp_input", FALSE);
 
 	/* check if the remaining calls are paused */
 	while( the_calls ){
@@ -6539,7 +6540,7 @@ void linphone_core_soundcard_hint_check( LinphoneCore* lc){
 	}
 
 	/* if no more calls or all calls are paused, we can free the soundcard */
-	if ( (lc->calls==NULL || dont_need_sound) && !lc->use_files){
+	if ( (lc->calls==NULL || dont_need_sound) && !lc->use_files && !use_rtp_io){
 		ms_message("Notifying soundcard that we don't need it anymore for calls.");
 		notify_soundcard_usage(lc,FALSE);
 	}
