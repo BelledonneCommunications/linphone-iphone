@@ -2390,12 +2390,13 @@ LINPHONE_PUBLIC void linphone_core_set_log_handler(OrtpLogFunc logfunc);
 LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
 
 /**
- * @deprecated Use #linphone_core_set_log_level_mask instead, which is exactly the
- * same function..
+ * @deprecated Define the log level.
+ *
+ * @param loglevel Minimum level for logging messages.
 **/
 LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
 /**
- * Define the log level.
+ * Define the log level using mask.
  *
  * @ingroup misc
  *

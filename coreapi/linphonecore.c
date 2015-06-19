@@ -171,7 +171,24 @@ void linphone_core_set_log_file(FILE *file) {
 }
 
 void linphone_core_set_log_level(OrtpLogLevel loglevel) {
-	linphone_core_set_log_level_mask(loglevel);
+	OrtpLogLevel mask = loglevel;
+	switch (loglevel) {
+		case ORTP_TRACE:
+		case ORTP_DEBUG:
+			mask |= ORTP_DEBUG;
+		case ORTP_MESSAGE:
+			mask |= ORTP_MESSAGE;
+		case ORTP_WARNING:
+			mask |= ORTP_WARNING;
+		case ORTP_ERROR:
+			mask |= ORTP_ERROR;
+		case ORTP_FATAL:
+			mask |= ORTP_FATAL;
+			break;
+		case ORTP_LOGLEV_END:
+			break;
+	}
+	linphone_core_set_log_level_mask(mask);
 }
 
 void linphone_core_set_log_level_mask(OrtpLogLevel loglevel) {
