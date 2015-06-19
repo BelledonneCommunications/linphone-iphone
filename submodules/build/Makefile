@@ -21,7 +21,7 @@
 ############################################################################
 enable_gpl_third_parties=yes
 enable_zrtp=yes
-enable_ffmpeg=yes
+enable_ffmpeg=no
 enable_opus=yes
 enable_debug=no
 enable_i386=no
