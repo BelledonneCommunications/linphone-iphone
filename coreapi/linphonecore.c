@@ -177,9 +177,9 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 void linphone_core_set_log_level_mask(OrtpLogLevel loglevel) {
 	ortp_set_log_level_mask(loglevel);
 	if (loglevel == 0) {
-		sal_disable_logs();
+		sal_disable_log();
 	} else {
-		sal_enable_logs();
+		sal_enable_log();
 	}
 }
 
@@ -662,8 +662,8 @@ void linphone_core_reset_log_collection() {
 void linphone_core_enable_logs(FILE *file){
 	if (file==NULL) file=stdout;
 	ortp_set_log_file(file);
-	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
-	sal_enable_logs();
+	ortp_set_log_level(ORTP_MESSAGE);
+	sal_set_log_level(ORTP_MESSAGE);
 }
 
 /**
@@ -677,9 +677,9 @@ void linphone_core_enable_logs(FILE *file){
  *
 **/
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
-	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+	ortp_set_log_level(ORTP_MESSAGE);
 	linphone_core_set_log_handler(logfunc);
-	sal_enable_logs();
+	sal_set_log_level(ORTP_MESSAGE);
 }
 
 /**
@@ -689,8 +689,8 @@ void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
  * @deprecated Use #linphone_core_set_log_level instead.
 **/
 void linphone_core_disable_logs(void){
-	ortp_set_log_level_mask(ORTP_ERROR|ORTP_FATAL);
-	sal_disable_logs();
+	ortp_set_log_level(ORTP_ERROR);
+	sal_set_log_level(ORTP_ERROR);
 }
 
 void linphone_core_serialize_logs(void) {

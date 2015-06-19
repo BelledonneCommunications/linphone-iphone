@@ -777,8 +777,11 @@ const SalCustomHeader *sal_op_get_recv_custom_header(SalOp *op);
 
 void sal_op_set_sent_custom_header(SalOp *op, SalCustomHeader* ch);
 
-void sal_enable_logs();
-void sal_disable_logs();
+/** deprecated. use sal_set_log_level instead **/
+void sal_enable_log();
+/** deprecated. use sal_set_log_level instead **/
+void sal_disable_log();
+void sal_set_log_level(OrtpLogLevel level);
 
 /*internal API */
 void __sal_op_init(SalOp *b, Sal *sal);

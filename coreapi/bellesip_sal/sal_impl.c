@@ -87,12 +87,37 @@ void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
 	}
 }
 
-void sal_enable_logs(){
-	belle_sip_set_log_level(BELLE_SIP_LOG_MESSAGE);
+void sal_enable_log(){
+	sal_set_log_level(ORTP_MESSAGE);
 }
 
-void sal_disable_logs() {
-	belle_sip_set_log_level(BELLE_SIP_LOG_ERROR);
+void sal_disable_log() {
+	sal_set_log_level(ORTP_ERROR);
+}
+
+void sal_set_log_level(OrtpLogLevel level) {
+	belle_sip_log_level belle_sip_level;
+	switch (level) {
+		case ORTP_FATAL:
+			belle_sip_level = BELLE_SIP_LOG_FATAL;
+			break;
+		case ORTP_ERROR:
+			belle_sip_level = BELLE_SIP_LOG_ERROR;
+			break;
+		case ORTP_WARNING:
+			belle_sip_level = BELLE_SIP_LOG_WARNING;
+			break;
+		case ORTP_MESSAGE:
+			belle_sip_level = BELLE_SIP_LOG_MESSAGE;
+			break;
+		case ORTP_DEBUG:
+		case ORTP_TRACE:
+			belle_sip_level = BELLE_SIP_LOG_DEBUG;
+			break;
+		case ORTP_LOGLEV_END:
+			return;
+	}
+	belle_sip_set_log_level(belle_sip_level);
 }
 
 void sal_add_pending_auth(Sal *sal, SalOp *op){
