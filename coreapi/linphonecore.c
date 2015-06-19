@@ -679,8 +679,7 @@ void linphone_core_reset_log_collection() {
 void linphone_core_enable_logs(FILE *file){
 	if (file==NULL) file=stdout;
 	ortp_set_log_file(file);
-	ortp_set_log_level(ORTP_MESSAGE);
-	sal_set_log_level(ORTP_MESSAGE);
+	linphone_core_set_log_level(ORTP_MESSAGE);
 }
 
 /**
@@ -694,9 +693,8 @@ void linphone_core_enable_logs(FILE *file){
  *
 **/
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
-	ortp_set_log_level(ORTP_MESSAGE);
+	linphone_core_set_log_level(ORTP_MESSAGE);
 	linphone_core_set_log_handler(logfunc);
-	sal_set_log_level(ORTP_MESSAGE);
 }
 
 /**
@@ -706,8 +704,7 @@ void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
  * @deprecated Use #linphone_core_set_log_level instead.
 **/
 void linphone_core_disable_logs(void){
-	ortp_set_log_level(ORTP_ERROR);
-	sal_set_log_level(ORTP_ERROR);
+	linphone_core_set_log_level(ORTP_ERROR);
 }
 
 void linphone_core_serialize_logs(void) {
