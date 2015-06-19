@@ -39,7 +39,7 @@ typedef enum _LinphoneLoggerSeverity {
 
 }
 + (void)log:(LinphoneLoggerSeverity)severity file:(const char*)file line:(int)line format:(NSString *)format,...;
-
+void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 @end
 
 @interface LinphoneUtils : NSObject {

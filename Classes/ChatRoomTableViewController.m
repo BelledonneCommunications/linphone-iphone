@@ -114,16 +114,16 @@
 
 - (void)debugMessages {
     if( !messageList ){
-        NSLog(@"No data to debug");
-        return;
-    }
-    MSList*item = self->messageList;
-    int count = 0;
-    while (item) {
-        LinphoneChatMessage* msg = (LinphoneChatMessage*)item->data;
-        NSLog(@"Message %d: %s", count++, linphone_chat_message_get_text(msg));
-        item = item->next;
-    }
+		LOGE(@"No data to debug");
+		return;
+	}
+	MSList *item = self->messageList;
+	int count = 0;
+	while (item) {
+		LinphoneChatMessage *msg = (LinphoneChatMessage *)item->data;
+		LOGI(@"Message %d: %s", count++, linphone_chat_message_get_text(msg));
+		item = item->next;
+	}
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {

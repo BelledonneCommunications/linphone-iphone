@@ -52,6 +52,36 @@
     va_end (args);
 }
 
+#pragma mark - Logs Functions callbacks
+
+void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
+	NSString *format = [[NSString alloc] initWithUTF8String:fmt];
+	NSString *formatedString = [[NSString alloc] initWithFormat:format arguments:args];
+	char levelC = 'I';
+	switch ((OrtpLogLevel)lev) {
+	case ORTP_FATAL:
+		levelC = 'F';
+		break;
+	case ORTP_ERROR:
+		levelC = 'E';
+		break;
+	case ORTP_WARNING:
+		levelC = 'W';
+		break;
+	case ORTP_MESSAGE:
+		levelC = 'I';
+		break;
+	case ORTP_TRACE:
+	case ORTP_DEBUG:
+		levelC = 'D';
+		break;
+	case ORTP_LOGLEV_END:
+		return;
+	}
+	// since \r are interpreted like \n, avoid double new lines when logging packets
+	NSLog(@"%c %@", levelC, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+}
+
 @end
 
 @implementation LinphoneUtils

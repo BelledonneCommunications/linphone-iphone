@@ -524,22 +524,13 @@ static void dump_section(const char* section, void* data){
 	}
 }
 
-
-#pragma mark - Logs Functions
-
-void linphone_iphone_log_handler(int lev, const char *fmt, va_list args){
-	NSString* format = [[NSString alloc] initWithUTF8String:fmt];
-	NSString* formatedString = [[NSString alloc] initWithFormat:format arguments:args];
-	//since \r are interpreted like \n, avoid double new lines when logging packets
-	NSLog([formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"], nil);
+#pragma mark - Logs Functions handlers
+static void linphone_iphone_log_user_info(struct _LinphoneCore *lc, const char *message) {
+	linphone_iphone_log_handler(ORTP_MESSAGE, message, NULL);
 }
-
-//Error/warning log handler
-static void linphone_iphone_log(struct _LinphoneCore * lc, const char * message) {
-	NSString* log = [NSString stringWithCString:message encoding:[NSString defaultCStringEncoding]];
-	NSLog(log, NULL);
+static void linphone_iphone_log_user_warning(struct _LinphoneCore *lc, const char *message) {
+	linphone_iphone_log_handler(ORTP_WARNING, message, NULL);
 }
-
 
 #pragma mark - Display Status Functions
 
@@ -1188,26 +1179,25 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 #pragma mark - VTable
 
-static LinphoneCoreVTable linphonec_vtable = {
-	.show =NULL,
-	.call_state_changed =(LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
-	.registration_state_changed = linphone_iphone_registration_state,
-	.notify_presence_received=NULL,
-	.new_subscription_requested = NULL,
-	.auth_info_requested = NULL,
-	.display_status = linphone_iphone_display_status,
-	.display_message=linphone_iphone_log,
-	.display_warning=linphone_iphone_log,
-	.display_url=NULL,
-	.text_received=NULL,
-	.message_received=linphone_iphone_message_received,
-	.dtmf_received=NULL,
-	.transfer_state_changed=linphone_iphone_transfer_state_changed,
-	.is_composing_received = linphone_iphone_is_composing_received,
-	.configuring_status = linphone_iphone_configuring_status_changed,
-	.global_state_changed = linphone_iphone_global_state_changed,
-	.notify_received = linphone_iphone_notify_received
-};
+static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
+											  .call_state_changed =
+												  (LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
+											  .registration_state_changed = linphone_iphone_registration_state,
+											  .notify_presence_received = NULL,
+											  .new_subscription_requested = NULL,
+											  .auth_info_requested = NULL,
+											  .display_status = linphone_iphone_display_status,
+											  .display_message = linphone_iphone_log_user_info,
+											  .display_warning = linphone_iphone_log_user_warning,
+											  .display_url = NULL,
+											  .text_received = NULL,
+											  .message_received = linphone_iphone_message_received,
+											  .dtmf_received = NULL,
+											  .transfer_state_changed = linphone_iphone_transfer_state_changed,
+											  .is_composing_received = linphone_iphone_is_composing_received,
+											  .configuring_status = linphone_iphone_configuring_status_changed,
+											  .global_state_changed = linphone_iphone_global_state_changed,
+											  .notify_received = linphone_iphone_notify_received};
 
 #pragma mark -
 
@@ -1374,7 +1364,7 @@ static BOOL libStarted = FALSE;
 	NSError* err;
 
 	if( ![audioSession setActive:NO error: &err] && err ){
-		NSLog(@"audioSession setActive failed: %@", [err description]);
+		LOGE(@"audioSession setActive failed: %@", [err description]);
 	}
 	if(!bAudioInputAvailable){
 		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"No microphone",nil)
