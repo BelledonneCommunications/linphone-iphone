@@ -116,8 +116,8 @@
 	UITableView *tv = nil;
 	NSError *err = nil;
 	if ([tester tryFindingAccessibilityElement:nil view:&tv withIdentifier:@"Chat list" tappable:false error:&err]) {
-		XCTAssert(tv != nil);
-		XCTAssert([tv numberOfRowsInSection:0] == 0); // no more messages
+		XCTAssertNotNil(tv);
+		ASSERT_EQ([tv numberOfRowsInSection:0], 0); // no more messages
 	} else {
 		NSLog(@"Error: %@", err);
 	}
@@ -146,10 +146,10 @@
 
 	// check that the tableview is empty
 	UITableView *tv = [self findTableView:@"ChatRoom list"];
-	XCTAssert([tv numberOfRowsInSection:0] == 0);
+	ASSERT_EQ([tv numberOfRowsInSection:0], 0);
 
 	// test that there's no more chatrooms in the core
-	XCTAssert(linphone_core_get_chat_rooms([LinphoneManager getLc]) == nil);
+	ASSERT_EQ(linphone_core_get_chat_rooms([LinphoneManager getLc]), NULL);
 }
 
 - (UITableView *)findTableView:(NSString *)table {
@@ -189,22 +189,22 @@
 	[tester tapViewWithAccessibilityLabel:element.accessibilityLabel];
 
 	UITableView *tv = [self findTableView:@"Chat list"];
-	XCTAssertEqual([tv numberOfRowsInSection:0], 1);
-	XCTAssertEqual([[[LinphoneManager instance] fileTransferDelegates] count], 1);
+	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 1);
 }
 
 - (void)testUploadImage {
 	NSString *user = @"testios";
 
-	XCTAssertEqual([[LinphoneManager instance] fileTransferDelegates].count, 0);
+	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
 	[self uploadImage];
-	XCTAssertEqual([[LinphoneManager instance] fileTransferDelegates].count, 1);
+	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 1);
 	[self goBackFromChat];
 
 	// if we go back to the same chatroom, the message should be still there
 	[self startChatWith:user];
 	UITableView *tv = [self findTableView:@"Chat list"];
-	XCTAssertEqual([tv numberOfRowsInSection:0], 1);
+	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
 
 	// wait for the upload to terminate...
 	for (int i = 0; i < 15; i++) {
@@ -214,14 +214,18 @@
 	}
 	[tester waitForViewWithAccessibilityLabel:@"Download"];
 
-	XCTAssertEqual([tv numberOfRowsInSection:0], 2);
-	XCTAssertEqual([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+	ASSERT_EQ([tv numberOfRowsInSection:0], 2);
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
 - (void)testCancelUploadImage {
 	[self uploadImage];
 	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
-	XCTAssertEqual([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+	if ([[[LinphoneManager instance] fileTransferDelegates] count] != 0) {
+		[[UIApplication sharedApplication] writeScreenshotForLine:__LINE__ inFile:@__FILE__ description:nil error:NULL];
+		;
+	}
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
 - (void)downloadImage {
@@ -235,19 +239,19 @@
 	[tester waitForViewWithAccessibilityLabel:@"Download"];
 	[tester tapViewWithAccessibilityLabel:@"Download"];
 	[tester waitForTimeInterval:.5f]; // just wait a few secs to start download
-	XCTAssertEqual([[[LinphoneManager instance] fileTransferDelegates] count], 1);
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 1);
 }
 
 - (void)testDownloadImage {
 	[self downloadImage];
 	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Cancel transfer"];
-	XCTAssertEqual([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
 - (void)testCancelDownloadImage {
 	[self downloadImage];
 	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
-	XCTAssertEqual([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
 @end
