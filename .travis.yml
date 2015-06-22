@@ -13,7 +13,7 @@ env:
         - secure: "JPPcWdmNIJiR3YcIwe0LRYce6qDdsiagO+eKKAp7eVk/wD9UHbz96Ms2FFkXxPhRJB1PA6Pf8FpAzIL2YRiJL9jRtKHSvtdF1cSto+57XyBkCsw7PkMVUIxp7fg6Wiwn3H3tucF8jisIkv/Pn7R+9EqePkZSqqu3+ig5AX9ApQ4="
 
 before_install:
-    - brew update
+    - brew update 1>/dev/null
     - brew install doxygen nasm gettext yasm optipng imagemagick coreutils intltool
     - brew outdated cmake || brew upgrade cmake
     - brew link gettext --force
@@ -27,7 +27,7 @@ before_install:
     - git submodule update --init --recursive
 
 install:
-    - ./prepare.py all
+    - ./prepare.py x86_64
     - make -s 1>/dev/null
     - mkdir -p Screens
     - export KIF_SCREENSHOTS=`pwd`/Screens
