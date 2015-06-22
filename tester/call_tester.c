@@ -413,7 +413,7 @@ marie = linphone_core_manager_new( "marie_rc");
 	linphone_core_manager_destroy(marie);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -459,7 +459,7 @@ static void call_with_timeouted_bye(void) {
 	linphone_core_manager_destroy(pauline);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -3231,7 +3231,7 @@ static void accept_call_in_send_base(bool_t caller_has_ice) {
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
 
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -3277,7 +3277,7 @@ void two_accepted_call_in_send_only() {
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
 
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -3424,7 +3424,7 @@ end:
 	linphone_core_manager_destroy(pauline);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -3473,7 +3473,7 @@ end:
 	linphone_core_manager_destroy(pauline);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -3515,7 +3515,7 @@ end:
 	linphone_core_manager_destroy(pauline);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -3734,7 +3734,7 @@ end:
 	linphone_core_manager_destroy(pauline);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -3878,7 +3878,7 @@ static void call_with_generic_cn(void) {
 	linphone_core_manager_destroy(pauline);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -4035,7 +4035,7 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 	linphone_core_manager_destroy(pauline);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}
@@ -4143,7 +4143,7 @@ end:
 	ms_free(recordpath);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects>0){
 		belle_sip_object_dump_active_objects();
 	}

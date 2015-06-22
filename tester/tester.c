@@ -229,6 +229,7 @@ bool_t transport_supported(LinphoneTransportType transport) {
 	Sal *sal = sal_init();
 	bool_t supported = sal_transport_available(sal,(SalTransport)transport);
 	if (!supported) ms_warning("TLS transport not supported, falling back to TCP if possible otherwise skipping test.");
+	sal_uninit(sal);
 	return supported;
 }
 
