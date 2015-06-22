@@ -18,6 +18,11 @@
 	// default is 0.01, which sometimes confuses the simulator to the point that
 	// it will miss some keys
 	[KIFTypist setKeystrokeDelay:0.05];
+
+	NSString *language = [[NSLocale preferredLanguages] objectAtIndex:0];
+	if (!([language isEqualToString:@"en"] || [language containsString:@"en-"])) {
+		LOGF(@"Language must be en (English) instead of %@", language);
+	}
 }
 
 - (NSString *)accountUsername {
@@ -69,49 +74,47 @@ static bool invalidAccount = true;
         const char* identity = linphone_proxy_config_get_identity(cfg);
         LinphoneAddress* addr = linphone_core_interpret_url(lc, identity);
         const char* username = linphone_address_get_username(addr);
-        
-        if( addr
-           && ( username && strcmp(username, [[self accountUsername] UTF8String]) == 0)
-           && ( domain   && strcmp(domain,   [[self accountDomain] UTF8String]) == 0 )
-           && linphone_proxy_config_get_state(cfg) == LinphoneRegistrationOk )
-        {
-            isOK = true;
-            linphone_address_destroy(addr);
-            break;
-        } else if( addr ) {
-            linphone_address_destroy(addr);
-        }
-        
-        proxies=proxies->next;
-    }
-    return isOK;
+
+		if (addr && (username && strcmp(username, [[self accountUsername] UTF8String]) == 0) &&
+			(domain && strcmp(domain, [[self accountDomain] UTF8String]) == 0) &&
+			linphone_proxy_config_get_state(cfg) == LinphoneRegistrationOk) {
+			isOK = true;
+			linphone_address_destroy(addr);
+			break;
+		} else if (addr) {
+			linphone_address_destroy(addr);
+		}
+
+		proxies = proxies->next;
+	}
+	return isOK;
 }
 
 - (void)switchToValidAccountIfNeeded {
     [UIView setAnimationsEnabled:false];
-    
-    if( invalidAccount && ! [self hasValidProxyConfig] ){
-        
-        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Settings")];
+
+	if (invalidAccount && ![self hasValidProxyConfig]) {
+
+		[tester tapViewWithAccessibilityLabel:@"Settings"];
 		[tester tapViewWithAccessibilityLabel:@"Run assistant"];
         [tester waitForTimeInterval:0.5];
-        if( [tester tryFindingViewWithAccessibilityLabel:LOCALIZED(@"Launch Wizard") error:nil]){
-            [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Launch Wizard")];
-            [tester waitForTimeInterval:0.5];
-        }
-        
-        NSLog(@"Switching to a valid account");
-        
-        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Start")];
-        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Sign in linphone.org account")];
-        
-        [tester enterText:@"testios" intoViewWithAccessibilityLabel:LOCALIZED(@"Username")];
-        [tester enterText:@"testtest" intoViewWithAccessibilityLabel:LOCALIZED(@"Password")];
-        
-        [tester tapViewWithAccessibilityLabel:LOCALIZED(@"Sign in")];
-        
-        invalidAccount = false;
-    }
+		if ([tester tryFindingViewWithAccessibilityLabel:@"Launch Wizard" error:nil]) {
+			[tester tapViewWithAccessibilityLabel:@"Launch Wizard"];
+			[tester waitForTimeInterval:0.5];
+		}
+
+		NSLog(@"Switching to a valid account");
+
+		[tester tapViewWithAccessibilityLabel:@"Start"];
+		[tester tapViewWithAccessibilityLabel:@"Sign in linphone.org account"];
+
+		[tester enterText:@"testios" intoViewWithAccessibilityLabel:@"Username"];
+		[tester enterText:@"testtest" intoViewWithAccessibilityLabel:@"Password"];
+
+		[tester tapViewWithAccessibilityLabel:@"Sign in"];
+
+		invalidAccount = false;
+	}
 }
 
 
