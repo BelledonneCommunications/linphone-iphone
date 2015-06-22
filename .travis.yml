@@ -1,7 +1,4 @@
 language: objective-c
-xcode_project: linphone.xcodeproj
-xcode_scheme: linphone
-xcode_sdk: iphonesimulator8.1
 
 branches:
   only:
@@ -31,7 +28,8 @@ install:
     - make -j1 -s 1>/dev/null
     - mkdir -p Screens
     - export KIF_SCREENSHOTS=`pwd`/Screens
-    - alias xctool='xctool 1>/dev/null'
+
+script: xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator8.1 build test 1>/dev/null
 
 after_script:
     - ./Tools/imgur_upload.sh
