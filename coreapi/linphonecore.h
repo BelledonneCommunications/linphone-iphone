@@ -957,18 +957,20 @@ LINPHONE_PUBLIC	void linphone_proxy_config_enable_quality_reporting(LinphoneProx
 LINPHONE_PUBLIC	bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg);
 
  /**
- * Set the SIP address of the collector end-point when using quality reporting. This SIP address
- * should be used on server-side to process packets directly then discard packets. Collector address
- * should be a non existing account and should not received any packets.
+ * Set the route of the collector end-point when using quality reporting. This SIP address
+ * should be used on server-side to process packets directly before discarding packets. Collector address
+ * should be a non existing account and will not receive any messages.
+ * If NULL, reports will be send to the proxy domain.
  * @param[in] cfg #LinphoneProxyConfig object
- * @param[in] collector SIP address of the collector end-point.
+ * @param[in] collector route of the collector end-point, if NULL PUBLISH will be sent to the proxy domain.
  */
 LINPHONE_PUBLIC	void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *cfg, const char *collector);
 
  /**
- * Get the SIP address of the collector end-point when using quality reporting. This SIP address
- * should be used on server-side to process packets directly then discard packets. Collector address
- * should be a non existing account and should not received any packets.
+ * Get the route of the collector end-point when using quality reporting. This SIP address
+ * should be used on server-side to process packets directly before discarding packets. Collector address
+ * should be a non existing account and will not receive any messages.
+ * If NULL, reports will be send to the proxy domain.
  * @param[in] cfg #LinphoneProxyConfig object
  * @return The SIP address of the collector end-point.
  */

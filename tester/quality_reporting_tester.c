@@ -142,18 +142,15 @@ bool_t create_call_for_quality_reporting_tests(
 }
 
 static void quality_reporting_not_used_without_config() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, NULL, NULL))  {
-	// marie has stats collection enabled but pauline has not
+		// marie has stats collection enabled but pauline has not
 		BC_ASSERT_TRUE(linphone_proxy_config_quality_reporting_enabled(call_marie->dest_proxy));
 		BC_ASSERT_FALSE(linphone_proxy_config_quality_reporting_enabled(call_pauline->dest_proxy));
-
-		BC_ASSERT_STRING_EQUAL(linphone_proxy_config_get_quality_reporting_collector(call_marie->dest_proxy),
-								"sip:collector@sip.example.org");
 
 		// this field should be already filled
 		BC_ASSERT_PTR_NOT_NULL(call_marie->log->reporting.reports[0]->info.local_addr.ip);
@@ -166,7 +163,7 @@ static void quality_reporting_not_used_without_config() {
 }
 
 static void quality_reporting_not_sent_if_call_not_started() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallLog* out_call_log;
 	LinphoneCall* out_call;
@@ -197,7 +194,7 @@ static void quality_reporting_not_sent_if_call_not_started() {
 }
 
 static void quality_reporting_not_sent_if_low_bandwidth() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallParams* marie_params;
 
@@ -222,7 +219,7 @@ void on_report_send_remove_fields(const LinphoneCall *call, SalStreamType stream
 }
 
 static void quality_reporting_invalid_report() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
@@ -234,6 +231,7 @@ static void quality_reporting_invalid_report() {
 
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1));
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishError,1,3000));
+		BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishError,1, int, "%d");
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0, int, "%d");
 	}
 	linphone_core_manager_destroy(marie);
@@ -241,7 +239,7 @@ static void quality_reporting_invalid_report() {
 }
 
 static void quality_reporting_at_call_termination() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc_rtcp_xr");
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
@@ -262,6 +260,7 @@ static void quality_reporting_at_call_termination() {
 
 		// PUBLISH submission to the collector should be ok
 		BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishProgress,1));
+		BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,1, int, "%d");
 		BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishOk,1));
 	}
 	linphone_core_manager_destroy(marie);
