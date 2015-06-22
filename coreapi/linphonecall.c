@@ -2687,6 +2687,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 	}
 }
 
+#ifdef VIDEO_ENABLED
 static RtpSession * create_video_rtp_io_session(LinphoneCall *call) {
 	PayloadType *pt;
 	LinphoneCore *lc = call->core;
@@ -2709,6 +2710,7 @@ static RtpSession * create_video_rtp_io_session(LinphoneCall *call) {
 	}
 	return rtp_session;
 }
+#endif
 
 static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inputs_muted){
 #ifdef VIDEO_ENABLED
