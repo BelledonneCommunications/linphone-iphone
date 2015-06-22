@@ -225,8 +225,9 @@ LinphoneCoreManager *get_manager(LinphoneCore *lc){
 	return manager;
 }
 
-bool_t transport_supported(LinphoneCore *lc, LinphoneTransportType transport) {
-	bool_t supported = linphone_core_sip_transport_supported(lc, transport);
+bool_t transport_supported(LinphoneTransportType transport) {
+	Sal *sal = sal_init();
+	bool_t supported = sal_transport_available(sal,(SalTransport)transport);
 	if (!supported) ms_warning("TLS transport not supported, falling back to TCP if possible otherwise skipping test.");
 	return supported;
 }
@@ -287,7 +288,7 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 		char hellopath[512];
 		char *recordpath = ms_strdup_printf("%s/record_for_lc_%p.wav",bc_tester_writable_dir_prefix,mgr->lc);
 		ms_message("Manager for '%s' using files", rc_file ? rc_file : "--");
-		linphone_core_use_files(mgr->lc, TRUE);
+		linphone_core_set_use_files(mgr->lc, TRUE);
 		snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", bc_tester_read_dir_prefix);
 		linphone_core_set_play_file(mgr->lc,hellopath);
 		linphone_core_set_record_file(mgr->lc,recordpath);

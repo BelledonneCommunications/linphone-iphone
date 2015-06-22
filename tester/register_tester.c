@@ -294,13 +294,13 @@ static void simple_tcp_register_compatibility_mode(){
 }
 
 static void simple_tls_register(){
-	char route[256];
-	LinphoneCoreManager* lcm = create_lcm();
-	if (transport_supported(lcm->lc,LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		char route[256];
+		LinphoneCoreManager* lcm = create_lcm();
 		sprintf(route,"sip:%s;transport=tls",test_route);
 		register_with_refresh(lcm,FALSE,test_domain,route);
+		linphone_core_manager_destroy(lcm);
 	}
-	linphone_core_manager_destroy(lcm);
 }
 
 
@@ -458,14 +458,13 @@ static void authenticated_register_with_wrong_credentials_without_403() {
 	authenticated_register_with_wrong_credentials_with_params("tester-no-403");
 }
 static LinphoneCoreManager* configure_lcm(void) {
-	LinphoneCoreManager *lcm=linphone_core_manager_new2( "multi_account_rc", FALSE);
-	if (transport_supported(lcm->lc,LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager *lcm=linphone_core_manager_new2( "multi_account_rc", FALSE);
 		stats *counters=&lcm->stat;
 		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,ms_list_size(linphone_core_get_proxy_config_list(lcm->lc))));
 		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0, int, "%d");
 		return lcm;
 	}
-	linphone_core_manager_destroy(lcm);
 	return NULL;
 }
 
@@ -685,15 +684,14 @@ static void io_recv_error_retry_immediatly(){
 }
 
 static void io_recv_error_late_recovery(){
-	LinphoneCoreManager *lcm;
-	LinphoneCore* lc;
-	int register_ok;
-	stats* counters ;
-	int number_of_udp_proxy=0;
-	MSList* lcs;
-
-	lcm=linphone_core_manager_new2( "multi_account_rc",FALSE); /*to make sure iterates are not call yet*/
-	if (transport_supported(lcm->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager *lcm;
+		LinphoneCore* lc;
+		int register_ok;
+		stats* counters ;
+		int number_of_udp_proxy=0;
+		MSList* lcs;
+		lcm=linphone_core_manager_new2( "multi_account_rc",FALSE); /*to make sure iterates are not call yet*/
 		lc=lcm->lc;
 		sal_set_refresher_retry_after(lc->sal,1000);
 		counters=&lcm->stat;
@@ -716,8 +714,8 @@ static void io_recv_error_late_recovery(){
 		sal_set_send_error(lc->sal, 0);
 
 		BC_ASSERT_TRUE(wait_for_list(lcs=ms_list_append(NULL,lc),&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy +register_ok,sal_get_refresher_retry_after(lc->sal)+3000));
+		linphone_core_manager_destroy(lcm);
 	}
-	linphone_core_manager_destroy(lcm);
 }
 
 static void io_recv_error_without_active_register(){
@@ -761,13 +759,13 @@ static void io_recv_error_without_active_register(){
 
 
 static void tls_certificate_failure(){
-	LinphoneCoreManager* lcm;
-	LinphoneCore *lc;
-	char rootcapath[256];
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* lcm;
+		LinphoneCore *lc;
+		char rootcapath[256];
 
-	lcm=linphone_core_manager_new2("pauline_rc",FALSE);
-	lc=lcm->lc;
-	if (transport_supported(lc,LinphoneTransportTls)) {
+		lcm=linphone_core_manager_new2("pauline_rc",FALSE);
+		lc=lcm->lc;
 		snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/agent.pem", bc_tester_read_dir_prefix); /*bad root ca*/
 		linphone_core_set_root_ca(lcm->lc,rootcapath);
 		linphone_core_set_network_reachable(lc,TRUE);
@@ -780,21 +778,21 @@ static void tls_certificate_failure(){
 		linphone_core_refresh_registers(lcm->lc);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationOk,1));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,2, int, "%d");
+		linphone_core_manager_destroy(lcm);
 	}
-	linphone_core_manager_destroy(lcm);
 }
 
 /*the purpose of this test is to check that will not block the proxy config during SSL handshake for entire life in case of mistaken configuration*/
 static void tls_with_non_tls_server(){
-	LinphoneCoreManager *lcm;
-	LinphoneProxyConfig* proxy_cfg;
-	LinphoneAddress* addr;
-	char tmp[256];
-	LinphoneCore *lc;
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager *lcm;
+		LinphoneProxyConfig* proxy_cfg;
+		LinphoneAddress* addr;
+		char tmp[256];
+		LinphoneCore *lc;
 
-	lcm=linphone_core_manager_new2( "marie_rc", 0);
-	lc=lcm->lc;
-	if (transport_supported(lc,LinphoneTransportTls)) {
+		lcm=linphone_core_manager_new2( "marie_rc", 0);
+		lc=lcm->lc;
 		sal_set_transport_timeout(lc->sal,3000);
 		linphone_core_get_default_proxy(lc,&proxy_cfg);
 		linphone_proxy_config_edit(proxy_cfg);
@@ -805,42 +803,42 @@ static void tls_with_non_tls_server(){
 		linphone_proxy_config_done(proxy_cfg);
 		linphone_address_destroy(addr);
 		BC_ASSERT_TRUE(wait_for_until(lc,lc,&lcm->stat.number_of_LinphoneRegistrationFailed,1,5000));
+		linphone_core_manager_destroy(lcm);
 	}
-	linphone_core_manager_destroy(lcm);
 }
 
 static void tls_alt_name_register(){
-	LinphoneCoreManager* lcm;
-	LinphoneCore *lc;
-	char rootcapath[256];
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* lcm;
+		LinphoneCore *lc;
+		char rootcapath[256];
 
-	lcm=linphone_core_manager_new2("pauline_alt_rc",FALSE);
-	lc=lcm->lc;
-	if (transport_supported(lc,LinphoneTransportTls)) {
+		lcm=linphone_core_manager_new2("pauline_alt_rc",FALSE);
+		lc=lcm->lc;
 		snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", bc_tester_read_dir_prefix);
 		linphone_core_set_root_ca(lc,rootcapath);
 		linphone_core_refresh_registers(lc);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationOk,1));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,0, int, "%d");
+		linphone_core_manager_destroy(lcm);
 	}
-	linphone_core_manager_destroy(lcm);
 }
 
 static void tls_wildcard_register(){
-	LinphoneCoreManager* lcm;
-	LinphoneCore *lc;
-	char rootcapath[256];
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* lcm;
+		LinphoneCore *lc;
+		char rootcapath[256];
 
-	lcm=linphone_core_manager_new2("pauline_wild_rc",FALSE);
-	lc=lcm->lc;
-	if (transport_supported(lc,LinphoneTransportTls)) {
+		lcm=linphone_core_manager_new2("pauline_wild_rc",FALSE);
+		lc=lcm->lc;
 		snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", bc_tester_read_dir_prefix);
 		linphone_core_set_root_ca(lc,rootcapath);
 		linphone_core_refresh_registers(lc);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationOk,2));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,0, int, "%d");
+		linphone_core_manager_destroy(lcm);
 	}
-	linphone_core_manager_destroy(lcm);
 }
 
 static void redirect(){

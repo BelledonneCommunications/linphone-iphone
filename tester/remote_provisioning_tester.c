@@ -58,12 +58,12 @@ static void remote_provisioning_transient(void) {
 }
 
 static void remote_provisioning_https(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_https_rc", FALSE);
-	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_https_rc", FALSE);
 		BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
 		BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneRegistrationOk,1));
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 }
 
 static void remote_provisioning_not_found(void) {

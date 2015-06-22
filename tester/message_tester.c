@@ -441,8 +441,8 @@ bool_t compare_files(const char *path1, const char *path2) {
 }
 
 static void file_transfer_message(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		char* to;
 		LinphoneChatRoom* chat_room;
 		LinphoneChatMessage* message;
@@ -506,15 +506,15 @@ static void file_transfer_message(void) {
 		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
 		ms_free(receive_filepath);
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 }
 
 /* same than previous but with a 160 characters file */
 #define SMALL_FILE_SIZE 160
 static void small_file_transfer_message(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		int i;
 		char* to;
 		LinphoneChatRoom* chat_room;
@@ -571,8 +571,8 @@ static void small_file_transfer_message(void) {
 
 		linphone_content_unref(content);
 		linphone_core_manager_destroy(pauline);
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 }
 
 #ifdef HAVE_LIME
@@ -915,8 +915,8 @@ static void lime_text_message(void) {
 #endif /* HAVE_LIME */
 
 static void file_transfer_message_io_error_upload(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		int i;
 		char* to;
 		LinphoneChatRoom* chat_room;
@@ -978,15 +978,15 @@ static void file_transfer_message_io_error_upload(void) {
 
 		linphone_content_unref(content);
 		linphone_core_manager_destroy(pauline);
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 }
 
 
 #ifdef TEST_IS_BUGGED_NO_CALL_TO_IO_ERROR_CALLBACK
 static void file_transfer_message_io_error_download(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		int i;
 		char* to;
 		LinphoneChatRoom* chat_room;
@@ -1047,14 +1047,14 @@ static void file_transfer_message_io_error_download(void) {
 
 		sal_set_recv_error(marie->lc->sal, 0);
 		linphone_core_manager_destroy(pauline);
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 }
 #endif
 
 static void file_transfer_message_upload_cancelled(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		int i;
 		char* to;
 		LinphoneChatRoom* chat_room;
@@ -1111,8 +1111,8 @@ static void file_transfer_message_upload_cancelled(void) {
 
 		linphone_content_unref(content);
 		linphone_core_manager_destroy(pauline);
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 }
 
 static void file_transfer_message_download_cancelled(void) {
@@ -1182,8 +1182,8 @@ static void file_transfer_message_download_cancelled(void) {
 }
 
 static void file_transfer_using_external_body_url(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 		char *to;
 		LinphoneChatMessageCbs *cbs;
 		LinphoneChatRoom *chat_room;
@@ -1216,13 +1216,13 @@ static void file_transfer_using_external_body_url(void) {
 		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageInProgress, 1));
 		ms_free(to);
 		linphone_core_manager_destroy(pauline);
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 }
 
 static void file_transfer_message_two_messages() {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		char* to;
 		LinphoneChatRoom* pauline_room;
 		LinphoneChatMessage* message;
@@ -1304,8 +1304,8 @@ static void file_transfer_message_two_messages() {
 		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
 		ms_free(receive_filepath);
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 }
 
 static void text_message_with_send_error(void) {
@@ -1444,8 +1444,8 @@ static void info_message_with_args(bool_t with_content) {
 			if (linphone_content_get_buffer(content))BC_ASSERT_TRUE(strcmp((const char*)linphone_content_get_buffer(content),info_content)==0);
 			BC_ASSERT_EQUAL(linphone_content_get_size(content),strlen(info_content), int, "%d");
 		}
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 
@@ -1613,8 +1613,8 @@ static void history_range_full_test(){
 		history_message_count_helper(chatroom, -1, 3, 4);
 		history_message_count_helper(chatroom, -2, 2, 3);
 		history_message_count_helper(chatroom, -3, 1, 2);
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
 }
@@ -1672,8 +1672,8 @@ static void history_messages_count() {
 		messages = linphone_chat_room_get_history_range(chatroom, 1265, 1260);
 		BC_ASSERT_EQUAL(ms_list_size(messages), 1270-1265, int, "%d");
 		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
+		linphone_core_manager_destroy(marie);
 	}
-	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
 }

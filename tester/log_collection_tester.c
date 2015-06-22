@@ -290,8 +290,8 @@ static void logCollectionUploadStateChangedCb(LinphoneCore *lc, LinphoneCoreLogC
 	}
 }
 static void upload_collected_traces()  {
-	LinphoneCoreManager* marie = setup(TRUE);
-	if (transport_supported(marie->lc, LinphoneTransportTls)) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = setup(TRUE);
 		int waiting = 100;
 		LinphoneCoreVTable *v_table = linphone_core_v_table_new();
 		v_table->log_collection_upload_state_changed = logCollectionUploadStateChangedCb;
@@ -312,8 +312,8 @@ static void upload_collected_traces()  {
 		linphone_core_compress_log_collection(marie->lc);
 		linphone_core_upload_log_collection(marie->lc);
 		BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2));
+		collect_cleanup(marie);
 	}
-	collect_cleanup(marie);
 }
 
 test_t log_collection_tests[] = {

@@ -299,7 +299,7 @@ void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2);
 void disable_all_audio_codecs_except_one(LinphoneCore *lc, const char *mime, int rate);
 void disable_all_video_codecs_except_one(LinphoneCore *lc, const char *mime);
 stats * get_stats(LinphoneCore *lc);
-bool_t transport_supported(LinphoneCore *lc, LinphoneTransportType transport);
+bool_t transport_supported(LinphoneTransportType transport);
 LinphoneCoreManager *get_manager(LinphoneCore *lc);
 const char *liblinphone_tester_get_subscribe_content(void);
 const char *liblinphone_tester_get_notify_content(void);
