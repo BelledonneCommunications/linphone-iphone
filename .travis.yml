@@ -11,7 +11,6 @@ env:
     global:
         - VERSION="8.1"
         - secure: "JPPcWdmNIJiR3YcIwe0LRYce6qDdsiagO+eKKAp7eVk/wD9UHbz96Ms2FFkXxPhRJB1PA6Pf8FpAzIL2YRiJL9jRtKHSvtdF1cSto+57XyBkCsw7PkMVUIxp7fg6Wiwn3H3tucF8jisIkv/Pn7R+9EqePkZSqqu3+ig5AX9ApQ4="
-        - alias xctool='xctool 1>/dev/null'
 
 before_install:
     - brew update
@@ -32,6 +31,7 @@ install:
     - make -s 1>/dev/null
     - mkdir -p Screens
     - export KIF_SCREENSHOTS=`pwd`/Screens
+    - alias xctool='xctool 1>/dev/null'
 
 after_script:
     - ./Tools/imgur_upload.sh
