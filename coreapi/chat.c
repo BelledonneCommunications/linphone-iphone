@@ -1068,20 +1068,19 @@ const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessag
 	return message->external_body_url;
 }
 
-void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url) {
+void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message, const char* url) {
 	if (message->external_body_url) {
 		ms_free(message->external_body_url);
 	}
 	message->external_body_url=url?ms_strdup(url):NULL;
 }
 
-
 const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message){
 	return message->appdata;
 }
 
 void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data){
-	if( message->appdata ){
+	if ( message->appdata ){
 		ms_free(message->appdata);
 	}
 	message->appdata = data? ms_strdup(data) : NULL;

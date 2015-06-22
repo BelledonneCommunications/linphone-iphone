@@ -1560,7 +1560,6 @@ LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, Linp
  * by calling linphone_chat_message_get_callbacks().
  */
 LINPHONE_PUBLIC void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
-LINPHONE_PUBLIC void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 
 /**
  * Mark all messages of the conversation as read
