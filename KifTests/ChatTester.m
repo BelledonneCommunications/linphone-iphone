@@ -102,6 +102,9 @@
 
 	[self startChatWith:user];
 	[self sendMessage:user];
+	[tester waitForViewWithAccessibilityLabel:@"Message status"
+										value:@"not delivered"
+									   traits:UIAccessibilityTraitImage];
 
 	[tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
 
