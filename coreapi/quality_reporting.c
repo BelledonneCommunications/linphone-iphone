@@ -266,6 +266,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	LinphoneEvent *lev;
 	LinphoneAddress *request_uri;
 	char * domain;
+	const char* route;
 
 	/*if we are on a low bandwidth network, do not send reports to not overload it*/
 	if (linphone_call_params_low_bandwidth_enabled(linphone_call_get_current_params(call))){
@@ -336,15 +337,17 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	}
 
 
+	route = linphone_proxy_config_get_quality_reporting_collector(call->dest_proxy);
 	domain = ms_strdup_printf("sip:%s", linphone_proxy_config_get_domain(call->dest_proxy));
-	request_uri = linphone_address_new(domain);
+	request_uri = linphone_address_new(route ? route : domain);
 	ms_free(domain);
 	lev=linphone_core_create_publish(call->core, request_uri, "vq-rtcpxr", expires);
-	if (linphone_proxy_config_get_quality_reporting_collector(call->dest_proxy) != NULL) {
-		sal_op_set_route(lev->op, linphone_proxy_config_get_quality_reporting_collector(call->dest_proxy));
+	if (route) {
+		ms_message("Publishing report with custom route %s", route);
+		sal_op_set_route(lev->op, route);
 	}
 
-	if (! linphone_event_send_publish(lev, content)){
+	if (linphone_event_send_publish(lev, content) != 0){
 		linphone_event_unref(lev);
 		lev=NULL;
 		ret=4;

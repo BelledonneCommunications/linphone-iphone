@@ -120,7 +120,7 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 				/*nothing special to do*/
 				break;
 		}
-		
+
 	}
 }
 
@@ -153,7 +153,7 @@ LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *
 int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
 	SalBody salbody;
 	int err;
-	
+
 	if (lev->dir!=LinphoneSubscriptionOutgoing){
 		ms_error("linphone_event_send_subscribe(): cannot send or update something that is not an outgoing subscription.");
 		return -1;
@@ -173,12 +173,12 @@ int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *bod
 			/*those states are ok*/
 		break;
 	}
-	
+
 	if (lev->send_custom_headers){
 		sal_op_set_sent_custom_header(lev->op,lev->send_custom_headers);
 		lev->send_custom_headers=NULL;
 	}else sal_op_set_sent_custom_header(lev->op,NULL);
-	
+
 	err=sal_subscribe(lev->op,NULL,NULL,lev->name,lev->expires,sal_body_from_content(&salbody,body));
 	if (err==0){
 		if (lev->subscription_state==LinphoneSubscriptionNone)
@@ -238,7 +238,7 @@ LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddr
 static int _linphone_event_send_publish(LinphoneEvent *lev, const LinphoneContent *body, bool_t notify_err){
 	SalBody salbody;
 	int err;
-	
+
 	if (lev->dir!=LinphoneSubscriptionInvalidDir){
 		ms_error("linphone_event_update_publish(): this is not a PUBLISH event.");
 		return -1;
@@ -276,7 +276,6 @@ int linphone_event_update_publish(LinphoneEvent* lev, const LinphoneContent* bod
 	return linphone_event_send_publish(lev,body);
 }
 
-
 void linphone_event_set_user_data(LinphoneEvent *ev, void *up){
 	ev->userdata=up;
 }
@@ -302,7 +301,7 @@ void linphone_event_terminate(LinphoneEvent *lev){
 	}else if (lev->dir==LinphoneSubscriptionOutgoing){
 		sal_unsubscribe(lev->op);
 	}
-	
+
 	if (lev->publish_state!=LinphonePublishNone){
 		if (lev->publish_state==LinphonePublishOk && lev->expires!=-1){
 			sal_publish(lev->op,NULL,NULL,NULL,0,NULL);
@@ -310,7 +309,7 @@ void linphone_event_terminate(LinphoneEvent *lev){
 		linphone_event_set_publish_state(lev,LinphonePublishCleared);
 		return;
 	}
-	
+
 	if (lev->subscription_state!=LinphoneSubscriptionNone){
 		linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
 		return;

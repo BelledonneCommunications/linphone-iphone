@@ -550,8 +550,7 @@ void linphone_proxy_config_enable_quality_reporting(LinphoneProxyConfig *cfg, bo
 }
 
 bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg){
-	// ensure that collector address is set too!
-	return cfg->quality_reporting_enabled && cfg->quality_reporting_collector != NULL;
+	return cfg->quality_reporting_enabled;
 }
 
 void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval) {
