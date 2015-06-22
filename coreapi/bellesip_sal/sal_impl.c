@@ -97,26 +97,19 @@ void sal_disable_log() {
 
 void sal_set_log_level(OrtpLogLevel level) {
 	belle_sip_log_level belle_sip_level;
-	switch (level) {
-		case ORTP_FATAL:
-			belle_sip_level = BELLE_SIP_LOG_FATAL;
-			break;
-		case ORTP_ERROR:
-			belle_sip_level = BELLE_SIP_LOG_ERROR;
-			break;
-		case ORTP_WARNING:
-			belle_sip_level = BELLE_SIP_LOG_WARNING;
-			break;
-		case ORTP_MESSAGE:
-			belle_sip_level = BELLE_SIP_LOG_MESSAGE;
-			break;
-		case ORTP_DEBUG:
-		case ORTP_TRACE:
-			belle_sip_level = BELLE_SIP_LOG_DEBUG;
-			break;
-		case ORTP_LOGLEV_END:
-		default:
-			return;
+	if ((level&ORTP_FATAL) != 0) {
+		belle_sip_level = BELLE_SIP_LOG_FATAL;
+	} else if ((level&ORTP_ERROR) != 0) {
+		belle_sip_level = BELLE_SIP_LOG_ERROR;
+	} else if ((level&ORTP_WARNING) != 0) {
+		belle_sip_level = BELLE_SIP_LOG_WARNING;
+	} else if ((level&ORTP_MESSAGE) != 0) {
+		belle_sip_level = BELLE_SIP_LOG_MESSAGE;
+	} else if (((level&ORTP_DEBUG) != 0) || ((level&ORTP_TRACE) != 0)) {
+		belle_sip_level = BELLE_SIP_LOG_DEBUG;
+	} else {
+		//well, this should never occurs but...
+		belle_sip_level = BELLE_SIP_LOG_MESSAGE;
 	}
 	belle_sip_set_log_level(belle_sip_level);
 }
