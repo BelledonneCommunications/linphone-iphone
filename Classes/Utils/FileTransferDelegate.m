@@ -191,6 +191,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 		linphone_chat_message_cbs_set_file_transfer_progress_indication(linphone_chat_message_get_callbacks(_message),
 																		NULL);
+		linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message), NULL);
 		linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(_message), NULL);
 		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(_message), NULL);
 		linphone_chat_message_cancel_file_transfer(_message);
