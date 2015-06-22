@@ -115,6 +115,7 @@ void sal_set_log_level(OrtpLogLevel level) {
 			belle_sip_level = BELLE_SIP_LOG_DEBUG;
 			break;
 		case ORTP_LOGLEV_END:
+		default:
 			return;
 	}
 	belle_sip_set_log_level(belle_sip_level);
