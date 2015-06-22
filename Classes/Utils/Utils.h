@@ -26,19 +26,13 @@
     [inst_ isKindOfClass:[cls class]]? inst_ : nil; \
  })
 
-typedef enum _LinphoneLoggerSeverity {
-    LinphoneLoggerDebug = 0,
-    LinphoneLoggerLog,
-    LinphoneLoggerWarning,
-    LinphoneLoggerError,
-    LinphoneLoggerFatal
-} LinphoneLoggerSeverity;
-
+#import <ortp/ortp.h>
 
 @interface LinphoneLogger : NSObject {
 
 }
-+ (void)log:(LinphoneLoggerSeverity)severity file:(const char*)file line:(int)line format:(NSString *)format,...;
+
++ (void)log:(OrtpLogLevel)severity file:(const char *)file line:(int)line format:(NSString *)format, ...;
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 @end
 
@@ -62,11 +56,11 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 @end
 
 #define LOGV(level, ...) [LinphoneLogger log:level file:__FILE__ line:__LINE__ format:__VA_ARGS__]
-#define LOGI(...) LOGV(LinphoneLoggerLog, __VA_ARGS__)
-#define LOGD(...) LOGV(LinphoneLoggerDebug, __VA_ARGS__)
-#define LOGW(...) LOGV(LinphoneLoggerWarning, __VA_ARGS__)
-#define LOGE(...) LOGV(LinphoneLoggerError, __VA_ARGS__)
-#define LOGF(...) LOGV(LinphoneLoggerFatal, __VA_ARGS__)
+#define LOGD(...) LOGV(ORTP_DEBUG, __VA_ARGS__)
+#define LOGI(...) LOGV(ORTP_MESSAGE, __VA_ARGS__)
+#define LOGW(...) LOGV(ORTP_WARNING, __VA_ARGS__)
+#define LOGE(...) LOGV(ORTP_ERROR, __VA_ARGS__)
+#define LOGF(...) LOGV(ORTP_FATAL, __VA_ARGS__)
 
 #endif
 

@@ -23,30 +23,25 @@
 
 @implementation LinphoneLogger
 
-
-+ (void)logv:(LinphoneLoggerSeverity)severity file:(const char*)file line:(int)line format:(NSString*)format args:(va_list)args{
-    NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
-	OrtpLogLevel ortp_severity;
++ (void)logv:(OrtpLogLevel)severity
+		file:(const char *)file
+		line:(int)line
+	  format:(NSString *)format
+		args:(va_list)args {
+	NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
 	int filesize = 20;
-	if (severity <= LinphoneLoggerDebug) {
+	if (severity <= ORTP_DEBUG) {
 		// lol: ortp_debug(XXX) can be disabled at compile time, but ortp_log(ORTP_DEBUG, xxx) will always be valid even
 		//      not in debug build...
 		ortp_debug("%*s:%3d - %s", filesize, file+MAX((int)strlen(file)-filesize,0), line, [str UTF8String]);
-		return;
-	} else if(severity <= LinphoneLoggerLog) {
-		ortp_severity = ORTP_MESSAGE;
-	} else if(severity <= LinphoneLoggerWarning) {
-		ortp_severity = ORTP_WARNING;
-	} else if(severity <= LinphoneLoggerError) {
-		ortp_severity = ORTP_ERROR;
 	} else {
-		ortp_severity = ORTP_FATAL;
+		ortp_log(severity, "%*s:%3d - %s", filesize, file + MAX((int)strlen(file) - filesize, 0), line,
+				 [str UTF8String]);
 	}
-    ortp_log(ortp_severity, "%*s:%3d - %s", filesize, file+MAX((int)strlen(file)-filesize,0), line, [str UTF8String]);
 }
 
-+ (void)log:(LinphoneLoggerSeverity) severity file:(const char*)file line:(int)line format:(NSString *)format,... {
-    va_list args;
++ (void)log:(OrtpLogLevel)severity file:(const char *)file line:(int)line format:(NSString *)format, ... {
+	va_list args;
 	va_start (args, format);
 	[LinphoneLogger logv:severity file:file line:line format:format args:args];
     va_end (args);
