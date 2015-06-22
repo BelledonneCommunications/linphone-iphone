@@ -65,8 +65,6 @@ void LSLog(NSString* fmt, ...){
 
 	liblinphone_tester_keep_accounts(TRUE);
 
-	linphone_core_set_log_level(ORTP_WARNING);
-
 	int count = bc_tester_nb_suites();
 
     for (int i=0; i<count; i++) {

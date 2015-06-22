@@ -50,7 +50,6 @@
     [tester acknowledgeSystemAlert];
 #endif
 	[super beforeAll];
-	linphone_core_set_log_level(ORTP_WARNING);
 }
 
 

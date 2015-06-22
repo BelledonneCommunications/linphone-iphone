@@ -54,7 +54,6 @@ static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list arg
     logsBuffer = [NSMutableArray arrayWithCapacity:kLogsBufferCapacity];
 
     linphone_core_set_log_handler(linphone_log_function);
-	linphone_core_set_log_level(ORTP_WARNING);
 }
 
 
