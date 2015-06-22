@@ -10,14 +10,15 @@
 #include "LinphoneManager.h"
 #import "UIChatRoomCell.h"
 
-@implementation ChatTester
+#import "KIF/UIApplication-KIFAdditions.h"
 
+@implementation ChatTester
 
 #pragma mark - setup
 
 - (void)beforeAll {
-    [super beforeAll];
-    [self switchToValidAccountIfNeeded];
+	[super beforeAll];
+	[self switchToValidAccountIfNeeded];
 }
 
 - (void)beforeEach {
@@ -52,21 +53,20 @@
 	[tester tapViewWithAccessibilityLabel:@"Back"];
 }
 
-- (void)startChatWith:(NSString*)user {
+- (void)startChatWith:(NSString *)user {
 	[tester enterText:user intoViewWithAccessibilityLabel:@"Enter a address"];
 	[tester tapViewWithAccessibilityLabel:@"New Discussion"];
 }
 
-- (void)sendMessage:(NSString*)message {
+- (void)sendMessage:(NSString *)message {
 	[tester enterText:message intoViewWithAccessibilityLabel:@"Message field"];
 	[tester tapViewWithAccessibilityLabel:@"Send"];
 }
 
-
 #pragma mark - tests
 
 - (void)testSendMessageToMyself {
-    [self startChatWith:[self accountUsername]];
+	[self startChatWith:[self accountUsername]];
 
 	[self sendMessage:@"Hello"];
 
@@ -78,7 +78,7 @@
 	[self goBackFromChat];
 }
 
-- (void)testInvalidSPAddress {
+- (void)testInvalidSIPAddress {
 
 	[self startChatWith:@"sip://toto"];
 
@@ -86,8 +86,8 @@
 	[tester tapViewWithAccessibilityLabel:@"Cancel"];
 }
 
--(void)testSendToSIPAddress{
-    NSString* sipAddr = [NSString stringWithFormat:@"sip:%@@%@", [self accountUsername], [self accountDomain]];
+- (void)testSendToSIPAddress {
+	NSString *sipAddr = [NSString stringWithFormat:@"sip:%@@%@", [self accountUsername], [self accountDomain]];
 
 	[self startChatWith:sipAddr];
 
@@ -123,7 +123,7 @@
 }
 
 - (void)testRemoveAllChats {
-    NSArray* uuids = [self getUUIDArrayOfSize:5];
+	NSArray *uuids = [self getUUIDArrayOfSize:5];
 
 	for (NSString *uuid in uuids) {
 		[self startChatWith:uuid];
@@ -176,8 +176,14 @@
 
 	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 column:1];
 
-	// TODO: do not harcode size!
-	[tester tapViewWithAccessibilityLabel:@"Minimum (108.9 KB)"];
+	// wait for the quality popup to show up
+	[tester waitForTimeInterval:1];
+
+	UIAccessibilityElement *element =
+		[[UIApplication sharedApplication] accessibilityElementMatchingBlock:^BOOL(UIAccessibilityElement *element) {
+		  return [element.accessibilityLabel containsString:@"Minimum ("];
+		}];
+	[tester tapViewWithAccessibilityLabel:element.accessibilityLabel];
 
 	UITableView *tv = [self findTableView:@"Chat list"];
 	XCTAssertEqual([tv numberOfRowsInSection:0], 1);
@@ -187,7 +193,9 @@
 - (void)testUploadImage {
 	NSString *user = @"testios";
 
+	XCTAssertEqual([[LinphoneManager instance] fileTransferDelegates].count, 0);
 	[self uploadImage];
+	XCTAssertEqual([[LinphoneManager instance] fileTransferDelegates].count, 1);
 	[self goBackFromChat];
 
 	// if we go back to the same chatroom, the message should be still there
@@ -195,6 +203,12 @@
 	UITableView *tv = [self findTableView:@"Chat list"];
 	XCTAssertEqual([tv numberOfRowsInSection:0], 1);
 
+	// wait for the upload to terminate...
+	for (int i = 0; i < 15; i++) {
+		[tester waitForTimeInterval:1.f];
+		if ([[[LinphoneManager instance] fileTransferDelegates] count] == 0)
+			break;
+	}
 	[tester waitForViewWithAccessibilityLabel:@"Download"];
 
 	XCTAssertEqual([tv numberOfRowsInSection:0], 2);
