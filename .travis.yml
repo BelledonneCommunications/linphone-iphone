@@ -29,7 +29,9 @@ install:
     - mkdir -p Screens
     - export KIF_SCREENSHOTS=`pwd`/Screens
 
-script: xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator8.1 build test 1>/dev/null
+script:
+    - xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator8.1 build 1>/dev/null
+    - xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator8.1 test
 
 after_script:
     - ./Tools/imgur_upload.sh
