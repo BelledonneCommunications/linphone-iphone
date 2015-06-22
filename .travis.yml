@@ -27,8 +27,8 @@ before_install:
     - git submodule update --init --recursive
 
 install:
-    - ./prepare.py x86_64
-    - make -s 1>/dev/null
+    - ./prepare.py i386
+    - make -j1 -s 1>/dev/null
     - mkdir -p Screens
     - export KIF_SCREENSHOTS=`pwd`/Screens
     - alias xctool='xctool 1>/dev/null'
