@@ -28,6 +28,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <math.h>
 
+#if TARGET_OS_IPHONE
+#include <sys/sysctl.h>
+#endif
+
 #define STR_REASSIGN(dest, src) {\
 	if (dest != NULL) \
 		ms_free(dest); \
@@ -109,7 +113,6 @@ static void reset_avg_metrics(reporting_session_report_t * report){
 #define METRICS_JITTER_BUFFER 1 << 3
 #define METRICS_DELAY 1 << 4
 #define METRICS_SIGNAL 1 << 5
-#define METRICS_ADAPTIVE_ALGORITHM 1 << 6
 
 static uint8_t are_metrics_filled(const reporting_content_metrics_t rm) {
 	uint8_t ret = 0;
@@ -325,6 +328,17 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 			APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, " OUT=\"%s\"", report->qos_analyzer.output);
 		append_to_buffer(&buffer, &size, &offset, "\r\n");
 	}
+
+#if TARGET_OS_IPHONE
+	{
+		size_t namesize;
+		char *machine;
+		sysctlbyname("hw.machine", NULL, &namesize, NULL, 0);
+		machine = malloc(namesize);
+		sysctlbyname("hw.machine", machine, &namesize, NULL, 0);
+		APPEND_IF_NOT_NULL_STR(&buffer, &size, &offset, "Device: %s\r\n", machine);
+	}
+#endif
 
 	linphone_content_set_buffer(content, buffer, strlen(buffer));
 	ms_free(buffer);
