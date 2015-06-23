@@ -79,12 +79,12 @@ static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list arg
     LSLog(@"Document path: %@", documentPath);
 
     int count = bc_tester_nb_suites();
-    _objects = [[NSMutableArray alloc] initWithCapacity:count];
-    for (int i=0; i<count; i++) {
-        const char* suite = bc_tester_suite_name(i);
-        [_objects addObject:[NSString stringWithUTF8String:suite]];
-    }
-
+	_objects = [[NSMutableArray alloc] initWithCapacity:count + 1];
+	[_objects addObject:@"All"];
+	for (int i = 0; i < count; i++) {
+		const char *suite = bc_tester_suite_name(i);
+		[_objects addObject:[NSString stringWithUTF8String:suite]];
+	}
 }
 
 - (void)displayLogs {

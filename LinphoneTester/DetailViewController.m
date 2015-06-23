@@ -62,21 +62,34 @@ static NSString* const kAllTestsName = @"Run All tests";
     }        
 }
 
+- (void)addTestsFromSuite:(NSString *)suite {
+	int count = bc_tester_nb_tests([suite UTF8String]);
+
+	for (int i = 0; i < count; i++) {
+		const char *test_name = bc_tester_test_name([suite UTF8String], i);
+		NSString *testName = [NSString stringWithUTF8String:test_name];
+		TestItem *item = [[TestItem alloc] initWithName:testName fromSuite:suite];
+		[_tests addObject:item];
+	}
+}
+
 - (void)configureView
 {
-    const char* suite = [self.detailItem UTF8String];
-    if( suite == NULL ) return;
-    NSString* nssuite = [NSString stringWithUTF8String:suite];
-    int count = bc_tester_nb_tests(suite);
-    _tests = [[NSMutableArray alloc] initWithCapacity:count];
-    
-    [_tests addObject:[TestItem testWithName:kAllTestsName fromSuite:nssuite]];
-    
-    for (int i=0; i<count; i++) {
-        const char* test_name = bc_tester_test_name(suite, i);
-        TestItem* item = [[TestItem alloc] initWithName:[NSString stringWithUTF8String:test_name] fromSuite:nssuite];
-        [_tests addObject:item];
-    }
+	_tests = [[NSMutableArray alloc] initWithCapacity:0];
+	if (self.detailItem == nil) {
+		return;
+	}
+
+	[_tests
+		addObject:[TestItem testWithName:kAllTestsName fromSuite:self.detailItem]]; // suite name not used for this one
+
+	if ([self.detailItem isEqualToString:@"All"]) {
+		for (int i = 0; i < bc_tester_nb_suites(); i++) {
+			[self addTestsFromSuite:[NSString stringWithUTF8String:bc_tester_suite_name(i)]];
+		}
+	} else {
+		[self addTestsFromSuite:self.detailItem];
+	}
 }
 
 - (void)viewDidLoad
@@ -108,17 +121,25 @@ static NSString* const kAllTestsName = @"Run All tests";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"testCellIdentifier" forIndexPath:indexPath];
 
     TestItem *test = _tests[indexPath.row];
-    cell.textLabel.text = test.name;
-    NSString* image = nil;
-    switch( test.state ){
-        case TestStateIdle: image = nil; break;
-        case TestStatePassed: image = @"test_passed"; break;
-        case TestStateInProgress: image = @"test_inprogress"; break;
-        case TestStateFailed: image = @"test_failed"; break;
-    }
-    if(image){
-        image = [[NSBundle mainBundle] pathForResource:image ofType:@"png"];
-        cell.imageView.image = [UIImage imageWithContentsOfFile:image];
+	cell.textLabel.text = [NSString stringWithFormat:@"%@/%@", test.suite, test.name];
+	NSString *image = nil;
+	switch (test.state) {
+	case TestStateIdle:
+		image = nil;
+		break;
+	case TestStatePassed:
+		image = @"test_passed";
+		break;
+	case TestStateInProgress:
+		image = @"test_inprogress";
+		break;
+	case TestStateFailed:
+		image = @"test_failed";
+		break;
+	}
+	if (image) {
+		image = [[NSBundle mainBundle] pathForResource:image ofType:@"png"];
+		cell.imageView.image = [UIImage imageWithContentsOfFile:image];
 	} else {
 		[cell.imageView setImage:nil];
 	}
