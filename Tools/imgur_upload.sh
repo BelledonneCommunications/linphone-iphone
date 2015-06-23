@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Install underscore-cli for hacking
 if ! which underscore &> /dev/null; then

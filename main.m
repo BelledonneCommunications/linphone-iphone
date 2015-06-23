@@ -36,7 +36,6 @@ int main(int argc, char *argv[]) {
     NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
 #endif
     @autoreleasepool {
-        int retVal = UIApplicationMain(argc, argv, nil, NSStringFromClass([LinphoneAppDelegate class]));
-        return retVal;
-    }
+		return UIApplicationMain(argc, argv, nil, NSStringFromClass([LinphoneAppDelegate class]));
+	}
 }

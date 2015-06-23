@@ -19,9 +19,18 @@
 	}
 }
 
++ (FileTransferDelegate *)messageDelegate:(LinphoneChatMessage *)message {
+	for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+		if (ftd.message == message) {
+			return ftd;
+		}
+	}
+	return nil;
+}
+
 static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, const LinphoneContent *content,
 											   const LinphoneBuffer *buffer) {
-	FileTransferDelegate *thiz = (__bridge FileTransferDelegate *)linphone_chat_message_get_user_data(message);
+	FileTransferDelegate *thiz = [FileTransferDelegate messageDelegate:message];
 	size_t size = linphone_buffer_get_size(buffer);
 
 	if (!thiz.data) {
@@ -35,7 +44,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 		// we're finished, save the image and update the message
 		UIImage *image = [UIImage imageWithData:thiz.data];
 
-
+		CFBridgingRetain(thiz);
 		[[[LinphoneManager instance] fileTransferDelegates] removeObject:thiz];
 
 		[[LinphoneManager instance]
@@ -59,6 +68,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 																  forKey:@"localimage"
 															   inMessage:message];
 						   }
+						   linphone_chat_message_unref(thiz.message);
 						   thiz.message = NULL;
 						   [[NSNotificationCenter defaultCenter]
 							   postNotificationName:kLinphoneFileTransferRecvUpdate
@@ -88,7 +98,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 
 static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *message, const LinphoneContent *content,
 														  size_t offset, size_t size) {
-	FileTransferDelegate *thiz = (__bridge FileTransferDelegate *)linphone_chat_message_get_user_data(message);
+	FileTransferDelegate *thiz = [FileTransferDelegate messageDelegate:message];
 	size_t total = thiz.data.length;
 	if (thiz.data) {
 		size_t remaining = total - offset;
@@ -97,16 +107,26 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 			@"state" : @(linphone_chat_message_get_state(message)),
 			@"progress" : @(offset * 1.f / total),
 		}];
-		LOGD(@"Transfer of %s (%d bytes): already sent %ld, remaining %ld", linphone_content_get_name(content), total,
-			 offset, remaining);
+		LOGD(@"Transfer of %s (%d bytes): already sent %ld (%f%%), remaining %ld", linphone_content_get_name(content),
+			 total, offset, offset * 100.f / total, remaining);
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneFileTransferSendUpdate
 															object:thiz
 														  userInfo:dict];
+
+		LinphoneBuffer *buffer = NULL;
 		@try {
-			return linphone_buffer_new_from_data([thiz.data subdataWithRange:NSMakeRange(offset, size)].bytes, size);
+			buffer = linphone_buffer_new_from_data([thiz.data subdataWithRange:NSMakeRange(offset, size)].bytes, size);
 		} @catch (NSException *exception) {
 			LOGE(@"Exception: %@", exception);
 		}
+
+		// this is the last time we will be notified, so destroy ourselve
+		if (remaining <= size) {
+			linphone_chat_message_unref(thiz.message);
+			thiz.message = NULL;
+			[thiz stopAndDestroy];
+		}
+		return buffer;
 	} else {
 		LOGE(@"Transfer of %s (%d bytes): %d Error - no upload data in progress!", linphone_content_get_name(content),
 			 total, offset);
@@ -115,28 +135,9 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	return NULL;
 }
 
-static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
-	FileTransferDelegate *thiz = (__bridge FileTransferDelegate *)linphone_chat_message_get_user_data(msg);
-
-	NSString *notification =
-		linphone_chat_message_is_outgoing(msg) ? kLinphoneFileTransferSendUpdate : kLinphoneFileTransferRecvUpdate;
-
-	const char *text = (linphone_chat_message_get_file_transfer_information(msg) != NULL)
-						   ? "photo transfer"
-						   : linphone_chat_message_get_text(msg);
-	LOGI(@"Delivery status for [%s] is [%s]", text, linphone_chat_message_state_to_string(state));
-
-	NSDictionary *dict = @{ @"state" : @(state), @"progress" : @0.f };
-	if (state == LinphoneChatMessageStateFileTransferDone || state == LinphoneChatMessageStateFileTransferError) {
-		thiz.message = NULL;
-	}
-	[[NSNotificationCenter defaultCenter] postNotificationName:notification object:thiz userInfo:dict];
-	if (linphone_chat_message_is_outgoing(msg)) {
-		[thiz stopAndDestroy];
-	}
-}
-
 - (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom {
+	[[[LinphoneManager instance] fileTransferDelegates] addObject:self];
+
 	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_lc(chatRoom));
 	_data = [NSMutableData dataWithData:UIImageJPEGRepresentation(image, 1.0)];
 	linphone_content_set_type(content, "image");
@@ -146,38 +147,36 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 														  [NSDate timeIntervalSinceReferenceDate]] UTF8String]);
 	linphone_content_set_size(content, [_data length]);
 
-	CFTypeRef myself = (__bridge CFTypeRef)self;
 	_message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
 	linphone_chat_message_ref(_message);
-	linphone_chat_message_set_user_data(_message, (void *)CFRetain(myself));
 	linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message),
 													 linphone_iphone_file_transfer_send);
-	linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(_message), message_status);
 
 	if (url) {
 		// internal url is saved in the appdata for display and later save
 		[LinphoneManager setValueInMessageAppData:[url absoluteString] forKey:@"localimage" inMessage:_message];
 	}
 
+	LOGI(@"%p Uploading content in %p", self, _message);
+
 	linphone_chat_room_send_chat_message(chatRoom, _message);
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {
+	[[[LinphoneManager instance] fileTransferDelegates] addObject:self];
+
 	_message = message;
 	// we need to keep a ref on the message to continue downloading even if user quit a chatroom which destroy all chat
 	// messages
 	linphone_chat_message_ref(_message);
 	const char *url = linphone_chat_message_get_external_body_url(_message);
-	LOGI(@"Content to download: %s", url);
+	LOGI(@"%p Downloading content in %p from %s", self, message, url);
 
 	if (url == nil)
 		return FALSE;
 
-	linphone_chat_message_set_user_data(_message, (void *)CFBridgingRetain(self));
-
 	linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(_message),
 													 linphone_iphone_file_transfer_recv);
-	linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(_message), message_status);
 
 	linphone_chat_message_download_file(_message);
 
@@ -187,18 +186,17 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 - (void)stopAndDestroy {
 	[[[LinphoneManager instance] fileTransferDelegates] removeObject:self];
 	if (_message != NULL) {
-		linphone_chat_message_set_user_data(_message, NULL);
-
+		LOGI(@"%p Cancelling transferm from %p", self, _message);
 		linphone_chat_message_cbs_set_file_transfer_progress_indication(linphone_chat_message_get_callbacks(_message),
 																		NULL);
 		linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message), NULL);
 		linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(_message), NULL);
-		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(_message), NULL);
 		linphone_chat_message_cancel_file_transfer(_message);
 		linphone_chat_message_unref(_message);
 	}
 	_message = nil;
 	_data = nil;
+	LOGI(@"%p Destroying", self);
 }
 
 - (void)cancel {

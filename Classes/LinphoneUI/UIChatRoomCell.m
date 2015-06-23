@@ -86,22 +86,44 @@ static UIFont *CELL_FONT = nil;
 
 - (void)dealloc {
 	[self disconnectFromFileDelegate];
+	if (self->chat) {
+		linphone_chat_message_unref(self->chat);
+		linphone_chat_message_set_user_data(self->chat, NULL);
+		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(self->chat), NULL);
+		self->chat = NULL;
+	}
 }
 
 #pragma mark -
 
 - (void)setChatMessage:(LinphoneChatMessage *)message {
 	if (message != self->chat) {
+		if (self->chat) {
+			linphone_chat_message_unref(self->chat);
+			linphone_chat_message_set_user_data(self->chat, NULL);
+			linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(self->chat), NULL);
+		}
 		self->chat = message;
 		messageImageView.image = nil;
 		[self disconnectFromFileDelegate];
-		for (FileTransferDelegate *aftd in [[LinphoneManager instance] fileTransferDelegates]) {
-			if (message &&
-				linphone_chat_message_get_storage_id(aftd.message) == linphone_chat_message_get_storage_id(message)) {
-				LOGI(@"Chat message [%p] with file transfer delegate [%p], connecting to it!", message,
-					 linphone_chat_message_get_user_data(message));
-				[self connectToFileDelegate:aftd];
-				break;
+		if (self->chat) {
+			linphone_chat_message_ref(self->chat);
+			linphone_chat_message_set_user_data(self->chat, (void *)CFBridgingRetain(self));
+			linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(self->chat),
+															message_status);
+
+			const LinphoneContent *c = linphone_chat_message_get_file_transfer_information(message);
+			if (c) {
+				const char *name = linphone_content_get_name(c);
+				for (FileTransferDelegate *aftd in [[LinphoneManager instance] fileTransferDelegates]) {
+					if (linphone_chat_message_get_file_transfer_information(aftd.message) &&
+						strcmp(name, linphone_content_get_name(
+										 linphone_chat_message_get_file_transfer_information(aftd.message))) == 0) {
+						LOGI(@"Chat message [%p] with file transfer delegate [%p], connecting to it!", message, aftd);
+						[self connectToFileDelegate:aftd];
+						break;
+					}
+				}
 			}
 		}
 		[self update];
@@ -353,7 +375,6 @@ static UIFont *CELL_FONT = nil;
 - (IBAction)onDownloadClick:(id)event {
 	if (ftd.message == nil) {
 		ftd = [[FileTransferDelegate alloc] init];
-		[[[LinphoneManager instance] fileTransferDelegates] addObject:ftd];
 		[self connectToFileDelegate:ftd];
 		[ftd download:chat];
 		_cancelButton.hidden = NO;
@@ -422,6 +443,11 @@ static UIFont *CELL_FONT = nil;
 			});
 		}
 	}
+}
+#pragma mark - State changed handler
+static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
+	UIChatRoomCell *thiz = (__bridge UIChatRoomCell *)linphone_chat_message_get_user_data(msg);
+	[thiz update];
 }
 
 #pragma mark - LinphoneFileTransfer Notifications Handling

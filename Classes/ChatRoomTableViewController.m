@@ -41,8 +41,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [TUNinePatchCache flushCache]; // Clear cache
-//    [self clearMessageList];
-//    chatRoom = NULL;
 }
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
@@ -70,7 +68,7 @@
 				linphone_chat_room_get_peer_address(chatRoom) &&
 			linphone_chat_message_is_outgoing(ftd.message)) {
 			LOGI(@"Appending transient upload message %p", ftd.message);
-			self->messageList = ms_list_append(self->messageList, ftd.message);
+			self->messageList = ms_list_append(self->messageList, linphone_chat_message_ref(ftd.message));
 		}
 	}
 }

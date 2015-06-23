@@ -549,7 +549,6 @@ static void message_status(LinphoneChatMessage* msg,LinphoneChatMessageState sta
 
 - (BOOL)chatRoomStartImageUpload:(UIImage*)image url:(NSURL*)url{
 	FileTransferDelegate * fileTransfer = [[FileTransferDelegate alloc] init];
-	[[[LinphoneManager instance] fileTransferDelegates] addObject:fileTransfer];
 	[fileTransfer upload:image withURL:url forChatRoom:chatRoom];
 	[tableController addChatEntry:linphone_chat_message_ref(fileTransfer.message)];
 	[tableController scrollToBottom:true];

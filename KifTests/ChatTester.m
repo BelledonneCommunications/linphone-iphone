@@ -35,6 +35,7 @@
 	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Back" error:nil]) {
 		[self goBackFromChat];
 	}
+	ASSERT_EQ([LinphoneManager instance].fileTransferDelegates.count, 0)
 }
 
 #pragma mark - tools
@@ -163,11 +164,11 @@
 	return tv;
 }
 
-- (void)uploadImage {
-	NSString *user = @"testios";
+- (void)uploadImageWithQuality:(NSString *)quality {
+	UITableView *tv = [self findTableView:@"Chat list"];
 
-	[self startChatWith:user];
-
+	long messagesCount = [tv numberOfRowsInSection:0];
+	long delegatesCount = [[[LinphoneManager instance] fileTransferDelegates] count];
 	[tester tapViewWithAccessibilityLabel:@"Send picture"];
 	[tester tapViewWithAccessibilityLabel:@"Photo library"];
 	// if popup "Linphone would access your photo" pops up, click OK.
@@ -177,32 +178,33 @@
 #endif
 	}
 
-	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 column:1];
+	// select another photo if already uploading one
+	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 + delegatesCount column:1];
 
 	// wait for the quality popup to show up
 	[tester waitForTimeInterval:1];
 
 	UIAccessibilityElement *element =
 		[[UIApplication sharedApplication] accessibilityElementMatchingBlock:^BOOL(UIAccessibilityElement *element) {
-		  return [element.accessibilityLabel containsString:@"Minimum ("];
+		  return [element.accessibilityLabel containsString:quality];
 		}];
 	[tester tapViewWithAccessibilityLabel:element.accessibilityLabel];
 
-	UITableView *tv = [self findTableView:@"Chat list"];
-	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 1);
+	ASSERT_EQ([tv numberOfRowsInSection:0], messagesCount + 1);
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], delegatesCount + 1);
 }
 
 - (void)testUploadImage {
-	NSString *user = @"testios";
+	NSString *myself = @"testios";
+	[self startChatWith:myself];
 
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
-	[self uploadImage];
+	[self uploadImageWithQuality:@"Minimum"];
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 1);
 	[self goBackFromChat];
 
 	// if we go back to the same chatroom, the message should be still there
-	[self startChatWith:user];
+	[self startChatWith:myself];
 	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
 
@@ -219,7 +221,9 @@
 }
 
 - (void)testCancelUploadImage {
-	[self uploadImage];
+	NSString *myself = @"testios";
+	[self startChatWith:myself];
+	[self uploadImageWithQuality:@"Minimum"];
 	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
 	if ([[[LinphoneManager instance] fileTransferDelegates] count] != 0) {
 		[[UIApplication sharedApplication] writeScreenshotForLine:__LINE__ inFile:@__FILE__ description:nil error:NULL];
@@ -228,8 +232,29 @@
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
+- (void)test3UploadsSimultanously {
+	NSString *myself = @"testios";
+	[self startChatWith:myself];
+	// use Maximum quality to be sure that first transfer is not terminated when the third begins
+	[self uploadImageWithQuality:@"Maximum"];
+	[self uploadImageWithQuality:@"Maximum"];
+	[self uploadImageWithQuality:@"Minimum"];
+	UITableView *tv = [self findTableView:@"Chat list"];
+	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 3);
+	// wait for ALL uploads to terminate...
+	for (int i = 0; i < 45; i++) {
+		[tester waitForTimeInterval:1.f];
+		if ([tv numberOfRowsInSection:0] == 6)
+			break;
+	}
+	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
+	ASSERT_EQ([tv numberOfRowsInSection:0], 6);
+}
+
 - (void)downloadImage {
-	[self uploadImage];
+	NSString *myself = @"testios";
+	[self startChatWith:myself];
+	[self uploadImageWithQuality:@"Minimum"];
 	// wait for the upload to terminate...
 	for (int i = 0; i < 15; i++) {
 		[tester waitForTimeInterval:1.f];
@@ -240,6 +265,26 @@
 	[tester tapViewWithAccessibilityLabel:@"Download"];
 	[tester waitForTimeInterval:.5f]; // just wait a few secs to start download
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 1);
+}
+
+- (void)test3DownloadsSimultanously {
+	[self startChatWith:[self me]];
+	[self uploadImageWithQuality:@"Maximum"];
+	[self uploadImageWithQuality:@"Average"];
+	[self uploadImageWithQuality:@"Minimum"];
+	UITableView *tv = [self findTableView:@"Chat list"];
+	// wait for ALL uploads to terminate...
+	for (int i = 0; i < 45; i++) {
+		[tester waitForTimeInterval:1.f];
+		if ([tv numberOfRowsInSection:0] == 6)
+			break;
+	}
+	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
+	for (int i = 0; i < 3; i++) {
+		[tester waitForViewWithAccessibilityLabel:@"Download"];
+		[tester tapViewWithAccessibilityLabel:@"Download"];
+		[tester waitForTimeInterval:.5f]; // just wait a few secs to start download
+	}
 }
 
 - (void)testDownloadImage {
