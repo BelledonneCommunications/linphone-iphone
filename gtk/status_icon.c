@@ -265,8 +265,15 @@ gboolean linphone_status_icon_init(LinphoneStatusIconReadyCb ready_cb, void *use
 }
 
 void linphone_status_icon_uninit(void) {
-	if(_linphone_status_icon_instance) _linphone_status_icon_free(_linphone_status_icon_instance);
-	if(_linphone_status_icon_impls) g_slist_free(_linphone_status_icon_impls);
+	if(_linphone_status_icon_instance) {
+		_linphone_status_icon_free(_linphone_status_icon_instance);
+		_linphone_status_icon_instance = NULL;
+	}
+	if(_linphone_status_icon_impls) {
+		g_slist_free(_linphone_status_icon_impls);
+		_linphone_status_icon_impls = NULL;
+	}
+	_linphone_status_icon_selected_desc = NULL;
 }
 
 LinphoneStatusIcon *linphone_status_icon_get(void) {
