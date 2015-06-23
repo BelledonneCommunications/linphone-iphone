@@ -6,10 +6,8 @@ if ! which underscore &> /dev/null; then
 fi
 
 cd $KIF_SCREENSHOTS
-pwd
-ls
 
-if "*.png" 2>/dev/null; then
+if [ ! -z "$(find . -name "*.png")" ]; then
 	# Prepare location to collect delete commands
 	if test "$TRAVIS_BUILD_NUMBER" = ""; then
 		TRAVIS_BUILD_NUMBER="dev"
