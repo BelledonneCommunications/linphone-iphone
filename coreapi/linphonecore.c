@@ -1600,7 +1600,7 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	/*hack for opus, that needs to be disabed by default on ARM single processor, otherwise there is no cpu left for video processing*/
 	if (ms_get_cpu_count()==1) opus_enabled=FALSE;
 #endif
-	linphone_core_register_payload_type(lc,&payload_type_opus,"useinbandfec=1; stereo=0; sprop-stereo=0",opus_enabled);
+	linphone_core_register_payload_type(lc,&payload_type_opus,"useinbandfec=1",opus_enabled);
 	linphone_core_register_payload_type(lc,&payload_type_silk_wb,NULL,TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_speex_wb,"vbr=on",TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_speex_nb,"vbr=on",TRUE);
