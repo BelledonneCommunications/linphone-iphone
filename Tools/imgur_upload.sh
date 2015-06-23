@@ -5,14 +5,15 @@ if ! which underscore &> /dev/null; then
 	npm install -g underscore-cli
 fi
 
-cd Screens
+cd $KIF_SCREENSHOTS
+pwd
+ls
 
 if "*.png" 2>/dev/null; then
 	# Prepare location to collect delete commands
 	if test "$TRAVIS_BUILD_NUMBER" = ""; then
 		TRAVIS_BUILD_NUMBER="dev"
 	fi
-	output_dir="Screens"
 	download_cmds=""
 
 	# curl from http://imgur.com/tools/imgurbash.sh via http://imgur.com/tools

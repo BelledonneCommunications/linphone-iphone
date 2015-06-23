@@ -27,7 +27,7 @@ before_install:
 install:
     - ./prepare.py i386
     - make -j1 -s 1>/dev/null
-    - mkdir -p Screens
+    - mkdir -p $KIF_SCREENSHOTS
 
 script:
     - xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator8.1 build 1>/dev/null
