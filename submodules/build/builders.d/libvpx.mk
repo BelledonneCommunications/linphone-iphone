@@ -56,13 +56,8 @@ take_binary=
 libvpx_configure_options+= --extra-cflags="-fno-strict-aliasing"
 endif
 
-$(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp:
-	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
-	&& git apply $(BUILDER_SRC_DIR)/build/builders.d/libvpx.patch \
-	&& touch $@
 
-
-$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk: $(BUILDER_SRC_DIR)/$(libvpx_dir)/patched.stamp
+$(BUILDER_BUILD_DIR)/$(libvpx_dir)/config.mk:
 	mkdir -p $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 	cd $(BUILDER_BUILD_DIR)/$(libvpx_dir)/ \
 	&&  host_alias=${host} . $(BUILDER_SRC_DIR)/build/$(config_site) \
@@ -87,7 +82,7 @@ clean-libvpx:
 veryclean-libvpx:
 	-cd $(BUILDER_BUILD_DIR)/$(libvpx_dir) && make distclean
 	cd $(BUILDER_SRC_DIR)/$(libvpx_dir) \
-	&& git clean -f && git reset --hard && rm -f patched.stamp
+	&& git clean -f && git reset --hard
 	rm -rf $(BUILDER_BUILD_DIR)/$(libvpx_dir)
 
 clean-makefile-libvpx:
