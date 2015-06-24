@@ -891,9 +891,10 @@ bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const c
 			*p=='(' ||
 			*p=='/' ||
 			*p=='+' ||
-			(unsigned char)*p== 0xca // non-breakable space (iOS uses it to format contacts phone number)
-			)
+			(unsigned char)*p==0xca || (unsigned char)*p==0xc2 || (unsigned char)*p==0xa0 // non-breakable space (iOS uses it to format contacts phone number)
+			) {
 			continue;
+		}
 		return FALSE;
 	}
 	return TRUE;
