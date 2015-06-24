@@ -1665,10 +1665,6 @@ void linphone_gtk_show_parameters(void){
 
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(linphone_gtk_get_widget(pb,"ring_chooser")),
 					linphone_core_get_ring(lc));
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"download_bw")),
-				linphone_core_get_download_bandwidth(lc));
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"upload_bw")),
-				linphone_core_get_upload_bandwidth(lc));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"adaptive_rate_control")),
 	                         linphone_core_adaptive_rate_control_enabled(lc));
 	/* SIP CONFIG */
@@ -1693,6 +1689,10 @@ void linphone_gtk_show_parameters(void){
 	linphone_gtk_init_codec_list(GTK_TREE_VIEW(video_codec_list));
 	linphone_gtk_draw_codec_list(GTK_TREE_VIEW(audio_codec_list), 0);
 	linphone_gtk_draw_codec_list(GTK_TREE_VIEW(video_codec_list), 1);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"download_bw")),
+				linphone_core_get_download_bandwidth(lc));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb,"upload_bw")),
+				linphone_core_get_upload_bandwidth(lc));
 
 	/* CALL PARAMS CONFIG */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "auto_answer_checkbox")), linphone_gtk_get_ui_config_int("auto_answer", 0));
