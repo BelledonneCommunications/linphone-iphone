@@ -348,14 +348,15 @@ static MS2_INLINE int get_min_bandwidth(int dbw, int ubw){
 }
 
 static MS2_INLINE bool_t bandwidth_is_greater(int bw1, int bw2){
-	if (bw1<0) return TRUE;
-	else if (bw2<0) return FALSE;
+	if (bw1<=0) return TRUE;
+	else if (bw2<=0) return FALSE;
 	else return bw1>=bw2;
 }
 
 static MS2_INLINE int get_remaining_bandwidth_for_video(int total, int audio){
-	if (total<=0) return 0;
-	return total-audio-10;
+	int ret = total-audio-10;
+	if (ret < 0) ret = 0;
+	return ret;
 }
 
 static MS2_INLINE void set_string(char **dest, const char *src){
