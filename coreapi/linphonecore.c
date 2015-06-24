@@ -867,7 +867,13 @@ static void certificates_config_read(LinphoneCore *lc)
 {
 	const char *rootca;
 #ifdef __linux
+	struct stat sb;
 	rootca=lp_config_get_string(lc->config,"sip","root_ca", "/etc/ssl/certs");
+	if (stat("/etc/ssl/certs", &sb) != 0 || !S_ISDIR(sb.st_mode))
+	{
+		ms_warning("/etc/ssl/certs not found, using %s instead", ROOT_CA_FILE);
+		rootca=lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE);
+	}
 #else
 	rootca=lp_config_get_string(lc->config,"sip","root_ca", ROOT_CA_FILE);
 #endif
