@@ -224,7 +224,7 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	}
 }
 
-bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt,  int bandwidth_limit)
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt, int bandwidth_limit)
 {
 	double codec_band;
 	bool_t ret=FALSE;
@@ -233,8 +233,8 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 		case PAYLOAD_AUDIO_CONTINUOUS:
 		case PAYLOAD_AUDIO_PACKETIZED:
 			codec_band=get_audio_payload_bandwidth(lc,pt,bandwidth_limit);
-			ret=bandwidth_is_greater(bandwidth_limit*1000,codec_band);
-			//ms_message("Payload %s: %g",pt->mime_type,codec_band);
+			ret=bandwidth_is_greater(bandwidth_limit,codec_band);
+			/*ms_message("Payload %s: codec_bandwidth=%g, bandwidth_limit=%i",pt->mime_type,codec_band,bandwidth_limit);*/
 			break;
 		case PAYLOAD_VIDEO:
 			if (bandwidth_limit!=0) {/* infinite (-1) or strictly positive*/
@@ -248,7 +248,9 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 
 /* return TRUE if codec can be used with bandwidth, FALSE else*/
 bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt){
-	bool_t ret=linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, linphone_core_get_payload_type_bitrate(lc,pt));
+	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
+					linphone_core_get_upload_bandwidth(lc));
+	bool_t ret=linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, maxbw);
 	if ((pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED)
 		&& lc->sound_conf.capt_sndcard 
 		&& !(ms_snd_card_get_capabilities(lc->sound_conf.capt_sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER)
