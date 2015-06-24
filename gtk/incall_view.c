@@ -338,7 +338,7 @@ static void linphone_gtk_show_call_stats(LinphoneCall *call){
 	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(w),"call_stats");
 	if (call_stats==NULL){
 		guint tid;
-		call_stats=linphone_gtk_create_window("call_statistics");
+		call_stats=linphone_gtk_create_window("call_statistics", NULL);
 		g_object_set_data(G_OBJECT(w),"call_stats",call_stats);
 		g_object_set_data(G_OBJECT(call_stats),"call",linphone_call_ref(call));
 		tid=g_timeout_add(1000,(GSourceFunc)refresh_call_stats,call_stats);

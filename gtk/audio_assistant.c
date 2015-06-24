@@ -497,7 +497,7 @@ void linphone_gtk_show_audio_assistant(void){
 	GtkWidget *end_page;
 	if(audio_assistant!=NULL)
 		return;
-	w=audio_assistant=linphone_gtk_create_window("audio_assistant");
+	w=audio_assistant=linphone_gtk_create_window("audio_assistant", linphone_gtk_get_main_window());
 
 	gtk_window_set_resizable (GTK_WINDOW(w), FALSE);
 	gtk_window_set_title(GTK_WINDOW(w),_("Audio Assistant"));

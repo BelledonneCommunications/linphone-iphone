@@ -84,7 +84,7 @@ GtkWidget *_gtk_image_new_from_memory_at_scale(const void *data, gint len, gint 
 GdkPixbuf *_gdk_pixbuf_new_from_memory_at_scale(const void *data, gint len, gint w, gint h, gboolean preserve_ratio);
 
 LINPHONE_PUBLIC void linphone_gtk_destroy_window(GtkWidget *window);
-LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_window(const char *window_name);
+LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_window(const char *window_name, GtkWidget *parent);
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name);
 
@@ -147,7 +147,7 @@ LINPHONE_PUBLIC void linphone_gtk_friend_list_set_active_address(const LinphoneA
 LINPHONE_PUBLIC const LinphoneAddress *linphone_gtk_friend_list_get_active_address(void);
 LINPHONE_PUBLIC void linphone_gtk_notebook_tab_select(GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer data);
 LINPHONE_PUBLIC void linphone_gtk_show_friends(void);
-LINPHONE_PUBLIC void linphone_gtk_show_contact(LinphoneFriend* lf, GtkWindow* parent);
+LINPHONE_PUBLIC void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *parent);
 LINPHONE_PUBLIC void linphone_gtk_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf);
 
 /*functions controlling the different views*/

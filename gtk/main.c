@@ -379,7 +379,7 @@ void linphone_gtk_destroy_window(GtkWidget *widget) {
 	g_object_unref (G_OBJECT (builder));
 }
 
-GtkWidget *linphone_gtk_create_window(const char *window_name){
+GtkWidget *linphone_gtk_create_window(const char *window_name, GtkWidget *parent){
 	GError* error = NULL;
 	GtkBuilder* builder = gtk_builder_new ();
 	char path[512];
@@ -402,6 +402,12 @@ GtkWidget *linphone_gtk_create_window(const char *window_name){
 	g_object_set_data(G_OBJECT(w), "builder",builder);
 	gtk_builder_connect_signals(builder,w);
 	linphone_gtk_configure_window(w,window_name);
+	if(parent) {
+		gtk_window_set_modal(GTK_WINDOW(w), TRUE);
+		gtk_window_set_transient_for(GTK_WINDOW(w), GTK_WINDOW(parent));
+	} else {
+		gtk_window_set_modal(GTK_WINDOW(w), FALSE);
+	}
 	return w;
 }
 
@@ -527,8 +533,10 @@ void linphone_gtk_show_about(void){
 	    linphone_gtk_get_ui_config("logo","linphone-banner.png"));
 	static const char *defcfg="defcfg";
 
-	about=linphone_gtk_create_window("about");
+	about=linphone_gtk_create_window("about", the_ui);
+	
 	gtk_about_dialog_set_url_hook(about_url_clicked,NULL,NULL);
+	
 	memset(&filestat,0,sizeof(filestat));
 	if (stat(license_file,&filestat)!=0){
 		license_file="COPYING";
@@ -1053,7 +1061,7 @@ static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid){
 static void linphone_gtk_new_subscriber_response(GtkWidget *dialog, guint response_id, LinphoneFriend *lf){
 	switch(response_id){
 		case GTK_RESPONSE_YES:
-			linphone_gtk_show_contact(lf, GTK_WINDOW(the_ui));
+			linphone_gtk_show_contact(lf, the_ui);
 		break;
 		default:
 			linphone_core_reject_subscriber(linphone_gtk_get_core(),lf);
@@ -1135,7 +1143,7 @@ void linphone_gtk_password_ok(GtkWidget *w){
 }
 
 static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
-	GtkWidget *w=linphone_gtk_create_window("password");
+	GtkWidget *w=linphone_gtk_create_window("password", the_ui);
 	GtkWidget *label=linphone_gtk_get_widget(w,"message");
 	LinphoneAuthInfo *info;
 	gchar *msg;
@@ -1871,7 +1879,7 @@ void linphone_gtk_create_keypad(GtkWidget *button){
 	if(k!=NULL){
 		gtk_widget_destroy(k);
 	}
-	keypad=linphone_gtk_create_window("keypad");
+	keypad=linphone_gtk_create_window("keypad", NULL);
 	linphone_gtk_connect_digits(keypad);
 	linphone_gtk_init_dtmf_table(keypad);
 	g_object_set_data(G_OBJECT(mw),"keypad",(gpointer)keypad);
@@ -2190,7 +2198,7 @@ core_start:
 		return 0;
 	}
 
-	the_ui=linphone_gtk_create_window("main");
+	the_ui=linphone_gtk_create_window("main", NULL);
 
 	g_object_set_data(G_OBJECT(the_ui),"is_created",GINT_TO_POINTER(FALSE));
 

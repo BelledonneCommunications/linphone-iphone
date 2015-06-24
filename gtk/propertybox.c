@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphone.h"
 #include "linphone_tunnel.h"
 #include "lpconfig.h"
+#include "config.h"
 
 void linphone_gtk_fill_combo_box(GtkWidget *combo, const char **devices, const char *selected, DeviceCap cap){
 	const char **p=devices;
@@ -153,7 +154,7 @@ static void linphone_gtk_ldap_load_settings(GtkWidget* param)
 void linphone_gtk_show_ldap_config(GtkWidget* button)
 {
 	GtkWidget* param = gtk_widget_get_toplevel(button);
-	GtkWidget* ldap_config = linphone_gtk_create_window("ldap");
+	GtkWidget* ldap_config = linphone_gtk_create_window("ldap", param);
 	linphone_gtk_ldap_load_settings(ldap_config);
 
 	// to refresh parameters when the ldap config is destroyed
@@ -998,7 +999,7 @@ void linphone_gtk_proxy_address_changed(GtkEditable *editable){
 }
 
 void linphone_gtk_show_proxy_config(GtkWidget *pb, LinphoneProxyConfig *cfg){
-	GtkWidget *w=linphone_gtk_create_window("sip_account");
+	GtkWidget *w=linphone_gtk_create_window("sip_account", gtk_widget_get_toplevel(pb));
 	const char *tmp;
 	gboolean is_new=FALSE;
 
@@ -1581,7 +1582,7 @@ void linphone_gtk_show_parameters(void){
 	int min_port = 0, max_port = 0;
 
 	if (pb==NULL) {
-		pb=linphone_gtk_create_window("parameters");
+		pb=linphone_gtk_create_window("parameters", linphone_gtk_get_main_window());
 		g_object_set_data(G_OBJECT(mw),"parameters",pb);
 	}else {
 		gtk_widget_show(pb);
@@ -1765,7 +1766,7 @@ void linphone_gtk_edit_tunnel_closed(GtkWidget *button){
 }
 
 void linphone_gtk_edit_tunnel(GtkButton *button){
-	GtkWidget *w=linphone_gtk_create_window("tunnel_config");
+	GtkWidget *w=linphone_gtk_create_window("tunnel_config", gtk_widget_get_toplevel(GTK_WIDGET(button)));
 	LinphoneCore *lc=linphone_gtk_get_core();
 	LinphoneTunnel *tunnel=linphone_core_get_tunnel(lc);
 	const MSList *configs;
@@ -1863,7 +1864,7 @@ static int read_dscp(GtkWidget *entry){
 
 void linphone_gtk_dscp_edit(void){
 	LinphoneCore *lc=linphone_gtk_get_core();
-	GtkWidget *widget=linphone_gtk_create_window("dscp_settings");
+	GtkWidget *widget=linphone_gtk_create_window("dscp_settings", linphone_gtk_get_main_window());
 	show_dscp(linphone_gtk_get_widget(widget,"sip_dscp"),
 		  linphone_core_get_sip_dscp(lc));
 	show_dscp(linphone_gtk_get_widget(widget,"audio_dscp"),

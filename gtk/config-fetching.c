@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 void linphone_gtk_set_configuration_uri(void){
-	GtkWidget *w=linphone_gtk_create_window("config-uri");
+	GtkWidget *w=linphone_gtk_create_window("config-uri", linphone_gtk_get_main_window());
 	GtkWidget *entry=linphone_gtk_get_widget(w,"uri_entry");
 	const char *uri=linphone_core_get_provisioning_uri(linphone_gtk_get_core());
 	if (uri) gtk_entry_set_text(GTK_ENTRY(entry),uri);
@@ -52,7 +52,7 @@ void linphone_gtk_config_uri_cancel(GtkWidget *button){
 
 GtkWidget * linphone_gtk_show_config_fetching(void){
 	LinphoneCore *lc=linphone_gtk_get_core();
-	GtkWidget *w=linphone_gtk_create_window("provisioning-fetch");
+	GtkWidget *w=linphone_gtk_create_window("provisioning-fetch", linphone_gtk_get_main_window());
 	g_message("Fetching started");
 	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(w),_("fetching from %s"),linphone_core_get_provisioning_uri(lc));
 #if GTK_CHECK_VERSION(2,20,0)

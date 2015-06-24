@@ -209,7 +209,7 @@ void linphone_gtk_log_hide(void){
 
 void linphone_gtk_create_log_window(void){
 	GtkTextBuffer *b;
-	log_window=linphone_gtk_create_window("log");
+	log_window=linphone_gtk_create_window("log", NULL);
 	b=gtk_text_view_get_buffer(GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview")));
 	gtk_text_buffer_create_tag(b,"red","foreground","red",NULL);
 	gtk_text_buffer_create_tag(b,"orange","foreground","orange",NULL);

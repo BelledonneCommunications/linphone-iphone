@@ -30,7 +30,7 @@ void *linphone_gtk_wait(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, co
 	switch(ws){
 		case LinphoneWaitingStart:
 			gdk_threads_enter();
-			w=linphone_gtk_create_window("waiting");
+			w=linphone_gtk_create_window("waiting", NULL);
 			gtk_window_set_transient_for(GTK_WINDOW(w),GTK_WINDOW(linphone_gtk_get_main_window()));
 			gtk_window_set_position(GTK_WINDOW(w),GTK_WIN_POS_CENTER_ON_PARENT);
 			if (purpose) {
