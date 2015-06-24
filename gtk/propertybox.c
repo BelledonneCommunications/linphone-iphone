@@ -830,6 +830,11 @@ static void linphone_gtk_codec_set_enable_all_selected(GtkWidget *button, gboole
 	else v=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"video_codec_list"));
 	sel=gtk_tree_view_get_selection(v);
 	gtk_tree_selection_selected_foreach(sel, linphone_gtk_codec_set_enable, &enabled);
+	if (type == 0){
+		/*activating audio and video codecs has consequences on video bandwidth*/
+		GtkTreeView *videov=GTK_TREE_VIEW(linphone_gtk_get_widget(gtk_widget_get_toplevel(button),"video_codec_list"));
+		linphone_gtk_check_codec_bandwidth(videov);
+	}
 }
 
 void linphone_gtk_audio_codec_up(GtkWidget *button){
