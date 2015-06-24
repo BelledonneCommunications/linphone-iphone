@@ -608,20 +608,26 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 	
 	g_value_init(&editable, G_TYPE_BOOLEAN);
 	g_value_set_boolean(&editable, TRUE);
+	
 	renderer = gtk_cell_renderer_text_new ();
 	g_object_set_property(G_OBJECT(renderer), "editable", &editable);
-	column = gtk_tree_view_column_new_with_attributes (_("IP Bitrate (kbit/s)"),
-                                                   renderer,
-                                                   "text", CODEC_BITRATE,
-						"foreground",CODEC_COLOR,
-                                                   NULL);
+	column = gtk_tree_view_column_new_with_attributes (
+		_("IP Bitrate (kbit/s)"),
+		renderer,
+		"text", CODEC_BITRATE,
+		"foreground",CODEC_COLOR,
+		NULL);
 	g_signal_connect(G_OBJECT(renderer),"edited",G_CALLBACK(bitrate_edited),store);
 	gtk_tree_view_append_column (listview, column);
-	column = gtk_tree_view_column_new_with_attributes (_("Parameters"),
-                                                   renderer,
-                                                   "text", CODEC_PARAMS,
-						"foreground",CODEC_COLOR,
-                                                   NULL);
+	
+	renderer = gtk_cell_renderer_text_new ();
+	g_object_set_property(G_OBJECT(renderer), "editable", &editable);
+	column = gtk_tree_view_column_new_with_attributes (
+		_("Parameters"),
+		renderer,
+		"text", CODEC_PARAMS,
+		"foreground",CODEC_COLOR,
+		NULL);
 	g_signal_connect(G_OBJECT(renderer),"edited",G_CALLBACK(fmtp_edited),store);
 	gtk_tree_view_append_column (listview, column);
 	/* Setup the selection handler */
