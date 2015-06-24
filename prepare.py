@@ -337,7 +337,7 @@ clean: $(addprefix clean-,$(packages))
 
 veryclean: $(addprefix veryclean-,$(packages))
 
-libs: $(addprefix all-,$(archs))
+lipo:
 	archives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
 	mkdir -p liblinphone-sdk/apple-darwin && \\
 	cp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/include liblinphone-sdk/apple-darwin/. && \\
@@ -366,6 +366,8 @@ libs: $(addprefix all-,$(archs))
 			cp -f submodules/binaries/libdummy.a $$library_path ; \\
 		fi \\
 	done
+
+libs: $(addprefix all-,$(archs)) lipo
 
 ipa: build
 	xcodebuild -configuration Release \\
