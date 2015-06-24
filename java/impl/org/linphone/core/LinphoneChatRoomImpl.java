@@ -38,7 +38,6 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native boolean isRemoteComposing(long ptr);
 	private native void markAsRead(long ptr);
 	private native void deleteMessage(long room, long message);
-	private native void updateUrl(long room, long message);
 	private native long createLinphoneChatMessage2(long ptr, String message,
 			String url, int state, long timestamp, boolean isRead,
 			boolean isIncoming);
@@ -136,13 +135,6 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		synchronized(getCore()){
 			if (message != null)
 				deleteMessage(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
-		}
-	}
-
-	public void updateUrl(LinphoneChatMessage message) {
-		synchronized(getCore()){
-			if (message != null)
-				updateUrl(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
 		}
 	}
 

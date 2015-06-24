@@ -121,12 +121,6 @@ public interface LinphoneChatRoom {
 	void deleteMessage(LinphoneChatMessage message);
 
 	/**
-	 * Update the value stored in the database for the external_body_url field
-	 * @param message to update
-	 */
-	void updateUrl(LinphoneChatMessage message);
-
-	/**
 	 * Create a LinphoneChatMessage
 	 * @return LinphoneChatMessage object
 	 */
