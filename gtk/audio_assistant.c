@@ -57,6 +57,11 @@ static void activate_play_button(gboolean is_active){
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(play_button),is_active);
 }
 
+static gboolean deactivate_play_button(void){
+	activate_play_button(FALSE);
+	return FALSE;
+}
+
 static gchar *get_record_file(){
 	char filename[256]={0};
 	char date[64]={0};
@@ -239,7 +244,9 @@ static void endoffile_cb(void *ud, MSFilter *f, unsigned int ev,void * arg){
 	switch (ev) {
 		case MS_PLAYER_EOF: {
 			ms_message("EndOfFile received");
-			activate_play_button(FALSE);
+			/*workaround for a mediastreamer2 bug. Don't deactivate the play button, because it will stop the graph from the end of file callback,
+			 * which is sometimes crashing. On master branch it is fixed in mediastreamer2, the workaround is only valid in 3.8.x branch*/
+			g_timeout_add(0, (GSourceFunc)deactivate_play_button, NULL);
 			break;
 		}
 		break;
