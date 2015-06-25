@@ -185,6 +185,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		[self.view addSubview:tableView];
 		[self update];
+	} else {
+		// if table is already created, simply refresh buttons (selection mode changed, etc.)
+		[self refreshButtons];
 	}
 }
 
@@ -255,7 +258,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)update {
+- (void)refreshButtons {
 	switch ([ContactSelection getSelectionMode]) {
 		case ContactSelectionModePhone:
 		case ContactSelectionModeMessage:
@@ -274,6 +277,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		allButton.selected = TRUE;
 		linphoneButton.selected = FALSE;
 	}
+}
+
+- (void)update {
+	[self refreshButtons];
 	[tableController loadData];
 }
 

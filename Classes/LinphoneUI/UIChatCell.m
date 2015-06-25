@@ -62,7 +62,12 @@
 #pragma mark -
 
 - (NSString *)accessibilityValue {
-    return [NSString stringWithFormat:@"%@ - %@ (%ld)", addressLabel.text, chatContentLabel.text, (long)[unreadMessageLabel.text integerValue]];
+	if (chatContentLabel.text) {
+		return [NSString stringWithFormat:@"%@ - %@ (%li)", addressLabel.text, chatContentLabel.text,
+										  [unreadMessageLabel.text integerValue]];
+	} else {
+		return [NSString stringWithFormat:@"%@ (%li)", addressLabel.text, [unreadMessageLabel.text integerValue]];
+	}
 }
 
 
@@ -113,26 +118,25 @@
         if(url||last_content) {
             [chatContentLabel setText:@"🗻"];
         } else if (text) {
-            NSString *message = [NSString stringWithUTF8String:text];
-            // shorten long messages
-            if([message length] > 50)
-                message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
+			NSString *message = [NSString stringWithUTF8String:text];
+			// shorten long messages
+			if ([message length] > 50)
+				message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
 
-            [chatContentLabel setText:message];
-        }
+			chatContentLabel.text = message;
+		}
 
-        int count = linphone_chat_room_get_unread_messages_count(chatRoom);
-        if(count > 0) {
-            [unreadMessageView setHidden:FALSE];
-            [unreadMessageLabel setText:[NSString stringWithFormat:@"%i", count]];
-        } else {
-            [unreadMessageView setHidden:TRUE];
-        }
-    } else {
-        chatContentLabel.text = nil;
-        [unreadMessageView setHidden:TRUE];
-    }
-
+		int count = linphone_chat_room_get_unread_messages_count(chatRoom);
+		if (count > 0) {
+			[unreadMessageView setHidden:FALSE];
+			unreadMessageLabel.text = [NSString stringWithFormat:@"%i", count];
+		} else {
+			[unreadMessageView setHidden:TRUE];
+		}
+	} else {
+		chatContentLabel.text = nil;
+		[unreadMessageView setHidden:TRUE];
+	}
 }
 
 - (void)setEditing:(BOOL)editing {

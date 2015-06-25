@@ -254,4 +254,16 @@
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
+- (void)testChatFromContactPhoneNumber {
+	[tester tapViewWithAccessibilityLabel:@"New Discussion"];
+	[tester tapViewWithAccessibilityLabel:@"Anna Haro"];
+	[tester tapViewWithAccessibilityLabel:@"home, 555-522-8243"];
+	[self goBackFromChat];
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
+	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
+	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message"
+										value:@"Anna Haro (3)"
+									   traits:UIAccessibilityTraitStaticText];
+}
+
 @end
