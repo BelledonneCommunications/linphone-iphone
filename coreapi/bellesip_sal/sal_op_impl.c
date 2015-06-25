@@ -464,6 +464,9 @@ SalReason sal_reason_to_sip_code(SalReason r){
 		case SalReasonBadGateway:
 			ret=502;
 			break;
+		case SalReasonInternalError:
+			ret=500;
+			break;
 	}
 	return ret;
 }
@@ -508,6 +511,8 @@ SalReason _sal_reason_from_sip_code(int code) {
 		return SalReasonNotAcceptable;
 	case 491:
 		return SalReasonRequestPending;
+	case 500:
+		return SalReasonInternalError;
 	case 501:
 		return SalReasonNotImplemented;
 	case 502:

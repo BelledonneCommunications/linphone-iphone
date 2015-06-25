@@ -747,7 +747,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 		case LinphoneCallPausing:
 		case LinphoneCallResuming:
 		case LinphoneCallUpdatedByRemote:
-			sal_call_decline(call->op,SalReasonNotImplemented,NULL);
+			sal_call_decline(call->op,SalReasonInternalError,NULL);
 			/*no break*/
 		case LinphoneCallIdle:
 		case LinphoneCallOutgoingInit:

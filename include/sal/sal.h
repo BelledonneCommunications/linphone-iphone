@@ -355,7 +355,8 @@ typedef enum SalReason{
 	SalReasonNotImplemented,
 	SalReasonBadGateway,
 	SalReasonServerTimeout,
-	SalReasonIOError
+	SalReasonIOError,
+	SalReasonInternalError
 }SalReason;
 
 const char* sal_reason_to_string(const SalReason reason);

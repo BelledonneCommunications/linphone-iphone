@@ -1274,6 +1274,7 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 			ret=LinphoneReasonIOError;
 			break;
 		case SalReasonUnknown:
+		case SalReasonInternalError:
 			ret=LinphoneReasonUnknown;
 			break;
 		case SalReasonBusy:
@@ -1304,7 +1305,7 @@ LinphoneReason linphone_reason_from_sal(SalReason r){
 			ret=LinphoneReasonIOError;
 			break;
 		case SalReasonRequestPending:
-			ret=LinphoneReasonNone;
+			ret=LinphoneReasonTemporarilyUnavailable; /*might not be exactly the perfect matching, but better than LinphoneReasonNone*/
 			break;
 		case SalReasonUnauthorized:
 			ret=LinphoneReasonUnauthorized;
