@@ -226,7 +226,7 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 
 bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt, int bandwidth_limit){
 	double codec_band;
-	const int video_enablement_limit = 128;
+	const int video_enablement_limit = 99;
 	bool_t ret=FALSE;
 
 	switch (pt->type){
