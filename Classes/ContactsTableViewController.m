@@ -205,13 +205,6 @@ static void sync_address_book (ABAddressBookRef addressBook, CFDictionaryRef inf
 	[controller loadData];
 }
 
-#pragma mark - ViewController Functions
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-
 #pragma mark - UITableViewDataSource Functions
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {

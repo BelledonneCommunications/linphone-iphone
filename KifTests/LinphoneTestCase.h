@@ -7,16 +7,19 @@
 //
 
 #import <KIF/KIF.h>
+#import <KIF/UIApplication-KIFAdditions.h>
 
 @interface LinphoneTestCase : KIFTestCase
 @property BOOL invalidAccountSet;
 
 - (void)switchToValidAccountIfNeeded;
-- (NSString*)accountUsername;
+- (NSString *)me;
 - (NSString*)accountDomain;
 
 - (NSString*)getUUID;
 - (NSArray*)getUUIDArrayOfSize:(size_t)size;
+
+- (UITableView *)findTableView:(NSString *)table;
 
 @end
 

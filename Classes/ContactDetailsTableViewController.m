@@ -108,10 +108,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	self.tableView.accessibilityIdentifier = @"Contact numbers table";
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-
 #pragma mark -
 
 - (BOOL)isValid {

@@ -25,8 +25,8 @@
 	}
 }
 
-- (NSString *)accountUsername {
-    return @"testios";
+- (NSString *)me {
+	return @"testios";
 }
 
 - (NSString *)accountDomain {
@@ -74,7 +74,7 @@ static bool invalidAccount = true;
         LinphoneAddress* addr = linphone_core_interpret_url(lc, identity);
         const char* username = linphone_address_get_username(addr);
 
-		if (addr && (username && strcmp(username, [[self accountUsername] UTF8String]) == 0) &&
+		if (addr && (username && strcmp(username, [[self me] UTF8String]) == 0) &&
 			(domain && strcmp(domain, [[self accountDomain] UTF8String]) == 0) &&
 			linphone_proxy_config_get_state(cfg) == LinphoneRegistrationOk) {
 			isOK = true;
@@ -107,7 +107,7 @@ static bool invalidAccount = true;
 		[tester tapViewWithAccessibilityLabel:@"Start"];
 		[tester tapViewWithAccessibilityLabel:@"Sign in linphone.org account"];
 
-		[tester enterText:@"testios" intoViewWithAccessibilityLabel:@"Username"];
+		[tester enterText:[self me] intoViewWithAccessibilityLabel:@"Username"];
 		[tester enterText:@"testtest" intoViewWithAccessibilityLabel:@"Password"];
 
 		[tester tapViewWithAccessibilityLabel:@"Sign in"];
@@ -116,5 +116,15 @@ static bool invalidAccount = true;
 	}
 }
 
+- (UITableView *)findTableView:(NSString *)table {
+	UITableView *tv = nil;
+	NSError *err = nil;
+	if ([tester tryFindingAccessibilityElement:nil view:&tv withIdentifier:table tappable:false error:&err]) {
+		XCTAssertNotNil(tv);
+	} else {
+		XCTFail(@"Error: %@", err);
+	}
+	return tv;
+}
 
 @end

@@ -8,9 +8,6 @@
 
 #import "ChatTester.h"
 #include "LinphoneManager.h"
-#import "UIChatRoomCell.h"
-
-#import "KIF/UIApplication-KIFAdditions.h"
 
 @implementation ChatTester
 
@@ -67,7 +64,7 @@
 #pragma mark - tests
 
 - (void)testSendMessageToMyself {
-	[self startChatWith:[self accountUsername]];
+	[self startChatWith:[self me]];
 
 	[self sendMessage:@"Hello"];
 
@@ -88,11 +85,11 @@
 }
 
 - (void)testSendToSIPAddress {
-	NSString *sipAddr = [NSString stringWithFormat:@"sip:%@@%@", [self accountUsername], [self accountDomain]];
+	NSString *sipAddr = [NSString stringWithFormat:@"sip:%@@%@", [self me], [self accountDomain]];
 
 	[self startChatWith:sipAddr];
 
-	[tester waitForViewWithAccessibilityLabel:@"Contact name" value:@"testios" traits:0];
+	[tester waitForViewWithAccessibilityLabel:@"Contact name" value:[self me] traits:0];
 
 	[self goBackFromChat];
 }
@@ -153,17 +150,6 @@
 	ASSERT_EQ(linphone_core_get_chat_rooms([LinphoneManager getLc]), NULL);
 }
 
-- (UITableView *)findTableView:(NSString *)table {
-	UITableView *tv = nil;
-	NSError *err = nil;
-	if ([tester tryFindingAccessibilityElement:nil view:&tv withIdentifier:table tappable:false error:&err]) {
-		XCTAssertNotNil(tv);
-	} else {
-		XCTFail(@"Error: %@", err);
-	}
-	return tv;
-}
-
 - (void)uploadImageWithQuality:(NSString *)quality {
 	UITableView *tv = [self findTableView:@"Chat list"];
 
@@ -195,8 +181,7 @@
 }
 
 - (void)testUploadImage {
-	NSString *myself = @"testios";
-	[self startChatWith:myself];
+	[self startChatWith:[self me]];
 
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
 	[self uploadImageWithQuality:@"Minimum"];
@@ -204,7 +189,7 @@
 	[self goBackFromChat];
 
 	// if we go back to the same chatroom, the message should be still there
-	[self startChatWith:myself];
+	[self startChatWith:[self me]];
 	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
 
@@ -221,8 +206,7 @@
 }
 
 - (void)testCancelUploadImage {
-	NSString *myself = @"testios";
-	[self startChatWith:myself];
+	[self startChatWith:[self me]];
 	[self uploadImageWithQuality:@"Minimum"];
 	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
 	if ([[[LinphoneManager instance] fileTransferDelegates] count] != 0) {
@@ -233,8 +217,7 @@
 }
 
 - (void)test3UploadsSimultanously {
-	NSString *myself = @"testios";
-	[self startChatWith:myself];
+	[self startChatWith:[self me]];
 	// use Maximum quality to be sure that first transfer is not terminated when the third begins
 	[self uploadImageWithQuality:@"Maximum"];
 	[self uploadImageWithQuality:@"Maximum"];
@@ -252,8 +235,7 @@
 }
 
 - (void)downloadImage {
-	NSString *myself = @"testios";
-	[self startChatWith:myself];
+	[self startChatWith:[self me]];
 	[self uploadImageWithQuality:@"Minimum"];
 	// wait for the upload to terminate...
 	for (int i = 0; i < 15; i++) {

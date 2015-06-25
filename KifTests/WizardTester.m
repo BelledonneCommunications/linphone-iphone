@@ -52,49 +52,50 @@
     [self setInvalidAccountSet:true];
     [tester tapViewWithAccessibilityLabel:@"Start"];
     [tester tapViewWithAccessibilityLabel:@"Sign in SIP account"];
-    
-    [tester enterText:@"testios" intoViewWithAccessibilityLabel:@"Username"];
-    [tester enterText:@"testtest" intoViewWithAccessibilityLabel:@"Password"];
-    [tester enterText:@"sip.linphone.org" intoViewWithAccessibilityLabel:@"Domain"];
-    [tester tapViewWithAccessibilityLabel:protocol];
-    
-    [tester tapViewWithAccessibilityLabel:@"Sign in"];
-    
-    // check the registration state
-    UIView* regState = [tester waitForViewWithAccessibilityLabel:@"Registration state"];
-    [tester waitForTimeInterval:1];
-    [tester expectView:regState toContainText:@"Registered"];
+
+	[tester enterText:[self me] intoViewWithAccessibilityLabel:@"Username"];
+	[tester enterText:@"testtest" intoViewWithAccessibilityLabel:@"Password"];
+	[tester enterText:[self accountDomain] intoViewWithAccessibilityLabel:@"Domain"];
+	[tester tapViewWithAccessibilityLabel:protocol];
+
+	[tester tapViewWithAccessibilityLabel:@"Sign in"];
+
+	// check the registration state
+	UIView *regState = [tester waitForViewWithAccessibilityLabel:@"Registration state"];
+	[tester waitForTimeInterval:1];
+	[tester expectView:regState toContainText:@"Registered"];
 }
 
 #pragma mark - Tests
 
 - (void)testLinphoneLogin {
 
-    [self _linphoneLogin:@"testios" withPW:@"testtest"];
-    
-    // check the registration state
-    UIView* regState = [tester waitForViewWithAccessibilityLabel:@"Registration state"];
-    [tester waitForTimeInterval:1];
-    [tester expectView:regState toContainText:@"Registered"];
-    
+	[self _linphoneLogin:[self me] withPW:@"testtest"];
+
+	// check the registration state
+	UIView *regState = [tester waitForViewWithAccessibilityLabel:@"Registration state"];
+	[tester waitForTimeInterval:1];
+	[tester expectView:regState toContainText:@"Registered"];
 }
 
 - (void)testLinphoneLoginWithBadPassword {
-    [self _linphoneLogin:@"testios" withPW:@"badPass"];
-    
-    [self setInvalidAccountSet:true];
-    
-    UIView* alertViewText = [tester waitForViewWithAccessibilityLabel:@"Registration failure" traits:UIAccessibilityTraitStaticText];
-    if( alertViewText ){
-        UIView *reason = [tester waitForViewWithAccessibilityLabel:@"Forbidden" traits:UIAccessibilityTraitStaticText];
-        if( reason == nil ){ [tester fail];
-        } else {
-            [tester tapViewWithAccessibilityLabel:@"OK"]; // alertview
-            [tester tapViewWithAccessibilityLabel:@"Cancel"]; // cancel wizard
-        }
-    } else {
-        [tester fail];
-    }
+	[self _linphoneLogin:[self me] withPW:@"badPass"];
+
+	[self setInvalidAccountSet:true];
+
+	UIView *alertViewText =
+		[tester waitForViewWithAccessibilityLabel:@"Registration failure" traits:UIAccessibilityTraitStaticText];
+	if (alertViewText) {
+		UIView *reason = [tester waitForViewWithAccessibilityLabel:@"Forbidden" traits:UIAccessibilityTraitStaticText];
+		if (reason == nil) {
+			[tester fail];
+		} else {
+			[tester tapViewWithAccessibilityLabel:@"OK"];	 // alertview
+			[tester tapViewWithAccessibilityLabel:@"Cancel"]; // cancel wizard
+		}
+	} else {
+		[tester fail];
+	}
 }
 
 - (void)testExternalLoginWithUDP {
