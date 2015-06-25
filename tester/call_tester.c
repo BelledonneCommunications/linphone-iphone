@@ -1759,7 +1759,7 @@ static void call_with_declined_video_using_policy(void) {
 	call_with_declined_video_base(TRUE);
 }
 
-static void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
+void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
 	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
 	LinphoneCall* marie_call;
 	LinphoneCall* pauline_call;
@@ -1837,7 +1837,7 @@ static void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* 
 	}
 
 }
-void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
+static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
 	video_call_base_2(pauline,marie,using_policy,mode,callee_video_enabled,caller_video_enabled);
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));

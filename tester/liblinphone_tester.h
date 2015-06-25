@@ -328,6 +328,6 @@ static const int audio_cmp_max_shift=20;
  * this function return max value in the last 3 seconds*/
 int linphone_core_manager_get_max_audio_down_bw(const LinphoneCoreManager *mgr);
 int linphone_core_manager_get_max_audio_up_bw(const LinphoneCoreManager *mgr);
-void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled);
+void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled);
 #endif /* LIBLINPHONE_TESTER_H_ */
 
