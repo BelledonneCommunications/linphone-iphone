@@ -3583,7 +3583,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_set_fps(call->videostream, linphone_core_get_preferred_framerate(lc));
 			if (call->camera_enabled && call->videostream->cam!=lc->video_conf.device){
-				video_stream_change_camera(call->videostream,lc->video_conf.device);
+				video_stream_change_camera(call->videostream,call->cam = lc->video_conf.device);
 			}else video_stream_update_video_params(call->videostream);
 		}
 #endif
