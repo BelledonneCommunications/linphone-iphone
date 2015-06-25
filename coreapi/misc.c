@@ -224,9 +224,9 @@ void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	}
 }
 
-bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt, int bandwidth_limit)
-{
+bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt, int bandwidth_limit){
 	double codec_band;
+	const int video_enablement_limit = 128;
 	bool_t ret=FALSE;
 
 	switch (pt->type){
@@ -237,7 +237,7 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 			/*ms_message("Payload %s: codec_bandwidth=%g, bandwidth_limit=%i",pt->mime_type,codec_band,bandwidth_limit);*/
 			break;
 		case PAYLOAD_VIDEO:
-			if (bandwidth_limit!=0) {/* infinite (-1) or strictly positive*/
+			if (bandwidth_limit<=0 || bandwidth_limit >= video_enablement_limit) {/* infinite or greater than video_enablement_limit*/
 				ret=TRUE;
 			}
 			else ret=FALSE;
