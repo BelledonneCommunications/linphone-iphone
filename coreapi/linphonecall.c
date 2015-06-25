@@ -2156,12 +2156,12 @@ void linphone_call_init_media_streams(LinphoneCall *call){
 
 static int dtmf_tab[16]={'0','1','2','3','4','5','6','7','8','9','*','#','A','B','C','D'};
 
-static void linphone_core_dtmf_received(LinphoneCore *lc, int dtmf){
+static void linphone_core_dtmf_received(LinphoneCall *call, int dtmf){
 	if (dtmf<0 || dtmf>15){
 		ms_warning("Bad dtmf value %i",dtmf);
 		return;
 	}
-	linphone_core_notify_dtmf_received(lc, linphone_core_get_current_call(lc), dtmf_tab[dtmf]);
+	linphone_core_notify_dtmf_received(call->core, call, dtmf_tab[dtmf]);
 }
 
 static void parametrize_equalizer(LinphoneCore *lc, AudioStream *st){
@@ -3763,7 +3763,7 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
 			handle_ice_events(call, ev);
 		} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
-			linphone_core_dtmf_received(call->core,evd->info.telephone_event);
+			linphone_core_dtmf_received(call,evd->info.telephone_event);
 		}
 		ortp_event_destroy(ev);
 	}
