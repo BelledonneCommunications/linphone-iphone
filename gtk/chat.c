@@ -166,10 +166,10 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		gtk_text_buffer_get_iter_at_offset(buffer,&iter,off);
 		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, get_display_name(from), -1,
-		                                         "bold", me ? "bg" : NULL, me ? "font_black" : NULL, NULL);
+		                                         "from", me ? "me" : NULL, NULL);
 		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter, " : ", -1,
-		                                         "bold", me ? "bg" : NULL, me ? "font_black" : NULL, NULL);
+		                                         "from", me ? "me" : NULL, NULL);
 		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 		g_free(from_message);
@@ -177,7 +177,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	}
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, linphone_chat_message_get_text(msg), -1,
-	                                         "margin", me ? "bg" : NULL, me ? "font_black" : NULL, NULL);
+	                                         "body", me ? "me" : NULL, NULL);
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 	gtk_text_buffer_get_end_iter(buffer,&iter);
@@ -187,7 +187,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		{
 			g_hash_table_insert(table,(gpointer)msg,GINT_TO_POINTER(gtk_text_iter_get_line(&iter)));
 			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Sending ..",-1,
-		                                "right","small","italic","font_grey","bg",NULL);
+												"status", me ? "me" : NULL, NULL);
 			g_object_set_data(G_OBJECT(w),"table",table);
 			break;
 		}
@@ -204,15 +204,15 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 				strftime(buf,80,"%H:%M",tm);
 			}
 			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,buf,-1,
-	                      "right","small","italic","font_grey",me ? "bg":NULL,NULL);
+	                      "status", me ? "me" : NULL, NULL);
 			break;
 		}
 		case  LinphoneChatMessageStateNotDelivered:
 				gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Message not sent",-1,
-	                       "right","small","italic","font_grey",me ? "bg":NULL,NULL);
+	                       "status", me ? "me" : NULL, NULL);
 				break;
 		default : gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Sending ..",-1,
-	                       "right","small","italic","font_grey",me ? "bg":NULL,NULL);
+	                       "status", me ? "me" : NULL, NULL);
 	}
 	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
@@ -278,7 +278,7 @@ void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessag
 			default : result="Sending ..";
 		}
 		gtk_text_buffer_insert_with_tags_by_name(b,&iter,result,-1,
-												"right","small","italic","font_grey","bg",NULL);
+												"status", "me", NULL);
 		g_object_set_data(G_OBJECT(page),"table",table);
 	}
 }
@@ -391,9 +391,6 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	char *with_str;
 
 	with_str=linphone_address_as_string_uri_only(with);
-	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_WORD_CHAR);
-	gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
-	gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text),FALSE);
 	gtk_notebook_append_page(notebook,chat_view,create_tab_chat_header(cr,with));
 	idx = gtk_notebook_page_num(notebook, chat_view);
 	gtk_notebook_set_current_page(notebook, idx);
@@ -402,24 +399,35 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	g_object_set_data(G_OBJECT(chat_view),"cr",cr);
 	g_object_set_data(G_OBJECT(chat_view),"from_message",NULL);
 	g_object_set_data(G_OBJECT(chat_view),"table",table);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                        "right","justification", GTK_JUSTIFY_RIGHT,NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                        "left","justification", GTK_JUSTIFY_LEFT,NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                       	    "bold","weight", PANGO_WEIGHT_BOLD,NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-								"italic","style", PANGO_STYLE_ITALIC,NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                           	"small","size",9*PANGO_SCALE,NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                           	"font_grey","foreground-gdk",&color_grey,NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                           	"font_black","foreground-gdk",&color_black,NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                           	"margin","indent",10,NULL);
-	gtk_text_buffer_create_tag(gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
-	                           	"bg","paragraph-background-gdk",&color_light_grey,NULL);
+	
+	gtk_text_buffer_create_tag(
+		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
+		"me",
+		"foreground_gdk", &color_black,
+		"paragraph-background-gdk", &color_light_grey,
+		NULL);
+	
+	gtk_text_buffer_create_tag(
+		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
+		"from",
+		"weight", PANGO_WEIGHT_BOLD,
+		NULL);
+	
+	gtk_text_buffer_create_tag(
+		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
+		"body",
+		"margin", 10,
+		NULL);
+	
+	gtk_text_buffer_create_tag(
+		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
+		"status",
+		"size-points", 9.0,
+		"foreground_gdk", &color_grey,
+		"style", PANGO_STYLE_ITALIC,
+		"justification", GTK_JUSTIFY_RIGHT,
+		NULL);
+	
 	messages = linphone_chat_room_get_history(cr,NB_MSG_HIST);
 	display_history_message(chat_view,messages,with);
 	button = linphone_gtk_get_widget(chat_view,"send");
