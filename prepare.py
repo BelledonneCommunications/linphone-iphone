@@ -328,7 +328,8 @@ pull-transifex:
 \ttx pull -af
 
 push-transifex:
-\t&& ./Tools/generate_strings_files.sh && tx push -s -t -f --no-interactive
+\t./Tools/i18n_generate_strings_files.sh && \\
+\ttx push -s -t -f --no-interactive
 
 zipres:
 \t@tar -czf ios_assets.tar.gz Resources iTunesArtwork
