@@ -1238,7 +1238,7 @@ void linphone_gtk_lang_changed(GtkComboBox *combo){
 		if (cur_lang==NULL) cur_lang="C";
 		if (!lang_equals(cur_lang,code)){
 			GtkWidget *dialog = gtk_message_dialog_new (GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(combo))),
-				GTK_DIALOG_DESTROY_WITH_PARENT,
+				GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_MESSAGE_INFO,
 				GTK_BUTTONS_CLOSE,
 				"%s",
