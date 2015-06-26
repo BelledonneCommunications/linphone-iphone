@@ -117,8 +117,8 @@ void sal_address_set_password(SalAddress *addr, const char *passwd);
 const char *sal_address_get_password(const SalAddress *addr);
 void sal_address_set_header(SalAddress *addr, const char *header_name, const char *header_value);
 
-Sal * sal_init();
-void sal_uninit(Sal* sal);
+LINPHONE_PUBLIC Sal * sal_init();
+LINPHONE_PUBLIC void sal_uninit(Sal* sal);
 void sal_set_user_pointer(Sal *sal, void *user_data);
 void *sal_get_user_pointer(const Sal *sal);
 
@@ -568,7 +568,7 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs);
 int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int is_tunneled);
 int sal_get_listening_port(Sal *ctx, SalTransport tr);
 int sal_unlisten_ports(Sal *ctx);
-int sal_transport_available(Sal *ctx, SalTransport t);
+LINPHONE_PUBLIC int sal_transport_available(Sal *ctx, SalTransport t);
 void sal_set_dscp(Sal *ctx, int dscp);
 void sal_set_supported_tags(Sal *ctx, const char* tags);
 void sal_add_supported_tag(Sal *ctx, const char* tag);

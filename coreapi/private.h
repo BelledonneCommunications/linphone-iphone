@@ -1264,7 +1264,7 @@ void v_table_reference_destroy(VTableReference *ref);
 
 void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease);
 #ifdef VIDEO_ENABLED
-MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);
+LINPHONE_PUBLIC MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);
 MSWebCam *get_nowebcam_device();
 #endif
 bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
