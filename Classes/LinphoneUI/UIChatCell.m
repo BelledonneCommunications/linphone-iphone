@@ -64,9 +64,9 @@
 - (NSString *)accessibilityValue {
 	if (chatContentLabel.text) {
 		return [NSString stringWithFormat:@"%@ - %@ (%li)", addressLabel.text, chatContentLabel.text,
-										  [unreadMessageLabel.text integerValue]];
+										  (long)[unreadMessageLabel.text integerValue]];
 	} else {
-		return [NSString stringWithFormat:@"%@ (%li)", addressLabel.text, [unreadMessageLabel.text integerValue]];
+		return [NSString stringWithFormat:@"%@ (%li)", addressLabel.text, (long)[unreadMessageLabel.text integerValue]];
 	}
 }
 
