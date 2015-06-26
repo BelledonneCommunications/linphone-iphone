@@ -1951,6 +1951,31 @@ static SalMulticastRole linphone_call_get_multicast_role(const LinphoneCall *cal
 
 }
 
+static void setup_dtls_params(LinphoneCall *call, MediaStream* stream) {
+	LinphoneCore *lc=call->core;
+	if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
+		MSDtlsSrtpParams params;
+		char *certificate, *key;
+		memset(&params,0,sizeof(MSDtlsSrtpParams));
+		/* TODO : search for a certificate with CNAME=sip uri(retrieved from variable me) or default : linphone-dtls-default-identity */
+		/* This will parse the directory to find a matching fingerprint or generate it if not found */
+		/* returned string must be freed */
+		sal_certificates_chain_parse_directory(&certificate, &key, &call->dtls_certificate_fingerprint, lc->user_certificates_path, "linphone-dtls-default-identity", SAL_CERTIFICATE_RAW_FORMAT_PEM, TRUE, TRUE);
+
+		if (key!= NULL && certificate!=NULL) {
+			params.pem_certificate = (char *)certificate;
+			params.pem_pkey = (char *)key;
+			params.role = MSDtlsSrtpRoleUnset; /* default is unset, then check if we have a result SalMediaDescription */
+			media_stream_enable_dtls(stream,&params);
+			ms_free(certificate);
+			ms_free(key);
+		} else {
+			ms_error("Unable to retrieve or generate DTLS certificate and key - DTLS disabled");
+			/* TODO : check if encryption forced, if yes, stop call */
+		}
+	}
+}
+
 void linphone_call_init_audio_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	AudioStream *audiostream;
@@ -1981,27 +2006,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		audio_stream_set_rtcp_information(call->audiostream, cname, rtcp_tool);
 		ms_free(cname);
 		rtp_session_set_symmetric_rtp(audiostream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
-		if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
-			MSDtlsSrtpParams params;
-			char *certificate, *key;
-			memset(&params,0,sizeof(MSDtlsSrtpParams));
-			/* TODO : search for a certificate with CNAME=sip uri(retrieved from variable me) or default : linphone-dtls-default-identity */
-			/* This will parse the directory to find a matching fingerprint or generate it if not found */
-			/* returned string must be freed */
-			sal_certificates_chain_parse_directory(&certificate, &key, &call->dtls_certificate_fingerprint, lc->user_certificates_path, "linphone-dtls-default-identity", SAL_CERTIFICATE_RAW_FORMAT_PEM, TRUE, TRUE);
-
-			if (key!= NULL && certificate!=NULL) {
-				params.pem_certificate = (char *)certificate;
-				params.pem_pkey = (char *)key;
-				params.role = MSDtlsSrtpRoleUnset; /* default is unset, then check if we have a result SalMediaDescription */
-				audio_stream_enable_dtls(call->audiostream,&params);
-				ms_free(certificate);
-				ms_free(key);
-			} else {
-				ms_error("Unable to retrieve or generate DTLS certificate and key - DTLS disabled");
-				/* TODO : check if encryption forced, if yes, stop call */
-			}
-		}
+		setup_dtls_params(call, &audiostream->ms);
 	}else{
 		call->audiostream=audio_stream_new_with_sessions(&call->sessions[0]);
 	}
@@ -2069,7 +2074,6 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	_linphone_call_prepare_ice_for_stream(call,0,FALSE);
 }
 
-
 void linphone_call_init_video_stream(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	LinphoneCore *lc=call->core;
@@ -2103,27 +2107,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			ms_free(cname);
 			rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
 
-			if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
-				MSDtlsSrtpParams params;
-				char *certificate, *key;
-				memset(&params,0,sizeof(MSDtlsSrtpParams));
-				/* TODO : search for a certificate with CNAME=sip uri(retrieved from variable me) or default : linphone-dtls-default-identity */
-				/* This will parse the directory to find a matching fingerprint or generate it if not found */
-				/* returned string must be freed */
-				sal_certificates_chain_parse_directory(&certificate, &key, &call->dtls_certificate_fingerprint, lc->user_certificates_path, "linphone-dtls-default-identity", SAL_CERTIFICATE_RAW_FORMAT_PEM, TRUE, TRUE);
-
-				if (key!= NULL && certificate!=NULL) {
-					params.pem_certificate = (char *)certificate;
-					params.pem_pkey = (char *)key;
-					params.role = MSDtlsSrtpRoleUnset; /* default is unset, then check if we have a result SalMediaDescription */
-					video_stream_enable_dtls(call->videostream,&params);
-					ms_free(certificate);
-					ms_free(key);
-				} else {
-					ms_error("Unable to retrieve or generate DTLS certificate and key - DTLS disabled");
-					/* TODO : check if encryption forced, if yes, stop call */
-				}
-			}
+			setup_dtls_params(call, &call->videostream->ms);
 		}else{
 			call->videostream=video_stream_new_with_sessions(&call->sessions[1]);
 		}
