@@ -148,27 +148,13 @@ static NSString* const kAllTestsName = @"Run All tests";
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Return NO if you do not want the specified item to be editable.
     return NO;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:FALSE];
-    if( !in_progress ){
-        if( indexPath.row == 0 ){
-          
-            // run all tests
-            NSMutableArray* paths = [[NSMutableArray alloc] init];
-            for (int i = 1; i<_tests.count; i++) {
-                [paths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
-            }
-            [self launchTest:paths];
-            
-        } else {
-            [self launchTest:@[indexPath]];
-        }
-    }
+	[self launchTests:indexPath];
 }
 
 
@@ -177,38 +163,44 @@ static NSString* const kAllTestsName = @"Run All tests";
                           withRowAnimation:animate?UITableViewRowAnimationFade:UITableViewRowAnimationNone];
 }
 
+- (void)launchTests:(NSIndexPath *)index {
+	if (in_progress) {
+		LSLog(@"Test already in progress");
+		return;
+	}
+	in_progress = TRUE;
 
--(void)launchTest:(NSArray*)paths {
-    for (NSIndexPath* path in paths) {
-        TestItem *test = _tests[path.row];
-        test.state = TestStateInProgress;
-    }
-    [self updateItem:paths withAnimation:FALSE];
-    
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    in_progress = TRUE;
-    
-    dispatch_async(queue, ^{
-        for (NSIndexPath*path in paths) {
-            
-            TestItem *test = _tests[path.row];
-            LSLog(@"Should launch test %@", test);
-            
-            BOOL fail = bc_tester_run_tests([test.suite UTF8String], [test.name UTF8String]);
-            if(fail){
-                LSLog(@"Test Failed!");
-                test.state = TestStateFailed;
-            } else {
-                LSLog(@"Test Passed!");
-                test.state = TestStatePassed;
-            }
-            
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self updateItem:@[path] withAnimation:TRUE];
-                in_progress = FALSE;
-            });
-        }
-    });
+	TestItem *test = _tests[index.row];
+	test.state = TestStateInProgress;
+	[self updateItem:@[ index ] withAnimation:FALSE];
+
+	dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+	dispatch_async(queue, ^{
+	  TestItem *test = _tests[index.row];
+	  LSLog(@"Should launch test %@", test);
+	  NSString *testSuite = test.suite;
+	  if ([test.suite isEqualToString:@"All"]) {
+		  testSuite = nil;
+	  }
+	  NSString *testName = test.name;
+	  if ([test.name isEqualToString:kAllTestsName]) {
+		  testName = nil;
+	  }
+	  BOOL fail = bc_tester_run_tests([testSuite UTF8String], [testName UTF8String]);
+	  if (fail) {
+		  LSLog(@"Test Failed!");
+		  test.state = TestStateFailed;
+	  } else {
+		  LSLog(@"Test Passed!");
+		  test.state = TestStatePassed;
+	  }
+
+	  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		[self updateItem:@[ index ] withAnimation:TRUE];
+		in_progress = FALSE;
+	  });
+	});
 }
 
 
