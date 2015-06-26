@@ -1176,6 +1176,8 @@ static LangCodes supported_langs[]={
 	{	"nb_NO"	,	N_("Norwegian")	},
 	{	"he"	,	N_("Hebrew")	},
 	{	"sr"	,	N_("Serbian")	},
+	{	"ar"	,	N_("Arabic")	},
+	{	"tr"	,	N_("Turkish")	},
 	{	NULL	,	NULL		}
 };
 
