@@ -1200,12 +1200,7 @@ static void linphone_gtk_fill_langs(GtkWidget *pb){
 	int i=0,index=0;
 	int cur_lang_index=-1;
 	char text[256]={0};
-	const char *cur_lang;
-	#if defined(WIN32) || defined(__APPLE__)
-		cur_lang=getenv("LANG");
-	#else
-		cur_lang=getenv("LANGUAGE");
-	#endif
+	const char *cur_lang = g_getenv("LANGUAGE");
 	if (cur_lang==NULL) cur_lang="C";
 	/* glade creates a combo box without list model and text renderer,
 	unless we fill it with a dummy text.
@@ -1227,12 +1222,7 @@ static void linphone_gtk_fill_langs(GtkWidget *pb){
 void linphone_gtk_lang_changed(GtkComboBox *combo){
 	const char *selected=gtk_combo_box_get_active_text(combo);
 	char code[10];
-	const char *cur_lang;
-	#if defined(WIN32) || defined(__APPLE__)
-		cur_lang=getenv("LANG");
-	#else
-		cur_lang=getenv("LANGUAGE");
-	#endif
+	const char *cur_lang=g_getenv("LANGUAGE");
 	if (selected!=NULL){
 		sscanf(selected,"%s",code);
 		if (cur_lang==NULL) cur_lang="C";
