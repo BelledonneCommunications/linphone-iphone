@@ -155,30 +155,13 @@ const char *linphone_gtk_get_lang(const char *config_file){
 
 void linphone_gtk_set_lang(const char *code){
 	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
-	const char *curlang;
-
-	#ifdef WIN32
-	char tmp[128];
-	#endif
-
-	#if defined(WIN32) || defined(__APPLE__)
-		curlang=getenv("LANG");
-	#else
-		curlang=getenv("LANGUAGE");
-	#endif
+	const char *curlang=g_getenv("LANGUAGE");
 	if (curlang!=NULL && strncmp(curlang,code,2)==0) {
 		/* do not loose the _territory@encoding part*/
 		return;
 	}
 	lp_config_set_string(cfg,"GtkUi","lang",code);
-#ifdef WIN32
-	snprintf(tmp,sizeof(tmp),"LANG=%s",code);
-	_putenv(tmp);
-#elif __APPLE__
-	setenv("LANG",code,1);
-#else
-	setenv("LANGUAGE",code,1);
-#endif
+	g_setenv("LANGUAGE",code,1);
 }
 
 const gchar *linphone_gtk_get_ui_config(const char *key, const char *def){
