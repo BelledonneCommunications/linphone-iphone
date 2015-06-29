@@ -90,7 +90,7 @@ ui_DATA=$(UI_FILES) $(PIXMAPS) $(top_srcdir)/COPYING
 endif
 
 
-AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
+AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ -I$(top_builddir)/coreapi/ \
 		$(MEDIASTREAMER_CFLAGS) \
 		$(ORTP_CFLAGS) $(BELLESIP_CFLAGS) \
 		$(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
