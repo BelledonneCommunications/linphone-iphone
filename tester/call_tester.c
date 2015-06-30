@@ -1795,8 +1795,10 @@ void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
 	}
 
 	if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-		marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates/marie", bc_tester_read_dir_prefix);
-		pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates/pauline", bc_tester_read_dir_prefix);
+		marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates-marie", bc_tester_writable_dir_prefix);
+		pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates-pauline", bc_tester_writable_dir_prefix);
+		belle_sip_mkdir(marie->lc->user_certificates_path);
+		belle_sip_mkdir(pauline->lc->user_certificates_path);
 	}
 
 	linphone_core_set_media_encryption(marie->lc,mode);
@@ -2506,8 +2508,10 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 		linphone_core_set_media_encryption(marie->lc,mode);
 		linphone_core_set_media_encryption(pauline->lc,mode);
 		if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-			marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates/marie", bc_tester_read_dir_prefix);
-			pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates/pauline", bc_tester_read_dir_prefix);
+			marie->lc->user_certificates_path = ms_strdup_printf("%s/certificates-marie", bc_tester_writable_dir_prefix);
+			pauline->lc->user_certificates_path = ms_strdup_printf("%s/certificates-pauline", bc_tester_writable_dir_prefix);
+			belle_sip_mkdir(marie->lc->user_certificates_path);
+			belle_sip_mkdir(pauline->lc->user_certificates_path);
 		}
 
 		linphone_core_set_firewall_policy(marie->lc,policy);
