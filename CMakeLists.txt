@@ -145,6 +145,10 @@ endif()
 if(MSVC)
 	include_directories(${MSVC_INCLUDE_DIR})
 endif()
+if(INTL_FOUND)
+	set(HAVE_GETTEXT 1)
+	add_definitions("-DENABLE_NLS")
+endif()
 
 add_definitions("-DIN_LINPHONE")
 
