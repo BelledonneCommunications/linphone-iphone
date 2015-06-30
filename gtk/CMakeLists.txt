@@ -72,10 +72,6 @@ if(WIN32)
 	list(APPEND SOURCE_FILES linphone.rc)
 endif()
 
-if(GETTEXT_FOUND)
-	add_definitions("-DENABLE_NLS")
-endif()
-
 if(WIN32)
 	add_executable(linphone-gtk WIN32 ${SOURCE_FILES})
 else()
