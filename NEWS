@@ -1,3 +1,13 @@
+linphone-3.8.5 -- June 30th, 2015
+	* Fix bug about status icon on MacOSX. Attention request worked only once
+	* Fix crash at the end of the audio assistant
+	* Fix crash when configuring a remote provisioning
+	* Fix regretion in the codec view. Codec which are not usable because
+	  bandwitch limits are to low were not grayed anymore
+	* Fix language selection on Wndows and MacOSX
+	* Add translation for 'Arabic' and 'Turkish' items in the language selection
+	  list
+
 linphone-3.8.4 -- June 9th, 2015
 	* Add a built-in XMLRPC client. Linphone does not depend on libsoup anymore
 
