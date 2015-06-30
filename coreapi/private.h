@@ -81,6 +81,10 @@ extern "C" {
 #ifdef ANDROID
 #include <jni.h>
 #endif
+	
+#ifndef _WIN32
+#define WINAPI_FAMILY_PARTITION(x) 1
+#endif
 
 struct _LinphoneCallParams{
 	belle_sip_object_t base;
