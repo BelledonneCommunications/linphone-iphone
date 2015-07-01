@@ -1160,27 +1160,27 @@ static void ping_reply(SalOp *op){
 }
 
 static bool_t fill_auth_info_with_client_certificate(LinphoneCore *lc, SalAuthInfo* sai) {
-		const char *chain_file = lp_config_get_string(lc->config,"sip","client_cert_chain", 0);
-		const char *key_file = lp_config_get_string(lc->config,"sip","client_cert_key", 0);;
+	const char *chain_file = lp_config_get_string(lc->config,"sip","client_cert_chain", 0);
+	const char *key_file = lp_config_get_string(lc->config,"sip","client_cert_key", 0);;
 
 #ifndef WIN32
-		{
-		// optinal check for files
-		struct stat st;
-		if (stat(key_file,&st)) {
-			ms_warning("No client certificate key found in %s", key_file);
-			return FALSE;
-		}
-		if (stat(chain_file,&st)) {
-			ms_warning("No client certificate chain found in %s", chain_file);
-			return FALSE;
-		}
-		}
+	{
+	// optinal check for files
+	struct stat st;
+	if (stat(key_file,&st)) {
+		ms_warning("No client certificate key found in %s", key_file);
+		return FALSE;
+	}
+	if (stat(chain_file,&st)) {
+		ms_warning("No client certificate chain found in %s", chain_file);
+		return FALSE;
+	}
+	}
 #endif
 
-		sal_certificates_chain_parse_file(sai, chain_file, SAL_CERTIFICATE_RAW_FORMAT_PEM );
-		sal_signing_key_parse_file(sai, key_file, "");
-		return sai->certificates && sai->key;
+	sal_certificates_chain_parse_file(sai, chain_file, SAL_CERTIFICATE_RAW_FORMAT_PEM );
+	sal_signing_key_parse_file(sai, key_file, "");
+	return sai->certificates && sai->key;
 }
 
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
