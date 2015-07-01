@@ -309,7 +309,8 @@ lipo:
 \t\tfi \\
 \tdone
 
-libs: $(addprefix all-,$(archs)) lipo
+libs: $(addprefix all-,$(archs))
+\t$(MAKE) lipo
 
 ipa: build
 \txcodebuild -configuration Release \\
