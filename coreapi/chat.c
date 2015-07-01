@@ -153,6 +153,10 @@ static void process_auth_requested_download(void *data, belle_sip_auth_event_t *
 
 static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, size_t total){
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
+	if (!chatMsg->http_request || belle_http_request_is_cancelled(chatMsg->http_request)) {
+		ms_warning("Cancelled request for msg [%p], ignoring %s", chatMsg, __FUNCTION__);
+		return;
+	}
 	if (linphone_chat_message_cbs_get_file_transfer_progress_indication(chatMsg->callbacks)) {
 		linphone_chat_message_cbs_get_file_transfer_progress_indication(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, offset, total);
 	} else {
@@ -165,6 +169,11 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
 	char *buf = (char *)buffer;
+
+	if (!chatMsg->http_request || belle_http_request_is_cancelled(chatMsg->http_request)) {
+		ms_warning("Cancelled request for msg [%p], ignoring %s", chatMsg, __FUNCTION__);
+		return BELLE_SIP_STOP;
+	}
 
 	/* if we've not reach the end of file yet, ask for more data*/
 	if (offset<linphone_content_get_size(chatMsg->file_transfer_information)){
@@ -1096,6 +1105,11 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
 	LinphoneCore *lc = chatMsg->chat_room->lc;
 
+	if (!chatMsg->http_request || belle_http_request_is_cancelled(chatMsg->http_request)) {
+		ms_warning("Cancelled request for msg [%p], ignoring %s", chatMsg, __FUNCTION__);
+		return;
+	}
+
 	/* first call may be with a zero size, ignore it */
 	if (size == 0) {
 		return;
@@ -1257,7 +1271,8 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *message, Lin
 void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 	if (msg->http_request) {
 		if (!belle_http_request_is_cancelled(msg->http_request)) {
-			ms_message("Cancelled file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?linphone_core_get_file_transfer_server(msg->chat_room->lc):msg->external_body_url, msg, msg->chat_room);
+			ms_message("Cancelling file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?linphone_core_get_file_transfer_server(msg->chat_room->lc):msg->external_body_url, msg, msg->chat_room);
+
 			belle_http_provider_cancel_request(msg->chat_room->lc->http_provider, msg->http_request);
 			belle_sip_object_unref(msg->http_request);
 			msg->http_request = NULL;
