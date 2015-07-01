@@ -273,7 +273,7 @@ veryclean-%: package-in-list-%
 \tdone; \\
 \techo "Run 'make build-$*' to rebuild $* correctly."
 
-build: libs sdk
+build: libs
 
 clean: $(addprefix clean-,$(packages))
 
