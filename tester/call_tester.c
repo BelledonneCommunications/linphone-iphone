@@ -4377,7 +4377,7 @@ test_t call_tests[] = {
 
 test_suite_t call_test_suite = {
 	"Single Call",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(call_tests) / sizeof(call_tests[0]),
 	call_tests

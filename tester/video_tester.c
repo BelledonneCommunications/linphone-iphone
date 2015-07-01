@@ -538,7 +538,7 @@ test_t video_tests[] = {
 
 test_suite_t video_test_suite = {
 	"Video",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(video_tests) / sizeof(video_tests[0]),
 	video_tests

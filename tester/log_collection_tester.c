@@ -326,7 +326,7 @@ test_t log_collection_tests[] = {
 
 test_suite_t log_collection_test_suite = {
 	"LogCollection",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(log_collection_tests) / sizeof(log_collection_tests[0]),
 	log_collection_tests

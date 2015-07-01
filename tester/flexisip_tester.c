@@ -936,7 +936,7 @@ test_t flexisip_tests[] = {
 
 test_suite_t flexisip_test_suite = {
 	"Flexisip",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(flexisip_tests) / sizeof(flexisip_tests[0]),
 	flexisip_tests

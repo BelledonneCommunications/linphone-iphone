@@ -1717,7 +1717,7 @@ test_t message_tests[] = {
 
 test_suite_t message_test_suite = {
 	"Message",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(message_tests) / sizeof(message_tests[0]),
 	message_tests

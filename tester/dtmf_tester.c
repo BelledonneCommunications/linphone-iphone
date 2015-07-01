@@ -173,7 +173,7 @@ test_t dtmf_tests[] = {
 
 test_suite_t dtmf_test_suite = {
 	"DTMF",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(dtmf_tests) / sizeof(dtmf_tests[0]),
 	dtmf_tests

@@ -268,7 +268,7 @@ static void devices_reload_test(void) {
 static void codec_usability_test(void) {
 	LinphoneCoreManager *mgr = linphone_core_manager_new2("empty_rc", FALSE);
 	PayloadType *pt = linphone_core_find_payload_type(mgr->lc, "PCMU", 8000, -1);
-	
+
 	BC_ASSERT_TRUE(pt!=NULL);
 	if (!pt) goto end;
 	/*no limit*/
@@ -279,12 +279,12 @@ static void codec_usability_test(void) {
 	linphone_core_set_upload_bandwidth(mgr->lc, 50);
 	linphone_core_set_download_bandwidth(mgr->lc, 50);
 	BC_ASSERT_FALSE(linphone_core_check_payload_type_usability(mgr->lc, pt));
-	
+
 	/*reasonable limit*/
 	linphone_core_set_upload_bandwidth(mgr->lc, 200);
 	linphone_core_set_download_bandwidth(mgr->lc, 200);
 	BC_ASSERT_TRUE(linphone_core_check_payload_type_usability(mgr->lc, pt));
-	
+
 end:
 	linphone_core_manager_destroy(mgr);
 }
@@ -308,7 +308,7 @@ test_t setup_tests[] = {
 
 test_suite_t setup_test_suite = {
 	"Setup",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(setup_tests) / sizeof(setup_tests[0]),
 	setup_tests

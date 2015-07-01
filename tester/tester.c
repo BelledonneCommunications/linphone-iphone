@@ -32,7 +32,7 @@
 static bool_t liblinphone_tester_ipv6_enabled=FALSE;
 static int liblinphone_tester_keep_accounts_flag = 0;
 static int liblinphone_tester_keep_record_files = FALSE;
-static int manager_count = 0;
+int manager_count = 0;
 
 const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";
@@ -232,6 +232,7 @@ bool_t transport_supported(LinphoneTransportType transport) {
 	sal_uninit(sal);
 	return supported;
 }
+
 
 LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
@@ -440,4 +441,12 @@ int linphone_core_manager_get_max_audio_down_bw(const LinphoneCoreManager *mgr) 
 int linphone_core_manager_get_max_audio_up_bw(const LinphoneCoreManager *mgr) {
 	return linphone_core_manager_get_max_audio_bw_base(mgr->stat.audio_upload_bandwidth
 			, sizeof(mgr->stat.audio_upload_bandwidth)/sizeof(int));
+}
+
+int liblinphone_tester_setup() {
+	if (manager_count != 0) {
+		ms_error("%d linphone core manager still alive!", manager_count);
+		return 1;
+	}
+	return 0;
 }

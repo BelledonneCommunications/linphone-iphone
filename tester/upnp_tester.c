@@ -58,7 +58,7 @@ test_t upnp_tests[] = {
 
 test_suite_t upnp_test_suite = {
 	"Upnp",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(upnp_tests) / sizeof(upnp_tests[0]),
 	upnp_tests

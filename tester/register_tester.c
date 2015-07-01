@@ -314,6 +314,7 @@ static void simple_authenticated_register(){
 	counters = &lcm->stat;
 	register_with_refresh(lcm,FALSE,auth_domain,route);
 	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
+	linphone_core_manager_destroy(lcm);
 }
 
 static void ha1_authenticated_register(){
@@ -329,6 +330,7 @@ static void ha1_authenticated_register(){
 	counters = &lcm->stat;
 	register_with_refresh(lcm,FALSE,auth_domain,route);
 	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
+	linphone_core_manager_destroy(lcm);
 }
 
 static void authenticated_register_with_no_initial_credentials(){
@@ -892,7 +894,7 @@ test_t register_tests[] = {
 
 test_suite_t register_test_suite = {
 	"Register",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(register_tests) / sizeof(register_tests[0]),
 	register_tests

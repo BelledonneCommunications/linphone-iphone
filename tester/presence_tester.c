@@ -484,7 +484,7 @@ test_t presence_tests[] = {
 
 test_suite_t presence_test_suite = {
 	"Presence",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(presence_tests) / sizeof(presence_tests[0]),
 	presence_tests

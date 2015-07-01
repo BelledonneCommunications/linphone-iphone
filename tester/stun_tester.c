@@ -112,7 +112,7 @@ test_t stun_tests[] = {
 
 test_suite_t stun_test_suite = {
 	"Stun",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(stun_tests) / sizeof(stun_tests[0]),
 	stun_tests

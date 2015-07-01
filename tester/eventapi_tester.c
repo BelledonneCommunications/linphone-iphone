@@ -242,10 +242,11 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
 
-	/*check good receipt of custom headers*/
-	BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header"),"pouet");
-	BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header2"),"pimpon");
-
+	if (pauline->stat.number_of_LinphoneSubscriptionIncomingReceived == 1) {
+		/*check good receipt of custom headers*/
+		BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header"),"pouet");
+		BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header2"),"pimpon");
+	}
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
 
@@ -368,7 +369,7 @@ test_t event_tests[] = {
 
 test_suite_t event_test_suite = {
 	"Event",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(event_tests) / sizeof(event_tests[0]),
 	event_tests

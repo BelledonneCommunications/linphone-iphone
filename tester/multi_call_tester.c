@@ -283,9 +283,9 @@ static void simple_encrypted_conference_with_ice(LinphoneMediaEncryption mode) {
 			...
 			linphone_core_iterate() at linphonecore.c:2 620
 			...
-			
+
 			linphone_core_set_stun_server() initiates an asynchronous resolution, but it needs a few iteration before it is completed.
-			By calling private function linphone_core_get_stun_server_addrinfo() we make sure to wait that the resolution is done before the 
+			By calling private function linphone_core_get_stun_server_addrinfo() we make sure to wait that the resolution is done before the
 			test calls actually start.
 		*/
 		linphone_core_get_stun_server_addrinfo(marie->lc);
@@ -555,7 +555,7 @@ test_t multi_call_tests[] = {
 
 test_suite_t multi_call_test_suite = {
 	"Multi call",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(multi_call_tests) / sizeof(multi_call_tests[0]),
 	multi_call_tests

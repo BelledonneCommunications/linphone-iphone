@@ -396,7 +396,7 @@ test_t quality_reporting_tests[] = {
 
 test_suite_t quality_reporting_test_suite = {
 	"QualityReporting",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(quality_reporting_tests) / sizeof(quality_reporting_tests[0]),
 	quality_reporting_tests

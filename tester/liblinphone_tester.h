@@ -52,6 +52,7 @@ extern test_suite_t video_test_suite;
 extern test_suite_t multicast_call_test_suite;
 extern test_suite_t multi_call_test_suite;
 extern test_suite_t proxy_config_test_suite;
+extern int manager_count;
 
 extern int liblinphone_tester_ipv6_available(void);
 
@@ -329,5 +330,7 @@ static const int audio_cmp_max_shift=20;
 int linphone_core_manager_get_max_audio_down_bw(const LinphoneCoreManager *mgr);
 int linphone_core_manager_get_max_audio_up_bw(const LinphoneCoreManager *mgr);
 void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled);
-#endif /* LIBLINPHONE_TESTER_H_ */
 
+int liblinphone_tester_setup();
+
+#endif /* LIBLINPHONE_TESTER_H_ */

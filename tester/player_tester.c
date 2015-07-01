@@ -84,7 +84,7 @@ test_t player_tests[] = {
 
 test_suite_t player_test_suite = {
 	"Player",
-	NULL,
+	liblinphone_tester_setup,
 	NULL,
 	sizeof(player_tests) / sizeof(test_t),
 	player_tests
