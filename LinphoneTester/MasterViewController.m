@@ -12,6 +12,7 @@
 
 #include "linphone/liblinphone_tester.h"
 #include "mediastreamer2/msutils.h"
+#import "Utils.h"
 
 @interface MasterViewController () {
     NSMutableArray *_objects;
@@ -37,23 +38,12 @@ static int const kLastLogsCapacity = 5000;
 static int const kLogsBufferCapacity = 10;
 NSString* const  kLogsUpdateNotification = @"kLogsUpdateNotification";
 
-void LSLog(NSString* fmt, ...){
-    va_list args;
-    va_start(args, fmt);
-    linphone_log_function(ORTP_MESSAGE, [fmt UTF8String], args);
-    va_end(args);
-}
-
-static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list args) {
-    NSString* log = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:fmt] arguments:args];
-    NSLog(@"%@",log);
-}
-
 - (void)setupLogging {
     lastLogs = [[NSMutableArray alloc] initWithCapacity:kLastLogsCapacity];
     logsBuffer = [NSMutableArray arrayWithCapacity:kLogsBufferCapacity];
 
-    linphone_core_set_log_handler(linphone_log_function);
+	//	linphone_core_set_log_level(ORTP_MESSAGE);
+	linphone_core_set_log_handler((OrtpLogFunc)linphone_iphone_log_handler);
 }
 
 
@@ -69,16 +59,16 @@ static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list arg
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     documentPath = [paths objectAtIndex:0];
 
-	bc_tester_init((void (*)(int, const char *fm, va_list))linphone_log_function, ORTP_MESSAGE, ORTP_ERROR);
+	bc_tester_init((void (*)(int, const char *fm, va_list))linphone_iphone_log_handler, ORTP_MESSAGE, ORTP_ERROR);
 	liblinphone_tester_add_suites();
 		
 	bc_tester_read_dir_prefix = ms_strdup([bundlePath UTF8String]);
 	bc_tester_writable_dir_prefix = ms_strdup([documentPath UTF8String]);
 
-    LSLog(@"Bundle path: %@", bundlePath);
-    LSLog(@"Document path: %@", documentPath);
+	LOGI(@"Bundle path: %@", bundlePath);
+	LOGI(@"Document path: %@", documentPath);
 
-    int count = bc_tester_nb_suites();
+	int count = bc_tester_nb_suites();
 	_objects = [[NSMutableArray alloc] initWithCapacity:count + 1];
 	[_objects addObject:@"All"];
 	for (int i = 0; i < count; i++) {
@@ -88,8 +78,8 @@ static void linphone_log_function(OrtpLogLevel lev, const char *fmt, va_list arg
 }
 
 - (void)displayLogs {
-    LSLog(@"Should display logs");
-    [self.navigationController performSegueWithIdentifier:@"viewLogs" sender:self];
+	LOGI(@"Should display logs");
+	[self.navigationController performSegueWithIdentifier:@"viewLogs" sender:self];
 }
 
 - (void)didReceiveMemoryWarning

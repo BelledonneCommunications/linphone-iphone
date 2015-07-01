@@ -102,7 +102,7 @@ static bool invalidAccount = true;
 			[tester waitForTimeInterval:0.5];
 		}
 
-		NSLog(@"Switching to a valid account");
+		LOGI(@"Switching to a valid account");
 
 		[tester tapViewWithAccessibilityLabel:@"Start"];
 		[tester tapViewWithAccessibilityLabel:@"Sign in linphone.org account"];

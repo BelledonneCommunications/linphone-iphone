@@ -10,6 +10,7 @@
 #import "MasterViewController.h"
 #import "LogsViewController.h"
 #include "linphone/liblinphone_tester.h"
+#import "Utils.h"
 
 static NSString* const kAllTestsName = @"Run All tests";
 
@@ -165,7 +166,7 @@ static NSString* const kAllTestsName = @"Run All tests";
 
 - (void)launchTests:(NSIndexPath *)index {
 	if (in_progress) {
-		LSLog(@"Test already in progress");
+		LOGE(@"Test already in progress");
 		return;
 	}
 	in_progress = TRUE;
@@ -178,7 +179,7 @@ static NSString* const kAllTestsName = @"Run All tests";
 
 	dispatch_async(queue, ^{
 	  TestItem *test = _tests[index.row];
-	  LSLog(@"Should launch test %@", test);
+	  LOGI(@"Should launch test %@", test);
 	  NSString *testSuite = test.suite;
 	  if ([test.suite isEqualToString:@"All"]) {
 		  testSuite = nil;
@@ -189,10 +190,10 @@ static NSString* const kAllTestsName = @"Run All tests";
 	  }
 	  BOOL fail = bc_tester_run_tests([testSuite UTF8String], [testName UTF8String]);
 	  if (fail) {
-		  LSLog(@"Test Failed!");
+		  LOGW(@"Test Failed!");
 		  test.state = TestStateFailed;
 	  } else {
-		  LSLog(@"Test Passed!");
+		  LOGI(@"Test Passed!");
 		  test.state = TestStatePassed;
 	  }
 

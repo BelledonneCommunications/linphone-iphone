@@ -20,6 +20,7 @@
 
 #import "Utils.h"
 #include "linphone/linphonecore.h"
+#import <CommonCrypto/CommonDigest.h>
 
 @implementation LinphoneLogger
 
@@ -261,8 +262,6 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 @end
 
 @implementation NSString(md5)
-
-#import <CommonCrypto/CommonDigest.h>
 
 - (NSString *)md5 {
 	const char *ptr = [self UTF8String];

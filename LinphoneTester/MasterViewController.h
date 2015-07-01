@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-void LSLog(NSString* fmt, ...);
-
 NSMutableArray* lastLogs;
 NSString* const  kLogsUpdateNotification;
 
