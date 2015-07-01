@@ -289,7 +289,7 @@
 	UITableView *tv = [self findTableView:@"ChatRoom list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
 	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message"
-										value:@"Anna Haro (3)"
+										value:@"Anna Haro (0)"
 									   traits:UIAccessibilityTraitStaticText];
 }
 
