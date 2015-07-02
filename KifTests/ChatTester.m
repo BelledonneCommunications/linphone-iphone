@@ -160,6 +160,7 @@
 	if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined) {
 #if TARGET_IPHONE_SIMULATOR
 		[tester acknowledgeSystemAlert];
+		[tester waitForTimeInterval:1];
 #endif
 	}
 
