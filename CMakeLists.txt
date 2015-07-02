@@ -26,7 +26,7 @@ project(LINPHONE C CXX)
 
 set(LINPHONE_MAJOR_VERSION "3")
 set(LINPHONE_MINOR_VERSION "8")
-set(LINPHONE_MICRO_VERSION "4")
+set(LINPHONE_MICRO_VERSION "5")
 set(LINPHONE_VERSION "${LINPHONE_MAJOR_VERSION}.${LINPHONE_MINOR_VERSION}.${LINPHONE_MICRO_VERSION}")
 set(LINPHONE_SO_VERSION "7")
 
@@ -53,6 +53,7 @@ option(ENABLE_UPNP "Build with uPnP support." YES)
 option(ENABLE_VIDEO "Build with video support." YES)
 cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENABLE_GTK_UI" NO)
 option(ENABLE_DEBUG_LOGS "Turn on or off debug level logs." NO)
+option(ENABLE_NLS "Build with internationalisation support" YES)
 
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -136,6 +137,10 @@ if(ENABLE_ASSISTANT)
 	set(BUILD_WIZARD 1)
 endif()
 find_package(Gettext)
+if(ENABLE_NLS)
+	find_package(Gettext REQUIRED)
+	find_package(Intl REQUIRED)
+endif()
 
 
 include_directories(
@@ -167,6 +172,7 @@ endif()
 if(INTL_FOUND)
 	set(HAVE_GETTEXT 1)
 	add_definitions("-DENABLE_NLS")
+	include_directories(${INTL_INCLUDE_DIRECTORIES})
 endif()
 
 add_definitions("-DIN_LINPHONE")
