@@ -119,6 +119,7 @@ static void message_forking_with_unreachable_recipients(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(marie3);
 	linphone_core_manager_destroy(pauline);
 	ms_free(to);
 	ms_list_free(lcs);
@@ -169,6 +170,7 @@ static void message_forking_with_all_recipients_unreachable(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(marie3);
 	linphone_core_manager_destroy(pauline);
 	ms_free(to);
 	ms_list_free(lcs);
@@ -800,7 +802,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 	}
 }
 
-static void send_file_transfer_message_using_external_body_url(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
+void send_file_transfer_message_using_external_body_url(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
 	char *to;
 	LinphoneChatMessageCbs *cbs;
 	LinphoneChatRoom *chat_room;
@@ -877,6 +879,7 @@ static void dos_module_trigger(void) {
 	char *to;
 	LinphoneChatRoom *chat_room;
 	int i = 0;
+	const char* passmsg = "This one should pass through";
 	int number_of_messge_to_send = 100;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -896,15 +899,18 @@ static void dos_module_trigger(void) {
 	} while (i < number_of_messge_to_send);
 	// At this point we should be banned for a minute
 
-	ms_usleep(90000000); // Wait 90 seconds to ensure we are not banned anymore
+	ms_usleep(65000000); // Wait several seconds to ensure we are not banned anymore
 	BC_ASSERT_LOWER(marie->stat.number_of_LinphoneMessageReceived, number_of_messge_to_send, int, "%d");
 
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
-	linphone_chat_room_send_message(chat_room, "This one should pass through");
+	linphone_chat_room_send_message(chat_room, passmsg);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived, 1));
-
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceived, 1, int, "%d");
+	if (marie->stat.last_received_chat_message) {
+		BC_ASSERT_NSTRING_EQUAL(linphone_chat_message_get_text(marie->stat.last_received_chat_message), passmsg, strlen(passmsg));
+	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	ms_free(to);
