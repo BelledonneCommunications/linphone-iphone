@@ -147,8 +147,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
                  gboolean me,LinphoneChatRoom *cr,LinphoneChatMessage *msg, gboolean hist){
 	GtkTextView *text=GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textview"));
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(text);
-	GtkTextIter iter,begin;
-	int off;
+	GtkTextIter iter;
 	char *from_str=linphone_address_as_string_uri_only(from);
 	gchar *from_message=(gchar *)g_object_get_data(G_OBJECT(w),"from_message");
 	GHashTable *table=(GHashTable*)g_object_get_data(G_OBJECT(w),"table");
@@ -159,40 +158,29 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	int tnow_day;
 	int tnow_year;
 
-	gtk_text_buffer_get_start_iter(buffer,&begin);
-	gtk_text_buffer_get_end_iter(buffer,&iter);
-	off=gtk_text_iter_get_offset(&iter);
+	gtk_text_buffer_get_end_iter(buffer, &iter);
 	if(g_strcmp0(from_message,from_str)!=0){
-		gtk_text_buffer_get_iter_at_offset(buffer,&iter,off);
-		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, get_display_name(from), -1,
 		                                         "from", me ? "me" : NULL, NULL);
-		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter, " : ", -1,
 		                                         "from", me ? "me" : NULL, NULL);
-		gtk_text_buffer_get_end_iter(buffer,&iter);
 		gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 		g_free(from_message);
 		g_object_set_data(G_OBJECT(w),"from_message",g_strdup(from_str));
+		ms_free(from_str);
 	}
-	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, linphone_chat_message_get_text(msg), -1,
 	                                         "body", me ? "me" : NULL, NULL);
-	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
-	gtk_text_buffer_get_end_iter(buffer,&iter);
 	t=linphone_chat_message_get_time(msg);
 	switch (linphone_chat_message_get_state (msg)){
 		case LinphoneChatMessageStateInProgress:
-		{
 			g_hash_table_insert(table,(gpointer)msg,GINT_TO_POINTER(gtk_text_iter_get_line(&iter)));
 			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Sending ..",-1,
 												"status", me ? "me" : NULL, NULL);
 			g_object_set_data(G_OBJECT(w),"table",table);
 			break;
-		}
 		case LinphoneChatMessageStateDelivered:
-		{
 			tnow=time(NULL);
 			tm=localtime(&tnow);
 			tnow_day=tm->tm_yday;
@@ -206,18 +194,15 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,buf,-1,
 	                      "status", me ? "me" : NULL, NULL);
 			break;
-		}
 		case  LinphoneChatMessageStateNotDelivered:
-				gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Message not sent",-1,
+			gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Message not sent",-1,
 	                       "status", me ? "me" : NULL, NULL);
-				break;
+			break;
 		default : gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Sending ..",-1,
 	                       "status", me ? "me" : NULL, NULL);
 	}
-	gtk_text_buffer_get_end_iter(buffer,&iter);
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 	g_idle_add((GSourceFunc)scroll_to_end,text);
-	ms_free(from_str);
 }
 
 const LinphoneAddress* linphone_gtk_get_used_identity(){
@@ -427,7 +412,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	gtk_text_buffer_create_tag(
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 		"body",
-		"left-margin", 10,
+		"indent", 10,
 		NULL);
 	
 	gtk_text_buffer_create_tag(
