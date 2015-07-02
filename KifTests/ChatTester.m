@@ -220,7 +220,6 @@
 	[self uploadImageWithQuality:@"Maximum"];
 	[self uploadImageWithQuality:@"Minimum"];
 	UITableView *tv = [self findTableView:@"Chat list"];
-	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 3);
 	// wait for ALL uploads to terminate...
 	for (int i = 0; i < 45; i++) {
 		[tester waitForTimeInterval:1.f];
@@ -229,6 +228,7 @@
 	}
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
 	ASSERT_EQ([tv numberOfRowsInSection:0], 6);
+	[self goBackFromChat];
 }
 
 - (void)downloadImage {
