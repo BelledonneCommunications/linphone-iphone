@@ -177,7 +177,6 @@
 	[tester tapViewWithAccessibilityLabel:element.accessibilityLabel];
 
 	ASSERT_EQ([tv numberOfRowsInSection:0], messagesCount + 1);
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], delegatesCount + 1);
 }
 
 - (void)testUploadImage {
