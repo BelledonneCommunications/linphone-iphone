@@ -12,7 +12,7 @@ env:
 
 before_install:
     - brew update 1>/dev/null
-    - brew install doxygen nasm gettext yasm optipng imagemagick coreutils intltool
+    - brew install doxygen nasm gettext yasm optipng imagemagick coreutils intltool ninja
     - brew outdated cmake || brew upgrade cmake
     - brew link gettext --force
     - brew tap Gui13/linphone
@@ -25,8 +25,8 @@ before_install:
     - git submodule update --init --recursive
 
 install:
-    - ./prepare.py i386
-    - make -j1 -s 1>/dev/null
+    - ./prepare.py i386 -G Ninja
+    - make -j4 -s 1>/dev/null
     - mkdir -p $KIF_SCREENSHOTS
 
 script:

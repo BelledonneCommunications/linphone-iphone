@@ -27,12 +27,12 @@ if [ ! -z "$(find . -name "*.png")" ]; then
 		if [ "$succeeded" != "true" ]; then
 			echo "There was a problem uploading \"$filepath\": $result"
 		else
-			download_cmds="${download_cmds}wget $(echo "$result" | underscore extract 'data.link')\n"
+			download_cmds="${download_cmds}\nwget $(echo "$result" | underscore extract 'data.link')"
 		fi
 	done
 	echo "All uploads complete!"
 	echo ""
-	echo "Download via: $download_cmds"
+	printf "Download via: $download_cmds\n"
 else
 	echo "Could not find any PNG in $PWD, something must be broken!"
 fi
