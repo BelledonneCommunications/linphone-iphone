@@ -764,23 +764,24 @@ static void tls_certificate_failure(){
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* lcm;
 		LinphoneCore *lc;
-		char rootcapath[256];
+		char *rootcapath = bc_tester_res("certificates/cn/agent.pem"); /*bad root ca*/
 
 		lcm=linphone_core_manager_new2("pauline_rc",FALSE);
 		lc=lcm->lc;
-		snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/agent.pem", bc_tester_read_dir_prefix); /*bad root ca*/
 		linphone_core_set_root_ca(lcm->lc,rootcapath);
 		linphone_core_set_network_reachable(lc,TRUE);
 		BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&lcm->stat.number_of_LinphoneRegistrationFailed,1));
 		linphone_core_set_root_ca(lcm->lc,NULL); /*no root ca*/
 		linphone_core_refresh_registers(lcm->lc);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationFailed,2));
-		snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", bc_tester_read_dir_prefix); /*goot root ca*/
+		ms_free(rootcapath);
+		rootcapath = bc_tester_res("certificates/cn/cafile.pem"); /*good root ca*/
 		linphone_core_set_root_ca(lcm->lc,rootcapath);
 		linphone_core_refresh_registers(lcm->lc);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationOk,1));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,2, int, "%d");
 		linphone_core_manager_destroy(lcm);
+		ms_free(rootcapath);
 	}
 }
 
@@ -813,16 +814,16 @@ static void tls_alt_name_register(){
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* lcm;
 		LinphoneCore *lc;
-		char rootcapath[256];
+		char *rootcapath = bc_tester_res("certificates/cn/cafile.pem");
 
 		lcm=linphone_core_manager_new2("pauline_alt_rc",FALSE);
 		lc=lcm->lc;
-		snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", bc_tester_read_dir_prefix);
 		linphone_core_set_root_ca(lc,rootcapath);
 		linphone_core_refresh_registers(lc);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationOk,1));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,0, int, "%d");
 		linphone_core_manager_destroy(lcm);
+		ms_free(rootcapath);
 	}
 }
 
@@ -830,16 +831,16 @@ static void tls_wildcard_register(){
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* lcm;
 		LinphoneCore *lc;
-		char rootcapath[256];
+		char *rootcapath = bc_tester_res("certificates/cn/cafile.pem");
 
 		lcm=linphone_core_manager_new2("pauline_wild_rc",FALSE);
 		lc=lcm->lc;
-		snprintf(rootcapath,sizeof(rootcapath), "%s/certificates/cn/cafile.pem", bc_tester_read_dir_prefix);
 		linphone_core_set_root_ca(lc,rootcapath);
 		linphone_core_refresh_registers(lc);
 		BC_ASSERT_TRUE(wait_for(lc,lc,&lcm->stat.number_of_LinphoneRegistrationOk,2));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationFailed,0, int, "%d");
 		linphone_core_manager_destroy(lcm);
+		ms_free(rootcapath);
 	}
 }
 

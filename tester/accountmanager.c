@@ -123,7 +123,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 
 	vtable.registration_state_changed=account_created_on_server_cb;
 	vtable.auth_info_requested=account_created_auth_requested_cb;
-	lc=configure_lc_from(&vtable,bc_tester_read_dir_prefix,NULL,account);
+	lc=configure_lc_from(&vtable,bc_tester_get_resource_dir_prefix(),NULL,account);
 	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tls_port=LC_SIP_TRANSPORT_RANDOM;

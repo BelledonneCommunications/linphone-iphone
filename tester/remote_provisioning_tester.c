@@ -98,7 +98,7 @@ static void remote_provisioning_default_values(void) {
 		LpConfig* lp = linphone_core_get_config(marie->lc);
 		BC_ASSERT_STRING_EQUAL(lp_config_get_string(lp,"app","toto","empty"),"titi");
 	}
-
+	linphone_proxy_config_destroy(lpc);
 	linphone_core_manager_destroy(marie);
 }
 

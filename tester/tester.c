@@ -259,7 +259,7 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
-	mgr->lc=configure_lc_from(&mgr->v_table, bc_tester_read_dir_prefix, rc_path, mgr);
+	mgr->lc=configure_lc_from(&mgr->v_table, bc_tester_get_resource_dir_prefix(), rc_path, mgr);
 	linphone_core_manager_check_accounts(mgr);
 
 	manager_count++;
@@ -287,16 +287,16 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 
 
 	if( manager_count >= 2){
-		char hellopath[512];
-		char *recordpath = ms_strdup_printf("%s/record_for_lc_%p.wav",bc_tester_writable_dir_prefix,mgr->lc);
+		char *hellopath = bc_tester_file("sounds/hello8000.wav");
+		char *recordpath = ms_strdup_printf("%s/record_for_lc_%p.wav",bc_tester_get_writable_dir_prefix(),mgr->lc);
 		ms_message("Manager for '%s' using files", rc_file ? rc_file : "--");
 		linphone_core_set_use_files(mgr->lc, TRUE);
-		snprintf(hellopath,sizeof(hellopath), "%s/sounds/hello8000.wav", bc_tester_read_dir_prefix);
 		linphone_core_set_play_file(mgr->lc,hellopath);
 		linphone_core_set_record_file(mgr->lc,recordpath);
 		ms_free(recordpath);
+		ms_free(hellopath);
 	}
-	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_writable_dir_prefix);
+	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_get_writable_dir_prefix());
 
 	if (rc_path) ms_free(rc_path);
 
@@ -445,7 +445,9 @@ int linphone_core_manager_get_max_audio_up_bw(const LinphoneCoreManager *mgr) {
 
 int liblinphone_tester_setup() {
 	if (manager_count != 0) {
-		ms_error("%d linphone core manager still alive!", manager_count);
+		// crash in some linphone core have not been destroyed because if we continue
+		// it will crash in CUnit AND we should NEVER keep a manager alive
+		ms_fatal("%d linphone core manager still alive!", manager_count);
 		return 1;
 	}
 	return 0;

@@ -91,7 +91,7 @@ static size_t getline(char **lineptr, size_t *n, FILE *stream) {
 static LinphoneLogCollectionState old_collection_state;
 static void collect_init()  {
 	old_collection_state = linphone_core_log_collection_enabled();
-	linphone_core_set_log_collection_path(bc_tester_writable_dir_prefix);
+	linphone_core_set_log_collection_path(bc_tester_get_writable_dir_prefix());
 }
 
 static void collect_cleanup(LinphoneCoreManager *marie)  {
@@ -186,7 +186,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 		BC_ASSERT_PTR_NOT_NULL(file);
 		if (!file) return 0;
 		// 1) expect to find folder name in filename path
-		BC_ASSERT_PTR_NOT_NULL(strstr(filepath, bc_tester_writable_dir_prefix));
+		BC_ASSERT_PTR_NOT_NULL(strstr(filepath, bc_tester_get_writable_dir_prefix()));
 
 		// 2) check file contents
 		while (getline(&line, &line_size, file) != -1) {

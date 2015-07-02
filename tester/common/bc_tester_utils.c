@@ -23,24 +23,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bc_tester_utils.h"
 
 #include <stdlib.h>
+#include <time.h>
 
 #include "CUnit/Basic.h"
 #include "CUnit/Automated.h"
-
-#if WINAPI_FAMILY_PHONE_APP
-const char *bc_tester_read_dir_prefix="Assets";
-#elif defined(__QNX__)
-const char *bc_tester_read_dir_prefix="./app/native/assets/";
-#else
-const char *bc_tester_read_dir_prefix=".";
+#ifdef _WIN32
+#if defined(__MINGW32__) || !defined(WINAPI_FAMILY_PARTITION) || !defined(WINAPI_PARTITION_DESKTOP)
+#define BC_TESTER_WINDOWS_DESKTOP 1
+#elif defined(WINAPI_FAMILY_PARTITION)
+#if defined(WINAPI_PARTITION_DESKTOP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+#define BC_TESTER_WINDOWS_DESKTOP 1
+#endif
+#if defined(WINAPI_PARTITION_PHONE_APP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_PHONE_APP)
+#define BC_TESTER_WINDOWS_PHONE 1
+#endif
+#if defined(WINAPI_PARTITION_APP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+#define BC_TESTER_WINDOWS_UNIVERSAL 1
+#endif
+#endif
 #endif
 
-/* TODO: have the same "static" for QNX and windows as above? */
-#ifdef ANDROID
-const char *bc_tester_writable_dir_prefix = "/data/data/org.linphone.tester/cache";
-#else
-const char *bc_tester_writable_dir_prefix = ".";
-#endif
+
+static char *bc_tester_resource_dir_prefix = NULL;
+static char *bc_tester_writable_dir_prefix = NULL;
 
 int bc_printf_verbosity_info;
 int bc_printf_verbosity_error;
@@ -97,7 +102,7 @@ int bc_tester_suite_index(const char *suite_name) {
 	return -1;
 }
 
-int bc_tester_nb_suites() {
+int bc_tester_nb_suites(void) {
 	return nb_test_suites;
 }
 
@@ -114,7 +119,7 @@ int bc_tester_nb_tests(const char *suite_name) {
 	return test_suite[i]->nb_tests;
 }
 
-void bc_tester_list_suites() {
+void bc_tester_list_suites(void) {
 	int j;
 	for(j=0;j<nb_test_suites;j++) {
 		bc_tester_printf(bc_printf_verbosity_info, "%s", bc_tester_suite_name(j));
@@ -146,15 +151,19 @@ static void suite_cleanup_failure_message_handler(const CU_pSuite pSuite) {
 }
 
 #ifdef HAVE_CU_GET_SUITE
+static time_t suite_start_time = 0;
 static void suite_start_message_handler(const CU_pSuite pSuite) {
 	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] started\n", pSuite->pName);
+	suite_start_time = time(NULL);
 }
 static void suite_complete_message_handler(const CU_pSuite pSuite, const CU_pFailureRecord pFailure) {
-	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] ended\n", pSuite->pName);
+	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] ended in %lu sec\n", pSuite->pName, time(NULL) - suite_start_time);
 }
 
+static time_t test_start_time = 0;
 static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSuite) {
 	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] Test [%s] started", pSuite->pName,pTest->pName);
+	test_start_time = time(NULL);
 }
 
 /*derivated from cunit*/
@@ -178,7 +187,7 @@ static void test_complete_message_handler(const CU_pTest pTest,
 	} else {
 		strncat(result, " passed", strlen(" passed"));
 	}
-	bc_tester_printf(bc_printf_verbosity_info,"%s\n", result);
+	bc_tester_printf(bc_printf_verbosity_info,"%s in %lu sec\n", result, (unsigned long)(time(NULL) - test_start_time));
 }
 #endif
 
@@ -264,7 +273,7 @@ void bc_tester_helper(const char *name, const char* additionnal_helper) {
 		"\t\t\t--curses\n"
 #endif
 		"\t\t\t--xml\n"
-		"\t\t\t--xml-file <xml file prefix (will be suffixed by '-Results.xml')>\n"
+		"\t\t\t--xml-file <xml file name>\n"
 		"And additionally:\n"
 		"%s"
 		, name
@@ -272,6 +281,22 @@ void bc_tester_helper(const char *name, const char* additionnal_helper) {
 }
 
 void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list args), int iverbosity_info, int iverbosity_error) {
+#if defined(BC_TESTER_WINDOWS_PHONE) || defined(BC_TESTER_WINDOWS_UNIVERSAL)
+	bc_tester_set_resource_dir_prefix("Assets");
+#elif defined(__QNX__)
+	bc_tester_set_resource_dir_prefix("./app/native/assets/");
+#else
+	bc_tester_set_resource_dir_prefix(".");
+#endif
+
+#ifdef ANDROID
+	bc_tester_set_writable_dir_prefix("/data/data/org.linphone.tester/cache");
+#elif defined(__QNX__)
+	bc_tester_set_writable_dir_prefix("./tmp");
+#else
+	bc_tester_set_writable_dir_prefix(".");
+#endif
+
 	tester_printf_va = ftester_printf;
 	bc_printf_verbosity_error = iverbosity_error;
 	bc_printf_verbosity_info = iverbosity_info;
@@ -316,7 +341,7 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	return i - argid + 1;
 }
 
-int bc_tester_start() {
+int bc_tester_start(void) {
 	int ret;
 	if( xml_enabled ){
 		size_t size = strlen(xml_file) + strlen(".tmp") + 1;
@@ -341,7 +366,7 @@ void bc_tester_add_suite(test_suite_t *suite) {
 	}
 }
 
-void bc_tester_uninit() {
+void bc_tester_uninit(void) {
 	/* Redisplay list of failed tests on end */
 	if (CU_get_number_of_failure_records()){
 		CU_basic_show_failures(CU_get_failure_list());
@@ -364,14 +389,56 @@ void bc_tester_uninit() {
 		test_suite = NULL;
 		nb_test_suites = 0;
 	}
+
+	if (bc_tester_resource_dir_prefix != NULL) {
+		free(bc_tester_resource_dir_prefix);
+		bc_tester_resource_dir_prefix = NULL;
+	}
+	if (bc_tester_writable_dir_prefix != NULL) {
+		free(bc_tester_writable_dir_prefix);
+		bc_tester_writable_dir_prefix = NULL;
+	}
+}
+
+static void bc_tester_set_dir_prefix(char **prefix, const char *name) {
+	size_t len = strlen(name);
+	if (*prefix != NULL) free(*prefix);
+	*prefix = malloc(len + 1);
+	strncpy(*prefix, name, len);
+	(*prefix)[len] = '\0';
+}
+
+const char * bc_tester_get_resource_dir_prefix(void) {
+	return bc_tester_resource_dir_prefix;
+}
+
+void bc_tester_set_resource_dir_prefix(const char *name) {
+	bc_tester_set_dir_prefix(&bc_tester_resource_dir_prefix, name);
+}
+
+const char * bc_tester_get_writable_dir_prefix(void) {
+	return bc_tester_writable_dir_prefix;
+}
+
+void bc_tester_set_writable_dir_prefix(const char *name) {
+	bc_tester_set_dir_prefix(&bc_tester_writable_dir_prefix, name);
+}
+
+static char * bc_tester_path(const char *prefix, const char *name) {
+	char* file = NULL;
+	if (name) {
+		size_t len = strlen(prefix) + 1 + strlen(name) + 1;
+		file = malloc(len);
+		snprintf(file, len, "%s/%s", prefix, name);
+		file[strlen(file)] = '\0';
+	}
+	return file;
 }
 
 char * bc_tester_res(const char *name) {
-	char* file = NULL;
-	if (name) {
-		size_t len = strlen(bc_tester_read_dir_prefix) + 1 + strlen(name) + 1;
-		file = malloc(len);
-		snprintf(file, len, "%s/%s", bc_tester_read_dir_prefix, name);
-	}
-	return file;
+	return bc_tester_path(bc_tester_resource_dir_prefix, name);
+}
+
+char * bc_tester_file(const char *name) {
+	return bc_tester_path(bc_tester_writable_dir_prefix, name);
 }

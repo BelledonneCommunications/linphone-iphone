@@ -736,8 +736,8 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		LinphoneContent* content;
 		FILE *file_to_send = NULL;
 		size_t file_size;
-		char *send_filepath = ms_strdup_printf("%s/images/nowebcamCIF.jpg", bc_tester_read_dir_prefix);
-		char *receive_filepath = ms_strdup_printf("%s/receive_file.dump", bc_tester_writable_dir_prefix);
+		char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+		char *receive_filepath = bc_tester_file("receive_file.dump");
 		LinphoneCoreManager* pauline = linphone_core_manager_init( "pauline_rc");
 
 		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");

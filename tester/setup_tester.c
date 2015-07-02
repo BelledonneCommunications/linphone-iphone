@@ -127,7 +127,7 @@ static void linphone_lpconfig_from_buffer_zerolen_value(){
 static void linphone_lpconfig_from_file_zerolen_value(){
 	/* parameters that have no value should return NULL, not "". */
 	const char* zero_rc_file = "zero_length_params_rc";
-	char* rc_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_read_dir_prefix, zero_rc_file);
+	char* rc_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_get_resource_dir_prefix(), zero_rc_file);
 	LpConfig* conf;
 
 	/* not using lp_config_new() because it expects a readable file, and iOS (for instance)
@@ -148,7 +148,7 @@ static void linphone_lpconfig_from_file_zerolen_value(){
 
 static void linphone_lpconfig_from_xml_zerolen_value(){
 	const char* zero_xml_file = "remote_zero_length_params_rc";
-	char* xml_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_read_dir_prefix, zero_xml_file);
+	char* xml_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_get_resource_dir_prefix(), zero_xml_file);
 	LpConfig* conf;
 
 	LinphoneCoreManager* mgr = linphone_core_manager_new2("empty_rc",FALSE);

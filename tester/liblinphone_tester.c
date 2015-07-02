@@ -217,7 +217,7 @@ int main (int argc, char *argv[])
 			auth_domain=argv[i];
 		} else if (strcmp(argv[i],"--config")==0){
 			CHECK_ARG("--config", ++i, argc);
-			bc_tester_read_dir_prefix=argv[i];
+			bc_tester_set_resource_dir_prefix(argv[i]);
 		}else if (strcmp(argv[i],"--dns-hosts")==0){
 			CHECK_ARG("--dns-hosts", ++i, argc);
 			userhostsfile=argv[i];

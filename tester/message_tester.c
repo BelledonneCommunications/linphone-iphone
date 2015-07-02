@@ -64,16 +64,15 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
  * */
 void file_transfer_received(LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer){
 	FILE* file=NULL;
-	char receive_file[256];
+	char *receive_file = bc_tester_file("receive_file.dump");
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(message);
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
-	snprintf(receive_file,sizeof(receive_file), "%s/receive_file.dump", bc_tester_writable_dir_prefix);
 	if (!linphone_chat_message_get_user_data(message)) {
 		/*first chunk, creating file*/
 		file = fopen(receive_file,"wb");
 		linphone_chat_message_set_user_data(message,(void*)file); /*store fd for next chunks*/
 	}
-
+	ms_free(receive_file);
 	file = (FILE*)linphone_chat_message_get_user_data(message);
 
 	if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
@@ -450,8 +449,8 @@ static void file_transfer_message(void) {
 		LinphoneContent* content;
 		FILE *file_to_send = NULL;
 		size_t file_size;
-		char *send_filepath = ms_strdup_printf("%s/images/nowebcamCIF.jpg", bc_tester_read_dir_prefix);
-		char *receive_filepath = ms_strdup_printf("%s/receive_file.dump", bc_tester_writable_dir_prefix);
+		char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+		char *receive_filepath = bc_tester_file("receive_file.dump");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
 		reset_counters(&marie->stat);
@@ -578,7 +577,7 @@ static void small_file_transfer_message(void) {
 #ifdef HAVE_LIME
 
 static FILE* fopen_from_write_dir(const char * name, const char * mode) {
-	char *filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,name);
+	char *filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,name);
 	FILE * file = fopen(filepath,mode);
 	ms_free(filepath);
 	return file;
@@ -629,11 +628,11 @@ static void lime_file_transfer_message_base(bool_t encrypt_file) {
 	ms_free(marie_id);
 	ms_free(pauline_id);
 
-	filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,"tmpZIDCacheMarie.xml");
+	filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,"tmpZIDCacheMarie.xml");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
 	ms_free(filepath);
 
-	filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,"tmpZIDCachePauline.xml");
+	filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,"tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
 	ms_free(filepath);
 
@@ -890,11 +889,11 @@ static void lime_text_message(void) {
 	fclose(ZIDCacheMarieFD);
 	fclose(ZIDCachePaulineFD);
 
-	filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,"tmpZIDCacheMarie.xml");
+	filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,"tmpZIDCacheMarie.xml");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
 	ms_free(filepath);
 
-	filepath = ms_strdup_printf("%s/%s", bc_tester_writable_dir_prefix,"tmpZIDCachePauline.xml");
+	filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,"tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
 	ms_free(filepath);
 
@@ -1231,8 +1230,8 @@ static void file_transfer_message_two_messages() {
 		LinphoneContent* content;
 		FILE *file_to_send = NULL;
 		size_t file_size;
-		char *send_filepath = ms_strdup_printf("%s/images/nowebcamCIF.jpg", bc_tester_read_dir_prefix);
-		char *receive_filepath = ms_strdup_printf("%s/receive_file.dump", bc_tester_writable_dir_prefix);
+		char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+		char *receive_filepath = bc_tester_file("receive_file.dump");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
 		reset_counters(&marie->stat);
@@ -1444,8 +1443,8 @@ static void info_message_with_args(bool_t with_content) {
 			if (linphone_content_get_buffer(content))BC_ASSERT_TRUE(strcmp((const char*)linphone_content_get_buffer(content),info_content)==0);
 			BC_ASSERT_EQUAL(linphone_content_get_size(content),strlen(info_content), int, "%d");
 		}
-		linphone_core_manager_destroy(marie);
 	}
+	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 
@@ -1542,11 +1541,9 @@ static int check_no_strange_time(void* data,int argc, char** argv,char** cNames)
 
 static void message_storage_migration() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	char src_db[256];
-	char tmp_db[256];
+	char *src_db = bc_tester_res("messages.db");
+	char *tmp_db  = bc_tester_file("tmp.db");
 	MSList* chatrooms;
-	snprintf(src_db,sizeof(src_db), "%s/messages.db", bc_tester_read_dir_prefix);
-	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", bc_tester_writable_dir_prefix);
 
 	BC_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
@@ -1565,6 +1562,8 @@ static void message_storage_migration() {
 
 	linphone_core_manager_destroy(marie);
 	remove(tmp_db);
+	ms_free(src_db);
+	ms_free(tmp_db);
 }
 
 static void history_message_count_helper(LinphoneChatRoom* chatroom, int x, int y, int expected ){
@@ -1583,10 +1582,8 @@ static void history_range_full_test(){
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
 	LinphoneChatRoom *chatroom;
-	char src_db[256];
-	char tmp_db[256];
-	snprintf(src_db,sizeof(src_db), "%s/messages.db", bc_tester_read_dir_prefix);
-	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", bc_tester_writable_dir_prefix);
+	char *src_db = bc_tester_res("messages.db");
+	char *tmp_db  = bc_tester_file("tmp.db");
 
 	BC_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
@@ -1613,10 +1610,12 @@ static void history_range_full_test(){
 		history_message_count_helper(chatroom, -1, 3, 4);
 		history_message_count_helper(chatroom, -2, 2, 3);
 		history_message_count_helper(chatroom, -3, 1, 2);
-		linphone_core_manager_destroy(marie);
 	}
+	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
+	ms_free(src_db);
+	ms_free(tmp_db);
 }
 
 
@@ -1625,10 +1624,8 @@ static void history_messages_count() {
 	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
 	LinphoneChatRoom *chatroom;
 	MSList *messages;
-	char src_db[256];
-	char tmp_db[256];
-	snprintf(src_db,sizeof(src_db), "%s/messages.db", bc_tester_read_dir_prefix);
-	snprintf(tmp_db,sizeof(tmp_db), "%s/tmp.db", bc_tester_writable_dir_prefix);
+	char *src_db = bc_tester_res("messages.db");
+	char *tmp_db  = bc_tester_file("tmp.db");
 
 	BC_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
@@ -1672,10 +1669,12 @@ static void history_messages_count() {
 		messages = linphone_chat_room_get_history_range(chatroom, 1265, 1260);
 		BC_ASSERT_EQUAL(ms_list_size(messages), 1270-1265, int, "%d");
 		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
-		linphone_core_manager_destroy(marie);
 	}
+	linphone_core_manager_destroy(marie);
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
+	ms_free(src_db);
+	ms_free(tmp_db);
 }
 
 
