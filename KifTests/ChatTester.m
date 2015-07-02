@@ -164,7 +164,7 @@
 	}
 
 	// select random photo to avoid having the same multiple times
-	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 + messagesCount column:1];
+	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 column:1 + messagesCount % 4];
 
 	// wait for the quality popup to show up
 	[tester waitForTimeInterval:1];
