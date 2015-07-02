@@ -375,6 +375,17 @@ static void linphone_gtk_chat_add_contact(const LinphoneAddress *addr){
 	linphone_gtk_show_friends();
 }
 
+static GdkColor *_linphone_gtk_chatroom_get_link_color(GtkWidget *chatview) {
+	GValue color_value = {0};
+	g_value_init(&color_value, GDK_TYPE_COLOR);
+	gtk_style_get_style_property(
+		gtk_widget_get_style(chatview),
+		G_OBJECT_TYPE(chatview),
+		"link-color", &color_value);
+	
+	return (GdkColor *)g_value_get_boxed(&color_value);
+}
+
 GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with){
 	GtkWidget *chat_view=linphone_gtk_create_widget("main","chatroom_frame");
 	GtkWidget *main_window=linphone_gtk_get_main_window();
@@ -416,7 +427,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	gtk_text_buffer_create_tag(
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 		"body",
-		"margin", 10,
+		"left-margin", 10,
 		NULL);
 	
 	gtk_text_buffer_create_tag(
@@ -426,6 +437,13 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 		"foreground_gdk", &color_grey,
 		"style", PANGO_STYLE_ITALIC,
 		"justification", GTK_JUSTIFY_RIGHT,
+		NULL);
+
+	gtk_text_buffer_create_tag(
+		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
+		"link",
+		"underline", PANGO_UNDERLINE_SINGLE,
+		"foreground_gdk", _linphone_gtk_chatroom_get_link_color(chat_view),
 		NULL);
 	
 	messages = linphone_chat_room_get_history(cr,NB_MSG_HIST);
