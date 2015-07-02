@@ -154,7 +154,6 @@
 	UITableView *tv = [self findTableView:@"Chat list"];
 
 	long messagesCount = [tv numberOfRowsInSection:0];
-	long delegatesCount = [[[LinphoneManager instance] fileTransferDelegates] count];
 	[tester tapViewWithAccessibilityLabel:@"Send picture"];
 	[tester tapViewWithAccessibilityLabel:@"Photo library"];
 	// if popup "Linphone would access your photo" pops up, click OK.
@@ -164,8 +163,8 @@
 #endif
 	}
 
-	// select another photo if already uploading one
-	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 + delegatesCount column:1];
+	// select random photo to avoid having the same multiple times
+	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 + messagesCount column:1];
 
 	// wait for the quality popup to show up
 	[tester waitForTimeInterval:1];
@@ -175,8 +174,6 @@
 		  return [element.accessibilityLabel containsString:quality];
 		}];
 	[tester tapViewWithAccessibilityLabel:element.accessibilityLabel];
-
-	ASSERT_EQ([tv numberOfRowsInSection:0], messagesCount + 1);
 }
 
 - (void)testUploadImage {
@@ -249,6 +246,7 @@
 }
 
 - (void)test3DownloadsSimultanously {
+
 	[self startChatWith:[self me]];
 	[self uploadImageWithQuality:@"Maximum"];
 	[self uploadImageWithQuality:@"Average"];
@@ -261,10 +259,13 @@
 			break;
 	}
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
+	[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:1];
 	for (int i = 0; i < 3; i++) {
 		[tester waitForViewWithAccessibilityLabel:@"Download"];
 		[tester tapViewWithAccessibilityLabel:@"Download"];
 		[tester waitForTimeInterval:.5f]; // just wait a few secs to start download
+		if (i != 2)
+			[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:-.5f];
 	}
 }
 

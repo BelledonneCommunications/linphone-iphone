@@ -15,6 +15,7 @@
 - (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom;
 - (void)cancel;
 - (BOOL)download:(LinphoneChatMessage *)message;
+- (void)stopAndDestroy;
 
 @property() LinphoneChatMessage *message;
 @end

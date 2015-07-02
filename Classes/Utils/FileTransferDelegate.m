@@ -122,6 +122,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 
 		// this is the last time we will be notified, so destroy ourselve
 		if (remaining <= size) {
+			LOGI(@"Upload ended, unreffing %p", thiz.message);
 			linphone_chat_message_unref(thiz.message);
 			thiz.message = NULL;
 			[thiz stopAndDestroy];
@@ -187,8 +188,6 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	[[[LinphoneManager instance] fileTransferDelegates] removeObject:self];
 	if (_message != NULL) {
 		LOGI(@"%p Cancelling transferm from %p", self, _message);
-		linphone_chat_message_cbs_set_file_transfer_progress_indication(linphone_chat_message_get_callbacks(_message),
-																		NULL);
 		linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message), NULL);
 		linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(_message), NULL);
 		linphone_chat_message_cancel_file_transfer(_message);
