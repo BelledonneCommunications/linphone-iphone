@@ -51,6 +51,7 @@ option(ENABLE_TUTORIALS "Enable compilation of tutorials." YES)
 option(ENABLE_UNIT_TESTS "Enable compilation of unit tests." YES)
 option(ENABLE_UPNP "Build with uPnP support." YES)
 option(ENABLE_VIDEO "Build with video support." YES)
+option(ENABLE_NLS "Build with internationalisation support" YES)
 
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -119,7 +120,10 @@ if(ENABLE_NOTIFY)
 		set(ENABLE_NOTIFY OFF CACHE BOOL "Enable libnotify support." FORCE)
 	endif()
 endif()
-find_package(Gettext)
+if(ENABLE_NLS)
+	find_package(Gettext REQUIRED)
+	find_package(Intl REQUIRED)
+endif()
 
 
 include_directories(
@@ -145,9 +149,10 @@ endif()
 if(MSVC)
 	include_directories(${MSVC_INCLUDE_DIR})
 endif()
-if(GETTEXT_FOUND)
+if(INTL_FOUND)
 	set(HAVE_GETTEXT 1)
 	add_definitions("-DENABLE_NLS")
+	include_directories(${INTL_INCLUDE_DIRECTORIES})
 endif()
 
 add_definitions("-DIN_LINPHONE")

@@ -84,7 +84,7 @@ endif()
 set_target_properties(linphone-gtk PROPERTIES OUTPUT_NAME linphone LINKER_LANGUAGE CXX)
 target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS} ${INTL_INCLUDE_DIRS})
 target_link_libraries(linphone-gtk linphone ${GTK2_LIBRARIES})
-if(GETTEXT_FOUND)
+if(INTL_FOUND)
 	target_link_libraries(linphone-gtk ${INTL_LIBRARIES})
 endif()
 

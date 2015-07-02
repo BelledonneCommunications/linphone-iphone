@@ -144,7 +144,7 @@ endif()
 if(WIN32 AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
 	list(APPEND LIBS shlwapi)
 endif()
-if(GETTEXT_FOUND)
+if(INTL_FOUND)
 	list(APPEND LIBS ${INTL_LIBRARIES})
 endif()
 
