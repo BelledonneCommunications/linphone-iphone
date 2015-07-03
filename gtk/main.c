@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <libnotify/notify.h>
 #endif
 
-#ifdef ENABLE_NLS
+#ifdef HAVE_INTL
 #include <locale.h>
 #endif
 
@@ -535,9 +535,9 @@ void linphone_gtk_show_about(void){
 	static const char *defcfg="defcfg";
 
 	about=linphone_gtk_create_window("about", the_ui);
-	
+
 	gtk_about_dialog_set_url_hook(about_url_clicked,NULL,NULL);
-	
+
 	memset(&filestat,0,sizeof(filestat));
 	if (stat(license_file,&filestat)!=0){
 		license_file="COPYING";
@@ -2102,7 +2102,7 @@ int main(int argc, char *argv[]){
 		g_setenv("LANGUAGE",lang,1);
 	}
 
-#ifdef ENABLE_NLS
+#ifdef HAVE_INTL
 	setlocale(LC_ALL, "");
 	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
@@ -2152,7 +2152,7 @@ int main(int argc, char *argv[]){
 		}
 	}
 
-#if defined(__APPLE__) && defined(ENABLE_NLS)
+#if defined(__APPLE__) && defined(HAVE_INTL)
 	/*workaround for bundles. GTK is unable to find translations in the bundle (obscure bug again).
 	So we help it:*/
 	{

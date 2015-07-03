@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ldap/ldapprovider.h"
 
-#ifdef ENABLE_NLS
+#ifdef HAVE_INTL
 # include <libintl.h>
 # undef _
 # define _(String) dgettext (GETTEXT_PACKAGE,String)

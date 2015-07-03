@@ -96,7 +96,7 @@ void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, in
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
 	if (ms_filter_codec_supported(pt->mime_type)){
 		MSFilterDesc *desc=ms_filter_get_encoder(pt->mime_type);
-#ifdef ENABLE_NLS
+#ifdef HAVE_INTL
 		return dgettext("mediastreamer",desc->text);
 #else
 		return desc->text;
@@ -252,7 +252,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const Payloa
 					linphone_core_get_upload_bandwidth(lc));
 	bool_t ret=linphone_core_is_payload_type_usable_for_bandwidth(lc, pt, maxbw);
 	if ((pt->type==PAYLOAD_AUDIO_CONTINUOUS || pt->type==PAYLOAD_AUDIO_PACKETIZED)
-		&& lc->sound_conf.capt_sndcard 
+		&& lc->sound_conf.capt_sndcard
 		&& !(ms_snd_card_get_capabilities(lc->sound_conf.capt_sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER)
 		&& linphone_core_echo_cancellation_enabled(lc)
 		&& (pt->clock_rate!=16000 && pt->clock_rate!=8000)
@@ -715,7 +715,7 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 		}
 	}
-	ms_message("Call [%p] New ICE state: audio: [%s]    video: [%s]", call, 
+	ms_message("Call [%p] New ICE state: audio: [%s]    video: [%s]", call,
 		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state));
 }
 
@@ -723,7 +723,7 @@ void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call) {
 	int i;
 	IceSession *session = call->ice_session;
 	SalMediaDescription *desc = call->localdesc;
-	
+
 	if (session == NULL) return;
 	if (ice_session_state(session) == IS_Completed) return;
 
@@ -1628,7 +1628,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreement_suites(LinphoneCore 
 	if (zrtpConfig == NULL) {
 	        return 0;
 	}
-    
+
 	origPtr = strdup(zrtpConfig);
 	zrtpConfig = origPtr;
 	while ((entry = seperate_string_list(&zrtpConfig))) {
@@ -1650,7 +1650,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_cipher_suites(LinphoneCore *lc, MS
 	if (zrtpConfig == NULL) {
 	        return 0;
 	}
-    
+
 	origPtr = strdup(zrtpConfig);
 	zrtpConfig = origPtr;
 	while ((entry = seperate_string_list(&zrtpConfig))) {

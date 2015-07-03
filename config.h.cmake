@@ -42,4 +42,4 @@
 #cmakedefine HAVE_ZLIB 1
 #cmakedefine HAVE_CU_GET_SUITE 1
 #cmakedefine HAVE_CU_CURSES 1
-#cmakedefine HAVE_GETTEXT 1
+#cmakedefine HAVE_INTL 1

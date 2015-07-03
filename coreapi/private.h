@@ -65,7 +65,7 @@ extern "C" {
 #define PACKAGE_DATA_DIR "."
 #endif
 
-#ifdef HAVE_GETTEXT
+#ifdef HAVE_INTL
 #include <libintl.h>
 #ifndef _
 #define _(String) dgettext(GETTEXT_PACKAGE,String)
@@ -81,7 +81,7 @@ extern "C" {
 #ifdef ANDROID
 #include <jni.h>
 #endif
-	
+
 #ifndef _WIN32
 #define WINAPI_FAMILY_PARTITION(x) 1
 #endif

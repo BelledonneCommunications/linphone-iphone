@@ -65,7 +65,7 @@
 
 #endif /*_WIN32_WCE*/
 
-#ifdef HAVE_GETTEXT
+#ifdef HAVE_INTL
 #include <libintl.h>
 #ifndef _
 #define _(String) gettext(String)
@@ -714,7 +714,7 @@ linphonec_init(int argc, char **argv)
 		default:
 			break;
 	}
-#ifdef ENABLE_NLS
+#ifdef HAVE_INTL
 	if (NULL == bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR))
 		perror ("bindtextdomain failed");
 #ifndef __ARM__
