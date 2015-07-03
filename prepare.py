@@ -27,11 +27,15 @@ import os
 import re
 import shutil
 import sys
+from distutils.spawn import find_executable
 from subprocess import Popen, PIPE
 sys.dont_write_bytecode = True
 sys.path.insert(0, 'submodules/cmake-builder')
-import prepare
-from distutils.spawn import find_executable
+try:
+    import prepare
+except:
+    print("Could not find prepare module, probably missing submodules/cmake-builder? Try running git submodule update --init --recursive")
+    exit(1)
 
 
 class IOSTarget(prepare.Target):
@@ -152,7 +156,7 @@ def extract_libs_list():
 def check_installed(binary, prog=None, warn=True):
     if not find_executable(binary):
         if warn:
-            print("Could not find {}. Please install {}".format(binary, prog))
+            print("Could not find {}. Please install {}.".format(binary, prog))
         return 1
     return 0
 
@@ -161,7 +165,7 @@ def check_tools():
     ret = 0
 
     if " " in os.path.dirname(os.path.realpath(__file__)):
-        print("Invalid location: your location should not contain spaces")
+        print("Invalid location: linphone-iphone path should not contain any spaces.")
         ret = 1
 
     for prog in ["autoconf", "automake", "pkg-config", "doxygen", "java", "nasm", "gettext", "wget", "yasm", "optipng"]:
@@ -174,18 +178,24 @@ def check_tools():
         if check_installed("glibtoolize", "libtool"):
             glibtoolize_path = find_executable(glibtoolize)
             ret = 1
-            error = "Please do a symbolic link from glibtoolize to libtoolize: 'ln -s {} ${}'"
+            error = "Please do a symbolic link from glibtoolize to libtoolize: 'ln -s {} ${}'."
             print(error.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
 
+    devnull = open(os.devnull, 'wb')
     # just ensure that JDK is installed - if not, it will automatiaclyl display a popup to user
-    if not Popen("java -version".split(" "), stderr=PIPE, stdout=PIPE):
-        print("Please install Java JDK (not just JRE)")
+    p = Popen("java -version".split(" "), stderr=devnull, stdout=devnull)
+    p.wait()
+    if p.returncode != 0:
+        print(p.returncode)
+        print("Please install Java JDK (not just JRE).")
         ret = 1
 
     # needed by x264
-    check_installed("gas-preprocessor.pl", "it following the README.md")
+    check_installed("gas-preprocessor.pl", """it:
+        wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
+        chmod +x gas-preprocessor.pl
+        sudo mv gas-preprocessor.pl /usr/local/bin/""")
 
-    devnull = open(os.devnull, 'wb')
     nasm_output = Popen("nasm -f elf32".split(" "), stderr=PIPE, stdout=PIPE).stderr.read()
     if "fatal: unrecognised output format" in nasm_output:
         print(
@@ -195,15 +205,17 @@ def check_tools():
         if not os.path.isdir("submodules/linphone/mediastreamer2") or not os.path.isdir("submodules/linphone/oRTP"):
             print("Missing some git submodules. Did you run 'git submodule update --init --recursive'?")
             ret = 1
-    if not Popen("xcrun --sdk iphoneos --show-sdk-path".split(" "), stdout=devnull, stderr=devnull):
-        print("iOS SDK not found, please install Xcode from AppStore or equivalent")
+    p = Popen("xcrun --sdk iphoneos --show-sdk-path".split(" "), stdout=devnull, stderr=devnull)
+    p.wait()
+    if p.returncode != 0:
+        print("iOS SDK not found, please install Xcode from AppStore or equivalent.")
         ret = 1
     else:
         sdk_platform_path = Popen("xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "), stdout=PIPE, stderr=devnull).stdout.read()[:-1]
         sdk_strings_path = "{}/{}".format(sdk_platform_path, "Developer/usr/bin/strings")
         if not os.path.isfile(sdk_strings_path):
             strings_path = find_executable("strings")
-            print("strings binary missing, please run 'sudo ln -s {} {}'".format(strings_path, sdk_strings_path))
+            print("strings binary missing, please run 'sudo ln -s {} {}'.".format(strings_path, sdk_strings_path))
             ret = 1
 
     if ret == 1:
