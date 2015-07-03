@@ -12,11 +12,9 @@ env:
 
 before_install:
     - brew update 1>/dev/null
-    - brew install doxygen nasm gettext yasm optipng imagemagick coreutils intltool ninja
-    - brew outdated cmake || brew upgrade cmake
-    - brew link gettext --force
     - brew tap Gui13/linphone
-    - brew install antlr3.2
+    - brew install doxygen nasm yasm optipng imagemagick coreutils intltool ninj antlr3.2
+    - brew upgrade cmake
     - wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
     - chmod +x gas-preprocessor.pl
     - sudo mv gas-preprocessor.pl /usr/local/bin

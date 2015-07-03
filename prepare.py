@@ -168,7 +168,7 @@ def check_tools():
         print("Invalid location: linphone-iphone path should not contain any spaces.")
         ret = 1
 
-    for prog in ["autoconf", "automake", "pkg-config", "doxygen", "java", "nasm", "gettext", "wget", "yasm", "optipng"]:
+    for prog in ["autoconf", "automake", "pkg-config", "doxygen", "java", "nasm", "cmake", "wget", "yasm", "optipng"]:
         ret |= check_installed(prog, "it")
     ret |= check_installed("ginstall", "coreutils")
     ret |= check_installed("intltoolize", "intltool")
@@ -492,6 +492,8 @@ def main(argv=None):
     selected_platforms = list(set(selected_platforms))
 
     if args.G__generator == 'Ninja':
+        if check_installed("ninja", "it") != 0:
+            return 1
         generator = 'ninja -C'
     else:
         generator = '$(MAKE) -C'
