@@ -61,9 +61,9 @@ NSString* const  kLogsUpdateNotification = @"kLogsUpdateNotification";
 
 	bc_tester_init((void (*)(int, const char *fm, va_list))linphone_iphone_log_handler, ORTP_MESSAGE, ORTP_ERROR);
 	liblinphone_tester_add_suites();
-		
-	bc_tester_read_dir_prefix = ms_strdup([bundlePath UTF8String]);
-	bc_tester_writable_dir_prefix = ms_strdup([documentPath UTF8String]);
+
+	bc_tester_set_resource_dir_prefix([bundlePath UTF8String]);
+	bc_tester_set_writable_dir_prefix([documentPath UTF8String]);
 
 	LOGI(@"Bundle path: %@", bundlePath);
 	LOGI(@"Document path: %@", documentPath);
