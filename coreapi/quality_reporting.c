@@ -53,7 +53,7 @@ static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offs
 	belle_sip_error_code ret;
 	size_t prevoffset = *offset;
 
-	#ifndef WIN32
+	#ifndef _WIN32
 		va_list cap;/*copy of our argument list: a va_list cannot be re-used (SIGSEGV on linux 64 bits)*/
 		va_copy(cap,args);
 		ret = belle_sip_snprintf_valist(*buff, *buff_size, offset, fmt, cap);

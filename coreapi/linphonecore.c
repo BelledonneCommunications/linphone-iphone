@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/dtmfgen.h"
 
 #ifdef INET6
-#ifndef WIN32
+#ifndef _WIN32
 #include <netdb.h>
 #endif
 #endif
@@ -60,9 +60,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef HAVE_ZLIB
 #define COMPRESSED_LOG_COLLECTION_EXTENSION "gz"
-#ifdef WIN32
+#ifdef _WIN32
 #include <fcntl.h>
 #include <io.h>
+#define fileno _fileno
+#define unlink _unlink
 #define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
 #else
 #define SET_BINARY_MODE(file)
@@ -105,10 +107,10 @@ static void linphone_core_free_hooks(LinphoneCore *lc);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
-#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-#define SOUNDS_PREFIX
-#else
+#if defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL)
 #define SOUNDS_PREFIX "Assets/Sounds/"
+#else
+#define SOUNDS_PREFIX
 #endif
 /* relative path where is stored local ring*/
 #define LOCAL_RING SOUNDS_PREFIX "rings/oldphone.wav"
@@ -212,7 +214,7 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 	struct stat statbuf;
 
 	if (liblinphone_log_func != NULL) {
-#ifndef WIN32
+#ifndef _WIN32
 		va_list args_copy;
 		va_copy(args_copy, args);
 		liblinphone_log_func(level, fmt, args_copy);

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "lpconfig.h"
 
 // stat
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -1163,7 +1163,7 @@ static bool_t fill_auth_info_with_client_certificate(LinphoneCore *lc, SalAuthIn
 	const char *chain_file = lp_config_get_string(lc->config,"sip","client_cert_chain", 0);
 	const char *key_file = lp_config_get_string(lc->config,"sip","client_cert_key", 0);;
 
-#ifndef WIN32
+#ifndef _WIN32
 	{
 	// optinal check for files
 	struct stat st;

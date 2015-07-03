@@ -40,16 +40,16 @@
 #endif /*_WIN32_WCE*/
 
 #ifdef _MSC_VER
-#ifdef WINAPI_FAMILY_PHONE_APP
-#include <stdlib.h>
-#else
+#ifdef LINPHONE_WINDOWS_DESKTOP
 #include <Shlwapi.h>
+#else
+#include <stdlib.h>
 #endif
 #else
 #include <libgen.h>
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #define RENAME_REQUIRES_NONEXISTENT_NEW_PATH 1
 #endif
 
@@ -363,7 +363,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		lpconfig->filename=ortp_strdup(config_filename);
 		lpconfig->tmpfilename=ortp_strdup_printf("%s.tmp",config_filename);
 
-#if !defined(WIN32)
+#if !defined(_WIN32)
 		{
 			struct stat fileStat;
 			if ((stat(config_filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
@@ -374,7 +374,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 				}
 			}
 		}
-#endif /*WIN32*/
+#endif /*_WIN32*/
 		/*open with r+ to check if we can write on it later*/
 		lpconfig->file=fopen(lpconfig->filename,"r+");
 #ifdef RENAME_REQUIRES_NONEXISTENT_NEW_PATH
@@ -505,7 +505,7 @@ int lp_config_get_int(const LpConfig *lpconfig,const char *section, const char *
 int64_t lp_config_get_int64(const LpConfig *lpconfig,const char *section, const char *key, int64_t default_value){
 	const char *str=lp_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
-#ifdef WIN32
+#ifdef _WIN32
 		return (int64_t)_atoi64(str);
 #else
 		return atoll(str);
@@ -604,7 +604,7 @@ int lp_config_sync(LpConfig *lpconfig){
 	FILE *file;
 	if (lpconfig->filename==NULL) return -1;
 	if (lpconfig->readonly) return 0;
-#ifndef WIN32
+#ifndef _WIN32
 	/* don't create group/world-accessible files */
 	(void) umask(S_IRWXG | S_IRWXO);
 #endif

@@ -1629,7 +1629,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreement_suites(LinphoneCore 
 	        return 0;
 	}
 
-	origPtr = strdup(zrtpConfig);
+	origPtr = ms_strdup(zrtpConfig);
 	zrtpConfig = origPtr;
 	while ((entry = seperate_string_list(&zrtpConfig))) {
 		const MSZrtpKeyAgreement agreement = ms_zrtp_key_agreement_from_string(entry);
@@ -1639,7 +1639,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_key_agreement_suites(LinphoneCore 
 		}
 	}
 
-	free(origPtr);
+	ms_free(origPtr);
 	return key_agreements_count;
 }
 
@@ -1651,7 +1651,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_cipher_suites(LinphoneCore *lc, MS
 	        return 0;
 	}
 
-	origPtr = strdup(zrtpConfig);
+	origPtr = ms_strdup(zrtpConfig);
 	zrtpConfig = origPtr;
 	while ((entry = seperate_string_list(&zrtpConfig))) {
 		const MSZrtpCipher cipher = ms_zrtp_cipher_from_string(entry);
@@ -1661,7 +1661,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_cipher_suites(LinphoneCore *lc, MS
 		}
 	}
 
-	free(origPtr);
+	ms_free(origPtr);
 	return cipher_count;
 }
 
@@ -1673,7 +1673,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_hash_suites(LinphoneCore *lc, MSZr
         	return 0;
 	}
 
-	origPtr = strdup(zrtpConfig);
+	origPtr = ms_strdup(zrtpConfig);
 	zrtpConfig = origPtr;
 	while ((entry = seperate_string_list(&zrtpConfig))) {
 		const MSZrtpHash hash = ms_zrtp_hash_from_string(entry);
@@ -1683,7 +1683,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_hash_suites(LinphoneCore *lc, MSZr
 		}
 	}
 
-	free(origPtr);
+	ms_free(origPtr);
 	return hash_count;
 }
 
@@ -1695,7 +1695,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_auth_suites(LinphoneCore *lc, MSZr
 		return 0;
 	}
 
-	origPtr = strdup(zrtpConfig);
+	origPtr = ms_strdup(zrtpConfig);
 	zrtpConfig = origPtr;
 	while ((entry = seperate_string_list(&zrtpConfig))) {
 		const MSZrtpAuthTag authTag = ms_zrtp_auth_tag_from_string(entry);
@@ -1705,7 +1705,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_auth_suites(LinphoneCore *lc, MSZr
 		}
 	}
 
-	free(origPtr);
+	ms_free(origPtr);
 	return auth_tag_count;
 }
 
@@ -1717,7 +1717,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_sas_suites(LinphoneCore *lc, MSZrt
 	        return 0;
 	}
 
-	origPtr = strdup(zrtpConfig);
+	origPtr = ms_strdup(zrtpConfig);
 	zrtpConfig = origPtr;
 	while ((entry = seperate_string_list(&zrtpConfig))) {
 		const MSZrtpSasType type = ms_zrtp_sas_type_from_string(entry);
@@ -1727,7 +1727,7 @@ MsZrtpCryptoTypesCount linphone_core_get_zrtp_sas_suites(LinphoneCore *lc, MSZrt
 		}
 	}
 
-	free(origPtr);
+	ms_free(origPtr);
 	return sas_count;
 }
 

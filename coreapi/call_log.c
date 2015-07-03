@@ -33,7 +33,7 @@ static size_t my_strftime(char *s, size_t max, const char  *fmt,  const struct t
 }
 
 static time_t string_to_time(const char *date){
-#ifndef WIN32
+#ifndef _WIN32
 	struct tm tmtime={0};
 	strptime(date,"%c",&tmtime);
 	return mktime(&tmtime);
@@ -44,7 +44,7 @@ static time_t string_to_time(const char *date){
 
 static void set_call_log_date(LinphoneCallLog *cl, time_t start_time){
 	struct tm loctime;
-#ifdef WIN32
+#ifdef _WIN32
 #if !defined(_WIN32_WCE)
 	loctime=*localtime(&start_time);
 	/*FIXME*/

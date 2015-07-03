@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PRIu64 "I64u"
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
 #if !defined(ANDROID) && !defined(__QNXNTO__)
 #	include <langinfo.h>
 #	include <iconv.h>
@@ -594,7 +594,7 @@ void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug){
 static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 #if defined(ANDROID) || defined(__QNXNTO__)
 	return sqlite3_open(db_file, db);
-#elif defined(WIN32)
+#elif defined(_WIN32)
 	int ret;
 	wchar_t db_file_utf16[MAX_PATH_SIZE];
 	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, MAX_PATH_SIZE, db_file_utf16, MAX_PATH_SIZE);
