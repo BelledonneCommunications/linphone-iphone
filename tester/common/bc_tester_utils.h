@@ -26,7 +26,9 @@
 #include <math.h>
 
 #ifdef _WIN32
+#ifndef snprintf
 #define snprintf _snprintf
+#endif
 #endif
 
 extern int bc_printf_verbosity_info;

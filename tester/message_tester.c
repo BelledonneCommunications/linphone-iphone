@@ -577,7 +577,7 @@ static void small_file_transfer_message(void) {
 #ifdef HAVE_LIME
 
 static FILE* fopen_from_write_dir(const char * name, const char * mode) {
-	char *filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,name);
+	char *filepath = bc_tester_file(name);
 	FILE * file = fopen(filepath,mode);
 	ms_free(filepath);
 	return file;
@@ -628,11 +628,11 @@ static void lime_file_transfer_message_base(bool_t encrypt_file) {
 	ms_free(marie_id);
 	ms_free(pauline_id);
 
-	filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,"tmpZIDCacheMarie.xml");
+	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
 	ms_free(filepath);
 
-	filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,"tmpZIDCachePauline.xml");
+	filepath = bc_tester_file("tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
 	ms_free(filepath);
 
@@ -889,11 +889,11 @@ static void lime_text_message(void) {
 	fclose(ZIDCacheMarieFD);
 	fclose(ZIDCachePaulineFD);
 
-	filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,"tmpZIDCacheMarie.xml");
+	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
 	ms_free(filepath);
 
-	filepath = bc_tester_res("%s", bc_tester_writable_dir_prefix,"tmpZIDCachePauline.xml");
+	filepath = bc_tester_file("tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
 	ms_free(filepath);
 
