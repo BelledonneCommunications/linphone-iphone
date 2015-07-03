@@ -306,12 +306,12 @@ package-in-list-%:
     multiarch = ""
     for arch in platforms[1:]:
         multiarch += \
-            """     if test -f "$${arch}_path"; then \\
-        all_paths=`echo $$all_paths $${arch}_path`; \\
-        all_archs="$$all_archs,{arch}" ; \\
-    else \\
-        echo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
-    fi; \\
+"""\tif test -f "$${arch}_path"; then \\
+\t\tall_paths=`echo $$all_paths $${arch}_path`; \\
+\t\tall_archs="$$all_archs,{arch}" ; \\
+\telse \\
+\t\techo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
+\tfi; \\
 """.format(first_arch=platforms[0], arch=arch)
     makefile = """
 archs={archs}
@@ -320,6 +320,7 @@ libs_list={libs_list}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
+.SILENT: lipo
 
 all: build
 
