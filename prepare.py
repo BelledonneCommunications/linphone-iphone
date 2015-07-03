@@ -475,6 +475,10 @@ def main(argv=None):
     if args.debug_verbose:
         additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
 
+    if os.path.isdir("submodules/tunnel"):
+        print("Enabling tunnel")
+        additional_args += ["-DENABLE_TUNNEL=YES"]
+
     if check_tools() != 0:
         return 1
 
