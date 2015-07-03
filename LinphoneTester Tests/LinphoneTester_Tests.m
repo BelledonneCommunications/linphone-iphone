@@ -48,8 +48,8 @@
     LOGI(@"Bundle path: %@", bundlePath);
     LOGI(@"Document path: %@", documentPath);
 
-	bc_tester_read_dir_prefix = ms_strdup(bundle);
-	bc_tester_writable_dir_prefix = ms_strdup(documents);
+	bc_tester_set_resource_dir_prefix(bundle);
+	bc_tester_set_writable_dir_prefix(documents);
 
 	liblinphone_tester_keep_accounts(TRUE);
 	int count = bc_tester_nb_suites();
