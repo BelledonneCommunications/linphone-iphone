@@ -1102,6 +1102,14 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate, int 
 	return NULL;
 }
 
+static bool_t linphone_core_codec_supported(LinphoneCore *lc, SalStreamType type, const char *mime){
+	if (type == SalVideo && lp_config_get_int(lc->config, "video", "rtp_io", FALSE)){
+		return TRUE; /*in rtp io mode, we don't transcode video, thus we can support a format for which we have no encoder nor decoder.*/
+	}
+	return ms_filter_codec_supported(mime);
+}
+
+
 static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, PayloadType **ret){
 	char codeckey[50];
 	const char *mime,*fmtp;
@@ -1118,7 +1126,7 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 	fmtp=lp_config_get_string(config,codeckey,"recv_fmtp",NULL);
 	channels=lp_config_get_int(config,codeckey,"channels",0);
 	enabled=lp_config_get_int(config,codeckey,"enabled",1);
-	if (!ms_filter_codec_supported(mime)){
+	if (!linphone_core_codec_supported(lc, type, mime)){
 		ms_warning("Codec %s/%i read from conf is not supported by mediastreamer2, ignored.",mime,rate);
 		return TRUE;
 	}
@@ -1484,7 +1492,7 @@ const char * linphone_core_get_version(void){
 
 static void linphone_core_register_payload_type(LinphoneCore *lc, const PayloadType *const_pt, const char *recv_fmtp, bool_t enabled){
 	MSList **codec_list=const_pt->type==PAYLOAD_VIDEO ? &lc->default_video_codecs : &lc->default_audio_codecs;
-	if (ms_filter_codec_supported(const_pt->mime_type)){
+	if (linphone_core_codec_supported(lc, (const_pt->type == PAYLOAD_VIDEO) ? SalVideo : SalAudio, const_pt->mime_type)){
 		PayloadType *pt=payload_type_clone(const_pt);
 		int number=-1;
 		payload_type_set_enable(pt,enabled);
@@ -6547,7 +6555,7 @@ void linphone_core_soundcard_hint_check( LinphoneCore* lc){
 	MSList* the_calls = lc->calls;
 	LinphoneCall* call = NULL;
 	bool_t dont_need_sound = TRUE;
-	bool_t use_rtp_io = lp_config_get_int(lc->config, "sound", "rtp_input", FALSE);
+	bool_t use_rtp_io = lp_config_get_int(lc->config, "sound", "rtp_io", FALSE);
 
 	/* check if the remaining calls are paused */
 	while( the_calls ){
