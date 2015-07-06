@@ -175,10 +175,10 @@ static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCo
 
 	while (caller_mgr->stat.number_of_LinphoneCallOutgoingRinging != (initial_caller.number_of_LinphoneCallOutgoingRinging + 1)
 		&& caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia != (initial_caller.number_of_LinphoneCallOutgoingEarlyMedia + 1)
-		&& retry++ < 20) {
+		&& retry++ < 200) {
 		linphone_core_iterate(caller_mgr->lc);
 		linphone_core_iterate(callee_mgr->lc);
-		ms_usleep(100000);
+		ms_usleep(10000);
 	}
 
 	BC_ASSERT_TRUE((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging == initial_caller.number_of_LinphoneCallOutgoingRinging + 1)

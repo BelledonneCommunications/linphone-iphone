@@ -25,6 +25,8 @@ const char* phone_normalization(LinphoneProxyConfig *proxy, const char* in) {
 }
 
 static void phone_normalization_without_proxy() {
+
+	BC_ASSERT_TRUE(0);
 	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "012 345 6789"), "0123456789");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "+33123456789"), "+33123456789");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "+33012345678"), "+33012345678");

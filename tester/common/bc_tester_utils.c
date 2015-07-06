@@ -174,9 +174,9 @@ static void test_complete_message_handler(const CU_pTest pTest,
 	char result[2048];
 	char buffer[2048];
 	CU_pFailureRecord pFailure = pFailureList;
-	snprintf(result, sizeof(result), "Suite [%s] Test [%s]", pSuite->pName, pTest->pName);
+	snprintf(result, sizeof(result), "Suite [%s] Test [%s] %s in %lu secs"
+			, pSuite->pName, pTest->pName, pFailure?"failed":"passed",(unsigned long)(time(NULL) - test_start_time));
 	if (pFailure) {
-		strncat(result, " failed:", strlen(" failed:"));
 		for (i = 1 ; (NULL != pFailure) ; pFailure = pFailure->pNext, i++) {
 			snprintf(buffer, sizeof(buffer), "\n    %d. %s:%u  - %s", i,
 				(NULL != pFailure->strFileName) ? pFailure->strFileName : "",
@@ -184,10 +184,8 @@ static void test_complete_message_handler(const CU_pTest pTest,
 				(NULL != pFailure->strCondition) ? pFailure->strCondition : "");
 			strncat(result, buffer, strlen(buffer));
 		}
-	} else {
-		strncat(result, " passed", strlen(" passed"));
 	}
-	bc_tester_printf(bc_printf_verbosity_info,"%s in %lu sec\n", result, (unsigned long)(time(NULL) - test_start_time));
+	bc_tester_printf(bc_printf_verbosity_info,"%s\n", result);
 }
 #endif
 

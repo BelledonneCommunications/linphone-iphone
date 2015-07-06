@@ -112,7 +112,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 	linphone_core_set_default_proxy(lc,proxy_cfg);
 
 	while (counters->number_of_LinphoneRegistrationOk<1+(refresh!=0)
-			&& retry++ <(110 /*only wait 11 s if final state is progress*/+(expected_final_state==LinphoneRegistrationProgress?0:200))) {
+			&& retry++ <(1100 /*only wait 11 s if final state is progress*/+(expected_final_state==LinphoneRegistrationProgress?0:2000))) {
 		linphone_core_iterate(lc);
 		if (counters->number_of_auth_info_requested>0 && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationFailed && late_auth_info) {
 			if (!linphone_core_get_auth_info_list(lc)) {
@@ -124,7 +124,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 		if (linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonBadCredentials
 				|| (counters->number_of_auth_info_requested>2 &&linphone_proxy_config_get_error(proxy_cfg) == LinphoneReasonUnauthorized)) /*no need to continue if auth cannot be found*/
 			break; /*no need to continue*/
-		ms_usleep(100000);
+		ms_usleep(10000);
 	}
 	BC_ASSERT_EQUAL(linphone_proxy_config_is_registered(proxy_cfg),(expected_final_state == LinphoneRegistrationOk), int, "%d");
 	BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationNone,0, int, "%d");
@@ -170,9 +170,9 @@ static void register_with_refresh_with_send_error() {
 	register_with_refresh_base(lcm->lc,TRUE,auth_domain,route);
 	/*simultate a network error*/
 	sal_set_send_error(lcm->lc->sal, -1);
-	while (counters->number_of_LinphoneRegistrationProgress<2 && retry++ <20) {
+	while (counters->number_of_LinphoneRegistrationProgress<2 && retry++ <200) {
 			linphone_core_iterate(lcm->lc);
-			ms_usleep(100000);
+			ms_usleep(10000);
 	}
 	BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0, int, "%d");
 	BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress,2, int, "%d");

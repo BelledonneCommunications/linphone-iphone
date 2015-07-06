@@ -894,7 +894,7 @@ static void dos_module_trigger(void) {
 		char msg[128];
 		sprintf(msg, "Flood message number %i", i);
 		linphone_chat_room_send_message(chat_room, msg);
-		ms_usleep(100000);
+		ms_usleep(10000);
 		i++;
 	} while (i < number_of_messge_to_send);
 	// At this point we should be banned for a minute

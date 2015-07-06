@@ -244,10 +244,10 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 
 	while (caller_mgr->stat.number_of_LinphoneCallOutgoingRinging!=(initial_caller.number_of_LinphoneCallOutgoingRinging + 1)
 			&& caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia!=(initial_caller.number_of_LinphoneCallOutgoingEarlyMedia +1)
-			&& retry++ <20) {
+			&& retry++ < 100) {
 			linphone_core_iterate(caller_mgr->lc);
 			linphone_core_iterate(callee_mgr->lc);
-			ms_usleep(100000);
+			ms_usleep(20000);
 	}
 
 
@@ -2495,12 +2495,12 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 		linphone_tunnel_add_server(linphone_core_get_tunnel(marie->lc),tunnel_config);
 		linphone_tunnel_enable_sip(linphone_core_get_tunnel(marie->lc),FALSE);
 		linphone_tunnel_set_mode(linphone_core_get_tunnel(marie->lc),LinphoneTunnelModeEnable);
-		for (i=0;i<10;i++) {
+		for (i=0;i<100;i++) {
 			if (linphone_tunnel_connected(linphone_core_get_tunnel(marie->lc))) {
 				break;
 			}
 			linphone_core_iterate(marie->lc);
-			ms_usleep(200000);
+			ms_usleep(20000);
 		}
 		BC_ASSERT_TRUE(linphone_tunnel_connected(linphone_core_get_tunnel(marie->lc)));
 
@@ -2524,7 +2524,7 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 			&& linphone_core_get_media_encryption(pauline->lc) == LinphoneMediaEncryptionZRTP) {
 			/*wait for SAS*/
 			int i;
-			for (i=0;i<10;i++) {
+			for (i=0;i<100;i++) {
 				if (linphone_call_get_authentication_token(linphone_core_get_current_call(pauline->lc))
 					&&
 					linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc))) {
@@ -2536,7 +2536,7 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 				}
 				linphone_core_iterate(marie->lc);
 				linphone_core_iterate(pauline->lc);
-				ms_usleep(200000);
+				ms_usleep(20000);
 			}
 
 		}
