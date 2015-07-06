@@ -465,39 +465,6 @@ static void call_with_timeouted_bye(void) {
 	}
 }
 
-static void phone_number_normalization(void){
-	LinphoneCoreManager *marie = linphone_core_manager_new( "marie_rc");
-	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(marie->lc);
-	char result[128];
-
-	linphone_proxy_config_set_dial_prefix(cfg, "33");
-	linphone_proxy_config_normalize_number(cfg, "0952636505", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "+33952636505");
-	linphone_proxy_config_normalize_number(cfg, "09 52 63 65 05", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "+33952636505");
-	linphone_proxy_config_normalize_number(cfg, "09-52-63-65-05", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "+33952636505");
-	linphone_proxy_config_normalize_number(cfg, "+31952636505", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "+31952636505");
-	linphone_proxy_config_normalize_number(cfg, "0033952636505", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "+33952636505");
-	linphone_proxy_config_normalize_number(cfg, "0033952636505", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "+33952636505");
-	linphone_proxy_config_normalize_number(cfg, "toto", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "toto");
-
-	linphone_proxy_config_set_dial_escape_plus(cfg, TRUE);
-	linphone_proxy_config_normalize_number(cfg, "0033952636505", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "0033952636505");
-	linphone_proxy_config_normalize_number(cfg, "0952636505", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "0033952636505");
-	linphone_proxy_config_normalize_number(cfg, "+34952636505", result, sizeof(result));
-	BC_ASSERT_STRING_EQUAL(result, "0034952636505");
-
-	linphone_proxy_config_unref(cfg);
-	linphone_core_manager_destroy(marie);
-}
-
 static void direct_call_over_ipv6(){
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
@@ -4251,7 +4218,6 @@ static void simple_mono_call_opus(void){
 }
 
 test_t call_tests[] = {
-	{ "Phone number normalization", phone_number_normalization },
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
 	{ "Cancelled call", cancelled_call },

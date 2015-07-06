@@ -512,8 +512,8 @@ static void call_forking_not_responded(void){
 
 static void early_media_call_forking(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_early_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	MSList *lcs=NULL;
 	LinphoneCallParams *params=linphone_core_create_default_call_parameters(pauline->lc);
 	LinphoneVideoPolicy pol;
@@ -586,9 +586,9 @@ static void early_media_call_forking(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,5000));
 
 	ms_list_free(lcs);
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(marie);
 }
 
 static void call_with_sips(void){
