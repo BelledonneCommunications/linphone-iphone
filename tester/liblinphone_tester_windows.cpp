@@ -8,7 +8,7 @@ using namespace Windows::Foundation;
 using namespace Windows::Storage;
 using namespace Windows::System::Threading;
 
-#define MAX_TRACE_SIZE		512
+#define MAX_TRACE_SIZE		2048
 #define MAX_SUITE_NAME_SIZE	128
 #define MAX_WRITABLE_DIR_SIZE 1024
 
@@ -19,11 +19,11 @@ LibLinphoneTester^ LibLinphoneTester::_instance = ref new LibLinphoneTester();
 static void nativeOutputTraceHandler(int lev, const char *fmt, va_list args)
 {
 	if (sTraceListener) {
-		wchar_t wstr[MAX_TRACE_SIZE];
+		wchar_t wstr[MAX_TRACE_SIZE] = { 0 };
 		std::string str;
 		str.resize(MAX_TRACE_SIZE);
 		vsnprintf((char *)str.c_str(), MAX_TRACE_SIZE, fmt, args);
-		mbstowcs(wstr, str.c_str(), sizeof(wstr));
+		mbstowcs(wstr, str.c_str(), MAX_TRACE_SIZE - 1);
 		String^ msg = ref new String(wstr);
 		String^ l;
 		switch (lev) {
