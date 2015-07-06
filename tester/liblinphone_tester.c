@@ -129,7 +129,7 @@ static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt
 #endif /* __QNX__ */
 
 static void log_handler(int lev, const char *fmt, va_list args) {
-#ifdef WIN32
+#ifdef _WIN32
 	vfprintf(lev == ORTP_ERROR ? stderr : stdout, fmt, args);
 	fprintf(lev == ORTP_ERROR ? stderr : stdout, "\n");
 #else
@@ -150,7 +150,7 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 	}
 }
 
-void liblinphone_tester_init(void) {
+void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, va_list args)) {
 	if (! log_file) {
 #if defined(ANDROID)
 		linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
@@ -159,7 +159,8 @@ void liblinphone_tester_init(void) {
 #endif
 	}
 
-	bc_tester_init(log_handler, ORTP_MESSAGE, ORTP_ERROR);
+	if (ftester_printf == NULL) ftester_printf = log_handler;
+	bc_tester_init(ftester_printf, ORTP_MESSAGE, ORTP_ERROR);
 	liblinphone_tester_add_suites();
 }
 
@@ -167,6 +168,8 @@ void liblinphone_tester_uninit(void) {
 	bc_tester_uninit();
 }
 
+
+#if !defined(ANDROID) && !defined(TARGET_OS_IPHONE) && !(defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL))
 
 static const char* liblinphone_helper =
 		"\t\t\t--verbose\n"
@@ -178,7 +181,6 @@ static const char* liblinphone_helper =
 		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
 		"\t\t\t--keep-recorded-files\n";
 
-#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 int main (int argc, char *argv[])
 {
 	int i;
@@ -192,7 +194,7 @@ int main (int argc, char *argv[])
 	gdk_threads_init();
 #endif
 
-	liblinphone_tester_init();
+	liblinphone_tester_init(NULL);
 
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {

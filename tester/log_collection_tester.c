@@ -30,7 +30,7 @@
 
 
 /*getline is POSIX 2008, not available on many systems.*/
-#if defined(ANDROID) || defined(WIN32)
+#if defined(ANDROID) || defined(_WIN32)
 /* This code is public domain -- Will Hartung 4/9/09 */
 static size_t getline(char **lineptr, size_t *n, FILE *stream) {
 	char *bufptr = NULL;
@@ -143,14 +143,14 @@ static FILE* gzuncompress(const char* filepath) {
 static time_t get_current_time() {
 	struct timeval tp;
 	struct tm *lt;
-#ifndef WIN32
+#ifndef _WIN32
 	struct tm tmbuf;
 #endif
 	time_t tt;
 	ortp_gettimeofday(&tp,NULL);
 	tt = (time_t)tp.tv_sec;
 
-#ifdef WIN32
+#ifdef _WIN32
 	lt = localtime(&tt);
 #else
 	lt = localtime_r(&tt,&tmbuf);
@@ -172,7 +172,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 		int line_count = 0;
 		char *line = NULL;
 		size_t line_size = 256;
-#ifndef WIN32
+#ifndef _WIN32
 		struct tm tm_curr = {0};
 		time_t time_prev = 0;
 #endif
@@ -192,7 +192,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 		while (getline(&line, &line_size, file) != -1) {
 			// a) there should be at least 25 lines
 			++line_count;
-#ifndef WIN32
+#ifndef _WIN32
 			// b) logs should be ordered by date (format: 2014-11-04 15:22:12:606)
 			if (strlen(line) > 24) {
 				char date[24] = {'\0'};
@@ -216,7 +216,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 
 		timediff = labs((long int)log_time - (long int)cur_time);
 		(void)timediff;
-#ifndef WIN32
+#ifndef _WIN32
 		BC_ASSERT_TRUE( timediff <= 1 );
 		if( !(timediff <= 1) ){
 			char buffers[2][128] = {{0}};

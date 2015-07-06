@@ -17,7 +17,7 @@
 */
 
 
-	#include <sys/types.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include "linphonecore.h"
 #include "lpconfig.h"
@@ -26,7 +26,7 @@
 #include "mediastreamer2/msutils.h"
 #include "belle-sip/sipstack.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define unlink _unlink
 #ifndef F_OK
 #define F_OK 00 /*visual studio does not define F_OK*/

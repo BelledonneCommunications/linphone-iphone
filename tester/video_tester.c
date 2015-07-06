@@ -28,7 +28,7 @@
 #include <gtk/gtk.h>
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
-#elif defined(WIN32)
+#elif defined(_WIN32)
 #include <gdk/gdkwin32.h>
 #elif defined(__APPLE__)
 extern void *gdk_quartz_window_get_nswindow(GdkWindow      *window);
@@ -41,7 +41,7 @@ extern void *gdk_quartz_window_get_nsview(GdkWindow      *window);
 static unsigned long get_native_handle(GdkWindow *gdkw) {
 #ifdef GDK_WINDOWING_X11
 	return (unsigned long)GDK_WINDOW_XID(gdkw);
-#elif defined(WIN32)
+#elif defined(_WIN32)
 	return (unsigned long)GDK_WINDOW_HWND(gdkw);
 #elif defined(__APPLE__)
 	return (unsigned long)gdk_quartz_window_get_nsview(gdkw);

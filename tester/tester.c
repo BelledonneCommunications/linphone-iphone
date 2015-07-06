@@ -28,6 +28,9 @@
 #ifdef HAVE_GTK
 #include <gtk/gtk.h>
 #endif
+#if _WIN32
+#define unlink _unlink
+#endif
 
 static bool_t liblinphone_tester_ipv6_enabled=FALSE;
 static int liblinphone_tester_keep_accounts_flag = 0;
@@ -184,7 +187,7 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 #endif
 			linphone_core_iterate((LinphoneCore*)(iterator->data));
 		}
-#ifdef WIN32
+#ifdef LINPHONE_WINDOWS_DESKTOP
 		{
 			MSG msg;
 			while (PeekMessage(&msg, NULL, 0, 0,1)){

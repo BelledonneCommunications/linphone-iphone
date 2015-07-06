@@ -58,6 +58,7 @@
     <ClCompile Include="..\..\..\coreapi\lime.c" />
     <ClCompile Include="..\..\..\coreapi\linphonecall.c" />
     <ClCompile Include="..\..\..\coreapi\linphonecore.c" />
+    <ClCompile Include="..\..\..\coreapi\linphone_tunnel_config.c" />
     <ClCompile Include="..\..\..\coreapi\linphone_tunnel_stubs.c" />
     <ClCompile Include="..\..\..\coreapi\localplayer.c" />
     <ClCompile Include="..\..\..\coreapi\lpc2xml.c" />

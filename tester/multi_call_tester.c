@@ -26,7 +26,7 @@
 #include "mediastreamer2/msutils.h"
 #include "belle-sip/sipstack.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define unlink _unlink
 #endif
 
