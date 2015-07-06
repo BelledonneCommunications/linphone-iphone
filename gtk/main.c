@@ -608,18 +608,14 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 static gboolean uribar_completion_matchfunc(GtkEntryCompletion *completion, const gchar *key, GtkTreeIter *iter, gpointer user_data){
 	char* address = NULL;
 	gboolean ret  = FALSE;
-	gchar *tmp= NULL;
 	gtk_tree_model_get(gtk_entry_completion_get_model(completion),iter,0,&address,-1);
 
-	tmp = g_utf8_casefold(address,-1);
-	if (tmp){
-		if (strstr(tmp,key))
-			ret=TRUE;
+	if(address) {
+		gchar *tmp = g_utf8_casefold(address,-1);
+		if (strstr(tmp,key)) ret=TRUE;
 		g_free(tmp);
-	}
-
-	if( address)
 		g_free(address);
+	}
 
 	return ret;
 }
