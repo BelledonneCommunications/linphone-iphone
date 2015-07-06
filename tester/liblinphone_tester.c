@@ -169,7 +169,7 @@ void liblinphone_tester_uninit(void) {
 }
 
 
-#if !defined(ANDROID) && !defined(TARGET_OS_IPHONE) && !(defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL))
+#if !defined(ANDROID) && !__ios && !(defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL))
 
 static const char* liblinphone_helper =
 		"\t\t\t--verbose\n"
