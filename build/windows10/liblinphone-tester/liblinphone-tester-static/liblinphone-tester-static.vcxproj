@@ -112,8 +112,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\..\tester;$(ProjectDir)..\..\..\..\tester\common;$(ProjectDir)..\..\liblinphone;$(ProjectDir)..\..\..\..\coreapi;$(ProjectDir)..\..\..\..\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\..\cunit\build\windows10\cunit\$(Platform)\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BC_CONFIG_FILE="config.h";IN_LINPHONE;VIDEO_ENABLED;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\..\tester;$(ProjectDir)..\..\..\..\tester\common;$(ProjectDir)..\..\liblinphone;$(ProjectDir)..\..\..\..\coreapi;$(ProjectDir)..\..\..\..\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\..\sqlite;$(ProjectDir)..\..\..\..\..\zlib;$(ProjectDir)..\..\..\..\..\cunit\build\windows10\cunit\$(Platform)\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BC_CONFIG_FILE="config.h";IN_LINPHONE;MSG_STORAGE_ENABLED;VIDEO_ENABLED;HAVE_CU_GET_SUITE;HAVE_ZLIB;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

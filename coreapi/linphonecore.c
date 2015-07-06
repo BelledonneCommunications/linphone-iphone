@@ -63,7 +63,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef _WIN32
 #include <fcntl.h>
 #include <io.h>
+#ifndef fileno
 #define fileno _fileno
+#endif
 #define unlink _unlink
 #define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
 #else

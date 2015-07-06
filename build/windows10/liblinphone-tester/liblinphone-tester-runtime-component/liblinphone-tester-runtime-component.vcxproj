@@ -33,6 +33,12 @@
     <ClInclude Include="..\..\..\..\tester\liblinphone_tester_windows.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\bcg729\build\windows10\libmsbcg729\libmsbcg729.vcxproj">
+      <Project>{acf5ea95-d647-4d0c-8f97-2cd9aae8a2e0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\build\sqlite\sqlite.vcxproj">
+      <Project>{74cad9d0-d8ae-4896-b71b-b2d9b48f30aa}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\msamr\build\windows10\libmsamr\libmsamr.vcxproj">
       <Project>{8c1bc968-c5c8-4d4b-9ef3-d6a065fc7c97}</Project>
     </ProjectReference>
@@ -47,6 +53,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\mswebrtc\build\windows10\libmswebrtc\libmswebrtc.vcxproj">
       <Project>{878cf9d3-9761-479e-a715-a1de9f99cb78}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\zlib\build\windows10\zlib\zlib.vcxproj">
+      <Project>{a34f450d-392d-4660-9618-810bd695b3b0}</Project>
     </ProjectReference>
     <ProjectReference Include="..\liblinphone-tester-static\liblinphone-tester-static.vcxproj">
       <Project>{9eb3fe8d-2d91-4d29-a3bb-98ddb51d45b7}</Project>
