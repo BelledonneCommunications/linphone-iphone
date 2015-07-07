@@ -1232,10 +1232,12 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 }
 
 void linphone_core_clear_proxy_config(LinphoneCore *lc){
-	const MSList* list=linphone_core_get_proxy_config_list(lc);
+	MSList* list=ms_list_copy(linphone_core_get_proxy_config_list((const LinphoneCore*)lc));
+	MSList* copy=list;
 	for(;list!=NULL;list=list->next){
 		linphone_core_remove_proxy_config(lc,(LinphoneProxyConfig *)list->data);
 	}
+	ms_list_free(copy);
 	linphone_proxy_config_write_all_to_config_file(lc);
 }
 
