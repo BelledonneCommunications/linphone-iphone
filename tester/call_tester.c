@@ -180,7 +180,7 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 			break;
 
 		}
-		wait_for_until(caller->lc,callee->lc,&dummy,1,500); /*just to sleep while iterating*/
+		wait_for_until(caller->lc,callee->lc,&dummy,1,20); /*just to sleep while iterating*/
 	}while (!liblinphone_tester_clock_elapsed(&ts,12000));
 	BC_ASSERT_TRUE(linphone_call_get_audio_stats(c1)->round_trip_delay>0.0);
 	BC_ASSERT_TRUE(linphone_call_get_audio_stats(c2)->round_trip_delay>0.0);
@@ -366,9 +366,9 @@ void simple_call_base(bool_t enable_multicast_recv_side) {
 	const char* marie_id = NULL;
 
 	belle_sip_object_enable_leak_detector(TRUE);
-begin=belle_sip_object_get_object_count();
+	begin=belle_sip_object_get_object_count();
 
-marie = linphone_core_manager_new( "marie_rc");
+	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
 	/* with the account manager, we might lose the identity */
@@ -1045,8 +1045,6 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 }
 
 static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
-	bool_t call_ok;
-
 	if (callee_with_ice){
 		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
 	}
@@ -1061,9 +1059,10 @@ static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager
 		linphone_core_set_video_port(pauline->lc,-1);
 	}
 
-	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 
-	if (!call_ok) goto end;
+	if (!BC_ASSERT_TRUE(call(pauline,marie)))
+		goto end;
+
 	if (callee_with_ice && caller_with_ice) {
 		/*wait for the ICE reINVITE to complete*/
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));

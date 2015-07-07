@@ -126,7 +126,8 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 			break; /*no need to continue*/
 		ms_usleep(10000);
 	}
-	BC_ASSERT_EQUAL(linphone_proxy_config_is_registered(proxy_cfg),(expected_final_state == LinphoneRegistrationOk), int, "%d");
+
+	BC_ASSERT_EQUAL(linphone_proxy_config_is_registered(proxy_cfg), expected_final_state == LinphoneRegistrationOk, int, "%d");
 	BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationNone,0, int, "%d");
 	BC_ASSERT_TRUE(counters->number_of_LinphoneRegistrationProgress>=1);
 	if (expected_final_state == LinphoneRegistrationOk) {
