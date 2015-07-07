@@ -4174,7 +4174,7 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	if (clock_rate!=48000) {
 		ms_warning("Similarity checking not implemented for files not having the same sampling rate");
 	}else{
-#if !defined(__arm__) && !defined(__arm64__) && !defined(__ios__) && !defined(ANDROID)
+#if !defined(__arm__) && !defined(__arm64__) && !defined(TARGET_IPHONE_SIMULATOR) && !defined(ANDROID)
 		double similar;
 		const double threshold = .7f;
 		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
