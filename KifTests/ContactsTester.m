@@ -79,10 +79,7 @@
 												traits:UIAccessibilityTraitStaticText];
 }
 
-- (void)tapEditButtonForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section {
-	// tap the "+" to add a new item (or "-" to delete it).... WOW, this code is ugly!
-	// the thing is: we don't handle the "+" button ourself (system stuff)
-	// so it is not present in the tableview cell... so we tap on a fixed position of screen :)
+- (void)tapCellForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section atX:(CGFloat)x {
 	UITableView *tv = [self findTableView:@"Contact numbers table"];
 	NSIndexPath *path = [NSIndexPath indexPathForRow:idx inSection:section];
 	UITableViewCell *last =
@@ -90,8 +87,19 @@
 	XCTAssertNotNil(last);
 
 	CGRect cellFrame = [last.contentView convertRect:last.contentView.frame toView:tv];
-	[tv tapAtPoint:CGPointMake(10, cellFrame.origin.y + cellFrame.size.height / 2.)];
+	[tv tapAtPoint:CGPointMake(x > 0 ? x : cellFrame.size.width + x, cellFrame.origin.y + cellFrame.size.height / 2.)];
 	[tester waitForAnimationsToFinish];
+}
+
+- (void)tapRemoveButtonForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section {
+	[self tapCellForRowAtIndexPath:idx inSection:section atX:-10];
+}
+
+- (void)tapEditButtonForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section {
+	// tap the "+" to add a new item (or "-" to delete it).... WOW, this code is ugly!
+	// the thing is: we don't handle the "+" button ourself (system stuff)
+	// so it is not present in the tableview cell... so we tap on a fixed position of screen :)
+	[self tapCellForRowAtIndexPath:idx inSection:section atX:10];
 }
 
 - (void)addEntries:(NSArray *)numbers inSection:(NSInteger)section {
@@ -106,6 +114,15 @@
 	for (NSInteger i = 0; i < numbers.count; i++) {
 		[tester waitForViewWithAccessibilityLabel:[@"Linphone, " stringByAppendingString:[numbers objectAtIndex:i]]
 										   traits:UIAccessibilityTraitStaticText];
+	}
+}
+
+- (void)deleteContactEntryForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section {
+	if ([tester tryFindingViewWithAccessibilityLabel:@"Delete" error:nil]) {
+		[tester tapViewWithAccessibilityLabel:@"Delete"];
+	} else {
+		// hack: Travis seems to be unable to click on delete for what ever reason
+		[self tapRemoveButtonForRowAtIndexPath:idx inSection:section];
 	}
 }
 
@@ -126,14 +143,12 @@
 	// remove all numbers
 	for (NSInteger i = 0; i < phones.count; i++) {
 		[self tapEditButtonForRowAtIndexPath:0 inSection:ContactSections_Number];
-		[tester waitForTappableViewWithAccessibilityLabel:@"Delete"];
-		[tester tapViewWithAccessibilityLabel:@"Delete"];
+		[self deleteContactEntryForRowAtIndexPath:0 inSection:ContactSections_Number];
 	}
 	// remove all SIPs
 	for (NSInteger i = 0; i < SIPs.count; i++) {
 		[self tapEditButtonForRowAtIndexPath:0 inSection:ContactSections_Sip];
-		[tester waitForTappableViewWithAccessibilityLabel:@"Delete"];
-		[tester tapViewWithAccessibilityLabel:@"Delete"];
+		[self deleteContactEntryForRowAtIndexPath:0 inSection:ContactSections_Sip];
 	}
 	[tester tapViewWithAccessibilityLabel:@"Edit"];
 
