@@ -32,6 +32,7 @@
 
 #import "LinphoneManager.h"
 #import "LinphoneCoreSettingsStore.h"
+#import "Utils/FileTransferDelegate.h"
 
 #include "linphone/linphonecore_utils.h"
 #include "linphone/lpconfig.h"
@@ -1453,6 +1454,12 @@ static BOOL libStarted = FALSE;
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 
 	if (theLinphoneCore != nil) { //just in case application terminate before linphone core initialization
+
+		for (FileTransferDelegate *ftd in _fileTransferDelegates) {
+			[ftd stopAndDestroy];
+		}
+		[_fileTransferDelegates removeAllObjects];
+
 		LOGI(@"Destroy linphonecore");
 		linphone_core_destroy(theLinphoneCore);
 		theLinphoneCore = nil;

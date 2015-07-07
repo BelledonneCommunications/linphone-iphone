@@ -184,6 +184,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_core_add_auth_info([LinphoneManager getLc], auth_info);
 		linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
 		linphone_core_set_default_proxy_config([LinphoneManager getLc], proxyCfg);
+		// reload address book to prepend proxy config domain to contacts' phone number
+		[[[LinphoneManager instance] fastAddressBook] reload];
 		[self.waitView setHidden:false];
 	};
 }

@@ -61,41 +61,130 @@
 	[tester tapViewWithAccessibilityLabel:@"Send"];
 }
 
+- (void)uploadImageWithQuality:(NSString *)quality {
+	UITableView *tv = [self findTableView:@"Chat list"];
+
+	long messagesCount = [tv numberOfRowsInSection:0];
+	[tester tapViewWithAccessibilityLabel:@"Send picture"];
+	[tester tapViewWithAccessibilityLabel:@"Photo library"];
+	// if popup "Linphone would access your photo" pops up, click OK.
+	if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined) {
+#if TARGET_IPHONE_SIMULATOR
+		[tester acknowledgeSystemAlert];
+		[tester waitForTimeInterval:1];
+#endif
+	}
+
+	// select random photo to avoid having the same multiple times
+	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 column:1 + messagesCount % 4];
+
+	// wait for the quality popup to show up
+	[tester waitForTimeInterval:1];
+
+	UIAccessibilityElement *element =
+		[[UIApplication sharedApplication] accessibilityElementMatchingBlock:^BOOL(UIAccessibilityElement *element) {
+		  return [element.accessibilityLabel containsString:quality];
+		}];
+	[tester tapViewWithAccessibilityLabel:element.accessibilityLabel];
+}
+
+- (void)downloadImage {
+	[self startChatWith:[self me]];
+	[self uploadImageWithQuality:@"Minimum"];
+	// wait for the upload to terminate...
+	for (int i = 0; i < 15; i++) {
+		[tester waitForTimeInterval:1.f];
+		if ([[[LinphoneManager instance] fileTransferDelegates] count] == 0)
+			break;
+	}
+	[tester waitForViewWithAccessibilityLabel:@"Download"];
+	[tester tapViewWithAccessibilityLabel:@"Download"];
+	[tester waitForTimeInterval:.5f]; // just wait a few secs to start download
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 1);
+}
+
 #pragma mark - tests
 
-- (void)testSendMessageToMyself {
+- (void)test3DownloadsSimultanously {
 	[self startChatWith:[self me]];
-
-	[self sendMessage:@"Hello"];
-
-	[tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
-	[tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
-
-	[tester waitForViewWithAccessibilityLabel:@"Message status" value:@"delivered" traits:UIAccessibilityTraitImage];
-
+	[self uploadImageWithQuality:@"Maximum"];
+	[self uploadImageWithQuality:@"Average"];
+	[self uploadImageWithQuality:@"Minimum"];
+	UITableView *tv = [self findTableView:@"Chat list"];
+	// wait for ALL uploads to terminate...
+	for (int i = 0; i < 45; i++) {
+		[tester waitForTimeInterval:1.f];
+		if ([tv numberOfRowsInSection:0] == 6)
+			break;
+	}
+	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
+	for (int i = 0; i < 3; i++) {
+		[tester waitForViewWithAccessibilityLabel:@"Download"];
+		[tester tapViewWithAccessibilityLabel:@"Download"];
+		[tester waitForTimeInterval:.2f]; // just wait a few secs to start download
+		if (i != 2)
+			[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:-.5f];
+	}
+	while ([LinphoneManager instance].fileTransferDelegates.count > 0) {
+		[tester waitForTimeInterval:.5];
+	}
 	[self goBackFromChat];
 }
 
-- (void)testInvalidSIPAddress {
-
-	[self startChatWith:@"sip://toto"];
-
-	[tester waitForViewWithAccessibilityLabel:@"Invalid address" traits:UIAccessibilityTraitStaticText];
-	[tester tapViewWithAccessibilityLabel:@"Cancel"];
-}
-
-- (void)testSendToSIPAddress {
-	NSString *sipAddr = [NSString stringWithFormat:@"sip:%@@%@", [self me], [self accountDomain]];
-
-	[self startChatWith:sipAddr];
-
-	[tester waitForViewWithAccessibilityLabel:@"Contact name" value:[self me] traits:0];
-
+- (void)test3UploadsSimultanously {
+	[self startChatWith:[self me]];
+	// use Maximum quality to be sure that first transfer is not terminated when the third begins
+	[self uploadImageWithQuality:@"Maximum"];
+	[self uploadImageWithQuality:@"Maximum"];
+	[self uploadImageWithQuality:@"Minimum"];
+	UITableView *tv = [self findTableView:@"Chat list"];
+	// wait for ALL uploads to terminate...
+	for (int i = 0; i < 45; i++) {
+		[tester waitForTimeInterval:1.f];
+		if ([tv numberOfRowsInSection:0] == 6)
+			break;
+	}
+	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
+	ASSERT_EQ([tv numberOfRowsInSection:0], 6);
 	[self goBackFromChat];
 }
 
-- (void)testChatMessageRemoval {
+- (void)testCancelDownloadImage {
+	[self downloadImage];
+	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+}
 
+- (void)testCancelUploadImage {
+	[self startChatWith:[self me]];
+	[self uploadImageWithQuality:@"Minimum"];
+	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
+	if ([[[LinphoneManager instance] fileTransferDelegates] count] != 0) {
+		[[UIApplication sharedApplication] writeScreenshotForLine:__LINE__ inFile:@__FILE__ description:nil error:NULL];
+		;
+	}
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+}
+
+- (void)testChatFromContactPhoneNumber {
+	[tester tapViewWithAccessibilityLabel:@"New Discussion"];
+	[tester tapViewWithAccessibilityLabel:@"Anna Haro"];
+	[tester tapViewWithAccessibilityLabel:@"home, 555-522-8243"];
+	[self goBackFromChat];
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
+	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
+	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message"
+										value:@"Anna Haro (0)"
+									   traits:UIAccessibilityTraitStaticText];
+}
+
+- (void)testDownloadImage {
+	[self downloadImage];
+	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Cancel transfer"];
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+}
+
+- (void)testMessageRemoval {
 	NSString *user = [self getUUID];
 
 	[self startChatWith:user];
@@ -121,6 +210,14 @@
 	}
 
 	[self goBackFromChat];
+}
+
+- (void)testInvalidSIPAddress {
+
+	[self startChatWith:@"sip://toto"];
+
+	[tester waitForViewWithAccessibilityLabel:@"Invalid address" traits:UIAccessibilityTraitStaticText];
+	[tester tapViewWithAccessibilityLabel:@"Cancel"];
 }
 
 - (void)testRemoveAllChats {
@@ -150,31 +247,27 @@
 	ASSERT_EQ(linphone_core_get_chat_rooms([LinphoneManager getLc]), NULL);
 }
 
-- (void)uploadImageWithQuality:(NSString *)quality {
-	UITableView *tv = [self findTableView:@"Chat list"];
+- (void)testSendMessageToMyself {
+	[self startChatWith:[self me]];
 
-	long messagesCount = [tv numberOfRowsInSection:0];
-	[tester tapViewWithAccessibilityLabel:@"Send picture"];
-	[tester tapViewWithAccessibilityLabel:@"Photo library"];
-	// if popup "Linphone would access your photo" pops up, click OK.
-	if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined) {
-#if TARGET_IPHONE_SIMULATOR
-		[tester acknowledgeSystemAlert];
-		[tester waitForTimeInterval:1];
-#endif
-	}
+	[self sendMessage:@"Hello"];
 
-	// select random photo to avoid having the same multiple times
-	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 column:1 + messagesCount % 4];
+	[tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
+	[tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
 
-	// wait for the quality popup to show up
-	[tester waitForTimeInterval:1];
+	[tester waitForViewWithAccessibilityLabel:@"Message status" value:@"delivered" traits:UIAccessibilityTraitImage];
 
-	UIAccessibilityElement *element =
-		[[UIApplication sharedApplication] accessibilityElementMatchingBlock:^BOOL(UIAccessibilityElement *element) {
-		  return [element.accessibilityLabel containsString:quality];
-		}];
-	[tester tapViewWithAccessibilityLabel:element.accessibilityLabel];
+	[self goBackFromChat];
+}
+
+- (void)testSendToSIPAddress {
+	NSString *sipAddr = [NSString stringWithFormat:@"sip:%@@%@", [self me], [self accountDomain]];
+
+	[self startChatWith:sipAddr];
+
+	[tester waitForViewWithAccessibilityLabel:@"Contact name" value:[self me] traits:0];
+
+	[self goBackFromChat];
 }
 
 - (void)testUploadImage {
@@ -200,98 +293,6 @@
 
 	ASSERT_EQ([tv numberOfRowsInSection:0], 2);
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
-}
-
-- (void)testCancelUploadImage {
-	[self startChatWith:[self me]];
-	[self uploadImageWithQuality:@"Minimum"];
-	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
-	if ([[[LinphoneManager instance] fileTransferDelegates] count] != 0) {
-		[[UIApplication sharedApplication] writeScreenshotForLine:__LINE__ inFile:@__FILE__ description:nil error:NULL];
-		;
-	}
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
-}
-
-- (void)test3UploadsSimultanously {
-	[self startChatWith:[self me]];
-	// use Maximum quality to be sure that first transfer is not terminated when the third begins
-	[self uploadImageWithQuality:@"Maximum"];
-	[self uploadImageWithQuality:@"Maximum"];
-	[self uploadImageWithQuality:@"Minimum"];
-	UITableView *tv = [self findTableView:@"Chat list"];
-	// wait for ALL uploads to terminate...
-	for (int i = 0; i < 45; i++) {
-		[tester waitForTimeInterval:1.f];
-		if ([tv numberOfRowsInSection:0] == 6)
-			break;
-	}
-	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
-	ASSERT_EQ([tv numberOfRowsInSection:0], 6);
-	[self goBackFromChat];
-}
-
-- (void)downloadImage {
-	[self startChatWith:[self me]];
-	[self uploadImageWithQuality:@"Minimum"];
-	// wait for the upload to terminate...
-	for (int i = 0; i < 15; i++) {
-		[tester waitForTimeInterval:1.f];
-		if ([[[LinphoneManager instance] fileTransferDelegates] count] == 0)
-			break;
-	}
-	[tester waitForViewWithAccessibilityLabel:@"Download"];
-	[tester tapViewWithAccessibilityLabel:@"Download"];
-	[tester waitForTimeInterval:.5f]; // just wait a few secs to start download
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 1);
-}
-
-- (void)test3DownloadsSimultanously {
-
-	[self startChatWith:[self me]];
-	[self uploadImageWithQuality:@"Maximum"];
-	[self uploadImageWithQuality:@"Average"];
-	[self uploadImageWithQuality:@"Minimum"];
-	UITableView *tv = [self findTableView:@"Chat list"];
-	// wait for ALL uploads to terminate...
-	for (int i = 0; i < 45; i++) {
-		[tester waitForTimeInterval:1.f];
-		if ([tv numberOfRowsInSection:0] == 6)
-			break;
-	}
-	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
-	[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:1];
-	for (int i = 0; i < 3; i++) {
-		[tester waitForViewWithAccessibilityLabel:@"Download"];
-		[tester tapViewWithAccessibilityLabel:@"Download"];
-		[tester waitForTimeInterval:.5f]; // just wait a few secs to start download
-		if (i != 2)
-			[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:-.5f];
-	}
-}
-
-- (void)testDownloadImage {
-	[self downloadImage];
-	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Cancel transfer"];
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
-}
-
-- (void)testCancelDownloadImage {
-	[self downloadImage];
-	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
-}
-
-- (void)testChatFromContactPhoneNumber {
-	[tester tapViewWithAccessibilityLabel:@"New Discussion"];
-	[tester tapViewWithAccessibilityLabel:@"Anna Haro"];
-	[tester tapViewWithAccessibilityLabel:@"home, 555-522-8243"];
-	[self goBackFromChat];
-	UITableView *tv = [self findTableView:@"ChatRoom list"];
-	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
-	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message"
-										value:@"Anna Haro (0)"
-									   traits:UIAccessibilityTraitStaticText];
 }
 
 @end

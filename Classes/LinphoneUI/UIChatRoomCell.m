@@ -456,11 +456,12 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		// the transient message will not be found and it will not appear in the list of
 		// message, so we must refresh the table when we change to this state to ensure that
 		// all transient messages apppear
-		ChatRoomViewController *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE],
-			ChatRoomViewController);
-		[controller.tableController setChatRoom:linphone_chat_message_get_chat_room(msg)];
-		// UGLY HACK, must be fixed in file transfer cb
+		//		ChatRoomViewController *controller = DYNAMIC_CAST(
+		//			[[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription]
+		// push:TRUE],
+		//			ChatRoomViewController);
+		//		[controller.tableController setChatRoom:linphone_chat_message_get_chat_room(msg)];
+		// This is breaking interface too much, it must be fixed in file transfer cb.. meanwhile, disabling it.
 	}
 	[thiz update];
 }

@@ -127,14 +127,11 @@
 		}
 
 		int count = linphone_chat_room_get_unread_messages_count(chatRoom);
-		if (count > 0) {
-			[unreadMessageView setHidden:FALSE];
-			unreadMessageLabel.text = [NSString stringWithFormat:@"%i", count];
-		} else {
-			[unreadMessageView setHidden:TRUE];
-		}
+		unreadMessageLabel.text = [NSString stringWithFormat:@"%i", count];
+		[unreadMessageView setHidden:(count <= 0)];
 	} else {
 		chatContentLabel.text = nil;
+		unreadMessageLabel.text = [NSString stringWithFormat:@"0"];
 		[unreadMessageView setHidden:TRUE];
 	}
 }

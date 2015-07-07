@@ -68,6 +68,18 @@
 
 #pragma mark - Tests
 
+- (void)testExternalLoginWithUDP {
+	[self _externalLoginWithProtocol:@"UDP"];
+}
+
+- (void)testExternalLoginWithTCP {
+	[self _externalLoginWithProtocol:@"TCP"];
+}
+
+- (void)testExternalLoginWithTLS {
+	[self _externalLoginWithProtocol:@"TLS"];
+}
+
 - (void)testLinphoneLogin {
 
 	[self _linphoneLogin:[self me] withPW:@"testtest"];
@@ -97,21 +109,5 @@
 		[tester fail];
 	}
 }
-
-- (void)testExternalLoginWithUDP {
-    [self _externalLoginWithProtocol:@"UDP"];
-}
-
-- (void)testExternalLoginWithTCP {
-    [self _externalLoginWithProtocol:@"TCP"];
-}
-
-- (void)testExternalLoginWithTLS {
-    [self _externalLoginWithProtocol:@"TLS"];
-}
-
-
-
-
 
 @end

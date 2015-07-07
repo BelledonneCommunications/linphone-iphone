@@ -505,6 +505,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_add_auth_info(lc, info);
     linphone_core_add_proxy_config(lc, proxyCfg);
 	linphone_core_set_default_proxy_config(lc, proxyCfg);
+	// reload address book to prepend proxy config domain to contacts' phone number
+	[[[LinphoneManager instance] fastAddressBook] reload];
 	return TRUE;
 }
 
@@ -534,6 +536,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_add_auth_info([LinphoneManager getLc], info);
     linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
 	linphone_core_set_default_proxy_config([LinphoneManager getLc], proxyCfg);
+	// reload address book to prepend proxy config domain to contacts' phone number
+	[[[LinphoneManager instance] fastAddressBook] reload];
 }
 
 - (NSString*)identityFromUsername:(NSString*)username {
