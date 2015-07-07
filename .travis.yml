@@ -22,7 +22,7 @@ before_install:
     - git submodule update --init --recursive
 
 install:
-    - ./prepare.py i386 -G Ninja
+    - ./prepare.py -d i386 -G Ninja
     - make -j4 -s 1>/dev/null
     - mkdir -p $KIF_SCREENSHOTS
 
