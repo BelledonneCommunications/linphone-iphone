@@ -2752,10 +2752,20 @@ LINPHONE_PUBLIC	LinphoneProxyConfig * linphone_core_create_proxy_config(Linphone
 
 LINPHONE_PUBLIC	int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
+/**
+ * Erase all proxies from config.
+ *
+ * @ingroup proxy
+**/
 LINPHONE_PUBLIC	void linphone_core_clear_proxy_config(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
+/**
+ * Returns an unmodifiable list of entered proxy configurations.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{LinphoneProxyConfig}
+**/
 LINPHONE_PUBLIC	const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc);
 
 /** @deprecated Use linphone_core_set_default_proxy_config() instead. */

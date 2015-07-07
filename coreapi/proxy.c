@@ -1215,31 +1215,27 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,cfg);
 	/* add to the list of destroyed proxies, so that the possible unREGISTER request can succeed authentication */
 	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,cfg);
+
+	if (lc->default_proxy==cfg){
+		lc->default_proxy=NULL;
+	}
+
 	cfg->deletion_date=ms_time(NULL);
 	if (cfg->state==LinphoneRegistrationOk){
-		/* unREGISTER */
+		/* UNREGISTER */
 		linphone_proxy_config_edit(cfg);
 		linphone_proxy_config_enable_register(cfg,FALSE);
 		linphone_proxy_config_done(cfg);
 		linphone_proxy_config_update(cfg);
 	}
-	if (lc->default_proxy==cfg){
-		lc->default_proxy=NULL;
-	}
 	linphone_proxy_config_write_all_to_config_file(lc);
 }
-/**
- * Erase all proxies from config.
- *
- * @ingroup proxy
-**/
+
 void linphone_core_clear_proxy_config(LinphoneCore *lc){
-	MSList* list=ms_list_copy(linphone_core_get_proxy_config_list((const LinphoneCore*)lc));
-	MSList* copy=list;
+	const MSList* list=linphone_core_get_proxy_config_list(lc);
 	for(;list!=NULL;list=list->next){
 		linphone_core_remove_proxy_config(lc,(LinphoneProxyConfig *)list->data);
 	}
-	ms_list_free(copy);
 	linphone_proxy_config_write_all_to_config_file(lc);
 }
 
@@ -1297,11 +1293,6 @@ LinphoneProxyConfig * linphone_core_get_default_proxy_config(LinphoneCore *lc) {
 	return lc->default_proxy;
 }
 
-/**
- * Returns an unmodifiable list of entered proxy configurations.
- * @param[in] lc The LinphoneCore object
- * @return \mslist{LinphoneProxyConfig}
-**/
 const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
 	return lc->sip_conf.proxies;
 }
