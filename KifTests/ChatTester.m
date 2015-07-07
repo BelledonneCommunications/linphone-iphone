@@ -118,12 +118,15 @@
 			break;
 	}
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
+	[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:1.f];
 	for (int i = 0; i < 3; i++) {
+		// messages order is not known: if upload bitrate is huge, first image can be uploaded before last started
+		while (![tester tryFindingTappableViewWithAccessibilityLabel:@"Download" error:nil]) {
+			[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:-.1f];
+		}
 		[tester waitForViewWithAccessibilityLabel:@"Download"];
 		[tester tapViewWithAccessibilityLabel:@"Download"];
 		[tester waitForTimeInterval:.2f]; // just wait a few secs to start download
-		if (i != 2)
-			[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:-.5f];
 	}
 	while ([LinphoneManager instance].fileTransferDelegates.count > 0) {
 		[tester waitForTimeInterval:.5];
@@ -276,10 +279,7 @@
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
 	[self uploadImageWithQuality:@"Minimum"];
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 1);
-	[self goBackFromChat];
 
-	// if we go back to the same chatroom, the message should be still there
-	[self startChatWith:[self me]];
 	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
 

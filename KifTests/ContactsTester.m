@@ -126,11 +126,13 @@
 	// remove all numbers
 	for (NSInteger i = 0; i < phones.count; i++) {
 		[self tapEditButtonForRowAtIndexPath:0 inSection:ContactSections_Number];
+		[tester waitForTappableViewWithAccessibilityLabel:@"Delete"];
 		[tester tapViewWithAccessibilityLabel:@"Delete"];
 	}
 	// remove all SIPs
 	for (NSInteger i = 0; i < SIPs.count; i++) {
 		[self tapEditButtonForRowAtIndexPath:0 inSection:ContactSections_Sip];
+		[tester waitForTappableViewWithAccessibilityLabel:@"Delete"];
 		[tester tapViewWithAccessibilityLabel:@"Delete"];
 	}
 	[tester tapViewWithAccessibilityLabel:@"Edit"];

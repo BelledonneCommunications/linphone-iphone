@@ -2059,7 +2059,7 @@ static void audioRouteChangeListenerCallback (
 	if (enabled) {
 		NSLog(@"Enabling debug logs");
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-		ortp_set_log_level_mask(ORTP_DEBUG|ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+		linphone_core_set_log_level(ORTP_DEBUG);
 		linphone_core_enable_log_collection(enabled);
 	} else {
 		NSLog(@"Disabling debug logs");
