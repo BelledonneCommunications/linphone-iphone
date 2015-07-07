@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <libnotify/notify.h>
 #endif
 
-#ifdef HAVE_INTL
+#ifdef ENABLE_NLS
 #include <locale.h>
 #endif
 
@@ -2098,7 +2098,7 @@ int main(int argc, char *argv[]){
 		g_setenv("LANGUAGE",lang,1);
 	}
 
-#ifdef HAVE_INTL
+#ifdef ENABLE_NLS
 	setlocale(LC_ALL, "");
 	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
@@ -2148,7 +2148,7 @@ int main(int argc, char *argv[]){
 		}
 	}
 
-#if defined(__APPLE__) && defined(HAVE_INTL)
+#if defined(__APPLE__) && defined(ENABLE_NLS)
 	/*workaround for bundles. GTK is unable to find translations in the bundle (obscure bug again).
 	So we help it:*/
 	{

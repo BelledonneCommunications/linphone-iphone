@@ -65,7 +65,7 @@ extern "C" {
 #define PACKAGE_DATA_DIR "."
 #endif
 
-#ifdef HAVE_INTL
+#ifdef ENABLE_NLS
 #include <libintl.h>
 #ifndef _
 #define _(String) dgettext(GETTEXT_PACKAGE,String)

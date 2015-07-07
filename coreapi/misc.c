@@ -96,7 +96,7 @@ void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, in
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
 	if (ms_filter_codec_supported(pt->mime_type)){
 		MSFilterDesc *desc=ms_filter_get_encoder(pt->mime_type);
-#ifdef HAVE_INTL
+#ifdef ENABLE_NLS
 		return dgettext("mediastreamer",desc->text);
 #else
 		return desc->text;
