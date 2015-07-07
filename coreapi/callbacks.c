@@ -122,7 +122,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 	bool_t all_muted=FALSE;
 	bool_t send_ringbacktone=FALSE;
 	int md_changed=0;
-	
+
 
 	if (!((call->state == LinphoneCallIncomingEarlyMedia) && (linphone_core_get_ring_during_incoming_early_media(lc)))) {
 		linphone_core_stop_ringing(lc);
@@ -362,7 +362,7 @@ static void call_received(SalOp *h){
 	linphone_call_ref(call); /*prevent the call from being destroyed while we are notifying, if the user declines within the state callback */
 
 	call->bg_task_id=sal_begin_background_task("liblinphone call notification", NULL, NULL);
-	
+
 	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)) {
 		/* Defer ringing until the end of the ICE candidates gathering process. */
 		ms_message("Defer ringing to gather ICE candidates");
@@ -773,7 +773,7 @@ static void call_terminated(SalOp *op, const char *from){
 	switch(linphone_call_get_state(call)){
 		case LinphoneCallEnd:
 		case LinphoneCallError:
-			ms_warning("call_terminated: ignoring.");
+			ms_warning("call_terminated: already terminated, ignoring.");
 			return;
 		break;
 		case LinphoneCallIncomingReceived:

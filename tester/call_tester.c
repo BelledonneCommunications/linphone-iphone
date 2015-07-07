@@ -4134,7 +4134,7 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	LinphoneCoreManager* pauline;
 	PayloadType *pt;
 	char *stereo_file = bc_tester_res("sounds/vrroom.wav");
-	char *recordpath = create_filepath(bc_tester_get_writable_dir_prefix(), "stereo-record", "wav");
+	char *recordpath = bc_tester_file("stereo-record.wav");
 	int dummy=0;
 
 	belle_sip_object_enable_leak_detector(TRUE);
@@ -4167,29 +4167,22 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	lp_config_set_string(marie->lc->config,"sound","features","NONE");
 	lp_config_set_string(pauline->lc->config,"sound","features","NONE");
 
-	if (!BC_ASSERT_TRUE(call(marie,pauline))) goto end;
-	wait_for_until(marie->lc, pauline->lc, &dummy, 1,6000);
-	end_call(marie,pauline);
+	if (!BC_ASSERT_TRUE(call(pauline,marie))) goto end;
+	wait_for_until(marie->lc, pauline->lc, &dummy, 1,1000);
+	end_call(pauline, marie);
 
-	if (clock_rate!=48000) ms_warning("Similarity checking not implemented for files not having the same sampling rate");
-	else{
-#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
-		if (stereo){
-			double similar;
-			const double threshold = .7f;
-			BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
-			BC_ASSERT_GREATER(similar, threshold, float, "%f");
-			BC_ASSERT_LOWER(similar, 1.f, float, "%f");
-		}else{
-			double similar;
-			const double threshold = .7f;
-			BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
-			BC_ASSERT_LOWER(similar, threshold, float, "%f");
-			BC_ASSERT_LOWER(similar, 1.f, float, "%f");
-		}
+
+	if (clock_rate!=48000) {
+		ms_warning("Similarity checking not implemented for files not having the same sampling rate");
+	}else{
+#if !defined(__arm__) && !defined(__arm64__) && !defined(__ios__) && !defined(ANDROID)
+		double similar;
+		const double threshold = .7f;
+		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
+		BC_ASSERT_GREATER(similar, threshold, float, "%f");
+		BC_ASSERT_LOWER(similar, 1.f, float, "%f");
 #endif
 	}
-
 
 end:
 	linphone_core_manager_destroy(marie);
