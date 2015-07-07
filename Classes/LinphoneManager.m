@@ -1323,8 +1323,8 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
 
-	LOGW(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-
+	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(),
+		 [[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 
 	// Post event
 	NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore]
@@ -2056,15 +2056,21 @@ static void audioRouteChangeListenerCallback (
 }
 
 -(void)setLogsEnabled:(BOOL)enabled {
-	if (enabled) {
-		NSLog(@"Enabling debug logs");
+	if ([LinphoneManager isRunningTests]) {
+		NSLog(@"Running tests, forcing logs to Warning level");
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-		linphone_core_set_log_level(ORTP_DEBUG);
-		linphone_core_enable_log_collection(enabled);
+		linphone_core_set_log_level(ORTP_WARNING);
 	} else {
-		NSLog(@"Disabling debug logs");
-		linphone_core_enable_log_collection(enabled);
-		linphone_core_disable_logs();
+		if (enabled) {
+			NSLog(@"Enabling debug logs");
+			linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+			linphone_core_set_log_level(ORTP_DEBUG);
+			linphone_core_enable_log_collection(enabled);
+		} else {
+			NSLog(@"Disabling debug logs");
+			linphone_core_enable_log_collection(enabled);
+			linphone_core_disable_logs();
+		}
 	}
 }
 
