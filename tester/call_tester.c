@@ -2314,6 +2314,9 @@ static void call_with_file_player(void) {
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
 
+	// inter-correlation is very sensitive to variable offset when comparing files, so using a fixed jitter
+	// buffer length should help it a lot.
+	linphone_core_enable_audio_adaptive_jittcomp(pauline->lc, FALSE);
 
 	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
 	linphone_core_use_files(marie->lc,TRUE);
