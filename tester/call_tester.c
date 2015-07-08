@@ -4142,6 +4142,10 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
+	// inter-correlation is very sensitive to variable offset when comparing files, so using a fixed jitter
+	// buffer length should help it a lot.
+	linphone_core_enable_audio_adaptive_jittcomp(pauline->lc, FALSE);
+
 	/*make sure we have opus*/
 	pt = linphone_core_find_payload_type(marie->lc, codec_name, clock_rate, 2);
 	if (!pt) {
