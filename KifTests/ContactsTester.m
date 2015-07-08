@@ -119,7 +119,7 @@
 }
 
 - (void)deleteContactEntryForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section {
-	if ([tester tryFindingViewWithAccessibilityLabel:@"Delete" error:nil]) {
+	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Delete" error:nil]) {
 		[tester tapViewWithAccessibilityLabel:@"Delete"];
 	} else {
 		// hack: Travis seems to be unable to click on delete for what ever reason

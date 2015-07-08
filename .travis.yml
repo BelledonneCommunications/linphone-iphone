@@ -26,8 +26,8 @@ install:
     - mkdir -p $KIF_SCREENSHOTS
 
 script:
-    - xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator build 1>/dev/null
-    - xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator test
+    - xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator -destination name='iPhone 6' build 1>/dev/null
+    - xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator -destination name='iPhone 6' test
 
 after_script:
     - ./Tools/imgur_upload.sh
