@@ -13,19 +13,21 @@
 @implementation WizardTester
 
 - (void)beforeEach {
-    [UIView setAnimationsEnabled:false];
-    
-    [tester tapViewWithAccessibilityLabel:@"Settings"];
-    [tester tapViewWithAccessibilityLabel:@"Run assistant"];
-    [tester waitForTimeInterval:0.5];
-    if( [tester tryFindingViewWithAccessibilityLabel:@"Launch Wizard" error:nil]){
-        [tester tapViewWithAccessibilityLabel:@"Launch Wizard"];
-        [tester waitForTimeInterval:0.5];
-    }
+	[super beforeEach];
+	[UIView setAnimationsEnabled:false];
+
+	[tester tapViewWithAccessibilityLabel:@"Settings"];
+	[tester tapViewWithAccessibilityLabel:@"Run assistant"];
+	[tester waitForTimeInterval:0.5];
+	if ([tester tryFindingViewWithAccessibilityLabel:@"Launch Wizard" error:nil]) {
+		[tester tapViewWithAccessibilityLabel:@"Launch Wizard"];
+		[tester waitForTimeInterval:0.5];
+	}
 }
 
 - (void)afterEach{
-    [tester tapViewWithAccessibilityLabel:@"Dialer"];
+	[super afterEach];
+	[tester tapViewWithAccessibilityLabel:@"Dialer"];
 }
 
 #pragma mark - State 
@@ -68,16 +70,16 @@
 
 #pragma mark - Tests
 
-- (void)testExternalLoginWithUDP {
-	[self _externalLoginWithProtocol:@"UDP"];
-}
-
 - (void)testExternalLoginWithTCP {
 	[self _externalLoginWithProtocol:@"TCP"];
 }
 
 - (void)testExternalLoginWithTLS {
 	[self _externalLoginWithProtocol:@"TLS"];
+}
+
+- (void)testExternalLoginWithUDP {
+	[self _externalLoginWithProtocol:@"UDP"];
 }
 
 - (void)testLinphoneLogin {

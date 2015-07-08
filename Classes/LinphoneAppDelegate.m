@@ -174,30 +174,33 @@
     BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
     BOOL start_at_boot   = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 
+	if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+		/* iOS8 notifications can be actioned! Awesome: */
+		UIUserNotificationType notifTypes =
+			UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
 
-    if( !instance.isTesting ){
-        if( [app respondsToSelector:@selector(registerUserNotificationSettings:)] ){
-            /* iOS8 notifications can be actioned! Awesome: */
-            UIUserNotificationType notifTypes = UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
+		NSSet *categories =
+			[NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], nil];
+		UIUserNotificationSettings *userSettings =
+			[UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
+		[app registerUserNotificationSettings:userSettings];
 
-            NSSet* categories = [NSSet setWithObjects:[self getCallNotificationCategory], [self getMessageNotificationCategory], nil];
-            UIUserNotificationSettings* userSettings = [UIUserNotificationSettings settingsForTypes:notifTypes categories:categories];
-            [app registerUserNotificationSettings:userSettings];
-            [app registerForRemoteNotifications];
-        } else {
-            NSUInteger notifTypes = UIRemoteNotificationTypeAlert|UIRemoteNotificationTypeSound|UIRemoteNotificationTypeBadge|UIRemoteNotificationTypeNewsstandContentAvailability;
-            [app registerForRemoteNotificationTypes:notifTypes];
-        }
-    } else {
-        NSLog(@"No remote push for testing");
-    }
+		if (!instance.isTesting) {
+			[app registerForRemoteNotifications];
+		}
+	} else {
+		if (!instance.isTesting) {
+			NSUInteger notifTypes = UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound |
+									UIRemoteNotificationTypeBadge |
+									UIRemoteNotificationTypeNewsstandContentAvailability;
+			[app registerForRemoteNotificationTypes:notifTypes];
+		}
+	}
 
-
-    if (state == UIApplicationStateBackground)
-    {
-        // we've been woken up directly to background;
-        if( !start_at_boot || !background_mode ) {
-            // autoboot disabled or no background, and no push: do nothing and wait for a real launch
+	if (state == UIApplicationStateBackground) {
+		// we've been woken up directly to background;
+		if (!start_at_boot || !background_mode) {
+			// autoboot disabled or no background, and no push: do nothing and wait for a real launch
 			/*output a log with NSLog, because the ortp logging system isn't activated yet at this time*/
 			NSLog(@"Linphone launch doing nothing because start_at_boot or background_mode are not activated.", NULL);
             return YES;

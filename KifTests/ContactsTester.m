@@ -15,7 +15,8 @@
 #pragma mark - Setup
 
 - (void)beforeAll {
-    [tester tapViewWithAccessibilityLabel:@"Contacts"];
+	[super beforeAll];
+	[tester tapViewWithAccessibilityLabel:@"Contacts"];
 }
 
 #pragma mark - Utils

@@ -48,7 +48,8 @@
 
 - (void)beforeAll{
 #if TARGET_IPHONE_SIMULATOR
-    [tester acknowledgeSystemAlert];
+	[tester acknowledgeSystemAlert]; // Contact access alert
+	[tester acknowledgeSystemAlert]; // Local notification / badge alert
 #endif
 	[super beforeAll];
 }

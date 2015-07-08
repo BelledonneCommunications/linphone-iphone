@@ -28,6 +28,7 @@
 }
 
 - (void)afterAll {
+	[super afterAll];
 	// at the end of tests, go back to chat rooms to display main bar
 	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Back" error:nil]) {
 		[self goBackFromChat];
