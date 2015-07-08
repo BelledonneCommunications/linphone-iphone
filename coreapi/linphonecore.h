@@ -2418,6 +2418,12 @@ LINPHONE_PUBLIC void linphone_core_disable_logs(void);
  */
 LINPHONE_PUBLIC void linphone_core_serialize_logs(void);
 
+/**
+ * Returns liblinphone's version as a string.
+ *
+ * @ingroup misc
+ *
+**/
 LINPHONE_PUBLIC	const char *linphone_core_get_version(void);
 LINPHONE_PUBLIC	const char *linphone_core_get_user_agent(LinphoneCore *lc);
 /**
@@ -2429,6 +2435,25 @@ LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_name(void);
 **/
 LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_version(void);
 
+/**
+ * Instanciates a LinphoneCore object.
+ * @ingroup initializing
+ *
+ * The LinphoneCore object is the primary handle for doing all phone actions.
+ * It should be unique within your application.
+ * @param vtable a LinphoneCoreVTable structure holding your application callbacks
+ * @param config_path a path to a config file. If it does not exists it will be created.
+ *        The config file is used to store all settings, call logs, friends, proxies... so that all these settings
+ *	       become persistent over the life of the LinphoneCore object.
+ *	       It is allowed to set a NULL config file. In that case LinphoneCore will not store any settings.
+ * @param factory_config_path a path to a read-only config file that can be used to
+ *        to store hard-coded preference such as proxy settings or internal preferences.
+ *        The settings in this factory file always override the one in the normal config file.
+ *        It is OPTIONAL, use NULL if unneeded.
+ * @param userdata an opaque user pointer that can be retrieved at any time (for example in
+ *        callbacks) using linphone_core_get_user_data().
+ * @see linphone_core_new_with_config
+**/
 LINPHONE_PUBLIC LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config, void* userdata);
 
@@ -2575,41 +2600,161 @@ LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_call_by_remote_address2(Linphone
 **/
 LINPHONE_PUBLIC	void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
 
+/**
+ * Sets the local "from" identity.
+ *
+ * @ingroup proxies
+ * This data is used in absence of any proxy configuration or when no
+ * default proxy configuration is set. See LinphoneProxyConfig
+**/
 LINPHONE_PUBLIC	int linphone_core_set_primary_contact(LinphoneCore *lc, const char *contact);
 
+/**
+ * Returns the default identity when no proxy configuration is used.
+ *
+ * @ingroup proxies
+**/
 LINPHONE_PUBLIC	const char *linphone_core_get_primary_contact(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	const char * linphone_core_get_identity(LinphoneCore *lc);
 
+/**
+ * Tells LinphoneCore to guess local hostname automatically in primary contact.
+ *
+ * @ingroup proxies
+**/
 LINPHONE_PUBLIC void linphone_core_set_guess_hostname(LinphoneCore *lc, bool_t val);
+/**
+ * Returns TRUE if hostname part of primary contact is guessed automatically.
+ *
+ * @ingroup proxies
+**/
 LINPHONE_PUBLIC bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
 
+/**
+ * Tells to LinphoneCore to use Linphone Instant Messaging encryption
+ *
+ */
 LINPHONE_PUBLIC void linphone_core_enable_lime(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC bool_t linphone_core_lime_enabled(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);
 
+/**
+ * Same as linphone_core_get_primary_contact() but the result is a LinphoneAddress object
+ * instead of const char*
+ *
+ * @ingroup proxies
+**/
 LINPHONE_PUBLIC	LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc);
 LINPHONE_PUBLIC	const char * linphone_core_get_identity(LinphoneCore *lc);
-/*0= no bandwidth limit*/
+/**
+ * Sets maximum available download bandwidth
+ * This is IP bandwidth, in kbit/s.
+ * This information is used signaled to other parties during
+ * calls (within SDP messages) so that the remote end can have
+ * sufficient knowledge to properly configure its audio & video
+ * codec output bitrate to not overflow available bandwidth.
+ *
+ * @ingroup media_parameters
+ *
+ * @param lc the LinphoneCore object
+ * @param bw the bandwidth in kbits/s, 0 for infinite
+ */
 LINPHONE_PUBLIC	void linphone_core_set_download_bandwidth(LinphoneCore *lc, int bw);
+/**
+ * Sets maximum available upload bandwidth
+ * This is IP bandwidth, in kbit/s.
+ * This information is used by liblinphone together with remote
+ * side available bandwidth signaled in SDP messages to properly
+ * configure audio & video codec's output bitrate.
+ *
+ * @param lc the LinphoneCore object
+ * @param bw the bandwidth in kbits/s, 0 for infinite
+ * @ingroup media_parameters
+ */
 LINPHONE_PUBLIC	void linphone_core_set_upload_bandwidth(LinphoneCore *lc, int bw);
 
+/**
+ * Retrieve the maximum available download bandwidth.
+ * This value was set by linphone_core_set_download_bandwidth().
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC	int linphone_core_get_download_bandwidth(const LinphoneCore *lc);
+/**
+ * Retrieve the maximum available upload bandwidth.
+ * This value was set by linphone_core_set_upload_bandwidth().
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC	int linphone_core_get_upload_bandwidth(const LinphoneCore *lc);
 
+/**
+ * Enable adaptive rate control.
+ *
+ * @ingroup media_parameters
+ *
+ * Adaptive rate control consists in using RTCP feedback provided information to dynamically
+ * control the output bitrate of the audio and video encoders, so that we can adapt to the network conditions and
+ * available bandwidth. Control of the audio encoder is done in case of audio-only call, and control of the video encoder is done for audio & video calls.
+ * Adaptive rate control feature is enabled by default.
+**/
 LINPHONE_PUBLIC void linphone_core_enable_adaptive_rate_control(LinphoneCore *lc, bool_t enabled);
+
+/**
+ * Returns whether adaptive rate control is enabled.
+ *
+ * @ingroup media_parameters
+ *
+ * See linphone_core_enable_adaptive_rate_control().
+**/
 LINPHONE_PUBLIC bool_t linphone_core_adaptive_rate_control_enabled(const LinphoneCore *lc);
 
+/**
+ * Sets adaptive rate algorithm. It will be used for each new calls starting from
+ * now. Calls already started will not be updated.
+ *
+ * @ingroup media_parameters
+ *
+**/
 LINPHONE_PUBLIC void linphone_core_set_adaptive_rate_algorithm(LinphoneCore *lc, const char *algorithm);
+/**
+ * Returns which adaptive rate algorithm is currently configured for future calls.
+ *
+ * @ingroup media_parameters
+ *
+ * See linphone_core_set_adaptive_rate_algorithm().
+**/
 LINPHONE_PUBLIC const char* linphone_core_get_adaptive_rate_algorithm(const LinphoneCore *lc);
 
+/**
+ * Set audio packetization time linphone expects to receive from peer.
+ * A value of zero means that ptime is not specified.
+ * @ingroup media_parameters
+ */
 LINPHONE_PUBLIC	void linphone_core_set_download_ptime(LinphoneCore *lc, int ptime);
+/**
+ * Get audio packetization time linphone expects to receive from peer.
+ * A value of zero means that ptime is not specified.
+ * @ingroup media_parameters
+ */
 LINPHONE_PUBLIC	int  linphone_core_get_download_ptime(LinphoneCore *lc);
 
+/**
+ * Set audio packetization time linphone will send (in absence of requirement from peer)
+ * A value of 0 stands for the current codec default packetization time.
+ *
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC	void linphone_core_set_upload_ptime(LinphoneCore *lc, int ptime);
 
+/**
+ * Set audio packetization time linphone will send (in absence of requirement from peer)
+ * A value of 0 stands for the current codec default packetization time.
+ *
+ *
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC	int linphone_core_get_upload_ptime(LinphoneCore *lc);
 
 /**
@@ -2644,11 +2789,32 @@ LINPHONE_PUBLIC void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enabl
  */
 LINPHONE_PUBLIC bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc);
 
-/* returns a MSList of PayloadType */
+/**
+ * Returns the list of available audio codecs.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{PayloadType}
+ *
+ * This list is unmodifiable. The ->data field of the MSList points a PayloadType
+ * structure holding the codec information.
+ * It is possible to make copy of the list with ms_list_copy() in order to modify it
+ * (such as the order of codecs).
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC	const MSList *linphone_core_get_audio_codecs(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC int linphone_core_set_audio_codecs(LinphoneCore *lc, MSList *codecs);
-/* returns a MSList of PayloadType */
+
+/**
+ * Returns the list of available video codecs.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{PayloadType}
+ *
+ * This list is unmodifiable. The ->data field of the MSList points a PayloadType
+ * structure holding the codec information.
+ * It is possible to make copy of the list with ms_list_copy() in order to modify it
+ * (such as the order of codecs).
+ * @ingroup media_parameters
+**/
 LINPHONE_PUBLIC const MSList *linphone_core_get_video_codecs(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
