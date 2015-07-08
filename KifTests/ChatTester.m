@@ -259,6 +259,7 @@
 	[tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
 	[tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
 
+	[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:1.f];
 	[tester waitForViewWithAccessibilityLabel:@"Message status" value:@"delivered" traits:UIAccessibilityTraitImage];
 
 	[self goBackFromChat];
