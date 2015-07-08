@@ -1,9 +1,5 @@
 language: objective-c
 
-branches:
-  only:
-    - master
-
 env:
     global:
         - secure: "JPPcWdmNIJiR3YcIwe0LRYce6qDdsiagO+eKKAp7eVk/wD9UHbz96Ms2FFkXxPhRJB1PA6Pf8FpAzIL2YRiJL9jRtKHSvtdF1cSto+57XyBkCsw7PkMVUIxp7fg6Wiwn3H3tucF8jisIkv/Pn7R+9EqePkZSqqu3+ig5AX9ApQ4="
@@ -21,7 +17,7 @@ before_install:
     - git submodule update --init --recursive
 
 install:
-    - ./prepare.py -d i386 -G Ninja
+    - ./prepare.py -d x86_64 -G Ninja
     - make -j4 -s 1>/dev/null
     - mkdir -p $KIF_SCREENSHOTS
 
