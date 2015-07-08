@@ -118,6 +118,7 @@
 		if ([tv numberOfRowsInSection:0] == 6)
 			break;
 	}
+	[tester waitForTimeInterval:.5f];
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
 	[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:1.f];
 	for (int i = 0; i < 3; i++) {
@@ -139,7 +140,7 @@
 	[self startChatWith:[self me]];
 	// use Maximum quality to be sure that first transfer is not terminated when the third begins
 	[self uploadImageWithQuality:@"Maximum"];
-	[self uploadImageWithQuality:@"Maximum"];
+	[self uploadImageWithQuality:@"Average"];
 	[self uploadImageWithQuality:@"Minimum"];
 	UITableView *tv = [self findTableView:@"Chat list"];
 	// wait for ALL uploads to terminate...
@@ -148,6 +149,7 @@
 		if ([tv numberOfRowsInSection:0] == 6)
 			break;
 	}
+	[tester waitForTimeInterval:.5f];
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
 	ASSERT_EQ([tv numberOfRowsInSection:0], 6);
 	[self goBackFromChat];
@@ -259,7 +261,6 @@
 	[tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
 	[tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
 
-	[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:1.f];
 	[tester waitForViewWithAccessibilityLabel:@"Message status" value:@"delivered" traits:UIAccessibilityTraitImage];
 
 	[self goBackFromChat];

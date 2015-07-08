@@ -230,6 +230,7 @@ static UIFont *CELL_FONT = nil;
 	BOOL outgoing = linphone_chat_message_is_outgoing(chat);
 
 	if( !outgoing ){
+		[statusImage setAccessibilityValue:@"incoming"];
 		statusImage.hidden = TRUE; // not useful for incoming chats..
 	} else if (state== LinphoneChatMessageStateInProgress) {
 		[statusImage setImage:[UIImage imageNamed:@"chat_message_inprogress.png"]];

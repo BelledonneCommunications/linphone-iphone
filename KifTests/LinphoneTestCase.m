@@ -114,6 +114,7 @@ static bool invalidAccount = true;
 
 		[tester tapViewWithAccessibilityLabel:@"Sign in"];
 
+		[tester waitForViewWithAccessibilityLabel:@"Dialer"];
 		invalidAccount = false;
 	}
 }
