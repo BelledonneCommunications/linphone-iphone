@@ -143,11 +143,40 @@ static gboolean scroll_to_end(GtkTextView *w){
 	return FALSE;
 }
 
+static gboolean is_http_uri(const GtkTextIter *word_start) {
+	gboolean res;
+	gchar *schema = NULL;
+	GtkTextIter end = *word_start;
+	gtk_text_iter_forward_chars(&end, 7);
+	schema = gtk_text_iter_get_slice(word_start, &end);
+	res = ( g_strcmp0(schema, "http://") == 0 );
+	g_free(schema);
+	return res;
+}
+
+static gboolean is_space(gunichar ch, gpointer user_data) {
+	return g_unichar_isspace(ch);
+}
+
+static void insert_link_tags(GtkTextBuffer *buffer, const GtkTextIter *begin, const GtkTextIter *end) {
+	GtkTextIter iter = *begin;
+	while(gtk_text_iter_compare(&iter, end) < 0) {
+		if(gtk_text_iter_starts_word(&iter) && is_http_uri(&iter)) {
+			GtkTextIter uri_begin = iter;
+			if(gtk_text_iter_forward_find_char(&iter, is_space, NULL, end)) {
+				gtk_text_buffer_apply_tag_by_name(buffer, "link", &uri_begin, &iter);
+			}
+		}
+		gtk_text_iter_forward_char(&iter);
+	}
+}
+
 void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
                  gboolean me,LinphoneChatRoom *cr,LinphoneChatMessage *msg, gboolean hist){
 	GtkTextView *text=GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textview"));
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(text);
-	GtkTextIter iter;
+	GtkTextIter iter, link_start;
+	GtkTextMark *link_start_mark = NULL;
 	char *from_str=linphone_address_as_string_uri_only(from);
 	gchar *from_message=(gchar *)g_object_get_data(G_OBJECT(w),"from_message");
 	GHashTable *table=(GHashTable*)g_object_get_data(G_OBJECT(w),"table");
@@ -169,9 +198,15 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		g_object_set_data(G_OBJECT(w),"from_message",g_strdup(from_str));
 		ms_free(from_str);
 	}
+
+	link_start_mark = gtk_text_buffer_create_mark(buffer, NULL, &iter, TRUE);
 	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, linphone_chat_message_get_text(msg), -1,
 	                                         "body", me ? "me" : NULL, NULL);
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
+	gtk_text_buffer_get_iter_at_mark(buffer, &link_start, link_start_mark);
+	insert_link_tags(buffer, &link_start, &iter);
+	gtk_text_buffer_delete_mark(buffer, link_start_mark);
+
 	t=linphone_chat_message_get_time(msg);
 	switch (linphone_chat_message_get_state (msg)){
 		case LinphoneChatMessageStateInProgress:
