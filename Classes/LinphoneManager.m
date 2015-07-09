@@ -1635,7 +1635,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	LinphoneCall *currentCall = linphone_core_get_current_call(theLinphoneCore);
 	const MSList *callList = linphone_core_get_calls(theLinphoneCore);
 	if (!currentCall // no active call
-		&& callList  // at least one call in a non active state
+		&& callList // at least one call in a non active state
 		&& ms_list_find_custom((MSList *)callList, (MSCompareFunc)comp_call_state_paused, NULL)) {
 		[self startCallPausedLongRunningTask];
 	}
@@ -1991,7 +1991,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 		}
 // NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
 // NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
-#ifdef DEBUG
+#ifdef USE_APN_DEV
 #define APPMODE_SUFFIX @"dev"
 #else
 #define APPMODE_SUFFIX @"prod"
