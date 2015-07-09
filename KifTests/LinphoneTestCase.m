@@ -26,6 +26,20 @@
 	linphone_core_set_log_level(ORTP_WARNING);
 }
 
+- (void)beforeAll {
+	[super beforeAll];
+#if TARGET_IPHONE_SIMULATOR
+	[tester acknowledgeSystemAlert]; // Contact access alert
+	[tester acknowledgeSystemAlert]; // Local notification / badge alert
+#endif
+	// go to dialer
+	for (NSString *button in @[ @"Cancel", @"Back", @"Dialer" ]) {
+		if ([tester tryFindingTappableViewWithAccessibilityLabel:button error:nil]) {
+			[tester tapViewWithAccessibilityLabel:button traits:UIAccessibilityTraitButton];
+		}
+	}
+}
+
 - (NSString *)me {
 	return @"testios";
 }
@@ -45,15 +59,6 @@
     }
     return array;
 }
-
-- (void)beforeAll{
-#if TARGET_IPHONE_SIMULATOR
-	[tester acknowledgeSystemAlert]; // Contact access alert
-	[tester acknowledgeSystemAlert]; // Local notification / badge alert
-#endif
-	[super beforeAll];
-}
-
 
 static bool invalidAccount = true;
 

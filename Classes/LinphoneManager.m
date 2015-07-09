@@ -2050,7 +2050,6 @@ static void audioRouteChangeListenerCallback (
 		if( linphone_core_payload_type_is_vbr(theLinphoneCore, pt) ) {
 			linphone_core_set_payload_type_bitrate(theLinphoneCore, pt, bitrate);
 		}
-
 		codec = codec->next;
 	}
 }

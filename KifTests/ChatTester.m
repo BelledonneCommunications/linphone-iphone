@@ -229,6 +229,8 @@
 - (void)testRemoveAllChats {
 	NSArray *uuids = [self getUUIDArrayOfSize:5];
 
+	[self removeAllRooms];
+
 	for (NSString *uuid in uuids) {
 		[self startChatWith:uuid];
 		[self sendMessage:@"Test"];
