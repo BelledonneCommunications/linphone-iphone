@@ -23,56 +23,55 @@
 @synthesize backgroundNinePatch;
 @synthesize backgroundOverNinePatch;
 
-
 #pragma mark - Lifecycle Functions
 
 - (void)initUILinphoneButton {
-    self.backgroundNinePatch = [TUNinePatch ninePatchNamed:@"button_background_default"];
-    self.backgroundOverNinePatch = [TUNinePatch ninePatchNamed:@"button_background_over"];
-    [self setBackgroundImage:nil forState:UIControlStateNormal];
-    [self setBackgroundImage:nil forState:UIControlStateHighlighted];
-    [self setContentMode:UIViewContentModeRedraw];
+	self.backgroundNinePatch = [TUNinePatch ninePatchNamed:@"button_background_default"];
+	self.backgroundOverNinePatch = [TUNinePatch ninePatchNamed:@"button_background_over"];
+	[self setBackgroundImage:nil forState:UIControlStateNormal];
+	[self setBackgroundImage:nil forState:UIControlStateHighlighted];
+	[self setContentMode:UIViewContentModeRedraw];
 }
 
 - (id)init {
-    self = [super init];
-    if(self != nil) {
-        [self initUILinphoneButton];
-    }
-    return self;
+	self = [super init];
+	if (self != nil) {
+		[self initUILinphoneButton];
+	}
+	return self;
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
-    self = [super initWithCoder:aDecoder];
-    if(self != nil) {
-        [self initUILinphoneButton];
-    }
-    return self;
+	self = [super initWithCoder:aDecoder];
+	if (self != nil) {
+		[self initUILinphoneButton];
+	}
+	return self;
 }
 
 - (id)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if(self != nil) {
-        [self initUILinphoneButton];
-    }
-    return self;
+	self = [super initWithFrame:frame];
+	if (self != nil) {
+		[self initUILinphoneButton];
+	}
+	return self;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
-    [super setHighlighted:highlighted];
-    [self setNeedsDisplay];
+	[super setHighlighted:highlighted];
+	[self setNeedsDisplay];
 }
 
 - (void)drawRect:(CGRect)rect {
-    // we ignore the rect and redraw the entire view
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    if (context) {
-        if(self.highlighted) {
-            [self.backgroundOverNinePatch inContext:context drawInRect:[self bounds]];
-        } else {
-            [self.backgroundNinePatch inContext:context drawInRect:[self bounds]];   
-        }
-    }
+	// we ignore the rect and redraw the entire view
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	if (context) {
+		if (self.highlighted) {
+			[self.backgroundOverNinePatch inContext:context drawInRect:[self bounds]];
+		} else {
+			[self.backgroundNinePatch inContext:context drawInRect:[self bounds]];
+		}
+	}
 }
 
 @end

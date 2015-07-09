@@ -21,49 +21,55 @@
 
 #pragma mark - Utils
 
-- (void)setText:(NSString*)text forContactHeaderIndex:(NSInteger)idx {
-    [tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0] inTableViewWithAccessibilityIdentifier:@"Contact Name Table"];
-    [tester enterTextIntoCurrentFirstResponder:text];
+- (void)setText:(NSString *)text forContactHeaderIndex:(NSInteger)idx {
+	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]
+		inTableViewWithAccessibilityIdentifier:@"Contact Name Table"];
+	[tester enterTextIntoCurrentFirstResponder:text];
 }
 
-- (void)setText:(NSString*)text forContactNumbersIndex:(NSInteger)idx inSection:(NSInteger)section {
-    [tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:section] inTableViewWithAccessibilityIdentifier:@"Contact numbers table"];
-    [tester enterTextIntoCurrentFirstResponder:text];
+- (void)setText:(NSString *)text forContactNumbersIndex:(NSInteger)idx inSection:(NSInteger)section {
+	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:section]
+		inTableViewWithAccessibilityIdentifier:@"Contact numbers table"];
+	[tester enterTextIntoCurrentFirstResponder:text];
 }
 
-- (void)createContact:(NSString*)firstName lastName:(NSString*)lastName phoneNumber:(NSString*)phone SIPAddress:(NSString*)sip {
-    
-    XCTAssert(firstName != nil);
-    [tester tapViewWithAccessibilityLabel:@"Add contact"];
-    
-    // check that the OK button is disabled
-    [tester waitForViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton|UIAccessibilityTraitNotEnabled|UIAccessibilityTraitSelected];
-    
-    [self setText:firstName forContactHeaderIndex:0];
-    
-    // entering text should enable the "edit" button
-    [tester waitForViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton|UIAccessibilityTraitSelected];
-    
-    if( lastName )
-        [self setText:lastName forContactHeaderIndex:1];
-    
-    if ( phone ){
-        [self setText:phone forContactNumbersIndex:0 inSection:ContactSections_Number];
-    }
-    
-    if ( sip ){
-        [self setText:sip forContactNumbersIndex:0 inSection:ContactSections_Sip];
-    }
-    
-    [tester tapViewWithAccessibilityLabel:@"Edit"];
-    [tester tapViewWithAccessibilityLabel:@"Back"];
-    
+- (void)createContact:(NSString *)firstName
+			 lastName:(NSString *)lastName
+		  phoneNumber:(NSString *)phone
+		   SIPAddress:(NSString *)sip {
+
+	XCTAssert(firstName != nil);
+	[tester tapViewWithAccessibilityLabel:@"Add contact"];
+
+	// check that the OK button is disabled
+	[tester waitForViewWithAccessibilityLabel:@"Edit"
+									   traits:UIAccessibilityTraitButton | UIAccessibilityTraitNotEnabled |
+											  UIAccessibilityTraitSelected];
+
+	[self setText:firstName forContactHeaderIndex:0];
+
+	// entering text should enable the "edit" button
+	[tester waitForViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton | UIAccessibilityTraitSelected];
+
+	if (lastName)
+		[self setText:lastName forContactHeaderIndex:1];
+
+	if (phone) {
+		[self setText:phone forContactNumbersIndex:0 inSection:ContactSections_Number];
+	}
+
+	if (sip) {
+		[self setText:sip forContactNumbersIndex:0 inSection:ContactSections_Sip];
+	}
+
+	[tester tapViewWithAccessibilityLabel:@"Edit"];
+	[tester tapViewWithAccessibilityLabel:@"Back"];
 }
 
 #pragma mark - Tests
 
 - (void)testDeleteContact {
-    NSString* contactName = [self getUUID];
+	NSString *contactName = [self getUUID];
 	[self createContact:contactName lastName:@"dummy" phoneNumber:@"0102030405" SIPAddress:[self me]];
 
 	NSString *fullName = [contactName stringByAppendingString:@" dummy"];
@@ -128,14 +134,14 @@
 }
 
 - (void)testEditContact {
-    NSString* contactName = [self getUUID];
-    NSString* fullName = [contactName stringByAppendingString:@" dummy"];
-    [self createContact:contactName lastName:@"dummy" phoneNumber:nil SIPAddress:nil];
-    
-    [tester tapViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
-    
-    /* Phone number */
-    NSArray* phones = @[@"01234", @"56789"];
+	NSString *contactName = [self getUUID];
+	NSString *fullName = [contactName stringByAppendingString:@" dummy"];
+	[self createContact:contactName lastName:@"dummy" phoneNumber:nil SIPAddress:nil];
+
+	[tester tapViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
+
+	/* Phone number */
+	NSArray *phones = @[ @"01234", @"56789" ];
 	[self addEntries:phones inSection:ContactSections_Number];
 	NSArray *SIPs = @[ @"sip1", @"sip2" ];
 	[self addEntries:SIPs inSection:ContactSections_Sip];
@@ -158,10 +164,9 @@
 
 	[tester scrollViewWithAccessibilityIdentifier:@"Contact numbers table" byFractionOfSizeHorizontal:0 vertical:-0.9];
 
-    [tester tapViewWithAccessibilityLabel:@"Remove"];
-    
-    [tester waitForAbsenceOfViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
-    
+	[tester tapViewWithAccessibilityLabel:@"Remove"];
+
+	[tester waitForAbsenceOfViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
 }
 
 @end

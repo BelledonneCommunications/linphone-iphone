@@ -12,35 +12,35 @@
 #include "linphone/liblinphone_tester.h"
 #import "Utils.h"
 
-static NSString* const kAllTestsName = @"Run All tests";
+static NSString *const kAllTestsName = @"Run All tests";
 
 @implementation TestItem
 
--(id)initWithName:(NSString *)name fromSuite:(NSString *)suite {
-    self = [super init];
-    if( self ){
-        self.name = name;
-        self.suite = suite;
-        self.state = TestStateIdle;
-    }
-    return self;
+- (id)initWithName:(NSString *)name fromSuite:(NSString *)suite {
+	self = [super init];
+	if (self) {
+		self.name = name;
+		self.suite = suite;
+		self.state = TestStateIdle;
+	}
+	return self;
 }
 
-+(TestItem *)testWithName:(NSString *)name fromSuite:(NSString *)suite{
-    return [[TestItem alloc] initWithName:name fromSuite:suite];
++ (TestItem *)testWithName:(NSString *)name fromSuite:(NSString *)suite {
+	return [[TestItem alloc] initWithName:name fromSuite:suite];
 }
 
--(NSString*)description {
-    return [NSString stringWithFormat:@"{suite:'%@', test:'%@', state:%d}", _suite, _name, _state];
+- (NSString *)description {
+	return [NSString stringWithFormat:@"{suite:'%@', test:'%@', state:%d}", _suite, _name, _state];
 }
 
 @end
 
 @interface DetailViewController () {
-    NSMutableArray* _tests;
-    BOOL in_progress;
+	NSMutableArray *_tests;
+	BOOL in_progress;
 }
-@property (strong, nonatomic) UIPopoverController *masterPopoverController;
+@property(strong, nonatomic) UIPopoverController *masterPopoverController;
 - (void)configureView;
 @end
 
@@ -48,19 +48,18 @@ static NSString* const kAllTestsName = @"Run All tests";
 
 #pragma mark - Managing the detail item
 
-- (void)setDetailItem:(id)newDetailItem
-{
-    if (_detailItem != newDetailItem) {
-        _detailItem = newDetailItem;
-        
-        // Update the view.
-        [self configureView];
-        [self.tableView reloadData];
-    }
+- (void)setDetailItem:(id)newDetailItem {
+	if (_detailItem != newDetailItem) {
+		_detailItem = newDetailItem;
 
-    if (self.masterPopoverController != nil) {
-        [self.masterPopoverController dismissPopoverAnimated:YES];
-    }        
+		// Update the view.
+		[self configureView];
+		[self.tableView reloadData];
+	}
+
+	if (self.masterPopoverController != nil) {
+		[self.masterPopoverController dismissPopoverAnimated:YES];
+	}
 }
 
 - (void)addTestsFromSuite:(NSString *)suite {
@@ -74,8 +73,7 @@ static NSString* const kAllTestsName = @"Run All tests";
 	}
 }
 
-- (void)configureView
-{
+- (void)configureView {
 	_tests = [[NSMutableArray alloc] initWithCapacity:0];
 	if (self.detailItem == nil) {
 		return;
@@ -93,35 +91,31 @@ static NSString* const kAllTestsName = @"Run All tests";
 	}
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
+- (void)viewDidLoad {
+	[super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    [self configureView];
+	[self configureView];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)didReceiveMemoryWarning {
+	[super didReceiveMemoryWarning];
+	// Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Tableview
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+	return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return _tests.count;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return _tests.count;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"testCellIdentifier" forIndexPath:indexPath];
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"testCellIdentifier" forIndexPath:indexPath];
 
-    TestItem *test = _tests[indexPath.row];
+	TestItem *test = _tests[indexPath.row];
 	cell.textLabel.text = [NSString stringWithFormat:@"%@/%@", test.suite, test.name];
 	NSString *image = nil;
 	switch (test.state) {
@@ -144,16 +138,14 @@ static NSString* const kAllTestsName = @"Run All tests";
 	} else {
 		[cell.imageView setImage:nil];
 	}
-    return cell;
+	return cell;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return NO;
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+	return NO;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:FALSE];
 	if (indexPath.row == 0) {
 		// we should run all tests
@@ -167,10 +159,9 @@ static NSString* const kAllTestsName = @"Run All tests";
 	}
 }
 
-
--(void)updateItem:(NSArray*)paths withAnimation:(BOOL)animate {
-    [self.tableView reloadRowsAtIndexPaths:paths
-                          withRowAnimation:animate?UITableViewRowAnimationFade:UITableViewRowAnimationNone];
+- (void)updateItem:(NSArray *)paths withAnimation:(BOOL)animate {
+	[self.tableView reloadRowsAtIndexPaths:paths
+						  withRowAnimation:animate ? UITableViewRowAnimationFade : UITableViewRowAnimationNone];
 }
 
 - (void)launchTest:(NSArray *)paths {
@@ -215,21 +206,23 @@ static NSString* const kAllTestsName = @"Run All tests";
 	});
 }
 
-
 #pragma mark - Split view
 
-- (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController
-{
-    barButtonItem.title = NSLocalizedString(@"Master", @"Master");
-    [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
-    self.masterPopoverController = popoverController;
+- (void)splitViewController:(UISplitViewController *)splitController
+	 willHideViewController:(UIViewController *)viewController
+		  withBarButtonItem:(UIBarButtonItem *)barButtonItem
+	   forPopoverController:(UIPopoverController *)popoverController {
+	barButtonItem.title = NSLocalizedString(@"Master", @"Master");
+	[self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
+	self.masterPopoverController = popoverController;
 }
 
-- (void)splitViewController:(UISplitViewController *)splitController willShowViewController:(UIViewController *)viewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
-{
-    // Called when the view is shown again in the split view, invalidating the button and popover controller.
-    [self.navigationItem setLeftBarButtonItem:nil animated:YES];
-    self.masterPopoverController = nil;
+- (void)splitViewController:(UISplitViewController *)splitController
+	 willShowViewController:(UIViewController *)viewController
+  invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem {
+	// Called when the view is shown again in the split view, invalidating the button and popover controller.
+	[self.navigationItem setLeftBarButtonItem:nil animated:YES];
+	self.masterPopoverController = nil;
 }
 
 @end

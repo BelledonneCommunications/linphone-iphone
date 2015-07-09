@@ -26,10 +26,10 @@
 @implementation ContactSelection
 
 static ContactSelectionMode sSelectionMode = ContactSelectionModeNone;
-static NSString* sAddAddress = nil;
-static NSString* sSipFilter = nil;
+static NSString *sAddAddress = nil;
+static NSString *sSipFilter = nil;
 static BOOL sEnableEmailFilter = FALSE;
-static NSString* sNameOrEmailFilter;
+static NSString *sNameOrEmailFilter;
 
 + (void)setSelectionMode:(ContactSelectionMode)selectionMode {
 	sSelectionMode = selectionMode;
@@ -39,24 +39,24 @@ static NSString* sNameOrEmailFilter;
 	return sSelectionMode;
 }
 
-+ (void)setAddAddress:(NSString*)address {
-	if(sAddAddress != nil) {
-		sAddAddress= nil;
++ (void)setAddAddress:(NSString *)address {
+	if (sAddAddress != nil) {
+		sAddAddress = nil;
 	}
-	if(address != nil) {
+	if (address != nil) {
 		sAddAddress = address;
 	}
 }
 
-+ (NSString*)getAddAddress {
++ (NSString *)getAddAddress {
 	return sAddAddress;
 }
 
-+ (void)setSipFilter:(NSString*)domain {
++ (void)setSipFilter:(NSString *)domain {
 	sSipFilter = domain;
 }
 
-+ (NSString*)getSipFilter {
++ (NSString *)getSipFilter {
 	return sSipFilter;
 }
 
@@ -68,14 +68,13 @@ static NSString* sNameOrEmailFilter;
 	return sEnableEmailFilter;
 }
 
-+ (void)setNameOrEmailFilter:(NSString*)fuzzyName {
++ (void)setNameOrEmailFilter:(NSString *)fuzzyName {
 	sNameOrEmailFilter = fuzzyName;
 }
 
-+ (NSString*)getNameOrEmailFilter {
++ (NSString *)getNameOrEmailFilter {
 	return sNameOrEmailFilter;
 }
-
 
 @end
 
@@ -92,13 +91,7 @@ static NSString* sNameOrEmailFilter;
 @synthesize addButton;
 @synthesize toolBar;
 
-typedef enum _HistoryView {
-	History_All,
-	History_Linphone,
-	History_Search,
-	History_MAX
-} HistoryView;
-
+typedef enum _HistoryView { History_All, History_Linphone, History_Search, History_MAX } HistoryView;
 
 #pragma mark - Lifecycle Functions
 
@@ -106,26 +99,24 @@ typedef enum _HistoryView {
 	return [super initWithNibName:@"ContactsViewController" bundle:[NSBundle mainBundle]];
 }
 
-
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
-	if(compositeDescription == nil) {
-		compositeDescription = [[UICompositeViewDescription alloc]	init:@"Contacts"
-										content:@"ContactsViewController"
-										stateBar:nil
-										stateBarEnabled:false
-										tabBar:@"UIMainBar"
-										tabBarEnabled:true
-										fullscreen:false
-										landscapeMode:[LinphoneManager runningOnIpad]
-										portraitMode:true];
+	if (compositeDescription == nil) {
+		compositeDescription = [[UICompositeViewDescription alloc] init:@"Contacts"
+																content:@"ContactsViewController"
+															   stateBar:nil
+														stateBarEnabled:false
+																 tabBar:@"UIMainBar"
+														  tabBarEnabled:true
+															 fullscreen:false
+														  landscapeMode:[LinphoneManager runningOnIpad]
+														   portraitMode:true];
 	}
 	return compositeDescription;
 }
-
 
 #pragma mark - ViewController Functions
 
@@ -134,27 +125,29 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)relayoutTableView {
-	CGRect subViewFrame= self.view.frame;
+	CGRect subViewFrame = self.view.frame;
 	// let the toolBar be visible
 	subViewFrame.origin.y += self.toolBar.frame.size.height;
 	subViewFrame.size.height -= self.toolBar.frame.size.height;
-	[UIView animateWithDuration:0.2 animations:^{
-		self.tableView.frame = subViewFrame;
-	}];
+	[UIView animateWithDuration:0.2
+					 animations:^{
+					   self.tableView.frame = subViewFrame;
+					 }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
 	// cannot change search bar icon nor text font from the interface builder...
-	// [_searchBar setImage:[UIImage imageNamed:@"contact_search.png" ] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+	// [_searchBar setImage:[UIImage imageNamed:@"contact_search.png" ] forSearchBarIcon:UISearchBarIconSearch
+	// state:UIControlStateNormal];
 	// UITextField *searchText = [_searchBar valueForKey:@"_searchField"];
 	// [searchText setFont:[UIFont fontWithName:@"CustomFont" size:12]];
 	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
 
 	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
-	if( use_system && !self.sysViewController){// use system contacts
-		ABPeoplePickerNavigationController* picker = [[ABPeoplePickerNavigationController alloc] init];
+	if (use_system && !self.sysViewController) { // use system contacts
+		ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
 		picker.peoplePickerDelegate = self;
 		picker.view.frame = self.view.frame;
 
@@ -163,8 +156,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		self.sysViewController = picker;
 		self.searchBar.hidden = TRUE;
 
-	} else if( !use_system && !self.tableController ){
-
+	} else if (!use_system && !self.tableController) {
 
 		self.tableController = [[ContactsTableViewController alloc] init];
 		self.tableView = [[UITableView alloc] init];
@@ -174,14 +166,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self relayoutTableView];
 
 		self.tableView.dataSource = self.tableController;
-		self.tableView.delegate   = self.tableController;
+		self.tableView.delegate = self.tableController;
 
-		self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight |
-										   UIViewAutoresizingFlexibleWidth |
-									   UIViewAutoresizingFlexibleTopMargin |
-									UIViewAutoresizingFlexibleBottomMargin |
-									  UIViewAutoresizingFlexibleLeftMargin |
-									 UIViewAutoresizingFlexibleRightMargin;
+		self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth |
+										  UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin |
+										  UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
 
 		[self.view addSubview:tableView];
 		[self update];
@@ -193,13 +182,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	if(![FastAddressBook isAuthorized]) {
-		UIAlertView* error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Address book",nil)
-														message:NSLocalizedString(@"You must authorize the application to have access to address book.\n"
-																				  "Toggle the application in Settings > Privacy > Contacts",nil)
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"Continue",nil)
-											  otherButtonTitles:nil];
+	if (![FastAddressBook isAuthorized]) {
+		UIAlertView *error = [[UIAlertView alloc]
+				initWithTitle:NSLocalizedString(@"Address book", nil)
+					  message:NSLocalizedString(@"You must authorize the application to have access to address book.\n"
+												 "Toggle the application in Settings > Privacy > Contacts",
+												nil)
+					 delegate:nil
+			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+			otherButtonTitles:nil];
 		[error show];
 		[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
 	}
@@ -218,7 +209,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Set selected+over background: IB lack !
 	[linphoneButton setBackgroundImage:[UIImage imageNamed:@"contacts_linphone_selected.png"]
-				 forState:(UIControlStateHighlighted | UIControlStateSelected)];
+							  forState:(UIControlStateHighlighted | UIControlStateSelected)];
 
 	[linphoneButton setTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
 					forState:UIControlStateNormal];
@@ -227,19 +218,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Set selected+over background: IB lack !
 	[allButton setBackgroundImage:[UIImage imageNamed:@"contacts_all_selected.png"]
-					forState:(UIControlStateHighlighted | UIControlStateSelected)];
+						 forState:(UIControlStateHighlighted | UIControlStateSelected)];
 
 	[LinphoneUtils buttonFixStates:allButton];
 
 	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-	[tableController.tableView setBackgroundView:nil]; // Can't do it in Xib: issue with ios4
+	[tableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4
 }
-
 
 #pragma mark -
 
 - (void)changeView:(HistoryView)view {
-	if(view == History_All) {
+	if (view == History_All) {
 		[ContactSelection setSipFilter:nil];
 		[ContactSelection enableEmailFilter:FALSE];
 		[tableController loadData];
@@ -248,7 +238,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		allButton.selected = FALSE;
 	}
 
-	if(view == History_Linphone) {
+	if (view == History_Linphone) {
 		[ContactSelection setSipFilter:[LinphoneManager instance].contactFilter];
 		[ContactSelection enableEmailFilter:FALSE];
 		[tableController loadData];
@@ -260,17 +250,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)refreshButtons {
 	switch ([ContactSelection getSelectionMode]) {
-		case ContactSelectionModePhone:
-		case ContactSelectionModeMessage:
-			[addButton setHidden:TRUE];
-			[backButton setHidden:FALSE];
-			break;
-		default:
-			[addButton setHidden:FALSE];
-			[backButton setHidden:TRUE];
-			break;
+	case ContactSelectionModePhone:
+	case ContactSelectionModeMessage:
+		[addButton setHidden:TRUE];
+		[backButton setHidden:FALSE];
+		break;
+	default:
+		[addButton setHidden:FALSE];
+		[backButton setHidden:TRUE];
+		break;
 	}
-	if([ContactSelection getSipFilter]) {
+	if ([ContactSelection getSipFilter]) {
 		allButton.selected = FALSE;
 		linphoneButton.selected = TRUE;
 	} else {
@@ -284,22 +274,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[tableController loadData];
 }
 
-
 #pragma mark - Action Functions
 
 - (IBAction)onAllClick:(id)event {
-	[self changeView: History_All];
+	[self changeView:History_All];
 }
 
 - (IBAction)onLinphoneClick:(id)event {
-	[self changeView: History_Linphone];
+	[self changeView:History_Linphone];
 }
 
 - (IBAction)onAddContactClick:(id)event {
 	// Go to Contact details view
-	ContactDetailsViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE], ContactDetailsViewController);
-	if(controller != nil) {
-		if([ContactSelection getAddAddress] == nil) {
+	ContactDetailsViewController *controller = DYNAMIC_CAST(
+		[[PhoneMainView instance] changeCurrentView:[ContactDetailsViewController compositeViewDescription] push:TRUE],
+		ContactDetailsViewController);
+	if (controller != nil) {
+		if ([ContactSelection getAddAddress] == nil) {
 			[controller newContact];
 		} else {
 			[controller newContact:[ContactSelection getAddAddress]];
@@ -310,7 +301,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onBackClick:(id)event {
 	[[PhoneMainView instance] popCurrentView];
 }
-
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	[self searchBar:searchBar textDidChange:nil];
@@ -325,11 +315,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self relayoutTableView];
 }
 
-
 #pragma mark - ABPeoplePickerDelegate
 
--(void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
-{
+- (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker {
 	[[PhoneMainView instance] popCurrentView];
 	return;
 }
@@ -337,7 +325,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
 	  shouldContinueAfterSelectingPerson:(ABRecordRef)person {
 	return true;
-
 }
 
 - (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
@@ -346,12 +333,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 							  identifier:(ABMultiValueIdentifier)identifier {
 
 	CFTypeRef multiValue = ABRecordCopyValue(person, property);
-	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue,identifier);
+	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue, identifier);
 	NSString *phoneNumber = (NSString *)CFBridgingRelease(ABMultiValueCopyValueAtIndex(multiValue, valueIdx));
 	// Go to dialer view
-	DialerViewController *controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
-	if(controller != nil) {
-		[controller call:phoneNumber displayName:(NSString*)CFBridgingRelease(ABRecordCopyCompositeName(person))];
+	DialerViewController *controller =
+		DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]],
+					 DialerViewController);
+	if (controller != nil) {
+		[controller call:phoneNumber displayName:(NSString *)CFBridgingRelease(ABRecordCopyCompositeName(person))];
 	}
 	CFRelease(multiValue);
 	return false;
@@ -368,15 +357,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
-    [searchBar setShowsCancelButton:FALSE animated:TRUE];
+	[searchBar setShowsCancelButton:FALSE animated:TRUE];
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-    [searchBar setShowsCancelButton:TRUE animated:TRUE];
+	[searchBar setShowsCancelButton:TRUE animated:TRUE];
 }
 
--(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    [searchBar resignFirstResponder];
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+	[searchBar resignFirstResponder];
 }
 
 - (void)viewDidUnload {

@@ -6,7 +6,6 @@
 //
 //
 
-
 #import "WizardTester.h"
 #import <KIF/KIF.h>
 
@@ -25,35 +24,33 @@
 	}
 }
 
-- (void)afterEach{
+- (void)afterEach {
 	[super afterEach];
 	[tester tapViewWithAccessibilityLabel:@"Dialer"];
 }
 
-#pragma mark - State 
+#pragma mark - State
 
-+ (void)switchToValidAccountWithTester:(KIFTestCase*)testCase {
++ (void)switchToValidAccountWithTester:(KIFTestCase *)testCase {
 }
 
 #pragma mark - Utilities
 
-- (void)_linphoneLogin:(NSString*)username withPW:(NSString*)pw {
-    [tester tapViewWithAccessibilityLabel:@"Start"];
-    [tester tapViewWithAccessibilityLabel:@"Sign in linphone.org account"];
-    
-    [tester enterText:username intoViewWithAccessibilityLabel:@"Username"];
-    [tester enterText:pw intoViewWithAccessibilityLabel:@"Password"];
-    
-    [tester tapViewWithAccessibilityLabel:@"Sign in"];
+- (void)_linphoneLogin:(NSString *)username withPW:(NSString *)pw {
+	[tester tapViewWithAccessibilityLabel:@"Start"];
+	[tester tapViewWithAccessibilityLabel:@"Sign in linphone.org account"];
+
+	[tester enterText:username intoViewWithAccessibilityLabel:@"Username"];
+	[tester enterText:pw intoViewWithAccessibilityLabel:@"Password"];
+
+	[tester tapViewWithAccessibilityLabel:@"Sign in"];
 }
 
+- (void)_externalLoginWithProtocol:(NSString *)protocol {
 
-
-- (void)_externalLoginWithProtocol:(NSString*)protocol {
-    
-    [self setInvalidAccountSet:true];
-    [tester tapViewWithAccessibilityLabel:@"Start"];
-    [tester tapViewWithAccessibilityLabel:@"Sign in SIP account"];
+	[self setInvalidAccountSet:true];
+	[tester tapViewWithAccessibilityLabel:@"Start"];
+	[tester tapViewWithAccessibilityLabel:@"Sign in SIP account"];
 
 	[tester enterText:[self me] intoViewWithAccessibilityLabel:@"Username"];
 	[tester enterText:@"testtest" intoViewWithAccessibilityLabel:@"Password"];

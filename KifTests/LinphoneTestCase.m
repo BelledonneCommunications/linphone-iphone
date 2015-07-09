@@ -45,41 +45,41 @@
 }
 
 - (NSString *)accountDomain {
-    return @"sip.linphone.org";
+	return @"sip.linphone.org";
 }
 
-- (NSString*)getUUID {
-    return [[[NSUUID UUID] UUIDString] substringToIndex:8];
+- (NSString *)getUUID {
+	return [[[NSUUID UUID] UUIDString] substringToIndex:8];
 }
 
 - (NSArray *)getUUIDArrayOfSize:(size_t)size {
-    NSMutableArray* array = [NSMutableArray arrayWithCapacity:size];
-    for (NSInteger i=0; i<size; i++) {
-        [array setObject:[self getUUID] atIndexedSubscript:i];
-    }
-    return array;
+	NSMutableArray *array = [NSMutableArray arrayWithCapacity:size];
+	for (NSInteger i = 0; i < size; i++) {
+		[array setObject:[self getUUID] atIndexedSubscript:i];
+	}
+	return array;
 }
 
 static bool invalidAccount = true;
 
 - (void)setInvalidAccountSet:(BOOL)invalidAccountSet {
-    invalidAccount = invalidAccountSet;
+	invalidAccount = invalidAccountSet;
 }
 
 - (BOOL)invalidAccountSet {
-    return invalidAccount;
+	return invalidAccount;
 }
 
 - (BOOL)hasValidProxyConfig {
-    LinphoneCore* lc = [LinphoneManager getLc];
-    const MSList* proxies = linphone_core_get_proxy_config_list(lc);
-    BOOL isOK = false;
-    while(proxies){
-        LinphoneProxyConfig* cfg = (LinphoneProxyConfig*)proxies->data;
-        const char*   domain = linphone_proxy_config_get_domain(cfg);
-        const char* identity = linphone_proxy_config_get_identity(cfg);
-        LinphoneAddress* addr = linphone_core_interpret_url(lc, identity);
-        const char* username = linphone_address_get_username(addr);
+	LinphoneCore *lc = [LinphoneManager getLc];
+	const MSList *proxies = linphone_core_get_proxy_config_list(lc);
+	BOOL isOK = false;
+	while (proxies) {
+		LinphoneProxyConfig *cfg = (LinphoneProxyConfig *)proxies->data;
+		const char *domain = linphone_proxy_config_get_domain(cfg);
+		const char *identity = linphone_proxy_config_get_identity(cfg);
+		LinphoneAddress *addr = linphone_core_interpret_url(lc, identity);
+		const char *username = linphone_address_get_username(addr);
 
 		if (addr && (username && strcmp(username, [[self me] UTF8String]) == 0) &&
 			(domain && strcmp(domain, [[self accountDomain] UTF8String]) == 0) &&
@@ -97,13 +97,13 @@ static bool invalidAccount = true;
 }
 
 - (void)switchToValidAccountIfNeeded {
-    [UIView setAnimationsEnabled:false];
+	[UIView setAnimationsEnabled:false];
 
 	if (invalidAccount && ![self hasValidProxyConfig]) {
 
 		[tester tapViewWithAccessibilityLabel:@"Settings"];
 		[tester tapViewWithAccessibilityLabel:@"Run assistant"];
-        [tester waitForTimeInterval:0.5];
+		[tester waitForTimeInterval:0.5];
 		if ([tester tryFindingViewWithAccessibilityLabel:@"Launch Wizard" error:nil]) {
 			[tester tapViewWithAccessibilityLabel:@"Launch Wizard"];
 			[tester waitForTimeInterval:0.5];

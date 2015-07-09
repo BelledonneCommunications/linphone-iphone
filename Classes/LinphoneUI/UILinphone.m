@@ -26,103 +26,101 @@
 @implementation UIColor (LightAndDark)
 
 - (UIColor *)lumColor:(float)mult {
-    float hsbH, hsbS, hsbB;
-    float rgbaR, rgbaG, rgbaB, rgbaA;
+	float hsbH, hsbS, hsbB;
+	float rgbaR, rgbaG, rgbaB, rgbaA;
 
-    // Get RGB
-    CGColorRef cgColor = [self CGColor];
-    CGColorSpaceRef cgColorSpace = CGColorGetColorSpace(cgColor);
-    if(CGColorSpaceGetModel(cgColorSpace) != kCGColorSpaceModelRGB) {
-        LOGW(@"Can't convert not RGB color");
-        return self;
-    } else {
-        const CGFloat *colors = CGColorGetComponents(cgColor);
-        rgbaR = colors[0];
-        rgbaG = colors[1];
-        rgbaB = colors[2];
-        rgbaA = CGColorGetAlpha(cgColor);
-    }
+	// Get RGB
+	CGColorRef cgColor = [self CGColor];
+	CGColorSpaceRef cgColorSpace = CGColorGetColorSpace(cgColor);
+	if (CGColorSpaceGetModel(cgColorSpace) != kCGColorSpaceModelRGB) {
+		LOGW(@"Can't convert not RGB color");
+		return self;
+	} else {
+		const CGFloat *colors = CGColorGetComponents(cgColor);
+		rgbaR = colors[0];
+		rgbaG = colors[1];
+		rgbaB = colors[2];
+		rgbaA = CGColorGetAlpha(cgColor);
+	}
 
-    RGB2HSL(rgbaR, rgbaG, rgbaB, &hsbH, &hsbS, &hsbB);
+	RGB2HSL(rgbaR, rgbaG, rgbaB, &hsbH, &hsbS, &hsbB);
 
-    hsbB = MIN(MAX(hsbB * mult, 0.0), 1.0);
+	hsbB = MIN(MAX(hsbB * mult, 0.0), 1.0);
 
-    HSL2RGB(hsbH, hsbS, hsbB, &rgbaR, &rgbaG, &rgbaB);
+	HSL2RGB(hsbH, hsbS, hsbB, &rgbaR, &rgbaG, &rgbaB);
 
-    return [UIColor colorWithRed:rgbaR green:rgbaG blue:rgbaB alpha:rgbaA];
+	return [UIColor colorWithRed:rgbaR green:rgbaG blue:rgbaB alpha:rgbaA];
 }
 
 - (UIColor *)adjustHue:(float)hm saturation:(float)sm brightness:(float)bm alpha:(float)am {
-    float hsbH, hsbS, hsbB;
-    float rgbaR, rgbaG, rgbaB, rgbaA;
+	float hsbH, hsbS, hsbB;
+	float rgbaR, rgbaG, rgbaB, rgbaA;
 
+	// Get RGB
+	CGColorRef cgColor = [self CGColor];
+	CGColorSpaceRef cgColorSpace = CGColorGetColorSpace(cgColor);
+	if (CGColorSpaceGetModel(cgColorSpace) != kCGColorSpaceModelRGB) {
+		LOGW(@"Can't convert not RGB color");
+		return self;
+	} else {
+		const CGFloat *colors = CGColorGetComponents(cgColor);
+		rgbaR = colors[0];
+		rgbaG = colors[1];
+		rgbaB = colors[2];
+		rgbaA = CGColorGetAlpha(cgColor);
+	}
 
-    // Get RGB
-    CGColorRef cgColor = [self CGColor];
-    CGColorSpaceRef cgColorSpace = CGColorGetColorSpace(cgColor);
-    if(CGColorSpaceGetModel(cgColorSpace) != kCGColorSpaceModelRGB) {
-        LOGW(@"Can't convert not RGB color");
-        return self;
-    } else {
-        const CGFloat *colors = CGColorGetComponents(cgColor);
-        rgbaR = colors[0];
-        rgbaG = colors[1];
-        rgbaB = colors[2];
-        rgbaA = CGColorGetAlpha(cgColor);
-    }
+	RGB2HSL(rgbaR, rgbaG, rgbaB, &hsbH, &hsbS, &hsbB);
 
-    RGB2HSL(rgbaR, rgbaG, rgbaB, &hsbH, &hsbS, &hsbB);
+	hsbH = MIN(MAX(hsbH + hm, 0.0), 1.0);
+	hsbS = MIN(MAX(hsbS + sm, 0.0), 1.0);
+	hsbB = MIN(MAX(hsbB + bm, 0.0), 1.0);
+	rgbaA = MIN(MAX(rgbaA + am, 0.0), 1.0);
 
-    hsbH = MIN(MAX(hsbH + hm, 0.0), 1.0);
-    hsbS = MIN(MAX(hsbS + sm, 0.0), 1.0);
-    hsbB = MIN(MAX(hsbB + bm, 0.0), 1.0);
-    rgbaA = MIN(MAX(rgbaA + am, 0.0), 1.0);
+	HSL2RGB(hsbH, hsbS, hsbB, &rgbaR, &rgbaG, &rgbaB);
 
-    HSL2RGB(hsbH, hsbS, hsbB, &rgbaR, &rgbaG, &rgbaB);
-
-    return [UIColor colorWithRed:rgbaR green:rgbaG blue:rgbaB alpha:rgbaA];
+	return [UIColor colorWithRed:rgbaR green:rgbaG blue:rgbaB alpha:rgbaA];
 }
 
 - (UIColor *)lighterColor {
-    return [self lumColor:1.3];
+	return [self lumColor:1.3];
 }
 
 - (UIColor *)darkerColor {
-    return [self lumColor:0.75];
+	return [self lumColor:0.75];
 }
 
 @end
 
 @implementation UIImage (ForceDecode)
 
-+ (UIImage *)decodedImageWithImage:(UIImage *)image
-{
-    CGImageRef imageRef = image.CGImage;
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef context = CGBitmapContextCreate(NULL,
-                                                 CGImageGetWidth(imageRef),
-                                                 CGImageGetHeight(imageRef),
-                                                 8,
-                                                 // Just always return width * 4 will be enough
-                                                 CGImageGetWidth(imageRef) * 4,
-                                                 // System only supports RGB, set explicitly
-                                                 colorSpace,
-                                                 // Makes system don't need to do extra conversion when displayed.
-                                                 // NOTE: here we remove the alpha channel for performance. Most of the time, images loaded
-                                                 //       from the network are jpeg with no alpha channel. As a TODO, finding a way to detect
-                                                 //       if alpha channel is necessary would be nice.
-                                                 kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Little);
-    CGColorSpaceRelease(colorSpace);
-    if (!context) return nil;
++ (UIImage *)decodedImageWithImage:(UIImage *)image {
+	CGImageRef imageRef = image.CGImage;
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+	CGContextRef context = CGBitmapContextCreate(
+		NULL, CGImageGetWidth(imageRef), CGImageGetHeight(imageRef), 8,
+		// Just always return width * 4 will be enough
+		CGImageGetWidth(imageRef) * 4,
+		// System only supports RGB, set explicitly
+		colorSpace,
+		// Makes system don't need to do extra conversion when displayed.
+		// NOTE: here we remove the alpha channel for performance. Most of the time, images loaded
+		//       from the network are jpeg with no alpha channel. As a TODO, finding a way to detect
+		//       if alpha channel is necessary would be nice.
+		kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Little);
+	CGColorSpaceRelease(colorSpace);
+	if (!context)
+		return nil;
 
-    CGRect rect = (CGRect){CGPointZero,{CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}};
-    CGContextDrawImage(context, rect, imageRef);
-    CGImageRef decompressedImageRef = CGBitmapContextCreateImage(context);
-    CGContextRelease(context);
+	CGRect rect = (CGRect){CGPointZero, {CGImageGetWidth(imageRef), CGImageGetHeight(imageRef)}};
+	CGContextDrawImage(context, rect, imageRef);
+	CGImageRef decompressedImageRef = CGBitmapContextCreateImage(context);
+	CGContextRelease(context);
 
-    UIImage *decompressedImage = [[UIImage alloc] initWithCGImage:decompressedImageRef scale:image.scale orientation:image.imageOrientation];
-    CGImageRelease(decompressedImageRef);
-    return decompressedImage;
+	UIImage *decompressedImage =
+		[[UIImage alloc] initWithCGImage:decompressedImageRef scale:image.scale orientation:image.imageOrientation];
+	CGImageRelease(decompressedImageRef);
+	return decompressedImage;
 }
 
 @end

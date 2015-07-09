@@ -8,23 +8,19 @@
 
 #import "DTObjectBlockExecutor.h"
 
-
 @implementation DTObjectBlockExecutor
 
-+ (id)blockExecutorWithDeallocBlock:(void(^)())block
-{
-    DTObjectBlockExecutor *executor = [[DTObjectBlockExecutor alloc] init];
-    executor.deallocBlock = block; // copy
-    return executor;
++ (id)blockExecutorWithDeallocBlock:(void (^)())block {
+	DTObjectBlockExecutor *executor = [[DTObjectBlockExecutor alloc] init];
+	executor.deallocBlock = block; // copy
+	return executor;
 }
 
-- (void)dealloc
-{
-    if (_deallocBlock)
-    {
-        _deallocBlock();
-        _deallocBlock = nil;
-    }
+- (void)dealloc {
+	if (_deallocBlock) {
+		_deallocBlock();
+		_deallocBlock = nil;
+	}
 }
 
 @end

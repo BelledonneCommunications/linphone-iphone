@@ -23,58 +23,56 @@
 
 @synthesize backgroundNinePatch;
 
-
 #pragma mark - Lifecycle Functions
 
 - (void)initUILinphoneTextField {
-    self.backgroundNinePatch = [TUNinePatch ninePatchNamed:@"field_background"];
-    self.background = nil;
-    [self setContentMode:UIViewContentModeRedraw];
+	self.backgroundNinePatch = [TUNinePatch ninePatchNamed:@"field_background"];
+	self.background = nil;
+	[self setContentMode:UIViewContentModeRedraw];
 }
 
 - (id)init {
-    self = [super init];
-    if(self != nil) {
-        [self initUILinphoneTextField];
-    }
-    return self;
+	self = [super init];
+	if (self != nil) {
+		[self initUILinphoneTextField];
+	}
+	return self;
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
-    self = [super initWithCoder:aDecoder];
-    if(self != nil) {
-        [self initUILinphoneTextField];
-    }
-    return self;
+	self = [super initWithCoder:aDecoder];
+	if (self != nil) {
+		[self initUILinphoneTextField];
+	}
+	return self;
 }
 
 - (id)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if(self != nil) {
-        [self initUILinphoneTextField];
-    }
-    return self;
+	self = [super initWithFrame:frame];
+	if (self != nil) {
+		[self initUILinphoneTextField];
+	}
+	return self;
 }
 
-
 - (CGRect)textRectForBounds:(CGRect)bounds {
-    return CGRectInset(bounds, 6, 4);
+	return CGRectInset(bounds, 6, 4);
 }
 
 - (CGRect)placeholderRectForBounds:(CGRect)bounds {
-    return CGRectInset(bounds, 6, 4);
+	return CGRectInset(bounds, 6, 4);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds {
-    return CGRectInset(bounds, 6, 4);
+	return CGRectInset(bounds, 6, 4);
 }
 
 - (void)drawRect:(CGRect)rect {
-    // we ignore the rect and redraw the entire view
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    if (context) {
-        [self.backgroundNinePatch inContext:context drawInRect:[self bounds]];
-    }
+	// we ignore the rect and redraw the entire view
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	if (context) {
+		[self.backgroundNinePatch inContext:context drawInRect:[self bounds]];
+	}
 }
 
 @end

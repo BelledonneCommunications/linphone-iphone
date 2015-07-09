@@ -21,75 +21,72 @@
 
 @implementation UILoadingImageView
 
-
 @synthesize waitIndicatorView;
-
 
 #pragma mark - Lifecycle Functions
 
 - (void)initUIRemoteImageView {
-    waitIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    waitIndicatorView.hidesWhenStopped = TRUE;
-    waitIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
-                                        UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-    waitIndicatorView.center = self.center;
-    [self addSubview:waitIndicatorView];
+	waitIndicatorView =
+		[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+	waitIndicatorView.hidesWhenStopped = TRUE;
+	waitIndicatorView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin |
+										 UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+	waitIndicatorView.center = self.center;
+	[self addSubview:waitIndicatorView];
 }
 
 - (id)init {
-    self = [super init];
-    if(self != nil) {
-        [self initUIRemoteImageView];
-    }
-    return self;
+	self = [super init];
+	if (self != nil) {
+		[self initUIRemoteImageView];
+	}
+	return self;
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
-    self = [super initWithCoder:aDecoder];
-    if(self != nil) {
-        [self initUIRemoteImageView];
-    }
-    return self;
+	self = [super initWithCoder:aDecoder];
+	if (self != nil) {
+		[self initUIRemoteImageView];
+	}
+	return self;
 }
 
 - (id)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if(self != nil) {
-        [self initUIRemoteImageView];
-    }
-    return self;
+	self = [super initWithFrame:frame];
+	if (self != nil) {
+		[self initUIRemoteImageView];
+	}
+	return self;
 }
 
 - (id)initWithImage:(UIImage *)image {
-    self = [super initWithImage:image];
-    if(self != nil) {
-        [self initUIRemoteImageView];
-    }
-    return self;
+	self = [super initWithImage:image];
+	if (self != nil) {
+		[self initUIRemoteImageView];
+	}
+	return self;
 }
 
 - (id)initWithImage:(UIImage *)image highlightedImage:(UIImage *)highlightedImage {
-    self = [super initWithImage:image highlightedImage:highlightedImage];
-    if(self != nil) {
-        [self initUIRemoteImageView];
-    }
-    return self;
+	self = [super initWithImage:image highlightedImage:highlightedImage];
+	if (self != nil) {
+		[self initUIRemoteImageView];
+	}
+	return self;
 }
-
-
 
 #pragma mark -
 
 - (void)startLoading {
-    [waitIndicatorView startAnimating];
+	[waitIndicatorView startAnimating];
 }
 
 - (void)stopLoading {
-    [waitIndicatorView stopAnimating];
+	[waitIndicatorView stopAnimating];
 }
 
 - (BOOL)isLoading {
-    return [waitIndicatorView isAnimating];
+	return [waitIndicatorView isAnimating];
 }
 
 @end

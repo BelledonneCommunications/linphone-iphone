@@ -4,18 +4,18 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU Library General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */ 
+ */
 
 #import "UIContactDetailsFooter.h"
 
@@ -24,55 +24,51 @@
 @synthesize removeButton;
 @synthesize contactDetailsDelegate;
 
-
 #pragma mark - Lifecycle Functions
 
 - (void)initUIContactDetailsFooter {
 }
 
 - (id)init {
-    self = [super init];
-    if(self != nil) {
-        [self initUIContactDetailsFooter];
-    }
-    return self;
+	self = [super init];
+	if (self != nil) {
+		[self initUIContactDetailsFooter];
+	}
+	return self;
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
-    self = [super initWithCoder:aDecoder];
-    if(self != nil) {
-        [self initUIContactDetailsFooter];
-    }
-    return self;
+	self = [super initWithCoder:aDecoder];
+	if (self != nil) {
+		[self initUIContactDetailsFooter];
+	}
+	return self;
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if(self != nil) {
-        [self initUIContactDetailsFooter];
-    }
-    return self;
+	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	if (self != nil) {
+		[self initUIContactDetailsFooter];
+	}
+	return self;
 }
-
-
 
 #pragma mark - Action Functions
 
 - (IBAction)onRemoveClick:(id)event {
-    if(contactDetailsDelegate != nil) {
-        [contactDetailsDelegate onRemove:event];
-    }
+	if (contactDetailsDelegate != nil) {
+		[contactDetailsDelegate onRemove:event];
+	}
 }
-
 
 #pragma mark -
 
 + (CGFloat)height:(BOOL)editing {
-    if(editing) {
-        return 80.0f;
-    } else {
-        return 0.000001f;  // Hack UITableView = 0
-    }
+	if (editing) {
+		return 80.0f;
+	} else {
+		return 0.000001f; // Hack UITableView = 0
+	}
 }
 
 @end

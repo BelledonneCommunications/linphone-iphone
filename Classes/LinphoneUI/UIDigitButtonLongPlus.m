@@ -27,7 +27,8 @@
 }
 
 - (void)onLongTouch {
-	NSString* newAddress = [[self.addressField.text substringToIndex: [self.addressField.text length]-1]  stringByAppendingString:@"+"];
+	NSString *newAddress =
+		[[self.addressField.text substringToIndex:[self.addressField.text length] - 1] stringByAppendingString:@"+"];
 	[self.addressField setText:newAddress];
 }
 
