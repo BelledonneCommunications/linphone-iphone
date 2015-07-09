@@ -2989,7 +2989,14 @@ LINPHONE_PUBLIC bool_t linphone_core_audio_adaptive_jittcomp_enabled(LinphoneCor
 
 LINPHONE_PUBLIC int linphone_core_get_audio_jittcomp(LinphoneCore *lc);
 
-LINPHONE_PUBLIC void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value);
+/**
+ * Sets the nominal audio jitter buffer size in milliseconds.
+ * The value takes effect immediately for all running and pending calls, if any.
+ * A value of 0 disables the jitter buffer.
+ *
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int milliseconds);
 
 /**
  * Enable or disable the video adaptive jitter compensation.
@@ -3009,7 +3016,14 @@ LINPHONE_PUBLIC bool_t linphone_core_video_adaptive_jittcomp_enabled(LinphoneCor
 
 LINPHONE_PUBLIC int linphone_core_get_video_jittcomp(LinphoneCore *lc);
 
-LINPHONE_PUBLIC void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value);
+/**
+ * Sets the nominal video jitter buffer size in milliseconds.
+ * The value takes effect immediately for all running and pending calls, if any.
+ * A value of 0 disables the jitter buffer.
+ *
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_core_set_video_jittcomp(LinphoneCore *lc, int milliseconds);
 
 LINPHONE_PUBLIC	int linphone_core_get_audio_port(const LinphoneCore *lc);
 

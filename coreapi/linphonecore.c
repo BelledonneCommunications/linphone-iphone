@@ -1929,30 +1929,16 @@ static void apply_jitter_value(LinphoneCore *lc, int value, MSFormatType stype){
 	}
 }
 
-/**
- * Sets the nominal audio jitter buffer size in milliseconds.
- * The value takes effect immediately for all running and pending calls, if any.
- * A value of 0 disables the jitter buffer.
- *
- * @ingroup media_parameters
-**/
-void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value)
+void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int milliseconds)
 {
-	lc->rtp_conf.audio_jitt_comp=value;
-	apply_jitter_value(lc, value, MSAudio);
+	lc->rtp_conf.audio_jitt_comp=milliseconds;
+	apply_jitter_value(lc, milliseconds, MSAudio);
 }
 
-/**
- * Sets the nominal video jitter buffer size in milliseconds.
- * The value takes effect immediately for all running and pending calls, if any.
- * A value of 0 disables the jitter buffer.
- *
- * @ingroup media_parameters
-**/
-void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value)
+void linphone_core_set_video_jittcomp(LinphoneCore *lc, int milliseconds)
 {
-	lc->rtp_conf.video_jitt_comp=value;
-	apply_jitter_value(lc, value, MSVideo);
+	lc->rtp_conf.video_jitt_comp=milliseconds;
+	apply_jitter_value(lc, milliseconds, MSVideo);
 }
 
 void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc,bool_t rtp_no_xmit_on_audio_mute){
