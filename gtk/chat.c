@@ -406,6 +406,55 @@ static GdkColor *_linphone_gtk_chatroom_get_link_color(GtkWidget *chatview) {
 	return (GdkColor *)g_value_get_boxed(&color_value);
 }
 
+static void open_uri(const char *uri) {
+#ifdef __linux
+	gchar *argv[3] = {
+		g_strdup("xdg-open"),
+		g_strdup(uri),
+		NULL
+	};
+	g_spawn_async(
+		NULL,
+		argv,
+		NULL,
+		G_SPAWN_SEARCH_PATH,
+		NULL,
+		NULL,
+		NULL,
+		NULL
+	);
+	
+	g_free(argv[0]);
+	g_free(argv[1]);
+#endif
+}
+
+static gboolean link_event_handler(GtkTextTag *tag, GObject *object,GdkEvent *event, GtkTextIter *iter, gpointer user_data) {
+	switch(event->type) {
+		case GDK_BUTTON_PRESS:
+			if(((GdkEventButton *)event)->button == 1) {
+				gchar *uri = NULL;
+				GtkTextIter uri_begin = *iter;
+				GtkTextIter uri_end = *iter;
+				gtk_text_iter_backward_to_tag_toggle(&uri_begin, tag);
+				gtk_text_iter_forward_to_tag_toggle(&uri_end, tag);
+				uri = gtk_text_iter_get_slice(&uri_begin, &uri_end);
+				open_uri(uri);
+				g_free(uri);
+			}
+			break;
+		case GDK_ENTER_NOTIFY:
+			printf("Hovering link\n");
+			break;
+		case GDK_LEAVE_NOTIFY:
+			printf("Leaving link\n");
+			break;
+		default:
+			break;
+	}
+	return FALSE;
+}
+
 GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with){
 	GtkWidget *chat_view=linphone_gtk_create_widget("main","chatroom_frame");
 	GtkWidget *main_window=linphone_gtk_get_main_window();
@@ -420,6 +469,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	MSList *messages;
 	GHashTable *table;
 	char *with_str;
+	GtkTextTag *tmp_tag;
 
 	with_str=linphone_address_as_string_uri_only(with);
 	gtk_notebook_append_page(notebook,chat_view,create_tab_chat_header(cr,with));
@@ -459,12 +509,13 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 		"justification", GTK_JUSTIFY_RIGHT,
 		NULL);
 
-	gtk_text_buffer_create_tag(
+	tmp_tag = gtk_text_buffer_create_tag(
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 		"link",
 		"underline", PANGO_UNDERLINE_SINGLE,
 		"foreground_gdk", _linphone_gtk_chatroom_get_link_color(chat_view),
 		NULL);
+	g_signal_connect(G_OBJECT(tmp_tag), "event", G_CALLBACK(link_event_handler), NULL);
 	
 	messages = linphone_chat_room_get_history(cr,NB_MSG_HIST);
 	display_history_message(chat_view,messages,with);
