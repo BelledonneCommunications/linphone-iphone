@@ -1,8 +1,6 @@
-# Linphone on iPhone
-
 [![Build Status](https://travis-ci.org/BelledonneCommunications/linphone-iphone.svg?branch=master)](https://travis-ci.org/BelledonneCommunications/linphone-iphone)
 
-## BUILDING THE SDK
+# BUILDING THE SDK
 
 Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts.
 
@@ -30,7 +28,7 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
 
 **The resulting sdk is in `liblinphone-sdk/` root directory.**
 
-## BUILDING THE APPLICATION
+# BUILDING THE APPLICATION
 
 After the SDK is built, just open the Linphone Xcode project with Xcode, and press `Run`.
 
@@ -40,25 +38,58 @@ After the SDK is built, just open the Linphone Xcode project with Xcode, and pre
  Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_OPENH264 positioned in Xcode project.
  Before embedding these 4 codecs in the final application, make sure to have the right to do so.
 
-## TESTING THE APPLICATION
+# TESTING THE APPLICATION
 
 We are using the KIF framework to test the UI of Linphone. It is used as a submodule (instead of CocoaPods) for ease.
 
 Simply press `Command + U` and the default simulator / device will launch and try to pass all the tests.
 
 
-## LIMITATIONS, KNOWN BUGS
+# LIMITATIONS, KNOWN BUGS
 
 * Video capture does not work in simulator (not implemented by simulator?).
 
-## DEBUGING THE SDK
+# DEBUGING THE SDK
 
 Sometime it can be useful to step into liblinphone SDK functions. To allow Xcode to enable breakpoint within liblinphone, SDK must be built with debug symbols.
 To add debug symbol to liblinphone SDK, use:
 
         ./prepare.py -d && make
 
-## DEBUGING MEDIASTREAMER2
+# DEBUGING MEDIASTREAMER2
 
 For iOS specific media development like audio video capture/playback it may be interesting to use `mediastream` test tool.
 The project `submodule/liblinphone.xcodeproj` can be used for this purpose.
+
+# Quick UI reference for Linphone iOS:
+
+- The app is contained in a window, which resides in the MainStoryboard file.
+- The delegate is set to LinphoneAppDelegate in main.m, in the UIApplicationMain() by passing its class
+- Basic layout:
+
+MainStoryboard
+        |
+        | (rootViewController)
+        |
+    PhoneMainView ---> view #--> app background
+        |                   |
+        |                   #--> statusbar background
+        |
+        | (mainViewController)
+        |
+    UICompositeViewController : TPMultilayout
+                |
+                #---> view  #--> stateBar
+                            |
+                            #--> contentView
+                            |
+                            #--> tabBar
+
+
+When the app is started, the phoneMainView gets asked to transition to the Dialer view or the Wizard view.
+PhoneMainView exposes the -changeCurrentView: method, which will setup its
+Any Linphone view is actually presented in the UICompositeViewController, with or without a stateBar and tabBar.
+
+The UICompositeViewController consists of 3 areas laid out vertically. From top to bottom: StateBar, Content and TabBar.
+The TabBar is usually the UIMainBar, which is used as a navigation controller: clicking on each of the buttons will trigger
+a transition to another "view".
