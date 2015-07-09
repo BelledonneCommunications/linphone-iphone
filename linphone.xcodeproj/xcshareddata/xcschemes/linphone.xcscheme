@@ -29,8 +29,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F0F951FF1A6AEB1000254160"
-               BuildableName = "KifTests.xctest"
-               BlueprintName = "KifTests"
+               BuildableName = "linphone Tests.xctest"
+               BlueprintName = "linphone Tests"
                ReferencedContainer = "container:linphone.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,8 +47,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F0F951FF1A6AEB1000254160"
-               BuildableName = "KifTests.xctest"
-               BlueprintName = "KifTests"
+               BuildableName = "linphone Tests.xctest"
+               BlueprintName = "linphone Tests"
                ReferencedContainer = "container:linphone.xcodeproj">
             </BuildableReference>
          </TestableReference>

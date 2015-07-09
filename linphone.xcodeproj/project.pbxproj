@@ -108,6 +108,45 @@
 		57F005C415EE2CCF00914747 /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C315EE2CCF00914747 /* linphonerc */; };
 		57F005C815EE2D9200914747 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C615EE2D9200914747 /* linphonerc-factory */; };
 		57F005CA15EE2D9200914747 /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 57F005C715EE2D9200914747 /* linphonerc-factory~ipad */; };
+		630589E71B4E810900EFAE36 /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589DF1B4E810900EFAE36 /* ChatTester.m */; };
+		630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E11B4E810900EFAE36 /* ContactsTester.m */; };
+		630589EA1B4E810900EFAE36 /* LinphoneTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E41B4E810900EFAE36 /* LinphoneTestCase.m */; };
+		630589EB1B4E810900EFAE36 /* WizardTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E61B4E810900EFAE36 /* WizardTester.m */; };
+		63058A0B1B4E81B700EFAE36 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63058A0A1B4E81B700EFAE36 /* Info.plist */; };
+		63058A241B4E821E00EFAE36 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A0E1B4E821E00EFAE36 /* AppDelegate.m */; };
+		63058A251B4E821E00EFAE36 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63058A0F1B4E821E00EFAE36 /* InfoPlist.strings */; };
+		63058A261B4E821E00EFAE36 /* Main_iPad.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63058A111B4E821E00EFAE36 /* Main_iPad.strings */; };
+		63058A271B4E821E00EFAE36 /* Main_iPhone.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63058A131B4E821E00EFAE36 /* Main_iPhone.strings */; };
+		63058A281B4E821E00EFAE36 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63058A151B4E821E00EFAE36 /* Main_iPad.storyboard */; };
+		63058A291B4E821E00EFAE36 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63058A171B4E821E00EFAE36 /* Main_iPhone.storyboard */; };
+		63058A2A1B4E821E00EFAE36 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A1A1B4E821E00EFAE36 /* DetailViewController.m */; };
+		63058A2B1B4E821E00EFAE36 /* LinphoneTester-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63058A1C1B4E821E00EFAE36 /* LinphoneTester-Info.plist */; };
+		63058A2C1B4E821E00EFAE36 /* LogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A1F1B4E821E00EFAE36 /* LogsViewController.m */; };
+		63058A2D1B4E821E00EFAE36 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A201B4E821E00EFAE36 /* main.m */; };
+		63058A2E1B4E821E00EFAE36 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A221B4E821E00EFAE36 /* MasterViewController.m */; };
+		63058A2F1B4E821E00EFAE36 /* TesterImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63058A231B4E821E00EFAE36 /* TesterImages.xcassets */; };
+		63058A3B1B4E822F00EFAE36 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63058A311B4E822F00EFAE36 /* InfoPlist.strings */; };
+		63058A3C1B4E822F00EFAE36 /* DTObjectBlockExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A341B4E822F00EFAE36 /* DTObjectBlockExecutor.m */; };
+		63058A3E1B4E822F00EFAE36 /* LinphoneTester_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A381B4E822F00EFAE36 /* LinphoneTester_Tests.m */; };
+		63058A3F1B4E823000EFAE36 /* NSObject+DTRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A3A1B4E822F00EFAE36 /* NSObject+DTRuntime.m */; };
+		63058A4F1B4E835200EFAE36 /* libKIF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630589FD1B4E816A00EFAE36 /* libKIF.a */; };
+		63058ACF1B4E922500EFAE36 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC81B4E922500EFAE36 /* certificates */; };
+		63058AD01B4E922500EFAE36 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC91B4E922500EFAE36 /* flexisip */; };
+		63058AD11B4E922500EFAE36 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACA1B4E922500EFAE36 /* images */; };
+		63058AD21B4E922500EFAE36 /* marie_xml in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACB1B4E922500EFAE36 /* marie_xml */; };
+		63058AD31B4E922500EFAE36 /* messages.db in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACC1B4E922500EFAE36 /* messages.db */; };
+		63058AD41B4E922500EFAE36 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACD1B4E922500EFAE36 /* rcfiles */; };
+		63058AD51B4E922500EFAE36 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACE1B4E922500EFAE36 /* sounds */; };
+		63058AD61B4E92D400EFAE36 /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
+		63058ADA1B4E937300EFAE36 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC81B4E922500EFAE36 /* certificates */; };
+		63058ADB1B4E937300EFAE36 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC91B4E922500EFAE36 /* flexisip */; };
+		63058ADC1B4E937300EFAE36 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACA1B4E922500EFAE36 /* images */; };
+		63058ADD1B4E937300EFAE36 /* marie_xml in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACB1B4E922500EFAE36 /* marie_xml */; };
+		63058ADE1B4E937300EFAE36 /* messages.db in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACC1B4E922500EFAE36 /* messages.db */; };
+		63058ADF1B4E937300EFAE36 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACD1B4E922500EFAE36 /* rcfiles */; };
+		63058AE01B4E937300EFAE36 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACE1B4E922500EFAE36 /* sounds */; };
+		63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
+		63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
 		63158FAD1B468E0E00969917 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = 63158FAC1B468E0E00969917 /* ImageOptim.sh */; };
 		631C4FB119D2A8F2004BFE77 /* UIDigitButtonLongPlus.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB019D2A8F2004BFE77 /* UIDigitButtonLongPlus.m */; };
@@ -675,8 +714,6 @@
 		D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
 		D3F9A9DB15AEEB940045320F /* history_notification.png in Resources */ = {isa = PBXBuildFile; fileRef = D3F9A9DA15AEEB940045320F /* history_notification.png */; };
 		D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */; };
-		F0022B091A370915009B51FD /* messages.db in Resources */ = {isa = PBXBuildFile; fileRef = F0022B081A370915009B51FD /* messages.db */; };
-		F0022B0A1A370915009B51FD /* messages.db in Resources */ = {isa = PBXBuildFile; fileRef = F0022B081A370915009B51FD /* messages.db */; };
 		F01A77EB18ED989B00E287CA /* shortring.caf in Resources */ = {isa = PBXBuildFile; fileRef = F01A77EA18ED989B00E287CA /* shortring.caf */; };
 		F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
 		F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
@@ -690,19 +727,11 @@
 		F070E6371A2622EC00E17AFD /* incall_padding_right_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = F070E6311A2622EC00E17AFD /* incall_padding_right_landscape.png */; };
 		F070E6381A2622EC00E17AFD /* incall_padding_right.png in Resources */ = {isa = PBXBuildFile; fileRef = F070E6321A2622EC00E17AFD /* incall_padding_right.png */; };
 		F088488A19FF8C41007FFCF3 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F088488D19FF8C41007FFCF3 /* UIContactCell.xib */; };
-		F08BDC3D1A35E60F006210C9 /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
 		F08D468D1AA86849001E8CB5 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
 		F08F118519C09C6B007D70C2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B3318C0CF7000C4D7FE /* XCTest.framework */; };
 		F08F118619C09C6B007D70C2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		F08F118719C09C6B007D70C2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		F08F118D19C09C6B007D70C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F08F118B19C09C6B007D70C2 /* InfoPlist.strings */; };
-		F08F118F19C09C6B007D70C2 /* LinphoneTester_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F118E19C09C6B007D70C2 /* LinphoneTester_Tests.m */; };
-		F08F119919C09D88007D70C2 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = F08F119819C09D88007D70C2 /* flexisip */; };
-		F08F119A19C09D88007D70C2 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = F08F119819C09D88007D70C2 /* flexisip */; };
-		F08F119D19C0A65B007D70C2 /* NSObject+DTRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119C19C0A65B007D70C2 /* NSObject+DTRuntime.m */; };
-		F08F11A019C0A6CB007D70C2 /* DTObjectBlockExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = F08F119F19C0A6CB007D70C2 /* DTObjectBlockExecutor.m */; };
 		F0938159188E629800A55DFA /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F0938158188E629800A55DFA /* iTunesArtwork */; };
-		F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0A1CE071A6B056E001CA2BE /* ChatTester.m */; };
 		F0A54B0C1AD56F4600C22733 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B9718C0DB6F00C4D7FE /* libc++.dylib */; };
 		F0A54B0D1AD56F4600C22733 /* libstdc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B9418C0DAE100C4D7FE /* libstdc++.dylib */; };
 		F0B026F31AA710AF00FF49F7 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
@@ -715,14 +744,6 @@
 		F0BB8BD61936208100974404 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		F0BB8BD71936208100974404 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		F0BB8BD81936208100974404 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		F0BB8BDE1936208100974404 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BDC1936208100974404 /* InfoPlist.strings */; };
-		F0BB8BE01936208100974404 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BDF1936208100974404 /* main.m */; };
-		F0BB8BE41936208100974404 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BE31936208100974404 /* AppDelegate.m */; };
-		F0BB8BE71936208200974404 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BE51936208100974404 /* Main_iPhone.storyboard */; };
-		F0BB8BEA1936208200974404 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BE81936208200974404 /* Main_iPad.storyboard */; };
-		F0BB8BED1936208200974404 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BEC1936208200974404 /* MasterViewController.m */; };
-		F0BB8BF01936208200974404 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0BB8BEF1936208200974404 /* DetailViewController.m */; };
-		F0BB8BF21936208200974404 /* TesterImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8BF11936208200974404 /* TesterImages.xcassets */; };
 		F0BB8C10193623F300974404 /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
 		F0BB8C121936240300974404 /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C111936240300974404 /* libcunit.a */; };
 		F0BB8C131936242400974404 /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
@@ -752,13 +773,6 @@
 		F0BB8C301936246600974404 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2274402E106F335E006EC466 /* AudioToolbox.framework */; };
 		F0BB8C331936247C00974404 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		F0BB8C35193624C800974404 /* libresolv.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C34193624C800974404 /* libresolv.9.dylib */; };
-		F0BB8C3819362C1500974404 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3719362C1500974404 /* rcfiles */; };
-		F0BB8C3C19362C2200974404 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3919362C2200974404 /* certificates */; };
-		F0BB8C3D19362C2200974404 /* images in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3A19362C2200974404 /* images */; };
-		F0BB8C3E19362C2200974404 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3B19362C2200974404 /* sounds */; };
-		F0BB8C45193630CA00974404 /* local_tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C40193630CA00974404 /* local_tester_hosts */; };
-		F0BB8C46193630CA00974404 /* marie_xml in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C41193630CA00974404 /* marie_xml */; };
-		F0BB8C47193630CA00974404 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C42193630CA00974404 /* tester_hosts */; };
 		F0BB8C4C193631D200974404 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; };
 		F0BB8C4D193631DF00974404 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224567C1107B968500F10948 /* AVFoundation.framework */; };
 		F0C1F8EB1A277ADA009402C9 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F0C1F8EA1A277ADA009402C9 /* LaunchScreen.xib */; };
@@ -770,26 +784,63 @@
 		F0C1F9141A28781F009402C9 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = F0C1F90A1A28781F009402C9 /* logo.png */; };
 		F0C1F9151A28781F009402C9 /* strech-bottom.png in Resources */ = {isa = PBXBuildFile; fileRef = F0C1F90B1A28781F009402C9 /* strech-bottom.png */; };
 		F0C1F9161A28781F009402C9 /* strech-top.png in Resources */ = {isa = PBXBuildFile; fileRef = F0C1F90C1A28781F009402C9 /* strech-top.png */; };
-		F0C1F91D1A2CA345009402C9 /* local_tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C40193630CA00974404 /* local_tester_hosts */; };
-		F0C1F91E1A2CA352009402C9 /* marie_xml in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C41193630CA00974404 /* marie_xml */; };
-		F0C1F91F1A2CA354009402C9 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C42193630CA00974404 /* tester_hosts */; };
-		F0C1F9201A2CA358009402C9 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3719362C1500974404 /* rcfiles */; };
-		F0C1F9211A2CA35A009402C9 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3B19362C2200974404 /* sounds */; };
-		F0C1F9221A2CA35C009402C9 /* images in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3A19362C2200974404 /* images */; };
-		F0C1F9231A2CA35E009402C9 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = F0BB8C3919362C2200974404 /* certificates */; };
-		F0C773921A94828900E0C486 /* libKIF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0C773871A94822700E0C486 /* libKIF.a */; };
-		F0F952121A6AECD300254160 /* WizardTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F0F952111A6AECD300254160 /* WizardTester.m */; };
 		F0FF66AC1ACAEF4F008A4486 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0FF66AA1ACAEEB0008A4486 /* IOKit.framework */; };
 		F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DB911475562600DEE054 /* liblinphone.a */; };
 		F84015BF1939FE37006ABAB5 /* test_failed.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BC1939FE37006ABAB5 /* test_failed.png */; };
 		F84015C01939FE37006ABAB5 /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BD1939FE37006ABAB5 /* test_inprogress.png */; };
 		F84015C11939FE37006ABAB5 /* test_passed.png in Resources */ = {isa = PBXBuildFile; fileRef = F84015BE1939FE37006ABAB5 /* test_passed.png */; };
-		F84015C7193B4E34006ABAB5 /* LogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F84015C6193B4E34006ABAB5 /* LogsViewController.m */; };
-		F844AB141A93E3A200428306 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = F844AB131A93E3A200428306 /* ContactsTester.m */; };
-		F85554481A6DA2F400A9F915 /* LinphoneTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		630589FC1B4E816A00EFAE36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EABD46AA1857A0C700A5F081;
+			remoteInfo = KIF;
+		};
+		630589FE1B4E816A00EFAE36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB72047C1680DDAD00278DA2;
+			remoteInfo = "KIF-OCUnit";
+		};
+		63058A001B4E816A00EFAE36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB60ECC1177F8C83005A041A;
+			remoteInfo = "Test Host";
+		};
+		63058A021B4E816A00EFAE36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EABD46CD1857A0F300A5F081;
+			remoteInfo = "KIF Tests";
+		};
+		63058A041B4E816A00EFAE36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EB60ECEB177F8DB3005A041A;
+			remoteInfo = "KIF Tests-OCUnit";
+		};
+		63058A061B4E816A00EFAE36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9CC9673B1AD4B1B600576D13;
+			remoteInfo = KIFFramework;
+		};
+		63058A4D1B4E832500EFAE36 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = EABD46791857A0C700A5F081;
+			remoteInfo = KIF;
+		};
 		D3554ED015CA79AA00478841 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */;
@@ -824,48 +875,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = F0BB8BD41936208100974404;
 			remoteInfo = LinphoneTester;
-		};
-		F0C773861A94822700E0C486 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EABD46AA1857A0C700A5F081;
-			remoteInfo = KIF;
-		};
-		F0C773881A94822700E0C486 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EB72047C1680DDAD00278DA2;
-			remoteInfo = "KIF-OCUnit";
-		};
-		F0C7738A1A94822700E0C486 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EB60ECC1177F8C83005A041A;
-			remoteInfo = "Test Host";
-		};
-		F0C7738C1A94822700E0C486 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EABD46CD1857A0F300A5F081;
-			remoteInfo = "KIF Tests";
-		};
-		F0C7738E1A94822700E0C486 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EB60ECEB177F8DB3005A041A;
-			remoteInfo = "KIF Tests-OCUnit";
-		};
-		F0C773901A94827E00E0C486 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = EABD46791857A0C700A5F081;
-			remoteInfo = KIF;
 		};
 		F0F952061A6AEB1000254160 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1014,6 +1023,52 @@
 		57F005C315EE2CCF00914747 /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = linphonerc; path = Resources/linphonerc; sourceTree = "<group>"; };
 		57F005C615EE2D9200914747 /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory"; path = "Resources/linphonerc-factory"; sourceTree = "<group>"; };
 		57F005C715EE2D9200914747 /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "linphonerc-factory~ipad"; path = "Resources/linphonerc-factory~ipad"; sourceTree = "<group>"; };
+		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
+		630589DF1B4E810900EFAE36 /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
+		630589E01B4E810900EFAE36 /* ContactsTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTester.h; sourceTree = "<group>"; };
+		630589E11B4E810900EFAE36 /* ContactsTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTester.m; sourceTree = "<group>"; };
+		630589E31B4E810900EFAE36 /* LinphoneTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneTestCase.h; sourceTree = "<group>"; };
+		630589E41B4E810900EFAE36 /* LinphoneTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneTestCase.m; sourceTree = "<group>"; };
+		630589E51B4E810900EFAE36 /* WizardTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WizardTester.h; sourceTree = "<group>"; };
+		630589E61B4E810900EFAE36 /* WizardTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WizardTester.m; sourceTree = "<group>"; };
+		630589F21B4E816900EFAE36 /* KIF.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KIF.xcodeproj; path = Classes/KIF/KIF.xcodeproj; sourceTree = SOURCE_ROOT; };
+		63058A0A1B4E81B700EFAE36 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		63058A0D1B4E821E00EFAE36 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		63058A0E1B4E821E00EFAE36 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		63058A101B4E821E00EFAE36 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		63058A121B4E821E00EFAE36 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main_iPad.strings; sourceTree = "<group>"; };
+		63058A141B4E821E00EFAE36 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main_iPhone.strings; sourceTree = "<group>"; };
+		63058A161B4E821E00EFAE36 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		63058A181B4E821E00EFAE36 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		63058A191B4E821E00EFAE36 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		63058A1A1B4E821E00EFAE36 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		63058A1B1B4E821E00EFAE36 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		63058A1C1B4E821E00EFAE36 /* LinphoneTester-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "LinphoneTester-Info.plist"; sourceTree = "<group>"; };
+		63058A1D1B4E821E00EFAE36 /* LinphoneTester-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LinphoneTester-Prefix.pch"; sourceTree = "<group>"; };
+		63058A1E1B4E821E00EFAE36 /* LogsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogsViewController.h; sourceTree = "<group>"; };
+		63058A1F1B4E821E00EFAE36 /* LogsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogsViewController.m; sourceTree = "<group>"; };
+		63058A201B4E821E00EFAE36 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		63058A211B4E821E00EFAE36 /* MasterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
+		63058A221B4E821E00EFAE36 /* MasterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
+		63058A231B4E821E00EFAE36 /* TesterImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = TesterImages.xcassets; sourceTree = "<group>"; };
+		63058A321B4E822F00EFAE36 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		63058A331B4E822F00EFAE36 /* DTObjectBlockExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTObjectBlockExecutor.h; sourceTree = "<group>"; };
+		63058A341B4E822F00EFAE36 /* DTObjectBlockExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTObjectBlockExecutor.m; sourceTree = "<group>"; };
+		63058A351B4E822F00EFAE36 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		63058A381B4E822F00EFAE36 /* LinphoneTester_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneTester_Tests.m; sourceTree = "<group>"; };
+		63058A391B4E822F00EFAE36 /* NSObject+DTRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+DTRuntime.h"; sourceTree = "<group>"; };
+		63058A3A1B4E822F00EFAE36 /* NSObject+DTRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+DTRuntime.m"; sourceTree = "<group>"; };
+		63058A401B4E82C400EFAE36 /* LinphoneTesterTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "LinphoneTesterTests-Info.plist"; sourceTree = "<group>"; };
+		63058A411B4E82C400EFAE36 /* LinphoneTesterTests-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LinphoneTesterTests-Prefix.pch"; sourceTree = "<group>"; };
+		63058AC81B4E922500EFAE36 /* certificates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = certificates; path = ../submodules/linphone/tester/certificates; sourceTree = "<group>"; };
+		63058AC91B4E922500EFAE36 /* flexisip */ = {isa = PBXFileReference; lastKnownFileType = folder; name = flexisip; path = ../submodules/linphone/tester/flexisip; sourceTree = "<group>"; };
+		63058ACA1B4E922500EFAE36 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../submodules/linphone/tester/images; sourceTree = "<group>"; };
+		63058ACB1B4E922500EFAE36 /* marie_xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = marie_xml; path = ../submodules/linphone/tester/marie_xml; sourceTree = "<group>"; };
+		63058ACC1B4E922500EFAE36 /* messages.db */ = {isa = PBXFileReference; lastKnownFileType = file; name = messages.db; path = ../submodules/linphone/tester/messages.db; sourceTree = "<group>"; };
+		63058ACD1B4E922500EFAE36 /* rcfiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = rcfiles; path = ../submodules/linphone/tester/rcfiles; sourceTree = "<group>"; };
+		63058ACE1B4E922500EFAE36 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = ../submodules/linphone/tester/sounds; sourceTree = "<group>"; };
+		63058AE11B4E93A100EFAE36 /* tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tester_hosts; path = submodules/linphone/tester/tester_hosts; sourceTree = SOURCE_ROOT; };
+		63058AE41B4E952E00EFAE36 /* share */ = {isa = PBXFileReference; lastKnownFileType = folder; name = share; path = "../liblinphone-sdk/apple-darwin/share"; sourceTree = "<group>"; };
 		630CF5551AF7CE1500539F7A /* UITextField+DoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+DoneButton.h"; sourceTree = "<group>"; };
 		630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+DoneButton.m"; sourceTree = "<group>"; };
 		63158FAC1B468E0E00969917 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ImageOptim.sh; path = Tools/ImageOptim.sh; sourceTree = "<group>"; };
@@ -1645,7 +1700,6 @@
 		D3F9A9DA15AEEB940045320F /* history_notification.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = history_notification.png; path = Resources/history_notification.png; sourceTree = "<group>"; };
 		D3F9A9EC15AF277D0045320F /* UACellBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UACellBackgroundView.h; path = Utils/UACellBackgroundView/UACellBackgroundView.h; sourceTree = "<group>"; };
 		D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UACellBackgroundView.m; path = Utils/UACellBackgroundView/UACellBackgroundView.m; sourceTree = "<group>"; };
-		F0022B081A370915009B51FD /* messages.db */ = {isa = PBXFileReference; lastKnownFileType = file; name = messages.db; path = submodules/linphone/tester/messages.db; sourceTree = SOURCE_ROOT; };
 		F0181B6B18BF7B1200A9A357 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		F01A77EA18ED989B00E287CA /* shortring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = shortring.caf; path = Resources/shortring.caf; sourceTree = "<group>"; };
 		F03A9B3318C0CF7000C4D7FE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -1667,16 +1721,7 @@
 		F070E6321A2622EC00E17AFD /* incall_padding_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = incall_padding_right.png; path = Resources/incall_padding_right.png; sourceTree = "<group>"; };
 		F088488C19FF8C41007FFCF3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIContactCell.xib; sourceTree = "<group>"; };
 		F088488F19FF8C44007FFCF3 /* fr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIContactCell.strings; sourceTree = "<group>"; };
-		F08F118419C09C6A007D70C2 /* LinphoneTester Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LinphoneTester Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F08F118A19C09C6B007D70C2 /* LinphoneTester Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LinphoneTester Tests-Info.plist"; sourceTree = "<group>"; };
-		F08F118C19C09C6B007D70C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F08F118E19C09C6B007D70C2 /* LinphoneTester_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LinphoneTester_Tests.m; sourceTree = "<group>"; };
-		F08F119019C09C6B007D70C2 /* LinphoneTester Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LinphoneTester Tests-Prefix.pch"; sourceTree = "<group>"; };
-		F08F119819C09D88007D70C2 /* flexisip */ = {isa = PBXFileReference; lastKnownFileType = folder; name = flexisip; path = submodules/linphone/tester/flexisip; sourceTree = SOURCE_ROOT; };
-		F08F119B19C0A65A007D70C2 /* NSObject+DTRuntime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+DTRuntime.h"; sourceTree = "<group>"; };
-		F08F119C19C0A65B007D70C2 /* NSObject+DTRuntime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+DTRuntime.m"; sourceTree = "<group>"; };
-		F08F119E19C0A6CB007D70C2 /* DTObjectBlockExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTObjectBlockExecutor.h; sourceTree = "<group>"; };
-		F08F119F19C0A6CB007D70C2 /* DTObjectBlockExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTObjectBlockExecutor.m; sourceTree = "<group>"; };
+		F08F118419C09C6A007D70C2 /* liblinphoneTester Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "liblinphoneTester Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0938158188E629800A55DFA /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; path = iTunesArtwork; sourceTree = "<group>"; };
 		F09548181883F15300E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ChatRoomViewController.xib; sourceTree = "<group>"; };
 		F09548191883F15300E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ChatViewController.xib; sourceTree = "<group>"; };
@@ -1749,9 +1794,6 @@
 		F095485C1883F68800E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = "ru.lproj/WizardViewController~ipad.strings"; sourceTree = "<group>"; };
 		F095485D1883F6E700E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/WizardViews.strings; sourceTree = "<group>"; };
 		F095485E1883F6EA00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/WizardViews.strings; sourceTree = "<group>"; };
-		F0A1CE061A6B056E001CA2BE /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
-		F0A1CE071A6B056E001CA2BE /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
-		F0A1CE091A6B05A4001CA2BE /* WizardTester.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WizardTester.h; sourceTree = "<group>"; };
 		F0ADFCF91A78EB83004F1102 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = Resources/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F0AF06F01A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AboutViewController.strings; sourceTree = "<group>"; };
 		F0AF06F11A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ChatRoomViewController.strings; sourceTree = "<group>"; };
@@ -1787,10 +1829,6 @@
 		F0AF070F1A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/WizardViewController.strings; sourceTree = "<group>"; };
 		F0AF07101A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = "ar.lproj/WizardViewController~ipad.strings"; sourceTree = "<group>"; };
 		F0AF07111A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/WizardViews.strings; sourceTree = "<group>"; };
-		F0AF07121A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main_iPad.strings; sourceTree = "<group>"; };
-		F0AF07131A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main_iPhone.strings; sourceTree = "<group>"; };
-		F0AF07151A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F0AF07161A24BA780086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F0B026F21AA710AF00FF49F7 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		F0B4FB5C1A65550B00637027 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Resources/Images.xcassets; sourceTree = "<group>"; };
 		F0B89C2118DC89E30050B60E /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
@@ -1798,31 +1836,11 @@
 		F0B89C2518DC973E0050B60E /* wizard_linphone_create.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_linphone_create.rc; path = Resources/wizard_linphone_create.rc; sourceTree = "<group>"; };
 		F0B89C2618DC973E0050B60E /* wizard_linphone_existing.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_linphone_existing.rc; path = Resources/wizard_linphone_existing.rc; sourceTree = "<group>"; };
 		F0B89C2718DC973E0050B60E /* wizard_remote.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = wizard_remote.rc; path = Resources/wizard_remote.rc; sourceTree = "<group>"; };
-		F0BB8BD51936208100974404 /* LinphoneTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LinphoneTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F0BB8BDB1936208100974404 /* LinphoneTester-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LinphoneTester-Info.plist"; sourceTree = "<group>"; };
-		F0BB8BDD1936208100974404 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		F0BB8BDF1936208100974404 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		F0BB8BE11936208100974404 /* LinphoneTester-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LinphoneTester-Prefix.pch"; sourceTree = "<group>"; };
-		F0BB8BE21936208100974404 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		F0BB8BE31936208100974404 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		F0BB8BE61936208100974404 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
-		F0BB8BE91936208200974404 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
-		F0BB8BEB1936208200974404 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
-		F0BB8BEC1936208200974404 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
-		F0BB8BEE1936208200974404 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		F0BB8BEF1936208200974404 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
-		F0BB8BF11936208200974404 /* TesterImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = TesterImages.xcassets; sourceTree = "<group>"; };
+		F0BB8BD51936208100974404 /* liblinphoneTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = liblinphoneTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0BB8C0F193623F200974404 /* liblinphonetester.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphonetester.a; path = "liblinphone-sdk/apple-darwin/lib/liblinphonetester.a"; sourceTree = "<group>"; };
 		F0BB8C111936240300974404 /* libcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcunit.a; path = "liblinphone-sdk/apple-darwin/lib/libcunit.a"; sourceTree = "<group>"; };
 		F0BB8C311936246600974404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		F0BB8C34193624C800974404 /* libresolv.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.9.dylib; path = usr/lib/libresolv.9.dylib; sourceTree = SDKROOT; };
-		F0BB8C3719362C1500974404 /* rcfiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = rcfiles; path = submodules/linphone/tester/rcfiles; sourceTree = SOURCE_ROOT; };
-		F0BB8C3919362C2200974404 /* certificates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = certificates; path = submodules/linphone/tester/certificates; sourceTree = SOURCE_ROOT; };
-		F0BB8C3A19362C2200974404 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = submodules/linphone/tester/images; sourceTree = SOURCE_ROOT; };
-		F0BB8C3B19362C2200974404 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = submodules/linphone/tester/sounds; sourceTree = SOURCE_ROOT; };
-		F0BB8C40193630CA00974404 /* local_tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = local_tester_hosts; path = submodules/linphone/tester/local_tester_hosts; sourceTree = SOURCE_ROOT; };
-		F0BB8C41193630CA00974404 /* marie_xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = marie_xml; path = submodules/linphone/tester/marie_xml; sourceTree = SOURCE_ROOT; };
-		F0BB8C42193630CA00974404 /* tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tester_hosts; path = submodules/linphone/tester/tester_hosts; sourceTree = SOURCE_ROOT; };
 		F0BB8C4A193631B300974404 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		F0C1F8EA1A277ADA009402C9 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		F0C1F9041A28781F009402C9 /* background-launch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background-launch.png"; sourceTree = "<group>"; };
@@ -1833,20 +1851,11 @@
 		F0C1F90A1A28781F009402C9 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		F0C1F90B1A28781F009402C9 /* strech-bottom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "strech-bottom.png"; sourceTree = "<group>"; };
 		F0C1F90C1A28781F009402C9 /* strech-top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "strech-top.png"; sourceTree = "<group>"; };
-		F0C7737D1A94822600E0C486 /* KIF.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KIF.xcodeproj; path = Classes/KIF/KIF.xcodeproj; sourceTree = SOURCE_ROOT; };
-		F0F952001A6AEB1000254160 /* KifTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KifTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F0F952031A6AEB1000254160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F0F952111A6AECD300254160 /* WizardTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WizardTester.m; sourceTree = "<group>"; };
+		F0F952001A6AEB1000254160 /* linphone Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "linphone Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0FF66AA1ACAEEB0008A4486 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
 		F84015BC1939FE37006ABAB5 /* test_failed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_failed.png; path = Resources/test_failed.png; sourceTree = "<group>"; };
 		F84015BD1939FE37006ABAB5 /* test_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_inprogress.png; path = Resources/test_inprogress.png; sourceTree = "<group>"; };
 		F84015BE1939FE37006ABAB5 /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_passed.png; path = Resources/test_passed.png; sourceTree = "<group>"; };
-		F84015C5193B4E34006ABAB5 /* LogsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogsViewController.h; sourceTree = "<group>"; };
-		F84015C6193B4E34006ABAB5 /* LogsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogsViewController.m; sourceTree = "<group>"; };
-		F844AB121A93E3A200428306 /* ContactsTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTester.h; sourceTree = "<group>"; };
-		F844AB131A93E3A200428306 /* ContactsTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTester.m; sourceTree = "<group>"; };
-		F85554461A6DA2F400A9F915 /* LinphoneTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneTestCase.h; sourceTree = "<group>"; };
-		F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneTestCase.m; sourceTree = "<group>"; };
 		FD979F30169E84670022A8B4 /* ru */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ru; path = Resources/ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1917,7 +1926,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F08BDC3D1A35E60F006210C9 /* liblinphonetester.a in Frameworks */,
+				63058AD61B4E92D400EFAE36 /* liblinphonetester.a in Frameworks */,
 				F08F118519C09C6B007D70C2 /* XCTest.framework in Frameworks */,
 				F08F118719C09C6B007D70C2 /* UIKit.framework in Frameworks */,
 				F08F118619C09C6B007D70C2 /* Foundation.framework in Frameworks */,
@@ -1975,7 +1984,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0C773921A94828900E0C486 /* libKIF.a in Frameworks */,
+				63058A4F1B4E835200EFAE36 /* libKIF.a in Frameworks */,
 				F0FF66AC1ACAEF4F008A4486 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2075,9 +2084,9 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* linphone.app */,
-				F0BB8BD51936208100974404 /* LinphoneTester.app */,
-				F08F118419C09C6A007D70C2 /* LinphoneTester Tests.xctest */,
-				F0F952001A6AEB1000254160 /* KifTests.xctest */,
+				F0BB8BD51936208100974404 /* liblinphoneTester.app */,
+				F08F118419C09C6A007D70C2 /* liblinphoneTester Tests.xctest */,
+				F0F952001A6AEB1000254160 /* linphone Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2184,16 +2193,17 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				633E388219FFB0F400936D1C /* README.md */,
 				080E96DDFE201D6D7F000001 /* Classes */,
-				F0F952011A6AEB1000254160 /* UITests */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
-				F0BB8BD91936208100974404 /* LinphoneTester */,
+				63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				633E388219FFB0F400936D1C /* README.md */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				D398D3031594B0FB00FD553C /* Settings */,
+				63058A301B4E822F00EFAE36 /* TestsLiblinphone */,
+				630589DD1B4E810900EFAE36 /* TestsUI */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -2311,6 +2321,84 @@
 				F03A9B7E18C0D9C900C4D7FE /* libcunit.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		630589DD1B4E810900EFAE36 /* TestsUI */ = {
+			isa = PBXGroup;
+			children = (
+				63058A0A1B4E81B700EFAE36 /* Info.plist */,
+				630589F21B4E816900EFAE36 /* KIF.xcodeproj */,
+				630589DE1B4E810900EFAE36 /* ChatTester.h */,
+				630589DF1B4E810900EFAE36 /* ChatTester.m */,
+				630589E01B4E810900EFAE36 /* ContactsTester.h */,
+				630589E11B4E810900EFAE36 /* ContactsTester.m */,
+				630589E31B4E810900EFAE36 /* LinphoneTestCase.h */,
+				630589E41B4E810900EFAE36 /* LinphoneTestCase.m */,
+				630589E51B4E810900EFAE36 /* WizardTester.h */,
+				630589E61B4E810900EFAE36 /* WizardTester.m */,
+			);
+			path = TestsUI;
+			sourceTree = "<group>";
+		};
+		630589F31B4E816900EFAE36 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				630589FD1B4E816A00EFAE36 /* libKIF.a */,
+				630589FF1B4E816A00EFAE36 /* libKIF-OCUnit.a */,
+				63058A011B4E816A00EFAE36 /* Test Host.app */,
+				63058A031B4E816A00EFAE36 /* KIF Tests - XCTest.xctest */,
+				63058A051B4E816A00EFAE36 /* KIF Tests-OCUnit.octest */,
+				63058A071B4E816A00EFAE36 /* KIF.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */ = {
+			isa = PBXGroup;
+			children = (
+				63058AE41B4E952E00EFAE36 /* share */,
+				63058AE11B4E93A100EFAE36 /* tester_hosts */,
+				63058AC81B4E922500EFAE36 /* certificates */,
+				63058AC91B4E922500EFAE36 /* flexisip */,
+				63058ACA1B4E922500EFAE36 /* images */,
+				63058ACB1B4E922500EFAE36 /* marie_xml */,
+				63058ACC1B4E922500EFAE36 /* messages.db */,
+				63058ACD1B4E922500EFAE36 /* rcfiles */,
+				63058ACE1B4E922500EFAE36 /* sounds */,
+				63058A0D1B4E821E00EFAE36 /* AppDelegate.h */,
+				63058A0E1B4E821E00EFAE36 /* AppDelegate.m */,
+				63058A0F1B4E821E00EFAE36 /* InfoPlist.strings */,
+				63058A111B4E821E00EFAE36 /* Main_iPad.strings */,
+				63058A131B4E821E00EFAE36 /* Main_iPhone.strings */,
+				63058A151B4E821E00EFAE36 /* Main_iPad.storyboard */,
+				63058A171B4E821E00EFAE36 /* Main_iPhone.storyboard */,
+				63058A191B4E821E00EFAE36 /* DetailViewController.h */,
+				63058A1A1B4E821E00EFAE36 /* DetailViewController.m */,
+				63058A1C1B4E821E00EFAE36 /* LinphoneTester-Info.plist */,
+				63058A1D1B4E821E00EFAE36 /* LinphoneTester-Prefix.pch */,
+				63058A1E1B4E821E00EFAE36 /* LogsViewController.h */,
+				63058A1F1B4E821E00EFAE36 /* LogsViewController.m */,
+				63058A201B4E821E00EFAE36 /* main.m */,
+				63058A211B4E821E00EFAE36 /* MasterViewController.h */,
+				63058A221B4E821E00EFAE36 /* MasterViewController.m */,
+				63058A231B4E821E00EFAE36 /* TesterImages.xcassets */,
+			);
+			path = LiblinphoneTester;
+			sourceTree = "<group>";
+		};
+		63058A301B4E822F00EFAE36 /* TestsLiblinphone */ = {
+			isa = PBXGroup;
+			children = (
+				63058A311B4E822F00EFAE36 /* InfoPlist.strings */,
+				63058A331B4E822F00EFAE36 /* DTObjectBlockExecutor.h */,
+				63058A341B4E822F00EFAE36 /* DTObjectBlockExecutor.m */,
+				63058A401B4E82C400EFAE36 /* LinphoneTesterTests-Info.plist */,
+				63058A411B4E82C400EFAE36 /* LinphoneTesterTests-Prefix.pch */,
+				63058A381B4E822F00EFAE36 /* LinphoneTester_Tests.m */,
+				63058A391B4E822F00EFAE36 /* NSObject+DTRuntime.h */,
+				63058A3A1B4E822F00EFAE36 /* NSObject+DTRuntime.m */,
+			);
+			path = TestsLiblinphone;
 			sourceTree = "<group>";
 		};
 		D326483415887D4400930C67 /* Utils */ = {
@@ -2491,29 +2579,6 @@
 				D3F9A9ED15AF277D0045320F /* UACellBackgroundView.m */,
 			);
 			name = UACellBackgroundView;
-			sourceTree = "<group>";
-		};
-		F08F118819C09C6B007D70C2 /* LinphoneTester Tests */ = {
-			isa = PBXGroup;
-			children = (
-				F08F118E19C09C6B007D70C2 /* LinphoneTester_Tests.m */,
-				F08F119E19C0A6CB007D70C2 /* DTObjectBlockExecutor.h */,
-				F08F119F19C0A6CB007D70C2 /* DTObjectBlockExecutor.m */,
-				F08F119B19C0A65A007D70C2 /* NSObject+DTRuntime.h */,
-				F08F119C19C0A65B007D70C2 /* NSObject+DTRuntime.m */,
-				F08F118919C09C6B007D70C2 /* Supporting Files */,
-			);
-			path = "LinphoneTester Tests";
-			sourceTree = SOURCE_ROOT;
-		};
-		F08F118919C09C6B007D70C2 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				F08F118A19C09C6B007D70C2 /* LinphoneTester Tests-Info.plist */,
-				F08F118B19C09C6B007D70C2 /* InfoPlist.strings */,
-				F08F119019C09C6B007D70C2 /* LinphoneTester Tests-Prefix.pch */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		F0B89C2318DC90850050B60E /* images */ = {
@@ -3005,46 +3070,6 @@
 			name = images;
 			sourceTree = "<group>";
 		};
-		F0BB8BD91936208100974404 /* LinphoneTester */ = {
-			isa = PBXGroup;
-			children = (
-				F08F118819C09C6B007D70C2 /* LinphoneTester Tests */,
-				F0BB8BE21936208100974404 /* AppDelegate.h */,
-				F0BB8BE31936208100974404 /* AppDelegate.m */,
-				F0BB8BEE1936208200974404 /* DetailViewController.h */,
-				F0BB8BEF1936208200974404 /* DetailViewController.m */,
-				F0BB8BF11936208200974404 /* TesterImages.xcassets */,
-				F0BB8BE81936208200974404 /* Main_iPad.storyboard */,
-				F0BB8BE51936208100974404 /* Main_iPhone.storyboard */,
-				F0BB8BEB1936208200974404 /* MasterViewController.h */,
-				F0BB8BEC1936208200974404 /* MasterViewController.m */,
-				F0BB8BDA1936208100974404 /* Supporting Files */,
-				F84015C5193B4E34006ABAB5 /* LogsViewController.h */,
-				F84015C6193B4E34006ABAB5 /* LogsViewController.m */,
-			);
-			path = LinphoneTester;
-			sourceTree = "<group>";
-		};
-		F0BB8BDA1936208100974404 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				F08F119819C09D88007D70C2 /* flexisip */,
-				F0BB8C40193630CA00974404 /* local_tester_hosts */,
-				F0022B081A370915009B51FD /* messages.db */,
-				F0BB8C41193630CA00974404 /* marie_xml */,
-				F0BB8C42193630CA00974404 /* tester_hosts */,
-				F0BB8C3919362C2200974404 /* certificates */,
-				F0BB8C3A19362C2200974404 /* images */,
-				F0BB8C3B19362C2200974404 /* sounds */,
-				F0BB8C3719362C1500974404 /* rcfiles */,
-				F0BB8BDB1936208100974404 /* LinphoneTester-Info.plist */,
-				F0BB8BDC1936208100974404 /* InfoPlist.strings */,
-				F0BB8BDF1936208100974404 /* main.m */,
-				F0BB8BE11936208100974404 /* LinphoneTester-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		F0C1F9021A28781F009402C9 /* launchscreen */ = {
 			isa = PBXGroup;
 			children = (
@@ -3059,44 +3084,6 @@
 			);
 			name = launchscreen;
 			path = Resources/launchscreen;
-			sourceTree = "<group>";
-		};
-		F0C7737E1A94822600E0C486 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F0C773871A94822700E0C486 /* libKIF.a */,
-				F0C773891A94822700E0C486 /* libKIF-OCUnit.a */,
-				F0C7738B1A94822700E0C486 /* Test Host.app */,
-				F0C7738D1A94822700E0C486 /* KIF Tests - XCTest.xctest */,
-				F0C7738F1A94822700E0C486 /* KIF Tests-OCUnit.octest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		F0F952011A6AEB1000254160 /* UITests */ = {
-			isa = PBXGroup;
-			children = (
-				F0C7737D1A94822600E0C486 /* KIF.xcodeproj */,
-				F0F952021A6AEB1000254160 /* Supporting Files */,
-				F0F952111A6AECD300254160 /* WizardTester.m */,
-				F0A1CE091A6B05A4001CA2BE /* WizardTester.h */,
-				F0A1CE061A6B056E001CA2BE /* ChatTester.h */,
-				F0A1CE071A6B056E001CA2BE /* ChatTester.m */,
-				F85554461A6DA2F400A9F915 /* LinphoneTestCase.h */,
-				F85554471A6DA2F400A9F915 /* LinphoneTestCase.m */,
-				F844AB121A93E3A200428306 /* ContactsTester.h */,
-				F844AB131A93E3A200428306 /* ContactsTester.m */,
-			);
-			name = UITests;
-			path = KifTests;
-			sourceTree = "<group>";
-		};
-		F0F952021A6AEB1000254160 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				F0F952031A6AEB1000254160 /* Info.plist */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -3124,9 +3111,9 @@
 			productReference = 1D6058910D05DD3D006BFB54 /* linphone.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F08F118319C09C6A007D70C2 /* LinphoneTester Tests */ = {
+		F08F118319C09C6A007D70C2 /* liblinphoneTester Tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F08F119319C09C6B007D70C2 /* Build configuration list for PBXNativeTarget "LinphoneTester Tests" */;
+			buildConfigurationList = F08F119319C09C6B007D70C2 /* Build configuration list for PBXNativeTarget "liblinphoneTester Tests" */;
 			buildPhases = (
 				F08F118019C09C6A007D70C2 /* Sources */,
 				F08F118119C09C6A007D70C2 /* Frameworks */,
@@ -3137,14 +3124,14 @@
 			dependencies = (
 				F08F119219C09C6B007D70C2 /* PBXTargetDependency */,
 			);
-			name = "LinphoneTester Tests";
-			productName = "LinphoneTester Tests";
-			productReference = F08F118419C09C6A007D70C2 /* LinphoneTester Tests.xctest */;
+			name = "liblinphoneTester Tests";
+			productName = LinphoneTesterTests;
+			productReference = F08F118419C09C6A007D70C2 /* liblinphoneTester Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		F0BB8BD41936208100974404 /* LinphoneTester */ = {
+		F0BB8BD41936208100974404 /* liblinphoneTester */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F0BB8C051936208200974404 /* Build configuration list for PBXNativeTarget "LinphoneTester" */;
+			buildConfigurationList = F0BB8C051936208200974404 /* Build configuration list for PBXNativeTarget "liblinphoneTester" */;
 			buildPhases = (
 				F0BB8BD11936208100974404 /* Sources */,
 				F0BB8BD21936208100974404 /* Frameworks */,
@@ -3155,14 +3142,14 @@
 			);
 			dependencies = (
 			);
-			name = LinphoneTester;
+			name = liblinphoneTester;
 			productName = LinphoneTester;
-			productReference = F0BB8BD51936208100974404 /* LinphoneTester.app */;
+			productReference = F0BB8BD51936208100974404 /* liblinphoneTester.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F0F951FF1A6AEB1000254160 /* KifTests */ = {
+		F0F951FF1A6AEB1000254160 /* linphone Tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "KifTests" */;
+			buildConfigurationList = F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "linphone Tests" */;
 			buildPhases = (
 				F0F951FC1A6AEB1000254160 /* Sources */,
 				F0F951FD1A6AEB1000254160 /* Frameworks */,
@@ -3171,12 +3158,12 @@
 			buildRules = (
 			);
 			dependencies = (
-				F0C773911A94827E00E0C486 /* PBXTargetDependency */,
+				63058A4E1B4E832500EFAE36 /* PBXTargetDependency */,
 				F0F952071A6AEB1000254160 /* PBXTargetDependency */,
 			);
-			name = KifTests;
+			name = "linphone Tests";
 			productName = KifTests;
-			productReference = F0F952001A6AEB1000254160 /* KifTests.xctest */;
+			productReference = F0F952001A6AEB1000254160 /* linphone Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -3228,8 +3215,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = F0C7737E1A94822600E0C486 /* Products */;
-					ProjectRef = F0C7737D1A94822600E0C486 /* KIF.xcodeproj */;
+					ProductGroup = 630589F31B4E816900EFAE36 /* Products */;
+					ProjectRef = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
 				},
 				{
 					ProductGroup = D3B90E1215C2CB5700F64F8C /* Products */;
@@ -3243,14 +3230,56 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* linphone */,
-				F0BB8BD41936208100974404 /* LinphoneTester */,
-				F08F118319C09C6A007D70C2 /* LinphoneTester Tests */,
-				F0F951FF1A6AEB1000254160 /* KifTests */,
+				F0F951FF1A6AEB1000254160 /* linphone Tests */,
+				F0BB8BD41936208100974404 /* liblinphoneTester */,
+				F08F118319C09C6A007D70C2 /* liblinphoneTester Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		630589FD1B4E816A00EFAE36 /* libKIF.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libKIF.a;
+			remoteRef = 630589FC1B4E816A00EFAE36 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		630589FF1B4E816A00EFAE36 /* libKIF-OCUnit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libKIF-OCUnit.a";
+			remoteRef = 630589FE1B4E816A00EFAE36 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		63058A011B4E816A00EFAE36 /* Test Host.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Test Host.app";
+			remoteRef = 63058A001B4E816A00EFAE36 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		63058A031B4E816A00EFAE36 /* KIF Tests - XCTest.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "KIF Tests - XCTest.xctest";
+			remoteRef = 63058A021B4E816A00EFAE36 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		63058A051B4E816A00EFAE36 /* KIF Tests-OCUnit.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "KIF Tests-OCUnit.octest";
+			remoteRef = 63058A041B4E816A00EFAE36 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		63058A071B4E816A00EFAE36 /* KIF.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = KIF.framework;
+			remoteRef = 63058A061B4E816A00EFAE36 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		D3554ED115CA79AA00478841 /* libXMLRPC.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -3263,41 +3292,6 @@
 			fileType = archive.ar;
 			path = libNinePatch.a;
 			remoteRef = D3B90E1815C2CB5800F64F8C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F0C773871A94822700E0C486 /* libKIF.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libKIF.a;
-			remoteRef = F0C773861A94822700E0C486 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F0C773891A94822700E0C486 /* libKIF-OCUnit.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libKIF-OCUnit.a";
-			remoteRef = F0C773881A94822700E0C486 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F0C7738B1A94822700E0C486 /* Test Host.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = "Test Host.app";
-			remoteRef = F0C7738A1A94822700E0C486 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F0C7738D1A94822700E0C486 /* KIF Tests - XCTest.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "KIF Tests - XCTest.xctest";
-			remoteRef = F0C7738C1A94822700E0C486 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F0C7738F1A94822700E0C486 /* KIF Tests-OCUnit.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "KIF Tests-OCUnit.octest";
-			remoteRef = F0C7738E1A94822700E0C486 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -3855,16 +3849,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F08F119A19C09D88007D70C2 /* flexisip in Resources */,
-				F0022B0A1A370915009B51FD /* messages.db in Resources */,
-				F0C1F91D1A2CA345009402C9 /* local_tester_hosts in Resources */,
-				F0C1F9211A2CA35A009402C9 /* sounds in Resources */,
-				F08F118D19C09C6B007D70C2 /* InfoPlist.strings in Resources */,
-				F0C1F9231A2CA35E009402C9 /* certificates in Resources */,
-				F0C1F9221A2CA35C009402C9 /* images in Resources */,
-				F0C1F9201A2CA358009402C9 /* rcfiles in Resources */,
-				F0C1F91F1A2CA354009402C9 /* tester_hosts in Resources */,
-				F0C1F91E1A2CA352009402C9 /* marie_xml in Resources */,
+				63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */,
+				63058ACF1B4E922500EFAE36 /* certificates in Resources */,
+				63058AD01B4E922500EFAE36 /* flexisip in Resources */,
+				63058AD11B4E922500EFAE36 /* images in Resources */,
+				63058AD21B4E922500EFAE36 /* marie_xml in Resources */,
+				63058AD31B4E922500EFAE36 /* messages.db in Resources */,
+				63058AD41B4E922500EFAE36 /* rcfiles in Resources */,
+				63058AD51B4E922500EFAE36 /* sounds in Resources */,
+				63058A3B1B4E822F00EFAE36 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3872,22 +3865,24 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0BB8C3819362C1500974404 /* rcfiles in Resources */,
+				63058ADA1B4E937300EFAE36 /* certificates in Resources */,
+				63058ADB1B4E937300EFAE36 /* flexisip in Resources */,
+				63058ADC1B4E937300EFAE36 /* images in Resources */,
+				63058ADD1B4E937300EFAE36 /* marie_xml in Resources */,
+				63058ADE1B4E937300EFAE36 /* messages.db in Resources */,
+				63058ADF1B4E937300EFAE36 /* rcfiles in Resources */,
+				63058AE01B4E937300EFAE36 /* sounds in Resources */,
+				63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */,
 				F84015C11939FE37006ABAB5 /* test_passed.png in Resources */,
-				F08F119919C09D88007D70C2 /* flexisip in Resources */,
-				F0BB8C46193630CA00974404 /* marie_xml in Resources */,
-				F0BB8BEA1936208200974404 /* Main_iPad.storyboard in Resources */,
-				F0BB8C3E19362C2200974404 /* sounds in Resources */,
+				63058A2B1B4E821E00EFAE36 /* LinphoneTester-Info.plist in Resources */,
+				63058A2F1B4E821E00EFAE36 /* TesterImages.xcassets in Resources */,
+				63058A251B4E821E00EFAE36 /* InfoPlist.strings in Resources */,
+				63058A271B4E821E00EFAE36 /* Main_iPhone.strings in Resources */,
+				63058A261B4E821E00EFAE36 /* Main_iPad.strings in Resources */,
+				63058A291B4E821E00EFAE36 /* Main_iPhone.storyboard in Resources */,
 				F84015BF1939FE37006ABAB5 /* test_failed.png in Resources */,
-				F0022B091A370915009B51FD /* messages.db in Resources */,
-				F0BB8BF21936208200974404 /* TesterImages.xcassets in Resources */,
-				F0BB8BE71936208200974404 /* Main_iPhone.storyboard in Resources */,
-				F0BB8C47193630CA00974404 /* tester_hosts in Resources */,
+				63058A281B4E821E00EFAE36 /* Main_iPad.storyboard in Resources */,
 				F84015C01939FE37006ABAB5 /* test_inprogress.png in Resources */,
-				F0BB8C3C19362C2200974404 /* certificates in Resources */,
-				F0BB8C45193630CA00974404 /* local_tester_hosts in Resources */,
-				F0BB8C3D19362C2200974404 /* images in Resources */,
-				F0BB8BDE1936208100974404 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3895,6 +3890,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63058A0B1B4E81B700EFAE36 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4054,9 +4050,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				632DA24E1B43EEEF00EB356A /* Utils.m in Sources */,
-				F08F119D19C0A65B007D70C2 /* NSObject+DTRuntime.m in Sources */,
-				F08F118F19C09C6B007D70C2 /* LinphoneTester_Tests.m in Sources */,
-				F08F11A019C0A6CB007D70C2 /* DTObjectBlockExecutor.m in Sources */,
+				63058A3C1B4E822F00EFAE36 /* DTObjectBlockExecutor.m in Sources */,
+				63058A3F1B4E823000EFAE36 /* NSObject+DTRuntime.m in Sources */,
+				63058A3E1B4E822F00EFAE36 /* LinphoneTester_Tests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4064,12 +4060,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63058A2D1B4E821E00EFAE36 /* main.m in Sources */,
+				63058A241B4E821E00EFAE36 /* AppDelegate.m in Sources */,
 				632DA24D1B43EE9400EB356A /* Utils.m in Sources */,
-				F0BB8BE41936208100974404 /* AppDelegate.m in Sources */,
-				F84015C7193B4E34006ABAB5 /* LogsViewController.m in Sources */,
-				F0BB8BED1936208200974404 /* MasterViewController.m in Sources */,
-				F0BB8BE01936208100974404 /* main.m in Sources */,
-				F0BB8BF01936208200974404 /* DetailViewController.m in Sources */,
+				63058A2A1B4E821E00EFAE36 /* DetailViewController.m in Sources */,
+				63058A2E1B4E821E00EFAE36 /* MasterViewController.m in Sources */,
+				63058A2C1B4E821E00EFAE36 /* LogsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4077,16 +4073,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0A1CE081A6B056E001CA2BE /* ChatTester.m in Sources */,
-				F844AB141A93E3A200428306 /* ContactsTester.m in Sources */,
-				F85554481A6DA2F400A9F915 /* LinphoneTestCase.m in Sources */,
-				F0F952121A6AECD300254160 /* WizardTester.m in Sources */,
+				630589EA1B4E810900EFAE36 /* LinphoneTestCase.m in Sources */,
+				630589EB1B4E810900EFAE36 /* WizardTester.m in Sources */,
+				630589E71B4E810900EFAE36 /* ChatTester.m in Sources */,
+				630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		63058A4E1B4E832500EFAE36 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = KIF;
+			targetProxy = 63058A4D1B4E832500EFAE36 /* PBXContainerItemProxy */;
+		};
 		D3554ED515CA79B900478841 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = libXMLRPC;
@@ -4099,13 +4100,8 @@
 		};
 		F08F119219C09C6B007D70C2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F0BB8BD41936208100974404 /* LinphoneTester */;
+			target = F0BB8BD41936208100974404 /* liblinphoneTester */;
 			targetProxy = F08F119119C09C6B007D70C2 /* PBXContainerItemProxy */;
-		};
-		F0C773911A94827E00E0C486 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = KIF;
-			targetProxy = F0C773901A94827E00E0C486 /* PBXContainerItemProxy */;
 		};
 		F0F952071A6AEB1000254160 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4124,6 +4120,56 @@
 				F0ADFCF91A78EB83004F1102 /* ar */,
 			);
 			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		63058A0F1B4E821E00EFAE36 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63058A101B4E821E00EFAE36 /* ar */,
+				63058A1B1B4E821E00EFAE36 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		63058A111B4E821E00EFAE36 /* Main_iPad.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63058A121B4E821E00EFAE36 /* ar */,
+			);
+			name = Main_iPad.strings;
+			sourceTree = "<group>";
+		};
+		63058A131B4E821E00EFAE36 /* Main_iPhone.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63058A141B4E821E00EFAE36 /* ar */,
+			);
+			name = Main_iPhone.strings;
+			sourceTree = "<group>";
+		};
+		63058A151B4E821E00EFAE36 /* Main_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63058A161B4E821E00EFAE36 /* Base */,
+			);
+			name = Main_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		63058A171B4E821E00EFAE36 /* Main_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63058A181B4E821E00EFAE36 /* Base */,
+			);
+			name = Main_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		63058A311B4E822F00EFAE36 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63058A321B4E822F00EFAE36 /* ar */,
+				63058A351B4E822F00EFAE36 /* en */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 		636316D31A1DEBCB0009B839 /* AboutViewController.xib */ = {
@@ -4484,42 +4530,6 @@
 			name = UIContactCell.xib;
 			sourceTree = "<group>";
 		};
-		F08F118B19C09C6B007D70C2 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F08F118C19C09C6B007D70C2 /* en */,
-				F0AF07161A24BA780086C9C1 /* ar */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		F0BB8BDC1936208100974404 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F0BB8BDD1936208100974404 /* en */,
-				F0AF07151A24BA780086C9C1 /* ar */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		F0BB8BE51936208100974404 /* Main_iPhone.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F0BB8BE61936208100974404 /* Base */,
-				F0AF07131A24BA780086C9C1 /* ar */,
-			);
-			name = Main_iPhone.storyboard;
-			sourceTree = "<group>";
-		};
-		F0BB8BE81936208200974404 /* Main_iPad.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F0BB8BE91936208200974404 /* Base */,
-				F0AF07121A24BA780086C9C1 /* ar */,
-			);
-			name = Main_iPad.storyboard;
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -4877,7 +4887,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LinphoneTester.app/LinphoneTester";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -4898,7 +4908,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LinphoneTester Tests/LinphoneTester Tests-Prefix.pch";
+				GCC_PREFIX_HEADER = "TestsLiblinphone/LinphoneTesterTests-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -4914,7 +4924,7 @@
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "LinphoneTester Tests/LinphoneTester Tests-Info.plist";
+				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4924,7 +4934,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/liblinphoneTester.app/liblinphoneTester";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Debug;
@@ -4933,7 +4943,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LinphoneTester.app/LinphoneTester";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -4953,7 +4963,7 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LinphoneTester Tests/LinphoneTester Tests-Prefix.pch";
+				GCC_PREFIX_HEADER = "TestsLiblinphone/LinphoneTesterTests-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -4964,7 +4974,7 @@
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "LinphoneTester Tests/LinphoneTester Tests-Info.plist";
+				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4973,7 +4983,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/liblinphoneTester.app/liblinphoneTester";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -4983,7 +4993,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LinphoneTester.app/LinphoneTester";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -5003,7 +5013,7 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LinphoneTester Tests/LinphoneTester Tests-Prefix.pch";
+				GCC_PREFIX_HEADER = "TestsLiblinphone/LinphoneTesterTests-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -5014,7 +5024,7 @@
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "LinphoneTester Tests/LinphoneTester Tests-Info.plist";
+				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5023,7 +5033,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/liblinphoneTester.app/liblinphoneTester";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -5033,7 +5043,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LinphoneTester.app/LinphoneTester";
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -5053,7 +5063,7 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LinphoneTester Tests/LinphoneTester Tests-Prefix.pch";
+				GCC_PREFIX_HEADER = "TestsLiblinphone/LinphoneTesterTests-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -5064,7 +5074,7 @@
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "LinphoneTester Tests/LinphoneTester Tests-Info.plist";
+				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5073,7 +5083,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				TEST_HOST = "$(BUNDLE_LOADER)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/liblinphoneTester.app/liblinphoneTester";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -5104,7 +5114,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LinphoneTester/LinphoneTester-Prefix.pch";
+				GCC_PREFIX_HEADER = "LiblinphoneTester/LinphoneTester-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -5120,7 +5130,7 @@
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "LinphoneTester/LinphoneTester-Info.plist";
+				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5159,7 +5169,7 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LinphoneTester/LinphoneTester-Prefix.pch";
+				GCC_PREFIX_HEADER = "LiblinphoneTester/LinphoneTester-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -5170,7 +5180,7 @@
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "LinphoneTester/LinphoneTester-Info.plist";
+				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5209,7 +5219,7 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LinphoneTester/LinphoneTester-Prefix.pch";
+				GCC_PREFIX_HEADER = "LiblinphoneTester/LinphoneTester-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -5220,7 +5230,7 @@
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "LinphoneTester/LinphoneTester-Info.plist";
+				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5259,7 +5269,7 @@
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LinphoneTester/LinphoneTester-Prefix.pch";
+				GCC_PREFIX_HEADER = "LiblinphoneTester/LinphoneTester-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -5270,7 +5280,7 @@
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
-				INFOPLIST_FILE = "LinphoneTester/LinphoneTester-Info.plist";
+				INFOPLIST_FILE = "LiblinphoneTester/LinphoneTester-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5320,7 +5330,7 @@
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
-				INFOPLIST_FILE = KifTests/Info.plist;
+				INFOPLIST_FILE = TestsUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -5365,7 +5375,7 @@
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
-				INFOPLIST_FILE = KifTests/Info.plist;
+				INFOPLIST_FILE = TestsUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
@@ -5410,7 +5420,7 @@
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
-				INFOPLIST_FILE = KifTests/Info.plist;
+				INFOPLIST_FILE = TestsUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
@@ -5455,7 +5465,7 @@
 					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
-				INFOPLIST_FILE = KifTests/Info.plist;
+				INFOPLIST_FILE = TestsUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
@@ -5496,7 +5506,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		F08F119319C09C6B007D70C2 /* Build configuration list for PBXNativeTarget "LinphoneTester Tests" */ = {
+		F08F119319C09C6B007D70C2 /* Build configuration list for PBXNativeTarget "liblinphoneTester Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F08F119419C09C6B007D70C2 /* Debug */,
@@ -5507,7 +5517,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		F0BB8C051936208200974404 /* Build configuration list for PBXNativeTarget "LinphoneTester" */ = {
+		F0BB8C051936208200974404 /* Build configuration list for PBXNativeTarget "liblinphoneTester" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F0BB8C061936208200974404 /* Debug */,
@@ -5518,7 +5528,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "KifTests" */ = {
+		F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "linphone Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F0F952081A6AEB1000254160 /* Debug */,

@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F0BB8BD41936208100974404"
-               BuildableName = "LinphoneTester.app"
-               BlueprintName = "LinphoneTester"
+               BuildableName = "liblinphoneTester.app"
+               BlueprintName = "liblinphoneTester"
                ReferencedContainer = "container:linphone.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,8 +33,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F08F118319C09C6A007D70C2"
-               BuildableName = "LinphoneTester Tests.xctest"
-               BlueprintName = "LinphoneTester Tests"
+               BuildableName = "liblinphoneTester Tests.xctest"
+               BlueprintName = "liblinphoneTester Tests"
                ReferencedContainer = "container:linphone.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -43,8 +43,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F0BB8BD41936208100974404"
-            BuildableName = "LinphoneTester.app"
-            BlueprintName = "LinphoneTester"
+            BuildableName = "liblinphoneTester.app"
+            BlueprintName = "liblinphoneTester"
             ReferencedContainer = "container:linphone.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -63,8 +63,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F0BB8BD41936208100974404"
-            BuildableName = "LinphoneTester.app"
-            BlueprintName = "LinphoneTester"
+            BuildableName = "liblinphoneTester.app"
+            BlueprintName = "liblinphoneTester"
             ReferencedContainer = "container:linphone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -82,8 +82,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F0BB8BD41936208100974404"
-            BuildableName = "LinphoneTester.app"
-            BlueprintName = "LinphoneTester"
+            BuildableName = "liblinphoneTester.app"
+            BlueprintName = "liblinphoneTester"
             ReferencedContainer = "container:linphone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

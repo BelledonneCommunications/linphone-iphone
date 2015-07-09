@@ -8,9 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-
 @interface LogsViewController : UIViewController
-@property (weak, nonatomic) IBOutlet UITextView *tview;
+@property(weak, nonatomic) IBOutlet UITextView *tview;
 
 - (IBAction)clearLogs:(id)sender;
 

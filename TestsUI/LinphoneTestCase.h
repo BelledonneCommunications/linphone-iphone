@@ -14,10 +14,10 @@
 
 - (void)switchToValidAccountIfNeeded;
 - (NSString *)me;
-- (NSString*)accountDomain;
+- (NSString *)accountDomain;
 
-- (NSString*)getUUID;
-- (NSArray*)getUUIDArrayOfSize:(size_t)size;
+- (NSString *)getUUID;
+- (NSArray *)getUUIDArrayOfSize:(size_t)size;
 
 - (UITableView *)findTableView:(NSString *)table;
 

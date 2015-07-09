@@ -8,14 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-NSMutableArray* lastLogs;
-NSString* const  kLogsUpdateNotification;
+NSMutableArray *lastLogs;
+NSString *const kLogsUpdateNotification;
 
 @class DetailViewController;
 
 @interface MasterViewController : UITableViewController
 
-@property (strong, nonatomic) DetailViewController *detailViewController;
+@property(strong, nonatomic) DetailViewController *detailViewController;
 
 @end
-
