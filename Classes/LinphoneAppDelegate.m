@@ -220,6 +220,16 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
+
+	linphone_core_terminate_all_calls([LinphoneManager getLc]);
+
+	// destroyLinphoneCore automatically unregister proxies but if we are using
+	// remote push notifications, we want to continue receiving them
+	if ([LinphoneManager instance].pushNotificationToken != nil) {
+		//trick me! setting network reachable to false will avoid sending unregister
+		linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
+	}
+	[[LinphoneManager instance] destroyLinphoneCore];
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
