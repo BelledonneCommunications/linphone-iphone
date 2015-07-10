@@ -312,7 +312,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 	}
 }
 
-#pragma mark - Database Functions
+#pragma mark - Migration
 
 static int check_should_migrate_images(void *data, int argc, char **argv, char **cnames) {
 	*((BOOL *)data) = TRUE;
@@ -485,6 +485,56 @@ exit_dbmigration:
 	[self lpConfigSetBool:YES forKey:migration_flag];
 }
 
+- (void)migrationLinphoneSettings {
+	// we need to proceed to the migration *after* the chat database was opened, so that we know it is in consistent
+	// state
+	NSString *chatDBFileName = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
+	if ([self migrateChatDBIfNeeded:theLinphoneCore]) {
+		// if a migration was performed, we should reinitialize the chat database
+		linphone_core_set_chat_database_path(theLinphoneCore,
+											 [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	}
+
+	/* AVPF migration */
+	if ([self lpConfigBoolForKey:@"avpf_migration_done"] == FALSE) {
+		const MSList *proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
+		while (proxies) {
+			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)proxies->data;
+			const char *addr = linphone_proxy_config_get_addr(proxy);
+			// we want to enable AVPF for the proxies
+			if (addr && strstr(addr, "sip.linphone.org") != 0) {
+				LOGI(@"Migrating proxy config to use AVPF");
+				linphone_proxy_config_enable_avpf(proxy, TRUE);
+			}
+			proxies = proxies->next;
+		}
+		[self lpConfigSetBool:TRUE forKey:@"avpf_migration_done"];
+	}
+	/* Quality Reporting migration */
+	if ([self lpConfigBoolForKey:@"quality_report_migration_done"] == FALSE) {
+		const MSList *proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
+		while (proxies) {
+			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)proxies->data;
+			const char *addr = linphone_proxy_config_get_addr(proxy);
+			// we want to enable quality reporting for the proxies that are on linphone.org
+			if (addr && strstr(addr, "sip.linphone.org") != 0) {
+				LOGI(@"Migrating proxy config to send quality report");
+				linphone_proxy_config_set_quality_reporting_collector(proxy, "sip:voip-metrics@sip.linphone.org");
+				linphone_proxy_config_set_quality_reporting_interval(proxy, 180);
+				linphone_proxy_config_enable_quality_reporting(proxy, TRUE);
+			}
+			proxies = proxies->next;
+		}
+		[self lpConfigSetBool:TRUE forKey:@"quality_report_migration_done"];
+	}
+	/* File transfer migration */
+	if ([self lpConfigBoolForKey:@"file_transfer_migration_done"] == FALSE) {
+		NSString *newURL = @"https://www.linphone.org:444/lft.php";
+		LOGI(@"Migrating sharing server url from %@ to %@", [self lpConfigStringForKey:@"sharing_server_preference"], newURL);
+		[self lpConfigSetString:newURL forKey:@"sharing_server_preference"];
+		[self lpConfigSetBool:TRUE forKey:@"file_transfer_migration_done"];
+	}
+}
 #pragma mark - Linphone Core Functions
 
 + (LinphoneCore *)getLc {
@@ -1266,47 +1316,7 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 	linphone_core_set_chat_database_path(theLinphoneCore,
 										 [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 
-	// we need to proceed to the migration *after* the chat database was opened, so that we know it is in consistent
-	// state
-	BOOL migrated = [self migrateChatDBIfNeeded:theLinphoneCore];
-	if (migrated) {
-		// if a migration was performed, we should reinitialize the chat database
-		linphone_core_set_chat_database_path(theLinphoneCore,
-											 [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-	}
-
-	/* AVPF migration */
-	if ([self lpConfigBoolForKey:@"avpf_migration_done" forSection:@"app"] == FALSE) {
-		const MSList *proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
-		while (proxies) {
-			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)proxies->data;
-			const char *addr = linphone_proxy_config_get_addr(proxy);
-			// we want to enable AVPF for the proxies
-			if (addr && strstr(addr, "sip.linphone.org") != 0) {
-				LOGI(@"Migrating proxy config to use AVPF");
-				linphone_proxy_config_enable_avpf(proxy, TRUE);
-			}
-			proxies = proxies->next;
-		}
-		[self lpConfigSetBool:TRUE forKey:@"avpf_migration_done"];
-	}
-	/* Quality Reporting migration */
-	if ([self lpConfigBoolForKey:@"quality_report_migration_done" forSection:@"app"] == FALSE) {
-		const MSList *proxies = linphone_core_get_proxy_config_list(theLinphoneCore);
-		while (proxies) {
-			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)proxies->data;
-			const char *addr = linphone_proxy_config_get_addr(proxy);
-			// we want to enable quality reporting for the proxies that are on linphone.org
-			if (addr && strstr(addr, "sip.linphone.org") != 0) {
-				LOGI(@"Migrating proxy config to send quality report");
-				linphone_proxy_config_set_quality_reporting_collector(proxy, "sip:voip-metrics@sip.linphone.org");
-				linphone_proxy_config_set_quality_reporting_interval(proxy, 180);
-				linphone_proxy_config_enable_quality_reporting(proxy, TRUE);
-			}
-			proxies = proxies->next;
-		}
-		[self lpConfigSetBool:TRUE forKey:@"quality_report_migration_done"];
-	}
+	[self migrationLinphoneSettings];
 
 	[self setupNetworkReachabilityCallback];
 
