@@ -2,8 +2,8 @@
 <config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
 
 	<section name="proxy_default_values">
-		<entry name="reg_proxy" overwrite="true">&lt;sip:sip.linphone.org:5223;transport=tls&gt;</entry>
-		<entry name="reg_route" overwrite="true">&lt;sip:sip.linphone.org:5223;transport=tls&gt;</entry>
+		<entry name="reg_proxy" overwrite="true">&lt;sip:sip.linphone.org;transport=tls&gt;</entry>
+		<entry name="reg_route" overwrite="true">&lt;sip:sip.linphone.org;transport=tls&gt;</entry>
 		<entry name="reg_identity" overwrite="true">sip:?@sip.linphone.org</entry>
 		<entry name="reg_expires" overwrite="true">1314000</entry>
 		<entry name="reg_sendregister" overwrite="true">1</entry>
