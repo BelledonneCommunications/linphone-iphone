@@ -3111,9 +3111,9 @@
 			productReference = 1D6058910D05DD3D006BFB54 /* linphone.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F08F118319C09C6A007D70C2 /* liblinphoneTester Tests */ = {
+		F08F118319C09C6A007D70C2 /* liblinphoneTesterTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F08F119319C09C6B007D70C2 /* Build configuration list for PBXNativeTarget "liblinphoneTester Tests" */;
+			buildConfigurationList = F08F119319C09C6B007D70C2 /* Build configuration list for PBXNativeTarget "liblinphoneTesterTests" */;
 			buildPhases = (
 				F08F118019C09C6A007D70C2 /* Sources */,
 				F08F118119C09C6A007D70C2 /* Frameworks */,
@@ -3124,7 +3124,7 @@
 			dependencies = (
 				F08F119219C09C6B007D70C2 /* PBXTargetDependency */,
 			);
-			name = "liblinphoneTester Tests";
+			name = liblinphoneTesterTests;
 			productName = LinphoneTesterTests;
 			productReference = F08F118419C09C6A007D70C2 /* liblinphoneTester Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -3147,9 +3147,9 @@
 			productReference = F0BB8BD51936208100974404 /* liblinphoneTester.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F0F951FF1A6AEB1000254160 /* linphone Tests */ = {
+		F0F951FF1A6AEB1000254160 /* linphoneTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "linphone Tests" */;
+			buildConfigurationList = F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "linphoneTests" */;
 			buildPhases = (
 				F0F951FC1A6AEB1000254160 /* Sources */,
 				F0F951FD1A6AEB1000254160 /* Frameworks */,
@@ -3161,7 +3161,7 @@
 				63058A4E1B4E832500EFAE36 /* PBXTargetDependency */,
 				F0F952071A6AEB1000254160 /* PBXTargetDependency */,
 			);
-			name = "linphone Tests";
+			name = linphoneTests;
 			productName = KifTests;
 			productReference = F0F952001A6AEB1000254160 /* linphone Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -3230,9 +3230,9 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* linphone */,
-				F0F951FF1A6AEB1000254160 /* linphone Tests */,
+				F0F951FF1A6AEB1000254160 /* linphoneTests */,
 				F0BB8BD41936208100974404 /* liblinphoneTester */,
-				F08F118319C09C6A007D70C2 /* liblinphoneTester Tests */,
+				F08F118319C09C6A007D70C2 /* liblinphoneTesterTests */,
 			);
 		};
 /* End PBXProject section */
@@ -5508,7 +5508,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		F08F119319C09C6B007D70C2 /* Build configuration list for PBXNativeTarget "liblinphoneTester Tests" */ = {
+		F08F119319C09C6B007D70C2 /* Build configuration list for PBXNativeTarget "liblinphoneTesterTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F08F119419C09C6B007D70C2 /* Debug */,
@@ -5530,7 +5530,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "linphone Tests" */ = {
+		F0F9520C1A6AEB1100254160 /* Build configuration list for PBXNativeTarget "linphoneTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F0F952081A6AEB1000254160 /* Debug */,
