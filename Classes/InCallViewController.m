@@ -183,6 +183,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// in mode display_filter_auto_rotate=0, no need to rotate the preview
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[self previewTouchLift];
+}
+
 #pragma mark -
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
@@ -498,7 +503,41 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 #pragma mark VideoPreviewMoving
 
 - (void)moveVideoPreview:(UIPanGestureRecognizer *)dragndrop {
-	self.videoPreview.center = [dragndrop locationInView:videoPreview.superview];
+	CGPoint center = [dragndrop locationInView:videoPreview.superview];
+	self.videoPreview.center = center;
+	if (dragndrop.state == UIGestureRecognizerStateEnded) {
+		[self previewTouchLift];
+	}
+}
+
+- (CGFloat)coerce:(CGFloat)value betweenMin:(CGFloat)min andMax:(CGFloat)max {
+	if (value > max) {
+		value = max;
+	}
+	if (value < min) {
+		value = min;
+	}
+	return value;
+}
+
+- (void)previewTouchLift {
+	CGRect previewFrame = self.videoPreview.frame;
+	previewFrame.origin.x = [self coerce:previewFrame.origin.x
+							  betweenMin:5
+								  andMax:(self.view.frame.size.width - previewFrame.size.width - 5)];
+	previewFrame.origin.y = [self coerce:previewFrame.origin.y
+							  betweenMin:5
+								  andMax:(self.view.frame.size.height - previewFrame.size.height - 5)];
+
+	if (!CGRectEqualToRect(previewFrame, self.videoPreview.frame)) {
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+		  [UIView animateWithDuration:0.3
+						   animations:^{
+							 LOGI(@"Recentering preview to %@", NSStringFromCGRect(previewFrame));
+							 self.videoPreview.frame = previewFrame;
+						   }];
+		});
+	}
 }
 
 @end
