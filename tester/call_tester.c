@@ -4216,6 +4216,34 @@ static void simple_mono_call_opus(void){
 	simple_stereo_call("opus", 48000, 150, FALSE);
 }
 
+static void call_with_fqdn_in_sdp() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LpConfig *lp;
+	bool_t call_ok;
+	lp = linphone_core_get_config(marie->lc);
+	lp_config_set_string(lp,"rtp","bind_address","localhost");
+	lp = linphone_core_get_config(pauline->lc);
+	lp_config_set_string(lp,"rtp","bind_address","localhost");
+
+
+	BC_ASSERT_TRUE(call_ok=call(pauline,marie));
+	if (!call_ok) goto end;
+	liblinphone_tester_check_rtcp(pauline,marie);
+
+#ifdef VIDEO_ENABLED
+	BC_ASSERT_TRUE(add_video(pauline,marie, TRUE));
+	liblinphone_tester_check_rtcp(pauline,marie);
+#endif
+	/*just to sleep*/
+	linphone_core_terminate_all_calls(pauline->lc);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -4338,7 +4366,8 @@ test_t call_tests[] = {
 	{ "Unsuccessful call with transport change after released",unsucessfull_call_with_transport_change_after_released},
 	{ "Simple stereo call with L16", simple_stereo_call_l16 },
 	{ "Simple stereo call with opus", simple_stereo_call_opus },
-	{ "Simple mono call with opus", simple_mono_call_opus }
+	{ "Simple mono call with opus", simple_mono_call_opus },
+	{ "Call with FQDN in SDP", call_with_fqdn_in_sdp}
 };
 
 test_suite_t call_test_suite = {
