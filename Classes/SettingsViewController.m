@@ -444,7 +444,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	[settingsStore transformLinphoneCoreToKeys]; // Sync settings with linphone core settings
+	// Sync settings with linphone core settings
+	[settingsStore transformLinphoneCoreToKeys];
 	settingsController.hiddenKeys = [self findHiddenKeys];
 	[settingsController.tableView reloadData];
 

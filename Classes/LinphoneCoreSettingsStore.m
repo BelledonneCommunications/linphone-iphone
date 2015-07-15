@@ -31,7 +31,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	if (self) {
 		dict = [[NSMutableDictionary alloc] init];
 		changedDict = [[NSMutableDictionary alloc] init];
-		[self transformLinphoneCoreToKeys];
 	}
 	return self;
 }
