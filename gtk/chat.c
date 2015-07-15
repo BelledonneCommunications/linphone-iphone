@@ -443,14 +443,44 @@ static gboolean link_event_handler(GtkTextTag *tag, GObject *object,GdkEvent *ev
 				g_free(uri);
 			}
 			break;
-		case GDK_ENTER_NOTIFY:
-			printf("Hovering link\n");
-			break;
-		case GDK_LEAVE_NOTIFY:
-			printf("Leaving link\n");
-			break;
 		default:
 			break;
+	}
+	return FALSE;
+}
+
+static void chatroom_enable_hand_cursor(GdkWindow *window, gboolean hand_cursor_enabled) {
+	GdkCursor *cursor = gdk_window_get_cursor(window);
+	GdkCursor *new_cursor = NULL;
+	if(!hand_cursor_enabled && gdk_cursor_get_cursor_type(cursor) != GDK_XTERM) {
+		new_cursor = gdk_cursor_new(GDK_XTERM);
+	} else if(hand_cursor_enabled && gdk_cursor_get_cursor_type(cursor) != GDK_HAND1) {
+		new_cursor = gdk_cursor_new(GDK_HAND1);
+	}
+	if(new_cursor) {
+		gdk_window_set_cursor(window, new_cursor);
+		gdk_cursor_unref(new_cursor);
+	}
+}
+
+static gboolean chatroom_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	gint wx, wy, bx, by;
+	GtkTextView *chatroom = GTK_TEXT_VIEW(widget);
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(chatroom);
+	GtkTextTag *link_tag = gtk_text_tag_table_lookup(gtk_text_buffer_get_tag_table(buffer), "link");
+	GdkWindow *window = gtk_text_view_get_window(chatroom, GTK_TEXT_WINDOW_TEXT);
+	GtkTextIter iter;
+	if(event->type == GDK_MOTION_NOTIFY) {
+		GdkEventMotion *motion_ev = (GdkEventMotion *)event;
+		wx = motion_ev->x;
+		wy = motion_ev->y;
+		gtk_text_view_window_to_buffer_coords(chatroom, GTK_TEXT_WINDOW_TEXT, wx, wy, &bx, &by);
+		gtk_text_view_get_iter_at_location(chatroom, &iter, bx, by);
+		if(gtk_text_iter_has_tag(&iter, link_tag)) {
+			chatroom_enable_hand_cursor(window, TRUE);
+		} else {
+			chatroom_enable_hand_cursor(window, FALSE);
+		}
 	}
 	return FALSE;
 }
@@ -516,6 +546,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 		"foreground_gdk", _linphone_gtk_chatroom_get_link_color(chat_view),
 		NULL);
 	g_signal_connect(G_OBJECT(tmp_tag), "event", G_CALLBACK(link_event_handler), NULL);
+	g_signal_connect(G_OBJECT(text), "event", G_CALLBACK(chatroom_event), NULL);
 	
 	messages = linphone_chat_room_get_history(cr,NB_MSG_HIST);
 	display_history_message(chat_view,messages,with);
