@@ -2569,6 +2569,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				playfile=NULL;
 			}else if (stream->dir==SalStreamSendOnly){
 				playcard=NULL;
+				/*jehan: why capture card should be null in this case ? Not very good to only rely on stream dir to detect paused state.
+				 * It can also be a simple call in one way audio*/
 				captcard=NULL;
 				recfile=NULL;
 				/*And we will eventually play "playfile" if set by the user*/
@@ -2631,6 +2633,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				if (io.rtp_session == NULL) {
 					ok = FALSE;
 				}
+			} else if (stream->dir==SalStreamSendOnly) { /*no very good, io.xx versus playcard,captcard and call state should be reworked*/
+				io.input_file = playfile; /*quick fix to restaure current behavior which is  SalStreamSendOnly=Paused=playfile*/
 			} else {
 				io.playback_card = playcard;
 				io.capture_card = captcard;
