@@ -40,7 +40,7 @@ Install `GTK`. It is recommended to use the `quartz` backend for better integrat
 ##### Linphone library (liblinphone)
 
         brew install intltool libtool wget pkg-config automake libantlr3.4c \
-                antlr gettext speex ffmpeg readline libvpx opus
+                homebrew/versions/antlr3 gettext speex ffmpeg readline libvpx opus
         ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
         brew link --force gettext
         #readline is required from linphonec.c otherwise compilation will fail
