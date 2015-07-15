@@ -248,8 +248,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		displayName = [NSString stringWithUTF8String:username ?: address];
 		ms_free(address);
 	}
-	[addressLabel setText:displayName];
-	[addressLabel setAccessibilityValue:displayName];
+	if (displayName == nil)
+		LOGF(@"No display name");
+	addressLabel.text = displayName;
+	addressLabel.accessibilityValue = displayName;
 
 	// Avatar
 	if (image == nil) {
@@ -350,8 +352,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	CGRect newTableFrame = [self.tableController.tableView frame];
 
 	if (visible) {
-		[composeLabel
-			setText:[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", @""), [addressLabel text]]];
+		composeLabel.text =
+			[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), addressLabel.text];
 		// pull up the composing frame and shrink the table view
 
 		newTableFrame.size.height -= newComposingFrame.size.height;
