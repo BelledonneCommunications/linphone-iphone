@@ -2142,6 +2142,12 @@ typedef enum _LinphoneConfiguringState {
 } LinphoneConfiguringState;
 
 /**
+ * Converts a _LinphoneConfiguringState enum to a string.
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC const char *linphone_configuring_state_to_string(LinphoneConfiguringState cs);
+
+/**
  * Callback prototype for configuring status changes notification
  * @param lc the LinphoneCore
  * @param message informational message.

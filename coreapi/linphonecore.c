@@ -1496,6 +1496,7 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 	linphone_core_start(lc);
 }
 
+
 static int linphone_core_serialization_ref = 0;
 
 static void linphone_core_activate_log_serialization_if_needed(void) {
@@ -6457,6 +6458,21 @@ LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const cha
 		}
 	}
 	/*not found*/
+	return NULL;
+}
+
+const char* linphone_configuring_state_to_string(LinphoneConfiguringState cs){
+	switch(cs){
+		case LinphoneConfiguringSuccessful:
+			return "LinphoneConfiguringSuccessful";
+		break;
+		case LinphoneConfiguringFailed:
+			return "LinphoneConfiguringFailed";
+		break;
+		case LinphoneConfiguringSkipped:
+			return "LinphoneConfiguringSkipped";
+		break;
+	}
 	return NULL;
 }
 
