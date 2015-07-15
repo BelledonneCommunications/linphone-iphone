@@ -196,6 +196,14 @@ int main (int argc, char *argv[])
 
 	liblinphone_tester_init(NULL);
 
+	{
+		char res_dir[128] = {0};
+		// this allows to launch liblinphone_tester from outside of tester directory
+		strncpy(res_dir, argv[0], strstr(argv[0], ".libs")-argv[0]);
+		bc_tester_set_resource_dir_prefix(res_dir);
+		bc_tester_set_writable_dir_prefix(res_dir);
+	}
+
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
 			linphone_core_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
@@ -226,14 +234,14 @@ int main (int argc, char *argv[])
 		} else if (strcmp(argv[i],"--keep-recorded-files")==0){
 			liblinphone_tester_keep_recorded_files(TRUE);
 		} else {
-			int ret = bc_tester_parse_args(argc, argv, i);
-			if (ret>0) {
-				i += ret - 1;
+			int bret = bc_tester_parse_args(argc, argv, i);
+			if (bret>0) {
+				i += bret - 1;
 				continue;
-			} else if (ret<0) {
+			} else if (bret<0) {
 				bc_tester_helper(argv[0], liblinphone_helper);
 			}
-			return ret;
+			return bret;
 		}
 	}
 
