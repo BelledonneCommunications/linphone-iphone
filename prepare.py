@@ -241,12 +241,6 @@ def generate_makefile(platforms, generator):
         arch_targets += """
 {arch}: all-{arch}
 
-package-in-list-%:
-\tif ! grep -q " $* " <<< " $(packages) "; then \\
-\t\techo "$* not in list of available packages: $(packages)"; \\
-\t\texit 3; \\
-\tfi
-
 {arch}-build:
 \t@for package in $(packages); do \\
 \t\t$(MAKE) {arch}-build-$$package; \\
@@ -272,6 +266,7 @@ package-in-list-%:
 \trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-install;
 
 {arch}-veryclean-%: package-in-list-%
+\ttest -f WORK/ios-{arch}/Build/$*/install_manifest.txt && \\
 \tcat WORK/ios-{arch}/Build/$*/install_manifest.txt | xargs rm; \\
 \trm -rf WORK/ios-{arch}/Build/$*/*; \\
 \trm -f WORK/ios-{arch}/Stamp/EP_$*/*; \\
@@ -330,6 +325,12 @@ all-%:
 \t\trm -f WORK/ios-$*/Stamp/EP_$$package/EP_$$package-update; \\
 \tdone
 \t{generator} WORK/ios-$*/cmake
+
+package-in-list-%:
+\tif ! grep -q " $* " <<< " $(packages) "; then \\
+\t\techo "$* not in list of available packages: $(packages)"; \\
+\t\texit 3; \\
+\tfi
 
 build-%: package-in-list-%
 \t@for arch in $(archs); do \\
