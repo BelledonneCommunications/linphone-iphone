@@ -839,7 +839,8 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 }
 
 - (void)onConfiguringStatusChanged:(LinphoneConfiguringState)status withMessage:(const char *)message {
-	LOGI(@"onConfiguringStatusChanged: %d (message: %s)", status, message);
+	LOGI(@"onConfiguringStatusChanged: %s %@", linphone_configuring_state_to_string(status),
+		 message ? [NSString stringWithFormat:@"(message: %s)", message] : @"");
 
 	NSDictionary *dict = [NSDictionary
 		dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:status], @"state",
@@ -868,7 +869,7 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 			   cfg:(LinphoneProxyConfig *)cfg
 			 state:(LinphoneRegistrationState)state
 		   message:(const char *)message {
-	LOGI(@"NEW REGISTRATION STATE: '%s' (message: '%s')", linphone_registration_state_to_string(state), message);
+	LOGI(@"New registration state: %s (message: %s)", linphone_registration_state_to_string(state), message);
 
 	// Post event
 	NSDictionary *dict = [NSDictionary
@@ -1448,6 +1449,17 @@ static BOOL libStarted = FALSE;
 #ifdef HAVE_WEBRTC
 	libmswebrtc_init();
 #endif
+
+	// Set audio assets
+	const char *lRing =
+		[[LinphoneManager bundleFile:@"ring.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	lp_config_set_string(configDb, "sound", "local_ring", lRing);
+	const char *lRingBack =
+		[[LinphoneManager bundleFile:@"ringback.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	lp_config_set_string(configDb, "sound", "ringback_tone", lRingBack);
+	const char *lPlay =
+		[[LinphoneManager bundleFile:@"hold.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	lp_config_set_string(configDb, "sound", "hold_music", lPlay);
 
 	theLinphoneCore =
 		linphone_core_new_with_config(&linphonec_vtable, configDb, (__bridge void *)(self) /* user_data */);
