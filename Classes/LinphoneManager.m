@@ -79,6 +79,7 @@ extern void libmsx264_init(void);
 extern void libmsopenh264_init(void);
 extern void libmssilk_init(void);
 extern void libmsbcg729_init(void);
+extern void libmswebrtc_init(void);
 
 #define FRONT_CAM_NAME                                                                                                 \
 	"AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
@@ -138,6 +139,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 												   {"amr", 8000, "amr_preference"},
 												   {"gsm", 8000, "gsm_preference"},
 												   {"ilbc", 8000, "ilbc_preference"},
+												   {"isac", 16000, "isac_preference"},
 												   {"pcmu", 8000, "pcmu_preference"},
 												   {"pcma", 8000, "pcma_preference"},
 												   {"g722", 8000, "g722_preference"},
@@ -1418,8 +1420,9 @@ static BOOL libStarted = FALSE;
 		LOGI(@"linphonecore is already created");
 		return;
 	}
+	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
+	[self setLogsEnabled:[self lpConfigBoolForKey:@"debugenable_preference"]];
 	LOGI(@"Create linphonecore");
-
 	connectivity = none;
 
 	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
@@ -1442,8 +1445,9 @@ static BOOL libStarted = FALSE;
 	libmsbcg729_init(); // load g729 plugin
 #endif
 
-	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
-	[self setLogsEnabled:[self lpConfigBoolForKey:@"debugenable_preference"]];
+#ifdef HAVE_WEBRTC
+	libmswebrtc_init();
+#endif
 
 	theLinphoneCore =
 		linphone_core_new_with_config(&linphonec_vtable, configDb, (__bridge void *)(self) /* user_data */);
