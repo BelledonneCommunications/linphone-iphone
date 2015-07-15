@@ -1267,7 +1267,7 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	linphone_chat_message_update_state(chat_msg);
 
 	if (chat_msg && (chat_msg->cb || (chat_msg->callbacks && linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)))) {
-		ms_message("Notifying text delivery with status %i",chat_msg->state);
+		ms_message("Notifying text delivery with status %s",linphone_chat_message_state_to_string(chat_msg->state));
 		if (chat_msg->callbacks && linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)) {
 			linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)(chat_msg, chat_msg->state);
 		} else {
