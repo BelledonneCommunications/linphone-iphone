@@ -36,7 +36,7 @@
 @property (nonatomic, strong) IBOutlet UIMicroButton*   microButton;
 @property (nonatomic, strong) IBOutlet UISpeakerButton* speakerButton;
 @property (nonatomic, strong) IBOutlet UIToggleButton*  routesButton;
-@property (nonatomic, strong) IBOutlet UIToggleButton*  optionsButton;
+@property(nonatomic, strong) IBOutlet UIToggleButton *optionsButton;
 @property (nonatomic, strong) IBOutlet UIHangUpButton*  hangupButton;
 @property (nonatomic, strong) IBOutlet UIView*          padView;
 @property (nonatomic, strong) IBOutlet UIView*          routesView;

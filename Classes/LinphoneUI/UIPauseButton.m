@@ -152,47 +152,30 @@
 
 - (bool)onUpdate {
 	bool ret = false;
-	// TODO: disable pause on not running call
 	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCall *c = call;
 	switch (type) {
-	case UIPauseButtonType_Call: {
-		if (call != nil) {
-			LinphoneCallState state = linphone_call_get_state(call);
-			if (state == LinphoneCallPaused || state == LinphoneCallPausing) {
-				ret = true;
+		case UIPauseButtonType_Conference: {
+			self.enabled = (linphone_core_get_conference_size(lc) > 0);
+			if (self.enabled) {
+				ret = (!linphone_core_is_in_conference(lc));
 			}
-			[self setEnabled:TRUE];
-		} else {
-			[self setEnabled:FALSE];
+			break;
 		}
-		break;
-	}
-	case UIPauseButtonType_Conference: {
-		if (linphone_core_get_conference_size(lc) > 0) {
-			if (!linphone_core_is_in_conference(lc)) {
-				ret = true;
+		case UIPauseButtonType_CurrentCall:
+			c = [UIPauseButton getCall];
+		case UIPauseButtonType_Call: {
+			if (c != nil) {
+				LinphoneCallState state = linphone_call_get_state(c);
+				ret = (state == LinphoneCallPaused || state == LinphoneCallPausing);
+				self.enabled = (state == LinphoneCallPaused || state == LinphoneCallPausing ||
+								state == LinphoneCallStreamsRunning);
+			} else {
+				self.enabled = FALSE;
 			}
-			[self setEnabled:TRUE];
-		} else {
-			[self setEnabled:FALSE];
+			break;
 		}
-		break;
 	}
-	case UIPauseButtonType_CurrentCall: {
-		LinphoneCall *currentCall = [UIPauseButton getCall];
-		if (currentCall != nil) {
-			LinphoneCallState state = linphone_call_get_state(currentCall);
-			if (state == LinphoneCallPaused || state == LinphoneCallPausing) {
-				ret = true;
-			}
-			[self setEnabled:TRUE];
-		} else {
-			[self setEnabled:FALSE];
-		}
-		break;
-	}
-	}
-
 	return ret;
 }
 

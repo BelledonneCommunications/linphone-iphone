@@ -177,12 +177,17 @@
 
 	{
 		UIButton *optionsButtonLandscape = (UIButton *)[landscapeView viewWithTag:[optionsButton tag]];
+		// Set selected+disabled background: IB lack !
+		[optionsButton setBackgroundImage:[UIImage imageNamed:@"options_disabled.png"]
+								 forState:(UIControlStateDisabled | UIControlStateSelected)];
+		[optionsButtonLandscape setBackgroundImage:[UIImage imageNamed:@"options_disabled_landscape.png"]
+										  forState:(UIControlStateDisabled | UIControlStateSelected)];
+
 		// Set selected+over background: IB lack !
 		[optionsButton setBackgroundImage:[UIImage imageNamed:@"options_over.png"]
 								 forState:(UIControlStateHighlighted | UIControlStateSelected)];
 		[optionsButtonLandscape setBackgroundImage:[UIImage imageNamed:@"options_over_landscape.png"]
 										  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
 		[LinphoneUtils buttonFixStates:optionsButton];
 		[LinphoneUtils buttonFixStates:optionsButtonLandscape];
 	}
@@ -268,6 +273,9 @@
 	[pauseButton update];
 	[videoButton update];
 	[hangupButton update];
+
+	optionsButton.enabled =
+		(state == LinphoneCallPaused || state == LinphoneCallPausing || state == LinphoneCallStreamsRunning);
 
 	// Show Pause/Conference button following call count
 	if (linphone_core_get_calls_nb(lc) > 1) {
