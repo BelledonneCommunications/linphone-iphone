@@ -2314,9 +2314,6 @@ static void call_with_file_player(void) {
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
 
-	// inter-correlation is very sensitive to variable offset when comparing files, so using a fixed jitter
-	// buffer length should help it a lot.
-	linphone_core_enable_audio_adaptive_jittcomp(pauline->lc, FALSE);
 
 	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
 	linphone_core_use_files(marie->lc,TRUE);
@@ -4145,10 +4142,6 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
-	// inter-correlation is very sensitive to variable offset when comparing files, so using a fixed jitter
-	// buffer length should help it a lot.
-	linphone_core_enable_audio_adaptive_jittcomp(pauline->lc, FALSE);
-
 	/*make sure we have opus*/
 	pt = linphone_core_find_payload_type(marie->lc, codec_name, clock_rate, 2);
 	if (!pt) {
@@ -4174,14 +4167,14 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	lp_config_set_string(pauline->lc->config,"sound","features","NONE");
 
 	if (!BC_ASSERT_TRUE(call(pauline,marie))) goto end;
-	wait_for_until(marie->lc, pauline->lc, &dummy, 1,1000);
+	wait_for_until(marie->lc, pauline->lc, &dummy, 1,6000);
 	end_call(pauline, marie);
 
 
 	if (clock_rate!=48000) {
 		ms_warning("Similarity checking not implemented for files not having the same sampling rate");
 	}else{
-#if !defined(__arm__) && !defined(__arm64__) && !defined(TARGET_IPHONE_SIMULATOR) && !defined(ANDROID)
+#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
 		double similar;
 		const double threshold = .7f;
 		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
@@ -4194,6 +4187,7 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	ms_free(stereo_file);
+	unlink(recordpath);
 	ms_free(recordpath);
 
 	leaked_objects=belle_sip_object_get_object_count()-begin;
