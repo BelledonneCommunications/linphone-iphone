@@ -408,6 +408,7 @@ static GdkColor *_linphone_gtk_chatroom_get_link_color(GtkWidget *chatview) {
 
 static void open_uri(const char *uri) {
 #ifdef __linux
+	GError *error = NULL;
 	gchar *argv[3] = {
 		g_strdup("xdg-open"),
 		g_strdup(uri),
@@ -421,11 +422,17 @@ static void open_uri(const char *uri) {
 		NULL,
 		NULL,
 		NULL,
-		NULL
+		&error
 	);
-	
 	g_free(argv[0]);
 	g_free(argv[1]);
+	
+	if(error) {
+		g_warning("Cannot open %s: %s", uri, error->message);
+		g_error_free(error);
+	}
+#else
+	g_warning("Cannot open URIs from chat room on this platform");
 #endif
 }
 
