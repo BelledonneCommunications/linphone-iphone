@@ -22,6 +22,7 @@
 #import "UICompositeViewController.h"
 #import "UILinphoneTextField.h"
 #import "LinphoneUI/UILinphoneButton.h"
+#import "TPKeyboardAvoidingScrollView.h"
 
 @interface WizardViewController : TPMultiLayoutViewController
 <UITextFieldDelegate,
@@ -37,7 +38,7 @@
     NSMutableArray *historyViews;
 }
 
-@property (nonatomic, strong) IBOutlet UIScrollView *contentView;
+@property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;
 
 @property (nonatomic, strong) IBOutlet UIView *welcomeView;
 @property (nonatomic, strong) IBOutlet UIView *choiceView;
@@ -56,7 +57,6 @@
 @property (nonatomic, strong) IBOutlet UIButton *externalAccountButton;
 @property (strong, nonatomic) IBOutlet UIButton *remoteProvisioningButton;
 @property (strong, nonatomic) IBOutlet UILinphoneButton *registerButton;
-@property (strong, nonatomic) IBOutlet UILinphoneButton *purchaseButton;
 
 @property (strong, nonatomic) IBOutlet UILinphoneTextField *createAccountUsername;
 @property (strong, nonatomic) IBOutlet UILinphoneTextField *connectAccountUsername;
@@ -83,7 +83,6 @@
 - (IBAction)onExternalAccountClick:(id)sender;
 - (IBAction)onCheckValidationClick:(id)sender;
 - (IBAction)onRemoteProvisioningClick:(id)sender;
-- (IBAction)onPurchaseAccountClick:(id)sender;
 
 - (IBAction)onSignInClick:(id)sender;
 - (IBAction)onSignInExternalClick:(id)sender;

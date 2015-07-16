@@ -109,7 +109,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(registrationUpdateEvent:)
 												 name:kLinphoneRegistrationUpdate
@@ -118,39 +117,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector:@selector(configuringUpdate:)
 												 name:kLinphoneConfiguringStateUpdate
 											   object:nil];
-
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(keyboardWillShow:)
-												 name:UIKeyboardWillShowNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(keyboardWillHide:)
-												 name:UIKeyboardWillHideNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(inAppPurchaseNotification:)
-												 name:kIAPPurchaseSucceeded
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(inAppPurchaseNotification:)
-												 name:kIAPPurchaseTrying
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(inAppPurchaseNotification:)
-												 name:kIAPPurchaseFailed
-											   object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
-
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kIAPPurchaseFailed object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kIAPPurchaseTrying object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kIAPPurchaseSucceeded object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -183,12 +154,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 			text.placeholder = NSLocalizedString(@"Username", nil);
 		}
 	}
-
-	BOOL mustPurchaseNewAccount =
-		([[[LinphoneManager instance] iapManager] enabled] &&
-		 [[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"] != nil);
-	_registerButton.hidden = mustPurchaseNewAccount;
-	_purchaseButton.hidden = !mustPurchaseNewAccount;
 }
 
 #pragma mark -
@@ -882,46 +847,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)inAppPurchaseNotification:(NSNotification *)notification {
-	BOOL wasWaitingForInApp = (currentView == createAccountView);
-	NSString *paidAccountID =
-		[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
-	if (wasWaitingForInApp && [paidAccountID isEqualToString:[notification.userInfo objectForKey:@"product_id"]]) {
-		if ([notification.name isEqual:kIAPPurchaseTrying]) {
-			[waitView setHidden:false];
-		} else if ([notification.name isEqual:kIAPPurchaseFailed]) {
-			[waitView setHidden:true];
-		} else if ([notification.name isEqual:kIAPPurchaseSucceeded]) {
-			[waitView setHidden:true];
-			// now that the purchase is made, let's create the account.
-			[self onPurchaseAccountClick:self];
-		}
-	}
-}
-
-- (IBAction)onPurchaseAccountClick:(id)sender {
-	UITextField *username_tf = [WizardViewController findTextField:ViewElement_Username view:contentView];
-	NSString *username = username_tf.text;
-	NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
-	NSString *password2 = [WizardViewController findTextField:ViewElement_Password2 view:contentView].text;
-	NSString *email = [WizardViewController findTextField:ViewElement_Email view:contentView].text;
-
-	if ([self verificationRegisterWithUsername:username password:password password2:password2 email:email]) {
-		InAppProductsManager *iapm = [[LinphoneManager instance] iapManager];
-		// if has already purchased, continue
-		if ([iapm isPurchasedWithID:[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id"
-																		  forSection:@"in_app_purchase"]]) {
-			username = [username lowercaseString];
-			[username_tf setText:username];
-			NSString *identity = [self identityFromUsername:username];
-			[self checkUserExist:identity];
-		} else {
-			[iapm purchaseAccount:username withPassword:password andEmail:email monthly:FALSE];
-			// inAppPurchaseNotification will take care of bringing us to the next view now
-		}
-	}
-}
-
 - (IBAction)onProvisionedLoginClick:(id)sender {
 	NSString *username = provisionedUsername.text;
 	NSString *password = provisionedPassword.text;
@@ -944,6 +869,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self.waitView setHidden:false];
 		[self addProvisionedProxy:username withPassword:password withDomain:provisionedDomain.text];
 	}
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	[contentView contentSizeToFit];
 }
 
 - (IBAction)onViewTap:(id)sender {
@@ -1007,71 +936,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)registrationUpdateEvent:(NSNotification *)notif {
 	NSString *message = [notif.userInfo objectForKey:@"message"];
 	[self registrationUpdate:[[notif.userInfo objectForKey:@"state"] intValue] message:message];
-}
-
-#pragma mark - Keyboard Event Functions
-
-- (void)keyboardWillHide:(NSNotification *)notif {
-	// CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-	// CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-	UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
-	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-	[UIView beginAnimations:@"resize" context:nil];
-	[UIView setAnimationDuration:duration];
-	[UIView setAnimationCurve:curve];
-	[UIView setAnimationBeginsFromCurrentState:TRUE];
-
-	// Move view
-	UIEdgeInsets inset = {0, 0, 0, 0};
-	[contentView setContentInset:inset];
-	[contentView setScrollIndicatorInsets:inset];
-	[contentView setShowsVerticalScrollIndicator:FALSE];
-
-	[UIView commitAnimations];
-}
-
-- (void)keyboardWillShow:(NSNotification *)notif {
-	// CGRect beginFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-	CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-	UIViewAnimationCurve curve = [[[notif userInfo] objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
-	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-	[UIView beginAnimations:@"resize" context:nil];
-	[UIView setAnimationDuration:duration];
-	[UIView setAnimationCurve:curve];
-	[UIView setAnimationBeginsFromCurrentState:TRUE];
-
-	if (([[UIDevice currentDevice].systemVersion floatValue] < 8) &&
-		UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-		int width = endFrame.size.height;
-		endFrame.size.height = endFrame.size.width;
-		endFrame.size.width = width;
-	}
-
-	// Change inset
-	{
-		UIEdgeInsets inset = {0, 0, 0, 0};
-		CGRect frame = [contentView frame];
-		CGRect rect = [PhoneMainView instance].view.bounds;
-		CGPoint pos = {frame.size.width, frame.size.height};
-		CGPoint gPos =
-			[contentView convertPoint:pos
-							   toView:[UIApplication sharedApplication].keyWindow.rootViewController.view]; // Bypass
-																											// IOS bug
-																											// on
-																											// landscape
-																											// mode
-		inset.bottom = -(rect.size.height - gPos.y - endFrame.size.height);
-		if (inset.bottom < 0)
-			inset.bottom = 0;
-
-		[contentView setContentInset:inset];
-		[contentView setScrollIndicatorInsets:inset];
-		CGRect fieldFrame = activeTextField.frame;
-		fieldFrame.origin.y += fieldFrame.size.height;
-		[contentView scrollRectToVisible:fieldFrame animated:TRUE];
-		[contentView setShowsVerticalScrollIndicator:TRUE];
-	}
-	[UIView commitAnimations];
 }
 
 #pragma mark - XMLRPCConnectionDelegate Functions

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13C1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
-        <deployment defaultVersion="1536" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WizardViewController">
@@ -21,7 +21,7 @@
             <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" tag="1" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" id="98" userLabel="contentView">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" tag="1" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" id="98" userLabel="contentView" customClass="TPKeyboardAvoidingScrollView">
                     <rect key="frame" x="0.0" y="0.0" width="768" height="966"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 </scrollView>
@@ -98,12 +98,14 @@
                 </view>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
         </view>
         <view contentMode="scaleToFill" id="118" userLabel="Landscape View">
             <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" tag="1" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" id="119" userLabel="contentView">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" tag="1" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" id="119" userLabel="contentView" customClass="TPKeyboardAvoidingScrollView">
                     <rect key="frame" x="0.0" y="0.0" width="1024" height="711"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 </scrollView>
@@ -180,6 +182,8 @@
                 </view>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
         </view>
     </objects>
     <resources>
@@ -200,4 +204,9 @@
         <image name="setup_start_over.png" width="320" height="154"/>
         <image name="setup_start_over_landscape.png" width="1024" height="171"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>

@@ -44,9 +44,8 @@
 
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
-		_enabled =
-			(([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) && ([SKPaymentQueue canMakePayments]) &&
-			 ([[LinphoneManager instance] lpConfigBoolForKey:@"enabled" forSection:@"in_app_purchase"]));
+		_enabled = (([SKPaymentQueue canMakePayments]) &&
+					([[LinphoneManager instance] lpConfigBoolForKey:@"enabled" forSection:@"in_app_purchase"]));
 		_initialized = false;
 		_available = false;
 		_accountActivationInProgress = false;

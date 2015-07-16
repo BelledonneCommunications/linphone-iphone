@@ -163,6 +163,11 @@
 		639CEB061A1DF4F1004DE38F /* UIChatRoomCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB081A1DF4F1004DE38F /* UIChatRoomCell.xib */; };
 		639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */; };
 		63A4280A1B26F576000DAB93 /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
+		63B81A0C1B57DA33009604A6 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 63B81A031B57DA33009604A6 /* LICENSE.txt */; };
+		63B81A0D1B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A051B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m */; };
+		63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A071B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m */; };
+		63B81A0F1B57DA33009604A6 /* TPKeyboardAvoidingTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A091B57DA33009604A6 /* TPKeyboardAvoidingTableView.m */; };
+		63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A0B1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m */; };
 		63C458261B5680AC009F2D7E /* ring.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2237D4081084D7A9001383EE /* ring.wav */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
 		63D2680F1B174A5E00A2CC11 /* numpad_one_voicemail_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */; };
@@ -1094,6 +1099,15 @@
 		639CEB0A1A1DF4FA004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatCell.xib; sourceTree = "<group>"; };
 		639CEB0C1A1DF528004DE38F /* fr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICallCell.strings; sourceTree = "<group>"; };
 		639CEB0D1A1DF52C004DE38F /* ru */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/UICallCell.strings; sourceTree = "<group>"; };
+		63B81A031B57DA33009604A6 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		63B81A041B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPKeyboardAvoidingCollectionView.h; sourceTree = "<group>"; };
+		63B81A051B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingCollectionView.m; sourceTree = "<group>"; };
+		63B81A061B57DA33009604A6 /* TPKeyboardAvoidingScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPKeyboardAvoidingScrollView.h; sourceTree = "<group>"; };
+		63B81A071B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingScrollView.m; sourceTree = "<group>"; };
+		63B81A081B57DA33009604A6 /* TPKeyboardAvoidingTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPKeyboardAvoidingTableView.h; sourceTree = "<group>"; };
+		63B81A091B57DA33009604A6 /* TPKeyboardAvoidingTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingTableView.m; sourceTree = "<group>"; };
+		63B81A0A1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+TPKeyboardAvoidingAdditions.h"; sourceTree = "<group>"; };
+		63B81A0B1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+TPKeyboardAvoidingAdditions.m"; sourceTree = "<group>"; };
 		63CD4B4D1A5AAC8C00B84282 /* DTAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAlertView.h; sourceTree = "<group>"; };
 		63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
 		63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = numpad_one_voicemail_default.png; path = Resources/numpad_one_voicemail_default.png; sourceTree = "<group>"; };
@@ -2405,6 +2419,23 @@
 			path = TestsLiblinphone;
 			sourceTree = "<group>";
 		};
+		63B81A021B57DA33009604A6 /* TPKeyboardAvoiding */ = {
+			isa = PBXGroup;
+			children = (
+				63B81A031B57DA33009604A6 /* LICENSE.txt */,
+				63B81A041B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.h */,
+				63B81A051B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m */,
+				63B81A061B57DA33009604A6 /* TPKeyboardAvoidingScrollView.h */,
+				63B81A071B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m */,
+				63B81A081B57DA33009604A6 /* TPKeyboardAvoidingTableView.h */,
+				63B81A091B57DA33009604A6 /* TPKeyboardAvoidingTableView.m */,
+				63B81A0A1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.h */,
+				63B81A0B1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m */,
+			);
+			name = TPKeyboardAvoiding;
+			path = Utils/TPKeyboardAvoiding;
+			sourceTree = "<group>";
+		};
 		D326483415887D4400930C67 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -2417,6 +2448,7 @@
 				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
 				6371579F1B283FE200C91677 /* FileTransferDelegate.h */,
 				637157A01B283FE200C91677 /* FileTransferDelegate.m */,
+				63B81A021B57DA33009604A6 /* TPKeyboardAvoiding */,
 				D3ED40141602172200BF332B /* GrowingTextView */,
 				D3807FC715C2894A005BE9BC /* InAppSettingsKit */,
 				D3B90E1115C2CB5700F64F8C /* NinePatch.xcodeproj */,
@@ -3735,6 +3767,7 @@
 				D339890215C6DD1600CAF1E4 /* video_on_over_landscape~ipad.png in Resources */,
 				D339890615C6E16F00CAF1E4 /* dialer_alt_back_default_landscape~ipad.png in Resources */,
 				D339890815C6E16F00CAF1E4 /* dialer_alt_back_over_landscape~ipad.png in Resources */,
+				63B81A0C1B57DA33009604A6 /* LICENSE.txt in Resources */,
 				D30BBD1815D402A7000F93DD /* contact_ok_disabled.png in Resources */,
 				D3804E6015D92A57008072A5 /* msg.caf in Resources */,
 				D3804E6215D92A57008072A5 /* msg.wav in Resources */,
@@ -3948,6 +3981,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63B81A0F1B57DA33009604A6 /* TPKeyboardAvoidingTableView.m in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,
 				22F2508E107141E100AC9B3F /* DialerViewController.m in Sources */,
@@ -3984,10 +4018,13 @@
 				D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
 				D35E7597159460580066B1C1 /* ChatViewController.m in Sources */,
 				D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */,
+				63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
 				F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */,
+				63B81A0D1B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m in Sources */,
 				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
 				63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */,
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
+				63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */,
 				D3EA540D1598528B0037DC6B /* ChatTableViewController.m in Sources */,
 				D3EA5411159853750037DC6B /* UIChatCell.m in Sources */,
 				D3F26BF115986B73005F9CAB /* IncomingCallViewController.m in Sources */,
