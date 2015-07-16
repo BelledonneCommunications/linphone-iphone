@@ -3797,6 +3797,11 @@ LINPHONE_PUBLIC LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCor
 LINPHONE_PUBLIC	int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
 LINPHONE_PUBLIC	int linphone_core_add_all_to_conference(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
+/**
+ * Indicates whether the local participant is part of a conference.
+ * @param lc the linphone core
+ * @return TRUE if the local participant is in a conference, FALSE otherwise.
+**/
 LINPHONE_PUBLIC	bool_t linphone_core_is_in_conference(const LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_enter_conference(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_leave_conference(LinphoneCore *lc);
