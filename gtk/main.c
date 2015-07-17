@@ -1075,7 +1075,7 @@ static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend
 		return;
 	}
 
-	message=g_strdup_printf(_("%s would like to add you to his contact list.\nWould you allow him to see your presence status or add him to your contact list ?\nIf you answer no, this person will be temporarily blacklisted."),url);
+	message=g_strdup_printf(_("%s would like to add you to his/her contact list.\nWould you add him/her to your contact list and allow him/her to see your presence status?\nIf you answer no, this person will be temporarily blacklisted."),url);
 	dialog = gtk_message_dialog_new (
 				GTK_WINDOW(linphone_gtk_get_main_window()),
                                 GTK_DIALOG_DESTROY_WITH_PARENT,

@@ -9,10 +9,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-26 15:49+0200\n"
-"PO-Revision-Date: 2015-06-26 14:12+0000\n"
-"Last-Translator: محيي الدين <tx99h4@hotmail.com>\n"
-"Language-Team: Arabic (http://www.transifex.com/projects/p/linphone-gtk/language/ar/)\n"
+"POT-Creation-Date: 2015-07-17 09:34+0200\n"
+"PO-Revision-Date: 2015-07-17 07:34+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
+"Language-Team: Arabic (http://www.transifex.com/p/linphone-gtk/language/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -139,88 +139,88 @@ msgstr "ابدأ مرشد الصوت"
 msgid "Run self test and exit 0 if succeed"
 msgstr "شغِّل الاختبار الذاتي ثم اخرِجْ 0 إذا نجح"
 
-#: ../gtk/main.c:1082
+#: ../gtk/main.c:1078
 #, c-format
 msgid ""
-"%s would like to add you to his contact list.\n"
-"Would you allow him to see your presence status or add him to your contact list ?\n"
+"%s would like to add you to his/her contact list.\n"
+"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr "%s يريد إضافتك إلى جهة اتصاله.\nهل تريد السماح له برؤية معلومات حضورك وكذا إضافته إلى جهة اتصالك أيضا ؟ إذا أجبت بلا، سيُحظَر هذا الشخص مؤقتا."
+msgstr ""
 
-#: ../gtk/main.c:1159
+#: ../gtk/main.c:1155
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr "ادخل كلمة السر لـ  <i>%s</i>\n في نطاق <i>%s</i>:"
 
-#: ../gtk/main.c:1280
+#: ../gtk/main.c:1276
 msgid "Call error"
 msgstr "خطأ في المكالمة"
 
-#: ../gtk/main.c:1283 ../coreapi/linphonecore.c:3909
+#: ../gtk/main.c:1279 ../coreapi/linphonecore.c:3739
 msgid "Call ended"
 msgstr "إنتهت المكالمة"
 
-#: ../gtk/main.c:1286 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1282 ../coreapi/call_log.c:221
 msgid "Incoming call"
 msgstr "مكالمة واردة"
 
-#: ../gtk/main.c:1288 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1284 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
 msgid "Answer"
 msgstr "أجِبْ"
 
-#: ../gtk/main.c:1290 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1286 ../gtk/main.ui.h:6
 msgid "Decline"
 msgstr "ارفضْ"
 
-#: ../gtk/main.c:1296
+#: ../gtk/main.c:1292
 msgid "Call paused"
 msgstr "المكالمة متوقفة"
 
-#: ../gtk/main.c:1296
+#: ../gtk/main.c:1292
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>بواسطة %s</b>"
 
-#: ../gtk/main.c:1366
+#: ../gtk/main.c:1362
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "يود %s تشغيل الفيديو. هل تقبل ذلك ؟"
 
-#: ../gtk/main.c:1521
+#: ../gtk/main.c:1517
 msgid "Website link"
 msgstr "وصلة إلى الموقع وِبْ"
 
-#: ../gtk/main.c:1580 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1576 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "لِنْفُونْ"
 
-#: ../gtk/main.c:1581
+#: ../gtk/main.c:1577
 msgid "A video internet phone"
 msgstr "الهاتف المرئي عبر الإنترنت"
 
-#: ../gtk/main.c:1640
+#: ../gtk/main.c:1636
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (افتراضي)"
 
-#: ../gtk/main.c:1978 ../coreapi/callbacks.c:1077
+#: ../gtk/main.c:1974 ../coreapi/callbacks.c:1077
 #, c-format
 msgid "We are transferred to %s"
 msgstr "التحويل إلى %s"
 
-#: ../gtk/main.c:1988
+#: ../gtk/main.c:1984
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr "لا وجود للوحة الصوت على هذا الحاسوب.\nلن تتمكن من تلقي أو إجراء أي مكالمة."
 
-#: ../gtk/main.c:2120
+#: ../gtk/main.c:2116
 msgid "A free SIP video-phone"
 msgstr "هاتف SIP المرئي الحر"
 
-#: ../gtk/main.c:2229
+#: ../gtk/main.c:2225
 #, c-format
 msgid "Hello\n"
 msgstr "أهلا\n"
@@ -304,75 +304,75 @@ msgstr "الحساب"
 
 #: ../gtk/propertybox.c:1161
 msgid "English"
-msgstr "الإنجليزية"
+msgstr "English"
 
 #: ../gtk/propertybox.c:1162
 msgid "French"
-msgstr "الفرنسية"
+msgstr "Français"
 
 #: ../gtk/propertybox.c:1163
 msgid "Swedish"
-msgstr "السويدية"
+msgstr "Svenska"
 
 #: ../gtk/propertybox.c:1164
 msgid "Italian"
-msgstr "الإيطالية"
+msgstr "Italiano"
 
 #: ../gtk/propertybox.c:1165
 msgid "Spanish"
-msgstr "الإسبانية"
+msgstr "Español"
 
 #: ../gtk/propertybox.c:1166
 msgid "Brazilian Portugese"
-msgstr "البرتغالية البرازيلية"
+msgstr "Português do Brasil"
 
 #: ../gtk/propertybox.c:1167
 msgid "Polish"
-msgstr "البولونية"
+msgstr "Polski"
 
 #: ../gtk/propertybox.c:1168
 msgid "German"
-msgstr "الألمانية"
+msgstr "Deutsch"
 
 #: ../gtk/propertybox.c:1169
 msgid "Russian"
-msgstr "الروسية"
+msgstr "Русский"
 
 #: ../gtk/propertybox.c:1170
 msgid "Japanese"
-msgstr "اليابانية"
+msgstr "日本語"
 
 #: ../gtk/propertybox.c:1171
 msgid "Dutch"
-msgstr "الهولندية"
+msgstr "Nederlands"
 
 #: ../gtk/propertybox.c:1172
 msgid "Hungarian"
-msgstr "الهنغارية"
+msgstr "Magyar"
 
 #: ../gtk/propertybox.c:1173
 msgid "Czech"
-msgstr "التشيكية"
+msgstr "Čeština"
 
 #: ../gtk/propertybox.c:1174
 msgid "Chinese"
-msgstr "الصينية المبسَّطة"
+msgstr "简体中文"
 
 #: ../gtk/propertybox.c:1175
 msgid "Traditional Chinese"
-msgstr "الصينية التقليدية"
+msgstr "繁体中文"
 
 #: ../gtk/propertybox.c:1176
 msgid "Norwegian"
-msgstr "النرويجية"
+msgstr "Norsk bokmål"
 
 #: ../gtk/propertybox.c:1177
 msgid "Hebrew"
-msgstr "العبرية"
+msgstr "עברית"
 
 #: ../gtk/propertybox.c:1178
 msgid "Serbian"
-msgstr "الصربية"
+msgstr "Српски"
 
 #: ../gtk/propertybox.c:1179
 msgid "Arabic"
@@ -380,7 +380,7 @@ msgstr "العربية"
 
 #: ../gtk/propertybox.c:1180
 msgid "Turkish"
-msgstr "التركية"
+msgstr "Türkçe"
 
 #: ../gtk/propertybox.c:1237
 msgid ""
@@ -587,7 +587,7 @@ msgstr "التحقق من الحساب في تقدم"
 msgid "Error"
 msgstr "خطأ"
 
-#: ../gtk/setupwizard.c:619 ../gtk/audio_assistant.c:534
+#: ../gtk/setupwizard.c:619 ../gtk/audio_assistant.c:541
 msgid "Terminating"
 msgstr "في طور الإنهاء"
 
@@ -793,101 +793,101 @@ msgstr "يجلب من %s"
 msgid "Downloading of remote configuration from %s failed."
 msgstr "فَشِل تنزيل التهيئة عن بعد من %s ."
 
-#: ../gtk/audio_assistant.c:98
+#: ../gtk/audio_assistant.c:103
 msgid "No voice detected"
 msgstr "لم يكتشف صوتاً"
 
-#: ../gtk/audio_assistant.c:99
+#: ../gtk/audio_assistant.c:104
 msgid "Too low"
 msgstr "خافِت"
 
-#: ../gtk/audio_assistant.c:100
+#: ../gtk/audio_assistant.c:105
 msgid "Good"
 msgstr "جيد"
 
-#: ../gtk/audio_assistant.c:101
+#: ../gtk/audio_assistant.c:106
 msgid "Too loud"
 msgstr "صاخب"
 
-#: ../gtk/audio_assistant.c:183
+#: ../gtk/audio_assistant.c:188
 msgid "Did you hear three beeps ?"
 msgstr "هل سمعت ثلاث رنات ؟"
 
-#: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
+#: ../gtk/audio_assistant.c:299 ../gtk/audio_assistant.c:304
 msgid "Sound preferences not found "
 msgstr "لم يعثر على تفضيلات الصوت"
 
-#: ../gtk/audio_assistant.c:306
+#: ../gtk/audio_assistant.c:313
 msgid "Cannot launch system sound control "
 msgstr "لم يتمكن من تشغيل التحكم في الصوت للنظام"
 
-#: ../gtk/audio_assistant.c:318
+#: ../gtk/audio_assistant.c:325
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
 msgstr "مرحبا !\nسيمكنك هذا المرشد من تهيئة إعدادات الصوت من أجل لِنْفُونْ"
 
-#: ../gtk/audio_assistant.c:328
+#: ../gtk/audio_assistant.c:335
 msgid "Capture device"
 msgstr "جهاز الالتقاط"
 
-#: ../gtk/audio_assistant.c:329
+#: ../gtk/audio_assistant.c:336
 msgid "Recorded volume"
 msgstr "الحجم المسجَّل"
 
-#: ../gtk/audio_assistant.c:333
+#: ../gtk/audio_assistant.c:340
 msgid "No voice"
 msgstr "صامت"
 
-#: ../gtk/audio_assistant.c:334 ../gtk/audio_assistant.c:373
+#: ../gtk/audio_assistant.c:341 ../gtk/audio_assistant.c:380
 msgid "System sound preferences"
 msgstr "تفضيلات الصوت للنظام"
 
-#: ../gtk/audio_assistant.c:369
+#: ../gtk/audio_assistant.c:376
 msgid "Playback device"
 msgstr "جهاز السماع"
 
-#: ../gtk/audio_assistant.c:370
+#: ../gtk/audio_assistant.c:377
 msgid "Play three beeps"
 msgstr "شغِّل ثلاث رنَّات"
 
-#: ../gtk/audio_assistant.c:403
+#: ../gtk/audio_assistant.c:410
 msgid "Press the record button and say some words"
 msgstr "اضغط على زر التسجيل وانطق ببعض الكلمات"
 
-#: ../gtk/audio_assistant.c:404
+#: ../gtk/audio_assistant.c:411
 msgid "Listen to your record voice"
 msgstr "استمع لصوتك المسجَّل"
 
-#: ../gtk/audio_assistant.c:405
+#: ../gtk/audio_assistant.c:412
 msgid "Record"
 msgstr "تسجيل"
 
-#: ../gtk/audio_assistant.c:406
+#: ../gtk/audio_assistant.c:413
 msgid "Play"
 msgstr "تشغيل"
 
-#: ../gtk/audio_assistant.c:433
+#: ../gtk/audio_assistant.c:440
 msgid "Let's start Linphone now"
 msgstr "لنُشغِّل لِنْفُونْ الآن"
 
-#: ../gtk/audio_assistant.c:503
+#: ../gtk/audio_assistant.c:510
 msgid "Audio Assistant"
 msgstr "مرشد الصوت"
 
-#: ../gtk/audio_assistant.c:513 ../gtk/main.ui.h:32
+#: ../gtk/audio_assistant.c:520 ../gtk/main.ui.h:32
 msgid "Audio assistant"
 msgstr "مرشد الصوت"
 
-#: ../gtk/audio_assistant.c:518
+#: ../gtk/audio_assistant.c:525
 msgid "Mic Gain calibration"
 msgstr "معايرة كسب الميكروفون"
 
-#: ../gtk/audio_assistant.c:524
+#: ../gtk/audio_assistant.c:531
 msgid "Speaker volume calibration"
 msgstr "معايرة شدة مكبر الصوت"
 
-#: ../gtk/audio_assistant.c:529
+#: ../gtk/audio_assistant.c:536
 msgid "Record and Play"
 msgstr "سَجِّل واقرأ "
 
@@ -1764,60 +1764,60 @@ msgstr "تجري التهيئة..."
 msgid "Please wait while fetching configuration from server..."
 msgstr "رجاءً انتظر ريثما ينتهي من جلب الإعدادات من الخادم..."
 
-#: ../coreapi/linphonecore.c:1567
+#: ../coreapi/linphonecore.c:1483
 msgid "Ready"
 msgstr "جاهز"
 
-#: ../coreapi/linphonecore.c:2583
+#: ../coreapi/linphonecore.c:2413
 msgid "Configuring"
 msgstr "تجري التهيئة"
 
-#: ../coreapi/linphonecore.c:2757
+#: ../coreapi/linphonecore.c:2587
 msgid "Looking for telephone number destination..."
 msgstr "يجري البحث عن وجهة رقم الهاتف..."
 
-#: ../coreapi/linphonecore.c:2759
+#: ../coreapi/linphonecore.c:2589
 msgid "Could not resolve this number."
 msgstr "لم يتمكن من إيجاد هذا الرقم."
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:3045
+#: ../coreapi/linphonecore.c:2875
 msgid "Contacting"
 msgstr "يتصل ب"
 
-#: ../coreapi/linphonecore.c:3050
+#: ../coreapi/linphonecore.c:2880
 msgid "Could not call"
 msgstr "لم يتمكن من الاتصال"
 
-#: ../coreapi/linphonecore.c:3201
+#: ../coreapi/linphonecore.c:3031
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "آسف، وصل عدد المكالمات الآنية إلى حده الأقصى"
 
-#: ../coreapi/linphonecore.c:3359
+#: ../coreapi/linphonecore.c:3189
 msgid "is contacting you"
 msgstr "يتصل بك"
 
-#: ../coreapi/linphonecore.c:3360
+#: ../coreapi/linphonecore.c:3190
 msgid " and asked autoanswer."
 msgstr "ويطلب ردا تلقائيا."
 
-#: ../coreapi/linphonecore.c:3486
+#: ../coreapi/linphonecore.c:3316
 msgid "Modifying call parameters..."
 msgstr "يجري تعديل إعدادات المكالمة..."
 
-#: ../coreapi/linphonecore.c:3865
+#: ../coreapi/linphonecore.c:3695
 msgid "Connected."
 msgstr "متصل."
 
-#: ../coreapi/linphonecore.c:3890
+#: ../coreapi/linphonecore.c:3720
 msgid "Call aborted"
 msgstr "أُلغيت المكالمة"
 
-#: ../coreapi/linphonecore.c:4087
+#: ../coreapi/linphonecore.c:3917
 msgid "Could not pause the call"
 msgstr "لم يتمكن من توقيف المكالمة مؤقتا"
 
-#: ../coreapi/linphonecore.c:4090
+#: ../coreapi/linphonecore.c:3920
 msgid "Pausing the current call..."
 msgstr "وضع المكالمة قيد الانتظار..."
 
@@ -1893,7 +1893,7 @@ msgid ""
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr "إن هوية SIP التي أدخلت غير صحيحة.\nيجب أن تكون بهذا النمط sip:username@proxydomain، مثلا sip:alice@example.net"
 
-#: ../coreapi/proxy.c:1427
+#: ../coreapi/proxy.c:1420
 #, c-format
 msgid "Could not login as %s"
 msgstr "تعذر الولوج بالهوية %s"
@@ -2017,7 +2017,7 @@ msgstr "شارة التحقق من الهوية هي %s"
 msgid "Call parameters were successfully modified."
 msgstr "عُدِّلت معاملات المكالمات بنجاج."
 
-#: ../coreapi/linphonecall.c:3822
+#: ../coreapi/linphonecall.c:3826
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
