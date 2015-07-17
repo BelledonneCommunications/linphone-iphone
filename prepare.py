@@ -471,7 +471,6 @@ def main(argv=None):
                            'x86_64', 'devices'], help="The platform to build for (default is 'x86_64 devices'). Space separated architectures in list: {0}.".format(', '.join([repr(platform) for platform in platforms])))
 
     args, additional_args = argparser.parse_known_args()
-    additional_args += ["-G", args.G__generator]
 
     if args.debug_verbose:
         additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
@@ -485,6 +484,14 @@ def main(argv=None):
 
     install_git_hook()
 
+    additional_args += ["-G", args.G__generator]
+    if args.G__generator == 'Ninja':
+        if check_installed("ninja", "it") != 0:
+            return 1
+        generator = 'ninja -C'
+    else:
+        generator = '$(MAKE) -C'
+
     selected_platforms = []
     for platform in args.platform:
         if platform == 'all':
@@ -496,13 +503,6 @@ def main(argv=None):
         else:
             selected_platforms += [platform]
     selected_platforms = list(set(selected_platforms))
-
-    if args.G__generator == 'Ninja':
-        if check_installed("ninja", "it") != 0:
-            return 1
-        generator = 'ninja -C'
-    else:
-        generator = '$(MAKE) -C'
 
     for platform in selected_platforms:
         target = targets[platform]

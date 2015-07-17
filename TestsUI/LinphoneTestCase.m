@@ -21,7 +21,7 @@
 
 	NSString *language = [[NSLocale preferredLanguages] objectAtIndex:0];
 	if (!([language isEqualToString:@"en"] || [language containsString:@"en-"])) {
-		LOGF(@"Language must be en (English) instead of %@", language);
+		LOGF(@"Language must be 'en' (English) instead of %@", language);
 	}
 	linphone_core_set_log_level(ORTP_WARNING);
 }
@@ -29,8 +29,9 @@
 - (void)beforeAll {
 	[super beforeAll];
 #if TARGET_IPHONE_SIMULATOR
-	[tester acknowledgeSystemAlert]; // Contact access alert
-	[tester acknowledgeSystemAlert]; // Local notification / badge alert
+	while ([tester acknowledgeSystemAlert]) {
+		[tester waitForTimeInterval:.5f];
+	};
 #endif
 	// go to dialer
 	for (NSString *button in @[ @"Cancel", @"Back", @"Dialer" ]) {
