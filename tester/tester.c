@@ -240,6 +240,7 @@ bool_t transport_supported(LinphoneTransportType transport) {
 LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	char *rc_path = NULL;
+	char *hellopath = bc_tester_res("sounds/hello8000.wav");
 	mgr->number_of_cunit_error_at_creation = CU_get_number_of_failures();
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
@@ -288,7 +289,7 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	}
 #endif
 
-	char *hellopath = bc_tester_res("sounds/hello8000.wav");
+
 	linphone_core_set_play_file(mgr->lc,hellopath); /*is also used when in pause*/
 	ms_free(hellopath);
 
