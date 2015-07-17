@@ -143,13 +143,13 @@ static gboolean scroll_to_end(GtkTextView *w){
 	return FALSE;
 }
 
-static gboolean is_http_uri(const GtkTextIter *word_start) {
+static gboolean word_starts_with(const GtkTextIter *word_start, const char *prefix) {
 	gboolean res;
 	gchar *schema = NULL;
 	GtkTextIter end = *word_start;
-	gtk_text_iter_forward_chars(&end, 7);
+	gtk_text_iter_forward_chars(&end, strlen(prefix));
 	schema = gtk_text_iter_get_slice(word_start, &end);
-	res = ( g_strcmp0(schema, "http://") == 0 );
+	res = ( g_strcmp0(schema, prefix) == 0 );
 	g_free(schema);
 	return res;
 }
@@ -161,7 +161,11 @@ static gboolean is_space(gunichar ch, gpointer user_data) {
 static void insert_link_tags(GtkTextBuffer *buffer, const GtkTextIter *begin, const GtkTextIter *end) {
 	GtkTextIter iter = *begin;
 	while(gtk_text_iter_compare(&iter, end) < 0) {
-		if(gtk_text_iter_starts_word(&iter) && is_http_uri(&iter)) {
+		if(gtk_text_iter_starts_word(&iter) && (
+				word_starts_with(&iter, "http://") ||
+				word_starts_with(&iter, "https://") ||
+				word_starts_with(&iter, "ftp://") ||
+				word_starts_with(&iter, "ftps://"))) {
 			GtkTextIter uri_begin = iter;
 			if(gtk_text_iter_forward_find_char(&iter, is_space, NULL, end)) {
 				gtk_text_buffer_apply_tag_by_name(buffer, "link", &uri_begin, &iter);
