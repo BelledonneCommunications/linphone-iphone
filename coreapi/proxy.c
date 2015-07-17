@@ -23,6 +23,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "lpconfig.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
+#include "enum.h"
 
 #include <ctype.h>
 
@@ -938,33 +939,40 @@ static void replace_icp_with_plus(const char *src, char *dest, size_t destlen, c
 	strncpy(dest+i, src+strlen(icp), destlen-i-1);
 }
 
+static char* replace_plus_with_icp_new(char *phone, const char* icp){
+	return (icp && phone[0]=='+') ? ms_strdup_printf("%s%s", icp, phone+1) : ms_strdup(phone);
+}
 
-bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *inproxy, const char *username, char *result, size_t result_len){
+static char* replace_icp_with_plus_new(char *phone, const char *icp){
+	return (strstr(phone, icp) == phone) ?  ms_strdup_printf("+%s", phone+strlen(icp)) : ms_strdup(phone);
+}
+
+bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
 	bool_t ret;
-	LinphoneProxyConfig *proxy = inproxy ? inproxy : linphone_proxy_config_new();
+	LinphoneProxyConfig *tmpproxy = proxy ? proxy : linphone_proxy_config_new();
 	memset(result, 0, result_len);
-	if (linphone_proxy_config_is_phone_number(proxy, username)){
+	if (linphone_proxy_config_is_phone_number(tmpproxy, username)){
 		dial_plan_t dialplan = {0};
 		char *flatten=flatten_number(username);
 		ms_debug("Flattened number is '%s'",flatten);
 
-		/*username does not contain a dial prefix nor the proxy, nothing else to do*/
-		if (proxy->dial_prefix==NULL || proxy->dial_prefix[0]=='\0'){
+		/*username does not contain a dial prefix nor the tmpproxy, nothing else to do*/
+		if (tmpproxy->dial_prefix==NULL || tmpproxy->dial_prefix[0]=='\0'){
 			strncpy(result,flatten,result_len-1);
 		} else {
-			lookup_dial_plan_by_ccc(proxy->dial_prefix,&dialplan);
+			lookup_dial_plan_by_ccc(tmpproxy->dial_prefix,&dialplan);
 			ms_debug("Using dial plan '%s'",dialplan.country);
 			/* the number has international prefix or +, so nothing to do*/
 			if (flatten[0]=='+'){
 				ms_debug("Prefix already present.");
 				/*eventually replace the plus by the international calling prefix of the country*/
-				if (proxy->dial_escape_plus) {
+				if (tmpproxy->dial_escape_plus) {
 					replace_plus_with_icp(flatten,result,result_len,dialplan.icp);
 				}else{
 					strncpy(result, flatten, result_len-1);
 				}
 			}else if (strstr(flatten,dialplan.icp)==flatten){
-				if (proxy->dial_escape_plus){
+				if (tmpproxy->dial_escape_plus){
 					strncpy(result, flatten, result_len-1);
 				}else{
 					replace_icp_with_plus(flatten, result, result_len, dialplan.icp);
@@ -978,7 +986,7 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *inproxy, cons
 				skip=numlen-dialplan.nnl;
 				if (skip<0) skip=0;
 				/*first prepend international calling prefix or +*/
-				if (proxy->dial_escape_plus){
+				if (tmpproxy->dial_escape_plus){
 					strncpy(result,dialplan.icp,result_len);
 					i+=strlen(dialplan.icp);
 				}else{
@@ -994,15 +1002,127 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *inproxy, cons
 				strncpy(result+i,flatten+skip,result_len-i-1);
 			}
 		}
-
 		ms_free(flatten);
 		ret = TRUE;
 	} else {
 		strncpy(result,username,result_len-1);
 		ret = FALSE;
 	}
-	if (inproxy==NULL) ms_free(proxy);
+	if (proxy==NULL) ms_free(tmpproxy);
 	return ret;
+}
+
+char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, const char *username) {
+	LinphoneProxyConfig *tmpproxy = proxy ? proxy : linphone_proxy_config_new();
+	char* result = NULL;
+	if (linphone_proxy_config_is_phone_number(tmpproxy, username)){
+		dial_plan_t dialplan = {0};
+		char * flatten=flatten_number(username);
+		ms_debug("Flattened number is '%s'",flatten);
+
+		/*if proxy has a dial prefix, modify phonenumber accordingly*/
+		if (tmpproxy->dial_prefix!=NULL && tmpproxy->dial_prefix[0]!='\0'){
+			lookup_dial_plan_by_ccc(tmpproxy->dial_prefix,&dialplan);
+			ms_debug("Using dial plan '%s'",dialplan.country);
+			/* the number already starts with + or international prefix*/
+			if (flatten[0]=='+'||strstr(flatten,dialplan.icp)==flatten){
+				ms_debug("Prefix already present.");
+				if (tmpproxy->dial_escape_plus) {
+					result = replace_plus_with_icp_new(flatten,dialplan.icp);
+				} else {
+					result = replace_icp_with_plus_new(flatten,dialplan.icp);
+				}
+			}else{
+				/*0. keep at most national number significant digits */
+				char* flatten_start = flatten + MAX(0, strlen(flatten) - dialplan.nnl);
+				/*1. First prepend international calling prefix or +*/
+				/*2. Second add prefix*/
+				/*3. Finally add user digits */
+
+				result = ms_strdup_printf("%s%s%s"
+											, tmpproxy->dial_escape_plus ? dialplan.icp : "+"
+											, dialplan.ccc
+											, flatten_start);
+			}
+		}
+		if (result==NULL) {
+			result = flatten;
+		} else {
+			ms_free(flatten);
+		}
+	}
+	if (proxy==NULL) ms_free(tmpproxy);
+	return result;
+}
+
+static LinphoneAddress* _linphone_core_destroy_addr_if_not_sip( LinphoneAddress* addr ){
+	if( linphone_address_is_sip(addr) ) {
+		return addr;
+	} else {
+		linphone_address_destroy(addr);
+		return NULL;
+	}
+}
+
+LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *proxy, const char *username) {
+	enum_lookup_res_t *enumres=NULL;
+	char *enum_domain=NULL;
+	char *tmpurl;
+	LinphoneAddress *uri;
+
+	if (*username=='\0') return NULL;
+
+	if (is_enum(username,&enum_domain)){
+		if (proxy) {
+			linphone_core_notify_display_status(proxy->lc,_("Looking for telephone number destination..."));
+		}
+		if (enum_lookup(enum_domain,&enumres)<0){
+			if (proxy) {
+				linphone_core_notify_display_status(proxy->lc,_("Could not resolve this number."));
+			}
+			ms_free(enum_domain);
+			return NULL;
+		}
+		ms_free(enum_domain);
+		tmpurl=enumres->sip_address[0];
+		uri=linphone_address_new(tmpurl);
+		enum_lookup_res_free(enumres);
+		return _linphone_core_destroy_addr_if_not_sip(uri);
+	}
+	/* check if we have a "sip:" or a "sips:" */
+	if ( (strstr(username,"sip:")==NULL) && (strstr(username,"sips:")==NULL) ){
+		/* this doesn't look like a true sip uri */
+		if (strchr(username,'@')!=NULL){
+			/* seems like sip: is missing !*/
+			tmpurl=ms_strdup_printf("sip:%s",username);
+			uri=linphone_address_new(tmpurl);
+			ms_free(tmpurl);
+			if (uri){
+				return _linphone_core_destroy_addr_if_not_sip(uri);
+			}
+		}
+
+		if (proxy!=NULL){
+			/* append the proxy domain suffix */
+			const char *identity=linphone_proxy_config_get_identity(proxy);
+			char normalized_username[128];
+			uri=linphone_address_new(identity);
+			if (uri==NULL){
+				return NULL;
+			}
+			linphone_address_set_display_name(uri,NULL);
+			linphone_proxy_config_normalize_number(proxy,username,normalized_username,
+									sizeof(normalized_username));
+			linphone_address_set_username(uri,normalized_username);
+			return _linphone_core_destroy_addr_if_not_sip(uri);
+		}else return NULL;
+	}
+	uri=linphone_address_new(username);
+	if (uri!=NULL){
+		return _linphone_core_destroy_addr_if_not_sip(uri);
+	}
+
+	return NULL;
 }
 
 /**

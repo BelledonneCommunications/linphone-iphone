@@ -78,10 +78,26 @@ static void phone_normalization_with_dial_escape_plus(void){
 	linphone_proxy_config_destroy(proxy);
 }
 
+#define SIP_URI_CHECK(actual, expected) { \
+		LinphoneAddress* res = linphone_proxy_config_normalize_sip_uri(NULL, actual); \
+		char* actual_str = linphone_address_as_string_uri_only(res); \
+		BC_ASSERT_STRING_EQUAL(actual_str, expected); \
+		ms_free(actual_str); \
+		linphone_address_destroy(res); \
+	}
+
+
+static void sip_uri_normalization(void) {
+	BC_ASSERT_PTR_NULL(linphone_proxy_config_normalize_sip_uri(NULL, "test"));
+	SIP_URI_CHECK("test@linphone.org", "sip:test@linphone.org");
+	SIP_URI_CHECK("test@linphone.org;transport=tls", "sip:test@linphone.org;transport=tls");
+}
+
 test_t proxy_config_tests[] = {
 	{ "Phone normalization without proxy", phone_normalization_without_proxy },
 	{ "Phone normalization with proxy", phone_normalization_with_proxy },
 	{ "Phone normalization with dial escape plus", phone_normalization_with_dial_escape_plus },
+	{ "SIP URI normalization", sip_uri_normalization },
 };
 
 test_suite_t proxy_config_test_suite = {

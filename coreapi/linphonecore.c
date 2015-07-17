@@ -2549,87 +2549,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 }
 
-static LinphoneAddress* _linphone_core_destroy_addr_if_not_sip( LinphoneAddress* addr ){
-	if( linphone_address_is_sip(addr) ) {
-		return addr;
-	} else {
-		linphone_address_destroy(addr);
-		return NULL;
-	}
-}
-
-/**
- * Interpret a call destination as supplied by the user, and returns a fully qualified
- * LinphoneAddress.
- *
- * @ingroup call_control
- *
- * A sip address should look like DisplayName \<sip:username\@domain:port\> .
- * Basically this function performs the following tasks
- * - if a phone number is entered, prepend country prefix of the default proxy
- *   configuration, eventually escape the '+' by 00.
- * - if no domain part is supplied, append the domain name of the default proxy
- * - if no sip: is present, prepend it
- *
- * The result is a syntaxically correct SIP address.
-**/
-
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url){
-	enum_lookup_res_t *enumres=NULL;
-	char *enum_domain=NULL;
-	LinphoneProxyConfig *proxy=lc->default_proxy;
-	char *tmpurl;
-	LinphoneAddress *uri;
-
-	if (*url=='\0') return NULL;
-
-	if (is_enum(url,&enum_domain)){
-		linphone_core_notify_display_status(lc,_("Looking for telephone number destination..."));
-		if (enum_lookup(enum_domain,&enumres)<0){
-			linphone_core_notify_display_status(lc,_("Could not resolve this number."));
-			ms_free(enum_domain);
-			return NULL;
-		}
-		ms_free(enum_domain);
-		tmpurl=enumres->sip_address[0];
-		uri=linphone_address_new(tmpurl);
-		enum_lookup_res_free(enumres);
-		return _linphone_core_destroy_addr_if_not_sip(uri);
-	}
-	/* check if we have a "sip:" or a "sips:" */
-	if ( (strstr(url,"sip:")==NULL) && (strstr(url,"sips:")==NULL) ){
-		/* this doesn't look like a true sip uri */
-		if (strchr(url,'@')!=NULL){
-			/* seems like sip: is missing !*/
-			tmpurl=ms_strdup_printf("sip:%s",url);
-			uri=linphone_address_new(tmpurl);
-			ms_free(tmpurl);
-			if (uri){
-				return _linphone_core_destroy_addr_if_not_sip(uri);
-			}
-		}
-
-		if (proxy!=NULL){
-			/* append the proxy domain suffix */
-			const char *identity=linphone_proxy_config_get_identity(proxy);
-			char normalized_username[128];
-			uri=linphone_address_new(identity);
-			if (uri==NULL){
-				return NULL;
-			}
-			linphone_address_set_display_name(uri,NULL);
-			linphone_proxy_config_normalize_number(proxy,url,normalized_username,
-									sizeof(normalized_username));
-			linphone_address_set_username(uri,normalized_username);
-			return _linphone_core_destroy_addr_if_not_sip(uri);
-		}else return NULL;
-	}
-	uri=linphone_address_new(url);
-	if (uri!=NULL){
-		return _linphone_core_destroy_addr_if_not_sip(uri);
-	}
-
-	return NULL;
+	return linphone_proxy_config_normalize_sip_uri(NULL, url);
 }
 
 /**

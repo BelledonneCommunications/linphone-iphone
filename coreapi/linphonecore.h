@@ -1098,6 +1098,29 @@ LINPHONE_PUBLIC	bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfi
 																char *result, size_t result_len);
 
 /**
+ * Same objective as linphone_proxy_config_normalize_number but allocates a new string
+ * @param proxy #LinphoneProxyConfig object containing country code and/or escape symbol. If NULL passed, will use default configuration.
+ * @param username the string to parse
+ * @return NULL if invalid phone number, normalized phone number from username input otherwise.
+*/
+LINPHONE_PUBLIC	char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, const char *username);
+
+/**
+ * Normalize a human readable sip uri into a fully qualified LinphoneAddress.
+ * A sip address should look like DisplayName \<sip:username\@domain:port\> .
+ * Basically this function performs the following tasks
+ * - if a phone number is entered, prepend country prefix and eventually escape the '+' by 00 of the proxy config.
+ * - if no domain part is supplied, append the domain name of the proxy config.
+ * - if no sip: is present, prepend it.
+ *
+ * The result is a syntactically correct SIP address.
+ * @param proxy #LinphoneProxyConfig object containing country code, escape symbol and/or domain name. If NULL passed, will use default configuration.
+ * @param username the string to parse
+ * @return NULL if invalid phone number, normalized phone number from username input otherwise.
+*/
+LINPHONE_PUBLIC	LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *proxy, const char *username);
+
+/**
  * Set default privacy policy for all calls routed through this proxy.
  * @param cfg #LinphoneProxyConfig object to be modified
  * @param privacy LinphonePrivacy to configure privacy
@@ -2504,6 +2527,7 @@ LINPHONE_PUBLIC void linphone_core_remove_listener(LinphoneCore *lc, const Linph
 /*sets the user-agent string in sip messages, ideally called just after linphone_core_new() or linphone_core_init() */
 LINPHONE_PUBLIC	void linphone_core_set_user_agent(LinphoneCore *lc, const char *ua_name, const char *version);
 
+/** @deprecated Use linphone_proxy_config_normalize_sip_uri instead. */
 LINPHONE_PUBLIC	LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 
 LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url);
