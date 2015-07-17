@@ -288,17 +288,18 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	}
 #endif
 
+	char *hellopath = bc_tester_res("sounds/hello8000.wav");
+	linphone_core_set_play_file(mgr->lc,hellopath); /*is also used when in pause*/
+	ms_free(hellopath);
 
 	if( manager_count >= 2){
-		char *hellopath = bc_tester_res("sounds/hello8000.wav");
 		char *recordpath = ms_strdup_printf("%s/record_for_lc_%p.wav",bc_tester_get_writable_dir_prefix(),mgr->lc);
 		ms_message("Manager for '%s' using files", rc_file ? rc_file : "--");
 		linphone_core_set_use_files(mgr->lc, TRUE);
-		linphone_core_set_play_file(mgr->lc,hellopath);
 		linphone_core_set_record_file(mgr->lc,recordpath);
 		ms_free(recordpath);
-		ms_free(hellopath);
 	}
+
 	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_get_writable_dir_prefix());
 
 	if (rc_path) ms_free(rc_path);
