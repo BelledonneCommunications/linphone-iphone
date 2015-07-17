@@ -412,9 +412,9 @@ static void open_uri(const char *uri) {
 
 #ifdef __APPLE__
 	cmd = "open";
-#elseif __linux
+#elif __linux
 	cmd = "xdg-open";
-#elseif WIN32
+#elif WIN32
 	cmd = "start";
 #else
 	cmd = NULL;
