@@ -410,49 +410,8 @@ static GdkColor *_linphone_gtk_chatroom_get_link_color(GtkWidget *chatview) {
 	return (GdkColor *)g_value_get_boxed(&color_value);
 }
 
-static void open_uri(const char *uri) {
-	const char *cmd = NULL;
-	GError *error = NULL;
-
-#ifdef __APPLE__
-	cmd = "open";
-#elif __linux
-	cmd = "xdg-open";
-#elif WIN32
-	cmd = "start";
-#else
-	cmd = NULL;
-#endif
-
-	if(cmd) {
-		gchar *argv[3] = {
-			g_strdup(cmd),
-			g_strdup(uri),
-			NULL
-		};
-		g_spawn_async(
-			NULL,
-			argv,
-			NULL,
-			G_SPAWN_SEARCH_PATH,
-			NULL,
-			NULL,
-			NULL,
-			&error
-		);
-		g_free(argv[0]);
-		g_free(argv[1]);
-		
-		if(error) {
-			g_warning("Cannot open %s: %s", uri, error->message);
-			g_error_free(error);
-		}
-	} else {
-		g_warning("Cannot open URIs from chat room on this platform");
-	}
-}
-
 static gboolean link_event_handler(GtkTextTag *tag, GObject *object,GdkEvent *event, GtkTextIter *iter, gpointer user_data) {
+	GError *error = NULL;
 	switch(event->type) {
 		case GDK_BUTTON_PRESS:
 			if(((GdkEventButton *)event)->button == 1) {
@@ -462,7 +421,11 @@ static gboolean link_event_handler(GtkTextTag *tag, GObject *object,GdkEvent *ev
 				gtk_text_iter_backward_to_tag_toggle(&uri_begin, tag);
 				gtk_text_iter_forward_to_tag_toggle(&uri_end, tag);
 				uri = gtk_text_iter_get_slice(&uri_begin, &uri_end);
-				open_uri(uri);
+				gtk_show_uri(NULL, uri, gdk_event_get_time(event), &error);
+				if(error) {
+					g_warning("Could not open %s from chat: %s", uri, error->message);
+					g_error_free(error);
+				}
 				g_free(uri);
 			}
 			break;
