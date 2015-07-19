@@ -410,27 +410,28 @@ static GdkColor *_linphone_gtk_chatroom_get_link_color(GtkWidget *chatview) {
 	return (GdkColor *)g_value_get_boxed(&color_value);
 }
 
-static gboolean link_event_handler(GtkTextTag *tag, GObject *object,GdkEvent *event, GtkTextIter *iter, gpointer user_data) {
-	GError *error = NULL;
-	switch(event->type) {
-		case GDK_BUTTON_PRESS:
-			if(((GdkEventButton *)event)->button == 1) {
-				gchar *uri = NULL;
-				GtkTextIter uri_begin = *iter;
-				GtkTextIter uri_end = *iter;
-				gtk_text_iter_backward_to_tag_toggle(&uri_begin, tag);
-				gtk_text_iter_forward_to_tag_toggle(&uri_end, tag);
-				uri = gtk_text_iter_get_slice(&uri_begin, &uri_end);
-				gtk_show_uri(NULL, uri, gdk_event_get_time(event), &error);
-				if(error) {
-					g_warning("Could not open %s from chat: %s", uri, error->message);
-					g_error_free(error);
-				}
-				g_free(uri);
+static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent *event, GtkTextIter *iter, gpointer user_data) {
+	if(event->type == GDK_BUTTON_PRESS) {
+		GtkTextIter uri_begin = *iter;
+		GtkTextIter uri_end = *iter;
+		gchar *uri = NULL;
+		gtk_text_iter_backward_to_tag_toggle(&uri_begin, tag);
+		gtk_text_iter_forward_to_tag_toggle(&uri_end, tag);
+		uri = gtk_text_iter_get_slice(&uri_begin, &uri_end);
+		if(((GdkEventButton *)event)->button == 1) {
+			GError *error = NULL;
+			gtk_show_uri(NULL, uri, gdk_event_get_time(event), &error);
+			if(error) {
+				g_warning("Could not open %s from chat: %s", uri, error->message);
+				g_error_free(error);
 			}
-			break;
-		default:
-			break;
+		} else if(((GdkEventButton *)event)->button == 3) {
+			GtkMenu *menu = GTK_MENU(g_object_get_data(text_view, "link_ctx_menu"));
+			g_object_set_data_full(G_OBJECT(menu), "uri", g_strdup(uri), g_free);
+			gtk_menu_popup(menu, NULL, NULL, NULL, NULL, 3, gdk_event_get_time(event));
+		}
+		g_free(uri);
+		return TRUE;
 	}
 	return FALSE;
 }
@@ -471,6 +472,20 @@ static gboolean chatroom_event(GtkWidget *widget, GdkEvent *event, gpointer user
 	return FALSE;
 }
 
+static gboolean copy_uri_into_clipboard_handler(GtkMenuItem *menuitem, gpointer user_data) {
+	GtkWidget *menu = gtk_widget_get_parent(GTK_WIDGET(menuitem));
+	const gchar *uri = (const gchar *)g_object_get_data(G_OBJECT(menu), "uri");
+	GtkClipboard *clipboard = NULL;
+	GdkAtom clipboard_atom = gdk_atom_intern("CLIPBOARD", TRUE);
+	if(clipboard_atom == GDK_NONE) {
+		g_warning("Could not find CLIPBOARD atom");
+		return FALSE;
+	}
+	clipboard = gtk_clipboard_get(clipboard_atom);
+	if(uri) gtk_clipboard_set_text(clipboard, uri, -1);
+	return FALSE;
+}
+
 GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with){
 	GtkWidget *chat_view=linphone_gtk_create_widget("main","chatroom_frame");
 	GtkWidget *main_window=linphone_gtk_get_main_window();
@@ -486,6 +501,8 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	GHashTable *table;
 	char *with_str;
 	GtkTextTag *tmp_tag;
+	GtkWidget *link_ctx_menu = gtk_menu_new();
+	GtkWidget *link_ctx_menu_copy_item = gtk_menu_item_new_with_label(_("Copy"));
 
 	with_str=linphone_address_as_string_uri_only(with);
 	gtk_notebook_append_page(notebook,chat_view,create_tab_chat_header(cr,with));
@@ -533,6 +550,11 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 		NULL);
 	g_signal_connect(G_OBJECT(tmp_tag), "event", G_CALLBACK(link_event_handler), NULL);
 	g_signal_connect(G_OBJECT(text), "event", G_CALLBACK(chatroom_event), NULL);
+	gtk_menu_shell_append(GTK_MENU_SHELL(link_ctx_menu), link_ctx_menu_copy_item);
+	g_signal_connect(G_OBJECT(link_ctx_menu_copy_item), "activate", G_CALLBACK(copy_uri_into_clipboard_handler), NULL);
+	gtk_widget_show_all(link_ctx_menu);
+	g_object_set_data_full(G_OBJECT(text), "link_ctx_menu", link_ctx_menu, g_object_unref);
+	g_object_ref_sink(G_OBJECT(link_ctx_menu));
 	
 	messages = linphone_chat_room_get_history(cr,NB_MSG_HIST);
 	display_history_message(chat_view,messages,with);
