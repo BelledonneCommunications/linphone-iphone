@@ -994,7 +994,7 @@ static void lpc_apply_video_params(){
 		lpc_video_params.refresh=FALSE;
 #ifdef HAVE_X11_XLIB_H
 		if (lpc_video_params.wid==0){  // do not manage window if embedded
-			x11_apply_video_params(&lpc_video_params,wid);
+			x11_apply_video_params(&lpc_video_params,(Window)wid);
 		} else {
 		        linphone_core_show_video(linphonec, lpc_video_params.show);
 		}
@@ -1007,7 +1007,7 @@ static void lpc_apply_video_params(){
 		/*printf("wid=%p pwid=%p\n",wid,pwid);*/
 		if (lpc_preview_params.wid==NULL){  // do not manage window if embedded
 			printf("Refreshing\n");
-			x11_apply_video_params(&lpc_preview_params,pwid);
+			x11_apply_video_params(&lpc_preview_params,(Window)pwid);
 		}
 #endif
 	}
