@@ -4973,7 +4973,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 			video_preview_set_size(lc->previewstream,vsize);
 			if (display_filter)
 				video_preview_set_display_filter_name(lc->previewstream,display_filter);
-			if (lc->preview_window_id!=0)
+			if (lc->preview_window_id != NULL)
 				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
 			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
 			video_preview_start(lc->previewstream,lc->video_conf.device);
@@ -5273,7 +5273,7 @@ float linphone_core_get_static_picture_fps(LinphoneCore *lc) {
  *
  * @ingroup media_parameters
 **/
-unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
+void * linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 	if (lc->video_window_id) {
 		/* case where the video id was previously set by the app*/
 		return lc->video_window_id;
@@ -5289,13 +5289,17 @@ unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 }
 
 /* unsets the video id for all calls (indeed it may be kept by filters or videostream object itself by paused calls)*/
-static void unset_video_window_id(LinphoneCore *lc, bool_t preview, unsigned long id){
+static void unset_video_window_id(LinphoneCore *lc, bool_t preview, void *id){
 #ifdef VIDEO_ENABLED
 	LinphoneCall *call;
 	MSList *elem;
 #endif
 
-	if (id!=0 && id!=-1) {
+	if ((id != NULL)
+#ifndef _WIN32
+		&& ((unsigned long)id != (unsigned long)-1)
+#endif
+	){
 		ms_error("Invalid use of unset_video_window_id()");
 		return;
 	}
@@ -5317,8 +5321,12 @@ static void unset_video_window_id(LinphoneCore *lc, bool_t preview, unsigned lon
  * Set the native video window id where the video is to be displayed.
  * For MacOS, Linux, Windows: if not set or zero the core will create its own window, unless the special id -1 is given.
 **/
-void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id){
-	if (id==0 || id==(unsigned long)-1){
+void linphone_core_set_native_video_window_id(LinphoneCore *lc, void *id){
+	if ((id == NULL)
+#ifndef _WIN32
+		|| ((unsigned long)id == (unsigned long)-1)
+#endif
+	){
 		unset_video_window_id(lc,FALSE,id);
 	}
 	lc->video_window_id=id;
@@ -5337,7 +5345,7 @@ void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id
  *
  * @ingroup media_parameters
 **/
-unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc){
+void * linphone_core_get_native_preview_window_id(const LinphoneCore *lc){
 	if (lc->preview_window_id){
 		/*case where the id was set by the app previously*/
 		return lc->preview_window_id;
@@ -5360,8 +5368,8 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
  * This has to be used in conjonction with linphone_core_use_preview_window().
  * MacOS, Linux, Windows: if not set or zero the core will create its own window, unless the special id -1 is given.
 **/
-void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id){
-	if (id==0 || id==(unsigned long)-1){
+void linphone_core_set_native_preview_window_id(LinphoneCore *lc, void *id){
+	if (id == NULL || id==(unsigned long)-1){
 		unset_video_window_id(lc,TRUE,id);
 	}
 	lc->preview_window_id=id;

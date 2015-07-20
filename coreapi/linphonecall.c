@@ -2744,12 +2744,12 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 			video_stream_set_fps(call->videostream,linphone_core_get_preferred_framerate(lc));
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
-			if (call->video_window_id != 0)
-				video_stream_set_native_window_id(call->videostream,call->video_window_id);
-			else if (lc->video_window_id!=0)
-				video_stream_set_native_window_id(call->videostream,lc->video_window_id);
-			if (lc->preview_window_id!=0)
-				video_stream_set_native_preview_window_id (call->videostream,lc->preview_window_id);
+			if (call->video_window_id != NULL)
+				video_stream_set_native_window_id(call->videostream, call->video_window_id);
+			else if (lc->video_window_id != NULL)
+				video_stream_set_native_window_id(call->videostream, lc->video_window_id);
+			if (lc->preview_window_id != NULL)
+				video_stream_set_native_preview_window_id(call->videostream, lc->preview_window_id);
 			video_stream_use_preview_video_window (call->videostream,lc->use_preview_window);
 
 			if (is_multicast){
@@ -4041,7 +4041,7 @@ void linphone_call_cancel_dtmfs(LinphoneCall *call) {
 	}
 }
 
-unsigned long linphone_call_get_native_video_window_id(const LinphoneCall *call) {
+void * linphone_call_get_native_video_window_id(const LinphoneCall *call) {
 	if (call->video_window_id) {
 		/* The video id was previously set by the app. */
 		return call->video_window_id;
@@ -4055,7 +4055,7 @@ unsigned long linphone_call_get_native_video_window_id(const LinphoneCall *call)
 	return 0;
 }
 
-void linphone_call_set_native_video_window_id(LinphoneCall *call, unsigned long id) {
+void linphone_call_set_native_video_window_id(LinphoneCall *call, void *id) {
 	call->video_window_id = id;
 #ifdef VIDEO_ENABLED
 	if (call->videostream) {

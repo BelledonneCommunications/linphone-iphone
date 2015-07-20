@@ -606,7 +606,7 @@ LINPHONE_PUBLIC void linphone_player_destroy(LinphonePlayer *obj);
  * @param window_id Id of the drawing window. Depend of video out
  * @return A pointer on the new instance. NULL if faild.
  */
-LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, unsigned long window_id);
+LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id);
 
 /**
  * @brief Check whether Matroksa format is supported by the player
@@ -774,14 +774,14 @@ LINPHONE_PUBLIC	void linphone_call_cancel_dtmfs(LinphoneCall *call);
  * Get the native window handle of the video window, casted as an unsigned long.
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC unsigned long linphone_call_get_native_video_window_id(const LinphoneCall *call);
+LINPHONE_PUBLIC void * linphone_call_get_native_video_window_id(const LinphoneCall *call);
 
 /**
  * Set the native video window id where the video is to be displayed.
  * For MacOS, Linux, Windows: if not set or 0 a window will be automatically created, unless the special id -1 is given.
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC void linphone_call_set_native_video_window_id(LinphoneCall *call, unsigned long id);
+LINPHONE_PUBLIC void linphone_call_set_native_video_window_id(LinphoneCall *call, void * id);
 
 /**
  * Return TRUE if this call is currently part of a conference
@@ -3604,11 +3604,11 @@ LINPHONE_PUBLIC int linphone_core_set_static_picture_fps(LinphoneCore *lc, float
 LINPHONE_PUBLIC float linphone_core_get_static_picture_fps(LinphoneCore *lc);
 
 /*function to be used for eventually setting window decorations (icons, title...)*/
-LINPHONE_PUBLIC unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc);
-LINPHONE_PUBLIC void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id);
+LINPHONE_PUBLIC void * linphone_core_get_native_video_window_id(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_native_video_window_id(LinphoneCore *lc, void *id);
 
-LINPHONE_PUBLIC unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc);
-LINPHONE_PUBLIC void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id);
+LINPHONE_PUBLIC void * linphone_core_get_native_preview_window_id(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_native_preview_window_id(LinphoneCore *lc, void *id);
 
 /**
  * Tells the core to use a separate window for local camera preview video, instead of
