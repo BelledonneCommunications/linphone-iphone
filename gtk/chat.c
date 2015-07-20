@@ -437,6 +437,7 @@ static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent 
 }
 
 static void chatroom_enable_hand_cursor(GdkWindow *window, gboolean hand_cursor_enabled) {
+#if GTK_CHECK_VERSION(2,22,0)
 	GdkCursor *cursor = gdk_window_get_cursor(window);
 	GdkCursor *new_cursor = NULL;
 	if(!hand_cursor_enabled && gdk_cursor_get_cursor_type(cursor) != GDK_XTERM) {
@@ -448,6 +449,7 @@ static void chatroom_enable_hand_cursor(GdkWindow *window, gboolean hand_cursor_
 		gdk_window_set_cursor(window, new_cursor);
 		gdk_cursor_unref(new_cursor);
 	}
+#endif
 }
 
 static gboolean chatroom_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
