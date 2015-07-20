@@ -2550,7 +2550,8 @@ void linphone_core_iterate(LinphoneCore *lc){
 }
 
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url){
-	return linphone_proxy_config_normalize_sip_uri(NULL, url);
+	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(lc);
+	return linphone_proxy_config_normalize_sip_uri(proxy, url);
 }
 
 /**
