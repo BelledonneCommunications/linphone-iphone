@@ -5372,7 +5372,7 @@ void * linphone_core_get_native_preview_window_id(const LinphoneCore *lc){
 void linphone_core_set_native_preview_window_id(LinphoneCore *lc, void *id){
 	if ((id == NULL)
 #ifndef _WIN32
-		|| ((unsigned int)id == (unsigned long)-1)
+		|| ((unsigned long)id == (unsigned long)-1)
 #endif
 	) {
 		unset_video_window_id(lc,TRUE,id);
