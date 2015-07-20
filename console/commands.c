@@ -2376,12 +2376,12 @@ static int lpc_cmd_rtp_no_xmit_on_audio_mute(LinphoneCore *lc, char *args)
 #ifdef VIDEO_ENABLED
 static int _lpc_cmd_video_window(LinphoneCore *lc, char *args, bool_t is_preview){
 	char subcommand[64];
-	int a,b;
+	long a,b;
 	int err;
 	VideoParams *params=is_preview ? &lpc_preview_params : &lpc_video_params;
 
 	if (!args) return 0;
-	err=sscanf(args,"%63s %i %i",subcommand,&a,&b);
+	err=sscanf(args,"%63s %ld %ld",subcommand,&a,&b);
 	if (err>=1){
 		if (strcmp(subcommand,"pos")==0){
 			if (err<3) return 0;
@@ -2403,15 +2403,15 @@ static int _lpc_cmd_video_window(LinphoneCore *lc, char *args, bool_t is_preview
 			if (is_preview) linphone_core_enable_video_preview (lc,FALSE);
 		}else if (strcmp(subcommand,"id")==0){
 			if (err == 1){
-				linphonec_out("vwindow id: 0x%x\n",is_preview ? linphone_core_get_native_preview_window_id (lc) :
+				linphonec_out("vwindow id: 0x%p\n",is_preview ? linphone_core_get_native_preview_window_id (lc) :
 				              linphone_core_get_native_video_window_id (lc));
 				return 1;
 			} else if (err != 2) return 0;
-			params->wid=a;
+			params->wid=(void *)a;
 			if (is_preview)
-				linphone_core_set_native_preview_window_id (lc,a);
+				linphone_core_set_native_preview_window_id(lc, (void *)a);
 			else
-				linphone_core_set_native_video_window_id(lc,a);
+				linphone_core_set_native_video_window_id(lc, (void *)a);
 		}else if (is_preview==TRUE){
 			if (strcmp(subcommand,"integrated")==0){
 				linphone_core_use_preview_window (lc,FALSE);

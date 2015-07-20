@@ -38,13 +38,13 @@ extern void *gdk_quartz_window_get_nsview(GdkWindow      *window);
 #include <gdk/gdkkeysyms.h>
 
 
-static unsigned long get_native_handle(GdkWindow *gdkw) {
+static void *get_native_handle(GdkWindow *gdkw) {
 #ifdef GDK_WINDOWING_X11
-	return (unsigned long)GDK_WINDOW_XID(gdkw);
+	return (void *)GDK_WINDOW_XID(gdkw);
 #elif defined(_WIN32)
-	return (unsigned long)GDK_WINDOW_HWND(gdkw);
+	return (void *)GDK_WINDOW_HWND(gdkw);
 #elif defined(__APPLE__)
-	return (unsigned long)gdk_quartz_window_get_nsview(gdkw);
+	return (void *)gdk_quartz_window_get_nsview(gdkw);
 #endif
 	g_warning("No way to get the native handle from gdk window");
 	return 0;

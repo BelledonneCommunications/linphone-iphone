@@ -94,13 +94,13 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint 
 	return TRUE;
 }
 
-static unsigned long get_native_handle(GdkWindow *gdkw){
+static void *get_native_handle(GdkWindow *gdkw){
 #ifdef GDK_WINDOWING_X11
-	return (unsigned long)GDK_WINDOW_XID(gdkw);
+	return (void *)GDK_WINDOW_XID(gdkw);
 #elif defined(WIN32)
-	return (unsigned long)GDK_WINDOW_HWND(gdkw);
+	return (void *)GDK_WINDOW_HWND(gdkw);
 #elif defined(__APPLE__)
-	return (unsigned long)gdk_quartz_window_get_nsview(gdkw);
+	return (void *)gdk_quartz_window_get_nsview(gdkw);
 #endif
 	g_warning("No way to get the native handle from gdk window");
 	return 0;
@@ -132,7 +132,7 @@ static gint resize_video_window(LinphoneCall *call){
 
 static void on_video_window_destroy(GtkWidget *w, guint timeout){
 	g_source_remove(timeout);
-	linphone_core_set_native_video_window_id(linphone_gtk_get_core(),(unsigned long)-1);
+	linphone_core_set_native_video_window_id(linphone_gtk_get_core(),(void *)(unsigned long)-1);
 }
 
 static void video_window_set_fullscreen(GtkWidget *w, gboolean val){
@@ -314,7 +314,7 @@ static void on_video_preview_destroyed(GtkWidget *video_preview, GtkWidget *mw){
 	guint timeout_id=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(video_preview),"timeout-id"));
 	g_object_set_data(G_OBJECT(mw),"video_preview",NULL);
 	linphone_core_enable_video_preview(lc,FALSE);
-	linphone_core_set_native_preview_window_id(lc,-1);
+	linphone_core_set_native_preview_window_id(lc,(void *)(unsigned long)-1);
 	g_source_remove(timeout_id);
 }
 
