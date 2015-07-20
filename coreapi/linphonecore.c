@@ -5370,7 +5370,11 @@ void * linphone_core_get_native_preview_window_id(const LinphoneCore *lc){
  * MacOS, Linux, Windows: if not set or zero the core will create its own window, unless the special id -1 is given.
 **/
 void linphone_core_set_native_preview_window_id(LinphoneCore *lc, void *id){
-	if (id == NULL || id==(unsigned long)-1){
+	if ((id == NULL)
+#ifndef _WIN32
+		|| ((unsigned int)id == (unsigned long)-1)
+#endif
+	) {
 		unset_video_window_id(lc,TRUE,id);
 	}
 	lc->preview_window_id=id;
