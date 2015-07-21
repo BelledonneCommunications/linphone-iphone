@@ -403,11 +403,11 @@ GtkWidget *linphone_gtk_create_window(const char *window_name, GtkWidget *parent
 	gtk_builder_connect_signals(builder,w);
 	linphone_gtk_configure_window(w,window_name);
 	if(parent) {
-		gtk_window_set_modal(GTK_WINDOW(w), TRUE);
+// 		gtk_window_set_modal(GTK_WINDOW(w), TRUE);
 		gtk_window_set_transient_for(GTK_WINDOW(w), GTK_WINDOW(parent));
 		gtk_window_set_position(GTK_WINDOW(w), GTK_WIN_POS_CENTER_ON_PARENT);
 	} else {
-		gtk_window_set_modal(GTK_WINDOW(w), FALSE);
+// 		gtk_window_set_modal(GTK_WINDOW(w), FALSE);
 	}
 	return w;
 }
