@@ -3488,7 +3488,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(JNIEnv*
 		obj = env->NewGlobalRef(obj);
 		ms_message("Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(): NewGlobalRef(%p)",obj);
 	}else ms_message("Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(): setting to NULL");
-	linphone_core_set_native_video_window_id((LinphoneCore*)lc,(unsigned long)obj);
+	linphone_core_set_native_video_window_id((LinphoneCore*)lc,(void *)obj);
 	if (oldWindow != NULL) {
 		ms_message("Java_org_linphone_core_LinphoneCoreImpl_setVideoWindowId(): DeleteGlobalRef(%p)",oldWindow);
 		env->DeleteGlobalRef(oldWindow);
@@ -3504,7 +3504,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(JNIEn
 		obj = env->NewGlobalRef(obj);
 		ms_message("Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(): NewGlobalRef(%p)",obj);
 	}else ms_message("Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(): setting to NULL");
-	linphone_core_set_native_preview_window_id((LinphoneCore*)lc,(unsigned long)obj);
+	linphone_core_set_native_preview_window_id((LinphoneCore*)lc,(void *)obj);
 	if (oldWindow != NULL) {
 		ms_message("Java_org_linphone_core_LinphoneCoreImpl_setPreviewWindowId(): DeleteGlobalRef(%p)",oldWindow);
 		env->DeleteGlobalRef(oldWindow);
@@ -6031,7 +6031,7 @@ extern "C" void Java_org_linphone_core_LinphonePlayerImpl_destroy(JNIEnv *env, j
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createLocalPlayer(JNIEnv *env, jobject jobj, jlong ptr, jobject window) {
 	jobject window_ref = NULL;
 	window_ref = env->NewGlobalRef(window);
-	LinphonePlayer *player = linphone_core_create_local_player((LinphoneCore *)ptr, NULL, "MSAndroidDisplay", (unsigned long)window_ref);
+	LinphonePlayer *player = linphone_core_create_local_player((LinphoneCore *)ptr, NULL, "MSAndroidDisplay", (void *)window_ref);
 	if(player == NULL) {
 		ms_error("Fails to create a player");
 		if(window_ref) env->DeleteGlobalRef(window_ref);
