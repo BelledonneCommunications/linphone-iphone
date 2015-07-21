@@ -1110,13 +1110,13 @@ LINPHONE_PUBLIC	char* linphone_proxy_config_normalize_phone_number(LinphoneProxy
  * A sip address should look like DisplayName \<sip:username\@domain:port\> .
  * Basically this function performs the following tasks
  * - if a phone number is entered, prepend country prefix and eventually escape the '+' by 00 of the proxy config.
- * - if no domain part is supplied, append the domain name of the proxy config.
+ * - if no domain part is supplied, append the domain name of the proxy config. Returns NULL if no proxy is provided at this point.
  * - if no sip: is present, prepend it.
  *
  * The result is a syntactically correct SIP address.
- * @param proxy #LinphoneProxyConfig object containing country code, escape symbol and/or domain name. If NULL passed, will use default configuration.
+ * @param proxy #LinphoneProxyConfig object containing country code, escape symbol and/or domain name. Can be NULL if domain is already provided.
  * @param username the string to parse
- * @return NULL if invalid phone number, normalized phone number from username input otherwise.
+ * @return NULL if invalid input, normalized sip address otherwise.
 */
 LINPHONE_PUBLIC	LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *proxy, const char *username);
 
