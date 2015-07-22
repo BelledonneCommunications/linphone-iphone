@@ -25,14 +25,14 @@
     DTActionSheet *securitySheet;
 }
 
-@property (nonatomic, strong) IBOutlet UIImageView* registrationStateImage;
-@property (nonatomic, strong) IBOutlet UILabel*     registrationStateLabel;
+@property(weak, nonatomic) IBOutlet UIButton *registrationState;
 @property (nonatomic, strong) IBOutlet UIImageView* callQualityImage;
-@property (nonatomic, strong) IBOutlet UIImageView* callSecurityImage;
 @property (nonatomic, strong) IBOutlet UIButton* callSecurityButton;
-@property (strong, nonatomic) IBOutlet UILabel *voicemailCount;
+@property(weak, nonatomic) IBOutlet UIButton *voicemailButton;
+
+@property(weak, nonatomic) IBOutlet UIView *incallView;
+@property(weak, nonatomic) IBOutlet UIView *outcallView;
 
 - (IBAction)doSecurityClick:(id)sender;
-
 
 @end

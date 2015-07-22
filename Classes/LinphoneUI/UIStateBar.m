@@ -28,21 +28,14 @@
 	int messagesUnreadCount;
 }
 
-@synthesize registrationStateImage;
-@synthesize registrationStateLabel;
+@synthesize registrationState;
 @synthesize callQualityImage;
-@synthesize callSecurityImage;
 @synthesize callSecurityButton;
 
 #pragma mark - Lifecycle Functions
 
 - (id)init {
 	self = [super initWithNibName:@"UIStateBar" bundle:[NSBundle mainBundle]];
-	if (self != nil) {
-		self->callSecurityImage = nil;
-		self->callQualityImage = nil;
-		self->securitySheet = nil;
-	}
 	return self;
 }
 
@@ -90,9 +83,6 @@
 											 selector:@selector(callUpdate:)
 												 name:kLinphoneCallUpdate
 											   object:nil];
-
-	[callQualityImage setHidden:true];
-	[callSecurityImage setHidden:true];
 
 	// Update to default state
 	LinphoneProxyConfig *config = NULL;
@@ -161,17 +151,13 @@
 }
 
 - (void)updateVoicemail {
-	if (messagesUnreadCount > 0) {
-		self.voicemailCount.hidden = (linphone_core_get_calls([LinphoneManager getLc]) != NULL);
-		self.voicemailCount.text = [[NSString
-			stringWithFormat:NSLocalizedString(@"%d unread messages", @"%d"), messagesUnreadCount] uppercaseString];
-	} else {
-		self.voicemailCount.hidden = TRUE;
-	}
+	_voicemailButton.hidden = (messagesUnreadCount <= 0);
+	_voicemailButton.titleLabel.text = @(messagesUnreadCount).stringValue;
 }
 
 - (void)callUpdate:(NSNotification *)notif {
 	// show voice mail only when there is no call
+	[self updateUI:linphone_core_get_calls([LinphoneManager getLc]) != NULL];
 	[self updateVoicemail];
 }
 
@@ -214,73 +200,65 @@
 		}
 	}
 
-	registrationStateLabel.hidden = NO;
 	switch (state) {
 	case LinphoneRegistrationFailed:
-		registrationStateImage.hidden = NO;
 		image = [UIImage imageNamed:@"led_error.png"];
 		break;
 	case LinphoneRegistrationCleared:
 	case LinphoneRegistrationNone:
-		registrationStateImage.hidden = NO;
 		image = [UIImage imageNamed:@"led_disconnected.png"];
 		break;
 	case LinphoneRegistrationProgress:
-		registrationStateImage.hidden = NO;
 		image = [UIImage imageNamed:@"led_inprogress.png"];
 		break;
 	case LinphoneRegistrationOk:
-		registrationStateImage.hidden = NO;
 		image = [UIImage imageNamed:@"led_connected.png"];
 		break;
 	}
-	[registrationStateLabel setText:message];
-	[registrationStateImage setImage:image];
+	registrationState.titleLabel.text = message;
+	[registrationState setImage:image forState:UIControlStateNormal];
 }
 
 #pragma mark -
+
+- (void)updateUI:(BOOL)inCall {
+	_outcallView.hidden = (inCall);
+	_incallView.hidden = !_incallView.hidden;
+}
 
 - (void)callSecurityUpdate {
 	BOOL pending = false;
 	BOOL security = true;
 
 	const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
-
+	[self updateUI:(list != NULL)];
 	if (list == NULL) {
 		if (securitySheet) {
 			[securitySheet dismissWithClickedButtonIndex:securitySheet.destructiveButtonIndex animated:TRUE];
 		}
-		[callSecurityImage setHidden:true];
-		return;
-	}
-	while (list != NULL) {
-		LinphoneCall *call = (LinphoneCall *)list->data;
-		LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
-		if (enc == LinphoneMediaEncryptionNone)
-			security = false;
-		else if (enc == LinphoneMediaEncryptionZRTP) {
-			if (!linphone_call_get_authentication_token_verified(call)) {
-				pending = true;
-			}
-		}
-		list = list->next;
-	}
-
-	if (security) {
-		if (pending) {
-			[callSecurityImage setImage:[UIImage imageNamed:@"security_pending.png"]];
-		} else {
-			[callSecurityImage setImage:[UIImage imageNamed:@"security_ok.png"]];
-		}
 	} else {
-		[callSecurityImage setImage:[UIImage imageNamed:@"security_ko.png"]];
+		while (list != NULL) {
+			LinphoneCall *call = (LinphoneCall *)list->data;
+			LinphoneMediaEncryption enc =
+				linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
+			if (enc == LinphoneMediaEncryptionNone)
+				security = false;
+			else if (enc == LinphoneMediaEncryptionZRTP) {
+				if (!linphone_call_get_authentication_token_verified(call)) {
+					pending = true;
+				}
+			}
+			list = list->next;
+		}
+		NSString *imageName = security ? (pending ? @"security_pending.png" : @"security_ok.png") : @"security_ko.png";
+		[callSecurityButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
 	}
-	[callSecurityImage setHidden:false];
 }
 
 - (void)callQualityUpdate {
 	UIImage *image = nil;
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	[self updateUI:(call != NULL)];
 	if (call != NULL) {
 		// FIXME double check call state before computing, may cause core dump
 		float quality = linphone_call_get_average_quality(call);
@@ -293,12 +271,7 @@
 		} else {
 			image = [UIImage imageNamed:@"call_quality_indicator_3.png"];
 		}
-	}
-	if (image != nil) {
-		[callQualityImage setHidden:false];
 		[callQualityImage setImage:image];
-	} else {
-		[callQualityImage setHidden:true];
 	}
 }
 

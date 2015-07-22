@@ -168,14 +168,14 @@
 		631C4FB719D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */; };
 		632DA24D1B43EE9400EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		632DA24E1B43EEEF00EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
+		633968F31B5FE23000C1E3AF /* voicemail.png in Resources */ = {isa = PBXBuildFile; fileRef = 633968F21B5FE23000C1E3AF /* voicemail.png */; };
 		636316D11A1DEBCB0009B839 /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutViewController.xib */; };
 		636316D41A1DEC650009B839 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsViewController.xib */; };
 		636316D91A1DECC90009B839 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D71A1DECC90009B839 /* PhoneMainView.xib */; };
 		636316DE1A1DEF2F0009B839 /* UIButtonShrinkable.m in Sources */ = {isa = PBXBuildFile; fileRef = 636316DD1A1DEF2F0009B839 /* UIButtonShrinkable.m */; };
 		636BC9971B5F921B00C754CE /* UIIconButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 636BC9961B5F921B00C754CE /* UIIconButton.m */; };
 		637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 637157A01B283FE200C91677 /* FileTransferDelegate.m */; };
-		637BC58A1B5FDA1600A2EA37 /* UICallStateBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 637BC5891B5FDA1600A2EA37 /* UICallStateBar.m */; };
-		637BC5AD1B5FDA2100A2EA37 /* UICallStateBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637BC5931B5FDA2100A2EA37 /* UICallStateBar.xib */; };
+		637BC5B91B5FDD8C00A2EA37 /* menu.png in Resources */ = {isa = PBXBuildFile; fileRef = 637BC5B81B5FDD8C00A2EA37 /* menu.png */; };
 		639CEAFD1A1DF4D9004DE38F /* UIStateBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEAFF1A1DF4D9004DE38F /* UIStateBar.xib */; };
 		639CEB001A1DF4E4004DE38F /* UIHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB021A1DF4E4004DE38F /* UIHistoryCell.xib */; };
 		639CEB031A1DF4EB004DE38F /* UICompositeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB051A1DF4EB004DE38F /* UICompositeViewController.xib */; };
@@ -1116,6 +1116,7 @@
 		631C4FB019D2A8F2004BFE77 /* UIDigitButtonLongPlus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButtonLongPlus.m; sourceTree = "<group>"; };
 		631C4FB519D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButtonLongVoiceMail.h; sourceTree = "<group>"; };
 		631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButtonLongVoiceMail.m; sourceTree = "<group>"; };
+		633968F21B5FE23000C1E3AF /* voicemail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voicemail.png; sourceTree = "<group>"; };
 		633E388219FFB0F400936D1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutViewController.xib; sourceTree = "<group>"; };
 		636316D51A1DEC650009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SettingsViewController.xib; sourceTree = "<group>"; };
@@ -1128,9 +1129,7 @@
 		636BC9961B5F921B00C754CE /* UIIconButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIIconButton.m; sourceTree = "<group>"; };
 		6371579F1B283FE200C91677 /* FileTransferDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileTransferDelegate.h; path = Utils/FileTransferDelegate.h; sourceTree = "<group>"; };
 		637157A01B283FE200C91677 /* FileTransferDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileTransferDelegate.m; path = Utils/FileTransferDelegate.m; sourceTree = "<group>"; };
-		637BC5881B5FDA1600A2EA37 /* UICallStateBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallStateBar.h; sourceTree = "<group>"; };
-		637BC5891B5FDA1600A2EA37 /* UICallStateBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallStateBar.m; sourceTree = "<group>"; };
-		637BC5941B5FDA2100A2EA37 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICallStateBar.xib; sourceTree = "<group>"; };
+		637BC5B81B5FDD8C00A2EA37 /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
 		639CEAFE1A1DF4D9004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIStateBar.xib; sourceTree = "<group>"; };
 		639CEB011A1DF4E4004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIHistoryCell.xib; sourceTree = "<group>"; };
 		639CEB041A1DF4EB004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICompositeViewController.xib; sourceTree = "<group>"; };
@@ -2161,9 +2160,6 @@
 				D36C43C4158F2E5A0048BA40 /* UICallCell.h */,
 				D36C43C5158F2E5A0048BA40 /* UICallCell.m */,
 				D381881415FE3F0B00C3EDCA /* UICallCell.xib */,
-				637BC5881B5FDA1600A2EA37 /* UICallStateBar.h */,
-				637BC5891B5FDA1600A2EA37 /* UICallStateBar.m */,
-				637BC5931B5FDA2100A2EA37 /* UICallStateBar.xib */,
 				22AA8AFF13D83F6300B30535 /* UICamSwitch.h */,
 				22AA8B0013D83F6300B30535 /* UICamSwitch.m */,
 				D3EA540F159853750037DC6B /* UIChatCell.h */,
@@ -2486,6 +2482,8 @@
 				63060B441B5FA0A60075FB75 /* footer_contacts_default.png */,
 				63060B451B5FA0A60075FB75 /* footer_dialer_default.png */,
 				63060B461B5FA0A60075FB75 /* footer_history_default.png */,
+				637BC5B81B5FDD8C00A2EA37 /* menu.png */,
+				633968F21B5FE23000C1E3AF /* voicemail.png */,
 			);
 			path = images;
 			sourceTree = "<group>";
@@ -3621,6 +3619,7 @@
 				63060B511B5FA0A60075FB75 /* color_K.png in Resources */,
 				D3B9A3E715A58C450096EA4E /* chat_send_over.png in Resources */,
 				D32B6E2415A5B2020033019F /* chat_send_disabled.png in Resources */,
+				633968F31B5FE23000C1E3AF /* voicemail.png in Resources */,
 				639CEB061A1DF4F1004DE38F /* UIChatRoomCell.xib in Resources */,
 				D3A8BB7B15A6CC3200F96BE5 /* chat_bubble_outgoing.png in Resources */,
 				D3A8BB7D15A6CC3200F96BE5 /* chat_bubble_incoming.png in Resources */,
@@ -3639,12 +3638,12 @@
 				D3128FF515AABE4E00A2147A /* contact_edit_over.png in Resources */,
 				D37C638E15AAD251009D0BAC /* contact_number_over.png in Resources */,
 				D37C639015AAD251009D0BAC /* contact_number.png in Resources */,
-				637BC5AD1B5FDA2100A2EA37 /* UICallStateBar.xib in Resources */,
 				D381881515FE3F7F00C3EDCA /* UIContactDetailsHeader.xib in Resources */,
 				D3C6526B15AC228A0092A874 /* contact_ok_default.png in Resources */,
 				D3C6526D15AC228A0092A874 /* contact_ok_over.png in Resources */,
 				D38187B515FE341B00C3EDCA /* ContactDetailsLabelViewController.xib in Resources */,
 				D38187F415FE354700C3EDCA /* UIContactDetailsFooter.xib in Resources */,
+				637BC5B91B5FDD8C00A2EA37 /* menu.png in Resources */,
 				D32D5AA715ADE5D9008593F3 /* button_alert_background_default.png in Resources */,
 				D32D5AA915ADE5D9008593F3 /* button_alert_background_over.png in Resources */,
 				C9C8254315AE204D00D493FA /* options_add_disabled.png in Resources */,
@@ -4134,7 +4133,6 @@
 				D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
 				D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
 				D3E8F68615ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
-				637BC58A1B5FDA1600A2EA37 /* UICallStateBar.m in Sources */,
 				C90FAA7915AF54E6002091CB /* HistoryDetailsViewController.m in Sources */,
 				63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */,
 				F066515517F9A02E0064280C /* UITransparentTVCell.m in Sources */,
@@ -4328,14 +4326,6 @@
 				F0AF070D1A24BA770086C9C1 /* ar */,
 			);
 			name = PhoneMainView.xib;
-			sourceTree = "<group>";
-		};
-		637BC5931B5FDA2100A2EA37 /* UICallStateBar.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				637BC5941B5FDA2100A2EA37 /* Base */,
-			);
-			name = UICallStateBar.xib;
 			sourceTree = "<group>";
 		};
 		639CEAFF1A1DF4D9004DE38F /* UIStateBar.xib */ = {
