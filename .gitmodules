@@ -15,7 +15,7 @@
 	url = git://git.linphone.org/libilbc-rfc3951.git
 [submodule "submodules/externals/opencore-amr"]
 	path = submodules/externals/opencore-amr
-	url = git://git.code.sf.net/p/opencore-amr/code
+	url = git://git.linphone.org/opencore-amr
 	ignore = dirty
 [submodule "submodules/msamr"]
 	path = submodules/msamr
@@ -86,5 +86,5 @@
 	url = git://git.linphone.org/linphone-cmake-builder.git
 [submodule "submodules/externals/vo-amrwbenc"]
 	path = submodules/externals/vo-amrwbenc
-	url = git://git.code.sf.net/p/opencore-amr/vo-amrwbenc
+	url = git://git.linphone.org/vo-amrwbenc
 	ignore = dirty
