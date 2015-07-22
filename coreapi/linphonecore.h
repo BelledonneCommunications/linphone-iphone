@@ -3605,6 +3605,23 @@ LINPHONE_PUBLIC float linphone_core_get_static_picture_fps(LinphoneCore *lc);
 
 /*function to be used for eventually setting window decorations (icons, title...)*/
 LINPHONE_PUBLIC void * linphone_core_get_native_video_window_id(const LinphoneCore *lc);
+
+/**
+ * @ingroup media_parameters
+ * For MacOS, Linux, Windows: core will create its own window
+ * */
+#define LINPHONE_VIDEO_DISPLAY_AUTO (void*)((unsigned long) 0)
+/**
+ * @ingroup media_parameters
+ * For MacOS, Linux, Windows: do nothing
+ * */
+
+#define LINPHONE_VIDEO_DISPLAY_NONE (void*)((unsigned long) -1)
+/**
+ * @ingroup media_parameters
+ * Set the native video window id where the video is to be displayed.
+ * For MacOS, Linux, Windows: if not set or LINPHONE_VIDEO_DISPLAY_AUTO the core will create its own window, unless the special id LINPHONE_VIDEO_DISPLAY_NONE is given.
+**/
 LINPHONE_PUBLIC void linphone_core_set_native_video_window_id(LinphoneCore *lc, void *id);
 
 LINPHONE_PUBLIC void * linphone_core_get_native_preview_window_id(const LinphoneCore *lc);

@@ -5317,11 +5317,6 @@ static void unset_video_window_id(LinphoneCore *lc, bool_t preview, void *id){
 #endif
 }
 
-/**
- * @ingroup media_parameters
- * Set the native video window id where the video is to be displayed.
- * For MacOS, Linux, Windows: if not set or zero the core will create its own window, unless the special id -1 is given.
-**/
 void linphone_core_set_native_video_window_id(LinphoneCore *lc, void *id){
 	if ((id == NULL)
 #ifndef _WIN32

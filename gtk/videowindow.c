@@ -132,7 +132,7 @@ static gint resize_video_window(LinphoneCall *call){
 
 static void on_video_window_destroy(GtkWidget *w, guint timeout){
 	g_source_remove(timeout);
-	linphone_core_set_native_video_window_id(linphone_gtk_get_core(),(void *)(unsigned long)-1);
+	linphone_core_set_native_video_window_id(linphone_gtk_get_core(),LINPHONE_VIDEO_DISPLAY_NONE);
 }
 
 static void video_window_set_fullscreen(GtkWidget *w, gboolean val){

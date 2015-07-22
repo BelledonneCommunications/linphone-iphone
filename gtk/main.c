@@ -306,7 +306,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	g_free(user_certificates_dir);
 	linphone_core_enable_video_capture(the_core, TRUE);
 	linphone_core_enable_video_display(the_core, TRUE);
-	linphone_core_set_native_video_window_id(the_core,(void *)(unsigned int)-1);/*don't create the window*/
+	linphone_core_set_native_video_window_id(the_core,LINPHONE_VIDEO_DISPLAY_NONE);/*don't create the window*/
 	if (no_video) {
 		_linphone_gtk_enable_video(FALSE);
 		linphone_gtk_set_ui_config_int("videoselfview",0);
