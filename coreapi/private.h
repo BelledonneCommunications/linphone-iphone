@@ -556,6 +556,7 @@ struct _LinphoneChatRoom{
 	LinphoneAddress *peer_url;
 	MSList *messages_hist;
 	MSList *transient_messages;
+	int unread_count;
 	LinphoneIsComposingState remote_is_composing;
 	LinphoneIsComposingState is_composing;
 	belle_sip_source_t *remote_composing_refresh_timer;
