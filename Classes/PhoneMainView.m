@@ -169,7 +169,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 											   object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(textReceived:)
-												 name:kLinphoneTextReceived
+												 name:kLinphoneMessageReceived
 											   object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(onGlobalStateChanged:)
@@ -188,7 +188,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	// Remove observers
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneTextReceived object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneMessageReceived object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:UIDeviceBatteryLevelDidChangeNotification
@@ -540,11 +540,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view
 							  transition:(CATransition *)transition
 								   force:(BOOL)force {
-	LOGI(@"PhoneMainView: Change current view to %@", [view name]);
-
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
 
 	if (force || ![view equal:vc.currentView] || vc != self) {
+		LOGI(@"PhoneMainView: Change current view to %@", [view name]);
 		if (transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
 		if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {

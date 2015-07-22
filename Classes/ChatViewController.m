@@ -55,7 +55,7 @@
 	[super viewWillAppear:animated];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(textReceivedEvent:)
-												 name:kLinphoneTextReceived
+												 name:kLinphoneMessageReceived
 											   object:nil];
 	if ([tableController isEditing])
 		[tableController setEditing:FALSE animated:FALSE];
@@ -65,7 +65,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneTextReceived object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneMessageReceived object:nil];
 }
 
 #pragma mark - Event Functions

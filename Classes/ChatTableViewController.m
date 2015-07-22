@@ -185,7 +185,7 @@ static void chatTable_free_chatrooms(void *data) {
 		data = ms_list_remove(data, chatRoom);
 
 		// will force a call to [self loadData]
-		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 						 withRowAnimation:UITableViewRowAnimationFade];

@@ -56,7 +56,7 @@ NSString *const LINPHONERC_APPLICATION_KEY = @"app";
 
 NSString *const kLinphoneCoreUpdate = @"LinphoneCoreUpdate";
 NSString *const kLinphoneDisplayStatusUpdate = @"LinphoneDisplayStatusUpdate";
-NSString *const kLinphoneTextReceived = @"LinphoneTextReceived";
+NSString *const kLinphoneMessageReceived = @"LinphoneMessageReceived";
 NSString *const kLinphoneTextComposeEvent = @"LinphoneTextComposeStarted";
 NSString *const kLinphoneCallUpdate = @"LinphoneCallUpdate";
 NSString *const kLinphoneRegistrationUpdate = @"LinphoneRegistrationUpdate";
@@ -945,7 +945,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 		@"call-id" : callID
 	};
 
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self userInfo:dict];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self userInfo:dict];
 }
 
 static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {

@@ -138,7 +138,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(textReceivedEvent:)
-												 name:kLinphoneTextReceived
+												 name:kLinphoneMessageReceived
 											   object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(onMessageChange:)
@@ -199,13 +199,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self update];
 	linphone_chat_room_mark_as_read(chatRoom);
 	[self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
 	if (chatRoom != nil) {
 		linphone_chat_room_mark_as_read(chatRoom);
-		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 	}
 }
 
@@ -393,7 +393,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		if (strcasecmp(cr_from_string, fromStr) == 0) {
 			if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
 				linphone_chat_room_mark_as_read(room);
-				[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextReceived object:self];
+				[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 			}
 			[tableController addChatEntry:chat];
 			[tableController scrollToLastUnread:TRUE];

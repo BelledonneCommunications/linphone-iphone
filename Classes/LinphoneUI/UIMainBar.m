@@ -43,10 +43,6 @@ static NSString *const kDisappearAnimation = @"disappear";
 	return [super initWithNibName:@"UIMainBar" bundle:[NSBundle mainBundle]];
 }
 
-- (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - ViewController Functions
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -61,8 +57,8 @@ static NSString *const kDisappearAnimation = @"disappear";
 												 name:kLinphoneCallUpdate
 											   object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(textReceived:)
-												 name:kLinphoneTextReceived
+											 selector:@selector(messageReceived:)
+												 name:kLinphoneMessageReceived
 											   object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(settingsUpdate:)
@@ -73,118 +69,15 @@ static NSString *const kDisappearAnimation = @"disappear";
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneMainViewChange object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneTextReceived object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneSettingsUpdate object:nil];
-}
-
-- (void)flipImageForButton:(UIButton *)button {
-	UIControlState states[] = {UIControlStateNormal, UIControlStateDisabled, UIControlStateSelected,
-							   UIControlStateHighlighted, -1};
-	UIControlState *state = states;
-
-	while (*state != -1) {
-		UIImage *bgImage = [button backgroundImageForState:*state];
-
-		UIImage *flippedImage =
-			[UIImage imageWithCGImage:bgImage.CGImage scale:bgImage.scale orientation:UIImageOrientationUpMirrored];
-		[button setBackgroundImage:flippedImage forState:*state];
-		state++;
-	}
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
+	[super viewDidLoad];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(applicationWillEnterForeground:)
 												 name:UIApplicationWillEnterForegroundNotification
 											   object:nil];
-
-	{
-		UIButton *historyButtonLandscape = (UIButton *)[landscapeView viewWithTag:[historyButton tag]];
-		// Set selected+over background: IB lack !
-		[historyButton setBackgroundImage:[UIImage imageNamed:@"history_selected.png"]
-								 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		// Set selected+over background: IB lack !
-		[historyButtonLandscape setBackgroundImage:[UIImage imageNamed:@"history_selected_landscape.png"]
-										  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		[LinphoneUtils buttonFixStatesForTabs:historyButton];
-		[LinphoneUtils buttonFixStatesForTabs:historyButtonLandscape];
-	}
-
-	{
-		UIButton *contactsButtonLandscape = (UIButton *)[landscapeView viewWithTag:[contactsButton tag]];
-		// Set selected+over background: IB lack !
-		[contactsButton setBackgroundImage:[UIImage imageNamed:@"contacts_selected.png"]
-								  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		// Set selected+over background: IB lack !
-		[contactsButtonLandscape setBackgroundImage:[UIImage imageNamed:@"contacts_selected_landscape.png"]
-										   forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		[LinphoneUtils buttonFixStatesForTabs:contactsButton];
-		[LinphoneUtils buttonFixStatesForTabs:contactsButtonLandscape];
-	}
-	{
-		UIButton *dialerButtonLandscape = (UIButton *)[landscapeView viewWithTag:[dialerButton tag]];
-		// Set selected+over background: IB lack !
-		[dialerButton setBackgroundImage:[UIImage imageNamed:@"dialer_selected.png"]
-								forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		// Set selected+over background: IB lack !
-		[dialerButtonLandscape setBackgroundImage:[UIImage imageNamed:@"dialer_selected_landscape.png"]
-										 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		[LinphoneUtils buttonFixStatesForTabs:dialerButton];
-		[LinphoneUtils buttonFixStatesForTabs:dialerButtonLandscape];
-	}
-	{
-		UIButton *settingsButtonLandscape = (UIButton *)[landscapeView viewWithTag:[settingsButton tag]];
-		// Set selected+over background: IB lack !
-		[settingsButton setBackgroundImage:[UIImage imageNamed:@"settings_selected.png"]
-								  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		// Set selected+over background: IB lack !
-		[settingsButtonLandscape setBackgroundImage:[UIImage imageNamed:@"settings_selected_landscape.png"]
-										   forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		[LinphoneUtils buttonFixStatesForTabs:settingsButton];
-		[LinphoneUtils buttonFixStatesForTabs:settingsButtonLandscape];
-	}
-
-	{
-		UIButton *chatButtonLandscape = (UIButton *)[landscapeView viewWithTag:[chatButton tag]];
-		// Set selected+over background: IB lack !
-		[chatButton setBackgroundImage:[UIImage imageNamed:@"chat_selected.png"]
-							  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		// Set selected+over background: IB lack !
-		[chatButtonLandscape setBackgroundImage:[UIImage imageNamed:@"chat_selected_landscape.png"]
-									   forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-		[LinphoneUtils buttonFixStatesForTabs:chatButton];
-		[LinphoneUtils buttonFixStatesForTabs:chatButtonLandscape];
-	}
-	if ([LinphoneManager langageDirectionIsRTL]) {
-		[self flipImageForButton:historyButton];
-		[self flipImageForButton:settingsButton];
-		[self flipImageForButton:dialerButton];
-		[self flipImageForButton:chatButton];
-		[self flipImageForButton:contactsButton];
-	}
-
-	[super viewDidLoad]; // Have to be after due to TPMultiLayoutViewController
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
-
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:UIApplicationWillEnterForegroundNotification
-												  object:nil];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -222,7 +115,7 @@ static NSString *const kDisappearAnimation = @"disappear";
 - (void)changeViewEvent:(NSNotification *)notif {
 	// UICompositeViewDescription *view = [notif.userInfo objectForKey: @"view"];
 	// if(view != nil)
-	[self updateView:[[PhoneMainView instance] firstView]];
+	[self updateSelectedButton:[[PhoneMainView instance] firstView]];
 }
 
 - (void)settingsUpdate:(NSNotification *)notif {
@@ -242,14 +135,14 @@ static NSString *const kDisappearAnimation = @"disappear";
 	}
 }
 
-- (void)textReceived:(NSNotification *)notif {
+- (void)messageReceived:(NSNotification *)notif {
 	[self updateUnreadMessage:TRUE];
 }
 
-#pragma mark -
+#pragma mark - UI Update
 
 - (void)update:(BOOL)appear {
-	[self updateView:[[PhoneMainView instance] firstView]];
+	[self updateSelectedButton:[[PhoneMainView instance] firstView]];
 	[self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:appear];
 	[self updateUnreadMessage:appear];
 }
@@ -325,6 +218,43 @@ static NSString *const kDisappearAnimation = @"disappear";
 	}
 }
 
+- (void)updateSelectedButton:(UICompositeViewDescription *)view {
+	historyButton.selected = [view equal:[HistoryViewController compositeViewDescription]];
+	contactsButton.selected = [view equal:[ContactsViewController compositeViewDescription]];
+	dialerButton.selected = [view equal:[DialerViewController compositeViewDescription]];
+	settingsButton.selected = [view equal:[SettingsViewController compositeViewDescription]];
+	chatButton.selected = [view equal:[ChatViewController compositeViewDescription]];
+}
+
+#pragma mark - Action Functions
+
+- (IBAction)onHistoryClick:(id)event {
+	[[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
+}
+
+- (IBAction)onContactsClick:(id)event {
+	[ContactSelection setSelectionMode:ContactSelectionModeNone];
+	[ContactSelection setAddAddress:nil];
+	[ContactSelection setSipFilter:nil];
+	[ContactSelection enableEmailFilter:FALSE];
+	[ContactSelection setNameOrEmailFilter:nil];
+	[[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]];
+}
+
+- (IBAction)onDialerClick:(id)event {
+	[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
+}
+
+- (IBAction)onSettingsClick:(id)event {
+	[[PhoneMainView instance] changeCurrentView:[SettingsViewController compositeViewDescription]];
+}
+
+- (IBAction)onChatClick:(id)event {
+	[[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+}
+
+#pragma mark - Animation
+
 - (void)appearAnimation:(NSString *)animationID target:(UIView *)target completion:(void (^)(BOOL finished))completion {
 	CABasicAnimation *appear = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
 	appear.duration = 0.4;
@@ -364,62 +294,6 @@ static NSString *const kDisappearAnimation = @"disappear";
 
 - (void)stopBounceAnimation:(NSString *)animationID target:(UIView *)target {
 	[target.layer removeAnimationForKey:animationID];
-}
-
-- (void)updateView:(UICompositeViewDescription *)view {
-	// Update buttons
-	if ([view equal:[HistoryViewController compositeViewDescription]]) {
-		historyButton.selected = TRUE;
-	} else {
-		historyButton.selected = FALSE;
-	}
-	if ([view equal:[ContactsViewController compositeViewDescription]]) {
-		contactsButton.selected = TRUE;
-	} else {
-		contactsButton.selected = FALSE;
-	}
-	if ([view equal:[DialerViewController compositeViewDescription]]) {
-		dialerButton.selected = TRUE;
-	} else {
-		dialerButton.selected = FALSE;
-	}
-	if ([view equal:[SettingsViewController compositeViewDescription]]) {
-		settingsButton.selected = TRUE;
-	} else {
-		settingsButton.selected = FALSE;
-	}
-	if ([view equal:[ChatViewController compositeViewDescription]]) {
-		chatButton.selected = TRUE;
-	} else {
-		chatButton.selected = FALSE;
-	}
-}
-
-#pragma mark - Action Functions
-
-- (IBAction)onHistoryClick:(id)event {
-	[[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
-}
-
-- (IBAction)onContactsClick:(id)event {
-	[ContactSelection setSelectionMode:ContactSelectionModeNone];
-	[ContactSelection setAddAddress:nil];
-	[ContactSelection setSipFilter:nil];
-	[ContactSelection enableEmailFilter:FALSE];
-	[ContactSelection setNameOrEmailFilter:nil];
-	[[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]];
-}
-
-- (IBAction)onDialerClick:(id)event {
-	[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
-}
-
-- (IBAction)onSettingsClick:(id)event {
-	[[PhoneMainView instance] changeCurrentView:[SettingsViewController compositeViewDescription]];
-}
-
-- (IBAction)onChatClick:(id)event {
-	[[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
 }
 
 #pragma mark - TPMultiLayoutViewController Functions

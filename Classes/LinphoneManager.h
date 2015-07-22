@@ -40,7 +40,7 @@ extern NSString *const LINPHONERC_APPLICATION_KEY;
 
 extern NSString *const kLinphoneCoreUpdate;
 extern NSString *const kLinphoneDisplayStatusUpdate;
-extern NSString *const kLinphoneTextReceived;
+extern NSString *const kLinphoneMessageReceived;
 extern NSString *const kLinphoneTextComposeEvent;
 extern NSString *const kLinphoneCallUpdate;
 extern NSString *const kLinphoneRegistrationUpdate;
@@ -107,7 +107,7 @@ typedef struct _LinphoneManagerSounds {
 @interface LinphoneManager : NSObject {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
-	
+
 @private
 	NSTimer* mIterateTimer;
     NSMutableArray*  pushCallIDs;
