@@ -21,8 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int sal_send_info(SalOp *op, const char *from, const char *to, const SalBody *body){
 	if (op->dialog){
+		belle_sip_request_t *req;
 		belle_sip_dialog_enable_pending_trans_checking(op->dialog,op->base.root->pending_trans_checking);
-		belle_sip_request_t *req=belle_sip_dialog_create_queued_request(op->dialog,"INFO");
+		req=belle_sip_dialog_create_queued_request(op->dialog,"INFO");
 		sal_op_add_body(op,(belle_sip_message_t*)req,body);
 		return sal_op_send_request(op,req);
 	}
