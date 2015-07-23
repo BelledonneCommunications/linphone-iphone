@@ -88,10 +88,10 @@
         </view>
     </objects>
     <resources>
-        <image name="call_quality_indicator_2.png" width="54" height="30"/>
-        <image name="led_disconnected.png" width="18" height="17"/>
+        <image name="call_quality_indicator_2.png" width="56" height="58"/>
+        <image name="led_disconnected.png" width="35" height="35"/>
         <image name="menu.png" width="56" height="55"/>
-        <image name="security_ok.png" width="19" height="24"/>
+        <image name="security_ok.png" width="39" height="49"/>
         <image name="voicemail.png" width="76" height="36"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

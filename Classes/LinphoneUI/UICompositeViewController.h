@@ -29,9 +29,7 @@
 @property (strong) NSString *name;
 @property (strong) NSString *content;
 @property (strong) NSString *stateBar;
-@property (assign) BOOL stateBarEnabled;
 @property (strong) NSString *tabBar;
-@property (assign) BOOL tabBarEnabled;
 @property (assign) BOOL fullscreen;
 @property (assign) BOOL landscapeMode;
 @property (assign) BOOL portraitMode;
@@ -40,9 +38,7 @@
 - (id)copy;
 - (BOOL)equal:(UICompositeViewDescription*) description;
 - (id)init:(NSString *)name content:(NSString *)content stateBar:(NSString*)stateBar 
-                        stateBarEnabled:(BOOL) stateBarEnabled 
                                  tabBar:(NSString*)tabBar
-                          tabBarEnabled:(BOOL) tabBarEnabled
                              fullscreen:(BOOL) fullscreen
                           landscapeMode:(BOOL) landscapeMode
                            portraitMode:(BOOL) portraitMode;

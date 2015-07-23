@@ -26,9 +26,7 @@
 @synthesize name;
 @synthesize content;
 @synthesize stateBar;
-@synthesize stateBarEnabled;
 @synthesize tabBar;
-@synthesize tabBarEnabled;
 @synthesize fullscreen;
 @synthesize landscapeMode;
 @synthesize portraitMode;
@@ -37,9 +35,7 @@
 	UICompositeViewDescription *copy = [UICompositeViewDescription alloc];
 	copy.content = self.content;
 	copy.stateBar = self.stateBar;
-	copy.stateBarEnabled = self.stateBarEnabled;
 	copy.tabBar = self.tabBar;
-	copy.tabBarEnabled = self.tabBarEnabled;
 	copy.fullscreen = self.fullscreen;
 	copy.landscapeMode = self.landscapeMode;
 	copy.portraitMode = self.portraitMode;
@@ -54,18 +50,14 @@
 - (id)init:(NSString *)aname
 			content:(NSString *)acontent
 		   stateBar:(NSString *)astateBar
-	stateBarEnabled:(BOOL)astateBarEnabled
 			 tabBar:(NSString *)atabBar
-	  tabBarEnabled:(BOOL)atabBarEnabled
 		 fullscreen:(BOOL)afullscreen
 	  landscapeMode:(BOOL)alandscapeMode
 	   portraitMode:(BOOL)aportraitMode {
 	self.name = aname;
 	self.content = acontent;
-	self.stateBar = astateBar;
-	self.stateBarEnabled = astateBarEnabled;
-	self.tabBar = atabBar;
-	self.tabBarEnabled = atabBarEnabled;
+	self.stateBar = astateBar ?: @"UIStateBar";
+	self.tabBar = atabBar ?: @"UIMainBar";
 	self.fullscreen = afullscreen;
 	self.landscapeMode = alandscapeMode;
 	self.portraitMode = aportraitMode;
@@ -408,13 +400,11 @@
 			[contentView.layer removeAnimationForKey:@"transition"];
 			[contentView.layer addAnimation:viewTransition forKey:@"transition"];
 			if (oldViewDescription.stateBar != currentViewDescription.stateBar ||
-				oldViewDescription.stateBarEnabled != currentViewDescription.stateBarEnabled ||
 				[stateBarView.layer animationForKey:@"transition"] != nil) {
 				[stateBarView.layer removeAnimationForKey:@"transition"];
 				[stateBarView.layer addAnimation:viewTransition forKey:@"transition"];
 			}
 			if (oldViewDescription.tabBar != currentViewDescription.tabBar ||
-				oldViewDescription.tabBarEnabled != currentViewDescription.tabBarEnabled ||
 				[tabBarView.layer animationForKey:@"transition"] != nil) {
 				[tabBarView.layer removeAnimationForKey:@"transition"];
 				[tabBarView.layer addAnimation:viewTransition forKey:@"transition"];
@@ -476,21 +466,8 @@
 		return;
 	}
 
-	if (tabBar != nil) {
-		if (currentViewDescription.tabBarEnabled != [tabBar boolValue]) {
-			currentViewDescription.tabBarEnabled = [tabBar boolValue];
-		} else {
-			tabBar = nil; // No change = No Update
-		}
-	}
-
-	if (stateBar != nil) {
-		if (currentViewDescription.stateBarEnabled != [stateBar boolValue]) {
-			currentViewDescription.stateBarEnabled = [stateBar boolValue];
-		} else {
-			stateBar = nil; // No change = No Update
-		}
-	}
+	tabBar = nil;   // No change = No Update
+	stateBar = nil; // No change = No Update
 
 	if (fullscreen != nil) {
 		if (currentViewDescription.fullscreen != [fullscreen boolValue]) {
@@ -521,37 +498,27 @@
 	if (currentViewDescription.fullscreen)
 		origin = 0;
 
-	if (self.stateBarViewController != nil && currentViewDescription.stateBarEnabled) {
-		contentFrame.origin.y = origin + stateBarFrame.size.height;
-		stateBarFrame.origin.y = origin;
-	} else {
-		contentFrame.origin.y = origin;
-		stateBarFrame.origin.y = origin - stateBarFrame.size.height;
-	}
+	contentFrame.origin.y = origin + stateBarFrame.size.height;
+	stateBarFrame.origin.y = origin;
 
 	// Resize TabBar
 	CGRect tabFrame = tabBarView.frame;
-	if (self.tabBarViewController != nil && currentViewDescription.tabBarEnabled) {
-		tabFrame.origin.y = viewFrame.size.height;
-		tabFrame.origin.x = viewFrame.size.width;
-		tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
-		// tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
-		tabFrame.origin.y -= tabFrame.size.height;
-		tabFrame.origin.x -= tabFrame.size.width;
-		contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
+	tabFrame.origin.y = viewFrame.size.height;
+	tabFrame.origin.x = viewFrame.size.width;
+	tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
+	// tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
+	tabFrame.origin.y -= tabFrame.size.height;
+	tabFrame.origin.x -= tabFrame.size.width;
+	contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
 
-		// for some views, we need the content to overlap, in which case
-		// we insert in the tab XIB a mask with tag -1 and with y = the amount of
-		// points that the content should overlap.
-		for (UIView *view in self.tabBarViewController.view.subviews) {
-			if (view.tag == -1) {
-				contentFrame.size.height += view.frame.origin.y;
-				break;
-			}
+	// for some views, we need the content to overlap, in which case
+	// we insert in the tab XIB a mask with tag -1 and with y = the amount of
+	// points that the content should overlap.
+	for (UIView *view in self.tabBarViewController.view.subviews) {
+		if (view.tag == -1) {
+			contentFrame.size.height += view.frame.origin.y;
+			break;
 		}
-	} else {
-		contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
-		tabFrame.origin.y = viewFrame.size.height;
 	}
 
 	if (currentViewDescription.fullscreen) {

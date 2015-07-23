@@ -83,9 +83,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"Dialer"
 																content:@"DialerViewController"
 															   stateBar:@"UIStateBar"
-														stateBarEnabled:true
 																 tabBar:@"UIMainBar"
-														  tabBarEnabled:true
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]
 														   portraitMode:true];
@@ -143,28 +141,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[videoCameraSwitch setHidden:TRUE];
 		}
 	}
-
 	[addressField setText:@""];
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0 // attributed string only available since iOS6
-	if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
-		// fix placeholder bar color in iOS7
-		UIColor *color = [UIColor grayColor];
-		NSAttributedString *placeHolderString =
-			[[NSAttributedString alloc] initWithString:NSLocalizedString(@"Enter an address", @"Enter an address")
-											attributes:@{NSForegroundColorAttributeName : color}];
-		addressField.attributedPlaceholder = placeHolderString;
-	}
-#endif
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
-	// Remove observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
-
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCoreUpdate object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {

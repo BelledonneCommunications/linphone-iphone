@@ -37,7 +37,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="360" height="63"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter SIP address or phone number..." minimumFontSize="5" id="4" userLabel="addressField" customClass="UIAddressTextField">
+                        <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter SIP address or phone number" minimumFontSize="5" id="4" userLabel="addressField" customClass="UIAddressTextField">
                             <rect key="frame" x="0.0" y="0.0" width="300" height="63"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

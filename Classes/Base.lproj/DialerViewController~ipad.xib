@@ -73,7 +73,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </imageView>
-                        <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter SIP address or phone number..." adjustsFontSizeToFit="NO" minimumFontSize="15" id="6" userLabel="addressField" customClass="UIAddressTextField">
+                        <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter SIP address or phone number" adjustsFontSizeToFit="NO" minimumFontSize="15" id="6" userLabel="addressField" customClass="UIAddressTextField">
                             <rect key="frame" x="0.0" y="0.0" width="700" height="60"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -368,7 +368,7 @@
         <image name="background_alt.png" width="640" height="561"/>
         <image name="backspace_default.png" width="81" height="43"/>
         <image name="backspace_disabled.png" width="81" height="43"/>
-        <image name="backspace_over.png" width="81" height="43"/>
+        <image name="backspace_over.png" width="106" height="56"/>
         <image name="call_default.png" width="371" height="170"/>
         <image name="call_disabled.png" width="371" height="170"/>
         <image name="call_over.png" width="371" height="170"/>
@@ -398,8 +398,8 @@
         <image name="numpad_two_over.png" width="220" height="113"/>
         <image name="numpad_zero_default.png" width="220" height="113"/>
         <image name="numpad_zero_over.png" width="220" height="113"/>
-        <image name="switch_camera_default.png" width="151" height="51"/>
-        <image name="switch_camera_over.png" width="151" height="51"/>
+        <image name="switch_camera_default.png" width="151" height="149"/>
+        <image name="switch_camera_over.png" width="151" height="149"/>
         <image name="transfer_call_default.png" width="371" height="170"/>
         <image name="transfer_call_disabled.png" width="371" height="170"/>
         <image name="transfer_call_over.png" width="371" height="170"/>

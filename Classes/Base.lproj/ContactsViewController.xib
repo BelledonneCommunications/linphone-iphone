@@ -22,105 +22,98 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" id="3" userLabel="toolBar">
-                    <rect key="frame" x="0.0" y="0.0" width="360" height="88"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <rect key="frame" x="0.0" y="0.0" width="360" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="toolsbar_background.png" id="92" userLabel="background">
-                            <rect key="frame" x="0.0" y="0.0" width="360" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                        </imageView>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="87" userLabel="backButton" customClass="UIIconButton">
+                            <rect key="frame" x="0.0" y="0.0" width="72" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Back"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" image="back.png" backgroundImage="color_F.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                            <connections>
+                                <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="89"/>
+                            </connections>
+                        </button>
                         <view contentMode="scaleToFill" id="93" userLabel="switchView">
-                            <rect key="frame" x="146" y="0.0" width="214" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <rect key="frame" x="0.0" y="0.0" width="144" height="44"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="4" userLabel="allButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="107" height="44"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="72" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="All contacts filter"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="16" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" title="All" backgroundImage="contacts_all_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
+                                    <state key="normal" image="contacts_all.png" backgroundImage="color_F.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" backgroundImage="contacts_all_selected.png">
-                                        <color key="titleColor" red="0.97647064920000004" green="0.97647064920000004" blue="0.97647064920000004" alpha="1" colorSpace="deviceRGB"/>
-                                    </state>
-                                    <state key="highlighted" backgroundImage="contacts_all_selected.png">
-                                        <color key="titleColor" red="0.97647064920000004" green="0.97647064920000004" blue="0.97647064920000004" alpha="1" colorSpace="deviceRGB"/>
-                                    </state>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onAllClick:" destination="-1" eventType="touchUpInside" id="29"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="5" userLabel="linphoneButton">
-                                    <rect key="frame" x="107" y="0.0" width="107" height="44"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="linphoneButton" customClass="UIIconButton">
+                                    <rect key="frame" x="72" y="0.0" width="72" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Linphone contacts filter"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                     <inset key="titleEdgeInsets" minX="5" minY="14" maxX="10" maxY="0.0"/>
-                                    <state key="normal" title="Linphone" backgroundImage="contacts_linphone_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
+                                    <state key="normal" image="contacts_linphone.png" backgroundImage="color_F.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" backgroundImage="contacts_linphone_selected.png">
-                                        <color key="titleColor" red="0.97647064920000004" green="0.97647064920000004" blue="0.97647064920000004" alpha="1" colorSpace="deviceRGB"/>
-                                    </state>
-                                    <state key="highlighted" backgroundImage="contacts_linphone_selected.png">
-                                        <color key="titleColor" red="0.97647064920000004" green="0.97647064920000004" blue="0.97647064920000004" alpha="1" colorSpace="deviceRGB"/>
-                                    </state>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onLinphoneClick:" destination="-1" eventType="touchUpInside" id="47"/>
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         </view>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="6" userLabel="addButton">
-                            <rect key="frame" x="0.0" y="0.0" width="107" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="vXX-dG-OTJ" userLabel="listEditButton" customClass="UIIconButton">
+                            <rect key="frame" x="216" y="0.0" width="72" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Add contact"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Add contact" backgroundImage="contacts_add_default.png">
-                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
+                            <state key="normal" image="edit_list.png" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" backgroundImage="contacts_add_over.png">
-                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="addButton" customClass="UIIconButton">
+                            <rect key="frame" x="288" y="0.0" width="72" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Add contact"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" image="add_contact.png" backgroundImage="color_F.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
                             <connections>
                                 <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="86"/>
                             </connections>
                         </button>
-                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="87" userLabel="backButton">
-                            <rect key="frame" x="0.0" y="0.0" width="107" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Back"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="aJI-VJ-xN6" userLabel="deleteButton" customClass="UIIconButton">
+                            <rect key="frame" x="288" y="0.0" width="72" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Add contact"/>
                             <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Back" backgroundImage="contacts_back_default.png">
-                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
+                            <state key="normal" image="delete.png" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" backgroundImage="contacts_back_over.png">
-                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                            </state>
-                            <connections>
-                                <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="89"/>
-                            </connections>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
                         </button>
-                        <searchBar contentMode="redraw" showsCancelButton="YES" id="5jE-oF-d45" userLabel="searchBar">
-                            <rect key="frame" x="0.0" y="44" width="360" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <textInputTraits key="textInputTraits"/>
-                            <connections>
-                                <outlet property="delegate" destination="-1" id="4jL-Rv-dW7"/>
-                            </connections>
-                        </searchBar>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
+                <searchBar contentMode="redraw" showsCancelButton="YES" id="5jE-oF-d45" userLabel="searchBar">
+                    <rect key="frame" x="0.0" y="40" width="360" height="44"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="4jL-Rv-dW7"/>
+                    </connections>
+                </searchBar>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
@@ -128,15 +121,14 @@
         </view>
     </objects>
     <resources>
-        <image name="contacts_add_default.png" width="214" height="88"/>
-        <image name="contacts_add_over.png" width="214" height="88"/>
-        <image name="contacts_all_default.png" width="213" height="88"/>
-        <image name="contacts_all_selected.png" width="213" height="88"/>
-        <image name="contacts_back_default.png" width="214" height="88"/>
-        <image name="contacts_back_over.png" width="214" height="88"/>
-        <image name="contacts_linphone_default.png" width="213" height="88"/>
-        <image name="contacts_linphone_selected.png" width="213" height="88"/>
-        <image name="toolsbar_background.png" width="5" height="88"/>
+        <image name="add_contact.png" width="101" height="86"/>
+        <image name="back.png" width="71" height="64"/>
+        <image name="color_E.png" width="1" height="1"/>
+        <image name="color_F.png" width="1" height="1"/>
+        <image name="contacts_all.png" width="109" height="86"/>
+        <image name="contacts_linphone.png" width="110" height="86"/>
+        <image name="delete.png" width="64" height="82"/>
+        <image name="edit_list.png" width="88" height="85"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

@@ -75,7 +75,7 @@
 							<int key="weightCategory">0</int>
 							<double key="pointSize">25</double>
 						</object>
-						<object class="NSFont" key="IBUIFont" id="529562122">
+						<object class="NSFont" key="IBUIFont" id="808316515">
 							<string key="NSName">HelveticaNeue</string>
 							<double key="NSSize">25</double>
 							<int key="NSfFlags">16</int>
@@ -107,7 +107,7 @@
 							<int key="weightCategory">30</int>
 							<double key="pointSize">25</double>
 						</object>
-						<reference key="IBUIFont" ref="529562122"/>
+						<reference key="IBUIFont" ref="808316515"/>
 						<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 					</object>
 				</array>

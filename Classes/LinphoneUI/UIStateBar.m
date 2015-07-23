@@ -223,7 +223,7 @@
 
 - (void)updateUI:(BOOL)inCall {
 	_outcallView.hidden = (inCall);
-	_incallView.hidden = !_incallView.hidden;
+	_incallView.hidden = !_outcallView.hidden;
 }
 
 - (void)callSecurityUpdate {
@@ -231,12 +231,12 @@
 	BOOL security = true;
 
 	const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
-	[self updateUI:(list != NULL)];
 	if (list == NULL) {
 		if (securitySheet) {
 			[securitySheet dismissWithClickedButtonIndex:securitySheet.destructiveButtonIndex animated:TRUE];
 		}
 	} else {
+		[self updateUI:YES];
 		while (list != NULL) {
 			LinphoneCall *call = (LinphoneCall *)list->data;
 			LinphoneMediaEncryption enc =
@@ -258,8 +258,8 @@
 - (void)callQualityUpdate {
 	UIImage *image = nil;
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-	[self updateUI:(call != NULL)];
 	if (call != NULL) {
+		[self updateUI:YES];
 		// FIXME double check call state before computing, may cause core dump
 		float quality = linphone_call_get_average_quality(call);
 		if (quality < 1) {

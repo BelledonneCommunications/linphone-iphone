@@ -83,9 +83,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"Chat"
 																content:@"ChatViewController"
 															   stateBar:nil
-														stateBarEnabled:false
 																 tabBar:@"UIMainBar"
-														  tabBarEnabled:true
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]
 														   portraitMode:true];

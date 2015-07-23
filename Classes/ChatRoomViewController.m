@@ -80,9 +80,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"ChatRoom"
 																content:@"ChatRoomViewController"
 															   stateBar:nil
-														stateBarEnabled:false
 																 tabBar:/*@"UIMainBar"*/ nil
-														  tabBarEnabled:false /*to keep room for chat*/
 															 fullscreen:false
 														  landscapeMode:true
 														   portraitMode:true];

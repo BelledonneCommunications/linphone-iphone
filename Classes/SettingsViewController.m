@@ -404,10 +404,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"Settings"
 																content:@"SettingsViewController"
-															   stateBar:nil
-														stateBarEnabled:false
+															   stateBar:@"UIStateBar"
 																 tabBar:@"UIMainBar"
-														  tabBarEnabled:true
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]
 														   portraitMode:true];

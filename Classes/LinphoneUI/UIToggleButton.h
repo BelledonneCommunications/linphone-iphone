@@ -19,13 +19,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UIIconButton.h"
+
 @protocol UIToggleButtonDelegate 
 	- (void)onOn;
 	- (void)onOff;
 	- (bool)onUpdate;
 @end
 
-@interface UIToggleButton : UIButton <UIToggleButtonDelegate> {	
+@interface UIToggleButton : UIIconButton <UIToggleButtonDelegate> {
 }
 
 - (bool)update;
