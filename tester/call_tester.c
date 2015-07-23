@@ -2829,16 +2829,14 @@ static void call_established_with_complex_rejected_operation(void) {
 		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),linphone_core_create_info_message(marie->lc));
 
 
-		/*by chance, UPDATES can be sent in // to invite, but drawback is that it will not be rejected with 491*/
 		params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
-		params->no_user_consent=TRUE;
+		sal_enable_pending_trans_checking(marie->lc->sal,FALSE); /*to allow // transactions*/
+		linphone_core_enable_payload_type(marie->lc,linphone_core_find_payload_type(marie->lc,"PCMU",8000,1),TRUE);
+		linphone_core_enable_payload_type(marie->lc,linphone_core_find_payload_type(marie->lc,"PCMA",8000,1),FALSE);
+
 		linphone_core_update_call(	marie->lc
 											,linphone_core_get_current_call(marie->lc)
 											,params);
-
-
-
-
 
 		linphone_call_params_destroy(params);
 
@@ -2848,6 +2846,58 @@ static void call_established_with_complex_rejected_operation(void) {
 		BC_ASSERT_EQUAL(linphone_call_get_reason(linphone_core_get_current_call(pauline->lc)),LinphoneReasonTemporarilyUnavailable, int, "%d");
 		BC_ASSERT_EQUAL(linphone_call_get_reason(linphone_core_get_current_call(pauline->lc)),LinphoneReasonTemporarilyUnavailable, int, "%d");
 
+
+		/*just to sleep*/
+		linphone_core_terminate_all_calls(pauline->lc);
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	}
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_established_with_rejected_info_during_reinvite(void) {
+
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	bool_t call_ok=FALSE;
+
+	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	if (call_ok){
+
+		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,1));
+		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,1));
+
+		linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMU",8000,1),FALSE); /*disable PCMU*/
+		linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMA",8000,1),TRUE); /*enable PCMA*/
+		linphone_core_enable_payload_type(marie->lc,linphone_core_find_payload_type(marie->lc,"PCMU",8000,1),FALSE); /*disable PCMU*/
+		linphone_core_enable_payload_type(marie->lc,linphone_core_find_payload_type(marie->lc,"PCMA",8000,1),TRUE); /*enable PCMA*/
+
+		/*just to authenticate marie*/
+		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),linphone_core_create_info_message(marie->lc));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_inforeceived,1));
+		BC_ASSERT_EQUAL(pauline->stat.number_of_inforeceived,1, int, "%d");
+		/*to give time for 200ok to arrive*/
+		wait_for_until(marie->lc,pauline->lc,NULL,0,1000);
+
+
+		//sal_enable_pending_trans_checking(marie->lc->sal,FALSE); /*to allow // transactions*/
+
+		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),linphone_core_create_info_message(marie->lc));
+
+		//sal_set_send_error(marie->lc->sal, -1); /*to avoid 491 pending to be sent*/
+
+		linphone_core_update_call(	pauline->lc
+									,linphone_core_get_current_call(pauline->lc)
+									,linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
+
+
+
+		wait_for_until(pauline->lc,pauline->lc,NULL,0,2000); /*to avoid 491 pending to be sent to early*/
+
+
+		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 
 		/*just to sleep*/
 		linphone_core_terminate_all_calls(pauline->lc);
@@ -2987,22 +3037,32 @@ static void call_redirect(void){
 
 }
 
-static void call_established_with_rejected_reinvite_with_error(void) {
+static void call_established_with_rejected_reinvite_with_error_base(bool_t trans_pending) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	bool_t call_ok=TRUE;
+	int result;
 
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 
 	if (call_ok){
 		linphone_core_enable_payload_type(pauline->lc,linphone_core_find_payload_type(pauline->lc,"PCMA",8000,1),TRUE); /*add PCMA*/
 
-		sal_enable_unconditional_answer(marie->lc->sal,TRUE);
+		if (trans_pending) {
+			LinphoneInfoMessage * info = linphone_core_create_info_message(pauline->lc);
+			linphone_call_send_info_message(linphone_core_get_current_call(pauline->lc),info);
 
-		linphone_core_update_call(	pauline->lc
+		} else
+			sal_enable_unconditional_answer(marie->lc->sal,TRUE);
+
+		result = linphone_core_update_call(	pauline->lc
 						,linphone_core_get_current_call(pauline->lc)
 						,linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
 
+		if (trans_pending)
+			BC_ASSERT_NOT_EQUAL(result,0, int, "%d");
+		else
+			BC_ASSERT_EQUAL(result,0,int, "%d");
 
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 
@@ -3012,6 +3072,9 @@ static void call_established_with_rejected_reinvite_with_error(void) {
 		check_call_state(pauline,LinphoneCallStreamsRunning);
 		check_call_state(marie,LinphoneCallStreamsRunning);
 
+		if (!trans_pending)
+			sal_enable_unconditional_answer(marie->lc->sal,FALSE);
+
 		/*just to sleep*/
 		linphone_core_terminate_all_calls(pauline->lc);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -3020,6 +3083,14 @@ static void call_established_with_rejected_reinvite_with_error(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void call_established_with_rejected_reinvite_with_error(void) {
+	call_established_with_rejected_reinvite_with_error_base(FALSE);
+}
+
+static void call_established_with_rejected_reinvite_with_trans_pending_error(void) {
+	call_established_with_rejected_reinvite_with_error_base(TRUE);
 }
 
 static void call_rejected_because_wrong_credentials_with_params(const char* user_agent,bool_t enable_auth_req_cb) {
@@ -4339,7 +4410,9 @@ test_t call_tests[] = {
 	{ "Call established with rejected RE-INVITE",call_established_with_rejected_reinvite},
 	{ "Call established with rejected incoming RE-INVITE", call_established_with_rejected_incoming_reinvite },
 	{ "Call established with rejected RE-INVITE in error", call_established_with_rejected_reinvite_with_error},
+	{ "Call established with rejected RE-INVITE with trans pending error", call_established_with_rejected_reinvite_with_trans_pending_error},
 	{ "Call established with complex rejected operation",call_established_with_complex_rejected_operation},
+	{ "Call established with rejected info during re-invite",call_established_with_rejected_info_during_reinvite},
 	{ "Call redirected by callee", call_redirect},
 	{ "Call with specified codec bitrate", call_with_specified_codec_bitrate},
 	{ "Call with in-dialog UPDATE request", call_with_in_dialog_update },

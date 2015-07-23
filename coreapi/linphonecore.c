@@ -3270,12 +3270,13 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 **/
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
-	LinphoneCallState nextstate;
+	LinphoneCallState nextstate, initial_state;
+
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 	bool_t has_video = FALSE;
 #endif
 
-	switch(call->state){
+	switch(initial_state=call->state){
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
 		case LinphoneCallOutgoingRinging:
@@ -3328,7 +3329,11 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			}
 		}
 #endif //defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
-		err = linphone_core_start_update_call(lc, call);
+		if ((err = linphone_core_start_update_call(lc, call)) && call->state!=initial_state) {
+			/*Restore initial state*/
+			linphone_call_set_state(call,initial_state,NULL);
+		}
+
 	}else{
 #ifdef VIDEO_ENABLED
 		if ((call->videostream != NULL) && (call->state == LinphoneCallStreamsRunning)) {

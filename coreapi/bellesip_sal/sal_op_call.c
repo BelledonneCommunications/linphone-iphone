@@ -889,6 +889,8 @@ int sal_call_decline(SalOp *op, SalReason reason, const char *redirection /*opti
 int sal_call_update(SalOp *op, const char *subject, bool_t no_user_consent){
 	belle_sip_request_t *update;
 	belle_sip_dialog_state_t state=belle_sip_dialog_get_state(op->dialog);
+	belle_sip_dialog_enable_pending_trans_checking(op->dialog,op->base.root->pending_trans_checking);
+
 	/*check for dialog state*/
 	if ( state == BELLE_SIP_DIALOG_CONFIRMED) {
 		if (no_user_consent)
@@ -906,6 +908,11 @@ int sal_call_update(SalOp *op, const char *subject, bool_t no_user_consent){
 		sal_op_fill_invite(op, update);
 		return sal_op_send_request(op,update);
 	}
+	/*it failed why ?*/
+	if (belle_sip_dialog_request_pending(op->dialog))
+		sal_error_info_set(&op->error_info,SalReasonRequestPending,491,NULL,NULL);
+	else
+		sal_error_info_set(&op->error_info,SalReasonUnknown,500,NULL,NULL);
 	return -1;
 }
 

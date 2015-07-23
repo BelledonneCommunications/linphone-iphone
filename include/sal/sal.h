@@ -800,6 +800,11 @@ LINPHONE_PUBLIC	void sal_set_recv_error(Sal *sal,int value);
 /*always answer 480 if value=true*/
 LINPHONE_PUBLIC	void sal_enable_unconditional_answer(Sal *sal,int value);
 
+LINPHONE_PUBLIC bool_t sal_pending_trans_checking_enabled(const Sal *sal) ;
+LINPHONE_PUBLIC int sal_enable_pending_trans_checking(Sal *sal, bool_t value) ;
+
+
+
 /*refresher retry after value in ms*/
 LINPHONE_PUBLIC	void sal_set_refresher_retry_after(Sal *sal,int value);
 LINPHONE_PUBLIC	int sal_get_refresher_retry_after(const Sal *sal);

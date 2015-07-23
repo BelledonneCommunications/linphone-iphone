@@ -613,7 +613,10 @@ void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {
 			unlink_op_with_dialog(op,op->dialog);
 			op->dialog=NULL;
 		}
-		if (dialog) op->dialog=link_op_with_dialog(op,dialog);
+		if (dialog) {
+			op->dialog=link_op_with_dialog(op,dialog);
+			belle_sip_dialog_enable_pending_trans_checking(dialog,op->base.root->pending_trans_checking);
+		}
 	}
 	sal_op_unref(op);
 }
