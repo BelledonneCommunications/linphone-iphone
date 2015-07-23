@@ -31,7 +31,7 @@
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
 			<object class="IBUIView" id="191373211">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">301</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="IBUIView" id="256276698">
@@ -66,7 +66,6 @@
 						<int key="NSvFlags">266</int>
 						<string key="NSFrame">{{0, 577}, {360, 63}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="572758541"/>
 						<bool key="IBUIAutoresizesSubviews">NO</bool>
@@ -75,7 +74,6 @@
 					</object>
 				</array>
 				<string key="NSFrameSize">{360, 640}</string>
-				<reference key="NSSuperview"/>
 				<reference key="NSNextKeyView" ref="256276698"/>
 				<reference key="IBUIBackgroundColor" ref="572758541"/>
 				<object class="IBUISimulatedSizeMetrics" key="IBUISimulatedDestinationMetrics" id="445885811">
@@ -85,7 +83,7 @@
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
 			<object class="IBUIView" id="915565391">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">301</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="IBUIView" id="1051455928">
@@ -117,7 +115,6 @@
 						<int key="NSvFlags">266</int>
 						<string key="NSFrame">{{0, 310}, {640, 50}}</string>
 						<reference key="NSSuperview" ref="915565391"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="572758541"/>
 						<bool key="IBUIAutoresizesSubviews">NO</bool>
@@ -126,7 +123,6 @@
 					</object>
 				</array>
 				<string key="NSFrameSize">{640, 360}</string>
-				<reference key="NSSuperview"/>
 				<reference key="NSNextKeyView" ref="1051455928"/>
 				<reference key="IBUIBackgroundColor" ref="572758541"/>
 				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
