@@ -148,29 +148,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
 		picker.peoplePickerDelegate = self;
 		picker.view.frame = self.view.frame;
-
 		[self.view addSubview:picker.view];
-
 		self.sysViewController = picker;
 		self.searchBar.hidden = TRUE;
-
-	} else if (!use_system && !self.tableController) {
-
-		self.tableController = [[ContactsTableViewController alloc] init];
-		self.tableView = [[UITableView alloc] init];
-
-		self.tableController.view = self.tableView;
-
-		[self relayoutTableView];
-
-		self.tableView.dataSource = self.tableController;
-		self.tableView.delegate = self.tableController;
-
-		self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth |
-										  UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin |
-										  UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-
-		[self.view addSubview:tableView];
+	} else if (!use_system) {
 		[self update];
 	} else {
 		// if table is already created, simply refresh buttons (selection mode changed, etc.)
@@ -220,8 +201,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[LinphoneUtils buttonFixStates:allButton];
 
-	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-	[tableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4
+	//	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
+	//	[tableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4
 }
 
 #pragma mark -

@@ -79,8 +79,7 @@ typedef enum _ContactSelectionMode {
     BOOL use_systemView;
 }
 
-@property (nonatomic, strong) IBOutlet ContactsTableViewController* tableController;
-@property (nonatomic, strong) IBOutlet UITableView *tableView;
+@property(strong, nonatomic) IBOutlet ContactsTableViewController *tableController;
 @property (nonatomic, strong) IBOutlet UINavigationController* sysViewController;
 @property (strong, nonatomic) IBOutlet UIView *toolBar;
 @property (nonatomic, strong) IBOutlet UIButton* allButton;
@@ -88,6 +87,7 @@ typedef enum _ContactSelectionMode {
 @property (nonatomic, strong) IBOutlet UIButton *backButton;
 @property (nonatomic, strong) IBOutlet UIButton *addButton;
 @property (strong, nonatomic) IBOutlet UISearchBar *searchBar;
+@property(weak, nonatomic) IBOutlet UITableView *tableView;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onLinphoneClick:(id)event;

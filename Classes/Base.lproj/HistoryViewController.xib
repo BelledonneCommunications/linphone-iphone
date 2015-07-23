@@ -110,6 +110,7 @@
             <connections>
                 <outlet property="view" destination="17" id="25"/>
             </connections>
+            <point key="canvasLocation" x="596" y="305"/>
         </tableViewController>
     </objects>
     <resources>

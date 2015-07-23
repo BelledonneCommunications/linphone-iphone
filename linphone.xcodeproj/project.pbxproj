@@ -152,7 +152,6 @@
 		63C21F451B60F9870030B86B /* chat_message_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21EB11B60F9870030B86B /* chat_message_delivered.png */; };
 		63C21F461B60F9870030B86B /* chat_message_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21EB21B60F9870030B86B /* chat_message_inprogress.png */; };
 		63C21F471B60F9870030B86B /* chat_message_not_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21EB31B60F9870030B86B /* chat_message_not_delivered.png */; };
-		63C21F481B60F9870030B86B /* chat_new.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21EB41B60F9870030B86B /* chat_new.png */; };
 		63C21F491B60F9870030B86B /* chat_photo.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21EB51B60F9870030B86B /* chat_photo.png */; };
 		63C21F4A1B60F9870030B86B /* chat_photo_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21EB61B60F9870030B86B /* chat_photo_over.png */; };
 		63C21F4B1B60F9870030B86B /* chat_send.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21EB71B60F9870030B86B /* chat_send.png */; };
@@ -275,6 +274,7 @@
 		63C21FC01B60F9870030B86B /* transfer_call.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21F2C1B60F9870030B86B /* transfer_call.png */; };
 		63C21FC11B60F9870030B86B /* valid.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21F2D1B60F9870030B86B /* valid.png */; };
 		63C21FC21B60F9870030B86B /* voicemail.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21F2E1B60F9870030B86B /* voicemail.png */; };
+		63C21FC41B6118690030B86B /* add_chat.png in Resources */ = {isa = PBXBuildFile; fileRef = 63C21FC31B6118690030B86B /* add_chat.png */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63EA4C951B50189D00922857 /* libmswebrtc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63EA4C941B50189D00922857 /* libmswebrtc.a */; };
@@ -735,7 +735,6 @@
 		63C21EB11B60F9870030B86B /* chat_message_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_message_delivered.png; sourceTree = "<group>"; };
 		63C21EB21B60F9870030B86B /* chat_message_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_message_inprogress.png; sourceTree = "<group>"; };
 		63C21EB31B60F9870030B86B /* chat_message_not_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_message_not_delivered.png; sourceTree = "<group>"; };
-		63C21EB41B60F9870030B86B /* chat_new.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_new.png; sourceTree = "<group>"; };
 		63C21EB51B60F9870030B86B /* chat_photo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_photo.png; sourceTree = "<group>"; };
 		63C21EB61B60F9870030B86B /* chat_photo_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_photo_over.png; sourceTree = "<group>"; };
 		63C21EB71B60F9870030B86B /* chat_send.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_send.png; sourceTree = "<group>"; };
@@ -858,6 +857,7 @@
 		63C21F2C1B60F9870030B86B /* transfer_call.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = transfer_call.png; sourceTree = "<group>"; };
 		63C21F2D1B60F9870030B86B /* valid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = valid.png; sourceTree = "<group>"; };
 		63C21F2E1B60F9870030B86B /* voicemail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voicemail.png; sourceTree = "<group>"; };
+		63C21FC31B6118690030B86B /* add_chat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_chat.png; sourceTree = "<group>"; };
 		63CD4B4D1A5AAC8C00B84282 /* DTAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAlertView.h; sourceTree = "<group>"; };
 		63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
@@ -1697,16 +1697,17 @@
 			isa = PBXGroup;
 			children = (
 				63C21E9B1B60F9870030B86B /* add_call.png */,
+				63C21FC31B6118690030B86B /* add_chat.png */,
 				63C21E9C1B60F9870030B86B /* add_contact.png */,
 				63C21E9D1B60F9870030B86B /* add_field_default.png */,
 				63C21E9E1B60F9870030B86B /* add_field_over.png */,
 				63C21E9F1B60F9870030B86B /* avatar.png */,
-				63C21EA01B60F9870030B86B /* back.png */,
 				63C21EA11B60F9870030B86B /* back_call_footer.png */,
 				63C21EA21B60F9870030B86B /* back_call_top.png */,
 				63C21EA31B60F9870030B86B /* back_dialer_top.png */,
-				63C21EA41B60F9870030B86B /* backspace.png */,
+				63C21EA01B60F9870030B86B /* back.png */,
 				63C21EA51B60F9870030B86B /* backspace_over.png */,
+				63C21EA41B60F9870030B86B /* backspace.png */,
 				63C21EA61B60F9870030B86B /* call_quality_indicator_0.png */,
 				63C21EA71B60F9870030B86B /* call_quality_indicator_1.png */,
 				63C21EA81B60F9870030B86B /* call_quality_indicator_2.png */,
@@ -1715,17 +1716,16 @@
 				63C21EAB1B60F9870030B86B /* call_statuts_incoming.png */,
 				63C21EAC1B60F9870030B86B /* call_statuts_missed.png */,
 				63C21EAD1B60F9870030B86B /* call_statuts_outgoing.png */,
-				63C21EAE1B60F9870030B86B /* camera_on.png */,
 				63C21EAF1B60F9870030B86B /* camera_on_all_selected.png */,
+				63C21EAE1B60F9870030B86B /* camera_on.png */,
 				63C21EB01B60F9870030B86B /* chat_list_indicator.png */,
 				63C21EB11B60F9870030B86B /* chat_message_delivered.png */,
 				63C21EB21B60F9870030B86B /* chat_message_inprogress.png */,
 				63C21EB31B60F9870030B86B /* chat_message_not_delivered.png */,
-				63C21EB41B60F9870030B86B /* chat_new.png */,
-				63C21EB51B60F9870030B86B /* chat_photo.png */,
 				63C21EB61B60F9870030B86B /* chat_photo_over.png */,
-				63C21EB71B60F9870030B86B /* chat_send.png */,
+				63C21EB51B60F9870030B86B /* chat_photo.png */,
 				63C21EB81B60F9870030B86B /* chat_send_over.png */,
+				63C21EB71B60F9870030B86B /* chat_send.png */,
 				63C21EB91B60F9870030B86B /* clean_field_default.png */,
 				63C21EBA1B60F9870030B86B /* clean_field_over.png */,
 				63C21EBB1B60F9870030B86B /* color_A.png */,
@@ -1740,33 +1740,33 @@
 				63C21EC41B60F9870030B86B /* color_J.png */,
 				63C21EC51B60F9870030B86B /* color_K.png */,
 				63C21EC61B60F9870030B86B /* color_L.png */,
-				63C21EC71B60F9870030B86B /* contacts_all.png */,
 				63C21EC81B60F9870030B86B /* contacts_all_selected.png */,
-				63C21EC91B60F9870030B86B /* contacts_linphone.png */,
+				63C21EC71B60F9870030B86B /* contacts_all.png */,
 				63C21ECA1B60F9870030B86B /* contacts_linphone_selected.png */,
-				63C21ECB1B60F9870030B86B /* delete.png */,
+				63C21EC91B60F9870030B86B /* contacts_linphone.png */,
 				63C21ECC1B60F9870030B86B /* delete_field_default.png */,
 				63C21ECD1B60F9870030B86B /* delete_field_over.png */,
+				63C21ECB1B60F9870030B86B /* delete.png */,
 				63C21ECE1B60F9870030B86B /* deselect_all.png */,
 				63C21ECF1B60F9870030B86B /* dialer_alt_back.png */,
 				63C21ED01B60F9870030B86B /* edit_detail.png */,
 				63C21ED11B60F9870030B86B /* edit_list.png */,
 				63C21ED21B60F9870030B86B /* exit_conference_default.png */,
 				63C21ED31B60F9870030B86B /* exit_conference_over.png */,
-				63C21ED41B60F9870030B86B /* footer_chat.png */,
 				63C21ED51B60F9870030B86B /* footer_chat_default.png */,
-				63C21ED61B60F9870030B86B /* footer_contacts.png */,
+				63C21ED41B60F9870030B86B /* footer_chat.png */,
 				63C21ED71B60F9870030B86B /* footer_contacts_default.png */,
-				63C21ED81B60F9870030B86B /* footer_dialer.png */,
+				63C21ED61B60F9870030B86B /* footer_contacts.png */,
 				63C21ED91B60F9870030B86B /* footer_dialer_default.png */,
-				63C21EDA1B60F9870030B86B /* footer_history.png */,
+				63C21ED81B60F9870030B86B /* footer_dialer.png */,
 				63C21EDB1B60F9870030B86B /* footer_history_default.png */,
+				63C21EDA1B60F9870030B86B /* footer_history.png */,
 				63C21EDC1B60F9870030B86B /* hangup_decline.png */,
-				63C21EDD1B60F9870030B86B /* history_all.png */,
 				63C21EDE1B60F9870030B86B /* history_all_selected.png */,
+				63C21EDD1B60F9870030B86B /* history_all.png */,
 				63C21EDF1B60F9870030B86B /* history_chat_indicator.png */,
-				63C21EE01B60F9870030B86B /* history_missed.png */,
 				63C21EE11B60F9870030B86B /* history_missed_selected.png */,
+				63C21EE01B60F9870030B86B /* history_missed.png */,
 				63C21EE21B60F9870030B86B /* incoming_call_icon.png */,
 				63C21EE31B60F9870030B86B /* led_connected.png */,
 				63C21EE41B60F9870030B86B /* led_disconnected.png */,
@@ -1776,8 +1776,8 @@
 				63C21EE81B60F9870030B86B /* list_detail_default.png */,
 				63C21EE91B60F9870030B86B /* list_detail_over.png */,
 				63C21EEA1B60F9870030B86B /* menu.png */,
-				63C21EEB1B60F9870030B86B /* micro_off.png */,
 				63C21EEC1B60F9870030B86B /* micro_off_missed_selected.png */,
+				63C21EEB1B60F9870030B86B /* micro_off.png */,
 				63C21EED1B60F9870030B86B /* numpad_0.png */,
 				63C21EEE1B60F9870030B86B /* numpad_1.png */,
 				63C21EEF1B60F9870030B86B /* numpad_2.png */,
@@ -1790,11 +1790,11 @@
 				63C21EF61B60F9870030B86B /* numpad_9.png */,
 				63C21EF71B60F9870030B86B /* numpad_sharp.png */,
 				63C21EF81B60F9870030B86B /* numpad_star.png */,
-				63C21EF91B60F9870030B86B /* options.png */,
 				63C21EFA1B60F9870030B86B /* options_add_call.png */,
 				63C21EFB1B60F9870030B86B /* options_selected.png */,
 				63C21EFC1B60F9870030B86B /* options_start_conference.png */,
 				63C21EFD1B60F9870030B86B /* options_transfer_call.png */,
+				63C21EF91B60F9870030B86B /* options.png */,
 				63C21EFE1B60F9870030B86B /* padlock_incoming_call.png */,
 				63C21EFF1B60F9870030B86B /* pause_big_default.png */,
 				63C21F001B60F9870030B86B /* pause_big_disabled.png */,
@@ -1811,8 +1811,8 @@
 				63C21F0B1B60F9870030B86B /* security_ok.png */,
 				63C21F0C1B60F9870030B86B /* security_pending.png */,
 				63C21F0D1B60F9870030B86B /* select_all.png */,
-				63C21F0E1B60F9870030B86B /* speaker_on.png */,
 				63C21F0F1B60F9870030B86B /* speaker_on_selected.png */,
+				63C21F0E1B60F9870030B86B /* speaker_on.png */,
 				63C21F101B60F9870030B86B /* splashscreen_logo.png */,
 				63C21F111B60F9870030B86B /* start_accept_audio_call.png */,
 				63C21F121B60F9870030B86B /* start_accept_video_call.png */,
@@ -1824,23 +1824,23 @@
 				63C21F181B60F9870030B86B /* start_chat_body_disabled.png */,
 				63C21F191B60F9870030B86B /* start_chat_body_over.png */,
 				63C21F1A1B60F9870030B86B /* start_conference_top.png */,
-				63C21F1B1B60F9870030B86B /* status_available.png */,
 				63C21F1C1B60F9870030B86B /* status_available_desktop.png */,
 				63C21F1D1B60F9870030B86B /* status_available_phone.png */,
-				63C21F1E1B60F9870030B86B /* status_away.png */,
+				63C21F1B1B60F9870030B86B /* status_available.png */,
 				63C21F1F1B60F9870030B86B /* status_away_desktop.png */,
 				63C21F201B60F9870030B86B /* status_away_phone.png */,
-				63C21F211B60F9870030B86B /* status_busy.png */,
+				63C21F1E1B60F9870030B86B /* status_away.png */,
 				63C21F221B60F9870030B86B /* status_busy_desktop.png */,
 				63C21F231B60F9870030B86B /* status_busy_phone.png */,
-				63C21F241B60F9870030B86B /* status_disconnected.png */,
+				63C21F211B60F9870030B86B /* status_busy.png */,
 				63C21F251B60F9870030B86B /* status_disconnected_desktop.png */,
 				63C21F261B60F9870030B86B /* status_disconnected_phone.png */,
+				63C21F241B60F9870030B86B /* status_disconnected.png */,
 				63C21F271B60F9870030B86B /* switch_camera_default.png */,
 				63C21F281B60F9870030B86B /* switch_camera_disabled.png */,
 				63C21F291B60F9870030B86B /* switch_camera_over.png */,
-				63C21F2A1B60F9870030B86B /* switch_off.png */,
 				63C21F2B1B60F9870030B86B /* switch_off_over.png */,
+				63C21F2A1B60F9870030B86B /* switch_off.png */,
 				63C21F2C1B60F9870030B86B /* transfer_call.png */,
 				63C21F2D1B60F9870030B86B /* valid.png */,
 				63C21F2E1B60F9870030B86B /* voicemail.png */,
@@ -2302,7 +2302,6 @@
 				63C21F5D1B60F9870030B86B /* contacts_linphone.png in Resources */,
 				63C21FA01B60F9870030B86B /* security_pending.png in Resources */,
 				63C21FC01B60F9870030B86B /* transfer_call.png in Resources */,
-				63C21F481B60F9870030B86B /* chat_new.png in Resources */,
 				63C21F6F1B60F9870030B86B /* footer_history_default.png in Resources */,
 				63C21FB41B60F9870030B86B /* status_away_phone.png in Resources */,
 				63C21FA81B60F9870030B86B /* start_call_body_disabled.png in Resources */,
@@ -2313,6 +2312,7 @@
 				63C21F471B60F9870030B86B /* chat_message_not_delivered.png in Resources */,
 				63C21F9D1B60F9870030B86B /* resizable_textfield.png in Resources */,
 				63C21F791B60F9870030B86B /* led_error.png in Resources */,
+				63C21FC41B6118690030B86B /* add_chat.png in Resources */,
 				D38187AD15FE340100C3EDCA /* ChatRoomViewController.xib in Resources */,
 				63C21FA31B60F9870030B86B /* speaker_on_selected.png in Resources */,
 				63C21F851B60F9870030B86B /* numpad_4.png in Resources */,
