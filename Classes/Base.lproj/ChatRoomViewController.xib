@@ -14,8 +14,7 @@
                 <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
                 <outlet property="editButton" destination="10" id="35"/>
                 <outlet property="headerView" destination="39" id="45"/>
-                <outlet property="messageBackgroundImage" destination="66" id="90"/>
-                <outlet property="messageField" destination="63" id="64"/>
+                <outlet property="messageField" destination="CPp-ts-xy0" id="wPX-Uo-vZQ"/>
                 <outlet property="messageView" destination="14" id="89"/>
                 <outlet property="pictureButton" destination="73" id="84"/>
                 <outlet property="sendButton" destination="15" id="27"/>
@@ -28,6 +27,43 @@
             <rect key="frame" x="0.0" y="0.0" width="360" height="537"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" id="7" userLabel="toolsView">
+                    <rect key="frame" x="0.0" y="0.0" width="360" height="40"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
+                            <rect key="frame" x="0.0" y="0.0" width="72" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
+                            <accessibility key="accessibilityConfiguration" label="Back"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" image="back.png" backgroundImage="color_F.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                            <connections>
+                                <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="12"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="10" userLabel="editButton" customClass="UIToggleButton">
+                            <rect key="frame" x="288" y="0.0" width="72" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
+                            <accessibility key="accessibilityConfiguration" label="Edit"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" image="edit_list.png" backgroundImage="color_F.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                            <connections>
+                                <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="13"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </view>
                 <view contentMode="scaleToFill" id="49" userLabel="chatView">
                     <rect key="frame" x="0.0" y="44" width="360" height="493"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -36,11 +72,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="360" height="80"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar_shadow_small.png" id="42" userLabel="avatarShadowBackground">
-                                    <rect key="frame" x="-13" y="-5" width="131" height="107"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                </imageView>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar_unknown_small.png" id="41" userLabel="avatarImage">
+                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar.png" id="41" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="20" y="6" width="65" height="65"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact avatar">
@@ -49,7 +81,7 @@
                                     </accessibility>
                                 </imageView>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Contact1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="40" userLabel="addressLabel">
-                                    <rect key="frame" x="101" y="37" width="239" height="43"/>
+                                    <rect key="frame" x="93" y="17" width="174" height="43"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact name">
                                         <accessibilityTraits key="traits" none="YES"/>
@@ -58,11 +90,18 @@
                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>
                                 </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wzg-i0-spp" userLabel="callButton" customClass="UIIconButton">
+                                    <rect key="frame" x="287" y="6" width="65" height="65"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <state key="normal" image="start_call_body_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                </button>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="tableView">
-                            <rect key="frame" x="0.0" y="80" width="360" height="334"/>
+                            <rect key="frame" x="0.0" y="80" width="360" height="319"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <gestureRecognizers/>
@@ -72,7 +111,7 @@
                             </connections>
                         </tableView>
                         <view contentMode="scaleToFill" id="fx4-ao-53M" userLabel="composeIndicatorView">
-                            <rect key="frame" x="0.0" y="414" width="360" height="22"/>
+                            <rect key="frame" x="0.0" y="407" width="360" height="22"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
@@ -86,112 +125,47 @@
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
                         <view contentMode="scaleToFill" id="14" userLabel="messageView">
-                            <rect key="frame" x="0.0" y="436" width="360" height="57"/>
+                            <rect key="frame" x="0.0" y="430" width="360" height="63"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" id="66" userLabel="messageBackgroundImage">
-                                    <rect key="frame" x="0.0" y="0.0" width="360" height="57"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </imageView>
-                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="15" userLabel="sendButton">
-                                    <rect key="frame" x="302" y="0.0" width="58" height="57"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Send"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" title="Send" backgroundImage="chat_send_default.png">
-                                        <color key="titleColor" red="0.35686275360000003" green="0.3960784376" blue="0.43529412150000002" alpha="1" colorSpace="deviceRGB"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="disabled" backgroundImage="chat_send_disabled.png">
-                                        <color key="titleColor" red="0.80784313730000001" green="0.81568627449999997" blue="0.82352941180000006" alpha="1" colorSpace="deviceRGB"/>
-                                    </state>
-                                    <state key="highlighted" backgroundImage="chat_send_over.png">
-                                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                                    </state>
-                                    <connections>
-                                        <action selector="onSendClick:" destination="-1" eventType="touchUpInside" id="25"/>
-                                    </connections>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="73" userLabel="pictureButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="35" height="57"/>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="73" userLabel="pictureButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="72" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Send picture"/>
-                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" backgroundImage="chat_photo_default.png">
-                                        <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <state key="normal" image="chat_photo.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="disabled" backgroundImage="chat_photo_disabled.png"/>
-                                    <state key="highlighted" backgroundImage="chat_photo_over.png">
-                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <connections>
                                         <action selector="onPictureClick:" destination="-1" eventType="touchUpInside" id="87"/>
                                     </connections>
                                 </button>
-                                <view contentMode="scaleToFill" id="63" userLabel="messageField" customClass="HPGrowingTextView">
-                                    <rect key="frame" x="39" y="12" width="258" height="33"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                    <accessibility key="accessibilityConfiguration" label="Message field">
-                                        <bool key="isElement" value="YES"/>
-                                    </accessibility>
-                                </view>
+                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="CPp-ts-xy0" userLabel="messageField">
+                                    <rect key="frame" x="80" y="12" width="200" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <accessibility key="accessibilityConfiguration" hint="" label=""/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" spellCheckingType="yes" keyboardAppearance="alert" returnKeyType="send"/>
+                                    <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES"/>
+                                    <connections>
+                                        <outlet property="delegate" destination="-1" id="RVG-F4-M9q"/>
+                                    </connections>
+                                </textView>
+                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="15" userLabel="sendButton">
+                                    <rect key="frame" x="288" y="0.0" width="72" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Send"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="chat_send.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="onSendClick:" destination="-1" eventType="touchUpInside" id="25"/>
+                                    </connections>
+                                </button>
                             </subviews>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
-                <view contentMode="scaleToFill" id="7" userLabel="toolsView">
-                    <rect key="frame" x="0.0" y="0.0" width="360" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="toolsbar_background.png" id="47" userLabel="background">
-                            <rect key="frame" x="0.0" y="0.0" width="360" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton">
-                            <rect key="frame" x="0.0" y="0.0" width="160" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                            <accessibility key="accessibilityConfiguration" label="Back"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Back" backgroundImage="chat_back_default.png">
-                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="chat_back_over.png">
-                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                            </state>
-                            <connections>
-                                <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="12"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="10" userLabel="editButton" customClass="UIToggleButton">
-                            <rect key="frame" x="200" y="0.0" width="160" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                            <accessibility key="accessibilityConfiguration" label="Edit"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Edit" backgroundImage="chat_edit_default.png">
-                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="selected" title="Ok" backgroundImage="chat_ok_default.png">
-                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="chat_edit_over.png">
-                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                            </state>
-                            <connections>
-                                <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="13"/>
-                            </connections>
-                        </button>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
@@ -207,23 +181,18 @@
             <connections>
                 <outlet property="view" destination="8" id="33"/>
             </connections>
+            <point key="canvasLocation" x="758" y="347"/>
         </tableViewController>
     </objects>
     <resources>
-        <image name="avatar_shadow_small.png" width="262" height="214"/>
-        <image name="avatar_unknown_small.png" width="131" height="131"/>
-        <image name="chat_back_default.png" width="320" height="88"/>
-        <image name="chat_back_over.png" width="320" height="88"/>
-        <image name="chat_edit_default.png" width="320" height="88"/>
-        <image name="chat_edit_over.png" width="320" height="88"/>
-        <image name="chat_ok_default.png" width="320" height="88"/>
-        <image name="chat_photo_default.png" width="71" height="115"/>
-        <image name="chat_photo_disabled.png" width="71" height="115"/>
-        <image name="chat_photo_over.png" width="71" height="115"/>
-        <image name="chat_send_default.png" width="117" height="115"/>
-        <image name="chat_send_disabled.png" width="117" height="115"/>
-        <image name="chat_send_over.png" width="117" height="115"/>
-        <image name="toolsbar_background.png" width="5" height="88"/>
+        <image name="avatar.png" width="751" height="751"/>
+        <image name="back.png" width="71" height="64"/>
+        <image name="chat_photo.png" width="72" height="56"/>
+        <image name="chat_send.png" width="71" height="71"/>
+        <image name="color_E.png" width="1" height="1"/>
+        <image name="color_F.png" width="1" height="1"/>
+        <image name="edit_list.png" width="88" height="85"/>
+        <image name="start_call_body_default.png" width="151" height="151"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

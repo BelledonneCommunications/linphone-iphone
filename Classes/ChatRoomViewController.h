@@ -22,30 +22,28 @@
 #import "UIToggleButton.h"
 #import "UICompositeViewController.h"
 #import "ChatRoomTableViewController.h"
-#import "HPGrowingTextView.h"
 #import "ImagePickerViewController.h"
 #import "OrderedDictionary.h"
 
 #include "linphone/linphonecore.h"
 
-@interface ChatRoomViewController : UIViewController<HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatRoomDelegate> {
-    LinphoneChatRoom *chatRoom;
-    OrderedDictionary *imageQualities;
-    BOOL scrollOnGrowingEnabled;
-    BOOL composingVisible;
+@interface ChatRoomViewController
+	: UIViewController <UITextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatRoomDelegate> {
+	LinphoneChatRoom *chatRoom;
+	OrderedDictionary *imageQualities;
+	BOOL scrollOnGrowingEnabled;
+	BOOL composingVisible;
 }
 
 @property (nonatomic, strong) IBOutlet ChatRoomTableViewController* tableController;
 @property (nonatomic, strong) IBOutlet UIToggleButton *editButton;
-@property (nonatomic, strong) IBOutlet HPGrowingTextView* messageField;
+@property(weak, nonatomic) IBOutlet UITextView *messageField;
 @property (nonatomic, strong) IBOutlet UIButton* sendButton;
 @property (nonatomic, strong) IBOutlet UILabel *addressLabel;
 @property (nonatomic, strong) IBOutlet UIImageView *avatarImage;
 @property (nonatomic, strong) IBOutlet UIView *headerView;
 @property (nonatomic, strong) IBOutlet UIView *chatView;
 @property (nonatomic, strong) IBOutlet UIView *messageView;
-@property (nonatomic, strong) IBOutlet UIImageView *messageBackgroundImage;
-@property (nonatomic, strong) IBOutlet UIImageView *transferBackgroundImage;
 @property (nonatomic, strong) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
 @property (nonatomic, strong) IBOutlet UISwipeGestureRecognizer *listSwipeGestureRecognizer;
 @property (strong, nonatomic) IBOutlet UILabel *composeLabel;

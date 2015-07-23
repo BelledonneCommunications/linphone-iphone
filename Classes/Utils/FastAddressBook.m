@@ -19,6 +19,7 @@
 
 #import "FastAddressBook.h"
 #import "LinphoneManager.h"
+#import "ContactsViewController.h"
 
 @implementation FastAddressBook
 
@@ -266,6 +267,44 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 		return CFBridgingRelease(ABAddressBookCopyLocalizedLabel((__bridge CFStringRef)(label)));
 	}
 	return @"";
+}
+
++ (BOOL)contactHasValidSipDomain:(ABRecordRef)person {
+	// Check if one of the contact' sip URI matches the expected SIP filter
+	ABMultiValueRef personSipAddresses = ABRecordCopyValue(person, kABPersonInstantMessageProperty);
+	BOOL match = false;
+	NSString *domain = [ContactSelection getSipFilter];
+
+	for (int i = 0; i < ABMultiValueGetCount(personSipAddresses) && !match; ++i) {
+		CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(personSipAddresses, i);
+		if (CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
+			CFStringRef serviceKey = CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey);
+
+			if (CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField, serviceKey,
+								kCFCompareCaseInsensitive) == 0) {
+				match = true;
+			}
+		} else if (domain != nil) {
+			// check domain
+			LinphoneAddress *address = linphone_address_new(
+				[(NSString *)CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey) UTF8String]);
+
+			if (address) {
+				const char *dom = linphone_address_get_domain(address);
+				if (dom != NULL) {
+					NSString *contactDomain =
+						[NSString stringWithCString:dom encoding:[NSString defaultCStringEncoding]];
+
+					match = (([domain compare:@"*" options:NSCaseInsensitiveSearch] == NSOrderedSame) ||
+							 ([domain compare:contactDomain options:NSCaseInsensitiveSearch] == NSOrderedSame));
+				}
+				linphone_address_destroy(address);
+			}
+		}
+		CFRelease(lDict);
+	}
+	CFRelease(personSipAddresses);
+	return match;
 }
 
 @end

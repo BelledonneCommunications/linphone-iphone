@@ -175,34 +175,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
 	[self changeView:History_All];
-
-	[linphoneButton.titleLabel setAdjustsFontSizeToFitWidth:TRUE];
-
-	// Set selected+over background: IB lack !
-	[linphoneButton setBackgroundImage:[UIImage imageNamed:@"contacts_linphone_selected.png"]
-							  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	[linphoneButton setTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-					forState:UIControlStateNormal];
-
-	[LinphoneUtils buttonFixStates:linphoneButton];
-
-	// Set selected+over background: IB lack !
-	[allButton setBackgroundImage:[UIImage imageNamed:@"contacts_all_selected.png"]
-						 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	[LinphoneUtils buttonFixStates:allButton];
-
-	//	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-	//	[tableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4
 }
 
 #pragma mark -

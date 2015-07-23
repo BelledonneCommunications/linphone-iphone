@@ -30,9 +30,9 @@
 
 @implementation ChatRoomViewController
 
+@synthesize messageField;
 @synthesize tableController;
 @synthesize sendButton;
-@synthesize messageField;
 @synthesize editButton;
 @synthesize addressLabel;
 @synthesize composeLabel;
@@ -41,8 +41,6 @@
 @synthesize headerView;
 @synthesize chatView;
 @synthesize messageView;
-@synthesize messageBackgroundImage;
-@synthesize transferBackgroundImage;
 @synthesize listTapGestureRecognizer;
 @synthesize listSwipeGestureRecognizer;
 @synthesize pictureButton;
@@ -94,21 +92,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidLoad];
 	[tableController setChatRoomDelegate:self];
 
-	// Set selected+over background: IB lack !
-	[editButton setBackgroundImage:[UIImage imageNamed:@"chat_ok_over.png"]
-						  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	[LinphoneUtils buttonFixStates:editButton];
-
-	messageField.minNumberOfLines = 1;
-	messageField.maxNumberOfLines = ([LinphoneManager runningOnIpad]) ? 10 : 3;
-	messageField.delegate = self;
-	messageField.font = [UIFont systemFontOfSize:18.0f];
-	messageField.contentInset = UIEdgeInsetsMake(0, -5, -2, -5);
-	messageField.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 10);
-	messageField.backgroundColor = [UIColor clearColor];
-	[sendButton setEnabled:FALSE];
-
 	[tableController.tableView addGestureRecognizer:listTapGestureRecognizer];
 	[listTapGestureRecognizer setEnabled:FALSE];
 
@@ -152,9 +135,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[editButton setOff];
 	[[tableController tableView] reloadData];
 
-	[messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
-												 forNinePatchNamed:@"chat_message_background"]];
-
 	BOOL fileSharingEnabled =
 		[[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] != NULL &&
 		[[[LinphoneManager instance] lpConfigStringForKey:@"sharing_server_preference"] length] > 0;
@@ -173,8 +153,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-	[messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
-												 forNinePatchNamed:@"chat_message_background"]];
 	[tableController scrollToBottom:true];
 }
 
@@ -411,7 +389,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 #pragma mark - UITextFieldDelegate Functions
 
-- (BOOL)growingTextViewShouldBeginEditing:(HPGrowingTextView *)growingTextView {
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
 	if (editButton.selected) {
 		[tableController setEditing:FALSE animated:TRUE];
 		[editButton setOff];
@@ -420,17 +398,34 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	return TRUE;
 }
 
-- (BOOL)growingTextViewShouldEndEditing:(HPGrowingTextView *)growingTextView {
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView {
 	[listTapGestureRecognizer setEnabled:FALSE];
 	return TRUE;
 }
 
-- (void)growingTextChanged:(HPGrowingTextView *)growingTextView text:(NSString *)text {
-	if ([text length] > 0 && chatRoom)
-		linphone_chat_room_compose(chatRoom);
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+	if ([text isEqualToString:@"\n"]) {
+		[listTapGestureRecognizer setEnabled:FALSE];
+		[self onSendClick:nil];
+		textView.text = @"";
+		return NO;
+	}
+	return YES;
 }
 
-- (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
+- (void)textViewDidChange:(UITextView *)textView {
+	if ([textView.text length] > 0) {
+		linphone_chat_room_compose(chatRoom);
+	}
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+	[listTapGestureRecognizer setEnabled:FALSE];
+	[textView resignFirstResponder];
+}
+
+/*
+ - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
 	int diff = height - growingTextView.bounds.size.height;
 
 	if (diff != 0) {
@@ -453,8 +448,6 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		tableRect.size.height -= diff;
 		[tableController.view setFrame:tableRect];
 
-		[messageBackgroundImage setImage:[TUNinePatchCache imageOfSize:[messageBackgroundImage bounds].size
-													 forNinePatchNamed:@"chat_message_background"]];
 		// if we're showing the compose message, update it position
 		if (![composeLabel isHidden]) {
 			CGRect frame = [composeLabel frame];
@@ -462,7 +455,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 			[composeLabel setFrame:frame];
 		}
 	}
-}
+}*/
 
 #pragma mark - Action Functions
 

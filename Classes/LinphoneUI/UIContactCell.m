@@ -20,11 +20,11 @@
 #import "UIContactCell.h"
 #import "Utils.h"
 #import "FastAddressBook.h"
+#import "UILabel+Boldify.h"
 
 @implementation UIContactCell
 
-@synthesize firstNameLabel;
-@synthesize lastNameLabel;
+@synthesize nameLabel;
 @synthesize avatarImage;
 @synthesize contact;
 
@@ -45,7 +45,25 @@
 
 - (void)setContact:(ABRecordRef)acontact {
 	contact = acontact;
-	[self update];
+	if (contact != nil) {
+		NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonFirstNameProperty));
+		NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
+
+		NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
+		NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
+
+		NSString *lOrganization = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonOrganizationProperty));
+		NSString *lLocalizedOrganization = [FastAddressBook localizedLabel:lOrganization];
+
+		if (lLocalizedFirstName == nil && lLocalizedLastName == nil) {
+			[nameLabel setText:(NSString *)(lLocalizedOrganization)];
+		} else {
+			nameLabel.text = [NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
+			[nameLabel boldSubstring:lLocalizedLastName];
+		}
+
+		_linphoneImage.hidden = !([FastAddressBook contactHasValidSipDomain:contact]);
+	}
 }
 
 #pragma mark -
@@ -59,60 +77,7 @@
 }
 
 - (NSString *)accessibilityLabel {
-	return [NSString stringWithFormat:@"%@ %@", firstNameLabel.text, lastNameLabel.text];
-}
-
-- (void)update {
-	if (contact == NULL) {
-		LOGW(@"Cannot update contact cell: null contact");
-		return;
-	}
-
-	NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonFirstNameProperty));
-	NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
-
-	NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
-	NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
-
-	NSString *lOrganization = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonOrganizationProperty));
-	NSString *lLocalizedOrganization = [FastAddressBook localizedLabel:lOrganization];
-
-	[firstNameLabel setText:(NSString *)(lLocalizedFirstName)];
-	[lastNameLabel setText:(NSString *)(lLocalizedLastName)];
-
-	if (lLocalizedFirstName == nil && lLocalizedLastName == nil) {
-		[firstNameLabel setText:(NSString *)(lLocalizedOrganization)];
-	}
-}
-
-- (void)layoutSubviews {
-	[super layoutSubviews];
-	//
-	// Adapt size
-	//
-	CGRect firstNameFrame = [firstNameLabel frame];
-	CGRect lastNameFrame = [lastNameLabel frame];
-
-	// Compute firstName size
-	CGSize firstNameSize = [[firstNameLabel text] sizeWithFont:[firstNameLabel font]];
-	CGSize lastNameSize = [[lastNameLabel text] sizeWithFont:[lastNameLabel font]];
-	float sum = firstNameSize.width + 5 + lastNameSize.width;
-	float limit = self.bounds.size.width - 5 - firstNameFrame.origin.x;
-	if (sum > limit) {
-		firstNameSize.width *= limit / sum;
-		lastNameSize.width *= limit / sum;
-	}
-
-	firstNameFrame.size.width = firstNameSize.width;
-	lastNameFrame.size.width = lastNameSize.width;
-
-	// Compute lastName size & position
-	lastNameFrame.origin.x = firstNameFrame.origin.x + firstNameFrame.size.width;
-	if (firstNameFrame.size.width)
-		lastNameFrame.origin.x += 5;
-
-	[firstNameLabel setFrame:firstNameFrame];
-	[lastNameLabel setFrame:lastNameFrame];
+	return nameLabel.text;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -122,11 +87,9 @@
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
 	[super setHighlighted:highlighted animated:animated];
 	if (highlighted) {
-		[lastNameLabel setTextColor:[UIColor whiteColor]];
-		[firstNameLabel setTextColor:[UIColor whiteColor]];
+		[nameLabel setTextColor:[UIColor whiteColor]];
 	} else {
-		[lastNameLabel setTextColor:[UIColor blackColor]];
-		[firstNameLabel setTextColor:[UIColor blackColor]];
+		[nameLabel setTextColor:[UIColor blackColor]];
 	}
 }
 

@@ -110,6 +110,7 @@
 		631C4FB719D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */; };
 		632DA24D1B43EE9400EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		632DA24E1B43EEEF00EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
+		634610061B61330300548952 /* UILabel+Boldify.m in Sources */ = {isa = PBXBuildFile; fileRef = 634610051B61330300548952 /* UILabel+Boldify.m */; };
 		636316D11A1DEBCB0009B839 /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutViewController.xib */; };
 		636316D41A1DEC650009B839 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsViewController.xib */; };
 		636316D91A1DECC90009B839 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D71A1DECC90009B839 /* PhoneMainView.xib */; };
@@ -683,6 +684,8 @@
 		631C4FB519D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDigitButtonLongVoiceMail.h; sourceTree = "<group>"; };
 		631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDigitButtonLongVoiceMail.m; sourceTree = "<group>"; };
 		633E388219FFB0F400936D1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		634610041B61330300548952 /* UILabel+Boldify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+Boldify.h"; sourceTree = "<group>"; };
+		634610051B61330300548952 /* UILabel+Boldify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Boldify.m"; sourceTree = "<group>"; };
 		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutViewController.xib; sourceTree = "<group>"; };
 		636316D51A1DEC650009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SettingsViewController.xib; sourceTree = "<group>"; };
 		636316D81A1DECC90009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PhoneMainView.xib; sourceTree = "<group>"; };
@@ -1480,6 +1483,8 @@
 				D32460E5159D9AAD00BA7F3A /* UITransparentView.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
+				634610041B61330300548952 /* UILabel+Boldify.h */,
+				634610051B61330300548952 /* UILabel+Boldify.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -2535,6 +2540,7 @@
 				22F2508E107141E100AC9B3F /* DialerViewController.m in Sources */,
 				22E0A822111C44E100B04932 /* AboutViewController.m in Sources */,
 				631C4FB119D2A8F2004BFE77 /* UIDigitButtonLongPlus.m in Sources */,
+				634610061B61330300548952 /* UILabel+Boldify.m in Sources */,
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,
 				2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */,
 				2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */,

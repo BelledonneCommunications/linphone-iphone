@@ -63,45 +63,6 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 #pragma mark -
 
-- (BOOL)contactHasValidSipDomain:(ABRecordRef)person {
-	// Check if one of the contact' sip URI matches the expected SIP filter
-	ABMultiValueRef personSipAddresses = ABRecordCopyValue(person, kABPersonInstantMessageProperty);
-	BOOL match = false;
-	NSString *filter = [ContactSelection getSipFilter];
-
-	for (int i = 0; i < ABMultiValueGetCount(personSipAddresses) && !match; ++i) {
-		CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(personSipAddresses, i);
-		if (CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
-			CFStringRef serviceKey = CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey);
-
-			if (CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField, serviceKey,
-								kCFCompareCaseInsensitive) == 0) {
-				match = true;
-			}
-		} else {
-			// check domain
-			LinphoneAddress *address = linphone_address_new(
-				[(NSString *)CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey) UTF8String]);
-
-			if (address) {
-				const char *dom = linphone_address_get_domain(address);
-				if (dom != NULL) {
-					NSString *domain = [NSString stringWithCString:dom encoding:[NSString defaultCStringEncoding]];
-
-					if (([filter compare:@"*" options:NSCaseInsensitiveSearch] == NSOrderedSame) ||
-						([filter compare:domain options:NSCaseInsensitiveSearch] == NSOrderedSame)) {
-						match = true;
-					}
-				}
-				linphone_address_destroy(address);
-			}
-		}
-		CFRelease(lDict);
-	}
-	CFRelease(personSipAddresses);
-	return match;
-}
-
 static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	if (!fuzzy_word || !sentence) {
 		return fuzzy_word == sentence;
@@ -138,7 +99,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 			if ([ContactSelection getSipFilter] || [ContactSelection emailFilterEnabled]) {
 				add = false;
 			}
-			if ([ContactSelection getSipFilter] && [self contactHasValidSipDomain:person]) {
+			if ([FastAddressBook contactHasValidSipDomain:person]) {
 				add = true;
 			}
 			if (!add && [ContactSelection emailFilterEnabled]) {
@@ -175,8 +136,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 									  [[name lowercaseString] UTF8String]) == 0)) {
 
 						// Sort contacts by first letter. We need to translate the name to ASCII first, because of UTF-8
-						// issues. For instance
-						// we expect order:  Alberta(A tilde) before ASylvano.
+						// issues. For instance expected order would be:  Alberta(A tilde) before ASylvano.
 						NSData *name2ASCIIdata =
 							[name dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
 						NSString *name2ASCII =

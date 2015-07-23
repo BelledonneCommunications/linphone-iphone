@@ -36,7 +36,7 @@
 + (NSString*)appendCountryCodeIfPossible:(NSString*)number;
 + (NSString*)normalizePhoneNumber:(NSString*)number;
 + (NSString*)normalizeSipURI:(NSString*)address;
-
++ (BOOL)contactHasValidSipDomain:(ABRecordRef)person;
 
 // TOOLS
 
