@@ -704,7 +704,7 @@ LINPHONE_PUBLIC void sal_default_set_sdp_handling(Sal* h, SalOpSDPHandling handl
 LINPHONE_PUBLIC void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling) ;
 
 /*Registration*/
-int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
+int sal_register(SalOp *op, const char *proxy, const char *from, int expires,SalAddress* old_contact);
 /*refresh a register, -1 mean use the last known value*/
 int sal_register_refresh(SalOp *op, int expires);
 int sal_unregister(SalOp *h);

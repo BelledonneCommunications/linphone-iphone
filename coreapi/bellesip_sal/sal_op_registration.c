@@ -40,6 +40,7 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		/*check service route rfc3608*/
 		belle_sip_header_service_route_t* service_route;
 		belle_sip_header_address_t* service_route_address=NULL;
+		belle_sip_header_contact_t *contact = belle_sip_refresher_get_contact(refresher);
 		if ((service_route=belle_sip_message_get_header_by_type(response,belle_sip_header_service_route_t))) {
 			service_route_address=belle_sip_header_address_create(NULL,belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(service_route)));
 		}
@@ -47,6 +48,9 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		if (service_route_address) belle_sip_object_unref(service_route_address);
 		
 		sal_remove_pending_auth(op->base.root,op); /*just in case*/
+		if (contact) {
+			sal_op_set_contact_address(op,(SalAddress*)(BELLE_SIP_HEADER_ADDRESS(contact))); /*update contact with real value*/
+		}
 		op->base.root->callbacks.register_success(op,belle_sip_refresher_get_expires(op->refresher)>0);
 	} else if (status_code>=400) {
 		/* from rfc3608, 6.1.
@@ -71,7 +75,7 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 	}
 }
 
-int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
+int sal_register(SalOp *op, const char *proxy, const char *from, int expires,SalAddress* old_contact){
 	belle_sip_request_t *req;
 	belle_sip_uri_t* req_uri;
 	belle_sip_header_t* accept_header;
@@ -96,6 +100,19 @@ int sal_register(SalOp *op, const char *proxy, const char *from, int expires){
 	accept_header = belle_sip_header_create("Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req), accept_header);
 	belle_sip_message_set_header(BELLE_SIP_MESSAGE(req),(belle_sip_header_t*)sal_op_create_contact(op));
+	if (old_contact) {
+		belle_sip_header_contact_t *contact=belle_sip_header_contact_create((const belle_sip_header_address_t *)old_contact);
+		if (contact) {
+			char * tmp;
+			belle_sip_header_contact_set_expires(contact,0); /*remove old aor*/
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req), BELLE_SIP_HEADER(contact));
+			tmp = belle_sip_object_to_string(contact);
+			ms_message("Clearing contact [%s] for op [%p]",tmp,op);
+			ms_free(tmp);
+		} else {
+			ms_error("Cannot add old contact header to op [%p]",op);
+		}
+	}
 	return sal_op_send_and_create_refresher(op,req,expires,register_refresher_listener);
 }
 

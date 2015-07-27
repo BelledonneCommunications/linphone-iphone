@@ -286,7 +286,7 @@ void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg){
 	}
 }
 
-static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request,bool_t add_contact) {
+static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request, bool_t add_contact) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_uri_t* outbound_proxy=NULL;
@@ -294,10 +294,10 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	int result =-1;
 	belle_sip_uri_t *next_hop_uri=NULL;
 
-	if (add_contact) {
+	if (add_contact && !belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_contact_t)) {
 		contact = sal_op_create_contact(op);
 		belle_sip_message_set_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
-	}
+	} /*keep existing*/
 
 	_sal_op_add_custom_headers(op, (belle_sip_message_t*)request);
 

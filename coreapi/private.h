@@ -531,6 +531,7 @@ struct _LinphoneProxyConfig
 	LinphoneAddress *saved_proxy;
 	LinphoneAddress *saved_identity;
 	/*---*/
+	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/
 
 };
 

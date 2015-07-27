@@ -173,6 +173,7 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 	if (cfg->saved_proxy!=NULL) linphone_address_destroy(cfg->saved_proxy);
 	if (cfg->saved_identity!=NULL) linphone_address_destroy(cfg->saved_identity);
 	if (cfg->sent_headers!=NULL) sal_custom_header_free(cfg->sent_headers);
+	if (cfg->pending_contact) linphone_address_unref(cfg->pending_contact);
 	_linphone_proxy_config_release_ops(cfg);
 }
 
@@ -340,7 +341,19 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *cfg,LinphoneCore *lc){
 	linphone_proxy_config_done(cfg);
 }
 
-void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig *cfg){
+void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
+	LinphoneAddress *contact_addr=NULL;
+	if (	cfg->op
+			&& cfg->state == LinphoneRegistrationOk
+			&& (contact_addr = (LinphoneAddress*)sal_op_get_contact_address(cfg->op))
+			&& linphone_address_get_transport(contact_addr) != LinphoneTransportUdp /*with udp, there is a risk of port reuse, so I prefer to not do anything for now*/) {
+		/*need to save current contact in order to reset is later*/
+		linphone_address_ref(contact_addr);
+		if (cfg->pending_contact)
+			linphone_address_unref(cfg->pending_contact);
+		cfg->pending_contact=contact_addr;
+
+	}
 	if (cfg->publish_op){
 		sal_op_release(cfg->publish_op);
 		cfg->publish_op=NULL;
@@ -417,7 +430,12 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 
 		sal_op_set_user_pointer(cfg->op,cfg);
 
-		if (sal_register(cfg->op,proxy_string,from,cfg->expires)==0) {
+
+		if (sal_register(cfg->op,proxy_string, cfg->reg_identity, cfg->expires, cfg->pending_contact)==0) {
+			if (cfg->pending_contact) {
+				linphone_address_unref(cfg->pending_contact);
+				cfg->pending_contact=NULL;
+			}
 			linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress,"Registration in progress");
 		} else {
 			linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,"Registration failed");
