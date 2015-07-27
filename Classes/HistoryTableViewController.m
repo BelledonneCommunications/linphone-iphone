@@ -140,46 +140,15 @@
 #pragma mark - UITableViewDelegate Functions
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:indexPath animated:NO];
-
 	LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
-	LinphoneAddress *addr;
-	if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
-		addr = linphone_call_log_get_from(callLog);
-	} else {
-		addr = linphone_call_log_get_to(callLog);
-	}
-
-	NSString *displayName = nil;
-	NSString *address = nil;
-	if (addr != NULL) {
-		BOOL useLinphoneAddress = true;
-		// contact name
-		char *lAddress = linphone_address_as_string_uri_only(addr);
-		if (lAddress) {
-			address = [NSString stringWithUTF8String:lAddress];
-			NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:address];
-			ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
-			if (contact) {
-				displayName = [FastAddressBook getContactDisplayName:contact];
-				useLinphoneAddress = false;
-			}
-			ms_free(lAddress);
-		}
-		if (useLinphoneAddress) {
-			const char *lDisplayName = linphone_address_get_display_name(addr);
-			if (lDisplayName)
-				displayName = [NSString stringWithUTF8String:lDisplayName];
-		}
-	}
-
-	if (address != nil) {
-		// Go to dialer view
-		DialerViewController *controller =
-			DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]],
-						 DialerViewController);
+	if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
+		// Go to History details view
+		HistoryDetailsViewController *controller = DYNAMIC_CAST(
+			[[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription]
+												   push:TRUE],
+			HistoryDetailsViewController);
 		if (controller != nil) {
-			[controller call:address displayName:displayName];
+			[controller setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
 		}
 	}
 }

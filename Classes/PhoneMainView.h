@@ -42,7 +42,7 @@
 #import "WizardViewController.h"
 #import "IncomingCallViewController.h"
 #import "ImageViewController.h"
-
+#import "OutgoingCallViewController.h"
 
 @class PhoneMainView;
 
