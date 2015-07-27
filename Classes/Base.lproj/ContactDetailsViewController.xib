@@ -8,7 +8,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ContactDetailsViewController">
             <connections>
                 <outlet property="backButton" destination="9" id="50"/>
-                <outlet property="cancelButton" destination="47" id="51"/>
                 <outlet property="editButton" destination="8" id="31"/>
                 <outlet property="tableController" destination="20" id="27"/>
                 <outlet property="view" destination="1" id="3"/>
@@ -20,70 +19,53 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" id="4" userLabel="toolBar">
-                    <rect key="frame" x="0.0" y="0.0" width="360" height="44"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <rect key="frame" x="0.0" y="0.0" width="360" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="toolsbar_background.png" id="52" userLabel="barBackground">
-                            <rect key="frame" x="0.0" y="0.0" width="360" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton">
-                            <rect key="frame" x="0.0" y="0.0" width="160" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
+                            <rect key="frame" x="0.0" y="0.0" width="72" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Back"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Back" backgroundImage="contact_back_default.png">
+                            <state key="normal" image="back.png">
                                 <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" backgroundImage="contact_back_over.png"/>
                             <connections>
                                 <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="10"/>
                             </connections>
                         </button>
-                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="47" userLabel="cancelButton">
-                            <rect key="frame" x="0.0" y="0.0" width="160" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Cancel"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Cancel" backgroundImage="contact_cancel_default.png">
-                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="contact_cancel_over.png">
-                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                            </state>
-                            <connections>
-                                <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="49"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="8" userLabel="editButton" customClass="UIToggleButton">
-                            <rect key="frame" x="200" y="0.0" width="160" height="44"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8" userLabel="editButton" customClass="UIToggleButton">
+                            <rect key="frame" x="288" y="0.0" width="72" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Edit"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Edit" backgroundImage="contact_edit_default.png">
+                            <state key="normal" image="edit_detail.png">
                                 <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="disabled">
-                                <color key="titleColor" red="0.80784314869999996" green="0.8156862855" blue="0.82352942230000004" alpha="1" colorSpace="deviceRGB"/>
-                            </state>
-                            <state key="selected" title="Ok" backgroundImage="contact_ok_default.png">
-                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="contact_edit_over.png">
-                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
                             </state>
                             <connections>
                                 <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="30"/>
                             </connections>
                         </button>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="MuB-yy-R9o" userLabel="deleteButton" customClass="UIToggleButton">
+                            <rect key="frame" x="216" y="0.0" width="72" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Edit"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" image="delete.png">
+                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="3ff-r3-2d1"/>
+                            </connections>
+                        </button>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="0.89411764709999997" green="0.89411764709999997" blue="0.89411764709999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="19" userLabel="tableView">
                     <rect key="frame" x="0.0" y="44" width="360" height="493"/>
@@ -124,14 +106,9 @@
         </viewController>
     </objects>
     <resources>
-        <image name="contact_back_default.png" width="320" height="88"/>
-        <image name="contact_back_over.png" width="320" height="88"/>
-        <image name="contact_cancel_default.png" width="320" height="88"/>
-        <image name="contact_cancel_over.png" width="320" height="88"/>
-        <image name="contact_edit_default.png" width="320" height="88"/>
-        <image name="contact_edit_over.png" width="320" height="88"/>
-        <image name="contact_ok_default.png" width="320" height="88"/>
-        <image name="toolsbar_background.png" width="5" height="88"/>
+        <image name="back.png" width="71" height="64"/>
+        <image name="delete.png" width="64" height="82"/>
+        <image name="edit_detail.png" width="84" height="85"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

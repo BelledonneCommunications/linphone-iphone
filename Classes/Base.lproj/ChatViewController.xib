@@ -47,7 +47,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="selectAllButton" customClass="UIToggleButton">
-                            <rect key="frame" x="200.00000466240755" y="0.0" width="72" height="40"/>
+                            <rect key="frame" x="200.00000092562476" y="0.0" width="72" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Edit"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>

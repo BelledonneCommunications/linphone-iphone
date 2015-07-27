@@ -43,7 +43,6 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 + (BOOL)findAndResignFirstResponder:(UIView*)view;
 + (void)adjustFontSize:(UIView*)view mult:(float)mult;
 + (void)buttonFixStates:(UIButton*)button;
-+ (void)buttonFixStatesForTabs:(UIButton*)button;
 + (void)buttonMultiViewAddAttributes:(NSMutableDictionary*)attributes button:(UIButton*)button;
 + (void)buttonMultiViewApplyAttributes:(NSDictionary*)attributes button:(UIButton*)button;
 

@@ -148,9 +148,8 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)addCurrentContactContactField:(NSString *)address {
-
-	LinphoneAddress *linphoneAddress =
-		linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	LinphoneAddress *linphoneAddress = linphone_core_interpret_url(
+		[LinphoneManager getLc], [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	NSString *username = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
 
 	if (([username rangeOfString:@"@"].length > 0) &&
@@ -194,16 +193,6 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
-	// Set selected+over background: IB lack !
-	[editButton setBackgroundImage:[UIImage imageNamed:@"contact_ok_over.png"]
-						  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	// Set selected+disabled background: IB lack !
-	[editButton setBackgroundImage:[UIImage imageNamed:@"contact_ok_disabled.png"]
-						  forState:(UIControlStateDisabled | UIControlStateSelected)];
-
-	[LinphoneUtils buttonFixStates:editButton];
 
 	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 	[tableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4

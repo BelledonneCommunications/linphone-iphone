@@ -41,7 +41,6 @@
 
 			[self.contentView addSubview:[arrayOfViews objectAtIndex:0]];
 		}
-		[chatContentLabel setAdjustsFontSizeToFitWidth:TRUE]; // Auto shrink: IB lack!
 	}
 	return self;
 }

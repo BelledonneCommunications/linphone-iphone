@@ -114,37 +114,13 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 }
 
 + (void)buttonFixStates:(UIButton *)button {
-	// Set selected+over title: IB lack !
+	// Interface builder lack fixes
 	[button setTitle:[button titleForState:UIControlStateSelected]
 			forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	// Set selected+over titleColor: IB lack !
 	[button setTitleColor:[button titleColorForState:UIControlStateHighlighted]
 				 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	// Set selected+disabled title: IB lack !
 	[button setTitle:[button titleForState:UIControlStateSelected]
 			forState:(UIControlStateDisabled | UIControlStateSelected)];
-
-	// Set selected+disabled titleColor: IB lack !
-	[button setTitleColor:[button titleColorForState:UIControlStateDisabled]
-				 forState:(UIControlStateDisabled | UIControlStateSelected)];
-}
-
-+ (void)buttonFixStatesForTabs:(UIButton *)button {
-	// Set selected+over title: IB lack !
-	[button setTitle:[button titleForState:UIControlStateSelected]
-			forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	// Set selected+over titleColor: IB lack !
-	[button setTitleColor:[button titleColorForState:UIControlStateSelected]
-				 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	// Set selected+disabled title: IB lack !
-	[button setTitle:[button titleForState:UIControlStateSelected]
-			forState:(UIControlStateDisabled | UIControlStateSelected)];
-
-	// Set selected+disabled titleColor: IB lack !
 	[button setTitleColor:[button titleColorForState:UIControlStateDisabled]
 				 forState:(UIControlStateDisabled | UIControlStateSelected)];
 }

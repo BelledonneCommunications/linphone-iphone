@@ -82,24 +82,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidLoad];
 	[self changeView:History_All];
 
-	// Set selected+over background: IB lack !
-	[editButton setBackgroundImage:[UIImage imageNamed:@"history_ok_over.png"]
-						  forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	[LinphoneUtils buttonFixStates:editButton];
-
-	// Set selected+over background: IB lack !
-	[allButton setBackgroundImage:[UIImage imageNamed:@"history_all_selected.png"]
-						 forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	[LinphoneUtils buttonFixStatesForTabs:allButton];
-
-	// Set selected+over background: IB lack !
-	[missedButton setBackgroundImage:[UIImage imageNamed:@"history_missed_selected.png"]
-							forState:(UIControlStateHighlighted | UIControlStateSelected)];
-
-	[LinphoneUtils buttonFixStatesForTabs:missedButton];
-
 	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
 	[tableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4
 }

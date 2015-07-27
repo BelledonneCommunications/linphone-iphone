@@ -24,8 +24,9 @@
 -(void) onLongTouch;
 @end
 
-@interface UILongTouchButton : UIButton <UILongTouchButtonDelegate> {
-    
+#import "UIIconButton.h"
+
+@interface UILongTouchButton : UIIconButton <UILongTouchButtonDelegate> {
 }
 
 @end

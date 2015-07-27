@@ -144,9 +144,6 @@
 			[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
 			[self addSubview:sub];
 		}
-		// Set selected+over background: IB lack !
-		[pauseButton setImage:[UIImage imageNamed:@"call_state_pause_over.png"]
-					 forState:(UIControlStateHighlighted | UIControlStateSelected)];
 
 		self->currentCall = FALSE;
 

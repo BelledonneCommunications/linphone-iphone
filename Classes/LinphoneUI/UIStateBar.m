@@ -215,7 +215,7 @@
 		image = [UIImage imageNamed:@"led_connected.png"];
 		break;
 	}
-	registrationState.titleLabel.text = message;
+	[registrationState setTitle:message forState:UIControlStateNormal];
 	[registrationState setImage:image forState:UIControlStateNormal];
 }
 

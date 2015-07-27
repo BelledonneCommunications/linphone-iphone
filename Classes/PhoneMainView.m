@@ -309,46 +309,49 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 
 	switch (state) {
-	case LinphoneCallIncomingReceived:
-	case LinphoneCallIncomingEarlyMedia: {
-		[self displayIncomingCall:call];
-		break;
-	}
-	case LinphoneCallOutgoingInit:
-	case LinphoneCallPausedByRemote:
-	case LinphoneCallConnected:
-	case LinphoneCallStreamsRunning: {
-		[self changeCurrentView:[InCallViewController compositeViewDescription]];
-		break;
-	}
-	case LinphoneCallUpdatedByRemote: {
-		const LinphoneCallParams *current = linphone_call_get_current_params(call);
-		const LinphoneCallParams *remote = linphone_call_get_remote_params(call);
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia: {
+			[self displayIncomingCall:call];
+			break;
+		}
+		case LinphoneCallOutgoingInit: {
+			[self changeCurrentView:[InCallViewController compositeViewDescription]];
+			break;
+		}
+		case LinphoneCallPausedByRemote:
+		case LinphoneCallConnected:
+		case LinphoneCallStreamsRunning: {
+			[self changeCurrentView:[InCallViewController compositeViewDescription]];
+			break;
+		}
+		case LinphoneCallUpdatedByRemote: {
+			const LinphoneCallParams *current = linphone_call_get_current_params(call);
+			const LinphoneCallParams *remote = linphone_call_get_remote_params(call);
 
-		if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-			[self changeCurrentView:[InCallViewController compositeViewDescription]];
-		}
-		break;
-	}
-	case LinphoneCallError: {
-		[self displayCallError:call message:message];
-	}
-	case LinphoneCallEnd: {
-		if (canHideInCallView) {
-			// Go to dialer view
-			DialerViewController *controller = DYNAMIC_CAST(
-				[self changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
-			if (controller != nil) {
-				[controller setAddress:@""];
-				[controller setTransferMode:FALSE];
+			if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+				[self changeCurrentView:[InCallViewController compositeViewDescription]];
 			}
-		} else {
-			[self changeCurrentView:[InCallViewController compositeViewDescription]];
+			break;
 		}
-		break;
-	}
-	default:
-		break;
+		case LinphoneCallError: {
+			[self displayCallError:call message:message];
+		}
+		case LinphoneCallEnd: {
+			if (canHideInCallView) {
+				// Go to dialer view
+				DialerViewController *controller = DYNAMIC_CAST(
+					[self changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+				if (controller != nil) {
+					[controller setAddress:@""];
+					[controller setTransferMode:FALSE];
+				}
+			} else {
+				[self changeCurrentView:[InCallViewController compositeViewDescription]];
+			}
+			break;
+		}
+		default:
+			break;
 	}
 	[self updateApplicationBadgeNumber];
 }

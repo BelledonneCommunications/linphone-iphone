@@ -40,7 +40,7 @@
                             </accessibility>
                         </view>
                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                            <rect key="frame" x="244" y="378.99999981308486" width="108" height="150"/>
+                            <rect key="frame" x="244.00000014128503" y="378.99999962111264" width="108" height="150"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
@@ -89,8 +89,8 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="switch_camera_default.png" width="151" height="51"/>
-        <image name="switch_camera_over.png" width="151" height="51"/>
+        <image name="switch_camera_default.png" width="151" height="149"/>
+        <image name="switch_camera_over.png" width="151" height="149"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

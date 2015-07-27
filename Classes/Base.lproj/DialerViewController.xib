@@ -232,11 +232,10 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Add to contact"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" image="add_contact.png" backgroundImage="color_C.png">
+                            <state key="normal" image="add_contact.png" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="selected" backgroundImage="color_C.png"/>
-                            <state key="highlighted" backgroundImage="color_A.png"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
                             <connections>
                                 <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="230"/>
                             </connections>
@@ -246,11 +245,10 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Back"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" backgroundImage="color_C.png">
+                            <state key="normal" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="selected" backgroundImage="color_C.png"/>
-                            <state key="highlighted" backgroundImage="color_A.png"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
                             <connections>
                                 <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="233"/>
                             </connections>
@@ -260,11 +258,10 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Call"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" image="add_call.png" backgroundImage="color_C.png">
+                            <state key="normal" image="add_call.png" backgroundImage="color_A.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="selected" backgroundImage="color_C.png"/>
-                            <state key="highlighted" backgroundImage="color_A.png"/>
+                            <state key="highlighted" backgroundImage="color_L.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="235"/>
                             </connections>
@@ -274,11 +271,10 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Add call"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" backgroundImage="color_C.png">
+                            <state key="normal" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="selected" backgroundImage="color_C.png"/>
-                            <state key="highlighted" backgroundImage="color_A.png"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="234"/>
                             </connections>
@@ -288,11 +284,10 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Transfer call"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" backgroundImage="color_C.png">
+                            <state key="normal" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="selected" backgroundImage="color_C.png"/>
-                            <state key="highlighted" backgroundImage="color_A.png"/>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="237"/>
                             </connections>
@@ -312,7 +307,9 @@
         <image name="add_contact.png" width="101" height="86"/>
         <image name="backspace.png" width="106" height="56"/>
         <image name="color_A.png" width="1" height="1"/>
-        <image name="color_C.png" width="1" height="1"/>
+        <image name="color_E.png" width="1" height="1"/>
+        <image name="color_F.png" width="1" height="1"/>
+        <image name="color_L.png" width="1" height="1"/>
         <image name="numpad_eight_default.png" width="220" height="113"/>
         <image name="numpad_eight_over.png" width="220" height="113"/>
         <image name="numpad_five_default.png" width="220" height="113"/>

@@ -18,6 +18,7 @@
 	[self setBackgroundImage:[self backgroundImageForState:UIControlStateDisabled]
 					forState:(UIControlStateDisabled | UIControlStateSelected)];
 	[LinphoneUtils buttonFixStates:self];
+	[self.titleLabel setAdjustsFontSizeToFitWidth:TRUE];
 	return self;
 }
 
