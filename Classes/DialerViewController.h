@@ -21,7 +21,6 @@
 
 #import "UICompositeViewController.h"
 
-#import "UIEraseButton.h"
 #import "UICamSwitch.h"
 #import "UICallButton.h"
 #import "UITransferButton.h"
@@ -42,7 +41,7 @@
 @property (nonatomic, strong) IBOutlet UICallButton* addCallButton;
 @property (nonatomic, strong) IBOutlet UITransferButton* transferButton;
 @property (nonatomic, strong) IBOutlet UIButton* backButton;
-@property (nonatomic, strong) IBOutlet UIEraseButton* eraseButton;
+@property(weak, nonatomic) IBOutlet UIIconButton *backspaceButton;
 
 @property (nonatomic, strong) IBOutlet UIDigitButton* oneButton;
 @property (nonatomic, strong) IBOutlet UIDigitButton* twoButton;

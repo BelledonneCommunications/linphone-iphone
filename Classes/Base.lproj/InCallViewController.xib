@@ -40,7 +40,7 @@
                             </accessibility>
                         </view>
                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                            <rect key="frame" x="244.00000014128503" y="378.99999962111264" width="108" height="150"/>
+                            <rect key="frame" x="244.00000028578108" y="378.99999942623742" width="108" height="150"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>

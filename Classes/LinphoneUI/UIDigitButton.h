@@ -19,10 +19,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UILongTouchButton.h"
+#import "UIIconButton.h"
 
-
-@interface UIDigitButton : UILongTouchButton {
+@interface UIDigitButton : UIIconButton {
 }
 
 @property (nonatomic, strong) IBOutlet UITextField* addressField;

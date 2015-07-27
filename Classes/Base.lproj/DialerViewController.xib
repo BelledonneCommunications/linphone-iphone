@@ -11,6 +11,7 @@
                 <outlet property="addContactButton" destination="222" id="225"/>
                 <outlet property="addressField" destination="4" id="205"/>
                 <outlet property="backButton" destination="183" id="d75-ly-K6w"/>
+                <outlet property="backspaceButton" destination="8dc-hj-rvt" id="6p9-p4-QAN"/>
                 <outlet property="callButton" destination="224" id="231"/>
                 <outlet property="eightButton" destination="35" id="204"/>
                 <outlet property="fiveButton" destination="31" id="195"/>
@@ -49,7 +50,7 @@
                                 <outlet property="delegate" destination="-1" id="190"/>
                             </connections>
                         </textField>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8dc-hj-rvt" userLabel="backspaceButton">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8dc-hj-rvt" userLabel="backspaceButton" customClass="UIIconButton">
                             <rect key="frame" x="300" y="0.0" width="60" height="63"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <state key="normal" image="backspace_default.png">

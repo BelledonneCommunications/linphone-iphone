@@ -39,7 +39,7 @@
 @synthesize addCallButton;
 @synthesize transferButton;
 @synthesize callButton;
-@synthesize eraseButton;
+@synthesize backspaceButton;
 
 @synthesize oneButton;
 @synthesize twoButton;
@@ -166,6 +166,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[sharpButton setDigit:'#'];
 
 	[addressField setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
+
+	UILongPressGestureRecognizer *backspaceLongGesture =
+		[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onBackspaceLongClick:)];
+	[backspaceButton addGestureRecognizer:backspaceLongGesture];
+
+	UILongPressGestureRecognizer *zeroLongGesture =
+		[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onZeroLongClick:)];
+	[zeroButton addGestureRecognizer:zeroLongGesture];
+
+	UILongPressGestureRecognizer *oneLongGesture =
+		[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onOneLongClick:)];
+	[oneButton addGestureRecognizer:oneLongGesture];
 
 	if ([LinphoneManager runningOnIpad]) {
 		if ([LinphoneManager instance].frontCamId != nil) {
@@ -414,18 +426,40 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	if ([[addressField text] length] > 0) {
 		[addContactButton setEnabled:TRUE];
-		[eraseButton setEnabled:TRUE];
+		[backspaceButton setEnabled:TRUE];
 		[addCallButton setEnabled:TRUE];
 		[transferButton setEnabled:TRUE];
 	} else {
 		[addContactButton setEnabled:FALSE];
-		[eraseButton setEnabled:FALSE];
+		[backspaceButton setEnabled:FALSE];
 		[addCallButton setEnabled:FALSE];
 		[transferButton setEnabled:FALSE];
 	}
 }
 
 - (IBAction)onBackspaceClick:(id)sender {
+	if ([addressField.text length] > 0) {
+		[addressField setText:[addressField.text substringToIndex:[addressField.text length] - 1]];
+	}
 }
 
+- (void)onBackspaceLongClick:(id)sender {
+	[addressField setText:@""];
+}
+
+- (void)onOneLongClick:(id)sender {
+	NSString *newAddress =
+		[[self.addressField.text substringToIndex:[self.addressField.text length] - 1] stringByAppendingString:@"+"];
+	[self.addressField setText:newAddress];
+}
+
+- (void)onZeroLongClick:(id)sender {
+	LinphoneManager *lm = [LinphoneManager instance];
+	NSString *voiceMail = [lm lpConfigStringForKey:@"voice_mail_uri"];
+	if (voiceMail != nil) {
+		[lm call:voiceMail displayName:NSLocalizedString(@"Voice mail", nil) transfer:FALSE];
+	} else {
+		LOGE(@"Cannot call voice mail because URI not set!");
+	}
+}
 @end
