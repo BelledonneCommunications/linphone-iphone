@@ -54,7 +54,7 @@
 					<object class="IBUILabel" id="505648338">
 						<reference key="NSNextResponder" ref="675878782"/>
 						<int key="NSvFlags">274</int>
-						<string key="NSFrame">{{46, 0}, {261, 44}}</string>
+						<string key="NSFrame">{{79, 0}, {281, 44}}</string>
 						<reference key="NSSuperview" ref="675878782"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="647977481"/>
@@ -113,7 +113,7 @@
 					<object class="IBUIImageView" id="647977481">
 						<reference key="NSNextResponder" ref="675878782"/>
 						<int key="NSvFlags">300</int>
-						<string key="NSFrame">{{315, 12}, {37, 20}}</string>
+						<string key="NSFrame">{{46, 11}, {25, 22}}</string>
 						<reference key="NSSuperview" ref="675878782"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView"/>
@@ -122,7 +122,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">incoming_call_icon.png</string>
+							<string key="NSResourceName">linphone_user.png</string>
 						</object>
 					</object>
 				</array>
@@ -341,7 +341,7 @@
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="avatar.png">{751, 751}</string>
-			<string key="incoming_call_icon.png">{111, 62}</string>
+			<string key="linphone_user.png">{77, 66}</string>
 		</dictionary>
 	</data>
 </archive>

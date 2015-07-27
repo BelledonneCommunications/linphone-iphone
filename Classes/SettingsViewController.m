@@ -219,13 +219,6 @@
 	return r;
 }
 
-- (void)viewDidLoad {
-	[super viewDidLoad];
-
-	[self.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-	[self.tableView setBackgroundView:nil];					  // Can't do it in Xib: issue with ios4
-}
-
 - (id)initWithStyle:(UITableViewStyle)style {
 	self = [super initWithStyle:style];
 	if (self != nil) {

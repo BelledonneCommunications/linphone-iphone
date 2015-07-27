@@ -20,6 +20,7 @@
 #import "FastAddressBook.h"
 #import "LinphoneManager.h"
 #import "ContactsViewController.h"
+#import "UILabel+Boldify.h"
 
 @implementation FastAddressBook
 
@@ -270,6 +271,9 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 }
 
 + (BOOL)contactHasValidSipDomain:(ABRecordRef)person {
+	if (person == nil)
+		return NO;
+
 	// Check if one of the contact' sip URI matches the expected SIP filter
 	ABMultiValueRef personSipAddresses = ABRecordCopyValue(person, kABPersonInstantMessageProperty);
 	BOOL match = false;
@@ -305,6 +309,69 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 	}
 	CFRelease(personSipAddresses);
 	return match;
+}
+
++ (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact {
+	if (contact != nil) {
+		NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonFirstNameProperty));
+		NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
+
+		NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
+		NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
+
+		NSString *lOrganization = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonOrganizationProperty));
+		NSString *lLocalizedOrganization = [FastAddressBook localizedLabel:lOrganization];
+
+		if (lLocalizedFirstName == nil && lLocalizedLastName == nil) {
+			label.text = (NSString *)lLocalizedOrganization;
+		} else {
+			label.text = [NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
+			[label boldSubstring:lLocalizedLastName];
+		}
+	}
+}
+
++ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
+	label.text = NSLocalizedString(@"Unknown", nil);
+	if (addr != NULL) {
+		char *lAddress = linphone_address_as_string_uri_only(addr);
+		if (lAddress) {
+			NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+			ms_free(lAddress);
+			ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+			if (contact) {
+				[FastAddressBook setDisplayNameLabel:label forContact:contact];
+				return;
+			}
+		}
+		const char *lDisplayName = linphone_address_get_display_name(addr);
+		const char *lUserName = linphone_address_get_username(addr);
+		if (lDisplayName) {
+			label.text = [NSString stringWithUTF8String:lDisplayName];
+		} else if (lUserName) {
+			label.text = [NSString stringWithUTF8String:lUserName];
+		}
+	}
+}
+
++ (UIImage *)avatarForAddress:(const LinphoneAddress *)addr {
+	UIImage *avatar = nil;
+	if (addr != NULL) {
+		// contact name
+		char *lAddress = linphone_address_as_string_uri_only(addr);
+		if (lAddress) {
+			NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
+			ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
+			if (contact) {
+				avatar = [FastAddressBook getContactImage:contact thumbnail:TRUE];
+			}
+			ms_free(lAddress);
+		}
+	}
+	if (avatar == nil) {
+		avatar = [UIImage imageNamed:@"avatar"];
+	}
+	return avatar;
 }
 
 @end

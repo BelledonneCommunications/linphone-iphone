@@ -44,26 +44,34 @@
                             <rect key="frame" x="0.0" y="0.0" width="144" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="0.0" width="72" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="All contacts filter"/>
-                                    <inset key="titleEdgeInsets" minX="0.0" minY="16" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="contacts_all.png" backgroundImage="color_F.png">
+                                    <inset key="titleEdgeInsets" minX="-86" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" title="ALL" image="contacts_all_default.png" backgroundImage="color_F.png">
+                                        <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="selected" image="contacts_all_selected.png">
+                                        <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onAllClick:" destination="-1" eventType="touchUpInside" id="29"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="linphoneButton" customClass="UIIconButton">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="sipButton" customClass="UIIconButton">
                                     <rect key="frame" x="72" y="0.0" width="72" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Linphone contacts filter"/>
-                                    <inset key="titleEdgeInsets" minX="5" minY="14" maxX="10" maxY="0.0"/>
-                                    <state key="normal" image="contacts_linphone.png" backgroundImage="color_F.png">
+                                    <inset key="titleEdgeInsets" minX="-86" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" title="SIP" image="contacts_sip_default.png" backgroundImage="color_F.png">
+                                        <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="selected" image="contacts_sip_selected.png">
+                                        <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
@@ -87,7 +95,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Add contact"/>
                             <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" image="add_contact.png" backgroundImage="color_F.png">
+                            <state key="normal" image="contact_add.png" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <state key="highlighted" backgroundImage="color_E.png"/>
@@ -142,14 +150,16 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="add_contact.png" width="101" height="86"/>
         <image name="back.png" width="71" height="64"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
-        <image name="contacts_all.png" width="109" height="86"/>
-        <image name="contacts_linphone.png" width="110" height="86"/>
-        <image name="delete.png" width="64" height="82"/>
-        <image name="edit_list.png" width="88" height="85"/>
+        <image name="contact_add.png" width="100" height="86"/>
+        <image name="contacts_all_default.png" width="109" height="86"/>
+        <image name="contacts_all_selected.png" width="109" height="86"/>
+        <image name="contacts_sip_default.png" width="110" height="86"/>
+        <image name="contacts_sip_selected.png" width="109" height="86"/>
+        <image name="delete.png" width="63" height="82"/>
+        <image name="edit_list.png" width="88" height="84"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

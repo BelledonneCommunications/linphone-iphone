@@ -148,9 +148,7 @@ static void chatTable_free_chatrooms(void *data) {
 	ChatRoomViewController *controller = DYNAMIC_CAST(
 		[[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE],
 		ChatRoomViewController);
-	if (controller != nil) {
-		[controller setChatRoom:chatRoom];
-	}
+	[controller setChatRoom:chatRoom];
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView

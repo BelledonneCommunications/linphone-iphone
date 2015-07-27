@@ -25,10 +25,8 @@
 @implementation UIHistoryCell
 
 @synthesize callLog;
-@synthesize addressLabel;
-@synthesize imageView;
-@synthesize deleteButton;
-@synthesize detailsButton;
+@synthesize displayNameLabel;
+@synthesize historyStateButton;
 
 #pragma mark - Lifecycle Functions
 
@@ -95,7 +93,7 @@
 		call_type = missed ? @"Missed" : @"Incoming";
 	}
 
-	return [NSString stringWithFormat:@"%@ from %@", call_type, addressLabel.text];
+	return [NSString stringWithFormat:@"%@ from %@", call_type, displayNameLabel.text];
 }
 
 - (void)update {
@@ -105,7 +103,7 @@
 	}
 
 	// Set up the cell...
-	LinphoneAddress *addr;
+	const LinphoneAddress *addr;
 	UIImage *image;
 	if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
 		if (linphone_call_log_get_status(callLog) != LinphoneCallMissed) {
@@ -113,41 +111,15 @@
 		} else {
 			image = [UIImage imageNamed:@"call_status_missed.png"];
 		}
-		addr = linphone_call_log_get_from(callLog);
+		addr = linphone_call_log_get_from_address(callLog);
 	} else {
 		image = [UIImage imageNamed:@"call_status_outgoing.png"];
-		addr = linphone_call_log_get_to(callLog);
+		addr = linphone_call_log_get_to_address(callLog);
 	}
 
-	NSString *address = nil;
-	if (addr != NULL) {
-		BOOL useLinphoneAddress = true;
-		// contact name
-		char *lAddress = linphone_address_as_string_uri_only(addr);
-		if (lAddress) {
-			NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-			ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
-			if (contact) {
-				address = [FastAddressBook getContactDisplayName:contact];
-				useLinphoneAddress = false;
-			}
-			ms_free(lAddress);
-		}
-		if (useLinphoneAddress) {
-			const char *lDisplayName = linphone_address_get_display_name(addr);
-			const char *lUserName = linphone_address_get_username(addr);
-			if (lDisplayName)
-				address = [NSString stringWithUTF8String:lDisplayName];
-			else if (lUserName)
-				address = [NSString stringWithUTF8String:lUserName];
-		}
-	}
-	if (address == nil) {
-		address = NSLocalizedString(@"Unknown", nil);
-	}
-
-	[addressLabel setText:address];
-	[imageView setImage:image];
+	[FastAddressBook setDisplayNameLabel:displayNameLabel forAddress:addr];
+	[_avatarImage setImage:[FastAddressBook avatarForAddress:addr]];
+	[historyStateButton setImage:image forState:UIControlStateNormal];
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -159,6 +131,7 @@
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 	}
+#if 0
 	if (editing) {
 		[deleteButton setAlpha:1.0f];
 		[detailsButton setAlpha:0.0f];
@@ -166,6 +139,7 @@
 		[detailsButton setAlpha:1.0f];
 		[deleteButton setAlpha:0.0f];
 	}
+#endif
 	if (animated) {
 		[UIView commitAnimations];
 	}

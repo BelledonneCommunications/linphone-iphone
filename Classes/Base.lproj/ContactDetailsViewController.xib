@@ -42,7 +42,7 @@
                             <accessibility key="accessibilityConfiguration" label="Edit"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" image="edit_detail.png">
+                            <state key="normal" image="edit.png">
                                 <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
@@ -107,8 +107,8 @@
     </objects>
     <resources>
         <image name="back.png" width="71" height="64"/>
-        <image name="delete.png" width="64" height="82"/>
-        <image name="edit_detail.png" width="84" height="85"/>
+        <image name="delete.png" width="63" height="82"/>
+        <image name="edit.png" width="85" height="85"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

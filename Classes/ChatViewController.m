@@ -32,18 +32,7 @@
 	return [super initWithNibName:@"ChatViewController" bundle:[NSBundle mainBundle]];
 }
 
-- (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - ViewController Functions
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-
-	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-	[tableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4
-}
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];

@@ -161,9 +161,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[videoCameraSwitch setPreview:videoPreview];
 
-	[callTableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-	[callTableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4
-
 	UIPanGestureRecognizer *dragndrop =
 		[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(moveVideoPreview:)];
 	dragndrop.minimumNumberOfTouches = 1;

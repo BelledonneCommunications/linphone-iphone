@@ -81,6 +81,31 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 
 @implementation LinphoneUtils
 
++ (NSString *)timeToString:(time_t)time withStyle:(NSDateFormatterStyle)style {
+	NSDate *todayDate = [[NSDate alloc] init];
+	NSDate *messageDate = (time == 0) ? todayDate : [NSDate dateWithTimeIntervalSince1970:time];
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+
+	[dateFormatter setDateStyle:style];
+
+	if (style == NSDateFormatterShortStyle) {
+		// UGLY but single line code!
+		BOOL sameDay =
+			[[dateFormatter stringFromDate:todayDate] isEqualToString:[dateFormatter stringFromDate:messageDate]];
+		if (sameDay) {
+			[dateFormatter setDateStyle:NSDateFormatterNoStyle];
+			[dateFormatter setTimeStyle:style];
+		} else {
+			[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+		}
+	} else {
+		[dateFormatter setTimeStyle:style];
+	}
+	NSLocale *locale = [NSLocale currentLocale];
+	[dateFormatter setLocale:locale];
+	return [dateFormatter stringFromDate:messageDate];
+}
+
 + (BOOL)findAndResignFirstResponder:(UIView *)view {
 	if (view.isFirstResponder) {
 		[view resignFirstResponder];

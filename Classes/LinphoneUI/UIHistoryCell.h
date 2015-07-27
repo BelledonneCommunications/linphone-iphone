@@ -20,6 +20,8 @@
 #import <UIKit/UIKit.h>
 
 #import "UITransparentTVCell.h"
+#import "UIRoundedImageView.h"
+
 #include "linphone/linphonecore.h"
 
 @interface UIHistoryCell : UITransparentTVCell {
@@ -27,14 +29,10 @@
 
 @property (nonatomic, assign) LinphoneCallLog *callLog;
 
-@property (nonatomic, strong) IBOutlet UIImageView* imageView;
-@property (nonatomic, strong) IBOutlet UILabel*     addressLabel;
-@property (nonatomic, strong) IBOutlet UIButton*    detailsButton;
-@property (nonatomic, strong) IBOutlet UIButton*    deleteButton;
+@property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
+@property(nonatomic, strong) IBOutlet UIButton *historyStateButton;
+@property(nonatomic, strong) IBOutlet UILabel *displayNameLabel;
 
 - (id)initWithIdentifier:(NSString*)identifier;
-
-- (IBAction)onDetails:(id) event;
-- (IBAction)onDelete:(id) event;
 
 @end

@@ -20,6 +20,8 @@
 #import <Foundation/Foundation.h>
 #import <AddressBook/AddressBook.h>
 
+#include "linphone/linphonecore.h"
+
 @interface FastAddressBook :  NSObject {
     NSMutableDictionary* addressBookMap;  
     
@@ -36,10 +38,12 @@
 + (NSString*)appendCountryCodeIfPossible:(NSString*)number;
 + (NSString*)normalizePhoneNumber:(NSString*)number;
 + (NSString*)normalizeSipURI:(NSString*)address;
-+ (BOOL)contactHasValidSipDomain:(ABRecordRef)person;
 
 // TOOLS
 
 +(NSString*)localizedLabel:(NSString*)label;
-
++ (UIImage *)avatarForAddress:(const LinphoneAddress *)addr;
++ (BOOL)contactHasValidSipDomain:(ABRecordRef)person;
++ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr;
++ (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact;
 @end

@@ -45,25 +45,8 @@
 
 - (void)setContact:(ABRecordRef)acontact {
 	contact = acontact;
-	if (contact != nil) {
-		NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonFirstNameProperty));
-		NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
-
-		NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
-		NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
-
-		NSString *lOrganization = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonOrganizationProperty));
-		NSString *lLocalizedOrganization = [FastAddressBook localizedLabel:lOrganization];
-
-		if (lLocalizedFirstName == nil && lLocalizedLastName == nil) {
-			[nameLabel setText:(NSString *)(lLocalizedOrganization)];
-		} else {
-			nameLabel.text = [NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
-			[nameLabel boldSubstring:lLocalizedLastName];
-		}
-
-		_linphoneImage.hidden = !([FastAddressBook contactHasValidSipDomain:contact]);
-	}
+	[FastAddressBook setDisplayNameLabel:nameLabel forContact:contact];
+	_linphoneImage.hidden = !([FastAddressBook contactHasValidSipDomain:contact]);
 }
 
 #pragma mark -

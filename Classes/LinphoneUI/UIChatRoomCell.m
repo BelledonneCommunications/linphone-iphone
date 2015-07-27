@@ -218,14 +218,8 @@ static UIFont *CELL_FONT = nil;
 	}
 
 	// Date
-	time_t chattime = linphone_chat_message_get_time(chat);
-	NSDate *message_date = (chattime == 0) ? [[NSDate alloc] init] : [NSDate dateWithTimeIntervalSince1970:chattime];
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
-	[dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-	NSLocale *locale = [NSLocale currentLocale];
-	[dateFormatter setLocale:locale];
-	[dateLabel setText:[dateFormatter stringFromDate:message_date]];
+	dateLabel.text =
+		[LinphoneUtils timeToString:linphone_chat_message_get_time(chat) withStyle:NSDateFormatterMediumStyle];
 
 	LinphoneChatMessageState state = linphone_chat_message_get_state(chat);
 	BOOL outgoing = linphone_chat_message_is_outgoing(chat);

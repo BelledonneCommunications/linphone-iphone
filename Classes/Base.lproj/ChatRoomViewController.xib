@@ -178,6 +178,7 @@
         </view>
         <tableViewController autoresizesArchivedViewToFullSize="NO" id="29" userLabel="tableController" customClass="ChatRoomTableViewController">
             <extendedEdge key="edgesForExtendedLayout"/>
+            <nil key="simulatedStatusBarMetrics"/>
             <connections>
                 <outlet property="view" destination="8" id="33"/>
             </connections>
@@ -191,7 +192,7 @@
         <image name="chat_send.png" width="71" height="71"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
-        <image name="edit_list.png" width="88" height="85"/>
+        <image name="edit_list.png" width="88" height="84"/>
         <image name="start_call_body_default.png" width="151" height="151"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

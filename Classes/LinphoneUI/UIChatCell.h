@@ -20,6 +20,8 @@
 #import <UIKit/UIKit.h>
 
 #import "UITransparentTVCell.h"
+#import "UIRoundedImageView.h"
+#import "UIIconButton.h"
 
 #include "linphone/linphonecore.h"
 
@@ -27,12 +29,12 @@
     LinphoneChatRoom* chatRoom;
 }
 
-@property (nonatomic, strong) IBOutlet UIImageView *avatarImage;
+@property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
 @property (nonatomic, strong) IBOutlet UILabel* addressLabel;
 @property (nonatomic, strong) IBOutlet UILabel* chatContentLabel;
 @property (nonatomic, strong) IBOutlet UIButton * deleteButton;
-@property (nonatomic, strong) IBOutlet UIView * unreadMessageView;
-@property (nonatomic, strong) IBOutlet UILabel * unreadMessageLabel;
+@property(weak, nonatomic) IBOutlet UILabel *chatLatestTimeLabel;
+@property(weak, nonatomic) IBOutlet UIIconButton *unreadCountButton;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

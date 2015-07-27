@@ -28,8 +28,7 @@
 @synthesize addressLabel;
 @synthesize chatContentLabel;
 @synthesize deleteButton;
-@synthesize unreadMessageLabel;
-@synthesize unreadMessageView;
+@synthesize unreadCountButton;
 
 #pragma mark - Lifecycle Functions
 
@@ -57,58 +56,31 @@
 - (NSString *)accessibilityValue {
 	if (chatContentLabel.text) {
 		return [NSString stringWithFormat:@"%@ - %@ (%li)", addressLabel.text, chatContentLabel.text,
-										  (long)[unreadMessageLabel.text integerValue]];
+										  (long)[unreadCountButton.titleLabel.text integerValue]];
 	} else {
-		return [NSString stringWithFormat:@"%@ (%li)", addressLabel.text, (long)[unreadMessageLabel.text integerValue]];
+		return [NSString
+			stringWithFormat:@"%@ (%li)", addressLabel.text, (long)[unreadCountButton.titleLabel.text integerValue]];
 	}
 }
 
 - (void)update {
-	NSString *displayName = nil;
-	UIImage *image = nil;
 	if (chatRoom == nil) {
 		LOGW(@"Cannot update chat cell: null chat");
 		return;
 	}
 	const LinphoneAddress *linphoneAddress = linphone_chat_room_get_peer_address(chatRoom);
-
-	if (linphoneAddress == NULL)
-		return;
-	char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
-	NSString *normalizedSipAddress = [NSString stringWithUTF8String:tmp];
-	ms_free(tmp);
-
-	ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
-	if (contact != nil) {
-		displayName = [FastAddressBook getContactDisplayName:contact];
-		image = [FastAddressBook getContactImage:contact thumbnail:true];
-	}
-
-	// Display name
-	if (displayName == nil) {
-		const char *username = linphone_address_get_username(linphoneAddress);
-		char *address = linphone_address_as_string(linphoneAddress);
-		displayName = [NSString stringWithUTF8String:username ?: address];
-		ms_free(address);
-	}
-	[addressLabel setText:displayName];
-
-	// Avatar
-	if (image == nil) {
-		image = [UIImage imageNamed:@"avatar_unknown_small.png"];
-	}
-	[avatarImage setImage:image];
+	[FastAddressBook setDisplayNameLabel:addressLabel forAddress:linphoneAddress];
+	avatarImage.image = [FastAddressBook avatarForAddress:linphoneAddress];
 
 	LinphoneChatMessage *last_message = linphone_chat_room_get_user_data(chatRoom);
-
 	if (last_message) {
-
 		const char *text = linphone_chat_message_get_text(last_message);
 		const char *url = linphone_chat_message_get_external_body_url(last_message);
 		const LinphoneContent *last_content = linphone_chat_message_get_file_transfer_information(last_message);
-		// Message
+		// Last message was a file transfer (image) so display a picture...
 		if (url || last_content) {
-			[chatContentLabel setText:@"🗻"];
+			chatContentLabel.text = @"🗻";
+			// otherwise show beginning of the text message
 		} else if (text) {
 			NSString *message = [NSString stringWithUTF8String:text];
 			// shorten long messages
@@ -118,14 +90,17 @@
 			chatContentLabel.text = message;
 		}
 
-		int count = linphone_chat_room_get_unread_messages_count(chatRoom);
-		unreadMessageLabel.text = [NSString stringWithFormat:@"%i", count];
-		[unreadMessageView setHidden:(count <= 0)];
+		_chatLatestTimeLabel.text = [LinphoneUtils timeToString:linphone_chat_message_get_time(last_message)
+													  withStyle:NSDateFormatterShortStyle];
+		_chatLatestTimeLabel.hidden = NO;
 	} else {
 		chatContentLabel.text = nil;
-		unreadMessageLabel.text = [NSString stringWithFormat:@"0"];
-		[unreadMessageView setHidden:TRUE];
+		_chatLatestTimeLabel.hidden = YES;
 	}
+
+	int count = linphone_chat_room_get_unread_messages_count(chatRoom);
+	[unreadCountButton setTitle:[NSString stringWithFormat:@"%i", count] forState:UIControlStateNormal];
+	unreadCountButton.hidden = (count <= 0);
 }
 
 - (void)setEditing:(BOOL)editing {

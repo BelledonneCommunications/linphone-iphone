@@ -98,9 +98,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	listSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
 	[tableController.tableView addGestureRecognizer:listSwipeGestureRecognizer];
 	listSwipeGestureRecognizer.enabled = TRUE;
-
-	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-	[tableController.tableView setBackgroundView:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

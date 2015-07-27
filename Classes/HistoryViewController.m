@@ -81,9 +81,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[self changeView:History_All];
-
-	[tableController.tableView setBackgroundColor:[UIColor clearColor]]; // Can't do it in Xib: issue with ios4
-	[tableController.tableView setBackgroundView:nil];					 // Can't do it in Xib: issue with ios4
 }
 
 #pragma mark -

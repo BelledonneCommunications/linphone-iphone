@@ -447,13 +447,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[addressField setText:@""];
 }
 
-- (void)onOneLongClick:(id)sender {
+- (void)onZeroLongClick:(id)sender {
+	// replace last character with a '+'
 	NSString *newAddress =
 		[[self.addressField.text substringToIndex:[self.addressField.text length] - 1] stringByAppendingString:@"+"];
 	[self.addressField setText:newAddress];
 }
 
-- (void)onZeroLongClick:(id)sender {
+- (void)onOneLongClick:(id)sender {
 	LinphoneManager *lm = [LinphoneManager instance];
 	NSString *voiceMail = [lm lpConfigStringForKey:@"voice_mail_uri"];
 	if (voiceMail != nil) {
