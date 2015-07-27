@@ -25,21 +25,6 @@
 @implementation HistoryDetailsViewController {
 }
 
-@synthesize callLogId;
-@synthesize avatarImage;
-@synthesize addressLabel;
-@synthesize dateLabel;
-@synthesize dateHeaderLabel;
-@synthesize durationLabel;
-@synthesize durationHeaderLabel;
-@synthesize typeLabel;
-@synthesize typeHeaderLabel;
-@synthesize plainAddressLabel;
-@synthesize plainAddressHeaderLabel;
-@synthesize callButton;
-@synthesize messageButton;
-@synthesize addContactButton;
-
 #pragma mark - LifeCycle Functions
 
 - (id)init {
@@ -78,7 +63,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Property Functions
 
 - (void)setCallLogId:(NSString *)acallLogId {
-	self->callLogId = [acallLogId copy];
+	_callLogId = [acallLogId copy];
 	[self update];
 }
 
@@ -90,11 +75,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	UITapGestureRecognizer *headerTapGesture =
 		[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onContactClick:)];
 	[_headerView addGestureRecognizer:headerTapGesture];
-
-	[HistoryDetailsViewController adaptSize:dateHeaderLabel field:dateLabel];
-	[HistoryDetailsViewController adaptSize:durationHeaderLabel field:durationLabel];
-	[HistoryDetailsViewController adaptSize:typeHeaderLabel field:typeLabel];
-	[HistoryDetailsViewController adaptSize:plainAddressHeaderLabel field:plainAddressLabel];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -102,7 +82,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
 	if (use_system) {
-		[addContactButton setHidden:TRUE];
+		_addContactButton.hidden = TRUE;
 	}
 
 	[_tableView loadData];
@@ -158,129 +138,41 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[field setFrame:fieldFrame];
 }
 
-- (void)update {
-
+- (void)retrieveCallLog {
 	// Look for the call log
 	callLog = NULL;
 	const MSList *list = linphone_core_get_call_logs([LinphoneManager getLc]);
 	while (list != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)list->data;
 		const char *cid = linphone_call_log_get_call_id(log);
-		if (cid != NULL && [callLogId isEqualToString:[NSString stringWithUTF8String:cid]]) {
+		if (cid != NULL && [_callLogId isEqualToString:[NSString stringWithUTF8String:cid]]) {
 			callLog = log;
 			break;
 		}
 		list = list->next;
 	}
+}
 
+- (void)update {
 	// Pop if callLog is null
+	[self retrieveCallLog];
 	if (callLog == NULL) {
 		[[PhoneMainView instance] popCurrentView];
 		return;
 	}
 
 	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	// this address should NEVER be NULL: if this assert is broken, the bug is elsewhere.
+	assert(addr != NULL);
 
-	UIImage *image = nil;
-	NSString *address = nil;
-	if (addr != NULL) {
-		BOOL useLinphoneAddress = true;
-		// contact name
-		char *lAddress = linphone_address_as_string_uri_only(addr);
-		if (lAddress) {
-			NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-			contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
-			if (contact) {
-				image = [FastAddressBook getContactImage:contact thumbnail:true];
-				address = [FastAddressBook getContactDisplayName:contact];
-				useLinphoneAddress = false;
-			}
-			ms_free(lAddress);
-		}
-		if (useLinphoneAddress) {
-			const char *lDisplayName = linphone_address_get_display_name(addr);
-			const char *lUserName = linphone_address_get_username(addr);
-			if (lDisplayName)
-				address = [NSString stringWithUTF8String:lDisplayName];
-			else if (lUserName)
-				address = [NSString stringWithUTF8String:lUserName];
-		}
-	}
+	[FastAddressBook setDisplayNameLabel:_contactLabel forAddress:addr];
+	_avatarImage.image = [FastAddressBook avatarForAddress:addr];
+	char *addrURI = linphone_address_as_string_uri_only(addr);
+	_addressLabel.text = [NSString stringWithUTF8String:addrURI];
+	ms_free(addrURI);
 
-	// Set Image
-	if (image == nil) {
-		image = [UIImage imageNamed:@"avatar_unknown.png"];
-	}
-	[avatarImage setImage:image];
-
-	// Set Address
-	if (address == nil) {
-		address = NSLocalizedString(@"Unknown", nil);
-	}
-	[addressLabel setText:address];
-
-	// Hide/Show add button
 	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
-	if (contact) {
-		[addContactButton setHidden:TRUE];
-	} else if (!use_system) {
-		[addContactButton setHidden:FALSE];
-	}
-
-	// State
-	NSMutableString *state = [NSMutableString string];
-	if (linphone_call_log_get_dir(callLog) == LinphoneCallIncoming) {
-		[state setString:NSLocalizedString(@"Incoming call", nil)];
-	} else {
-		[state setString:NSLocalizedString(@"Outgoing call", nil)];
-	}
-	switch (linphone_call_log_get_status(callLog)) {
-	case LinphoneCallSuccess:
-		break;
-	case LinphoneCallAborted:
-		[state appendString:NSLocalizedString(@" (Aborted)", nil)];
-		break;
-	case LinphoneCallMissed:
-		[state appendString:NSLocalizedString(@" (Missed)", nil)];
-		break;
-	case LinphoneCallDeclined:
-		[state appendString:NSLocalizedString(@" (Declined)", nil)];
-		break;
-	}
-	[typeLabel setText:state];
-
-	// Date
-	NSDate *startData = [NSDate dateWithTimeIntervalSince1970:linphone_call_log_get_start_date(callLog)];
-	[dateLabel setText:[dateFormatter stringFromDate:startData]];
-
-	// Duration
-	int duration = linphone_call_log_get_duration(callLog);
-	[durationLabel
-		setText:[NSString stringWithFormat:@"%02i:%02i", (duration / 60), duration - 60 * (duration / 60), nil]];
-
-	// contact name
-	[plainAddressLabel setText:@""];
-	if (addr != NULL) {
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"contact_display_username_only"]) {
-			[plainAddressLabel setText:[NSString stringWithUTF8String:linphone_address_get_username(addr)
-																		  ? linphone_address_get_username(addr)
-																		  : ""]];
-		} else {
-			char *lAddress = linphone_address_as_string_uri_only(addr);
-			if (lAddress != NULL) {
-				[plainAddressLabel setText:[NSString stringWithUTF8String:lAddress]];
-				ms_free(lAddress);
-			}
-		}
-	}
-
-	if (addr != NULL) {
-		[callButton setHidden:FALSE];
-		[messageButton setHidden:FALSE];
-	} else {
-		[callButton setHidden:TRUE];
-		[messageButton setHidden:TRUE];
-	}
+	_addContactButton.hidden = contact || use_system;
 }
 
 #pragma mark - Action Functions
@@ -315,51 +207,31 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[ContactSelection setSipFilter:nil];
 			[ContactSelection enableEmailFilter:FALSE];
 			[ContactSelection setNameOrEmailFilter:nil];
-			ContactsViewController *controller = DYNAMIC_CAST(
-				[[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]
-													   push:TRUE],
-				ContactsViewController);
-			if (controller != nil) {
-			}
+			DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsViewController compositeViewDescription]
+																push:TRUE],
+						 ContactsViewController);
 			ms_free(lAddress);
 		}
 	}
 }
 
 - (IBAction)onCallClick:(id)event {
-	LinphoneAddress *addr;
-	addr = linphone_call_log_get_remote_address(callLog);
-
+	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	char *lAddress = linphone_address_as_string_uri_only(addr);
 	if (lAddress == NULL)
 		return;
-
-	NSString *displayName = nil;
-	if (contact != nil) {
-		displayName = [FastAddressBook getContactDisplayName:contact];
-	} else {
-		const char *lDisplayName = linphone_address_get_display_name(addr);
-		const char *lUserName = linphone_address_get_username(addr);
-		if (lDisplayName)
-			displayName = [NSString stringWithUTF8String:lDisplayName];
-		else if (lUserName)
-			displayName = [NSString stringWithUTF8String:lUserName];
-	}
+	NSString *displayName = [FastAddressBook displayNameForAddress:addr];
 
 	DialerViewController *controller =
 		DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]],
 					 DialerViewController);
 	if (controller != nil) {
-		if (displayName != nil) {
-			[controller call:[NSString stringWithUTF8String:lAddress] displayName:displayName];
-		} else {
-			[controller call:[NSString stringWithUTF8String:lAddress]];
-		}
+		[controller call:[NSString stringWithUTF8String:lAddress] displayName:displayName];
 	}
 	ms_free(lAddress);
 }
 
-- (IBAction)onMessageClick:(id)event {
+- (IBAction)onChatClick:(id)event {
 	LinphoneAddress *addr;
 	addr = linphone_call_log_get_remote_address(callLog);
 

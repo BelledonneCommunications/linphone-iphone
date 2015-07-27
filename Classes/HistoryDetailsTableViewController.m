@@ -44,7 +44,7 @@
 	LinphoneCallLog *log = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
 	int duration = linphone_call_log_get_duration(log);
 	time_t callTime = linphone_call_log_get_start_date(log);
-
+	cell.textLabel.textAlignment = NSTextAlignmentCenter;
 	[cell.textLabel
 		setText:[NSString stringWithFormat:@"%@ - %d sec",
 										   [LinphoneUtils timeToString:callTime withStyle:NSDateFormatterMediumStyle],

@@ -46,4 +46,7 @@
 + (BOOL)contactHasValidSipDomain:(ABRecordRef)person;
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr;
 + (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact;
++ (NSString *)displayNameForAddress:(const LinphoneAddress *)addr;
++ (NSString *)displayNameForContact:(ABRecordRef)contact;
+
 @end

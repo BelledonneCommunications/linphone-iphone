@@ -312,6 +312,14 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 }
 
 + (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact {
+	label.text = [FastAddressBook displayNameForContact:contact];
+	NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
+	NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
+	[label boldSubstring:lLocalizedLastName];
+}
+
++ (NSString *)displayNameForContact:(ABRecordRef)contact {
+	NSString *ret = nil;
 	if (contact != nil) {
 		NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonFirstNameProperty));
 		NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
@@ -323,16 +331,16 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 		NSString *lLocalizedOrganization = [FastAddressBook localizedLabel:lOrganization];
 
 		if (lLocalizedFirstName == nil && lLocalizedLastName == nil) {
-			label.text = (NSString *)lLocalizedOrganization;
+			ret = (NSString *)lLocalizedOrganization;
 		} else {
-			label.text = [NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
-			[label boldSubstring:lLocalizedLastName];
+			ret = [NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
 		}
 	}
+	return ret;
 }
 
-+ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
-	label.text = NSLocalizedString(@"Unknown", nil);
++ (NSString *)displayNameForAddress:(const LinphoneAddress *)addr {
+	NSString *ret = NSLocalizedString(@"Unknown", nil);
 	if (addr != NULL) {
 		char *lAddress = linphone_address_as_string_uri_only(addr);
 		if (lAddress) {
@@ -340,18 +348,22 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 			ms_free(lAddress);
 			ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
 			if (contact) {
-				[FastAddressBook setDisplayNameLabel:label forContact:contact];
-				return;
+				return [FastAddressBook displayNameForContact:contact];
 			}
 		}
 		const char *lDisplayName = linphone_address_get_display_name(addr);
 		const char *lUserName = linphone_address_get_username(addr);
 		if (lDisplayName) {
-			label.text = [NSString stringWithUTF8String:lDisplayName];
+			ret = [NSString stringWithUTF8String:lDisplayName];
 		} else if (lUserName) {
-			label.text = [NSString stringWithUTF8String:lUserName];
+			ret = [NSString stringWithUTF8String:lUserName];
 		}
 	}
+	return ret;
+}
+
++ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
+	label.text = [FastAddressBook displayNameForAddress:addr];
 }
 
 + (UIImage *)avatarForAddress:(const LinphoneAddress *)addr {

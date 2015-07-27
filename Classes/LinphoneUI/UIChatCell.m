@@ -95,7 +95,7 @@
 		_chatLatestTimeLabel.hidden = NO;
 	} else {
 		chatContentLabel.text = nil;
-		_chatLatestTimeLabel.hidden = YES;
+		_chatLatestTimeLabel.text = NSLocalizedString(@"Now", nil);
 	}
 
 	int count = linphone_chat_room_get_unread_messages_count(chatRoom);

@@ -29,18 +29,9 @@
     LinphoneCallLog *callLog;
     NSDateFormatter *dateFormatter;
 }
+@property(weak, nonatomic) IBOutlet UILabel *contactLabel;
 @property (nonatomic, strong) IBOutlet  UIImageView *avatarImage;
 @property (nonatomic, strong) IBOutlet UILabel *addressLabel;
-@property (nonatomic, strong) IBOutlet UILabel *dateLabel;
-@property (nonatomic, strong) IBOutlet UILabel *dateHeaderLabel;
-@property (nonatomic, strong) IBOutlet UILabel *durationLabel;
-@property (nonatomic, strong) IBOutlet UILabel *durationHeaderLabel;
-@property (nonatomic, strong) IBOutlet UILabel *typeLabel;
-@property (nonatomic, strong) IBOutlet UILabel *typeHeaderLabel;
-@property (nonatomic, strong) IBOutlet UILabel *plainAddressLabel;
-@property (nonatomic, strong) IBOutlet UILabel *plainAddressHeaderLabel;
-@property (nonatomic, strong) IBOutlet UIButton *callButton;
-@property (nonatomic, strong) IBOutlet UIButton *messageButton;
 @property (nonatomic, strong) IBOutlet UIButton *addContactButton;
 @property (nonatomic, copy, setter=setCallLogId:) NSString *callLogId;
 @property(weak, nonatomic) IBOutlet UIView *headerView;
@@ -48,10 +39,9 @@
 @property(strong, nonatomic) IBOutlet HistoryDetailsTableViewController *tableView;
 
 - (IBAction)onBackClick:(id)event;
-- (IBAction)onContactClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;
 - (IBAction)onCallClick:(id)event;
-- (IBAction)onMessageClick:(id)event;
+- (IBAction)onChatClick:(id)event;
 - (void)setCallLogId:(NSString *)acallLogId;
 
 @end
