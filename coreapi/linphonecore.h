@@ -721,6 +721,43 @@ LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *ca
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
+
+/**
+ * @brief Get playback volume.
+ * 
+ * @param call The call.
+ * @return double Percenatge of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
+ * In case of failure, a negative value is returned
+ */
+LINPHONE_PUBLIC double linphone_call_get_play_percent_volume(const LinphoneCall *call);
+
+/**
+ * @brief Set playback volume.
+ * 
+ * @param call The call.
+ * @param volume New volume in percentage of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
+ * @return void
+ */
+LINPHONE_PUBLIC void linphone_call_set_play_percent_volume(LinphoneCall *call, double volume);
+
+/**
+ * @brief Get record volume.
+ * 
+ * @param call The call.
+ * @return double Percenatge of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
+ * In case of failure, a negative value is returned
+ */
+LINPHONE_PUBLIC double linphone_call_get_record_percent_volume(const LinphoneCall *call);
+
+/**
+ * @brief Set record volume.
+ * 
+ * @param call The call.
+ * @param volume New volume in percentage of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
+ * @return void
+ */
+LINPHONE_PUBLIC void linphone_call_set_record_percent_volume(LinphoneCall *call, double volume);
+
 LINPHONE_PUBLIC	float linphone_call_get_current_quality(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_average_quality(LinphoneCall *call);
 LINPHONE_PUBLIC	const char* linphone_call_get_authentication_token(LinphoneCall *call);

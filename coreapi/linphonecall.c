@@ -3203,6 +3203,32 @@ float linphone_call_get_record_volume(LinphoneCall *call){
 	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
+double linphone_call_get_play_percent_volume(const LinphoneCall *call) {
+	if(call->audiostream) return audio_stream_get_output_volume(call->audiostream);
+	else {
+		ms_error("Could not get playback volume: no audio stream");
+		return -1.0;
+	}
+}
+
+void linphone_call_set_play_percent_volume(LinphoneCall *call, double volume) {
+	if(call->audiostream) audio_stream_set_output_volume(call->audiostream, volume);
+	else ms_error("Could not set playback volume: no audio stream");
+}
+
+double linphone_call_get_record_percent_volume(const LinphoneCall *call) {
+	if(call->audiostream) return audio_stream_get_input_volume(call->audiostream);
+	else {
+		ms_error("Could not get record volume: no audio stream");
+		return -1.0;
+	}
+}
+
+void linphone_call_set_record_percent_volume(LinphoneCall *call, double volume) {
+	if(call->audiostream) audio_stream_set_input_volume(call->audiostream, volume);
+	else ms_error("Could not set record volume: no audio stream");
+}
+
 /**
  * Obtain real-time quality rating of the call
  *
