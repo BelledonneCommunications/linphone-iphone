@@ -10,7 +10,7 @@
                 <outlet property="addCallButton" destination="184" id="227"/>
                 <outlet property="addContactButton" destination="222" id="225"/>
                 <outlet property="addressField" destination="4" id="205"/>
-                <outlet property="backButton" destination="183" id="254"/>
+                <outlet property="backButton" destination="183" id="d75-ly-K6w"/>
                 <outlet property="callButton" destination="224" id="231"/>
                 <outlet property="eightButton" destination="35" id="204"/>
                 <outlet property="fiveButton" destination="31" id="195"/>
@@ -56,21 +56,24 @@
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <state key="highlighted" image="backspace_over.png"/>
+                            <connections>
+                                <action selector="onBackspaceClick:" destination="-1" eventType="touchUpInside" id="sWE-Ch-kAr"/>
+                            </connections>
                         </button>
                     </subviews>
                     <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
                 <view contentMode="scaleToFill" id="180" userLabel="pad">
-                    <rect key="frame" x="0.0" y="83" width="360" height="373"/>
+                    <rect key="frame" x="0.0" y="63" width="360" height="411"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="38" userLabel="1" customClass="UIDigitButtonLongVoiceMail">
-                            <rect key="frame" x="0.0" y="11" width="107" height="54"/>
+                            <rect key="frame" x="0.0" y="0.0" width="120" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="0.40000001000000002" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
                             <accessibility key="accessibilityConfiguration" label="1"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_1.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -78,11 +81,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="37" userLabel="2" customClass="UIDigitButton">
-                            <rect key="frame" x="127" y="11" width="106" height="54"/>
+                            <rect key="frame" x="120" y="0.0" width="120" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="2"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_2.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -90,11 +93,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="29" userLabel="3" customClass="UIDigitButton">
-                            <rect key="frame" x="253" y="11" width="107" height="54"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <rect key="frame" x="240" y="0.0" width="120" height="102"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="3"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_3.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -102,11 +105,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="30" userLabel="4" customClass="UIDigitButton">
-                            <rect key="frame" x="0.0" y="113" width="107" height="54"/>
+                            <rect key="frame" x="0.0" y="102" width="120" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="4"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_4.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -114,11 +117,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="31" userLabel="5" customClass="UIDigitButton">
-                            <rect key="frame" x="128" y="113" width="106" height="54"/>
+                            <rect key="frame" x="120" y="102" width="120" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_5.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -126,11 +129,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="33" userLabel="6" customClass="UIDigitButton">
-                            <rect key="frame" x="253" y="113" width="107" height="54"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <rect key="frame" x="240" y="102" width="120" height="102"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="6"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_6.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -138,11 +141,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="34" userLabel="7" customClass="UIDigitButton">
-                            <rect key="frame" x="0.0" y="209" width="107" height="54"/>
+                            <rect key="frame" x="0.0" y="204" width="120" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="7"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_7.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -150,11 +153,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="35" userLabel="8" customClass="UIDigitButton">
-                            <rect key="frame" x="127" y="209" width="106" height="54"/>
+                            <rect key="frame" x="120" y="204" width="120" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="8"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_8.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -162,11 +165,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="36" userLabel="9" customClass="UIDigitButton">
-                            <rect key="frame" x="253" y="209" width="107" height="54"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <rect key="frame" x="240" y="204" width="120" height="102"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="9"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_9.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -174,11 +177,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="39" userLabel="*" customClass="UIDigitButton">
-                            <rect key="frame" x="0.0" y="310" width="107" height="54"/>
+                            <rect key="frame" x="0.0" y="306" width="120" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Star"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_star.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -186,11 +189,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="40" userLabel="0" customClass="UIDigitButtonLongPlus">
-                            <rect key="frame" x="127" y="310" width="106" height="54"/>
+                            <rect key="frame" x="120" y="306" width="120" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="0"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_0.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -198,11 +201,11 @@
                             </connections>
                         </button>
                         <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="41" userLabel="#" customClass="UIDigitButton">
-                            <rect key="frame" x="253" y="310" width="107" height="54"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                            <rect key="frame" x="240" y="306" width="120" height="102"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Sharp"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                            <state key="normal">
+                            <state key="normal" image="numpad_sharp.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -216,25 +219,12 @@
                     <rect key="frame" x="0.0" y="474" width="360" height="63"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="222" userLabel="addContactButton">
-                            <rect key="frame" x="0.0" y="0.0" width="120" height="63"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Add to contact"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" image="add_contact.png" backgroundImage="color_F.png">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="color_E.png"/>
-                            <connections>
-                                <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="230"/>
-                            </connections>
-                        </button>
                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="183" userLabel="backButton">
                             <rect key="frame" x="0.0" y="0.0" width="120" height="63"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Back"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" backgroundImage="color_F.png">
+                            <state key="normal" image="back.png" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <state key="highlighted" backgroundImage="color_E.png"/>
@@ -242,12 +232,25 @@
                                 <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="233"/>
                             </connections>
                         </button>
+                        <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="222" userLabel="addContactButton">
+                            <rect key="frame" x="0.0" y="0.0" width="120" height="63"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Add to contact"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                            <state key="normal" image="contact_add.png" backgroundImage="color_F.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <state key="highlighted" backgroundImage="color_E.png"/>
+                            <connections>
+                                <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="230"/>
+                            </connections>
+                        </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="224" userLabel="callButton" customClass="UICallButton">
                             <rect key="frame" x="120" y="0.0" width="240" height="63"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Call"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" image="add_call.png" backgroundImage="color_A.png">
+                            <state key="normal" image="call_alt_start.png" backgroundImage="color_A.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <state key="highlighted" backgroundImage="color_L.png"/>
@@ -260,7 +263,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Add call"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" backgroundImage="color_F.png">
+                            <state key="normal" image="call_add.png" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <state key="highlighted" backgroundImage="color_E.png"/>
@@ -273,7 +276,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Transfer call"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" backgroundImage="color_F.png">
+                            <state key="normal" image="call_transfer.png" backgroundImage="color_F.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <state key="highlighted" backgroundImage="color_E.png"/>
@@ -292,14 +295,29 @@
         </view>
     </objects>
     <resources>
-        <image name="add_call.png" width="117" height="105"/>
-        <image name="add_contact.png" width="101" height="86"/>
+        <image name="back.png" width="71" height="64"/>
         <image name="backspace_default.png" width="106" height="56"/>
         <image name="backspace_over.png" width="106" height="56"/>
+        <image name="call_add.png" width="116" height="105"/>
+        <image name="call_alt_start.png" width="86" height="86"/>
+        <image name="call_transfer.png" width="118" height="107"/>
         <image name="color_A.png" width="1" height="1"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="color_L.png" width="1" height="1"/>
+        <image name="contact_add.png" width="100" height="86"/>
+        <image name="numpad_0.png" width="154" height="144"/>
+        <image name="numpad_1.png" width="154" height="142"/>
+        <image name="numpad_2.png" width="154" height="144"/>
+        <image name="numpad_3.png" width="154" height="144"/>
+        <image name="numpad_4.png" width="154" height="142"/>
+        <image name="numpad_5.png" width="154" height="142"/>
+        <image name="numpad_6.png" width="154" height="144"/>
+        <image name="numpad_7.png" width="154" height="142"/>
+        <image name="numpad_8.png" width="154" height="144"/>
+        <image name="numpad_9.png" width="154" height="144"/>
+        <image name="numpad_sharp.png" width="154" height="143"/>
+        <image name="numpad_star.png" width="154" height="149"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

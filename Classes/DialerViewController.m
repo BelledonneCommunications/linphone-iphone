@@ -425,4 +425,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+- (IBAction)onBackspaceClick:(id)sender {
+}
+
 @end

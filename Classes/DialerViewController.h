@@ -63,5 +63,6 @@
 - (IBAction)onAddContactClick: (id) event;
 - (IBAction)onBackClick: (id) event;
 - (IBAction)onAddressChange: (id)sender;
+- (IBAction)onBackspaceClick:(id)sender;
 
 @end
