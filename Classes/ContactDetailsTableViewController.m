@@ -53,8 +53,6 @@
 static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSections_None, ContactSections_Number,
 																	   ContactSections_Sip, ContactSections_Email};
 
-@synthesize footerController;
-@synthesize headerController;
 @synthesize contactDetailsDelegate;
 @synthesize contact;
 
@@ -98,21 +96,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	}
 }
 
-#pragma mark - ViewController Functions
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-	[headerController view]; // Force view load
-	[footerController view]; // Force view load
-
-	self.tableView.accessibilityIdentifier = @"Contact numbers table";
-}
-
 #pragma mark -
-
-- (BOOL)isValid {
-	return [headerController isValid];
-}
 
 - (void)updateModification {
 	[contactDetailsDelegate onModification:nil];
@@ -466,7 +450,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	}
 	contact = acontact;
 	[self loadData];
-	[headerController setContact:contact];
 }
 
 - (void)addPhoneField:(NSString *)number {
@@ -701,9 +684,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		[LinphoneUtils findAndResignFirstResponder:[self tableView]];
 	}
 
-	[headerController setEditing:editing animated:animated];
-	[footerController setEditing:editing animated:animated];
-
 	if (animated) {
 		[self.tableView beginUpdates];
 	}
@@ -748,23 +728,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	return UITableViewCellEditingStyleDelete;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	if (section == ContactSections_None) {
-		return [headerController view];
-	} else {
-		return nil;
-	}
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-	if (section == (ContactSections_MAX - 1)) {
-		if (ABRecordGetRecordID(contact) != kABRecordInvalidID) {
-			return [footerController view];
-		}
-	}
-	return nil;
-}
-
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
 	if ([[self getSectionData:section] count] == 0)
 		return nil;
@@ -777,35 +740,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		return NSLocalizedString(@"Email addresses", nil);
 	}
 	return nil;
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-	return nil;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	if (section == ContactSections_None) {
-		return [UIContactDetailsHeader height:[headerController isEditing]];
-	} else {
-		// Hide section if nothing in it
-		if ([[self getSectionData:section] count] > 0)
-			return 22;
-		else
-			return 0.000001f; // Hack UITableView = 0
-	}
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-	if (section == (ContactSections_MAX - 1)) {
-		if (ABRecordGetRecordID(contact) != kABRecordInvalidID) {
-			return [UIContactDetailsFooter height:[footerController isEditing]];
-		} else {
-			return 0.000001f; // Hack UITableView = 0
-		}
-	} else if (section == ContactSections_None) {
-		return 0.000001f; // Hack UITableView = 0
-	}
-	return 10.0f;
 }
 
 #pragma mark - ContactDetailsLabelDelegate Functions
@@ -886,6 +820,10 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		[self performSelector:@selector(updateModification) withObject:nil afterDelay:0];
 	}
 	return TRUE;
+}
+
+- (BOOL)isValid {
+	return true;
 }
 
 @end

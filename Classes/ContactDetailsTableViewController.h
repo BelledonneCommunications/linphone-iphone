@@ -22,9 +22,6 @@
 
 #import "ContactDetailsDelegate.h"
 #import "ContactDetailsLabelViewController.h"
-#import "UIContactDetailsHeader.h"
-#import "UIContactDetailsFooter.h"
-
 
 typedef enum _ContactSections {
     ContactSections_None = 0,
@@ -43,8 +40,6 @@ typedef enum _ContactSections {
 
 @property (nonatomic, assign, setter=setContact:) ABRecordRef contact;
 @property (nonatomic, strong) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
-@property (nonatomic, strong) IBOutlet UIContactDetailsHeader *headerController;
-@property (nonatomic, strong) IBOutlet UIContactDetailsFooter *footerController;
 
 - (BOOL)isValid;
 - (void)addPhoneField:(NSString*)number;
