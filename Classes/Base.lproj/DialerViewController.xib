@@ -52,9 +52,10 @@
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8dc-hj-rvt" userLabel="backspaceButton">
                             <rect key="frame" x="300" y="0.0" width="60" height="63"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <state key="normal" image="backspace.png">
+                            <state key="normal" image="backspace_default.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
+                            <state key="highlighted" image="backspace_over.png"/>
                         </button>
                     </subviews>
                     <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -68,11 +69,10 @@
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="0.40000001000000002" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
                             <accessibility key="accessibilityConfiguration" label="1"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_one_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_one_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="240"/>
                             </connections>
@@ -81,11 +81,10 @@
                             <rect key="frame" x="127" y="11" width="106" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="2"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_two_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_two_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="241"/>
                             </connections>
@@ -94,11 +93,10 @@
                             <rect key="frame" x="253" y="11" width="107" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="3"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_three_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_three_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="242"/>
                             </connections>
@@ -107,11 +105,10 @@
                             <rect key="frame" x="0.0" y="113" width="107" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="4"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_four_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_four_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="243"/>
                             </connections>
@@ -120,11 +117,10 @@
                             <rect key="frame" x="128" y="113" width="106" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="5"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_five_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_five_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="244"/>
                             </connections>
@@ -133,11 +129,10 @@
                             <rect key="frame" x="253" y="113" width="107" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="6"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_six_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_six_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="245"/>
                             </connections>
@@ -146,11 +141,10 @@
                             <rect key="frame" x="0.0" y="209" width="107" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="7"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_seven_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_seven_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="246"/>
                             </connections>
@@ -159,11 +153,10 @@
                             <rect key="frame" x="127" y="209" width="106" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="8"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_eight_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_eight_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="247"/>
                             </connections>
@@ -172,11 +165,10 @@
                             <rect key="frame" x="253" y="209" width="107" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="9"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_nine_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_nine_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="248"/>
                             </connections>
@@ -185,11 +177,10 @@
                             <rect key="frame" x="0.0" y="310" width="107" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Star"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_star_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_star_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="249"/>
                             </connections>
@@ -198,11 +189,10 @@
                             <rect key="frame" x="127" y="310" width="106" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="0"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_zero_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_zero_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="250"/>
                             </connections>
@@ -211,11 +201,10 @@
                             <rect key="frame" x="253" y="310" width="107" height="54"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Sharp"/>
-                            <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="15"/>
-                            <state key="normal" image="numpad_sharp_default.png">
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <state key="normal">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="highlighted" image="numpad_sharp_over.png"/>
                             <connections>
                                 <outlet property="addressField" destination="4" id="251"/>
                             </connections>
@@ -305,35 +294,12 @@
     <resources>
         <image name="add_call.png" width="117" height="105"/>
         <image name="add_contact.png" width="101" height="86"/>
-        <image name="backspace.png" width="106" height="56"/>
+        <image name="backspace_default.png" width="106" height="56"/>
+        <image name="backspace_over.png" width="106" height="56"/>
         <image name="color_A.png" width="1" height="1"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="color_L.png" width="1" height="1"/>
-        <image name="numpad_eight_default.png" width="220" height="113"/>
-        <image name="numpad_eight_over.png" width="220" height="113"/>
-        <image name="numpad_five_default.png" width="220" height="113"/>
-        <image name="numpad_five_over.png" width="220" height="113"/>
-        <image name="numpad_four_default.png" width="210" height="113"/>
-        <image name="numpad_four_over.png" width="210" height="113"/>
-        <image name="numpad_nine_default.png" width="210" height="113"/>
-        <image name="numpad_nine_over.png" width="210" height="113"/>
-        <image name="numpad_one_default.png" width="210" height="113"/>
-        <image name="numpad_one_over.png" width="210" height="113"/>
-        <image name="numpad_seven_default.png" width="210" height="113"/>
-        <image name="numpad_seven_over.png" width="210" height="113"/>
-        <image name="numpad_sharp_default.png" width="210" height="113"/>
-        <image name="numpad_sharp_over.png" width="210" height="113"/>
-        <image name="numpad_six_default.png" width="210" height="113"/>
-        <image name="numpad_six_over.png" width="210" height="113"/>
-        <image name="numpad_star_default.png" width="210" height="113"/>
-        <image name="numpad_star_over.png" width="210" height="113"/>
-        <image name="numpad_three_default.png" width="210" height="113"/>
-        <image name="numpad_three_over.png" width="210" height="113"/>
-        <image name="numpad_two_default.png" width="220" height="113"/>
-        <image name="numpad_two_over.png" width="220" height="113"/>
-        <image name="numpad_zero_default.png" width="220" height="113"/>
-        <image name="numpad_zero_over.png" width="220" height="113"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
