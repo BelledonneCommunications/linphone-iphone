@@ -22,7 +22,7 @@
 
 #import <AddressBook/AddressBook.h>
 #import "UICompositeViewController.h"
-
+#import "HistoryDetailsTableViewController.h"
 @interface HistoryDetailsViewController : UIViewController<UICompositeViewDelegate> {
     @private
     ABRecordRef contact;
@@ -43,6 +43,9 @@
 @property (nonatomic, strong) IBOutlet UIButton *messageButton;
 @property (nonatomic, strong) IBOutlet UIButton *addContactButton;
 @property (nonatomic, copy, setter=setCallLogId:) NSString *callLogId;
+@property(weak, nonatomic) IBOutlet UIView *headerView;
+@property(weak, nonatomic) IBOutlet UITableView *callsTableView;
+@property(strong, nonatomic) IBOutlet HistoryDetailsTableViewController *tableView;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onContactClick:(id)event;

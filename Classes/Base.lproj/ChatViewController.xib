@@ -17,7 +17,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" id="7" userLabel="toolsBar">
-                    <rect key="frame" x="0.0" y="0.0" width="360.00000546735953" height="40"/>
+                    <rect key="frame" x="0.0" y="0.0" width="360.0000008953366" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="10" userLabel="backButton">
@@ -47,7 +47,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="selectAllButton" customClass="UIToggleButton">
-                            <rect key="frame" x="200" y="0.0" width="72.000001447242141" height="40"/>
+                            <rect key="frame" x="200" y="0.0" width="72.000000237000876" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Edit"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -57,7 +57,7 @@
                             </state>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="UxT-TB-Ri4" userLabel="editButton" customClass="UIToggleButton">
-                            <rect key="frame" x="288" y="0.0" width="72.000005467359557" height="40"/>
+                            <rect key="frame" x="288" y="0.0" width="72.000000895336598" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Edit"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -70,7 +70,7 @@
                             </connections>
                         </button>
                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="e4g-nB-qYa" userLabel="deleteButton" customClass="UIToggleButton">
-                            <rect key="frame" x="288" y="0.0" width="72.000005467359557" height="40"/>
+                            <rect key="frame" x="288" y="0.0" width="72.000000895336598" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Edit"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>

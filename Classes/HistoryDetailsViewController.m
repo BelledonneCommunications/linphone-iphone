@@ -86,6 +86,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+
+	UITapGestureRecognizer *headerTapGesture =
+		[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onContactClick:)];
+	[_headerView addGestureRecognizer:headerTapGesture];
+
 	[HistoryDetailsViewController adaptSize:dateHeaderLabel field:dateLabel];
 	[HistoryDetailsViewController adaptSize:durationHeaderLabel field:durationLabel];
 	[HistoryDetailsViewController adaptSize:typeHeaderLabel field:typeLabel];
@@ -99,6 +104,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (use_system) {
 		[addContactButton setHidden:TRUE];
 	}
+
+	[_tableView loadData];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(update)

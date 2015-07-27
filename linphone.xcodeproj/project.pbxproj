@@ -243,6 +243,9 @@
 		634CEE151B6630DB00D7A921 /* status_disconnected_phone.png in Resources */ = {isa = PBXBuildFile; fileRef = 634CED901B6630DB00D7A921 /* status_disconnected_phone.png */; };
 		634CEE161B6630DB00D7A921 /* valid.png in Resources */ = {isa = PBXBuildFile; fileRef = 634CED911B6630DB00D7A921 /* valid.png */; };
 		634CEE171B6630DB00D7A921 /* voicemail.png in Resources */ = {isa = PBXBuildFile; fileRef = 634CED921B6630DB00D7A921 /* voicemail.png */; };
+		635775251B6673EC00C8B704 /* HistoryDetailsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 635775241B6673EC00C8B704 /* HistoryDetailsTableViewController.m */; };
+		6357752E1B6676C200C8B704 /* UIHistoryDetailsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6357752D1B6676C200C8B704 /* UIHistoryDetailsCell.m */; };
+		635775311B66777200C8B704 /* UIHistoryDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6357752F1B66777200C8B704 /* UIHistoryDetailsCell.xib */; };
 		636316D11A1DEBCB0009B839 /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutViewController.xib */; };
 		636316D41A1DEC650009B839 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsViewController.xib */; };
 		636316D91A1DECC90009B839 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D71A1DECC90009B839 /* PhoneMainView.xib */; };
@@ -798,6 +801,11 @@
 		634CED901B6630DB00D7A921 /* status_disconnected_phone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = status_disconnected_phone.png; sourceTree = "<group>"; };
 		634CED911B6630DB00D7A921 /* valid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = valid.png; sourceTree = "<group>"; };
 		634CED921B6630DB00D7A921 /* voicemail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voicemail.png; sourceTree = "<group>"; };
+		635775231B6673EC00C8B704 /* HistoryDetailsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsTableViewController.h; sourceTree = "<group>"; };
+		635775241B6673EC00C8B704 /* HistoryDetailsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsTableViewController.m; sourceTree = "<group>"; };
+		6357752C1B6676C200C8B704 /* UIHistoryDetailsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHistoryDetailsCell.h; sourceTree = "<group>"; };
+		6357752D1B6676C200C8B704 /* UIHistoryDetailsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIHistoryDetailsCell.m; sourceTree = "<group>"; };
+		635775301B66777200C8B704 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIHistoryDetailsCell.xib; sourceTree = "<group>"; };
 		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutViewController.xib; sourceTree = "<group>"; };
 		636316D51A1DEC650009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SettingsViewController.xib; sourceTree = "<group>"; };
 		636316D81A1DECC90009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PhoneMainView.xib; sourceTree = "<group>"; };
@@ -1285,6 +1293,8 @@
 				2218A92212FBE1340088A667 /* FirstLoginViewController.h */,
 				2218A92312FBE1340088A667 /* FirstLoginViewController.m */,
 				D38187CC15FE346400C3EDCA /* FirstLoginViewController.xib */,
+				635775231B6673EC00C8B704 /* HistoryDetailsTableViewController.h */,
+				635775241B6673EC00C8B704 /* HistoryDetailsTableViewController.m */,
 				C90FAA7615AF54E6002091CB /* HistoryDetailsViewController.h */,
 				C90FAA7715AF54E6002091CB /* HistoryDetailsViewController.m */,
 				D38187D015FE346700C3EDCA /* HistoryDetailsViewController.xib */,
@@ -1438,6 +1448,9 @@
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
 				634610041B61330300548952 /* UILabel+Boldify.h */,
 				634610051B61330300548952 /* UILabel+Boldify.m */,
+				6357752C1B6676C200C8B704 /* UIHistoryDetailsCell.h */,
+				6357752D1B6676C200C8B704 /* UIHistoryDetailsCell.m */,
+				6357752F1B66777200C8B704 /* UIHistoryDetailsCell.xib */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -2188,6 +2201,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				634CEE161B6630DB00D7A921 /* valid.png in Resources */,
+				635775311B66777200C8B704 /* UIHistoryDetailsCell.xib in Resources */,
 				634CEDC71B6630DB00D7A921 /* delete.png in Resources */,
 				636316D11A1DEBCB0009B839 /* AboutViewController.xib in Resources */,
 				634CEDF31B6630DB00D7A921 /* options_start_conference.png in Resources */,
@@ -2523,6 +2537,7 @@
 				D3E8F68615ADE05B0065A226 /* UIContactDetailsFooter.m in Sources */,
 				C90FAA7915AF54E6002091CB /* HistoryDetailsViewController.m in Sources */,
 				63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */,
+				635775251B6673EC00C8B704 /* HistoryDetailsTableViewController.m in Sources */,
 				F066515517F9A02E0064280C /* UITransparentTVCell.m in Sources */,
 				D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */,
 				6346100F1B61409800548952 /* OutgoingCallViewController.m in Sources */,
@@ -2554,6 +2569,7 @@
 				D3ED40191602172200BF332B /* HPGrowingTextView.m in Sources */,
 				D3ED401B1602172200BF332B /* HPTextViewInternal.m in Sources */,
 				D37EE162160377D7003608A6 /* DTActionSheet.m in Sources */,
+				6357752E1B6676C200C8B704 /* UIHistoryDetailsCell.m in Sources */,
 				D35E91F4160CA10B0023116B /* UILinphoneTextField.m in Sources */,
 				D35E91F8160CA4FF0023116B /* UILinphoneButton.m in Sources */,
 				D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */,
@@ -2683,6 +2699,14 @@
 				634610111B6140A500548952 /* Base */,
 			);
 			name = OutgoingCallViewController.xib;
+			sourceTree = "<group>";
+		};
+		6357752F1B66777200C8B704 /* UIHistoryDetailsCell.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				635775301B66777200C8B704 /* Base */,
+			);
+			name = UIHistoryDetailsCell.xib;
 			sourceTree = "<group>";
 		};
 		636316D31A1DEBCB0009B839 /* AboutViewController.xib */ = {

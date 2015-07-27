@@ -10,16 +10,8 @@
                 <outlet property="addContactButton" destination="50" id="52"/>
                 <outlet property="addressLabel" destination="25" id="42"/>
                 <outlet property="avatarImage" destination="23" id="43"/>
-                <outlet property="callButton" destination="37" id="61"/>
-                <outlet property="dateHeaderLabel" destination="27" id="44"/>
-                <outlet property="dateLabel" destination="28" id="45"/>
-                <outlet property="durationHeaderLabel" destination="31" id="46"/>
-                <outlet property="durationLabel" destination="32" id="47"/>
-                <outlet property="messageButton" destination="59" id="62"/>
-                <outlet property="plainAddressHeaderLabel" destination="55" id="63"/>
-                <outlet property="plainAddressLabel" destination="56" id="64"/>
-                <outlet property="typeHeaderLabel" destination="36" id="48"/>
-                <outlet property="typeLabel" destination="35" id="49"/>
+                <outlet property="headerView" destination="33" id="iv2-Rj-j3j"/>
+                <outlet property="tableView" destination="baU-d4-eu3" id="3q4-5X-yCB"/>
                 <outlet property="view" destination="4" id="10"/>
             </connections>
         </placeholder>
@@ -29,39 +21,25 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" id="6" userLabel="navigationBar">
-                    <rect key="frame" x="0.0" y="0.0" width="360" height="44"/>
+                    <rect key="frame" x="0.0" y="0.0" width="360" height="40"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
-                            <rect key="frame" x="0.0" y="0.0" width="160" height="44"/>
+                            <rect key="frame" x="0.0" y="0.0" width="72" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Back"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Back" backgroundImage="history_details_back_default.png">
-                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="history_details_back_over.png">
-                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                            </state>
+                            <state key="normal" image="back.png"/>
                             <connections>
                                 <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="11"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="50" userLabel="addButton" customClass="UIIconButton">
-                            <rect key="frame" x="200" y="0.0" width="160" height="44"/>
+                            <rect key="frame" x="288" y="0.0" width="72" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Add to contact"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Add to contacts" backgroundImage="history_details_add_default.png">
-                                <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="history_details_add_over.png">
-                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                            </state>
+                            <state key="normal" image="contact_add.png"/>
                             <connections>
                                 <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="53"/>
                             </connections>
@@ -70,196 +48,101 @@
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                 </view>
                 <view contentMode="scaleToFill" id="33" userLabel="headerView">
-                    <rect key="frame" x="0.0" y="44" width="352" height="100"/>
+                    <rect key="frame" x="0.0" y="40" width="360" height="146"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="38" userLabel="headerButton">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="100"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration">
-                                <bool key="isElement" value="NO"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal">
-                                <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted">
-                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <connections>
-                                <action selector="onContactClick:" destination="-1" eventType="touchUpInside" id="40"/>
-                            </connections>
-                        </button>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar_shadow_small.png" id="24" userLabel="avatarShadowBackground">
-                            <rect key="frame" x="-13" y="-5" width="131" height="107"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar_unknown_small.png" id="23" userLabel="avatarImage">
-                            <rect key="frame" x="20" y="6" width="65" height="65"/>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar.png" id="23" userLabel="avatarImage" customClass="UIRoundedImageView">
+                            <rect key="frame" x="144" y="0.0" width="65" height="65"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                 <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
                                 <bool key="isElement" value="YES"/>
                             </accessibility>
                         </imageView>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Contact1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="25" userLabel="addressLabel">
-                            <rect key="frame" x="101" y="37" width="231" height="43"/>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="25" userLabel="contactLabel">
+                            <rect key="frame" x="0.0" y="68" width="352" height="16"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Contact name"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            <attributedString key="attributedText">
+                                <fragment content="John ">
+                                    <attributes>
+                                        <color key="NSColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                        <font key="NSFont" size="22" name="HelveticaNeue"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="truncatingTail" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                                <fragment content="Doe">
+                                    <attributes>
+                                        <color key="NSColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                        <font key="NSFont" size="22" name="HelveticaNeue-Bold"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="truncatingTail" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                            </attributedString>
                             <nil key="highlightedColor"/>
                         </label>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
-                <view contentMode="scaleToFill" id="29" userLabel="dateView">
-                    <rect key="frame" x="23" y="152" width="315" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Date:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="27" userLabel="dateHeaderLabel">
-                            <rect key="frame" x="0.0" y="0.0" width="49" height="21"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration">
-                                <bool key="isElement" value="NO"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="11/11/2011 at 10:01" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="28" userLabel="dateLabel">
-                            <rect key="frame" x="57" y="0.0" width="258" height="21"/>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="johndoe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="EoB-ux-sD7" userLabel="addressLabel">
+                            <rect key="frame" x="4" y="88" width="352" height="18"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Call date">
-                                <accessibilityTraits key="traits" none="YES"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <accessibility key="accessibilityConfiguration" label="Contact name"/>
+                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="10"/>
+                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
-                <view contentMode="scaleToFill" id="30" userLabel="durationView">
-                    <rect key="frame" x="23" y="181" width="315" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Duration:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="31" userLabel="durationHeaderLabel">
-                            <rect key="frame" x="0.0" y="0.0" width="80" height="21"/>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
+                            <rect key="frame" x="217" y="23" width="20" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration">
-                                <bool key="isElement" value="NO"/>
+                            <accessibility key="accessibilityConfiguration" label="Contact avatar">
+                                <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
+                                <bool key="isElement" value="YES"/>
                             </accessibility>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="9:05" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="32" userLabel="durationLabel">
-                            <rect key="frame" x="88" y="0.0" width="227" height="21"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Call duration">
-                                <accessibilityTraits key="traits" none="YES"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
-                <view contentMode="scaleToFill" id="34" userLabel="typeView">
-                    <rect key="frame" x="23" y="210" width="315" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Type:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="36" userLabel="typeHeaderLabel">
-                            <rect key="frame" x="0.0" y="0.0" width="57" height="21"/>
+                        </imageView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5eX-W0-T4B" userLabel="callButton">
+                            <rect key="frame" x="130" y="104" width="42" height="42"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration">
-                                <bool key="isElement" value="NO"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="outgoing call" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="35" userLabel="typeLabel">
-                            <rect key="frame" x="65" y="0.0" width="250" height="21"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Call type">
-                                <accessibilityTraits key="traits" none="YES"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
-                <view contentMode="scaleToFill" id="54" userLabel="plainAddressView">
-                    <rect key="frame" x="23" y="239" width="315" height="21"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <subviews>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Address:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="55" userLabel="plainAddressHeaderLabel">
-                            <rect key="frame" x="0.0" y="0.0" width="78" height="21"/>
+                            <state key="normal" title="Button" image="call_start_body_default.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="obZ-W7-q8P" userLabel="chatButton">
+                            <rect key="frame" x="180" y="104" width="42" height="42"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration">
-                                <bool key="isElement" value="NO"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="0102030405" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="56" userLabel="plainAddressLabel">
-                            <rect key="frame" x="86" y="0.0" width="229" height="21"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Address">
-                                <accessibilityTraits key="traits" none="YES"/>
-                            </accessibility>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <nil key="highlightedColor"/>
-                        </label>
+                            <state key="normal" title="Button" image="chat_start_body_default.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                        </button>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="37" userLabel="callButton" customClass="UIIconButton">
-                    <rect key="frame" x="53" y="268" width="255" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <accessibility key="accessibilityConfiguration" label="Callback"/>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                    <inset key="contentEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
-                    <state key="normal" title="Call" backgroundImage="button_background_default.png">
-                        <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <state key="highlighted" backgroundImage="button_background_over.png"/>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="k6N-Av-eOu">
+                    <rect key="frame" x="0.0" y="194" width="360" height="343"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>
-                        <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="65"/>
+                        <outlet property="dataSource" destination="baU-d4-eu3" id="p7o-Mx-Kmc"/>
+                        <outlet property="delegate" destination="baU-d4-eu3" id="iS5-xg-0C2"/>
                     </connections>
-                </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="59" userLabel="messageButton" customClass="UIIconButton">
-                    <rect key="frame" x="53" y="326" width="255" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <accessibility key="accessibilityConfiguration" label="Send message"/>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                    <inset key="contentEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
-                    <state key="normal" title="Send message" backgroundImage="button_background_default.png">
-                        <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <state key="highlighted" backgroundImage="button_background_over.png"/>
-                    <connections>
-                        <action selector="onMessageClick:" destination="-1" eventType="touchUpInside" id="66"/>
-                    </connections>
-                </button>
+                </tableView>
             </subviews>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="235" y="219.5"/>
         </view>
+        <tableViewController id="baU-d4-eu3" customClass="HistoryDetailsTableViewController">
+            <connections>
+                <outlet property="view" destination="k6N-Av-eOu" id="Dos-d4-5l5"/>
+            </connections>
+            <point key="canvasLocation" x="621" y="235"/>
+        </tableViewController>
     </objects>
     <resources>
-        <image name="avatar_shadow_small.png" width="262" height="214"/>
-        <image name="avatar_unknown_small.png" width="131" height="131"/>
-        <image name="button_background_default.png" width="550" height="101"/>
-        <image name="button_background_over.png" width="550" height="101"/>
-        <image name="history_details_add_default.png" width="320" height="88"/>
-        <image name="history_details_add_over.png" width="320" height="88"/>
-        <image name="history_details_back_default.png" width="320" height="88"/>
-        <image name="history_details_back_over.png" width="320" height="88"/>
+        <image name="avatar.png" width="751" height="751"/>
+        <image name="back.png" width="71" height="64"/>
+        <image name="call_start_body_default.png" width="150" height="150"/>
+        <image name="chat_start_body_default.png" width="150" height="150"/>
+        <image name="contact_add.png" width="100" height="86"/>
+        <image name="linphone_user.png" width="77" height="66"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
