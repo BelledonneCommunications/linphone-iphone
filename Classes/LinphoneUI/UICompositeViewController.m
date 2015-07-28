@@ -566,12 +566,41 @@
 	[self update:nil tabBar:nil stateBar:nil fullscreen:[NSNumber numberWithBool:enabled]];
 }
 
-- (void)setToolBarHidden:(BOOL)hidden {
+- (void)hideToolBar:(BOOL)hidden {
 	[self update:nil tabBar:[NSNumber numberWithBool:!hidden] stateBar:nil fullscreen:nil];
 }
 
-- (void)setStateBarHidden:(BOOL)hidden {
+- (void)hideStateBar:(BOOL)hidden {
 	[self update:nil tabBar:nil stateBar:[NSNumber numberWithBool:!hidden] fullscreen:nil];
+}
+
+- (void)hideSideMenu:(BOOL)hidden {
+	[self hideSideMenu:hidden
+			  animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference" withDefault:YES]];
+}
+
+- (void)hideSideMenu:(BOOL)hidden animated:(BOOL)animated {
+	LOGI(@"%s side menu", hidden ? "Closing" : "Opening");
+
+	// resign keyboard, if any
+	[LinphoneUtils findAndResignFirstResponder:self.view];
+
+	CGRect d = _sideMenuView.frame;
+	d.origin.x = hidden ? -d.size.width : 0;
+
+	if (animated) {
+		_sideMenuView.hidden = NO;
+		[UIView animateWithDuration:0.3
+			animations:^{
+			  _sideMenuView.frame = d;
+			}
+			completion:^(BOOL finished) {
+			  _sideMenuView.hidden = hidden;
+			}];
+	} else {
+		_sideMenuView.frame = d;
+		_sideMenuView.hidden = hidden;
+	}
 }
 
 - (UIViewController *)getCurrentViewController {

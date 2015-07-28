@@ -107,6 +107,7 @@
 		63158FAD1B468E0E00969917 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = 63158FAC1B468E0E00969917 /* ImageOptim.sh */; };
 		632DA24D1B43EE9400EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		632DA24E1B43EEEF00EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
+		633756391B67BAF400E21BAD /* SideMenuTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756381B67BAF400E21BAD /* SideMenuTableViewController.m */; };
 		634610061B61330300548952 /* UILabel+Boldify.m in Sources */ = {isa = PBXBuildFile; fileRef = 634610051B61330300548952 /* UILabel+Boldify.m */; };
 		6346100F1B61409800548952 /* OutgoingCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6346100E1B61409800548952 /* OutgoingCallViewController.m */; };
 		634610121B6140A500548952 /* OutgoingCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 634610101B6140A500548952 /* OutgoingCallViewController.xib */; };
@@ -656,6 +657,8 @@
 		630CF5551AF7CE1500539F7A /* UITextField+DoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+DoneButton.h"; sourceTree = "<group>"; };
 		630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+DoneButton.m"; sourceTree = "<group>"; };
 		63158FAC1B468E0E00969917 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ImageOptim.sh; path = Tools/ImageOptim.sh; sourceTree = "<group>"; };
+		633756371B67BAF400E21BAD /* SideMenuTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuTableViewController.h; sourceTree = "<group>"; };
+		633756381B67BAF400E21BAD /* SideMenuTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideMenuTableViewController.m; sourceTree = "<group>"; };
 		633E388219FFB0F400936D1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		634610041B61330300548952 /* UILabel+Boldify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+Boldify.h"; sourceTree = "<group>"; };
 		634610051B61330300548952 /* UILabel+Boldify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Boldify.m"; sourceTree = "<group>"; };
@@ -1324,6 +1327,8 @@
 				D38187E015FE348A00C3EDCA /* WizardViewController.xib */,
 				D3D5126E160B3AD400946DF8 /* WizardViewController~ipad.xib */,
 				D3D5126A160B3A8E00946DF8 /* WizardViews.xib */,
+				633756371B67BAF400E21BAD /* SideMenuTableViewController.h */,
+				633756381B67BAF400E21BAD /* SideMenuTableViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -2446,6 +2451,7 @@
 				22E0A822111C44E100B04932 /* AboutViewController.m in Sources */,
 				634610061B61330300548952 /* UILabel+Boldify.m in Sources */,
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,
+				633756391B67BAF400E21BAD /* SideMenuTableViewController.m in Sources */,
 				2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */,
 				2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */,
 				630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */,

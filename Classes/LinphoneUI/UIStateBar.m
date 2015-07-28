@@ -277,7 +277,7 @@
 
 #pragma mark - Action Functions
 
-- (IBAction)doSecurityClick:(id)sender {
+- (IBAction)onSecurityClick:(id)sender {
 	if (linphone_core_get_calls_nb([LinphoneManager getLc])) {
 		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 		if (call != NULL) {
@@ -312,6 +312,11 @@
 			}
 		}
 	}
+}
+
+- (IBAction)onSideMenuClick:(id)sender {
+	UICompositeViewController *cvc = PhoneMainView.instance.mainViewController;
+	[cvc hideSideMenu:!cvc.sideMenuView.hidden];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {

@@ -488,11 +488,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)showTabBar:(BOOL)show {
-	[mainViewController setToolBarHidden:!show];
+	[mainViewController hideToolBar:!show];
 }
 
 - (void)showStateBar:(BOOL)show {
-	[mainViewController setStateBarHidden:!show];
+	[mainViewController hideStateBar:!show];
 }
 
 - (void)updateStatusBar:(UICompositeViewDescription *)to_view {

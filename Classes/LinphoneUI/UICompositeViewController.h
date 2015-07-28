@@ -22,6 +22,7 @@
 
 #import "LinphoneManager.h"
 #import "TPMultiLayoutViewController.h"
+#import "SideMenuTableViewController.h"
 
 @interface UICompositeViewDescription: NSObject{
 }
@@ -63,11 +64,14 @@
 @property (nonatomic, strong) IBOutlet UIView* stateBarView;
 @property (nonatomic, strong) IBOutlet UIView* contentView;
 @property (nonatomic, strong) IBOutlet UIView* tabBarView;
+@property(weak, nonatomic) IBOutlet UIView *sideMenuView;
+@property(strong, nonatomic) IBOutlet SideMenuTableViewController *sideMenuTableViewController;
 
 - (void)changeView:(UICompositeViewDescription *)description;
-- (void)setFullScreen:(BOOL) enabled;
-- (void)setStateBarHidden:(BOOL) hidden;
-- (void)setToolBarHidden:(BOOL) hidden;
+- (void)setFullScreen:(BOOL)enabled;
+- (void)hideStateBar:(BOOL)hidden;
+- (void)hideToolBar:(BOOL)hidden;
+- (void)hideSideMenu:(BOOL)hidden;
 - (BOOL)currentViewSupportsLandscape;
 - (UIViewController *)getCachedController:(NSString*)name;
 - (UIViewController *)getCurrentViewController;

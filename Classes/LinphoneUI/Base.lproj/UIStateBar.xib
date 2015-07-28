@@ -22,27 +22,6 @@
             <rect key="frame" x="0.0" y="0.0" width="360" height="40"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="lfO-I4-PXi" userLabel="outcallView">
-                    <rect key="frame" x="0.0" y="0.0" width="360" height="40"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="yg7-rx-XVv" userLabel="menuButton">
-                            <rect key="frame" x="10" y="10" width="20" height="20"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <state key="normal" title="Button" image="menu.png">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="3Jg-EU-ajT" userLabel="voicemailButton">
-                            <rect key="frame" x="249" y="0.0" width="111" height="40"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                            <inset key="titleEdgeInsets" minX="6" minY="0.0" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="12" image="voicemail.png">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                        </button>
-                    </subviews>
-                </view>
                 <view hidden="YES" contentMode="scaleToFill" id="0Vp-VF-wmX" userLabel="incallView">
                     <rect key="frame" x="0.0" y="0.0" width="360" height="40"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -67,13 +46,37 @@
                                 <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
-                                <action selector="doSecurityClick:" destination="-1" eventType="touchUpInside" id="30"/>
+                                <action selector="onSecurityClick:" destination="-1" eventType="touchUpInside" id="bdh-tU-zPP"/>
                             </connections>
                         </button>
                     </subviews>
                 </view>
+                <view contentMode="scaleToFill" id="lfO-I4-PXi" userLabel="outcallView">
+                    <rect key="frame" x="0.0" y="0.0" width="360" height="40"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="yg7-rx-XVv" userLabel="sideMenuButton">
+                            <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" title="Button" image="menu.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="onSideMenuClick:" destination="-1" eventType="touchUpInside" id="EeV-2U-i44"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="3Jg-EU-ajT" userLabel="voicemailButton">
+                            <rect key="frame" x="249" y="0.0" width="111" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <inset key="titleEdgeInsets" minX="6" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <state key="normal" title="12" image="voicemail.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                        </button>
+                    </subviews>
+                </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Mhg-P6-RfU" userLabel="registrationState" customClass="UIIconButton">
-                    <rect key="frame" x="40" y="0.0" width="200" height="40"/>
+                    <rect key="frame" x="46" y="0.0" width="194" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <inset key="titleEdgeInsets" minX="6" minY="0.0" maxX="0.0" maxY="0.0"/>
                     <state key="normal" title="Registered" image="led_disconnected.png">
@@ -84,7 +87,7 @@
             <color key="backgroundColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="39" y="178"/>
+            <point key="canvasLocation" x="148" y="122"/>
         </view>
     </objects>
     <resources>

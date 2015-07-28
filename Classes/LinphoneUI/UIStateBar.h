@@ -20,6 +20,7 @@
 #import <UIKit/UIKit.h>
 #import "TPMultiLayoutViewController.h"
 #import "DTActionSheet.h"
+#import "SideMenuTableViewController.h"
 
 @interface UIStateBar : TPMultiLayoutViewController<UIActionSheetDelegate> {
     DTActionSheet *securitySheet;
@@ -33,6 +34,7 @@
 @property(weak, nonatomic) IBOutlet UIView *incallView;
 @property(weak, nonatomic) IBOutlet UIView *outcallView;
 
-- (IBAction)doSecurityClick:(id)sender;
+- (IBAction)onSecurityClick:(id)sender;
+- (IBAction)onSideMenuClick:(id)sender;
 
 @end
