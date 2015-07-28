@@ -68,9 +68,10 @@
 		LOGW(@"Cannot update chat cell: null chat");
 		return;
 	}
-	const LinphoneAddress *linphoneAddress = linphone_chat_room_get_peer_address(chatRoom);
-	[FastAddressBook setDisplayNameLabel:addressLabel forAddress:linphoneAddress];
-	avatarImage.image = [FastAddressBook avatarForAddress:linphoneAddress];
+	const LinphoneAddress *addr = linphone_chat_room_get_peer_address(chatRoom);
+	[FastAddressBook setDisplayNameLabel:addressLabel forAddress:addr];
+	avatarImage.image =
+		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
 
 	LinphoneChatMessage *last_message = linphone_chat_room_get_user_data(chatRoom);
 	if (last_message) {

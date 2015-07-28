@@ -628,32 +628,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	}
 
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
-	NSString *address = nil;
-	if (addr != NULL) {
-		BOOL useLinphoneAddress = true;
-		// contact name
-		char *lAddress = linphone_address_as_string_uri_only(addr);
-		if (lAddress) {
-			NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-			ABRecordRef contact = [fastAddressBook getContact:normalizedSipAddress];
-			if (contact) {
-				address = [FastAddressBook getContactDisplayName:contact];
-				useLinphoneAddress = false;
-			}
-			ms_free(lAddress);
-		}
-		if (useLinphoneAddress) {
-			const char *lDisplayName = linphone_address_get_display_name(addr);
-			const char *lUserName = linphone_address_get_username(addr);
-			if (lDisplayName)
-				address = [NSString stringWithUTF8String:lDisplayName];
-			else if (lUserName)
-				address = [NSString stringWithUTF8String:lUserName];
-		}
-	}
-	if (address == nil) {
-		address = NSLocalizedString(@"Unknown", nil);
-	}
+	NSString *address = [FastAddressBook displayNameForAddress:addr];
 
 	if (state == LinphoneCallIncomingReceived) {
 
@@ -886,41 +861,21 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 #pragma mark - Text Received Functions
 
 - (void)onMessageReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room message:(LinphoneChatMessage *)msg {
-
 	if (silentPushCompletion) {
-
 		// we were woken up by a silent push. Call the completion handler with NEWDATA
 		// so that the push is notified to the user
 		LOGI(@"onMessageReceived - handler %p", silentPushCompletion);
 		silentPushCompletion(UIBackgroundFetchResultNewData);
 		silentPushCompletion = nil;
 	}
+	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(msg, "Call-ID")];
 	const LinphoneAddress *remoteAddress = linphone_chat_message_get_from_address(msg);
+	NSString *from = [FastAddressBook displayNameForAddress:remoteAddress];
 	char *c_address = linphone_address_as_string_uri_only(remoteAddress);
-	NSString *address = [NSString stringWithUTF8String:c_address];
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
-	const char *call_id = linphone_chat_message_get_custom_header(msg, "Call-ID");
-	NSString *callID = [NSString stringWithUTF8String:call_id];
-
 	ms_free(c_address);
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-
-		ABRecordRef contact = [fastAddressBook getContact:address];
-		if (contact) {
-			address = [FastAddressBook getContactDisplayName:contact];
-		} else {
-			if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
-				LinphoneAddress *linphoneAddress =
-					linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-				address = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
-				linphone_address_destroy(linphoneAddress);
-			}
-		}
-		if (address == nil) {
-			address = NSLocalizedString(@"Unknown", nil);
-		}
-
 		// Create a new notification
 		UILocalNotification *notif = [[UILocalNotification alloc] init];
 		if (notif) {
@@ -928,10 +883,10 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 			if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 				notif.category = @"incoming_msg";
 			}
-			notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), address];
+			notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
 			notif.alertAction = NSLocalizedString(@"Show", nil);
 			notif.soundName = @"msg.caf";
-			notif.userInfo = @{ @"from" : address, @"from_addr" : remote_uri, @"call-id" : callID };
+			notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
 
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 		}

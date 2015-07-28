@@ -23,30 +23,33 @@
 #include "linphone/linphonecore.h"
 
 @interface FastAddressBook :  NSObject {
-    NSMutableDictionary* addressBookMap;  
-    
-    ABAddressBookRef addressBook;
+	NSMutableDictionary *addressBookMap;
+	ABAddressBookRef addressBook;
 }
 
-+ (BOOL)isSipURI:(NSString*)address;
-+ (NSString*)getContactDisplayName:(ABRecordRef)contact;
-+ (UIImage*)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
-- (ABRecordRef)getContact:(NSString*)address;
 - (void)reload;
 - (void)saveAddressBook;
+
 + (BOOL)isAuthorized;
-+ (NSString*)appendCountryCodeIfPossible:(NSString*)number;
-+ (NSString*)normalizePhoneNumber:(NSString*)number;
-+ (NSString*)normalizeSipURI:(NSString*)address;
 
 // TOOLS
 
-+(NSString*)localizedLabel:(NSString*)label;
-+ (UIImage *)avatarForAddress:(const LinphoneAddress *)addr;
++ (ABRecordRef)getContact:(NSString *)address;
++ (ABRecordRef)getContactWithLinphoneAddress:(const LinphoneAddress *)address;
+
++ (NSString *)getContactDisplayName:(ABRecordRef)contact;
++ (UIImage *)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
 + (BOOL)contactHasValidSipDomain:(ABRecordRef)person;
-+ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr;
 + (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact;
+
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr;
-+ (NSString *)displayNameForContact:(ABRecordRef)contact;
++ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr;
+
++ (BOOL)isSipURI:(NSString *)address;						  // should be removed
++ (NSString *)appendCountryCodeIfPossible:(NSString *)number; // should be removed
++ (NSString *)normalizePhoneNumber:(NSString *)number;		  // should be removed
++ (NSString *)normalizeSipURI:(NSString *)address;			  // should be removed
+
++ (NSString *)localizedLabel:(NSString *)label;
 
 @end

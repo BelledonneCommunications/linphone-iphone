@@ -116,10 +116,11 @@
 		image = [UIImage imageNamed:@"call_status_outgoing.png"];
 		addr = linphone_call_log_get_to_address(callLog);
 	}
-
-	[FastAddressBook setDisplayNameLabel:displayNameLabel forAddress:addr];
-	[_avatarImage setImage:[FastAddressBook avatarForAddress:addr]];
 	[historyStateButton setImage:image forState:UIControlStateNormal];
+
+	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	[FastAddressBook setDisplayNameLabel:displayNameLabel forContact:contact];
+	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:TRUE];
 }
 
 - (void)setEditing:(BOOL)editing {

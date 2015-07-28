@@ -60,7 +60,6 @@
 
 - (void)touchUp:(id)sender {
 	NSString *address = [addressField text];
-	NSString *displayName = nil;
 
 	if ([address length] == 0) {
 		const MSList *logs = linphone_core_get_call_logs([LinphoneManager getLc]);
@@ -96,10 +95,7 @@
 	}
 
 	if ([address length] > 0) {
-		ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
-		if (contact) {
-			displayName = [FastAddressBook getContactDisplayName:contact];
-		}
+		NSString *displayName = [FastAddressBook getContactDisplayName:[FastAddressBook getContact:address]];
 		[[LinphoneManager instance] call:address displayName:displayName transfer:FALSE];
 	}
 }

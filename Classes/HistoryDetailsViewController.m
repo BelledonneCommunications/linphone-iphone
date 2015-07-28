@@ -166,13 +166,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	assert(addr != NULL);
 
 	[FastAddressBook setDisplayNameLabel:_contactLabel forAddress:addr];
-	_avatarImage.image = [FastAddressBook avatarForAddress:addr];
+	_avatarImage.image =
+		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
 	char *addrURI = linphone_address_as_string_uri_only(addr);
 	_addressLabel.text = [NSString stringWithUTF8String:addrURI];
 	ms_free(addrURI);
 
-	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
-	_addContactButton.hidden = contact || use_system;
+	_addContactButton.hidden = contact || [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
 }
 
 #pragma mark - Action Functions

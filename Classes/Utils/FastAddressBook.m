@@ -64,20 +64,32 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 			contact, thumbnail ? kABPersonImageFormatThumbnail : kABPersonImageFormatOriginalSize));
 
 		retImage = [UIImage imageWithData:imgData];
-
-		if (retImage != nil && retImage.size.width != retImage.size.height) {
-			LOGI(@"Image is not square : cropping it.");
-			return [self squareImageCrop:retImage];
-		}
 	}
-
+	if (retImage == nil) {
+		retImage = [UIImage imageNamed:@"avatar"];
+	}
+	if (retImage.size.width != retImage.size.height) {
+		LOGW(@"Image is not square (%@): cropping it.", retImage.size);
+		retImage = [self squareImageCrop:retImage];
+	}
 	return retImage;
 }
 
-- (ABRecordRef)getContact:(NSString *)address {
-	@synchronized(addressBookMap) {
-		return (__bridge ABRecordRef)[addressBookMap objectForKey:address];
++ (ABRecordRef)getContact:(NSString *)address {
+	@synchronized(LinphoneManager.instance.fastAddressBook->addressBookMap) {
+		return (__bridge ABRecordRef)[LinphoneManager.instance.fastAddressBook->addressBookMap objectForKey:address];
 	}
+}
+
++ (ABRecordRef)getContactWithLinphoneAddress:(const LinphoneAddress *)address {
+	ABRecordRef contact = nil;
+	if (address) {
+		char *uri = linphone_address_as_string_uri_only(address);
+		NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:uri]];
+		contact = [FastAddressBook getContact:normalizedSipAddress];
+		ms_free(uri);
+	}
+	return contact;
 }
 
 + (BOOL)isSipURI:(NSString *)address {
@@ -341,16 +353,10 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr {
 	NSString *ret = NSLocalizedString(@"Unknown", nil);
-	if (addr != NULL) {
-		char *lAddress = linphone_address_as_string_uri_only(addr);
-		if (lAddress) {
-			NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-			ms_free(lAddress);
-			ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
-			if (contact) {
-				return [FastAddressBook displayNameForContact:contact];
-			}
-		}
+	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	if (contact) {
+		ret = [FastAddressBook displayNameForContact:contact];
+	} else {
 		const char *lDisplayName = linphone_address_get_display_name(addr);
 		const char *lUserName = linphone_address_get_username(addr);
 		if (lDisplayName) {
@@ -364,26 +370,6 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
 	label.text = [FastAddressBook displayNameForAddress:addr];
-}
-
-+ (UIImage *)avatarForAddress:(const LinphoneAddress *)addr {
-	UIImage *avatar = nil;
-	if (addr != NULL) {
-		// contact name
-		char *lAddress = linphone_address_as_string_uri_only(addr);
-		if (lAddress) {
-			NSString *normalizedSipAddress = [FastAddressBook normalizeSipURI:[NSString stringWithUTF8String:lAddress]];
-			ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
-			if (contact) {
-				avatar = [FastAddressBook getContactImage:contact thumbnail:TRUE];
-			}
-			ms_free(lAddress);
-		}
-	}
-	if (avatar == nil) {
-		avatar = [UIImage imageNamed:@"avatar"];
-	}
-	return avatar;
 }
 
 @end

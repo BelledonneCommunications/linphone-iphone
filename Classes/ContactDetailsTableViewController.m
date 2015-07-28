@@ -821,7 +821,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	}
 	return TRUE;
 }
-
 - (BOOL)isValid {
 	return true;
 }

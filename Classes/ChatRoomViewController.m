@@ -188,8 +188,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		return;
 	}
 
-	NSString *displayName = nil;
-	UIImage *image = nil;
 	const LinphoneAddress *linphoneAddress = linphone_chat_room_get_peer_address(chatRoom);
 	if (linphoneAddress == NULL) {
 		[[PhoneMainView instance] popCurrentView];
@@ -204,33 +202,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[error show];
 		return;
 	}
-	char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
-	NSString *normalizedSipAddress = [NSString stringWithUTF8String:tmp];
-	ms_free(tmp);
-
-	ABRecordRef acontact = [[[LinphoneManager instance] fastAddressBook] getContact:normalizedSipAddress];
-	if (acontact != nil) {
-		displayName = [FastAddressBook getContactDisplayName:acontact];
-		image = [FastAddressBook getContactImage:acontact thumbnail:true];
-	}
-
-	// Display name
-	if (displayName == nil) {
-		const char *username = linphone_address_get_username(linphoneAddress);
-		char *address = linphone_address_as_string(linphoneAddress);
-		displayName = [NSString stringWithUTF8String:username ?: address];
-		ms_free(address);
-	}
-	if (displayName == nil)
-		LOGF(@"No display name");
-	addressLabel.text = displayName;
-	addressLabel.accessibilityValue = displayName;
-
-	// Avatar
-	if (image == nil) {
-		image = [UIImage imageNamed:@"avatar_unknown_small.png"];
-	}
-	[avatarImage setImage:image];
+	[FastAddressBook setDisplayNameLabel:addressLabel forAddress:linphoneAddress];
+	addressLabel.accessibilityValue = addressLabel.text;
+	avatarImage.image =
+		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:linphoneAddress] thumbnail:YES];
 }
 
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {
@@ -296,7 +271,6 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 - (void)chooseImageQuality:(UIImage *)image url:(NSURL *)url {
 	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the image size", nil)];
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-	  // UIImage *image = [original_image normalizedImage];
 	  for (NSString *key in [imageQualities allKeys]) {
 		  NSNumber *number = [imageQualities objectForKey:key];
 		  NSData *data = UIImageJPEGRepresentation(image, [number floatValue]);

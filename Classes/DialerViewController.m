@@ -362,11 +362,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)call:(NSString *)address {
-	NSString *displayName = nil;
-	ABRecordRef contact = [[[LinphoneManager instance] fastAddressBook] getContact:address];
-	if (contact) {
-		displayName = [FastAddressBook getContactDisplayName:contact];
-	}
+	NSString *displayName = [FastAddressBook getContactDisplayName:[FastAddressBook getContact:address]];
 	[self call:address displayName:displayName];
 }
 
