@@ -85,6 +85,17 @@ struct _LpConfig{
 	int readonly;
 };
 
+char* lp_realpath(const char* file, char* name) {
+#ifdef _WIN32
+	return ms_strdup(file);
+#else
+	char * output = realpath(file, name);
+	char * msoutput = ms_strdup(output);
+	free(output);
+	return msoutput;
+#endif
+}
+
 LpItem * lp_item_new(const char *key, const char *value){
 	LpItem *item=lp_new0(LpItem,1);
 	item->key=ortp_strdup(key);
@@ -359,7 +370,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
-		lpconfig->filename=realpath(config_filename, NULL);
+		lpconfig->filename=lp_realpath(config_filename, NULL);
 		lpconfig->tmpfilename=ortp_strdup_printf("%s.tmp",lpconfig->filename);
 		ms_message("Using (r/w) config information from %s", lpconfig->filename);
 
@@ -400,7 +411,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 }
 
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
-	char* path = realpath(filename, NULL);
+	char* path = lp_realpath(filename, NULL);
 	FILE* f=fopen(path,"r");
 	if (f!=NULL){
 		ms_message("Reading config information from %s", path);
@@ -727,7 +738,7 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 	} else {
 		char *dir = _lp_config_dirname(lpconfig->filename);
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
-		char *realfilepath = realpath(filepath, NULL);
+		char *realfilepath = lp_realpath(filepath, NULL);
 		FILE *file = fopen(realfilepath, "r");
 		ms_free(dir);
 		ms_free(filepath);
@@ -744,7 +755,7 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	if(strlen(data) > 0) {
 		char *dir = _lp_config_dirname(lpconfig->filename);
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
-		char *realfilepath = realpath(filepath, NULL);
+		char *realfilepath = lp_realpath(filepath, NULL);
 		FILE *file = fopen(realfilepath, "w");
 		if(file != NULL) {
 			fprintf(file, "%s", data);
@@ -768,7 +779,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	if (lpconfig->filename == NULL) return -1;
 	dir = _lp_config_dirname(lpconfig->filename);
 	filepath = ms_strdup_printf("%s/%s", dir, filename);
-	realfilepath = realpath(filepath, NULL);
+	realfilepath = lp_realpath(filepath, NULL);
 	file = fopen(realfilepath, "r");
 	if(file != NULL) {
 		if(fread(data, 1, max_length, file)<=0) {
