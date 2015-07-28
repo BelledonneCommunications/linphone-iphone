@@ -79,7 +79,7 @@
 	url = git://git.linphone.org/mswebrtc.git
 [submodule "Classes/KIF"]
 	path = Classes/KIF
-	url = https://github.com/bagage/KIF.git
+	url = https://github.com/kif-framework/KIF.git
 	ignore = dirty
 [submodule "submodules/cmake-builder"]
 	path = submodules/cmake-builder
