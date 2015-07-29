@@ -46,15 +46,9 @@ static const char* get_ip_from_hostname(const char * tunnel_hostname){
 	return output;
 }
 static char* get_public_contact_ip(LinphoneCore* lc)  {
-	long contact_host_ip_len;
-	char contact_host_ip[255];
-	char * contact = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(lc));
+	const LinphoneAddress * contact = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(lc));
 	BC_ASSERT_PTR_NOT_NULL(contact);
-	contact_host_ip_len = strchr(contact, ':')-contact;
-	strncpy(contact_host_ip, contact, contact_host_ip_len);
-	contact_host_ip[contact_host_ip_len]='\0';
-	ms_free(contact);
-	return ms_strdup(contact_host_ip);
+	return ms_strdup(linphone_address_get_domain(contact));
 }
 
 

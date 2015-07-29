@@ -32,7 +32,6 @@ endif()
 
 set(SOURCE_FILES
 	account_creator.c
-	account_creator.h
 	address.c
 	authentication.c
 	bellesip_sal/sal_address_impl.c
@@ -61,18 +60,13 @@ set(SOURCE_FILES
 	enum.c
 	enum.h
 	event.c
-	event.h
 	friend.c
 	info.c
 	ldap/ldapprovider.c
 	lime.c
 	linphonecall.c
 	linphonecore.c
-	linphonecore.h
-	linphonecore_utils.h
-	linphonefriend.h
 	linphone_tunnel_config.c
-	linphone_tunnel.h
 	localplayer.c
 	lpconfig.c
 	lpconfig.h
@@ -90,13 +84,29 @@ set(SOURCE_FILES
 	sal.c
 	siplogin.c
 	sipsetup.c
-	sipsetup.h
 	xml2lpc.c
-	xml2lpc.h
 	xml.c
 	xmlrpc.c
-	xmlrpc.h
 	vtables.c
+)
+
+set(HEADER_FILES
+	account_creator.h
+	buffer.h
+	call_log.h
+	call_params.h
+	content.h
+	event.h
+	linphonecore.h
+	linphonecore_utils.h
+	linphonefriend.h
+	linphonepresence.h
+	linphone_tunnel.h
+	lpc2xml.h
+	lpconfig.h
+	sipsetup.h
+	xml2lpc.h
+	xmlrpc.h
 )
 if(ENABLE_TUNNEL)
 	list(APPEND SOURCE_FILES
@@ -181,26 +191,6 @@ install(TARGETS linphone EXPORT LinphoneTargets
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-)
-
-
-set(HEADER_FILES
-	account_creator.h
-	buffer.h
-	call_log.h
-	call_params.h
-	content.h
-	event.h
-	linphonecore.h
-	linphonecore_utils.h
-	linphonefriend.h
-	linphonepresence.h
-	linphone_tunnel.h
-	lpc2xml.h
-	lpconfig.h
-	sipsetup.h
-	xml2lpc.h
-	xmlrpc.h
 )
 
 install(FILES ${HEADER_FILES}

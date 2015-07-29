@@ -363,7 +363,6 @@ void simple_call_base(bool_t enable_multicast_recv_side) {
 	const LinphoneAddress *from;
 	LinphoneCall *pauline_call;
 	LinphoneProxyConfig* marie_cfg;
-	const char* marie_id = NULL;
 
 	belle_sip_object_enable_leak_detector(TRUE);
 	begin=belle_sip_object_get_object_count();
@@ -373,9 +372,8 @@ void simple_call_base(bool_t enable_multicast_recv_side) {
 
 	/* with the account manager, we might lose the identity */
 	marie_cfg = linphone_core_get_default_proxy_config(marie->lc);
-	marie_id = linphone_proxy_config_get_identity(marie_cfg);
 	{
-		LinphoneAddress* marie_addr = linphone_address_new(marie_id);
+		LinphoneAddress* marie_addr = linphone_address_clone(linphone_proxy_config_get_identity_address(marie_cfg));
 		char* marie_tmp_id = NULL;
 		linphone_address_set_display_name(marie_addr, "Super Marie");
 		marie_tmp_id = linphone_address_as_string(marie_addr);
@@ -385,7 +383,7 @@ void simple_call_base(bool_t enable_multicast_recv_side) {
 		linphone_proxy_config_done(marie_cfg);
 
 		ms_free(marie_tmp_id);
-		linphone_address_unref(marie_addr);
+		linphone_address_destroy(marie_addr);
 	}
 
 	linphone_core_enable_audio_multicast(pauline->lc,enable_multicast_recv_side);
@@ -695,14 +693,14 @@ static void simple_call_compatibility_mode(void) {
 	stats* stat_marie=&marie->stat;
 	stats* stat_pauline=&pauline->stat;
 	LinphoneProxyConfig* proxy;
-	LinphoneAddress* identity;
+	const LinphoneAddress* identity;
 	LinphoneAddress* proxy_address;
 	char*tmp;
 	LCSipTransports transport;
 
 	linphone_core_get_default_proxy(lc_marie,&proxy);
 	BC_ASSERT_PTR_NOT_NULL (proxy);
-	identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+	identity = linphone_proxy_config_get_identity_address(proxy);
 
 
 	proxy_address=linphone_address_new(linphone_proxy_config_get_addr(proxy));
@@ -733,7 +731,6 @@ static void simple_call_compatibility_mode(void) {
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call_remote_address(lc_pauline));
 	if (linphone_core_get_current_call_remote_address(lc_pauline)) {
 		BC_ASSERT_TRUE(linphone_address_weak_equal(identity,linphone_core_get_current_call_remote_address(lc_pauline)));
-		linphone_address_destroy(identity);
 
 		linphone_core_accept_call(lc_pauline,linphone_core_get_current_call(lc_pauline));
 

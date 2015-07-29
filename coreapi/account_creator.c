@@ -269,7 +269,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_validate(LinphoneAccountCr
 }
 
 LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator) {
-	LinphoneAddress *identity;
+	const LinphoneAddress *identity;
 	LinphoneAuthInfo *info;
 	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(creator->core);
 	char *identity_str = ms_strdup_printf("sip:%s@%s", creator->username, creator->domain);
@@ -298,10 +298,9 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 		linphone_core_set_firewall_policy(creator->core, LinphonePolicyUseIce);
 	}
 
-	identity = linphone_address_new(linphone_proxy_config_get_identity(cfg));
+	identity = linphone_proxy_config_get_identity_address(cfg);
 	info = linphone_auth_info_new(linphone_address_get_username(identity), NULL, creator->password, NULL, NULL, linphone_address_get_domain(identity));
 	linphone_core_add_auth_info(creator->core, info);
-	linphone_address_destroy(identity);
 
 	if (linphone_core_add_proxy_config(creator->core, cfg) != -1) {
 		linphone_core_set_default_proxy(creator->core, cfg);

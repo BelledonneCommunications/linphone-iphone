@@ -244,14 +244,6 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	g_idle_add((GSourceFunc)scroll_to_end,text);
 }
 
-const LinphoneAddress* linphone_gtk_get_used_identity(){
-	LinphoneCore *lc=linphone_gtk_get_core();
-	LinphoneProxyConfig *cfg;
-	linphone_core_get_default_proxy(lc,&cfg);
-	if (cfg) return linphone_address_new(linphone_proxy_config_get_identity(cfg));
-	else  return linphone_core_get_primary_contact_parsed(lc);
-}
-
 void update_chat_state_message(LinphoneChatMessageState state,LinphoneChatMessage *msg){
 	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(main_window,"contact_list");
@@ -406,7 +398,7 @@ static GdkColor *_linphone_gtk_chatroom_get_link_color(GtkWidget *chatview) {
 		gtk_widget_get_style(chatview),
 		G_OBJECT_TYPE(chatview),
 		"link-color", &color_value);
-	
+
 	return (GdkColor *)g_value_get_boxed(&color_value);
 }
 
@@ -515,26 +507,26 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	g_object_set_data(G_OBJECT(chat_view),"cr",cr);
 	g_object_set_data(G_OBJECT(chat_view),"from_message",NULL);
 	g_object_set_data(G_OBJECT(chat_view),"table",table);
-	
+
 	gtk_text_buffer_create_tag(
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 		"me",
 		"foreground_gdk", &color_black,
 		"paragraph-background-gdk", &color_light_grey,
 		NULL);
-	
+
 	gtk_text_buffer_create_tag(
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 		"from",
 		"weight", PANGO_WEIGHT_BOLD,
 		NULL);
-	
+
 	gtk_text_buffer_create_tag(
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 		"body",
 		"indent", 10,
 		NULL);
-	
+
 	gtk_text_buffer_create_tag(
 		gtk_text_view_get_buffer(GTK_TEXT_VIEW(text)),
 		"status",
@@ -557,7 +549,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	gtk_widget_show_all(link_ctx_menu);
 	g_object_set_data_full(G_OBJECT(text), "link_ctx_menu", link_ctx_menu, g_object_unref);
 	g_object_ref_sink(G_OBJECT(link_ctx_menu));
-	
+
 	messages = linphone_chat_room_get_history(cr,NB_MSG_HIST);
 	display_history_message(chat_view,messages,with);
 	button = linphone_gtk_get_widget(chat_view,"send");

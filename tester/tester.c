@@ -331,7 +331,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, const char* rc_file, 
 
 	linphone_core_get_default_proxy(mgr->lc,&proxy);
 	if (proxy) {
-		mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+		mgr->identity = linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
 		linphone_address_clean(mgr->identity);
 	}
 }

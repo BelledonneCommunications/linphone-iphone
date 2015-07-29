@@ -584,7 +584,6 @@ void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, Li
 	SalMediaDescription *old_md=call->localdesc;
 	int i;
 	int nb_active_streams = 0;
-	const char *me;
 	SalMediaDescription *md=sal_media_description_new();
 	LinphoneAddress *addr;
 	const char *subject;
@@ -605,11 +604,11 @@ void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, Li
 
 	linphone_core_adapt_to_network(lc,call->ping_time,params);
 
-	if (call->dest_proxy)
-		me=linphone_proxy_config_get_identity(call->dest_proxy);
-	else
-		me=linphone_core_get_identity(lc);
-	addr=linphone_address_new(me);
+	if (call->dest_proxy) {
+		addr=linphone_address_clone(linphone_proxy_config_get_identity_address(call->dest_proxy));
+	} else {
+		addr=linphone_address_new(linphone_core_get_identity(lc));
+	}
 
 	md->session_id=(old_md ? old_md->session_id : (rand() & 0xfff));
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));

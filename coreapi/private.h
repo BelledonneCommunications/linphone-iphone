@@ -340,7 +340,7 @@ void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
  * Can be NULL
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
-LINPHONE_PUBLIC char* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg);
+const LinphoneAddress* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg);
 
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
@@ -478,6 +478,9 @@ typedef enum _LinphoneProxyConfigAddressComparisonResult{
 
 LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
 LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
+/**
+ * unregister without moving the register_enable flag
+ */
 void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj);
 void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
@@ -494,9 +497,9 @@ struct _LinphoneProxyConfig
 	struct _LinphoneCore *lc;
 	char *reg_proxy;
 	char *reg_identity;
+	LinphoneAddress* identity_address;
 	char *reg_route;
 	char *quality_reporting_collector;
-	char *domain;
 	char *realm;
 	char *contact_params;
 	char *contact_uri_params;
