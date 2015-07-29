@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -13,98 +14,104 @@
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="25">
-            <rect key="frame" x="0.0" y="0.0" width="360" height="537"/>
-            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+        <view contentMode="scaleToFill" id="HpM-if-114" userLabel="iphone6MetricsView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view tag="1" contentMode="scaleToFill" id="8">
-                    <rect key="frame" x="0.0" y="0.0" width="360" height="461"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                <view contentMode="scaleToFill" id="25">
+                    <rect key="frame" x="0.0" y="42" width="375" height="559"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" tag="2" contentMode="scaleToFill" image="cell_call_first.png" id="21" userLabel="addressBackgroundImage">
-                            <rect key="frame" x="0.0" y="49" width="360" height="63"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleToFill" image="header_incoming.png" id="12" userLabel="headerBackground">
-                            <rect key="frame" x="0.0" y="0.0" width="360" height="68"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="">
-                                <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
-                            </accessibility>
-                        </imageView>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="4" contentMode="left" text="Incoming call" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="31" userLabel="headerLabel">
-                            <rect key="frame" x="20" y="0.0" width="320" height="50"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Incoming call"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
-                            <color key="textColor" red="0.7254902124" green="0.76862746479999999" blue="0.79607844350000001" alpha="1" colorSpace="deviceRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label autoresizesSubviews="NO" opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" text="0102030405" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="9" userLabel="addressLabel">
-                            <rect key="frame" x="10" y="53" width="340" height="51"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Contact name"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="30"/>
-                            <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <imageView userInteractionEnabled="NO" tag="6" contentMode="scaleToFill" image="avatar_shadow.png" id="18" userLabel="avatarShadowImage">
-                            <rect key="frame" x="20" y="96" width="320" height="262"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleToFill" image="avatar_unknown.png" id="19" userLabel="avatarImage">
-                            <rect key="frame" x="100" y="113" width="160" height="170"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Contact avatar">
-                                <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
-                                <bool key="isElement" value="YES"/>
-                            </accessibility>
-                        </imageView>
-                    </subviews>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </view>
-                <view tag="10" contentMode="scaleToFill" id="4" userLabel="tabBar">
-                    <rect key="frame" x="0.0" y="460" width="360" height="77"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <subviews>
-                        <view hidden="YES" userInteractionEnabled="NO" tag="-1" contentMode="scaleToFill" id="5" userLabel="mask">
-                            <rect key="frame" x="0.0" y="10" width="360" height="67"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <view tag="1" contentMode="scaleToFill" id="8">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="480"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView userInteractionEnabled="NO" tag="2" contentMode="scaleToFill" image="cell_call_first.png" id="21" userLabel="addressBackgroundImage">
+                                    <rect key="frame" x="0.0" y="49" width="375" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                </imageView>
+                                <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleToFill" image="header_incoming.png" id="12" userLabel="headerBackground">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="68"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="">
+                                        <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
+                                    </accessibility>
+                                </imageView>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="4" contentMode="left" text="Incoming call" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="31" userLabel="headerLabel">
+                                    <rect key="frame" x="20" y="0.0" width="335" height="50"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Incoming call"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
+                                    <color key="textColor" red="0.7254902124" green="0.76862746479999999" blue="0.79607844350000001" alpha="1" colorSpace="deviceRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label autoresizesSubviews="NO" opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" text="0102030405" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="9" userLabel="addressLabel">
+                                    <rect key="frame" x="10" y="53" width="355" height="51"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact name"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                    <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <imageView userInteractionEnabled="NO" tag="6" contentMode="scaleToFill" image="avatar_shadow.png" id="18" userLabel="avatarShadowImage">
+                                    <rect key="frame" x="28" y="96" width="320" height="262"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                </imageView>
+                                <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleToFill" image="avatar_unknown.png" id="19" userLabel="avatarImage">
+                                    <rect key="frame" x="108" y="113" width="160" height="170"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact avatar">
+                                        <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
+                                        <bool key="isElement" value="YES"/>
+                                    </accessibility>
+                                </imageView>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
-                        <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7" userLabel="acceptButton">
-                            <rect key="frame" x="0.0" y="0.0" width="180" height="77"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Accept"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" backgroundImage="accept_default.png">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="accept_over.png"/>
-                            <connections>
-                                <action selector="onAcceptClick:" destination="-1" eventType="touchUpInside" id="15"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="declineButton">
-                            <rect key="frame" x="180" y="0.0" width="180" height="77"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Decline"/>
-                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" backgroundImage="decline_default.png">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="highlighted" backgroundImage="decline_over.png"/>
-                            <connections>
-                                <action selector="onDeclineClick:" destination="-1" eventType="touchUpInside" id="16"/>
-                            </connections>
-                        </button>
+                        <view tag="10" contentMode="scaleToFill" id="4" userLabel="tabBar">
+                            <rect key="frame" x="0.0" y="482" width="375" height="77"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                            <subviews>
+                                <view hidden="YES" userInteractionEnabled="NO" tag="-1" contentMode="scaleToFill" id="5" userLabel="mask">
+                                    <rect key="frame" x="0.0" y="10" width="375" height="67"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                </view>
+                                <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7" userLabel="acceptButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="188" height="77"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" backgroundImage="accept_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="highlighted" backgroundImage="accept_over.png"/>
+                                    <connections>
+                                        <action selector="onAcceptClick:" destination="-1" eventType="touchUpInside" id="15"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="declineButton">
+                                    <rect key="frame" x="188" y="0.0" width="187" height="77"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Decline"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" backgroundImage="decline_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="highlighted" backgroundImage="decline_over.png"/>
+                                    <connections>
+                                        <action selector="onDeclineClick:" destination="-1" eventType="touchUpInside" id="16"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
             </subviews>
-            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-            <nil key="simulatedStatusBarMetrics"/>
-            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
         </view>
     </objects>
     <resources>

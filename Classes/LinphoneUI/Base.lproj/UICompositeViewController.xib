@@ -38,7 +38,7 @@
 					<object class="IBUIView" id="481442126">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">314</int>
-						<string key="NSFrame">{{0, 40}, {360, 537}}</string>
+						<string key="NSFrame">{{0, 42}, {375, 559}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="548578981"/>
@@ -55,7 +55,7 @@
 					<object class="IBUIView" id="256276698">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">290</int>
-						<string key="NSFrameSize">{360, 40}</string>
+						<string key="NSFrameSize">{375, 42}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="28953768"/>
@@ -69,9 +69,10 @@
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">266</int>
 						<array class="NSMutableArray" key="NSSubviews"/>
-						<string key="NSFrame">{{0, 577}, {360, 63}}</string>
+						<string key="NSFrame">{{0, 604}, {375, 66}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="572758541"/>
 						<bool key="IBUIAutoresizesSubviews">NO</bool>
@@ -82,7 +83,7 @@
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">-2147483329</int>
 						<array class="NSMutableArray" key="NSSubviews"/>
-						<string key="NSFrame">{{-360, 40}, {360, 640}}</string>
+						<string key="NSFrame">{{-375, 42}, {375, 625}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="481442126"/>
@@ -90,14 +91,27 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 				</array>
-				<string key="NSFrameSize">{360, 640}</string>
+				<string key="NSFrameSize">{375, 667}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="256276698"/>
 				<reference key="IBUIBackgroundColor" ref="572758541"/>
-				<object class="IBUISimulatedSizeMetrics" key="IBUISimulatedDestinationMetrics" id="445885811">
-					<string key="IBUISimulatedSizeMetricsClass">IBUISimulatedFreeformSizeMetricsSentinel</string>
-					<string key="IBUIDisplayName">Freeform</string>
+				<object class="IBUIScreenMetrics" key="IBUISimulatedDestinationMetrics" id="667725831">
+					<string key="IBUISimulatedSizeMetricsClass">IBUIScreenMetrics</string>
+					<string key="IBUITargetRuntime">IBCocoaTouchFramework</string>
+					<string key="IBUIDisplayName">iPhone 4.7-inch</string>
+					<object class="NSMutableDictionary" key="IBUINormalizedOrientationToSizeMap">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<array key="dict.sortedKeys">
+							<integer value="1"/>
+							<integer value="3"/>
+						</array>
+						<array key="dict.values">
+							<string>{375, 667}</string>
+							<string>{667, 375}</string>
+						</array>
+					</object>
+					<int key="IBUIType">2</int>
 				</object>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
@@ -108,7 +122,7 @@
 					<object class="IBUIView" id="575003184">
 						<reference key="NSNextResponder" ref="915565391"/>
 						<int key="NSvFlags">314</int>
-						<string key="NSFrame">{{0, 26}, {640, 284}}</string>
+						<string key="NSFrame">{{0, 27}, {667, 296}}</string>
 						<reference key="NSSuperview" ref="915565391"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="872119935"/>
@@ -121,7 +135,7 @@
 					<object class="IBUIView" id="1051455928">
 						<reference key="NSNextResponder" ref="915565391"/>
 						<int key="NSvFlags">290</int>
-						<string key="NSFrameSize">{640, 26}</string>
+						<string key="NSFrameSize">{667, 26}</string>
 						<reference key="NSSuperview" ref="915565391"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="575003184"/>
@@ -134,9 +148,10 @@
 					<object class="IBUIView" id="872119935">
 						<reference key="NSNextResponder" ref="915565391"/>
 						<int key="NSvFlags">266</int>
-						<string key="NSFrame">{{0, 310}, {640, 50}}</string>
+						<string key="NSFrame">{{0, 325}, {667, 50}}</string>
 						<reference key="NSSuperview" ref="915565391"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="572758541"/>
 						<bool key="IBUIAutoresizesSubviews">NO</bool>
@@ -144,7 +159,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 				</array>
-				<string key="NSFrameSize">{640, 360}</string>
+				<string key="NSFrameSize">{667, 375}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="1051455928"/>
@@ -153,10 +168,10 @@
 					<int key="IBUIInterfaceOrientation">3</int>
 					<int key="interfaceOrientation">3</int>
 				</object>
-				<reference key="IBUISimulatedDestinationMetrics" ref="445885811"/>
+				<reference key="IBUISimulatedDestinationMetrics" ref="667725831"/>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
-			<object class="IBUISwipeGestureRecognizer" id="605127205"/>
+			<object class="IBUISwipeGestureRecognizer" id="786763443"/>
 		</array>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<array key="connectionRecords">
@@ -220,7 +235,7 @@
 					<object class="IBCocoaTouchOutletCollectionConnection" key="connection">
 						<string key="label">gestureRecognizers</string>
 						<reference key="source" ref="481442126"/>
-						<reference key="destination" ref="605127205"/>
+						<reference key="destination" ref="786763443"/>
 						<bool key="addsContentToExistingCollection">YES</bool>
 					</object>
 					<int key="connectionID">41</int>
@@ -228,7 +243,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
-						<reference key="source" ref="605127205"/>
+						<reference key="source" ref="786763443"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">42</int>
@@ -236,7 +251,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">onRightSwipe:</string>
-						<reference key="source" ref="605127205"/>
+						<reference key="source" ref="786763443"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">43</int>
@@ -332,7 +347,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">40</int>
-						<reference key="object" ref="605127205"/>
+						<reference key="object" ref="786763443"/>
 						<reference key="parent" ref="0"/>
 					</object>
 				</array>
@@ -343,7 +358,7 @@
 				<string key="-2.CustomClassName">UIResponder</string>
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<reference key="1.IBNSViewMetadataGestureRecognizers" ref="0"/>
-				<string key="1.IBPersistedLastKnownCanvasPosition">{-78, 343}</string>
+				<string key="1.IBPersistedLastKnownCanvasPosition">{-110.5, 22.5}</string>
 				<string key="1.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="14.CustomClassName">UITransparentView</string>
 				<string key="14.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -351,7 +366,7 @@
 				<string key="16.CustomClassName">UITransparentView</string>
 				<string key="16.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<reference key="20.IBNSViewMetadataGestureRecognizers" ref="0"/>
-				<string key="20.IBPersistedLastKnownCanvasPosition">{1095, -76}</string>
+				<string key="20.IBPersistedLastKnownCanvasPosition">{452.5, -106.5}</string>
 				<string key="20.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="21.CustomClassName">UITransparentView</string>
 				<string key="21.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -369,7 +384,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">43</int>
+			<int key="maxID">44</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

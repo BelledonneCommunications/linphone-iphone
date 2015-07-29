@@ -776,7 +776,7 @@
         </view>
     </objects>
     <resources>
-        <image name="color_A.png" width="1" height="1"/>
+        <image name="color_A.png" width="751" height="751"/>
         <image name="color_L.png" width="1" height="1"/>
         <image name="dialer_alt_background.png" width="530" height="526"/>
         <image name="numpad_eight_default.png" width="220" height="113"/>
