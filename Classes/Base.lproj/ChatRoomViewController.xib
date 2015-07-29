@@ -150,7 +150,6 @@
                                             <accessibility key="accessibilityConfiguration" hint="" label=""/>
                                             <fontDescription key="fontDescription" type="system" pointSize="26"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" spellCheckingType="yes" keyboardAppearance="alert" returnKeyType="send"/>
-                                            <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES" address="YES"/>
                                             <connections>
                                                 <outlet property="delegate" destination="-1" id="RVG-F4-M9q"/>
                                             </connections>

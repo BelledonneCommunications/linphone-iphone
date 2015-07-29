@@ -18,6 +18,7 @@
  */ 
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface VideoZoomHandler : NSObject {
     float zoomLevel, cx, cy;
