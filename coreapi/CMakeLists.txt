@@ -101,6 +101,7 @@ set(HEADER_FILES
 	linphonecore_utils.h
 	linphonefriend.h
 	linphonepresence.h
+	linphone_proxy_config.h
 	linphone_tunnel.h
 	lpc2xml.h
 	lpconfig.h
