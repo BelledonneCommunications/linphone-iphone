@@ -620,7 +620,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	msg->dir=LinphoneChatMessageOutgoing;
 	msg->from=linphone_address_new(identity);
 	msg->storage_id=linphone_chat_message_store(msg);
-	
+
 	if(cr->unread_count >= 0 && !msg->is_read) cr->unread_count++;
 
 	// add to transient list
@@ -775,10 +775,10 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 
 	linphone_address_destroy(addr);
 	msg->storage_id=linphone_chat_message_store(msg);
-	
+
 	if(cr->unread_count < 0) cr->unread_count = 1;
 	else cr->unread_count++;
-	
+
 	linphone_chat_room_message_received(cr,lc,msg);
 	linphone_chat_message_unref(msg);
 }
@@ -1380,6 +1380,7 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	new_message->storage_id=msg->storage_id;
 	if (msg->from) new_message->from=linphone_address_clone(msg->from);
 	if (msg->file_transfer_filepath) new_message->file_transfer_filepath=ms_strdup(msg->file_transfer_filepath);
+	if (msg->file_transfer_information) new_message->file_transfer_information=linphone_content_copy(msg->file_transfer_information);
 	return new_message;
 }
 
