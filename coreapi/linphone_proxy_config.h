@@ -285,6 +285,9 @@ LINPHONE_PUBLIC	void linphone_proxy_config_refresh_register(LinphoneProxyConfig 
  * @param[in] cfg #LinphoneProxyConfig object.
 **/
 LINPHONE_PUBLIC void linphone_proxy_config_pause_register(LinphoneProxyConfig *cfg);
+
+LINPHONE_PUBLIC const LinphoneAddress* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg);
+
 /**
  * @return previously set contact parameters.
 **/
