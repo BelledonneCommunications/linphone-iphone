@@ -22,5 +22,4 @@ typedef void (^SideMenuEntryBlock)(void);
 
 @property(nonatomic, retain) NSMutableArray *sideMenuEntries;
 
-+ (void)addSideMenuEntry:(SideMenuEntry *)entry;
 @end

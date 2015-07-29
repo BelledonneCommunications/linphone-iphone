@@ -17,7 +17,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" id="7" userLabel="toolsBar">
-                    <rect key="frame" x="0.0" y="0.0" width="360.0000008953366" height="40"/>
+                    <rect key="frame" x="0.0" y="0.0" width="359.99999484412984" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="10" userLabel="backButton">
@@ -47,7 +47,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="selectAllButton" customClass="UIToggleButton">
-                            <rect key="frame" x="200" y="0.0" width="72.000000237000876" height="40"/>
+                            <rect key="frame" x="200" y="0.0" width="71.999998635210773" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Edit"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -57,7 +57,7 @@
                             </state>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="UxT-TB-Ri4" userLabel="editButton" customClass="UIToggleButton">
-                            <rect key="frame" x="288" y="0.0" width="72.000000895336598" height="40"/>
+                            <rect key="frame" x="288" y="0.0" width="71.999994844129859" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Edit"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -70,7 +70,7 @@
                             </connections>
                         </button>
                         <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="e4g-nB-qYa" userLabel="deleteButton" customClass="UIToggleButton">
-                            <rect key="frame" x="288" y="0.0" width="72.000000895336598" height="40"/>
+                            <rect key="frame" x="288" y="0.0" width="71.999994844129859" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Edit"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -110,11 +110,11 @@
     </objects>
     <resources>
         <image name="back.png" width="71" height="64"/>
-        <image name="chat_add.png" width="96" height="86"/>
+        <image name="chat_add.png" width="32" height="29"/>
         <image name="color_F.png" width="1" height="1"/>
-        <image name="delete.png" width="63" height="82"/>
-        <image name="edit_list.png" width="88" height="84"/>
-        <image name="select_all.png" width="79" height="79"/>
+        <image name="delete.png" width="21" height="27"/>
+        <image name="edit_list.png" width="29" height="28"/>
+        <image name="select_all.png" width="26" height="26"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

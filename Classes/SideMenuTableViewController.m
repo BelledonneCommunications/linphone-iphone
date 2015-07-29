@@ -26,18 +26,12 @@
 
 @implementation SideMenuTableViewController
 
-+ (void)addSideMenuEntry:(SideMenuEntry *)entry {
-	SideMenuTableViewController *this = PhoneMainView.instance.mainViewController.sideMenuTableViewController;
-	[this.sideMenuEntries addObject:entry];
-}
-
 - (void)viewDidLoad {
 	_sideMenuEntries = [[NSMutableArray alloc] init];
 
 	[_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Settings", nil)
 											  tapBlock:^() {
-
 												[PhoneMainView.instance
 													changeCurrentView:SettingsViewController.compositeViewDescription];
 											  }]];

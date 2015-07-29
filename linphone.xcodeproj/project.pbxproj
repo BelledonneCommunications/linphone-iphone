@@ -108,6 +108,8 @@
 		632DA24D1B43EE9400EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		632DA24E1B43EEEF00EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		633756391B67BAF400E21BAD /* SideMenuTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756381B67BAF400E21BAD /* SideMenuTableViewController.m */; };
+		633756451B67D2B200E21BAD /* SideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756431B67D2B100E21BAD /* SideMenuViewController.m */; };
+		633756461B67D2B200E21BAD /* SideMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 633756441B67D2B100E21BAD /* SideMenuViewController.xib */; };
 		634610061B61330300548952 /* UILabel+Boldify.m in Sources */ = {isa = PBXBuildFile; fileRef = 634610051B61330300548952 /* UILabel+Boldify.m */; };
 		6346100F1B61409800548952 /* OutgoingCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6346100E1B61409800548952 /* OutgoingCallViewController.m */; };
 		634610121B6140A500548952 /* OutgoingCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 634610101B6140A500548952 /* OutgoingCallViewController.xib */; };
@@ -659,6 +661,9 @@
 		63158FAC1B468E0E00969917 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ImageOptim.sh; path = Tools/ImageOptim.sh; sourceTree = "<group>"; };
 		633756371B67BAF400E21BAD /* SideMenuTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuTableViewController.h; sourceTree = "<group>"; };
 		633756381B67BAF400E21BAD /* SideMenuTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideMenuTableViewController.m; sourceTree = "<group>"; };
+		633756421B67D2B100E21BAD /* SideMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuViewController.h; sourceTree = "<group>"; };
+		633756431B67D2B100E21BAD /* SideMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideMenuViewController.m; sourceTree = "<group>"; };
+		633756441B67D2B100E21BAD /* SideMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SideMenuViewController.xib; sourceTree = "<group>"; };
 		633E388219FFB0F400936D1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		634610041B61330300548952 /* UILabel+Boldify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+Boldify.h"; sourceTree = "<group>"; };
 		634610051B61330300548952 /* UILabel+Boldify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Boldify.m"; sourceTree = "<group>"; };
@@ -1329,6 +1334,9 @@
 				D3D5126A160B3A8E00946DF8 /* WizardViews.xib */,
 				633756371B67BAF400E21BAD /* SideMenuTableViewController.h */,
 				633756381B67BAF400E21BAD /* SideMenuTableViewController.m */,
+				633756421B67D2B100E21BAD /* SideMenuViewController.h */,
+				633756431B67D2B100E21BAD /* SideMenuViewController.m */,
+				633756441B67D2B100E21BAD /* SideMenuViewController.xib */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -2203,6 +2211,7 @@
 				D38187D115FE346B00C3EDCA /* HistoryViewController.xib in Resources */,
 				634CEDA51B6630DB00D7A921 /* call_start_body_disabled.png in Resources */,
 				D38187BD15FE342800C3EDCA /* ContactsViewController.xib in Resources */,
+				633756461B67D2B200E21BAD /* SideMenuViewController.xib in Resources */,
 				634CED9B1B6630DB00D7A921 /* call_alt_start.png in Resources */,
 				634CEE031B6630DB00D7A921 /* security_ko.png in Resources */,
 				634CEDAE1B6630DB00D7A921 /* camera_switch_default.png in Resources */,
@@ -2448,6 +2457,7 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,
 				22F2508E107141E100AC9B3F /* DialerViewController.m in Sources */,
+				633756451B67D2B200E21BAD /* SideMenuViewController.m in Sources */,
 				22E0A822111C44E100B04932 /* AboutViewController.m in Sources */,
 				634610061B61330300548952 /* UILabel+Boldify.m in Sources */,
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,

@@ -64,8 +64,7 @@
 @property (nonatomic, strong) IBOutlet UIView* stateBarView;
 @property (nonatomic, strong) IBOutlet UIView* contentView;
 @property (nonatomic, strong) IBOutlet UIView* tabBarView;
-@property(weak, nonatomic) IBOutlet UIView *sideMenuView;
-@property(strong, nonatomic) IBOutlet SideMenuTableViewController *sideMenuTableViewController;
+@property(strong, nonatomic) IBOutlet UIView *sideMenuView;
 
 - (void)changeView:(UICompositeViewDescription *)description;
 - (void)setFullScreen:(BOOL)enabled;
@@ -77,5 +76,6 @@
 - (UIViewController *)getCurrentViewController;
 - (UIInterfaceOrientation)currentOrientation;
 - (void)clearCache:(NSArray*)exclude;
+- (IBAction)onRightSwipe:(id)sender;
 
 @end

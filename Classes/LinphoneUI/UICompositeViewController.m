@@ -72,6 +72,7 @@
 @property(nonatomic, strong) UIViewController *stateBarViewController;
 @property(nonatomic, strong) UIViewController *tabBarViewController;
 @property(nonatomic, strong) UIViewController *contentViewController;
+@property(nonatomic, strong) UIViewController *sideMenuViewController;
 
 @end
 
@@ -83,6 +84,7 @@
 @synthesize tabBarViewController = _tabBarViewController;
 @synthesize stateBarViewController = _stateBarViewController;
 @synthesize contentViewController = _contentViewController;
+@synthesize sideMenuViewController = _sideMenuViewController;
 
 @synthesize viewTransition;
 
@@ -165,6 +167,9 @@
 	   the device screen size at load */
 	[self updateViewsFramesAccordingToLaunchOrientation];
 	[super viewDidLoad];
+
+	_sideMenuViewController = [self getCachedController:@"SideMenuViewController"];
+	[UICompositeViewController addSubView:_sideMenuViewController view:_sideMenuView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -172,6 +177,7 @@
 	[self.contentViewController viewWillAppear:animated];
 	[self.tabBarViewController viewWillAppear:animated];
 	[self.stateBarViewController viewWillAppear:animated];
+	[self.sideMenuViewController viewWillAppear:animated];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(orientationDidChange:)
@@ -185,6 +191,7 @@
 	[self.contentViewController viewDidAppear:animated];
 	[self.tabBarViewController viewDidAppear:animated];
 	[self.stateBarViewController viewDidAppear:animated];
+	[self.sideMenuViewController viewDidAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -192,6 +199,7 @@
 	[self.contentViewController viewWillDisappear:animated];
 	[self.tabBarViewController viewWillDisappear:animated];
 	[self.stateBarViewController viewWillDisappear:animated];
+	[self.sideMenuViewController viewWillDisappear:animated];
 
 	[[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 
@@ -203,6 +211,7 @@
 	[self.contentViewController viewDidDisappear:animated];
 	[self.tabBarViewController viewDidDisappear:animated];
 	[self.stateBarViewController viewDidDisappear:animated];
+	[self.sideMenuViewController viewDidDisappear:animated];
 }
 
 #pragma mark - Rotation messages
@@ -214,6 +223,7 @@
 	[self.contentViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.tabBarViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.stateBarViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	[self.sideMenuViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -223,6 +233,7 @@
 	[self.contentViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.tabBarViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.stateBarViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	[self.sideMenuViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self update:nil tabBar:nil stateBar:nil fullscreen:nil];
 }
 
@@ -231,6 +242,7 @@
 	[self.contentViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self.tabBarViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self.stateBarViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[self.sideMenuViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -315,6 +327,10 @@
 			[viewControllerCache removeObjectForKey:key];
 		}
 	}
+}
+
+- (IBAction)onRightSwipe:(id)sender {
+	[self hideSideMenu:NO];
 }
 
 - (UIInterfaceOrientation)currentOrientation {
@@ -437,6 +453,7 @@
 				[self.contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
 				[self.tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
 				[self.stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+				[self.sideMenuViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
 			}
 		} else {
 			if (oldContentViewController != newContentViewController) {
@@ -454,8 +471,11 @@
 			if (oldStateBarViewController != newStateBarViewController) {
 				UIInterfaceOrientation oldOrientation = self.stateBarViewController.interfaceOrientation;
 				[self.stateBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+				[self.sideMenuViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
 				[self.stateBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+				[self.sideMenuViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
 				[self.stateBarViewController didRotateFromInterfaceOrientation:oldOrientation];
+				[self.sideMenuViewController didRotateFromInterfaceOrientation:oldOrientation];
 			}
 		}
 	} else {
@@ -538,6 +558,11 @@
 	frame.size.width = [stateBarView bounds].size.width;
 	[self.stateBarViewController.view setFrame:frame];
 
+	CGRect sideMenuFrame = contentFrame;
+	sideMenuFrame.size.height += tabFrame.size.height;
+	_sideMenuView.frame = sideMenuFrame;
+	_sideMenuViewController.view.frame = [_sideMenuView bounds];
+
 	// Commit animation
 	if (tabBar != nil || stateBar != nil || fullscreen != nil) {
 		[UIView commitAnimations];
@@ -580,12 +605,17 @@
 }
 
 - (void)hideSideMenu:(BOOL)hidden animated:(BOOL)animated {
-	LOGI(@"%s side menu", hidden ? "Closing" : "Opening");
+	LOGI(@"%s side menu %s animation", hidden ? "Closing" : "Opening", animated ? "with" : "without");
 
 	// resign keyboard, if any
 	[LinphoneUtils findAndResignFirstResponder:self.view];
 
 	CGRect d = _sideMenuView.frame;
+
+	// first replace sidemenuview at the right place, if needed
+	d.origin.x = hidden ? 0 : -d.size.width;
+	_sideMenuView.frame = d;
+
 	d.origin.x = hidden ? -d.size.width : 0;
 
 	if (animated) {
