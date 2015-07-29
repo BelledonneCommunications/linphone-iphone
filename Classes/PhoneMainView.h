@@ -72,6 +72,7 @@
 
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView;
 - (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;
+- (UIViewController *)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated;
 - (UIViewController*)popCurrentView;
 - (void)popToView:(UICompositeViewDescription *)currentView;
 - (UICompositeViewDescription *)firstView;

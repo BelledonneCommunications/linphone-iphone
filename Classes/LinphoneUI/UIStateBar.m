@@ -316,7 +316,11 @@
 
 - (IBAction)onSideMenuClick:(id)sender {
 	UICompositeViewController *cvc = PhoneMainView.instance.mainViewController;
-	[cvc hideSideMenu:!cvc.sideMenuView.hidden];
+	if (cvc.sideMenuView.hidden) {
+		[cvc hideSideMenu:NO];
+	} else {
+		[cvc hideSideMenu:cvc.sideMenuView.frame.origin.x == 0];
+	}
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {

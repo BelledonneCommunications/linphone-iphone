@@ -130,8 +130,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self callUpdate:call state:state animated:FALSE];
 
 	// Set windows (warn memory leaks)
-	linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
-	linphone_core_set_native_preview_window_id([LinphoneManager getLc], (unsigned long)videoPreview);
+	linphone_core_set_native_video_window_id([LinphoneManager getLc], (__bridge void *)(videoView));
+	linphone_core_set_native_preview_window_id([LinphoneManager getLc], (__bridge void *)(videoPreview));
 
 	// Enable tap
 	[singleFingerTap setEnabled:TRUE];

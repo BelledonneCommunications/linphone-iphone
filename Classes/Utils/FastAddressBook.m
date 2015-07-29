@@ -76,9 +76,13 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 + (ABRecordRef)getContact:(NSString *)address {
-	@synchronized(LinphoneManager.instance.fastAddressBook->addressBookMap) {
-		return (__bridge ABRecordRef)[LinphoneManager.instance.fastAddressBook->addressBookMap objectForKey:address];
+	if (LinphoneManager.instance.fastAddressBook != nil) {
+		@synchronized(LinphoneManager.instance.fastAddressBook->addressBookMap) {
+			return (
+				__bridge ABRecordRef)[LinphoneManager.instance.fastAddressBook->addressBookMap objectForKey:address];
+		}
 	}
+	return nil;
 }
 
 + (ABRecordRef)getContactWithLinphoneAddress:(const LinphoneAddress *)address {

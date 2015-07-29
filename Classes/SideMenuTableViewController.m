@@ -33,13 +33,18 @@
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Settings", nil)
 											  tapBlock:^() {
 												[PhoneMainView.instance
-													changeCurrentView:SettingsViewController.compositeViewDescription];
+													changeCurrentView:SettingsViewController.compositeViewDescription
+																 push:NO
+															 animated:NO];
 											  }]];
 	[_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"About", nil)
 											  tapBlock:^() {
 												[PhoneMainView.instance
-													changeCurrentView:AboutViewController.compositeViewDescription];
+													changeCurrentView:AboutViewController.compositeViewDescription
+																 push:NO
+															 animated:NO];
+
 											  }]];
 }
 
@@ -67,8 +72,8 @@
 	if (entry->onTapBlock == nil) {
 		LOGF(@"Entry %@ has no onTapBlock!", entry->title);
 	}
-	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
 	entry->onTapBlock();
+	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
 }
 
 @end

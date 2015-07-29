@@ -54,11 +54,13 @@
                                     <rect key="frame" x="0.0" y="0.0" width="150" height="46"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
                                             <rect key="frame" x="0.0" y="0.0" width="75" height="42"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="All contacts filter"/>
-                                            <inset key="titleEdgeInsets" minX="-86" minY="18" maxX="0.0" maxY="0.0"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                                            <inset key="titleEdgeInsets" minX="-38" minY="15" maxX="0.0" maxY="0.0"/>
+                                            <inset key="imageEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" title="ALL" image="contacts_all_default.png" backgroundImage="color_F.png">
                                                 <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -71,11 +73,13 @@
                                                 <action selector="onAllClick:" destination="-1" eventType="touchUpInside" id="29"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="sipButton" customClass="UIIconButton">
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="sipButton" customClass="UIIconButton">
                                             <rect key="frame" x="75" y="0.0" width="75" height="42"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Linphone contacts filter"/>
-                                            <inset key="titleEdgeInsets" minX="-86" minY="18" maxX="0.0" maxY="0.0"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="9"/>
+                                            <inset key="titleEdgeInsets" minX="-35" minY="15" maxX="0.0" maxY="0.0"/>
+                                            <inset key="imageEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
                                             <state key="normal" title="SIP" image="contacts_sip_default.png" backgroundImage="color_F.png">
                                                 <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -152,6 +156,7 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="4.5" y="212.5"/>
         </view>
     </objects>
     <resources>

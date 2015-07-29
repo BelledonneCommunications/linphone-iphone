@@ -18,11 +18,20 @@
 	return [super initWithNibName:@"SideMenuViewController" bundle:[NSBundle mainBundle]];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)updateHeader {
 	LinphoneProxyConfig *default_proxy = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
-	linphone_proxy_config_get [FastAddressBook setDisplayNameLabel:_nameLabel forAddress:@"toto replace me"];
-	[FastAddressBook setDisplayNameLabel:_addressLabel forAddress:@"yolo"];
-	[FastAddressBook getContactImage:nil thumbnail:NO];
+	const LinphoneAddress *addr = linphone_proxy_config_get_identity_address(default_proxy);
+	if (default_proxy != NULL) {
+		[FastAddressBook setDisplayNameLabel:_nameLabel forAddress:addr];
+		char *as_string = linphone_address_as_string(addr);
+		_addressLabel.text = [NSString stringWithUTF8String:as_string];
+		ms_free(as_string);
+		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
+	}
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	[self updateHeader];
 }
 
 - (IBAction)onLateralSwipe:(id)sender {

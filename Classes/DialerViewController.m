@@ -126,7 +126,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		BOOL previewPref = [mgr lpConfigBoolForKey:@"preview_preference"];
 
 		if (videoEnabled && previewPref) {
-			linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
+			linphone_core_set_native_preview_window_id(lc, (__bridge void *)(videoPreview));
 
 			if (!linphone_core_video_preview_enabled(lc)) {
 				linphone_core_enable_video_preview(lc, TRUE);
@@ -135,7 +135,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[backgroundView setHidden:FALSE];
 			[videoCameraSwitch setHidden:FALSE];
 		} else {
-			linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
+			linphone_core_set_native_preview_window_id(lc, NULL);
 			linphone_core_enable_video_preview(lc, FALSE);
 			[backgroundView setHidden:TRUE];
 			[videoCameraSwitch setHidden:TRUE];
@@ -226,11 +226,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([LinphoneManager runningOnIpad]) {
 		LinphoneCore *lc = [LinphoneManager getLc];
 		if (linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
-			linphone_core_set_native_preview_window_id(lc, (unsigned long)videoPreview);
+			linphone_core_set_native_preview_window_id(lc, (__bridge void *)(videoPreview));
 			[backgroundView setHidden:FALSE];
 			[videoCameraSwitch setHidden:FALSE];
 		} else {
-			linphone_core_set_native_preview_window_id(lc, (unsigned long)NULL);
+			linphone_core_set_native_preview_window_id(lc, NULL);
 			[backgroundView setHidden:TRUE];
 			[videoCameraSwitch setHidden:TRUE];
 		}

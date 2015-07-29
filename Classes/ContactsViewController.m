@@ -177,7 +177,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)centerTextOnIcon:(UIButton *)button {
 	UIEdgeInsets inset = button.titleEdgeInsets;
-	inset.left = -(button.imageView.frame.size.width + button.titleLabel.frame.size.width / 2);
+	inset.left = -(button.imageView.frame.size.width);
 	button.titleEdgeInsets = inset;
 }
 

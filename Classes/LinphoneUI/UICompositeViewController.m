@@ -177,7 +177,6 @@
 	[self.contentViewController viewWillAppear:animated];
 	[self.tabBarViewController viewWillAppear:animated];
 	[self.stateBarViewController viewWillAppear:animated];
-	[self.sideMenuViewController viewWillAppear:animated];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(orientationDidChange:)
@@ -559,6 +558,7 @@
 	[self.stateBarViewController.view setFrame:frame];
 
 	CGRect sideMenuFrame = contentFrame;
+	contentFrame.origin.x = (_sideMenuView.hidden ? -contentFrame.size.width : 0);
 	sideMenuFrame.size.height += tabFrame.size.height;
 	_sideMenuView.frame = sideMenuFrame;
 	_sideMenuViewController.view.frame = [_sideMenuView bounds];
@@ -611,11 +611,6 @@
 	[LinphoneUtils findAndResignFirstResponder:self.view];
 
 	CGRect d = _sideMenuView.frame;
-
-	// first replace sidemenuview at the right place, if needed
-	d.origin.x = hidden ? 0 : -d.size.width;
-	_sideMenuView.frame = d;
-
 	d.origin.x = hidden ? -d.size.width : 0;
 
 	if (animated) {
