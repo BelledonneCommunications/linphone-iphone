@@ -28,7 +28,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="90" height="63"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="History"/>
-                    <state key="normal" image="footer_history_default.png" backgroundImage="color_C.png"/>
+                    <state key="normal" image="footer_history.png" backgroundImage="color_C.png"/>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onHistoryClick:" destination="-1" eventType="touchUpInside" id="22"/>
@@ -39,7 +39,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Contacts"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
-                    <state key="normal" image="footer_contacts_default.png" backgroundImage="color_C.png"/>
+                    <state key="normal" image="footer_contacts.png"/>
                     <state key="selected">
                         <color key="titleColor" red="0.81176471709999998" green="0.29803922770000002" blue="0.16078431900000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
@@ -52,7 +52,7 @@
                     <rect key="frame" x="180" y="0.0" width="90" height="63"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Dialer"/>
-                    <state key="normal" image="footer_dialer_default.png" backgroundImage="color_C.png"/>
+                    <state key="normal" image="footer_dialer.png" backgroundImage="color_C.png"/>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onDialerClick:" destination="-1" eventType="touchUpInside" id="24"/>
@@ -63,22 +63,22 @@
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Chat"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
-                    <state key="normal" image="footer_chat_default.png" backgroundImage="color_C.png"/>
+                    <state key="normal" image="footer_chat.png" backgroundImage="color_C.png"/>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="26"/>
                     </connections>
                 </button>
                 <view autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="37" userLabel="chatNotificationView">
-                    <rect key="frame" x="338" y="0.0" width="24" height="17"/>
+                    <rect key="frame" x="338" y="0.0" width="21" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="history_notification.png" id="39" userLabel="chatNotificationImage">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="chat_list_indicator.png" id="39" userLabel="chatNotificationImage">
                             <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="38" userLabel="chatNotificationLabel">
-                            <rect key="frame" x="3" y="2" width="16" height="17"/>
+                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Missed message(s)">
                                 <accessibilityTraits key="traits" none="YES"/>
@@ -91,15 +91,15 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="32" userLabel="historyNotificationView">
-                    <rect key="frame" x="68" y="0.0" width="24" height="17"/>
+                    <rect key="frame" x="68" y="0.0" width="21" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="history_notification.png" id="33" userLabel="historyNotificationImage">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="chat_list_indicator.png" id="33" userLabel="historyNotificationImage">
                             <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="34" userLabel="historyNotificationLabel">
-                            <rect key="frame" x="3" y="2" width="16" height="17"/>
+                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Missed call(s)">
                                 <accessibilityTraits key="traits" none="YES"/>
@@ -112,20 +112,20 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="0.0" green="1" blue="0.19194547549999999" alpha="0.0" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="401" y="264.5"/>
         </view>
     </objects>
     <resources>
+        <image name="chat_list_indicator.png" width="21" height="21"/>
         <image name="color_A.png" width="1" height="1"/>
         <image name="color_C.png" width="1" height="1"/>
-        <image name="footer_chat_default.png" width="81" height="81"/>
-        <image name="footer_contacts_default.png" width="86" height="86"/>
-        <image name="footer_dialer_default.png" width="80" height="80"/>
-        <image name="footer_history_default.png" width="86" height="86"/>
-        <image name="history_notification.png" width="43" height="43"/>
+        <image name="footer_chat.png" width="28" height="28"/>
+        <image name="footer_contacts.png" width="30" height="30"/>
+        <image name="footer_dialer.png" width="28" height="28"/>
+        <image name="footer_history.png" width="30" height="30"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

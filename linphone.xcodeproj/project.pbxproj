@@ -104,6 +104,18 @@
 		63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
 		63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
+		631560341B69175F0047F4D3 /* color_A.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560281B69175F0047F4D3 /* color_A.png */; };
+		631560351B69175F0047F4D3 /* color_B.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560291B69175F0047F4D3 /* color_B.png */; };
+		631560361B69175F0047F4D3 /* color_C.png in Resources */ = {isa = PBXBuildFile; fileRef = 6315602A1B69175F0047F4D3 /* color_C.png */; };
+		631560371B69175F0047F4D3 /* color_D.png in Resources */ = {isa = PBXBuildFile; fileRef = 6315602B1B69175F0047F4D3 /* color_D.png */; };
+		631560381B69175F0047F4D3 /* color_E.png in Resources */ = {isa = PBXBuildFile; fileRef = 6315602C1B69175F0047F4D3 /* color_E.png */; };
+		631560391B69175F0047F4D3 /* color_F.png in Resources */ = {isa = PBXBuildFile; fileRef = 6315602D1B69175F0047F4D3 /* color_F.png */; };
+		6315603A1B69175F0047F4D3 /* color_G.png in Resources */ = {isa = PBXBuildFile; fileRef = 6315602E1B69175F0047F4D3 /* color_G.png */; };
+		6315603B1B69175F0047F4D3 /* color_H.png in Resources */ = {isa = PBXBuildFile; fileRef = 6315602F1B69175F0047F4D3 /* color_H.png */; };
+		6315603C1B69175F0047F4D3 /* color_I.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560301B69175F0047F4D3 /* color_I.png */; };
+		6315603D1B69175F0047F4D3 /* color_J.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560311B69175F0047F4D3 /* color_J.png */; };
+		6315603E1B69175F0047F4D3 /* color_K.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560321B69175F0047F4D3 /* color_K.png */; };
+		6315603F1B69175F0047F4D3 /* color_L.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560331B69175F0047F4D3 /* color_L.png */; };
 		63158FAD1B468E0E00969917 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = 63158FAC1B468E0E00969917 /* ImageOptim.sh */; };
 		632DA24D1B43EE9400EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		632DA24E1B43EEEF00EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
@@ -658,6 +670,18 @@
 		63058AE41B4E952E00EFAE36 /* share */ = {isa = PBXFileReference; lastKnownFileType = folder; name = share; path = "../liblinphone-sdk/apple-darwin/share"; sourceTree = "<group>"; };
 		630CF5551AF7CE1500539F7A /* UITextField+DoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+DoneButton.h"; sourceTree = "<group>"; };
 		630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+DoneButton.m"; sourceTree = "<group>"; };
+		631560281B69175F0047F4D3 /* color_A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_A.png; sourceTree = "<group>"; };
+		631560291B69175F0047F4D3 /* color_B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_B.png; sourceTree = "<group>"; };
+		6315602A1B69175F0047F4D3 /* color_C.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_C.png; sourceTree = "<group>"; };
+		6315602B1B69175F0047F4D3 /* color_D.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_D.png; sourceTree = "<group>"; };
+		6315602C1B69175F0047F4D3 /* color_E.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_E.png; sourceTree = "<group>"; };
+		6315602D1B69175F0047F4D3 /* color_F.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_F.png; sourceTree = "<group>"; };
+		6315602E1B69175F0047F4D3 /* color_G.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_G.png; sourceTree = "<group>"; };
+		6315602F1B69175F0047F4D3 /* color_H.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_H.png; sourceTree = "<group>"; };
+		631560301B69175F0047F4D3 /* color_I.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_I.png; sourceTree = "<group>"; };
+		631560311B69175F0047F4D3 /* color_J.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_J.png; sourceTree = "<group>"; };
+		631560321B69175F0047F4D3 /* color_K.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_K.png; sourceTree = "<group>"; };
+		631560331B69175F0047F4D3 /* color_L.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_L.png; sourceTree = "<group>"; };
 		63158FAC1B468E0E00969917 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ImageOptim.sh; path = Tools/ImageOptim.sh; sourceTree = "<group>"; };
 		633756371B67BAF400E21BAD /* SideMenuTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuTableViewController.h; sourceTree = "<group>"; };
 		633756381B67BAF400E21BAD /* SideMenuTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideMenuTableViewController.m; sourceTree = "<group>"; };
@@ -1736,6 +1760,18 @@
 				634CED721B6630DA00D7A921 /* pause_big_over_selected.png */,
 				634CED731B6630DA00D7A921 /* pause_small_default.png */,
 				634CED741B6630DA00D7A921 /* pause_small_disabled.png */,
+				631560281B69175F0047F4D3 /* color_A.png */,
+				631560291B69175F0047F4D3 /* color_B.png */,
+				6315602A1B69175F0047F4D3 /* color_C.png */,
+				6315602B1B69175F0047F4D3 /* color_D.png */,
+				6315602C1B69175F0047F4D3 /* color_E.png */,
+				6315602D1B69175F0047F4D3 /* color_F.png */,
+				6315602E1B69175F0047F4D3 /* color_G.png */,
+				6315602F1B69175F0047F4D3 /* color_H.png */,
+				631560301B69175F0047F4D3 /* color_I.png */,
+				631560311B69175F0047F4D3 /* color_J.png */,
+				631560321B69175F0047F4D3 /* color_K.png */,
+				631560331B69175F0047F4D3 /* color_L.png */,
 				634CED751B6630DA00D7A921 /* pause_small_over_selected.png */,
 				634CED761B6630DA00D7A921 /* quit_default.png */,
 				634CED771B6630DA00D7A921 /* quit_over.png */,
@@ -2189,6 +2225,9 @@
 				634CEDF31B6630DB00D7A921 /* options_start_conference.png in Resources */,
 				634CEE071B6630DB00D7A921 /* speaker_default.png in Resources */,
 				634CEDD51B6630DB00D7A921 /* history_chat_indicator.png in Resources */,
+				6315603C1B69175F0047F4D3 /* color_I.png in Resources */,
+				631560361B69175F0047F4D3 /* color_C.png in Resources */,
+				6315603F1B69175F0047F4D3 /* color_L.png in Resources */,
 				634CED981B6630DB00D7A921 /* backspace_over.png in Resources */,
 				634CEDF11B6630DB00D7A921 /* options_default.png in Resources */,
 				634CEE141B6630DB00D7A921 /* status_disconnected_desktop.png in Resources */,
@@ -2213,6 +2252,7 @@
 				D38187BD15FE342800C3EDCA /* ContactsViewController.xib in Resources */,
 				633756461B67D2B200E21BAD /* SideMenuViewController.xib in Resources */,
 				634CED9B1B6630DB00D7A921 /* call_alt_start.png in Resources */,
+				631560351B69175F0047F4D3 /* color_B.png in Resources */,
 				634CEE031B6630DB00D7A921 /* security_ko.png in Resources */,
 				634CEDAE1B6630DB00D7A921 /* camera_switch_default.png in Resources */,
 				634CEDA11B6630DB00D7A921 /* call_quality_indicator_2.png in Resources */,
@@ -2238,10 +2278,12 @@
 				634CEDB61B6630DB00D7A921 /* chat_picture_default.png in Resources */,
 				634CEE0E1B6630DB00D7A921 /* status_away_desktop.png in Resources */,
 				D38187B115FE340500C3EDCA /* ChatViewController.xib in Resources */,
+				631560381B69175F0047F4D3 /* color_E.png in Resources */,
 				634CEDCE1B6630DB00D7A921 /* edit_list.png in Resources */,
 				634CED9F1B6630DB00D7A921 /* call_quality_indicator_0.png in Resources */,
 				634CED941B6630DB00D7A921 /* add_field_over.png in Resources */,
 				634CED9E1B6630DB00D7A921 /* call_hangup.png in Resources */,
+				631560341B69175F0047F4D3 /* color_A.png in Resources */,
 				636316D41A1DEC650009B839 /* SettingsViewController.xib in Resources */,
 				D34F6F9E1594D3FB0095705B /* InAppSettings.bundle in Resources */,
 				634CEDFC1B6630DB00D7A921 /* quit_over.png in Resources */,
@@ -2251,6 +2293,7 @@
 				D38187D915FE347700C3EDCA /* IncomingCallViewController.xib in Resources */,
 				639CEB031A1DF4EB004DE38F /* UICompositeViewController.xib in Resources */,
 				634CEE0D1B6630DB00D7A921 /* status_away.png in Resources */,
+				631560391B69175F0047F4D3 /* color_F.png in Resources */,
 				D38187F015FE354000C3EDCA /* UIConferenceHeader.xib in Resources */,
 				634CEDF61B6630DB00D7A921 /* pause_big_disabled.png in Resources */,
 				634CEDB81B6630DB00D7A921 /* chat_send_default.png in Resources */,
@@ -2274,11 +2317,13 @@
 				D38187B515FE341B00C3EDCA /* ContactDetailsLabelViewController.xib in Resources */,
 				634CEDF41B6630DB00D7A921 /* options_transfer_call.png in Resources */,
 				634CEDA41B6630DB00D7A921 /* call_start_body_default.png in Resources */,
+				6315603B1B69175F0047F4D3 /* color_H.png in Resources */,
 				634CEDCB1B6630DB00D7A921 /* dialer_alt_back.png in Resources */,
 				634CEE0C1B6630DB00D7A921 /* status_available_phone.png in Resources */,
 				634CEDBA1B6630DB00D7A921 /* chat_start_body_default.png in Resources */,
 				634CEDC01B6630DB00D7A921 /* conference_exit_over.png in Resources */,
 				634CEDE71B6630DB00D7A921 /* numpad_3.png in Resources */,
+				6315603A1B69175F0047F4D3 /* color_G.png in Resources */,
 				634CEDAA1B6630DB00D7A921 /* call_transfer.png in Resources */,
 				634CEDFD1B6630DB00D7A921 /* resizable_assistant_button.png in Resources */,
 				634CEDE81B6630DB00D7A921 /* numpad_4.png in Resources */,
@@ -2321,9 +2366,11 @@
 				634CEE061B6630DB00D7A921 /* select_all.png in Resources */,
 				634CEDC81B6630DB00D7A921 /* delete_field_default.png in Resources */,
 				634CEDA31B6630DB00D7A921 /* call_quality_indicator_4.png in Resources */,
+				6315603D1B69175F0047F4D3 /* color_J.png in Resources */,
 				634CED991B6630DB00D7A921 /* call_add.png in Resources */,
 				634CEDDC1B6630DB00D7A921 /* led_error.png in Resources */,
 				634CEDBD1B6630DB00D7A921 /* clean_field_default.png in Resources */,
+				631560371B69175F0047F4D3 /* color_D.png in Resources */,
 				634CEDA81B6630DB00D7A921 /* call_status_missed.png in Resources */,
 				634CEDB31B6630DB00D7A921 /* chat_message_delivered.png in Resources */,
 				634CEE131B6630DB00D7A921 /* status_disconnected.png in Resources */,
@@ -2335,6 +2382,7 @@
 				634CEDB51B6630DB00D7A921 /* chat_message_not_delivered.png in Resources */,
 				634CEDEB1B6630DB00D7A921 /* numpad_7.png in Resources */,
 				634CED971B6630DB00D7A921 /* backspace_default.png in Resources */,
+				6315603E1B69175F0047F4D3 /* color_K.png in Resources */,
 				634CED961B6630DB00D7A921 /* back.png in Resources */,
 				634CEDBE1B6630DB00D7A921 /* clean_field_over.png in Resources */,
 				634CEE0B1B6630DB00D7A921 /* status_available_desktop.png in Resources */,
