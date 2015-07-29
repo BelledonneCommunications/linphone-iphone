@@ -31,13 +31,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ldap/ldapprovider.h"
 
 #ifdef ENABLE_NLS
+
+#ifdef _MSC_VER
+// prevent libintl.h from re-defining fprintf and vfprintf
+#ifndef fprintf
+#define fprintf fprintf
+#endif
+#ifndef vfprintf
+#define vfprintf vfprintf
+#endif
+#define _GL_STDIO_H
+#endif
+
 # include <libintl.h>
 # undef _
 # define _(String) dgettext (GETTEXT_PACKAGE,String)
 #else
 # define _(String) (String)
 # define ngettext(singular,plural,number) ((number>1) ? (plural) : (singular) )
-#endif
+#endif // ENABLE_NLS
 
 #undef N_
 #define N_(str) (str)

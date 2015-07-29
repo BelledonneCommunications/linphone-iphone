@@ -66,7 +66,20 @@ extern "C" {
 #endif
 
 #ifdef ENABLE_NLS
+
+#ifdef _MSC_VER
+// prevent libintl.h from re-defining fprintf and vfprintf
+#ifndef fprintf
+#define fprintf fprintf
+#endif
+#ifndef vfprintf
+#define vfprintf vfprintf
+#endif
+#define _GL_STDIO_H
+#endif
+
 #include <libintl.h>
+	
 #ifndef _
 #define _(String) dgettext(GETTEXT_PACKAGE,String)
 #endif

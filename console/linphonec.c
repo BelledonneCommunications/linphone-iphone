@@ -65,15 +65,6 @@
 
 #endif /*_WIN32_WCE*/
 
-#ifdef ENABLE_NLS
-#include <libintl.h>
-#ifndef _
-#define _(String) gettext(String)
-#endif
-#else
-#define _(something)	(something)
-#endif
-
 #ifndef PACKAGE_DIR
 #define PACKAGE_DIR ""
 #endif
@@ -714,16 +705,6 @@ linphonec_init(int argc, char **argv)
 		default:
 			break;
 	}
-#ifdef ENABLE_NLS
-	if (NULL == bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR))
-		perror ("bindtextdomain failed");
-#ifndef __ARM__
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-#endif
-	textdomain (GETTEXT_PACKAGE);
-#else
-	printf ("NLS disabled.\n");
-#endif
 
 	linphonec_parse_cmdline(argc, argv);
 
