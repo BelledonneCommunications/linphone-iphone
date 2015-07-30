@@ -4329,7 +4329,7 @@ static void call_with_rtp_io_mode(void) {
 	lp_config_set_string(pauline->lc->config, "sound", "rtp_remote_addr", "127.0.0.1");
 	lp_config_set_int(pauline->lc->config, "sound", "rtp_local_port", 17076);
 	lp_config_set_int(pauline->lc->config, "sound", "rtp_remote_port", 17076);
-	lp_config_get_string(pauline->lc->config, "sound", "rtp_map", "pcmu/8000/1");
+	lp_config_set_string(pauline->lc->config, "sound", "rtp_map", "pcmu/8000/1");
 
 	BC_ASSERT_TRUE((call_ok = call(marie, pauline)));
 	if (!call_ok) goto end;

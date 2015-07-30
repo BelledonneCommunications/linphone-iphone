@@ -2505,6 +2505,7 @@ static RtpSession * create_audio_rtp_io_session(LinphoneCall *call) {
 	int remote_port = lp_config_get_int(lc->config, "sound", "rtp_remote_port", 17078);
 	int ptnum = lp_config_get_int(lc->config, "sound", "rtp_ptnum", 0);
 	const char *rtpmap = lp_config_get_string(lc->config, "sound", "rtp_map", "pcmu/8000/1");
+	int symmetric = lp_config_get_int(lc->config, "sound", "rtp_symmetric", 0);
 	RtpSession *rtp_session = NULL;
 	pt = rtp_profile_get_payload_from_rtpmap(call->audio_profile, rtpmap);
 	if (pt != NULL) {
@@ -2516,6 +2517,7 @@ static RtpSession * create_audio_rtp_io_session(LinphoneCall *call) {
 		rtp_session_enable_rtcp(rtp_session, FALSE);
 		rtp_session_set_payload_type(rtp_session, ptnum);
 		rtp_session_set_jitter_compensation(rtp_session, linphone_core_get_audio_jittcomp(lc));
+		rtp_session_set_symmetric_rtp(rtp_session, (bool_t)symmetric);
 	}
 	return rtp_session;
 }
@@ -2684,6 +2686,7 @@ static RtpSession * create_video_rtp_io_session(LinphoneCall *call) {
 	int remote_port = lp_config_get_int(lc->config, "video", "rtp_remote_port", 19078);
 	int ptnum = lp_config_get_int(lc->config, "video", "rtp_ptnum", 0);
 	const char *rtpmap = lp_config_get_string(lc->config, "video", "rtp_map", "vp8/90000/1");
+	int symmetric = lp_config_get_int(lc->config, "video", "rtp_symmetric", 0);
 	RtpSession *rtp_session = NULL;
 	pt = rtp_profile_get_payload_from_rtpmap(call->video_profile, rtpmap);
 	if (pt != NULL) {
@@ -2694,6 +2697,7 @@ static RtpSession * create_video_rtp_io_session(LinphoneCall *call) {
 		rtp_session_set_remote_addr_and_port(rtp_session, remote_ip, remote_port, -1);
 		rtp_session_enable_rtcp(rtp_session, FALSE);
 		rtp_session_set_payload_type(rtp_session, ptnum);
+		rtp_session_set_symmetric_rtp(rtp_session, (bool_t)symmetric);
 	}
 	return rtp_session;
 }
