@@ -637,11 +637,11 @@ typedef enum { VOLUME_CTRL_PLAYBACK, VOLUME_CTRL_RECORD } VolumeControlType;
 
 static void volume_control_value_changed(GtkScaleButton *button, gdouble value, gpointer user_data) {
 	LinphoneCall *call = (LinphoneCall *)g_object_get_data(G_OBJECT(button), "call");
-	VolumeControlType method = (VolumeControlType)g_object_get_data(G_OBJECT(button), "method");
+	VolumeControlType type = (VolumeControlType)g_object_get_data(G_OBJECT(button), "type");
 
-	if(method == VOLUME_CTRL_PLAYBACK) {
+	if(type == VOLUME_CTRL_PLAYBACK) {
 		linphone_call_set_speaker_volume_gain(call, value);
-	} else if(method == VOLUME_CTRL_RECORD) {
+	} else if(type == VOLUME_CTRL_RECORD) {
 		linphone_call_set_microphone_volume_gain(call, value);
 	}
 }
