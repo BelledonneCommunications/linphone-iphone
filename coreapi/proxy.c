@@ -402,9 +402,10 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *cfg){
 	return ret;
 }
 
-void _linphone_proxy_config_unregister(LinphoneProxyConfig *cfg) {
-	if (cfg->op && cfg->state == LinphoneRegistrationOk) {
-		sal_unregister(cfg->op);
+void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj) {
+	if (obj->op && (obj->state == LinphoneRegistrationOk ||
+					(obj->state == LinphoneRegistrationProgress && obj->expires != 0))) {
+		sal_unregister(obj->op);
 	}
 }
 

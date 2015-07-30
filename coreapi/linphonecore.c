@@ -5941,7 +5941,8 @@ void sip_config_uninit(LinphoneCore *lc)
 			sal_iterate(lc->sal);
 			for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
 				LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
-				still_registered|=linphone_proxy_config_is_registered(cfg);
+				LinphoneRegistrationState state = linphone_proxy_config_get_state(cfg);
+				still_registered|=(state==LinphoneRegistrationOk||state==LinphoneRegistrationProgress);
 			}
 			ms_usleep(100000);
 		}
