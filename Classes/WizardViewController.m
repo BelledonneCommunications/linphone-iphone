@@ -953,8 +953,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  otherButtonTitles:nil, nil];
 		[errorView show];
 	} else if ([response object] != nil) { // Don't handle if not object: HTTP/Communication Error
+		NSString *value = [response object];
 		if ([[request method] isEqualToString:@"check_account"]) {
-			if ([response object] == [NSNumber numberWithInt:1]) {
+			if ([value integerValue] == 1) {
 				UIAlertView *errorView =
 					[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check issue", nil)
 											   message:NSLocalizedString(@"Username already exists", nil)
@@ -970,7 +971,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				[self createAccount:identity password:password email:email];
 			}
 		} else if ([[request method] isEqualToString:@"create_account_with_useragent"]) {
-			if ([response object] == [NSNumber numberWithInt:0]) {
+			if ([value integerValue] == 0) {
 				NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
 				NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
 				[self changeView:validateAccountView back:FALSE animation:TRUE];
@@ -986,7 +987,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				[errorView show];
 			}
 		} else if ([[request method] isEqualToString:@"check_account_validated"]) {
-			if ([response object] == [NSNumber numberWithInt:1]) {
+			if ([value integerValue] == 1) {
 				NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
 				NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
 				[self addProxyConfig:username password:password domain:nil withTransport:nil];
