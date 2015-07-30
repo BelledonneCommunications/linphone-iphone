@@ -17,12 +17,6 @@
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewController id="baU-d4-eu3" customClass="HistoryDetailsTableViewController">
-            <connections>
-                <outlet property="view" destination="k6N-Av-eOu" id="Dos-d4-5l5"/>
-            </connections>
-            <point key="canvasLocation" x="621" y="235"/>
-        </tableViewController>
         <view contentMode="scaleToFill" id="HKr-sq-hGv" userLabel="iphone6MetricsView">
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -59,11 +53,11 @@
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         </view>
                         <view contentMode="scaleToFill" id="33" userLabel="headerView">
-                            <rect key="frame" x="0.0" y="40" width="375" height="152"/>
+                            <rect key="frame" x="0.0" y="40" width="375" height="150"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar.png" id="23" userLabel="avatarImage" customClass="UIRoundedImageView">
-                                    <rect key="frame" x="150" y="0.0" width="68" height="68"/>
+                                    <rect key="frame" x="150" y="0.0" width="68" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                         <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
@@ -71,7 +65,7 @@
                                     </accessibility>
                                 </imageView>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="25" userLabel="contactLabel">
-                                    <rect key="frame" x="0.0" y="71" width="367" height="17"/>
+                                    <rect key="frame" x="0.0" y="69" width="367" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact name"/>
                                     <attributedString key="attributedText">
@@ -93,7 +87,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="johndoe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="EoB-ux-sD7" userLabel="addressLabel">
-                                    <rect key="frame" x="4" y="92" width="367" height="19"/>
+                                    <rect key="frame" x="4" y="90" width="367" height="18"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact name"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="10"/>
@@ -101,7 +95,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
-                                    <rect key="frame" x="226" y="24" width="21" height="21"/>
+                                    <rect key="frame" x="226" y="23" width="21" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                         <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
@@ -109,7 +103,7 @@
                                     </accessibility>
                                 </imageView>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5eX-W0-T4B" userLabel="callButton">
-                                    <rect key="frame" x="135" y="109" width="44" height="44"/>
+                                    <rect key="frame" x="135" y="106" width="44" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <state key="normal" title="Button" image="call_start_body_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -119,7 +113,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="obZ-W7-q8P" userLabel="chatButton">
-                                    <rect key="frame" x="188" y="109" width="44" height="44"/>
+                                    <rect key="frame" x="188" y="106" width="44" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <state key="normal" title="Button" image="chat_start_body_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -129,10 +123,10 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="k6N-Av-eOu">
-                            <rect key="frame" x="0.0" y="194" width="375" height="365"/>
+                            <rect key="frame" x="0.0" y="190" width="375" height="369"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
@@ -144,9 +138,15 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
             </subviews>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
         </view>
+        <tableViewController id="baU-d4-eu3" customClass="HistoryDetailsTableViewController">
+            <connections>
+                <outlet property="view" destination="k6N-Av-eOu" id="Dos-d4-5l5"/>
+            </connections>
+            <point key="canvasLocation" x="621" y="235"/>
+        </tableViewController>
     </objects>
     <resources>
         <image name="avatar.png" width="261" height="261"/>
