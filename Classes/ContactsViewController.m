@@ -142,6 +142,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// UITextField *searchText = [_searchBar valueForKey:@"_searchField"];
 	// [searchText setFont:[UIFont fontWithName:@"CustomFont" size:12]];
 	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
+	CGRect frame = _searchBar.frame;
+	frame.origin.y = toolBar.frame.origin.y + toolBar.frame.size.height;
+	_searchBar.frame = frame;
 
 	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
 	if (use_system && !self.sysViewController) { // use system contacts

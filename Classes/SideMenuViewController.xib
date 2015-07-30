@@ -38,14 +38,14 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="XbU-2B-u1b" userLabel="nameLabel">
-                                    <rect key="frame" x="98" y="15" width="202" height="32"/>
+                                    <rect key="frame" x="98" y="15" width="194" height="32"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="37"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="aQ3-qc-xBv" userLabel="addressLabel">
-                                    <rect key="frame" x="98" y="54" width="202" height="22"/>
+                                    <rect key="frame" x="98" y="54" width="194" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
