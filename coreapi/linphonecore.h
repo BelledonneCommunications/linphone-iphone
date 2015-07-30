@@ -723,40 +723,44 @@ LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 
 /**
- * @brief Get playback volume.
+ * @brief Get speaker volume gain.
+ * If the sound backend supports it, the returned gain is equal to the gain set
+ * with the system mixer.
  * 
  * @param call The call.
- * @return double Percenatge of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
+ * @return Percenatge of the max supported volume gain. Valid values are in [ 0.0 : 1.0 ].
  * In case of failure, a negative value is returned
  */
-LINPHONE_PUBLIC double linphone_call_get_play_percent_volume(const LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_get_speaker_volume_gain(const LinphoneCall *call);
 
 /**
- * @brief Set playback volume.
+ * @brief Set speaker volume gain.
+ * If the sound backend supports it, the new gain will synchronized with the system mixer.
  * 
  * @param call The call.
- * @param volume New volume in percentage of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
- * @return void
+ * @param volume Percentage of the max supported gain. Valid values are in [ 0.0 : 1.0 ].
  */
-LINPHONE_PUBLIC void linphone_call_set_play_percent_volume(LinphoneCall *call, double volume);
+LINPHONE_PUBLIC void linphone_call_set_speaker_volume_gain(LinphoneCall *call, float volume);
 
 /**
- * @brief Get record volume.
+ * @brief Get microphone volume gain.
+ * If the sound backend supports it, the returned gain is equal to the gain set
+ * with the system mixer.
  * 
  * @param call The call.
- * @return double Percenatge of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
+ * @return double Percenatge of the max supported volume gain. Valid values are in [ 0.0 : 1.0 ].
  * In case of failure, a negative value is returned
  */
-LINPHONE_PUBLIC double linphone_call_get_record_percent_volume(const LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_get_microphone_volume_gain(const LinphoneCall *call);
 
 /**
- * @brief Set record volume.
+ * @brief Set microphone volume gain.
+ * If the sound backend supports it, the new gain will synchronized with the system mixer.
  * 
  * @param call The call.
- * @param volume New volume in percentage of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
- * @return void
+ * @param volume Percentage of the max supported gain. Valid values are in [ 0.0 : 1.0 ].
  */
-LINPHONE_PUBLIC void linphone_call_set_record_percent_volume(LinphoneCall *call, double volume);
+LINPHONE_PUBLIC void linphone_call_set_microphone_volume_gain(LinphoneCall *call, float volume);
 
 LINPHONE_PUBLIC	float linphone_call_get_current_quality(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_average_quality(LinphoneCall *call);

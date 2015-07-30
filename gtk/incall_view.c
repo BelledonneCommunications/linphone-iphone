@@ -640,9 +640,9 @@ static void volume_control_value_changed(GtkScaleButton *button, gdouble value, 
 	VolumeControlType method = (VolumeControlType)g_object_get_data(G_OBJECT(button), "method");
 
 	if(method == VOLUME_CTRL_PLAYBACK) {
-		linphone_call_set_play_percent_volume(call, value);
+		linphone_call_set_speaker_volume_gain(call, value);
 	} else if(method == VOLUME_CTRL_RECORD) {
-		linphone_call_set_record_percent_volume(call, value);
+		linphone_call_set_microphone_volume_gain(call, value);
 	}
 }
 
@@ -651,9 +651,9 @@ static void volume_control_init(GtkWidget *vol_ctrl, VolumeControlType type, Lin
 	g_object_set_data(G_OBJECT(vol_ctrl), "type", (gpointer)type);
 	
 	if(type == VOLUME_CTRL_PLAYBACK) {
-		gtk_scale_button_set_value(GTK_SCALE_BUTTON(vol_ctrl), linphone_call_get_play_volume(call));
+		gtk_scale_button_set_value(GTK_SCALE_BUTTON(vol_ctrl), linphone_call_get_speaker_volume_gain(call));
 	} else if(type == VOLUME_CTRL_RECORD) {
-		gtk_scale_button_set_value(GTK_SCALE_BUTTON(vol_ctrl), linphone_call_get_record_percent_volume(call));
+		gtk_scale_button_set_value(GTK_SCALE_BUTTON(vol_ctrl), linphone_call_get_microphone_volume_gain(call));
 	}
 	
 	g_signal_connect(G_OBJECT(vol_ctrl), "value-changed", G_CALLBACK(volume_control_value_changed), NULL);

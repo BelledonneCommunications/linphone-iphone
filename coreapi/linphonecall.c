@@ -3203,28 +3203,28 @@ float linphone_call_get_record_volume(LinphoneCall *call){
 	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
-double linphone_call_get_play_percent_volume(const LinphoneCall *call) {
+float linphone_call_get_speaker_volume_gain(const LinphoneCall *call) {
 	if(call->audiostream) return audio_stream_get_sound_card_output_gain(call->audiostream);
 	else {
 		ms_error("Could not get playback volume: no audio stream");
-		return -1.0;
+		return -1.0f;
 	}
 }
 
-void linphone_call_set_play_percent_volume(LinphoneCall *call, double volume) {
+void linphone_call_set_speaker_volume_gain(LinphoneCall *call, float volume) {
 	if(call->audiostream) audio_stream_set_sound_card_output_gain(call->audiostream, volume);
 	else ms_error("Could not set playback volume: no audio stream");
 }
 
-double linphone_call_get_record_percent_volume(const LinphoneCall *call) {
+float linphone_call_get_microphone_volume_gain(const LinphoneCall *call) {
 	if(call->audiostream) return audio_stream_get_sound_card_input_gain(call->audiostream);
 	else {
 		ms_error("Could not get record volume: no audio stream");
-		return -1.0;
+		return -1.0f;
 	}
 }
 
-void linphone_call_set_record_percent_volume(LinphoneCall *call, double volume) {
+void linphone_call_set_microphone_volume_gain(LinphoneCall *call, float volume) {
 	if(call->audiostream) audio_stream_set_sound_card_input_gain(call->audiostream, volume);
 	else ms_error("Could not set record volume: no audio stream");
 }
