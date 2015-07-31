@@ -282,7 +282,6 @@
 		63AADBF11B6A0FF200AA16FD /* strech-bottom.png in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD31B6A0FF200AA16FD /* strech-bottom.png */; };
 		63AADBF21B6A0FF200AA16FD /* strech-top.png in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD41B6A0FF200AA16FD /* strech-top.png */; };
 		63AADBF31B6A0FF200AA16FD /* licenses.html in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD51B6A0FF200AA16FD /* licenses.html */; };
-		63AADBF41B6A0FF200AA16FD /* licenses.md in Sources */ = {isa = PBXBuildFile; fileRef = 63AADBD61B6A0FF200AA16FD /* licenses.md */; };
 		63AADBF51B6A0FF200AA16FD /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD71B6A0FF200AA16FD /* linphonerc */; };
 		63AADBF61B6A0FF200AA16FD /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD81B6A0FF200AA16FD /* linphonerc-factory */; };
 		63AADBF71B6A0FF200AA16FD /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD91B6A0FF200AA16FD /* linphonerc-factory~ipad */; };
@@ -888,7 +887,6 @@
 		63AADBD31B6A0FF200AA16FD /* strech-bottom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "strech-bottom.png"; sourceTree = "<group>"; };
 		63AADBD41B6A0FF200AA16FD /* strech-top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "strech-top.png"; sourceTree = "<group>"; };
 		63AADBD51B6A0FF200AA16FD /* licenses.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = licenses.html; sourceTree = "<group>"; };
-		63AADBD61B6A0FF200AA16FD /* licenses.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = licenses.md; sourceTree = "<group>"; };
 		63AADBD71B6A0FF200AA16FD /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = linphonerc; sourceTree = "<group>"; };
 		63AADBD81B6A0FF200AA16FD /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-factory"; sourceTree = "<group>"; };
 		63AADBD91B6A0FF200AA16FD /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-factory~ipad"; sourceTree = "<group>"; };
@@ -1876,7 +1874,6 @@
 				63AADBCA1B6A0FF200AA16FD /* Images.xcassets */,
 				63AADBCC1B6A0FF200AA16FD /* launchscreen */,
 				63AADBD51B6A0FF200AA16FD /* licenses.html */,
-				63AADBD61B6A0FF200AA16FD /* licenses.md */,
 				63AADBD71B6A0FF200AA16FD /* linphonerc */,
 				63AADBD81B6A0FF200AA16FD /* linphonerc-factory */,
 				63AADBD91B6A0FF200AA16FD /* linphonerc-factory~ipad */,
@@ -2695,7 +2692,6 @@
 				D3A8BB7015A6C7D500F96BE5 /* UIChatRoomCell.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsViewController.m in Sources */,
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableViewController.m in Sources */,
-				63AADBF41B6A0FF200AA16FD /* licenses.md in Sources */,
 				63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */,
 				D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
 				D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
