@@ -1083,6 +1083,7 @@ struct _LinphoneAccountCreator {
 	char *route;
 	char *email;
 	bool_t subscribe_to_newsletter;
+	char *display_name;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);

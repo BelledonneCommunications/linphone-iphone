@@ -84,6 +84,7 @@ static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
 	if (creator->domain) ms_free(creator->domain);
 	if (creator->route) ms_free(creator->route);
 	if (creator->email) ms_free(creator->email);
+	if (creator->display_name) ms_free(creator->display_name);
 	ms_free(creator);
 }
 
@@ -153,6 +154,14 @@ void linphone_account_creator_set_route(LinphoneAccountCreator *creator, const c
 
 const char * linphone_account_creator_get_route(const LinphoneAccountCreator *creator) {
 	return creator->route;
+}
+
+void linphone_account_creator_set_display_name(LinphoneAccountCreator *creator, const char *display_name) {
+	set_string(&creator->display_name, display_name);
+}
+
+const char * linphone_account_creator_get_display_name(const LinphoneAccountCreator *creator) {
+	return creator->display_name;
 }
 
 void linphone_account_creator_set_email(LinphoneAccountCreator *creator, const char *email) {
@@ -269,12 +278,15 @@ LinphoneAccountCreatorStatus linphone_account_creator_validate(LinphoneAccountCr
 }
 
 LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator) {
-	const LinphoneAddress *identity;
 	LinphoneAuthInfo *info;
 	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(creator->core);
 	char *identity_str = ms_strdup_printf("sip:%s@%s", creator->username, creator->domain);
+	LinphoneAddress *identity = linphone_address_new(identity_str);
+	if (creator->display_name) {
+		linphone_address_set_display_name(identity, creator->display_name);
+	}
 
-	linphone_proxy_config_set_identity(cfg, identity_str);
+	linphone_proxy_config_set_identity(cfg, linphone_address_as_string(identity));
 	linphone_proxy_config_set_server_addr(cfg, creator->domain);
 	linphone_proxy_config_set_route(cfg, creator->route);
 	linphone_proxy_config_enable_publish(cfg, FALSE);
@@ -298,9 +310,9 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 		linphone_core_set_firewall_policy(creator->core, LinphonePolicyUseIce);
 	}
 
-	identity = linphone_proxy_config_get_identity_address(cfg);
 	info = linphone_auth_info_new(linphone_address_get_username(identity), NULL, creator->password, NULL, NULL, linphone_address_get_domain(identity));
 	linphone_core_add_auth_info(creator->core, info);
+	linphone_address_destroy(identity);
 
 	if (linphone_core_add_proxy_config(creator->core, cfg) != -1) {
 		linphone_core_set_default_proxy(creator->core, cfg);
