@@ -67,6 +67,26 @@
 
 #pragma mark - Tests
 
+- (void)testAccountCreation {
+	NSString *username = [NSString stringWithFormat:@"%@-%.2f", [self getUUID], [[NSDate date] timeIntervalSince1970]];
+	[tester tapViewWithAccessibilityLabel:@"Start"];
+	[tester tapViewWithAccessibilityLabel:@"Create linphone.org account" traits:UIAccessibilityTraitButton];
+
+	[tester enterText:username intoViewWithAccessibilityLabel:@"Username"];
+	[tester enterText:username intoViewWithAccessibilityLabel:@"Password "];
+	[tester enterText:username intoViewWithAccessibilityLabel:@"Password again"];
+	[tester enterText:@"testios@.dev.null" intoViewWithAccessibilityLabel:@"Email"];
+
+	[tester tapViewWithAccessibilityLabel:@"Register" traits:UIAccessibilityTraitButton];
+
+	[tester waitForViewWithAccessibilityLabel:@"Check validation" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"Check validation"];
+
+	[tester waitForViewWithAccessibilityLabel:@"Account validation issue"];
+	[tester tapViewWithAccessibilityLabel:@"Continue"];
+	[tester tapViewWithAccessibilityLabel:@"Cancel"];
+}
+
 - (void)testExternalLoginWithTCP {
 	[self _externalLoginWithProtocol:@"TCP"];
 }

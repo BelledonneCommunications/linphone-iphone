@@ -303,7 +303,6 @@
 		63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A0B1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
-		63EA4C951B50189D00922857 /* libmswebrtc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63EA4C941B50189D00922857 /* libmswebrtc.a */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
 		7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0B13E830E400EFC6DC /* libvpx.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
@@ -1197,7 +1196,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63EA4C951B50189D00922857 /* libmswebrtc.a in Frameworks */,
 				63A4280A1B26F576000DAB93 /* libSKP_SILK_SDK.a in Frameworks */,
 				152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */,
 				152F22341B15E83B008C0621 /* libilbcrfc3951.a in Frameworks */,

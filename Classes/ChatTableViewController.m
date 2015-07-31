@@ -82,12 +82,8 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		// store last message in user data
 		LinphoneChatRoom *chat_room = iter->data;
 		MSList *history = linphone_chat_room_get_history(iter->data, 1);
-		assert(ms_list_size(history) <= 1);
 		LinphoneChatMessage *last_msg = history ? history->data : NULL;
-		if (last_msg) {
-			linphone_chat_message_ref(last_msg);
-			linphone_chat_room_set_user_data(chat_room, last_msg);
-		}
+		linphone_chat_room_set_user_data(chat_room, last_msg);
 		sorted = ms_list_insert_sorted(sorted, chat_room, (MSCompareFunc)sorted_history_comparison);
 
 		iter = iter->next;
