@@ -598,7 +598,7 @@ LINPHONE_PUBLIC void linphone_player_close(LinphonePlayer *obj);
 LINPHONE_PUBLIC void linphone_player_destroy(LinphonePlayer *obj);
 
 /**
- * @brief Create an independent media file player.
+ * Create an independent media file player.
  * This player support WAVE and MATROSKA formats.
  * @param lc A LinphoneCore object
  * @param snd_card Playback sound card. If NULL, the sound card set in LinphoneCore will be used
@@ -609,7 +609,7 @@ LINPHONE_PUBLIC void linphone_player_destroy(LinphonePlayer *obj);
 LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id);
 
 /**
- * @brief Check whether Matroksa format is supported by the player
+ * Check whether Matroksa format is supported by the player
  * @return TRUE if it is supported
  */
 LINPHONE_PUBLIC bool_t linphone_local_player_matroska_supported(void);
@@ -723,7 +723,7 @@ LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 
 /**
- * @brief Get speaker volume gain.
+ * Get speaker volume gain.
  * If the sound backend supports it, the returned gain is equal to the gain set
  * with the system mixer.
  * 
@@ -734,7 +734,7 @@ LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 LINPHONE_PUBLIC float linphone_call_get_speaker_volume_gain(const LinphoneCall *call);
 
 /**
- * @brief Set speaker volume gain.
+ * Set speaker volume gain.
  * If the sound backend supports it, the new gain will synchronized with the system mixer.
  * 
  * @param call The call.
@@ -743,7 +743,7 @@ LINPHONE_PUBLIC float linphone_call_get_speaker_volume_gain(const LinphoneCall *
 LINPHONE_PUBLIC void linphone_call_set_speaker_volume_gain(LinphoneCall *call, float volume);
 
 /**
- * @brief Get microphone volume gain.
+ * Get microphone volume gain.
  * If the sound backend supports it, the returned gain is equal to the gain set
  * with the system mixer.
  * 
@@ -754,7 +754,7 @@ LINPHONE_PUBLIC void linphone_call_set_speaker_volume_gain(LinphoneCall *call, f
 LINPHONE_PUBLIC float linphone_call_get_microphone_volume_gain(const LinphoneCall *call);
 
 /**
- * @brief Set microphone volume gain.
+ * Set microphone volume gain.
  * If the sound backend supports it, the new gain will synchronized with the system mixer.
  * 
  * @param call The call.
