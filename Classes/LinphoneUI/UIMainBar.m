@@ -30,7 +30,6 @@ static NSString *const kDisappearAnimation = @"disappear";
 @synthesize historyButton;
 @synthesize contactsButton;
 @synthesize dialerButton;
-@synthesize settingsButton;
 @synthesize chatButton;
 @synthesize historyNotificationView;
 @synthesize historyNotificationLabel;
@@ -222,8 +221,16 @@ static NSString *const kDisappearAnimation = @"disappear";
 	historyButton.selected = [view equal:[HistoryViewController compositeViewDescription]];
 	contactsButton.selected = [view equal:[ContactsViewController compositeViewDescription]];
 	dialerButton.selected = [view equal:[DialerViewController compositeViewDescription]];
-	settingsButton.selected = [view equal:[SettingsViewController compositeViewDescription]];
 	chatButton.selected = [view equal:[ChatViewController compositeViewDescription]];
+	CGRect selectedNewFrame = _selectedBtnView.frame;
+	selectedNewFrame.origin.x =
+		(historyButton.selected
+			 ? historyButton.frame.origin.x
+			 : (contactsButton.selected
+					? contactsButton.frame.origin.x
+					: (dialerButton.selected ? dialerButton.frame.origin.x
+											 : (chatButton.selected ? chatButton.frame.origin.x : 0))));
+	_selectedBtnView.frame = selectedNewFrame;
 }
 
 #pragma mark - Action Functions

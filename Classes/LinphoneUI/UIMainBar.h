@@ -26,17 +26,16 @@
 @property (nonatomic, strong) IBOutlet UIButton* historyButton;
 @property (nonatomic, strong) IBOutlet UIButton* contactsButton;
 @property (nonatomic, strong) IBOutlet UIButton* dialerButton;
-@property (nonatomic, strong) IBOutlet UIButton* settingsButton;
 @property (nonatomic, strong) IBOutlet UIButton* chatButton;
 @property (nonatomic, strong) IBOutlet UIView *historyNotificationView;
 @property (nonatomic, strong) IBOutlet UILabel *historyNotificationLabel;
 @property (nonatomic, strong) IBOutlet UIView *chatNotificationView;
 @property (nonatomic, strong) IBOutlet UILabel *chatNotificationLabel;
+@property(weak, nonatomic) IBOutlet UIView *selectedBtnView;
 
 -(IBAction) onHistoryClick: (id) event;
 -(IBAction) onContactsClick: (id) event;
 -(IBAction) onDialerClick: (id) event;
--(IBAction) onSettingsClick: (id) event;
 -(IBAction) onChatClick: (id) event;
 
 @end
