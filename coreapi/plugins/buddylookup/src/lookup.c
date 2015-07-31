@@ -81,7 +81,7 @@ static void fill_buddy_info(BLReq *blreq, BuddyInfo *bi, GHashTable *ht){
 	}else{
 		strncpy(bi->sip_uri,tmp,sizeof(bi->sip_uri)-1);
 	}
-	
+
 	fill_item(ht,"street",bi->address.street,sizeof(bi->address.street));
 	fill_item(ht,"zip",bi->address.zip,sizeof(bi->address.zip));
 	fill_item(ht,"city",bi->address.town,sizeof(bi->address.town));
@@ -105,7 +105,7 @@ static void fill_buddy_info(BLReq *blreq, BuddyInfo *bi, GHashTable *ht){
 			ms_error("Fail to fetch the image %i",status);
 		}
 	}
-	
+
 }
 
 static MSList * make_buddy_list(BLReq *blreq, GValue *retval){
@@ -156,7 +156,7 @@ static int xml_rpc_parse_response(BLReq *blreq, SoupMessage *sm){
 
 #if SERIALIZE_HTTPS
 /*on windows libsoup support for threads with gnutls is not yet functionnal (only in git)
-This will come in next release of libsoup, probably. 
+This will come in next release of libsoup, probably.
 In the meantime, we are forced to serialize all soup https processing with a big
 ugly global mutex...*/
 
@@ -191,27 +191,26 @@ static int lookup_buddy(SipSetupContext *ctx, BLReq *req){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
 	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
 	LpConfig *config=linphone_core_get_config(lc);
-	const char *identity=linphone_proxy_config_get_identity(cfg);
+	LinphoneAddress *from=linphone_proxy_config_get_identity_address(cfg);
 	const char *url=lp_config_get_string(config,"BuddyLookup","url",NULL);
-	const LinphoneAuthInfo *aa;
+	const LinphoneAuthInfo *auth_info;
 	SoupMessage *sm;
-	LinphoneAddress *from;
-	
+	char *identity;
+
 	if (url==NULL){
 		ms_error("No url defined for BuddyLookup in config file, aborting search.");
 		return -1;
 	}
-
-	from=linphone_address_new(identity);
-	if (from==NULL){
-		ms_error("Could not parse identity %s",identity);
-		return -1;
+	auth_info=linphone_core_find_auth_info(lc,linphone_address_get_domain(from),linphone_address_get_username(from));
+	if (auth_info) {
+		ms_message("There is a password: %s",auth_info->passwd);
+	} else {
+		ms_message("No password for %s on %s",linphone_address_get_username(from),linphone_address_get_domain(from));
 	}
-	aa=linphone_core_find_auth_info(lc,linphone_address_get_domain(from),linphone_address_get_username(from));
-	if (aa) ms_message("There is a password: %s",aa->passwd);
-	else ms_message("No password for %s on %s",linphone_address_get_username(from),linphone_address_get_domain(from));
-	sm=build_xmlrpc_request(identity, aa ? aa->passwd : NULL, req->base.key, linphone_address_get_domain(from), url, req->base.max_results);
-	linphone_address_destroy(from);
+
+	identity=linphone_proxy_config_get_identity(cfg);
+	sm=build_xmlrpc_request(identity, auth_info ? auth_info->passwd : NULL, req->base.key, linphone_address_get_domain(from), url, req->base.max_results);
+	ms_free(identity);
 	req->msg=sm;
 	ortp_thread_create(&req->th,NULL,process_xml_rpc_request,req);
 	if (!sm) return -1;

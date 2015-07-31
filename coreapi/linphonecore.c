@@ -1496,6 +1496,7 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 	linphone_core_start(lc);
 }
 
+
 static int linphone_core_serialization_ref = 0;
 
 static void linphone_core_activate_log_serialization_if_needed(void) {
@@ -1929,30 +1930,16 @@ static void apply_jitter_value(LinphoneCore *lc, int value, MSFormatType stype){
 	}
 }
 
-/**
- * Sets the nominal audio jitter buffer size in milliseconds.
- * The value takes effect immediately for all running and pending calls, if any.
- * A value of 0 disables the jitter buffer.
- *
- * @ingroup media_parameters
-**/
-void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int value)
+void linphone_core_set_audio_jittcomp(LinphoneCore *lc, int milliseconds)
 {
-	lc->rtp_conf.audio_jitt_comp=value;
-	apply_jitter_value(lc, value, MSAudio);
+	lc->rtp_conf.audio_jitt_comp=milliseconds;
+	apply_jitter_value(lc, milliseconds, MSAudio);
 }
 
-/**
- * Sets the nominal video jitter buffer size in milliseconds.
- * The value takes effect immediately for all running and pending calls, if any.
- * A value of 0 disables the jitter buffer.
- *
- * @ingroup media_parameters
-**/
-void linphone_core_set_video_jittcomp(LinphoneCore *lc, int value)
+void linphone_core_set_video_jittcomp(LinphoneCore *lc, int milliseconds)
 {
-	lc->rtp_conf.video_jitt_comp=value;
-	apply_jitter_value(lc, value, MSVideo);
+	lc->rtp_conf.video_jitt_comp=milliseconds;
+	apply_jitter_value(lc, milliseconds, MSVideo);
 }
 
 void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *lc,bool_t rtp_no_xmit_on_audio_mute){
@@ -2562,87 +2549,9 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 }
 
-static LinphoneAddress* _linphone_core_destroy_addr_if_not_sip( LinphoneAddress* addr ){
-	if( linphone_address_is_sip(addr) ) {
-		return addr;
-	} else {
-		linphone_address_destroy(addr);
-		return NULL;
-	}
-}
-
-/**
- * Interpret a call destination as supplied by the user, and returns a fully qualified
- * LinphoneAddress.
- *
- * @ingroup call_control
- *
- * A sip address should look like DisplayName \<sip:username\@domain:port\> .
- * Basically this function performs the following tasks
- * - if a phone number is entered, prepend country prefix of the default proxy
- *   configuration, eventually escape the '+' by 00.
- * - if no domain part is supplied, append the domain name of the default proxy
- * - if no sip: is present, prepend it
- *
- * The result is a syntaxically correct SIP address.
-**/
-
 LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url){
-	enum_lookup_res_t *enumres=NULL;
-	char *enum_domain=NULL;
-	LinphoneProxyConfig *proxy=lc->default_proxy;
-	char *tmpurl;
-	LinphoneAddress *uri;
-
-	if (*url=='\0') return NULL;
-
-	if (is_enum(url,&enum_domain)){
-		linphone_core_notify_display_status(lc,_("Looking for telephone number destination..."));
-		if (enum_lookup(enum_domain,&enumres)<0){
-			linphone_core_notify_display_status(lc,_("Could not resolve this number."));
-			ms_free(enum_domain);
-			return NULL;
-		}
-		ms_free(enum_domain);
-		tmpurl=enumres->sip_address[0];
-		uri=linphone_address_new(tmpurl);
-		enum_lookup_res_free(enumres);
-		return _linphone_core_destroy_addr_if_not_sip(uri);
-	}
-	/* check if we have a "sip:" or a "sips:" */
-	if ( (strstr(url,"sip:")==NULL) && (strstr(url,"sips:")==NULL) ){
-		/* this doesn't look like a true sip uri */
-		if (strchr(url,'@')!=NULL){
-			/* seems like sip: is missing !*/
-			tmpurl=ms_strdup_printf("sip:%s",url);
-			uri=linphone_address_new(tmpurl);
-			ms_free(tmpurl);
-			if (uri){
-				return _linphone_core_destroy_addr_if_not_sip(uri);
-			}
-		}
-
-		if (proxy!=NULL){
-			/* append the proxy domain suffix */
-			const char *identity=linphone_proxy_config_get_identity(proxy);
-			char normalized_username[128];
-			uri=linphone_address_new(identity);
-			if (uri==NULL){
-				return NULL;
-			}
-			linphone_address_set_display_name(uri,NULL);
-			linphone_proxy_config_normalize_number(proxy,url,normalized_username,
-									sizeof(normalized_username));
-			linphone_address_set_username(uri,normalized_username);
-			return _linphone_core_destroy_addr_if_not_sip(uri);
-		}else return NULL;
-	}
-	uri=linphone_address_new(url);
-	if (uri!=NULL){
-		return _linphone_core_destroy_addr_if_not_sip(uri);
-	}
-
-	return NULL;
+	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(lc);
+	return linphone_proxy_config_normalize_sip_uri(proxy, url);
 }
 
 /**
@@ -3361,12 +3270,13 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 **/
 int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
 	int err=0;
-	LinphoneCallState nextstate;
+	LinphoneCallState nextstate, initial_state;
+
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 	bool_t has_video = FALSE;
 #endif
 
-	switch(call->state){
+	switch(initial_state=call->state){
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
 		case LinphoneCallOutgoingRinging:
@@ -3419,7 +3329,11 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			}
 		}
 #endif //defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
-		err = linphone_core_start_update_call(lc, call);
+		if ((err = linphone_core_start_update_call(lc, call)) && call->state!=initial_state) {
+			/*Restore initial state*/
+			linphone_call_set_state(call,initial_state,NULL);
+		}
+
 	}else{
 #ifdef VIDEO_ENABLED
 		if ((call->videostream != NULL) && (call->state == LinphoneCallStreamsRunning)) {
@@ -5065,7 +4979,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 			video_preview_set_size(lc->previewstream,vsize);
 			if (display_filter)
 				video_preview_set_display_filter_name(lc->previewstream,display_filter);
-			if (lc->preview_window_id!=0)
+			if (lc->preview_window_id != NULL)
 				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
 			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
 			video_preview_start(lc->previewstream,lc->video_conf.device);
@@ -5365,7 +5279,7 @@ float linphone_core_get_static_picture_fps(LinphoneCore *lc) {
  *
  * @ingroup media_parameters
 **/
-unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
+void * linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 	if (lc->video_window_id) {
 		/* case where the video id was previously set by the app*/
 		return lc->video_window_id;
@@ -5381,13 +5295,17 @@ unsigned long linphone_core_get_native_video_window_id(const LinphoneCore *lc){
 }
 
 /* unsets the video id for all calls (indeed it may be kept by filters or videostream object itself by paused calls)*/
-static void unset_video_window_id(LinphoneCore *lc, bool_t preview, unsigned long id){
+static void unset_video_window_id(LinphoneCore *lc, bool_t preview, void *id){
 #ifdef VIDEO_ENABLED
 	LinphoneCall *call;
 	MSList *elem;
 #endif
 
-	if (id!=0 && id!=-1) {
+	if ((id != NULL)
+#ifndef _WIN32
+		&& ((unsigned long)id != (unsigned long)-1)
+#endif
+	){
 		ms_error("Invalid use of unset_video_window_id()");
 		return;
 	}
@@ -5404,13 +5322,12 @@ static void unset_video_window_id(LinphoneCore *lc, bool_t preview, unsigned lon
 #endif
 }
 
-/**
- * @ingroup media_parameters
- * Set the native video window id where the video is to be displayed.
- * For MacOS, Linux, Windows: if not set or zero the core will create its own window, unless the special id -1 is given.
-**/
-void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id){
-	if (id==0 || id==(unsigned long)-1){
+void linphone_core_set_native_video_window_id(LinphoneCore *lc, void *id){
+	if ((id == NULL)
+#ifndef _WIN32
+		|| ((unsigned long)id == (unsigned long)-1)
+#endif
+	){
 		unset_video_window_id(lc,FALSE,id);
 	}
 	lc->video_window_id=id;
@@ -5429,7 +5346,7 @@ void linphone_core_set_native_video_window_id(LinphoneCore *lc, unsigned long id
  *
  * @ingroup media_parameters
 **/
-unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc){
+void * linphone_core_get_native_preview_window_id(const LinphoneCore *lc){
 	if (lc->preview_window_id){
 		/*case where the id was set by the app previously*/
 		return lc->preview_window_id;
@@ -5452,8 +5369,12 @@ unsigned long linphone_core_get_native_preview_window_id(const LinphoneCore *lc)
  * This has to be used in conjonction with linphone_core_use_preview_window().
  * MacOS, Linux, Windows: if not set or zero the core will create its own window, unless the special id -1 is given.
 **/
-void linphone_core_set_native_preview_window_id(LinphoneCore *lc, unsigned long id){
-	if (id==0 || id==(unsigned long)-1){
+void linphone_core_set_native_preview_window_id(LinphoneCore *lc, void *id){
+	if ((id == NULL)
+#ifndef _WIN32
+		|| ((unsigned long)id == (unsigned long)-1)
+#endif
+	) {
 		unset_video_window_id(lc,TRUE,id);
 	}
 	lc->preview_window_id=id;
@@ -6020,7 +5941,8 @@ void sip_config_uninit(LinphoneCore *lc)
 			sal_iterate(lc->sal);
 			for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
 				LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
-				still_registered|=linphone_proxy_config_is_registered(cfg);
+				LinphoneRegistrationState state = linphone_proxy_config_get_state(cfg);
+				still_registered|=(state==LinphoneRegistrationOk||state==LinphoneRegistrationProgress);
 			}
 			ms_usleep(100000);
 		}
@@ -6471,6 +6393,21 @@ LinphonePayloadType* linphone_core_find_payload_type(LinphoneCore* lc, const cha
 		}
 	}
 	/*not found*/
+	return NULL;
+}
+
+const char* linphone_configuring_state_to_string(LinphoneConfiguringState cs){
+	switch(cs){
+		case LinphoneConfiguringSuccessful:
+			return "LinphoneConfiguringSuccessful";
+		break;
+		case LinphoneConfiguringFailed:
+			return "LinphoneConfiguringFailed";
+		break;
+		case LinphoneConfiguringSkipped:
+			return "LinphoneConfiguringSkipped";
+		break;
+	}
 	return NULL;
 }
 

@@ -490,6 +490,7 @@ Sal * sal_init(){
 	sal->tls_verify_cn=TRUE;
 	sal->refresher_retry_after=60000; /*default value in ms*/
 	sal->enable_sip_update=TRUE;
+	sal->pending_trans_checking=TRUE;
 	return sal;
 }
 
@@ -1171,4 +1172,13 @@ void sal_enable_sip_update_method(Sal *ctx,bool_t value) {
 void sal_default_set_sdp_handling(Sal *sal, SalOpSDPHandling sdp_handling_method)  {
 	if (sdp_handling_method != SalOpSDPNormal ) ms_message("Enabling special SDP handling for all new SalOp in Sal[%p]!", sal);
 	sal->default_sdp_handling = sdp_handling_method;
+}
+
+bool_t sal_pending_trans_checking_enabled(const Sal *sal) {
+	return sal->pending_trans_checking;
+}
+
+int sal_enable_pending_trans_checking(Sal *sal, bool_t value) {
+	sal->pending_trans_checking = value;
+	return 0;
 }

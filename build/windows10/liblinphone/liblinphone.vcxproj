@@ -175,10 +175,10 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <PreBuildEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">version.bat</Command>
+      <Command>version.bat</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Batch script to get the git version</Message>
+      <Message>Batch script to get the git version</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

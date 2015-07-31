@@ -481,7 +481,8 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	reporting_session_report_t * report = call->log->reporting.reports[stats_type];
 	char * dialog_id;
 
-	if (!media_report_enabled(call, stats_type))
+	// call->op might be already released if hanging up in state LinphoneCallOutgoingInit
+	if (!media_report_enabled(call, stats_type) || call->op == NULL)
 		return;
 
 	dialog_id = sal_op_get_dialog_id(call->op);

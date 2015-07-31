@@ -240,6 +240,7 @@ bool_t transport_supported(LinphoneTransportType transport) {
 LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	char *rc_path = NULL;
+	char *hellopath = bc_tester_res("sounds/hello8000.wav");
 	mgr->number_of_cunit_error_at_creation = CU_get_number_of_failures();
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
@@ -289,16 +290,17 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 #endif
 
 
+	linphone_core_set_play_file(mgr->lc,hellopath); /*is also used when in pause*/
+	ms_free(hellopath);
+
 	if( manager_count >= 2){
-		char *hellopath = bc_tester_res("sounds/hello8000.wav");
 		char *recordpath = ms_strdup_printf("%s/record_for_lc_%p.wav",bc_tester_get_writable_dir_prefix(),mgr->lc);
 		ms_message("Manager for '%s' using files", rc_file ? rc_file : "--");
 		linphone_core_set_use_files(mgr->lc, TRUE);
-		linphone_core_set_play_file(mgr->lc,hellopath);
 		linphone_core_set_record_file(mgr->lc,recordpath);
 		ms_free(recordpath);
-		ms_free(hellopath);
 	}
+
 	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_get_writable_dir_prefix());
 
 	if (rc_path) ms_free(rc_path);
@@ -329,7 +331,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, const char* rc_file, 
 
 	linphone_core_get_default_proxy(mgr->lc,&proxy);
 	if (proxy) {
-		mgr->identity = linphone_address_new(linphone_proxy_config_get_identity(proxy));
+		mgr->identity = linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
 		linphone_address_clean(mgr->identity);
 	}
 }

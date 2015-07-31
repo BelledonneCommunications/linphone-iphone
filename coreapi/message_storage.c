@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MAX_PATH_SIZE 1024
 
 #include "sqlite3.h"
+#include <assert.h>
 
 static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
 	MSList* transients = cr->transient_messages;
@@ -286,6 +287,9 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	char *buf;
 
 	if (lc->db==NULL) return ;
+	
+	// optimization: do not modify the database if no message is marked as unread
+	if(linphone_chat_room_get_unread_messages_count(cr) == 0) return;
 
 	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 	buf=sqlite3_mprintf("UPDATE history SET read=%i WHERE remoteContact = %Q;",
@@ -293,6 +297,8 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 	ms_free(peer);
+	
+	cr->unread_count = 0;
 }
 
 void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
@@ -315,6 +321,9 @@ static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t un
 	int returnValue;
 
 	if (lc->db==NULL) return 0;
+	
+	// optimization: do not read database if the count is already available in memory
+	if(unread_only && cr->unread_count >= 0) return cr->unread_count;
 
 	peer=linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 	buf=sqlite3_mprintf("SELECT count(*) FROM history WHERE remoteContact = %Q %s;",peer,unread_only?"AND read = 0":"");
@@ -327,6 +336,11 @@ static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t un
 	sqlite3_finalize(selectStatement);
 	sqlite3_free(buf);
 	ms_free(peer);
+	
+	/* no need to test the sign of cr->unread_count here
+	 * because it has been tested above */
+	if(unread_only) cr->unread_count = numrows;
+	
 	return numrows;
 }
 
@@ -347,6 +361,11 @@ void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage
 	buf=sqlite3_mprintf("DELETE FROM history WHERE id = %i;", msg->storage_id);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
+	
+	if(cr->unread_count >= 0 && !msg->is_read) {
+		assert(cr->unread_count > 0);
+		cr->unread_count--;
+	}
 }
 
 void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
@@ -361,6 +380,8 @@ void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 	ms_free(peer);
+	
+	if(cr->unread_count > 0) cr->unread_count = 0;
 }
 
 MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){

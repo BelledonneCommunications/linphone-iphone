@@ -35,6 +35,7 @@ linphone_include_HEADERS=\
 	linphonecore_utils.h \
 	linphonefriend.h \
 	linphonepresence.h \
+	linphone_proxy_config.h \
 	linphone_tunnel.h \
 	lpc2xml.h \
 	lpconfig.h \
@@ -59,17 +60,16 @@ liblinphone_la_SOURCES=\
 	dict.c \
 	ec-calibrator.c \
 	enum.c enum.h \
-	event.c event.h \
+	event.c \
 	friend.c \
 	info.c \
 	ldap/ldapprovider.c ldap/ldapprovider.h \
 	linphonecall.c \
-	linphonecore.c linphonecore.h \
-	linphonecore_utils.h \
+	linphonecore.c \
 	localplayer.c \
 	lpc2xml.c \
 	lime.c lime.h\
-	lpconfig.c lpconfig.h \
+	lpconfig.c \
 	lsd.c \
 	message_storage.c \
 	misc.c  \
@@ -82,7 +82,7 @@ liblinphone_la_SOURCES=\
 	remote_provisioning.c \
 	sal.c \
 	siplogin.c \
-	sipsetup.c sipsetup.h \
+	sipsetup.c \
 	xml2lpc.c \
 	xml.c \
 	xmlrpc.c \

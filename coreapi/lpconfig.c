@@ -85,6 +85,17 @@ struct _LpConfig{
 	int readonly;
 };
 
+char* lp_realpath(const char* file, char* name) {
+#ifdef _WIN32
+	return ms_strdup(file);
+#else
+	char * output = realpath(file, name);
+	char * msoutput = ms_strdup(output);
+	free(output);
+	return msoutput;
+#endif
+}
+
 LpItem * lp_item_new(const char *key, const char *value){
 	LpItem *item=lp_new0(LpItem,1);
 	item->key=ortp_strdup(key);
@@ -359,16 +370,16 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
-		ms_message("Using (r/w) config information from %s", config_filename);
-		lpconfig->filename=ortp_strdup(config_filename);
-		lpconfig->tmpfilename=ortp_strdup_printf("%s.tmp",config_filename);
+		lpconfig->filename=lp_realpath(config_filename, NULL);
+		lpconfig->tmpfilename=ortp_strdup_printf("%s.tmp",lpconfig->filename);
+		ms_message("Using (r/w) config information from %s", lpconfig->filename);
 
 #if !defined(_WIN32)
 		{
 			struct stat fileStat;
-			if ((stat(config_filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
+			if ((stat(lpconfig->filename,&fileStat) == 0) && (S_ISREG(fileStat.st_mode))) {
 				/* make existing configuration files non-group/world-accessible */
-				if (chmod(config_filename, S_IRUSR | S_IWUSR) == -1) {
+				if (chmod(lpconfig->filename, S_IRUSR | S_IWUSR) == -1) {
 					ms_warning("unable to correct permissions on "
 						"configuration file: %s", strerror(errno));
 				}
@@ -400,14 +411,16 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 }
 
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
-	FILE* f=fopen(filename,"r");
+	char* path = lp_realpath(filename, NULL);
+	FILE* f=fopen(path,"r");
 	if (f!=NULL){
-		ms_message("Reading config information from %s", filename);
+		ms_message("Reading config information from %s", path);
 		lp_config_parse(lpconfig,f);
 		fclose(f);
 		return 0;
 	}
-	ms_warning("Fail to open file %s",filename);
+	ms_warning("Fail to open file %s",path);
+	ms_free(path);
 	return -1;
 }
 
@@ -725,9 +738,11 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 	} else {
 		char *dir = _lp_config_dirname(lpconfig->filename);
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
-		FILE *file = fopen(filepath, "r");
+		char *realfilepath = lp_realpath(filepath, NULL);
+		FILE *file = fopen(realfilepath, "r");
 		ms_free(dir);
 		ms_free(filepath);
+		ms_free(realfilepath);
 		if (file) {
 			fclose(file);
 		}
@@ -740,15 +755,17 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	if(strlen(data) > 0) {
 		char *dir = _lp_config_dirname(lpconfig->filename);
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
-		FILE *file = fopen(filepath, "w");
+		char *realfilepath = lp_realpath(filepath, NULL);
+		FILE *file = fopen(realfilepath, "w");
 		if(file != NULL) {
 			fprintf(file, "%s", data);
 			fclose(file);
 		} else {
-			ms_error("Could not open %s for write", filepath);
+			ms_error("Could not open %s for write", realfilepath);
 		}
 		ms_free(dir);
 		ms_free(filepath);
+		ms_free(realfilepath);
 	} else {
 		ms_warning("%s has not been created because there is no data to write", filename);
 	}
@@ -758,27 +775,30 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	char *dir;
 	char *filepath;
 	FILE *file;
-
+	char* realfilepath;
 	if (lpconfig->filename == NULL) return -1;
 	dir = _lp_config_dirname(lpconfig->filename);
 	filepath = ms_strdup_printf("%s/%s", dir, filename);
-	file = fopen(filepath, "r");
+	realfilepath = lp_realpath(filepath, NULL);
+	file = fopen(realfilepath, "r");
 	if(file != NULL) {
 		if(fread(data, 1, max_length, file)<=0) {
-			ms_error("%s could not be loaded. %s", filepath, strerror(errno));
+			ms_error("%s could not be loaded. %s", realfilepath, strerror(errno));
 			goto err;
 		}
 		fclose(file);
 	} else {
-		ms_error("Could not open %s for read. %s", filepath, strerror(errno));
+		ms_error("Could not open %s for read. %s", realfilepath, strerror(errno));
 		goto err;
 	}
 	ms_free(dir);
 	ms_free(filepath);
+	ms_free(realfilepath);
 	return 0;
 
 err:
 	ms_free(dir);
 	ms_free(filepath);
+	ms_free(realfilepath);
 	return -1;
 }

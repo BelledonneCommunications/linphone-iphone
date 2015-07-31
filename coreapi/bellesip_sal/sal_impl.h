@@ -51,6 +51,7 @@ struct Sal{
 	bool_t no_initial_route;
 	bool_t enable_sip_update; /*true by default*/
 	SalOpSDPHandling default_sdp_handling;
+	bool_t pending_trans_checking; /*testing purpose*/
 };
 
 typedef enum SalOpState {

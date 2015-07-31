@@ -65,15 +65,6 @@
 
 #endif /*_WIN32_WCE*/
 
-#ifdef ENABLE_NLS
-#include <libintl.h>
-#ifndef _
-#define _(String) gettext(String)
-#endif
-#else
-#define _(something)	(something)
-#endif
-
 #ifndef PACKAGE_DIR
 #define PACKAGE_DIR ""
 #endif
@@ -164,7 +155,7 @@ static char zrtpsecrets[PATH_MAX];
 static char usr_certificates_path[PATH_MAX];
 static const char *factory_configfile_name=NULL;
 static char *sip_addr_to_call = NULL; /* for autocall */
-static int window_id = 0; /* 0=standalone window, or window id for embedding video */
+static void *window_id = NULL; /* NULL=standalone window, or window id for embedding video */
 #if !defined(_WIN32_WCE)
 static ortp_pipe_t client_sock=ORTP_PIPE_INVALID;
 #endif /*_WIN32_WCE*/
@@ -714,16 +705,6 @@ linphonec_init(int argc, char **argv)
 		default:
 			break;
 	}
-#ifdef ENABLE_NLS
-	if (NULL == bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR))
-		perror ("bindtextdomain failed");
-#ifndef __ARM__
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-#endif
-	textdomain (GETTEXT_PACKAGE);
-#else
-	printf ("NLS disabled.\n");
-#endif
 
 	linphonec_parse_cmdline(argc, argv);
 
@@ -759,9 +740,9 @@ linphonec_init(int argc, char **argv)
 	linphone_core_set_user_certificates_path(linphonec,usr_certificates_path);
 	linphone_core_enable_video_capture(linphonec, vcap_enabled);
 	linphone_core_enable_video_display(linphonec, display_enabled);
-	if (display_enabled && window_id != 0)
+	if (display_enabled && (window_id != NULL))
 	{
-		printf("Setting window_id: 0x%x\n", window_id);
+		printf("Setting window_id: 0x%p\n", window_id);
 		linphone_core_set_native_video_window_id(linphonec,window_id);
 	}
 
@@ -985,28 +966,29 @@ static void x11_apply_video_params(VideoParams *params, Window window){
 
 
 static void lpc_apply_video_params(){
-	static unsigned long old_wid=0,old_pwid=0;
-	unsigned long wid=linphone_core_get_native_video_window_id (linphonec);
-	unsigned long pwid=linphone_core_get_native_preview_window_id (linphonec);
+	static void *old_wid=NULL;
+	static void *old_pwid=NULL;
+	void *wid=linphone_core_get_native_video_window_id(linphonec);
+	void *pwid=linphone_core_get_native_preview_window_id(linphonec);
 
-	if (wid!=0 && (lpc_video_params.refresh || old_wid!=wid)){
+	if (wid!=NULL && (lpc_video_params.refresh || old_wid!=wid)){
 		lpc_video_params.refresh=FALSE;
 #ifdef HAVE_X11_XLIB_H
 		if (lpc_video_params.wid==0){  // do not manage window if embedded
-			x11_apply_video_params(&lpc_video_params,wid);
+			x11_apply_video_params(&lpc_video_params,(Window)wid);
 		} else {
 		        linphone_core_show_video(linphonec, lpc_video_params.show);
 		}
 #endif
 	}
 	old_wid=wid;
-	if (pwid!=0 && (lpc_preview_params.refresh || old_pwid!=pwid)){
+	if (pwid!=NULL && (lpc_preview_params.refresh || old_pwid!=pwid)){
 		lpc_preview_params.refresh=FALSE;
 #ifdef HAVE_X11_XLIB_H
-		/*printf("wid=%lu pwid=%lu\n",wid,pwid);*/
-		if (lpc_preview_params.wid==0){  // do not manage window if embedded
+		/*printf("wid=%p pwid=%p\n",wid,pwid);*/
+		if (lpc_preview_params.wid==NULL){  // do not manage window if embedded
 			printf("Refreshing\n");
-			x11_apply_video_params(&lpc_preview_params,pwid);
+			x11_apply_video_params(&lpc_preview_params,(Window)pwid);
 		}
 #endif
 	}
@@ -1303,7 +1285,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 			arg_num++;
 			if (arg_num < argc) {
 				char *tmp;
-				window_id = strtol( argv[arg_num], &tmp, 0 );
+				window_id = (void *)strtol( argv[arg_num], &tmp, 0 );
 				lpc_video_params.wid = window_id;
 			}
 		}

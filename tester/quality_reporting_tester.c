@@ -170,6 +170,8 @@ static void quality_reporting_not_sent_if_call_not_started() {
 
 	linphone_core_set_max_calls(pauline->lc,0);
 	out_call = linphone_core_invite(marie->lc,"pauline");
+	BC_ASSERT_PTR_NOT_NULL(out_call);
+	if(out_call == NULL) goto end;
 	linphone_call_ref(out_call);
 
 	BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallError,1, 10000));
@@ -189,6 +191,7 @@ static void quality_reporting_not_sent_if_call_not_started() {
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0, int, "%d");
 
+end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

@@ -266,7 +266,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const Payloa
 }
 
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret){
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined(LINPHONE_WINDOWS_UNIVERSAL)
 	FILE *f=popen(command,"r");
 	if (f!=NULL){
 		int err;

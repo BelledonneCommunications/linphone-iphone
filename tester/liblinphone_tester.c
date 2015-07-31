@@ -169,7 +169,7 @@ void liblinphone_tester_uninit(void) {
 }
 
 
-#if !defined(ANDROID) && !__ios && !(defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL))
+#if !__ios && !(defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL))
 
 static const char* liblinphone_helper =
 		"\t\t\t--verbose\n"
@@ -195,6 +195,14 @@ int main (int argc, char *argv[])
 #endif
 
 	liblinphone_tester_init(NULL);
+
+	if (strstr(argv[0], ".libs")) {
+		char res_dir[128] = {0};
+		// this allows to launch liblinphone_tester from outside of tester directory
+		strncpy(res_dir, argv[0], strstr(argv[0], ".libs")-argv[0]);
+		bc_tester_set_resource_dir_prefix(res_dir);
+		bc_tester_set_writable_dir_prefix(res_dir);
+	}
 
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
@@ -226,14 +234,14 @@ int main (int argc, char *argv[])
 		} else if (strcmp(argv[i],"--keep-recorded-files")==0){
 			liblinphone_tester_keep_recorded_files(TRUE);
 		} else {
-			int ret = bc_tester_parse_args(argc, argv, i);
-			if (ret>0) {
-				i += ret - 1;
+			int bret = bc_tester_parse_args(argc, argv, i);
+			if (bret>0) {
+				i += bret - 1;
 				continue;
-			} else if (ret<0) {
+			} else if (bret<0) {
 				bc_tester_helper(argv[0], liblinphone_helper);
 			}
-			return ret;
+			return bret;
 		}
 	}
 

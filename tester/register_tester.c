@@ -680,7 +680,7 @@ static void io_recv_error_retry_immediatly(){
 		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0,int,"%d");
 		sal_set_recv_error(lc->sal, 1); /*reset*/
 
-		BC_ASSERT_TRUE(wait_for(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy+register_ok));
+		BC_ASSERT_TRUE(wait_for_until(lc,lc,&counters->number_of_LinphoneRegistrationOk,register_ok-number_of_udp_proxy+register_ok,30000));
 
 		linphone_core_manager_destroy(lcm);
 	}

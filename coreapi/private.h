@@ -66,7 +66,20 @@ extern "C" {
 #endif
 
 #ifdef ENABLE_NLS
+
+#ifdef _MSC_VER
+// prevent libintl.h from re-defining fprintf and vfprintf
+#ifndef fprintf
+#define fprintf fprintf
+#endif
+#ifndef vfprintf
+#define vfprintf vfprintf
+#endif
+#define _GL_STDIO_H
+#endif
+
 #include <libintl.h>
+	
 #ifndef _
 #define _(String) dgettext(GETTEXT_PACKAGE,String)
 #endif
@@ -252,7 +265,7 @@ struct _LinphoneCall{
 	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
-	unsigned long video_window_id;
+	void *video_window_id;
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
 	LinphoneCallParams *params;
@@ -340,7 +353,6 @@ void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
  * Can be NULL
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
-LINPHONE_PUBLIC char* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg);
 
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
@@ -478,6 +490,9 @@ typedef enum _LinphoneProxyConfigAddressComparisonResult{
 
 LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b);
 LINPHONE_PUBLIC LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* obj);
+/**
+ * unregister without moving the register_enable flag
+ */
 void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj);
 void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
@@ -494,9 +509,9 @@ struct _LinphoneProxyConfig
 	struct _LinphoneCore *lc;
 	char *reg_proxy;
 	char *reg_identity;
+	LinphoneAddress* identity_address;
 	char *reg_route;
 	char *quality_reporting_collector;
-	char *domain;
 	char *realm;
 	char *contact_params;
 	char *contact_uri_params;
@@ -528,6 +543,7 @@ struct _LinphoneProxyConfig
 	LinphoneAddress *saved_proxy;
 	LinphoneAddress *saved_identity;
 	/*---*/
+	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/
 
 };
 
@@ -556,6 +572,7 @@ struct _LinphoneChatRoom{
 	LinphoneAddress *peer_url;
 	MSList *messages_hist;
 	MSList *transient_messages;
+	int unread_count;
 	LinphoneIsComposingState remote_is_composing;
 	LinphoneIsComposingState is_composing;
 	belle_sip_source_t *remote_composing_refresh_timer;
@@ -784,8 +801,8 @@ struct _LinphoneCore
 	int audio_bw; /*IP bw consumed by audio codec, set as soon as used codec is known, its purpose is to know the remaining bw for video*/
 	LinphoneCoreWaitingCallback wait_cb;
 	void *wait_ctx;
-	unsigned long video_window_id;
-	unsigned long preview_window_id;
+	void *video_window_id;
+	void *preview_window_id;
 	time_t netup_time; /*time when network went reachable */
 	struct _EcCalibrator *ecc;
 	MSList *hooks;
@@ -1066,6 +1083,7 @@ struct _LinphoneAccountCreator {
 	char *route;
 	char *email;
 	bool_t subscribe_to_newsletter;
+	char *display_name;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);

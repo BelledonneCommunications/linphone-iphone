@@ -584,7 +584,6 @@ void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, Li
 	SalMediaDescription *old_md=call->localdesc;
 	int i;
 	int nb_active_streams = 0;
-	const char *me;
 	SalMediaDescription *md=sal_media_description_new();
 	LinphoneAddress *addr;
 	const char *subject;
@@ -605,11 +604,11 @@ void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, Li
 
 	linphone_core_adapt_to_network(lc,call->ping_time,params);
 
-	if (call->dest_proxy)
-		me=linphone_proxy_config_get_identity(call->dest_proxy);
-	else
-		me=linphone_core_get_identity(lc);
-	addr=linphone_address_new(me);
+	if (call->dest_proxy) {
+		addr=linphone_address_clone(linphone_proxy_config_get_identity_address(call->dest_proxy));
+	} else {
+		addr=linphone_address_new(linphone_core_get_identity(lc));
+	}
 
 	md->session_id=(old_md ? old_md->session_id : (rand() & 0xfff));
 	md->session_ver=(old_md ? (old_md->session_ver+1) : (rand() & 0xfff));
@@ -2506,6 +2505,7 @@ static RtpSession * create_audio_rtp_io_session(LinphoneCall *call) {
 	int remote_port = lp_config_get_int(lc->config, "sound", "rtp_remote_port", 17078);
 	int ptnum = lp_config_get_int(lc->config, "sound", "rtp_ptnum", 0);
 	const char *rtpmap = lp_config_get_string(lc->config, "sound", "rtp_map", "pcmu/8000/1");
+	int symmetric = lp_config_get_int(lc->config, "sound", "rtp_symmetric", 0);
 	RtpSession *rtp_session = NULL;
 	pt = rtp_profile_get_payload_from_rtpmap(call->audio_profile, rtpmap);
 	if (pt != NULL) {
@@ -2517,6 +2517,7 @@ static RtpSession * create_audio_rtp_io_session(LinphoneCall *call) {
 		rtp_session_enable_rtcp(rtp_session, FALSE);
 		rtp_session_set_payload_type(rtp_session, ptnum);
 		rtp_session_set_jitter_compensation(rtp_session, linphone_core_get_audio_jittcomp(lc));
+		rtp_session_set_symmetric_rtp(rtp_session, (bool_t)symmetric);
 	}
 	return rtp_session;
 }
@@ -2569,6 +2570,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				playfile=NULL;
 			}else if (stream->dir==SalStreamSendOnly){
 				playcard=NULL;
+				/*jehan: why capture card should be null in this case ? Not very good to only rely on stream dir to detect paused state.
+				 * It can also be a simple call in one way audio*/
 				captcard=NULL;
 				recfile=NULL;
 				/*And we will eventually play "playfile" if set by the user*/
@@ -2631,6 +2634,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				if (io.rtp_session == NULL) {
 					ok = FALSE;
 				}
+			} else if (stream->dir==SalStreamSendOnly) { /*no very good, io.xx versus playcard,captcard and call state should be reworked*/
+				io.input_file = playfile; /*quick fix to restaure current behavior which is  SalStreamSendOnly=Paused=playfile*/
 			} else {
 				io.playback_card = playcard;
 				io.capture_card = captcard;
@@ -2681,6 +2686,7 @@ static RtpSession * create_video_rtp_io_session(LinphoneCall *call) {
 	int remote_port = lp_config_get_int(lc->config, "video", "rtp_remote_port", 19078);
 	int ptnum = lp_config_get_int(lc->config, "video", "rtp_ptnum", 0);
 	const char *rtpmap = lp_config_get_string(lc->config, "video", "rtp_map", "vp8/90000/1");
+	int symmetric = lp_config_get_int(lc->config, "video", "rtp_symmetric", 0);
 	RtpSession *rtp_session = NULL;
 	pt = rtp_profile_get_payload_from_rtpmap(call->video_profile, rtpmap);
 	if (pt != NULL) {
@@ -2691,6 +2697,7 @@ static RtpSession * create_video_rtp_io_session(LinphoneCall *call) {
 		rtp_session_set_remote_addr_and_port(rtp_session, remote_ip, remote_port, -1);
 		rtp_session_enable_rtcp(rtp_session, FALSE);
 		rtp_session_set_payload_type(rtp_session, ptnum);
+		rtp_session_set_symmetric_rtp(rtp_session, (bool_t)symmetric);
 	}
 	return rtp_session;
 }
@@ -2740,12 +2747,12 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 			video_stream_set_fps(call->videostream,linphone_core_get_preferred_framerate(lc));
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
-			if (call->video_window_id != 0)
-				video_stream_set_native_window_id(call->videostream,call->video_window_id);
-			else if (lc->video_window_id!=0)
-				video_stream_set_native_window_id(call->videostream,lc->video_window_id);
-			if (lc->preview_window_id!=0)
-				video_stream_set_native_preview_window_id (call->videostream,lc->preview_window_id);
+			if (call->video_window_id != NULL)
+				video_stream_set_native_window_id(call->videostream, call->video_window_id);
+			else if (lc->video_window_id != NULL)
+				video_stream_set_native_window_id(call->videostream, lc->video_window_id);
+			if (lc->preview_window_id != NULL)
+				video_stream_set_native_preview_window_id(call->videostream, lc->preview_window_id);
 			video_stream_use_preview_video_window (call->videostream,lc->use_preview_window);
 
 			if (is_multicast){
@@ -3198,6 +3205,32 @@ float linphone_call_get_record_volume(LinphoneCall *call){
 
 	}
 	return LINPHONE_VOLUME_DB_LOWEST;
+}
+
+float linphone_call_get_speaker_volume_gain(const LinphoneCall *call) {
+	if(call->audiostream) return audio_stream_get_sound_card_output_gain(call->audiostream);
+	else {
+		ms_error("Could not get playback volume: no audio stream");
+		return -1.0f;
+	}
+}
+
+void linphone_call_set_speaker_volume_gain(LinphoneCall *call, float volume) {
+	if(call->audiostream) audio_stream_set_sound_card_output_gain(call->audiostream, volume);
+	else ms_error("Could not set playback volume: no audio stream");
+}
+
+float linphone_call_get_microphone_volume_gain(const LinphoneCall *call) {
+	if(call->audiostream) return audio_stream_get_sound_card_input_gain(call->audiostream);
+	else {
+		ms_error("Could not get record volume: no audio stream");
+		return -1.0f;
+	}
+}
+
+void linphone_call_set_microphone_volume_gain(LinphoneCall *call, float volume) {
+	if(call->audiostream) audio_stream_set_sound_card_input_gain(call->audiostream, volume);
+	else ms_error("Could not set record volume: no audio stream");
 }
 
 /**
@@ -4037,7 +4070,7 @@ void linphone_call_cancel_dtmfs(LinphoneCall *call) {
 	}
 }
 
-unsigned long linphone_call_get_native_video_window_id(const LinphoneCall *call) {
+void * linphone_call_get_native_video_window_id(const LinphoneCall *call) {
 	if (call->video_window_id) {
 		/* The video id was previously set by the app. */
 		return call->video_window_id;
@@ -4051,7 +4084,7 @@ unsigned long linphone_call_get_native_video_window_id(const LinphoneCall *call)
 	return 0;
 }
 
-void linphone_call_set_native_video_window_id(LinphoneCall *call, unsigned long id) {
+void linphone_call_set_native_video_window_id(LinphoneCall *call, void *id) {
 	call->video_window_id = id;
 #ifdef VIDEO_ENABLED
 	if (call->videostream) {

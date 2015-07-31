@@ -31,13 +31,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ldap/ldapprovider.h"
 
 #ifdef ENABLE_NLS
+
+#ifdef _MSC_VER
+// prevent libintl.h from re-defining fprintf and vfprintf
+#ifndef fprintf
+#define fprintf fprintf
+#endif
+#ifndef vfprintf
+#define vfprintf vfprintf
+#endif
+#define _GL_STDIO_H
+#endif
+
 # include <libintl.h>
 # undef _
 # define _(String) dgettext (GETTEXT_PACKAGE,String)
 #else
 # define _(String) (String)
 # define ngettext(singular,plural,number) ((number>1) ? (plural) : (singular) )
-#endif
+#endif // ENABLE_NLS
 
 #undef N_
 #define N_(str) (str)
@@ -95,7 +107,6 @@ LINPHONE_PUBLIC void linphone_gtk_close_assistant(void);
 LINPHONE_PUBLIC LinphoneCore *linphone_gtk_get_core(void);
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_main_window();
 LINPHONE_PUBLIC void linphone_gtk_display_something(GtkMessageType type, const gchar *message);
-LINPHONE_PUBLIC void linphone_gtk_start_call(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_call_terminated();
 LINPHONE_PUBLIC void linphone_gtk_set_my_presence(LinphoneOnlineStatus ss);
 LINPHONE_PUBLIC void linphone_gtk_show_parameters(void);
@@ -228,6 +239,7 @@ LINPHONE_PUBLIC void linphone_gtk_logout_clicked(void);
 LINPHONE_PUBLIC void linphone_gtk_about_response(GtkDialog *dialog, gint id);
 LINPHONE_PUBLIC void linphone_gtk_show_about(void);
 LINPHONE_PUBLIC void linphone_gtk_start_call(GtkWidget *w);
+LINPHONE_PUBLIC void linphone_gtk_start_chat(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_uri_bar_activate(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_terminate_call(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_decline_clicked(GtkWidget *button);

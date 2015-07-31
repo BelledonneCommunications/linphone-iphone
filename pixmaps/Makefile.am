@@ -9,10 +9,10 @@ pixmap_DATA= \
 	status-red.png \
 	status-offline.png \
 	call.png \
-	chat.png active_chat.png composing_chat.png composing_active_chat.png\
+	chat.png chat_start.png active_chat.png composing_chat.png composing_active_chat.png\
 	chat_message_inprogress.png chat_message_delivered.png chat_message_not_delivered.png\
-	contact-orange.png dialer-orange.png history-orange.png\
-	startcall-green.png startcall-small.png stopcall-red.png stopcall-small.png addcall-green.png linphone.icns \
+	contact-orange.png history-orange.png\
+	call_start.png startcall-small.png stopcall-red.png stopcall-small.png call_add.png linphone.icns \
 	contact_starred.png contact_unstarred.png \
 	speaker.png \
 	call_status_incoming.png call_status_outgoing.png \

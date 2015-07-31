@@ -32,7 +32,7 @@ static void _local_player_close(LinphonePlayer *obj);
 static void _local_player_destroy(LinphonePlayer *obj);
 static void _local_player_eof_callback(void *user_data);
 
-LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, unsigned long window_id) {
+LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id) {
 	LinphonePlayer *obj = ms_new0(LinphonePlayer, 1);
 	if(snd_card == NULL) snd_card = lc->sound_conf.ring_sndcard;
 	if(video_out == NULL) video_out = linphone_core_get_video_display_filter(lc);

@@ -704,7 +704,7 @@ LINPHONE_PUBLIC void sal_default_set_sdp_handling(Sal* h, SalOpSDPHandling handl
 LINPHONE_PUBLIC void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling) ;
 
 /*Registration*/
-int sal_register(SalOp *op, const char *proxy, const char *from, int expires);
+int sal_register(SalOp *op, const char *proxy, const char *from, int expires,SalAddress* old_contact);
 /*refresh a register, -1 mean use the last known value*/
 int sal_register_refresh(SalOp *op, int expires);
 int sal_unregister(SalOp *h);
@@ -799,6 +799,11 @@ LINPHONE_PUBLIC	void sal_set_recv_error(Sal *sal,int value);
 
 /*always answer 480 if value=true*/
 LINPHONE_PUBLIC	void sal_enable_unconditional_answer(Sal *sal,int value);
+
+LINPHONE_PUBLIC bool_t sal_pending_trans_checking_enabled(const Sal *sal) ;
+LINPHONE_PUBLIC int sal_enable_pending_trans_checking(Sal *sal, bool_t value) ;
+
+
 
 /*refresher retry after value in ms*/
 LINPHONE_PUBLIC	void sal_set_refresher_retry_after(Sal *sal,int value);

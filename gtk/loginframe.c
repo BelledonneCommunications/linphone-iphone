@@ -39,7 +39,7 @@ static gboolean do_login_noprompt(LinphoneProxyConfig *cfg){
 		linphone_gtk_show_login_frame(cfg,TRUE);
 		return FALSE;
 	}
-	addr=linphone_address_new(linphone_proxy_config_get_identity(cfg));
+	addr=linphone_address_clone(linphone_proxy_config_get_identity_address(cfg));
 	linphone_address_set_username(addr,username);
 	tmp=linphone_address_as_string (addr);
 	do_login(ssctx,tmp,NULL,NULL);
@@ -58,14 +58,14 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg, gboolean disable_au
 	const char *passwd=NULL;
 	const char *userid=NULL;
 	gboolean auto_login=linphone_gtk_get_ui_config_int("automatic_login",0);
-	
+
 	if (auto_login && !disable_auto_login){
 		g_timeout_add(250,(GSourceFunc)do_login_noprompt,cfg);
 		return;
 	}
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(mw,"automatic_login")),auto_login);
-	
+
 	{
 		const char *login_image=linphone_gtk_get_ui_config("login_image","linphone-banner.png");
 		if (login_image){
@@ -95,7 +95,7 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg, gboolean disable_au
 		if (username)
 			linphone_address_set_username(from,username);
 	}
-	
+
 	ai=linphone_core_find_auth_info(lc,linphone_proxy_config_get_domain(cfg),linphone_address_get_username(from),NULL);
 	/*display the last entered username, if not '?????'*/
 	if (linphone_address_get_username(from)[0]!='?')
@@ -109,7 +109,7 @@ void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg, gboolean disable_au
 		passwd!=NULL ? passwd : "");
 	gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_userid")),
 		userid ? userid : "");
-	
+
 	linphone_address_destroy(from);
 }
 
@@ -150,7 +150,7 @@ void linphone_gtk_login_frame_connect_clicked(GtkWidget *button){
 	username=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_username")));
 	password=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_password")));
 	userid=gtk_entry_get_text(GTK_ENTRY(linphone_gtk_get_widget(mw,"login_userid")));
-	
+
 	if (username==NULL || username[0]=='\0')
 		return;
 

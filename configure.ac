@@ -632,7 +632,7 @@ AC_ARG_ENABLE(zrtp,
 
 dnl this options are just for passing to mediastreamer2 subproject
 AC_ARG_ENABLE(dtls,
-	[AS_HELP_STRING([--enable-dtls], [Turn on dtls support - requires polarssl > 1.4])],
+	[AS_HELP_STRING([--enable-dtls], [Turn on srtp-dtls support - requires polarssl > 1.4])],
 	[case "${enableval}" in
 		yes)	dtls=true ;;
 		no)	dtls=false ;;

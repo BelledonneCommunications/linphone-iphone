@@ -38,16 +38,6 @@ class TestSetup:
         assert_equals(lc.config.get_int('sip', 'sip_tcp_port', -2), -1)
         assert_equals(lc.config.get_int('sip', 'sip_tls_port', -2), -1)
 
-    def test_interpret_url(self):
-        lc = linphone.Core.new({}, None, None)
-        assert lc is not None
-        sips_address = "sips:margaux@sip.linphone.org"
-        address = lc.interpret_url(sips_address)
-        assert address is not None
-        assert_equals(address.scheme, "sips")
-        assert_equals(address.username, "margaux")
-        assert_equals(address.domain, "sip.linphone.org")
-
     def test_lpconfig_from_buffer(self):
         buffer = "[buffer]\ntest=ok"
         buffer_linebreaks = "[buffer_linebreaks]\n\n\n\r\n\n\r\ntest=ok"

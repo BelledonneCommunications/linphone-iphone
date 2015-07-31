@@ -191,10 +191,10 @@ char *linphone_gtk_get_config_file(const char *filename){
 #define FACTORY_CONFIG_FILE "linphonerc.factory"
 static char _factory_config_file[1024];
 static const char *linphone_gtk_get_factory_config_file(){
+	char* path = NULL;
 	/*try accessing a local file first if exists*/
 	if (access(FACTORY_CONFIG_FILE,F_OK)==0){
-		snprintf(_factory_config_file,sizeof(_factory_config_file),
-						 "%s",FACTORY_CONFIG_FILE);
+		path = ms_strdup(FACTORY_CONFIG_FILE);
 	} else {
 		char *progdir;
 
@@ -206,33 +206,31 @@ static const char *linphone_gtk_get_factory_config_file(){
 			if (basename != NULL) {
 				basename ++;
 				*basename = '\0';
-				snprintf(_factory_config_file, sizeof(_factory_config_file),
-								 "%s\\..\\%s", progdir, FACTORY_CONFIG_FILE);
-			} else {
-				if (workingdir!=NULL) {
-					snprintf(_factory_config_file, sizeof(_factory_config_file),
-									 "%s\\%s", workingdir, FACTORY_CONFIG_FILE);
-				} else {
-					free(progdir);
-					return NULL;
-				}
+				path = ms_strdup_printf("%s\\..\\%s", progdir, FACTORY_CONFIG_FILE);
+			} else if (workingdir!=NULL) {
+				path = ms_strdup_printf("%s\\%s", workingdir, FACTORY_CONFIG_FILE);
 			}
 #else
 			basename = strrchr(progdir, '/');
 			if (basename != NULL) {
 				basename ++;
 				*basename = '\0';
-				snprintf(_factory_config_file, sizeof(_factory_config_file),
-								 "%s/../share/linphone/%s", progdir, FACTORY_CONFIG_FILE);
-			} else {
-				free(progdir);
-				return NULL;
+				path = ms_strdup_printf("%s/../share/linphone/%s", progdir, FACTORY_CONFIG_FILE);
 			}
 #endif
 			free(progdir);
 		}
 	}
-	return _factory_config_file;
+	if (path) {
+		//use factory file only if it exists
+		if (access(path,F_OK)==0){
+			snprintf(_factory_config_file, sizeof(_factory_config_file), "%s", path);
+			ms_free(path);
+			return _factory_config_file;
+		}
+		ms_free(path);
+	}
+	return NULL;
 }
 
 LinphoneLDAPContactProvider* linphone_gtk_get_ldap(void){
@@ -306,7 +304,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	g_free(user_certificates_dir);
 	linphone_core_enable_video_capture(the_core, TRUE);
 	linphone_core_enable_video_display(the_core, TRUE);
-	linphone_core_set_native_video_window_id(the_core,-1);/*don't create the window*/
+	linphone_core_set_native_video_window_id(the_core,LINPHONE_VIDEO_DISPLAY_NONE);/*don't create the window*/
 	if (no_video) {
 		_linphone_gtk_enable_video(FALSE);
 		linphone_gtk_set_ui_config_int("videoselfview",0);
@@ -403,11 +401,11 @@ GtkWidget *linphone_gtk_create_window(const char *window_name, GtkWidget *parent
 	gtk_builder_connect_signals(builder,w);
 	linphone_gtk_configure_window(w,window_name);
 	if(parent) {
-		gtk_window_set_modal(GTK_WINDOW(w), TRUE);
+// 		gtk_window_set_modal(GTK_WINDOW(w), TRUE);
 		gtk_window_set_transient_for(GTK_WINDOW(w), GTK_WINDOW(parent));
 		gtk_window_set_position(GTK_WINDOW(w), GTK_WIN_POS_CENTER_ON_PARENT);
 	} else {
-		gtk_window_set_modal(GTK_WINDOW(w), FALSE);
+// 		gtk_window_set_modal(GTK_WINDOW(w), FALSE);
 	}
 	return w;
 }
@@ -484,16 +482,16 @@ void linphone_gtk_display_something(GtkMessageType type,const gchar *message){
 		/* draw a question box. link to dialog_click callback */
 		dialog = gtk_message_dialog_new (
 				GTK_WINDOW(main_window),
-                                GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_MESSAGE_QUESTION,
-                                GTK_BUTTONS_YES_NO,
-                                "%s",
+								GTK_BUTTONS_YES_NO,
+								"%s",
 				(const gchar*)message);
 		/* connect to some callback : REVISIT */
 		/*
 		g_signal_connect_swapped (G_OBJECT (dialog), "response",
-                           G_CALLBACK (dialog_click),
-                           G_OBJECT (dialog));
+						   G_CALLBACK (dialog_click),
+						   G_OBJECT (dialog));
 		*/
 		/* actually show the box */
 		gtk_widget_show(dialog);
@@ -501,15 +499,15 @@ void linphone_gtk_display_something(GtkMessageType type,const gchar *message){
 	else
 	{
 		dialog = gtk_message_dialog_new (GTK_WINDOW(main_window),
-                                  GTK_DIALOG_DESTROY_WITH_PARENT,
-                                  type,
-                                  GTK_BUTTONS_CLOSE,
-                                  "%s",
-                                  (const gchar*)message);
+								  GTK_DIALOG_DESTROY_WITH_PARENT,
+								  type,
+								  GTK_BUTTONS_CLOSE,
+								  "%s",
+								  (const gchar*)message);
 		/* Destroy the dialog when the user responds to it (e.g. clicks a button) */
 		g_signal_connect_swapped (G_OBJECT (dialog), "response",
-                           G_CALLBACK (gtk_widget_destroy),
-                           G_OBJECT (dialog));
+						   G_CALLBACK (gtk_widget_destroy),
+						   G_OBJECT (dialog));
 		gtk_widget_show(dialog);
 	}
 }
@@ -531,7 +529,7 @@ void linphone_gtk_show_about(void){
 	GtkWidget *about;
 	const char *tmp;
 	GdkPixbuf *logo=create_pixbuf(
-	    linphone_gtk_get_ui_config("logo","linphone-banner.png"));
+		linphone_gtk_get_ui_config("logo","linphone-banner.png"));
 	static const char *defcfg="defcfg";
 
 	about=linphone_gtk_create_window("about", the_ui);
@@ -829,7 +827,7 @@ void linphone_gtk_show_main_window(){
 void linphone_gtk_call_terminated(LinphoneCall *call, const char *error){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	if (linphone_core_get_calls(linphone_gtk_get_core())==NULL){
-	    gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
+		gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"start_call"),TRUE);
 	}
 	if (linphone_gtk_use_in_call_view() && call)
 		linphone_gtk_in_call_view_terminate(call,error);
@@ -840,31 +838,26 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	const MSList *calls=linphone_core_get_calls(lc);
 	GtkWidget *button;
-	bool_t start_active=TRUE;
-	//bool_t stop_active=FALSE;
 	bool_t add_call=FALSE;
 	int call_list_size=ms_list_size(calls);
 	GtkWidget *conf_frame;
 
-	if (calls==NULL){
-		start_active=TRUE;
-		//stop_active=FALSE;
-	}else{
-		//stop_active=TRUE;
-		start_active=TRUE;
+	if (calls!=NULL){
 		add_call=TRUE;
 	}
 	button=linphone_gtk_get_widget(mw,"start_call");
-	gtk_widget_set_sensitive(button,start_active);
+	gtk_widget_set_visible(button,!add_call);
+
+	button=linphone_gtk_get_widget(mw,"start_chat");
 	gtk_widget_set_visible(button,!add_call);
 
 	button=linphone_gtk_get_widget(mw,"add_call");
+	gtk_widget_set_visible(button,add_call);
 	if (linphone_core_sound_resources_locked(lc) || (call && linphone_call_get_state(call)==LinphoneCallIncomingReceived)) {
 		gtk_widget_set_sensitive(button,FALSE);
 	} else {
-		gtk_widget_set_sensitive(button,start_active);
+		gtk_widget_set_sensitive(button,TRUE);
 	}
-	gtk_widget_set_visible(button,add_call);
 
 	//gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
 	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
@@ -981,6 +974,18 @@ void linphone_gtk_start_call(GtkWidget *w){
 
 }
 
+void linphone_gtk_start_chat(GtkWidget *w){
+	GtkWidget *mw=gtk_widget_get_toplevel(w);
+	GtkWidget *uri_bar=linphone_gtk_get_widget(mw,"uribar");
+	const char *entered=gtk_entry_get_text(GTK_ENTRY(uri_bar));
+	LinphoneCore *lc=linphone_gtk_get_core();
+	LinphoneAddress *addr=linphone_core_interpret_url(lc,entered);
+	if (addr) {
+		linphone_gtk_friend_list_set_chat_conversation(addr);
+		linphone_address_destroy(addr);
+	}
+}
+
 void linphone_gtk_uri_bar_activate(GtkWidget *w){
 	linphone_gtk_start_call(w);
 }
@@ -1075,13 +1080,13 @@ static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend
 		return;
 	}
 
-	message=g_strdup_printf(_("%s would like to add you to his contact list.\nWould you allow him to see your presence status or add him to your contact list ?\nIf you answer no, this person will be temporarily blacklisted."),url);
+	message=g_strdup_printf(_("%s would like to add you to his/her contact list.\nWould you add him/her to your contact list and allow him/her to see your presence status?\nIf you answer no, this person will be temporarily blacklisted."),url);
 	dialog = gtk_message_dialog_new (
 				GTK_WINDOW(linphone_gtk_get_main_window()),
-                                GTK_DIALOG_DESTROY_WITH_PARENT,
+								GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_MESSAGE_QUESTION,
-                                GTK_BUTTONS_YES_NO,
-                                "%s",
+								GTK_BUTTONS_YES_NO,
+								"%s",
 				message);
 	g_free(message);
 	g_signal_connect(G_OBJECT (dialog), "response",
@@ -1346,7 +1351,7 @@ static void linphone_gtk_call_updated_by_remote(LinphoneCall *call){
 	gboolean video_requested=linphone_call_params_video_enabled(rparams);
 	gboolean video_used=linphone_call_params_video_enabled(current_params);
 	g_message("Video used=%i, video requested=%i, automatically_accept=%i",
-	          video_used,video_requested,pol->automatically_accept);
+			  video_used,video_requested,pol->automatically_accept);
 	if (!video_used && video_requested && !pol->automatically_accept){
 		linphone_core_defer_call_update(lc,call);
 		{
@@ -1356,13 +1361,13 @@ static void linphone_gtk_call_updated_by_remote(LinphoneCall *call){
 			if (dname==NULL) dname=linphone_address_get_username(addr);
 			if (dname==NULL) dname=linphone_address_get_domain(addr);
 			dialog=gtk_message_dialog_new(GTK_WINDOW(linphone_gtk_get_main_window()),
-			                                         GTK_DIALOG_DESTROY_WITH_PARENT,
-			                                         GTK_MESSAGE_WARNING,
-			                                         GTK_BUTTONS_YES_NO,
-			                                         _("%s proposed to start video. Do you accept ?"),dname);
+													 GTK_DIALOG_DESTROY_WITH_PARENT,
+													 GTK_MESSAGE_WARNING,
+													 GTK_BUTTONS_YES_NO,
+													 _("%s proposed to start video. Do you accept ?"),dname);
 			g_object_set_data_full(G_OBJECT(dialog), "call", linphone_call_ref(call), (GDestroyNotify)linphone_call_unref);
-            g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(on_call_updated_response), NULL);
-         	g_timeout_add(20000,(GSourceFunc)on_call_updated_timeout,dialog);
+			g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(on_call_updated_response), NULL);
+			g_timeout_add(20000,(GSourceFunc)on_call_updated_timeout,dialog);
 			gtk_widget_show(dialog);
 		}
 	}
@@ -1470,7 +1475,7 @@ static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistr
 }
 
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg,
-                                                    LinphoneRegistrationState rs, const char *msg){
+													LinphoneRegistrationState rs, const char *msg){
 	switch (rs){
 		case LinphoneRegistrationOk:
 			if (cfg){
@@ -1541,7 +1546,7 @@ static GtkWidget *create_icon_menu(){
 
 #ifndef HAVE_GTK_OSX
 void linphone_gtk_save_main_window_position(GtkWindow* mw, GdkEvent *event, gpointer data){
-       gtk_window_get_position(GTK_WINDOW(mw), &main_window_x, &main_window_y);
+	   gtk_window_get_position(GTK_WINDOW(mw), &main_window_x, &main_window_y);
 }
 #endif
 
@@ -1643,8 +1648,8 @@ void linphone_gtk_load_identities(void){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,0,linphone_proxy_config_get_identity(cfg),1,
-		                   linphone_proxy_config_is_registered(cfg) ? GTK_STOCK_YES : NULL,
-		                   2,cfg,-1);
+						   linphone_proxy_config_is_registered(cfg) ? GTK_STOCK_YES : NULL,
+						   2,cfg,-1);
 		if (cfg==def) {
 			def_index=i;
 		}
@@ -1707,6 +1712,7 @@ static void linphone_gtk_configure_main_window(){
 	static const char *home;
 	static const char *start_call_icon;
 	static const char *add_call_icon;
+	static const char *start_chat_icon;
 	static const char *search_icon;
 	static gboolean update_check_menu;
 	static gboolean buttons_have_borders;
@@ -1716,8 +1722,9 @@ static void linphone_gtk_configure_main_window(){
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title","Linphone");
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
-		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","startcall-green.png");
-		add_call_icon=linphone_gtk_get_ui_config("add_call_icon","addcall-green.png");
+		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","call_start.png");
+		add_call_icon=linphone_gtk_get_ui_config("add_call_icon","call_add.png");
+		start_chat_icon=linphone_gtk_get_ui_config("start_chat_icon","chat_start.png");
 		search_icon=linphone_gtk_get_ui_config("directory_search_icon",NULL);
 		update_check_menu=linphone_gtk_get_ui_config_int("update_check_menu",0);
 		buttons_have_borders=linphone_gtk_get_ui_config_int("buttons_border",1);
@@ -1730,15 +1737,21 @@ static void linphone_gtk_configure_main_window(){
 	}
 	if (start_call_icon){
 		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"start_call")),
-		                    create_pixmap (start_call_icon));
+							create_pixmap (start_call_icon));
 		if (!buttons_have_borders)
 			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"start_call")),GTK_RELIEF_NONE);
 	}
 	if (add_call_icon){
 		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"add_call")),
-		                    create_pixmap (add_call_icon));
+							create_pixmap (add_call_icon));
 		if (!buttons_have_borders)
 			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"add_call")),GTK_RELIEF_NONE);
+	}
+	if (start_chat_icon){
+		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"start_chat")),
+							create_pixmap (start_chat_icon));
+		if (!buttons_have_borders)
+			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"start_chat")),GTK_RELIEF_NONE);
 	}
 	if (search_icon){
 		GdkPixbuf *pbuf=create_pixbuf(search_icon);
