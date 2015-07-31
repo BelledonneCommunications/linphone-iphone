@@ -1062,6 +1062,19 @@ audio-volume-medium</property>
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkButton" id="keypad">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <signal name="clicked" handler="linphone_gtk_create_keypad" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkButton" id="add_call">
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -1072,8 +1085,7 @@ audio-volume-medium</property>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">6</property>
-                        <property name="pack_type">end</property>
-                        <property name="position">1</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -1086,22 +1098,21 @@ audio-volume-medium</property>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="padding">6</property>
-                        <property name="pack_type">end</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="keypad">
+                      <object class="GtkButton" id="start_chat">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <signal name="clicked" handler="linphone_gtk_create_keypad" swapped="no"/>
+                        <signal name="clicked" handler="linphone_gtk_start_chat" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">3</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
+                        <property name="pack_type">end</property>
                       </packing>
                     </child>
                     <child>
