@@ -158,4 +158,18 @@ public interface LinphoneCallParams {
 	**/
 	boolean videoMulticastEnabled();
 	
+	/**
+	 * Use to enable real time text following rfc4103.
+	 * If enabled, outgoing calls put a m=text line in SDP offer .
+	 * @param yesno if yes, subsequent outgoing calls will propose rtt
+	 * 
+	**/
+	void enableRealTimeText(boolean yesno);
+	/**
+	 * Use to get real time text following rfc4103.
+	 * @returns returns true if call rtt is activated.
+	**/
+	boolean realTimeTextEnabled();
+	
+	
 }

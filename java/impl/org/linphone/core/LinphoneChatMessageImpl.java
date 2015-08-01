@@ -154,4 +154,8 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	public void setListener(LinphoneChatMessageListener listener) {
 		setListener(nativePtr, listener);
 	}
+	@Override
+	public void putChar(long charater) throws LinphoneCoreException {
+		throw new RuntimeException("java binding not implemented yet");	
+	}
 }

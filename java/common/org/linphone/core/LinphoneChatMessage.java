@@ -227,4 +227,12 @@ public interface LinphoneChatMessage {
 	 * Set the callbacks associated with the LinphoneChatMessage.
 	 */
 	void setListener(LinphoneChatMessage.LinphoneChatMessageListener listener);
+	/**
+	 * Fulfill a chat message char by char. Message linked to a Real Time Text Call send char in realtime following RFC 4103/T.140
+	 * To commit a message, use #linphone_chat_room_send_message
+	 * @param[in] character T.140 char
+	 * @throw LinphoneCoreExeption .
+	 */
+	void putChar(long charater) throws LinphoneCoreException;
+	
 }

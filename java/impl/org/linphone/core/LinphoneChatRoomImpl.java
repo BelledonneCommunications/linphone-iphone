@@ -174,4 +174,12 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	public void sendChatMessage(LinphoneChatMessage message) {
 		sendChatMessage(nativePtr, message, ((LinphoneChatMessageImpl)message).getNativePtr());
 	}
+	@Override
+	public LinphoneCall getCall() {
+		throw new RuntimeException("java binding not implemented yet");
+	}
+	@Override
+	public long getChar() {
+		throw new RuntimeException("java binding not implemented yet");
+	}
 }
