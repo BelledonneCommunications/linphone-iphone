@@ -39,6 +39,7 @@ set(UI_FILES
 	sip_account.ui
 	tunnel_config.ui
 	waiting.ui
+	chat_view.ui
 )
 
 set(PIXMAPS stock_people.png)
