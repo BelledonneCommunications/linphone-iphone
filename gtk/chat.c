@@ -493,12 +493,10 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	GtkWidget *entry = linphone_gtk_get_widget(chat_view,"text_entry");
 	MSList *messages;
 	GHashTable *table;
-	char *with_str;
 	GtkTextTag *tmp_tag;
 	GtkWidget *link_ctx_menu = gtk_menu_new();
 	GtkWidget *link_ctx_menu_copy_item = gtk_menu_item_new_with_label(_("Copy"));
 
-	with_str=linphone_address_as_string_uri_only(with);
 	gtk_notebook_append_page(notebook,chat_view,create_tab_chat_header(cr,with));
 	idx = gtk_notebook_page_num(notebook, chat_view);
 	gtk_notebook_set_current_page(notebook, idx);
@@ -558,7 +556,6 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	g_signal_connect_swapped(G_OBJECT(entry),"activate",(GCallback)linphone_gtk_send_text,NULL);
 	g_signal_connect_swapped(G_OBJECT(entry),"changed",(GCallback)linphone_gtk_compose_text,NULL);
 	g_signal_connect(G_OBJECT(notebook),"switch_page",(GCallback)linphone_gtk_notebook_tab_select,NULL);
-	ms_free(with_str);
 	return chat_view;
 }
 
