@@ -441,6 +441,38 @@ GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_n
 	return w;
 }
 
+GtkWidget *linphone_gtk_create_widget_2(const char *filename, const char *widget_name) {
+	char path[2048];
+	GtkWidget *w = NULL;
+	GtkBuilder *builder = gtk_builder_new();
+	GError *error = NULL;
+	GObject *obj;
+	
+	if(get_ui_file(filename, path, sizeof(path)) == -1) goto end;
+	
+	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
+	
+	if(gtk_builder_add_from_file(builder, path, &error) == 0) {
+		g_error("Couldn't load builder file: %s", error->message);
+		g_error_free(error);
+		goto end;
+	}
+	
+	obj = gtk_builder_get_object(builder, widget_name);
+	if(obj == NULL) {
+		g_error("'%s' widget not found", widget_name);
+		goto end;
+	}
+	
+	w = GTK_WIDGET(obj);
+	g_object_set_data_full(obj, "builder", builder, g_object_unref);
+	gtk_widget_unparent(w);
+	
+	
+end:
+	return w;
+}
+
 static void entry_unmapped(GtkWidget *widget){
 	ms_message("%s is unmapped, calling unrealize to workaround chinese bug.",G_OBJECT_TYPE_NAME(widget));
 	gtk_widget_unrealize(widget);
