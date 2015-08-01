@@ -1,8 +1,7 @@
 
 /*
 linphone
-Copyright (C) 2010  Belledonne Communications SARL 
- (simon.morlat@linphone.org)
+Copyright (C) 2015  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,10 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /**
  * @defgroup real_time_text Real Time Text Receiver
  * @ingroup tutorials
- This program is a _very_ simple usage example of liblinphone.
- It just takes a sip-uri as first argument and attempts to call it
+ This program is able to receive chat message in real time on port 5060. Use realtimetext_sender to generate chat message
+ usage: ./realtimetext_receiver
 
- @include helloworld.c
+ @include realtimetext_sender.c
  */
 #ifdef IN_LINPHONE
 #include "linphonecore.h"
@@ -74,9 +73,8 @@ static void  message_received(LinphoneCore *lc, LinphoneChatRoom *room, Linphone
  */
 static void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
 	LinphoneCall *call = linphone_chat_room_get_call(room); /*get corresponding call*/
-	uint32_t received_char;
 	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) /*check if realtime text enabled for this call*/
-		printf("%c",received_char=linphone_chat_room_get_char(room));
+		printf("%c",linphone_chat_room_get_char(room));
 	/*else ignored*/
 }
 
@@ -95,9 +93,9 @@ int main(int argc, char *argv[]){
 	 All are optional. Here we only use the call_state_changed callbacks
 	 in order to get notifications about the progress of the call.
 	 */
-	vtable.call_state_changed=call_state_changed;
-	vtable.message_received=message_received;
-	vtable.is_composing_received=is_composing_received;
+	vtable.call_state_changed=call_state_changed; /*to receive incoming call*/
+	vtable.message_received=message_received; /*to receive committed messages*/
+	vtable.is_composing_received=is_composing_received; /*to receive char in real time*/
 	/*
 	 Instanciate a LinphoneCore object given the LinphoneCoreVTable
 	*/

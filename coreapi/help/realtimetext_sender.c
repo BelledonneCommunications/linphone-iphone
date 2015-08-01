@@ -1,8 +1,7 @@
 
 /*
 linphone
-Copyright (C) 2010  Belledonne Communications SARL 
- (simon.morlat@linphone.org)
+Copyright (C) 2015  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,12 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 /**
- * @defgroup basic_call_tutorials Real Time Text Sender
+ * @defgroup real_time_text Real Time Text Sender
  * @ingroup tutorials
- This program is a _very_ simple usage example of liblinphone.
- It just takes a sip-uri as first argument and attempts to call it
+ This program just send chat message in real time to dest uri. Use realtimetext_receiver to receive  message.
+ usage: ./realtimetext_sender sip:localhost:5060
 
- @include helloworld.c
+
+ @include realtimetext_sender.c
  */
 #ifdef IN_LINPHONE
 #include "linphonecore.h"
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]){
 		linphone_core_iterate(lc);
 		ms_usleep(50000);
 	}
-	/*check if call is establised*/
+	/*check if call is established*/
 	switch (linphone_call_get_state(call)) {
 	case LinphoneCallError:
 	case LinphoneCallReleased:
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]){
 	/* main loop for sending message and doing background linphonecore work: */
 	while(running){
 		char character;
-		system ("/bin/stty raw"); /*to disable buffing*/
+		system ("/bin/stty raw"); /*to disable terminal buffering*/
 		character = getchar();
 		system ("/bin/stty cooked");
 		if (character==0x03) {/*CTRL C*/
@@ -126,7 +126,7 @@ int main(int argc, char *argv[]){
 				chat_message = linphone_chat_room_create_message(chat_room,""); /*create an empty message*/
 			}
 			if (character == '\r') {
-				/*new line, commiting message*/
+				/*new line, committing message*/
 				linphone_chat_room_send_chat_message(chat_room,chat_message);
 				chat_message = NULL; /*reset message*/
 			} else {
