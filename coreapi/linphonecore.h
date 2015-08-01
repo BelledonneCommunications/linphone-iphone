@@ -722,6 +722,15 @@ LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call)
 LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 
+struct _LinphoneChatRoom;
+/**
+ * Create a new chat room for messaging from a call if not already existing, else return existing one
+ * @param call #LinphoneCall object
+ * @return #LinphoneChatRoom where messaging can take place.
+ */
+LINPHONE_PUBLIC	struct _LinphoneChatRoom * linphone_call_get_chat_room(LinphoneCall *call);
+
+
 /**
  * @brief Get playback volume.
  * 
@@ -1354,6 +1363,14 @@ LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr);
 
 /**
+ * When realtime text is enabled #linphone_call_params_realtime_text_enabled, #LinphoneCoreIsComposingReceivedCb is call everytime a char is received from peer.
+ * At the end of remote typing a regular #LinphoneChatMessage is received with committed data from #LinphoneCoreMessageReceivedCb.
+ * @param[in] msg LinphoneChatMessage
+ * @returns  RFC 4103/T.140 char
+ */
+LINPHONE_PUBLIC uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr);
+
+/**
  * Returns an list of chat rooms
  * @param[in] lc #LinphoneCore object
  * @return \mslist{LinphoneChatRoom}
@@ -1558,6 +1575,27 @@ LINPHONE_PUBLIC void linphone_chat_message_set_file_transfer_filepath(LinphoneCh
  * @return The path to the file to use for the file transfer.
  */
 LINPHONE_PUBLIC const char * linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg);
+
+
+
+/**
+ * Fulfill a chat message char by char. Message linked to a Real Time Text Call send char in realtime following RFC 4103/T.140
+ * To commit a message, use #linphone_chat_room_send_message
+ * @param[in] msg LinphoneChatMessage
+ * @param[in] character T.140 char
+ * @returns 0 if succeed.
+ */
+LINPHONE_PUBLIC int linphone_chat_message_put_char(LinphoneChatMessage *msg,uint32_t charater);
+
+/**
+ * get Curent Call associated to this chatroom if any
+ * To commit a message, use #linphone_chat_room_send_message
+ * @param[in] room LinphoneChatRomm
+ * @returns LinphoneCall or NULL.
+ */
+LINPHONE_PUBLIC LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room);
+
+
 /**
  * Get the LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
  * @param[in] msg LinphoneChatMessage object

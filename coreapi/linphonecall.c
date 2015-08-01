@@ -1121,6 +1121,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	}
 
 	discover_mtu(lc,linphone_address_get_domain(from));
+	if (sal_custom_header_find(sal_op_get_recv_custom_header(op),"X-RTT")) {
+		call->current_params->realtimetext_enabled=TRUE;
+	}
 	return call;
 }
 
@@ -4096,3 +4099,10 @@ MSWebCam *linphone_call_get_video_device(const LinphoneCall *call) {
 		return call->cam;
 }
 #endif
+
+LinphoneChatRoom * linphone_call_get_chat_room(LinphoneCall *call) {
+	/*stubbed implementation*/
+	LinphoneChatRoom * chat_room = linphone_core_get_chat_room(call->core,linphone_call_get_remote_address(call));
+	chat_room->call=linphone_call_ref(call);
+	return chat_room;
+}

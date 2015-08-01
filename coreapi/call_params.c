@@ -263,6 +263,7 @@ LinphoneCallParams * linphone_call_params_new(void) {
 	LinphoneCallParams *cp=belle_sip_object_new(LinphoneCallParams);
 	cp->audio_dir=LinphoneMediaDirectionSendRecv;
 	cp->video_dir=LinphoneMediaDirectionSendRecv;
+	cp->realtimetext_enabled=TRUE; /*fixme*/
 	return cp;
 }
 
@@ -279,3 +280,12 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallParams, belle_sip_object_t,
 	NULL, // marshal
 	FALSE
 );
+
+int linphone_call_params_enable_realtime_text(LinphoneCallParams *params, bool_t yesno) {
+	params->realtimetext_enabled=yesno;
+	return 0;
+}
+
+bool_t linphone_call_params_realtime_text_enabled(const LinphoneCallParams *params) {
+	return params->realtimetext_enabled;
+}

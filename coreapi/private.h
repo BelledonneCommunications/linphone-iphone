@@ -141,6 +141,7 @@ struct _LinphoneCallParams{
 	bool_t internal_call_update; /*use mark that call update was requested internally (might be by ice)*/
 	bool_t video_multicast_enabled;
 	bool_t audio_multicast_enabled;
+	bool_t realtimetext_enabled;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
@@ -578,6 +579,8 @@ struct _LinphoneChatRoom{
 	belle_sip_source_t *remote_composing_refresh_timer;
 	belle_sip_source_t *composing_idle_timer;
 	belle_sip_source_t *composing_refresh_timer;
+	LinphoneCall *call;
+	LinphoneChatMessage *pending_message;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatRoom);

@@ -498,6 +498,11 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr){
 		cr->lc->chatrooms=ms_list_remove(cr->lc->chatrooms,(void *) cr);
 	}
 	linphone_address_destroy(cr->peer_url);
+	if (cr->pending_message)
+		linphone_chat_message_destroy(cr->pending_message);
+	if (cr->call)
+		linphone_call_unref(cr->call);
+
 	ms_free(cr->peer);
 }
 
@@ -534,7 +539,15 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	char* content_type;
 	const char *identity=NULL;
 	time_t t=time(NULL);
+	/*stubed rtt text*/
+	if (cr->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(cr->call))) {
+		char crlf[4]="CRLF";
+		linphone_chat_message_put_char(msg,*(uint32_t*)crlf); /*CRLF*/
+		msg->state = LinphoneChatMessageStateDelivered;
+		return ;
+	}
 	linphone_chat_message_ref(msg);
+
 	/* Check if we shall upload a file to a server */
 	if (msg->file_transfer_information != NULL && msg->content_type == NULL) {
 		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
@@ -856,6 +869,51 @@ static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const c
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing) {
 	LinphoneChatRoom *cr = linphone_core_get_or_create_chat_room(lc, is_composing->from);
 	if (cr != NULL) {
+		/*rtt stub*/
+		LinphoneCall *call = linphone_core_find_call_from_uri(lc,cr->peer);
+		if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
+			const char * rtt;
+			if (cr->call == NULL) {
+				/*attach cr to call*/
+				cr->call = call;
+				linphone_call_ref(cr->call);
+			}
+			if (cr->pending_message == NULL) {
+				cr->pending_message = linphone_chat_room_create_message(cr,"");
+			}
+
+			rtt = sal_custom_header_find(sal_op_get_recv_custom_header(op),"X-RTT");
+			if (rtt) {
+				if (strcmp(rtt,"CRLF")==0) {
+					LinphoneChatMessage *msg = cr->pending_message;
+					/*forge a message*/
+					linphone_chat_message_set_from(msg, cr->peer_url);
+
+					{
+						LinphoneAddress *to;
+						to=sal_op_get_to(op) ? linphone_address_new(sal_op_get_to(op)) : linphone_address_new(linphone_core_get_identity(lc));
+						msg->to=to;
+					}
+
+					msg->time=ms_time(0);
+					msg->state=LinphoneChatMessageStateDelivered;
+					msg->is_read=FALSE;
+					msg->dir=LinphoneChatMessageIncoming;
+					msg->storage_id=linphone_chat_message_store(msg);
+
+					if(cr->unread_count < 0) cr->unread_count = 1;
+					else cr->unread_count++;
+
+					linphone_chat_room_message_received(cr,lc,msg);
+					linphone_chat_message_unref(msg);
+					cr->pending_message=NULL;
+				} else if (strcmp(rtt,"S P")==0) {
+					cr->pending_message->message=ms_strcat_printf(cr->pending_message->message," ");
+				} else {
+					cr->pending_message->message=ms_strcat_printf(cr->pending_message->message,rtt);
+				}
+			}
+		}
 		linphone_chat_room_notify_is_composing(cr, is_composing->text);
 	}
 }
@@ -1018,6 +1076,42 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 	}
 }
 
+uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr) {
+	if (cr->pending_message && strlen(cr->pending_message->message) > 0 ) {
+		return cr->pending_message->message[strlen(cr->pending_message->message)-1];
+	} else return 0;
+}
+int linphone_chat_message_put_char(LinphoneChatMessage *msg,uint32_t charater) {
+	/*stubbed implementation using im-iscomposing+xml*/
+	LinphoneChatRoom *cr=linphone_chat_message_get_chat_room(msg);
+	char *content;
+	SalOp *op = sal_op_new(cr->lc->sal);
+	char* value;
+	const char* from;
+	LinphoneCall *call = cr->call;
+	cr->is_composing = LinphoneIsComposingActive;
+	content = linphone_chat_room_create_is_composing_xml(cr);
+	linphone_configure_op(cr->lc, op, cr->peer_url, NULL, lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
+	if (charater==' ')
+		value=ms_strdup("S P");
+	else
+		value=ms_strdup_printf("%c%c%c%c",((char*)&charater)[0],((char*)&charater)[1],((char*)&charater)[2],((char*)&charater)[3]);
+	sal_op_set_sent_custom_header(op,sal_custom_header_append(NULL,"X-RTT",value));
+	ms_free(value);
+	if (call->dir==LinphoneCallOutgoing) {
+		from = sal_op_get_from(call->op);
+	} else {
+		from = sal_op_get_to(call->op);
+	}
+	sal_message_send(op
+					, from
+					, cr->peer
+					, "application/im-iscomposing+xml"
+					, content
+					, NULL);
+
+	return 0;
+}
 static int linphone_chat_room_stop_composing(void *data, unsigned int revents) {
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
 	cr->is_composing = LinphoneIsComposingIdle;
@@ -1453,4 +1547,7 @@ LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneCha
 	msg->content_type=NULL; /* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
 	msg->http_request=NULL; /* this will store the http request during file upload to the server */
 	return msg;
+}
+LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room) {
+	return room->call;
 }

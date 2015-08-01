@@ -348,14 +348,31 @@ LINPHONE_PUBLIC bool_t linphone_call_params_audio_multicast_enabled(const Linpho
  * @param yesno if yes, subsequent outgoing calls will propose multicast ip set by #linphone_core_set_video_multicast_addr
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC void linphone_call_params_enable_video_multicast(LinphoneCallParams *param, bool_t yesno);
+LINPHONE_PUBLIC void linphone_call_params_enable_video_multicast(LinphoneCallParams *params, bool_t yesno);
 /**
  * Use to get multicast state of video stream.
- * @param core #LinphoneCallParams
+ * @param params #LinphoneCallParams
  * @return true if  subsequent calls will propose multicast ip set by #linphone_core_set_video_multicast_addr
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC bool_t linphone_call_params_video_multicast_enabled(const LinphoneCallParams *param);
+LINPHONE_PUBLIC bool_t linphone_call_params_video_multicast_enabled(const LinphoneCallParams *params);
+
+/**
+ * Use to enable real time text following rfc4103.
+ * If enabled, outgoing calls put a m=text line in SDP offer .
+ * @param params #LinphoneCallParams
+ * @param yesno if yes, subsequent outgoing calls will propose rtt
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC int linphone_call_params_enable_realtime_text(LinphoneCallParams *params, bool_t yesno);
+
+/**
+ * Use to get real time text following rfc4103.
+ * @param params #LinphoneCallParams
+ * @returns returns true if call rtt is activated.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC bool_t linphone_call_params_realtime_text_enabled(const LinphoneCallParams *params);
 
 
 /*******************************************************************************

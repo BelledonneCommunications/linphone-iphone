@@ -233,6 +233,69 @@ static void text_message_within_dialog(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void rtt_text_message(void) {
+	LinphoneChatRoom *pauline_chat_room, *marie_chat_room;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+
+	LinphoneCallParams *marie_params = linphone_core_create_default_call_parameters(marie->lc);
+	LinphoneCall *pauline_call, *marie_call;
+	linphone_call_params_enable_realtime_text(marie_params,TRUE);
+
+	BC_ASSERT_TRUE(call_with_caller_params(marie,pauline,marie_params));
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+	marie_call=linphone_core_get_current_call(marie->lc);
+	BC_ASSERT_TRUE(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(pauline_call)));
+
+	pauline_chat_room = linphone_call_get_chat_room(pauline_call);
+	BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
+	if (pauline_chat_room) {
+	LinphoneChatMessage*  rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+
+	linphone_chat_message_put_char(rtt_message,'B');
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneIsComposingActiveReceived,1));
+	marie_chat_room = linphone_call_get_chat_room(marie_call);
+	BC_ASSERT_PTR_NOT_NULL(marie_chat_room);
+	BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room),'B',int,"%c");
+
+	linphone_chat_message_put_char(rtt_message,'L');
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneIsComposingActiveReceived,2));
+	BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room),'L',int,"%c");
+
+	linphone_chat_message_put_char(rtt_message,'A');
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneIsComposingActiveReceived,3));
+	BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room),'A',int,"%c");
+
+	linphone_chat_message_put_char(rtt_message,' ');
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneIsComposingActiveReceived,4));
+	BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room),' ',int,"%c");
+
+	linphone_chat_message_put_char(rtt_message,'B');
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneIsComposingActiveReceived,5));
+	BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room),'B',int,"%c");
+
+	linphone_chat_message_put_char(rtt_message,'L');
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneIsComposingActiveReceived,6));
+	BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room),'L',int,"%c");
+
+	linphone_chat_message_put_char(rtt_message,'A');
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneIsComposingActiveReceived,7));
+	BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room),'A',int,"%c");
+
+	/*Commit the message, triggers a NEW LINE in T.140 */
+	linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
+
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+		LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
+		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg),"BLA BLA");
+	}
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+
 static LinphoneAuthInfo* text_message_with_credential_from_auth_cb_auth_info;
 static void text_message_with_credential_from_auth_cb_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 	ms_message("text_message_with_credential_from_auth_cb:Auth info requested  for user id [%s] at realm [%s]\n"
@@ -1726,6 +1789,7 @@ test_t message_tests[] = {
 	,{ "History count", history_messages_count }
 	,{ "History range", history_range_full_test }
 #endif
+	,{ "Real Time Text base", rtt_text_message}
 };
 
 test_suite_t message_test_suite = {
