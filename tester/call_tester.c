@@ -636,10 +636,10 @@ static void call_with_specified_codec_bitrate(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	const LinphoneCallStats *pauline_stats,*marie_stats;
 	bool_t call_ok;
-	char * codec = "opus";
+	const char * codec = "opus";
 	int rate = 48000;
 	int min_bw=24;
-	int max_bw=40;
+	int max_bw=50;
 
 #ifdef __arm__
 	if (ms_get_cpu_count() <2) { /*2 opus codec channel + resampler is too much for a single core*/
@@ -656,7 +656,7 @@ static void call_with_specified_codec_bitrate(void) {
 #endif
 
 	if (linphone_core_find_payload_type(marie->lc,codec,rate,-1)==NULL){
-		ms_warning("opus codec not supported, test skipped.");
+		BC_PASS("opus codec not supported, test skipped.");
 		goto end;
 	}
 
@@ -673,10 +673,15 @@ static void call_with_specified_codec_bitrate(void) {
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	if (!call_ok) goto end;
 	liblinphone_tester_check_rtcp(marie,pauline);
+	/*wait a bit that bitstreams are stabilized*/
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
+	
 	marie_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc));
 	pauline_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc));
-	BC_ASSERT_TRUE(marie_stats->download_bandwidth<(min_bw+5+min_bw*.1));
-	BC_ASSERT_TRUE(pauline_stats->download_bandwidth>(max_bw-5-max_bw*.1));
+	
+	BC_ASSERT_LOWER(marie_stats->download_bandwidth, min_bw+5+min_bw*.1, int, "%i");
+	BC_ASSERT_GREATER(marie_stats->download_bandwidth, 10, int, "%i"); /*check that at least something is received */
+	BC_ASSERT_GREATER(pauline_stats->download_bandwidth, (max_bw-5-max_bw*.1), int, "%i");
 
 end:
 	linphone_core_manager_destroy(marie);
@@ -2505,13 +2510,8 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 		}
 
 		if (policy == LinphonePolicyUseIce){
-			int i=0;
 			BC_ASSERT_TRUE(check_ice(pauline,marie,enable_tunnel?LinphoneIceStateReflexiveConnection:LinphoneIceStateHostConnection));
-			for (i=0;i<100;i++) { /*fixme to workaround a crash*/
-				ms_usleep(20000);
-				linphone_core_iterate(marie->lc);
-				linphone_core_iterate(pauline->lc);
-			}
+			wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);/*fixme to workaround a crash*/
 		}
 #ifdef VIDEO_ENABLED
 		if (enable_video) {
@@ -4244,10 +4244,20 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	}else{
 #if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
 		double similar;
-		const double threshold = .7f;
-		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
-		BC_ASSERT_GREATER(similar, threshold, float, "%f");
-		BC_ASSERT_LOWER(similar, 1.f, float, "%f");
+		double min_threshold;
+		if (stereo){
+			min_threshold = .7f;
+			BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
+			BC_ASSERT_GREATER(similar, min_threshold, float, "%f");
+			BC_ASSERT_LOWER(similar, 1.f, float, "%f");
+		}else{
+			double max_threshold = .6f;
+			min_threshold = .5f;
+			/*when opus doesn't transmit stereo, the cross correlation is around 0.54 : as expected, it is not as good as in full stereo mode*/
+			BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
+			BC_ASSERT_GREATER(similar, min_threshold, float, "%f");
+			BC_ASSERT_LOWER(similar, max_threshold, float, "%f");
+		}
 #endif
 	}
 
