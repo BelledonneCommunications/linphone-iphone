@@ -2386,8 +2386,8 @@ static void call_with_mkv_file_player(void) {
 	const double threshold = 0.9;
 #define DO_AUDIO_CMP
 #endif
-	hellomkv = bc_tester_res("sounds/hello8000_mkv_ref.wav");
-	hellowav = bc_tester_res("sounds/hello8000.mkv");
+	hellowav = bc_tester_res("sounds/hello8000_mkv_ref.wav");
+	hellomkv = bc_tester_res("sounds/hello8000.mkv");
 
 	if (!is_format_supported(marie->lc,"mkv")){
 		ms_warning("Test skipped, no mkv support.");
