@@ -870,27 +870,33 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	const MSList *calls=linphone_core_get_calls(lc);
 	GtkWidget *button;
+	bool_t start_active=TRUE;
+	//bool_t stop_active=FALSE;
 	bool_t add_call=FALSE;
 	int call_list_size=ms_list_size(calls);
 	GtkWidget *conf_frame;
 
-	if (calls!=NULL){
+	if (calls==NULL){
+		start_active=TRUE;
+		//stop_active=FALSE;
+	}else{
+		//stop_active=TRUE;
+		start_active=TRUE;
 		add_call=TRUE;
 	}
 	button=linphone_gtk_get_widget(mw,"start_call");
-	gtk_widget_set_visible(button,!add_call);
-
-	button=linphone_gtk_get_widget(mw,"start_chat");
+	gtk_widget_set_sensitive(button,start_active);
 	gtk_widget_set_visible(button,!add_call);
 
 	button=linphone_gtk_get_widget(mw,"add_call");
-	gtk_widget_set_visible(button,add_call);
+
 	if (linphone_core_sound_resources_locked(lc) || (call && linphone_call_get_state(call)==LinphoneCallIncomingReceived)) {
 		gtk_widget_set_sensitive(button,FALSE);
 	} else {
-		gtk_widget_set_sensitive(button,TRUE);
+		gtk_widget_set_sensitive(button,start_active);
 	}
-
+	gtk_widget_set_visible(button,add_call);
+ 
 	//gtk_widget_set_sensitive(linphone_gtk_get_widget(mw,"terminate_call"),stop_active);
 	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
 	if(conf_frame==NULL){
