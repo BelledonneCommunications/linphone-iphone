@@ -370,7 +370,15 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
-		lpconfig->filename=lp_realpath(config_filename, NULL);
+		if(access(config_filename, F_OK) == 0) {
+			lpconfig->filename=lp_realpath(config_filename, NULL);
+			if(lpconfig->filename == NULL) {
+				ms_error("Could not find the real path of %s: %s", config_filename, strerror(errno));
+				goto fail;
+			}
+		} else {
+			lpconfig->filename = ms_strdup(config_filename);
+		}
 		lpconfig->tmpfilename=ortp_strdup_printf("%s.tmp",lpconfig->filename);
 		ms_message("Using (r/w) config information from %s", lpconfig->filename);
 
@@ -408,6 +416,10 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		lp_config_read_file(lpconfig, factory_config_filename);
 	}
 	return lpconfig;
+	
+fail:
+	ms_free(lpconfig);
+	return NULL;
 }
 
 int lp_config_read_file(LpConfig *lpconfig, const char *filename){
