@@ -634,7 +634,6 @@ static void multiple_answers_call_with_media_relay(void) {
 static void call_with_specified_codec_bitrate(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	const LinphoneCallStats *pauline_stats,*marie_stats;
 	bool_t call_ok;
 	const char * codec = "opus";
 	int rate = 48000;
@@ -676,13 +675,12 @@ static void call_with_specified_codec_bitrate(void) {
 	/*wait a bit that bitstreams are stabilized*/
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
 	
-	marie_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(marie->lc));
-	pauline_stats=linphone_call_get_audio_stats(linphone_core_get_current_call(pauline->lc));
-	
-	BC_ASSERT_LOWER(marie_stats->download_bandwidth, min_bw+5+min_bw*.1, int, "%i");
-	BC_ASSERT_GREATER(marie_stats->download_bandwidth, 10, int, "%i"); /*check that at least something is received */
-	BC_ASSERT_GREATER(pauline_stats->download_bandwidth, (max_bw-5-max_bw*.1), int, "%i");
-
+	BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_down_bw(marie), min_bw+5+min_bw*.1, int, "%i");
+	BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie), 10, int, "%i"); /*check that at least something is received */
+	BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(pauline), (max_bw-5-max_bw*.1), int, "%i");
+	linphone_core_terminate_all_calls(pauline->lc);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -2312,52 +2310,57 @@ static void call_with_file_player(void) {
 	char *hellopath = bc_tester_res("sounds/ahbahouaismaisbon.wav");
 	char *recordpath = create_filepath(bc_tester_get_writable_dir_prefix(), "record-call_with_file_player", "wav");
 	bool_t call_ok;
+	int attempts;
+	double similar=1;
+	const double threshold = 0.9;
+	
+	/*this test is actually attempted three times in case of failure, because the audio comparison at the end is very sensitive to 
+	 * jitter buffer drifts, which sometimes happen if the machine is unable to run the test in good realtime conditions */
+	for (attempts=0; attempts<3; attempts++){
+		reset_counters(&marie->stat);
+		reset_counters(&pauline->stat);
+		/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
+		unlink(recordpath);
+		/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
+		linphone_core_use_files(marie->lc,TRUE);
+		linphone_core_set_play_file(marie->lc,NULL);
 
-	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
-	unlink(recordpath);
+		/*callee is recording and plays file*/
+		linphone_core_use_files(pauline->lc,TRUE);
+		linphone_core_set_play_file(pauline->lc,NULL);
+		linphone_core_set_record_file(pauline->lc,recordpath);
 
-
-	/*caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player*/
-	linphone_core_use_files(marie->lc,TRUE);
-	linphone_core_set_play_file(marie->lc,NULL);
-
-	/*callee is recording and plays file*/
-	linphone_core_use_files(pauline->lc,TRUE);
-	linphone_core_set_play_file(pauline->lc,NULL);
-	linphone_core_set_record_file(pauline->lc,recordpath);
-
-	BC_ASSERT_TRUE((call_ok=call(marie,pauline)));
-	if (!call_ok) goto end;
-	player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
-	BC_ASSERT_PTR_NOT_NULL(player);
-	if (player){
-		BC_ASSERT_TRUE(linphone_player_open(player,hellopath,on_eof,marie)==0);
-		BC_ASSERT_TRUE(linphone_player_start(player)==0);
-	}
-
-	/* This assert should be modified to be at least as long as the WAV file */
-	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,10000));
-
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(marie->lc);
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-	/*cannot run on iphone simulator because locks main loop beyond permitted time (should run
-	on another thread) */
-#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
-	{
-		double similar;
-		const int threshold = 90;
-		BC_ASSERT_EQUAL(ms_audio_diff(hellopath,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
-		BC_ASSERT_GREATER(100*similar, threshold, int, "%d");
-		BC_ASSERT_LOWER(100*similar, 100, int, "%d");
-		if (threshold < 100*similar && 100*similar < 100) {
-			remove(recordpath);
+		BC_ASSERT_TRUE((call_ok=call(marie,pauline)));
+		if (!call_ok) goto end;
+		player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
+		BC_ASSERT_PTR_NOT_NULL(player);
+		if (player){
+			BC_ASSERT_TRUE(linphone_player_open(player,hellopath,on_eof,marie)==0);
+			BC_ASSERT_TRUE(linphone_player_start(player)==0);
 		}
-	}
+
+		/* This assert should be modified to be at least as long as the WAV file */
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,10000));
+
+		/*just to sleep*/
+		linphone_core_terminate_all_calls(marie->lc);
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+		/*cannot run on iphone simulator because locks main loop beyond permitted time (should run
+		on another thread) */
+#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
+		BC_ASSERT_EQUAL(ms_audio_diff(hellopath,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
+		if (similar>=threshold)
+			break;
 #else
-	remove(recordpath);
+		remove(recordpath);
 #endif
+	}
+	BC_ASSERT_GREATER(similar, threshold, double, "%g");
+	BC_ASSERT_LOWER(similar, 1.0, double, "%g");
+	if (similar >= threshold && similar <= 1.0) {
+		remove(recordpath);
+	}
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

@@ -431,12 +431,20 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&proxy_config_test_suite);
 }
 
-static bool_t linphone_core_manager_get_max_audio_bw_base(const int array[],int array_size) {
+static int linphone_core_manager_get_max_audio_bw_base(const int array[],int array_size) {
 	int i,result=0;
 	for (i=0; i<array_size; i++) {
 		result = MAX(result,array[i]);
 	}
 	return result;
+}
+
+static int linphone_core_manager_get_mean_audio_bw_base(const int array[],int array_size) {
+	int i,result=0;
+	for (i=0; i<array_size; i++) {
+		result += array[i];
+	}
+	return result/array_size;
 }
 
 int linphone_core_manager_get_max_audio_down_bw(const LinphoneCoreManager *mgr) {
@@ -445,6 +453,15 @@ int linphone_core_manager_get_max_audio_down_bw(const LinphoneCoreManager *mgr) 
 }
 int linphone_core_manager_get_max_audio_up_bw(const LinphoneCoreManager *mgr) {
 	return linphone_core_manager_get_max_audio_bw_base(mgr->stat.audio_upload_bandwidth
+			, sizeof(mgr->stat.audio_upload_bandwidth)/sizeof(int));
+}
+
+int linphone_core_manager_get_mean_audio_down_bw(const LinphoneCoreManager *mgr) {
+	return linphone_core_manager_get_mean_audio_bw_base(mgr->stat.audio_download_bandwidth
+			, sizeof(mgr->stat.audio_download_bandwidth)/sizeof(int));
+}
+int linphone_core_manager_get_mean_audio_up_bw(const LinphoneCoreManager *mgr) {
+	return linphone_core_manager_get_mean_audio_bw_base(mgr->stat.audio_upload_bandwidth
 			, sizeof(mgr->stat.audio_upload_bandwidth)/sizeof(int));
 }
 
