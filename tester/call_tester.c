@@ -2340,14 +2340,12 @@ static void call_with_file_player(void) {
 			BC_ASSERT_TRUE(linphone_player_open(player,hellopath,on_eof,marie)==0);
 			BC_ASSERT_TRUE(linphone_player_start(player)==0);
 		}
-
 		/* This assert should be modified to be at least as long as the WAV file */
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,10000));
+		/*wait one second more for transmission to be fully ended (transmission time + jitter buffer)*/
+		wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
 
-		/*just to sleep*/
-		linphone_core_terminate_all_calls(marie->lc);
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+		end_call(marie, pauline);
 		/*cannot run on iphone simulator because locks main loop beyond permitted time (should run
 		on another thread) */
 #if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
@@ -2363,6 +2361,7 @@ static void call_with_file_player(void) {
 	if (similar >= threshold && similar <= 1.0) {
 		remove(recordpath);
 	}
+
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -2425,12 +2424,10 @@ static void call_with_mkv_file_player(void) {
 		BC_ASSERT_TRUE(linphone_player_start(player)==0);
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,12000));
 		linphone_player_close(player);
+		/*wait for one second more so that last RTP packets can arrive*/
+		wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
 	}
-
-	/*just to sleep*/
-	linphone_core_terminate_all_calls(marie->lc);
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	end_call(marie, pauline);
 #ifdef DO_AUDIO_CMP
 	BC_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,audio_cmp_max_shift,NULL,NULL)==0);
 	BC_ASSERT_TRUE(similar>threshold);
@@ -4367,10 +4364,9 @@ static void call_with_rtp_io_mode(void) {
 
 		/* This assert should be modified to be at least as long as the WAV file */
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_player_eof, 1, 10000));
-
-		linphone_core_terminate_all_calls(marie->lc);
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+		/*wait for one second more so that last RTP packets can arrive*/
+		wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
+		end_call(pauline,marie);
 
 		if (ms_tags_list_contains_tag(ms_factory_get_platform_tags(ms_factory_get_fallback()), "embedded")) {
 			ms_warning("Cannot run audio diff on embedded platform");
