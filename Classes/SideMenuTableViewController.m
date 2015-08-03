@@ -38,6 +38,14 @@
 															 animated:NO];
 											  }]];
 	[_sideMenuEntries
+		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Assistant", nil)
+											  tapBlock:^() {
+												[PhoneMainView.instance
+													changeCurrentView:WizardViewController.compositeViewDescription
+																 push:NO
+															 animated:NO];
+											  }]];
+	[_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"About", nil)
 											  tapBlock:^() {
 												[PhoneMainView.instance

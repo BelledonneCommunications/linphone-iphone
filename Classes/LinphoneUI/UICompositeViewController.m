@@ -56,8 +56,8 @@
 	   portraitMode:(BOOL)aportraitMode {
 	self.name = aname;
 	self.content = acontent;
-	self.stateBar = astateBar ?: @"UIStateBar";
-	self.tabBar = atabBar ?: @"UIMainBar";
+	self.stateBar = astateBar;
+	self.tabBar = atabBar;
 	self.fullscreen = afullscreen;
 	self.landscapeMode = alandscapeMode;
 	self.portraitMode = aportraitMode;

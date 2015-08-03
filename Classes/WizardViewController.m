@@ -45,7 +45,6 @@ typedef enum _ViewElement {
 
 @synthesize contentView;
 
-@synthesize welcomeView;
 @synthesize choiceView;
 @synthesize createAccountView;
 @synthesize connectAccountView;
@@ -55,11 +54,10 @@ typedef enum _ViewElement {
 @synthesize waitView;
 
 @synthesize backButton;
-@synthesize startButton;
-@synthesize createAccountButton;
-@synthesize connectAccountButton;
-@synthesize externalAccountButton;
-@synthesize remoteProvisioningButton;
+@synthesize createChoiceButton;
+@synthesize connectChoiceButton;
+@synthesize externalChoiceButton;
+@synthesize remoteChoiceButton;
 
 @synthesize provisionedDomain, provisionedPassword, provisionedUsername;
 
@@ -93,7 +91,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"Wizard"
 																content:@"WizardViewController"
-															   stateBar:nil
+															   stateBar:@"UIStateBar"
 																 tabBar:nil
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]
@@ -130,7 +128,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[contentView addGestureRecognizer:viewTapGestureRecognizer];
 
 	if ([LinphoneManager runningOnIpad]) {
-		[LinphoneUtils adjustFontSize:welcomeView mult:2.22f];
 		[LinphoneUtils adjustFontSize:choiceView mult:2.22f];
 		[LinphoneUtils adjustFontSize:createAccountView mult:2.22f];
 		[LinphoneUtils adjustFontSize:connectAccountView mult:2.22f];
@@ -140,16 +137,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number"];
-	for (UILinphoneTextField *text in
-		 [NSArray arrayWithObjects:provisionedUsername, _createAccountUsername, _connectAccountUsername,
-								   _externalAccountUsername, nil]) {
+	_createUsernameLabel.text =
+		usePhoneNumber ? NSLocalizedString(@"PHONE NUMBER", nil) : NSLocalizedString(@"USERNAME", nil);
+	for (UIRoundBorderedTextField *text in
+		 [NSArray arrayWithObjects:provisionedUsername, _createUsername, _connectUsername, _externalUsername, nil]) {
 		if (usePhoneNumber) {
 			text.keyboardType = UIKeyboardTypePhonePad;
-			text.placeholder = NSLocalizedString(@"Phone number", nil);
 			[text addDoneButton];
 		} else {
 			text.keyboardType = UIKeyboardTypeDefault;
-			text.placeholder = NSLocalizedString(@"Username", nil);
 		}
 	}
 }
@@ -216,7 +212,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)resetTextFields {
-	[WizardViewController cleanTextField:welcomeView];
 	[WizardViewController cleanTextField:choiceView];
 	[WizardViewController cleanTextField:createAccountView];
 	[WizardViewController cleanTextField:connectAccountView];
@@ -242,11 +237,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_set_stun_server(lc, NULL);
 	linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
 	[self resetTextFields];
-	if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_welcome_view_preference"] == true) {
-		[self changeView:choiceView back:FALSE animation:FALSE];
-	} else {
-		[self changeView:welcomeView back:FALSE animation:FALSE];
-	}
+	[self changeView:choiceView back:FALSE animation:FALSE];
 	[waitView setHidden:TRUE];
 }
 
@@ -286,25 +277,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	static BOOL placement_done = NO; // indicates if the button placement has been done in the wizard choice view
 
 	// Change toolbar buttons following view
-	if (view == welcomeView) {
-		[startButton setHidden:false];
-		[backButton setHidden:true];
-	} else {
-		[startButton setHidden:true];
-		[backButton setHidden:false];
-	}
-
-	if (view == validateAccountView) {
-		[backButton setEnabled:FALSE];
-	} else if (view == choiceView) {
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_welcome_view_preference"] == true) {
-			[backButton setEnabled:FALSE];
-		} else {
-			[backButton setEnabled:TRUE];
-		}
-	} else {
-		[backButton setEnabled:TRUE];
-	}
+	backButton.enabled = (view == choiceView);
 
 	if (view == choiceView) {
 		// layout is this:
@@ -321,18 +294,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (!placement_done) {
 			// visibility
 			choiceViewLogoImageView.hidden = !show_logo;
-			externalAccountButton.hidden = !show_extern;
-			createAccountButton.hidden = !show_new;
+			externalChoiceButton.hidden = !show_extern;
+			createChoiceButton.hidden = !show_new;
 
 			// placement
 			if (show_logo && show_new && !show_extern) {
 				// lower both remaining buttons
-				[createAccountButton setCenter:[connectAccountButton center]];
-				[connectAccountButton setCenter:[externalAccountButton center]];
+				[createChoiceButton setCenter:[connectChoiceButton center]];
+				[connectChoiceButton setCenter:[externalChoiceButton center]];
 
 			} else if (!show_logo && !show_new && show_extern) {
 				// move up the extern button
-				[externalAccountButton setCenter:[createAccountButton center]];
+				[externalChoiceButton setCenter:[createChoiceButton center]];
 			}
 			placement_done = YES;
 		}
@@ -669,17 +642,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
 }
 
-- (IBAction)onCreateAccountClick:(id)sender {
+- (IBAction)onCreateChoiceClick:(id)sender {
 	nextView = createAccountView;
 	[self loadWizardConfig:@"wizard_linphone_create.rc"];
 }
 
-- (IBAction)onConnectLinphoneAccountClick:(id)sender {
+- (IBAction)onConnectChoiceClick:(id)sender {
 	nextView = connectAccountView;
 	[self loadWizardConfig:@"wizard_linphone_existing.rc"];
 }
 
-- (IBAction)onExternalAccountClick:(id)sender {
+- (IBAction)onExternalChoiceClick:(id)sender {
 	nextView = externalAccountView;
 	[self loadWizardConfig:@"wizard_external_sip.rc"];
 }
@@ -690,7 +663,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self checkAccountValidation:identity];
 }
 
-- (IBAction)onRemoteProvisioningClick:(id)sender {
+- (IBAction)onRemoteChoiceClick:(id)sender {
 	UIAlertView *remoteInput = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter provisioning URL", @"")
 														  message:@""
 														 delegate:self
@@ -826,7 +799,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return TRUE;
 }
 
-- (IBAction)onRegisterClick:(id)sender {
+- (IBAction)onCreateAccountClick:(id)sender {
 	UITextField *username_tf = [WizardViewController findTextField:ViewElement_Username view:contentView];
 	NSString *username = username_tf.text;
 	NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;

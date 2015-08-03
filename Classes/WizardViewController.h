@@ -20,8 +20,7 @@
 #import <UIKit/UIKit.h>
 #import <XMLRPCConnectionDelegate.h>
 #import "UICompositeViewController.h"
-#import "UILinphoneTextField.h"
-#import "LinphoneUI/UILinphoneButton.h"
+#import "UIRoundBorderedTextField.h"
 #import "TPKeyboardAvoidingScrollView.h"
 
 @interface WizardViewController : TPMultiLayoutViewController
@@ -40,7 +39,6 @@
 
 @property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;
 
-@property (nonatomic, strong) IBOutlet UIView *welcomeView;
 @property (nonatomic, strong) IBOutlet UIView *choiceView;
 @property (nonatomic, strong) IBOutlet UIView *createAccountView;
 @property (nonatomic, strong) IBOutlet UIView *connectAccountView;
@@ -51,16 +49,17 @@
 @property (nonatomic, strong) IBOutlet UIView *waitView;
 
 @property (nonatomic, strong) IBOutlet UIButton *backButton;
-@property (nonatomic, strong) IBOutlet UIButton *startButton;
-@property (nonatomic, strong) IBOutlet UIButton *createAccountButton;
-@property (nonatomic, strong) IBOutlet UIButton *connectAccountButton;
-@property (nonatomic, strong) IBOutlet UIButton *externalAccountButton;
-@property (strong, nonatomic) IBOutlet UIButton *remoteProvisioningButton;
-@property (strong, nonatomic) IBOutlet UILinphoneButton *registerButton;
+@property(nonatomic, strong) IBOutlet UIButton *createChoiceButton;
+@property(nonatomic, strong) IBOutlet UIButton *connectChoiceButton;
+@property(nonatomic, strong) IBOutlet UIButton *externalChoiceButton;
+@property(strong, nonatomic) IBOutlet UIButton *remoteChoiceButton;
 
-@property (strong, nonatomic) IBOutlet UILinphoneTextField *createAccountUsername;
-@property (strong, nonatomic) IBOutlet UILinphoneTextField *connectAccountUsername;
-@property (strong, nonatomic) IBOutlet UILinphoneTextField *externalAccountUsername;
+@property(weak, nonatomic) IBOutlet UILabel *createUsernameLabel;
+@property(strong, nonatomic) IBOutlet UIRoundBorderedTextField *createUsername;
+@property(strong, nonatomic) IBOutlet UIRoundBorderedTextField *connectUsername;
+@property(strong, nonatomic) IBOutlet UIRoundBorderedTextField *externalUsername;
+
+@property(strong, nonatomic) IBOutlet UIButton *createAccountButton;
 
 @property (strong, nonatomic) IBOutlet UITextField *provisionedUsername;
 @property (strong, nonatomic) IBOutlet UITextField *provisionedPassword;
@@ -77,15 +76,16 @@
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onDialerBackClick:(id)sender;
 
-- (IBAction)onCreateAccountClick:(id)sender;
-- (IBAction)onConnectLinphoneAccountClick:(id)sender;
-- (IBAction)onExternalAccountClick:(id)sender;
+- (IBAction)onCreateChoiceClick:(id)sender;
+- (IBAction)onConnectChoiceClick:(id)sender;
+- (IBAction)onExternalChoiceClick:(id)sender;
+- (IBAction)onRemoteChoiceClick:(id)sender;
+
 - (IBAction)onCheckValidationClick:(id)sender;
-- (IBAction)onRemoteProvisioningClick:(id)sender;
 
 - (IBAction)onSignInClick:(id)sender;
 - (IBAction)onSignInExternalClick:(id)sender;
-- (IBAction)onRegisterClick:(id)sender;
+- (IBAction)onCreateAccountClick:(id)sender;
 - (IBAction)onProvisionedLoginClick:(id)sender;
 
 @end

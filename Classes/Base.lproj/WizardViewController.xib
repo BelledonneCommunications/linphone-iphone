@@ -20,12 +20,8 @@
             <subviews>
                 <view contentMode="scaleToFill" id="12">
                     <rect key="frame" x="0.0" y="42" width="375" height="625"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" tag="1" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" id="98" userLabel="contentView" customClass="TPKeyboardAvoidingScrollView">
-                            <rect key="frame" x="0.0" y="63" width="375" height="562"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        </scrollView>
                         <view contentMode="scaleToFill" id="Vsu-Ew-BxE" userLabel="toolBar">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="63"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -61,12 +57,16 @@
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="KeZ-8e-Ci2"/>
-                                        <action selector="onDialerBackClick:" destination="-1" eventType="touchUpInside" id="uyh-P9-RMa"/>
                                     </connections>
                                 </button>
                             </subviews>
                             <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
+                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" tag="1" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" id="98" userLabel="contentView" customClass="TPKeyboardAvoidingScrollView">
+                            <rect key="frame" x="0.0" y="63" width="375" height="562"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </scrollView>
                         <view hidden="YES" tag="6" contentMode="scaleToFill" id="91" userLabel="waitView">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="625"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

@@ -104,6 +104,7 @@
 		63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
 		63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
+		631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */; };
 		631560341B69175F0047F4D3 /* color_A.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560281B69175F0047F4D3 /* color_A.png */; };
 		631560351B69175F0047F4D3 /* color_B.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560291B69175F0047F4D3 /* color_B.png */; };
 		631560361B69175F0047F4D3 /* color_C.png in Resources */ = {isa = PBXBuildFile; fileRef = 6315602A1B69175F0047F4D3 /* color_C.png */; };
@@ -330,11 +331,9 @@
 		D3549816158761D0000081D8 /* ContactsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3549815158761D0000081D8 /* ContactsTableViewController.m */; };
 		D35498211587716B000081D8 /* UIStateBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D354981F1587716B000081D8 /* UIStateBar.m */; };
 		D35860D615B549B500513429 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
-		D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7580159328EB0066B1C1 /* UIAddressTextField.m */; };
 		D35E7597159460580066B1C1 /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7595159460560066B1C1 /* ChatViewController.m */; };
 		D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
-		D35E91F4160CA10B0023116B /* UILinphoneTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E91F3160CA10B0023116B /* UILinphoneTextField.m */; };
-		D35E91F8160CA4FF0023116B /* UILinphoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E91F7160CA4FF0023116B /* UILinphoneButton.m */; };
+		D35E91F4160CA10B0023116B /* UIRoundBorderedTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E91F3160CA10B0023116B /* UIRoundBorderedTextField.m */; };
 		D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
 		D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
 		D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */; };
@@ -695,6 +694,8 @@
 		63058AE41B4E952E00EFAE36 /* share */ = {isa = PBXFileReference; lastKnownFileType = folder; name = share; path = "../liblinphone-sdk/apple-darwin/share"; sourceTree = "<group>"; };
 		630CF5551AF7CE1500539F7A /* UITextField+DoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+DoneButton.h"; sourceTree = "<group>"; };
 		630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+DoneButton.m"; sourceTree = "<group>"; };
+		6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundBorderedButton.h; sourceTree = "<group>"; };
+		6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedButton.m; sourceTree = "<group>"; };
 		631560281B69175F0047F4D3 /* color_A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_A.png; sourceTree = "<group>"; };
 		631560291B69175F0047F4D3 /* color_B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_B.png; sourceTree = "<group>"; };
 		6315602A1B69175F0047F4D3 /* color_C.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_C.png; sourceTree = "<group>"; };
@@ -966,16 +967,12 @@
 		D354981F1587716B000081D8 /* UIStateBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIStateBar.m; sourceTree = "<group>"; };
 		D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = XMLRPC.xcodeproj; path = Utils/XMLRPC/XMLRPC.xcodeproj; sourceTree = "<group>"; };
 		D35860D515B549B500513429 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Utils.m; path = Utils/Utils.m; sourceTree = "<group>"; };
-		D35E757F159328EA0066B1C1 /* UIAddressTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAddressTextField.h; sourceTree = "<group>"; };
-		D35E7580159328EB0066B1C1 /* UIAddressTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddressTextField.m; sourceTree = "<group>"; };
 		D35E7594159460560066B1C1 /* ChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatViewController.h; sourceTree = "<group>"; };
 		D35E7595159460560066B1C1 /* ChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatViewController.m; sourceTree = "<group>"; };
 		D35E759C159460B50066B1C1 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		D35E759D159460B50066B1C1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
-		D35E91F2160CA10B0023116B /* UILinphoneTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphoneTextField.h; sourceTree = "<group>"; };
-		D35E91F3160CA10B0023116B /* UILinphoneTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphoneTextField.m; sourceTree = "<group>"; };
-		D35E91F6160CA4FF0023116B /* UILinphoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILinphoneButton.h; sourceTree = "<group>"; };
-		D35E91F7160CA4FF0023116B /* UILinphoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILinphoneButton.m; sourceTree = "<group>"; };
+		D35E91F2160CA10B0023116B /* UIRoundBorderedTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundBorderedTextField.h; sourceTree = "<group>"; };
+		D35E91F3160CA10B0023116B /* UIRoundBorderedTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedTextField.m; sourceTree = "<group>"; };
 		D36C43C4158F2E5A0048BA40 /* UICallCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallCell.h; sourceTree = "<group>"; };
 		D36C43C5158F2E5A0048BA40 /* UICallCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallCell.m; sourceTree = "<group>"; };
 		D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseButton.h; sourceTree = "<group>"; };
@@ -1436,8 +1433,6 @@
 		2214EB7012F84668002A5394 /* LinphoneUI */ = {
 			isa = PBXGroup;
 			children = (
-				D35E757F159328EA0066B1C1 /* UIAddressTextField.h */,
-				D35E7580159328EB0066B1C1 /* UIAddressTextField.m */,
 				22C7555E1317E59C007BC101 /* UIBluetoothButton.h */,
 				22C7555F1317E59C007BC101 /* UIBluetoothButton.m */,
 				D326483B1588950F00930C67 /* UICallBar.h */,
@@ -1479,10 +1474,8 @@
 				636BC9961B5F921B00C754CE /* UIIconButton.m */,
 				D3E84F3C15B018A600420DAC /* UILinphone.h */,
 				D380800415C28A7A005BE9BC /* UILinphone.m */,
-				D35E91F6160CA4FF0023116B /* UILinphoneButton.h */,
-				D35E91F7160CA4FF0023116B /* UILinphoneButton.m */,
-				D35E91F2160CA10B0023116B /* UILinphoneTextField.h */,
-				D35E91F3160CA10B0023116B /* UILinphoneTextField.m */,
+				D35E91F2160CA10B0023116B /* UIRoundBorderedTextField.h */,
+				D35E91F3160CA10B0023116B /* UIRoundBorderedTextField.m */,
 				D306459C1611EC2900BB571E /* UILoadingImageView.h */,
 				D306459D1611EC2900BB571E /* UILoadingImageView.m */,
 				D3ED3E841586291B006C0DE4 /* UIMainBar.h */,
@@ -1515,6 +1508,8 @@
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
 				634610041B61330300548952 /* UILabel+Boldify.h */,
 				634610051B61330300548952 /* UILabel+Boldify.m */,
+				6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */,
+				6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -2665,7 +2660,6 @@
 				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
 				D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */,
-				D35E7581159328EB0066B1C1 /* UIAddressTextField.m in Sources */,
 				D35E7597159460580066B1C1 /* ChatViewController.m in Sources */,
 				D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */,
 				63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
@@ -2693,6 +2687,7 @@
 				63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */,
 				D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
 				D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */,
+				631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */,
 				C90FAA7915AF54E6002091CB /* HistoryDetailsViewController.m in Sources */,
 				63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */,
 				635775251B6673EC00C8B704 /* HistoryDetailsTableViewController.m in Sources */,
@@ -2727,8 +2722,7 @@
 				D3ED40191602172200BF332B /* HPGrowingTextView.m in Sources */,
 				D3ED401B1602172200BF332B /* HPTextViewInternal.m in Sources */,
 				D37EE162160377D7003608A6 /* DTActionSheet.m in Sources */,
-				D35E91F4160CA10B0023116B /* UILinphoneTextField.m in Sources */,
-				D35E91F8160CA4FF0023116B /* UILinphoneButton.m in Sources */,
+				D35E91F4160CA10B0023116B /* UIRoundBorderedTextField.m in Sources */,
 				D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */,
 				D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
 			);
