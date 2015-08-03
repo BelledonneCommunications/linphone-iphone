@@ -2,6 +2,7 @@
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
   <!-- interface-naming-policy toplevel-contextual -->
+  <!-- interface-local-resource-path /home/francois/projects/linphone/linphone/pixmaps/hicolor -->
   <object class="GtkImage" id="add_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -304,10 +305,7 @@
                             <property name="relief">none</property>
                             <property name="focus_on_click">False</property>
                             <property name="orientation">vertical</property>
-                            <property name="icons">audio-volume-muted
-audio-volume-high
-audio-volume-low
-audio-volume-medium</property>
+                            <property name="icons">linphone-micro-enabled</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -350,10 +348,7 @@ audio-volume-medium</property>
                             <property name="relief">none</property>
                             <property name="focus_on_click">False</property>
                             <property name="orientation">vertical</property>
-                            <property name="icons">audio-volume-muted
-audio-volume-high
-audio-volume-low
-audio-volume-medium</property>
+                            <property name="icons">linphone-speaker-enabled</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
