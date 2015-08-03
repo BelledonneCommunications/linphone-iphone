@@ -333,7 +333,6 @@
 		D35860D615B549B500513429 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		D35E7597159460580066B1C1 /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E7595159460560066B1C1 /* ChatViewController.m */; };
 		D35E759F159460B70066B1C1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E759D159460B50066B1C1 /* SettingsViewController.m */; };
-		D35E91F4160CA10B0023116B /* UIRoundBorderedTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E91F3160CA10B0023116B /* UIRoundBorderedTextField.m */; };
 		D36C43C6158F2E5A0048BA40 /* UICallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D36C43C5158F2E5A0048BA40 /* UICallCell.m */; };
 		D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D36FB2D41589EF7C0036F6F2 /* UIPauseButton.m */; };
 		D378906515AC373B00BD776C /* ContactDetailsLabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D378906315AC373B00BD776C /* ContactDetailsLabelViewController.m */; };
@@ -971,8 +970,6 @@
 		D35E7595159460560066B1C1 /* ChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatViewController.m; sourceTree = "<group>"; };
 		D35E759C159460B50066B1C1 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		D35E759D159460B50066B1C1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
-		D35E91F2160CA10B0023116B /* UIRoundBorderedTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundBorderedTextField.h; sourceTree = "<group>"; };
-		D35E91F3160CA10B0023116B /* UIRoundBorderedTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedTextField.m; sourceTree = "<group>"; };
 		D36C43C4158F2E5A0048BA40 /* UICallCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallCell.h; sourceTree = "<group>"; };
 		D36C43C5158F2E5A0048BA40 /* UICallCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallCell.m; sourceTree = "<group>"; };
 		D36FB2D31589EF7C0036F6F2 /* UIPauseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIPauseButton.h; sourceTree = "<group>"; };
@@ -1474,8 +1471,6 @@
 				636BC9961B5F921B00C754CE /* UIIconButton.m */,
 				D3E84F3C15B018A600420DAC /* UILinphone.h */,
 				D380800415C28A7A005BE9BC /* UILinphone.m */,
-				D35E91F2160CA10B0023116B /* UIRoundBorderedTextField.h */,
-				D35E91F3160CA10B0023116B /* UIRoundBorderedTextField.m */,
 				D306459C1611EC2900BB571E /* UILoadingImageView.h */,
 				D306459D1611EC2900BB571E /* UILoadingImageView.m */,
 				D3ED3E841586291B006C0DE4 /* UIMainBar.h */,
@@ -2722,7 +2717,6 @@
 				D3ED40191602172200BF332B /* HPGrowingTextView.m in Sources */,
 				D3ED401B1602172200BF332B /* HPTextViewInternal.m in Sources */,
 				D37EE162160377D7003608A6 /* DTActionSheet.m in Sources */,
-				D35E91F4160CA10B0023116B /* UIRoundBorderedTextField.m in Sources */,
 				D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */,
 				D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,
 			);

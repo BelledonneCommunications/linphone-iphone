@@ -20,7 +20,6 @@
 #import <UIKit/UIKit.h>
 #import <XMLRPCConnectionDelegate.h>
 #import "UICompositeViewController.h"
-#import "UIRoundBorderedTextField.h"
 #import "TPKeyboardAvoidingScrollView.h"
 
 @interface WizardViewController : TPMultiLayoutViewController
@@ -55,9 +54,9 @@
 @property(strong, nonatomic) IBOutlet UIButton *remoteChoiceButton;
 
 @property(weak, nonatomic) IBOutlet UILabel *createUsernameLabel;
-@property(strong, nonatomic) IBOutlet UIRoundBorderedTextField *createUsername;
-@property(strong, nonatomic) IBOutlet UIRoundBorderedTextField *connectUsername;
-@property(strong, nonatomic) IBOutlet UIRoundBorderedTextField *externalUsername;
+@property(strong, nonatomic) IBOutlet UITextField *createUsername;
+@property(strong, nonatomic) IBOutlet UITextField *connectUsername;
+@property(strong, nonatomic) IBOutlet UITextField *externalUsername;
 
 @property(strong, nonatomic) IBOutlet UIButton *createAccountButton;
 
@@ -67,8 +66,6 @@
 
 @property (nonatomic, strong) IBOutlet UIImageView *choiceViewLogoImageView;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *transportChooser;
-
-@property (nonatomic, strong) IBOutlet UITapGestureRecognizer *viewTapGestureRecognizer;
 
 - (void)reset;
 - (void)fillDefaultValues;
