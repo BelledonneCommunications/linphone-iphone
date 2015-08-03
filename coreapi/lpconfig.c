@@ -370,7 +370,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 	LpConfig *lpconfig=lp_new0(LpConfig,1);
 	lpconfig->refcnt=1;
 	if (config_filename!=NULL){
-		if(access(config_filename, F_OK) == 0) {
+		if(ortp_file_exist(config_filename) == 0) {
 			lpconfig->filename=lp_realpath(config_filename, NULL);
 			if(lpconfig->filename == NULL) {
 				ms_error("Could not find the real path of %s: %s", config_filename, strerror(errno));
