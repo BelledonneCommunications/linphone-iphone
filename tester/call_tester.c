@@ -4335,6 +4335,7 @@ static void call_with_rtp_io_mode(void) {
 	linphone_core_use_files(marie->lc, TRUE);
 	linphone_core_set_play_file(marie->lc, NULL);
 	linphone_core_set_record_file(marie->lc, recordpath);
+	linphone_core_use_files(pauline->lc, FALSE);
 
 	/* The callee uses the RTP IO mode with the PCMU codec to send back audio to the caller. */
 	disable_all_audio_codecs_except_one(pauline->lc, "pcmu", -1);
