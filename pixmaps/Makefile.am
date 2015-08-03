@@ -1,5 +1,6 @@
 pixmapdir=$(datadir)/pixmaps/linphone
-dist_pixmap_DATA= \
+
+pixmap_DATA= \
 	hold_on.png hold_off.png \
 	mic_muted.png mic_active.png \
 	linphone.png linphone-banner.png \
@@ -20,9 +21,9 @@ dist_pixmap_DATA= \
 	notok.png
 
 
-appicondir=$(datadir)/icons/hicolor/48x48/apps
-dist_appicon_DATA= linphone.png
+iconsdir=$(datadir)/icons/hicolor/48x48/apps
 
-iconsdir=$(datadir)/linphone/icons
-dist_icons_DATA=hicolor
+icons_DATA= linphone.png
 
+
+EXTRA_DIST=$(pixmap_DATA) $(icons_DATA)
