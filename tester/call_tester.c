@@ -158,7 +158,6 @@ void linphone_call_cb(LinphoneCall *call,void * user_data) {
 
 void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee) {
 	LinphoneCall *c1,*c2;
-	int dummy=0;
 	MSTimeSpec ts;
 
 	c1=linphone_core_get_current_call(caller->lc);
@@ -173,15 +172,15 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 
 	liblinphone_tester_clock_start(&ts);
 	do {
-		if (linphone_call_get_audio_stats(c1)->round_trip_delay >0.0
-				&& linphone_call_get_audio_stats(c2)->round_trip_delay >0.0
+		if (linphone_call_get_audio_stats(c1)->round_trip_delay > 0.0
+				&& linphone_call_get_audio_stats(c2)->round_trip_delay > 0.0
 				&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c1)) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)
 				&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c2))  || linphone_call_get_video_stats(c2)->round_trip_delay>0.0)) {
 			break;
 
 		}
-		wait_for_until(caller->lc,callee->lc,&dummy,1,20); /*just to sleep while iterating*/
-	}while (!liblinphone_tester_clock_elapsed(&ts,12000));
+		wait_for_until(caller->lc,callee->lc,NULL,0,20); /*just to sleep while iterating*/
+	}while (!liblinphone_tester_clock_elapsed(&ts,15000));
 	BC_ASSERT_TRUE(linphone_call_get_audio_stats(c1)->round_trip_delay>0.0);
 	BC_ASSERT_TRUE(linphone_call_get_audio_stats(c2)->round_trip_delay>0.0);
 	if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
@@ -653,6 +652,9 @@ static void call_with_specified_codec_bitrate(void) {
 #endif
 	}
 #endif
+	/*Force marie to play from file: if soundcard is used and it is silient, then vbr mode will drop down the bitrate
+	 Note that a play file is already set by linphone_core_manager_new() (but not used)*/
+	linphone_core_set_use_files(marie->lc, TRUE); 
 
 	if (linphone_core_find_payload_type(marie->lc,codec,rate,-1)==NULL){
 		BC_PASS("opus codec not supported, test skipped.");
@@ -4325,55 +4327,63 @@ static void call_with_rtp_io_mode(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphonePlayer *player;
 	char *hellopath = bc_tester_res("sounds/ahbahouaismaisbon.wav");
-	char *recordpath = create_filepath(bc_tester_get_writable_dir_prefix(), "record-call_with_file_player", "wav");
+	char *recordpath = create_filepath(bc_tester_get_writable_dir_prefix(), "record-call_with_rtp_io_mode", "wav");
 	bool_t call_ok;
+	int attempts;
+	double similar=1;
+	const double threshold = 0.9;
 
-	/* Make sure that the record file doesn't already exists, otherwise this test will append new samples to it. */
-	unlink(recordpath);
+	/*this test is actually attempted three times in case of failure, because the audio comparison at the end is very sensitive to
+	 * jitter buffer drifts, which sometimes happen if the machine is unable to run the test in good realtime conditions */
+	for (attempts=0; attempts<3; attempts++){
+		/* Make sure that the record file doesn't already exists, otherwise this test will append new samples to it. */
+		unlink(recordpath);
+		reset_counters(&marie->stat);
+		reset_counters(&pauline->stat);
+		
+		/* The caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player. */
+		linphone_core_use_files(marie->lc, TRUE);
+		linphone_core_set_play_file(marie->lc, NULL);
+		linphone_core_set_record_file(marie->lc, recordpath);
+		linphone_core_use_files(pauline->lc, FALSE);
 
-	/* The caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player. */
-	linphone_core_use_files(marie->lc, TRUE);
-	linphone_core_set_play_file(marie->lc, NULL);
-	linphone_core_set_record_file(marie->lc, recordpath);
-	linphone_core_use_files(pauline->lc, FALSE);
+		/* The callee uses the RTP IO mode with the PCMU codec to send back audio to the caller. */
+		disable_all_audio_codecs_except_one(pauline->lc, "pcmu", -1);
+		lp_config_set_int(pauline->lc->config, "sound", "rtp_io", 1);
+		lp_config_set_string(pauline->lc->config, "sound", "rtp_local_addr", "127.0.0.1");
+		lp_config_set_string(pauline->lc->config, "sound", "rtp_remote_addr", "127.0.0.1");
+		lp_config_set_int(pauline->lc->config, "sound", "rtp_local_port", 17076);
+		lp_config_set_int(pauline->lc->config, "sound", "rtp_remote_port", 17076);
+		lp_config_set_string(pauline->lc->config, "sound", "rtp_map", "pcmu/8000/1");
 
-	/* The callee uses the RTP IO mode with the PCMU codec to send back audio to the caller. */
-	disable_all_audio_codecs_except_one(pauline->lc, "pcmu", -1);
-	lp_config_set_int(pauline->lc->config, "sound", "rtp_io", 1);
-	lp_config_set_string(pauline->lc->config, "sound", "rtp_local_addr", "127.0.0.1");
-	lp_config_set_string(pauline->lc->config, "sound", "rtp_remote_addr", "127.0.0.1");
-	lp_config_set_int(pauline->lc->config, "sound", "rtp_local_port", 17076);
-	lp_config_set_int(pauline->lc->config, "sound", "rtp_remote_port", 17076);
-	lp_config_set_string(pauline->lc->config, "sound", "rtp_map", "pcmu/8000/1");
-
-	BC_ASSERT_TRUE((call_ok = call(marie, pauline)));
-	if (!call_ok) goto end;
-	player = linphone_call_get_player(linphone_core_get_current_call(marie->lc));
-	BC_ASSERT_PTR_NOT_NULL(player);
-	if (player) {
-		BC_ASSERT_TRUE(linphone_player_open(player, hellopath, on_eof, marie) == 0);
-		BC_ASSERT_TRUE(linphone_player_start(player) == 0);
-	}
-
-	/* This assert should be modified to be at least as long as the WAV file */
-	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_player_eof, 1, 10000));
-
-	linphone_core_terminate_all_calls(marie->lc);
-	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-
-	if (ms_tags_list_contains_tag(ms_factory_get_platform_tags(ms_factory_get_fallback()), "embedded")) {
-		ms_warning("Cannot run audio diff on embedded platform");
-		remove(recordpath);
-	} else {
-		double similar;
-		const int threshold = 90;
-		BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, audio_cmp_max_shift, NULL, NULL), 0, int, "%d");
-		BC_ASSERT_GREATER(100 * similar, threshold, int, "%d");
-		BC_ASSERT_LOWER(100 * similar, 100, int, "%d");
-		if ((threshold < (100 * similar)) && ((100 * similar) < 100)) {
-			remove(recordpath);
+		BC_ASSERT_TRUE((call_ok = call(marie, pauline)));
+		if (!call_ok) goto end;
+		player = linphone_call_get_player(linphone_core_get_current_call(marie->lc));
+		BC_ASSERT_PTR_NOT_NULL(player);
+		if (player) {
+			BC_ASSERT_TRUE(linphone_player_open(player, hellopath, on_eof, marie) == 0);
+			BC_ASSERT_TRUE(linphone_player_start(player) == 0);
 		}
+
+		/* This assert should be modified to be at least as long as the WAV file */
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_player_eof, 1, 10000));
+
+		linphone_core_terminate_all_calls(marie->lc);
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+
+		if (ms_tags_list_contains_tag(ms_factory_get_platform_tags(ms_factory_get_fallback()), "embedded")) {
+			ms_warning("Cannot run audio diff on embedded platform");
+			remove(recordpath);
+		} else {
+			BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, audio_cmp_max_shift, NULL, NULL), 0, int, "%d");
+			if (similar>=threshold) break;
+		}
+	}
+	BC_ASSERT_GREATER(similar, threshold, double, "%g");
+	BC_ASSERT_LOWER(similar, 1.0, double, "%g");
+	if (similar >= threshold && similar <= 1.0) {
+		remove(recordpath);
 	}
 
 end:
