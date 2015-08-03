@@ -4402,7 +4402,6 @@ static void call_with_generic_nack_rtcp_feedback(void) {
 	LinphoneCall *call_marie;
 	bool_t call_ok;
 	OrtpNetworkSimulatorParams params = { 0 };
-	int dummy = 0;
 
 	params.enabled = TRUE;
 	params.loss_rate = 10;

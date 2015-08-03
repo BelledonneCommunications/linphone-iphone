@@ -2395,7 +2395,7 @@ static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned 
 	return -1;
 }
 
-static void configure_rtp_session_for_rtcp_fb(LinphoneCall *call, SalStreamDescription *stream) {
+static void configure_rtp_session_for_rtcp_fb(LinphoneCall *call, const SalStreamDescription *stream) {
 	RtpSession *session = NULL;
 
 	if (stream->type == SalAudio) {
