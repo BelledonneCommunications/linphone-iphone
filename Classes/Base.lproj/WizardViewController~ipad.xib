@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -44,7 +43,7 @@
                                 <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                             </state>
                             <connections>
-                                <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="24"/>
+                                <action selector="onDialerBackClick:" destination="-1" eventType="touchUpInside" id="pz2-rx-iMl"/>
                             </connections>
                         </button>
                         <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="16" userLabel="startButton">
@@ -128,7 +127,7 @@
                                 <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                             </state>
                             <connections>
-                                <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="128"/>
+                                <action selector="onDialerBackClick:" destination="-1" eventType="touchUpInside" id="s23-r4-4Vg"/>
                             </connections>
                         </button>
                         <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="123" userLabel="startButton">

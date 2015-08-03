@@ -30,8 +30,8 @@
 @property (nonatomic, assign) LinphoneCallLog *callLog;
 
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
-@property(nonatomic, strong) IBOutlet UIButton *historyStateButton;
 @property(nonatomic, strong) IBOutlet UILabel *displayNameLabel;
+@property(weak, nonatomic) IBOutlet UIImageView *stateImage;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

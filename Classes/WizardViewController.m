@@ -183,7 +183,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				linphone_address_destroy(addr);
 				if (auth) {
 					LOGI(@"A proxy config was set up with the remote provisioning, skip wizard");
-					[self onCancelClick:nil];
+					[self onDialerBackClick:nil];
 				}
 			}
 		}
@@ -657,10 +657,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Action Functions
 
-- (IBAction)onStartClick:(id)sender {
-	[self changeView:choiceView back:FALSE animation:TRUE];
-}
-
 - (IBAction)onBackClick:(id)sender {
 	if ([historyViews count] > 0) {
 		UIView *view = [historyViews lastObject];
@@ -669,7 +665,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (IBAction)onCancelClick:(id)sender {
+- (IBAction)onDialerBackClick:(id)sender {
 	[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
 }
 

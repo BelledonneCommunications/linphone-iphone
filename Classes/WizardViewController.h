@@ -74,9 +74,8 @@
 - (void)reset;
 - (void)fillDefaultValues;
 
-- (IBAction)onStartClick:(id)sender;
 - (IBAction)onBackClick:(id)sender;
-- (IBAction)onCancelClick:(id)sender;
+- (IBAction)onDialerBackClick:(id)sender;
 
 - (IBAction)onCreateAccountClick:(id)sender;
 - (IBAction)onConnectLinphoneAccountClick:(id)sender;

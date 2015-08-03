@@ -26,7 +26,6 @@
 
 @synthesize callLog;
 @synthesize displayNameLabel;
-@synthesize historyStateButton;
 
 #pragma mark - Lifecycle Functions
 
@@ -116,7 +115,7 @@
 		image = [UIImage imageNamed:@"call_status_outgoing.png"];
 		addr = linphone_call_log_get_to_address(callLog);
 	}
-	[historyStateButton setImage:image forState:UIControlStateNormal];
+	_stateImage.image = image;
 
 	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
 	[FastAddressBook setDisplayNameLabel:displayNameLabel forContact:contact];

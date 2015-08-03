@@ -112,6 +112,7 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="29.5" y="166.5"/>
         </view>
     </objects>
     <resources>
