@@ -224,6 +224,7 @@ typedef struct _stats {
 	int video_upload_bandwidth[3];
 	int current_bandwidth_index;
 
+	int number_of_rtcp_generic_nack;
 }stats;
 
 

@@ -485,10 +485,13 @@ static void setup_rtcp_fb(LinphoneCall *call, SalMediaDescription *md) {
 	MSList *pt_it;
 	PayloadType *pt;
 	PayloadTypeAvpfParams avpf_params;
+	LinphoneCore *lc = call->core;
 	int i;
 
 	for (i = 0; i < md->nb_streams; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
+		md->streams[i].rtcp_fb.generic_nack_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_generic_nack_enabled", 0);
+		md->streams[i].rtcp_fb.tmmbr_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_tmmbr_enabled", 0);
 		for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
 			pt = (PayloadType *)pt_it->data;
 			if (call->params->avpf_enabled == TRUE) {
@@ -2392,6 +2395,27 @@ static int find_crypto_index_from_tag(const SalSrtpCryptoAlgo crypto[],unsigned 
 	return -1;
 }
 
+static void configure_rtp_session_for_rtcp_fb(LinphoneCall *call, SalStreamDescription *stream) {
+	RtpSession *session = NULL;
+
+	if (stream->type == SalAudio) {
+		session = call->audiostream->ms.sessions.rtp_session;
+	} else if (stream->type == SalVideo) {
+		session = call->videostream->ms.sessions.rtp_session;
+	} else {
+		// Do nothing for streams that are not audio or video
+		return;
+	}
+	if (stream->rtcp_fb.generic_nack_enabled)
+		rtp_session_enable_avpf_feature(session, ORTP_AVPF_FEATURE_GENERIC_NACK, TRUE);
+	else
+		rtp_session_enable_avpf_feature(session, ORTP_AVPF_FEATURE_GENERIC_NACK, FALSE);
+	if (stream->rtcp_fb.tmmbr_enabled)
+		rtp_session_enable_avpf_feature(session, ORTP_AVPF_FEATURE_TMMBR, TRUE);
+	else
+		rtp_session_enable_avpf_feature(session, ORTP_AVPF_FEATURE_TMMBR, FALSE);
+}
+
 static void configure_rtp_session_for_rtcp_xr(LinphoneCore *lc, LinphoneCall *call, SalStreamType type) {
 	RtpSession *session;
 	const OrtpRtcpXrConfiguration *localconfig;
@@ -2622,6 +2646,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 					ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
 				}
 			}
+			configure_rtp_session_for_rtcp_fb(call, stream);
 			configure_rtp_session_for_rtcp_xr(lc, call, SalAudio);
 			if (is_multicast)
 				rtp_session_set_multicast_ttl(call->audiostream->ms.sessions.rtp_session,stream->ttl);
@@ -2789,6 +2814,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 						media_stream_set_srtp_send_key_b64(&(call->videostream->ms.sessions),vstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 					}
 				}
+				configure_rtp_session_for_rtcp_fb(call, vstream);
 				configure_rtp_session_for_rtcp_xr(lc, call, SalVideo);
 
 				call->log->video_enabled = TRUE;

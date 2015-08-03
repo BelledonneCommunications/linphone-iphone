@@ -4381,6 +4381,58 @@ end:
 	ms_free(hellopath);
 }
 
+static void generic_nack_received(const OrtpEventData *evd, stats *st) {
+	if (rtcp_is_RTPFB(evd->packet)) {
+		switch (rtcp_RTPFB_get_type(evd->packet)) {
+			case RTCP_RTPFB_NACK:
+				st->number_of_rtcp_generic_nack++;
+				break;
+			default:
+				break;
+		}
+	}
+}
+
+static void call_with_generic_nack_rtcp_feedback(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LpConfig *lp;
+	LinphoneCall *call_marie;
+	bool_t call_ok;
+	OrtpNetworkSimulatorParams params = { 0 };
+	int dummy = 0;
+
+	params.enabled = TRUE;
+	params.loss_rate = 10;
+	params.consecutive_loss_probability = 0.75;
+	params.mode = OrtpNetworkSimulatorOutbound;
+	linphone_core_set_avpf_mode(marie->lc, LinphoneAVPFEnabled);
+	linphone_core_set_avpf_mode(pauline->lc, LinphoneAVPFEnabled);
+	lp = linphone_core_get_config(pauline->lc);
+	lp_config_set_int(lp, "rtp", "rtcp_fb_generic_nack_enabled", 1);
+
+
+	BC_ASSERT_TRUE(call_ok = call(pauline, marie));
+	if (!call_ok) goto end;
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	call_marie = linphone_core_get_current_call(marie->lc);
+	if (call_marie) {
+		rtp_session_enable_network_simulation(call_marie->audiostream->ms.sessions.rtp_session, &params);
+		ortp_ev_dispatcher_connect(media_stream_get_event_dispatcher(&call_marie->audiostream->ms),
+			ORTP_EVENT_RTCP_PACKET_RECEIVED, RTCP_RTPFB, (OrtpEvDispatcherCb)generic_nack_received, &marie->stat);
+	}
+
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_rtcp_generic_nack, 5, 5000));
+	linphone_core_terminate_all_calls(pauline->lc);
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -4507,7 +4559,8 @@ test_t call_tests[] = {
 	{ "Simple stereo call with opus", simple_stereo_call_opus },
 	{ "Simple mono call with opus", simple_mono_call_opus },
 	{ "Call with FQDN in SDP", call_with_fqdn_in_sdp},
-	{ "Call with RTP IO mode", call_with_rtp_io_mode }
+	{ "Call with RTP IO mode", call_with_rtp_io_mode },
+	{ "Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback }
 };
 
 test_suite_t call_test_suite = {
