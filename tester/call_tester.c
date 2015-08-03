@@ -674,7 +674,7 @@ static void call_with_specified_codec_bitrate(void) {
 	liblinphone_tester_check_rtcp(marie,pauline);
 	/*wait a bit that bitstreams are stabilized*/
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
-	
+
 	BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_down_bw(marie), min_bw+5+min_bw*.1, int, "%i");
 	BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie), 10, int, "%i"); /*check that at least something is received */
 	BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(pauline), (max_bw-5-max_bw*.1), int, "%i");
@@ -2313,8 +2313,8 @@ static void call_with_file_player(void) {
 	int attempts;
 	double similar=1;
 	const double threshold = 0.9;
-	
-	/*this test is actually attempted three times in case of failure, because the audio comparison at the end is very sensitive to 
+
+	/*this test is actually attempted three times in case of failure, because the audio comparison at the end is very sensitive to
 	 * jitter buffer drifts, which sometimes happen if the machine is unable to run the test in good realtime conditions */
 	for (attempts=0; attempts<3; attempts++){
 		reset_counters(&marie->stat);
@@ -4197,6 +4197,11 @@ static void video_call_ice_params() {
 }
 #endif
 
+static void completion_cb(void *user_data, int percentage){
+	fprintf(stdout,"%i %% completed\r",percentage);
+	fflush(stdout);
+}
+
 static void simple_stereo_call(const char *codec_name, int clock_rate, int bitrate_override, bool_t stereo) {
 	int begin;
 	int leaked_objects;
@@ -4247,20 +4252,16 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	}else{
 #if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
 		double similar;
-		double min_threshold;
-		if (stereo){
-			min_threshold = .7f;
-			BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
-			BC_ASSERT_GREATER(similar, min_threshold, float, "%f");
-			BC_ASSERT_LOWER(similar, 1.f, float, "%f");
-		}else{
-			double max_threshold = .6f;
-			min_threshold = .5f;
+		double min_threshold = .7f;
+		double max_threshold = 1.f;
+		if (!stereo){
 			/*when opus doesn't transmit stereo, the cross correlation is around 0.54 : as expected, it is not as good as in full stereo mode*/
-			BC_ASSERT_EQUAL(ms_audio_diff(stereo_file,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
-			BC_ASSERT_GREATER(similar, min_threshold, float, "%f");
-			BC_ASSERT_LOWER(similar, max_threshold, float, "%f");
+			min_threshold = .5f;
+			max_threshold = .6f;
 		}
+		BC_ASSERT_EQUAL(ms_audio_diff(recordpath, stereo_file,&similar,audio_cmp_max_shift,completion_cb,NULL), 0, int, "%d");
+		BC_ASSERT_GREATER(similar, min_threshold, float, "%f");
+		BC_ASSERT_LOWER(similar, max_threshold, float, "%f");
 #endif
 	}
 
