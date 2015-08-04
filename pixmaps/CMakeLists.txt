@@ -20,11 +20,21 @@
 #
 ############################################################################
 
+set(ICONS_INSTALL_DIR ${PACKAGE_DATA_DIR}/linphone/icons/hicolor)
+
 file(GLOB PIXMAPS "*.png" "linphone.icns")
 
 install(FILES ${PIXMAPS}
 	DESTINATION ${PACKAGE_DATA_DIR}/pixmaps/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+)
+
+install(FILES svg/linphone-micro-muted.svg
+	svg/linphone-speaker-muted.svg
+	svg/linphone-micro-enabled.svg
+	svg/linphone-speaker-enabled.svg
+	DESTINATION ${ICONS_INSTALL_DIR}/scalable/status
+	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
 
 install(FILES linphone.png

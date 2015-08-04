@@ -1,8 +1,6 @@
 pixmapdir=$(datadir)/pixmaps/linphone
-
-pixmap_DATA= \
+dist_pixmap_DATA= \
 	hold_on.png hold_off.png \
-	mic_muted.png mic_active.png \
 	linphone.png linphone-banner.png \
 	status-green.png \
 	status-orange.png \
@@ -14,16 +12,17 @@ pixmap_DATA= \
 	contact-orange.png history-orange.png\
 	call_start.png startcall-small.png stopcall-red.png stopcall-small.png call_add.png linphone.icns \
 	contact_starred.png contact_unstarred.png \
-	speaker.png \
 	call_status_incoming.png call_status_outgoing.png \
 	ok.png \
 	dialer.png \
 	notok.png
 
+appicondir=$(datadir)/icons/hicolor/48x48/apps
+dist_appicon_DATA= linphone.png
 
-iconsdir=$(datadir)/icons/hicolor/48x48/apps
-
-icons_DATA= linphone.png
-
-
-EXTRA_DIST=$(pixmap_DATA) $(icons_DATA)
+statusiconsdir=$(datadir)/linphone/icons/hicolor/scalable/status
+dist_statusicons_DATA= \
+	svg/linphone-micro-muted.svg \
+	svg/linphone-speaker-muted.svg \
+	svg/linphone-micro-enabled.svg \
+	svg/linphone-speaker-enabled.svg
