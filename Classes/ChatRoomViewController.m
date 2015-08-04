@@ -23,7 +23,6 @@
 #import "UILinphone.h"
 #import "DTAlertView.h"
 #import "Utils/FileTransferDelegate.h"
-#import <NinePatch.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import "Utils.h"
 #import "UIChatRoomCell.h"
@@ -160,7 +159,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
-	[TUNinePatchCache flushCache]; // will remove any images cache (freeing any cached but unused images)
 }
 
 #pragma mark -

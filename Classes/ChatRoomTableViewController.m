@@ -23,8 +23,6 @@
 #import "Utils.h"
 #import "PhoneMainView.h"
 
-#import <NinePatch.h>
-
 @implementation ChatRoomTableViewController
 
 @synthesize chatRoomDelegate;
@@ -37,10 +35,6 @@
 
 #pragma mark - ViewController Functions
 
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-	[TUNinePatchCache flushCache]; // Clear cache
-}
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	self.tableView.accessibilityIdentifier = @"Chat list";
