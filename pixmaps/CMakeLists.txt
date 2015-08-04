@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-set(ICONS_INSTALL_DIR ${PACKAGE_DATA_DIR}/linphone/icons/hicolor)
+set(ICONS_INSTALL_DIR ${PACKAGE_DATA_DIR}/icons/hicolor)
 
 file(GLOB PIXMAPS "*.png" "linphone.icns")
 
@@ -37,7 +37,15 @@ install(FILES svg/linphone-micro-muted.svg
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
 
+install(FILES linphone-micro-muted.png
+	linphone-speaker-muted.png
+	linphone-micro-enabled.png
+	linphone-speaker-enabled.png
+	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
+	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+)
+
 install(FILES linphone.png
-	DESTINATION ${PACKAGE_DATA_DIR}/icons/hicolor/48x48/apps
+	DESTINATION ${ICONS_INSTALL_DIR}/48x48/apps
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )

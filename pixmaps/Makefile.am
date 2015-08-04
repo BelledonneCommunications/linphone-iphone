@@ -17,12 +17,21 @@ dist_pixmap_DATA= \
 	dialer.png \
 	notok.png
 
-appicondir=$(datadir)/icons/hicolor/48x48/apps
-dist_appicon_DATA= linphone.png
+iconsdir=$(datadir)/icons/hicolor
+appiconsdir=$(iconsdir)/48x48/apps
+dist_appicons_DATA= linphone.png
 
-statusiconsdir=$(datadir)/linphone/icons/hicolor/scalable/status
+sacalable-status-iconsdir=$(iconsdir)/scalable/status
 dist_statusicons_DATA= \
 	svg/linphone-micro-muted.svg \
 	svg/linphone-speaker-muted.svg \
 	svg/linphone-micro-enabled.svg \
 	svg/linphone-speaker-enabled.svg
+
+status-iconsdir=$(iconsdir)/48x48/status
+dist_status-icons_DATA= \
+	svg/linphone-micro-muted.png \
+	svg/linphone-speaker-muted.png \
+	svg/linphone-micro-enabled.png \
+	svg/linphone-speaker-enabled.png
+	
