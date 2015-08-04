@@ -321,7 +321,6 @@
 		D3211BB0159C4EF10098460B /* UIConferenceHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = D3211BAE159C4EF00098460B /* UIConferenceHeader.m */; };
 		D32460E6159D9AAD00BA7F3A /* UITransparentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D32460E5159D9AAD00BA7F3A /* UITransparentView.m */; };
 		D326483815887D5200930C67 /* OrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483715887D5200930C67 /* OrderedDictionary.m */; };
-		D326483E1588950F00930C67 /* UICallBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D326483C1588950F00930C67 /* UICallBar.m */; };
 		D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D32648431588F6FB00930C67 /* UIToggleButton.m */; };
 		D32B6E2915A5BC440033019F /* ChatRoomTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D32B6E2815A5BC430033019F /* ChatRoomTableViewController.m */; };
 		D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
@@ -378,8 +377,6 @@
 		D38187D115FE346B00C3EDCA /* HistoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187D415FE346B00C3EDCA /* HistoryViewController.xib */; };
 		D38187D915FE347700C3EDCA /* IncomingCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187DC15FE347700C3EDCA /* IncomingCallViewController.xib */; };
 		D38187DD15FE348A00C3EDCA /* WizardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E015FE348A00C3EDCA /* WizardViewController.xib */; };
-		D38187E115FE349700C3EDCA /* UICallBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E415FE349700C3EDCA /* UICallBar.xib */; };
-		D38187E515FE349D00C3EDCA /* UICallBar~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187E815FE349D00C3EDCA /* UICallBar~ipad.xib */; };
 		D38187F015FE354000C3EDCA /* UIConferenceHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187F315FE354000C3EDCA /* UIConferenceHeader.xib */; };
 		D38187F815FE355D00C3EDCA /* UIMainBar.xib in Resources */ = {isa = PBXBuildFile; fileRef = D38187FB15FE355D00C3EDCA /* UIMainBar.xib */; };
 		D381881115FE3F0B00C3EDCA /* UICallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881415FE3F0B00C3EDCA /* UICallCell.xib */; };
@@ -948,8 +945,6 @@
 		D32460E5159D9AAD00BA7F3A /* UITransparentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransparentView.m; sourceTree = "<group>"; };
 		D326483615887D5200930C67 /* OrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OrderedDictionary.h; path = Utils/OrderedDictionary.h; sourceTree = "<group>"; };
 		D326483715887D5200930C67 /* OrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OrderedDictionary.m; path = Utils/OrderedDictionary.m; sourceTree = "<group>"; };
-		D326483B1588950F00930C67 /* UICallBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallBar.h; sourceTree = "<group>"; };
-		D326483C1588950F00930C67 /* UICallBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallBar.m; sourceTree = "<group>"; };
 		D32648421588F6FA00930C67 /* UIToggleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIToggleButton.h; sourceTree = "<group>"; };
 		D32648431588F6FB00930C67 /* UIToggleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIToggleButton.m; sourceTree = "<group>"; };
 		D32B6E2715A5BC430033019F /* ChatRoomTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatRoomTableViewController.h; sourceTree = "<group>"; };
@@ -1095,8 +1090,6 @@
 		F09548231883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/InCallViewController.xib; sourceTree = "<group>"; };
 		F09548241883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/IncomingCallViewController.xib; sourceTree = "<group>"; };
 		F09548251883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/IncomingCallViewController~ipad.xib"; sourceTree = "<group>"; };
-		F09548261883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICallBar.xib; sourceTree = "<group>"; };
-		F09548271883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/UICallBar~ipad.xib"; sourceTree = "<group>"; };
 		F09548281883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICallCell.xib; sourceTree = "<group>"; };
 		F09548291883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIConferenceHeader.xib; sourceTree = "<group>"; };
 		F095482C1883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIMainBar.xib; sourceTree = "<group>"; };
@@ -1129,10 +1122,6 @@
 		F09548481883F55800E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/IncomingCallViewController.strings; sourceTree = "<group>"; };
 		F09548491883F56A00E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/IncomingCallViewController~ipad.strings"; sourceTree = "<group>"; };
 		F095484A1883F56E00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = "ru.lproj/IncomingCallViewController~ipad.strings"; sourceTree = "<group>"; };
-		F095484B1883F58E00E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICallBar.strings; sourceTree = "<group>"; };
-		F095484C1883F59200E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/UICallBar.strings; sourceTree = "<group>"; };
-		F095484D1883F5AF00E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = "fr.lproj/UICallBar~ipad.strings"; sourceTree = "<group>"; };
-		F095484E1883F5B300E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = "ru.lproj/UICallBar~ipad.strings"; sourceTree = "<group>"; };
 		F095484F1883F5D500E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIConferenceHeader.strings; sourceTree = "<group>"; };
 		F09548501883F5D900E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/UIConferenceHeader.strings; sourceTree = "<group>"; };
 		F09548551883F61300E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIMainBar.strings; sourceTree = "<group>"; };
@@ -1158,8 +1147,6 @@
 		F0AF06FC1A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InCallViewController.strings; sourceTree = "<group>"; };
 		F0AF06FD1A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/IncomingCallViewController.strings; sourceTree = "<group>"; };
 		F0AF06FE1A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = "ar.lproj/IncomingCallViewController~ipad.strings"; sourceTree = "<group>"; };
-		F0AF06FF1A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UICallBar.strings; sourceTree = "<group>"; };
-		F0AF07001A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = "ar.lproj/UICallBar~ipad.strings"; sourceTree = "<group>"; };
 		F0AF07011A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UICallCell.strings; sourceTree = "<group>"; };
 		F0AF07021A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UIChatCell.strings; sourceTree = "<group>"; };
 		F0AF07031A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UIChatRoomCell.strings; sourceTree = "<group>"; };
@@ -1434,10 +1421,6 @@
 			children = (
 				22C7555E1317E59C007BC101 /* UIBluetoothButton.h */,
 				22C7555F1317E59C007BC101 /* UIBluetoothButton.m */,
-				D326483B1588950F00930C67 /* UICallBar.h */,
-				D326483C1588950F00930C67 /* UICallBar.m */,
-				D38187E415FE349700C3EDCA /* UICallBar.xib */,
-				D38187E815FE349D00C3EDCA /* UICallBar~ipad.xib */,
 				2214EB7812F846B1002A5394 /* UICallButton.h */,
 				2214EB7912F846B1002A5394 /* UICallButton.m */,
 				D36C43C4158F2E5A0048BA40 /* UICallCell.h */,
@@ -2366,7 +2349,6 @@
 				63AADBFB1B6A0FF200AA16FD /* ring.caf in Resources */,
 				634CEDF71B6630DB00D7A921 /* pause_big_over_selected.png in Resources */,
 				634CEDEA1B6630DB00D7A921 /* numpad_6.png in Resources */,
-				D38187E115FE349700C3EDCA /* UICallBar.xib in Resources */,
 				639CEB001A1DF4E4004DE38F /* UIHistoryCell.xib in Resources */,
 				634CEDCC1B6630DB00D7A921 /* dialer_back.png in Resources */,
 				634CEDED1B6630DB00D7A921 /* numpad_9.png in Resources */,
@@ -2454,7 +2436,6 @@
 				634CEDBC1B6630DB00D7A921 /* chat_start_body_over.png in Resources */,
 				63AADC021B6A0FF200AA16FD /* wizard_remote.rc in Resources */,
 				D38187C515FE345F00C3EDCA /* DialerViewController~ipad.xib in Resources */,
-				D38187E515FE349D00C3EDCA /* UICallBar~ipad.xib in Resources */,
 				634CEE121B6630DB00D7A921 /* status_busy_phone.png in Resources */,
 				634CEDFB1B6630DB00D7A921 /* quit_default.png in Resources */,
 				63158FAD1B468E0E00969917 /* ImageOptim.sh in Resources */,
@@ -2654,7 +2635,6 @@
 				D35498211587716B000081D8 /* UIStateBar.m in Sources */,
 				D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */,
 				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
-				D326483E1588950F00930C67 /* UICallBar.m in Sources */,
 				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
 				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
@@ -3079,28 +3059,6 @@
 				F0AF070F1A24BA770086C9C1 /* ar */,
 			);
 			name = WizardViewController.xib;
-			sourceTree = "<group>";
-		};
-		D38187E415FE349700C3EDCA /* UICallBar.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F09548261883F15400E8A69B /* Base */,
-				F095484B1883F58E00E8A69B /* fr */,
-				F095484C1883F59200E8A69B /* ru */,
-				F0AF06FF1A24BA770086C9C1 /* ar */,
-			);
-			name = UICallBar.xib;
-			sourceTree = "<group>";
-		};
-		D38187E815FE349D00C3EDCA /* UICallBar~ipad.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F09548271883F15400E8A69B /* Base */,
-				F095484D1883F5AF00E8A69B /* fr */,
-				F095484E1883F5B300E8A69B /* ru */,
-				F0AF07001A24BA770086C9C1 /* ar */,
-			);
-			name = "UICallBar~ipad.xib";
 			sourceTree = "<group>";
 		};
 		D38187F315FE354000C3EDCA /* UIConferenceHeader.xib */ = {
