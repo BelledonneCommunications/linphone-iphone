@@ -2124,6 +2124,18 @@ int main(int argc, char *argv[]){
 	/*for pulseaudio:*/
 	g_setenv("PULSE_PROP_media.role", "phone", TRUE);
 #endif
+	
+	/* Add the data directory of the install prefix to XDG_DATA_DIRS
+	 * This environment variable is used by GTK+ to locate the directory
+	 * which stores icon images. */
+	tmp = g_getenv("XDG_DATA_DIRS");
+	if(tmp && strlen(tmp) > 0) {
+		char *xdg_data_dirs = g_strdup_printf("%s:%s", PACKAGE_DATA_DIR, tmp);
+		g_setenv("XDG_DATA_DIRS", xdg_data_dirs, TRUE);
+		g_free(xdg_data_dirs);
+	} else {
+		g_setenv("XDG_DATA_DIRS", PACKAGE_DATA_DIR, FALSE);
+	}
 
 	lang=linphone_gtk_get_lang(config_file);
 	if (lang == NULL || lang[0]=='\0'){
