@@ -107,7 +107,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"Contacts"
 																content:@"ContactsViewController"
-															   stateBar:nil
+															   stateBar:@"UIStateBar"
 																 tabBar:@"UIMainBar"
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]

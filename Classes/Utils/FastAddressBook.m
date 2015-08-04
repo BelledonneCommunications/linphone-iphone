@@ -331,11 +331,13 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 	label.text = [FastAddressBook displayNameForContact:contact];
 	NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
 	NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
-	[label boldSubstring:lLocalizedLastName];
+	if (lLocalizedLastName) {
+		[label boldSubstring:lLocalizedLastName];
+	}
 }
 
 + (NSString *)displayNameForContact:(ABRecordRef)contact {
-	NSString *ret = nil;
+	NSString *ret = NSLocalizedString(@"Unknown", nil);
 	if (contact != nil) {
 		NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonFirstNameProperty));
 		NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];

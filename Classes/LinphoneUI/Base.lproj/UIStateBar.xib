@@ -26,9 +26,9 @@
                     <rect key="frame" x="0.0" y="0.0" width="360" height="42"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" tag="4" contentMode="scaleToFill" image="call_quality_indicator_2.png" id="13" userLabel="callQualityImage">
-                            <rect key="frame" x="300" y="0.0" width="27" height="40"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <imageView userInteractionEnabled="NO" tag="4" contentMode="center" image="call_quality_indicator_4.png" id="13" userLabel="callQualityImage">
+                            <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Call quality"/>
                         </imageView>
                         <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="27" userLabel="callSecurityButton">
@@ -92,7 +92,7 @@
         </view>
     </objects>
     <resources>
-        <image name="call_quality_indicator_2.png" width="19" height="20"/>
+        <image name="call_quality_indicator_4.png" width="20" height="20"/>
         <image name="led_disconnected.png" width="12" height="12"/>
         <image name="menu.png" width="19" height="19"/>
         <image name="security_ok.png" width="13" height="17"/>

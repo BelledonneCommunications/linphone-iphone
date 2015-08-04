@@ -126,7 +126,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"ImageView"
 																content:@"ImageViewController"
-															   stateBar:nil
+															   stateBar:@"UIStateBar"
 																 tabBar:nil
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]

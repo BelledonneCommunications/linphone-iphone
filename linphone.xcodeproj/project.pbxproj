@@ -105,6 +105,7 @@
 		63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
 		631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */; };
+		631348321B6FA53300C6BDCB /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 631348311B6FA53300C6BDCB /* rootca.pem */; };
 		631560341B69175F0047F4D3 /* color_A.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560281B69175F0047F4D3 /* color_A.png */; };
 		631560351B69175F0047F4D3 /* color_B.png in Resources */ = {isa = PBXBuildFile; fileRef = 631560291B69175F0047F4D3 /* color_B.png */; };
 		631560361B69175F0047F4D3 /* color_C.png in Resources */ = {isa = PBXBuildFile; fileRef = 6315602A1B69175F0047F4D3 /* color_C.png */; };
@@ -695,6 +696,7 @@
 		630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+DoneButton.m"; sourceTree = "<group>"; };
 		6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundBorderedButton.h; sourceTree = "<group>"; };
 		6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedButton.m; sourceTree = "<group>"; };
+		631348311B6FA53300C6BDCB /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = "liblinphone-sdk/apple-darwin/share/linphone/rootca.pem"; sourceTree = SOURCE_ROOT; };
 		631560281B69175F0047F4D3 /* color_A.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_A.png; sourceTree = "<group>"; };
 		631560291B69175F0047F4D3 /* color_B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_B.png; sourceTree = "<group>"; };
 		6315602A1B69175F0047F4D3 /* color_C.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = color_C.png; sourceTree = "<group>"; };
@@ -1857,7 +1859,6 @@
 		63AADBC31B6A0FF200AA16FD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				63AADBC41B6A0FF200AA16FD /* Localizable.strings */,
 				63AADBC91B6A0FF200AA16FD /* hold.wav */,
 				63AADBCA1B6A0FF200AA16FD /* Images.xcassets */,
 				63AADBCC1B6A0FF200AA16FD /* launchscreen */,
@@ -1866,11 +1867,13 @@
 				63AADBD81B6A0FF200AA16FD /* linphonerc-factory */,
 				63AADBD91B6A0FF200AA16FD /* linphonerc-factory~ipad */,
 				63AADBDA1B6A0FF200AA16FD /* linphonerc~ipad */,
+				63AADBC41B6A0FF200AA16FD /* Localizable.strings */,
 				63AADBDB1B6A0FF200AA16FD /* msg.caf */,
 				63AADBDC1B6A0FF200AA16FD /* msg.wav */,
 				63AADBDE1B6A0FF200AA16FD /* ring.caf */,
 				63AADBDF1B6A0FF200AA16FD /* ring.wav */,
 				63AADBE01B6A0FF200AA16FD /* ringback.wav */,
+				631348311B6FA53300C6BDCB /* rootca.pem */,
 				63AADBE21B6A0FF200AA16FD /* shortring.caf */,
 				63AADBE31B6A0FF200AA16FD /* wizard_external_sip.rc */,
 				63AADBE41B6A0FF200AA16FD /* wizard_linphone_create.rc */,
@@ -2470,6 +2473,7 @@
 				63AADBE81B6A0FF200AA16FD /* Localizable.strings in Resources */,
 				D381881115FE3F0B00C3EDCA /* UICallCell.xib in Resources */,
 				634CEDCA1B6630DB00D7A921 /* deselect_all.png in Resources */,
+				631348321B6FA53300C6BDCB /* rootca.pem in Resources */,
 				634CEDC51B6630DB00D7A921 /* contacts_sip_default.png in Resources */,
 				D381881915FE3FCA00C3EDCA /* InCallViewController.xib in Resources */,
 				634CEDFA1B6630DB00D7A921 /* pause_small_over_selected.png in Resources */,

@@ -50,7 +50,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"FirstLogin"
 																content:@"FirstLoginViewController"
-															   stateBar:nil
+															   stateBar:@"UIStateBar"
 																 tabBar:nil
 															 fullscreen:false
 														  landscapeMode:false

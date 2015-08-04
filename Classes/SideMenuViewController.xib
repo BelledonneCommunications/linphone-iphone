@@ -37,10 +37,10 @@
                                     <rect key="frame" x="0.0" y="15" width="90" height="61"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 </imageView>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="XbU-2B-u1b" userLabel="nameLabel">
-                                    <rect key="frame" x="98" y="15" width="194" height="32"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Joghn Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="XbU-2B-u1b" userLabel="nameLabel">
+                                    <rect key="frame" x="98" y="15" width="194" height="31"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="37"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
@@ -53,6 +53,10 @@
                                 </label>
                             </subviews>
                             <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <gestureRecognizers/>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="1kD-az-BAx" appends="YES" id="GzA-ju-Hpx"/>
+                            </connections>
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Ttt-1k-jAm">
                             <rect key="frame" x="0.0" y="100" width="300" height="532"/>
@@ -82,6 +86,11 @@
             </connections>
             <point key="canvasLocation" x="815" y="194"/>
         </tableViewController>
+        <tapGestureRecognizer id="1kD-az-BAx">
+            <connections>
+                <action selector="onHeaderClick:" destination="-1" id="yqn-58-lbb"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="avatar.png" width="261" height="261"/>

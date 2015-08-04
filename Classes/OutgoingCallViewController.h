@@ -22,8 +22,14 @@
 #import "UICompositeViewController.h"
 #import "TPMultiLayoutViewController.h"
 #include "linphone/linphonecore.h"
+#import "UIRoundedImageView.h"
 
 @interface OutgoingCallViewController : TPMultiLayoutViewController <UICompositeViewDelegate> {
 }
+@property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
+@property(weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property(weak, nonatomic) IBOutlet UILabel *addressLabel;
+
+- (IBAction)onDeclineClick:(id)sender;
 
 @end

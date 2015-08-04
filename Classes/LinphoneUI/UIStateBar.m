@@ -262,14 +262,18 @@
 		[self updateUI:YES];
 		// FIXME double check call state before computing, may cause core dump
 		float quality = linphone_call_get_average_quality(call);
+		callQualityImage.hidden = (quality == -1.f);
+
 		if (quality < 1) {
 			image = [UIImage imageNamed:@"call_quality_indicator_0.png"];
 		} else if (quality < 2) {
 			image = [UIImage imageNamed:@"call_quality_indicator_1.png"];
 		} else if (quality < 3) {
 			image = [UIImage imageNamed:@"call_quality_indicator_2.png"];
-		} else {
+		} else if (quality < 4) {
 			image = [UIImage imageNamed:@"call_quality_indicator_3.png"];
+		} else {
+			image = [UIImage imageNamed:@"call_quality_indicator_4.png"];
 		}
 		[callQualityImage setImage:image];
 	}

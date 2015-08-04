@@ -37,4 +37,9 @@
 - (IBAction)onLateralSwipe:(id)sender {
 	[[PhoneMainView instance].mainViewController hideSideMenu:YES];
 }
+
+- (IBAction)onHeaderClick:(id)sender {
+	[PhoneMainView.instance changeCurrentView:SettingsViewController.compositeViewDescription];
+	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
+}
 @end

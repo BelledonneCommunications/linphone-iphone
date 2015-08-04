@@ -33,7 +33,7 @@
 
 @interface IncomingCallViewController : TPMultiLayoutViewController <UICompositeViewDelegate> {
 }
-
+@property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (nonatomic, strong) IBOutlet UILabel* addressLabel;
 @property (nonatomic, strong) IBOutlet UIImageView* avatarImage;
 @property (nonatomic, assign) LinphoneCall* call;

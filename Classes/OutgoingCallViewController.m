@@ -18,6 +18,7 @@
  */
 
 #import "OutgoingCallViewController.h"
+#import "PhoneMainView.h"
 
 @implementation OutgoingCallViewController
 
@@ -29,8 +30,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"OutgoingCall"
 																content:@"OutgoingCallViewController"
-															   stateBar:nil
-																 tabBar:@"UICallBar"
+															   stateBar:@"UIStateBar"
+																 tabBar:nil
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]
 														   portraitMode:true];
@@ -39,4 +40,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return compositeDescription;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+
+	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	if (!call) {
+		[[PhoneMainView instance] popCurrentView];
+	} else {
+		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+		[FastAddressBook setDisplayNameLabel:_nameLabel forAddress:addr];
+		char *uri = linphone_address_as_string_uri_only(addr);
+		_addressLabel.text = [NSString stringWithUTF8String:uri];
+		ms_free(uri);
+		_avatarImage.image =
+			[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
+	}
+}
+
+- (IBAction)onDeclineClick:(id)sender {
+	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	if (call) {
+		linphone_core_terminate_call([LinphoneManager getLc], call);
+	}
+	[[PhoneMainView instance] popCurrentView];
+}
 @end

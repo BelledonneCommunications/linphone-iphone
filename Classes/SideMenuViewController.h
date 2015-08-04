@@ -16,5 +16,6 @@
 @property(weak, nonatomic) IBOutlet UILabel *addressLabel;
 @property(strong, nonatomic) IBOutlet SideMenuTableViewController *sideMenuTableViewController;
 - (IBAction)onLateralSwipe:(id)sender;
+- (IBAction)onHeaderClick:(id)sender;
 
 @end
