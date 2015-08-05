@@ -172,13 +172,15 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 		return videoMulticastEnabled(nativePtr);
 	}
 
+	private native void enableRealTimeText(long nativePtr, boolean yesno);
 	@Override
 	public void enableRealTimeText(boolean yesno) {
-		throw new RuntimeException("java binding not implemented yet");
+		enableRealTimeText(nativePtr, yesno);
 	}
 
+	private native boolean realTimeTextEnabled(long nativePtr);
 	@Override
 	public boolean realTimeTextEnabled() {
-		throw new RuntimeException("java binding not implemented yet");
+		return realTimeTextEnabled(nativePtr);
 	}
 }

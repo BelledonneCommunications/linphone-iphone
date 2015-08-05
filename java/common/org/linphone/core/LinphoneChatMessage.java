@@ -233,6 +233,6 @@ public interface LinphoneChatMessage {
 	 * @param[in] character T.140 char
 	 * @throw LinphoneCoreExeption .
 	 */
-	void putChar(long charater) throws LinphoneCoreException;
+	void putChar(long character) throws LinphoneCoreException;
 	
 }

@@ -20,6 +20,7 @@ package org.linphone.core;
 
 import org.linphone.core.LinphoneChatMessage.State;
 import org.linphone.core.LinphoneChatMessage.StateListener;
+import org.linphone.core.LinphoneCall;
 
 @SuppressWarnings("deprecation")
 class LinphoneChatRoomImpl implements LinphoneChatRoom {
@@ -174,12 +175,16 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	public void sendChatMessage(LinphoneChatMessage message) {
 		sendChatMessage(nativePtr, message, ((LinphoneChatMessageImpl)message).getNativePtr());
 	}
+	
+	private native Object getCall(long nativePtr);
 	@Override
 	public LinphoneCall getCall() {
-		throw new RuntimeException("java binding not implemented yet");
+		return (LinphoneCall) getCall(nativePtr);
 	}
+	
+	private native long getChar(long nativePtr);
 	@Override
 	public long getChar() {
-		throw new RuntimeException("java binding not implemented yet");
+		return getChar(nativePtr);
 	}
 }

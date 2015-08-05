@@ -254,9 +254,11 @@ class LinphoneCallImpl implements LinphoneCall {
 	public LinphonePlayer getPlayer() {
 		return new LinphonePlayerImpl(getPlayer(nativePtr));
 	}
+	
+	private native long getChatRoom(long nativePtr);
 	@Override
 	public LinphoneChatRoom getChatRoom() {
-		throw new RuntimeException("java binding not implemented yet");
+		return new LinphoneChatRoomImpl(getChatRoom(nativePtr));
 	}
 
 }
