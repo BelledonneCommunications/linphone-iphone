@@ -339,26 +339,9 @@ static void quality_reporting_session_report_if_video_stopped() {
 }
 
 void publish_report_with_route_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state){
-	stats* counters = get_stats(lc);
-	const LinphoneAddress* from_addr = linphone_event_get_from(ev);
-	char* from = linphone_address_as_string(from_addr);
-	ms_message("Publish state [%s] from [%s]",linphone_publish_state_to_string(state),from);
-	ms_free(from);
-	switch(state){
-		case LinphonePublishProgress:
-			BC_ASSERT_STRING_EQUAL(linphone_address_as_string(linphone_event_get_resource(ev)), linphone_proxy_config_get_quality_reporting_collector(linphone_core_get_default_proxy_config(lc)));
-			counters->number_of_LinphonePublishProgress++;
-			break;
-		case LinphonePublishOk:
-			counters->number_of_LinphonePublishOk++;
-			break;
-		case LinphonePublishError: counters->number_of_LinphonePublishError++; break;
-		case LinphonePublishExpiring: counters->number_of_LinphonePublishExpiring++; break;
-		case LinphonePublishCleared: counters->number_of_LinphonePublishCleared++;break;
-		default:
-		break;
+	if (state == LinphonePublishProgress) {
+		BC_ASSERT_STRING_EQUAL(linphone_address_as_string(linphone_event_get_resource(ev)), linphone_proxy_config_get_quality_reporting_collector(linphone_core_get_default_proxy_config(lc)));
 	}
-
 }
 
 static void quality_reporting_sent_using_custom_route() {
@@ -367,7 +350,10 @@ static void quality_reporting_sent_using_custom_route() {
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 
-	marie->lc->current_vtable->publish_state_changed = publish_report_with_route_state_changed;
+	LinphoneCoreVTable publish_vtable = {0};
+	publish_vtable.publish_state_changed = publish_report_with_route_state_changed;
+	linphone_core_add_listener(marie->lc, &publish_vtable);
+
 	//INVALID collector: sip.linphone.org do not collect reports, so it will throw a 404 Not Found error
 	linphone_proxy_config_set_quality_reporting_collector(linphone_core_get_default_proxy_config(marie->lc), "sip:sip.linphone.org");
 
