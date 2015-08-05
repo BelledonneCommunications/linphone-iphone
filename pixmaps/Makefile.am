@@ -21,13 +21,17 @@ iconsdir=$(datadir)/icons/hicolor
 appiconsdir=$(iconsdir)/48x48/apps
 dist_appicons_DATA= linphone.png
 
-statusiconsdir=$(iconsdir)/48x48/status
-dist_statusicons_DATA= \
+status48iconsdir=$(iconsdir)/48x48/status
+dist_status48icons_DATA= \
+	linphone-micro-muted.png \
+	linphone-speaker-muted.png \
+	linphone-micro-enabled.png \
+	linphone-speaker-enabled.png
+
+statussvgiconsdir=$(iconsdir)/scalable/status
+dist_statussvgicons_DATA= \
 	svg/linphone-micro-muted.svg \
 	svg/linphone-speaker-muted.svg \
 	svg/linphone-micro-enabled.svg \
 	svg/linphone-speaker-enabled.svg
 
-
-
-	
