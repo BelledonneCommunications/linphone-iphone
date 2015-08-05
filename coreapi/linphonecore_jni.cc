@@ -136,12 +136,18 @@ static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt,
 int dumbMethodForAllowingUsageOfCpuFeaturesFromStaticLibMediastream() {
 	return (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM && (android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0);
 }
+
+int dumbMethodForAllowingUsageOfMsAudioDiffFromStaticLibMediastream() {
+	return ms_audio_diff(NULL, NULL, NULL, 0, NULL, NULL);
+}
 #endif /*ANDROID*/
+
 
 JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
 	ms_set_jvm(ajvm);
+	
 #endif /*ANDROID*/
 	jvm=ajvm;
 	return JNI_VERSION_1_2;

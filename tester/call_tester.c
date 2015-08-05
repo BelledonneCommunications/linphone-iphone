@@ -2345,13 +2345,9 @@ static void call_with_file_player(void) {
 		end_call(marie, pauline);
 		/*cannot run on iphone simulator because locks main loop beyond permitted time (should run
 		on another thread) */
-#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
 		BC_ASSERT_EQUAL(ms_audio_diff(hellopath,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
 		if (similar>=threshold)
 			break;
-#else
-		remove(recordpath);
-#endif
 	}
 	BC_ASSERT_GREATER(similar, threshold, double, "%g");
 	BC_ASSERT_LOWER(similar, 1.0, double, "%g");
@@ -4367,13 +4363,8 @@ static void call_with_rtp_io_mode(void) {
 		wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
 		end_call(pauline,marie);
 
-		if (ms_tags_list_contains_tag(ms_factory_get_platform_tags(ms_factory_get_fallback()), "embedded")) {
-			ms_warning("Cannot run audio diff on embedded platform");
-			remove(recordpath);
-		} else {
-			BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, audio_cmp_max_shift, NULL, NULL), 0, int, "%d");
-			if (similar>=threshold) break;
-		}
+		BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, audio_cmp_max_shift, NULL, NULL), 0, int, "%d");
+		if (similar>=threshold) break;
 	}
 	BC_ASSERT_GREATER(similar, threshold, double, "%g");
 	BC_ASSERT_LOWER(similar, 1.0, double, "%g");

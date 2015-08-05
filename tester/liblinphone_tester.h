@@ -320,7 +320,7 @@ bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,LinphoneCore
 bool_t compare_files(const char *path1, const char *path2);
 void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList* lcs,LinphoneMediaDirection audio_dir, LinphoneMediaDirection video_dir);
 
-static const int audio_cmp_max_shift=20;
+static const int audio_cmp_max_shift=10;
 
 /*
  * this function return max value in the last 3 seconds*/
