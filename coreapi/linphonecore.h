@@ -719,7 +719,21 @@ LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
+
+/**
+ * Get the mesured playback volume level.
+ * 
+ * @param call The call.
+ * @return float Volume level in percentage.
+ */
 LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
+
+/**
+ * Get the mesured record volume level
+ * 
+ * @param call The call.
+ * @return float Volume level in percentage.
+ */
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 
 /**
