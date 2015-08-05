@@ -111,7 +111,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 
 	if (file){
 		filepath = ms_strdup_printf("%s/%s", path, file);
-		BC_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
+		BC_ASSERT_EQUAL_FATAL(ortp_file_exist(filepath),0,int,"%d");
 		config = lp_config_new_with_factory(NULL,filepath);
 	}
 

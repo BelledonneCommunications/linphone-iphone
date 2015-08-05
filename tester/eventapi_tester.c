@@ -39,7 +39,7 @@ const char *liblinphone_tester_get_notify_content(void){
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content){
 	LinphoneCoreManager *mgr;
 	BC_ASSERT_PTR_NOT_NULL_FATAL(content);
-	BC_ASSERT_TRUE(strcmp(notify_content,(const char*)linphone_content_get_buffer(content))==0);
+	BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
 	mgr=get_manager(lc);
 	mgr->stat.number_of_NotifyReceived++;
 }
@@ -193,7 +193,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 
 	if (refresh_type==AutoRefresh){
 		wait_for_list(lcs,NULL,0,6000);
-		BC_ASSERT_TRUE(linphone_event_get_subscription_state(pauline->lev)==LinphoneSubscriptionActive);
+		BC_ASSERT_EQUAL(linphone_event_get_subscription_state(pauline->lev), LinphoneSubscriptionActive, int, "%d");
 	}else if (refresh_type==ManualRefresh){
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionExpiring,1,4000));
 		linphone_event_update_subscribe(lev,NULL);
@@ -255,7 +255,7 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 
 	if (refresh_type==AutoRefresh){
 		wait_for_list(lcs,NULL,0,6000);
-		BC_ASSERT_TRUE(linphone_event_get_subscription_state(pauline->lev)==LinphoneSubscriptionActive);
+		BC_ASSERT_EQUAL(linphone_event_get_subscription_state(pauline->lev), LinphoneSubscriptionActive, int, "%d");
 	}else if (refresh_type==ManualRefresh){
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionExpiring,1,4000));
 		linphone_event_update_subscribe(lev,NULL);

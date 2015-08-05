@@ -43,13 +43,13 @@ static void start_with_no_config(void){
 	int speex16_codec_pos=get_codec_position(codecs, "speex", 16000);
 	PayloadType *pt;
 	opus_codec_pos=get_codec_position(codecs, "opus", 48000);
-	if (opus_codec_pos!=-1) BC_ASSERT_TRUE(opus_codec_pos==0);
-	BC_ASSERT_TRUE(speex16_codec_pos<speex_codec_pos);
+	if (opus_codec_pos!=-1) BC_ASSERT_EQUAL(opus_codec_pos,0,int, "%d");
+	BC_ASSERT_LOWER(speex16_codec_pos,speex_codec_pos,int,"%d");
 
 	pt=linphone_core_find_payload_type(lc, "speex", 16000, 1);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt) {
-		BC_ASSERT_TRUE(linphone_core_payload_type_enabled(lc, pt)==TRUE);
+		BC_ASSERT_TRUE(linphone_core_payload_type_enabled(lc, pt));
 	}
 	linphone_core_destroy(lc);
 }
@@ -59,13 +59,13 @@ static void check_payload_type_numbers(LinphoneCall *call1, LinphoneCall *call2,
 	const PayloadType *pt=linphone_call_params_get_used_audio_codec(params);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		BC_ASSERT_TRUE(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt)==expected_number);
+		BC_ASSERT_EQUAL(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt),expected_number, int, "%d");
 	}
 	params=linphone_call_get_current_params(call2);
 	pt=linphone_call_params_get_used_audio_codec(params);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		BC_ASSERT_TRUE(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt)==expected_number);
+		BC_ASSERT_EQUAL(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt),expected_number, int, "%d");
 	}
 }
 

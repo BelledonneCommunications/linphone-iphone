@@ -25,7 +25,7 @@
 static void linphone_version_test(void){
 	const char *version=linphone_core_get_version();
 	/*make sure the git version is always included in the version number*/
-	BC_ASSERT_TRUE(strstr(version,"unknown")==NULL);
+	BC_ASSERT_PTR_NULL(strstr(version,"unknown"));
 }
 
 static void core_init_test(void) {
@@ -269,7 +269,7 @@ static void codec_usability_test(void) {
 	LinphoneCoreManager *mgr = linphone_core_manager_new2("empty_rc", FALSE);
 	PayloadType *pt = linphone_core_find_payload_type(mgr->lc, "PCMU", 8000, -1);
 
-	BC_ASSERT_TRUE(pt!=NULL);
+	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (!pt) goto end;
 	/*no limit*/
 	linphone_core_set_upload_bandwidth(mgr->lc, 0);

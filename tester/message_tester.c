@@ -1444,7 +1444,7 @@ static void info_message_with_args(bool_t with_content) {
 
 	BC_ASSERT_PTR_NOT_NULL(hvalue);
 	if (hvalue)
-		BC_ASSERT_TRUE(strcmp(hvalue,"still bad")==0);
+		BC_ASSERT_STRING_EQUAL(hvalue, "still bad");
 
 	if (with_content){
 		BC_ASSERT_PTR_NOT_NULL(content);
@@ -1452,9 +1452,9 @@ static void info_message_with_args(bool_t with_content) {
 			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_buffer(content));
 			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_type(content));
 			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_subtype(content));
-			if (linphone_content_get_type(content)) BC_ASSERT_TRUE(strcmp(linphone_content_get_type(content),"application")==0);
-			if (linphone_content_get_subtype(content)) BC_ASSERT_TRUE(strcmp(linphone_content_get_subtype(content),"somexml")==0);
-			if (linphone_content_get_buffer(content))BC_ASSERT_TRUE(strcmp((const char*)linphone_content_get_buffer(content),info_content)==0);
+			if (linphone_content_get_type(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_type(content),"application");
+			if (linphone_content_get_subtype(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_subtype(content),"somexml");
+			if (linphone_content_get_buffer(content))BC_ASSERT_STRING_EQUAL((const char*)linphone_content_get_buffer(content),info_content);
 			BC_ASSERT_EQUAL(linphone_content_get_size(content),strlen(info_content), int, "%d");
 		}
 	}

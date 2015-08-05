@@ -202,13 +202,13 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 				if (strptime(date, "%Y-%m-%d %H:%M:%S", &tm_curr) != NULL) {
 					tm_curr.tm_isdst = -1; // LOL
 					log_time = mktime(&tm_curr);
-					BC_ASSERT_TRUE(log_time >= time_prev);
+					BC_ASSERT_GREATER(log_time , time_prev, long int, "%ld");
 					time_prev = log_time;
 				}
 			}
 #endif
 		}
-		BC_ASSERT_TRUE(line_count > 25);
+		BC_ASSERT_GREATER(line_count , 25, int, "%d");
 		free(line);
 		fclose(file);
 		ms_free(filepath);
@@ -217,7 +217,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 		timediff = labs((long int)log_time - (long int)cur_time);
 		(void)timediff;
 #ifndef _WIN32
-		BC_ASSERT_TRUE( timediff <= 1 );
+		BC_ASSERT_LOWER(timediff, 1, unsigned, "%u");
 		if( !(timediff <= 1) ){
 			char buffers[2][128] = {{0}};
 			strftime(buffers[0], sizeof(buffers[0]), "%Y-%m-%d %H:%M:%S", localtime(&log_time));

@@ -181,13 +181,13 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 		}
 		wait_for_until(caller->lc,callee->lc,NULL,0,20); /*just to sleep while iterating*/
 	}while (!liblinphone_tester_clock_elapsed(&ts,15000));
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(c1)->round_trip_delay>0.0);
-	BC_ASSERT_TRUE(linphone_call_get_audio_stats(c2)->round_trip_delay>0.0);
+	BC_ASSERT_GREATER(linphone_call_get_audio_stats(c1)->round_trip_delay,0.0,float,"%f");
+	BC_ASSERT_GREATER(linphone_call_get_audio_stats(c2)->round_trip_delay,0.0,float,"%f");
 	if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
-		BC_ASSERT_TRUE(linphone_call_get_video_stats(c1)->round_trip_delay>0.0);
+		BC_ASSERT_GREATER(linphone_call_get_video_stats(c1)->round_trip_delay,0.0,float,"%f");
 	}
 	if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
-		BC_ASSERT_TRUE(linphone_call_get_video_stats(c2)->round_trip_delay>0.0);
+		BC_ASSERT_GREATER(linphone_call_get_video_stats(c2)->round_trip_delay,0.0,float,"%f");
 	}
 	linphone_call_unref(c1);
 	linphone_call_unref(c2);
@@ -287,7 +287,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
-	
+
 	result = wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1)
 			&&
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1);
@@ -654,7 +654,7 @@ static void call_with_specified_codec_bitrate(void) {
 #endif
 	/*Force marie to play from file: if soundcard is used and it is silient, then vbr mode will drop down the bitrate
 	 Note that a play file is already set by linphone_core_manager_new() (but not used)*/
-	linphone_core_set_use_files(marie->lc, TRUE); 
+	linphone_core_set_use_files(marie->lc, TRUE);
 
 	if (linphone_core_find_payload_type(marie->lc,codec,rate,-1)==NULL){
 		BC_PASS("opus codec not supported, test skipped.");
@@ -743,7 +743,7 @@ static void simple_call_compatibility_mode(void) {
 		BC_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallConnected,1));
 		BC_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallStreamsRunning,1));
 		BC_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,1));
-		
+
 		wait_for(lc_pauline,lc_marie,&stat_marie->number_of_LinphoneCallStreamsRunning,3);
 		linphone_core_terminate_all_calls(lc_pauline);
 		BC_ASSERT_TRUE(wait_for(lc_pauline,lc_marie,&stat_pauline->number_of_LinphoneCallEnd,1));
@@ -938,7 +938,7 @@ static void call_terminated_by_caller(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
 	BC_ASSERT_TRUE(call(pauline,marie));
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -954,7 +954,7 @@ static void call_with_no_sdp(void) {
 	linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
 
 	BC_ASSERT_TRUE(call(marie,pauline));
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -1246,8 +1246,8 @@ static void call_paused_resumed(void) {
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_rtcp_sent, rtcp_count_current+1, 10000)); \
 	stats = rtp_session_get_stats(call_pauline->audiostream->ms.sessions.rtp_session); \
 	loss_percentage = stats->cum_packet_loss * 100.f / (stats->packet_recv + stats->cum_packet_loss); \
-	BC_ASSERT_TRUE(.75 * params.loss_rate < loss_percentage); \
-	BC_ASSERT_TRUE(loss_percentage < 1.25 * params.loss_rate)
+	BC_ASSERT_LOWER(.75 * params.loss_rate , loss_percentage, float, "%f"); \
+	BC_ASSERT_LOWER(loss_percentage , 1.25 * params.loss_rate, float, "%f")
 
 static void call_paused_resumed_with_loss(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -1343,7 +1343,7 @@ void concurrent_paused_resumed_base() {
 	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
 	BC_ASSERT_EQUAL(stats->cum_packet_loss, 0, int, "%d");
 
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -1991,8 +1991,8 @@ static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	/*audio stream shall not have been requested to start*/
 	BC_ASSERT_PTR_NULL(pauline_call->audiostream->soundread);
 
-	BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(out_call))==TRUE);
-	BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(pauline_call))==TRUE);
+	BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(out_call)));
+	BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(pauline_call)));
 
 	linphone_core_accept_call(pauline->lc, pauline_call);
 
@@ -2017,7 +2017,7 @@ static void video_call_limited_bandwidth(void) {
 	linphone_core_set_download_bandwidth(pauline->lc, 100);
 	video_call_base(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
 
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2051,7 +2051,7 @@ static void _call_with_media_relay(bool_t random_ports) {
 	BC_ASSERT_TRUE(add_video(pauline,marie, TRUE));
 	liblinphone_tester_check_rtcp(pauline,marie);
 #endif
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2095,7 +2095,7 @@ static void call_with_privacy(void) {
 		BC_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(c2)),LinphonePrivacyId, int, "%d");
 	}
 
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2118,7 +2118,7 @@ static void call_with_privacy(void) {
 
 		BC_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(c2)),LinphonePrivacyId, int, "%d");
 	}
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,2));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,2));
@@ -2160,7 +2160,7 @@ static void call_with_privacy2(void) {
 		BC_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(c2)),LinphonePrivacyId, int, "%d");
 	}
 
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2285,9 +2285,9 @@ static void call_srtp_paused_and_resumed(void) {
 
 	/*assert that after pause and resume, SRTP is still being used*/
 	params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
-	BC_ASSERT_TRUE(linphone_call_params_get_media_encryption(params) == LinphoneMediaEncryptionSRTP);
+	BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(params) , LinphoneMediaEncryptionSRTP, int, "%d");
 	params = linphone_call_get_current_params(linphone_core_get_current_call(marie->lc));
-	BC_ASSERT_TRUE(linphone_call_params_get_media_encryption(params) == LinphoneMediaEncryptionSRTP);
+	BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(params) , LinphoneMediaEncryptionSRTP, int, "%d");
 
 	linphone_core_terminate_all_calls(marie->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
@@ -2334,8 +2334,8 @@ static void call_with_file_player(void) {
 		player=linphone_call_get_player(linphone_core_get_current_call(marie->lc));
 		BC_ASSERT_PTR_NOT_NULL(player);
 		if (player){
-			BC_ASSERT_TRUE(linphone_player_open(player,hellopath,on_eof,marie)==0);
-			BC_ASSERT_TRUE(linphone_player_start(player)==0);
+			BC_ASSERT_EQUAL(linphone_player_open(player,hellopath,on_eof,marie),0, int, "%d");
+			BC_ASSERT_EQUAL(linphone_player_start(player),0, int, "%d");
 		}
 		/* This assert should be modified to be at least as long as the WAV file */
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,10000));
@@ -2418,7 +2418,7 @@ static void call_with_mkv_file_player(void) {
 			goto end;
 		}
 		BC_ASSERT_EQUAL(res, 0, int, "%d");
-		BC_ASSERT_TRUE(linphone_player_start(player)==0);
+		BC_ASSERT_EQUAL(linphone_player_start(player),0,int,"%d");
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_player_eof,1,12000));
 		linphone_player_close(player);
 		/*wait for one second more so that last RTP packets can arrive*/
@@ -2426,9 +2426,9 @@ static void call_with_mkv_file_player(void) {
 	}
 	end_call(marie, pauline);
 #ifdef DO_AUDIO_CMP
-	BC_ASSERT_TRUE(ms_audio_diff(hellowav,recordpath,&similar,audio_cmp_max_shift,NULL,NULL)==0);
-	BC_ASSERT_TRUE(similar>threshold);
-	BC_ASSERT_TRUE(similar<=1.0);
+	BC_ASSERT_EQUAL(ms_audio_diff(hellowav,recordpath,&similar,audio_cmp_max_shift,NULL,NULL),0,int,"%d");
+	BC_ASSERT_GREATER(similar,threshold,double,"%f");
+	BC_ASSERT_LOWER(similar,1.0,double,"%f");
 	if(similar>threshold && similar<=1.0) {
 		remove(recordpath);
 	}
@@ -2529,7 +2529,7 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 #endif
 
 
-		
+
 		linphone_core_terminate_all_calls(marie->lc);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2583,7 +2583,7 @@ static void early_media_call(void) {
 	/*added because a bug related to early-media caused the Connected state to be reached two times*/
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallConnected,1, int, "%d");
 
-	
+
 	linphone_core_terminate_all_calls(marie->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2762,7 +2762,7 @@ static void call_established_with_rejected_info(void) {
 		check_call_state(pauline,LinphoneCallStreamsRunning);
 		check_call_state(marie,LinphoneCallStreamsRunning);
 
-		
+
 		linphone_core_terminate_all_calls(pauline->lc);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2843,7 +2843,7 @@ static void call_established_with_complex_rejected_operation(void) {
 		BC_ASSERT_EQUAL(linphone_call_get_reason(linphone_core_get_current_call(pauline->lc)),LinphoneReasonTemporarilyUnavailable, int, "%d");
 
 
-		
+
 		linphone_core_terminate_all_calls(pauline->lc);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2895,7 +2895,7 @@ static void call_established_with_rejected_info_during_reinvite(void) {
 
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 
-		
+
 		linphone_core_terminate_all_calls(pauline->lc);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2930,7 +2930,7 @@ static void call_established_with_rejected_reinvite(void) {
 		check_call_state(pauline,LinphoneCallStreamsRunning);
 		check_call_state(marie,LinphoneCallStreamsRunning);
 
-		
+
 		linphone_core_terminate_all_calls(pauline->lc);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -2969,7 +2969,7 @@ static void call_established_with_rejected_incoming_reinvite(void) {
 		check_call_state(pauline,LinphoneCallStreamsRunning);
 		check_call_state(marie,LinphoneCallStreamsRunning);
 
-		
+
 		linphone_core_terminate_all_calls(pauline->lc);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -3071,7 +3071,7 @@ static void call_established_with_rejected_reinvite_with_error_base(bool_t trans
 		if (!trans_pending)
 			sal_enable_unconditional_answer(marie->lc->sal,FALSE);
 
-		
+
 		linphone_core_terminate_all_calls(pauline->lc);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -3628,7 +3628,7 @@ static void call_with_custom_supported_tags(void) {
 	recv_supported=linphone_call_params_get_custom_header(remote_params,"supported");
 	BC_ASSERT_PTR_NOT_NULL(recv_supported);
 	if (recv_supported){
-		BC_ASSERT_TRUE(strstr(recv_supported,"pouet-tag")!=NULL);
+		BC_ASSERT_PTR_NOT_NULL(strstr(recv_supported,"pouet-tag"));
 	}
 	end_call(marie,pauline);
 end:
@@ -3675,7 +3675,7 @@ static void call_log_from_taken_from_p_asserted_id(void) {
 	BC_ASSERT_TRUE(linphone_address_weak_equal(linphone_call_get_remote_address(c2),paulie_asserted_id_addr));
 
 
-	
+
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
@@ -3991,7 +3991,7 @@ static void call_with_generic_cn(void) {
 		err=stat(recorded_file,&stbuf);
 		BC_ASSERT_EQUAL(err, 0, int, "%d");
 		if (err==0){
-			BC_ASSERT_TRUE(stbuf.st_size>120000);
+			BC_ASSERT_GREATER(stbuf.st_size,120000,int, "%d");
 		}
 	}
 
@@ -4146,9 +4146,9 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 
 		/*assert that after pause and resume, SRTP is still being used*/
 		current_params = linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc));
-		BC_ASSERT_TRUE(linphone_call_params_get_media_encryption(current_params) == mode);
+		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(current_params) , mode, int, "%d");
 		current_params = linphone_call_get_current_params(linphone_core_get_current_call(marie->lc));
-		BC_ASSERT_TRUE(linphone_call_params_get_media_encryption(current_params) == mode);
+		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(current_params) , mode, int, "%d");
 
 	}
 	end_call(marie,pauline);
@@ -4297,7 +4297,7 @@ static void call_with_fqdn_in_sdp(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(tls_supported ? "pauline_rc" : "pauline_tcp_rc");
 	LpConfig *lp;
 	bool_t call_ok;
-	
+
 	lp = linphone_core_get_config(marie->lc);
 	lp_config_set_string(lp,"rtp","bind_address","localhost");
 	lp = linphone_core_get_config(pauline->lc);
@@ -4336,7 +4336,7 @@ static void call_with_rtp_io_mode(void) {
 		unlink(recordpath);
 		reset_counters(&marie->stat);
 		reset_counters(&pauline->stat);
-		
+
 		/* The caller uses files instead of soundcard in order to avoid mixing soundcard input with file played using call's player. */
 		linphone_core_use_files(marie->lc, TRUE);
 		linphone_core_set_play_file(marie->lc, NULL);
@@ -4357,8 +4357,8 @@ static void call_with_rtp_io_mode(void) {
 		player = linphone_call_get_player(linphone_core_get_current_call(marie->lc));
 		BC_ASSERT_PTR_NOT_NULL(player);
 		if (player) {
-			BC_ASSERT_TRUE(linphone_player_open(player, hellopath, on_eof, marie) == 0);
-			BC_ASSERT_TRUE(linphone_player_start(player) == 0);
+			BC_ASSERT_EQUAL(linphone_player_open(player, hellopath, on_eof, marie) , 0, int, "%d");
+			BC_ASSERT_EQUAL(linphone_player_start(player) , 0, int, "%d");
 		}
 
 		/* This assert should be modified to be at least as long as the WAV file */
