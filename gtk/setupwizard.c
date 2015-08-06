@@ -189,8 +189,8 @@ static int external_account_configuration_complete(GtkWidget *w) {
 
 	if ((gtk_entry_get_text_length(username) > 0)
 		&& (gtk_entry_get_text_length(domain) > 0)
-		&& (g_regex_match_simple("^[a-zA-Z0-9]+[a-zA-Z0-9.\\-_]{2,}$", gtk_entry_get_text(username), 0, 0))
-		&& (g_regex_match_simple("^(sip:)?([a-zA-Z0-9]+([\\.-][a-zA-Z0-9]+)*)$", gtk_entry_get_text(domain), 0, 0))) {
+		&& (g_regex_match_simple("^[a-zA-Z0-9+]+[a-zA-Z0-9.\\+\\-_]{2,}$", gtk_entry_get_text(username), 0, 0))
+		&& (g_regex_match_simple("^(sip:)?([a-zA-Z0-9\\+]+([\\.-][a-zA-Z0-9+]+)*)$", gtk_entry_get_text(domain), 0, 0))) {
 		return 1;
 	}
 	return 0;
@@ -315,7 +315,7 @@ static gboolean update_interface_with_username_availability(void *w) {
 		gtk_label_set_text(usernameError, "");
 	} else {
 		GdkPixbuf *nok_pixbuf = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "nok_pixbuf"));
-		gtk_label_set_text(usernameError, "Username is already in use !");
+		gtk_label_set_text(usernameError, "Username is already in use!");
 		g_object_set_data(G_OBJECT(w), "is_username_available", GINT_TO_POINTER(0));
 		gtk_image_set_from_pixbuf(isUsernameOk, nok_pixbuf);
 	}
@@ -326,7 +326,7 @@ static gboolean update_interface_with_username_availability(void *w) {
 static void linphone_gtk_test_account_existence_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
 	GtkWidget *assistant = (GtkWidget *)linphone_account_creator_get_user_data(creator);
 	GtkWidget *page = g_object_get_data(G_OBJECT(assistant), "linphone_account_creation_configuration");
-	int account_existing = (status == LinphoneAccountCreatorOk) ? 0 : 1;
+	int account_existing = (status != LinphoneAccountCreatorOk);
 	g_object_set_data(G_OBJECT(page), "is_username_used", GINT_TO_POINTER(account_existing));
 	gdk_threads_add_idle((GSourceFunc)update_interface_with_username_availability, (void*)page);
 }
@@ -375,7 +375,7 @@ static void linphone_account_creation_email_changed(GtkEntry *entry, GtkWidget *
 	GtkImage* isEmailOk = GTK_IMAGE(g_object_get_data(G_OBJECT(w), "emailOk"));
 	GtkWidget *assistant = gtk_widget_get_toplevel(w);
 
-	if (g_regex_match_simple("^[a-z0-9]+([_\\.-][a-z0-9]+)*@([a-z0-9]+([\\.-][a-z0-9]+)*)+\\.[a-z]{2,}$", gtk_entry_get_text(email), 0, 0)) {
+	if (g_regex_match_simple("^[a-z0-9]([a-z0-9_\\+\\.-]+)@[a-z0-9]([a-z0-9\\.-]+)\\.[a-z]{2,}$", gtk_entry_get_text(email), 0, 0)) {
 		GdkPixbuf *ok_pixbuf = GDK_PIXBUF(g_object_get_data(G_OBJECT(the_assistant), "ok_pixbuf"));
 		g_object_set_data(G_OBJECT(w), "is_email_correct", GINT_TO_POINTER(1));
 		gtk_image_set_from_pixbuf(isEmailOk, ok_pixbuf);
@@ -638,6 +638,9 @@ void linphone_gtk_close_assistant(void) {
 	//reload list of proxy configs because a new one was probably created...
 	mw=linphone_gtk_get_main_window();
 	if (mw) {
-		linphone_gtk_show_sip_accounts((GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters"));
+		GtkWidget* pb = (GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
+		if (pb) {
+			linphone_gtk_show_sip_accounts(pb);
+		}
 	}
 }
