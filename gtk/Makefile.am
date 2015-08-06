@@ -16,7 +16,10 @@ UI_FILES=	about.ui \
 		config-uri.ui \
 		provisioning-fetch.ui \
 		audio_assistant.ui \
-		chat_view.ui
+		chat_view.ui \
+		in_call_view.ui \
+		conf_view.ui \
+		conf_callee_view.ui
 
 PIXMAPS=	\
 		stock_people.png

@@ -361,7 +361,7 @@ void linphone_gtk_enable_video_button(LinphoneCall *call, gboolean sensitive, gb
 }
 
 void linphone_gtk_create_in_call_view(LinphoneCall *call){
-	GtkWidget *call_view=linphone_gtk_create_widget("main","in_call_frame");
+	GtkWidget *call_view=linphone_gtk_create_widget("in_call_view","in_call_frame");
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
 	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(main_window,"viewswitch");
 	static int call_index=1;

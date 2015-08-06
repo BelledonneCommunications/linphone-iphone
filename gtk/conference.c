@@ -81,7 +81,7 @@ static GtkWidget *find_conferencee_from_call(LinphoneCall *call){
 
 static GtkWidget * create_conference_panel(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
-	GtkWidget *conf_frame=linphone_gtk_create_widget("main","conf_frame");
+	GtkWidget *conf_frame=linphone_gtk_create_widget("conf_view","conf_frame");
 	GtkWidget *conf_box=linphone_gtk_get_widget(conf_frame,"conf_box");
 	GtkWidget *button_conf=linphone_gtk_get_widget(conf_frame,"terminate_conf");
 	GtkWidget *image=create_pixmap("stopcall-small.png");
@@ -94,7 +94,7 @@ static GtkWidget * create_conference_panel(void){
 	g_object_set_data(G_OBJECT(mw),"conf_frame",(gpointer)conf_frame);
 
 	box=gtk_vbox_new(FALSE,0);
-	participant=linphone_gtk_create_widget("main","callee_frame");
+	participant=linphone_gtk_create_widget("conf_callee_view","callee_frame");
 	gtk_widget_show(participant);
 	gtk_box_set_homogeneous(GTK_BOX(box),TRUE);
 	init_local_participant(participant);
@@ -126,7 +126,7 @@ void linphone_gtk_set_in_conference(LinphoneCall *call){
 		const LinphoneAddress *addr=linphone_call_get_remote_address(call);
 		gchar *markup;
 
-		participant=linphone_gtk_create_widget("main","callee_frame");
+		participant=linphone_gtk_create_widget("conf_callee_view","callee_frame");
 		gtk_widget_show(participant);
 		if (linphone_address_get_display_name(addr)!=NULL){
 			markup=g_strdup_printf("<b>%s</b>",linphone_address_get_display_name(addr));

@@ -40,6 +40,9 @@ set(UI_FILES
 	tunnel_config.ui
 	waiting.ui
 	chat_view.ui
+	in_call_view.ui
+	conf_view.ui
+	conf_callee_view.ui
 )
 
 set(PIXMAPS stock_people.png)

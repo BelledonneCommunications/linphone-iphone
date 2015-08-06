@@ -410,38 +410,7 @@ GtkWidget *linphone_gtk_create_window(const char *window_name, GtkWidget *parent
 	return w;
 }
 
-GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name){
-	char path[2048];
-	GtkWidget *w;
-	GtkBuilder* builder = gtk_builder_new ();
-	GError *error=NULL;
-	gchar *object_ids[2];
-	object_ids[0]=g_strdup(widget_name);
-	object_ids[1]=NULL;
-
-	if (get_ui_file(filename,path,sizeof(path))==-1) return NULL;
-
-	gtk_builder_set_translation_domain(builder,GETTEXT_PACKAGE);
-
-	if (!gtk_builder_add_objects_from_file(builder,path,object_ids,&error)){
-		g_error("Couldn't load %s from builder file %s: %s", widget_name,path,error->message);
-		g_error_free (error);
-		g_free(object_ids[0]);
-		return NULL;
-	}
-	g_free(object_ids[0]);
-	w=GTK_WIDGET(gtk_builder_get_object (builder,widget_name));
-	if (w==NULL){
-		g_error("Could not retrieve '%s' window from xml file",widget_name);
-		return NULL;
-	}
-	g_object_set_data(G_OBJECT(w),"builder",builder);
-	g_signal_connect_swapped(G_OBJECT(w),"destroy",(GCallback)g_object_unref,builder);
-	gtk_builder_connect_signals(builder,w);
-	return w;
-}
-
-GtkWidget *linphone_gtk_create_widget_2(const char *filename, const char *widget_name) {
+GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name) {
 	char path[2048];
 	GtkWidget *w = NULL;
 	GtkBuilder *builder = gtk_builder_new();
@@ -467,6 +436,7 @@ GtkWidget *linphone_gtk_create_widget_2(const char *filename, const char *widget
 	w = GTK_WIDGET(obj);
 	g_object_set_data_full(obj, "builder", builder, g_object_unref);
 	gtk_widget_unparent(w);
+	gtk_builder_connect_signals(builder, w);
 
 
 end:
