@@ -297,7 +297,7 @@
 						LOGE(@"PushNotification: does not have call-id yet, fix it !");
 					}
 
-					if ([loc_key isEqualToString:@"IM_MSG"]) {
+					if ([loc_key isEqualToString:@"IM_MSG"] || [loc_key isEqualToString:@"IM_FULLMSG"]) {
 
 						[[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
 

@@ -901,6 +901,8 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
 	const char *call_id = linphone_chat_message_get_custom_header(msg, "Call-ID");
 	NSString *callID = [NSString stringWithUTF8String:call_id];
+    const char* chat = linphone_chat_message_get_text(msg);
+    if( chat == NULL) chat = "";
 
 	ms_free(c_address);
 
@@ -915,6 +917,8 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 					linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 				address = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
 				linphone_address_destroy(linphoneAddress);
+			} else {
+				address = @(linphone_address_get_username(remoteAddress));
 			}
 		}
 		if (address == nil) {
@@ -928,7 +932,11 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 			if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 				notif.category = @"incoming_msg";
 			}
-			notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), address];
+			if ( [[LinphoneManager instance] lpConfigBoolForKey:@"show_msg_in_notif"] ){
+				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), address, @(chat)];
+			} else {
+				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), address];
+			}
 			notif.alertAction = NSLocalizedString(@"Show", nil);
 			notif.soundName = @"msg.caf";
 			notif.userInfo = @{ @"from" : address, @"from_addr" : remote_uri, @"call-id" : callID };

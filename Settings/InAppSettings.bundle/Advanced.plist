@@ -38,6 +38,32 @@
 		</dict>
 		<dict>
 			<key>Title</key>
+			<string>Notifications</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>show_msg_in_notif</string>
+			<key>Title</key>
+			<string>Show message in notification</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>autoanswer_notif_preference</string>
+			<key>Title</key>
+			<string>Auto-answer after notification</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>Title</key>
 			<string>Other</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
@@ -56,29 +82,9 @@
 			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
-			<string>backgroundmode_preference</string>
-			<key>Title</key>
-			<string>Background mode</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
 			<string>start_at_boot_preference</string>
 			<key>Title</key>
 			<string>Start at boot</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>autoanswer_notif_preference</string>
-			<key>Title</key>
-			<string>Auto-answer after notification</string>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>

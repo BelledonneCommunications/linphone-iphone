@@ -2,11 +2,12 @@
 "Debug" = "Debug";
 "Send Logs" = "Send Logs";
 "Clear Logs" = "Clear Logs";
+"Notifications" = "Notifications";
+"Show message in notification" = "Show message in notification";
+"Auto-answer after notification" = "Auto-answer after notification";
 "Other" = "Other";
 "Animations" = "Animations";
-"Background mode" = "Background mode";
 "Start at boot" = "Start at boot";
-"Auto-answer after notification" = "Auto-answer after notification";
 "First login view" = "First login view";
 "Expire" = "Expire";
 "Primary account" = "Primary account";
