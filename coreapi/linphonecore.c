@@ -2775,7 +2775,8 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 			if (call->localdesc->streams[0].max_rate>0) {
 				ms_snd_card_set_preferred_sample_rate(lc->sound_conf.play_sndcard, call->localdesc->streams[0].max_rate);
 			}
-			audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
+			if (!lc->use_files)
+				audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 		}
 	}
 	real_url=linphone_address_as_string( destination ? destination : call->log->to);
@@ -3612,7 +3613,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 			ms_snd_card_set_preferred_sample_rate(lc->sound_conf.capt_sndcard, call->localdesc->streams[0].max_rate);
 	}
 
-	if (!was_ringing && call->audiostream->ms.state==MSStreamInitialized){
+	if (!was_ringing && call->audiostream->ms.state==MSStreamInitialized && !lc->use_files){
 		audio_stream_prepare_sound(call->audiostream,lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard);
 	}
 
