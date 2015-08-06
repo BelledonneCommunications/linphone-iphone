@@ -2656,30 +2656,32 @@ LINPHONE_PUBLIC	int linphone_core_get_payload_type_number(LinphoneCore *lc, cons
 **/
 LINPHONE_PUBLIC void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number);
 
-LINPHONE_PUBLIC	const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
+LINPHONE_PUBLIC const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
-LINPHONE_PUBLIC	bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt);
+
+/**
+ * @addtogroup proxies
+ * @{
+ */
 
 /**
  * Create a proxy config with default values from Linphone core.
  * @param[in] lc #LinphoneCore object
  * @return #LinphoneProxyConfig with default values set
- * @ingroup proxy
  */
-LINPHONE_PUBLIC	LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc);
 
 /**
  * Add a proxy configuration.
  * This will start registration on the proxy, if registration is enabled.
 **/
-LINPHONE_PUBLIC	int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
+LINPHONE_PUBLIC int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
 /**
  * Erase all proxies from config.
- *
- * @ingroup proxy
 **/
-LINPHONE_PUBLIC	void linphone_core_clear_proxy_config(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_clear_proxy_config(LinphoneCore *lc);
 
 /**
  * Removes a proxy configuration.
@@ -2687,14 +2689,14 @@ LINPHONE_PUBLIC	void linphone_core_clear_proxy_config(LinphoneCore *lc);
  * LinphoneCore will then automatically unregister and place the proxy configuration
  * on a deleted list. For that reason, a removed proxy does NOT need to be freed.
 **/
-LINPHONE_PUBLIC	void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
+LINPHONE_PUBLIC void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
 /**
  * Returns an unmodifiable list of entered proxy configurations.
  * @param[in] lc The LinphoneCore object
  * @return \mslist{LinphoneProxyConfig}
 **/
-LINPHONE_PUBLIC	const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc);
+LINPHONE_PUBLIC const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc);
 
 /** @deprecated Use linphone_core_set_default_proxy_config() instead. */
 #define linphone_core_set_default_proxy(lc, config) linphone_core_set_default_proxy_config(lc, config)
@@ -2705,7 +2707,7 @@ LINPHONE_PUBLIC void linphone_core_set_default_proxy_index(LinphoneCore *lc, int
  * @return the default proxy configuration, that is the one used to determine the current identity.
  * @deprecated Use linphone_core_get_default_proxy_config() instead.
 **/
-LINPHONE_PUBLIC	int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config);
+LINPHONE_PUBLIC int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config);
 
 /**
  * @return the default proxy configuration, that is the one used to determine the current identity.
@@ -2724,6 +2726,10 @@ LINPHONE_PUBLIC LinphoneProxyConfig * linphone_core_get_default_proxy_config(Lin
  * @param[in] config The proxy configuration to use as the default one.
 **/
 LINPHONE_PUBLIC void linphone_core_set_default_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
+
+/**
+ * @}
+ */
 
 /**
  * Create an authentication information with default values from Linphone core.
