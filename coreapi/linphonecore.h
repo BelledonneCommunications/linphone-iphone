@@ -888,6 +888,7 @@ LINPHONE_PUBLIC	bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *ca
  * @addtogroup proxies
  * @{
 **/
+
 /**
  * The LinphoneProxyConfig object represents a proxy configuration to be used
  * by the LinphoneCore object.
@@ -922,6 +923,10 @@ typedef enum _LinphoneRegistrationState{
  * @param cs sate
  */
 LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegistrationState cs);
+
+/**
+ * @}
+ */
 
 #include "linphone_proxy_config.h"
 
