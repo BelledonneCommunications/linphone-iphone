@@ -12,3 +12,5 @@ WORK
 Makefile
 OUTPUT
 git-clang-format.diff
+submodules/tunnel
+submodules/binaries/dummy-*.a

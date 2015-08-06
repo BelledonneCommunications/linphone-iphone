@@ -153,31 +153,31 @@ def extract_libs_list():
     return list(set(l))
 
 
-def check_installed(binary, prog=None, warn=True):
+def check_is_installed(binary, prog=None, warn=True):
     if not find_executable(binary):
         if warn:
             print("Could not find {}. Please install {}.".format(binary, prog))
-        return 1
-    return 0
+        return False
+    return True
 
 
 def check_tools():
-    ret = 0
+    reterr = 0
 
     if " " in os.path.dirname(os.path.realpath(__file__)):
         print("Invalid location: linphone-iphone path should not contain any spaces.")
-        ret = 1
+        reterr = 1
 
     for prog in ["autoconf", "automake", "pkg-config", "doxygen", "java", "nasm", "cmake", "wget", "yasm", "optipng"]:
-        ret |= check_installed(prog, "it")
-    ret |= check_installed("ginstall", "coreutils")
-    ret |= check_installed("intltoolize", "intltool")
-    ret |= check_installed("convert", "imagemagick")
+        reterr |= not check_is_installed(prog, "it")
+    reterr |= not check_is_installed("ginstall", "coreutils")
+    reterr |= not check_is_installed("intltoolize", "intltool")
+    reterr |= not check_is_installed("convert", "imagemagick")
 
-    if not check_installed("libtoolize", warn=False):
-        if check_installed("glibtoolize", "libtool"):
+    if check_is_installed("libtoolize", warn=False):
+        if not check_is_installed("glibtoolize", "libtool"):
             glibtoolize_path = find_executable(glibtoolize)
-            ret = 1
+            reterr = 1
             error = "Please do a symbolic link from glibtoolize to libtoolize: 'ln -s {} ${}'."
             print(error.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
 
@@ -188,10 +188,10 @@ def check_tools():
     if p.returncode != 0:
         print(p.returncode)
         print("Please install Java JDK (not just JRE).")
-        ret = 1
+        reterr = 1
 
     # needed by x264
-    check_installed("gas-preprocessor.pl", """it:
+    check_is_installed("gas-preprocessor.pl", """it:
         wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
         chmod +x gas-preprocessor.pl
         sudo mv gas-preprocessor.pl /usr/local/bin/""")
@@ -200,28 +200,28 @@ def check_tools():
     if "fatal: unrecognised output format" in nasm_output:
         print(
             "Invalid version of nasm: your version does not support elf32 output format. If you have installed nasm, please check that your PATH env variable is set correctly.")
-        ret = 1
+        reterr = 1
 
         if not os.path.isdir("submodules/linphone/mediastreamer2") or not os.path.isdir("submodules/linphone/oRTP"):
             print("Missing some git submodules. Did you run 'git submodule update --init --recursive'?")
-            ret = 1
+            reterr = 1
     p = Popen("xcrun --sdk iphoneos --show-sdk-path".split(" "), stdout=devnull, stderr=devnull)
     p.wait()
     if p.returncode != 0:
         print("iOS SDK not found, please install Xcode from AppStore or equivalent.")
-        ret = 1
+        reterr = 1
     else:
         sdk_platform_path = Popen("xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "), stdout=PIPE, stderr=devnull).stdout.read()[:-1]
         sdk_strings_path = "{}/{}".format(sdk_platform_path, "Developer/usr/bin/strings")
         if not os.path.isfile(sdk_strings_path):
             strings_path = find_executable("strings")
             print("strings binary missing, please run 'sudo ln -s {} {}'.".format(strings_path, sdk_strings_path))
-            ret = 1
+            reterr = 1
 
-    if ret == 1:
+    if reterr == 1:
         print("Failed to detect required tools, aborting.")
 
-    return ret
+    return reterr
 
 
 def install_git_hook():
@@ -467,6 +467,8 @@ def main(argv=None):
         '-G' '--generator', help="CMake build system generator (default: Unix Makefiles).", default='Unix Makefiles', choices=['Unix Makefiles', 'Ninja'])
     argparser.add_argument(
         '-L', '--list-cmake-variables', help="List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
+    argparser.add_argument(
+        '-t', '--tunnel', help="Enable Tunnel.", action='store_true')
     argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=[
                            'x86_64', 'devices'], help="The platform to build for (default is 'x86_64 devices'). Space separated architectures in list: {0}.".format(', '.join([repr(platform) for platform in platforms])))
 
@@ -475,10 +477,6 @@ def main(argv=None):
     if args.debug_verbose:
         additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
 
-    if os.path.isdir("submodules/tunnel"):
-        print("Enabling tunnel")
-        additional_args += ["-DENABLE_TUNNEL=YES"]
-
     if check_tools() != 0:
         return 1
 
@@ -486,11 +484,20 @@ def main(argv=None):
 
     additional_args += ["-G", args.G__generator]
     if args.G__generator == 'Ninja':
-        if check_installed("ninja", "it") != 0:
+        if not check_is_installed("ninja", "it"):
             return 1
         generator = 'ninja -C'
     else:
         generator = '$(MAKE) -C'
+
+    if args.tunnel:
+        if not os.path.isdir("submodules/tunnel"):
+            print("Tunnel enabled but not found, trying to clone it...")
+            if check_is_installed("git", "it", True):
+                Popen("git clone gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" ")).wait()
+                additional_args += ["-DENABLE_TUNNEL=YES"]
+            else:
+                return 1
 
     selected_platforms = []
     for platform in args.platform:
