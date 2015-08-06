@@ -1490,6 +1490,13 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 	LinphoneCore *lc=cfg->lc;
 	bool_t update_friends=FALSE;
 
+	if (state==LinphoneRegistrationProgress) {
+		char *msg=ortp_strdup_printf(_("Refreshing on %s..."), linphone_proxy_config_get_identity(cfg));
+		linphone_core_notify_display_status(lc,msg);
+		ms_free(msg);
+
+	}
+
 	if (cfg->state!=state || state==LinphoneRegistrationOk) { /*allow multiple notification of LinphoneRegistrationOk for refreshing*/
 		ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s]"	, cfg,
 								linphone_proxy_config_get_identity(cfg),
