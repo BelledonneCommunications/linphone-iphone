@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <glib.h>
 #include <glib/gprintf.h>
 
-
 static const int PASSWORD_MIN_SIZE = 6;
 static const int LOGIN_MIN_SIZE = 4;
 static GtkWidget *the_assistant = NULL;
@@ -622,14 +621,23 @@ void linphone_gtk_show_assistant(GtkWidget *parent) {
 	g_signal_connect(G_OBJECT(w), "close", (GCallback)linphone_gtk_assistant_closed, NULL);
 	g_signal_connect(G_OBJECT(w), "cancel", (GCallback)linphone_gtk_assistant_closed, NULL);
 	g_signal_connect(G_OBJECT(w), "prepare", (GCallback)linphone_gtk_assistant_prepare, NULL);
-	
+
 	gtk_window_set_transient_for(GTK_WINDOW(the_assistant), GTK_WINDOW(linphone_gtk_get_main_window()));
 
 	gtk_widget_show(w);
 }
 
 void linphone_gtk_close_assistant(void) {
-	if (the_assistant == NULL) return;
+	GtkWidget *mw;
+	if (the_assistant == NULL) {
+		return;
+	}
 	gtk_widget_destroy(the_assistant);
 	the_assistant = NULL;
+
+	//reload list of proxy configs because a new one was probably created...
+	mw=linphone_gtk_get_main_window();
+	if (mw) {
+		linphone_gtk_show_sip_accounts((GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters"));
+	}
 }

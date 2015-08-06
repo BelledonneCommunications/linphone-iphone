@@ -308,6 +308,7 @@ LINPHONE_PUBLIC void linphone_gtk_video_preset_changed(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_show_camera_preview_clicked(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_update_my_contact(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_add_proxy(GtkButton *button);
+LINPHONE_PUBLIC void linphone_gtk_show_sip_accounts(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_edit_proxy(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_remove_proxy(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_clear_passwords(GtkWidget *button);
