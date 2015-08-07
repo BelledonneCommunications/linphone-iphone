@@ -27,7 +27,7 @@
                     <subviews>
                         <view contentMode="scaleToFill" id="6" userLabel="navigationBar">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="0.0" width="72" height="40"/>
@@ -54,7 +54,7 @@
                         </view>
                         <view contentMode="scaleToFill" id="33" userLabel="headerView">
                             <rect key="frame" x="0.0" y="40" width="375" height="150"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar.png" id="23" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="150" y="0.0" width="68" height="66"/>
@@ -127,7 +127,7 @@
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="k6N-Av-eOu">
                             <rect key="frame" x="0.0" y="190" width="375" height="369"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <outlet property="dataSource" destination="baU-d4-eu3" id="p7o-Mx-Kmc"/>
@@ -140,12 +140,13 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="254.5" y="288.5"/>
         </view>
         <tableViewController id="baU-d4-eu3" customClass="HistoryDetailsTableViewController">
             <connections>
                 <outlet property="view" destination="k6N-Av-eOu" id="Dos-d4-5l5"/>
             </connections>
-            <point key="canvasLocation" x="621" y="235"/>
+            <point key="canvasLocation" x="823" y="263"/>
         </tableViewController>
     </objects>
     <resources>

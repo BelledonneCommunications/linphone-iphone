@@ -26,7 +26,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="360" height="42"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" tag="4" contentMode="center" image="call_quality_indicator_4.png" id="13" userLabel="callQualityImage">
+                        <imageView hidden="YES" userInteractionEnabled="NO" tag="4" contentMode="center" image="call_quality_indicator_4.png" id="13" userLabel="callQualityImage">
                             <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Call quality"/>

@@ -66,26 +66,6 @@
 	[tester tapViewWithAccessibilityLabel:@"Back"];
 }
 
-#pragma mark - Tests
-
-- (void)testDeleteContact {
-	NSString *contactName = [self getUUID];
-	[self createContact:contactName lastName:@"dummy" phoneNumber:@"0102030405" SIPAddress:[self me]];
-
-	NSString *fullName = [contactName stringByAppendingString:@" dummy"];
-
-	[tester tapViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
-
-	[tester tapViewWithAccessibilityLabel:@"Edit"];
-	[tester scrollViewWithAccessibilityIdentifier:@"Contact numbers table" byFractionOfSizeHorizontal:0 vertical:-0.9];
-
-	[tester tapViewWithAccessibilityLabel:@"Remove"];
-
-	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Firstname, Lastname"
-												 value:fullName
-												traits:UIAccessibilityTraitStaticText];
-}
-
 - (void)tapCellForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section atX:(CGFloat)x {
 	UITableView *tv = [self findTableView:@"Contact numbers table"];
 	NSIndexPath *path = [NSIndexPath indexPathForRow:idx inSection:section];
@@ -131,6 +111,34 @@
 		// hack: Travis seems to be unable to click on delete for what ever reason
 		[self tapRemoveButtonForRowAtIndexPath:idx inSection:section];
 	}
+}
+
+#pragma mark - Tests
+
+- (void)testCallContactWithInvalidPhoneNumber {
+	NSString *contactName = [self getUUID];
+	[self createContact:contactName lastName:@"dummy" phoneNumber:@"5 15 #0664;447*46" SIPAddress:nil];
+	NSString *fullName = [contactName stringByAppendingString:@" dummy"];
+	[tester tapViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
+	[tester tapViewWithAccessibilityLabel:@"Chat"];
+}
+
+- (void)testDeleteContact {
+	NSString *contactName = [self getUUID];
+	[self createContact:contactName lastName:@"dummy" phoneNumber:@"0102030405" SIPAddress:[self me]];
+
+	NSString *fullName = [contactName stringByAppendingString:@" dummy"];
+
+	[tester tapViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
+
+	[tester tapViewWithAccessibilityLabel:@"Edit"];
+	[tester scrollViewWithAccessibilityIdentifier:@"Contact numbers table" byFractionOfSizeHorizontal:0 vertical:-0.9];
+
+	[tester tapViewWithAccessibilityLabel:@"Remove"];
+
+	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Firstname, Lastname"
+												 value:fullName
+												traits:UIAccessibilityTraitStaticText];
 }
 
 - (void)testEditContact {

@@ -49,20 +49,6 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	// Set callQualityTimer
-	callQualityTimer = [NSTimer scheduledTimerWithTimeInterval:1
-														target:self
-													  selector:@selector(callQualityUpdate)
-													  userInfo:nil
-													   repeats:YES];
-
-	// Set callQualityTimer
-	callSecurityTimer = [NSTimer scheduledTimerWithTimeInterval:1
-														 target:self
-													   selector:@selector(callSecurityUpdate)
-													   userInfo:nil
-														repeats:YES];
-
 	// Set observer
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(registrationUpdate:)
@@ -91,6 +77,7 @@
 		lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", 0);
 
 	[self proxyConfigUpdate:config];
+	[self updateUI:linphone_core_get_calls_nb([LinphoneManager getLc])];
 	[self updateVoicemail];
 }
 
@@ -222,8 +209,37 @@
 #pragma mark -
 
 - (void)updateUI:(BOOL)inCall {
-	_outcallView.hidden = (inCall);
-	_incallView.hidden = !_outcallView.hidden;
+	// nothing changed
+	if (_outcallView.hidden == inCall)
+		return;
+
+	_outcallView.hidden = inCall;
+	_incallView.hidden = !inCall;
+	// always hide icons at start since they are not ready yet
+	callQualityImage.hidden = callSecurityButton.hidden = YES;
+
+	if (callQualityTimer) {
+		[callQualityTimer invalidate];
+		callQualityTimer = nil;
+	}
+	if (callSecurityTimer) {
+		[callSecurityTimer invalidate];
+		callSecurityTimer = nil;
+	}
+
+	// if we are in call, we have to update quality and security icons every sec
+	if (inCall) {
+		callQualityTimer = [NSTimer scheduledTimerWithTimeInterval:1
+															target:self
+														  selector:@selector(callQualityUpdate)
+														  userInfo:nil
+														   repeats:YES];
+		callSecurityTimer = [NSTimer scheduledTimerWithTimeInterval:1
+															 target:self
+														   selector:@selector(callSecurityUpdate)
+														   userInfo:nil
+															repeats:YES];
+	}
 }
 
 - (void)callSecurityUpdate {
@@ -236,7 +252,7 @@
 			[securitySheet dismissWithClickedButtonIndex:securitySheet.destructiveButtonIndex animated:TRUE];
 		}
 	} else {
-		[self updateUI:YES];
+		callSecurityButton.hidden = NO;
 		while (list != NULL) {
 			LinphoneCall *call = (LinphoneCall *)list->data;
 			LinphoneMediaEncryption enc =
@@ -256,26 +272,18 @@
 }
 
 - (void)callQualityUpdate {
-	UIImage *image = nil;
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call != NULL) {
-		[self updateUI:YES];
-		// FIXME double check call state before computing, may cause core dump
-		float quality = linphone_call_get_average_quality(call);
-		callQualityImage.hidden = (quality == -1.f);
-
-		if (quality < 1) {
-			image = [UIImage imageNamed:@"call_quality_indicator_0.png"];
-		} else if (quality < 2) {
-			image = [UIImage imageNamed:@"call_quality_indicator_1.png"];
-		} else if (quality < 3) {
-			image = [UIImage imageNamed:@"call_quality_indicator_2.png"];
-		} else if (quality < 4) {
-			image = [UIImage imageNamed:@"call_quality_indicator_3.png"];
-		} else {
-			image = [UIImage imageNamed:@"call_quality_indicator_4.png"];
+		int quality = MIN(4, floor(linphone_call_get_average_quality(call)));
+		NSString *accessibilityValue = [NSString stringWithFormat:NSLocalizedString(@"Call quality: %d", nil), quality];
+		if (![accessibilityValue isEqualToString:callQualityImage.accessibilityValue]) {
+			callQualityImage.accessibilityValue = accessibilityValue;
+			callQualityImage.hidden = (quality == -1.f);
+			callQualityImage.image =
+				(quality == -1.f)
+					? nil
+					: [UIImage imageNamed:[NSString stringWithFormat:@"call_quality_indicator_%d.png", quality]];
 		}
-		[callQualityImage setImage:image];
 	}
 }
 

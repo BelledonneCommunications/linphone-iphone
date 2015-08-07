@@ -97,9 +97,11 @@
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wzg-i0-spp" userLabel="callButton" customClass="UIIconButton">
                                             <rect key="frame" x="287" y="6" width="65" height="65"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <state key="normal" image="start_call_body_default.png">
+                                            <state key="normal" image="call_start_body_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
+                                            <state key="disabled" image="call_start_body_disabled.png"/>
+                                            <state key="highlighted" image="call_start_body_over.png"/>
                                         </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -136,9 +138,10 @@
                                             <rect key="frame" x="0.0" y="2" width="72" height="63"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Send picture"/>
-                                            <state key="normal" image="chat_photo.png">
+                                            <state key="normal" image="chat_picture_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
+                                            <state key="highlighted" image="chat_picture_over.png"/>
                                             <connections>
                                                 <action selector="onPictureClick:" destination="-1" eventType="touchUpInside" id="87"/>
                                             </connections>
@@ -159,9 +162,10 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Send"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="0.0" maxY="0.0"/>
-                                            <state key="normal" image="chat_send.png">
+                                            <state key="normal" image="chat_send_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
+                                            <state key="highlighted" image="chat_send_over.png"/>
                                             <connections>
                                                 <action selector="onSendClick:" destination="-1" eventType="touchUpInside" id="25"/>
                                             </connections>
@@ -193,12 +197,16 @@
     <resources>
         <image name="avatar.png" width="261" height="261"/>
         <image name="back.png" width="25" height="22"/>
-        <image name="chat_photo.png" width="72" height="56"/>
-        <image name="chat_send.png" width="71" height="71"/>
+        <image name="call_start_body_default.png" width="52" height="52"/>
+        <image name="call_start_body_disabled.png" width="52" height="52"/>
+        <image name="call_start_body_over.png" width="52" height="52"/>
+        <image name="chat_picture_default.png" width="25" height="19"/>
+        <image name="chat_picture_over.png" width="42" height="42"/>
+        <image name="chat_send_default.png" width="25" height="24"/>
+        <image name="chat_send_over.png" width="42" height="42"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="edit_list.png" width="31" height="29"/>
-        <image name="start_call_body_default.png" width="151" height="151"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

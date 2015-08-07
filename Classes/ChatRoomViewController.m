@@ -77,9 +77,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"ChatRoom"
 																content:@"ChatRoomViewController"
 															   stateBar:@"UIStateBar"
-																 tabBar:/*@"UIMainBar"*/ nil
+																 tabBar:@"UIMainBar"
 															 fullscreen:false
-														  landscapeMode:true
+														  landscapeMode:false
 														   portraitMode:true];
 	}
 	return compositeDescription;
