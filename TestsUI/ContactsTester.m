@@ -14,8 +14,11 @@
 
 #pragma mark - Setup
 
-- (void)beforeAll {
-	[super beforeAll];
+- (void)beforeEach {
+	[super beforeEach];
+	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Back" error:nil]) {
+		[tester tapViewWithAccessibilityLabel:@"Back"];
+	}
 	[tester tapViewWithAccessibilityLabel:@"Contacts"];
 }
 
