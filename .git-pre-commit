@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# This hook purpose is to keep coding style consistent between all developers
+# It is automatically installed in .git/hooks folder by cmake on first run.
+
+# From https://github.com/tatsuhiro-t/nghttp2/blob/master/pre-commit
+
+function invalid-format-detected {
+        cat git-clang-format.diff
+        echo "*****************"
+        echo "$0: Invalid coding style detected (see git-clang-format.diff for issues). Please correct it using one of the following:"
+        echo "1) Apply patch located at git-clang-format.diff using:"
+        echo "  cd $(git rev-parse --show-toplevel) && $1"
+        echo "2) Use clang-format to correctly format source code using:"
+        echo "  $2"
+        echo "3) Reformat these lines manually."
+        echo "*** Aborting commit.***"
+        exit 1
+}
+function git-clang-format-diffing {
+    format_diff=$(which git-clang-format)
+    format_diff_options="--style=file"
+
+    #only diffing commited files, ignored staged one
+    $format_diff $format_diff_options --diff $(git --no-pager diff --cached --name-status | grep -v '^D' | cut -f2) > git-clang-format.diff
+
+    if ! grep -q -E '(no modified files to format|clang-format did not modify any files)' git-clang-format.diff; then
+        invalid-format-detected "git apply git-clang-format.diff" "clang-format $format_diff_options -i <some_file.c>"
+    fi
+}
+
+function clang-format-diff-diffing {
+    format_diff=$(find /usr/bin/ -name 'clang-format-diff*' -type f | tail -n1)
+    format_diff_options="-style file"
+
+    git diff-index --cached --diff-filter=ACMR -p HEAD -- | $format_diff $format_diff_options -p1 > git-clang-format.diff
+    if [ -s git-clang-format.diff ]; then
+        invalid-format-detected "patch -p0 < git-clang-format.diff" "${format_diff/-diff/} $format_diff_options -i <some_file.cpp>"
+    fi
+}
+
+set -e
+if which git-clang-format &>/dev/null; then
+    git-clang-format-diffing $@
+elif [ ! -z "$(find /usr/bin/ /usr/local/bin/ /opt/bin/ -name 'clang-format-diff*' -type f 2>/dev/null)" ]; then
+    # Warning! We need at least version 1.6...
+    clang-format-diff-diffing $@
+else
+    echo "$0: Please install clang-format (coding style checker) - could not find git-clang-format nor clang-format-diff in PATH. Skipping code verification..."
+    exit 0
+fi
