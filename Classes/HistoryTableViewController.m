@@ -142,14 +142,18 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
 	if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
-		// Go to History details view
-		HistoryDetailsViewController *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription]
-												   push:TRUE],
-			HistoryDetailsViewController);
+		LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+		char *uri = linphone_address_as_string(addr);
+
+		// Go to dialer view
+		DialerViewController *controller =
+			DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]],
+						 DialerViewController);
 		if (controller != nil) {
-			[controller setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
+			[controller call:[NSString stringWithUTF8String:uri]
+				 displayName:[FastAddressBook displayNameForAddress:addr]];
 		}
+		ms_free(uri);
 	}
 }
 

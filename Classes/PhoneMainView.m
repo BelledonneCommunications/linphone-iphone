@@ -350,7 +350,18 @@ static RootViewManager *rootViewManagerInstance = nil;
 			}
 			break;
 		}
-		default:
+		case LinphoneCallEarlyUpdatedByRemote:
+		case LinphoneCallEarlyUpdating:
+		case LinphoneCallIdle:
+		case LinphoneCallOutgoingEarlyMedia:
+		case LinphoneCallOutgoingProgress:
+		case LinphoneCallOutgoingRinging:
+		case LinphoneCallPaused:
+		case LinphoneCallPausing:
+		case LinphoneCallRefered:
+		case LinphoneCallReleased:
+		case LinphoneCallResuming:
+		case LinphoneCallUpdating:
 			break;
 	}
 	[self updateApplicationBadgeNumber];

@@ -105,7 +105,7 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="tableView">
-                                    <rect key="frame" x="0.0" y="80" width="375" height="341"/>
+                                    <rect key="frame" x="0.0" y="80" width="375" height="338"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <gestureRecognizers/>
@@ -115,7 +115,7 @@
                                     </connections>
                                 </tableView>
                                 <view contentMode="scaleToFill" id="fx4-ao-53M" userLabel="composeIndicatorView">
-                                    <rect key="frame" x="0.0" y="429" width="375" height="22"/>
+                                    <rect key="frame" x="0.0" y="426" width="375" height="22"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
@@ -129,11 +129,11 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <view contentMode="scaleToFill" id="14" userLabel="messageView">
-                                    <rect key="frame" x="0.0" y="452" width="375" height="63"/>
+                                    <rect key="frame" x="0.0" y="449" width="375" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="73" userLabel="pictureButton">
-                                            <rect key="frame" x="0.0" y="0.0" width="72" height="63"/>
+                                            <rect key="frame" x="0.0" y="2" width="72" height="63"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Send picture"/>
                                             <state key="normal" image="chat_photo.png">
@@ -144,7 +144,7 @@
                                             </connections>
                                         </button>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="CPp-ts-xy0" userLabel="messageField">
-                                            <rect key="frame" x="88" y="12" width="200" height="40"/>
+                                            <rect key="frame" x="88" y="14" width="200" height="40"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <accessibility key="accessibilityConfiguration" hint="" label=""/>
@@ -155,7 +155,7 @@
                                             </connections>
                                         </textView>
                                         <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="15" userLabel="sendButton">
-                                            <rect key="frame" x="303" y="0.0" width="72" height="63"/>
+                                            <rect key="frame" x="303" y="2" width="72" height="63"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Send"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="0.0" maxY="0.0"/>

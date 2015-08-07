@@ -78,9 +78,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		compositeDescription = [[UICompositeViewDescription alloc] init:@"InCall"
 																content:@"InCallViewController"
 															   stateBar:@"UIStateBar"
-																 tabBar:@"UICallBar"
+																 tabBar:nil
 															 fullscreen:false
-														  landscapeMode:true
+														  landscapeMode:false
 														   portraitMode:true];
 		compositeDescription.darkBackground = true;
 	}
