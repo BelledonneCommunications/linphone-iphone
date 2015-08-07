@@ -27,13 +27,12 @@ PIXMAPS=	\
 LINPHONE_ICO_RC_FILE=linphone.rc
 LINPHONE_ICO_FILE=linphone.ico
 
-EXTRA_DIST=	$(PIXMAPS) \
-		$(UI_FILES) \
-		linphone.iss \
-		$(LINPHONE_ICO_RC_FILE) \
-		$(LINPHONE_ICO_FILE)
-		gtkrc \
-		gtkrc.mac
+EXTRA_DIST= \
+	linphone.iss \
+	$(LINPHONE_ICO_RC_FILE) \
+	$(LINPHONE_ICO_FILE)
+	gtkrc \
+	gtkrc.mac
 
 if BUILD_GTK_UI
 
@@ -89,7 +88,7 @@ linphone_LDFLAGS=-export-dynamic
 endif
 
 uidir=$(datadir)/linphone
-ui_DATA=$(UI_FILES) $(PIXMAPS) $(top_srcdir)/COPYING
+dist_ui_DATA=$(UI_FILES) $(PIXMAPS) $(top_srcdir)/COPYING
 
 endif
 

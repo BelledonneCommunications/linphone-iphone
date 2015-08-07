@@ -14,6 +14,9 @@ gtk/incall_view.c
 gtk/loginframe.c
 gtk/config-fetching.c
 gtk/audio_assistant.c
+gtk/conf_callee_view.ui
+gtk/conf_view.ui
+gtk/in_call_view.ui
 [type: gettext/glade]gtk/main.ui
 [type: gettext/glade]gtk/about.ui
 [type: gettext/glade]gtk/contact.ui
