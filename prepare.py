@@ -495,9 +495,9 @@ def main(argv=None):
             print("Tunnel enabled but not found, trying to clone it...")
             if check_is_installed("git", "it", True):
                 Popen("git clone gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" ")).wait()
-                additional_args += ["-DENABLE_TUNNEL=YES"]
             else:
                 return 1
+        additional_args += ["-DENABLE_TUNNEL=YES"]
 
     selected_platforms = []
     for platform in args.platform:
