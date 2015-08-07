@@ -63,14 +63,23 @@
 	}
 
 	[tester tapViewWithAccessibilityLabel:@"Edit"];
-	[tester tapViewWithAccessibilityLabel:@"Back"];
 }
 
 #pragma mark - Tests
 
+- (void)testCallContactWithInvalidPhoneNumber {
+	NSString *contactName = [self getUUID];
+	NSString *phone = @"+5 15 #0664;447*46";
+	[self createContact:contactName lastName:@"dummy" phoneNumber:phone SIPAddress:nil];
+	[tester tapViewWithAccessibilityLabel:[@"Linphone, " stringByAppendingString:phone]];
+	[tester waitForViewWithAccessibilityLabel:[phone stringByAppendingString:@" not registered"]];
+	[tester tapViewWithAccessibilityLabel:@"Dismiss"];
+}
+
 - (void)testDeleteContact {
 	NSString *contactName = [self getUUID];
 	[self createContact:contactName lastName:@"dummy" phoneNumber:@"0102030405" SIPAddress:[self me]];
+	[tester tapViewWithAccessibilityLabel:@"Back"];
 
 	NSString *fullName = [contactName stringByAppendingString:@" dummy"];
 
@@ -137,8 +146,6 @@
 	NSString *contactName = [self getUUID];
 	NSString *fullName = [contactName stringByAppendingString:@" dummy"];
 	[self createContact:contactName lastName:@"dummy" phoneNumber:nil SIPAddress:nil];
-
-	[tester tapViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
 
 	/* Phone number */
 	NSArray *phones = @[ @"01234", @"56789" ];
