@@ -146,7 +146,7 @@ class AccountManager:
             linphonetester_logger.critical("[TESTER] Account for {identity} could not be created on server.".format(identity=refcfg.identity_address.as_string()))
             sys.exit(-1)
         cfg.edit()
-        cfg.identity = account.modified_identity
+        cfg.identity_address = account.modified_identity
         cfg.done()
         ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
         lc.add_auth_info(ai)
