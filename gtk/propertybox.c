@@ -885,6 +885,9 @@ void linphone_gtk_show_sip_accounts(GtkWidget *w){
 	GtkTreeModel *model=gtk_tree_view_get_model(v);
 	GtkListStore *store;
 	GtkTreeSelection *select;
+	const LinphoneProxyConfig *default_pc = linphone_core_get_default_proxy_config(linphone_gtk_get_core());
+	GtkTreePath *default_pc_path = NULL;
+	
 	const MSList *elem;
 	if (!model){
 		GtkCellRenderer *renderer;
@@ -914,6 +917,11 @@ void linphone_gtk_show_sip_accounts(GtkWidget *w){
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,PROXY_CONFIG_IDENTITY,linphone_proxy_config_get_identity(cfg),
 					PROXY_CONFIG_REF,cfg,-1);
+		if(cfg == default_pc) default_pc_path = gtk_tree_model_get_path(GTK_TREE_MODEL(store), &iter);
+	}
+	if(default_pc_path) {
+		gtk_tree_selection_select_path(gtk_tree_view_get_selection(v), default_pc_path);
+		gtk_tree_path_free(default_pc_path);
 	}
 }
 
