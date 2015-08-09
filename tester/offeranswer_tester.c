@@ -343,19 +343,20 @@ static void compatible_avpf_features(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphonePayloadType *lpt;
+	bool_t call_ok;
 
 	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
 	lpt = configure_core_for_avpf_and_video(pauline->lc);
 
-	BC_ASSERT_TRUE(call(marie, pauline));
+	BC_ASSERT_TRUE((call_ok=call(marie, pauline)));
+	if (!call_ok) goto end;
+	
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 	check_avpf_features(marie->lc, lpt->avpf.features);
 	check_avpf_features(pauline->lc, lpt->avpf.features);
 
-	linphone_core_terminate_all_calls(marie->lc);
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	end_call(marie,pauline);
 end:
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
@@ -365,20 +366,20 @@ static void incompatible_avpf_features(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphonePayloadType *lpt;
+	bool_t call_ok;
 
 	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
 	lpt = configure_core_for_avpf_and_video(pauline->lc);
 	lpt->avpf.features = PAYLOAD_TYPE_AVPF_NONE;
 
-	BC_ASSERT_TRUE(call(marie, pauline));
+	BC_ASSERT_TRUE(call_ok=call(marie, pauline));
+	if (!call_ok) goto end;
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 	check_avpf_features(marie->lc, PAYLOAD_TYPE_AVPF_NONE);
 	check_avpf_features(pauline->lc, PAYLOAD_TYPE_AVPF_NONE);
 
-	linphone_core_terminate_all_calls(marie->lc);
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	end_call(marie,pauline);
 end:
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
