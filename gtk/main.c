@@ -377,69 +377,47 @@ void linphone_gtk_destroy_window(GtkWidget *widget) {
 	g_object_unref (G_OBJECT (builder));
 }
 
-GtkWidget *linphone_gtk_create_window(const char *window_name, GtkWidget *parent){
-	GError* error = NULL;
-	GtkBuilder* builder = gtk_builder_new ();
-	char path[512];
-	GtkWidget *w;
-
-	if (get_ui_file(window_name,path,sizeof(path))==-1) return NULL;
-
-	gtk_builder_set_translation_domain(builder,GETTEXT_PACKAGE);
-
-	if (!gtk_builder_add_from_file (builder, path, &error)){
-		g_error("Couldn't load builder file: %s", error->message);
-		g_error_free (error);
-		return NULL;
-	}
-	w=GTK_WIDGET(gtk_builder_get_object (builder,window_name));
-	if (w==NULL){
-		g_error("Could not retrieve '%s' window from xml file",window_name);
-		return NULL;
-	}
-	g_object_set_data(G_OBJECT(w), "builder",builder);
-	gtk_builder_connect_signals(builder,w);
-	linphone_gtk_configure_window(w,window_name);
-	if(parent) {
-// 		gtk_window_set_modal(GTK_WINDOW(w), TRUE);
-		gtk_window_set_transient_for(GTK_WINDOW(w), GTK_WINDOW(parent));
-		gtk_window_set_position(GTK_WINDOW(w), GTK_WIN_POS_CENTER_ON_PARENT);
-	} else {
-// 		gtk_window_set_modal(GTK_WINDOW(w), FALSE);
-	}
-	return w;
-}
-
-GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name) {
+GtkWidget *linphone_gtk_create_widget(const char *widget_name) {
 	char path[2048];
-	GtkWidget *w = NULL;
 	GtkBuilder *builder = gtk_builder_new();
 	GError *error = NULL;
 	GObject *obj;
 
-	if(get_ui_file(filename, path, sizeof(path)) == -1) goto end;
+	if(get_ui_file(widget_name, path, sizeof(path)) == -1) goto fail;
 
 	gtk_builder_set_translation_domain(builder, GETTEXT_PACKAGE);
 
 	if(gtk_builder_add_from_file(builder, path, &error) == 0) {
 		g_error("Couldn't load builder file: %s", error->message);
 		g_error_free(error);
-		goto end;
+		goto fail;
 	}
 
 	obj = gtk_builder_get_object(builder, widget_name);
 	if(obj == NULL) {
 		g_error("'%s' widget not found", widget_name);
-		goto end;
+		goto fail;
 	}
 
-	w = GTK_WIDGET(obj);
 	g_object_set_data_full(obj, "builder", builder, g_object_unref);
-	gtk_widget_unparent(w);
-	gtk_builder_connect_signals(builder, w);
+	gtk_builder_connect_signals(builder, obj);
 
+	return GTK_WIDGET(obj);
 
-end:
+fail:
+	g_object_unref(builder);
+	return NULL;
+}
+
+GtkWidget *linphone_gtk_create_window(const char *window_name, GtkWidget *parent){
+	GtkWidget *w = linphone_gtk_create_widget(window_name);
+	if(w) {
+		linphone_gtk_configure_window(w,window_name);
+		if(parent) {
+			gtk_window_set_transient_for(GTK_WINDOW(w), GTK_WINDOW(parent));
+			gtk_window_set_position(GTK_WINDOW(w), GTK_WIN_POS_CENTER_ON_PARENT);
+		}
+	}
 	return w;
 }
 
@@ -593,8 +571,7 @@ static gboolean linphone_gtk_iterate(LinphoneCore *lc){
 	if (addr_to_call!=NULL){
 		/*make sure we are not showing the login screen*/
 		GtkWidget *mw=linphone_gtk_get_main_window();
-		GtkWidget *login_frame=linphone_gtk_get_widget(mw,"login_frame");
-		if (!GTK_WIDGET_VISIBLE(login_frame)){
+		if (g_object_get_data(G_OBJECT(mw), "login_frame") == NULL){
 			GtkWidget *uri_bar=linphone_gtk_get_widget(mw,"uribar");
 			gtk_entry_set_text(GTK_ENTRY(uri_bar),addr_to_call);
 			addr_to_call=NULL;
@@ -1149,7 +1126,7 @@ static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm
 	gchar *msg;
 	GtkWidget *mw=linphone_gtk_get_main_window();
 
-	if (mw && GTK_WIDGET_VISIBLE(linphone_gtk_get_widget(mw,"login_frame"))){
+	if (mw && g_object_get_data(G_OBJECT(mw), "login_frame") != NULL){
 		/*don't prompt for authentication when login frame is visible*/
 		linphone_core_abort_authentication(lc,NULL);
 		return;

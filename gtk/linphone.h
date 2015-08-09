@@ -98,7 +98,7 @@ GdkPixbuf *_gdk_pixbuf_new_from_memory_at_scale(const void *data, gint len, gint
 LINPHONE_PUBLIC void linphone_gtk_destroy_window(GtkWidget *window);
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_window(const char *window_name, GtkWidget *parent);
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
-LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name);
+LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_widget(const char* widget_name);
 
 const char *linphone_gtk_message_storage_get_db_file(const char *filename);
 LINPHONE_PUBLIC void linphone_gtk_show_assistant(GtkWidget* parent);
@@ -212,7 +212,7 @@ LINPHONE_PUBLIC void linphone_gtk_in_call_show_video(LinphoneCall *call);
 LINPHONE_PUBLIC char *linphone_gtk_address(const LinphoneAddress *addr);/*return human readable identifier for a LinphoneAddress */
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_camera_preview_window(void);
 
-LINPHONE_PUBLIC void linphone_gtk_login_frame_connect_clicked(GtkWidget *button);
+LINPHONE_PUBLIC void linphone_gtk_login_frame_connect_clicked(GtkWidget *button, GtkWidget *login_frame);
 
 LINPHONE_PUBLIC gboolean linphone_gtk_call_log_reset_missed_call(GtkWidget *w, GdkEvent *event, gpointer user_data);
 LINPHONE_PUBLIC void linphone_gtk_history_row_activated(GtkWidget *treeview);
