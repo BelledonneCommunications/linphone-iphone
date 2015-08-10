@@ -745,21 +745,23 @@ static char *_lp_config_dirname(char *path) {
 }
 
 bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename) {
-	if (lpconfig->filename == NULL) {
-		return FALSE;
-	} else {
+	bool_t ret = FALSE;
+	if (lpconfig->filename) {
 		char *dir = _lp_config_dirname(lpconfig->filename);
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
 		char *realfilepath = lp_realpath(filepath, NULL);
-		FILE *file = fopen(realfilepath, "r");
+		if (realfilepath){
+			FILE *file = fopen(realfilepath, "r");
+			ms_free(realfilepath);
+			if (file){
+				ret = TRUE;
+				fclose(file);
+			}
+		}
 		ms_free(dir);
 		ms_free(filepath);
-		ms_free(realfilepath);
-		if (file) {
-			fclose(file);
-		}
-		return file != NULL;
 	}
+	return ret;
 }
 
 void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filename, const char *data) {

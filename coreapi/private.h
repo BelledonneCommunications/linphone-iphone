@@ -295,6 +295,7 @@ struct _LinphoneCall{
 	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
 	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
+	MSWebCam *cam; /*webcam use for this call*/
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
 	bool_t audio_muted;
@@ -311,8 +312,6 @@ struct _LinphoneCall{
 	bool_t record_active;
 
 	bool_t paused_by_app;
-
-	MSWebCam *cam; /*webcam use for this call*/
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCall);

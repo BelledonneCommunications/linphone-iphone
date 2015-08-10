@@ -2560,7 +2560,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 	const char *recfile;
 	const SalStreamDescription *local_st_desc;
 	int crypto_idx;
-	AudioStreamIO io = { 0 };
+	MSMediaStreamIO io = MS_MEDIA_STREAM_IO_INITIALIZER;
 	bool_t use_rtp_io = lp_config_get_int(lc->config, "sound", "rtp_io", FALSE);
 
 	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
@@ -2599,7 +2599,6 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				captcard=NULL;
 				recfile=NULL;
 				/*And we will eventually play "playfile" if set by the user*/
-				/*playfile=NULL;*/
 			}
 			if (send_ringbacktone){
 				conf = linphone_core_get_config(lc);
@@ -2624,12 +2623,14 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				captcard=playcard=NULL;
 			}
 			use_ec=captcard==NULL ? FALSE : linphone_core_echo_cancellation_enabled(lc);
+			audio_stream_enable_echo_canceller(call->audiostream, use_ec);
 			if (playcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(playcard, stream->max_rate);
 			if (captcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(captcard, stream->max_rate);
 			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
 			media_stream_set_adaptive_bitrate_algorithm(&call->audiostream->ms,
 													  ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
 			audio_stream_enable_adaptive_jittcomp(call->audiostream, linphone_core_audio_adaptive_jittcomp_enabled(lc));
+			rtp_session_set_jitter_compensation(call->audiostream->ms.sessions.rtp_session,linphone_core_get_audio_jittcomp(lc));
 			if (!call->params->in_conference && call->params->record_file){
 				audio_stream_mixed_record_open(call->audiostream,call->params->record_file);
 				call->current_params->record_file=ms_strdup(call->params->record_file);
@@ -2640,8 +2641,8 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 				crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, stream->crypto_local_tag);
 
 				if (crypto_idx >= 0) {
-					media_stream_set_srtp_recv_key_b64(&(call->audiostream->ms.sessions),stream->crypto[0].algo,stream->crypto[0].master_key);
-					media_stream_set_srtp_send_key_b64(&(call->audiostream->ms.sessions),stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+					ms_media_stream_sessions_set_srtp_recv_key_b64(&call->audiostream->ms.sessions, stream->crypto[0].algo,stream->crypto[0].master_key);
+					ms_media_stream_sessions_set_srtp_send_key_b64(&call->audiostream->ms.sessions, stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 				} else {
 					ms_warning("Failed to find local crypto algo with tag: %d", stream->crypto_local_tag);
 				}
@@ -2651,19 +2652,28 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 			if (is_multicast)
 				rtp_session_set_multicast_ttl(call->audiostream->ms.sessions.rtp_session,stream->ttl);
 
-			if (lc->use_files) {
-				io.input_file = playfile;
-				io.output_file = recfile;
-			} else if (use_rtp_io) {
-				io.rtp_session = create_audio_rtp_io_session(call);
-				if (io.rtp_session == NULL) {
+			if (use_rtp_io) {
+				io.input.type = io.output.type = MSResourceRtp;
+				io.input.session = io.output.session = create_audio_rtp_io_session(call);
+				if (io.input.session == NULL) {
 					ok = FALSE;
 				}
-			} else if (stream->dir==SalStreamSendOnly) { /*no very good, io.xx versus playcard,captcard and call state should be reworked*/
-				io.input_file = playfile; /*quick fix to restaure current behavior which is  SalStreamSendOnly=Paused=playfile*/
-			} else {
-				io.playback_card = playcard;
-				io.capture_card = captcard;
+			}else {
+				if (playcard){
+					io.output.type = MSResourceSoundcard;
+					io.output.soundcard = playcard;
+				}else{
+					io.output.type = MSResourceFile;
+					io.output.file = recfile;
+				}
+				if (captcard){
+					io.input.type = MSResourceSoundcard;
+					io.input.soundcard = captcard;
+				}else{
+					io.input.type = MSResourceFile;
+					io.input.file = playfile;
+				}
+				
 			}
 			if (ok == TRUE) {
 				audio_stream_start_from_io(call->audiostream,
@@ -2673,14 +2683,12 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 					stream->rtcp_addr[0]!='\0' ? stream->rtcp_addr : call->resultdesc->addr,
 					(linphone_core_rtcp_enabled(lc) && !is_multicast) ? (stream->rtcp_port ? stream->rtcp_port : stream->rtp_port+1) : 0,
 					used_pt,
-					linphone_core_get_audio_jittcomp(lc),
-					use_ec,
 					&io
 				);
 				post_configure_audio_streams(call, muted && !send_ringbacktone);
 			}
 
-			media_stream_session_encryption_mandatory_enable(&call->audiostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
+			ms_media_stream_sessions_set_encryption_mandatory(&call->audiostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
 
 			if (stream->dir==SalStreamSendOnly && playfile!=NULL){
 				int pause_time=500;
@@ -2736,14 +2744,12 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 	MSFilter* source = NULL;
 	bool_t reused_preview = FALSE;
 	bool_t use_rtp_io = lp_config_get_int(lc->config, "video", "rtp_io", FALSE);
-	VideoStreamIO io = { 0 };
+	MSMediaStreamIO io = MS_MEDIA_STREAM_IO_INITIALIZER;
 
 	/* shutdown preview */
 	if (lc->previewstream!=NULL) {
-
 		if( lc->video_conf.reuse_preview_source == FALSE) video_preview_stop(lc->previewstream);
 		else source = video_preview_stop_reuse_source(lc->previewstream);
-
 		lc->previewstream=NULL;
 	}
 
@@ -2756,9 +2762,10 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 		call->video_profile=make_profile(call,call->resultdesc,vstream,&used_pt);
 
 		if (used_pt!=-1){
-			VideoStreamDir dir=VideoStreamSendRecv;
+			MediaStreamDir dir= MediaStreamSendRecv;
 			bool_t is_inactive=FALSE;
 			MSWebCam *cam;
+			
 			call->current_params->video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
 			call->current_params->has_video=TRUE;
 
@@ -2767,6 +2774,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 			media_stream_set_adaptive_bitrate_algorithm(&call->videostream->ms,
 													  ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
 			video_stream_enable_adaptive_jittcomp(call->videostream, linphone_core_video_adaptive_jittcomp_enabled(lc));
+			rtp_session_set_jitter_compensation(call->videostream->ms.sessions.rtp_session, linphone_core_get_video_jittcomp(lc));
 			if (lc->video_conf.preview_vsize.width!=0)
 				video_stream_set_preview_size(call->videostream,lc->video_conf.preview_vsize);
 			video_stream_set_fps(call->videostream,linphone_core_get_preferred_framerate(lc));
@@ -2782,20 +2790,20 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 
 			if (is_multicast){
 				if (vstream->multicast_role == SalMulticastReceiver)
-					dir=VideoStreamRecvOnly;
+					dir=MediaStreamRecvOnly;
 				else
-					dir=VideoStreamSendOnly;
+					dir=MediaStreamSendOnly;
 			} else if (vstream->dir==SalStreamSendOnly && lc->video_conf.capture ){
-				dir=VideoStreamSendOnly;
+				dir=MediaStreamSendOnly;
 			}else if (vstream->dir==SalStreamRecvOnly && lc->video_conf.display ){
-				dir=VideoStreamRecvOnly;
+				dir=MediaStreamRecvOnly;
 			}else if (vstream->dir==SalStreamSendRecv){
 				if (lc->video_conf.display && lc->video_conf.capture)
-					dir=VideoStreamSendRecv;
+					dir=MediaStreamSendRecv;
 				else if (lc->video_conf.display)
-					dir=VideoStreamRecvOnly;
+					dir=MediaStreamRecvOnly;
 				else
-					dir=VideoStreamSendOnly;
+					dir=MediaStreamSendOnly;
 			}else{
 				ms_warning("video stream is inactive.");
 				/*either inactive or incompatible with local capabilities*/
@@ -2810,8 +2818,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 				if (sal_stream_description_has_srtp(vstream) == TRUE) {
 					int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, vstream->crypto_local_tag);
 					if (crypto_idx >= 0) {
-						media_stream_set_srtp_recv_key_b64(&(call->videostream->ms.sessions),vstream->crypto[0].algo,vstream->crypto[0].master_key);
-						media_stream_set_srtp_send_key_b64(&(call->videostream->ms.sessions),vstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+						ms_media_stream_sessions_set_srtp_recv_key_b64(&call->videostream->ms.sessions, vstream->crypto[0].algo,vstream->crypto[0].master_key);
+						ms_media_stream_sessions_set_srtp_send_key_b64(&call->videostream->ms.sessions, vstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 					}
 				}
 				configure_rtp_session_for_rtcp_fb(call, vstream);
@@ -2837,23 +2845,26 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 				} else {
 					bool_t ok = TRUE;
 					if (use_rtp_io) {
-						io.rtp_session = create_video_rtp_io_session(call);
-						if (io.rtp_session == NULL) {
+						io.input.type = io.output.type = MSResourceRtp;
+						io.input.session = io.output.session = create_video_rtp_io_session(call);
+						if (io.input.session == NULL) {
 							ok = FALSE;
 							ms_warning("Cannot create video RTP IO session");
 						}
 					} else {
-						io.cam = cam;
+						io.input.type = MSResourceCamera;
+						io.input.camera = cam;
+						io.output.type = MSResourceDefault;
 					}
 					if (ok) {
 						video_stream_start_from_io(call->videostream,
 							call->video_profile, rtp_addr, vstream->rtp_port,
 							rtcp_addr,
 							(linphone_core_rtcp_enabled(lc) && !is_multicast)  ? (vstream->rtcp_port ? vstream->rtcp_port : vstream->rtp_port+1) : 0,
-							used_pt, linphone_core_get_video_jittcomp(lc), &io);
+							used_pt, &io);
 					}
 				}
-				media_stream_session_encryption_mandatory_enable(&call->videostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
+				ms_media_stream_sessions_set_encryption_mandatory(&call->videostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
 			}
 		}else ms_warning("No video stream accepted.");
 	}else{
@@ -3002,9 +3013,9 @@ static bool_t update_stream_crypto_params(LinphoneCall *call, const SalStreamDes
 	int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, new_stream->crypto_local_tag);
 	if (crypto_idx >= 0) {
 		if (call->localdesc_changed & SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED)
-			media_stream_set_srtp_send_key_b64(&(ms->sessions),new_stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+			ms_media_stream_sessions_set_srtp_send_key_b64(&ms->sessions, new_stream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
 		if (strcmp(old_stream->crypto[0].master_key,new_stream->crypto[0].master_key)!=0){
-			media_stream_set_srtp_recv_key_b64(&(ms->sessions),new_stream->crypto[0].algo,new_stream->crypto[0].master_key);
+			ms_media_stream_sessions_set_srtp_recv_key_b64(&ms->sessions, new_stream->crypto[0].algo,new_stream->crypto[0].master_key);
 		}
 		return TRUE;
 	} else {
@@ -3784,10 +3795,10 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 	if (call->ice_session == NULL) ms->ice_check_list = NULL;
 
 	switch(ms->type){
-		case AudioStreamType:
+		case MSAudio:
 			audio_stream_iterate((AudioStream*)ms);
 		break;
-		case VideoStreamType:
+		case MSVideo:
 #ifdef VIDEO_ENABLED
 			video_stream_iterate((VideoStream*)ms);
 #endif
@@ -3806,17 +3817,17 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 		linphone_call_notify_stats_updated(call,stream_index);
 
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
-			if (ms->type==AudioStreamType)
+			if (ms->type==MSAudio)
 				linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
-			else if (ms->type==VideoStreamType)
+			else if (ms->type==MSVideo)
 				propagate_encryption_changed(call);
 		} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
-			if (ms->type==AudioStreamType)
+			if (ms->type==MSAudio)
 				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
 		} else if (evt == ORTP_EVENT_DTLS_ENCRYPTION_CHANGED) {
-			if (ms->type==AudioStreamType)
+			if (ms->type==MSAudio)
 				linphone_call_audiostream_encryption_changed(call, evd->info.dtls_stream_encrypted);
-			else if (ms->type==VideoStreamType)
+			else if (ms->type==MSVideo)
 				propagate_encryption_changed(call);
 		}else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
 			|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
