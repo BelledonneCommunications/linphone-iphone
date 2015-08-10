@@ -16,10 +16,11 @@ UI_FILES=	about.ui \
 		config-uri.ui \
 		provisioning-fetch.ui \
 		audio_assistant.ui \
-		chat_view.ui \
-		in_call_view.ui \
-		conf_view.ui \
-		conf_callee_view.ui
+		chatroom_frame.ui \
+		in_call_frame.ui \
+		conf_frame.ui \
+		callee_frame.ui \
+		login_frame.ui
 
 PIXMAPS=	\
 		stock_people.png
