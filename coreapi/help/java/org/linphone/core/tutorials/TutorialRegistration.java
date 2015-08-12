@@ -88,7 +88,6 @@ public class TutorialRegistration implements LinphoneCoreListener {
 	public void globalState(LinphoneCore lc, GlobalState state, String message) {}
 	public void newSubscriptionRequest(LinphoneCore lc, LinphoneFriend lf,String url) {}
 	public void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf) {}
-	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {}
 	public void callState(LinphoneCore lc, LinphoneCall call, State cstate, String msg) {}
 	public void callStatsUpdated(LinphoneCore lc, LinphoneCall call, LinphoneCallStats stats) {}
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,int delay_ms, Object data) {}

@@ -1186,7 +1186,7 @@ public interface LinphoneCore {
 	 * Returns true if the software echo canceler needs to be turned on.
 	 * If the device has a builtin echo canceller, it will return false.
 	 */
-	boolean needsEchoCanceler();
+	boolean hasBuiltInEchoCanceler();
 
 	void enableIpv6(boolean enable);
 

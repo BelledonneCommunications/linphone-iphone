@@ -118,6 +118,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../build/android \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
+	$(LOCAL_PATH)/../mediastreamer2/src/audiofilters/ \
 	$(LOCAL_PATH)/../../belle-sip/include \
 	$(LOCAL_PATH)/../../../gen \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
