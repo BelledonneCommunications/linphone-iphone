@@ -612,6 +612,7 @@ static void on_audio_meter_destroy(GtkWidget *w, gpointer data){
 	g_source_remove(task_id);
 }
 
+
 void linphone_gtk_init_audio_meter(GtkWidget *w, get_volume_t get_volume, void *data){
 	guint task_id=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(w),"task_id"));
 	if (task_id==0){

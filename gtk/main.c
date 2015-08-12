@@ -398,8 +398,8 @@ GtkWidget *linphone_gtk_create_widget(const char *widget_name) {
 		g_error("'%s' widget not found", widget_name);
 		goto fail;
 	}
-
-	g_object_set_data_full(obj, "builder", builder, g_object_unref);
+	g_object_set_data(G_OBJECT(obj), "builder", builder);
+	g_signal_connect_data(G_OBJECT(obj),"destroy",(GCallback)g_object_unref,builder, NULL, G_CONNECT_AFTER|G_CONNECT_SWAPPED);
 	gtk_builder_connect_signals(builder, obj);
 
 	return GTK_WIDGET(obj);
