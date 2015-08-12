@@ -607,7 +607,8 @@ static gboolean update_audio_meter(volume_ctx_t *ctx){
 	return TRUE;
 }
 
-static void on_audio_meter_destroy(guint task_id){
+static void on_audio_meter_destroy(GtkWidget *w, gpointer data){
+	guint task_id = GPOINTER_TO_INT(data);
 	g_source_remove(task_id);
 }
 
@@ -621,7 +622,8 @@ void linphone_gtk_init_audio_meter(GtkWidget *w, get_volume_t get_volume, void *
 		ctx->last_value=0;
 		g_object_set_data_full(G_OBJECT(w),"ctx",ctx,g_free);
 		task_id=g_timeout_add(50,(GSourceFunc)update_audio_meter,ctx);
-		g_object_set_data_full(G_OBJECT(w),"task_id",GINT_TO_POINTER(task_id),(GDestroyNotify)on_audio_meter_destroy);
+		g_object_set_data(G_OBJECT(w), "task_id", GINT_TO_POINTER(task_id));
+		g_signal_connect(G_OBJECT(w), "destroy", (GCallback)on_audio_meter_destroy, GINT_TO_POINTER(task_id));
 	}
 }
 
@@ -630,6 +632,7 @@ void linphone_gtk_uninit_audio_meter(GtkWidget *w){
 	if (task_id!=0){
 		g_object_set_data(G_OBJECT(w),"ctx",NULL);
 		g_object_set_data(G_OBJECT(w),"task_id",NULL);
+		g_source_remove(task_id);
 	}
 }
 
