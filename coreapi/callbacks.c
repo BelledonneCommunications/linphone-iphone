@@ -111,7 +111,7 @@ void linphone_call_update_frozen_payloads(LinphoneCall *call, SalMediaDescriptio
 				/*new codec, needs to be added to the list*/
 				local->streams[i].already_assigned_payloads=ms_list_append(local->streams[i].already_assigned_payloads, payload_type_clone(pt));
 				ms_message("LinphoneCall[%p] : payload type %i %s/%i fmtp=%s added to frozen list.",
-					   call, payload_type_get_number(pt), pt->mime_type, pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : NULL);
+					   call, payload_type_get_number(pt), pt->mime_type, pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : "");
 			}
 		}
 	}

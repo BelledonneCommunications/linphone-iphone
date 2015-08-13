@@ -86,7 +86,7 @@ struct _LpConfig{
 };
 
 char* lp_realpath(const char* file, char* name) {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__QNX__)
 	return ms_strdup(file);
 #else
 	char * output = realpath(file, name);
