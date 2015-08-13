@@ -4137,3 +4137,9 @@ MSWebCam *linphone_call_get_video_device(const LinphoneCall *call) {
 		return call->cam;
 }
 #endif
+
+void linphone_call_set_audio_route(LinphoneCall *call, MSAudioRoute route) {
+	if (call != NULL && call->audiostream != NULL){
+		audio_stream_set_audio_route(call->audiostream, route);
+	}
+}
