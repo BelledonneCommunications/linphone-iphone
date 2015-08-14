@@ -18,6 +18,10 @@ dist_pixmap_DATA= \
 	notok.png
 
 iconsdir=$(datadir)/icons/hicolor
+if WIN32
+	dist_icons_DATA=index.theme
+endif
+
 appiconsdir=$(iconsdir)/48x48/apps
 dist_appicons_DATA= linphone.png
 
