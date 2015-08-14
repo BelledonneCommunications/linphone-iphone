@@ -18,7 +18,7 @@ dist_pixmap_DATA= \
 	notok.png
 
 iconsdir=$(datadir)/icons/hicolor
-if WIN32
+if BUILD_WIN32
 	dist_icons_DATA=index.theme
 endif
 
