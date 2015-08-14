@@ -86,7 +86,7 @@ struct _LpConfig{
 };
 
 char* lp_realpath(const char* file, char* name) {
-#if defined(_WIN32) || defined(__QNX__)
+#if defined(_WIN32) || defined(__QNX__) || defined(ANDROID)
 	return ms_strdup(file);
 #else
 	char * output = realpath(file, name);
