@@ -688,6 +688,7 @@ static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call, bool_t 
 		}
 
 	} else if( call->state == LinphoneCallPausedByRemote ){
+		/* FIXME: the comment below is meaningless. */
 		/* Case where no SDP is present and we were paused by remote.
 		 * We send back an ACK with our SDP and expect the remote to send its own.
 		 * No state change here until an answer is received. */
