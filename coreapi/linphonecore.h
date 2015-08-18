@@ -877,13 +877,26 @@ LINPHONE_PUBLIC	void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_
 LINPHONE_PUBLIC	bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
 
 /**
+ * Enum describing type of audio route.
+**/
+enum _LinphoneAudioRoute {
+	LinphoneAudioRouteEarpiece = MSAudioRouteEarpiece,
+	LinphoneAudioRouteSpeaker = MSAudioRouteSpeaker
+};
+
+/**
+ * Enum describing type of audio route.
+**/
+typedef enum _LinphoneAudioRoute LinphoneAudioRoute;
+
+/**
  * Change the playback output device (currently only used for blackberry)
  * @param call
  * @param route the wanted audio route (earpiece, speaker, ...)
  * 
  * @ingroup call_control
 **/
-LINPHONE_PUBLIC	void linphone_call_set_audio_route(LinphoneCall *call, MSAudioRoute route);
+LINPHONE_PUBLIC	void linphone_call_set_audio_route(LinphoneCall *call, LinphoneAudioRoute route);
 
 /*keep this in sync with mediastreamer2/msvolume.h*/
 
