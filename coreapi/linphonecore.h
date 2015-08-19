@@ -878,6 +878,7 @@ LINPHONE_PUBLIC	bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *ca
 
 /**
  * Enum describing type of audio route.
+ * @ingroup call_control
 **/
 enum _LinphoneAudioRoute {
 	LinphoneAudioRouteEarpiece = MSAudioRouteEarpiece,
@@ -886,6 +887,7 @@ enum _LinphoneAudioRoute {
 
 /**
  * Enum describing type of audio route.
+ * @ingroup call_control
 **/
 typedef enum _LinphoneAudioRoute LinphoneAudioRoute;
 
