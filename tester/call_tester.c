@@ -33,6 +33,16 @@
 #endif
 #endif
 
+int static min(int a, int b) {
+	if (a < b) return a;
+	return b;
+}
+
+int static max(int a, int b) {
+	if (a < b) return b;
+	return a;
+}
+
 static void srtp_call(void);
 static char *create_filepath(const char *dir, const char *filename, const char *ext);
 
@@ -4430,6 +4440,125 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+typedef struct _RtpTransportModifierData {
+	int packetSentCount;
+	int packetReceivedCount;
+} RtpTransportModifierData;
+
+static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
+	RtpTransportModifierData *data = rtptm->data;
+	data->packetSentCount += 1;
+	/* /!\ DO NOT RETURN 0 or the packet will never leave /!\ */
+	return msgdsize(msg);
+}
+
+static int rtptm_on_receive(RtpTransportModifier *rtptm, mblk_t *msg) {
+	RtpTransportModifierData *data = rtptm->data;
+	data->packetReceivedCount += 1;
+	return 0;
+}
+
+static void rtptm_destroy(RtpTransportModifier *rtptm)  {
+	// Do nothing, we'll free it later
+}
+
+void static call_state_changed_4(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
+	if (cstate == LinphoneCallIncomingReceived || cstate == LinphoneCallOutgoingProgress) {
+		RtpTransport *rtpt = NULL;
+		RtpTransportModifierData *data = ms_new0(RtpTransportModifierData, 1);
+		RtpTransportModifier *rtptm = ms_new0(RtpTransportModifier, 1);
+		
+		rtpt = linphone_call_get_meta_rtp_transport(call, 0);
+		rtptm->data = data;
+		rtptm->t_process_on_send = rtptm_on_send;
+		rtptm->t_process_on_receive = rtptm_on_receive;
+		rtptm->t_destroy = rtptm_destroy;
+		meta_rtp_transport_append_modifier(rtpt, rtptm);
+		call->user_data = rtptm;
+	}
+}
+
+static void call_with_custom_rtp_modifier(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall* call_pauline;
+	LinphoneCall* call_marie;
+	const rtp_stats_t * stats;
+	bool_t call_ok;
+	LinphoneCoreVTable * v_table;
+	RtpTransportModifier *rtptm_marie = NULL;
+	RtpTransportModifier *rtptm_pauline = NULL;
+	RtpTransportModifierData *data_marie = NULL;
+	RtpTransportModifierData *data_pauline = NULL;
+	
+	v_table = linphone_core_v_table_new();
+	v_table->call_state_changed=call_state_changed_4;
+	linphone_core_add_listener(pauline->lc,v_table);
+	v_table = linphone_core_v_table_new();
+	v_table->call_state_changed=call_state_changed_4;
+	linphone_core_add_listener(marie->lc,v_table);
+
+	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+
+	if (!call_ok) goto end;
+
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
+	
+	call_pauline = linphone_core_get_current_call(pauline->lc);
+	rtptm_pauline = (RtpTransportModifier *)call_pauline->user_data;
+	call_marie = linphone_core_get_current_call(marie->lc);
+	rtptm_marie = (RtpTransportModifier *)call_marie->user_data;
+
+	linphone_core_pause_call(pauline->lc,call_pauline);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+
+	/*stay in pause a little while in order to generate traffic*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
+
+	linphone_core_resume_call(pauline->lc,call_pauline);
+
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	/*same here: wait a while for a bit of a traffic, we need to receive a RTCP packet*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
+
+	/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
+	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
+	BC_ASSERT_EQUAL(stats->cum_packet_loss, 0, int, "%d");
+
+	linphone_core_terminate_all_calls(pauline->lc);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	
+	BC_ASSERT_PTR_NOT_NULL(rtptm_marie);
+	BC_ASSERT_PTR_NOT_NULL(rtptm_pauline);
+	data_marie = (RtpTransportModifierData *)rtptm_marie->data;
+	data_pauline = (RtpTransportModifierData *)rtptm_pauline->data;
+	
+	BC_ASSERT_PTR_NOT_NULL(data_marie);
+	BC_ASSERT_PTR_NOT_NULL(data_pauline);
+	ms_message("Marie sent %i RTP packets and received %i", data_marie->packetSentCount, data_marie->packetReceivedCount);
+	ms_message("Pauline sent %i RTP packets and received %i", data_pauline->packetSentCount, data_pauline->packetReceivedCount);
+	// There will be a few RTP packets sent on marie's side before the call is ended at pauline's request, so we need the threshold
+	BC_ASSERT_TRUE(max(data_pauline->packetReceivedCount, data_marie->packetSentCount) - min(data_pauline->packetReceivedCount, data_marie->packetSentCount) < 8);
+	BC_ASSERT_TRUE(data_marie->packetReceivedCount == data_pauline->packetSentCount);
+
+end:
+	if (data_pauline) {
+		ms_free(data_pauline);
+	}
+	ms_free(rtptm_pauline);
+	if (data_marie) {
+		ms_free(data_marie);
+	}
+	ms_free(rtptm_marie);
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -4557,7 +4686,8 @@ test_t call_tests[] = {
 	{ "Simple mono call with opus", simple_mono_call_opus },
 	{ "Call with FQDN in SDP", call_with_fqdn_in_sdp},
 	{ "Call with RTP IO mode", call_with_rtp_io_mode },
-	{ "Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback }
+	{ "Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback },
+	{ "Call with custom RTP Modifier", call_with_custom_rtp_modifier }
 };
 
 test_suite_t call_test_suite = {

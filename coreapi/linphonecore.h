@@ -898,7 +898,43 @@ typedef enum _LinphoneAudioRoute LinphoneAudioRoute;
  * 
  * @ingroup call_control
 **/
-LINPHONE_PUBLIC	void linphone_call_set_audio_route(LinphoneCall *call, LinphoneAudioRoute route);
+LINPHONE_PUBLIC void linphone_call_set_audio_route(LinphoneCall *call, LinphoneAudioRoute route);
+
+/**
+ * Returns the number of stream for the given call.
+ * Currently there is only two (Audio, Video), but later there will be more.
+ * @param call
+ * 
+ * @return 2
+**/
+LINPHONE_PUBLIC int linphone_call_get_stream_count(LinphoneCall *call);
+
+/**
+ * Returns the type of stream for the given stream index.
+ * @param call
+ * @param stream_index
+ * 
+ * @return MsAudio if stream_index = 0, MsVideo otherwise
+**/
+LINPHONE_PUBLIC MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index);
+
+/**
+ * Returns the meta rtp transport for the given stream index.
+ * @param call
+ * @param stream_index
+ * 
+ * @return a pointer to the meta rtp transport if it exists, NULL otherwise
+**/
+LINPHONE_PUBLIC RtpTransport* linphone_call_get_meta_rtp_transport(LinphoneCall *call, int stream_index);
+
+/**
+ * Returns the meta rtcp transport for the given stream index.
+ * @param call
+ * @param stream_index
+ * 
+ * @return a pointer to the meta rtcp transport if it exists, NULL otherwise
+**/
+LINPHONE_PUBLIC RtpTransport* linphone_call_get_meta_rtcp_transport(LinphoneCall *call, int stream_index);
 
 /*keep this in sync with mediastreamer2/msvolume.h*/
 

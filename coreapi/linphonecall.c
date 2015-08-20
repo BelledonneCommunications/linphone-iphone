@@ -2009,6 +2009,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		ms_free(cname);
 		rtp_session_set_symmetric_rtp(audiostream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
 		setup_dtls_params(call, &audiostream->ms);
+		media_stream_reclaim_sessions(&audiostream->ms, &call->sessions[0]);
 	}else{
 		call->audiostream=audio_stream_new_with_sessions(&call->sessions[0]);
 	}
@@ -2108,8 +2109,8 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			video_stream_set_rtcp_information(call->videostream, cname, rtcp_tool);
 			ms_free(cname);
 			rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session,linphone_core_symmetric_rtp_enabled(lc));
-
 			setup_dtls_params(call, &call->videostream->ms);
+			media_stream_reclaim_sessions(&call->videostream->ms, &call->sessions[1]);
 		}else{
 			call->videostream=video_stream_new_with_sessions(&call->sessions[1]);
 		}
@@ -4142,4 +4143,41 @@ void linphone_call_set_audio_route(LinphoneCall *call, LinphoneAudioRoute route)
 	if (call != NULL && call->audiostream != NULL){
 		audio_stream_set_audio_route(call->audiostream, (MSAudioRoute) route);
 	}
+}
+
+int linphone_call_get_stream_count(LinphoneCall *call) {
+	// Revisit when multiple media streams will be implemented
+	return 2;
+}
+
+MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index) {
+	// Revisit when multiple media streams will be implemented
+	if (stream_index == 0) {
+		return MSAudio;
+	}
+	return MSVideo;
+}
+
+RtpTransport* linphone_call_get_meta_rtp_transport(LinphoneCall *call, int stream_index) {
+	RtpTransport *meta_rtp;
+	RtpTransport *meta_rtcp;
+	
+	if (!call || stream_index < 0 || stream_index >= linphone_call_get_stream_count(call)) {
+		return NULL;
+	}
+
+	rtp_session_get_transports(call->sessions[stream_index].rtp_session, &meta_rtp, &meta_rtcp);
+	return meta_rtp;
+}
+
+RtpTransport* linphone_call_get_meta_rtcp_transport(LinphoneCall *call, int stream_index) {
+	RtpTransport *meta_rtp;
+	RtpTransport *meta_rtcp;
+	
+	if (!call || stream_index < 0 || stream_index >= linphone_call_get_stream_count(call)) {
+		return NULL;
+	}
+
+	rtp_session_get_transports(call->sessions[stream_index].rtp_session, &meta_rtp, &meta_rtcp);
+	return meta_rtcp;
 }

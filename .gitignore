@@ -90,3 +90,6 @@ tester/record-call_with_file_player.wav
 tester/ZIDCache*.xml
 
 tester/stereo-record.wav
+coreapi/bellesip_sal/.dirstamp 
+coreapi/ldap/.dirstamp 
+
