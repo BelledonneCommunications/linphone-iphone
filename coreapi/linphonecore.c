@@ -1565,6 +1565,8 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_24,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_32,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_40,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_codec2,NULL,FALSE);
+
 
 
 

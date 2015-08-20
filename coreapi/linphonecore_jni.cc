@@ -58,6 +58,9 @@ extern "C" void libmsbcg729_init();
 #ifdef HAVE_WEBRTC
 extern "C" void libmswebrtc_init();
 #endif
+#ifdef HAVE_CODEC2
+extern "C" void libmscodec2_init();
+#endif
 #include <belle-sip/wakelock.h>
 #endif /*ANDROID*/
 
@@ -1141,6 +1144,9 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 #endif
 #ifdef HAVE_WEBRTC
 	libmswebrtc_init();
+#endif
+#ifdef HAVE_CODEC2
+	libmscodec2_init();
 #endif
 
 	jobject core = env->NewGlobalRef(thiz);
