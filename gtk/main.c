@@ -1466,19 +1466,26 @@ static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphonePr
 	update_registration_status(cfg,rs);
 }
 
-void linphone_gtk_open_browser(const char *url){
-	/*in gtk 2.16, gtk_show_uri does not work...*/
-#ifndef WIN32
-#if GTK_CHECK_VERSION(2,18,3)
-	gtk_show_uri(NULL,url,GDK_CURRENT_TIME,NULL);
-#else
-	char cl[255];
-	snprintf(cl,sizeof(cl),"/usr/bin/x-www-browser %s",url);
-	g_spawn_command_line_async(cl,NULL);
+void linphone_gtk_open_browser(const char *uri) {
+	const char *cmd_name = NULL;
+	char cmd_line[256];
+	GError *error = NULL;
+	
+#ifdef __APPLE__
+	cmd_name = "/usr/bin/open";
+#elseif defined(WIN32)
+	cmd_name = "open";
 #endif
-#else /*WIN32*/
-	ShellExecute(0,"open",url,NULL,NULL,1);
-#endif
+	if(cmd_name) {
+		g_snprintf(cmd_line, sizeof(cmd_line), "%s %s", cmd_name, uri);
+		g_spawn_command_line_async(cmd_line, &error);
+	} else {
+		gtk_show_uri(NULL, uri, GDK_CURRENT_TIME, &error);
+	}
+	if(error) {
+		g_warning("Could not open %s: %s", uri, error->message);
+		g_error_free(error);
+	}
 }
 
 void linphone_gtk_link_to_website(GtkWidget *item){

@@ -411,12 +411,7 @@ static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent 
 		gtk_text_iter_forward_to_tag_toggle(&uri_end, tag);
 		uri = gtk_text_iter_get_slice(&uri_begin, &uri_end);
 		if(((GdkEventButton *)event)->button == 1) {
-			GError *error = NULL;
-			gtk_show_uri(NULL, uri, gdk_event_get_time(event), &error);
-			if(error) {
-				g_warning("Could not open %s from chat: %s", uri, error->message);
-				g_error_free(error);
-			}
+			linphone_gtk_open_browser(uri);
 		} else if(((GdkEventButton *)event)->button == 3) {
 			GtkMenu *menu = GTK_MENU(g_object_get_data(text_view, "link_ctx_menu"));
 			g_object_set_data_full(G_OBJECT(menu), "uri", g_strdup(uri), g_free);
