@@ -95,7 +95,7 @@ const char* get_display_name(const LinphoneAddress *from){
 
 GtkWidget *create_tab_chat_header(LinphoneChatRoom *cr,const LinphoneAddress *uri){
 	GtkWidget *w=gtk_hbox_new (FALSE,0);
-	GtkWidget *i=create_pixmap ("chat.png");
+	GtkWidget *i = gtk_image_new_from_icon_name("linphone-chat-nothing", GTK_ICON_SIZE_BUTTON);
 	GtkWidget *l;
 	GtkWidget *image=gtk_image_new_from_stock(GTK_STOCK_CLOSE,GTK_ICON_SIZE_MENU);
 	GtkWidget *b=gtk_button_new();

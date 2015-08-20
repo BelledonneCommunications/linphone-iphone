@@ -156,7 +156,7 @@ void transfer_button_clicked(GtkWidget *button, gpointer call_ref){
 			menu_item=gtk_image_menu_item_new_with_label(text);
 			ms_free(remote_uri);
 			g_free(text);
-			gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),create_pixmap("status-green.png"));
+			gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),create_pixmap("startcall-green.png"));
 			gtk_widget_show(menu_item);
 			gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
 			g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_transfer_call,other_call);

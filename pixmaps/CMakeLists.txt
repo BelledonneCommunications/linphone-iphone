@@ -29,19 +29,39 @@ install(FILES ${PIXMAPS}
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 
-install(FILES svg/linphone-micro-muted.svg
+install(FILES
+	svg/linphone-micro-muted.svg
 	svg/linphone-speaker-muted.svg
 	svg/linphone-micro-enabled.svg
 	svg/linphone-speaker-enabled.svg
+	svg/linphone-status-online.svg
+	svg/linphone-status-away.svg
+	svg/linphone-status-donotdisturb.svg
+	svg/linphone-status-offline.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
 
-install(FILES linphone-micro-muted.png
+install(FILES
+	linphone-micro-muted.png
 	linphone-speaker-muted.png
 	linphone-micro-enabled.png
 	linphone-speaker-enabled.png
+	linphone-status-online.png
+	linphone-status-away.png
+	linphone-status-donotdisturb.png
+	linphone-status-offline.png
+	linphone-chat-nothing.png
+	linphone-chat-new-message.png
+	linphone-chat-writing.png
+	linphone-chat-new-message-and-writing.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
+	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+)
+
+install(FILES
+	linphone-start-call2.png
+	DESTINATION ${ICONS_INSTALL_DIR}/48x48/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
 

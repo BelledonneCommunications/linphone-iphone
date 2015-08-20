@@ -156,6 +156,8 @@ LINPHONE_PUBLIC void linphone_gtk_friend_list_set_chat_conversation(const Linpho
 LINPHONE_PUBLIC gboolean linphone_gtk_friend_list_is_contact(const LinphoneAddress *addr);
 LINPHONE_PUBLIC void linphone_gtk_friend_list_set_active_address(const LinphoneAddress *addr);
 LINPHONE_PUBLIC const LinphoneAddress *linphone_gtk_friend_list_get_active_address(void);
+// LINPHONE_PUBLIC void linphone_gtk_friend_list_on_presence_column_clicked(GtkTreeModel *model);
+LINPHONE_PUBLIC void linphone_gtk_friend_list_on_name_column_clicked(GtkTreeModel *model);
 LINPHONE_PUBLIC void linphone_gtk_notebook_tab_select(GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer data);
 LINPHONE_PUBLIC void linphone_gtk_show_friends(void);
 LINPHONE_PUBLIC void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *parent);

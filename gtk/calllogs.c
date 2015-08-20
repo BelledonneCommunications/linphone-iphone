@@ -261,8 +261,6 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		g_signal_connect_swapped(G_OBJECT(select),"changed",(GCallback)call_log_selection_changed,v);
 		g_signal_connect(G_OBJECT(notebook),"focus-tab",(GCallback)linphone_gtk_call_log_reset_missed_call,NULL);
 		g_signal_connect(G_OBJECT(v),"button-press-event",(GCallback)linphone_gtk_call_log_button_pressed,NULL);
-//		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"call_back_button")),
-//		                     create_pixmap (linphone_gtk_get_ui_config("callback_button","status-green.png")));
 	}
 	nb=linphone_core_get_missed_calls_count(linphone_gtk_get_core());
 	if(nb > 0)
@@ -398,19 +396,3 @@ void linphone_gtk_call_log_response(GtkWidget *w, guint response_id){
 	g_object_set_data(G_OBJECT(mw),"call_logs",NULL);
 	gtk_widget_destroy(w);
 }
-
-// GtkWidget * linphone_gtk_show_call_logs(void){
-// 	GtkWidget *mw=linphone_gtk_get_main_window();
-// 
-// 	GtkWidget *w=(GtkWidget*)g_object_get_data(G_OBJECT(linphone_gtk_get_main_window()),"call_logs");
-// 	if (w==NULL){
-// 		w=linphone_gtk_create_window("call_logs");
-// //		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"call_back_button")),
-// //		                     create_pixmap (linphone_gtk_get_ui_config("callback_button","status-green.png")));
-// 		g_object_set_data(G_OBJECT(mw),"call_logs",w);
-// 		g_signal_connect(G_OBJECT(w),"response",(GCallback)linphone_gtk_call_log_response,NULL);
-// 		gtk_widget_show(w);
-// 		linphone_gtk_call_log_update(w);
-// 	}else gtk_window_present(GTK_WINDOW(w));
-// 	return w;
-// }

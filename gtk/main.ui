@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="2.18"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <!-- interface-local-resource-path /home/francois/projects/linphone/linphone/pixmaps/hicolor -->
   <object class="GtkImage" id="add_image">
@@ -17,6 +17,52 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-connect</property>
+  </object>
+  <object class="GtkListStore" id="contact_list_model">
+    <columns>
+      <!-- column-name presence_icon -->
+      <column type="gchararray"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name id -->
+      <column type="gpointer"/>
+      <!-- column-name chatroom -->
+      <column type="gpointer"/>
+      <!-- column-name sip_address -->
+      <column type="gchararray"/>
+      <!-- column-name call_icon -->
+      <column type="gchararray"/>
+      <!-- column-name chat_icon -->
+      <column type="gchararray"/>
+      <!-- column-name icon_size -->
+      <column type="GtkIconSize"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">linphone-status-online</col>
+        <col id="1">Toto</col>
+        <col id="4">toto@sip.linphone.org</col>
+        <col id="5">linphone-call</col>
+        <col id="6">linphone-chat</col>
+        <col id="7">large-toolbar</col>
+      </row>
+      <row>
+        <col id="0">linphone-status-offline</col>
+        <col id="1">Toto2</col>
+        <col id="4">toto2@sip.linphone.org</col>
+        <col id="5">linphone-call</col>
+        <col id="6">linphone-chat</col>
+        <col id="7">large-toolbar</col>
+      </row>
+      <row>
+        <col id="0">linphone-status-offline</col>
+        <col id="1">Toto3</col>
+        <col id="4">toto3@sip.linphone.org</col>
+        <col id="5">linphone-call</col>
+        <col id="6">linphone-chat</col>
+        <col id="7">large-toolbar</col>
+      </row>
+    </data>
   </object>
   <object class="GtkImage" id="edit_image">
     <property name="visible">True</property>
@@ -42,34 +88,6 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-info</property>
-  </object>
-  <object class="GtkListStore" id="model1">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">All users</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Online users</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkListStore" id="model2">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">ADSL</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Fiber Channel</col>
-      </row>
-    </data>
   </object>
   <object class="GtkListStore" id="model3">
     <columns>
@@ -101,6 +119,8 @@
     <property name="stock">gtk-remove</property>
   </object>
   <object class="GtkWindow" id="main">
+    <property name="width_request">640</property>
+    <property name="height_request">480</property>
     <property name="can_focus">False</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="default_width">660</property>
@@ -417,6 +437,8 @@
               <object class="GtkHPaned" id="central_paned">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="position">200</property>
+                <property name="position_set">True</property>
                 <child>
                   <object class="GtkVBox" id="vbox12">
                     <property name="visible">True</property>
@@ -449,13 +471,60 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="model">contact_list_model</property>
+                            <property name="headers_visible">False</property>
                             <property name="reorderable">True</property>
-                            <property name="enable_search">False</property>
                             <property name="search_column">1</property>
+                            <property name="tooltip_column">4</property>
                             <signal name="button-press-event" handler="linphone_gtk_contact_list_button_pressed" swapped="no"/>
                             <signal name="cursor-changed" handler="linphone_gtk_contact_clicked" swapped="no"/>
                             <signal name="row-activated" handler="linphone_gtk_contact_activated" swapped="no"/>
                             <signal name="popup-menu" handler="linphone_gtk_popup_contact_menu" swapped="no"/>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="presence_status_column">
+                                <child>
+                                  <object class="GtkCellRendererPixbuf" id="status_img_cell"/>
+                                  <attributes>
+                                    <attribute name="icon-name">0</attribute>
+                                    <attribute name="stock-size">7</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="contact_name_column">
+                                <property name="max_width">60</property>
+                                <property name="expand">True</property>
+                                <child>
+                                  <object class="GtkCellRendererText" id="contact_name_cell"/>
+                                  <attributes>
+                                    <attribute name="text">1</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="contact_call_column">
+                                <child>
+                                  <object class="GtkCellRendererPixbuf" id="contact_call_renderer"/>
+                                  <attributes>
+                                    <attribute name="icon-name">5</attribute>
+                                    <attribute name="stock-size">7</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="contact_chat_column">
+                                <child>
+                                  <object class="GtkCellRendererPixbuf" id="contact_chat_renderer"/>
+                                  <attributes>
+                                    <attribute name="icon-name">6</attribute>
+                                    <attribute name="stock-size">7</attribute>
+                                  </attributes>
+                                </child>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -523,8 +592,8 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="resize">False</property>
-                    <property name="shrink">False</property>
+                    <property name="resize">True</property>
+                    <property name="shrink">True</property>
                   </packing>
                 </child>
                 <child>
