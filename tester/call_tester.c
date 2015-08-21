@@ -33,16 +33,6 @@
 #endif
 #endif
 
-int static min(int a, int b) {
-	if (a < b) return a;
-	return b;
-}
-
-int static max(int a, int b) {
-	if (a < b) return b;
-	return a;
-}
-
 static void srtp_call(void);
 static char *create_filepath(const char *dir, const char *filename, const char *ext);
 
@@ -4542,7 +4532,7 @@ static void call_with_custom_rtp_modifier(void) {
 	ms_message("Marie sent %i RTP packets and received %i", data_marie->packetSentCount, data_marie->packetReceivedCount);
 	ms_message("Pauline sent %i RTP packets and received %i", data_pauline->packetSentCount, data_pauline->packetReceivedCount);
 	// There will be a few RTP packets sent on marie's side before the call is ended at pauline's request, so we need the threshold
-	BC_ASSERT_TRUE(max(data_pauline->packetReceivedCount, data_marie->packetSentCount) - min(data_pauline->packetReceivedCount, data_marie->packetSentCount) < 8);
+	BC_ASSERT_TRUE(MAX(data_pauline->packetReceivedCount, data_marie->packetSentCount) - MIN(data_pauline->packetReceivedCount, data_marie->packetSentCount) < 8);
 	BC_ASSERT_TRUE(data_marie->packetReceivedCount == data_pauline->packetSentCount);
 
 end:
