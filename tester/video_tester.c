@@ -449,7 +449,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 0, float, "%f");
 		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 0, float, "%f");
 		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(marie2_call)->download_bandwidth, 0, float, "%f");
-		BC_ASSERT_EQUAL(linphone_call_get_video_stats(pauline_call)->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_LOWER(linphone_call_get_video_stats(pauline_call)->download_bandwidth, 3, float, "%f"); /*3 because of stun packets*/
 		BC_ASSERT_GREATER(linphone_call_get_video_stats(marie1_call)->download_bandwidth, 0, float, "%f");
 		BC_ASSERT_GREATER(linphone_call_get_video_stats(marie2_call)->download_bandwidth, 0, float, "%f");
 
@@ -465,8 +465,8 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 		wait_for_list(lcs, &dummy, 1, 3000);
 		BC_ASSERT_GREATER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 71, float, "%f");
 		BC_ASSERT_GREATER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 71, float, "%f");
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(pauline_call)->download_bandwidth, 0, float, "%f");
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(marie1_call)->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_LOWER(linphone_call_get_video_stats(pauline_call)->download_bandwidth, 3, float, "%f");
+		BC_ASSERT_LOWER(linphone_call_get_video_stats(marie1_call)->download_bandwidth, 3, float, "%f");
 
 		/* send an INFO in reverse side to check that dialogs are properly established */
 		info = linphone_core_create_info_message(marie1->lc);
