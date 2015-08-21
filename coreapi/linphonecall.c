@@ -3088,6 +3088,17 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, MediaStream *st){
 	}
 }
 
+static void update_rtp_stats(LinphoneCall *call, int stream_index) {
+	if (stream_index >= linphone_call_get_stream_count(call)) {
+		return;
+	}
+		
+	if (call->sessions[stream_index].rtp_session) {
+		const rtp_stats_t *stats = rtp_session_get_stats(call->sessions[stream_index].rtp_session);
+		memcpy(&call->stats[stream_index].rtp_stats, stats, sizeof(*stats));
+	}
+}
+
 static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 	if (call->audiostream!=NULL) {
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_AUDIO);
@@ -3107,6 +3118,7 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 			linphone_call_remove_from_conf(call);
 		}
 		audio_stream_stop(call->audiostream);
+		update_rtp_stats(call, 0);
 		rtp_session_unregister_event_queue(call->sessions[0].rtp_session, call->audiostream_app_evq);
 		ortp_ev_queue_flush(call->audiostream_app_evq);
 		ortp_ev_queue_destroy(call->audiostream_app_evq);
@@ -3124,6 +3136,7 @@ static void linphone_call_stop_video_stream(LinphoneCall *call) {
 		linphone_call_log_fill_stats(call->log,(MediaStream*)call->videostream);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
+		update_rtp_stats(call, 1);
 		rtp_session_unregister_event_queue(call->sessions[1].rtp_session, call->videostream_app_evq);
 		ortp_ev_queue_flush(call->videostream_app_evq);
 		ortp_ev_queue_destroy(call->videostream_app_evq);
@@ -3317,19 +3330,20 @@ float linphone_call_get_average_quality(LinphoneCall *call){
 	return -1;
 }
 
-static void update_local_stats(LinphoneCallStats *stats, MediaStream *stream){
-	const MSQualityIndicator *qi=media_stream_get_quality_indicator(stream);
+static void update_local_stats(LinphoneCallStats *stats, MediaStream *stream) {
+	const MSQualityIndicator *qi = media_stream_get_quality_indicator(stream);
 	if (qi) {
 		stats->local_late_rate=ms_quality_indicator_get_local_late_rate(qi);
 		stats->local_loss_rate=ms_quality_indicator_get_local_loss_rate(qi);
 	}
+	media_stream_get_local_rtp_stats(stream, &stats->rtp_stats);
 }
 
 /**
  * Access last known statistics for audio stream, for a given call.
 **/
 const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
-	LinphoneCallStats *stats=&call->stats[LINPHONE_CALL_STATS_AUDIO];
+	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_AUDIO];
 	if (call->audiostream){
 		update_local_stats(stats,(MediaStream*)call->audiostream);
 	}
@@ -3340,7 +3354,7 @@ const LinphoneCallStats *linphone_call_get_audio_stats(LinphoneCall *call) {
  * Access last known statistics for video stream, for a given call.
 **/
 const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
-	LinphoneCallStats *stats=&call->stats[LINPHONE_CALL_STATS_VIDEO];
+	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_VIDEO];
 	if (call->videostream){
 		update_local_stats(stats,(MediaStream*)call->videostream);
 	}
@@ -3474,18 +3488,14 @@ float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallSta
 	return (float)report_block_get_interarrival_jitter(rrb) / (float)pt->clock_rate;
 }
 
-rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *stats, LinphoneCall *call) {
+rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *stats) {
 	rtp_stats_t rtp_stats;
 	memset(&rtp_stats, 0, sizeof(rtp_stats));
 
-	if (stats && call) {
-		if (stats->type == LINPHONE_CALL_STATS_AUDIO && call->audiostream != NULL)
-			audio_stream_get_local_rtp_stats(call->audiostream, &rtp_stats);
-	#ifdef VIDEO_ENABLED
-		else if (call->videostream != NULL)
-			video_stream_get_local_rtp_stats(call->videostream, &rtp_stats);
-	#endif
+	if (stats) {
+		memcpy(&rtp_stats, &stats->rtp_stats, sizeof(stats->rtp_stats));
 	}
+	
 	return rtp_stats;
 }
 
@@ -3494,7 +3504,7 @@ rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *stats, Li
  * @return The cumulative number of late packets
 **/
 uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call) {
-	return linphone_call_stats_get_rtp_stats(stats, call).outoftime;
+	return linphone_call_stats_get_rtp_stats(stats).outoftime;
 }
 
 /**
@@ -3578,12 +3588,13 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 		call->stats[LINPHONE_CALL_STATS_AUDIO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
 		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
 		call->stats[LINPHONE_CALL_STATS_AUDIO].updated=0;
+		update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], as);
 	}
 	if (vs_active) {
 		call->stats[LINPHONE_CALL_STATS_VIDEO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
 		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
 		call->stats[LINPHONE_CALL_STATS_VIDEO].updated=0;
-
+		update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], vs);
 	}
 
 	ms_message(	"Bandwidth usage for call [%p]:\n"
@@ -4147,7 +4158,11 @@ void linphone_call_set_audio_route(LinphoneCall *call, LinphoneAudioRoute route)
 
 int linphone_call_get_stream_count(LinphoneCall *call) {
 	// Revisit when multiple media streams will be implemented
+#ifdef VIDEO_ENABLED
 	return 2;
+#else
+	return 1;
+#endif
 }
 
 MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index) {

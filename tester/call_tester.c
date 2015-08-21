@@ -4430,49 +4430,118 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+// This is a custom structure used for the tests using custom RTP transport modifier.
+// It is only used to count the number of sent and received packets
 typedef struct _RtpTransportModifierData {
-	int packetSentCount;
-	int packetReceivedCount;
+	uint64_t packetSentCount;
+	uint64_t packetReceivedCount;
 } RtpTransportModifierData;
 
+const char *XOR_KEY = "BELLEDONNECOMMUNICATIONS";
+
+// Callback called when a packet is on it's way to be sent
+// This is where we can do some changes on it, like encrypt it
 static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 	RtpTransportModifierData *data = rtptm->data;
+	int i = 0;
+	int size = msg->b_wptr - msg->b_rptr;
+	unsigned char *src = msg->b_rptr;
+	rtp_header_t *rtp = (rtp_header_t*)msg->b_rptr;
+	
+	if (rtp->version == 0) {
+		// This is probably a STUN packet, so don't count it (oRTP won't) and don't encrypt it either
+		return size;
+	}
+	
 	data->packetSentCount += 1;
+	
+	// Just for fun, let's do a XOR encryption
+	for (i = 0; i < size; i++) {
+		src[0] ^= XOR_KEY[i % strlen(XOR_KEY)];
+		src++;
+	}
+	
 	/* /!\ DO NOT RETURN 0 or the packet will never leave /!\ */
 	return msgdsize(msg);
 }
 
+// Callback called when a packet is on it's way to be received
+// This is where we can do some changes on it, like decrypt it
 static int rtptm_on_receive(RtpTransportModifier *rtptm, mblk_t *msg) {
 	RtpTransportModifierData *data = rtptm->data;
+	int i = 0;
+	int size = msg->b_wptr - msg->b_rptr;
+	unsigned char *src = msg->b_rptr;
+	rtp_header_t *rtp = (rtp_header_t*)msg->b_rptr;
+	
+	if (rtp->version == 0) {
+		// This is probably a STUN packet, so don't count it (oRTP won't) and don't decrypt it either
+		return size;
+	}
+	
 	data->packetReceivedCount += 1;
-	return 0;
+	
+	// Do the XOR decryption
+	for (i = 0; i < size; i++) {
+		src[0] ^= XOR_KEY[i % strlen(XOR_KEY)];
+		src++;
+	}
+	
+	/* /!\ DO NOT RETURN 0 or the packet willbe dropped /!\ */
+	return msgdsize(msg);
 }
 
+// This callback is called when the transport modifier is being destroyed
+// It is a good place to free the resources allocated for the transport modifier
 static void rtptm_destroy(RtpTransportModifier *rtptm)  {
-	// Do nothing, we'll free it later
+	// Do nothing, we'll free it later because we need to access the RtpTransportModifierData structure after the call is ended
 }
 
-void static call_state_changed_4(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
+// This is the callback called when the state of the call change
+void static call_state_changed_4(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
+	int i = 0;
+	
+	// To add a custom RTP transport modifier, we have to do it before the call is running, but after the RTP session is created.
 	if (cstate == LinphoneCallIncomingReceived || cstate == LinphoneCallOutgoingProgress) {
 		RtpTransport *rtpt = NULL;
 		RtpTransportModifierData *data = ms_new0(RtpTransportModifierData, 1);
 		RtpTransportModifier *rtptm = ms_new0(RtpTransportModifier, 1);
-		
-		rtpt = linphone_call_get_meta_rtp_transport(call, 0);
 		rtptm->data = data;
 		rtptm->t_process_on_send = rtptm_on_send;
 		rtptm->t_process_on_receive = rtptm_on_receive;
 		rtptm->t_destroy = rtptm_destroy;
-		meta_rtp_transport_append_modifier(rtpt, rtptm);
+		
+		// Here we iterate on each meta rtp transport available
+		for (i = 0; i < linphone_call_get_stream_count(call); i++) {
+			MSFormatType type;
+			
+			rtpt = linphone_call_get_meta_rtp_transport(call, i);
+			
+			// If we wanted, we also could get the RTCP meta transports like this:
+			// rtcpt = linphone_call_get_meta_rtcp_transport(call, i);
+			
+			// If you want to know which stream meta RTP transport is the current one, you can use
+			type = linphone_call_get_stream_type(call, i);
+			// Currently there is only MSAudio and MSVideo types, but this could change later
+			if (type == MSAudio) {
+				// And now we append our RTP transport modifier to the current list of modifiers
+				meta_rtp_transport_append_modifier(rtpt, rtptm);
+			} else if (type == MSVideo) {
+				// Because the call of this test is audio only, we don't have to append our modifier to the meta RTP transport from the video stream
+			}
+			
+		}
+		// We save the pointer to our RtpTransportModifier in the call user_data to be able to get to it later
 		call->user_data = rtptm;
 	}
 }
 
-static void call_with_custom_rtp_modifier(void) {
+static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
+	// This will initialize two linphone core using information contained in the marie_rc and pauline_rc files and wait for them to be correctly registered
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCall* call_pauline;
-	LinphoneCall* call_marie;
+	LinphoneCall* call_pauline = NULL;
+	LinphoneCall* call_marie = NULL;
 	const rtp_stats_t * stats;
 	bool_t call_ok;
 	LinphoneCoreVTable * v_table;
@@ -4481,6 +4550,7 @@ static void call_with_custom_rtp_modifier(void) {
 	RtpTransportModifierData *data_marie = NULL;
 	RtpTransportModifierData *data_pauline = NULL;
 	
+	// We create a new vtable to listen only to the call state changes, in order to plug our RTP Transport Modifier when the call will be established
 	v_table = linphone_core_v_table_new();
 	v_table->call_state_changed=call_state_changed_4;
 	linphone_core_add_listener(pauline->lc,v_table);
@@ -4488,40 +4558,49 @@ static void call_with_custom_rtp_modifier(void) {
 	v_table->call_state_changed=call_state_changed_4;
 	linphone_core_add_listener(marie->lc,v_table);
 
+	// Now the the call should be running (call state StreamsRunning)
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 
 	if (!call_ok) goto end;
 
+	// This only wait for 3 seconds in order to generate traffic for the test
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
 	
-	call_pauline = linphone_core_get_current_call(pauline->lc);
+	// Ref the call to keep the pointer valid even after the call is release
+	call_pauline = linphone_call_ref(linphone_core_get_current_call(pauline->lc));
 	rtptm_pauline = (RtpTransportModifier *)call_pauline->user_data;
-	call_marie = linphone_core_get_current_call(marie->lc);
+	call_marie = linphone_call_ref(linphone_core_get_current_call(marie->lc));
 	rtptm_marie = (RtpTransportModifier *)call_marie->user_data;
+	
+	// This is for the pause/resume test, we don't do it in the call record test to be able to check the recorded call matches the file played
+	if (pauseResumeTest) {
+		linphone_core_pause_call(pauline->lc,call_pauline);
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
 
-	linphone_core_pause_call(pauline->lc,call_pauline);
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+		/*stay in pause a little while in order to generate traffic*/
+		wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
 
-	/*stay in pause a little while in order to generate traffic*/
-	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
+		linphone_core_resume_call(pauline->lc,call_pauline);
 
-	linphone_core_resume_call(pauline->lc,call_pauline);
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+	
+		/*same here: wait a while for a bit of a traffic, we need to receive a RTCP packet*/
+		wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
 
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
-	/*same here: wait a while for a bit of a traffic, we need to receive a RTCP packet*/
-	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
+		/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
+		stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
+		BC_ASSERT_EQUAL(stats->cum_packet_loss, 0, int, "%d");
+	}
 
-	/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
-	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
-	BC_ASSERT_EQUAL(stats->cum_packet_loss, 0, int, "%d");
-
+	// We termine the call and check the stats to see if the call is correctly ended on both sides
 	linphone_core_terminate_all_calls(pauline->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
 	
+	// Now we can go fetch our custom structure and check the number of packets sent/received is the same on both sides
 	BC_ASSERT_PTR_NOT_NULL(rtptm_marie);
 	BC_ASSERT_PTR_NOT_NULL(rtptm_pauline);
 	data_marie = (RtpTransportModifierData *)rtptm_marie->data;
@@ -4529,13 +4608,29 @@ static void call_with_custom_rtp_modifier(void) {
 	
 	BC_ASSERT_PTR_NOT_NULL(data_marie);
 	BC_ASSERT_PTR_NOT_NULL(data_pauline);
-	ms_message("Marie sent %i RTP packets and received %i", data_marie->packetSentCount, data_marie->packetReceivedCount);
-	ms_message("Pauline sent %i RTP packets and received %i", data_pauline->packetSentCount, data_pauline->packetReceivedCount);
+	ms_message("Marie sent %" PRIu64 " RTP packets and received %" PRIu64 " (through our modifier)", data_marie->packetSentCount, data_marie->packetReceivedCount);
+	ms_message("Pauline sent %" PRIu64 " RTP packets and received %" PRIu64 " (through our modifier)", data_pauline->packetSentCount, data_pauline->packetReceivedCount);
 	// There will be a few RTP packets sent on marie's side before the call is ended at pauline's request, so we need the threshold
-	BC_ASSERT_TRUE(MAX(data_pauline->packetReceivedCount, data_marie->packetSentCount) - MIN(data_pauline->packetReceivedCount, data_marie->packetSentCount) < 8);
+	BC_ASSERT_TRUE(MAX(data_pauline->packetReceivedCount, data_marie->packetSentCount) - MIN(data_pauline->packetReceivedCount, data_marie->packetSentCount) < 50);
 	BC_ASSERT_TRUE(data_marie->packetReceivedCount == data_pauline->packetSentCount);
+	// At this point, we know each packet that has been processed in the send callback of our RTP modifier also go through the recv callback of the remote.
+	
+	// Now we want to ensure that all sent RTP packets actually go through our RTP transport modifier and thus no packet leave without being processed (by any operation we might want to do on it)
+	{
+		const LinphoneCallStats *marie_stats = linphone_call_get_audio_stats(call_marie);
+		const LinphoneCallStats *pauline_stats = linphone_call_get_audio_stats(call_pauline);
+		rtp_stats_t marie_rtp_stats = linphone_call_stats_get_rtp_stats(marie_stats);
+		rtp_stats_t pauline_rtp_stats = linphone_call_stats_get_rtp_stats(pauline_stats);
+		ms_message("Marie sent %" PRIu64 " RTP packets and received %" PRIu64 " (for real)", marie_rtp_stats.packet_sent, marie_rtp_stats.packet_recv);
+		ms_message("Pauline sent %" PRIu64 " RTP packets and received %" PRIu64 " (for real)", pauline_rtp_stats.packet_sent, pauline_rtp_stats.packet_recv);
+		BC_ASSERT_TRUE(data_marie->packetReceivedCount == marie_rtp_stats.packet_recv);
+		BC_ASSERT_TRUE(data_marie->packetSentCount == marie_rtp_stats.packet_sent);
+		BC_ASSERT_TRUE(data_pauline->packetReceivedCount == pauline_rtp_stats.packet_recv);
+		BC_ASSERT_TRUE(data_pauline->packetSentCount == pauline_rtp_stats.packet_sent);
+	}
 
 end:
+	// Since we didn't free the resources of our RTP transport modifier in the rtptm_destroy callback, we'll do it here
 	if (data_pauline) {
 		ms_free(data_pauline);
 	}
@@ -4545,8 +4640,29 @@ end:
 	}
 	ms_free(rtptm_marie);
 	
+	// Unref the previously ref calls
+	if (call_marie) {
+		linphone_call_unref(call_marie);
+	}
+	if (call_pauline) {
+		linphone_call_unref(call_pauline);
+	}
+	
+	// The test is finished, the linphone core are no longer needed, we can safely free them
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void call_with_custom_rtp_modifier(void) {
+	custom_rtp_modifier(FALSE, FALSE);
+}
+
+static void call_paused_resumed_with_custom_rtp_modifier(void) {
+	custom_rtp_modifier(TRUE, FALSE);
+}
+
+static void call_record_with_custom_rtp_modifier(void) {
+	custom_rtp_modifier(FALSE, TRUE);
 }
 
 test_t call_tests[] = {
@@ -4677,7 +4793,9 @@ test_t call_tests[] = {
 	{ "Call with FQDN in SDP", call_with_fqdn_in_sdp},
 	{ "Call with RTP IO mode", call_with_rtp_io_mode },
 	{ "Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback },
-	{ "Call with custom RTP Modifier", call_with_custom_rtp_modifier }
+	{ "Call with custom RTP Modifier", call_with_custom_rtp_modifier },
+	{ "Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier },
+	{ "Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier }
 };
 
 test_suite_t call_test_suite = {
