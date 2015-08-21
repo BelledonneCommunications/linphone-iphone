@@ -4437,29 +4437,18 @@ typedef struct _RtpTransportModifierData {
 	uint64_t packetReceivedCount;
 } RtpTransportModifierData;
 
-const char *XOR_KEY = "BELLEDONNECOMMUNICATIONS";
-
 // Callback called when a packet is on it's way to be sent
 // This is where we can do some changes on it, like encrypt it
 static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 	RtpTransportModifierData *data = rtptm->data;
-	int i = 0;
-	int size = msg->b_wptr - msg->b_rptr;
-	unsigned char *src = msg->b_rptr;
 	rtp_header_t *rtp = (rtp_header_t*)msg->b_rptr;
 	
 	if (rtp->version == 0) {
 		// This is probably a STUN packet, so don't count it (oRTP won't) and don't encrypt it either
-		return size;
+		return msgdsize(msg);
 	}
 	
 	data->packetSentCount += 1;
-	
-	// Just for fun, let's do a XOR encryption
-	for (i = 0; i < size; i++) {
-		src[0] ^= XOR_KEY[i % strlen(XOR_KEY)];
-		src++;
-	}
 	
 	/* /!\ DO NOT RETURN 0 or the packet will never leave /!\ */
 	return msgdsize(msg);
@@ -4469,23 +4458,14 @@ static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 // This is where we can do some changes on it, like decrypt it
 static int rtptm_on_receive(RtpTransportModifier *rtptm, mblk_t *msg) {
 	RtpTransportModifierData *data = rtptm->data;
-	int i = 0;
-	int size = msg->b_wptr - msg->b_rptr;
-	unsigned char *src = msg->b_rptr;
 	rtp_header_t *rtp = (rtp_header_t*)msg->b_rptr;
 	
 	if (rtp->version == 0) {
 		// This is probably a STUN packet, so don't count it (oRTP won't) and don't decrypt it either
-		return size;
+		return msgdsize(msg);
 	}
 	
 	data->packetReceivedCount += 1;
-	
-	// Do the XOR decryption
-	for (i = 0; i < size; i++) {
-		src[0] ^= XOR_KEY[i % strlen(XOR_KEY)];
-		src++;
-	}
 	
 	/* /!\ DO NOT RETURN 0 or the packet willbe dropped /!\ */
 	return msgdsize(msg);
@@ -4549,43 +4529,61 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	RtpTransportModifier *rtptm_pauline = NULL;
 	RtpTransportModifierData *data_marie = NULL;
 	RtpTransportModifierData *data_pauline = NULL;
+	// The following are only used for the record test
+	LinphonePlayer *player;
+	char *hellopath = bc_tester_res("sounds/ahbahouaismaisbon.wav"); // File to be played
+	char *recordpath = create_filepath(bc_tester_get_writable_dir_prefix(), "record-call_with_file_player", "wav"); // File to record the received sound
+	double similar = 1; // The factor of similarity between the played file and the one recorded
+	const double threshold = 0.9; // Minimum similarity value to consider the record file equal to the one sent
 	
 	// We create a new vtable to listen only to the call state changes, in order to plug our RTP Transport Modifier when the call will be established
 	v_table = linphone_core_v_table_new();
-	v_table->call_state_changed=call_state_changed_4;
+	v_table->call_state_changed = call_state_changed_4;
 	linphone_core_add_listener(pauline->lc,v_table);
 	v_table = linphone_core_v_table_new();
-	v_table->call_state_changed=call_state_changed_4;
+	v_table->call_state_changed = call_state_changed_4;
 	linphone_core_add_listener(marie->lc,v_table);
+	
+	if (recordTest) { // When we do the record test, we need a file player to play the content of a sound file
+		/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
+		unlink(recordpath);
+		
+		linphone_core_use_files(pauline->lc,TRUE);
+		linphone_core_set_play_file(pauline->lc,NULL);
+		linphone_core_set_record_file(pauline->lc,NULL);
+
+		/*callee is recording and plays file*/
+		linphone_core_use_files(marie->lc,TRUE);
+		linphone_core_set_play_file(marie->lc,NULL);
+		linphone_core_set_record_file(marie->lc,recordpath);
+	}
 
 	// Now the the call should be running (call state StreamsRunning)
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 
 	if (!call_ok) goto end;
-
-	// This only wait for 3 seconds in order to generate traffic for the test
-	wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
 	
 	// Ref the call to keep the pointer valid even after the call is release
 	call_pauline = linphone_call_ref(linphone_core_get_current_call(pauline->lc));
-	rtptm_pauline = (RtpTransportModifier *)call_pauline->user_data;
 	call_marie = linphone_call_ref(linphone_core_get_current_call(marie->lc));
-	rtptm_marie = (RtpTransportModifier *)call_marie->user_data;
 	
 	// This is for the pause/resume test, we don't do it in the call record test to be able to check the recorded call matches the file played
 	if (pauseResumeTest) {
+		// This only wait for 3 seconds in order to generate traffic for the test
+		wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
+	
 		linphone_core_pause_call(pauline->lc,call_pauline);
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallPausing, 1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallPausedByRemote, 1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallPaused, 1));
 
 		/*stay in pause a little while in order to generate traffic*/
 		wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
 
 		linphone_core_resume_call(pauline->lc,call_pauline);
 
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
 	
 		/*same here: wait a while for a bit of a traffic, we need to receive a RTCP packet*/
 		wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
@@ -4593,16 +4591,42 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
 		stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
 		BC_ASSERT_EQUAL(stats->cum_packet_loss, 0, int, "%d");
-	}
 
-	// We termine the call and check the stats to see if the call is correctly ended on both sides
-	linphone_core_terminate_all_calls(pauline->lc);
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+		end_call(pauline, marie);
+	} else if (recordTest) {
+		player = linphone_call_get_player(call_pauline);
+		BC_ASSERT_PTR_NOT_NULL(player);
+		if (player) {
+			// This will ask marie to play the file
+			BC_ASSERT_EQUAL(linphone_player_open(player, hellopath, on_eof, pauline),0, int, "%d");
+			BC_ASSERT_EQUAL(linphone_player_start(player), 0, int, "%d");
+		}
+		/* This assert should be modified to be at least as long as the WAV file */
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_player_eof, 1, 10000));
+		/*wait one second more for transmission to be fully ended (transmission time + jitter buffer)*/
+		wait_for_until(pauline->lc, marie->lc, NULL, 0, 1000);
+
+		end_call(pauline, marie);
+		
+		BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, audio_cmp_max_shift, NULL, NULL), 0, int, "%d");
+		
+		BC_ASSERT_GREATER(similar, threshold, double, "%g");
+		BC_ASSERT_LOWER(similar, 1.0, double, "%g");
+		if (similar >= threshold && similar <= 1.0) {
+			// If the similarity value is between perfect (1) and our threshold (0.9), then we delete the file used for the record
+			remove(recordpath);
+		}
+	} else {
+		// This only wait for 3 seconds in order to generate traffic for the test
+		wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
+		
+		// We termine the call and check the stats to see if the call is correctly ended on both sides
+		end_call(pauline, marie);
+	}
 	
 	// Now we can go fetch our custom structure and check the number of packets sent/received is the same on both sides
-	BC_ASSERT_PTR_NOT_NULL(rtptm_marie);
-	BC_ASSERT_PTR_NOT_NULL(rtptm_pauline);
+	rtptm_marie = (RtpTransportModifier *)call_marie->user_data;
+	rtptm_pauline = (RtpTransportModifier *)call_pauline->user_data;
 	data_marie = (RtpTransportModifierData *)rtptm_marie->data;
 	data_pauline = (RtpTransportModifierData *)rtptm_pauline->data;
 	
@@ -4651,6 +4675,9 @@ end:
 	// The test is finished, the linphone core are no longer needed, we can safely free them
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+	
+	ms_free(recordpath);
+	ms_free(hellopath);
 }
 
 static void call_with_custom_rtp_modifier(void) {
