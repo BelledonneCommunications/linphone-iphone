@@ -1467,25 +1467,29 @@ static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphonePr
 }
 
 void linphone_gtk_open_browser(const char *uri) {
-	const char *cmd_name = NULL;
-	char cmd_line[256];
-	GError *error = NULL;
-	
 #ifdef __APPLE__
-	cmd_name = "/usr/bin/open";
-#elseif defined(WIN32)
-	cmd_name = "open";
-#endif
-	if(cmd_name) {
-		g_snprintf(cmd_line, sizeof(cmd_line), "%s %s", cmd_name, uri);
-		g_spawn_command_line_async(cmd_line, &error);
-	} else {
-		gtk_show_uri(NULL, uri, GDK_CURRENT_TIME, &error);
-	}
-	if(error) {
+	GError *error = NULL;
+	char cmd_line[256];
+
+	g_snprintf(cmd_line, sizeof(cmd_line), "%s %s", "/usr/bin/open", uri);
+	g_spawn_command_line_async(cmd_line, &error);
+	if (error) {
 		g_warning("Could not open %s: %s", uri, error->message);
 		g_error_free(error);
 	}
+#elif defined(WIN32)
+	HINSTANCE instance = ShellExecute(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL);
+	if (instance <= 32) {
+		g_warning("Could not open %s (error #%i)", uri, instance);
+	}
+#else
+	GError *error = NULL;
+	gtk_show_uri(NULL, uri, GDK_CURRENT_TIME, &error);
+	if (error) {
+		g_warning("Could not open %s: %s", uri, error->message);
+		g_error_free(error);
+	}
+#endif
 }
 
 void linphone_gtk_link_to_website(GtkWidget *item){
