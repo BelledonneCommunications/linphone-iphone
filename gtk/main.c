@@ -1479,8 +1479,8 @@ void linphone_gtk_open_browser(const char *uri) {
 	}
 #elif defined(WIN32)
 	HINSTANCE instance = ShellExecute(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL);
-	if (instance <= 32) {
-		g_warning("Could not open %s (error #%i)", uri, instance);
+	if ((int)instance <= 32) {
+		g_warning("Could not open %s (error #%i)", uri, (int)instance);
 	}
 #else
 	GError *error = NULL;
