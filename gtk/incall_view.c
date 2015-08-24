@@ -510,7 +510,7 @@ void linphone_gtk_in_call_view_set_calling(LinphoneCall *call){
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Calling...</b>"));
 	display_peer_name_in_label(callee,linphone_call_get_remote_address (call));
 
-	gtk_label_set_text(GTK_LABEL(duration),_("00::00::00"));
+	gtk_label_set_text(GTK_LABEL(duration),_("00:00:00"));
 	linphone_gtk_in_call_set_animation_spinner(callview);
 }
 
@@ -653,7 +653,7 @@ static void volume_control_value_changed(GtkScaleButton *button, gdouble value, 
 static void volume_control_button_update_value(GtkWidget *widget) {
 	LinphoneCall *call = (LinphoneCall *)g_object_get_data(G_OBJECT(widget), "call");
 	VolumeControlType type = (VolumeControlType)g_object_get_data(G_OBJECT(widget), "type");
-	
+
 	if(type == VOLUME_CTRL_PLAYBACK) {
 		gtk_scale_button_set_value(GTK_SCALE_BUTTON(widget), linphone_call_get_speaker_volume_gain(call));
 	} else if(type == VOLUME_CTRL_RECORD) {
@@ -764,7 +764,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"conference_button"),!in_conf);
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"transfer_button"),!in_conf);
 
-	gtk_label_set_text(GTK_LABEL(duration),_("00::00::00"));
+	gtk_label_set_text(GTK_LABEL(duration),_("00:00:00"));
 	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_MEDIA_PLAY,TRUE);
 	linphone_gtk_call_update_tab_header(call,FALSE);
 	linphone_gtk_enable_mute_button(
