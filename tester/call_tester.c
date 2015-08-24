@@ -4437,15 +4437,32 @@ typedef struct _RtpTransportModifierData {
 	uint64_t packetReceivedCount;
 } RtpTransportModifierData;
 
+const char *XOR_KEY = "BELLEDONNECOMMUNICATIONS";
+
 // Callback called when a packet is on it's way to be sent
 // This is where we can do some changes on it, like encrypt it
 static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 	RtpTransportModifierData *data = rtptm->data;
 	rtp_header_t *rtp = (rtp_header_t*)msg->b_rptr;
+	int i = 0;
+	unsigned char *src;
+	int size = 0;
 	
 	if (rtp->version == 0) {
 		// This is probably a STUN packet, so don't count it (oRTP won't) and don't encrypt it either
 		return msgdsize(msg);
+	}
+	
+	// Mediastream can create a mblk_t with only the RTP header and setting the b_cont pointer to the actual RTP content buffer
+	// In this scenario, the result of rtp_get_payload will be 0, and we won't be able to do our XOR encryption on the payload
+	// The call to msgpullup will trigger a memcpy of the header and the payload in the same buffer in the msg mblk_t
+	msgpullup(msg, -1);
+	// Now that the mblk_t buffer directly contains the header and the payload, we can get the size of the payload and a pointer to it's start (we don't encrypt the RTP header)
+	size = rtp_get_payload(msg, &src);
+	
+	// Just for fun, let's do a XOR encryption
+	for (i = 0; i < size; i++) {
+		src[i] ^= (unsigned char) XOR_KEY[i % strlen(XOR_KEY)];
 	}
 	
 	data->packetSentCount += 1;
@@ -4459,15 +4476,27 @@ static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 static int rtptm_on_receive(RtpTransportModifier *rtptm, mblk_t *msg) {
 	RtpTransportModifierData *data = rtptm->data;
 	rtp_header_t *rtp = (rtp_header_t*)msg->b_rptr;
+	int i = 0;
+	unsigned char *src;
+	int size = 0;
 	
 	if (rtp->version == 0) {
 		// This is probably a STUN packet, so don't count it (oRTP won't) and don't decrypt it either
 		return msgdsize(msg);
 	}
 	
+	// On the receiving side, there is no need for a msgpullup, the mblk_t contains the header and the payload in the same buffer
+	// We just ask for the size and a pointer to the payload buffer
+	size = rtp_get_payload(msg, &src);
+	
+	// Since we did a XOR encryption on the send side, we have to do it again to decrypt the payload
+	for (i = 0; i < size; i++) {
+		src[i] ^= (unsigned char) XOR_KEY[i % strlen(XOR_KEY)];
+	}
+	
 	data->packetReceivedCount += 1;
 	
-	/* /!\ DO NOT RETURN 0 or the packet willbe dropped /!\ */
+	/* /!\ DO NOT RETURN 0 or the packet will be dropped /!\ */
 	return msgdsize(msg);
 }
 
@@ -4597,7 +4626,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		player = linphone_call_get_player(call_pauline);
 		BC_ASSERT_PTR_NOT_NULL(player);
 		if (player) {
-			// This will ask marie to play the file
+			// This will ask pauline to play the file
 			BC_ASSERT_EQUAL(linphone_player_open(player, hellopath, on_eof, pauline),0, int, "%d");
 			BC_ASSERT_EQUAL(linphone_player_start(player), 0, int, "%d");
 		}
@@ -4608,6 +4637,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 
 		end_call(pauline, marie);
 		
+		// Now we compute a similarity factor between the original file and the one we recorded on the callee side
 		BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, audio_cmp_max_shift, NULL, NULL), 0, int, "%d");
 		
 		BC_ASSERT_GREATER(similar, threshold, double, "%g");
@@ -4635,7 +4665,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	ms_message("Marie sent %" PRIu64 " RTP packets and received %" PRIu64 " (through our modifier)", data_marie->packetSentCount, data_marie->packetReceivedCount);
 	ms_message("Pauline sent %" PRIu64 " RTP packets and received %" PRIu64 " (through our modifier)", data_pauline->packetSentCount, data_pauline->packetReceivedCount);
 	// There will be a few RTP packets sent on marie's side before the call is ended at pauline's request, so we need the threshold
-	BC_ASSERT_TRUE(MAX(data_pauline->packetReceivedCount, data_marie->packetSentCount) - MIN(data_pauline->packetReceivedCount, data_marie->packetSentCount) < 50);
+	BC_ASSERT_TRUE(data_marie->packetSentCount - data_pauline->packetReceivedCount < 50);
 	BC_ASSERT_TRUE(data_marie->packetReceivedCount == data_pauline->packetSentCount);
 	// At this point, we know each packet that has been processed in the send callback of our RTP modifier also go through the recv callback of the remote.
 	
