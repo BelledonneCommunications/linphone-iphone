@@ -618,7 +618,7 @@ static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 #elif defined(_WIN32)
 	int ret;
 	wchar_t db_file_utf16[MAX_PATH_SIZE];
-	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, MAX_PATH_SIZE, db_file_utf16, MAX_PATH_SIZE);
+	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, -1, db_file_utf16, MAX_PATH_SIZE);
 	if(ret == 0) db_file_utf16[0] = '\0';
 	return sqlite3_open16(db_file_utf16, db);
 #else
