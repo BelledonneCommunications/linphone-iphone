@@ -4662,8 +4662,8 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	
 	BC_ASSERT_PTR_NOT_NULL(data_marie);
 	BC_ASSERT_PTR_NOT_NULL(data_pauline);
-	ms_message("Marie sent %" PRIu64 " RTP packets and received %" PRIu64 " (through our modifier)", data_marie->packetSentCount, data_marie->packetReceivedCount);
-	ms_message("Pauline sent %" PRIu64 " RTP packets and received %" PRIu64 " (through our modifier)", data_pauline->packetSentCount, data_pauline->packetReceivedCount);
+	ms_message("Marie sent %i RTP packets and received %i (through our modifier)", (int)data_marie->packetSentCount, (int)data_marie->packetReceivedCount);
+	ms_message("Pauline sent %i RTP packets and received %i (through our modifier)", (int)data_pauline->packetSentCount, (int)data_pauline->packetReceivedCount);
 	// There will be a few RTP packets sent on marie's side before the call is ended at pauline's request, so we need the threshold
 	BC_ASSERT_TRUE(data_marie->packetSentCount - data_pauline->packetReceivedCount < 50);
 	BC_ASSERT_TRUE(data_marie->packetReceivedCount == data_pauline->packetSentCount);
@@ -4675,8 +4675,8 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		const LinphoneCallStats *pauline_stats = linphone_call_get_audio_stats(call_pauline);
 		rtp_stats_t marie_rtp_stats = linphone_call_stats_get_rtp_stats(marie_stats);
 		rtp_stats_t pauline_rtp_stats = linphone_call_stats_get_rtp_stats(pauline_stats);
-		ms_message("Marie sent %" PRIu64 " RTP packets and received %" PRIu64 " (for real)", marie_rtp_stats.packet_sent, marie_rtp_stats.packet_recv);
-		ms_message("Pauline sent %" PRIu64 " RTP packets and received %" PRIu64 " (for real)", pauline_rtp_stats.packet_sent, pauline_rtp_stats.packet_recv);
+		ms_message("Marie sent %i RTP packets and received %i (for real)", (int)marie_rtp_stats.packet_sent, (int)marie_rtp_stats.packet_recv);
+		ms_message("Pauline sent %i RTP packets and received %i (for real)", (int)pauline_rtp_stats.packet_sent, (int)pauline_rtp_stats.packet_recv);
 		BC_ASSERT_TRUE(data_marie->packetReceivedCount == marie_rtp_stats.packet_recv);
 		BC_ASSERT_TRUE(data_marie->packetSentCount == marie_rtp_stats.packet_sent);
 		BC_ASSERT_TRUE(data_pauline->packetReceivedCount == pauline_rtp_stats.packet_recv);
