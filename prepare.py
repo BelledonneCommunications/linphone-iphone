@@ -26,6 +26,7 @@ import argparse
 import os
 import re
 import shutil
+import tempfile
 import sys
 from distutils.spawn import find_executable
 from subprocess import Popen, PIPE
@@ -468,19 +469,19 @@ def main(argv=None):
     argparser.add_argument(
         '-L', '--list-cmake-variables', help="List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
     argparser.add_argument(
+        '-lf', '--list-features', help="List optional features and their default values.", action='store_true', dest='list_features')
+    argparser.add_argument(
         '-t', '--tunnel', help="Enable Tunnel.", action='store_true')
     argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=[
                            'x86_64', 'devices'], help="The platform to build for (default is 'x86_64 devices'). Space separated architectures in list: {0}.".format(', '.join([repr(platform) for platform in platforms])))
 
     args, additional_args = argparser.parse_known_args()
 
-    if args.debug_verbose:
-        additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
-
     if check_tools() != 0:
         return 1
 
-    install_git_hook()
+    if args.debug_verbose:
+        additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
 
     additional_args += ["-G", args.G__generator]
     if args.G__generator == 'Ninja':
@@ -491,13 +492,26 @@ def main(argv=None):
         generator = '$(MAKE) -C'
 
     if args.tunnel:
+        additional_args += ["-DENABLE_TUNNEL=YES"]
         if not os.path.isdir("submodules/tunnel"):
             print("Tunnel enabled but not found, trying to clone it...")
             if check_is_installed("git", "it", True):
                 Popen("git clone gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" ")).wait()
             else:
                 return 1
-        additional_args += ["-DENABLE_TUNNEL=YES"]
+
+    if args.list_features:
+        tmpdir = tempfile.mkdtemp(prefix="linphone-iphone")
+        tmptarget = IOSarm64Target()
+
+        option_regex = re.compile("ENABLE_(.*):(.*)=(.*)")
+        for line in Popen(tmptarget.cmake_command("Debug", False, True, additional_args),
+                          cwd=tmpdir, shell=False, stdout=PIPE).stdout.readlines():
+            match = option_regex.match(line)
+            if match is not None:
+                print("ENABLE_{} (is currently {})".format(match.groups()[0], match.groups()[2]))
+        shutil.rmtree(tmpdir)
+        return 0
 
     selected_platforms = []
     for platform in args.platform:
@@ -528,6 +542,7 @@ def main(argv=None):
         if os.path.isfile('Makefile'):
             os.remove('Makefile')
     elif selected_platforms:
+        install_git_hook()
         generate_makefile(selected_platforms, generator)
 
     return 0
