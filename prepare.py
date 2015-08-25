@@ -37,7 +37,7 @@ try:
     import prepare
 except:
     error(
-        "Could not find prepare module, probably missing submodules/cmake-builder? Try running git submodule update --init --recursive")
+        "Could not find prepare module, probably missing submodules/cmake-builder? Try running:\ngit submodule update --init --recursive")
     exit(1)
 
 
@@ -115,24 +115,24 @@ def gpl_disclaimer(platforms):
     gpl_third_parties_enabled = ("ENABLE_GPL_THIRD_PARTIES:BOOL=ON" in open(cmakecache).read())
 
     if gpl_third_parties_enabled:
-        warning("***************************************************************************\n"
-                "***************************************************************************\n"
-                "***** CAUTION, this liblinphone SDK is built using 3rd party GPL code *****\n"
-                "***** Even if you acquired a proprietary license from Belledonne      *****\n"
-                "***** Communications, this SDK is GPL and GPL only.                   *****\n"
-                "***** To disable 3rd party gpl code, please use:                      *****\n"
-                "***** $ ./prepare.py -DENABLE_GPL_THIRD_PARTIES=NO                    *****\n"
-                "***************************************************************************\n"
-                "***************************************************************************\n")
+        warning("\n***************************************************************************"
+                "\n***************************************************************************"
+                "\n***** CAUTION, this liblinphone SDK is built using 3rd party GPL code *****"
+                "\n***** Even if you acquired a proprietary license from Belledonne      *****"
+                "\n***** Communications, this SDK is GPL and GPL only.                   *****"
+                "\n***** To disable 3rd party gpl code, please use:                      *****"
+                "\n***** $ ./prepare.py -DENABLE_GPL_THIRD_PARTIES=NO                    *****"
+                "\n***************************************************************************"
+                "\n***************************************************************************")
     else:
-        warning("*****************************************************************\n"
-                "*****************************************************************\n"
-                "***** Linphone SDK without 3rd party GPL software           *****\n"
-                "***** If you acquired a proprietary license from Belledonne *****\n"
-                "***** Communications, this SDK can be used to create        *****\n"
-                "***** a proprietary linphone-based application.             *****\n"
-                "*****************************************************************\n"
-                "*****************************************************************\n")
+        warning("\n***************************************************************************"
+                "\n***************************************************************************"
+                "\n***** Linphone SDK without 3rd party GPL software                     *****"
+                "\n***** If you acquired a proprietary license from Belledonne           *****"
+                "\n***** Communications, this SDK can be used to create                  *****"
+                "\n***** a proprietary linphone-based application.                       *****"
+                "\n***************************************************************************"
+                "\n***************************************************************************")
 
 
 def extract_libs_list():
@@ -149,36 +149,72 @@ def extract_libs_list():
     return list(set(l))
 
 
+missing_dependencies = {}
+
+
 def check_is_installed(binary, prog=None, warn=True):
     if not find_executable(binary):
+
         if warn:
-            error("Could not find {}. Please install {}.".format(binary, prog))
+            missing_dependencies[binary] = prog
+            # error("Could not find {}. Please install {}.".format(binary, prog))
         return False
     return True
 
 
+def detect_package_manager():
+    if find_executable("brew"):
+        return "brew"
+    elif find_executable("port"):
+        return "sudo port"
+    else:
+        error(
+            "No package manager found. Please README or install brew using:\n\truby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"")
+        return "brew"
+
+
 def check_tools():
+    package_manager_info = {"brew-pkg-config": "pkg-config",
+                            "sudo port-pkg-config": "pkgconfig",
+                            "brew-binary-path": "/usr/local/bin/",
+                            "sudo port-binary-path": "/opt/local/bin/"
+                            }
     reterr = 0
 
     if " " in os.path.dirname(os.path.realpath(__file__)):
         error("Invalid location: linphone-iphone path should not contain any spaces.")
         reterr = 1
 
-    for prog in ["autoconf", "automake", "pkg-config", "doxygen", "java", "nasm", "cmake", "wget", "yasm", "optipng"]:
-        reterr |= not check_is_installed(prog, "it")
+    for prog in ["autoconf", "automake", "doxygen", "java", "nasm", "cmake", "wget", "yasm", "optipng"]:
+        reterr |= not check_is_installed(prog, prog)
+
+    reterr |= not check_is_installed("pkg-config", package_manager_info[detect_package_manager() + "-pkg-config"])
     reterr |= not check_is_installed("ginstall", "coreutils")
     reterr |= not check_is_installed("intltoolize", "intltool")
     reterr |= not check_is_installed("convert", "imagemagick")
+
+    if find_executable("nasm"):
+        nasm_output = Popen("nasm -f elf32".split(" "), stderr=PIPE, stdout=PIPE).stderr.read()
+        if "fatal: unrecognised output format" in nasm_output:
+            missing_dependencies["nasm"] = "nasm"
+            reterr = 1
 
     if check_is_installed("libtoolize", warn=False):
         if not check_is_installed("glibtoolize", "libtool"):
             glibtoolize_path = find_executable(glibtoolize)
             reterr = 1
-            error = "Please do a symbolic link from glibtoolize to libtoolize: 'ln -s {} ${}'."
-            error(error.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
+            msg = "Please do a symbolic link from glibtoolize to libtoolize:\n\tln -s {} ${}"
+            error(msg.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
+
+    # list all missing packages to install
+    if missing_dependencies:
+        error("The following binaries are missing: {}. Please install them using:\n\t{} install {}".format(
+            " ".join(missing_dependencies.keys()),
+            detect_package_manager(),
+            " ".join(missing_dependencies.values())))
 
     devnull = open(os.devnull, 'wb')
-    # just ensure that JDK is installed - if not, it will automatiaclyl display a popup to user
+    # just ensure that JDK is installed - if not, it will automatically display a popup to user
     p = Popen("java -version".split(" "), stderr=devnull, stdout=devnull)
     p.wait()
     if p.returncode != 0:
@@ -186,20 +222,17 @@ def check_tools():
         reterr = 1
 
     # needed by x264
-    check_is_installed("gas-preprocessor.pl", """it:
-        wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl
-        chmod +x gas-preprocessor.pl
-        sudo mv gas-preprocessor.pl /usr/local/bin/""")
-
-    nasm_output = Popen("nasm -f elf32".split(" "), stderr=PIPE, stdout=PIPE).stderr.read()
-    if "fatal: unrecognised output format" in nasm_output:
-        error(
-            "Invalid version of nasm: your version does not support elf32 output format. If you have installed nasm, please check that your PATH env variable is set correctly.")
+    if not find_executable("gas-preprocessor.pl"):
+        error("""Could not find gas-preprocessor.pl, please install it:
+        wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl && \\
+        chmod +x gas-preprocessor.pl && \\
+        sudo mv gas-preprocessor.pl {}""".format(package_manager_info[detect_package_manager() + "-binary-path"]))
         reterr = 1
 
-        if not os.path.isdir("submodules/linphone/mediastreamer2") or not os.path.isdir("submodules/linphone/oRTP"):
-            error("Missing some git submodules. Did you run 'git submodule update --init --recursive'?")
-            reterr = 1
+    if not os.path.isdir("submodules/linphone/mediastreamer2") or not os.path.isdir("submodules/linphone/oRTP"):
+        error("Missing some git submodules. Did you run:\n\tgit submodule update --init --recursive")
+        reterr = 1
+
     p = Popen("xcrun --sdk iphoneos --show-sdk-path".split(" "), stdout=devnull, stderr=devnull)
     p.wait()
     if p.returncode != 0:
@@ -211,11 +244,8 @@ def check_tools():
         sdk_strings_path = "{}/{}".format(sdk_platform_path, "Developer/usr/bin/strings")
         if not os.path.isfile(sdk_strings_path):
             strings_path = find_executable("strings")
-            error("strings binary missing, please run 'sudo ln -s {} {}'.".format(strings_path, sdk_strings_path))
+            error("strings binary missing, please run:\n\tsudo ln -s {} {}".format(strings_path, sdk_strings_path))
             reterr = 1
-
-    if reterr == 1:
-        error("Failed to detect required tools, aborting.")
 
     return reterr
 
@@ -504,7 +534,7 @@ def main(argv=None):
         tmptarget = IOSarm64Target()
 
         option_regex = re.compile("ENABLE_(.*):(.*)=(.*)")
-        option_list = [ "" ]
+        option_list = [""]
         for line in Popen(tmptarget.cmake_command("Debug", False, True, additional_args),
                           cwd=tmpdir, shell=False, stdout=PIPE).stdout.readlines():
             match = option_regex.match(line)

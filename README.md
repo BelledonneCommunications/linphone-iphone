@@ -1,5 +1,22 @@
 [![Build Status](https://travis-ci.org/BelledonneCommunications/linphone-iphone.svg?branch=master)](https://travis-ci.org/BelledonneCommunications/linphone-iphone)
 
+Linphone is a free VoIP and video softphone based on the SIP protocol.
+
+![Dialer screenshot](http://www.linphone.org/img/slideshow-phone.png)
+
+# Getting started
+
+Here's how to launch Linphone for iPhone (more details below):
+
+1. Install [Xcode from AppStore](https://itunes.apple.com/us/app/Xcode/id497799835?mt=12#).
+2. Install [HomeBrew, a package manager for OS X](http://brew.sh) (MacPorts is supported but deprecated).
+3. Install Linphone dependencies: open iTerm.app in the current directory and list dependencies to install using:
+ `./prepare.py`
+4. Build SDK (see below for options and explanations):
+ `./prepare.py -c && ./prepare.py && make`
+5. Open linphone.xcodeproj in Xcode: `open linphone.xcodeproj`
+6. Press `⌘R` and voilà!
+
 # Building the SDK
 
 Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts.
@@ -12,19 +29,18 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
 
 ## Licensing: GPL third parties versus non GPL third parties
 
-This SDK can be generated in 2 flavors.
+This SDK can be generated in 2 flavors:
 
-* When choosing using GPL third parties, it means liblinphone includes GPL third parties like FFmpeg or X264. If you choose this flavor, your final application must comply with GPL in any case. This is the default mode.
+* GPL third parties enabled means that liblinphone includes GPL third parties like FFmpeg or X264. If you choose this flavor, your final application **must comply with GPL in any case**. This is the default mode.
 
-* When choosing NOT using GPL third parties, Linphone will only use non GPL code except for `liblinphone`, `mediastreamer2`, `oRTP` and `belle-sip`.
- If you choose this flavor, your final application  is still subject to GPL except if you have a commercial license for liblinphone, mediastreamer2, oRTP, belle-sip.
- To generate the liblinphone multi arch SDK in non GPL mode, do:
+* NO GPL third parties means that Linphone will only use non GPL code except for `liblinphone`, `mediastreamer2`, `oRTP` and `belle-sip`. If you choose this flavor, your final application is **still subject to GPL except if you have a [commercial license for the mentioned libraries](http://www.belledonne-communications.com/products.html)**.
+ To generate the liblinphone multi arch SDK without GPL third parties, invoke:
 
-        ./prepare.py -DENABLE_GPL_THIRD_PARTIES=NO [other options] && make
+        ./prepare.py -DENABLE_GPL_THIRD_PARTIES=OFF [other options] && make
 
 ## Customizing features
 
-You can choose to enable / disable features such as custom audio / video codecs, media encryption, etc. To get a list of all features, the simplest way is to invoke `prepare.py` with `--list-features`:
+You can choose to enable/disable features such as custom audio/video codecs, media encryption, etc. To get a list of all features, the simplest way is to invoke `prepare.py` with `--list-features`:
 
         ./prepare.py --list-features
 
@@ -41,7 +57,7 @@ You can for instance enable X264 by using:
 - 64 bits x86_64 for simulator for all ARM64 devices.
 - 32 bits i386 for simulator for all ARMv7 older devices.
 
- Note: We are not compiling for the 32 bits i386 simulator by default because xCode default device (iPhone 6) runs in 64 bits. If you want to enable it, you should invoke `prepare.py` with `i386` argument: `./prepare.py i386 [other options]`.
+ Note: We are not compiling for the 32 bits i386 simulator by default because Xcode default device (iPhone 6) runs in 64 bits. If you want to enable it, you should invoke `prepare.py` with `i386` argument: `./prepare.py i386 [other options]`.
 
 ## Upgrading your iOS SDK
 
@@ -55,24 +71,24 @@ After the SDK is built, just open the Linphone Xcode project with Xcode, and pre
 
 ## Note regarding third party components subject to license
 
- The liblinphone-sdk is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and H264 codecs.
+ The liblinphone SDK is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and H264 codecs.
  Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_OPENH264 positioned in Xcode project.
- Before embedding these 4 codecs in the final application, make sure to have the right to do so.
+ Before embedding these 4 codecs in the final application, **make sure to have the right to do so**.
 
 # Testing the application
 
 We are using the KIF framework to test the UI of Linphone. It is used as a submodule (instead of CocoaPods) for ease.
 
-Simply press `Command + U` and the default simulator / device will launch and try to pass all the tests.
+Simply press `⌘U` and the default simulator / device will launch and try to pass all the tests.
 
 
 # Limitations and known bugs
 
-* Video capture will not work in simulator (not implemented in simulator).
+* Video capture will not work in simulator (not implemented in it).
 
 # Debugging the SDK
 
-Sometime it can be useful to step into liblinphone SDK functions. To allow XCode to enable breakpoint within liblinphone, SDK must be built with debug symbols by using option `--debug`:
+Sometime it can be useful to step into liblinphone SDK functions. To allow Xcode to enable breakpoint within liblinphone, SDK must be built with debug symbols by using option `--debug`:
 
         ./prepare.py --debug [other options] && make
 
