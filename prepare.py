@@ -28,6 +28,7 @@ import re
 import shutil
 import tempfile
 import sys
+from logging import *
 from distutils.spawn import find_executable
 from subprocess import Popen, PIPE
 sys.dont_write_bytecode = True
@@ -35,7 +36,8 @@ sys.path.insert(0, 'submodules/cmake-builder')
 try:
     import prepare
 except:
-    print("Could not find prepare module, probably missing submodules/cmake-builder? Try running git submodule update --init --recursive")
+    error(
+        "Could not find prepare module, probably missing submodules/cmake-builder? Try running git submodule update --init --recursive")
     exit(1)
 
 
@@ -108,36 +110,29 @@ class PlatformListAction(argparse.Action):
             setattr(namespace, self.dest, values)
 
 
-def warning(platforms):
-    gpl_third_parties_enabled = False
-    regex = re.compile("^ENABLE_GPL_THIRD_PARTIES:BOOL=ON")
-    f = open(
-        'WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0]), 'r')
-    for line in f:
-        if regex.match(line):
-            gpl_third_parties_enabled = True
-            break
-    f.close()
+def gpl_disclaimer(platforms):
+    cmakecache = 'WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0])
+    gpl_third_parties_enabled = ("ENABLE_GPL_THIRD_PARTIES:BOOL=ON" in open(cmakecache).read())
 
     if gpl_third_parties_enabled:
-        print("***************************************************************************\n"
-              "***************************************************************************\n"
-              "***** CAUTION, this liblinphone SDK is built using 3rd party GPL code *****\n"
-              "***** Even if you acquired a proprietary license from Belledonne      *****\n"
-              "***** Communications, this SDK is GPL and GPL only.                   *****\n"
-              "***** To disable 3rd party gpl code, please use:                      *****\n"
-              "***** $ ./prepare.py -DENABLE_GPL_THIRD_PARTIES=NO                    *****\n"
-              "***************************************************************************\n"
-              "***************************************************************************\n")
+        warning("***************************************************************************\n"
+                "***************************************************************************\n"
+                "***** CAUTION, this liblinphone SDK is built using 3rd party GPL code *****\n"
+                "***** Even if you acquired a proprietary license from Belledonne      *****\n"
+                "***** Communications, this SDK is GPL and GPL only.                   *****\n"
+                "***** To disable 3rd party gpl code, please use:                      *****\n"
+                "***** $ ./prepare.py -DENABLE_GPL_THIRD_PARTIES=NO                    *****\n"
+                "***************************************************************************\n"
+                "***************************************************************************\n")
     else:
-        print("*****************************************************************\n"
-              "*****************************************************************\n"
-              "***** Linphone SDK without 3rd party GPL software           *****\n"
-              "***** If you acquired a proprietary license from Belledonne *****\n"
-              "***** Communications, this SDK can be used to create        *****\n"
-              "***** a proprietary linphone-based application.             *****\n"
-              "*****************************************************************\n"
-              "*****************************************************************\n")
+        warning("*****************************************************************\n"
+                "*****************************************************************\n"
+                "***** Linphone SDK without 3rd party GPL software           *****\n"
+                "***** If you acquired a proprietary license from Belledonne *****\n"
+                "***** Communications, this SDK can be used to create        *****\n"
+                "***** a proprietary linphone-based application.             *****\n"
+                "*****************************************************************\n"
+                "*****************************************************************\n")
 
 
 def extract_libs_list():
@@ -157,7 +152,7 @@ def extract_libs_list():
 def check_is_installed(binary, prog=None, warn=True):
     if not find_executable(binary):
         if warn:
-            print("Could not find {}. Please install {}.".format(binary, prog))
+            error("Could not find {}. Please install {}.".format(binary, prog))
         return False
     return True
 
@@ -166,7 +161,7 @@ def check_tools():
     reterr = 0
 
     if " " in os.path.dirname(os.path.realpath(__file__)):
-        print("Invalid location: linphone-iphone path should not contain any spaces.")
+        error("Invalid location: linphone-iphone path should not contain any spaces.")
         reterr = 1
 
     for prog in ["autoconf", "automake", "pkg-config", "doxygen", "java", "nasm", "cmake", "wget", "yasm", "optipng"]:
@@ -180,15 +175,14 @@ def check_tools():
             glibtoolize_path = find_executable(glibtoolize)
             reterr = 1
             error = "Please do a symbolic link from glibtoolize to libtoolize: 'ln -s {} ${}'."
-            print(error.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
+            error(error.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
 
     devnull = open(os.devnull, 'wb')
     # just ensure that JDK is installed - if not, it will automatiaclyl display a popup to user
     p = Popen("java -version".split(" "), stderr=devnull, stdout=devnull)
     p.wait()
     if p.returncode != 0:
-        print(p.returncode)
-        print("Please install Java JDK (not just JRE).")
+        error("Please install Java JDK (not just JRE).")
         reterr = 1
 
     # needed by x264
@@ -199,28 +193,29 @@ def check_tools():
 
     nasm_output = Popen("nasm -f elf32".split(" "), stderr=PIPE, stdout=PIPE).stderr.read()
     if "fatal: unrecognised output format" in nasm_output:
-        print(
+        error(
             "Invalid version of nasm: your version does not support elf32 output format. If you have installed nasm, please check that your PATH env variable is set correctly.")
         reterr = 1
 
         if not os.path.isdir("submodules/linphone/mediastreamer2") or not os.path.isdir("submodules/linphone/oRTP"):
-            print("Missing some git submodules. Did you run 'git submodule update --init --recursive'?")
+            error("Missing some git submodules. Did you run 'git submodule update --init --recursive'?")
             reterr = 1
     p = Popen("xcrun --sdk iphoneos --show-sdk-path".split(" "), stdout=devnull, stderr=devnull)
     p.wait()
     if p.returncode != 0:
-        print("iOS SDK not found, please install Xcode from AppStore or equivalent.")
+        error("iOS SDK not found, please install Xcode from AppStore or equivalent.")
         reterr = 1
     else:
-        sdk_platform_path = Popen("xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "), stdout=PIPE, stderr=devnull).stdout.read()[:-1]
+        sdk_platform_path = Popen(
+            "xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "), stdout=PIPE, stderr=devnull).stdout.read()[:-1]
         sdk_strings_path = "{}/{}".format(sdk_platform_path, "Developer/usr/bin/strings")
         if not os.path.isfile(sdk_strings_path):
             strings_path = find_executable("strings")
-            print("strings binary missing, please run 'sudo ln -s {} {}'.".format(strings_path, sdk_strings_path))
+            error("strings binary missing, please run 'sudo ln -s {} {}'.".format(strings_path, sdk_strings_path))
             reterr = 1
 
     if reterr == 1:
-        print("Failed to detect required tools, aborting.")
+        error("Failed to detect required tools, aborting.")
 
     return reterr
 
@@ -228,7 +223,7 @@ def check_tools():
 def install_git_hook():
     git_hook_path = ".git{sep}hooks{sep}pre-commit".format(sep=os.sep)
     if os.path.isdir(".git{sep}hooks".format(sep=os.sep)) and not os.path.isfile(git_hook_path):
-        print("Installing Git pre-commit hook")
+        info("Installing Git pre-commit hook")
         shutil.copyfile(".git-pre-commit", git_hook_path)
         os.chmod(git_hook_path, 0755)
 
@@ -302,7 +297,7 @@ def generate_makefile(platforms, generator):
     multiarch = ""
     for arch in platforms[1:]:
         multiarch += \
-"""\tif test -f "$${arch}_path"; then \\
+            """\tif test -f "$${arch}_path"; then \\
 \t\tall_paths=`echo $$all_paths $${arch}_path`; \\
 \t\tall_archs="$$all_archs,{arch}" ; \\
 \telse \\
@@ -448,10 +443,12 @@ help: help-prepare-options
     f = open('Makefile', 'w')
     f.write(makefile)
     f.close()
-    warning(platforms)
+    gpl_disclaimer(platforms)
 
 
 def main(argv=None):
+    basicConfig(format="%(levelname)s: %(message)s", level=INFO)
+
     if argv is None:
         argv = sys.argv
     argparser = argparse.ArgumentParser(
@@ -481,7 +478,7 @@ def main(argv=None):
         return 1
 
     if args.debug_verbose:
-        additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
+        additional_args += ["-DENABLE_DEBUG_LOGS=ON"]
 
     additional_args += ["-G", args.G__generator]
     if args.G__generator == 'Ninja':
@@ -491,25 +488,31 @@ def main(argv=None):
     else:
         generator = '$(MAKE) -C'
 
-    if args.tunnel:
-        additional_args += ["-DENABLE_TUNNEL=YES"]
+    if args.tunnel or os.path.isdir("submodules/tunnel"):
         if not os.path.isdir("submodules/tunnel"):
-            print("Tunnel enabled but not found, trying to clone it...")
+            info("Tunnel wanted but not found yet, trying to clone it...")
             if check_is_installed("git", "it", True):
                 Popen("git clone gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" ")).wait()
             else:
+                error("Could not clone tunnel. Please see http://www.belledonne-communications.com/voiptunnel.html")
                 return 1
+        warning("Tunnel enabled, disabling GPL third parties.")
+        additional_args += ["-DENABLE_TUNNEL=ON", "-DENABLE_GPL_THIRD_PARTIES=OFF"]
 
     if args.list_features:
         tmpdir = tempfile.mkdtemp(prefix="linphone-iphone")
         tmptarget = IOSarm64Target()
 
         option_regex = re.compile("ENABLE_(.*):(.*)=(.*)")
+        option_list = [ "" ]
         for line in Popen(tmptarget.cmake_command("Debug", False, True, additional_args),
                           cwd=tmpdir, shell=False, stdout=PIPE).stdout.readlines():
             match = option_regex.match(line)
             if match is not None:
-                print("ENABLE_{} (is currently {})".format(match.groups()[0], match.groups()[2]))
+                option_list.append("ENABLE_{} (is currently {})".format(match.groups()[0], match.groups()[2]))
+        info("Here is the list of available features: {}".format("\n\t".join(option_list)))
+        info("To enable some feature, please use -DENABLE_SOMEOPTION=ON")
+        info("Similarly, to disable some feature, please use -DENABLE_SOMEOPTION=OFF")
         shutil.rmtree(tmpdir)
         return 0
 
