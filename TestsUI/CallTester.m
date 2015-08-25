@@ -53,7 +53,7 @@
 }
 
 - (void)testDialInvalidSIPURI {
-	[self callURI:@"🎆123"];
+	[self callURI:@"123 😀"];
 	[tester waitForViewWithAccessibilityLabel:
 				@"Some invalid characters where found in the given SIP address. Please correct it."];
 	[tester tapViewWithAccessibilityLabel:@"Cancel" traits:UIAccessibilityTraitButton];
