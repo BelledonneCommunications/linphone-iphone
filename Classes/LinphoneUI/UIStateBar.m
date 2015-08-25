@@ -235,6 +235,7 @@
 		break;
 	}
 	[registrationStateLabel setText:message];
+	registrationStateLabel.accessibilityValue = registrationStateImage.accessibilityValue = message;
 	[registrationStateImage setImage:image];
 }
 

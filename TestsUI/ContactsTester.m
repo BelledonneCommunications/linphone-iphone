@@ -75,8 +75,8 @@
 	NSString *phone = @"+5 15 #0664;447*46";
 	[self createContact:contactName lastName:@"dummy" phoneNumber:phone SIPAddress:nil];
 	[tester tapViewWithAccessibilityLabel:[@"Linphone, " stringByAppendingString:phone]];
-	[tester waitForViewWithAccessibilityLabel:[phone stringByAppendingString:@" not registered"]];
-	[tester tapViewWithAccessibilityLabel:@"Dismiss"];
+	[tester waitForViewWithAccessibilityLabel:[phone stringByAppendingString:@" is not registered."]];
+	[tester tapViewWithAccessibilityLabel:@"Cancel"];
 }
 
 - (void)testDeleteContact {

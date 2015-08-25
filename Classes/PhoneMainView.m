@@ -608,21 +608,28 @@ static RootViewManager *rootViewManagerInstance = nil;
 									 @"SIP account configuration in the settings.",
 									 nil);
 	} else {
-		lMessage = [NSString stringWithFormat:NSLocalizedString(@"Cannot call %@", nil), lUserName];
+		lMessage = [NSString stringWithFormat:NSLocalizedString(@"Cannot call %@.", nil), lUserName];
 	}
 
-	if (linphone_call_get_reason(call) == LinphoneReasonNotFound) {
-		lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ not registered", nil), lUserName];
-	} else {
-		if (message != nil) {
-			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@\nReason was: %@", nil), lMessage, message];
-		}
+	switch (linphone_call_get_reason(call)) {
+		case LinphoneReasonNotFound:
+			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is not registered.", nil), lUserName];
+			break;
+		case LinphoneReasonBusy:
+			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is busy.", nil), lUserName];
+			break;
+		default:
+			if (message != nil) {
+				lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@\nReason was: %@", nil), lMessage, message];
+			}
+			break;
 	}
+
 	lTitle = NSLocalizedString(@"Call failed", nil);
 	UIAlertView *error = [[UIAlertView alloc] initWithTitle:lTitle
 													message:lMessage
 												   delegate:nil
-										  cancelButtonTitle:NSLocalizedString(@"Dismiss", nil)
+										  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
 										  otherButtonTitles:nil];
 	[error show];
 }

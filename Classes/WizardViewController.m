@@ -228,7 +228,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)reset {
-	[self clearProxyConfig];
+	[[LinphoneManager instance] removeAllAccounts];
 	[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
 
 	LinphoneCore *lc = [LinphoneManager getLc];
@@ -372,17 +372,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[contentView setContentSize:[view bounds].size];
 }
 
-- (void)clearProxyConfig {
-	linphone_core_clear_proxy_config([LinphoneManager getLc]);
-	linphone_core_clear_all_auth_info([LinphoneManager getLc]);
-}
-
-- (void)setDefaultSettings:(LinphoneProxyConfig *)proxyCfg {
-	LinphoneManager *lm = [LinphoneManager instance];
-
-	[lm configurePushTokenForProxyConfig:proxyCfg];
-}
-
 - (BOOL)addProxyConfig:(NSString *)username
 			  password:(NSString *)password
 				domain:(NSString *)domain
@@ -440,9 +429,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneAuthInfo *info = linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL,
 													linphone_proxy_config_get_domain(proxyCfg));
 
-	[self setDefaultSettings:proxyCfg];
-
-	[self clearProxyConfig];
+	LinphoneManager *lm = [LinphoneManager instance];
+	[lm configurePushTokenForProxyConfig:proxyCfg];
+	[lm removeAllAccounts];
 
 	linphone_proxy_config_enable_register(proxyCfg, true);
 	linphone_core_add_auth_info(lc, info);
@@ -454,8 +443,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)addProvisionedProxy:(NSString *)username withPassword:(NSString *)password withDomain:(NSString *)domain {
-	[self clearProxyConfig];
-
+	[[LinphoneManager instance] removeAllAccounts];
 	LinphoneProxyConfig *proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
 
 	const char *addr = linphone_proxy_config_get_domain(proxyCfg);

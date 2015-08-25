@@ -167,6 +167,7 @@
 		63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A071B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m */; };
 		63B81A0F1B57DA33009604A6 /* TPKeyboardAvoidingTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A091B57DA33009604A6 /* TPKeyboardAvoidingTableView.m */; };
 		63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A0B1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m */; };
+		63B910C21B8B5368004641C9 /* CallTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B910BA1B8B5356004641C9 /* CallTester.m */; };
 		63C458261B5680AC009F2D7E /* ring.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2237D4081084D7A9001383EE /* ring.wav */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
 		63D2680F1B174A5E00A2CC11 /* numpad_one_voicemail_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */; };
@@ -1108,6 +1109,8 @@
 		63B81A091B57DA33009604A6 /* TPKeyboardAvoidingTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingTableView.m; sourceTree = "<group>"; };
 		63B81A0A1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+TPKeyboardAvoidingAdditions.h"; sourceTree = "<group>"; };
 		63B81A0B1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+TPKeyboardAvoidingAdditions.m"; sourceTree = "<group>"; };
+		63B910B91B8B5356004641C9 /* CallTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallTester.h; sourceTree = "<group>"; };
+		63B910BA1B8B5356004641C9 /* CallTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallTester.m; sourceTree = "<group>"; };
 		63CD4B4D1A5AAC8C00B84282 /* DTAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAlertView.h; sourceTree = "<group>"; };
 		63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
 		63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = numpad_one_voicemail_default.png; path = Resources/numpad_one_voicemail_default.png; sourceTree = "<group>"; };
@@ -2297,7 +2300,6 @@
 				F03A9B9718C0DB6F00C4D7FE /* libc++.dylib */,
 				F0BB8C111936240300974404 /* libcunit.a */,
 				220FAD2910765B400068D98F /* libgsm.a */,
-				223148E31178A08200637D6A /* libilbc.a */,
 				2211DB911475562600DEE054 /* liblinphone.a */,
 				F0BB8C0F193623F200974404 /* liblinphonetester.a */,
 				22405EE916006F0700B92522 /* libmediastreamer_base.a */,
@@ -2345,12 +2347,14 @@
 		630589DD1B4E810900EFAE36 /* TestsUI */ = {
 			isa = PBXGroup;
 			children = (
-				63058A0A1B4E81B700EFAE36 /* Info.plist */,
-				630589F21B4E816900EFAE36 /* KIF.xcodeproj */,
+				63B910B91B8B5356004641C9 /* CallTester.h */,
+				63B910BA1B8B5356004641C9 /* CallTester.m */,
 				630589DE1B4E810900EFAE36 /* ChatTester.h */,
 				630589DF1B4E810900EFAE36 /* ChatTester.m */,
 				630589E01B4E810900EFAE36 /* ContactsTester.h */,
 				630589E11B4E810900EFAE36 /* ContactsTester.m */,
+				63058A0A1B4E81B700EFAE36 /* Info.plist */,
+				630589F21B4E816900EFAE36 /* KIF.xcodeproj */,
 				630589E31B4E810900EFAE36 /* LinphoneTestCase.h */,
 				630589E41B4E810900EFAE36 /* LinphoneTestCase.m */,
 				630589E51B4E810900EFAE36 /* WizardTester.h */,
@@ -4118,6 +4122,7 @@
 				630589EA1B4E810900EFAE36 /* LinphoneTestCase.m in Sources */,
 				630589EB1B4E810900EFAE36 /* WizardTester.m in Sources */,
 				630589E71B4E810900EFAE36 /* ChatTester.m in Sources */,
+				63B910C21B8B5368004641C9 /* CallTester.m in Sources */,
 				630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
