@@ -1003,7 +1003,7 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 	char *tmpurl;
 	LinphoneAddress *uri;
 
-	if (*username=='\0') return NULL;
+	if (!username || *username=='\0') return NULL;
 
 	if (is_enum(username,&enum_domain)){
 		if (proxy) {
@@ -1036,8 +1036,9 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 		}
 
 		if (proxy!=NULL){
-			/* append the proxy domain suffix */
+			/* append the proxy domain suffix but remove any custom parameters/headers */
 			LinphoneAddress *uri=linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
+			linphone_address_clean(uri);
 			if (uri==NULL){
 				return NULL;
 			} else {

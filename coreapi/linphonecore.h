@@ -723,7 +723,7 @@ LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call)
 
 /**
  * Get the mesured playback volume level.
- * 
+ *
  * @param call The call.
  * @return float Volume level in percentage.
  */
@@ -731,7 +731,7 @@ LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
 
 /**
  * Get the mesured record volume level
- * 
+ *
  * @param call The call.
  * @return float Volume level in percentage.
  */
@@ -741,7 +741,7 @@ LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
  * Get speaker volume gain.
  * If the sound backend supports it, the returned gain is equal to the gain set
  * with the system mixer.
- * 
+ *
  * @param call The call.
  * @return Percenatge of the max supported volume gain. Valid values are in [ 0.0 : 1.0 ].
  * In case of failure, a negative value is returned
@@ -751,7 +751,7 @@ LINPHONE_PUBLIC float linphone_call_get_speaker_volume_gain(const LinphoneCall *
 /**
  * Set speaker volume gain.
  * If the sound backend supports it, the new gain will synchronized with the system mixer.
- * 
+ *
  * @param call The call.
  * @param volume Percentage of the max supported gain. Valid values are in [ 0.0 : 1.0 ].
  */
@@ -761,7 +761,7 @@ LINPHONE_PUBLIC void linphone_call_set_speaker_volume_gain(LinphoneCall *call, f
  * Get microphone volume gain.
  * If the sound backend supports it, the returned gain is equal to the gain set
  * with the system mixer.
- * 
+ *
  * @param call The call.
  * @return double Percenatge of the max supported volume gain. Valid values are in [ 0.0 : 1.0 ].
  * In case of failure, a negative value is returned
@@ -771,7 +771,7 @@ LINPHONE_PUBLIC float linphone_call_get_microphone_volume_gain(const LinphoneCal
 /**
  * Set microphone volume gain.
  * If the sound backend supports it, the new gain will synchronized with the system mixer.
- * 
+ *
  * @param call The call.
  * @param volume Percentage of the max supported gain. Valid values are in [ 0.0 : 1.0 ].
  */
@@ -896,7 +896,7 @@ typedef enum _LinphoneAudioRoute LinphoneAudioRoute;
  * Change the playback output device (currently only used for blackberry)
  * @param call
  * @param route the wanted audio route (earpiece, speaker, ...)
- * 
+ *
  * @ingroup call_control
 **/
 LINPHONE_PUBLIC void linphone_call_set_audio_route(LinphoneCall *call, LinphoneAudioRoute route);
@@ -2319,6 +2319,21 @@ LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, co
 
 LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *url, const LinphoneCallParams *params);
 
+/**
+ * Initiates an outgoing call given a destination LinphoneAddress
+ *
+ * @ingroup call_control
+ * @param lc the LinphoneCore object
+ * @param addr the destination of the call (sip address).
+	@param params call parameters
+ *
+ * The LinphoneAddress can be constructed directly using linphone_address_new(), or
+ * created by linphone_core_interpret_url().
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @return a LinphoneCall object or NULL in case of failure
+**/
 LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params);
 
 LINPHONE_PUBLIC	int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
