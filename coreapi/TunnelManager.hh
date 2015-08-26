@@ -56,7 +56,7 @@ namespace belledonnecomm {
 		 * @param ip tunnel server ip address
 		 * @param port tunnel server tls port, recommended value is 443
 		 * @param udpMirrorPort remote port on the tunnel server side  used to test udp reachability
-		 * @param delay udp packet round trip delay in ms considered as acceptable. recommanded value is 1000 ms.
+		 * @param delay udp packet round trip delay in ms considered as acceptable. recommended value is 1000 ms.
 		 */
 		void addServer(const char *ip, int port,unsigned int udpMirrorPort,unsigned int delay);
 		/**

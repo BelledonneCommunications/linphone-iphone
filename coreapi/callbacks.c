@@ -495,13 +495,16 @@ static void call_accepted(SalOp *op){
 	SalMediaDescription *md, *rmd;
 	bool_t update_state=TRUE;
 
-	if (call==NULL){
+	if (call == NULL){
 		ms_warning("No call to accept.");
 		return ;
 	}
 	rmd=sal_call_get_remote_media_description(op);
 	/*set privacy*/
 	call->current_params->privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
+	/*reset the internal call update flag, so it doesn't risk to be copied and used in further re-INVITEs*/
+	if (call->params->internal_call_update)
+		call->params->internal_call_update = FALSE;
 
 	/* Handle remote ICE attributes if any. */
 	if (call->ice_session != NULL && rmd) {
@@ -580,8 +583,6 @@ static void call_accepted(SalOp *op){
 				}
 			}
 			linphone_core_update_streams(lc,call,md);
-			/*also reflect the change if the "wished" params, in order to avoid to propose SAVP or video again
-			* further in the call, for example during pause,resume, conferencing reINVITEs*/
 			linphone_call_fix_call_parameters(call);
 			if (!call->current_params->in_conference)
 				lc->current_call=call;
