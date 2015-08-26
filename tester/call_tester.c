@@ -4281,6 +4281,92 @@ static void simple_stereo_call_opus(void){
 	simple_stereo_call("opus", 48000, 150, TRUE);
 }
 
+static void call_with_complex_late_offering(void){
+	LinphoneCallParams *params;	
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline =  linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall* call_pauline;
+	LinphoneCall* call_marie;
+	
+	BC_ASSERT_TRUE(call(pauline,marie));
+	
+	call_pauline = linphone_core_get_current_call(pauline->lc);
+	call_marie = linphone_core_get_current_call(marie->lc);
+	
+	//Invite inactive Audio/video (Marie pause Pauline)
+	params=linphone_core_create_call_params(marie->lc,call_marie);
+	linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionInactive);
+	linphone_call_params_set_video_direction(params,LinphoneMediaDirectionInactive);
+	
+	linphone_core_update_call(marie->lc, call_marie ,params);
+	linphone_call_params_destroy(params);
+	
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPaused,1));
+	
+	//Marie send INVITE without SDP
+	linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
+	params=linphone_core_create_call_params(marie->lc,call_marie);
+	linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendOnly);
+	linphone_call_params_set_video_direction(params,LinphoneMediaDirectionSendOnly);
+	linphone_core_update_call(marie->lc, call_marie , params);
+	linphone_call_params_destroy(params);
+	
+	//Pauline OK with sendonly
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPaused,2));
+	
+	linphone_core_enable_sdp_200_ack(marie->lc,FALSE);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+
+	//Pauline pause Marie
+	linphone_core_pause_call(pauline->lc,call_pauline);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
+	
+	//Pauline resume Marie
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
+	linphone_core_resume_call(pauline->lc,call_pauline);
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallResuming,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,1));
+	
+	wait_for_until(pauline->lc, marie->lc, NULL, 0, 2000);
+		
+	//Marie invite inactive Audio/Video
+	params=linphone_core_create_call_params(marie->lc,call_marie);
+	linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionInactive);
+	linphone_call_params_set_video_direction(params,LinphoneMediaDirectionInactive);
+	
+	linphone_core_update_call(marie->lc, call_marie,params);
+	linphone_call_params_destroy(params);
+	
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPaused,3));
+	
+	//Marie send INVITE without SDP
+	linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
+	params=linphone_core_create_call_params(marie->lc,call_marie);
+	linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendRecv);
+	linphone_call_params_set_video_direction(params,LinphoneMediaDirectionSendRecv);
+	linphone_core_update_call(marie->lc, call_marie,params);
+	linphone_call_params_destroy(params);
+	
+	linphone_core_enable_sdp_200_ack(marie->lc,FALSE);
+	
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,4));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPaused,4));
+	
+	end_call(marie,pauline);
+	
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	
+}
+
 static void simple_mono_call_opus(void){
 	/*actually a call where input/output is made with stereo but opus transmits everything as mono*/
 	simple_stereo_call("opus", 48000, 150, FALSE);
@@ -4850,6 +4936,7 @@ test_t call_tests[] = {
 	{ "Call with FQDN in SDP", call_with_fqdn_in_sdp},
 	{ "Call with RTP IO mode", call_with_rtp_io_mode },
 	{ "Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback },
+	{ "Call with complex late offering", call_with_complex_late_offering },
 	{ "Call with custom RTP Modifier", call_with_custom_rtp_modifier },
 	{ "Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier },
 	{ "Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier }
