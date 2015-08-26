@@ -179,9 +179,8 @@
 		}
 	} else {
 		if (!instance.isTesting) {
-			NSUInteger notifTypes = UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound |
-									UIRemoteNotificationTypeBadge |
-									UIRemoteNotificationTypeNewsstandContentAvailability;
+			NSUInteger notifTypes =
+				UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;
 			[app registerForRemoteNotificationTypes:notifTypes];
 		}
 	}
