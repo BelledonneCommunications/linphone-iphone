@@ -80,8 +80,6 @@
 		2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2264B6D111200342002C2C53 /* SystemConfiguration.framework */; };
 		226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
 		226EF06C15FA256B005865C7 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 226EF06B15FA256B005865C7 /* MobileCoreServices.framework */; };
-		226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
-		226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
 		226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
 		2274401A106F31BD006EC466 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22744019106F31BD006EC466 /* CoreAudio.framework */; };
 		2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2274402E106F335E006EC466 /* AudioToolbox.framework */; };
@@ -175,6 +173,9 @@
 		63C5107E1B8DF3DF008A415A /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
 		63C5107F1B8DF3DF008A415A /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
 		63C510801B8DF3DF008A415A /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
+		63C5109E1B8F2603008A415A /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
+		63C5109F1B8F2603008A415A /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
+		63C510A01B8F48DB008A415A /* libmswebrtc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63EA4C941B50189D00922857 /* libmswebrtc.a */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
 		63D2680F1B174A5E00A2CC11 /* numpad_one_voicemail_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */; };
 		63D268101B174A5E00A2CC11 /* numpad_one_voicemail_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 63D2680E1B174A5E00A2CC11 /* numpad_one_voicemail_over.png */; };
@@ -1889,6 +1890,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63C510A01B8F48DB008A415A /* libmswebrtc.a in Frameworks */,
+				63C5109E1B8F2603008A415A /* libopencore-amrnb.a in Frameworks */,
+				63C5109F1B8F2603008A415A /* libopencore-amrwb.a in Frameworks */,
 				63D7216D1B73975900D70E65 /* libmsx264.a in Frameworks */,
 				63D7215D1B7394D200D70E65 /* libtunnel.a in Frameworks */,
 				63D7216C1B73973D00D70E65 /* libx264.a in Frameworks */,
@@ -1938,8 +1942,6 @@
 				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
 				226183B0147259670037138E /* libmssilk.a in Frameworks */,
 				22A10F3B11F8960300373793 /* libortp.a in Frameworks */,
-				226F2ED71344B0EF00F6EF27 /* libopencore-amrnb.a in Frameworks */,
-				226F2ED61344B0EF00F6EF27 /* libopencore-amrwb.a in Frameworks */,
 				226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */,
 				220FAD3810765B400068D98F /* libspeex.a in Frameworks */,
 				220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */,
@@ -4612,10 +4614,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					VIDEO_ENABLED,
-					HAVE_OPENH264,
-					HAVE_SILK,
-					HAVE_SSL,
 					DEBUG,
 					USE_APN_DEV,
 				);
@@ -4702,12 +4700,6 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					VIDEO_ENABLED,
-					HAVE_SILK,
-					HAVE_SSL,
-					HAVE_OPENH264,
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -4790,12 +4782,7 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					VIDEO_ENABLED,
-					HAVE_SILK,
-					HAVE_SSL,
-					USE_APN_DEV,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = USE_APN_DEV;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -4879,11 +4866,6 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = linphone_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					VIDEO_ENABLED,
-					HAVE_SILK,
-					HAVE_SSL,
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;

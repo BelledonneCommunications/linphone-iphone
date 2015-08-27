@@ -112,7 +112,7 @@ class PlatformListAction(argparse.Action):
 
 def gpl_disclaimer(platforms):
     cmakecache = 'WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0])
-    gpl_third_parties_enabled = ("ENABLE_GPL_THIRD_PARTIES:BOOL=ON" in open(cmakecache).read())
+    gpl_third_parties_enabled = "ENABLE_GPL_THIRD_PARTIES:BOOL=YES" in open(cmakecache).read() or "ENABLE_GPL_THIRD_PARTIES:BOOL=ON" in open(cmakecache).read()
 
     if gpl_third_parties_enabled:
         warning("\n***************************************************************************"
@@ -138,14 +138,14 @@ def gpl_disclaimer(platforms):
 def extract_libs_list():
     l = []
     # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
-    regex = re.compile("name = (lib(\S+)\.a); path = \"liblinphone-sdk/apple-darwin/")
+    regex = re.compile("name = (\")*(lib(\S+))\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
     f = open('linphone.xcodeproj/project.pbxproj', 'r')
     lines = f.readlines()
     f.close()
     for line in lines:
         m = regex.search(line)
         if m is not None:
-            l += [m.group(1)]
+            l += [m.group(2)]
     return list(set(l))
 
 
@@ -154,7 +154,6 @@ missing_dependencies = {}
 
 def check_is_installed(binary, prog=None, warn=True):
     if not find_executable(binary):
-
         if warn:
             missing_dependencies[binary] = prog
             # error("Could not find {}. Please install {}.".format(binary, prog))
@@ -383,6 +382,13 @@ clean: $(addprefix clean-,$(packages))
 
 veryclean: $(addprefix veryclean-,$(packages))
 
+generate-dummy-%:
+\t@echo "[{archs}] Generating dummy $* static library." ; \\
+\tprintf "void $*_init() {{}}" | tr '-' '_' > .dummy.c ; \\
+\tfor arch in {archs}; do clang -c .dummy.c -arch $$arch -o .dummy-$$arch.a; done ; \\
+\tlipo -create -output .dummy.a .dummy-*.a ; \\
+\trm .dummy-*.a .dummy.c
+
 lipo:
 \tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
 \tmkdir -p liblinphone-sdk/apple-darwin && \\
@@ -398,18 +404,18 @@ lipo:
 \t\tall_archs="{first_arch}"; \\
 \t\tmkdir -p `dirname $$destpath`; \\
 \t\t{multiarch} \\
-\t\techo "[$$all_archs] Mixing `basename $$archive` in $$destpath"; \\
+\t\techo "[{archs}] Mixing `basename $$archive` in $$destpath"; \\
 \t\tlipo -create $$all_paths -output $$destpath; \\
 \tdone && \\
 \tfor lib in {libs_list} ; do \\
 \t\tif [ $${{lib:0:5}} = "libms" ] ; then \\
-\t\t\tlibrary_path=liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/$$lib ; \\
+\t\t\tlibrary_path=liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/$${{lib}}.a ; \\
 \t\telse \\
-\t\t\tlibrary_path=liblinphone-sdk/apple-darwin/lib/$$lib ; \\
+\t\t\tlibrary_path=liblinphone-sdk/apple-darwin/lib/$${{lib}}.a ; \\
 \t\tfi ; \\
 \t\tif ! test -f $$library_path ; then \\
-\t\t\techo "[$$all_archs] Generating dummy $$lib static library." ; \\
-\t\t\tcp -f submodules/binaries/libdummy.a $$library_path ; \\
+\t\t\t$(MAKE) generate-dummy-$$lib ; \\
+\t\t\tmv .dummy.a $$library_path ; \\
 \t\tfi \\
 \tdone
 
@@ -492,7 +498,11 @@ def main(argv=None):
     argparser.add_argument(
         '-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
     argparser.add_argument(
-        '-G' '--generator', help="CMake build system generator (default: Unix Makefiles).", default='Unix Makefiles', choices=['Unix Makefiles', 'Ninja'])
+        '--disable-gpl-third-parties', help="Disable GPL third parties such as FFMpeg, x264.", action='store_false')
+    argparser.add_argument(
+        '--enable-non-free-codecs', help="Enable non-free codecs such as OpenH264, MPEG4, etc.. Final application must comply with their respective license (see README.md).", action='store_true')
+    argparser.add_argument(
+        '-G' '--generator', help="CMake build system generator (default: Unix Makefiles).", default='Unix Makefiles', choices=['Unix Makefiles', 'Ninja'], dest='generator')
     argparser.add_argument(
         '-L', '--list-cmake-variables', help="List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
     argparser.add_argument(
@@ -504,26 +514,27 @@ def main(argv=None):
 
     args, additional_args = argparser.parse_known_args()
 
-    if check_tools() != 0:
-        return 1
-
-    if args.debug_verbose:
-        additional_args += ["-DENABLE_DEBUG_LOGS=ON"]
-
-    additional_args += ["-G", args.G__generator]
-    if args.G__generator == 'Ninja':
+    additional_args += ["-G", args.generator]
+    if args.generator == 'Ninja':
         if not check_is_installed("ninja", "it"):
             return 1
         generator = 'ninja -C'
     else:
         generator = '$(MAKE) -C'
 
+    if check_tools() != 0:
+        return 1
+
+    additional_args += ["-DENABLE_DEBUG_LOGS={}".format("YES" if args.debug_verbose else "NO")]
+    additional_args += ["-DENABLE_NON_FREE_CODECS={}".format("YES" if args.enable_non_free_codecs else "NO")]
+    additional_args += ["-DENABLE_GPL_THIRD_PARTIES={}".format("NO" if args.disable_gpl_third_parties else "YES")]
+
     if args.tunnel or os.path.isdir("submodules/tunnel"):
         if not os.path.isdir("submodules/tunnel"):
             info("Tunnel wanted but not found yet, trying to clone it...")
-            if check_is_installed("git", "it", True):
-                Popen("git clone gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" ")).wait()
-            else:
+            p = Popen("git clone gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" "))
+            p.wait()
+            if p.retcode != 0:
                 error("Could not clone tunnel. Please see http://www.belledonne-communications.com/voiptunnel.html")
                 return 1
         warning("Tunnel enabled, disabling GPL third parties.")

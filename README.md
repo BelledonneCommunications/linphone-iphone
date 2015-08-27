@@ -36,11 +36,12 @@ This SDK can be generated in 2 flavors:
 * NO GPL third parties means that Linphone will only use non GPL code except for `liblinphone`, `mediastreamer2`, `oRTP` and `belle-sip`. If you choose this flavor, your final application is **still subject to GPL except if you have a [commercial license for the mentioned libraries](http://www.belledonne-communications.com/products.html)**.
  To generate the liblinphone multi arch SDK without GPL third parties, invoke:
 
-        ./prepare.py -DENABLE_GPL_THIRD_PARTIES=OFF [other options] && make
+        ./prepare.py --disable-gpl-third-parties=no [other options] && make
 
 ## Customizing features
 
-You can choose to enable/disable features such as custom audio/video codecs, media encryption, etc. To get a list of all features, the simplest way is to invoke `prepare.py` with `--list-features`:
+You can enable all non-free codecs using `--enable-non-free-codecs`.
+You can also choose to enable/disable features one by one (custom audio/video codecs, media encryption, etc.). To get a list of all features, the simplest way is to invoke `prepare.py` with `--list-features`:
 
         ./prepare.py --list-features
 
@@ -72,8 +73,8 @@ After the SDK is built, just open the Linphone Xcode project with Xcode, and pre
 ## Note regarding third party components subject to license
 
  The liblinphone SDK is compiled with third parties code that are subject to patent license, specially: AMR, SILK G729 and H264 codecs.
- Linphone controls the embedding of these codecs thanks to the preprocessor macros HAVE_SILK, HAVE_AMR, HAVE_G729 HAVE_OPENH264 positioned in Xcode project.
- Before embedding these 4 codecs in the final application, **make sure to have the right to do so**.
+ Linphone controls the embedding of these codecs by generating dummy libraries when there are not available. You can enable them using `prepare.py`
+ script (see `--enable-non-free-codecs` option). Before embedding these 4 codecs in the final application, **make sure to have the right to do so**.
 
 # Testing the application
 

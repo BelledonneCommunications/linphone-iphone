@@ -526,48 +526,47 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (IASKSpecifier *)filterSpecifier:(IASKSpecifier *)specifier {
-#ifndef HAVE_SSL
-	if ([[specifier key] isEqualToString:@"transport_preference"]) {
-		NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
-		NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
-		[titles removeObject:@"TLS"];
-		[dict setObject:titles forKey:@"Titles"];
-		NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
-		[values removeObject:@"tls"];
-		[dict setObject:values forKey:@"Values"];
-		return [[IASKSpecifier alloc] initWithSpecifier:dict];
+	if (linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
+		if ([[specifier key] isEqualToString:@"transport_preference"]) {
+			NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
+			NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+			[titles removeObject:@"TLS"];
+			[dict setObject:titles forKey:@"Titles"];
+			NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+			[values removeObject:@"tls"];
+			[dict setObject:values forKey:@"Values"];
+			return [[IASKSpecifier alloc] initWithSpecifier:dict];
+		}
+	} else {
+		if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
+			NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
+			if (!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionZRTP)) {
+				NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+				[titles removeObject:@"ZRTP"];
+				[dict setObject:titles forKey:@"Titles"];
+				NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+				[values removeObject:@"ZRTP"];
+				[dict setObject:values forKey:@"Values"];
+			}
+			if (!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionSRTP)) {
+				NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+				[titles removeObject:@"SRTP"];
+				[dict setObject:titles forKey:@"Titles"];
+				NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+				[values removeObject:@"SRTP"];
+				[dict setObject:values forKey:@"Values"];
+			}
+			if (!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionDTLS)) {
+				NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
+				[titles removeObject:@"DTLS"];
+				[dict setObject:titles forKey:@"Titles"];
+				NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
+				[values removeObject:@"DTLS"];
+				[dict setObject:values forKey:@"Values"];
+			}
+			return [[IASKSpecifier alloc] initWithSpecifier:dict];
+		}
 	}
-#else
-	if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
-		NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
-		if (!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionZRTP)) {
-			NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
-			[titles removeObject:@"ZRTP"];
-			[dict setObject:titles forKey:@"Titles"];
-			NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
-			[values removeObject:@"ZRTP"];
-			[dict setObject:values forKey:@"Values"];
-		}
-		if (!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionSRTP)) {
-			NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
-			[titles removeObject:@"SRTP"];
-			[dict setObject:titles forKey:@"Titles"];
-			NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
-			[values removeObject:@"SRTP"];
-			[dict setObject:values forKey:@"Values"];
-		}
-		if (!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionDTLS)) {
-			NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
-			[titles removeObject:@"DTLS"];
-			[dict setObject:titles forKey:@"Titles"];
-			NSMutableArray *values = [NSMutableArray arrayWithArray:[dict objectForKey:@"Values"]];
-			[values removeObject:@"DTLS"];
-			[dict setObject:values forKey:@"Values"];
-		}
-		return [[IASKSpecifier alloc] initWithSpecifier:dict];
-	}
-
-#endif // HAVE_SSL
 
 	// Add "build from source" if MPEG4 or H264 disabled
 	if ([[specifier key] isEqualToString:@"h264_preference"] && ![LinphoneManager isCodecSupported:"h264"]) {
@@ -584,9 +583,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneManager *lm = [LinphoneManager instance];
 	NSMutableSet *hiddenKeys = [NSMutableSet set];
 
-#ifndef HAVE_SSL
-	[hiddenKeys addObject:@"media_encryption_preference"];
-#endif
+	if (!linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
+		[hiddenKeys addObject:@"media_encryption_preference"];
+	}
 
 #ifndef DEBUG
 	[hiddenKeys addObject:@"release_button"];
@@ -630,9 +629,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[hiddenKeys addObject:@"enable_first_login_view_preference"];
 
-#ifndef VIDEO_ENABLED
-	[hiddenKeys addObject:@"enable_video_preference"];
-#endif // VIDEO_ENABLED
+	if (!linphone_core_video_supported([LinphoneManager getLc])) {
+		[hiddenKeys addObject:@"enable_video_preference"];
+	}
 
 	if (!linphone_core_video_enabled([LinphoneManager getLc])) {
 		[hiddenKeys addObject:@"video_menu"];

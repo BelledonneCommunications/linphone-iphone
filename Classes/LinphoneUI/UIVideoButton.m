@@ -99,15 +99,14 @@
 
 - (bool)onUpdate {
 	bool video_enabled = false;
-
-#ifdef VIDEO_ENABLED
-	LinphoneCall *currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
-	if (linphone_core_video_enabled([LinphoneManager getLc]) && currentCall &&
-		!linphone_call_media_in_progress(currentCall) &&
-		linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
-		video_enabled = TRUE;
+	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCall *currentCall = linphone_core_get_current_call(lc);
+	if (linphone_core_video_supported(lc)) {
+		if (linphone_core_video_enabled(lc) && currentCall && !linphone_call_media_in_progress(currentCall) &&
+			linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
+			video_enabled = TRUE;
+		}
 	}
-#endif // VIDEO_ENABLED
 
 	[self setEnabled:video_enabled];
 	if (last_update_state != video_enabled)
