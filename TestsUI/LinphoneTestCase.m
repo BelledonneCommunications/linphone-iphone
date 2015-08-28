@@ -23,11 +23,7 @@
 	if (!([language isEqualToString:@"en"] || [language containsString:@"en-"])) {
 		LOGF(@"Language must be 'en' (English) instead of %@", language);
 	}
-#if DEBUG
 	linphone_core_set_log_level(ORTP_MESSAGE);
-#else
-	linphone_core_set_log_level(ORTP_WARNING);
-#endif
 }
 
 - (void)beforeAll {

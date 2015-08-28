@@ -41,7 +41,7 @@ NSString *const kLogsUpdateNotification = @"kLogsUpdateNotification";
 	lastLogs = [[NSMutableArray alloc] initWithCapacity:kLastLogsCapacity];
 	logsBuffer = [NSMutableArray arrayWithCapacity:kLogsBufferCapacity];
 
-	linphone_core_set_log_level(ORTP_WARNING);
+	linphone_core_set_log_level(ORTP_MESSAGE);
 	linphone_core_set_log_handler((OrtpLogFunc)linphone_iphone_log_handler);
 }
 
