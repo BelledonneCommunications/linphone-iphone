@@ -31,13 +31,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define CONFIG_FILE ".linphone-history.db"
 
-const char *linphone_gtk_message_storage_get_db_file(const char *filename){
+char *linphone_gtk_message_storage_get_db_file(const char *filename){
 	const int path_max=1024;
-	static char *db_file=NULL;
+	char *db_file=NULL;
 
-	if (db_file) return db_file;
-
-	db_file=(char *)malloc(path_max*sizeof(char));
+	db_file=(char *)g_malloc(path_max*sizeof(char));
 	if (filename==NULL) filename=CONFIG_FILE;
 	/*try accessing a local file first if exists*/
 	if (access(CONFIG_FILE,F_OK)==0){
