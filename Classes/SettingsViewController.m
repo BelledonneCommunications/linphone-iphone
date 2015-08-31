@@ -507,24 +507,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark -
 
-+ (IASKSpecifier *)disableCodecSpecifier:(IASKSpecifier *)specifier {
-	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
-
-	NSMutableString *type = [NSMutableString stringWithString:[dict objectForKey:kIASKType]];
-	[type setString:kIASKPSTitleValueSpecifier];
-	[dict setObject:type forKey:kIASKType];
-
-	NSMutableArray *values =
-		[NSMutableArray arrayWithObjects:[NSNumber numberWithInt:0], [NSNumber numberWithInt:1], nil];
-	[dict setObject:values forKey:kIASKValues];
-
-	NSString *title = NSLocalizedString(@"Disabled, build from sources to enable", nil);
-	NSMutableArray *titles = [NSMutableArray arrayWithObjects:title, title, nil];
-	[dict setObject:titles forKey:kIASKTitles];
-
-	return [[IASKSpecifier alloc] initWithSpecifier:dict];
-}
-
 + (IASKSpecifier *)filterSpecifier:(IASKSpecifier *)specifier {
 	if (linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
 		if ([[specifier key] isEqualToString:@"transport_preference"]) {
@@ -568,14 +550,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 
-	// Add "build from source" if MPEG4 or H264 disabled
-	if ([[specifier key] isEqualToString:@"h264_preference"] && ![LinphoneManager isCodecSupported:"h264"]) {
-		return [SettingsViewController disableCodecSpecifier:specifier];
-	}
-	if ([[specifier key] isEqualToString:@"mp4v-es_preference"] && ![LinphoneManager isCodecSupported:"mp4v-es"]) {
-		return [SettingsViewController disableCodecSpecifier:specifier];
-	}
-
 	return specifier;
 }
 
@@ -613,6 +587,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (!linphone_core_video_supported([LinphoneManager getLc]))
 		[hiddenKeys addObject:@"video_menu"];
+
+	if (![LinphoneManager isCodecSupported:"h264"]) {
+		[hiddenKeys addObject:@"h264_preference"];
+	}
+	if (![LinphoneManager isCodecSupported:"mp4v-es"]) {
+		[hiddenKeys addObject:@"mp4v-es_preference"];
+	}
 
 	if (![LinphoneManager isNotIphone3G])
 		[hiddenKeys addObject:@"silk_24k_preference"];
