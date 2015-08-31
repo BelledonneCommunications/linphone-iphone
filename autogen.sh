@@ -16,12 +16,18 @@ else
 	AUTOMAKE=automake-${AM_VERSION}
 fi
 
-if test -f /opt/local/bin/glibtoolize ; then
-		# darwin
-		LIBTOOLIZE=/opt/local/bin/glibtoolize
-else
-		LIBTOOLIZE=libtoolize
-fi
+LIBTOOLIZE="libtoolize"
+for lt in glibtoolize libtoolize15 libtoolize14 libtoolize13 ; do
+        if test -x /usr/bin/$lt ; then
+                LIBTOOLIZE=$lt ; break
+        fi
+        if test -x /usr/local/bin/$lt ; then
+                LIBTOOLIZE=$lt ; break
+        fi
+        if test -x /opt/local/bin/$lt ; then
+                LIBTOOLIZE=$lt ; break
+        fi
+done
 
 if test -d /opt/local/share/aclocal ; then
 		ACLOCAL_ARGS="-I /opt/local/share/aclocal"
