@@ -498,7 +498,7 @@ def main(argv=None):
     argparser.add_argument(
         '-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
     argparser.add_argument(
-        '--disable-gpl-third-parties', help="Disable GPL third parties such as FFMpeg, x264.", action='store_false')
+        '--disable-gpl-third-parties', help="Disable GPL third parties such as FFMpeg, x264.", action='store_true')
     argparser.add_argument(
         '--enable-non-free-codecs', help="Enable non-free codecs such as OpenH264, MPEG4, etc.. Final application must comply with their respective license (see README.md).", action='store_true')
     argparser.add_argument(
@@ -525,9 +525,12 @@ def main(argv=None):
     if check_tools() != 0:
         return 1
 
-    additional_args += ["-DENABLE_DEBUG_LOGS={}".format("YES" if args.debug_verbose else "NO")]
-    additional_args += ["-DENABLE_NON_FREE_CODECS={}".format("YES" if args.enable_non_free_codecs else "NO")]
-    additional_args += ["-DENABLE_GPL_THIRD_PARTIES={}".format("NO" if args.disable_gpl_third_parties else "YES")]
+    if args.debug_verbose is True:
+        additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
+    if args.enable_non_free_codecs is True:
+        additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
+    if args.disable_gpl_third_parties is True:
+        additional_args += ["-DENABLE_GPL_THIRD_PARTIES=NO"]
 
     if args.tunnel or os.path.isdir("submodules/tunnel"):
         if not os.path.isdir("submodules/tunnel"):
