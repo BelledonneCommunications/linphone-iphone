@@ -97,6 +97,10 @@ if(ENABLE_NOTIFY)
 	target_link_libraries(linphone-gtk ${NOTIFY_LIBRARIES})
 endif()
 
+if (HAVE_LIBUDEV_H)
+	target_link_libraries(linphone-gtk udev)
+endif()
+
 install(TARGETS linphone-gtk
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
