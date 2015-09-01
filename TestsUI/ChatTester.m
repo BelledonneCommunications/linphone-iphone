@@ -165,10 +165,6 @@
 	[self startChatWith:[self me]];
 	[self uploadImageWithQuality:@"Minimum"];
 	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
-	if ([[[LinphoneManager instance] fileTransferDelegates] count] != 0) {
-		[[UIApplication sharedApplication] writeScreenshotForLine:__LINE__ inFile:@__FILE__ description:nil error:NULL];
-		;
-	}
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
@@ -224,6 +220,55 @@
 
 	[tester waitForViewWithAccessibilityLabel:@"Invalid address" traits:UIAccessibilityTraitStaticText];
 	[tester tapViewWithAccessibilityLabel:@"Cancel"];
+}
+
+- (void)testPerformanceHugeChatList {
+	[tester tapViewWithAccessibilityLabel:@"Dialer"];
+
+	// create lots of chat rooms...
+	LinphoneCore *lc = [LinphoneManager getLc];
+	for (int i = 0; i < 100; i++) {
+		LinphoneChatRoom *room =
+			linphone_core_get_chat_room_from_uri(lc, [[NSString stringWithFormat:@"%@ - %d", [self me], i] UTF8String]);
+		linphone_chat_room_send_message(room, "Hello");
+	}
+
+	[tester waitForTimeInterval:5]; // wait for all messages to be delivered
+
+	NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
+	[tester tapViewWithAccessibilityLabel:@"Chat"];
+	NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
+
+	// delete all rooms from test because it takes time when done by tester
+	[tester tapViewWithAccessibilityLabel:@"Dialer"];
+	for (MSList *it = linphone_core_get_chat_rooms(lc); it != NULL; it = it->next) {
+		linphone_chat_room_delete_history(it->data);
+	}
+
+	// conversation loading MUST be less than 1 sec
+	XCTAssertLessThan(after - before, 1.);
+}
+
+- (void)testPerformanceHugeConversation {
+	int count = 0;
+	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [[self me] UTF8String]);
+	// generate lots of messages...
+	for (; count < 100; count++) {
+		linphone_chat_room_send_message(room, [[NSString stringWithFormat:@"Message %d", count + 1] UTF8String]);
+	}
+	[tester waitForTimeInterval:5]; // wait for all messages to be delivered
+	// TODO: FIX below code: unread count is not always 100 messages while it should...
+	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message, Unread message number"
+										value:[NSString stringWithFormat:@"%@ - Message %d (%d)", self.me, count, count]
+									   traits:UIAccessibilityTraitStaticText];
+
+	NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
+	[self startChatWith:[self me]];
+	NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
+
+	// conversation loading MUST be less than 1 sec - opening an empty conversation is around 2.15 sec
+	XCTAssertLessThan(after - before, 2.15 + 1.);
 }
 
 - (void)testRemoveAllChats {

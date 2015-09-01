@@ -150,6 +150,7 @@
 		631C4FB719D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m in Sources */ = {isa = PBXBuildFile; fileRef = 631C4FB619D2C3A6004BFE77 /* UIDigitButtonLongVoiceMail.m */; };
 		632DA24D1B43EE9400EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		632DA24E1B43EEEF00EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
+		635ED88B1B95A3B500404347 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
 		636316D11A1DEBCB0009B839 /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutViewController.xib */; };
 		636316D41A1DEC650009B839 /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsViewController.xib */; };
 		636316D91A1DECC90009B839 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D71A1DECC90009B839 /* PhoneMainView.xib */; };
@@ -2013,6 +2014,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				635ED88B1B95A3B500404347 /* libxml2.dylib in Frameworks */,
 				63C5107C1B8DF3DF008A415A /* libbellesip.a in Frameworks */,
 				63C5107D1B8DF3DF008A415A /* liblinphonetester.a in Frameworks */,
 				63C5107E1B8DF3DF008A415A /* libmediastreamer_base.a in Frameworks */,

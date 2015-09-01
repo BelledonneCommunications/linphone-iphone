@@ -425,7 +425,9 @@
 		UIViewController *newStateBarViewController = [self getCachedController:description.stateBar];
 		UIViewController *newTabBarViewController = [self getCachedController:description.tabBar];
 
-		[UICompositeViewController removeSubView:oldContentViewController];
+		if (oldContentViewController != newContentViewController) {
+			[UICompositeViewController removeSubView:oldContentViewController];
+		}
 		if (oldTabBarViewController != nil && oldTabBarViewController != newTabBarViewController) {
 			[UICompositeViewController removeSubView:oldTabBarViewController];
 		}
