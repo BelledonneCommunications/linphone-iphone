@@ -350,7 +350,7 @@
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	[UINavigationControllerEx removeBackground:viewController.view];
 
-	[viewController viewWillAppear:animated]; // Force view
+	[viewController view]; // Force view
 	UILabel *labelTitleView = [[UILabel alloc] init];
 	labelTitleView.backgroundColor = [UIColor clearColor];
 	labelTitleView.textColor = [UIColor colorWithRed:0x41 / 255.0f green:0x48 / 255.0f blue:0x4f / 255.0f alpha:1.0];
