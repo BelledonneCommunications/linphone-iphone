@@ -43,11 +43,15 @@ static const char *EC_STATE_STORE = ".linphone.ecstate";
 static void linphone_call_stats_uninit(LinphoneCallStats *stats);
 static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress *remote_addr);
 
-#ifdef VIDEO_ENABLED
+
 MSWebCam *get_nowebcam_device(){
+#ifdef VIDEO_ENABLED
 	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
-}
+#else
+	return NULL;
 #endif
+}
+
 
 static bool_t generate_b64_crypto_key(int key_length, char* key_out, size_t key_out_size) {
 	int b64_size;
@@ -818,9 +822,6 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], LINPHONE_CALL_STATS_AUDIO);
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], LINPHONE_CALL_STATS_VIDEO);
-#ifdef VIDEO_ENABLED
-	call->cam = call->core->video_conf.device;
-#endif
 }
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type) {
@@ -948,6 +949,7 @@ void linphone_call_fill_media_multicast_addr(LinphoneCall *call) {
 	} else
 		call->media_ports[1].multicast_ip[0]='\0';
 }
+
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg){
 	LinphoneCall *call = belle_sip_object_new(LinphoneCall);
 
@@ -955,7 +957,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	call->core=lc;
 	linphone_call_outgoing_select_ip_version(call,to,cfg);
 	linphone_call_get_local_ip(call, to);
-	linphone_call_init_common(call,from,to);
+	linphone_call_init_common(call, from, to);
 	call->params = linphone_call_params_copy(params);
 
 	linphone_call_fill_media_multicast_addr(call);
@@ -1260,7 +1262,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		call->prevstate=call->state;
 		if (call->state==LinphoneCallEnd || call->state==LinphoneCallError){
 			if (cstate!=LinphoneCallReleased){
-				ms_warning("Spurious call state change from %s to %s, ignored."	,linphone_call_state_to_string(call->state)
+				ms_fatal("Spurious call state change from %s to %s, ignored."	,linphone_call_state_to_string(call->state)
 																				,linphone_call_state_to_string(cstate));
 				return;
 			}
@@ -2547,9 +2549,8 @@ static RtpSession * create_audio_rtp_io_session(LinphoneCall *call) {
 	return rtp_session;
 }
 
-static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, bool_t send_ringbacktone, bool_t use_arc){
+static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallState next_state, bool_t use_arc){
 	LinphoneCore *lc=call->core;
-	LpConfig* conf;
 	int used_pt=-1;
 	char rtcp_tool[128]={0};
 	const SalStreamDescription *stream;
@@ -2586,26 +2587,24 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 			if (captcard==NULL) {
 				ms_warning("No card defined for capture !");
 			}
-			/*Replace soundcard filters by inactive file players or recorders
-			 when placed in recvonly or sendonly mode*/
+			/*Don't use file or soundcard capture when placed in recv-only mode*/
 			if (stream->rtp_port==0
 					|| stream->dir==SalStreamRecvOnly
 					|| (stream->multicast_role == SalMulticastReceiver && is_multicast)){
 				captcard=NULL;
 				playfile=NULL;
-			}else if (stream->dir==SalStreamSendOnly){
+			}
+			if (next_state == LinphoneCallPaused){
+				/*in paused state, we never use soundcard*/
 				playcard=NULL;
-				/*jehan: why capture card should be null in this case ? Not very good to only rely on stream dir to detect paused state.
-				 * It can also be a simple call in one way audio*/
 				captcard=NULL;
 				recfile=NULL;
 				/*And we will eventually play "playfile" if set by the user*/
 			}
-			if (send_ringbacktone){
-				conf = linphone_core_get_config(lc);
+			if (call->playing_ringbacktone){
 				captcard=NULL;
 				playfile=NULL;/* it is setup later*/
-				if( conf && lp_config_get_int(conf,"sound","send_ringback_without_playback", 0) == 1){
+				if (lp_config_get_int(lc->config,"sound","send_ringback_without_playback", 0) == 1){
 					playcard = NULL;
 					recfile = NULL;
 				}
@@ -2629,7 +2628,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 			if (captcard &&  stream->max_rate>0) ms_snd_card_set_preferred_sample_rate(captcard, stream->max_rate);
 			audio_stream_enable_adaptive_bitrate_control(call->audiostream,use_arc);
 			media_stream_set_adaptive_bitrate_algorithm(&call->audiostream->ms,
-													  ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
+								ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
 			audio_stream_enable_adaptive_jittcomp(call->audiostream, linphone_core_audio_adaptive_jittcomp_enabled(lc));
 			rtp_session_set_jitter_compensation(call->audiostream->ms.sessions.rtp_session,linphone_core_get_audio_jittcomp(lc));
 			if (!call->params->in_conference && call->params->record_file){
@@ -2686,22 +2685,22 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, bool_t muted, b
 					used_pt,
 					&io
 				);
-				post_configure_audio_streams(call, muted && !send_ringbacktone);
+				post_configure_audio_streams(call, (call->all_muted || call->audio_muted) && !call->playing_ringbacktone);
 			}
 
 			ms_media_stream_sessions_set_encryption_mandatory(&call->audiostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
 
-			if (stream->dir==SalStreamSendOnly && playfile!=NULL){
+			if (next_state == LinphoneCallPaused && captcard == NULL && playfile != NULL){
 				int pause_time=500;
 				ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
 			}
-			if (send_ringbacktone){
+			if (call->playing_ringbacktone){
 				setup_ring_player(lc,call);
 			}
 
 			if (call->params->in_conference){
 				/*transform the graph to connect it to the conference filter */
-				mute=stream->dir==SalStreamRecvOnly;
+				mute = stream->dir==SalStreamRecvOnly;
 				linphone_call_add_to_conf(call, mute);
 			}
 			call->current_params->in_conference=call->params->in_conference;
@@ -2737,7 +2736,7 @@ static RtpSession * create_video_rtp_io_session(LinphoneCall *call) {
 }
 #endif
 
-static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inputs_muted){
+static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallState next_state){
 #ifdef VIDEO_ENABLED
 	LinphoneCore *lc=call->core;
 	int used_pt=-1;
@@ -2810,11 +2809,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, bool_t all_inpu
 				/*either inactive or incompatible with local capabilities*/
 				is_inactive=TRUE;
 			}
-			if (all_inputs_muted){
-				cam=get_nowebcam_device();
-			} else {
-				cam = linphone_call_get_video_device(call);
-			}
+			cam = linphone_call_get_video_device(call);
 			if (!is_inactive){
 				if (sal_stream_description_has_srtp(vstream) == TRUE) {
 					int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, vstream->crypto_local_tag);
@@ -2934,13 +2929,29 @@ static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
 	params->keyAgreementsCount = linphone_core_get_zrtp_key_agreement_suites(lc, params->keyAgreements);
 }
 
-void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone){
+void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState next_state){
 	LinphoneCore *lc=call->core;
-	bool_t use_arc=linphone_core_adaptive_rate_control_enabled(lc);
+	bool_t use_arc = linphone_core_adaptive_rate_control_enabled(lc);
 #ifdef VIDEO_ENABLED
 	const SalStreamDescription *vstream=sal_media_description_find_best_stream(call->resultdesc,SalVideo);
 #endif
 
+	switch (next_state){
+		case LinphoneCallIncomingEarlyMedia:
+			if (linphone_core_get_remote_ringback_tone(lc)){
+				call->playing_ringbacktone = TRUE;
+			}
+		case LinphoneCallOutgoingEarlyMedia:
+			if (!call->params->real_early_media){
+				call->all_muted = TRUE;
+			}
+		break;
+		default:
+			call->playing_ringbacktone = FALSE;
+			call->all_muted = FALSE;
+		break;
+	}
+	
 	call->current_params->audio_codec = NULL;
 	call->current_params->video_codec = NULL;
 
@@ -2958,18 +2969,16 @@ void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_mut
 		   call, linphone_core_get_upload_bandwidth(lc),linphone_core_get_download_bandwidth(lc));
 
 	if (call->audiostream!=NULL) {
-		linphone_call_start_audio_stream(call,all_inputs_muted||call->audio_muted,send_ringbacktone,use_arc);
+		linphone_call_start_audio_stream(call, next_state, use_arc);
 	} else {
 		ms_warning("DTLS no audio stream!");
 	}
 	call->current_params->has_video=FALSE;
 	if (call->videostream!=NULL) {
 		if (call->audiostream) audio_stream_link_video(call->audiostream,call->videostream);
-		linphone_call_start_video_stream(call,all_inputs_muted);
+		linphone_call_start_video_stream(call, next_state);
 	}
 
-	call->all_muted=all_inputs_muted;
-	call->playing_ringbacktone=send_ringbacktone;
 	call->up_bw=linphone_core_get_upload_bandwidth(lc);
 
 	/*might be moved in audio/video stream_start*/
@@ -4141,14 +4150,14 @@ void linphone_call_set_native_video_window_id(LinphoneCall *call, void *id) {
 	}
 #endif
 }
-#ifdef VIDEO_ENABLED
+
 MSWebCam *linphone_call_get_video_device(const LinphoneCall *call) {
-	if (call->camera_enabled==FALSE)
+	if (call->all_muted || call->camera_enabled == FALSE)
 		return get_nowebcam_device();
 	else
-		return call->cam;
+		return call->core->video_conf.device;
 }
-#endif
+
 
 void linphone_call_set_audio_route(LinphoneCall *call, LinphoneAudioRoute route) {
 	if (call != NULL && call->audiostream != NULL){

@@ -100,7 +100,6 @@ static ortp_mutex_t liblinphone_log_collection_mutex;
 static bool_t liblinphone_serialize_logs = FALSE;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
-static void linphone_core_free_hooks(LinphoneCore *lc);
 
 #include "enum.h"
 #include "contact_providers_priv.h"
@@ -1590,7 +1589,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-
+	linphone_task_list_init(&lc->hooks);
 
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
 	_linphone_core_add_listener(lc, local_vtable, TRUE);
@@ -3177,11 +3176,11 @@ int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall*
 			sal_op_set_sent_custom_header ( call->op,params->custom_headers );
 		}
 
-		sal_call_notify_ringing(call->op,TRUE);
+		sal_call_notify_ringing(call->op, TRUE);
 
 		linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
 		md=sal_call_get_final_media_description(call->op);
-		if (md) linphone_core_update_streams(lc,call,md);
+		if (md) linphone_core_update_streams(lc, call, md, call->state);
 		return 0;
 	}else{
 		ms_error("Bad state %s for linphone_core_accept_early_media_with_params()", linphone_call_state_to_string(call->state));
@@ -3273,6 +3272,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			break;
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallPaused:
+		case LinphoneCallPausedByRemote:
 			nextstate=LinphoneCallUpdating;
 			break;
 		default:
@@ -3329,7 +3329,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_set_fps(call->videostream, linphone_core_get_preferred_framerate(lc));
 			if (call->camera_enabled && call->videostream->cam!=lc->video_conf.device){
-				video_stream_change_camera(call->videostream,call->cam = lc->video_conf.device);
+				video_stream_change_camera(call->videostream, lc->video_conf.device);
 			}else video_stream_update_video_params(call->videostream);
 		}
 #endif
@@ -3378,7 +3378,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
 	if (md && !sal_media_description_empty(md)){
-		linphone_core_update_streams (lc,call,md);
+		linphone_core_update_streams(lc, call, md, next_state);
 		linphone_call_fix_call_parameters(call);
 	}
 	linphone_call_set_state(call,next_state,state_info);
@@ -3613,7 +3613,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	new_md=sal_call_get_final_media_description(call->op);
 	if (new_md){
-		linphone_core_update_streams(lc, call, new_md);
+		linphone_core_update_streams(lc, call, new_md, LinphoneCallStreamsRunning);
 		linphone_call_fix_call_parameters(call);
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	}else call->expect_media_in_ack=TRUE;
@@ -6096,7 +6096,7 @@ LpConfig * linphone_core_create_lp_config(LinphoneCore *lc, const char *filename
 
 static void linphone_core_uninit(LinphoneCore *lc)
 {
-	linphone_core_free_hooks(lc);
+	linphone_task_list_free(&lc->hooks);
 	lc->video_conf.show_local = FALSE;
 
 	while(lc->calls)
@@ -6558,47 +6558,18 @@ void linphone_core_set_max_calls(LinphoneCore *lc, int max) {
 	lc->max_calls=max;
 }
 
-typedef struct Hook{
-	LinphoneCoreIterateHook fun;
-	void *data;
-}Hook;
-
-static Hook *hook_new(LinphoneCoreIterateHook hook, void *hook_data){
-	Hook *h=ms_new0(Hook,1);
-	h->fun=hook;
-	h->data=hook_data;
-	return h;
-}
-
-static void hook_invoke(Hook *h){
-	h->fun(h->data);
-}
 
 void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data){
-	lc->hooks=ms_list_append(lc->hooks,hook_new(hook,hook_data));
+	linphone_task_list_add(&lc->hooks, hook, hook_data);
 }
 
 static void linphone_core_run_hooks(LinphoneCore *lc){
-	ms_list_for_each(lc->hooks,(void (*)(void*))hook_invoke);
-}
-
-static void linphone_core_free_hooks(LinphoneCore *lc){
-	ms_list_for_each(lc->hooks,(void (*)(void*))ms_free);
-	ms_list_free(lc->hooks);
-	lc->hooks=NULL;
+	linphone_task_list_run(&lc->hooks);
 }
 
 void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data){
-	MSList *elem;
-	for(elem=lc->hooks;elem!=NULL;elem=elem->next){
-		Hook *h=(Hook*)elem->data;
-		if (h->fun==hook && h->data==hook_data){
-			lc->hooks = ms_list_remove_link(lc->hooks,elem);
-			ms_free(h);
-			return;
-		}
-	}
-	ms_error("linphone_core_remove_iterate_hook(): No such hook found.");
+	linphone_task_list_remove(&lc->hooks, hook, hook_data);
+	
 }
 
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){

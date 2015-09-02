@@ -93,7 +93,6 @@ struct SalOp{
 	belle_sip_header_referred_by_t *referred_by;
 	SalMediaDescription *result;
 	belle_sdp_session_description_t *sdp_answer;
-	bool_t supports_session_timers;
 	SalOpState state;
 	SalOpDir dir;
 	belle_sip_refresher_t* refresher;
@@ -101,14 +100,15 @@ struct SalOp{
 	SalOpType type;
 	SalPrivacyMask privacy;
 	belle_sip_header_t *event; /*used by SalOpSubscribe kinds*/
+	SalOpSDPHandling sdp_handling;
+	int auth_requests; /*number of auth requested for this op*/
+	bool_t cnx_ip_to_0000_if_sendonly_enabled;
 	bool_t auto_answer_asked;
 	bool_t sdp_offering;
 	bool_t call_released;
 	bool_t manual_refresher;
 	bool_t has_auth_pending;
-	SalOpSDPHandling sdp_handling;
-	int auth_requests; /*number of auth requested for this op*/
-	bool_t cnx_ip_to_0000_if_sendonly_enabled; /*for */
+	bool_t supports_session_timers;
 };
 
 

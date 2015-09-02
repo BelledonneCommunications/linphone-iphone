@@ -288,9 +288,9 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
 	BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallConnected,initial_callee.number_of_LinphoneCallConnected+1));
 
-	result = wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1)
+	result = wait_for_until(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+1, 2000)
 			&&
-			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1);
+			wait_for_until(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+1, 2000);
 
 	if (linphone_core_get_media_encryption(caller_mgr->lc) != LinphoneMediaEncryptionNone
 		|| linphone_core_get_media_encryption(callee_mgr->lc) != LinphoneMediaEncryptionNone) {
@@ -4112,7 +4112,7 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 		linphone_call_params_destroy(params);
 
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallUpdating,1));
-		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallPaused,1));
+		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallPausedByRemote,1));
 
 		check_media_direction(marie,linphone_core_get_current_call(marie->lc),lcs,LinphoneMediaDirectionInactive,LinphoneMediaDirectionInactive);
@@ -4122,19 +4122,13 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 			linphone_core_enable_sdp_200_ack(marie->lc,TRUE);
 		}
 
-		/*
-		currently update call cannot be used in paused state, might not be good.
 		params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendRecv);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionSendRecv);
 		linphone_core_update_call(marie->lc,linphone_core_get_current_call(marie->lc),params);
 		linphone_call_params_destroy(params);
-		*/
-
-		linphone_core_resume_call(marie->lc,linphone_core_get_current_call(marie->lc));
-
-		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallResuming,1));
-		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
+		
+		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,3));
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 
 		check_media_direction(marie,linphone_core_get_current_call(marie->lc),lcs,LinphoneMediaDirectionSendRecv,LinphoneMediaDirectionSendRecv);

@@ -295,7 +295,6 @@ struct _LinphoneCall{
 	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
 	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
-	MSWebCam *cam; /*webcam use for this call*/
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
 	bool_t audio_muted;
@@ -450,7 +449,7 @@ void linphone_call_fix_call_parameters(LinphoneCall *call);
 void linphone_call_init_audio_stream(LinphoneCall *call);
 void linphone_call_init_video_stream(LinphoneCall *call);
 void linphone_call_init_media_streams(LinphoneCall *call);
-void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone);
+void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState target_state);
 void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
@@ -757,6 +756,16 @@ const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID i
 int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params, LinphoneCallState next_state, const char *state_info);
 typedef struct _LinphoneConference LinphoneConference;
 
+typedef struct _LinphoneTaskList{
+	MSList *hooks;
+}LinphoneTaskList;
+
+void linphone_task_list_init(LinphoneTaskList *t);
+void linphone_task_list_add(LinphoneTaskList *t, LinphoneCoreIterateHook hook, void *hook_data);
+void linphone_task_list_remove(LinphoneTaskList *t, LinphoneCoreIterateHook hook, void *hook_data);
+void linphone_task_list_run(LinphoneTaskList *t);
+void linphone_task_list_free(LinphoneTaskList *t);
+
 struct _LinphoneCore
 {
 	MSList* vtable_refs;
@@ -804,7 +813,7 @@ struct _LinphoneCore
 	void *preview_window_id;
 	time_t netup_time; /*time when network went reachable */
 	struct _EcCalibrator *ecc;
-	MSList *hooks;
+	LinphoneTaskList hooks; /*tasks periodically executed in linphone_core_iterate()*/
 	LinphoneConference conf_ctx;
 	char* zrtp_secrets_cache;
 	char* user_certificates_path;
@@ -892,7 +901,7 @@ void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *
 void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params);
 void linphone_call_increment_local_media_description(LinphoneCall *call);
 void linphone_call_fill_media_multicast_addr(LinphoneCall *call);
-void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
+void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md, LinphoneCallState target_state);
 
 bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt,  int bandwidth_limit);
 
