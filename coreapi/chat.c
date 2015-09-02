@@ -106,26 +106,13 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 
 static void process_io_error_upload(void *data, const belle_sip_io_error_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
-	msg->state = LinphoneChatMessageStateNotDelivered;
 	ms_error("I/O Error during file upload to %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
-	if (msg->cb) {
-		msg->cb(msg, msg->state, msg->cb_ud);
-	}
-
-	if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
-	}
+	linphone_chat_message_cancel_file_transfer(msg);
 }
 static void process_auth_requested_upload(void *data, belle_sip_auth_event_t *event){
 	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
-	msg->state = LinphoneChatMessageStateNotDelivered;
-	ms_error("Error during file upload : auth requested to connect %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
-	if (msg->cb) {
-		msg->cb(msg, msg->state, msg->cb_ud);
-	}
-	if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
-	}
+	ms_error("Error during file upload: auth requested to connect %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
+	linphone_chat_message_cancel_file_transfer(msg);
 }
 
 static void process_io_error_download(void *data, const belle_sip_io_error_event_t *event){
@@ -1404,7 +1391,6 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 		ms_free(msg->file_transfer_filepath);
 	}
 	linphone_chat_message_cbs_unref(msg->callbacks);
-	ms_message("LinphoneChatMessage [%p] destroyed.",msg);
 }
 
 LinphoneChatMessage * linphone_chat_message_ref(LinphoneChatMessage *msg){
@@ -1440,7 +1426,7 @@ LinphoneChatMessageCbs * linphone_chat_message_get_callbacks(const LinphoneChatM
 	return msg->callbacks;
 }
 
-LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, LinphoneContent* initial_content) {
+LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent* initial_content) {
 	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
 	msg->callbacks=linphone_chat_message_cbs_new();
 	msg->chat_room=(LinphoneChatRoom*)cr;

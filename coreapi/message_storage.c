@@ -116,7 +116,7 @@ static int callback_all(void *data, int argc, char **argv, char **colName){
  * | 8  | external body url
  * | 9  | utc timestamp
  * | 10 | app data text
- * | 11 | linphone content
+ * | 11 | linphone content id
  */
 static int create_chat_message(void *data, int argc, char **argv, char **colName){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;

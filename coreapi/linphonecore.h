@@ -905,7 +905,7 @@ LINPHONE_PUBLIC void linphone_call_set_audio_route(LinphoneCall *call, LinphoneA
  * Returns the number of stream for the given call.
  * Currently there is only two (Audio, Video), but later there will be more.
  * @param call
- * 
+ *
  * @return 2
 **/
 LINPHONE_PUBLIC int linphone_call_get_stream_count(LinphoneCall *call);
@@ -914,7 +914,7 @@ LINPHONE_PUBLIC int linphone_call_get_stream_count(LinphoneCall *call);
  * Returns the type of stream for the given stream index.
  * @param call
  * @param stream_index
- * 
+ *
  * @return MsAudio if stream_index = 0, MsVideo otherwise
 **/
 LINPHONE_PUBLIC MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index);
@@ -923,7 +923,7 @@ LINPHONE_PUBLIC MSFormatType linphone_call_get_stream_type(LinphoneCall *call, i
  * Returns the meta rtp transport for the given stream index.
  * @param call
  * @param stream_index
- * 
+ *
  * @return a pointer to the meta rtp transport if it exists, NULL otherwise
 **/
 LINPHONE_PUBLIC RtpTransport* linphone_call_get_meta_rtp_transport(LinphoneCall *call, int stream_index);
@@ -932,7 +932,7 @@ LINPHONE_PUBLIC RtpTransport* linphone_call_get_meta_rtp_transport(LinphoneCall 
  * Returns the meta rtcp transport for the given stream index.
  * @param call
  * @param stream_index
- * 
+ *
  * @return a pointer to the meta rtcp transport if it exists, NULL otherwise
 **/
 LINPHONE_PUBLIC RtpTransport* linphone_call_get_meta_rtcp_transport(LinphoneCall *call, int stream_index);
@@ -1333,17 +1333,17 @@ LINPHONE_PUBLIC void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void
 
  /**
  * Create a message attached to a dedicated chat room with a particular content.
- * Use #linphone_chat_room_send_message2 to initiate the transfer
+ * Use #linphone_chat_room_send_message to initiate the transfer
  * @param cr the chat room.
  * @param initial_content #LinphoneContent initial content. #LinphoneCoreVTable.file_transfer_send is invoked later to notify file transfer progress and collect next chunk of the message if #LinphoneContent.data is NULL.
  * @return a new #LinphoneChatMessage
  */
-LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, LinphoneContent* initial_content);
+LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent* initial_content);
 
 LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
 /**
  * Send a message to peer member of this chat room.
- * @deprecated linphone_chat_room_send_message2() gives more control on the message expedition.
+ * @deprecated Use linphone_chat_room_send_chat_message() instead.
  * @param cr #LinphoneChatRoom object
  * @param msg message to be sent
  */
