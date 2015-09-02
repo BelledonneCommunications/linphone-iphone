@@ -508,7 +508,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 + (IASKSpecifier *)filterSpecifier:(IASKSpecifier *)specifier {
-	if (linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
+	if (!linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
 		if ([[specifier key] isEqualToString:@"transport_preference"]) {
 			NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
 			NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
