@@ -334,3 +334,6 @@ LINPHONE_PUBLIC void linphone_gtk_proxy_cancel(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_proxy_address_changed(GtkEditable *editable);
 LINPHONE_PUBLIC void linphone_gtk_proxy_transport_changed(GtkWidget *combo);
 LINPHONE_PUBLIC void linphone_gtk_tunnel_ok(GtkButton *button);
+LINPHONE_PUBLIC void linphone_gtk_notebook_current_page_changed(GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data);
+LINPHONE_PUBLIC void linphone_gtk_reload_sound_devices(void);
+LINPHONE_PUBLIC void linphone_gtk_reload_video_devices(void);
