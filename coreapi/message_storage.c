@@ -122,9 +122,6 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
 	LinphoneAddress *from;
 	LinphoneAddress *to;
-	uint64_t begin, end;
-	begin=ortp_get_cur_time_ms();
-
 	unsigned int storage_id = atoi(argv[0]);
 
 	// check if the message exists in the transient list, in which case we should return that one.
@@ -163,9 +160,6 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 		}
 	}
 	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
-
-	end=ortp_get_cur_time_ms();
-	ms_message("\t%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
 
 	return 0;
 }
