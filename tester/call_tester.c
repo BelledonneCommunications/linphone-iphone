@@ -144,7 +144,7 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 }
 
 
-void linphone_call_cb(LinphoneCall *call,void * user_data) {
+void linphone_call_iframe_decoded_cb(LinphoneCall *call,void * user_data) {
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
 	stats* counters;
@@ -1496,7 +1496,7 @@ bool_t add_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t
 		}
 
 		if (video_policy->automatically_accept) {
-			linphone_call_set_next_video_frame_decoded_callback(call_obj,linphone_call_cb,callee->lc);
+			linphone_call_set_next_video_frame_decoded_callback(call_obj,linphone_call_iframe_decoded_cb,callee->lc);
 			/*send vfu*/
 			linphone_call_send_vfu_request(call_obj);
 			return wait_for(caller->lc,callee->lc,&callee->stat.number_of_IframeDecoded,initial_callee_stat.number_of_IframeDecoded+1);
@@ -1791,7 +1791,7 @@ void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
 			BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(pauline_call)));
 
 			/*check video path*/
-			linphone_call_set_next_video_frame_decoded_callback(marie_call,linphone_call_cb,marie->lc);
+			linphone_call_set_next_video_frame_decoded_callback(marie_call,linphone_call_iframe_decoded_cb,marie->lc);
 			linphone_call_send_vfu_request(marie_call);
 			BC_ASSERT_TRUE( wait_for(marie->lc,pauline->lc,&marie->stat.number_of_IframeDecoded,1));
 		} else {
@@ -3230,7 +3230,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 		int dummy = 0;
 
 		BC_ASSERT_EQUAL(video_dir,linphone_call_params_get_video_direction(params), int, "%d");
-		linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_cb,mgr->lc);
+		linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_iframe_decoded_cb,mgr->lc);
 		linphone_call_send_vfu_request(call);
 
 
@@ -3288,7 +3288,7 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 	linphone_core_set_video_device(marie->lc,"Mire: Mire (synthetic moving picture)");
 
 	linphone_call_set_next_video_frame_decoded_callback(linphone_core_invite_address(pauline->lc,marie->identity)
-														,linphone_call_cb
+														,linphone_call_iframe_decoded_cb
 														,pauline->lc);
 
 
