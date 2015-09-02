@@ -66,8 +66,7 @@ static UIFont *CELL_FONT = nil;
 
 		resendTapGestureRecognizer =
 			[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResendClick:)];
-		[dateLabel addGestureRecognizer:resendTapGestureRecognizer];
-		[statusImage addGestureRecognizer:resendTapGestureRecognizer];
+		[innerView addGestureRecognizer:resendTapGestureRecognizer];
 
 		[self addSubview:innerView];
 		[deleteButton setAlpha:0.0f];
