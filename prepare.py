@@ -391,6 +391,7 @@ generate-dummy-%:
 
 lipo:
 \tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
+\trm -rf liblinphone-sdk/apple-darwin && \\
 \tmkdir -p liblinphone-sdk/apple-darwin && \\
 \tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/include liblinphone-sdk/apple-darwin/. && \\
 \tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/share liblinphone-sdk/apple-darwin/. && \\
