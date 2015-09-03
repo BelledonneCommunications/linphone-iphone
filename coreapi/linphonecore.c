@@ -2768,7 +2768,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 	linphone_call_set_contact_op(call);
 
 	linphone_core_stop_dtmf_stream(lc);
-	linphone_call_make_local_media_description(lc,call);
+	linphone_call_make_local_media_description(call);
 
 	if (lc->ringstream==NULL) {
 		if (lc->sound_conf.play_sndcard && lc->sound_conf.capt_sndcard){
@@ -3171,7 +3171,7 @@ int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall*
 		// if parameters are passed, update the media description
 		if ( params ) {
 			linphone_call_set_new_params(call,params);
-			linphone_call_make_local_media_description ( lc,call );
+			linphone_call_make_local_media_description (call);
 			sal_call_set_local_media_description ( call->op,call->localdesc );
 			sal_op_set_sent_custom_header ( call->op,params->custom_headers );
 		}
@@ -3209,7 +3209,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 
 	linphone_call_fill_media_multicast_addr(call);
 
-	if (!no_user_consent) linphone_call_make_local_media_description(lc,call);
+	if (!no_user_consent) linphone_call_make_local_media_description(call);
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
@@ -3350,15 +3350,24 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
  * the call state notification, to deactivate the automatic answer that would just confirm the audio but reject the video.
  * Then, when the user responds to dialog prompt, it becomes possible to call linphone_core_accept_call_update() to answer
  * the reINVITE, with eventually video enabled in the LinphoneCallParams argument.
+ * 
+ * The #LinphoneCallUpdatedByRemote notification can also arrive when receiving an INVITE without SDP. In such case, an unchanged offer is made
+ * in the 200Ok, and when the ACK containing the SDP answer is received, #LinphoneCallUpdatedByRemote is triggered to notify the application of possible
+ * changes in the media session. However in such case defering the update has no meaning since we just generating an offer.
  *
- * @return 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a #LinphoneCallUpdatedByRemote notification, which is illegal.
+ * @return 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a valid #LinphoneCallUpdatedByRemote notification.
 **/
 int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
 	if (call->state==LinphoneCallUpdatedByRemote){
+		if (call->expect_media_in_ack){
+			ms_error("linphone_core_defer_call_update() is not possible during a late offer incoming reINVITE (INVITE without SDP)");
+			return -1;
+		}
 		call->defer_update=TRUE;
 		return 0;
+	}else{
+		ms_error("linphone_core_defer_call_update() not done in state LinphoneCallUpdatedByRemote");
 	}
-	ms_error("linphone_core_defer_call_update() not done in state LinphoneCallUpdatedByRemote");
 	return -1;
 }
 
@@ -3370,7 +3379,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
 			return 0;
 		}
 	}
-	linphone_call_make_local_media_description(lc,call);
+	linphone_call_make_local_media_description(call);
 
 	linphone_call_update_remote_session_id_and_ver(call);
 	linphone_call_stop_ice_for_inactive_streams(call);
@@ -3587,7 +3596,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 			linphone_call_set_compatible_incoming_call_parameters(call, md);
 		}
 		linphone_call_prepare_ice(call,TRUE);
-		linphone_call_make_local_media_description(lc,call);
+		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 		sal_op_set_sent_custom_header(call->op,params->custom_headers);
 	}
@@ -3797,10 +3806,8 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
 }
 
 /* Internal version that does not play tone indication*/
-int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
-{
+int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject=NULL;
-	LinphoneCallParams *params;
 
 	if (call->state!=LinphoneCallStreamsRunning && call->state!=LinphoneCallPausedByRemote){
 		ms_warning("Cannot pause this call, it is not active.");
@@ -3814,15 +3821,8 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		ms_error("No reason to pause this call, it is already paused or inactive.");
 		return -1;
 	}
-	params = linphone_call_params_copy(call->params);
-	linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendOnly);
-	if (lp_config_get_int(lc->config, "sip", "inactive_video_on_pause", 0)) {
-		linphone_call_params_set_video_direction(params, LinphoneMediaDirectionInactive);
-	} else {
-		linphone_call_params_set_video_direction(params, LinphoneMediaDirectionSendOnly);
-	}
-	linphone_call_make_local_media_description_with_params(lc, call, params);
-	linphone_call_params_unref(params);
+	linphone_call_set_state(call, LinphoneCallPausing, "Pausing call");
+	linphone_call_make_local_media_description(call);
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
@@ -3836,7 +3836,6 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 	linphone_core_notify_display_status(lc,_("Pausing the current call..."));
 	if (call->audiostream || call->videostream)
 		linphone_call_stop_media_streams (call);
-	linphone_call_set_state(call,LinphoneCallPausing,"Pausing call");
 	call->paused_by_app=FALSE;
 	return 0;
 }
@@ -3903,7 +3902,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	 prevents the participants to hear it while the 200OK comes back.*/
 	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
 
-	linphone_call_make_local_media_description(lc,call);
+	linphone_call_make_local_media_description(call);
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);

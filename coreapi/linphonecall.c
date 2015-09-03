@@ -582,11 +582,30 @@ static const char *linphone_call_get_public_ip_for_stream(LinphoneCall *call, in
 	return public_ip;
 }
 
-void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call) {
-	linphone_call_make_local_media_description_with_params(lc, call, call->params);
+static void force_streams_dir_according_to_state(LinphoneCall *call, SalMediaDescription *md){
+	int i;
+	
+	switch (call->state){
+		case LinphoneCallPausing:
+		case LinphoneCallPaused:
+		break;
+		default:
+			return;
+		break;
+	}
+	
+	for (i=0; i<2; ++i){
+		SalStreamDescription *sd = &md->streams[i];
+		sd->dir = SalStreamSendOnly;
+		if (sd->type == SalVideo){
+			if (lp_config_get_int(call->core->config, "sip", "inactive_video_on_pause", 0)) {
+				sd->dir = SalStreamInactive;
+			}
+		}
+	}
 }
 
-void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params) {
+void linphone_call_make_local_media_description(LinphoneCall *call) {
 	MSList *l;
 	SalMediaDescription *old_md=call->localdesc;
 	int i;
@@ -595,6 +614,9 @@ void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, Li
 	LinphoneAddress *addr;
 	const char *subject;
 	CodecConstraints codec_hints={0};
+	LinphoneCallParams *params = call->params;
+	LinphoneCore *lc = call->core;
+
 
 	/*multicast is only set in case of outgoing call*/
 	if (call->dir == LinphoneCallOutgoing && linphone_call_params_audio_multicast_enabled(params)) {
@@ -718,6 +740,7 @@ void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, Li
 		call->localdesc_changed=sal_media_description_equals(md,old_md);
 		sal_media_description_unref(old_md);
 	}
+	force_streams_dir_according_to_state(call, md);
 }
 
 static int find_port_offset(LinphoneCore *lc, int stream_index, int base_port){

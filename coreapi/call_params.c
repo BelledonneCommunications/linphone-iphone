@@ -43,6 +43,9 @@ SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir) {
 			return SalStreamRecvOnly;
 		case LinphoneMediaDirectionSendRecv:
 			return SalStreamSendRecv;
+		case LinphoneMediaDirectionInvalid:
+			ms_error("LinphoneMediaDirectionInvalid shall not be used.");
+			return SalStreamInactive;
 	}
 	return SalStreamSendRecv;
 }

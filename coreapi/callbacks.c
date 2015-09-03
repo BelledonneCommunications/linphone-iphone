@@ -329,7 +329,7 @@ static void call_received(SalOp *h){
 
 	call=linphone_call_new_incoming(lc,from_addr,to_addr,h);
 
-	linphone_call_make_local_media_description(lc,call);
+	linphone_call_make_local_media_description(call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	md=sal_call_get_final_media_description(call->op);
 	if (md){
@@ -637,7 +637,12 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 			if (sal_media_description_has_dir(rmd,SalStreamSendRecv) || sal_media_description_has_dir(rmd,SalStreamRecvOnly)){
 				call_resumed(lc,call);
 			}else{
-				_linphone_core_accept_call_update(lc,call,NULL,call->state,linphone_call_state_to_string(call->state));
+				/*we are staying in PausedByRemote*/
+				linphone_core_notify_display_status(lc,_("Call is updated by remote."));
+				linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
+				if (call->defer_update == FALSE){
+					linphone_core_accept_call_update(lc,call,NULL);
+				}
 			}
 		break;
 		/*SIP UPDATE CASE*/
@@ -662,12 +667,8 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 			}
 		break;
 		case LinphoneCallPaused:
-			if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
-				call_paused_by_remote(lc,call);
-			}else{
-				/*we'll remain in pause state but accept the offer anyway according to default parameters*/
-				_linphone_core_accept_call_update(lc,call,NULL,call->state,linphone_call_state_to_string(call->state));
-			}
+			/*we'll remain in pause state but accept the offer anyway according to default parameters*/
+			_linphone_core_accept_call_update(lc,call,NULL,call->state,linphone_call_state_to_string(call->state));
 		break;
 		case LinphoneCallUpdating:
 		case LinphoneCallPausing:
@@ -702,7 +703,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 	}
 	if (call->state!=LinphoneCallPaused){
 		/*Refresh the local description, but in paused state, we don't change anything.*/
-		linphone_call_make_local_media_description(lc,call);
+		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}
 	if (rmd == NULL){

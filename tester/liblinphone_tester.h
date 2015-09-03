@@ -335,6 +335,8 @@ int liblinphone_tester_setup();
 void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, va_list args));
 void liblinphone_tester_uninit(void);
 
+extern const char *liblinphone_tester_mire_id;
+
 
 #ifdef __cplusplus
 };

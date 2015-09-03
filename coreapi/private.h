@@ -897,7 +897,7 @@ int linphone_core_set_as_current_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
-void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call);
+void linphone_call_make_local_media_description(LinphoneCall *call);
 void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params);
 void linphone_call_increment_local_media_description(LinphoneCall *call);
 void linphone_call_fill_media_multicast_addr(LinphoneCall *call);
