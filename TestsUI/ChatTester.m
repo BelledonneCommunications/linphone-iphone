@@ -239,12 +239,6 @@
 	[tester tapViewWithAccessibilityLabel:@"Chat"];
 	NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
 
-	// delete all rooms from test because it takes time when done by tester
-	[tester tapViewWithAccessibilityLabel:@"Dialer"];
-	for (MSList *it = linphone_core_get_chat_rooms(lc); it != NULL; it = it->next) {
-		linphone_chat_room_delete_history(it->data);
-	}
-
 	// conversation loading MUST be less than 1 sec
 	XCTAssertLessThan(after - before, 1.);
 }
