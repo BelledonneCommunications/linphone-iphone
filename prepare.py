@@ -376,8 +376,6 @@ veryclean-%: package-in-list-%
 \tdone; \\
 \techo "Run 'make build-$*' to rebuild $* correctly."
 
-build: libs
-
 clean: $(addprefix clean-,$(packages))
 
 veryclean: $(addprefix veryclean-,$(packages))
@@ -420,14 +418,14 @@ lipo:
 \t\tfi \\
 \tdone
 
-libs: $(addprefix all-,$(archs))
+build: $(addprefix all-,$(archs))
 \t$(MAKE) lipo
 
 ipa: build
 \txcodebuild -configuration Release \\
-\t&& xcrun -sdk iphoneos PackageApplication -v build/Release-iphoneos/linphone.app -o linphone-iphone.ipa
+\t&& xcrun -sdk iphoneos PackageApplication -v build/Release-iphoneos/linphone.app -o $$PWD/linphone-iphone.ipa
 
-sdk: libs
+sdk: build
 \techo "Generating SDK zip file for version $(LINPHONE_IPHONE_VERSION)"
 \tzip -r liblinphone-iphone-sdk-$(LINPHONE_IPHONE_VERSION).zip \\
 \tliblinphone-sdk/apple-darwin \\
@@ -459,19 +457,18 @@ help: help-prepare-options
 \t@echo ""
 \t@echo "Available targets:"
 \t@echo ""
-\t@echo "   * all       : builds all architectures and creates the liblinphone sdk"
-\t@echo "   * zipres    : creates a tar.gz file with all the resources (images)"
+\t@echo "   * all or build: builds all architectures and creates the liblinphone SDK"
+\t@echo "   * sdk: generates a ZIP archive of liblinphone-sdk/apple-darwin containing the SDK. Use this only after a full build."
+\t@echo "   * zipres: creates a tar.gz file with all the resources (images)"
 \t@echo ""
 \t@echo "=== Advanced usage ==="
 \t@echo ""
-\t@echo "   *            build-[package] : builds the package for all architectures"
-\t@echo "   *            clean-[package] : clean the package for all architectures"
+\t@echo "   * build-[package]: builds the package for all architectures"
+\t@echo "   * clean-[package]: cleans the package for all architectures"
 \t@echo ""
-\t@echo "   *     [{arch_opts}]-build-[package] : builds a package for the selected architecture"
-\t@echo "   *     [{arch_opts}]-clean-[package] : clean the package for the selected architecture"
+\t@echo "   * [{arch_opts}]-build-[package]: builds a package for the selected architecture"
+\t@echo "   * [{arch_opts}]-clean-[package]: cleans the package for the selected architecture"
 \t@echo ""
-\t@echo "   * sdk  : re-add all generated libraries to the SDK. Use this only after a full build."
-\t@echo "   * libs : after a rebuild of a subpackage, will mix the new libs in liblinphone-sdk/apple-darwin directory"
 """.format(archs=' '.join(platforms), arch_opts='|'.join(platforms),
            first_arch=platforms[0], options=' '.join(sys.argv),
            arch_targets=arch_targets, packages=' '.join(packages),
@@ -579,7 +576,7 @@ def main(argv=None):
         if args.clean:
             target.clean()
         else:
-            retcode = prepare.run(target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
+            retcode = prepare.run (target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
             if retcode != 0:
                 if retcode == 51:
                     Popen("make help-prepare-options".split(" "))
