@@ -1692,7 +1692,17 @@ static void history_messages_count() {
 }
 
 
+
 #endif
+static void text_status_after_destroying_chat_room() {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneChatRoom *chatroom = linphone_core_get_chat_room_from_uri(marie->lc, "<sip:Jehan@sip.linphone.org>");
+	LinphoneChatMessage *message = linphone_chat_room_create_message(chatroom, "hello");
+	linphone_chat_room_send_chat_message(chatroom, message);
+	linphone_chat_room_unref(chatroom);
+	wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 1000);
+	linphone_core_manager_destroy(marie);
+}
 
 test_t message_tests[] = {
 	{ "Text message", text_message },
@@ -1726,6 +1736,7 @@ test_t message_tests[] = {
 	,{ "History count", history_messages_count }
 	,{ "History range", history_range_full_test }
 #endif
+	,{ "Text status after destroying chat room", text_status_after_destroying_chat_room },
 };
 
 test_suite_t message_test_suite = {
@@ -1735,4 +1746,5 @@ test_suite_t message_test_suite = {
 	sizeof(message_tests) / sizeof(message_tests[0]),
 	message_tests
 };
+
 

@@ -621,13 +621,15 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 	linphone_chat_message_unref(msg);
 }
 
-void linphone_chat_message_update_state(LinphoneChatMessage* chat_msg ) {
-	linphone_chat_message_store_state(chat_msg);
+void linphone_chat_message_update_state(LinphoneChatMessage* chat_msg, LinphoneCore* lc) {
+	linphone_chat_message_store_state(chat_msg, lc);
 
 	if( chat_msg->state == LinphoneChatMessageStateDelivered
 			|| chat_msg->state == LinphoneChatMessageStateNotDelivered ){
 		// message is not transient anymore, we can remove it from our transient list and unref it :
-		chat_msg->chat_room->transient_messages = ms_list_remove(chat_msg->chat_room->transient_messages, chat_msg);
+		if (chat_msg->chat_room) {
+			chat_msg->chat_room->transient_messages = ms_list_remove(chat_msg->chat_room->transient_messages, chat_msg);
+		}
 		linphone_chat_message_unref(chat_msg);
 	}
 }
@@ -1087,7 +1089,7 @@ void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char*
 		ms_free(message->appdata);
 	}
 	message->appdata = data? ms_strdup(data) : NULL;
-	linphone_chat_message_store_appdata(message);
+	linphone_chat_message_store_appdata(message, message->chat_room->lc);
 }
 
 
