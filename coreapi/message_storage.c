@@ -253,7 +253,8 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 	return id;
 }
 
-void linphone_chat_message_store_state(LinphoneChatMessage *msg, LinphoneCore *lc){
+void linphone_chat_message_store_state(LinphoneChatMessage *msg){
+	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
 		char *buf=sqlite3_mprintf("UPDATE history SET status=%i WHERE (id = %i);",
 								  msg->state,msg->storage_id);
@@ -262,7 +263,8 @@ void linphone_chat_message_store_state(LinphoneChatMessage *msg, LinphoneCore *l
 	}
 }
 
-void linphone_chat_message_store_appdata(LinphoneChatMessage* msg, LinphoneCore *lc){
+void linphone_chat_message_store_appdata(LinphoneChatMessage* msg){
+	LinphoneCore *lc=msg->chat_room->lc;
 	if (lc->db){
 		char *buf=sqlite3_mprintf("UPDATE history SET appdata=%Q WHERE id=%i;",
 								  msg->appdata,msg->storage_id);
@@ -669,10 +671,10 @@ unsigned int linphone_chat_message_store(LinphoneChatMessage *cr){
 	return 0;
 }
 
-void linphone_chat_message_store_state(LinphoneChatMessage *cr, LinphoneCore* lc)){
+void linphone_chat_message_store_state(LinphoneChatMessage *cr){
 }
 
-void linphone_chat_message_store_appdata(LinphoneChatMessage *msg, LinphoneCore *lc){
+void linphone_chat_message_store_appdata(LinphoneChatMessage *msg){
 }
 
 void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){

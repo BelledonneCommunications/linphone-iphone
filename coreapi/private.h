@@ -79,7 +79,7 @@ extern "C" {
 #endif
 
 #include <libintl.h>
-
+	
 #ifndef _
 #define _(String) dgettext(GETTEXT_PACKAGE,String)
 #endif
@@ -962,8 +962,8 @@ void linphone_upnp_destroy(LinphoneCore *lc);
 sqlite3 * linphone_message_storage_init();
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 #endif
-void linphone_chat_message_store_state(LinphoneChatMessage *msg, LinphoneCore* lc);
-void linphone_chat_message_store_appdata(LinphoneChatMessage* msg, LinphoneCore *lc);
+void linphone_chat_message_store_state(LinphoneChatMessage *msg);
+void linphone_chat_message_store_appdata(LinphoneChatMessage* msg);
 void linphone_core_message_storage_init(LinphoneCore *lc);
 void linphone_core_message_storage_close(LinphoneCore *lc);
 void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug);
