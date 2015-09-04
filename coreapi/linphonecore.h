@@ -1250,6 +1250,14 @@ LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, 
  * @return #LinphoneChatRoom where messaging can take place.
 **/
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to);
+
+/**
+ * Removes a chatroom including all message history from the LinphoneCore.
+ * @param lc The linphone core
+ * @param to The chatroom.
+**/
+LINPHONE_PUBLIC void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr);
+
 /**
  * Inconditionnaly disable incoming chat messages.
  * @param lc the core
@@ -1432,7 +1440,7 @@ LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr);
  * @param[in] lc #LinphoneCore object
  * @return \mslist{LinphoneChatRoom}
 **/
-LINPHONE_PUBLIC MSList* linphone_core_get_chat_rooms(LinphoneCore *lc);
+LINPHONE_PUBLIC const MSList* linphone_core_get_chat_rooms(LinphoneCore *lc);
 LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *msg);
 
 /**

@@ -1255,7 +1255,7 @@ static void file_transfer_2_messages_simultaneously() {
 		BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, int, "%d");
 		if (ms_list_size(linphone_core_get_chat_rooms(marie->lc)) != 1) {
 			char * buf = ms_strdup_printf("Found %d rooms instead of 1: ", ms_list_size(linphone_core_get_chat_rooms(marie->lc)));
-			MSList *it = linphone_core_get_chat_rooms(marie->lc);
+			const MSList *it = linphone_core_get_chat_rooms(marie->lc);
 			while (it) {
 				const LinphoneAddress * peer = linphone_chat_room_get_peer_address(it->data);
 				buf = ms_strcat_printf("%s, ", linphone_address_get_username(peer));
@@ -1515,7 +1515,7 @@ static void message_storage_migration() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	char *src_db = bc_tester_res("messages.db");
 	char *tmp_db  = bc_tester_file("tmp.db");
-	MSList* chatrooms;
+	const MSList* chatrooms;
 
 	BC_ASSERT_EQUAL_FATAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 

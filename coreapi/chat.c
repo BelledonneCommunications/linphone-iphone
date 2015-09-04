@@ -366,7 +366,8 @@ void linphone_core_enable_chat(LinphoneCore *lc){
 bool_t linphone_core_chat_enabled(const LinphoneCore *lc){
 	return lc->chat_deny_code!=LinphoneReasonNone;
 }
-MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
+
+const MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
 	return lc->chatrooms;
 }
 
@@ -443,6 +444,7 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr){
 	if (ms_list_find(lc->chatrooms, cr)){
 		lc->chatrooms = ms_list_remove(cr->lc->chatrooms, cr);
+		linphone_chat_room_delete_history(cr);
 		linphone_chat_room_unref(cr);
 	}else{
 		ms_error("linphone_core_delete_chat_room(): chatroom [%p] isn't part of LinphoneCore.",
