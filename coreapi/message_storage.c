@@ -100,7 +100,11 @@ static void fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *messag
 static int callback_all(void *data, int argc, char **argv, char **colName){
 	LinphoneCore* lc = (LinphoneCore*) data;
 	char* address = argv[0];
-	linphone_core_get_or_create_chat_room(lc, address);
+	LinphoneAddress *addr = linphone_address_new(address);
+	if (addr){
+		linphone_core_get_chat_room(lc, addr);
+		linphone_address_destroy(addr);
+	}
 	return 0;
 }
 

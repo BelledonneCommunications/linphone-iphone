@@ -39,6 +39,9 @@
 
 #define FILE_TRANSFER_KEY_SIZE 32
 
+
+static void linphone_chat_message_release(LinphoneChatMessage *msg);
+
 static LinphoneChatMessageCbs * linphone_chat_message_cbs_new(void) {
 	return belle_sip_object_new(LinphoneChatMessageCbs);
 }
@@ -429,20 +432,23 @@ static LinphoneChatRoom * _linphone_core_get_or_create_chat_room(LinphoneCore* l
 	return ret;
 }
 
-LinphoneChatRoom* linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
-	return _linphone_core_get_or_create_chat_room(lc, to);
-}
-
-LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to) {
-	return _linphone_core_get_or_create_chat_room(lc, to);
-}
-
 LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
 	LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
 	if (!ret) {
 		ret = _linphone_core_create_chat_room(lc, linphone_address_clone(addr));
 	}
 	return ret;
+}
+
+void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr){
+	if (ms_list_find(lc->chatrooms, cr)){
+		lc->chatrooms = ms_list_remove(cr->lc->chatrooms, cr);
+		linphone_chat_room_unref(cr);
+	}else{
+		ms_error("linphone_core_delete_chat_room(): chatroom [%p] isn't part of LinphoneCore.",
+			 cr);
+	}
+	
 }
 
 LinphoneChatRoom * linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
@@ -477,12 +483,18 @@ static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneCha
 }
 
 static void _linphone_chat_room_destroy(LinphoneChatRoom *cr){
-	ms_list_free_with_data(cr->transient_messages, (void (*)(void*))linphone_chat_message_unref);
+	ms_list_free_with_data(cr->transient_messages, (void (*)(void*))linphone_chat_message_release);
 	linphone_chat_room_delete_composing_idle_timer(cr);
 	linphone_chat_room_delete_composing_refresh_timer(cr);
 	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
 	if (cr->lc != NULL) {
-		cr->lc->chatrooms=ms_list_remove(cr->lc->chatrooms,(void *) cr);
+		if (ms_list_find(cr->lc->chatrooms, cr)){
+			ms_error("LinphoneChatRoom[%p] is destroyed while still being used by the LinphoneCore. This is abnormal."
+			" linphone_core_get_chat_room() doesn't give a reference, there is no need to call linphone_chat_room_unref(). "
+			"In order to remove a chat room from the core, use linphone_core_delete_chat_room().",
+				cr);
+		}
+		cr->lc->chatrooms=ms_list_remove(cr->lc->chatrooms, cr);
 	}
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
@@ -794,14 +806,17 @@ static void process_im_is_composing_notification(LinphoneChatRoom *cr, xmlparsin
 
 	xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"xsi", (const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
 	iscomposing_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, iscomposing_prefix);
-	if ((iscomposing_object != NULL) && (iscomposing_object->nodesetval != NULL)) {
-		for (i = 1; i <= iscomposing_object->nodesetval->nodeNr; i++) {
-			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/xsi:state", iscomposing_prefix, i);
-			state_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
-			if (state_str == NULL) continue;
-			snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/xsi:refresh", iscomposing_prefix, i);
-			refresh_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
+	if (iscomposing_object != NULL){
+		if(iscomposing_object->nodesetval != NULL) {
+			for (i = 1; i <= iscomposing_object->nodesetval->nodeNr; i++) {
+				snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/xsi:state", iscomposing_prefix, i);
+				state_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
+				if (state_str == NULL) continue;
+				snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/xsi:refresh", iscomposing_prefix, i);
+				refresh_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
+			}
 		}
+		xmlXPathFreeObject(iscomposing_object);
 	}
 
 	if (state_str != NULL) {
@@ -841,10 +856,12 @@ static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const c
 }
 
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing) {
-	LinphoneChatRoom *cr = linphone_core_get_or_create_chat_room(lc, is_composing->from);
+	LinphoneAddress *addr = linphone_address_new(is_composing->from);
+	LinphoneChatRoom *cr = _linphone_core_get_chat_room(lc, addr);
 	if (cr != NULL) {
 		linphone_chat_room_notify_is_composing(cr, is_composing->text);
 	}
+	linphone_address_destroy(addr);
 }
 
 bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
@@ -971,37 +988,22 @@ static char * linphone_chat_room_create_is_composing_xml(LinphoneChatRoom *cr) {
 
 static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *cr) {
 	SalOp *op = NULL;
-	LinphoneCall *call;
 	const char *identity = NULL;
 	char *content = NULL;
+	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
+	if (proxy)
+		identity = linphone_proxy_config_get_identity(proxy);
+	else
+		identity = linphone_core_get_primary_contact(cr->lc);
+	/*sending out of calls*/
+	op = sal_op_new(cr->lc->sal);
+	linphone_configure_op(cr->lc, op, cr->peer_url, NULL, lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
 
-	if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0)) {
-		if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {
-			if (call->state == LinphoneCallConnected ||
-			call->state == LinphoneCallStreamsRunning ||
-			call->state == LinphoneCallPaused ||
-			call->state == LinphoneCallPausing ||
-			call->state == LinphoneCallPausedByRemote) {
-				ms_message("send SIP message through the existing call.");
-				op = call->op;
-				identity = linphone_core_find_best_identity(cr->lc, linphone_call_get_remote_address(call));
-			}
-		}
-	}
-	if (op == NULL) {
-		LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
-		if (proxy)
-			identity = linphone_proxy_config_get_identity(proxy);
-		else
-			identity = linphone_core_get_primary_contact(cr->lc);
-		/*sending out of calls*/
-		op = sal_op_new(cr->lc->sal);
-		linphone_configure_op(cr->lc, op, cr->peer_url, NULL, lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
-	}
 	content = linphone_chat_room_create_is_composing_xml(cr);
 	if (content != NULL) {
 		sal_message_send(op, identity, cr->peer, "application/im-iscomposing+xml", content, NULL);
 		ms_free(content);
+		sal_op_unref(op);
 	}
 }
 
@@ -1400,6 +1402,12 @@ LinphoneChatMessage * linphone_chat_message_ref(LinphoneChatMessage *msg){
 
 void linphone_chat_message_unref(LinphoneChatMessage *msg){
 	belle_sip_object_unref(msg);
+}
+
+static void linphone_chat_message_release(LinphoneChatMessage *msg){
+	/*mark the chat message as orphan (it has no chat room anymore), and unref it*/
+	msg->chat_room = NULL;
+	linphone_chat_message_unref(msg);
 }
 
 const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg){

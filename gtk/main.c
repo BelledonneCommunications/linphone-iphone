@@ -1750,7 +1750,7 @@ static void linphone_gtk_configure_main_window(){
 		gchar *tmp;
 		GtkWidget *menu_item=linphone_gtk_get_widget(w,"home_item");
 		tmp=g_strdup(home);
-		g_object_set_data(G_OBJECT(menu_item),"home",tmp);
+		g_object_set_data_full(G_OBJECT(menu_item),"home",tmp, (GDestroyNotify)g_free);
 	}
 	{
 		/*

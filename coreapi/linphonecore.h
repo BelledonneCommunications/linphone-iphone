@@ -1232,24 +1232,11 @@ typedef LinphoneBuffer * (*LinphoneChatMessageCbsFileTransferSendCb)(LinphoneCha
 typedef void (*LinphoneChatMessageCbsFileTransferProgressIndicationCb)(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 
 LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
-/**
- * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
- * @param lc #LinphoneCore object
- * @param to destination address for messages
- * @return #LinphoneChatRoom where messaging can take place.
- * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
- */
-LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
-/**
- * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org if not already existing, else return exisiting one
- * @param lc #LinphoneCore object
- * @param to destination address for messages
- * @return #LinphoneChatRoom where messaging can take place.
- * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
- */
-LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_get_or_create_chat_room(LinphoneCore *lc, const char *to);
+
+
 /**
  * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
+ * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
  * @param lc the linphone core
  * @param addr a linphone address.
  * @return #LinphoneChatRoom where messaging can take place.
@@ -1257,6 +1244,7 @@ LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_get_or_create_chat_room(Linphon
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr);
 /**
  * Get a chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
+ * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
  * @param lc The linphone core
  * @param to The destination address for messages.
  * @return #LinphoneChatRoom where messaging can take place.
@@ -1356,6 +1344,7 @@ LINPHONE_PUBLIC	void linphone_chat_room_send_message(LinphoneChatRoom *cr, const
  * @param ud user data for the status cb.
  * @deprecated Use linphone_chat_room_send_chat_message() instead.
  * @note The LinphoneChatMessage must not be destroyed until the the callback is called.
+ * The LinphoneChatMessage reference is transfered to the function and thus doesn't need to be unref'd by the application.
  */
 LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb,void* ud);
 /**
@@ -1364,6 +1353,7 @@ LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, Linp
  * @param[in] msg LinphoneChatMessage object
  * The state of the message sending will be notified via the callbacks defined in the LinphoneChatMessageCbs object that can be obtained
  * by calling linphone_chat_message_get_callbacks().
+ * The LinphoneChatMessage reference is transfered to the function and thus doesn't need to be unref'd by the application.
  */
 LINPHONE_PUBLIC void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 
@@ -1583,7 +1573,7 @@ LINPHONE_PUBLIC	void linphone_chat_message_set_user_data(LinphoneChatMessage* me
 **/
 LINPHONE_PUBLIC LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
 /**
- * get peer address \link linphone_core_create_chat_room() associated to \endlink this #LinphoneChatRoom
+ * get peer address \link linphone_core_get_chat_room() associated to \endlink this #LinphoneChatRoom
  * @param cr #LinphoneChatRoom object
  * @return #LinphoneAddress peer address
  */

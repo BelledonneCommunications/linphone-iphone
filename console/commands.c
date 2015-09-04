@@ -633,7 +633,7 @@ lpc_cmd_chat(LinphoneCore *lc, char *args)
 		/* missing one parameter */
 		return 0;
 	}
-	cr = linphone_core_create_chat_room(lc,arg1);
+	cr = linphone_core_get_chat_room_from_uri(lc,arg1);
 	linphone_chat_room_send_message(cr,arg2);
 	return 1;
 }
