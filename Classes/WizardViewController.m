@@ -545,6 +545,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	case LinphoneRegistrationFailed: {
 		[waitView setHidden:true];
+		if ([message isEqualToString:@"Forbidden"]) {
+			message = NSLocalizedString(@"Incorrect username or password.", nil);
+		}
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
 														message:message
 													   delegate:nil

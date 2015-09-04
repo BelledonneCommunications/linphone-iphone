@@ -116,7 +116,8 @@
 	UIView *alertViewText =
 		[tester waitForViewWithAccessibilityLabel:@"Registration failure" traits:UIAccessibilityTraitStaticText];
 	if (alertViewText) {
-		UIView *reason = [tester waitForViewWithAccessibilityLabel:@"Forbidden" traits:UIAccessibilityTraitStaticText];
+		UIView *reason = [tester waitForViewWithAccessibilityLabel:@"Incorrect username or password."
+															traits:UIAccessibilityTraitStaticText];
 		if (reason == nil) {
 			[tester fail];
 		} else {
