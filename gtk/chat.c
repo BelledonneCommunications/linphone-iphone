@@ -188,7 +188,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	int tnow_year;
 
 	gtk_text_buffer_get_end_iter(buffer, &iter);
-	if(g_strcmp0(from_message,from_str)!=0){
+	if (g_strcmp0(from_message,from_str)!=0){
 		gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, get_display_name(from), -1,
 		                                         "from", me ? "me" : NULL, NULL);
 		gtk_text_buffer_insert_with_tags_by_name(buffer,&iter, " : ", -1,
@@ -196,8 +196,8 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 		gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 		g_free(from_message);
 		g_object_set_data(G_OBJECT(w),"from_message",g_strdup(from_str));
-		ms_free(from_str);
 	}
+	ms_free(from_str);
 
 	link_start_mark = gtk_text_buffer_create_mark(buffer, NULL, &iter, TRUE);
 	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, linphone_chat_message_get_text(msg), -1,

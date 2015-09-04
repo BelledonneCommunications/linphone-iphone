@@ -355,6 +355,8 @@ const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphonePro
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
+void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
+void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op);
 LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
 LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
 MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf);
@@ -585,7 +587,7 @@ struct _LinphoneFriend{
 	belle_sip_object_t base;
 	void *user_data;
 	LinphoneAddress *uri;
-	SalOp *insub;
+	MSList *insubs; /*list of SalOp. There can be multiple instances of a same Friend that subscribe to our presence*/
 	SalOp *outsub;
 	LinphoneSubscribePolicy pol;
 	LinphonePresenceModel *presence;

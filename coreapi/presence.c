@@ -1445,7 +1445,7 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalOp *op){
 	LinphoneFriend *fl=linphone_friend_new_with_address(subscriber);
 	if (fl==NULL) return ;
-	fl->insub=op;
+	linphone_friend_add_incoming_subscription(fl, op);
 	linphone_friend_set_inc_subscribe_policy(fl,LinphoneSPAccept);
 	fl->inc_subscribe_pending=TRUE;
 	lc->subscribers=ms_list_append(lc->subscribers,(void *)fl);
@@ -1468,9 +1468,7 @@ void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *p
 	if (activity_str != NULL) ms_free(activity_str);
 	for(elem=lc->friends;elem!=NULL;elem=elem->next){
 		LinphoneFriend *lf=(LinphoneFriend *)elem->data;
-		if (lf->insub){
-			linphone_friend_notify(lf,presence);
-		}
+		linphone_friend_notify(lf,presence);
 	}
 }
 
@@ -1478,26 +1476,15 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	LinphoneFriend *lf=NULL;
 	char *tmp;
 	LinphoneAddress *uri;
-	LinphoneProxyConfig *cfg;
 
 	uri=linphone_address_new(from);
 	linphone_address_clean(uri);
 	tmp=linphone_address_as_string(uri);
 	ms_message("Receiving new subscription from %s.",from);
 
-	cfg=linphone_core_lookup_known_proxy(lc,uri);
-	if (cfg!=NULL){
-		if (cfg->op){
-			if (sal_op_get_contact_address(cfg->op)) {
-				sal_op_set_contact_address (op,sal_op_get_contact_address(cfg->op));
-				ms_message("Contact for next subscribe answer has been fixed using proxy "/*to %s",fixed_contact*/);
-			}
-		}
-	}
-
 	/* check if we answer to this subscription */
 	if (linphone_find_friend_by_address(lc->friends,uri,&lf)!=NULL){
-		lf->insub=op;
+		linphone_friend_add_incoming_subscription(lf, op);
 		lf->inc_subscribe_pending=TRUE;
 		sal_subscribe_accept(op);
 		linphone_friend_done(lf);	/*this will do all necessary actions */
@@ -1904,7 +1891,7 @@ void linphone_subscription_closed(LinphoneCore *lc, SalOp *op){
 	lf=linphone_find_friend_by_inc_subscribe(lc->friends,op);
 	sal_op_release(op);
 	if (lf!=NULL){
-		lf->insub=NULL;
+		linphone_friend_remove_incoming_subscription(lf, op);
 	}else{
 		ms_warning("Receiving unsuscribe for unknown in-subscribtion from %s", sal_op_get_from(op));
 	}
