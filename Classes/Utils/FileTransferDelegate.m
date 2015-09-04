@@ -188,13 +188,17 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 - (void)stopAndDestroy {
 	[[[LinphoneManager instance] fileTransferDelegates] removeObject:self];
 	if (_message != NULL) {
-		LOGI(@"%p Cancelling transfer from %p", self, _message);
-		linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message), NULL);
-		linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(_message), NULL);
-		linphone_chat_message_cancel_file_transfer(_message);
-		linphone_chat_message_unref(_message);
+		LinphoneChatMessage *msg = _message;
+		_message = NULL;
+		LOGI(@"%p Cancelling transfer from %p", self, msg);
+		linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(msg), NULL);
+		linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(msg), NULL);
+		// when we cancel file transfer, this will automatically trigger NotDelivered callback... recalling ourself a
+		// second time
+		// so we have to unset message BEFORE calling this
+		linphone_chat_message_cancel_file_transfer(msg);
+		linphone_chat_message_unref(msg);
 	}
-	_message = NULL;
 	_data = nil;
 	LOGI(@"%p Destroying", self);
 }
