@@ -18,10 +18,9 @@
 "Network" = "Network";
 "Tunnel" = "Tunnel";
 "Advanced" = "Advanced";
-"Extra features" = "Extra features";
 "Development debug actions" = "Development debug actions";
 "About" = "About";
 "Quit" = "Quit";
-"Exit" = "Exit";
+"Release core" = "Release core";
 "Clear cache" = "Clear cache";
 "Battery alert" = "Battery alert";

@@ -10,5 +10,6 @@
 "Media Encryption" = "Media Encryption";
 "Push Notification" = "Push Notification";
 "Limits" = "Limits";
-"Upload bandwidth" = "Upload bandwidth";
-"Download bandwidth" = "Download bandwidth";
+"Adaptive rate control" = "Adaptive rate control";
+"Adaptive rate control" = "Adaptive rate control";
+"Adaptive rate algorithm" = "Adaptive rate algorithm";

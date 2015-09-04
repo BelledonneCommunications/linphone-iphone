@@ -14,13 +14,12 @@
 "G.729" = "G.729";
 "GSM" = "GSM";
 "iLBC" = "iLBC";
+"iSAC" = "iSAC";
 "PCMU" = "PCMU";
 "PCMA" = "PCMA";
 "Advanced" = "Advanced";
 "Playback gain" = "Playback gain";
 "Microphone gain" = "Microphone gain";
-"Adaptive rate control" = "Adaptive rate control";
-"Adaptive rate algorithm" = "Adaptive rate algorithm";
 "Codec bitrate limit" = "Codec bitrate limit";
 "Enable Voice Processing" = "Enable Voice Processing";
 "Enable Bass Boost" = "Enable Bass Boost";
