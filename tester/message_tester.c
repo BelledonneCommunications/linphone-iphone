@@ -561,7 +561,6 @@ static FILE* fopen_from_write_dir(const char * name, const char * mode) {
 
 static void lime_file_transfer_message_base(bool_t encrypt_file) {
 	int i;
-	char *to;
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneCoreManager *marie, *pauline;
 	LinphoneChatRoom *chat_room;
@@ -616,9 +615,8 @@ static void lime_file_transfer_message_base(bool_t encrypt_file) {
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
 	/* create a chatroom on pauline's side */
-	to = linphone_address_as_string(marie->identity);
-	chat_room = linphone_core_create_chat_room(pauline->lc,to);
-	ms_free(to);
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+
 	/* create a file transfer message */
 	content = linphone_core_create_content(pauline->lc);
 	linphone_content_set_type(content,"text");
@@ -846,7 +844,6 @@ static void lime_unit(void) {
 }
 
 static void lime_text_message(void) {
-	char* to;
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneChatRoom* chat_room;
 	char* filepath;
@@ -873,9 +870,7 @@ static void lime_text_message(void) {
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
 	ms_free(filepath);
 
-	to = linphone_address_as_string(marie->identity);
-	chat_room = linphone_core_create_chat_room(pauline->lc,to);
-	ms_free(to);
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
@@ -961,7 +956,6 @@ static void file_transfer_message_io_error_download(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		int i;
-		char* to;
 		LinphoneChatRoom* chat_room;
 		LinphoneChatMessage* message;
 		LinphoneContent content;
@@ -982,9 +976,7 @@ static void file_transfer_message_io_error_download(void) {
 		linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
 		/* create a chatroom on pauline's side */
-		to = linphone_address_as_string(marie->identity);
-		chat_room = linphone_core_create_chat_room(pauline->lc,to);
-		ms_free(to);
+		chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
 		/* create a file transfer message */
 		memset(&content,0,sizeof(content));
