@@ -75,8 +75,8 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 - (MSList *)sortChatRooms {
 	MSList *sorted = nil;
-	MSList *unsorted = linphone_core_get_chat_rooms([LinphoneManager getLc]);
-	MSList *iter = unsorted;
+	const MSList *unsorted = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+	const MSList *iter = unsorted;
 
 	while (iter) {
 		// store last message in user data
@@ -176,8 +176,7 @@ static void chatTable_free_chatrooms(void *data) {
 				[ftd cancel];
 			}
 		}
-		linphone_chat_room_delete_history(chatRoom);
-		linphone_chat_room_unref(chatRoom);
+		linphone_core_delete_chat_room(linphone_chat_room_get_lc(chatRoom), chatRoom);
 		data = ms_list_remove(data, chatRoom);
 
 		// will force a call to [self loadData]

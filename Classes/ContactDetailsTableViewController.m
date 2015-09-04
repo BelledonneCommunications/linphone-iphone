@@ -644,7 +644,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 					ChatRoomViewController);
 				if (controller != nil) {
 					LinphoneChatRoom *room =
-						linphone_core_get_or_create_chat_room([LinphoneManager getLc], [dest UTF8String]);
+						linphone_core_get_chat_room_from_uri([LinphoneManager getLc], [dest UTF8String]);
 					[controller setChatRoom:room];
 				}
 			}
