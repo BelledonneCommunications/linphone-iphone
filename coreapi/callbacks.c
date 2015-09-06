@@ -1106,6 +1106,7 @@ static void text_received(SalOp *op, const SalMessage *msg){
 static void is_composing_received(SalOp *op, const SalIsComposing *is_composing) {
 	LinphoneCore *lc = (LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	linphone_core_is_composing_received(lc, op, is_composing);
+	sal_op_release(op);
 }
 
 static void parse_presence_requested(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
