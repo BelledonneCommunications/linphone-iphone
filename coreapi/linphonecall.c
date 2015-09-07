@@ -584,7 +584,7 @@ static const char *linphone_call_get_public_ip_for_stream(LinphoneCall *call, in
 
 static void force_streams_dir_according_to_state(LinphoneCall *call, SalMediaDescription *md){
 	int i;
-	
+
 	switch (call->state){
 		case LinphoneCallPausing:
 		case LinphoneCallPaused:
@@ -593,7 +593,7 @@ static void force_streams_dir_according_to_state(LinphoneCall *call, SalMediaDes
 			return;
 		break;
 	}
-	
+
 	for (i=0; i<2; ++i){
 		SalStreamDescription *sd = &md->streams[i];
 		sd->dir = SalStreamSendOnly;
@@ -1349,7 +1349,13 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 				linphone_call_cancel_dtmfs(call);
 			}
 		}
-		linphone_core_notify_call_state_changed(lc,call,cstate,message);
+		if (!message) {
+			ms_error("%s(): You must fill a reason when changing call state (from %s o %s)."
+					, __FUNCTION__
+					, linphone_call_state_to_string(call->prevstate)
+					, linphone_call_state_to_string(call->state));
+		}
+		linphone_core_notify_call_state_changed(lc,call,cstate,message?message:"");
 		linphone_reporting_call_state_updated(call);
 		if (cstate==LinphoneCallReleased) {/*shall be performed after  app notification*/
 			linphone_call_set_released(call);
@@ -2696,7 +2702,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 					io.input.type = MSResourceFile;
 					io.input.file = playfile;
 				}
-				
+
 			}
 			if (ok == TRUE) {
 				audio_stream_start_from_io(call->audiostream,
@@ -2788,7 +2794,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 			MediaStreamDir dir= MediaStreamSendRecv;
 			bool_t is_inactive=FALSE;
 			MSWebCam *cam;
-			
+
 			call->current_params->video_codec = rtp_profile_get_payload(call->video_profile, used_pt);
 			call->current_params->has_video=TRUE;
 
@@ -2974,7 +2980,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 			call->all_muted = FALSE;
 		break;
 	}
-	
+
 	call->current_params->audio_codec = NULL;
 	call->current_params->video_codec = NULL;
 
@@ -3124,7 +3130,7 @@ static void update_rtp_stats(LinphoneCall *call, int stream_index) {
 	if (stream_index >= linphone_call_get_stream_count(call)) {
 		return;
 	}
-		
+
 	if (call->sessions[stream_index].rtp_session) {
 		const rtp_stats_t *stats = rtp_session_get_stats(call->sessions[stream_index].rtp_session);
 		memcpy(&call->stats[stream_index].rtp_stats, stats, sizeof(*stats));
@@ -3527,7 +3533,7 @@ rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *stats) {
 	if (stats) {
 		memcpy(&rtp_stats, &stats->rtp_stats, sizeof(stats->rtp_stats));
 	}
-	
+
 	return rtp_stats;
 }
 
@@ -4208,7 +4214,7 @@ MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index)
 RtpTransport* linphone_call_get_meta_rtp_transport(LinphoneCall *call, int stream_index) {
 	RtpTransport *meta_rtp;
 	RtpTransport *meta_rtcp;
-	
+
 	if (!call || stream_index < 0 || stream_index >= linphone_call_get_stream_count(call)) {
 		return NULL;
 	}
@@ -4220,7 +4226,7 @@ RtpTransport* linphone_call_get_meta_rtp_transport(LinphoneCall *call, int strea
 RtpTransport* linphone_call_get_meta_rtcp_transport(LinphoneCall *call, int stream_index) {
 	RtpTransport *meta_rtp;
 	RtpTransport *meta_rtcp;
-	
+
 	if (!call || stream_index < 0 || stream_index >= linphone_call_get_stream_count(call)) {
 		return NULL;
 	}

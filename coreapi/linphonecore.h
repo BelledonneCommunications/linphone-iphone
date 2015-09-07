@@ -1766,7 +1766,7 @@ typedef void (*LinphoneCoreGlobalStateChangedCb)(LinphoneCore *lc, LinphoneGloba
  * @param lc the LinphoneCore
  * @param call the call object whose state is changed.
  * @param cstate the new state of the call
- * @param message an informational message about the state.
+ * @param message a non NULL informational message about the state.
  */
 typedef void (*LinphoneCoreCallStateChangedCb)(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
 

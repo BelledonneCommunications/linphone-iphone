@@ -3320,7 +3320,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 #endif //defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 		if ((err = linphone_core_start_update_call(lc, call)) && call->state!=initial_state) {
 			/*Restore initial state*/
-			linphone_call_set_state(call,initial_state,NULL);
+			linphone_call_set_state(call,initial_state,"Restore initial state");
 		}
 
 	}else{
@@ -3350,7 +3350,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
  * the call state notification, to deactivate the automatic answer that would just confirm the audio but reject the video.
  * Then, when the user responds to dialog prompt, it becomes possible to call linphone_core_accept_call_update() to answer
  * the reINVITE, with eventually video enabled in the LinphoneCallParams argument.
- * 
+ *
  * The #LinphoneCallUpdatedByRemote notification can also arrive when receiving an INVITE without SDP. In such case, an unchanged offer is made
  * in the 200Ok, and when the ACK containing the SDP answer is received, #LinphoneCallUpdatedByRemote is triggered to notify the application of possible
  * changes in the media session. However in such case defering the update has no meaning since we just generating an offer.
@@ -6568,7 +6568,7 @@ static void linphone_core_run_hooks(LinphoneCore *lc){
 
 void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data){
 	linphone_task_list_remove(&lc->hooks, hook, hook_data);
-	
+
 }
 
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){

@@ -79,7 +79,7 @@ extern "C" {
 #endif
 
 #include <libintl.h>
-	
+
 #ifndef _
 #define _(String) dgettext(GETTEXT_PACKAGE,String)
 #endif
