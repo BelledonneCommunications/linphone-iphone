@@ -136,6 +136,10 @@
     ${prefix:linphone}/share/images
   </data>
 
+  <data>
+    ${prefix:linphone}/share/icons
+  </data>
+
 
   <!-- Copy in the themes data. You may want to trim this to save space
        in your bundle. -->
