@@ -17,21 +17,76 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #include "linphonecore.h"
 #include "sipsetup.h"
 #include "lpconfig.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
+#include "enum.h"
 
 #include <ctype.h>
 
+/*store current config related to server location*/
+static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {
+	if (cfg->saved_identity) linphone_address_destroy(cfg->saved_identity);
+	if (cfg->identity_address)
+		cfg->saved_identity = linphone_address_clone(cfg->identity_address);
+	else
+		cfg->saved_identity = NULL;
+
+	if (cfg->saved_proxy) linphone_address_destroy(cfg->saved_proxy);
+	if (cfg->reg_proxy)
+		cfg->saved_proxy = linphone_address_new(cfg->reg_proxy);
+	else
+		cfg->saved_proxy = NULL;
+}
+
+LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_address_equal(const LinphoneAddress *a, const LinphoneAddress *b) {
+	if (a == NULL && b == NULL)
+		return LinphoneProxyConfigAddressEqual;
+	else if (!a || !b)
+		return LinphoneProxyConfigAddressDifferent;
+
+	if (linphone_address_equal(a,b))
+		return LinphoneProxyConfigAddressEqual;
+	if (linphone_address_weak_equal(a,b)) {
+		/*also check both transport and uri */
+		if (linphone_address_is_secure(a) == linphone_address_is_secure(b) && linphone_address_get_transport(a) == linphone_address_get_transport(b))
+			return LinphoneProxyConfigAddressWeakEqual;
+		else
+			return LinphoneProxyConfigAddressDifferent;
+	}
+	return LinphoneProxyConfigAddressDifferent; /*either username, domain or port ar not equals*/
+}
+
+LinphoneProxyConfigAddressComparisonResult linphone_proxy_config_is_server_config_changed(const LinphoneProxyConfig* cfg) {
+	LinphoneAddress *current_proxy=cfg->reg_proxy?linphone_address_new(cfg->reg_proxy):NULL;
+	LinphoneProxyConfigAddressComparisonResult result_identity;
+	LinphoneProxyConfigAddressComparisonResult result;
+
+	result = linphone_proxy_config_address_equal(cfg->saved_identity,cfg->identity_address);
+	if (result == LinphoneProxyConfigAddressDifferent) goto end;
+	result_identity = result;
+
+	result = linphone_proxy_config_address_equal(cfg->saved_proxy,current_proxy);
+	if (result == LinphoneProxyConfigAddressDifferent) goto end;
+	/** If the proxies are equal use the result of the difference between the identities,
+	  * otherwise the result is weak-equal and so weak-equal must be returned even if the
+	  * identities were equal.
+	  */
+	if (result == LinphoneProxyConfigAddressEqual) result = result_identity;
+
+	end:
+	if (current_proxy) linphone_address_destroy(current_proxy);
+	return result;
+}
 
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 	MSList *elem;
 	int i;
 	if (!linphone_core_ready(lc)) return;
-	
+
 	for(elem=lc->sip_conf.proxies,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		linphone_proxy_config_write_to_config_file(lc->config,cfg,i);
@@ -41,77 +96,118 @@ void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
 }
 
-static void linphone_proxy_config_init(LinphoneCore* lc,LinphoneProxyConfig *obj){
-	memset(obj,0,sizeof(LinphoneProxyConfig));
-	obj->magic=linphone_proxy_config_magic;
-	obj->expires=LP_CONFIG_DEFAULT_INT((lc?lc->config:NULL),"reg_expires",3600);
-	obj->dial_prefix=ms_strdup(LP_CONFIG_DEFAULT_STRING((lc?lc->config:NULL),"dial_prefix",'\0'));
-	obj->dial_escape_plus=LP_CONFIG_DEFAULT_INT((lc?lc->config:NULL),"dial_escape_plus",0);
+static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cfg) {
+	const char *dial_prefix = lc ? lp_config_get_default_string(lc->config,"proxy","dial_prefix",NULL) : NULL;
+	const char *identity = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_identity", NULL) : NULL;
+	const char *proxy = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_proxy", NULL) : NULL;
+	const char *route = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_route", NULL) : NULL;
+	const char *realm = lc ? lp_config_get_default_string(lc->config, "proxy", "realm", NULL) : NULL;
+	const char *quality_reporting_collector = lc ? lp_config_get_default_string(lc->config, "proxy", "quality_reporting_collector", NULL) : NULL;
+	const char *contact_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_parameters", NULL) : NULL;
+	const char *contact_uri_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_uri_parameters", NULL) : NULL;
+
+	cfg->expires = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_expires", 3600) : 3600;
+	cfg->reg_sendregister = lc ? lp_config_get_default_int(lc->config, "proxy", "reg_sendregister", 1) : 1;
+	cfg->dial_prefix = dial_prefix ? ms_strdup(dial_prefix) : NULL;
+	cfg->dial_escape_plus = lc ? lp_config_get_default_int(lc->config, "proxy", "dial_escape_plus", 0) : 0;
+	cfg->privacy = lc ? lp_config_get_default_int(lc->config, "proxy", "privacy", LinphonePrivacyDefault) : LinphonePrivacyDefault;
+	cfg->identity_address = identity ? linphone_address_new(identity) : NULL;
+	cfg->reg_identity = cfg->identity_address ? linphone_address_as_string(cfg->identity_address) : NULL;
+	cfg->reg_proxy = proxy ? ms_strdup(proxy) : NULL;
+	cfg->reg_route = route ? ms_strdup(route) : NULL;
+	cfg->realm = realm ? ms_strdup(realm) : NULL;
+	cfg->quality_reporting_enabled = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_enabled", 0) : 0;
+	cfg->quality_reporting_collector = quality_reporting_collector ? ms_strdup(quality_reporting_collector) : NULL;
+	cfg->quality_reporting_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_interval", 0) : 0;
+	cfg->contact_params = contact_params ? ms_strdup(contact_params) : NULL;
+	cfg->contact_uri_params = contact_uri_params ? ms_strdup(contact_uri_params) : NULL;
+	cfg->avpf_mode = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf", LinphoneAVPFDefault) : LinphoneAVPFDefault;
+	cfg->avpf_rr_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
+	cfg->publish_expires=-1;
 }
 
-/**
- * @addtogroup proxies
- * @{
-**/
-
-/**
- * @deprecated, use #linphone_core_create_proxy_config instead
- *Creates an empty proxy config.
-**/
 LinphoneProxyConfig *linphone_proxy_config_new() {
 	return linphone_core_create_proxy_config(NULL);
 }
+
+static void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneProxyConfig);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneProxyConfig, belle_sip_object_t,
+	(belle_sip_object_destroy_t)_linphone_proxy_config_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
 LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc) {
-	LinphoneProxyConfig *obj=NULL;
-	obj=ms_new(LinphoneProxyConfig,1);
-	linphone_proxy_config_init(lc,obj);
-	return obj;
+	LinphoneProxyConfig *cfg = belle_sip_object_new(LinphoneProxyConfig);
+	linphone_proxy_config_init(lc,cfg);
+	return cfg;
 }
 
-
-
-/**
- * Destroys a proxy config.
- * 
- * @note: LinphoneProxyConfig that have been removed from LinphoneCore with
- * linphone_core_remove_proxy_config() must not be freed.
-**/
-void linphone_proxy_config_destroy(LinphoneProxyConfig *obj){
-	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
-	if (obj->reg_identity!=NULL) ms_free(obj->reg_identity);
-	if (obj->reg_route!=NULL) ms_free(obj->reg_route);
-	if (obj->ssctx!=NULL) sip_setup_context_free(obj->ssctx);
-	if (obj->realm!=NULL) ms_free(obj->realm);
-	if (obj->type!=NULL) ms_free(obj->type);
-	if (obj->dial_prefix!=NULL) ms_free(obj->dial_prefix);
-	if (obj->op) sal_op_release(obj->op);
-	if (obj->publish_op) sal_op_release(obj->publish_op);
+void _linphone_proxy_config_release_ops(LinphoneProxyConfig *cfg){
+	if (cfg->op) {
+		sal_op_release(cfg->op);
+		cfg->op=NULL;
+	}
+	if (cfg->publish_op){
+		sal_op_release(cfg->publish_op);
+		cfg->publish_op=NULL;
+	}
 }
 
-/**
- * Returns a boolean indicating that the user is sucessfully registered on the proxy.
-**/
-bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *obj){
-	return obj->state == LinphoneRegistrationOk;
+void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
+	if (cfg->reg_proxy!=NULL) ms_free(cfg->reg_proxy);
+	if (cfg->reg_identity!=NULL) ms_free(cfg->reg_identity);
+	if (cfg->identity_address!=NULL) linphone_address_destroy(cfg->identity_address);
+	if (cfg->reg_route!=NULL) ms_free(cfg->reg_route);
+	if (cfg->quality_reporting_collector!=NULL) ms_free(cfg->quality_reporting_collector);
+	if (cfg->ssctx!=NULL) sip_setup_context_free(cfg->ssctx);
+	if (cfg->realm!=NULL) ms_free(cfg->realm);
+	if (cfg->type!=NULL) ms_free(cfg->type);
+	if (cfg->dial_prefix!=NULL) ms_free(cfg->dial_prefix);
+	if (cfg->contact_params) ms_free(cfg->contact_params);
+	if (cfg->contact_uri_params) ms_free(cfg->contact_uri_params);
+	if (cfg->saved_proxy!=NULL) linphone_address_destroy(cfg->saved_proxy);
+	if (cfg->saved_identity!=NULL) linphone_address_destroy(cfg->saved_identity);
+	if (cfg->sent_headers!=NULL) sal_custom_header_free(cfg->sent_headers);
+	if (cfg->pending_contact) linphone_address_unref(cfg->pending_contact);
+	_linphone_proxy_config_release_ops(cfg);
 }
 
-/**
- * Sets the proxy address
- *
- * Examples of valid sip proxy address are:
- * - IP address: sip:87.98.157.38
- * - IP address with port: sip:87.98.157.38:5062
- * - hostnames : sip:sip.example.net
-**/
-int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *server_addr){
+void linphone_proxy_config_destroy(LinphoneProxyConfig *cfg) {
+	belle_sip_object_unref(cfg);
+}
+
+void _linphone_proxy_config_release(LinphoneProxyConfig *cfg) {
+	_linphone_proxy_config_release_ops(cfg);
+	belle_sip_object_unref(cfg);
+}
+
+LinphoneProxyConfig *linphone_proxy_config_ref(LinphoneProxyConfig *cfg) {
+	belle_sip_object_ref(cfg);
+	return cfg;
+}
+
+void linphone_proxy_config_unref(LinphoneProxyConfig *cfg) {
+	belle_sip_object_unref(cfg);
+}
+
+bool_t linphone_proxy_config_is_registered(const LinphoneProxyConfig *cfg){
+	return cfg->state == LinphoneRegistrationOk;
+}
+
+int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *cfg, const char *server_addr){
 	LinphoneAddress *addr=NULL;
 	char *modified=NULL;
-	
-	if (obj->reg_proxy!=NULL) ms_free(obj->reg_proxy);
-	obj->reg_proxy=NULL;
-	
+
+	if (cfg->reg_proxy!=NULL) ms_free(cfg->reg_proxy);
+	cfg->reg_proxy=NULL;
+
 	if (server_addr!=NULL && strlen(server_addr)>0){
-		if (strstr(server_addr,"sip:")==NULL){
+		if (strstr(server_addr,"sip:")==NULL && strstr(server_addr,"sips:")==NULL){
 			modified=ms_strdup_printf("sip:%s",server_addr);
 			addr=linphone_address_new(modified);
 			ms_free(modified);
@@ -119,7 +215,7 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
 		if (addr==NULL)
 			addr=linphone_address_new(server_addr);
 		if (addr){
-			obj->reg_proxy=linphone_address_as_string(addr);
+			cfg->reg_proxy=linphone_address_as_string(addr);
 			linphone_address_destroy(addr);
 		}else{
 			ms_warning("Could not parse %s",server_addr);
@@ -129,43 +225,38 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *obj, const char *
 	return 0;
 }
 
-/**
- * Sets the user identity as a SIP address.
- *
- * This identity is normally formed with display name, username and domain, such 
- * as:
- * Alice <sip:alice@example.net>
- * The REGISTER messages will have from and to set to this identity.
- *
-**/
-int linphone_proxy_config_set_identity(LinphoneProxyConfig *obj, const char *identity){
-	LinphoneAddress *addr;
+
+int linphone_proxy_config_set_identity_address(LinphoneProxyConfig *cfg, const LinphoneAddress *addr){
+	if (!addr || linphone_address_get_username(addr)==NULL){
+		char* as_string = linphone_address_as_string(addr);
+		ms_warning("Invalid sip identity: %s", addr?as_string:"NULL");
+		ms_free(as_string);
+		return -1;
+	}
+	if (cfg->identity_address != NULL) {
+		linphone_address_destroy(cfg->identity_address);
+	}
+	cfg->identity_address=linphone_address_clone(addr);
+
+	if (cfg->reg_identity!=NULL) {
+		ms_free(cfg->reg_identity);
+	}
+	cfg->reg_identity= linphone_address_as_string(cfg->identity_address);
+	return 0;
+}
+
+int linphone_proxy_config_set_identity(LinphoneProxyConfig *cfg, const char *identity){
 	if (identity!=NULL && strlen(identity)>0){
-		addr=linphone_address_new(identity);
-		if (!addr || linphone_address_get_username(addr)==NULL){
-			ms_warning("Invalid sip identity: %s",identity);
-			if (addr)
-				linphone_address_destroy(addr);
-			return -1;
-		}else{
-			if (obj->reg_identity!=NULL) {
-				ms_free(obj->reg_identity);
-				obj->reg_identity=NULL;
-			}
-			obj->reg_identity=ms_strdup(identity);
-			if (obj->realm){
-				ms_free(obj->realm);
-			}
-			obj->realm=ms_strdup(linphone_address_get_domain(addr));
-			linphone_address_destroy(addr);
-			return 0;
-		}
+		LinphoneAddress *addr=linphone_address_new(identity);
+		int ret=linphone_proxy_config_set_identity_address(cfg, addr);
+		linphone_address_destroy(addr);
+		return ret;
 	}
 	return -1;
 }
 
 const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
-	return cfg->realm;
+	return cfg->identity_address ? linphone_address_get_domain(cfg->identity_address) : NULL;
 }
 
 /**
@@ -173,17 +264,17 @@ const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
  * When a route is set, all outgoing calls will go to the route's destination if this proxy
  * is the default one (see linphone_core_set_default_proxy() ).
 **/
-int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
+int linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route)
 {
-	if (obj->reg_route!=NULL){
-		ms_free(obj->reg_route);
-		obj->reg_route=NULL;
+	if (cfg->reg_route!=NULL){
+		ms_free(cfg->reg_route);
+		cfg->reg_route=NULL;
 	}
-	if (route!=NULL){
+	if (route!=NULL && route[0] !='\0'){
 		SalAddress *addr;
 		char *tmp;
 		/*try to prepend 'sip:' */
-		if (strstr(route,"sip:")==NULL){
+		if (strstr(route,"sip:")==NULL && strstr(route,"sips:")==NULL){
 			tmp=ms_strdup_printf("sip:%s",route);
 		}else tmp=ms_strdup(route);
 		addr=sal_address_new(tmp);
@@ -193,158 +284,183 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *obj, const char *route)
 			ms_free(tmp);
 			tmp=NULL;
 		}
-		obj->reg_route=tmp;
+		cfg->reg_route=tmp;
 	}
 	return 0;
 }
 
-bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *obj){
-	if (obj->reg_proxy==NULL){
-		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("The sip proxy address you entered is invalid, it must start with \"sip:\""
+bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *cfg){
+	if (cfg->reg_proxy==NULL){
+		if (lc)
+			linphone_core_notify_display_warning(lc,_("The sip proxy address you entered is invalid, it must start with \"sip:\""
 						" followed by a hostname."));
 		return FALSE;
 	}
-	if (obj->reg_identity==NULL){
-		if (lc->vtable.display_warning)
-			lc->vtable.display_warning(lc,_("The sip identity you entered is invalid.\nIt should look like "
+	if (cfg->identity_address==NULL){
+		if (lc)
+			linphone_core_notify_display_warning(lc,_("The sip identity you entered is invalid.\nIt should look like "
 					"sip:username@proxydomain, such as sip:alice@example.net"));
 		return FALSE;
 	}
 	return TRUE;
 }
 
-/**
- * Indicates whether a REGISTER request must be sent to the proxy.
-**/
-void linphone_proxy_config_enableregister(LinphoneProxyConfig *obj, bool_t val){
-	obj->reg_sendregister=val;
+void linphone_proxy_config_enableregister(LinphoneProxyConfig *cfg, bool_t val){
+	cfg->reg_sendregister=val;
 }
 
-/**
- * Sets the registration expiration time in seconds.
-**/
-void linphone_proxy_config_expires(LinphoneProxyConfig *obj, int val){
+void linphone_proxy_config_set_expires(LinphoneProxyConfig *cfg, int val){
 	if (val<0) val=600;
-	obj->expires=val;
+	cfg->expires=val;
 }
 
-void linphone_proxy_config_enable_publish(LinphoneProxyConfig *obj, bool_t val){
-	obj->publish=val;
+void linphone_proxy_config_enable_publish(LinphoneProxyConfig *cfg, bool_t val){
+	cfg->publish=val;
 }
-/**
- * Starts editing a proxy configuration.
- *
- * Because proxy configuration must be consistent, applications MUST
- * call linphone_proxy_config_edit() before doing any attempts to modify
- * proxy configuration (such as identity, proxy address and so on).
- * Once the modifications are done, then the application must call
- * linphone_proxy_config_done() to commit the changes.
-**/
-void linphone_proxy_config_edit(LinphoneProxyConfig *obj){
-	if (obj->reg_sendregister){
-		/* unregister */
-		if (obj->state != LinphoneRegistrationNone && obj->state != LinphoneRegistrationCleared) {
-			sal_unregister(obj->op);
-		}
+
+void linphone_proxy_config_pause_register(LinphoneProxyConfig *cfg){
+	if (cfg->op) sal_op_stop_refreshing(cfg->op);
+}
+
+void linphone_proxy_config_edit(LinphoneProxyConfig *cfg){
+	if (cfg->publish && cfg->publish_op){
+			/*unpublish*/
+			sal_publish_presence(cfg->publish_op,NULL,NULL,0,(SalPresenceModel *)NULL);
+			sal_op_release(cfg->publish_op);
+			cfg->publish_op=NULL;
+	}
+	/*store current config related to server location*/
+	linphone_proxy_config_store_server_config(cfg);
+
+	/*stop refresher in any case*/
+	linphone_proxy_config_pause_register(cfg);
+}
+
+void linphone_proxy_config_apply(LinphoneProxyConfig *cfg,LinphoneCore *lc){
+	cfg->lc=lc;
+	linphone_proxy_config_done(cfg);
+}
+
+void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
+	LinphoneAddress *contact_addr=NULL;
+	if (	cfg->op
+			&& cfg->state == LinphoneRegistrationOk
+			&& (contact_addr = (LinphoneAddress*)sal_op_get_contact_address(cfg->op))
+			&& linphone_address_get_transport(contact_addr) != LinphoneTransportUdp /*with udp, there is a risk of port reuse, so I prefer to not do anything for now*/) {
+		/*need to save current contact in order to reset is later*/
+		linphone_address_ref(contact_addr);
+		if (cfg->pending_contact)
+			linphone_address_unref(cfg->pending_contact);
+		cfg->pending_contact=contact_addr;
+
+	}
+	if (cfg->publish_op){
+		sal_op_release(cfg->publish_op);
+		cfg->publish_op=NULL;
+	}
+	if (cfg->op){
+		sal_op_release(cfg->op);
+		cfg->op=NULL;
 	}
 }
 
-void linphone_proxy_config_apply(LinphoneProxyConfig *obj,LinphoneCore *lc)
-{
-	obj->lc=lc;
-	linphone_proxy_config_done(obj);
-}
-
-static char *guess_contact_for_register(LinphoneProxyConfig *obj){
-	LinphoneAddress *proxy=linphone_address_new(obj->reg_proxy);
-	char *ret=NULL;
+LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *cfg){
+	LinphoneAddress *ret=NULL;
+	LinphoneAddress *proxy=linphone_address_new(cfg->reg_proxy);
 	const char *host;
+
 	if (proxy==NULL) return NULL;
-	host=linphone_address_get_domain (proxy);
+	host=linphone_address_get_domain(proxy);
 	if (host!=NULL){
 		int localport = -1;
-		char localip_tmp[LINPHONE_IPADDR_SIZE] = {'\0'};
 		const char *localip = NULL;
-		char *tmp;
-		LCSipTransports tr;
-		LinphoneAddress *contact;
-		
-		contact=linphone_address_new(obj->reg_identity);
+		LinphoneAddress *contact=linphone_address_clone(cfg->identity_address);
+
+		linphone_address_clean(contact);
+
+		if (cfg->contact_params) {
+			// We want to add a list of contacts params to the linphone address
+			sal_address_set_params(contact,cfg->contact_params);
+		}
+		if (cfg->contact_uri_params){
+			sal_address_set_uri_params(contact,cfg->contact_uri_params);
+		}
 #ifdef BUILD_UPNP
-		if (obj->lc->upnp != NULL && linphone_core_get_firewall_policy(obj->lc)==LinphonePolicyUseUpnp &&
-			linphone_upnp_context_get_state(obj->lc->upnp) == LinphoneUpnpStateOk) {
-			localip = linphone_upnp_context_get_external_ipaddress(obj->lc->upnp);
-			localport = linphone_upnp_context_get_external_port(obj->lc->upnp);
+		if (cfg->lc->upnp != NULL && linphone_core_get_firewall_policy(cfg->lc)==LinphonePolicyUseUpnp &&
+			linphone_upnp_context_get_state(cfg->lc->upnp) == LinphoneUpnpStateOk) {
+			localip = linphone_upnp_context_get_external_ipaddress(cfg->lc->upnp);
+			localport = linphone_upnp_context_get_external_port(cfg->lc->upnp);
 		}
-#endif //BUILD_UPNP 		
-		if(localip == NULL) {
-			localip = localip_tmp;
-			linphone_core_get_local_ip(obj->lc,host,localip_tmp);
-		}
-		if(localport == -1) {
-			localport = linphone_core_get_sip_port(obj->lc);
-		}
-		linphone_address_set_port_int(contact,localport);
+#endif //BUILD_UPNP
+		linphone_address_set_port(contact,localport);
 		linphone_address_set_domain(contact,localip);
 		linphone_address_set_display_name(contact,NULL);
-		
-		linphone_core_get_sip_transports(obj->lc,&tr);
-		if (tr.udp_port <= 0) {
-			if (tr.tcp_port>0) {
-				sal_address_set_param(contact,"transport","tcp");
-			} else if (tr.tls_port>0) {
-				sal_address_set_param(contact,"transport","tls");
-			}
-		}
-		tmp=linphone_address_as_string_uri_only(contact);
-		if (obj->contact_params)
-			ret=ms_strdup_printf("<%s;%s>",tmp,obj->contact_params);
-		else ret=ms_strdup_printf("<%s>",tmp);
-		linphone_address_destroy(contact);
-		ms_free(tmp);
+
+		ret=contact;
 	}
-	linphone_address_destroy (proxy);
+	linphone_address_destroy(proxy);
 	return ret;
 }
 
-static void linphone_proxy_config_register(LinphoneProxyConfig *obj){
-	if (obj->reg_sendregister){
-		char *contact;
-		if (obj->op)
-			sal_op_release(obj->op);
-		obj->op=sal_op_new(obj->lc->sal);
-		contact=guess_contact_for_register(obj);
-		sal_op_set_contact(obj->op,contact);
-		ms_free(contact);
-		sal_op_set_user_pointer(obj->op,obj);
-		if (sal_register(obj->op,obj->reg_proxy,obj->reg_identity,obj->expires)==0) {
-			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress,"Registration in progress");
+void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj) {
+	if (obj->op && (obj->state == LinphoneRegistrationOk ||
+					(obj->state == LinphoneRegistrationProgress && obj->expires != 0))) {
+		sal_unregister(obj->op);
+	}
+}
+
+static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
+	if (cfg->reg_sendregister){
+		LinphoneAddress* proxy=linphone_address_new(cfg->reg_proxy);
+		char* proxy_string;
+		char * from = linphone_address_as_string(cfg->identity_address);
+		LinphoneAddress *contact;
+		ms_message("LinphoneProxyConfig [%p] about to register (LinphoneCore version: %s)",cfg,linphone_core_get_version());
+		proxy_string=linphone_address_as_string_uri_only(proxy);
+		linphone_address_destroy(proxy);
+		if (cfg->op)
+			sal_op_release(cfg->op);
+		cfg->op=sal_op_new(cfg->lc->sal);
+
+		linphone_configure_op(cfg->lc, cfg->op, cfg->identity_address, cfg->sent_headers, FALSE);
+
+		if ((contact=guess_contact_for_register(cfg))) {
+			sal_op_set_contact_address(cfg->op,contact);
+			linphone_address_destroy(contact);
+		}
+
+		sal_op_set_user_pointer(cfg->op,cfg);
+
+
+		if (sal_register(cfg->op,proxy_string, cfg->reg_identity, cfg->expires, cfg->pending_contact)==0) {
+			if (cfg->pending_contact) {
+				linphone_address_unref(cfg->pending_contact);
+				cfg->pending_contact=NULL;
+			}
+			linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress,"Registration in progress");
 		} else {
-			linphone_proxy_config_set_state(obj,LinphoneRegistrationFailed,"Registration failed");
+			linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,"Registration failed");
+		}
+		ms_free(proxy_string);
+		ms_free(from);
+	} else {
+		/* unregister if registered*/
+		if (cfg->state == LinphoneRegistrationProgress) {
+			linphone_proxy_config_set_state(cfg,LinphoneRegistrationCleared,"Registration cleared");
+		}
+		_linphone_proxy_config_unregister(cfg);
+	}
+}
+
+void linphone_proxy_config_refresh_register(LinphoneProxyConfig *cfg){
+	if (cfg->reg_sendregister && cfg->op && cfg->state!=LinphoneRegistrationProgress){
+		if (sal_register_refresh(cfg->op,cfg->expires) == 0) {
+			linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress, "Refresh registration");
 		}
 	}
 }
 
-/**
- * Refresh a proxy registration.
- * This is useful if for example you resuming from suspend, thus IP address may have changed.
-**/
-void linphone_proxy_config_refresh_register(LinphoneProxyConfig *obj){
-	if (obj->reg_sendregister && obj->op){
-		if (sal_register_refresh(obj->op,obj->expires) == 0) {
-			linphone_proxy_config_set_state(obj,LinphoneRegistrationProgress, "Refresh registration");
-		}
-	}
-}
 
-
-/**
- * Sets a dialing prefix to be automatically prepended when inviting a number with 
- * linphone_core_invite();
- * This dialing prefix shall usually be the country code of the country where the user is living.
- *
-**/
 void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char *prefix){
 	if (cfg->dial_prefix!=NULL){
 		ms_free(cfg->dial_prefix);
@@ -353,32 +469,57 @@ void linphone_proxy_config_set_dial_prefix(LinphoneProxyConfig *cfg, const char 
 	if (prefix && prefix[0]!='\0') cfg->dial_prefix=ms_strdup(prefix);
 }
 
-/**
- * Returns dialing prefix.
- *
- * 
-**/
 const char *linphone_proxy_config_get_dial_prefix(const LinphoneProxyConfig *cfg){
 	return cfg->dial_prefix;
 }
 
-/**
- * Sets whether liblinphone should replace "+" by international calling prefix in dialed numbers (passed to
- * #linphone_core_invite ).
- *
-**/
 void linphone_proxy_config_set_dial_escape_plus(LinphoneProxyConfig *cfg, bool_t val){
 	cfg->dial_escape_plus=val;
 }
 
-/**
- * Returns whether liblinphone should replace "+" by "00" in dialed numbers (passed to
- * #linphone_core_invite ).
- *
-**/
 bool_t linphone_proxy_config_get_dial_escape_plus(const LinphoneProxyConfig *cfg){
 	return cfg->dial_escape_plus;
 }
+
+void linphone_proxy_config_enable_quality_reporting(LinphoneProxyConfig *cfg, bool_t val){
+	cfg->quality_reporting_enabled = val;
+}
+
+bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg){
+	return cfg->quality_reporting_enabled;
+}
+
+void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, uint8_t interval) {
+	cfg->quality_reporting_interval = interval;
+}
+
+int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cfg) {
+	return cfg->quality_reporting_interval;
+}
+
+void linphone_proxy_config_set_quality_reporting_collector(LinphoneProxyConfig *cfg, const char *collector){
+	if (collector!=NULL && strlen(collector)>0){
+		LinphoneAddress *addr=linphone_address_new(collector);
+		if (!addr){
+			ms_error("Invalid SIP collector URI: %s. Quality reporting will be DISABLED.",collector);
+		} else {
+			if (cfg->quality_reporting_collector != NULL){
+				ms_free(cfg->quality_reporting_collector);
+			}
+			cfg->quality_reporting_collector = ms_strdup(collector);
+		}
+
+		if (addr){
+			linphone_address_destroy(addr);
+		}
+	}
+}
+
+const char *linphone_proxy_config_get_quality_reporting_collector(const LinphoneProxyConfig *cfg){
+	return cfg->quality_reporting_collector;
+}
+
+
 /*
  * http://en.wikipedia.org/wiki/Telephone_numbering_plan
  * http://en.wikipedia.org/wiki/Telephone_numbers_in_Europe
@@ -389,12 +530,11 @@ typedef struct dial_plan{
 	char  ccc[8]; /*country calling code*/
 	int nnl; /*maximum national number length*/
 	const char * icp; /*international call prefix, ex: 00 in europe*/
-	
+
 }dial_plan_t;
 
-/* TODO: fill with information for all countries over the world*/
-
 static dial_plan_t const dial_plans[]={
+	//Country					, iso country code, e164 country calling code, number length, international usual prefix
 	{"Afghanistan"                  ,"AF"		, "93"      , 9		, "00"  },
 	{"Albania"                      ,"AL"		, "355"     , 9		, "00"  },
 	{"Algeria"                      ,"DZ"		, "213"     , 9		, "00"  },
@@ -413,7 +553,7 @@ static dial_plan_t const dial_plans[]={
 	{"Bahrain"                      ,"BH"		, "973"     , 8     , "00"  },
 	{"Bangladesh"                   ,"BD"		, "880"     , 10    , "00"  },
 	{"Barbados"                     ,"BB"		, "1"       , 10    , "011"	},
-    {"Belarus"                      ,"BY"		, "375"     , 9     , "00"  },
+	{"Belarus"                      ,"BY"		, "375"     , 9     , "00"  },
 	{"Belgium"                      ,"BE"		, "32"      , 9     , "00"  },
 	{"Belize"                       ,"BZ"		, "501"     , 7     , "00"  },
 	{"Benin"                        ,"BJ"		, "229"     , 8     , "00"	},
@@ -422,12 +562,12 @@ static dial_plan_t const dial_plans[]={
 	{"Bolivia"                      ,"BO"		, "591"     , 8     , "00"	},
 	{"Bosnia and Herzegovina"       ,"BA"		, "387"     , 8     , "00"  },
 	{"Botswana"                     ,"BW"		, "267"     , 8     , "00"  },
-    {"Brazil"                       ,"BR"		, "55"      , 10	, "00"  },
+	{"Brazil"                       ,"BR"		, "55"      , 10	, "00"  },
 	{"Brunei Darussalam"            ,"BN"		, "673"     , 7		, "00"	},
 	{"Bulgaria"                     ,"BG"		, "359"     , 9		, "00"  },
 	{"Burkina Faso"                 ,"BF"		, "226"     , 8		, "00"  },
 	{"Burundi"                      ,"BI"		, "257"     , 8     , "011" },
-    {"Cambodia"                     ,"KH"		, "855"     , 9		, "00"  },
+	{"Cambodia"                     ,"KH"		, "855"     , 9		, "00"  },
 	{"Cameroon"                     ,"CM"		, "237"     , 8		, "00"  },
 	{"Canada"                       ,"CA"		, "1"       , 10	, "011" },
 	{"Cape Verde"                   ,"CV"		, "238"     , 7		, "00"	},
@@ -436,188 +576,190 @@ static dial_plan_t const dial_plans[]={
 	{"Chad"                         ,"TD"		, "235"     , 8		, "00"	},
 	{"Chile"                        ,"CL"		, "56"      , 9	    , "00"  },
 	{"China"                        ,"CN"		, "86"      , 11	, "00"  },
-    {"Colombia"                     ,"CO"       , "57"      , 10	, "00"  },
-    {"Comoros"                      ,"KM"		, "269"     , 7     , "00"	},
-    {"Congo"                        ,"CG"		, "242"     , 9		, "00"	},
-    {"Congo Democratic Republic"	,"CD"		, "243"     , 9		, "00"  },
-    {"Cook Islands"                 ,"CK"		, "682"     , 5		, "00"  },
-    {"Costa Rica"                   ,"CR"		, "506"     , 8     , "00"	},
-    {"C�te d'Ivoire"	            ,"AD"		, "225"     , 8     , "00"  },
-    {"Croatia"                      ,"HR"		, "385"     , 9		, "00"  },
-    {"Cuba"                         ,"CU"		, "53"      , 8     , "119" },
-    {"Cyprus"                       ,"CY"		, "357"     , 8     , "00"	},
-    {"Czech Republic"               ,"CZ"		, "420"     , 9     , "00"  },
-    {"Denmark"                      ,"DK"		, "45"      , 8		, "00"  },
-    {"Djibouti"                     ,"DJ"		, "253"     , 8		, "00"	},
-    {"Dominica"                     ,"DM"		, "1"       , 10	, "011" },
-    {"Dominican Republic"	        ,"DO"		, "1"       , 10	, "011" },
-    {"Ecuador"                      ,"EC"       , "593"     , 9		, "00"  },
-    {"Egypt"                        ,"EG"		, "20"      , 10	, "00"	},
-    {"El Salvador"                  ,"SV"		, "503"     , 8		, "00"	},
-    {"Equatorial Guinea"            ,"GQ"		, "240"     , 9		, "00"  },
-    {"Eritrea"                      ,"ER"		, "291"     , 7		, "00"  },
-    {"Estonia"                      ,"EE"		, "372"     , 8     , "00"	},
-    {"Ethiopia"                     ,"ET"		, "251"     , 9     , "00"  },
-    {"Falkland Islands"	            ,"FK"		, "500"     , 5		, "00"  },
-    {"Faroe Islands"	            ,"FO"		, "298"     , 6     , "00"  },
-    {"Fiji"                         ,"FJ"		, "679"     , 7     , "00"	},
-    {"Finland"                      ,"FI"		, "358"     , 9     , "00"  },
-    {"France"                       ,"FR"		, "33"      , 9		, "00"	},
-    {"French Guiana"				,"GF"		, "594"     , 9		, "00"	},
-    {"French Polynesia"             ,"PF"		, "689"     , 6	    , "00"  },
-    {"Gabon"                        ,"GA"		, "241"     , 8     , "00"  },
-    {"Gambia"                       ,"GM"       , "220"     , 7		, "00"  },
-    {"Georgia"                      ,"GE"		, "995"     , 9     , "00"	},
-    {"Germany"                      ,"DE"		, "49"      , 11	, "00"	},
-    {"Ghana"                        ,"GH"		, "233"     , 9		, "00"  },
-    {"Gibraltar"                    ,"GI"		, "350"     , 8		, "00"  },
-    {"Greece"                       ,"GR"		, "30"      ,10     , "00"	},
-    {"Greenland"                    ,"GL"		, "299"     , 6		, "00"  },
-    {"Grenada"                      ,"GD"		, "1"       , 10	, "011" },
-    {"Guadeloupe"                   ,"GP"		, "590"     , 9     , "00"  },
-    {"Guam"                         ,"GU"		, "1"       , 10	, "011"	},
-    {"Guatemala"                    ,"GT"		, "502"     , 8     , "00"  },
-    {"Guinea"                       ,"GN"		, "224"     , 8		, "00"  },
-    {"Guinea-Bissau"				,"GW"		, "245"     , 7		, "00"	},
-    {"Guyana"                       ,"GY"		, "592"     , 7	    , "001" },
-    {"Haiti"                        ,"HT"		, "509"     , 8     , "00"  },
-    {"Honduras"                     ,"HN"       , "504"     , 8		, "00"  },
-    {"Hong Kong"                    ,"HK"		, "852"     , 8     , "001"	},
-    {"Hungary"                      ,"HU"		, "36"      , 9     , "00"  },
-    {"Iceland"                      ,"IS"		, "354"     , 9     , "00"  },
-    {"India"                        ,"IN"		, "91"      , 10    , "00"  },
-    {"Indonesia"                    ,"ID"		, "62"      , 10	, "001"	},
-    {"Iran"                         ,"IR"		, "98"      , 10	, "00"	},
-    {"Iraq"                         ,"IQ"		, "964"     , 10	, "00"  },
-    {"Ireland"                      ,"IE"		, "353"     , 9		, "00"  },
-    {"Israel"                       ,"IL"		, "972"     , 9     , "00"	},
-    {"Italy"                        ,"IT"		, "39"      , 10	, "00"  },
-    {"Jamaica"                      ,"JM"		, "1"       , 10	, "011" },
-    {"Japan"                        ,"JP"		, "81"      , 10	, "010" },
-    {"Jordan"                       ,"JO"		, "962"     , 9     , "00"	},
-    {"Kazakhstan"                   ,"KZ"		, "7"       , 10    , "00"  },
-    {"Kenya"                        ,"KE"		, "254"     , 9		, "000" },
-    {"Kiribati"                     ,"KI"		, "686"     , 5		, "00"	},
-    {"Korea, North"                 ,"KP"		, "850"     , 12	, "99"  },
-    {"Korea, South"                 ,"KR"       , "82"      , 12	, "001" },
-    {"Kuwait"                       ,"KW"		, "965"     , 8     , "00"	},
-    {"Kyrgyzstan"                   ,"KG"		, "996"     , 9     , "00"  },
-    {"Laos"                         ,"LA"		, "856"     , 10    , "00"  },
-    {"Latvia"                       ,"LV"		, "371"     , 8     , "00"	},
-    {"Lebanon"                      ,"LB"		, "961"     , 7     , "00"	},
-    {"Lesotho"                      ,"LS"		, "266"     , 8		, "00"	},
-    {"Liberia"                      ,"LR"		, "231"     , 8		, "00"  },
-    {"Libya"                        ,"LY"		, "218"     , 8		, "00"  },
-    {"Liechtenstein"                ,"LI"		, "423"     , 7     , "00"	},
-    {"Lithuania"                    ,"LT"		, "370"     , 8		, "00"  },
-    {"Luxembourg"                   ,"LU"		, "352"     , 9		, "00"  },
-    {"Macau"                        ,"MO"		, "853"     , 8     , "00"  },
-    {"Macedonia"                    ,"MK"		, "389"     , 8     , "00"	},
-    {"Madagascar"                   ,"MG"		, "261"     , 9     , "00"  },
-    {"Malawi"                       ,"MW"		, "265"     , 9		, "00"  },
-    {"Malaysia"                     ,"MY"		, "60"      , 9		, "00"	},
-    {"Maldives"                     ,"MV"		, "960"     , 7	    , "00"  },
-    {"Mali"                         ,"ML"		, "223"     , 8     , "00"  },
-    {"Malta"                        ,"MT"       , "356"     , 8		, "00"  },
-    {"Marshall Islands"				,"MH"		, "692"     , 7     , "011"	},
-    {"Martinique"                   ,"MQ"		, "596"     , 9     , "00"  },
-    {"Mauritania"                   ,"MR"		, "222"     , 8     , "00"  },
-    {"Mauritius"                    ,"MU"		, "230"     , 7     , "00"	},
-    {"Mayotte Island"               ,"YT"		, "262"     , 9     , "00"	},
-    {"Mexico"                       ,"MX"		, "52"      , 10	, "00"	},
-    {"Micronesia"                   ,"FM"		, "691"     , 7		, "011" },
-    {"Moldova"                      ,"MD"		, "373"     , 8		, "00"  },
-    {"Monaco"                       ,"MC"		, "377"     , 8     , "00"	},
-    {"Mongolia"                     ,"MN"		, "976"     , 8     , "001" },
-    {"Montenegro"                   ,"ME"		, "382"     , 8		, "00"  },
-    {"Montserrat"                   ,"MS"		, "664"     , 10	, "011" },
-    {"Morocco"                      ,"MA"		, "212"     , 9     , "00"	},
-    {"Mozambique"                   ,"MZ"		, "258"     , 9     , "00"  },
-    {"Myanmar"                      ,"MM"		, "95"      , 8		, "00"  },
-    {"Namibia"                      ,"NA"		, "264"     , 9		, "00"	},
-    {"Nauru"                        ,"NR"		, "674"     , 7	    , "00"  },
-    {"Nepal"                        ,"NP"		, "43"      , 10	, "00"  },
-    {"Netherlands"                  ,"NL"       , "31"      , 9		, "00"  },
-    {"New Caledonia"				,"NC"		, "687"     , 6     , "00"	},
-    {"New Zealand"                  ,"NZ"		, "64"      , 10	, "00"  },
-    {"Nicaragua"                    ,"NI"		, "505"     , 8     , "00"  },
-    {"Niger"                        ,"NE"		, "227"     , 8     , "00"	},
-    {"Nigeria"                      ,"NG"		, "234"     , 10	, "009"	},
-    {"Niue"                         ,"NU"		, "683"     , 4		, "00"	},
-    {"Norfolk Island"	            ,"NF"		, "672"     , 5		, "00"  },
-    {"Northern Mariana Islands"	    ,"MP"		, "1"       , 10	, "011" },
-    {"Norway"                       ,"NO"		, "47"      , 8     , "00"	},
-    {"Oman"                         ,"OM"		, "968"     , 8		, "00"  },
-    {"Pakistan"                     ,"PK"		, "92"      , 10	, "00"  },
-    {"Palau"                        ,"PW"		, "680"     , 7     , "011" },
-    {"Palestine"                    ,"PS"		, "970"     , 9     , "00"	},
-    {"Panama"                       ,"PA"		, "507"     , 8     , "00"  },
-    {"Papua New Guinea"	            ,"PG"		, "675"     , 8		, "00"  },
-    {"Paraguay"                     ,"PY"		, "595"     , 9		, "00"	},
-    {"Peru"                         ,"PE"		, "51"      , 9	    , "00"  },
-    {"Philippines"                  ,"PH"		, "63"      , 10	, "00"  },
-    {"Poland"                       ,"PL"       , "48"      , 9		, "00"  },
-    {"Portugal"                     ,"PT"		, "351"     , 9     , "00"	},
-    {"Puerto Rico"                  ,"PR"		, "1"       , 10	, "011" },
-    {"Qatar"                        ,"QA"		, "974"     , 8     , "00"  },
-    {"R�union Island"				,"RE"		, "262"     , 9     , "011"	},
-    {"Romania"                      ,"RO"		, "40"      , 9     , "00"	},
-    {"Russian Federation"           ,"RU"		, "7"       , 10	, "8"	},
-    {"Rwanda"                       ,"RW"		, "250"     , 9		, "00"  },
-    {"Saint Helena"                 ,"SH"		, "290"     , 4		, "00"  },
-    {"Saint Kitts and Nevis"		,"KN"		, "1"       , 10	, "011"	},
-    {"Saint Lucia"                  ,"LC"		, "1"       , 10	, "011" },
-    {"Saint Pierre and Miquelon"    ,"PM"		, "508"     , 6		, "00"  },
-    {"Saint Vincent and the Grenadines","VC"	, "1"       , 10	, "011" },
-    {"Samoa"                        ,"WS"		, "685"     , 7     , "0"	},
-    {"San Marino"                   ,"SM"		, "378"     , 10	, "00"  },
-    {"S�o Tom� and Pr�ncipe"        ,"ST"		, "239"     , 7		, "00"  },
-    {"Saudi Arabia"                 ,"SA"		, "966"     , 9		, "00"	},
-    {"Senegal"                      ,"SN"		, "221"     , 9	    , "00"  },
-    {"Serbia"                       ,"RS"		, "381"     , 9     , "00"  },
-    {"Seychelles"                   ,"SC"       , "248"     , 7		, "00"  },
-    {"Sierra Leone"                 ,"SL"		, "232"     , 8     , "00"	},
-    {"Singapore"                    ,"SG"		, "65"      , 8     , "001" },
-    {"Slovakia"                     ,"SK"		, "421"     , 9     , "00"  },
-    {"Slovenia"                     ,"SI"		, "386"     , 8     , "00"	},
-    {"Solomon Islands"              ,"SB"		, "677"     , 7     , "00"	},
-    {"Somalia"                      ,"SO"		, "252"     , 8		, "00"	},
-    {"South Africa"                 ,"ZA"		, "27"      , 9		, "00"  },
-    {"Spain"                        ,"ES"		, "34"      , 9		, "00"  },
-    {"Sri Lanka"                    ,"LK"		, "94"      , 9     , "00"	},
-    {"Sudan"                        ,"SD"		, "249"     , 9		, "00"  },
-    {"Suriname"                     ,"SR"		, "597"     , 7		, "00"  },
-    {"Swaziland"                    ,"SZ"		, "268"     , 8     , "00"  },
-    {"Sweden"                       ,"SE"		, "1"       , 9     , "00"	},
-    {"Switzerland"                  ,"XK"		, "41"      , 9		, "00"	},
-    {"Syria"                        ,"SY"		, "963"     , 9		, "00"  },
-    {"Taiwan"                       ,"TW"		, "886"     , 9		, "810"	},
-    {"Tajikistan"                   ,"TJ"		, "992"     , 9	    , "002" },
-    {"Tanzania"                     ,"TZ"		, "255"     , 9     , "000" },
-    {"Thailand"                     ,"TH"       , "66"      , 9		, "001" },
-    {"Togo"                         ,"TG"		, "228"     , 8     , "00"	},
-    {"Tokelau"                      ,"TK"		, "690"     , 4     , "00"  },
-    {"Tonga"                        ,"TO"		, "676"     , 5     , "00"  },
-    {"Trinidad and Tobago"			,"TT"		, "1"       , 10    , "011"	},
-    {"Tunisia"                      ,"TN"		, "216"     , 8     , "00"	},
-    {"Turkey"                       ,"TR"		, "90"      , 10	, "00"	},
-    {"Turkmenistan"                 ,"TM"		, "993"     , 8		, "00"  },
-    {"Turks and Caicos Islands"	    ,"TC"		, "1"       , 7		, "0"   },
-    {"Tuvalu"                       ,"TV"		, "688"     , 5     , "00"	},
-    {"Uganda"                       ,"UG"		, "256"     , 9     , "000" },
-    {"Ukraine"                      ,"UA"		, "380"     , 9		, "00"  },
-    {"United Arab Emirates"	        ,"AE"		, "971"     , 9     , "00"  },
-    {"United Kingdom"               ,"UK"		, "44"      , 10	, "00"	},
-    {"United States"                ,"US"		, "1"       , 10	, "011" },
-    {"Uruguay"                      ,"UY"		, "598"     , 8		, "00"  },
-    {"Uzbekistan"                   ,"UZ"		, "998"     , 9		, "8"	},
-    {"Vanuatu"                      ,"VU"		, "678"     , 7	    , "00"  },
-    {"Venezuela"                    ,"VE"		, "58"      , 10	, "00"  },
-    {"Vietnam"                      ,"VN"		, "84"      , 9     , "00"  },
-    {"Wallis and Futuna"	        ,"WF"		, "681"     , 5		, "00"  },
-    {"Yemen"                        ,"YE"		, "967"     , 9     , "00"  },
-    {"Zambia"                       ,"ZM"		, "260"     , 9     , "00"	},
-    {"Zimbabwe"                     ,"ZW"		, "263"     , 9     , "00"  },
+	{"Colombia"                     ,"CO"       , "57"      , 10	, "00"  },
+	{"Comoros"                      ,"KM"		, "269"     , 7     , "00"	},
+	{"Congo"                        ,"CG"		, "242"     , 9		, "00"	},
+	{"Congo Democratic Republic"	,"CD"		, "243"     , 9		, "00"  },
+	{"Cook Islands"                 ,"CK"		, "682"     , 5		, "00"  },
+	{"Costa Rica"                   ,"CR"		, "506"     , 8     , "00"	},
+	{"Cote d'Ivoire"	            ,"AD"		, "225"     , 8     , "00"  },
+	{"Croatia"                      ,"HR"		, "385"     , 9		, "00"  },
+	{"Cuba"                         ,"CU"		, "53"      , 8     , "119" },
+	{"Cyprus"                       ,"CY"		, "357"     , 8     , "00"	},
+	{"Czech Republic"               ,"CZ"		, "420"     , 9     , "00"  },
+	{"Denmark"                      ,"DK"		, "45"      , 8		, "00"  },
+	{"Djibouti"                     ,"DJ"		, "253"     , 8		, "00"	},
+	{"Dominica"                     ,"DM"		, "1"       , 10	, "011" },
+	{"Dominican Republic"	        ,"DO"		, "1"       , 10	, "011" },
+	{"Ecuador"                      ,"EC"       , "593"     , 9		, "00"  },
+	{"Egypt"                        ,"EG"		, "20"      , 10	, "00"	},
+	{"El Salvador"                  ,"SV"		, "503"     , 8		, "00"	},
+	{"Equatorial Guinea"            ,"GQ"		, "240"     , 9		, "00"  },
+	{"Eritrea"                      ,"ER"		, "291"     , 7		, "00"  },
+	{"Estonia"                      ,"EE"		, "372"     , 8     , "00"	},
+	{"Ethiopia"                     ,"ET"		, "251"     , 9     , "00"  },
+	{"Falkland Islands"	            ,"FK"		, "500"     , 5		, "00"  },
+	{"Faroe Islands"	            ,"FO"		, "298"     , 6     , "00"  },
+	{"Fiji"                         ,"FJ"		, "679"     , 7     , "00"	},
+	{"Finland"                      ,"FI"		, "358"     , 9     , "00"  },
+	{"France"                       ,"FR"		, "33"      , 9		, "00"	},
+	{"French Guiana"				,"GF"		, "594"     , 9		, "00"	},
+	{"French Polynesia"             ,"PF"		, "689"     , 6	    , "00"  },
+	{"Gabon"                        ,"GA"		, "241"     , 8     , "00"  },
+	{"Gambia"                       ,"GM"       , "220"     , 7		, "00"  },
+	{"Georgia"                      ,"GE"		, "995"     , 9     , "00"	},
+	{"Germany"                      ,"DE"		, "49"      , 11	, "00"	},
+	{"Ghana"                        ,"GH"		, "233"     , 9		, "00"  },
+	{"Gibraltar"                    ,"GI"		, "350"     , 8		, "00"  },
+	{"Greece"                       ,"GR"		, "30"      ,10     , "00"	},
+	{"Greenland"                    ,"GL"		, "299"     , 6		, "00"  },
+	{"Grenada"                      ,"GD"		, "1"       , 10	, "011" },
+	{"Guadeloupe"                   ,"GP"		, "590"     , 9     , "00"  },
+	{"Guam"                         ,"GU"		, "1"       , 10	, "011"	},
+	{"Guatemala"                    ,"GT"		, "502"     , 8     , "00"  },
+	{"Guinea"                       ,"GN"		, "224"     , 8		, "00"  },
+	{"Guinea-Bissau"				,"GW"		, "245"     , 7		, "00"	},
+	{"Guyana"                       ,"GY"		, "592"     , 7	    , "001" },
+	{"Haiti"                        ,"HT"		, "509"     , 8     , "00"  },
+	{"Honduras"                     ,"HN"       , "504"     , 8		, "00"  },
+	{"Hong Kong"                    ,"HK"		, "852"     , 8     , "001"	},
+	{"Hungary"                      ,"HU"		, "36"      , 9     , "00"  },
+	{"Iceland"                      ,"IS"		, "354"     , 9     , "00"  },
+	{"India"                        ,"IN"		, "91"      , 10    , "00"  },
+	{"Indonesia"                    ,"ID"		, "62"      , 10	, "001"	},
+	{"Iran"                         ,"IR"		, "98"      , 10	, "00"	},
+	{"Iraq"                         ,"IQ"		, "964"     , 10	, "00"  },
+	{"Ireland"                      ,"IE"		, "353"     , 9		, "00"  },
+	{"Israel"                       ,"IL"		, "972"     , 9     , "00"	},
+	{"Italy"                        ,"IT"		, "39"      , 10	, "00"  },
+/*	{"Jersey"                       ,"JE"		, "44"      , 10	, "00"	},*/
+	{"Jamaica"                      ,"JM"		, "1"       , 10	, "011" },
+	{"Japan"                        ,"JP"		, "81"      , 10	, "010" },
+	{"Jordan"                       ,"JO"		, "962"     , 9     , "00"	},
+	{"Kazakhstan"                   ,"KZ"		, "7"       , 10    , "00"  },
+	{"Kenya"                        ,"KE"		, "254"     , 9		, "000" },
+	{"Kiribati"                     ,"KI"		, "686"     , 5		, "00"	},
+	{"Korea, North"                 ,"KP"		, "850"     , 12	, "99"  },
+	{"Korea, South"                 ,"KR"       , "82"      , 12	, "001" },
+	{"Kuwait"                       ,"KW"		, "965"     , 8     , "00"	},
+	{"Kyrgyzstan"                   ,"KG"		, "996"     , 9     , "00"  },
+	{"Laos"                         ,"LA"		, "856"     , 10    , "00"  },
+	{"Latvia"                       ,"LV"		, "371"     , 8     , "00"	},
+	{"Lebanon"                      ,"LB"		, "961"     , 7     , "00"	},
+	{"Lesotho"                      ,"LS"		, "266"     , 8		, "00"	},
+	{"Liberia"                      ,"LR"		, "231"     , 8		, "00"  },
+	{"Libya"                        ,"LY"		, "218"     , 8		, "00"  },
+	{"Liechtenstein"                ,"LI"		, "423"     , 7     , "00"	},
+	{"Lithuania"                    ,"LT"		, "370"     , 8		, "00"  },
+	{"Luxembourg"                   ,"LU"		, "352"     , 9		, "00"  },
+	{"Macau"                        ,"MO"		, "853"     , 8     , "00"  },
+	{"Macedonia"                    ,"MK"		, "389"     , 8     , "00"	},
+	{"Madagascar"                   ,"MG"		, "261"     , 9     , "00"  },
+	{"Malawi"                       ,"MW"		, "265"     , 9		, "00"  },
+	{"Malaysia"                     ,"MY"		, "60"      , 9		, "00"	},
+	{"Maldives"                     ,"MV"		, "960"     , 7	    , "00"  },
+	{"Mali"                         ,"ML"		, "223"     , 8     , "00"  },
+	{"Malta"                        ,"MT"       , "356"     , 8		, "00"  },
+	{"Marshall Islands"				,"MH"		, "692"     , 7     , "011"	},
+	{"Martinique"                   ,"MQ"		, "596"     , 9     , "00"  },
+	{"Mauritania"                   ,"MR"		, "222"     , 8     , "00"  },
+	{"Mauritius"                    ,"MU"		, "230"     , 7     , "00"	},
+	{"Mayotte Island"               ,"YT"		, "262"     , 9     , "00"	},
+	{"Mexico"                       ,"MX"		, "52"      , 10	, "00"	},
+	{"Micronesia"                   ,"FM"		, "691"     , 7		, "011" },
+	{"Moldova"                      ,"MD"		, "373"     , 8		, "00"  },
+	{"Monaco"                       ,"MC"		, "377"     , 8     , "00"	},
+	{"Mongolia"                     ,"MN"		, "976"     , 8     , "001" },
+	{"Montenegro"                   ,"ME"		, "382"     , 8		, "00"  },
+	{"Montserrat"                   ,"MS"		, "664"     , 10	, "011" },
+	{"Morocco"                      ,"MA"		, "212"     , 9     , "00"	},
+	{"Mozambique"                   ,"MZ"		, "258"     , 9     , "00"  },
+	{"Myanmar"                      ,"MM"		, "95"      , 8		, "00"  },
+	{"Namibia"                      ,"NA"		, "264"     , 9		, "00"	},
+	{"Nauru"                        ,"NR"		, "674"     , 7	    , "00"  },
+	{"Nepal"                        ,"NP"		, "43"      , 10	, "00"  },
+	{"Netherlands"                  ,"NL"       , "31"      , 9		, "00"  },
+	{"New Caledonia"				,"NC"		, "687"     , 6     , "00"	},
+	{"New Zealand"                  ,"NZ"		, "64"      , 10	, "00"  },
+	{"Nicaragua"                    ,"NI"		, "505"     , 8     , "00"  },
+	{"Niger"                        ,"NE"		, "227"     , 8     , "00"	},
+	{"Nigeria"                      ,"NG"		, "234"     , 10	, "009"	},
+	{"Niue"                         ,"NU"		, "683"     , 4		, "00"	},
+	{"Norfolk Island"	            ,"NF"		, "672"     , 5		, "00"  },
+	{"Northern Mariana Islands"	    ,"MP"		, "1"       , 10	, "011" },
+	{"Norway"                       ,"NO"		, "47"      , 8     , "00"	},
+	{"Oman"                         ,"OM"		, "968"     , 8		, "00"  },
+	{"Pakistan"                     ,"PK"		, "92"      , 10	, "00"  },
+	{"Palau"                        ,"PW"		, "680"     , 7     , "011" },
+	{"Palestine"                    ,"PS"		, "970"     , 9     , "00"	},
+	{"Panama"                       ,"PA"		, "507"     , 8     , "00"  },
+	{"Papua New Guinea"	            ,"PG"		, "675"     , 8		, "00"  },
+	{"Paraguay"                     ,"PY"		, "595"     , 9		, "00"	},
+	{"Peru"                         ,"PE"		, "51"      , 9	    , "00"  },
+	{"Philippines"                  ,"PH"		, "63"      , 10	, "00"  },
+	{"Poland"                       ,"PL"       , "48"      , 9		, "00"  },
+	{"Portugal"                     ,"PT"		, "351"     , 9     , "00"	},
+	{"Puerto Rico"                  ,"PR"		, "1"       , 10	, "011" },
+	{"Qatar"                        ,"QA"		, "974"     , 8     , "00"  },
+	{"R�union Island"				,"RE"		, "262"     , 9     , "011"	},
+	{"Romania"                      ,"RO"		, "40"      , 9     , "00"	},
+	{"Russian Federation"           ,"RU"		, "7"       , 10	, "8"	},
+	{"Rwanda"                       ,"RW"		, "250"     , 9		, "00"  },
+	{"Saint Helena"                 ,"SH"		, "290"     , 4		, "00"  },
+	{"Saint Kitts and Nevis"		,"KN"		, "1"       , 10	, "011"	},
+	{"Saint Lucia"                  ,"LC"		, "1"       , 10	, "011" },
+	{"Saint Pierre and Miquelon"    ,"PM"		, "508"     , 6		, "00"  },
+	{"Saint Vincent and the Grenadines","VC"	, "1"       , 10	, "011" },
+	{"Samoa"                        ,"WS"		, "685"     , 7     , "0"	},
+	{"San Marino"                   ,"SM"		, "378"     , 10	, "00"  },
+	{"Sao Tome and Principe"        ,"ST"		, "239"     , 7		, "00"  },
+	{"Saudi Arabia"                 ,"SA"		, "966"     , 9		, "00"	},
+	{"Senegal"                      ,"SN"		, "221"     , 9	    , "00"  },
+	{"Serbia"                       ,"RS"		, "381"     , 9     , "00"  },
+	{"Seychelles"                   ,"SC"       , "248"     , 7		, "00"  },
+	{"Sierra Leone"                 ,"SL"		, "232"     , 8     , "00"	},
+	{"Singapore"                    ,"SG"		, "65"      , 8     , "001" },
+	{"Slovakia"                     ,"SK"		, "421"     , 9     , "00"  },
+	{"Slovenia"                     ,"SI"		, "386"     , 8     , "00"	},
+	{"Solomon Islands"              ,"SB"		, "677"     , 7     , "00"	},
+	{"Somalia"                      ,"SO"		, "252"     , 8		, "00"	},
+	{"South Africa"                 ,"ZA"		, "27"      , 9		, "00"  },
+	{"Spain"                        ,"ES"		, "34"      , 9		, "00"  },
+	{"Sri Lanka"                    ,"LK"		, "94"      , 9     , "00"	},
+	{"Sudan"                        ,"SD"		, "249"     , 9		, "00"  },
+	{"Suriname"                     ,"SR"		, "597"     , 7		, "00"  },
+	{"Swaziland"                    ,"SZ"		, "268"     , 8     , "00"  },
+	{"Sweden"                       ,"SE"		, "1"       , 9     , "00"	},
+	{"Switzerland"                  ,"XK"		, "41"      , 9		, "00"	},
+	{"Syria"                        ,"SY"		, "963"     , 9		, "00"  },
+	{"Taiwan"                       ,"TW"		, "886"     , 9		, "810"	},
+	{"Tajikistan"                   ,"TJ"		, "992"     , 9	    , "002" },
+	{"Tanzania"                     ,"TZ"		, "255"     , 9     , "000" },
+	{"Thailand"                     ,"TH"       , "66"      , 9		, "001" },
+	{"Togo"                         ,"TG"		, "228"     , 8     , "00"	},
+	{"Tokelau"                      ,"TK"		, "690"     , 4     , "00"  },
+	{"Tonga"                        ,"TO"		, "676"     , 5     , "00"  },
+	{"Trinidad and Tobago"			,"TT"		, "1"       , 10    , "011"	},
+	{"Tunisia"                      ,"TN"		, "216"     , 8     , "00"	},
+	{"Turkey"                       ,"TR"		, "90"      , 10	, "00"	},
+	{"Turkmenistan"                 ,"TM"		, "993"     , 8		, "00"  },
+	{"Turks and Caicos Islands"	    ,"TC"		, "1"       , 7		, "0"   },
+	{"Tuvalu"                       ,"TV"		, "688"     , 5     , "00"	},
+	{"Uganda"                       ,"UG"		, "256"     , 9     , "000" },
+	{"Ukraine"                      ,"UA"		, "380"     , 9		, "00"  },
+	{"United Arab Emirates"	        ,"AE"		, "971"     , 9     , "00"  },
+	{"United Kingdom"               ,"GB"		, "44"      , 10	, "00"	},
+/*	{"United Kingdom"               ,"UK"		, "44"      , 10	, "00"	},*/
+	{"United States"                ,"US"		, "1"       , 10	, "011" },
+	{"Uruguay"                      ,"UY"		, "598"     , 8		, "00"  },
+	{"Uzbekistan"                   ,"UZ"		, "998"     , 9		, "8"	},
+	{"Vanuatu"                      ,"VU"		, "678"     , 7	    , "00"  },
+	{"Venezuela"                    ,"VE"		, "58"      , 10	, "00"  },
+	{"Vietnam"                      ,"VN"		, "84"      , 9     , "00"  },
+	{"Wallis and Futuna"	        ,"WF"		, "681"     , 5		, "00"  },
+	{"Yemen"                        ,"YE"		, "967"     , 9     , "00"  },
+	{"Zambia"                       ,"ZM"		, "260"     , 9     , "00"	},
+	{"Zimbabwe"                     ,"ZW"		, "263"     , 9     , "00"  },
 	{NULL                           ,NULL       ,  ""       , 0     , NULL	}
 };
 static dial_plan_t most_common_dialplan={ "generic" ,"", "", 10, "00"};
@@ -658,35 +800,41 @@ int linphone_dial_plan_lookup_ccc_from_iso(const char* iso) {
 	return -1;
 }
 
-static void lookup_dial_plan(const char *ccc, dial_plan_t *plan){
+static bool_t lookup_dial_plan_by_ccc(const char *ccc, dial_plan_t *plan){
 	int i;
 	for(i=0;dial_plans[i].country!=NULL;++i){
 		if (strcmp(ccc,dial_plans[i].ccc)==0){
 			*plan=dial_plans[i];
-			return;
+			return TRUE;
 		}
 	}
 	/*else return a generic "most common" dial plan*/
 	*plan=most_common_dialplan;
 	strcpy(plan->ccc,ccc);
+	return FALSE;
 }
 
-static bool_t is_a_phone_number(const char *username){
+bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const char *username){
 	const char *p;
 	for(p=username;*p!='\0';++p){
-		if (isdigit(*p) || 
-		    *p==' ' ||
-		    *p=='.' ||
-		    *p=='-' ||
-		    *p==')' ||
+		if (isdigit(*p) ||
+			*p==' ' ||
+			*p=='.' ||
+			*p=='-' ||
+			*p==')' ||
 			*p=='(' ||
 			*p=='/' ||
-			*p=='+') continue;
-		else return FALSE;
+			*p=='+' ||
+			(unsigned char)*p==0xca || (unsigned char)*p==0xc2 || (unsigned char)*p==0xa0 // non-breakable space (iOS uses it to format contacts phone number)
+			) {
+			continue;
+		}
+		return FALSE;
 	}
 	return TRUE;
 }
 
+//remove anything but [0-9] and +
 static char *flatten_number(const char *number){
 	char *result=ms_malloc0(strlen(number)+1);
 	char *w=result;
@@ -700,14 +848,14 @@ static char *flatten_number(const char *number){
 	return result;
 }
 
-static void replace_plus(const char *src, char *dest, size_t destlen, const char *icp){
+static void replace_plus_with_icp(const char *src, char *dest, size_t destlen, const char *icp){
 	int i=0;
-	
+
 	if (icp && src[0]=='+' && (destlen>(i=strlen(icp))) ){
 		src++;
-		strcpy(dest,icp);
+		strncpy(dest, icp, destlen);
 	}
-	
+
 	for(;(i<destlen-1) && *src!='\0';++i){
 		dest[i]=*src;
 		src++;
@@ -715,39 +863,63 @@ static void replace_plus(const char *src, char *dest, size_t destlen, const char
 	dest[i]='\0';
 }
 
+static void replace_icp_with_plus(const char *src, char *dest, size_t destlen, const char *icp){
+	int i=0;
+	if (strstr(src, icp) == src){
+		dest[0]='+';
+		i++;
+	}
+	strncpy(dest+i, src+strlen(icp), destlen-i-1);
+}
 
-int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
-	int numlen;
-	if (is_a_phone_number(username)){
-		char *flatten;
-		flatten=flatten_number(username);
-		ms_message("Flattened number is '%s'",flatten);
-		
-		if (proxy->dial_prefix==NULL || proxy->dial_prefix[0]=='\0'){
-			/*no prefix configured, nothing else to do*/
-			strncpy(result,flatten,result_len);
-			ms_free(flatten);
-			return 0;
-		}else{
-			dial_plan_t dialplan;
-			lookup_dial_plan(proxy->dial_prefix,&dialplan);
-			ms_message("Using dialplan '%s'",dialplan.country);
-			if (flatten[0]=='+' || strstr(flatten,dialplan.icp)==flatten){
-				/* the number has international prefix or +, so nothing to do*/
-				ms_message("Prefix already present.");
-				/*eventually replace the plus*/
-				replace_plus(flatten,result,result_len,proxy->dial_escape_plus ? dialplan.icp : NULL);
-				ms_free(flatten);
-				return 0;
+static char* replace_plus_with_icp_new(char *phone, const char* icp){
+	return (icp && phone[0]=='+') ? ms_strdup_printf("%s%s", icp, phone+1) : ms_strdup(phone);
+}
+
+static char* replace_icp_with_plus_new(char *phone, const char *icp){
+	return (strstr(phone, icp) == phone) ?  ms_strdup_printf("+%s", phone+strlen(icp)) : ms_strdup(phone);
+}
+
+bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
+	bool_t ret;
+	LinphoneProxyConfig *tmpproxy = proxy ? proxy : linphone_proxy_config_new();
+	memset(result, 0, result_len);
+	if (linphone_proxy_config_is_phone_number(tmpproxy, username)){
+		dial_plan_t dialplan = {0};
+		char *flatten=flatten_number(username);
+		ms_debug("Flattened number is '%s'",flatten);
+
+		/*username does not contain a dial prefix nor the tmpproxy, nothing else to do*/
+		if (tmpproxy->dial_prefix==NULL || tmpproxy->dial_prefix[0]=='\0'){
+			strncpy(result,flatten,result_len-1);
+		} else {
+			lookup_dial_plan_by_ccc(tmpproxy->dial_prefix,&dialplan);
+			ms_debug("Using dial plan '%s'",dialplan.country);
+			/* the number has international prefix or +, so nothing to do*/
+			if (flatten[0]=='+'){
+				ms_debug("Prefix already present.");
+				/*eventually replace the plus by the international calling prefix of the country*/
+				if (tmpproxy->dial_escape_plus) {
+					replace_plus_with_icp(flatten,result,result_len,dialplan.icp);
+				}else{
+					strncpy(result, flatten, result_len-1);
+				}
+			}else if (strstr(flatten,dialplan.icp)==flatten){
+				if (tmpproxy->dial_escape_plus){
+					strncpy(result, flatten, result_len-1);
+				}else{
+					replace_icp_with_plus(flatten, result, result_len, dialplan.icp);
+				}
 			}else{
+				int numlen;
 				int i=0;
 				int skip;
 				numlen=strlen(flatten);
 				/*keep at most national number significant digits */
 				skip=numlen-dialplan.nnl;
 				if (skip<0) skip=0;
-				/*first prepend internation calling prefix or +*/
-				if (proxy->dial_escape_plus){
+				/*first prepend international calling prefix or +*/
+				if (tmpproxy->dial_escape_plus){
 					strncpy(result,dialplan.icp,result_len);
 					i+=strlen(dialplan.icp);
 				}else{
@@ -761,122 +933,272 @@ int linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const cha
 				}
 				/*add user digits */
 				strncpy(result+i,flatten+skip,result_len-i-1);
-				ms_free(flatten);
 			}
 		}
-	}else strncpy(result,username,result_len);
-	return 0;
+		ms_free(flatten);
+		ret = TRUE;
+	} else {
+		strncpy(result,username,result_len-1);
+		ret = FALSE;
+	}
+	if (proxy==NULL) ms_free(tmpproxy);
+	return ret;
+}
+
+char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, const char *username) {
+	LinphoneProxyConfig *tmpproxy = proxy ? proxy : linphone_proxy_config_new();
+	char* result = NULL;
+	if (linphone_proxy_config_is_phone_number(tmpproxy, username)){
+		dial_plan_t dialplan = {0};
+		char * flatten=flatten_number(username);
+		ms_debug("Flattened number is '%s'",flatten);
+
+		/*if proxy has a dial prefix, modify phonenumber accordingly*/
+		if (tmpproxy->dial_prefix!=NULL && tmpproxy->dial_prefix[0]!='\0'){
+			lookup_dial_plan_by_ccc(tmpproxy->dial_prefix,&dialplan);
+			ms_debug("Using dial plan '%s'",dialplan.country);
+			/* the number already starts with + or international prefix*/
+			if (flatten[0]=='+'||strstr(flatten,dialplan.icp)==flatten){
+				ms_debug("Prefix already present.");
+				if (tmpproxy->dial_escape_plus) {
+					result = replace_plus_with_icp_new(flatten,dialplan.icp);
+				} else {
+					result = replace_icp_with_plus_new(flatten,dialplan.icp);
+				}
+			}else{
+				/*0. keep at most national number significant digits */
+				char* flatten_start = flatten + MAX(0, strlen(flatten) - dialplan.nnl);
+				/*1. First prepend international calling prefix or +*/
+				/*2. Second add prefix*/
+				/*3. Finally add user digits */
+
+				result = ms_strdup_printf("%s%s%s"
+											, tmpproxy->dial_escape_plus ? dialplan.icp : "+"
+											, dialplan.ccc
+											, flatten_start);
+			}
+		}
+		if (result==NULL) {
+			result = flatten;
+		} else {
+			ms_free(flatten);
+		}
+	}
+	if (proxy==NULL) ms_free(tmpproxy);
+	return result;
+}
+
+static LinphoneAddress* _linphone_core_destroy_addr_if_not_sip( LinphoneAddress* addr ){
+	if( linphone_address_is_sip(addr) ) {
+		return addr;
+	} else {
+		linphone_address_destroy(addr);
+		return NULL;
+	}
+}
+
+LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *proxy, const char *username) {
+	enum_lookup_res_t *enumres=NULL;
+	char *enum_domain=NULL;
+	char *tmpurl;
+	LinphoneAddress *uri;
+
+	if (!username || *username=='\0') return NULL;
+
+	if (is_enum(username,&enum_domain)){
+		if (proxy) {
+			linphone_core_notify_display_status(proxy->lc,_("Looking for telephone number destination..."));
+		}
+		if (enum_lookup(enum_domain,&enumres)<0){
+			if (proxy) {
+				linphone_core_notify_display_status(proxy->lc,_("Could not resolve this number."));
+			}
+			ms_free(enum_domain);
+			return NULL;
+		}
+		ms_free(enum_domain);
+		tmpurl=enumres->sip_address[0];
+		uri=linphone_address_new(tmpurl);
+		enum_lookup_res_free(enumres);
+		return _linphone_core_destroy_addr_if_not_sip(uri);
+	}
+	/* check if we have a "sip:" or a "sips:" */
+	if ( (strstr(username,"sip:")==NULL) && (strstr(username,"sips:")==NULL) ){
+		/* this doesn't look like a true sip uri */
+		if (strchr(username,'@')!=NULL){
+			/* seems like sip: is missing !*/
+			tmpurl=ms_strdup_printf("sip:%s",username);
+			uri=linphone_address_new(tmpurl);
+			ms_free(tmpurl);
+			if (uri){
+				return _linphone_core_destroy_addr_if_not_sip(uri);
+			}
+		}
+
+		if (proxy!=NULL){
+			/* append the proxy domain suffix but remove any custom parameters/headers */
+			LinphoneAddress *uri=linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
+			linphone_address_clean(uri);
+			if (uri==NULL){
+				return NULL;
+			} else {
+				char normalized_username[128];
+				linphone_address_set_display_name(uri,NULL);
+				linphone_proxy_config_normalize_number(proxy,username,normalized_username,
+										sizeof(normalized_username));
+				linphone_address_set_username(uri,normalized_username);
+				return _linphone_core_destroy_addr_if_not_sip(uri);
+			}
+		} else {
+			return NULL;
+		}
+	}
+	uri=linphone_address_new(username);
+	if (uri!=NULL){
+		return _linphone_core_destroy_addr_if_not_sip(uri);
+	}
+
+	return NULL;
 }
 
 /**
  * Commits modification made to the proxy configuration.
 **/
-int linphone_proxy_config_done(LinphoneProxyConfig *obj)
+int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 {
-	if (!linphone_proxy_config_check(obj->lc,obj)) return -1;
-	obj->commit=TRUE;
-	linphone_proxy_config_write_all_to_config_file(obj->lc);
+	LinphoneProxyConfigAddressComparisonResult res;
+
+	if (!linphone_proxy_config_check(cfg->lc,cfg))
+		return -1;
+
+	/*check if server address as changed*/
+	res = linphone_proxy_config_is_server_config_changed(cfg);
+	if (res != LinphoneProxyConfigAddressEqual) {
+		/* server config has changed, need to unregister from previous first*/
+		if (cfg->op) {
+			if (res == LinphoneProxyConfigAddressDifferent) {
+				_linphone_proxy_config_unregister(cfg);
+			}
+			sal_op_set_user_pointer(cfg->op,NULL); /*we don't want to receive status for this un register*/
+			sal_op_unref(cfg->op); /*but we keep refresher to handle authentication if needed*/
+			cfg->op=NULL;
+		}
+	}
+	cfg->commit=TRUE;
+	linphone_proxy_config_write_all_to_config_file(cfg->lc);
 	return 0;
 }
 
+const char* linphone_proxy_config_get_realm(const LinphoneProxyConfig *cfg)
+{
+	return cfg?cfg->realm:NULL;
+}
 void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm)
 {
 	if (cfg->realm!=NULL) {
 		ms_free(cfg->realm);
-		cfg->realm=NULL;
 	}
-	if (realm!=NULL) cfg->realm=ms_strdup(realm);
+	cfg->realm=ms_strdup(realm);
 }
 
-int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy,
-			       LinphoneOnlineStatus presence_mode){
-	int err;
-	SalOp *op=sal_op_new(proxy->lc->sal);
-	err=sal_publish(op,linphone_proxy_config_get_identity(proxy),
-	    linphone_proxy_config_get_identity(proxy),linphone_online_status_to_sal(presence_mode));
-	if (proxy->publish_op!=NULL)
-		sal_op_release(proxy->publish_op);
-	proxy->publish_op=op;
+int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePresenceModel *presence){
+	int err=0;
+
+	if (proxy->state==LinphoneRegistrationOk || proxy->state==LinphoneRegistrationCleared){
+		if (proxy->publish_op==NULL){
+			const LinphoneAddress *to=linphone_proxy_config_get_identity_address(proxy);
+			proxy->publish_op=sal_op_new(proxy->lc->sal);
+
+			linphone_configure_op(proxy->lc, proxy->publish_op,
+				to, NULL, FALSE);
+
+			if (lp_config_get_int(proxy->lc->config,"sip","publish_msg_with_contact",0)){
+				sal_op_set_contact_address(proxy->publish_op,linphone_proxy_config_get_identity_address(proxy));
+			}
+		}
+		err=sal_publish_presence(proxy->publish_op
+									,NULL
+									,NULL
+									,linphone_proxy_config_get_publish_expires(proxy)
+									,(SalPresenceModel *)presence);
+	}else proxy->send_publish=TRUE; /*otherwise do not send publish if registration is in progress, this will be done later*/
 	return err;
 }
 
-/**
- * Returns the route set for this proxy configuration.
-**/
-const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *obj){
-	return obj->reg_route;
+const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *cfg){
+	return cfg->reg_route;
+}
+
+const LinphoneAddress *linphone_proxy_config_get_identity_address(const LinphoneProxyConfig *cfg){
+	return cfg->identity_address;
+}
+
+const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *cfg){
+	return cfg->reg_identity;
+}
+
+bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *cfg){
+	return cfg->publish;
+}
+
+const char *linphone_proxy_config_get_server_addr(const LinphoneProxyConfig *cfg){
+	return cfg->reg_proxy;
 }
 
 /**
- * Returns the SIP identity that belongs to this proxy configuration.
- *
- * The SIP identity is a SIP address (Display Name <sip:username@@domain> )
+ * @return the duration of registration.
 **/
-const char *linphone_proxy_config_get_identity(const LinphoneProxyConfig *obj){
-	return obj->reg_identity;
+int linphone_proxy_config_get_expires(const LinphoneProxyConfig *cfg){
+	return cfg->expires;
 }
 
-/**
- * Returns TRUE if PUBLISH request is enabled for this proxy.
-**/
-bool_t linphone_proxy_config_publish_enabled(const LinphoneProxyConfig *obj){
-	return obj->publish;
+bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *cfg){
+	return cfg->reg_sendregister;
 }
 
-/**
- * Returns the proxy's SIP address.
-**/
-const char *linphone_proxy_config_get_addr(const LinphoneProxyConfig *obj){
-	return obj->reg_proxy;
-}
-
-/**
- * Returns the duration of registration.
-**/
-int linphone_proxy_config_get_expires(const LinphoneProxyConfig *obj){
-	return obj->expires;
-}
-
-/**
- * Returns TRUE if registration to the proxy is enabled.
-**/
-bool_t linphone_proxy_config_register_enabled(const LinphoneProxyConfig *obj){
-	return obj->reg_sendregister;
-}
-
-/**
- * Set optional contact parameters that will be added to the contact information sent in the registration.
- * @param obj the proxy config object
- * @param contact_params a string contaning the additional parameters in text form, like "myparam=something;myparam2=something_else"
- *
- * The main use case for this function is provide the proxy additional information regarding the user agent, like for example unique identifier or apple push id.
- * As an example, the contact address in the SIP register sent will look like <sip:joe@15.128.128.93:50421;apple-push-id=43143-DFE23F-2323-FA2232>.
-**/
-void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *obj, const char *contact_params){
-	if (obj->contact_params) {
-		ms_free(obj->contact_params);
-		obj->contact_params=NULL;
+void linphone_proxy_config_set_contact_parameters(LinphoneProxyConfig *cfg, const char *contact_params){
+	if (cfg->contact_params) {
+		ms_free(cfg->contact_params);
+		cfg->contact_params=NULL;
 	}
 	if (contact_params){
-		obj->contact_params=ms_strdup(contact_params);
+		cfg->contact_params=ms_strdup(contact_params);
 	}
 }
 
-/**
- * Returns previously set contact parameters.
-**/
-const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *obj){
-	return obj->contact_params;
+void linphone_proxy_config_set_contact_uri_parameters(LinphoneProxyConfig *cfg, const char *contact_uri_params){
+	if (cfg->contact_uri_params) {
+		ms_free(cfg->contact_uri_params);
+		cfg->contact_uri_params=NULL;
+	}
+	if (contact_uri_params){
+		cfg->contact_uri_params=ms_strdup(contact_uri_params);
+	}
 }
 
-struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *obj){
-	return obj->lc;
+const char *linphone_proxy_config_get_contact_parameters(const LinphoneProxyConfig *cfg){
+	return cfg->contact_params;
 }
 
-/**
- * Add a proxy configuration.
- * This will start registration on the proxy, if registration is enabled.
-**/
+const char *linphone_proxy_config_get_contact_uri_parameters(const LinphoneProxyConfig *cfg){
+	return cfg->contact_uri_params;
+}
+
+struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig *cfg){
+	return cfg->lc;
+}
+
+const char *linphone_proxy_config_get_custom_header(LinphoneProxyConfig *cfg, const char *header_name){
+	const SalCustomHeader *ch;
+	if (!cfg->op) return NULL;
+	ch = sal_op_get_recv_custom_header(cfg->op);
+	return sal_custom_header_find(ch, header_name);
+}
+
+void linphone_proxy_config_set_custom_header(LinphoneProxyConfig *cfg, const char *header_name, const char *header_value){
+	cfg->sent_headers=sal_custom_header_append(cfg->sent_headers, header_name, header_value);
+}
+
 int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	if (!linphone_proxy_config_check(lc,cfg)) {
 		return -1;
@@ -885,41 +1207,36 @@ int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 		ms_warning("ProxyConfig already entered, ignored.");
 		return 0;
 	}
-	lc->sip_conf.proxies=ms_list_append(lc->sip_conf.proxies,(void *)cfg);
+	lc->sip_conf.proxies=ms_list_append(lc->sip_conf.proxies,(void *)linphone_proxy_config_ref(cfg));
 	linphone_proxy_config_apply(cfg,lc);
 	return 0;
 }
 
-/**
- * Removes a proxy configuration.
- *
- * LinphoneCore will then automatically unregister and place the proxy configuration
- * on a deleted list. For that reason, a removed proxy does NOT need to be freed.
-**/
 void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cfg){
 	/* check this proxy config is in the list before doing more*/
 	if (ms_list_find(lc->sip_conf.proxies,cfg)==NULL){
-		ms_error("linphone_core_remove_proxy_config: LinphoneProxyConfig %p is not known by LinphoneCore (programming error?)",cfg);
+		ms_error("linphone_core_remove_proxy_config: LinphoneProxyConfig [%p] is not known by LinphoneCore (programming error?)",cfg);
 		return;
 	}
-	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,(void *)cfg);
+	lc->sip_conf.proxies=ms_list_remove(lc->sip_conf.proxies,cfg);
 	/* add to the list of destroyed proxies, so that the possible unREGISTER request can succeed authentication */
-	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,(void *)cfg);
-	cfg->deletion_date=ms_time(NULL);
-	if (cfg->state==LinphoneRegistrationOk){
-		/* this will unREGISTER */
-		linphone_proxy_config_edit(cfg);
-	}
+	lc->sip_conf.deleted_proxies=ms_list_append(lc->sip_conf.deleted_proxies,cfg);
+
 	if (lc->default_proxy==cfg){
 		lc->default_proxy=NULL;
 	}
+
+	cfg->deletion_date=ms_time(NULL);
+	if (cfg->state==LinphoneRegistrationOk){
+		/* UNREGISTER */
+		linphone_proxy_config_edit(cfg);
+		linphone_proxy_config_enable_register(cfg,FALSE);
+		linphone_proxy_config_done(cfg);
+		linphone_proxy_config_update(cfg);
+	}
 	linphone_proxy_config_write_all_to_config_file(lc);
 }
-/**
- * Erase all proxies from config.
- *
- * @ingroup proxy
-**/
+
 void linphone_core_clear_proxy_config(LinphoneCore *lc){
 	MSList* list=ms_list_copy(linphone_core_get_proxy_config_list((const LinphoneCore*)lc));
 	MSList* copy=list;
@@ -929,14 +1246,16 @@ void linphone_core_clear_proxy_config(LinphoneCore *lc){
 	ms_list_free(copy);
 	linphone_proxy_config_write_all_to_config_file(lc);
 }
-/**
- * Sets the default proxy.
- *
- * This default proxy must be part of the list of already entered LinphoneProxyConfig.
- * Toggling it as default will make LinphoneCore use the identity associated with
- * the proxy configuration in all incoming and outgoing calls.
-**/
-void linphone_core_set_default_proxy(LinphoneCore *lc, LinphoneProxyConfig *config){
+
+static int linphone_core_get_default_proxy_config_index(LinphoneCore *lc) {
+	int pos = -1;
+	if (lc->default_proxy != NULL) {
+		pos = ms_list_position(lc->sip_conf.proxies, ms_list_find(lc->sip_conf.proxies, (void *)lc->default_proxy));
+	}
+	return pos;
+}
+
+void linphone_core_set_default_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config){
 	/* check if this proxy is in our list */
 	if (config!=NULL){
 		if (ms_list_find(lc->sip_conf.proxies,config)==NULL){
@@ -947,105 +1266,126 @@ void linphone_core_set_default_proxy(LinphoneCore *lc, LinphoneProxyConfig *conf
 	}
 	lc->default_proxy=config;
 	if (linphone_core_ready(lc))
-		lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
-}	
+		lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy_config_index(lc));
+}
 
 void linphone_core_set_default_proxy_index(LinphoneCore *lc, int index){
 	if (index<0) linphone_core_set_default_proxy(lc,NULL);
 	else linphone_core_set_default_proxy(lc,ms_list_nth_data(lc->sip_conf.proxies,index));
 }
 
-/**
- * Returns the default proxy configuration, that is the one used to determine the current identity.
-**/
 int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config){
-	int pos=-1;
 	if (config!=NULL) *config=lc->default_proxy;
-	if (lc->default_proxy!=NULL){
-		pos=ms_list_position(lc->sip_conf.proxies,ms_list_find(lc->sip_conf.proxies,(void *)lc->default_proxy));
-	}
-	return pos;
+	return linphone_core_get_default_proxy_config_index(lc);
 }
 
-/**
- * Returns an unmodifiable list of entered proxy configurations.
-**/
+LinphoneProxyConfig * linphone_core_get_default_proxy_config(LinphoneCore *lc) {
+	return lc->default_proxy;
+}
+
 const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc){
 	return lc->sip_conf.proxies;
 }
 
-void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyConfig *obj, int index)
+void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyConfig *cfg, int index)
 {
 	char key[50];
 
 	sprintf(key,"proxy_%i",index);
 	lp_config_clean_section(config,key);
-	if (obj==NULL){
+	if (cfg==NULL){
 		return;
 	}
-	if (obj->type!=NULL){
-		lp_config_set_string(config,key,"type",obj->type);
+	if (cfg->type!=NULL){
+		lp_config_set_string(config,key,"type",cfg->type);
 	}
-	if (obj->reg_proxy!=NULL){
-		lp_config_set_string(config,key,"reg_proxy",obj->reg_proxy);
+	if (cfg->reg_proxy!=NULL){
+		lp_config_set_string(config,key,"reg_proxy",cfg->reg_proxy);
 	}
-	if (obj->reg_route!=NULL){
-		lp_config_set_string(config,key,"reg_route",obj->reg_route);
+	if (cfg->reg_route!=NULL){
+		lp_config_set_string(config,key,"reg_route",cfg->reg_route);
 	}
-	if (obj->reg_identity!=NULL){
-		lp_config_set_string(config,key,"reg_identity",obj->reg_identity);
+	if (cfg->reg_identity!=NULL){
+		lp_config_set_string(config,key,"reg_identity",cfg->reg_identity);
 	}
-	if (obj->contact_params!=NULL){
-		lp_config_set_string(config,key,"contact_parameters",obj->contact_params);
+	if (cfg->realm!=NULL){
+		lp_config_set_string(config,key,"realm",cfg->realm);
 	}
-	lp_config_set_int(config,key,"reg_expires",obj->expires);
-	lp_config_set_int(config,key,"reg_sendregister",obj->reg_sendregister);
-	lp_config_set_int(config,key,"publish",obj->publish);
-	lp_config_set_int(config,key,"dial_escape_plus",obj->dial_escape_plus);
-	lp_config_set_string(config,key,"dial_prefix",obj->dial_prefix);
+	if (cfg->contact_params!=NULL){
+		lp_config_set_string(config,key,"contact_parameters",cfg->contact_params);
+	}
+	if (cfg->contact_uri_params!=NULL){
+		lp_config_set_string(config,key,"contact_uri_parameters",cfg->contact_uri_params);
+	}
+	if (cfg->quality_reporting_collector!=NULL){
+		lp_config_set_string(config,key,"quality_reporting_collector",cfg->quality_reporting_collector);
+	}
+	lp_config_set_int(config,key,"quality_reporting_enabled",cfg->quality_reporting_enabled);
+	lp_config_set_int(config,key,"quality_reporting_interval",cfg->quality_reporting_interval);
+	lp_config_set_int(config,key,"reg_expires",cfg->expires);
+	lp_config_set_int(config,key,"reg_sendregister",cfg->reg_sendregister);
+	lp_config_set_int(config,key,"publish",cfg->publish);
+	lp_config_set_int(config, key, "avpf", cfg->avpf_mode);
+	lp_config_set_int(config, key, "avpf_rr_interval", cfg->avpf_rr_interval);
+	lp_config_set_int(config,key,"dial_escape_plus",cfg->dial_escape_plus);
+	lp_config_set_string(config,key,"dial_prefix",cfg->dial_prefix);
+	lp_config_set_int(config,key,"privacy",cfg->privacy);
 }
 
 
+#define CONFIGURE_STRING_VALUE(cfg,config,key,param,param_name) \
+	{\
+	char* default_value = linphone_proxy_config_get_##param(cfg)?ms_strdup(linphone_proxy_config_get_##param(cfg)):NULL;\
+	linphone_proxy_config_set_##param(cfg,lp_config_get_string(config,key,param_name,default_value)); \
+	if ( default_value) ms_free(default_value); \
+	}
 
-LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LpConfig *config, int index)
+#define CONFIGURE_BOOL_VALUE(cfg,config,key,param,param_name) \
+	linphone_proxy_config_enable_##param(cfg,lp_config_get_int(config,key,param_name,linphone_proxy_config_##param##_enabled(cfg)));
+
+#define CONFIGURE_INT_VALUE(cfg,config,key,param,param_name) \
+		linphone_proxy_config_set_##param(cfg,lp_config_get_int(config,key,param_name,linphone_proxy_config_get_##param(cfg)));
+
+LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc, int index)
 {
 	const char *tmp;
-	const char *identity;
-	const char *proxy;
 	LinphoneProxyConfig *cfg;
 	char key[50];
-	
+	LpConfig *config=lc->config;
+
 	sprintf(key,"proxy_%i",index);
 
 	if (!lp_config_has_section(config,key)){
 		return NULL;
 	}
 
-	cfg=linphone_proxy_config_new();
+	cfg=linphone_core_create_proxy_config(lc);
 
-	identity=lp_config_get_string(config,key,"reg_identity",NULL);	
-	proxy=lp_config_get_string(config,key,"reg_proxy",NULL);
-	
-	linphone_proxy_config_set_identity(cfg,identity);
-	linphone_proxy_config_set_server_addr(cfg,proxy);
-	
-	tmp=lp_config_get_string(config,key,"reg_route",NULL);
-	if (tmp!=NULL) linphone_proxy_config_set_route(cfg,tmp);
+	CONFIGURE_STRING_VALUE(cfg,config,key,identity,"reg_identity")
+	CONFIGURE_STRING_VALUE(cfg,config,key,server_addr,"reg_proxy")
+	CONFIGURE_STRING_VALUE(cfg,config,key,route,"reg_route")
 
-	linphone_proxy_config_set_contact_parameters(cfg,lp_config_get_string(config,key,"contact_parameters",NULL));
-	
-	linphone_proxy_config_expires(cfg,lp_config_get_int(config,key,"reg_expires",LP_CONFIG_DEFAULT_INT(config,"reg_expires",600)));
-	linphone_proxy_config_enableregister(cfg,lp_config_get_int(config,key,"reg_sendregister",0));
-	
-	linphone_proxy_config_enable_publish(cfg,lp_config_get_int(config,key,"publish",0));
+	CONFIGURE_STRING_VALUE(cfg,config,key,realm,"realm")
 
-	linphone_proxy_config_set_dial_escape_plus(cfg,lp_config_get_int(config,key,"dial_escape_plus",LP_CONFIG_DEFAULT_INT(config,"dial_escape_plus",0)));
-	linphone_proxy_config_set_dial_prefix(cfg,lp_config_get_string(config,key,"dial_prefix",LP_CONFIG_DEFAULT_STRING(config,"dial_prefix",NULL)));
-	
+	CONFIGURE_BOOL_VALUE(cfg,config,key,quality_reporting,"quality_reporting_enabled")
+	CONFIGURE_STRING_VALUE(cfg,config,key,quality_reporting_collector,"quality_reporting_collector")
+	CONFIGURE_INT_VALUE(cfg,config,key,quality_reporting_interval,"quality_reporting_interval")
+
+	CONFIGURE_STRING_VALUE(cfg,config,key,contact_parameters,"contact_parameters")
+	CONFIGURE_STRING_VALUE(cfg,config,key,contact_uri_parameters,"contact_uri_parameters")
+
+	CONFIGURE_INT_VALUE(cfg,config,key,expires,"reg_expires")
+	CONFIGURE_BOOL_VALUE(cfg,config,key,register,"reg_sendregister")
+	CONFIGURE_BOOL_VALUE(cfg,config,key,publish,"publish")
+	CONFIGURE_INT_VALUE(cfg,config,key,avpf_mode,"avpf")
+	CONFIGURE_INT_VALUE(cfg,config,key,avpf_rr_interval,"avpf_rr_interval")
+	CONFIGURE_INT_VALUE(cfg,config,key,dial_escape_plus,"dial_escape_plus")
+	CONFIGURE_STRING_VALUE(cfg,config,key,dial_prefix,"dial_prefix")
+
 	tmp=lp_config_get_string(config,key,"type",NULL);
-	if (tmp!=NULL && strlen(tmp)>0) 
+	if (tmp!=NULL && strlen(tmp)>0)
 		linphone_proxy_config_set_sip_setup(cfg,tmp);
-
+	CONFIGURE_INT_VALUE(cfg,config,key,privacy,"privacy")
 	return cfg;
 }
 
@@ -1063,10 +1403,10 @@ static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 	}
 	caps=sip_setup_context_get_capabilities(ssc);
 	if (caps & SIP_SETUP_CAP_ACCOUNT_MANAGER){
-		if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL)!=0){
-			if (lc->vtable.display_warning){
+		if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL,NULL)!=0){
+			{
 				char *tmp=ms_strdup_printf(_("Could not login as %s"),cfg->reg_identity);
-				lc->vtable.display_warning(lc,tmp);
+				linphone_core_notify_display_warning(lc,tmp);
 				ms_free(tmp);
 			}
 			return;
@@ -1080,7 +1420,7 @@ static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 			ms_error("Could not retrieve proxy uri !");
 		}
 	}
-	
+
 }
 
 SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg){
@@ -1091,29 +1431,37 @@ SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfig *cfg){
 	return NULL;
 }
 
+static bool_t can_register(LinphoneProxyConfig *cfg){
+	LinphoneCore *lc=cfg->lc;
+#ifdef BUILD_UPNP
+	if (linphone_core_get_firewall_policy(lc)==LinphonePolicyUseUpnp){
+		if(lc->sip_conf.register_only_when_upnp_is_ok &&
+			(lc->upnp == NULL || !linphone_upnp_context_is_ready_for_register(lc->upnp))) {
+			return FALSE;
+		}
+	}
+#endif //BUILD_UPNP
+	if (lc->sip_conf.register_only_when_network_is_up){
+		return lc->network_reachable;
+	}
+	return TRUE;
+}
+
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 	LinphoneCore *lc=cfg->lc;
 	if (cfg->commit){
 		if (cfg->type && cfg->ssctx==NULL){
 			linphone_proxy_config_activate_sip_setup(cfg);
 		}
-		switch(linphone_core_get_firewall_policy(lc)) {
-			case LinphonePolicyUseUpnp:
-#ifdef BUILD_UPNP
-			if(lc->sip_conf.register_only_when_upnp_is_ok && 
-			   (lc->upnp == NULL || !linphone_upnp_context_is_ready_for_register(lc->upnp))) {
-				break;
-			}
-#endif //BUILD_UPNP
-			default:
-			if ((!lc->sip_conf.register_only_when_network_is_up || lc->network_reachable)) {
-				linphone_proxy_config_register(cfg);
-			}
-		}	
-		if (cfg->publish && cfg->publish_op==NULL){
-			linphone_proxy_config_send_publish(cfg,lc->presence_mode);
+		if (can_register(cfg)){
+			linphone_proxy_config_register(cfg);
+			cfg->commit=FALSE;
+			if (cfg->publish) cfg->send_publish=TRUE;
 		}
-		cfg->commit=FALSE;
+	}
+	if (cfg->send_publish && (cfg->state==LinphoneRegistrationOk || cfg->state==LinphoneRegistrationCleared)){
+		linphone_proxy_config_send_publish(cfg,lc->presence_model);
+		cfg->send_publish=FALSE;
 	}
 }
 
@@ -1131,115 +1479,43 @@ SipSetupContext *linphone_proxy_config_get_sip_setup_context(LinphoneProxyConfig
 	return cfg->ssctx;
 }
 
-/**
- * @}
-**/
-
-LinphoneAccountCreator *linphone_account_creator_new(struct _LinphoneCore *core, const char *type){
-	LinphoneAccountCreator *obj;
-	LinphoneProxyConfig *cfg;
-	SipSetup *ss=sip_setup_lookup(type);
-	SipSetupContext *ssctx;
-	if (!ss){
-		return NULL;
-	}
-	if (!(sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_ACCOUNT_MANAGER)){
-		ms_error("%s cannot manage accounts.",type);
-		return NULL;
-	}
-	obj=ms_new0(LinphoneAccountCreator,1);
-	cfg=linphone_proxy_config_new();
-	ssctx=sip_setup_context_new(ss,cfg);
-	obj->lc=core;
-	obj->ssctx=ssctx;
-	set_string(&obj->domain,sip_setup_context_get_domains(ssctx)[0]);
-	cfg->lc=core;
-	return obj;
+void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cfg, void *ud) {
+	cfg->user_data = ud;
 }
 
-void linphone_account_creator_set_username(LinphoneAccountCreator *obj, const char *username){
-	set_string(&obj->username,username);
-}
-
-void linphone_account_creator_set_password(LinphoneAccountCreator *obj, const char *password){
-	set_string(&obj->password,password);
-}
-
-void linphone_account_creator_set_domain(LinphoneAccountCreator *obj, const char *domain){
-	set_string(&obj->domain,domain);
-}
-
-void linphone_account_creator_set_route(LinphoneAccountCreator *obj, const char *route) {
-	set_string(&obj->route,route);
-}
-
-void linphone_account_creator_set_email(LinphoneAccountCreator *obj, const char *email) {
-	set_string(&obj->email,email);
-}
-
-void linphone_account_creator_set_suscribe(LinphoneAccountCreator *obj, int suscribe) {
-	obj->suscribe = suscribe;
-}
-
-const char * linphone_account_creator_get_username(LinphoneAccountCreator *obj){
-	return obj->username;
-}
-
-const char * linphone_account_creator_get_domain(LinphoneAccountCreator *obj){
-	return obj->domain;
-}
-
-int linphone_account_creator_test_existence(LinphoneAccountCreator *obj){
-	SipSetupContext *ssctx=obj->ssctx;
-	char *uri=ms_strdup_printf("%s@%s",obj->username,obj->domain);
-	int err=sip_setup_context_account_exists(ssctx,uri);
-	ms_free(uri);
-	return err;
-}
-
-int linphone_account_creator_test_validation(LinphoneAccountCreator *obj) {
-	SipSetupContext *ssctx=obj->ssctx;
-	int err=sip_setup_context_account_validated(ssctx,obj->username);
-	return err;
-}
-
-LinphoneProxyConfig * linphone_account_creator_validate(LinphoneAccountCreator *obj){
-	SipSetupContext *ssctx=obj->ssctx;
-	char *uri=ms_strdup_printf("%s@%s",obj->username,obj->domain);
-	int err=sip_setup_context_create_account(ssctx, uri, obj->password, obj->email, obj->suscribe);
-	ms_free(uri);
-	if (err==0) {
-		obj->succeeded=TRUE;
-		return sip_setup_context_get_proxy_config(ssctx);
-	}
-	return NULL;
-}
-
-void linphone_account_creator_destroy(LinphoneAccountCreator *obj){
-	if (obj->username)
-		ms_free(obj->username);
-	if (obj->password)
-		ms_free(obj->password);
-	if (obj->domain)
-		ms_free(obj->domain);
-	if (!obj->succeeded){
-		linphone_proxy_config_destroy(sip_setup_context_get_proxy_config(obj->ssctx));
-	}
-}
-
-void linphone_proxy_config_set_user_data(LinphoneProxyConfig *cr, void * ud) {
-	cr->user_data=ud;
-}
-
-void * linphone_proxy_config_get_user_data(LinphoneProxyConfig *cr) {
-	return cr->user_data;
+void * linphone_proxy_config_get_user_data(const LinphoneProxyConfig *cfg) {
+	return cfg->user_data;
 }
 
 void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *message){
 	LinphoneCore *lc=cfg->lc;
-	cfg->state=state;
-	if (lc && lc->vtable.registration_state_changed){
-		lc->vtable.registration_state_changed(lc,cfg,state,message);
+	bool_t update_friends=FALSE;
+
+	if (state==LinphoneRegistrationProgress) {
+		char *msg=ortp_strdup_printf(_("Refreshing on %s..."), linphone_proxy_config_get_identity(cfg));
+		linphone_core_notify_display_status(lc,msg);
+		ms_free(msg);
+
+	}
+
+	if (cfg->state!=state || state==LinphoneRegistrationOk) { /*allow multiple notification of LinphoneRegistrationOk for refreshing*/
+		ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s]"	, cfg,
+								linphone_proxy_config_get_identity(cfg),
+								linphone_registration_state_to_string(cfg->state),
+								linphone_registration_state_to_string(state));
+		if (linphone_core_should_subscribe_friends_only_when_registered(lc)){
+			update_friends=(state==LinphoneRegistrationOk && cfg->state!=LinphoneRegistrationOk)
+				|| (state!=LinphoneRegistrationOk && cfg->state==LinphoneRegistrationOk);
+		}
+		cfg->state=state;
+
+		if (update_friends){
+			linphone_core_update_friends_subscriptions(lc,cfg,TRUE);
+		}
+		if (lc)
+			linphone_core_notify_registration_state_changed(lc,cfg,state,message);
+	} else {
+		/*state already reported*/
 	}
 }
 
@@ -1269,11 +1545,83 @@ LinphoneRegistrationState linphone_proxy_config_get_state(const LinphoneProxyCon
  }
 
 LinphoneReason linphone_proxy_config_get_error(const LinphoneProxyConfig *cfg) {
-	return cfg->error;
+	return linphone_error_info_get_reason(linphone_proxy_config_get_error_info(cfg));
 }
 
-void linphone_proxy_config_set_error(LinphoneProxyConfig *cfg,LinphoneReason error) {
-	cfg->error = error;
+const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProxyConfig *cfg){
+	return linphone_error_info_from_sal_op(cfg->op);
 }
 
+const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg) {
+	return cfg->op?(const LinphoneAddress*) sal_op_get_service_route(cfg->op):NULL;
+}
+const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) {
+	const char* addr=NULL;
+	const char* ret="udp"; /*default value*/
+	SalAddress* route_addr=NULL;
+	if (linphone_proxy_config_get_service_route(cfg)) {
+		route_addr=(SalAddress*)linphone_proxy_config_get_service_route(cfg);
+	} else if (linphone_proxy_config_get_route(cfg)) {
+		addr=linphone_proxy_config_get_route(cfg);
+	} else if(linphone_proxy_config_get_addr(cfg)) {
+		addr=linphone_proxy_config_get_addr(cfg);
+	} else {
+		ms_error("Cannot guess transport for proxy with identity [%s]",linphone_proxy_config_get_identity(cfg));
+		return NULL;
+	}
 
+	if ((route_addr || (route_addr=sal_address_new(addr))) && sal_address_get_transport(route_addr)) {
+		ret=sal_transport_to_string(sal_address_get_transport(route_addr));
+		if (!linphone_proxy_config_get_service_route(cfg)) sal_address_destroy(route_addr); /*destroy except for service route*/
+	}
+
+	return ret;
+}
+void linphone_proxy_config_set_privacy(LinphoneProxyConfig *params, LinphonePrivacyMask privacy) {
+	params->privacy=privacy;
+}
+LinphonePrivacyMask linphone_proxy_config_get_privacy(const LinphoneProxyConfig *params) {
+	return params->privacy;
+}
+void linphone_proxy_config_set_publish_expires(LinphoneProxyConfig *cfg, int expires) {
+	cfg->publish_expires=expires;
+}
+int linphone_proxy_config_get_publish_expires(const LinphoneProxyConfig *cfg) {
+	if (cfg->publish_expires<0) {
+		return cfg->expires; /*default value is same as register*/
+	} else {
+		return cfg->publish_expires;
+	}
+}
+
+void linphone_proxy_config_enable_avpf(LinphoneProxyConfig *cfg, bool_t enable) {
+	cfg->avpf_mode=enable ? LinphoneAVPFEnabled : LinphoneAVPFDisabled;
+}
+
+bool_t linphone_proxy_config_avpf_enabled(LinphoneProxyConfig *cfg) {
+	if (cfg->avpf_mode==LinphoneAVPFDefault && cfg->lc){
+		return linphone_core_get_avpf_mode(cfg->lc)==LinphoneAVPFEnabled;
+	}
+	return cfg->avpf_mode == LinphoneAVPFEnabled;
+}
+
+LinphoneAVPFMode linphone_proxy_config_get_avpf_mode(const LinphoneProxyConfig *cfg){
+	return cfg->avpf_mode;
+}
+
+void linphone_proxy_config_set_avpf_mode(LinphoneProxyConfig *cfg, LinphoneAVPFMode mode){
+	cfg->avpf_mode=mode;
+}
+
+void linphone_proxy_config_set_avpf_rr_interval(LinphoneProxyConfig *cfg, uint8_t interval) {
+	if (interval > 5) interval = 5;
+	cfg->avpf_rr_interval = interval;
+}
+
+uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cfg) {
+	return cfg->avpf_rr_interval;
+}
+
+const LinphoneAddress* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg) {
+	return sal_op_get_contact_address(cfg->op);
+}

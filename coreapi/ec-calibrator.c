@@ -29,37 +29,47 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void ecc_init_filters(EcCalibrator *ecc){
 	unsigned int rate;
+	int channels = 1;
+	int ecc_channels = 1;
 	MSTickerParams params={0};
 	params.name="Echo calibrator";
 	params.prio=MS_TICKER_PRIO_HIGH;
 	ecc->ticker=ms_ticker_new_with_params(&params);
 
-	ecc->sndread=ms_snd_card_create_reader(ecc->play_card);
+	ecc->sndread=ms_snd_card_create_reader(ecc->capt_card);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_GET_SAMPLE_RATE,&rate);
+	ms_filter_call_method(ecc->sndread,MS_FILTER_SET_NCHANNELS,&ecc_channels);
+	ms_filter_call_method(ecc->sndread,MS_FILTER_GET_NCHANNELS,&channels);
 	ecc->read_resampler=ms_filter_new(MS_RESAMPLE_ID);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_SAMPLE_RATE,&rate);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&ecc->rate);
+	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_NCHANNELS,&ecc_channels);
+	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_NCHANNELS,&channels);
 	
 	
 	ecc->det=ms_filter_new(MS_TONE_DETECTOR_ID);
 	ms_filter_call_method(ecc->det,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
-	ecc->rec=ms_filter_new(MS_FILE_REC_ID);
+	ecc->rec=ms_filter_new(MS_VOID_SINK_ID);
 
 	ms_filter_link(ecc->sndread,0,ecc->read_resampler,0);
 	ms_filter_link(ecc->read_resampler,0,ecc->det,0);
 	ms_filter_link(ecc->det,0,ecc->rec,0);
 
-	ecc->play=ms_filter_new(MS_FILE_PLAYER_ID);
+	ecc->play=ms_filter_new(MS_VOID_SOURCE_ID);
 	ecc->gen=ms_filter_new(MS_DTMF_GEN_ID);
 	ms_filter_call_method(ecc->gen,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ecc->write_resampler=ms_filter_new(MS_RESAMPLE_ID);
-	ecc->sndwrite=ms_snd_card_create_writer(ecc->capt_card);
+	ecc->sndwrite=ms_snd_card_create_writer(ecc->play_card);
 	
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_GET_SAMPLE_RATE,&rate);
+	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_NCHANNELS,&ecc_channels);
+	ms_filter_call_method(ecc->sndwrite,MS_FILTER_GET_NCHANNELS,&channels);
 	ms_filter_call_method(ecc->write_resampler,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->write_resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&rate);
+	ms_filter_call_method(ecc->write_resampler,MS_FILTER_SET_NCHANNELS,&ecc_channels);
+	ms_filter_call_method(ecc->write_resampler,MS_FILTER_SET_OUTPUT_NCHANNELS,&channels);
 
 	ms_filter_link(ecc->play,0,ecc->gen,0);
 	ms_filter_link(ecc->gen,0,ecc->write_resampler,0);
@@ -67,10 +77,17 @@ static void ecc_init_filters(EcCalibrator *ecc){
 
 	ms_ticker_attach(ecc->ticker,ecc->sndread);
 	ms_ticker_attach(ecc->ticker,ecc->play);
-	
+
+	if (ecc->audio_init_cb != NULL) {
+		(*ecc->audio_init_cb)(ecc->cb_data);
+	}
 }
 
 static void ecc_deinit_filters(EcCalibrator *ecc){
+	if (ecc->audio_uninit_cb != NULL) {
+		(*ecc->audio_uninit_cb)(ecc->cb_data);
+	}
+
 	ms_ticker_detach(ecc->ticker,ecc->sndread);
 	ms_ticker_detach(ecc->ticker,ecc->play);
 
@@ -133,8 +150,11 @@ static void on_tone_received(void *data, MSFilter *f, unsigned int event_id, voi
 static void ecc_play_tones(EcCalibrator *ecc){
 	MSDtmfGenCustomTone tone;
 	MSToneDetectorDef expected_tone;
+	
+	memset(&tone,0,sizeof(tone));
+	memset(&expected_tone,0,sizeof(expected_tone));
 
-	ms_filter_set_notify_callback(ecc->det,on_tone_received,ecc);
+	ms_filter_add_notify_callback(ecc->det,on_tone_received,ecc,TRUE);
 
 	/* configure the tones to be scanned */
 	
@@ -161,28 +181,28 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	
 	/*play an initial tone to startup the audio playback/capture*/
 	
-	tone.frequency=140;
+	tone.frequencies[0]=140;
 	tone.duration=1000;
 	tone.amplitude=0.5;
 
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(2);
 
-	ms_filter_set_notify_callback(ecc->gen,on_tone_sent,ecc);
+	ms_filter_add_notify_callback(ecc->gen,on_tone_sent,ecc,TRUE);
 	
 	/* play the three tones*/
 	
-	tone.frequency=2000;
+	tone.frequencies[0]=2000;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
 	
-	tone.frequency=2300;
+	tone.frequencies[0]=2300;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
 	
-	tone.frequency=2500;
+	tone.frequencies[0]=2500;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(1);
@@ -219,12 +239,15 @@ static void  * ecc_thread(void *p){
 	return NULL;
 }
 
-EcCalibrator * ec_calibrator_new(MSSndCard *play_card, MSSndCard *capt_card, unsigned int rate, LinphoneEcCalibrationCallback cb, void *cb_data ){
+EcCalibrator * ec_calibrator_new(MSSndCard *play_card, MSSndCard *capt_card, unsigned int rate, LinphoneEcCalibrationCallback cb,
+				 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data){
 	EcCalibrator *ecc=ms_new0(EcCalibrator,1);
 
 	ecc->rate=rate;
 	ecc->cb=cb;
 	ecc->cb_data=cb_data;
+	ecc->audio_init_cb=audio_init_cb;
+	ecc->audio_uninit_cb=audio_uninit_cb;
 	ecc->capt_card=capt_card;
 	ecc->play_card=play_card;
 	ms_thread_create(&ecc->thread,NULL,ecc_thread,ecc);
@@ -240,7 +263,8 @@ void ec_calibrator_destroy(EcCalibrator *ecc){
 	ms_free(ecc);
 }
 
-int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb, void *cb_data){
+int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
+					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data){
 	unsigned int rate;
 
 	if (lc->ecc!=NULL){
@@ -248,7 +272,7 @@ int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibration
 		return -1;
 	}
 	rate = lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
-	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,cb_data);
+	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,audio_init_cb,audio_uninit_cb,cb_data);
 	return 0;
 }
 

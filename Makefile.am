@@ -4,8 +4,10 @@
 ACLOCAL_AMFLAGS = -I m4 $(ACLOCAL_MACOS_FLAGS)
 
 SUBDIRS = build m4 pixmaps po @ORTP_DIR@ @MS2_DIR@ \
-		coreapi console gtk share scripts tools
+		coreapi console gtk share scripts tools tester include
 
+
+GITVERSION=`cd $(top_srcdir) && git describe --always || echo $(VERSION)`
 
 
 ACLOCAL_FLAGS=-I$(top_srcdir)/m4
@@ -20,11 +22,11 @@ OPTIONAL_SOUNDS=\
 
 INSTALLDIR=$(abs_top_builddir)/linphone-install
 INSTALLDIR_WITH_PREFIX=$(INSTALLDIR)/$(prefix)
-ZIPFILE=$(abs_top_builddir)/$(PACKAGE)-win32-$(VERSION).zip
+ZIPFILE=$(abs_top_builddir)/$(PACKAGE)-win32-$(GITVERSION).zip
 ZIP_EXCLUDED=include lib \
 		$(OPTIONAL_SOUNDS)
 
-SDK_ZIPFILE=$(abs_top_builddir)/lib$(PACKAGE)-win32-$(VERSION).zip
+SDK_ZIPFILE=$(abs_top_builddir)/lib$(PACKAGE)-win32-sdk-$(GITVERSION).zip
 SDK_EXCLUDED= \
 	bin/linphone.exe \
 	lib/*.la \
@@ -37,7 +39,7 @@ SDK_EXCLUDED= \
 
 GTK_PREFIX=/
 GTK_THEME=Outcrop
-GTK_FILELIST=gtk+-2.22.1.filelist
+GTK_FILELIST=gtk+-2.24.8.filelist
 GTK_FILELIST_PATH=$(abs_top_srcdir)/$(GTK_FILELIST)
 LINPHONEDEPS_FILELIST=linphone-deps.filelist
 WINBINDIST_FILES=`cat $(abs_top_srcdir)/$(LINPHONEDEPS_FILELIST)`
@@ -51,7 +53,7 @@ PACKAGE_BUNDLE_FILE=$(top_srcdir)/build/macos/$(PACKAGE).bundle
 EXTRA_DIST =		BUGS  \
 			README.arm \
 			README.mingw \
-			README.macos \
+			README.macos.md \
 			autogen.sh \
 			linphone.spec \
 			linphone.spec.in \
@@ -90,10 +92,6 @@ rpm-novideo: rpm-base
 
 #a zip containing win32 binaries, suitable to generate an installer
 
-if BUILD_ZRTP
-WINBINDIST_FILES+=./bin/libzrtpcpp.dll ./bin/msys-1.0.dll ./bin/msys-crypto-1.0.0.dll
-endif
-
 if BUILD_TUNNEL
 WINBINDIST_FILES+=./bin/libtunnel-0.dll
 endif
@@ -101,31 +99,33 @@ endif
 other-cherrypick:
 	cd $(GTK_PREFIX) && \
 	for file in $(WINBINDIST_FILES) ; do \
-		if test -d $$file; then \
+		if test -d $(prefix)/$$file; then \
 			$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		else \
-			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
+			cp $(prefix)/$$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
 	done
-	cp /mingw/bin/libgcc_s*.dll \
-		/mingw/bin/libstdc++-6.dll \
-		/mingw/bin/libintl-8.dll \
-		/mingw/bin/libiconv-2.dll \
-		/mingw/bin/pthreadGC2.dll \
-		$(INSTALLDIR_WITH_PREFIX)/bin/.
+	if test -d /mingw/bin ; then \
+		cp /mingw/bin/libgcc_s*.dll \
+			/mingw/bin/libstdc++-6.dll \
+			/mingw/bin/libintl-8.dll \
+			/mingw/bin/libiconv-2.dll \
+			/mingw/bin/pthreadGC2.dll \
+			$(INSTALLDIR_WITH_PREFIX)/bin/. ;\
+	fi
 
 
 gtk-cherrypick:
 	cd $(GTK_PREFIX) && \
 	for file in `cat $(GTK_FILELIST_PATH)` ; do \
-		if test -d $$file; then \
+		if test -d $(prefix)/$$file; then \
 			$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		else \
-			cp $$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
+			cp $(prefix)/$$file $(INSTALLDIR_WITH_PREFIX)/$$file ;\
 		fi \
 	done && \
 	$(MKDIR_P) $(INSTALLDIR_WITH_PREFIX)/share/themes && \
-	cp -rf share/themes/$(GTK_THEME) $(INSTALLDIR_WITH_PREFIX)/share/themes/.
+	cp -rf $(prefix)/share/themes/$(GTK_THEME) $(INSTALLDIR_WITH_PREFIX)/share/themes/.
 
 zip:
 	rm -f $(ZIPFILE)
@@ -164,14 +164,23 @@ filelist: zip
 		fi \
 	done
 
+### LOCALIZATION
+
+pull-transifex:
+	tx pull -af
+
+push-transifex:
+	$(MAKE) -C po update-po
+	tx push -s -f --no-interactive
+
 
 ### WINDOWS
 
 setup.exe: filelist
 	cp $(ISS_SCRIPT) $(INSTALLDIR_WITH_PREFIX)/.
 	cd $(INSTALLDIR_WITH_PREFIX) && \
-	$(ISCC) $(ISS_SCRIPT) 
-	mv $(INSTALLDIR_WITH_PREFIX)/Output/setup.exe $(PACKAGE)-$(VERSION)-setup.exe
+	$(ISCC) $(ISS_SCRIPT)
+	mv $(INSTALLDIR_WITH_PREFIX)/Output/setup.exe $(PACKAGE)-setup-$(GITVERSION).exe
 	rm -rf $(INSTALLDIR_WITH_PREFIX)/Output
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(PACKAGE_WIN32_FILELIST)
 	rm -f $(INSTALLDIR_WITH_PREFIX)/$(ISS_SCRIPT)
@@ -199,16 +208,15 @@ Portfile-devel:	$(top_srcdir)/scripts/Portfile-devel.tmpl dist
 ### MAC
 
 MACAPPNAME=Linphone.app
-MACAPPZIP=$(PACKAGE)-$(VERSION).app.zip
+MACAPPZIP=$(PACKAGE)-$(GITVERSION).app.zip
+MACAPPDMG=$(PACKAGE)-$(GITVERSION).dmg
+MACAPPPKG=$(PACKAGE)-$(GITVERSION).pkg
 BUNDLEPREFIX=./
 BUNDLEDIR=$(BUNDLEPREFIX)$(MACAPPNAME)
-LIBICONV_HACK=$(top_builddir)/build/macos/libiconv.2.dylib
+#a path prefix where additional libs can be cherry-picked by the bundler.
+LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX=/usr/local
 
-$(LIBICONV_HACK):
-	cd $(top_builddir)/build/macos && \
-	wget http://download-mirror.savannah.gnu.org/releases/linphone/misc/libiconv.2.dylib
-
-bundle: $(LIBICONV_HACK)
+Linphone.app:
 	rm -rf $(INSTALLDIR)
 	$(MKDIR_P) $(INSTALLDIR)
 	make install DESTDIR=$(INSTALLDIR)
@@ -216,13 +224,36 @@ bundle: $(LIBICONV_HACK)
 	LINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	LIBLINPHONE_INSTALL_PREFIX=$(INSTALLDIR_WITH_PREFIX) \
 	MS2_PLUGINS_INSTALL_PREFIX=$(prefix) \
+	LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX=$(LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX) \
 	gtk-mac-bundler $(PACKAGE_BUNDLE_FILE)
 	printf "[Pango]\nModuleFiles=./etc/pango/pango.modules\n" \
 	> $(BUNDLEDIR)/Contents/Resources/etc/pango/pangorc
 	cp -f $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig
-	sed -e 's:@executable_path/../Resources:../..:g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
-	cp -f $(LIBICONV_HACK) $(BUNDLEDIR)/Contents/Resources/lib/.
+	sed -e 's:@executable_path.*/::g' $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules.orig  > $(BUNDLEDIR)/Contents/Resources/etc/pango/pango.modules
+	patch -R ${BUNDLEDIR}/Contents/Resources/share/themes/Quartz/gtk-2.0/gtkrc ${srcdir}/build/macos/quartz-theme-gtkrc.patch
+	rm -f ${BUNDLEDIR}/Contents/Resources/lib/libopenh264*
+
+bundle: $(MACAPPNAME)
 	cd $(BUNDLEDIR)/.. && rm -f $(MACAPPZIP) && zip -r $(MACAPPZIP) $(MACAPPNAME) && cd -
+	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
+
+signed-bundle: $(MACAPPNAME)
+	codesign --deep -s "$(BUNDLE_SIGNING_ID)" $(BUNDLEDIR)
+	cd $(BUNDLEDIR)/.. && rm -f $(MAXAPPDMG) && hdiutil create $(MACAPPDMG) -srcfolder $(MACAPPNAME) -ov && cd -
+
+pkg: $(MACAPPNAME)
+	rm -rf ./packaging
+	mkdir -p ./packaging
+	cp ${srcdir}/COPYING ./packaging
+	cp ${srcdir}/pixmaps/linphone.png ./packaging
+	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --component $(MACAPPNAME) ./packaging/linphone.pkg
+	productbuild --resources . --distribution ${srcdir}/build/macos/pkg-distribution.xml --package-path ./packaging $(MACAPPPKG)
+	
+signed-pkg: pkg
+	mv $(MACAPPPKG) $(MACAPPPKG).tmp
+	productsign --sign "$(BUNDLE_SIGNING_ID)" $(MACAPPPKG).tmp $(MACAPPPKG)
+	rm -f $(MACAPPPKG).tmp
+
 
 ###
 ### CLEAN
@@ -230,6 +261,10 @@ bundle: $(LIBICONV_HACK)
 clean-local:
 	rm -rf $(BUNDLEDIR)
 discovery:
-	touch specs.cpp
+	touch specs.c
 	$(CC) --include $(top_builddir)/config.h \
-          $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS) -E -P -v -dD specs.cpp
+        $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.c
+
+.PHONY: $(MACAPPNAME) pkg
+
+

@@ -64,12 +64,15 @@ typedef enum {
 
 
 typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data);
+typedef void (*LinphoneEcCalibrationAudioInit)(void *data);
+typedef void (*LinphoneEcCalibrationAudioUninit)(void *data);
 
 /**
  *
  * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceller automatically.
 **/
-int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb, void *cb_data);
+LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
+					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data);
 /**
  * @ingroup IOS
  * Special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must() be called before entering FG mode
@@ -93,14 +96,14 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
  *@param iso country code alpha2
  *@return call country code or -1 if not found
  */
-int linphone_dial_plan_lookup_ccc_from_iso(const char* iso); 
+LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_iso(const char* iso); 
 /**
  * @ingroup misc
  *Function to get  call country code from  an e164 number, ex: +33952650121 will return 33
  *@param e164 phone number
  *@return call country code or -1 if not found
  */
-int linphone_dial_plan_lookup_ccc_from_e164(const char* e164);
+LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_e164(const char* e164);
 
 #ifdef __cplusplus
 }

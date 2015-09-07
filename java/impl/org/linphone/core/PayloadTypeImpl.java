@@ -21,7 +21,7 @@ package org.linphone.core;
 
 class PayloadTypeImpl implements PayloadType {
 
-	protected final long nativePtr;
+	public final long nativePtr;
 	
 	private native String toString(long ptr);
 	private native String getMime(long ptr);
@@ -41,5 +41,27 @@ class PayloadTypeImpl implements PayloadType {
 	
 	public String toString() {
 		return toString(nativePtr);
+	}
+	
+	private native void setRecvFmtp(long ptr, String fmtp);
+	@Override
+	public void setRecvFmtp(String fmtp) {
+		setRecvFmtp(nativePtr,fmtp);
+	}
+	private native String getRecvFmtp(long ptr);
+	@Override
+	public String getRecvFmtp() {
+		return getRecvFmtp(nativePtr);
+	}
+	
+	private native void setSendFmtp(long ptr, String fmtp);
+	@Override
+	public void setSendFmtp(String fmtp) {
+		setSendFmtp(nativePtr,fmtp);
+	}
+	private native String getSendFmtp(long ptr);
+	@Override
+	public String getSendFmtp() {
+		return getSendFmtp(nativePtr);
 	}
 }

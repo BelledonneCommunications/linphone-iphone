@@ -11,7 +11,7 @@
 
 Name:           linphone
 Version:        @VERSION@
-Release:        %(git describe --tags --abbrev=40 | sed -rn 's/^.*-([0-9]+)-g[a-z0-9]{40}$/\1/p' || echo '1')%{?dist}
+Release:        %(version=`git describe --tags --abbrev=40 | sed -rn 's/^.*-([0-9]+)-g[a-z0-9]{40}$/\1/p'` && if test -z "$version" ; then echo 0 ; else echo $version ; fi)%{?dist}
 Summary:        Phone anywhere in the whole world by using the Internet
 
 Group:          Applications/Communications
@@ -24,7 +24,7 @@ BuildArch:	i686
 %endif
 
 BuildRequires: gtk2-devel 
-BuildRequires: libeXosip2-devel speex-devel gettext 
+BuildRequires: belle-sip-devel speex-devel gettext 
 BuildRequires: intltool gettext-devel 
 %if %{video}
 BuildRequires: ffmpeg-devel SDL-devel
@@ -38,7 +38,7 @@ over the internet. It has a gtk+ and console interface.
 Summary:       Development libraries for linphone
 Group:         Development/Libraries
 Requires:      %{name} = %{version}-%{release}
-Requires:      ortp-devel = @ORTP_VERSION@
+Requires:      ortp-devel = 1:@ORTP_VERSION@
 Requires:      mediastreamer-devel = @MS2_VERSION@
 Requires:      glib2-devel
 
@@ -47,23 +47,19 @@ Libraries and headers required to develop software with linphone.
 
 %prep
 %setup -q
-#%patch -p 1 -b .pkgconfig
-#%patch1 -p 1 -b .Werror
-#%patch2 -p 1 -b .old
 
 %build
 %configure \
 %if !%{video}
 	--disable-video \
 %endif
-	--docdir=%{_docdir} --enable-ipv6 --enable-static --enable-external-mediastreamer --enable-external-ortp
+	--disable-tests --docdir=%{_docdir} --enable-ipv6 --enable-static --enable-external-mediastreamer --enable-external-ortp --enable-ldap
 %__make %{?_smp_mflags}
 
 
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
-install -p -m 0644 pixmaps/linphone.png $RPM_BUILD_ROOT%{_datadir}/pixmaps
 %find_lang %{name}
 desktop-file-install \
   --delete-original \
@@ -85,24 +81,30 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING NEWS README TODO
 %{_bindir}/*
-%{_libdir}/liblinphone.so.*
+%{_libdir}/*.so.*
 %{_mandir}/*
 %{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/audio-assistant.desktop
 %{_datadir}/pixmaps/linphone
 %{_datadir}/linphone
-%{_datadir}/pixmaps/linphone.png
+%{_datadir}/icons/*
 %{_datadir}/sounds/linphone
+%{_datadir}/appdata/linphone.appdata.xml
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/linphone
-%{_libdir}/liblinphone.a
-%{_libdir}/liblinphone.la
-%{_libdir}/liblinphone.so
+%{_libdir}/*.a
+%{_libdir}/*.la
+%{_libdir}/*.so
 %{_libdir}/pkgconfig/linphone.pc
+%{_datadir}/tutorials/linphone/*.c
 %{_docdir}
 
 %changelog
+* Mon Aug 19 2013 Jehan Monnier <jehan.monnier@linphone.org> - 3.6.99
+- belle sip migration
+
 * Wed Sep 28 2005 Francois-Xavier 'FiX' KOWALSKI <francois-xavier.kowalski@hp.com> - 1.2.0pre3
 - Updated to latests Simon's work
 

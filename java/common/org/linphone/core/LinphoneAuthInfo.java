@@ -20,7 +20,7 @@ package org.linphone.core;
 /**
  * Object holding authentication information.
  * In most case, authentication information consists of a username and password. Sometimes, a userid is required by proxy, and realm can be useful to discriminate different SIP domains.
- *<br>This object is instanciated using {@link LinphoneCoreFactory#createAuthInfo(String, String, String)}.
+ *<br>This object is instantiated using either {@link LinphoneCoreFactory#createAuthInfo(String, String, String)} or {@link LinphoneCoreFactory#createAuthInfo(String, String, String, String, String)}.
  *<br>
  *Once created and filled, a LinphoneAuthInfo must be added to the LinphoneCore in order to become known and used automatically when needed. 
  *Use {@link LinphoneCore#addAuthInfo(LinphoneAuthInfo)} for that purpose.
@@ -63,6 +63,43 @@ public interface LinphoneAuthInfo {
 	 * @param realm
 	 */
 	void setRealm(String realm);
+	/**
+	 * get auth userid has used in authentication header. If null, username is taken for authentication
+	 * @return auth userid
+	 */
+	String getUserId();
+	/**
+	 * set auth userid has used in authentication header. If null, username is taken for authentication
+	 * 
+	 */
+	void setUserId(String userid);
+	/**
+	 * get ha1
+	 * @return ha1
+	 */
+	String getHa1();
+	/**
+	 * set ha1
+	 */
+	void setHa1(String ha1);
+	
+	/**
+	 * Sets the domain
+	 * @param domain
+	 */
+	void setDomain(String domain);
+	
+	/**
+	 * Gets the domain
+	 * @return the domain
+	 */
+	String getDomain();
+	
+	/**
+	 * Clones a current auth info
+	 * @return the clone auth info
+	 */
+	LinphoneAuthInfo clone();
 }
 
 

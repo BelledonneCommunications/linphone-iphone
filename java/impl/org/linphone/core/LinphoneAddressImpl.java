@@ -21,34 +21,63 @@ package org.linphone.core;
 
 
 public class LinphoneAddressImpl implements LinphoneAddress {
+	public enum WrapMode{
+		FromNew,
+		FromConst,
+		FromExisting
+	};
 	protected final long nativePtr;
-	boolean ownPtr = false;
 	private native long newLinphoneAddressImpl(String uri,String displayName);
-	private native void  delete(long ptr);
+	private native long ref(long ptr);
+	private native void unref(long ptr);
+	private native long clone(long ptr);
 	private native String getDisplayName(long ptr);
 	private native String getUserName(long ptr);
 	private native String getDomain(long ptr);
+	private native int getTransport(long ptr);
+    private native int getPort(long ptr);
 	private native String toUri(long ptr);
 	private native void setDisplayName(long ptr,String name);
+	private native void setDomain(long ptr,String domain);
+	private native void setUserName(long ptr,String username);
+	private native void setTransport(long ptr, int transport);
+    private native void setPort(long ptr, int port);
 	private native String toString(long ptr);
 	
-	protected LinphoneAddressImpl(String identity)  {
+	protected LinphoneAddressImpl(String identity)  throws LinphoneCoreException{
 		nativePtr = newLinphoneAddressImpl(identity, null);
+		if(nativePtr==0) {
+			throw new LinphoneCoreException("Cannot create LinphoneAdress from ["+identity+"]");
+		}
 	}
 	
 	protected LinphoneAddressImpl(String username,String domain,String displayName)  {
-		nativePtr = newLinphoneAddressImpl("sip:"+username+"@"+domain, displayName);
+		nativePtr = newLinphoneAddressImpl(null, displayName);
+		this.setUserName(username);
+		this.setDomain(domain);
 	}
-	protected LinphoneAddressImpl(long aNativePtr,boolean javaOwnPtr)  {
-		nativePtr = aNativePtr;
-		ownPtr=javaOwnPtr;
+	//this method is there because JNI is calling it.
+	private LinphoneAddressImpl(long aNativeptr){
+		this(aNativeptr,WrapMode.FromConst);
 	}
-	protected LinphoneAddressImpl(long aNativePtr)  {
-		nativePtr = aNativePtr;
-		ownPtr=false;
+	protected LinphoneAddressImpl(long aNativePtr, WrapMode mode)  {
+		switch(mode){
+		case FromNew:
+			nativePtr=aNativePtr;
+			break;
+		case FromConst:
+			nativePtr=clone(aNativePtr);
+			break;
+		case FromExisting:
+			nativePtr=ref(aNativePtr);
+			break;
+		default:
+			nativePtr=0;
+		}
 	}
+	
 	protected void finalize() throws Throwable {
-		if (ownPtr) delete(nativePtr);
+		if (nativePtr!=0) unref(nativePtr);
 	}
 	public String getDisplayName() {
 		return getDisplayName(nativePtr);
@@ -59,42 +88,40 @@ public class LinphoneAddressImpl implements LinphoneAddress {
 	public String getUserName() {
 		return getUserName(nativePtr);
 	}
-	
-	public String toString() {
+	public TransportType getTransport() {
+		return TransportType.fromInt(getTransport(nativePtr));
+	}
+    public int getPort() { return getPort(nativePtr); }
+
+    public String toString() {
 		return toString(nativePtr);
 	}
 	public String toUri() {
 		return toUri(nativePtr);	
 	}
+
+    public String asString() {
+        return toString();
+    }
+    public String asStringUriOnly() {
+        return toUri(nativePtr);
+    }
+
+    public void clean() {
+        throw new RuntimeException("Not implemented");
+    }
+
 	public void setDisplayName(String name) {
 		setDisplayName(nativePtr,name);
 	}
-	public String asString() {
-		return toString();
-	}
-	public String asStringUriOnly() {
-		return toUri(nativePtr);
-	}
-	public void clean() {
-		throw new RuntimeException("Not implemented");
-	}
-	public String getPort() {
-		return String.valueOf(getPortInt());
-	}
-	public int getPortInt() {
-		return getPortInt();
-	}
 	public void setDomain(String domain) {
-		throw new RuntimeException("Not implemented");
+		setDomain(nativePtr, domain);
 	}
-	public void setPort(String port) {
-		throw new RuntimeException("Not implemented");
-	}
-	public void setPortInt(int port) {
-		throw new RuntimeException("Not implemented");
-	}
+	public void setPort(int port) { setPort(nativePtr, port); }
 	public void setUserName(String username) {
-		throw new RuntimeException("Not implemented");
+		setUserName(nativePtr,username);
 	}
- 
+	public void setTransport(TransportType transport) {
+		setTransport(nativePtr, transport.toInt());
+	}
 }

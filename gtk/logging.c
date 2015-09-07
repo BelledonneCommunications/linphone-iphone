@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 extern gchar *linphone_logfile;
 
@@ -163,7 +164,6 @@ static FILE *linphone_gtk_log_init()
 
 static void linphone_gtk_log_file(OrtpLogLevel lev, const char *msg)
 {
-	time_t now;
 	FILE *outlog;
 
 	outlog = linphone_gtk_log_init();
@@ -175,12 +175,11 @@ static void linphone_gtk_log_file(OrtpLogLevel lev, const char *msg)
 		 logfile_date_format in the GtkUi section of the config file,
 		 but it defaults to something compact, but yet readable. */
 		const char *lname="undef";
-		char date[256];
 
 		/* Convert level constant to text */
 		switch(lev){
 			case ORTP_DEBUG:
-				lname="debug";
+				lname="debug  ";
 				break;
 			case ORTP_MESSAGE:
 				lname="message";
@@ -189,35 +188,28 @@ static void linphone_gtk_log_file(OrtpLogLevel lev, const char *msg)
 				lname="warning";
 				break;
 			case ORTP_ERROR:
-				lname="error";
+				lname="error  ";
 				break;
 			case ORTP_FATAL:
-				lname="fatal";
+				lname="fatal  ";
 				break;
 			default:
-				lname="undef";
+				lname="undef  ";
 				break;
 		}
-		/* Get current time and format it properly */
-		now = time(NULL);
-		strftime(date, sizeof(date), dateformat, localtime(&now));
-		/* Now print out the message to the logfile.  We don't flush,
-		 maybe we should do to ensure that we have all the messages in
-		 case of a crash (which is one of the main reasons we have a
-		     log facility in the first place). */
-		fprintf(outlog, "[%s] [%s] %s\n", date, lname, msg);
+		fprintf(outlog, "[%s] %s\n", lname, msg);
 		fflush(outlog);
 	}
 }
 
-void linphone_gtk_log_hide(){
+void linphone_gtk_log_hide(void){
 	if (log_window)
 		gtk_widget_hide(log_window);
 }
 
 void linphone_gtk_create_log_window(void){
 	GtkTextBuffer *b;
-	log_window=linphone_gtk_create_window("log");
+	log_window=linphone_gtk_create_window("log", NULL);
 	b=gtk_text_view_get_buffer(GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview")));
 	gtk_text_buffer_create_tag(b,"red","foreground","red",NULL);
 	gtk_text_buffer_create_tag(b,"orange","foreground","orange",NULL);
@@ -334,13 +326,24 @@ gboolean linphone_gtk_check_logs(){
  * Called from any linphone thread.
  */
 void linphone_gtk_log_push(OrtpLogLevel lev, const char *fmt, va_list args){
-	gchar *msg=g_strdup_vprintf(fmt,args);
 	LinphoneGtkLog *lgl=g_new(LinphoneGtkLog,1);
+	gchar *msg=g_strdup_vprintf(fmt,args);
+	gchar *dated_msg;
+	struct timeval tp;
+	struct tm *lt;
+	time_t tt;
+	
+	ortp_gettimeofday(&tp, NULL);
+	tt = (time_t)tp.tv_sec;
+	lt = localtime((const time_t*)&tt);
+	dated_msg=g_strdup_printf("%i-%.2i-%.2i %.2i:%.2i:%.2i:%.3i %s",
+		1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), msg);
+	g_free(msg);
 	lgl->lev=lev;
-	lgl->msg=msg;
+	lgl->msg=dated_msg;
+	linphone_gtk_log_file(lev, dated_msg);
 	g_static_mutex_lock(&log_mutex);
 	log_queue=g_list_append(log_queue,lgl);
-	linphone_gtk_log_file(lev, msg);
 	g_static_mutex_unlock(&log_mutex);
 }
 

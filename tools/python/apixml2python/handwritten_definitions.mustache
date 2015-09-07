@@ -1,0 +1,972 @@
+static void pylinphone_dispatch_messages(void) {
+#ifdef WIN32
+	MSG msg;
+	while (PeekMessage(&msg, NULL, 0, 0, 1)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+#endif
+}
+
+static void pylinphone_log(const char *level, int indent, const char *fmt, va_list args) {
+	static int current_indent = 1;
+	PyObject *linphone_module;
+	PyGILState_STATE gstate;
+
+	gstate = PyGILState_Ensure();
+	if (gstate != PyGILState_LOCKED) return;
+	linphone_module = PyImport_ImportModule("linphone.linphone");
+	if (linphone_module != NULL) {
+		if (PyObject_HasAttrString(linphone_module, "__log_handler")) {
+			PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
+			if (log_handler != NULL) {
+				if (PyCallable_Check(log_handler)) {
+					char logstr[4096];
+					int i = 0;
+					if (indent == -1) current_indent--;
+					if (current_indent < 1) current_indent = 1;
+					if ((indent >= -1) && (indent <= 1)) {
+						for (i = 0; i < current_indent; i++) {
+							logstr[i] = '\t';
+						}
+					}
+					if (indent == 1) current_indent++;
+					if (vsnprintf(logstr + i, sizeof(logstr) - i, fmt, args) > 0) {
+						PyObject *pyargs = Py_BuildValue("ss", level, logstr);
+						if (PyEval_CallObject(log_handler, pyargs) == NULL) {
+							PyErr_Print();
+						}
+						Py_DECREF(pyargs);
+					}
+				}
+				Py_DECREF(log_handler);
+			}
+		}
+		Py_DECREF(linphone_module);
+	}
+	PyGILState_Release(gstate);
+}
+
+static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	pylinphone_log("debug", indent, fmt, args);
+	va_end(args);
+}
+
+static const char * pylinphone_ortp_log_level_to_string(OrtpLogLevel lev) {
+	switch (lev) {
+		default:
+		case ORTP_DEBUG:
+			return "debug";
+		case ORTP_MESSAGE:
+			return "info";
+		case ORTP_WARNING:
+			return "warning";
+		case ORTP_ERROR:
+			return "error";
+		case ORTP_FATAL:
+			return "critical";
+		case ORTP_TRACE:
+			return "debug";
+	}
+}
+
+static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+	PyGILState_STATE gstate;
+	PyObject *linphone_module;
+	const char *level;
+
+	gstate = PyGILState_Ensure();
+	if (gstate != PyGILState_LOCKED) return;
+	linphone_module = PyImport_ImportModule("linphone.linphone");
+	level = pylinphone_ortp_log_level_to_string(lev);
+	if (linphone_module != NULL) {
+		if (PyObject_HasAttrString(linphone_module, "__log_handler")) {
+			PyObject *log_handler = PyObject_GetAttrString(linphone_module, "__log_handler");
+			if (log_handler != NULL) {
+				if (PyCallable_Check(log_handler)) {
+					char logstr[4096];
+					if (vsnprintf(logstr, sizeof(logstr), fmt, args) > 0) {
+						PyObject *pyargs = Py_BuildValue("ss", level, logstr);
+						if (PyEval_CallObject(log_handler, pyargs) == NULL) {
+							PyErr_Print();
+						}
+						Py_DECREF(pyargs);
+					}
+				}
+				Py_DECREF(log_handler);
+			}
+		}
+		Py_DECREF(linphone_module);
+	}
+	PyGILState_Release(gstate);
+}
+
+static void pylinphone_init_logging(void) {
+	linphone_core_serialize_logs();
+	linphone_core_set_log_handler(pylinphone_module_log_handler);
+	linphone_core_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+}
+
+
+static PyObject * pylinphone_module_method_set_log_handler(PyObject *self, PyObject *args) {
+	PyObject *linphone_module = PyImport_ImportModule("linphone.linphone");
+	PyObject *callback;
+	if (!PyArg_ParseTuple(args, "O", &callback)) {
+		return NULL;
+	}
+	if (!PyCallable_Check(callback) && (callback != Py_None)) {
+		PyErr_SetString(PyExc_TypeError, "The argument must be a callable or None");
+		return NULL;
+	}
+	if (linphone_module != NULL) {
+		PyObject_SetAttrString(linphone_module, "__log_handler", callback);
+		Py_DECREF(linphone_module);
+	}
+	Py_RETURN_NONE;
+}
+
+
+static PyObject * pylinphone_Call_get_native_video_window_id(PyObject *self, void *closure) {
+	void * cresult;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const LinphoneCall *native_ptr;
+	native_ptr = pylinphone_Call_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Call instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	cresult = linphone_call_get_native_video_window_id(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyret = Py_BuildValue("k", (unsigned long)cresult);
+	
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Call_set_native_video_window_id(PyObject *self, PyObject *value, void *closure) {
+	LinphoneCall *native_ptr;
+	unsigned long _id;
+	native_ptr = pylinphone_Call_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Call instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'native_video_window_id' attribute.");
+		return -1;
+	}
+	if (!PyInt_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'native_video_window_id' attribute value must be a unsigned int.");
+		return -1;
+	}
+
+	_id = (unsigned long)PyInt_AsUnsignedLongMask(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %u)", __FUNCTION__, self, native_ptr, _id);
+	linphone_call_set_native_video_window_id(native_ptr, (void *)_id);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}
+
+
+static PyObject * pylinphone_Core_get_native_preview_window_id(PyObject *self, void *closure) {
+	void * cresult;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const LinphoneCore *native_ptr;
+	native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	cresult = linphone_core_get_native_preview_window_id(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyret = Py_BuildValue("k", (unsigned long)cresult);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Core_set_native_preview_window_id(PyObject *self, PyObject *value, void *closure) {
+	LinphoneCore *native_ptr;
+	unsigned long _id;
+	native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'native_preview_window_id' attribute.");
+		return -1;
+	}
+	if (!PyInt_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'native_preview_window_id' attribute value must be a unsigned int.");
+		return -1;
+	}
+
+	_id = (unsigned long)PyInt_AsUnsignedLongMask(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %u)", __FUNCTION__, self, native_ptr, _id);
+	linphone_core_set_native_preview_window_id(native_ptr, (void *)_id);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}
+
+
+static PyObject * pylinphone_Core_get_native_video_window_id(PyObject *self, void *closure) {
+	void * cresult;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const LinphoneCore *native_ptr;
+	native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	cresult = linphone_core_get_native_video_window_id(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyret = Py_BuildValue("k", (unsigned long)cresult);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Core_set_native_video_window_id(PyObject *self, PyObject *value, void *closure) {
+	LinphoneCore *native_ptr;
+	unsigned long _id;
+	native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'native_video_window_id' attribute.");
+		return -1;
+	}
+	if (!PyInt_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'native_video_window_id' attribute value must be a unsigned int.");
+		return -1;
+	}
+
+	_id = (unsigned long)PyInt_AsUnsignedLongMask(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %u)", __FUNCTION__, self, native_ptr, _id);
+	linphone_core_set_native_video_window_id(native_ptr, (void *)_id);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}
+
+static PyObject * pylinphone_Core_get_sip_transports(PyObject *self, void *closure) {
+    PyObject *pytr;
+    LCSipTransports tr = { 0 };
+    LinphoneCore *native_ptr = pylinphone_Core_get_native_ptr(self);
+
+    if (native_ptr == NULL) {
+        PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+        return NULL;
+    }
+
+    pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+    linphone_core_get_sip_transports(native_ptr, &tr);
+    pylinphone_dispatch_messages();
+
+    pytr = PyLinphoneSipTransports_FromLCSipTransports(tr);
+    pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pytr);
+    return pytr;
+}
+
+static int pylinphone_Core_set_sip_transports(PyObject *self, PyObject *value, void *closure) {
+    LinphoneCore *native_ptr;
+    PyObject * _tr_config;
+    const LCSipTransports * _tr_config_native_obj;
+    native_ptr = pylinphone_Core_get_native_ptr(self);
+    if (native_ptr == NULL) {
+        PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+        return -1;
+    }
+
+    if (value == NULL) {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete the 'sip_transports' attribute.");
+        return -1;
+    }
+    if (!PyLinphoneSipTransports_Check(value)) {
+        PyErr_SetString(PyExc_TypeError, "The 'sip_transports' attribute value must be a linphone.SipTransports.");
+        return -1;
+    }
+
+    _tr_config = value;
+    _tr_config_native_obj = PyLinphoneSipTransports_AsLCSipTransports(value);
+
+    pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p])", __FUNCTION__, self, native_ptr, _tr_config, _tr_config_native_obj);
+    linphone_core_set_sip_transports(native_ptr, _tr_config_native_obj);
+    pylinphone_dispatch_messages();
+    pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+    return 0;
+}
+
+static PyObject * pylinphone_Core_get_sip_transports_used(PyObject *self, void *closure) {
+    PyObject *pytr;
+    LCSipTransports tr = { 0 };
+    LinphoneCore *native_ptr = pylinphone_Core_get_native_ptr(self);
+
+    if (native_ptr == NULL) {
+        PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+        return NULL;
+    }
+
+    pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+    linphone_core_get_sip_transports_used(native_ptr, &tr);
+    pylinphone_dispatch_messages();
+
+    pytr = PyLinphoneSipTransports_FromLCSipTransports(tr);
+    pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pytr);
+    return pytr;
+}
+
+
+
+static PyObject * pylinphone_Core_get_sound_devices(PyObject *self, void *closure) {
+	PyObject *_list;
+	const char **_devices;
+	LinphoneCore *native_ptr = pylinphone_Core_get_native_ptr(self);
+
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	_devices = linphone_core_get_sound_devices(native_ptr);
+	pylinphone_dispatch_messages();
+
+	_list = PyList_New(0);
+	while (*_devices != NULL) {
+		PyObject *_item = PyString_FromString(*_devices);
+		PyList_Append(_list, _item);
+		_devices++;
+	}
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, _list);
+	return _list;
+}
+
+static PyObject * pylinphone_Core_get_video_devices(PyObject *self, void *closure) {
+	PyObject *_list;
+	const char **_devices;
+	LinphoneCore *native_ptr = pylinphone_Core_get_native_ptr(self);
+
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	_devices = linphone_core_get_video_devices(native_ptr);
+	pylinphone_dispatch_messages();
+
+	_list = PyList_New(0);
+	while (*_devices != NULL) {
+		PyObject *_item = PyString_FromString(*_devices);
+		PyList_Append(_list, _item);
+		_devices++;
+	}
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, _list);
+	return _list;
+}
+
+static void pylinphone_init_ms2_plugins(void) {
+	ms_init(); // Initialize mediastreamer2 before loading the plugins
+#ifdef ENABLE_OPENH264
+	libmsopenh264_init();
+#endif
+#ifdef ENABLE_WASAPI
+	libmswasapi_init();
+#endif
+}
+
+static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args) {
+	LinphoneCore * cresult;
+	pylinphone_CoreObject *self;
+	PyObject * pyret;
+	LinphoneCoreVTable _vtable = { 0 };
+	PyObject * _vtable_dict;
+	const char * _config_path;
+	const char * _factory_config_path;
+
+	if (!PyArg_ParseTuple(args, "Ozz", &_vtable_dict, &_config_path, &_factory_config_path)) {
+		return NULL;
+	}
+	if (!PyDict_Check(_vtable_dict)) {
+		PyErr_SetString(PyExc_TypeError, "The first argument must be a dictionary");
+		return NULL;
+	}
+
+	self = (pylinphone_CoreObject *)PyObject_CallObject((PyObject *) &pylinphone_CoreType, NULL);
+	if (self == NULL) {
+		return NULL;
+	}
+	Py_INCREF(_vtable_dict);
+	self->vtable_dict = _vtable_dict;
+{{#core_events}}
+	{{{event_vtable_reference}}}
+{{/core_events}}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, \"%s\", \"%s\")", __FUNCTION__, _vtable_dict, _config_path, _factory_config_path);
+	pylinphone_init_ms2_plugins();
+	cresult = linphone_core_new(&_vtable, _config_path, _factory_config_path, self);
+	self->native_ptr = cresult;
+
+	pyret = Py_BuildValue("O", self);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	Py_DECREF(self);
+	return pyret;
+}
+
+static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, PyObject *args) {
+	LinphoneCore * cresult;
+	pylinphone_CoreObject *self;
+	PyObject * pyret;
+	LinphoneCoreVTable _vtable = { 0 };
+	PyObject * _vtable_dict;
+	PyObject * _config;
+	LpConfig * _config_native_ptr;
+
+	if (!PyArg_ParseTuple(args, "OO", &_vtable_dict, &_config)) {
+		return NULL;
+	}
+	if (!PyDict_Check(_vtable_dict)) {
+		PyErr_SetString(PyExc_TypeError, "The first argument must be a dictionary");
+		return NULL;
+	}
+
+	if ((_config_native_ptr = pylinphone_LpConfig_get_native_ptr(_config)) == NULL) {
+		return NULL;
+	}
+
+	self = (pylinphone_CoreObject *)PyObject_CallObject((PyObject *) &pylinphone_CoreType, NULL);
+	if (self == NULL) {
+		return NULL;
+	}
+	Py_INCREF(_vtable_dict);
+	self->vtable_dict = _vtable_dict;
+{{#core_events}}
+	{{{event_vtable_reference}}}
+{{/core_events}}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, _config, _config_native_ptr);
+	pylinphone_init_ms2_plugins();
+	cresult = linphone_core_new_with_config(&_vtable, _config_native_ptr, self);
+	self->native_ptr = cresult;
+
+	pyret = Py_BuildValue("O", self);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	Py_DECREF(self);
+	return pyret;
+}
+
+static void pylinphone_Core_dealloc(PyObject *self) {
+	LinphoneCore * native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (Py_REFCNT(self) < 0) return;
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	
+	if (native_ptr != NULL) {
+		linphone_core_destroy(native_ptr);
+		ms_exit();	// De-initialize mediastreamer
+	}
+
+	pylinphone_dispatch_messages();
+	Py_XDECREF(((pylinphone_CoreObject *)self)->user_data);
+	Py_XDECREF(((pylinphone_CoreObject *)self)->vtable_dict);
+
+	self->ob_type->tp_free(self);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
+}
+
+
+
+static void pylinphone_VideoSize_dealloc(PyObject *self) {
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p)", __FUNCTION__, self);
+	self->ob_type->tp_free(self);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
+}
+
+static PyObject * pylinphone_VideoSize_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
+	pylinphone_VideoSizeObject *self = (pylinphone_VideoSizeObject *)type->tp_alloc(type, 0);
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s()", __FUNCTION__);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, self);
+	return (PyObject *)self;
+}
+
+static int pylinphone_VideoSize_init(PyObject *self, PyObject *args, PyObject *kw) {
+	pylinphone_VideoSizeObject *vso = (pylinphone_VideoSizeObject *)self;
+	int width;
+	int height;
+	if (!PyArg_ParseTuple(args, "ii", &width, &height)) {
+		return -1;
+	}
+	vso->vs.width = width;
+	vso->vs.height = height;
+	return 0;
+}
+
+static PyMemberDef pylinphone_VideoSize_members[] = {
+	{ "width", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, width), 0, "[int] The width of the video" },
+	{ "height", T_INT, offsetof(pylinphone_VideoSizeObject, vs) + offsetof(MSVideoSize, height), 0, "[int] The height of the video" },
+	{ NULL, 0, 0, 0, NULL }	/* Sentinel */
+};
+
+static PyTypeObject pylinphone_VideoSizeType = {
+	PyObject_HEAD_INIT(NULL)
+	0,	/* ob_size */
+	"linphone.VideoSize",	/* tp_name */
+	sizeof(pylinphone_VideoSizeObject),	/* tp_basicsize */
+	0,	/* tp_itemsize */
+	pylinphone_VideoSize_dealloc,	/* tp_dealloc */
+	0,	/* tp_print */
+	0,	/* tp_getattr */
+	0,	/* tp_setattr */
+	0,	/* tp_compare */
+	0,	/* tp_repr */
+	0,	/* tp_as_number */
+	0,	/* tp_as_sequence */
+	0,	/* tp_as_mapping */
+	0,	/* tp_hash */
+	0,	/* tp_call */
+	0,	/* tp_str */
+	0,	/* tp_getattro */
+	0,	/* tp_setattro */
+	0,	/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT,	/* tp_flags */
+	"Object representing the size of a video: its width and its height in pixels.",	/* tp_doc */
+	0,	/* tp_traverse */
+	0,	/* tp_clear */
+	0,	/* tp_richcompare */
+	0,	/* tp_weaklistoffset */
+	0,	/* tp_iter */
+	0,	/* tp_iternext */
+	0,	/* tp_methods */
+	pylinphone_VideoSize_members,	/* tp_members */
+	0,	/* tp_getset */
+	0,	/* tp_base */
+	0,	/* tp_dict */
+	0,	/* tp_descr_get */
+	0,	/* tp_descr_set */
+	0,	/* tp_dictoffset */
+	pylinphone_VideoSize_init,	/* tp_init */
+	0,	/* tp_alloc */
+	pylinphone_VideoSize_new,	/* tp_new */
+	0,	/* tp_free */
+};
+
+int PyLinphoneVideoSize_Check(PyObject *p) {
+	return PyObject_IsInstance(p, (PyObject *)&pylinphone_VideoSizeType);
+}
+
+MSVideoSize PyLinphoneVideoSize_AsMSVideoSize(PyObject *obj) {
+	return ((pylinphone_VideoSizeObject *)obj)->vs;
+}
+
+PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs) {
+	PyObject *linphone_module;
+	PyObject *pyret = NULL;
+	PyGILState_STATE gstate;
+
+	gstate = PyGILState_Ensure();
+	linphone_module = PyImport_ImportModule("linphone.linphone");
+	if (linphone_module != NULL) {
+		PyObject *cls = PyObject_GetAttrString(linphone_module, "VideoSize");
+		if (cls != NULL) {
+			PyObject *args = Py_BuildValue("ii", vs.width, vs.height);
+			pyret = PyEval_CallObject(cls, args);
+			if (pyret == NULL) {
+				PyErr_Print();
+			}
+			Py_DECREF(args);
+			Py_DECREF(cls);
+		}
+		Py_DECREF(linphone_module);
+	}
+	PyGILState_Release(gstate);
+
+	if (pyret == NULL) {
+		Py_RETURN_NONE;
+	}
+	return pyret;
+}
+
+
+
+static void pylinphone_SipTransports_dealloc(PyObject *self) {
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p)", __FUNCTION__, self);
+	self->ob_type->tp_free(self);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s", __FUNCTION__);
+}
+
+static PyObject * pylinphone_SipTransports_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
+	pylinphone_SipTransportsObject *self = (pylinphone_SipTransportsObject *)type->tp_alloc(type, 0);
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s()", __FUNCTION__);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, self);
+	return (PyObject *)self;
+}
+
+static int pylinphone_SipTransports_init(PyObject *self, PyObject *args, PyObject *kw) {
+	pylinphone_SipTransportsObject *sto = (pylinphone_SipTransportsObject *)self;
+	int udp_port;
+	int tcp_port;
+	int tls_port;
+	int dtls_port;
+	if (!PyArg_ParseTuple(args, "iiii", &udp_port, &tcp_port, &tls_port, &dtls_port)) {
+		return -1;
+	}
+	sto->lcst.udp_port = udp_port;
+	sto->lcst.tcp_port = tcp_port;
+	sto->lcst.tls_port = tls_port;
+	sto->lcst.dtls_port = dtls_port;
+	return 0;
+}
+
+static PyMemberDef pylinphone_SipTransports_members[] = {
+	{ "udp_port", T_INT, offsetof(pylinphone_SipTransportsObject, lcst) + offsetof(LCSipTransports, udp_port), 0, "[int] The port used for UDP SIP transport" },
+	{ "tcp_port", T_INT, offsetof(pylinphone_SipTransportsObject, lcst) + offsetof(LCSipTransports, tcp_port), 0, "[int] The port used for TCP SIP transport" },
+	{ "tls_port", T_INT, offsetof(pylinphone_SipTransportsObject, lcst) + offsetof(LCSipTransports, tls_port), 0, "[int] The port used for TLS SIP transport" },
+	{ "dtls_port", T_INT, offsetof(pylinphone_SipTransportsObject, lcst) + offsetof(LCSipTransports, dtls_port), 0, "[int] The port used for DTLS SIP transport" },
+	{ NULL, 0, 0, 0, NULL }	/* Sentinel */
+};
+
+static PyTypeObject pylinphone_SipTransportsType = {
+	PyObject_HEAD_INIT(NULL)
+	0,	/* ob_size */
+	"linphone.SipTransports",	/* tp_name */
+	sizeof(pylinphone_SipTransportsObject),	/* tp_basicsize */
+	0,	/* tp_itemsize */
+	pylinphone_SipTransports_dealloc,	/* tp_dealloc */
+	0,	/* tp_print */
+	0,	/* tp_getattr */
+	0,	/* tp_setattr */
+	0,	/* tp_compare */
+	0,	/* tp_repr */
+	0,	/* tp_as_number */
+	0,	/* tp_as_sequence */
+	0,	/* tp_as_mapping */
+	0,	/* tp_hash */
+	0,	/* tp_call */
+	0,	/* tp_str */
+	0,	/* tp_getattro */
+	0,	/* tp_setattro */
+	0,	/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT,	/* tp_flags */
+	"Object representing the SIP transports: its UDP, TCP, TLS and DTLS ports.",	/* tp_doc */
+	0,	/* tp_traverse */
+	0,	/* tp_clear */
+	0,	/* tp_richcompare */
+	0,	/* tp_weaklistoffset */
+	0,	/* tp_iter */
+	0,	/* tp_iternext */
+	0,	/* tp_methods */
+	pylinphone_SipTransports_members,	/* tp_members */
+	0,	/* tp_getset */
+	0,	/* tp_base */
+	0,	/* tp_dict */
+	0,	/* tp_descr_get */
+	0,	/* tp_descr_set */
+	0,	/* tp_dictoffset */
+	pylinphone_SipTransports_init,	/* tp_init */
+	0,	/* tp_alloc */
+	pylinphone_SipTransports_new,	/* tp_new */
+	0,	/* tp_free */
+};
+
+int PyLinphoneSipTransports_Check(PyObject *p) {
+	return PyObject_IsInstance(p, (PyObject *)&pylinphone_SipTransportsType);
+}
+
+LCSipTransports * PyLinphoneSipTransports_AsLCSipTransports(PyObject *obj) {
+	return &((pylinphone_SipTransportsObject *)obj)->lcst;
+}
+
+PyObject * PyLinphoneSipTransports_FromLCSipTransports(LCSipTransports lcst) {
+	PyObject *linphone_module;
+	PyObject *pyret = NULL;
+	PyGILState_STATE gstate;
+
+	gstate = PyGILState_Ensure();
+	linphone_module = PyImport_ImportModule("linphone.linphone");
+	if (linphone_module != NULL) {
+		PyObject *cls = PyObject_GetAttrString(linphone_module, "SipTransports");
+		if (cls != NULL) {
+			PyObject *args = Py_BuildValue("iiii", lcst.udp_port, lcst.tcp_port, lcst.tls_port, lcst.dtls_port);
+			pyret = PyEval_CallObject(cls, args);
+			if (pyret == NULL) {
+				PyErr_Print();
+			}
+			Py_DECREF(args);
+			Py_DECREF(cls);
+		}
+		Py_DECREF(linphone_module);
+	}
+	PyGILState_Release(gstate);
+
+	if (pyret == NULL) {
+		Py_RETURN_NONE;
+	}
+	return pyret;
+}
+
+
+
+time_t PyDateTime_As_time_t(PyObject *obj) {
+	time_t ret = -1;
+	PyObject *utctimetuple = PyObject_GetAttrString(obj, "utctimetuple");
+	if (utctimetuple != NULL) {
+		PyObject *calendar_module = PyImport_ImportModule("calendar");
+		if (calendar_module != NULL) {
+			PyObject *timegm = PyObject_GetAttrString(calendar_module, "timegm");
+			if (timegm != NULL) {
+				PyObject *args;
+				PyObject *tuple;
+				PyObject *pyres;
+				args = Py_BuildValue("()");
+				tuple = PyEval_CallObject(utctimetuple, args);
+				Py_DECREF(args);
+				args = Py_BuildValue("(O)", tuple);
+				pyres = PyEval_CallObject(timegm, args);
+				Py_DECREF(args);
+				ret = (time_t)PyLong_AsLong(pyres);
+				Py_DECREF(timegm);
+			}
+			Py_DECREF(calendar_module);
+		}
+		Py_DECREF(utctimetuple);
+	}
+	return ret;
+}
+
+PyObject * PyDateTime_From_time_t(time_t t) {
+	PyObject *pyret = NULL;
+	PyObject *datetime_module;
+	if (t == -1) {
+		Py_RETURN_NONE;
+	}
+	datetime_module = PyImport_ImportModule("datetime");
+	if (datetime_module != NULL) {
+		PyObject *datetime_class = PyObject_GetAttrString(datetime_module, "datetime");
+		if (datetime_class != NULL) {
+			PyObject *utcfromtimestamp = PyObject_GetAttrString(datetime_class, "utcfromtimestamp");
+			if (utcfromtimestamp != NULL) {
+				PyObject *args = Py_BuildValue("(f)", (float)t);
+				pyret = PyEval_CallObject(utcfromtimestamp, args);
+				if (pyret == NULL) {
+					PyErr_Print();
+				}
+				Py_DECREF(args);
+				Py_DECREF(utcfromtimestamp);
+			}
+			Py_DECREF(datetime_class);
+		}
+		Py_DECREF(datetime_module);
+	}
+	if (pyret == NULL) {
+		Py_RETURN_NONE;
+	}
+	return pyret;
+}
+
+
+static PyObject * pylinphone_PayloadTypeType_module_method_string(PyObject *self, PyObject *args) {
+	const char *value_str = "[invalid]";
+	int value;
+	PyObject *pyret;
+	if (!PyArg_ParseTuple(args, "i", &value)) {
+		return NULL;
+	}
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%d)", __FUNCTION__, value);
+	switch (value) {
+		case PAYLOAD_AUDIO_CONTINUOUS:
+			value_str = "PAYLOAD_AUDIO_CONTINUOUS";
+			break;
+		case PAYLOAD_AUDIO_PACKETIZED:
+			value_str = "PAYLOAD_AUDIO_PACKETIZED";
+			break;
+		case PAYLOAD_VIDEO:
+			value_str = "PAYLOAD_VIDEO";
+			break;
+		case PAYLOAD_TEXT:
+			value_str = "PAYLOAD_TEXT";
+			break;
+		case PAYLOAD_OTHER:
+			value_str = "PAYLOAD_OTHER";
+			break;
+		default:
+			break;
+	}
+	pyret = Py_BuildValue("z", value_str);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static PyMethodDef pylinphone_PayloadTypeType_ModuleMethods[] = {
+	{ "string", pylinphone_PayloadTypeType_module_method_string, METH_VARARGS, "Get a string representation of a linphone.PayloadTypeType value." },
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
+};
+
+
+static PyObject * pylinphone_Buffer_class_method_new_from_data(PyObject *cls, PyObject *args) {
+	LinphoneBuffer * cresult;
+	pylinphone_BufferObject *self;
+	PyObject * pyret;
+	PyObject * _byte_array;
+
+	if (!PyArg_ParseTuple(args, "O", &_byte_array)) {
+		return NULL;
+	}
+	if (!PyByteArray_Check(_byte_array)) {
+		PyErr_SetString(PyExc_TypeError, "The argument must be a ByteArray");
+		return NULL;
+	}
+
+	self = (pylinphone_BufferObject *)PyObject_CallObject((PyObject *) &pylinphone_BufferType, NULL);
+	if (self == NULL) {
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p)", __FUNCTION__, _byte_array);
+	cresult = linphone_buffer_new_from_data((uint8_t *)PyByteArray_AsString(_byte_array), PyByteArray_Size(_byte_array));
+	self->native_ptr = cresult;
+
+	pyret = Py_BuildValue("O", self);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	Py_DECREF(self);
+	return pyret;
+}
+
+static PyObject * pylinphone_Buffer_get_content(PyObject *self, void *closure) {
+	const uint8_t * ccontent;
+	size_t csize;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const char *pyret_fmt;
+	const LinphoneBuffer *native_ptr;
+	native_ptr = pylinphone_Buffer_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Buffer instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	ccontent = linphone_buffer_get_content(native_ptr);
+	csize = linphone_buffer_get_size(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyresult = PyByteArray_FromStringAndSize((const char *)ccontent, csize);
+	pyret = Py_BuildValue("O", pyresult);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Buffer_set_content(PyObject *self, PyObject *value, void *closure) {
+	LinphoneBuffer *native_ptr;
+	uint8_t * _content;
+	size_t _size;
+	LinphonePresenceModel * _presence_native_ptr = NULL;
+	native_ptr = pylinphone_Buffer_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Buffer instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'content' attribute.");
+		return -1;
+	}
+	if ((value != Py_None) && !PyByteArray_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'content' attribute value must be a ByteArray instance.");
+		return -1;
+	}
+
+	_content = (uint8_t *)PyByteArray_AsString(value);
+	_size = PyByteArray_Size(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p])", __FUNCTION__, self, native_ptr, value, _content);
+	linphone_buffer_set_content(native_ptr, _content, _size);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}
+
+
+static PyObject * pylinphone_Content_get_buffer(PyObject *self, void *closure) {
+	void * cbuffer;
+	size_t csize;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const char *pyret_fmt;
+	const LinphoneContent *native_ptr;
+	native_ptr = pylinphone_Content_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Content instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	cbuffer = linphone_content_get_buffer(native_ptr);
+	csize = linphone_content_get_size(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyresult = PyByteArray_FromStringAndSize((const char *)cbuffer, csize);
+	pyret = Py_BuildValue("O", pyresult);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Content_set_buffer(PyObject *self, PyObject *value, void *closure) {
+	LinphoneContent *native_ptr;
+	void * _buffer;
+	size_t _size;
+	LinphonePresenceModel * _presence_native_ptr = NULL;
+	native_ptr = pylinphone_Content_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Content instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'buffer' attribute.");
+		return -1;
+	}
+	if ((value != Py_None) && !PyByteArray_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'buffer' attribute value must be a ByteArray instance.");
+		return -1;
+	}
+
+	_buffer = PyByteArray_AsString(value);
+	_size = PyByteArray_Size(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %p [%p])", __FUNCTION__, self, native_ptr, value, _buffer);
+	linphone_content_set_buffer(native_ptr, _buffer, _size);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}

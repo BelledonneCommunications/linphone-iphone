@@ -18,9 +18,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 package org.linphone.core;
-
+/**
+ * Enum representing the direction of a call.
+**/
  public class CallDirection {
+	 /**
+	  * outgoing calls*
+	  * */
 	public static CallDirection Outgoing = new CallDirection("CallOutgoing");
+	/**
+	 * incoming calls
+	 */
 	public static CallDirection Incoming = new CallDirection("Callincoming");
 	private String mStringValue;
 	private CallDirection(String aStringValue) {

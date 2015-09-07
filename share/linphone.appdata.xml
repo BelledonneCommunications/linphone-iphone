@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2015 Belledonne Communications <contact@belledonne-communications.com> -->
+<component type="desktop">
+    <id>linphone.desktop</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-2.0</project_license>
+    <name>Linphone</name>
+    <summary>SIP video soft-phone</summary>
+    <description>
+        <ul>
+            <li>Make audio and video calls in HD</li>
+            <li>Create audio conferences</li>
+            <li>Record and store calls</li>
+            <li>View real-time presence status</li>
+            <li>Manage your address book</li>
+            <li>Communicate securely</li>
+            <li>Free subscription</li>
+        </ul>
+    </description>
+    <screenshots>
+        <screenshot type="default">
+            <image>http://www.linphone.org/uploads/images/desktop_main_window.png</image>
+            <caption>Main window</caption>
+        </screenshot>
+        <screenshot>
+            <image>http://www.linphone.org/uploads/images/desktop_call_view.png</image>
+            <caption>Call view</caption>
+        </screenshot>
+        <screenshot>
+            <image>http://www.linphone.org/uploads/images/desktop_chat_view.png</image>
+            <caption>Chat view</caption>
+        </screenshot>
+    </screenshots>
+    <url type="homepage">http://www.linphone.org</url>
+    <updatecontact>contact@belledonne-communications.com</updatecontact>
+</component>

@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{08dd0d38-d9b5-4626-b60d-b4d76b571142}</ProjectGuid>
+    <RootNamespace>LibLinphone</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\belle-sip\include;$(ProjectDir)..\..\oRTP\include;$(ProjectDir)..\..\mediastreamer2\include;$(ProjectDir)..\..\..\tunnel\include;$(ProjectDir)..\..\coreapi;$(ProjectDir)..\..\include;$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\zlib;$(ProjectDir)..\..\..\sqlite\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__STDC_CONSTANT_MACROS;_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;_USRDLL;WINDOW_NATIVE;_TRUE_TIME;IN_LINPHONE;USE_BELLESIP;VIDEO_ENABLED;LINPHONE_PACKAGE_NAME="linphone";LIBLINPHONE_EXPORTS;LINPHONE_PLUGINS_DIR="\\linphone\\plugins";UNICODE;_XKEYCHECK_H;HAVE_ZLIB;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalDependencies>belle-sip_no_tunnel.lib;mediastreamer2.lib;ws2_32.lib;ortp.lib;gsm.lib;speex.lib;speexdsp.lib;libxml2.lib;sqlite.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
+    </Link>
+    <PreBuildEvent>
+      <Command>version.bat</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Batch script to get the git version</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;MSG_STORAGE_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;MSG_STORAGE_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\coreapi\address.c" />
+    <ClCompile Include="..\..\coreapi\authentication.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_address_impl.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_impl.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_op_call.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_op_call_transfer.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_op_events.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_op_impl.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_op_info.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_op_message.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_op_presence.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_op_publish.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_op_registration.c" />
+    <ClCompile Include="..\..\coreapi\bellesip_sal\sal_sdp.c" />
+    <ClCompile Include="..\..\coreapi\buffer.c" />
+    <ClCompile Include="..\..\coreapi\call_log.c" />
+    <ClCompile Include="..\..\coreapi\call_params.c" />
+    <ClCompile Include="..\..\coreapi\callbacks.c" />
+    <ClCompile Include="..\..\coreapi\chat.c" />
+    <ClCompile Include="..\..\coreapi\conference.c" />
+    <ClCompile Include="..\..\coreapi\content.c" />
+    <ClCompile Include="..\..\coreapi\ec-calibrator.c" />
+    <ClCompile Include="..\..\coreapi\enum.c" />
+    <ClCompile Include="..\..\coreapi\event.c" />
+    <ClCompile Include="..\..\coreapi\friend.c" />
+    <ClCompile Include="..\..\coreapi\info.c" />
+    <ClCompile Include="..\..\coreapi\lime.c" />
+    <ClCompile Include="..\..\coreapi\linphonecall.c" />
+    <ClCompile Include="..\..\coreapi\linphonecore.c" />
+    <ClCompile Include="..\..\coreapi\linphone_tunnel_config.c" />
+    <ClCompile Include="..\..\coreapi\linphone_tunnel_stubs.c" />
+    <ClCompile Include="..\..\coreapi\localplayer.c" />
+    <ClCompile Include="..\..\coreapi\lpconfig.c" />
+    <ClCompile Include="..\..\coreapi\lsd.c" />
+    <ClCompile Include="..\..\coreapi\message_storage.c" />
+    <ClCompile Include="..\..\coreapi\misc.c" />
+    <ClCompile Include="..\..\coreapi\offeranswer.c" />
+    <ClCompile Include="..\..\coreapi\player.c" />
+    <ClCompile Include="..\..\coreapi\presence.c" />
+    <ClCompile Include="..\..\coreapi\proxy.c" />
+    <ClCompile Include="..\..\coreapi\quality_reporting.c" />
+    <ClCompile Include="..\..\coreapi\remote_provisioning.c" />
+    <ClCompile Include="..\..\coreapi\sal.c" />
+    <ClCompile Include="..\..\coreapi\siplogin.c" />
+    <ClCompile Include="..\..\coreapi\sipsetup.c" />
+    <ClCompile Include="..\..\coreapi\vtables.c" />
+    <ClCompile Include="..\..\coreapi\xml.c" />
+    <ClCompile Include="..\..\coreapi\xml2lpc.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\coreapi\bellesip_sal\sal_impl.h" />
+    <ClInclude Include="..\..\coreapi\buffer.h" />
+    <ClInclude Include="..\..\coreapi\content.h" />
+    <ClInclude Include="..\..\coreapi\enum.h" />
+    <ClInclude Include="..\..\coreapi\event.h" />
+    <ClInclude Include="..\..\coreapi\linphonecore.h" />
+    <ClInclude Include="..\..\coreapi\linphonecore_utils.h" />
+    <ClInclude Include="..\..\coreapi\linphonefriend.h" />
+    <ClInclude Include="..\..\coreapi\linphone_tunnel.h" />
+    <ClInclude Include="..\..\coreapi\lpconfig.h" />
+    <ClInclude Include="..\..\coreapi\offeranswer.h" />
+    <ClInclude Include="..\..\coreapi\private.h" />
+    <ClInclude Include="..\..\coreapi\sipsetup.h" />
+    <ClInclude Include="..\..\coreapi\xml2lpc.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="liblinphone_gitversion.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Windows">
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="platform.winmd">
+      <IsWinMDFile>true</IsWinMDFile>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\bcg729\build\wp8\bcg729\bcg729.vcxproj">
+      <Project>{1db09afe-fc9b-472e-a746-0e33f8ef8883}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\belle-sip\build\wp8\belle-sip\belle-sip_no_tunnel.vcxproj">
+      <Project>{4c225a82-800b-427b-ba7b-61686a9b347f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\msamr\build\wp8\msamr\msamr.vcxproj">
+      <Project>{9924ac72-f96c-4e56-94d9-2b025da43c6b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\msilbc\build\wp8\msilbc\msilbc.vcxproj">
+      <Project>{072fad20-7007-4da2-b2e7-16ce2b219f67}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\mssilk\build\wp8\mssilk\mssilk.vcxproj">
+      <Project>{36b528f9-fb79-4078-a16b-0a7442581bb7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\mswasapi\mswasapi\mswasapi.vcxproj">
+      <Project>{d22bd217-d0f8-4274-9b3a-f3f35f46482c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\mswebrtc\build\wp8\mswebrtc\mswebrtc.vcxproj">
+      <Project>{b16b81a9-bef2-44c9-b603-1065183ae844}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\mswp8vid\mswp8vid\mswp8vid.vcxproj">
+      <Project>{0565952a-ea62-46a2-8261-f5b4b490da42}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sqlite\sqlite.vcxproj">
+      <Project>{a45d63b9-60de-476c-8836-f8eedbe139d0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\mediastreamer2\build\wp8\mediastreamer2\mediastreamer2.vcxproj">
+      <Project>{027bad0e-9179-48c1-9733-7aa7e2c2ec70}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\oRTP\build\wp8\oRTP\oRTP.vcxproj">
+      <Project>{ffc7b532-0502-4d88-ac98-9e89071cbc97}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libxml2\libxml2.vcxproj">
+      <Project>{5dfa07b4-0be9-46a9-ba32-fdf5a55c580b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="zlib\zlib.vcxproj">
+      <Project>{7afac3bb-d97b-4578-b9fe-5e1d2b94ea2f}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />
+</Project>

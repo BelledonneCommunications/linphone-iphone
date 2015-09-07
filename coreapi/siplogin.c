@@ -49,7 +49,7 @@ static void guess_display_name(LinphoneAddress *from){
 	ms_free(dn);
 }
 
-static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char *passwd){
+static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char *passwd, const char *userid){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
 	LinphoneCore *lc=linphone_proxy_config_get_core(cfg);
 	LinphoneAuthInfo *auth;
@@ -66,7 +66,8 @@ static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char
 	tmp=linphone_address_as_string(parsed_uri);
 	linphone_proxy_config_set_identity(cfg,tmp);
 	if (passwd ) {
-		auth=linphone_auth_info_new(linphone_address_get_username(parsed_uri),NULL,passwd,NULL,NULL);
+		auth=linphone_auth_info_new(linphone_address_get_username(parsed_uri),userid,passwd,NULL,NULL,
+			linphone_address_get_domain(parsed_uri));
 		linphone_core_add_auth_info(lc,auth);
 	}
 	linphone_proxy_config_enable_register(cfg,TRUE);
@@ -79,6 +80,7 @@ static int sip_login_do_login(SipSetupContext * ctx, const char *uri, const char
 
 static int sip_login_do_logout(SipSetupContext * ctx){
 	LinphoneProxyConfig *cfg=sip_setup_context_get_proxy_config(ctx);
+	linphone_proxy_config_edit(cfg);
 	linphone_proxy_config_enable_register(cfg,FALSE);
 	linphone_proxy_config_done(cfg);
 	return 0;

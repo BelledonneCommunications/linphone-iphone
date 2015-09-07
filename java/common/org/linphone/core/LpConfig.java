@@ -42,9 +42,89 @@ public interface LpConfig {
 
 	/**
 	 * Sets an integer config item
-	 * @param key 
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param value the value of the setting
 	 */
 	void setInt(String section, String key, int value);
+	
+	/**
+	 * Sets an float config item
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param value the value of the setting
+	 */
+	void setFloat(String section, String key, float value);
+
+	/**
+	 * Sets an boolean config item
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param value the value of the setting
+	 */
+	void setBool(String section, String key, boolean value);
+
+	/**
+	 * Sets an string config item
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param value the value of the setting
+	 */
+	void setString(String section, String key, String value);
+
+	/**
+	 * Sets an integer range config item
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param min the min of the range
+	 * @param max the max of the range
+	 */
+	void setIntRange(String section, String key, int min, int max);
+	
+	/**
+	 * Gets a int from the config
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param defaultValue the default value if not set
+	 * @return the value of the setting or the default value if not set
+	 */
+	int getInt(String section, String key, int defaultValue);
+	
+	/**
+	 * Gets a float from the config
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param defaultValue the default value if not set
+	 * @return the value of the setting or the default value if not set
+	 */
+	float getFloat(String section, String key, float defaultValue);
+	
+	/**
+	 * Gets a boolean from the config
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param defaultValue the default value if not set
+	 * @return the value of the setting or the default value if not set
+	 */
+	boolean getBool(String section, String key, boolean defaultValue);
+	
+	/**
+	 * Gets a string from the config
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param defaultValue the default value if not set
+	 * @return the value of the setting or the default value if not set
+	 */
+	String getString(String section, String key, String defaultValue);
+	
+	/**
+	 * Gets a int range from the config
+	 * @param section the section in the lpconfig
+	 * @param key the name of the setting
+	 * @param defaultValue the default value if not set
+	 * @return the value of the setting or the default value if not set
+	 */
+	int[] getIntRange(String section, String key, int defaultMin, int defaultMax);
 
 	/**
 	 * Synchronize LpConfig with file

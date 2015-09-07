@@ -19,22 +19,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifndef LINPHONEFRIEND_H_
 #define LINPHONEFRIEND_H_
+
+#include "linphonepresence.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /**
  * @addtogroup buddy_list
  * @{
  */
 /**
- * @ingroup buddy_list
  * Enum controlling behavior for incoming subscription request.
  * <br> Use by linphone_friend_set_inc_subscribe_policy()
  */
-typedef  enum {
+typedef enum _LinphoneSubscribePolicy {
 	/**
 	 * Does not automatically accept an incoming subscription request.
-	 * This policy implies that a decision has to be taken for each incoming subscription request notified by callback LinphoneCoreVTable.new_subscription_request
+	 * This policy implies that a decision has to be taken for each incoming subscription request notified by callback LinphoneCoreVTable.new_subscription_requested
 	 *
 	 */
 	LinphoneSPWait,
@@ -46,10 +49,11 @@ typedef  enum {
 	 * Automatically accepts a subscription request.
 	 */
 	LinphoneSPAccept
-}LinphoneSubscribePolicy;
+} LinphoneSubscribePolicy;
 
 /**
  * Enum describing remote friend status
+ * @deprecated Use #LinphonePresenceModel and #LinphonePresenceActivity instead
  */
 typedef enum _LinphoneOnlineStatus{
 	/**
@@ -96,6 +100,10 @@ typedef enum _LinphoneOnlineStatus{
 	 * Pending
 	 */
 	LinphoneStatusPending,
+	/**
+	 * Vacation
+	 */
+	LinphoneStatusVacation,
 
 	LinphoneStatusEnd
 }LinphoneOnlineStatus;
@@ -111,40 +119,69 @@ typedef struct _LinphoneFriend LinphoneFriend;
  * Contructor
  * @return a new empty #LinphoneFriend
  */
-LinphoneFriend * linphone_friend_new();
+LINPHONE_PUBLIC LinphoneFriend * linphone_friend_new(void);
+
 /**
- * Contructor same as linphone_friend_new() + linphone_friend_set_addr()
+ * Contructor same as linphone_friend_new() + linphone_friend_set_address()
  * @param addr a buddy address, must be a sip uri like sip:joe@sip.linphone.org
  * @return a new #LinphoneFriend with \link linphone_friend_get_address() address initialized \endlink
  */
-LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_with_addr(const char *addr);
+LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_with_address(const char *addr);
 
 /**
- * Destructor
- * @param lf #LinphoneFriend object
+ * Contructor same as linphone_friend_new() + linphone_friend_set_address()
+ * @deprecated Use #linphone_friend_new_with_address instead
  */
-void linphone_friend_destroy(LinphoneFriend *lf);
+#define linphone_friend_new_with_addr linphone_friend_new_with_address
 
 /**
- * set #LinphoneAddress for this friend
+ * Destroy a LinphoneFriend.
+ * @param lf LinphoneFriend object
+ * @deprecated Use linphone_friend_unref() instead.
+ */
+LINPHONE_PUBLIC void linphone_friend_destroy(LinphoneFriend *lf);
+
+/**
+ * Set #LinphoneAddress for this friend
  * @param fr #LinphoneFriend object
  * @param address #LinphoneAddress
  */
-int linphone_friend_set_addr(LinphoneFriend *fr, const LinphoneAddress* address);
+LINPHONE_PUBLIC int linphone_friend_set_address(LinphoneFriend *fr, const LinphoneAddress* address);
 
 /**
- * get address of this friend
+ * Set #LinphoneAddress for this friend
+ * @deprecated Use #linphone_friend_set_address instead
+ */
+#define linphone_friend_set_addr linphone_friend_set_address
+
+/**
+ * Get address of this friend
  * @param lf #LinphoneFriend object
  * @return #LinphoneAddress
  */
 LINPHONE_PUBLIC	const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf);
+
+/**
+ * Set the display name for this friend
+ * @param lf #LinphoneFriend object
+ * @param name 
+ */
+LINPHONE_PUBLIC int linphone_friend_set_name(LinphoneFriend *lf, const char *name);
+
+/**
+ * Get the display name for this friend
+ * @param lf #LinphoneFriend object
+ * @return The display name of this friend
+ */
+LINPHONE_PUBLIC const char * linphone_friend_get_name(const LinphoneFriend *lf);
+
 /**
  * get subscription flag value
  * @param lf #LinphoneFriend object
  * @return returns true is subscription is activated for this friend
  *
  */
-bool_t linphone_friend_subscribes_enabled(const LinphoneFriend *lf);
+LINPHONE_PUBLIC bool_t linphone_friend_subscribes_enabled(const LinphoneFriend *lf);
 #define linphone_friend_get_send_subscribe linphone_friend_subscribes_enabled
 
 /**
@@ -154,108 +191,226 @@ bool_t linphone_friend_subscribes_enabled(const LinphoneFriend *lf);
  */
 
 LINPHONE_PUBLIC	int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val);
-
 #define linphone_friend_send_subscribe linphone_friend_enable_subscribes
+
 /**
  * Configure incoming subscription policy for this friend.
  * @param fr #LinphoneFriend object
  * @param pol #LinphoneSubscribePolicy policy to apply.
  */
-int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol);
+LINPHONE_PUBLIC int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol);
+
 /**
  * get current subscription policy for this #LinphoneFriend
  * @param lf #LinphoneFriend object
  * @return #LinphoneSubscribePolicy
  *
  */
-LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneFriend *lf);
+LINPHONE_PUBLIC LinphoneSubscribePolicy linphone_friend_get_inc_subscribe_policy(const LinphoneFriend *lf);
 
 /**
  * Starts editing a friend configuration.
  *
  * Because friend configuration must be consistent, applications MUST
  * call linphone_friend_edit() before doing any attempts to modify
- * friend configuration (such as \link linphone_friend_set_addr() address \endlink  or \link linphone_friend_set_inc_subscribe_policy() subscription policy\endlink  and so on).
+ * friend configuration (such as \link linphone_friend_set_address() address \endlink  or \link linphone_friend_set_inc_subscribe_policy() subscription policy\endlink  and so on).
  * Once the modifications are done, then the application must call
  * linphone_friend_done() to commit the changes.
 **/
 LINPHONE_PUBLIC	void linphone_friend_edit(LinphoneFriend *fr);
+
 /**
  * Commits modification made to the friend configuration.
  * @param fr #LinphoneFriend object
 **/
 LINPHONE_PUBLIC	void linphone_friend_done(LinphoneFriend *fr);
 
-
-
-
 /**
- * get friend status
+ * Get the status of a friend
+ * @param[in] lf A #LinphoneFriend object
  * @return #LinphoneOnlineStatus
+ * @deprecated Use linphone_friend_get_presence_model() instead
  */
-LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
-BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
-void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key);
-const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
-bool_t linphone_friend_in_list(const LinphoneFriend *lf);
-
-#define linphone_friend_url(lf) ((lf)->url)
+LINPHONE_PUBLIC LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf);
 
 /**
- * return humain readable presence status
- * @param ss
+ * Get the presence model of a friend
+ * @param[in] lf A #LinphoneFriend object
+ * @return A #LinphonePresenceModel object, or NULL if the friend do not have presence information (in which case he is considered offline)
  */
-const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
+LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf);
 
+/**
+ * Store user pointer to friend object.
+**/
+LINPHONE_PUBLIC void linphone_friend_set_user_data(LinphoneFriend *lf, void *data);
+
+/**
+ * Retrieve user data associated with friend.
+**/
+LINPHONE_PUBLIC void* linphone_friend_get_user_data(const LinphoneFriend *lf);
+
+LINPHONE_PUBLIC BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf);
+
+/**
+ * Set the reference key of a friend.
+ * @param[in] lf #LinphoneFriend object.
+ * @param[in] key The reference key to use for the friend.
+**/
+LINPHONE_PUBLIC void linphone_friend_set_ref_key(LinphoneFriend *lf, const char *key);
+
+/**
+ * Get the reference key of a friend.
+ * @param[in] lf #LinphoneFriend object.
+ * @return The reference key of the friend.
+**/
+LINPHONE_PUBLIC const char *linphone_friend_get_ref_key(const LinphoneFriend *lf);
+
+/**
+ * Check that the given friend is in a friend list.
+ * @param[in] lf #LinphoneFriend object.
+ * @return TRUE if the friend is in a friend list, FALSE otherwise.
+**/
+LINPHONE_PUBLIC bool_t linphone_friend_in_list(const LinphoneFriend *lf);
+
+
+/**
+ * Return humain readable presence status
+ * @param ss
+ * @deprecated Use #LinphonePresenceModel, #LinphonePresenceActivity and linphone_presence_activity_to_string() instead.
+ */
+LINPHONE_PUBLIC const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
+
+
+/**
+ * Create a default LinphoneFriend.
+ * @param[in] lc #LinphoneCore object
+ * @return The created #LinphoneFriend object
+ */
+LINPHONE_PUBLIC LinphoneFriend * linphone_core_create_friend(LinphoneCore *lc);
+
+/**
+ * Create a LinphoneFriend from the given address.
+ * @param[in] lc #LinphoneCore object
+ * @param[in] address A string containing the address to create the LinphoneFriend from
+ * @return The created #LinphoneFriend object
+ */
+LINPHONE_PUBLIC LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, const char *address);
 
 /**
  * Set my presence status
- * @param lc #LinphoneCore object
- * @param minutes_away how long in away
- * @param alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
- * @param os #LinphoneOnlineStatus
+ * @param[in] lc #LinphoneCore object
+ * @param[in] minutes_away how long in away
+ * @param[in] alternative_contact sip uri used to redirect call in state #LinphoneStatusMoved
+ * @param[in] os #LinphoneOnlineStatus
+ * @deprecated Use linphone_core_set_presence_model() instead
  */
-void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *alternative_contact,LinphoneOnlineStatus os);
-/**
- * get my presence status
- * @param lc #LinphoneCore object
- * @return #LinphoneOnlineStatus
- */
-LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_set_presence_info(LinphoneCore *lc,int minutes_away,const char *alternative_contact,LinphoneOnlineStatus os);
 
-void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result);
+/**
+ * Set my presence model
+ * @param[in] lc #LinphoneCore object
+ * @param[in] presence #LinphonePresenceModel
+ */
+LINPHONE_PUBLIC void linphone_core_set_presence_model(LinphoneCore *lc, LinphonePresenceModel *presence);
+
+/**
+ * Get my presence status
+ * @param[in] lc #LinphoneCore object
+ * @return #LinphoneOnlineStatus
+ * @deprecated Use linphone_core_get_presence_model() instead
+ */
+LINPHONE_PUBLIC LinphoneOnlineStatus linphone_core_get_presence_info(const LinphoneCore *lc);
+
+/**
+ * Get my presence model
+ * @param[in] lc #LinphoneCore object
+ * @return A #LinphonePresenceModel object, or NULL if no presence model has been set.
+ */
+LINPHONE_PUBLIC LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc);
+
+/**
+ * @deprecated Use linphone_core_interpret_url() instead
+ */
+LINPHONE_PUBLIC void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result);
+
 /**
  * Add a friend to the current buddy list, if \link linphone_friend_enable_subscribes() subscription attribute \endlink is set, a SIP SUBSCRIBE message is sent.
  * @param lc #LinphoneCore object
  * @param fr #LinphoneFriend to add
  */
 LINPHONE_PUBLIC	void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *fr);
+
 /**
  * remove a friend from the buddy list
  * @param lc #LinphoneCore object
  * @param fr #LinphoneFriend to add
  */
-void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *fr);
+LINPHONE_PUBLIC void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *fr);
+
 /**
  * Black list a friend. same as linphone_friend_set_inc_subscribe_policy() with #LinphoneSPDeny policy;
  * @param lc #LinphoneCore object
  * @param lf #LinphoneFriend to add
  */
-void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);
-/**
- * get Buddy list of LinphoneFriend
- * @param lc #LinphoneCore object
- * */
-LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
-/**
- *  notify all friends that have subscribed
- * @param lc #LinphoneCore object
- * @param os #LinphoneOnlineStatus to notify
- *  */
-void linphone_core_notify_all_friends(LinphoneCore *lc, LinphoneOnlineStatus os);
-LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *addr);
-LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
+LINPHONE_PUBLIC void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf);
 
+/**
+ * Get Buddy list of LinphoneFriend
+ * @param[in] lc #LinphoneCore object
+ * @return \mslist{LinphoneFriend}
+ */
+LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
+
+/**
+ * Notify all friends that have subscribed
+ * @param lc #LinphoneCore object
+ * @param presence #LinphonePresenceModel to notify
+ */
+LINPHONE_PUBLIC void linphone_core_notify_all_friends(LinphoneCore *lc, LinphonePresenceModel *presence);
+
+/**
+ * Search a LinphoneFriend by its address.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] addr The address to use to search the friend.
+ * @return The #LinphoneFriend object corresponding to the given address.
+ * @deprecated use linphone_core_find_friend() instead.
+ */
+LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *addr);
+
+/**
+ * Search a LinphoneFriend by its address.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] addr The address to use to search the friend.
+ * @return The #LinphoneFriend object corresponding to the given address.
+ */
+LINPHONE_PUBLIC LinphoneFriend *linphone_core_find_friend(const LinphoneCore *lc, const LinphoneAddress *addr);
+
+/**
+ * Search a LinphoneFriend by its reference key.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] key The reference key to use to search the friend.
+ * @return The #LinphoneFriend object corresponding to the given reference key.
+ */
+LINPHONE_PUBLIC LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key);
+
+/**
+ * Acquire a reference to the linphone friend.
+ * @param[in] lf LinphoneFriend object
+ * @return The same LinphoneFriend object
+**/
+LINPHONE_PUBLIC LinphoneFriend * linphone_friend_ref(LinphoneFriend *lf);
+
+/**
+ * Release a reference to the linphone friend.
+ * @param[in] lf LinohoneFriend object
+**/
+LINPHONE_PUBLIC void linphone_friend_unref(LinphoneFriend *lf);
+
+/**
+ * Returns the LinphoneCore object managing this friend, if any.
+ */
+LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr);
 /**
  * @}
  */

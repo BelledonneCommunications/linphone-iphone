@@ -30,7 +30,7 @@ void *linphone_gtk_wait(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, co
 	switch(ws){
 		case LinphoneWaitingStart:
 			gdk_threads_enter();
-			w=linphone_gtk_create_window("waiting");
+			w=linphone_gtk_create_window("waiting", NULL);
 			gtk_window_set_transient_for(GTK_WINDOW(w),GTK_WINDOW(linphone_gtk_get_main_window()));
 			gtk_window_set_position(GTK_WINDOW(w),GTK_WIN_POS_CENTER_ON_PARENT);
 			if (purpose) {
@@ -102,14 +102,14 @@ void linphone_gtk_reload_sound_devices(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *pb=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
 	linphone_core_reload_sound_devices(linphone_gtk_get_core());
-	linphone_gtk_fill_soundcards(pb);
+	if (pb) linphone_gtk_fill_soundcards(pb);
 }
 
 void linphone_gtk_reload_video_devices(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *pb=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
 	linphone_core_reload_video_devices(linphone_gtk_get_core());
-	linphone_gtk_fill_webcams(pb);
+	if (pb) linphone_gtk_fill_webcams(pb);
 }
 
 #ifdef HAVE_LIBUDEV_H

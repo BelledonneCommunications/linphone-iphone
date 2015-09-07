@@ -31,6 +31,9 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 	private float roundTripDelay;
 	private long latePacketsCumulativeNumber;
 	private float jitterBufferSize;
+	private float localLossRate;
+	private float localLateRate;
+	private long nativePtr;
 
 	private native int getMediaType(long nativeStatsPtr);
 	private native int getIceState(long nativeStatsPtr);
@@ -43,8 +46,12 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 	private native float getRoundTripDelay(long nativeStatsPtr);
 	private native long getLatePacketsCumulativeNumber(long nativeStatsPtr, long nativeCallPtr);
 	private native float getJitterBufferSize(long nativeStatsPtr);
+	private native float getLocalLossRate(long nativeStatsPtr);
+	private native float getLocalLateRate(long nativeStatsPtr);
+	private native void updateStats(long nativeCallPtr, int mediaType);
 
 	protected LinphoneCallStatsImpl(long nativeCallPtr, long nativeStatsPtr) {
+		nativePtr=nativeStatsPtr;
 		mediaType = getMediaType(nativeStatsPtr);
 		iceState = getIceState(nativeStatsPtr);
 		downloadBandwidth = getDownloadBandwidth(nativeStatsPtr);
@@ -56,6 +63,13 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 		roundTripDelay = getRoundTripDelay(nativeStatsPtr);
 		latePacketsCumulativeNumber = getLatePacketsCumulativeNumber(nativeStatsPtr, nativeCallPtr);
 		jitterBufferSize = getJitterBufferSize(nativeStatsPtr);
+		
+	}
+
+	protected void updateRealTimeStats(LinphoneCall call){
+		updateStats( ((LinphoneCallImpl)call).nativePtr, mediaType);
+		localLossRate=getLocalLossRate(nativePtr);
+		localLateRate=getLocalLateRate(nativePtr);
 	}
 
 	public MediaType getMediaType() {
@@ -100,5 +114,13 @@ class LinphoneCallStatsImpl implements LinphoneCallStats {
 
 	public float getJitterBufferSize() {
 		return jitterBufferSize;
+	}
+
+	public float getLocalLossRate(){
+		return localLossRate;
+	}
+
+	public float getLocalLateRate(){
+		return localLateRate;
 	}
 }

@@ -5,7 +5,7 @@
   <object class="GtkDialog" id="dscp_settings">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">Dscp settings</property>
+    <property name="title" translatable="yes">DSCP settings</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
     <signal name="response" handler="linphone_gtk_dscp_edit_response" swapped="no"/>

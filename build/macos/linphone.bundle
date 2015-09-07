@@ -15,7 +15,8 @@
     <prefix name="default">/opt/local</prefix>
     <prefix name="linphone">${env:LINPHONE_INSTALL_PREFIX}</prefix>
     <prefix name="ms2plugins">${env:MS2_PLUGINS_INSTALL_PREFIX}</prefix>
-    <prefix name="macports">/opt/local</prefix>
+    <!-- This prefix definition is necessary if some dependencies are to be taken from /usr/local/lib -->
+    <prefix name="local">${env:LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX}</prefix>
     <!-- The project directory is the default location of the created
          app. If you leave out the path, the current directory is
          used. Note the usage of an environment variable here again.
@@ -55,11 +56,11 @@
   <main-binary>${prefix:linphone}/bin/linphone</main-binary>
 
   <binary >
-    ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.so
+    ${prefix:ms2plugins}/lib/mediastreamer/plugins/*.*.so
   </binary>
   
   <binary >
-    ${prefix:linphone}/lib/*.dylib
+    ${prefix:linphone}/lib/*.*.dylib
   </binary>
 
   <!-- Copy in GTK+ modules.  Note the ${gtkdir} macro, which expands
@@ -91,6 +92,9 @@
   <binary>
     ${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/engines/*.so
   </binary>
+  <binary>
+    ${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/immodules/*.so
+  </binary>
   <!-- Copy GIO modules, required for https access for wizard-->
   <binary>
      ${prefix}/lib/gio/modules/libgiognutls.so
@@ -100,6 +104,15 @@
        want to copy in to the bundle. The "dest" attribute is
        optional, as usual. Bundler will find all translations of that
        library/program under the indicated directory and copy them.-->
+  <data name="linphone">
+    ${prefix:linphone}/share/locale
+  </data>
+  <translations name="gdk-pixbuf">
+    ${prefix}/share/locale
+  </translations>
+  <translations name="glib20">
+    ${prefix}/share/locale
+  </translations>
   <translations name="gtk20">
     ${prefix}/share/locale
   </translations>
@@ -118,6 +131,11 @@
   <data>
     ${prefix:linphone}/share/pixmaps/linphone
   </data>
+
+  <data>
+    ${prefix:linphone}/share/images
+  </data>
+
 
   <!-- Copy in the themes data. You may want to trim this to save space
        in your bundle. -->
@@ -152,6 +170,10 @@
 
   <data dest="${bundle}/Contents/Resources/share/sounds/linphone/ringback.wav">
       ${prefix:linphone}/share/sounds/linphone/ringback.wav
+  </data>
+  
+  <data dest="${bundle}/Contents/Resources/share/sounds/linphone/incoming_chat.wav">
+      ${prefix:linphone}/share/sounds/linphone/incoming_chat.wav
   </data>
 
   <!-- Icon themes to copy. The "icons" property can be either of

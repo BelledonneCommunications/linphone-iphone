@@ -1,0 +1,42 @@
+static PyObject * pylinphone_Call_get_native_video_window_id(PyObject *self, void *closure);
+static int pylinphone_Call_set_native_video_window_id(PyObject *self, PyObject *value, void *closure);
+static PyObject * pylinphone_Core_get_native_preview_window_id(PyObject *self, void *closure);
+static int pylinphone_Core_set_native_preview_window_id(PyObject *self, PyObject *value, void *closure);
+static PyObject * pylinphone_Core_get_native_video_window_id(PyObject *self, void *closure);
+static int pylinphone_Core_set_native_video_window_id(PyObject *self, PyObject *value, void *closure);
+static PyObject * pylinphone_Core_get_sip_transports(PyObject *self, void *closure);
+static int pylinphone_Core_set_sip_transports(PyObject *self, PyObject *value, void *closure);
+static void pylinphone_Core_dealloc(PyObject *self);
+static PyObject * pylinphone_Core_get_sip_transports_used(PyObject *self, void *closure);
+static PyObject * pylinphone_Core_get_sound_devices(PyObject *self, void *closure);
+static PyObject * pylinphone_Core_get_video_devices(PyObject *self, void *closure);
+
+static PyTypeObject pylinphone_VideoSizeType;
+static PyTypeObject pylinphone_SipTransportsType;
+
+typedef struct {
+	PyObject_HEAD
+	MSVideoSize vs;
+} pylinphone_VideoSizeObject;
+
+typedef struct {
+	PyObject_HEAD
+	LCSipTransports lcst;
+} pylinphone_SipTransportsObject;
+
+int PyLinphoneVideoSize_Check(PyObject *p);
+MSVideoSize PyLinphoneVideoSize_AsMSVideoSize(PyObject *obj);
+PyObject * PyLinphoneVideoSize_FromMSVideoSize(MSVideoSize vs);
+
+int PyLinphoneSipTransports_Check(PyObject *p);
+LCSipTransports * PyLinphoneSipTransports_AsLCSipTransports(PyObject *obj);
+PyObject * PyLinphoneSipTransports_FromLCSipTransports(LCSipTransports lcst);
+
+time_t PyDateTime_As_time_t(PyObject *obj);
+PyObject * PyDateTime_From_time_t(time_t t);
+
+static PyObject * pylinphone_Buffer_get_content(PyObject *self, void *closure);
+static int pylinphone_Buffer_set_content(PyObject *self, PyObject *value, void *closure);
+
+static PyObject * pylinphone_Content_get_buffer(PyObject *self, void *closure);
+static int pylinphone_Content_set_buffer(PyObject *self, PyObject *value, void *closure);

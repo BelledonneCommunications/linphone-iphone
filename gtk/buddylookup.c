@@ -71,7 +71,7 @@ GtkWidget * linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx){
 	GtkCellRenderer *renderer,*pbuf_renderer;
 	GtkTreeViewColumn *column;
 	GtkTreeSelection *select;
-	GtkWidget *w=linphone_gtk_create_window("buddylookup");
+	GtkWidget *w=linphone_gtk_create_window("buddylookup", NULL);
 	GtkWidget *results=linphone_gtk_get_widget(w,"search_results");
 	GtkProgressBar *pb=GTK_PROGRESS_BAR(linphone_gtk_get_widget(w,"progressbar"));
 	
@@ -287,7 +287,7 @@ void linphone_gtk_add_buddy_from_database(GtkWidget *button){
 		gtk_tree_model_get (model, &iter,LOOKUP_RESULT_SIP_URI , &uri,LOOKUP_RESULT_NAME, &name, -1);
 		addr=g_strdup_printf("%s <%s>",name,uri);
 
-		lf=linphone_friend_new_with_addr(addr);
+		lf=linphone_friend_new_with_address(addr);
 		linphone_friend_set_inc_subscribe_policy(lf,presence ? LinphoneSPAccept : LinphoneSPDeny);
 		linphone_friend_send_subscribe(lf,presence);
 		linphone_core_add_friend(linphone_gtk_get_core(),lf);

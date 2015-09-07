@@ -11,21 +11,29 @@ UI_FILES=	about.ui \
 		tunnel_config.ui \
 		waiting.ui \
 		dscp_settings.ui \
-		call_statistics.ui
+		call_statistics.ui \
+		ldap.ui \
+		config-uri.ui \
+		provisioning-fetch.ui \
+		audio_assistant.ui \
+		chatroom_frame.ui \
+		in_call_frame.ui \
+		conf_frame.ui \
+		callee_frame.ui \
+		login_frame.ui
 
 PIXMAPS=	\
-		stock_people.png 
+		stock_people.png
 
 LINPHONE_ICO_RC_FILE=linphone.rc
 LINPHONE_ICO_FILE=linphone.ico
 
-EXTRA_DIST=	$(PIXMAPS) \
-		$(UI_FILES) \
-		linphone.iss \
-		$(LINPHONE_ICO_RC_FILE) \
-		$(LINPHONE_ICO_FILE)
-		gtkrc \
-		gtkrc.mac
+EXTRA_DIST= \
+	linphone.iss \
+	$(LINPHONE_ICO_RC_FILE) \
+	$(LINPHONE_ICO_FILE)
+	gtkrc \
+	gtkrc.mac
 
 if BUILD_GTK_UI
 
@@ -48,20 +56,31 @@ linphone_SOURCES=	\
 			loginframe.c \
 			singleinstance.c \
 			conference.c \
-			linphone.h 
+			config-fetching.c \
+			audio_assistant.c \
+			videowindow.c \
+			status_icon.c status_icon.h \
+			linphone.h
+
 if BUILD_WIZARD
-linphone_SOURCES+=	\
-			setupwizard.c
+linphone_SOURCES+= \
+	setupwizard.c
+endif
+
+if BUILD_STATUS_NOTIFIER
+linphone_SOURCES+= \
+	status_notifier.c \
+	status_notifier.h
 endif
 
 linphone_LDADD=	$(top_builddir)/coreapi/liblinphone.la \
-		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS)
+		$(LIBGTK_LIBS) $(NOTIFY1_LIBS) $(NOTIFY4_LIBS) $(LIBGTKMAC_LIBS) $(INTLLIBS) $(SQLITE3_LIBS) $(BELLESIP_LIBS)
 
 
 if BUILD_WIN32
 
 linphone.res:	$(LINPHONE_ICO_RC_FILE) $(LINPHONE_ICO_FILE)
-	windres $(srcdir)/$(LINPHONE_ICO_RC_FILE) -O coff -o linphone.res
+	$(WINDRES) $(srcdir)/$(LINPHONE_ICO_RC_FILE) -O coff -o linphone.res
 
 linphone_LDADD+=linphone.res -lwininet
 linphone_LDFLAGS=-Wl,--export-all-symbols -mwindows
@@ -70,16 +89,17 @@ linphone_LDFLAGS=-export-dynamic
 endif
 
 uidir=$(datadir)/linphone
-ui_DATA=$(UI_FILES) $(PIXMAPS) $(top_srcdir)/COPYING
+dist_ui_DATA=$(UI_FILES) $(PIXMAPS) $(top_srcdir)/COPYING
 
 endif
 
 
-AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ \
+AM_CFLAGS= -DIN_LINPHONE -I$(top_srcdir)/coreapi/ -I$(top_builddir)/coreapi/ \
 		$(MEDIASTREAMER_CFLAGS) \
-		$(ORTP_CFLAGS) \
-		$(STRICT_OPTIONS) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
-		$(TUNNEL_CFLAGS)
+		$(ORTP_CFLAGS) $(BELLESIP_CFLAGS) \
+		$(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) $(IPV6_CFLAGS) \
+		$(TUNNEL_CFLAGS) \
+		$(SQLITE3_CFLAGS)
 
 
 version_date.h: $(top_srcdir)/configure.ac

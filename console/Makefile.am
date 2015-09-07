@@ -3,18 +3,19 @@
 AM_CPPFLAGS=\
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/coreapi \
-	-I$(top_srcdir)/exosip
+	-I$(top_srcdir)/include
 
 COMMON_CFLAGS=\
 	-DIN_LINPHONE \
-	-DENABLE_TRACE \
 	-D_ORTP_SOURCE \
 	$(STRICT_OPTIONS) \
+	$(STRICT_OPTIONS_CC) \
+	$(ORTP_CFLAGS) \
+	$(MEDIASTREAMER_CFLAGS) \
 	$(VIDEO_CFLAGS) \
 	$(READLINE_CFLAGS) \
-	$(OSIP_CFLAGS) \
-	$(ORTP_CFLAGS) \
-	$(MEDIASTREAMER_CFLAGS)
+	$(SQLITE3_CFLAGS) \
+	$(LIBXML2_CFLAGS)
 
 if BUILD_CONSOLE
 
@@ -25,10 +26,13 @@ bin_PROGRAMS+=linphoned
 endif
 
 linphonec_SOURCES=linphonec.c linphonec.h commands.c
-linphonec_CFLAGS=$(COMMON_CFLAGS) $(CONSOLE_FLAGS)
+linphonec_CFLAGS=$(COMMON_CFLAGS) $(CONSOLE_FLAGS) $(BELLESIP_CFLAGS)
 linphonec_LDADD=$(top_builddir)/coreapi/liblinphone.la \
 		$(READLINE_LIBS)  \
-		$(X11_LIBS)
+		$(SQLITE3_LIBS) \
+		$(X11_LIBS) \
+		$(BELLESIP_LIBS) \
+		$(LIBXML2_LIBS)
 
 if BUILD_WIN32
 #special build of linphonec to detach from the windows console

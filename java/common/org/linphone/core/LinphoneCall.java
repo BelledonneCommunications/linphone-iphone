@@ -119,6 +119,15 @@ public interface LinphoneCall {
 		 */
 		public static final State CallReleased = new State(18,"Released");
 
+		/**
+		 * The call is updated by remote while not yet answered (SIP UPDATE in early dialog received)
+		 */
+		public static final State CallEarlyUpdatedByRemote = new State(19,"EarlyUpdatedByRemote");
+
+		/**
+		 * We are updating the call while not yet answered (SIP UPDATE in early dialog sent)
+		**/
+		public static final State CallEarlyUpdating = new State(20,"EarlyUpdating");
 		
 		private State(int value,String stringValue) {
 			mValue = value;
@@ -259,6 +268,16 @@ public interface LinphoneCall {
 	void setAuthenticationTokenVerified(boolean verified);
 
 	boolean isInConference();
+
+	/**
+	 * Indicates whether an operation is in progress at the media side.
+	 * It can a bad idea to initiate signaling operations (adding video, pausing the call, removing video, changing video parameters) while
+	 * the media is busy in establishing the connection (typically ICE connectivity checks). It can result in failures generating loss of time
+	 * in future operations in the call.
+	 * Applications are invited to check this function after each call state change to decide whether certain operations are permitted or not.
+	 * @return TRUE if media is busy in establishing the connection, FALSE otherwise.
+	 **/
+	boolean mediaInProgress();
 	
 	float getPlayVolume();
 
@@ -292,4 +311,53 @@ public interface LinphoneCall {
 	 * Stop call recording.
 	 */
 	void stopRecording();
+	
+	/**
+	 * If a call transfer has been initiated for this call, returns the call state of the new call performed at the remote end as a result of the transfer request.
+	 * @return the call state of the new call performed by the referee to the refer target.
+	 */
+	State getTransferState();
+	
+	/**
+	 * Send an info message to remote peer.
+	 */
+	void sendInfoMessage(LinphoneInfoMessage msg);
+	
+	/**
+	 * Returns the transferer if this call was started automatically as a result of an incoming transfer request.
+	 * The call in which the transfer request was received is returned in this case.
+	 **/
+	LinphoneCall getTransfererCall();
+	
+	/**
+	 * When this call has received a transfer request, returns the new call that was automatically created as a result of the transfer.
+	**/
+	LinphoneCall getTransferTargetCall();
+	
+	Reason getReason();
+	
+	/**
+	 * Returns last error reported for the call.
+	 * @return an ErrorInfo.
+	 */
+	ErrorInfo getErrorInfo();
+	
+	/**
+	 *  attached a user data to a call
+	 **/
+	void setUserData(Object obj);
+	
+	/**
+	 * Returns user data from a call. return null if any
+	 * @return an Object.
+	 */
+	Object getUserData();
+	
+	/**
+	 * Get a call player
+	 * Call player enable to stream a media file through a call
+	 * @return A player
+	 */
+	public LinphonePlayer getPlayer();
+
 }

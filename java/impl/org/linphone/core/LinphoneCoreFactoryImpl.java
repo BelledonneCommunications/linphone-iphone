@@ -20,8 +20,9 @@ package org.linphone.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-import org.linphone.CpuUtils;
+import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 
 import android.util.Log;
@@ -33,66 +34,46 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			System.loadLibrary(s);
 			return true;
 		} catch (Throwable e) {
-			Log.w("Unable to load optional library lib", s);
+			Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library lib" + s);
 		}
 		return false;
 	}
 
 	static {
-		// FFMPEG (audio/video)
-		loadOptionalLibrary("avutil");
-		loadOptionalLibrary("swscale");
-		loadOptionalLibrary("avcore");
-
-		System.loadLibrary("neon");
-		
-		if (!hasNeonInCpuFeatures()) {
-			boolean noNeonLibrariesLoaded = loadOptionalLibrary("avcodecnoneon");
-			if (!noNeonLibrariesLoaded) {
-				loadOptionalLibrary("avcodec");
+		List<String> cpuabis=Version.getCpuAbis();
+		String ffmpegAbi;
+		boolean libLoaded=false;
+		Throwable firstException=null;
+		for (String abi : cpuabis){
+			Log.i("LinphoneCoreFactoryImpl","Trying to load liblinphone for " + abi);
+			ffmpegAbi=abi;
+			// FFMPEG (audio/video)
+			if (abi.startsWith("armeabi")) {
+				ffmpegAbi="arm";
 			}
-		} else {
-			loadOptionalLibrary("avcodec");
-		}
- 
-		// OPENSSL (cryptography)
-		// lin prefix avoids collision with libs in /system/lib
-		loadOptionalLibrary("lincrypto");
-		loadOptionalLibrary("linssl");
-
-		// Secure RTP and key negotiation
-		loadOptionalLibrary("srtp");
-		loadOptionalLibrary("zrtpcpp"); // GPLv3+
-
-		// Tunnel
-		loadOptionalLibrary("tunnelclient");
-		
-		// g729 A implementation
-		loadOptionalLibrary("bcg729");
-
-		//Main library
-		if (!hasNeonInCpuFeatures()) {
+			loadOptionalLibrary("ffmpeg-linphone-"+ffmpegAbi);
+			//Main library
 			try {
-				if (!isArmv7() && !Version.isX86()) {
-					System.loadLibrary("linphonearmv5"); 
-				} else {
-					System.loadLibrary("linphonenoneon"); 
-				}
-				Log.w("linphone", "No-neon liblinphone loaded");
-			} catch (UnsatisfiedLinkError ule) {
-				Log.w("linphone", "Failed to load no-neon liblinphone, loading neon liblinphone");
-				System.loadLibrary("linphone"); 
+				System.loadLibrary("linphone-" + abi);
+				Log.i("LinphoneCoreFactoryImpl","Loading done with " + abi);
+				libLoaded=true;
+				break;
+			}catch(Throwable e) {
+				if (firstException == null) firstException=e;
 			}
-		} else {
-			System.loadLibrary("linphone"); 
 		}
-
-		Version.dumpCapabilities();
+		
+		if (!libLoaded){
+			throw new RuntimeException(firstException);
+			
+		}else{
+			Version.dumpCapabilities();
+		}
 	}
 	@Override
 	public LinphoneAuthInfo createAuthInfo(String username, String password,
-			String realm) {
-		return new LinphoneAuthInfoImpl(username,password,realm);
+			String realm, String domain) {
+		return new LinphoneAuthInfoImpl(username, password, realm, domain);
 	}
 
 	@Override
@@ -102,7 +83,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	@Override
-	public LinphoneAddress createLinphoneAddress(String identity) {
+	public LinphoneAddress createLinphoneAddress(String identity) throws LinphoneCoreException {
 		return new LinphoneAddressImpl(identity);
 	}
 	
@@ -113,37 +94,40 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 
 	@Override
 	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener,
-			String userConfig, String factoryConfig, Object userdata)
+			String userConfig, String factoryConfig, Object userdata, Object context)
 			throws LinphoneCoreException {
 		try {
-			return new LinphoneCoreImpl(listener,new File(userConfig),new File(factoryConfig),userdata);
+			MediastreamerAndroidContext.setContext(context);
+			File user = userConfig == null ? null : new File(userConfig);
+			File factory = factoryConfig == null ? null : new File(factoryConfig);
+			LinphoneCore lc = new LinphoneCoreImpl(listener, user, factory, userdata);
+			if(context!=null) lc.setContext(context);
+			return lc;
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);
 		}
 	}
 
 	@Override
-	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener) throws LinphoneCoreException {
+	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener, Object context) throws LinphoneCoreException {
 		try {
-			return new LinphoneCoreImpl(listener);
+			MediastreamerAndroidContext.setContext(context);
+			LinphoneCore lc = new LinphoneCoreImpl(listener);
+			if(context!=null) lc.setContext(context);
+			return lc;
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);
 		}
-	}
-
-	@Override
-	public LinphoneProxyConfig createProxyConfig(String identity, String proxy,
-			String route, boolean enableRegister) throws LinphoneCoreException {
-		return new LinphoneProxyConfigImpl(identity,proxy,route,enableRegister);
 	}
 
 	@Override
 	public native void setDebugMode(boolean enable, String tag);
 
+	
+	private native void _setLogHandler(Object handler);
 	@Override
 	public void setLogHandler(LinphoneLogHandler handler) {
-		//not implemented on Android
-		
+		_setLogHandler(handler);
 	}
 
 	@Override
@@ -155,15 +139,58 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public LinphoneFriend createLinphoneFriend() {
 		return createLinphoneFriend(null);
 	}
-
-	public static boolean hasNeonInCpuFeatures()
-	{
-		CpuUtils cpu = new CpuUtils();
-		return cpu.isCpuNeon();
-	}
 	
+	@Override
+	public native void enableLogCollection(boolean enable);
+
+	@Override
+	public native void setLogCollectionPath(String path);
+
 	public static boolean isArmv7()
 	{
 		return System.getProperty("os.arch").contains("armv7");
+	}
+
+	@Override
+	public LinphoneAuthInfo createAuthInfo(String username, String userid,
+			String passwd, String ha1, String realm, String domain) {
+		return new LinphoneAuthInfoImpl(username, userid, passwd, ha1, realm, domain);
+	}
+
+	@Override
+	public LinphoneContent createLinphoneContent(String type, String subType,
+			byte [] data, String encoding) {
+		return new LinphoneContentImpl(type,subType,data,encoding);
+	}
+	
+	@Override
+	public LinphoneContent createLinphoneContent(String type, String subType,
+			String data) {
+		return new LinphoneContentImpl(type,subType,data == null ? null : data.getBytes(), null);
+	}
+
+	@Override
+	public PresenceActivity createPresenceActivity(PresenceActivityType type, String description) {
+		return new PresenceActivityImpl(type, description);
+	}
+
+	@Override
+	public PresenceService createPresenceService(String id, PresenceBasicStatus status, String contact) {
+		return new PresenceServiceImpl(id, status, contact);
+	}
+
+	@Override
+	public PresenceModel createPresenceModel() {
+		return new PresenceModelImpl();
+	}
+
+	@Override
+	public PresenceModel createPresenceModel(PresenceActivityType type, String description) {
+		return new PresenceModelImpl(type, description);
+	}
+
+	@Override
+	public PresenceModel createPresenceModel(PresenceActivityType type, String description, String note, String lang) {
+		return new PresenceModelImpl(type, description, note, lang);
 	}
 }

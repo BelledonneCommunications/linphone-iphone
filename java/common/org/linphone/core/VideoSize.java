@@ -26,6 +26,13 @@ public final class VideoSize {
 	public static final int CIF = 1;
 	public static final int HVGA = 2;
 	public static final int QVGA = 3;
+	public static final VideoSize VIDEO_SIZE_QCIF = new VideoSize(176,144);
+	public static final VideoSize VIDEO_SIZE_CIF = new VideoSize(352,288);
+	public static final VideoSize VIDEO_SIZE_QVGA = new VideoSize(320,240);
+	public static final VideoSize VIDEO_SIZE_HVGA = new VideoSize(320,480);
+	public static final VideoSize VIDEO_SIZE_VGA = new VideoSize(640,480);
+	public static final VideoSize VIDEO_SIZE_720P = new VideoSize(1280,720);
+	public static final VideoSize VIDEO_SIZE_1020P = new VideoSize(1920,1080);
 
 	public int width;
 	public int height;
@@ -36,6 +43,7 @@ public final class VideoSize {
 		this.height = height;
 	}
 
+	@Deprecated
 	public static final VideoSize createStandard(int code, boolean inverted) {
 		switch (code) {
 		case QCIF:
@@ -78,7 +86,9 @@ public final class VideoSize {
 		return true;
 	}
 	
-	
+	public String toDisplayableString() {
+		return width + "x" + height;
+	}
 	public String toString() {
 		return "width = "+width + " height = " + height;
 	}

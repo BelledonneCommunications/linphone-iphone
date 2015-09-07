@@ -1,7 +1,7 @@
 
 /*
 buddy_status
-Copyright (C) 2010  Belledonne Communications SARL 
+Copyright (C) 2010  Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -51,12 +51,15 @@ static void stop(int signum){
  * presence state change notification callback
  */
 static void notify_presence_recv_updated (LinphoneCore *lc,  LinphoneFriend *friend) {
+	const LinphonePresenceModel* model = linphone_friend_get_presence_model(friend);
 	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
+	LinphonePresenceActivity *activity = linphone_presence_model_get_activity(model);
+	char *activity_str = linphone_presence_activity_to_string(activity);
 	printf("New state state [%s] for user id [%s] \n"
-				,linphone_online_status_to_string(linphone_friend_get_status(friend))
+				,activity_str
 				,linphone_address_as_string (friend_address));
 }
-static void new_subscription_request (LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
+static void new_subscription_requested (LinphoneCore *lc,  LinphoneFriend *friend, const char* url) {
 	const LinphoneAddress* friend_address = linphone_friend_get_address(friend);
 	printf(" [%s] wants to see your status, accepting\n"
 				,linphone_address_as_string (friend_address));
@@ -70,7 +73,7 @@ static void new_subscription_request (LinphoneCore *lc,  LinphoneFriend *friend,
  * Registration state notification callback
  */
 static void registration_state_changed(struct _LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
-		printf("New registration state %s for user id [%s] at proxy [%s]\n"
+		printf("New registration state %s for user id [%s] at proxy [%s]"
 				,linphone_registration_state_to_string(cstate)
 				,linphone_proxy_config_get_identity(cfg)
 				,linphone_proxy_config_get_addr(cfg));
@@ -83,6 +86,8 @@ int main(int argc, char *argv[]){
 	char* dest_friend=NULL;
 	char* identity=NULL;
 	char* password=NULL;
+
+	LinphoneFriend* my_friend=NULL;
 
 	/* takes   sip uri  identity from the command line arguments */
 	if (argc>1){
@@ -101,13 +106,13 @@ int main(int argc, char *argv[]){
 #ifdef DEBUG
 	linphone_core_enable_logs(NULL); /*enable liblinphone logs.*/
 #endif
-	/* 
+	/*
 	 Fill the LinphoneCoreVTable with application callbacks.
-	 All are optional. Here we only use the both notify_presence_recv and new_subscription_request callbacks
+	 All are optional. Here we only use the both notify_presence_received and new_subscription_requested callbacks
 	 in order to get notifications about friend status.
 	 */
-	vtable.notify_presence_recv=notify_presence_recv_updated;
-	vtable.new_subscription_request=new_subscription_request;
+	vtable.notify_presence_received=notify_presence_recv_updated;
+	vtable.new_subscription_requested=new_subscription_requested;
 	vtable.registration_state_changed=registration_state_changed; /*just in case sip proxy is used*/
 
 	/*
@@ -120,13 +125,13 @@ int main(int argc, char *argv[]){
 		LinphoneProxyConfig* proxy_cfg = linphone_proxy_config_new();
 		/*parse identity*/
 		LinphoneAddress *from = linphone_address_new(identity);
+		LinphoneAuthInfo *info;
 		if (from==NULL){
 			printf("%s not a valid sip uri, must be like sip:toto@sip.linphone.org \n",identity);
 			goto end;
 		}
-		LinphoneAuthInfo *info;
 		if (password!=NULL){
-			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL); /*create authentication structure from identity*/
+			info=linphone_auth_info_new(linphone_address_get_username(from),NULL,password,NULL,NULL,NULL); /*create authentication structure from identity*/
 			linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 		}
 
@@ -149,10 +154,9 @@ int main(int argc, char *argv[]){
 		while(	running && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationProgress);
 
 	}
-	LinphoneFriend* my_friend=NULL;
 
 	if (dest_friend) {
-		my_friend = linphone_friend_new_with_addr(dest_friend); /*creates friend object from dest*/
+		my_friend = linphone_friend_new_with_address(dest_friend); /*creates friend object from dest*/
 		if (my_friend == NULL) {
 			printf("bad destination uri for friend [%s]\n",dest_friend);
 			goto end;
@@ -164,7 +168,8 @@ int main(int argc, char *argv[]){
 
 	}
 
-	linphone_core_set_presence_info(lc,0,NULL,LinphoneStatusOnline); /*set my status to online*/
+	/*set my status to online*/
+	linphone_core_set_presence_model(lc, linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline, NULL));
 
 	/* main loop for receiving notifications and doing background linphone core work: */
 	while(running){
@@ -172,7 +177,8 @@ int main(int argc, char *argv[]){
 		ms_usleep(50000);
 	}
 
-	linphone_core_set_presence_info(lc,0,NULL,LinphoneStatusOffline); /* change my presence status to offline*/
+	/* change my presence status to offline*/
+	linphone_core_set_presence_model(lc, linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline, NULL));
 	linphone_core_iterate(lc); /* just to make sure new status is initiate message is issued */
 
 	linphone_friend_edit(my_friend); /* start editing friend */

@@ -194,7 +194,7 @@ int lsd_player_play(LsdPlayer *b, const char *filename ){
 		ms_warning("Could not play %s",filename);
 		return -1;
 	}
-	ms_filter_set_notify_callback (b->player,lsd_player_on_eop,b);
+	ms_filter_add_notify_callback (b->player,lsd_player_on_eop,b,FALSE);
 	lsd_player_configure(b);
 	ms_filter_call_method_noarg (b->player,MS_PLAYER_START);
 	return 0;
@@ -249,7 +249,7 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, 
 	mp.pin=0;
 
 	lsd_player_init(&lsd->branches[0],mp,MS_ITC_SOURCE_ID,lsd);
-	ms_filter_set_notify_callback(lsd->branches[0].player,(MSFilterNotifyFunc)lsd_player_configure,&lsd->branches[0]);
+	ms_filter_add_notify_callback(lsd->branches[0].player,(MSFilterNotifyFunc)lsd_player_configure,&lsd->branches[0],FALSE);
 	for(i=1;i<MAX_BRANCHES;++i){
 		mp.pin=i;
 		lsd_player_init(&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);

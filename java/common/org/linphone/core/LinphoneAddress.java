@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
+
+import java.util.Vector;
+
 /**
  * Object that represents a SIP address.
  * The LinphoneAddress is an opaque object to represents SIP addresses, ie the content of SIP's 'from' and 'to' headers. 
@@ -28,6 +31,38 @@ package org.linphone.core;
  *
  */
 public interface LinphoneAddress {
+	static public class TransportType {
+		static private Vector<TransportType> values = new Vector<TransportType>();
+		static public TransportType LinphoneTransportUdp = new TransportType(0, "LinphoneTransportUdp");       
+		static public TransportType LinphoneTransportTcp = new TransportType(1, "LinphoneTransportTcp");
+		static public TransportType LinphoneTransportTls = new TransportType(2, "LinphoneTransportTls");
+
+		private final int mValue;
+		private final String mStringValue;
+
+		private TransportType(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+		
+		public static TransportType fromInt(int value) {
+			for (int i = 0; i < values.size(); i++) {
+				TransportType type = (TransportType) values.elementAt(i);
+				if (type.mValue == value) return type;
+			}
+			throw new RuntimeException("state not found ["+value+"]");
+		}
+		
+		public String toString() {
+			return mStringValue;
+		}
+		
+		public int toInt() {
+			return mValue;
+		}
+	}
+
 	/**
 	 * Human display name
 	 * @return null if not set
@@ -39,21 +74,39 @@ public interface LinphoneAddress {
 	 */
 	public String getUserName();
 	/**
-	 * 
+	 * Domain name
 	 * @return null if not set
 	 */
 	public String getDomain();
-	public String getPort();
-	public int getPortInt();
+	/**
+	 * Port
+	 * @return 0 if not set
+	 */
+	public int getPort();
 	/**
 	 * set display name 
 	 * @param name
 	 */
 	public void setDisplayName(String name);
+	/**
+	 * set user name 
+	 * @param username
+	 */
 	public void setUserName(String username);
+	/**
+	 * set domain name 
+	 * @param domain
+	 */
 	public void setDomain(String domain);
-	public void setPort(String port);
-	public void setPortInt(int port);
+	/**
+	 * set port
+	 * @param port, 0 if not set
+	 */
+	public void setPort(int port);
+
+	/**
+	 * Removes address's tags and uri headers so that it is displayable to the user.
+	**/
 	public void clean();
 	
 	/**
@@ -72,4 +125,16 @@ public interface LinphoneAddress {
 	 * 
 	 * */
 	public String toString();
+	
+	/**
+	 * Gets the transport set in the address
+	 * @return the transport
+	 */
+	public TransportType getTransport();
+	
+	/**
+	 * Sets the transport in the address
+	 * @param transport the transport to set
+	 */
+	public void setTransport(TransportType transport);
 }

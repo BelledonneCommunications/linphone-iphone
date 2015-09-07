@@ -1,0 +1,342 @@
+/*
+Copyright (C) 2014 Belledonne Communications SARL
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#include <Python.h>
+#include <structmember.h>
+#include <datetime.h>
+#include <linphone/linphonecore.h>
+#include <linphone/linphone_tunnel.h>
+#include <linphone/linphonecore_utils.h>
+#include <stdarg.h>
+
+#include "gitversion.h"
+
+#ifdef WIN32
+#include <windows.h>
+#endif
+
+#ifdef _MSC_VER
+#define PYLINPHONE_INLINE __inline
+#else
+#define PYLINPHONE_INLINE inline
+#endif
+
+
+static void pylinphone_dispatch_messages(void);
+static PYLINPHONE_INLINE void pylinphone_trace(int indent, const char *fmt, ...);
+
+
+{{> handwritten_declarations}}
+
+
+
+{{#classes}}
+static PyTypeObject pylinphone_{{class_name}}Type;
+{{/classes}}
+
+{{#classes}}
+
+typedef struct {
+	PyObject_HEAD
+	PyObject *user_data;
+	{{class_cname}} *native_ptr;
+{{{class_object_members_code}}}
+} pylinphone_{{class_name}}Object;
+
+{{/classes}}
+
+{{#classes}}
+static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(PyObject *self);
+static PyObject * pylinphone_{{class_name}}_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr);
+{{#class_type_hand_written_methods}}
+static PyObject * pylinphone_{{class_name}}_class_method_{{method_name}}(PyObject *cls, PyObject *args);
+{{/class_type_hand_written_methods}}
+{{#class_instance_hand_written_methods}}
+static PyObject * pylinphone_{{class_name}}_instance_method_{{method_name}}(PyObject *self, PyObject *args);
+{{/class_instance_hand_written_methods}}
+{{/classes}}
+
+{{#mslist_types}}
+PyObject * PyList_FromMSListOf{{c_contained_type}}(const MSList *msl) {
+	PyObject *pyl = PyList_New(0);
+	while (msl != NULL) {
+		{{c_contained_type}} *native_ptr = ({{c_contained_type}} *)msl->data;
+		PyObject *item = pylinphone_{{python_contained_type}}_from_native_ptr(&pylinphone_{{python_contained_type}}Type, native_ptr);
+		PyList_Append(pyl, item);
+		msl = ms_list_next(msl);
+	}
+	return pyl;
+}
+
+MSList * PyList_AsMSListOf{{c_contained_type}}(PyObject *pyl) {
+	MSList *msl = NULL;
+	Py_ssize_t idx;
+	Py_ssize_t size = PyList_Size(pyl);
+	for (idx = 0; idx < size; idx++) {
+		PyObject *item = PyList_GetItem(pyl, idx);
+		{{c_contained_type}} *native_ptr = pylinphone_{{python_contained_type}}_get_native_ptr(item);
+		msl = ms_list_append(msl, native_ptr);
+	}
+	return msl;
+}
+
+{{/mslist_types}}
+
+{{#core_events}}
+{{{event_callback_definition}}}
+{{/core_events}}
+
+{{#classes}}
+{{#class_events}}
+{{{event_callback_definition}}}
+{{/class_events}}
+{{/classes}}
+
+{{#classes}}
+
+static {{class_cname}} * pylinphone_{{class_name}}_get_native_ptr(PyObject *self) {
+	return ((pylinphone_{{class_name}}Object *)self)->native_ptr;
+}
+
+static PyObject * pylinphone_{{class_name}}_from_native_ptr(PyTypeObject *type, const {{class_cname}} *native_ptr) {
+{{{from_native_pointer_body}}}
+}
+
+static PyObject * pylinphone_{{class_name}}_new(PyTypeObject *type, PyObject *args, PyObject *kw) {
+{{{new_body}}}
+}
+
+static int pylinphone_{{class_name}}_init(PyObject *self, PyObject *args, PyObject *kw) {
+{{{init_body}}}
+}
+
+{{{dealloc_definition}}}
+
+{{#class_type_methods}}
+
+static PyObject * pylinphone_{{class_name}}_class_method_{{method_name}}(PyObject *cls, PyObject *args) {
+{{{method_body}}}
+}
+
+{{/class_type_methods}}
+
+{{#class_instance_methods}}
+
+static PyObject * pylinphone_{{class_name}}_instance_method_{{method_name}}(PyObject *self, PyObject *args) {
+{{{method_body}}}
+}
+
+{{/class_instance_methods}}
+
+static PyMethodDef pylinphone_{{class_name}}_methods[] = {
+	/* Class methods */
+{{#class_type_hand_written_methods}}
+	{ "{{method_name}}", pylinphone_{{class_name}}_class_method_{{method_name}}, METH_VARARGS | METH_CLASS, "{{{method_doc}}}" },
+{{/class_type_hand_written_methods}}
+{{#class_type_methods}}
+	{ "{{method_name}}", pylinphone_{{class_name}}_class_method_{{method_name}}, METH_VARARGS | METH_CLASS, "{{{method_doc}}}" },
+{{/class_type_methods}}
+	/* Instance methods */
+{{#class_instance_hand_written_methods}}
+	{ "{{method_name}}", pylinphone_{{class_name}}_instance_method_{{method_name}}, METH_VARARGS, "{{{method_doc}}}" },
+{{/class_instance_hand_written_methods}}
+{{#class_instance_methods}}
+	{ "{{method_name}}", pylinphone_{{class_name}}_instance_method_{{method_name}}, METH_VARARGS, "{{{method_doc}}}" },
+{{/class_instance_methods}}
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
+};
+
+static PyMemberDef pylinphone_{{class_name}}_members[] = {
+	{ "user_data", T_OBJECT, offsetof(pylinphone_{{class_name}}Object, user_data), 0, "A place to store some user data." },
+	{ NULL, 0, 0, 0, NULL }	/* Sentinel */
+};
+
+{{#class_properties}}
+
+{{{getter_definition_begin}}}
+{{{getter_body}}}
+{{{getter_definition_end}}}
+
+{{{setter_definition_begin}}}
+{{{setter_body}}}
+{{{setter_definition_end}}}
+
+{{/class_properties}}
+
+static PyGetSetDef pylinphone_{{class_name}}_getseters[] = {
+{{#class_hand_written_properties}}
+	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "{{{property_doc}}}" },
+{{/class_hand_written_properties}}
+{{#class_properties}}
+	{ "{{property_name}}", {{getter_reference}}, {{setter_reference}}, "{{{property_doc}}}" },
+{{/class_properties}}
+	/* Sentinel */
+	{ NULL, NULL, NULL, NULL, NULL }
+};
+
+static PyTypeObject pylinphone_{{class_name}}Type = {
+	PyObject_HEAD_INIT(NULL)
+	0,	/* ob_size */
+	"linphone.{{class_name}}",	/* tp_name */
+	sizeof(pylinphone_{{class_name}}Object),	/* tp_basicsize */
+	0,	/* tp_itemsize */
+	pylinphone_{{class_name}}_dealloc,	/* tp_dealloc */
+	0,	/* tp_print */
+	0,	/* tp_getattr */
+	0,	/* tp_setattr */
+	0,	/* tp_compare */
+	0,	/* tp_repr */
+	0,	/* tp_as_number */
+	0,	/* tp_as_sequence */
+	0,	/* tp_as_mapping */
+	0,	/* tp_hash */
+	0,	/* tp_call */
+	0,	/* tp_str */
+	0,	/* tp_getattro */
+	0,	/* tp_setattro */
+	0,	/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT,	/* tp_flags */
+	"{{{class_doc}}}",	/* tp_doc */
+	0,	/* tp_traverse */
+	0,	/* tp_clear */
+	0,	/* tp_richcompare */
+	0,	/* tp_weaklistoffset */
+	0,	/* tp_iter */
+	0,	/* tp_iternext */
+	pylinphone_{{class_name}}_methods,	/* tp_methods */
+	pylinphone_{{class_name}}_members,	/* tp_members */
+	pylinphone_{{class_name}}_getseters,	/* tp_getset */
+	0,	/* tp_base */
+	0,	/* tp_dict */
+	0,	/* tp_descr_get */
+	0,	/* tp_descr_set */
+	0,	/* tp_dictoffset */
+	pylinphone_{{class_name}}_init,	/* tp_init */
+	0,	/* tp_alloc */
+	pylinphone_{{class_name}}_new,	/* tp_new */
+	0,	/* tp_free */
+};
+
+{{/classes}}
+
+
+{{> handwritten_definitions}}
+
+
+static PyMethodDef pylinphone_ModuleMethods[] = {
+	{ "set_log_handler", pylinphone_module_method_set_log_handler, METH_VARARGS, "" },
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
+};
+
+{{#enums}}
+static PyObject * pylinphone_{{enum_name}}_module_method_string(PyObject *self, PyObject *args) {
+	const char *value_str = "[invalid]";
+	int value;
+	PyObject *pyret;
+	if (!PyArg_ParseTuple(args, "i", &value)) {
+		return NULL;
+	}
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%d)", __FUNCTION__, value);
+	switch (value) {
+{{#enum_values}}
+		case {{enum_value_cname}}:
+			value_str = "{{enum_value_name}}";
+			break;
+{{/enum_values}}
+		default:
+			break;
+	}
+	pyret = Py_BuildValue("z", value_str);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static PyMethodDef pylinphone_{{enum_name}}_ModuleMethods[] = {
+	{ "string", pylinphone_{{enum_name}}_module_method_string, METH_VARARGS, "Get a string representation of a linphone.{{enum_name}} value." },
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
+};
+
+{{/enums}}
+
+{{> linphone_testing_module}}
+
+PyMODINIT_FUNC initlinphone(void) {
+	PyObject *m;
+	PyObject *menum;
+
+	PyDateTime_IMPORT;
+	PyEval_InitThreads();
+	pylinphone_init_logging();
+
+{{#classes}}
+	if (PyType_Ready(&pylinphone_{{class_name}}Type) < 0) return;
+{{/classes}}
+
+	/* Hand-written classes. */
+	if (PyType_Ready(&pylinphone_VideoSizeType) < 0) return;
+	if (PyType_Ready(&pylinphone_SipTransportsType) < 0) return;
+
+	m = Py_InitModule3("linphone", pylinphone_ModuleMethods, "Python module giving access to the Linphone library.");
+	if (m == NULL) return;
+	if (PyModule_AddStringConstant(m, "__version__", LINPHONE_GIT_REVISION) < 0) return;
+
+{{#enums}}
+	menum = Py_InitModule3("{{enum_name}}", pylinphone_{{enum_name}}_ModuleMethods, "{{{enum_doc}}}");
+	if (menum == NULL) return;
+	Py_INCREF(menum);
+	if (PyModule_AddObject(m, "{{enum_name}}", menum) < 0) return;
+{{#enum_values}}
+	if (PyModule_AddIntConstant(menum, "{{enum_value_name}}", {{enum_value_cname}}) < 0) return;
+{{/enum_values}}
+{{#enum_deprecated_values}}
+	if (PyModule_AddIntConstant(menum, "{{enum_value_name}}", {{enum_value_cname}}) < 0) return;
+{{/enum_deprecated_values}}
+{{/enums}}
+
+	menum = Py_InitModule3("PayloadTypeType", pylinphone_PayloadTypeType_ModuleMethods, "Type of :py:class:`linphone.PayloadType`.\n\n.. csv-table::\n   :delim: |\n   :header: Value,Description\n\n   AudioContinuous|\n   AudioPacketized|\n   Video|\n   Text|\n   Other|\n");
+	if (menum == NULL) return;
+	Py_INCREF(menum);
+	if (PyModule_AddObject(m, "PayloadTypeType", menum) < 0) return;
+	if (PyModule_AddIntConstant(menum, "AudioContinuous", PAYLOAD_AUDIO_CONTINUOUS) < 0) return;
+	if (PyModule_AddIntConstant(menum, "AudioPacketized", PAYLOAD_AUDIO_PACKETIZED) < 0) return;
+	if (PyModule_AddIntConstant(menum, "Video", PAYLOAD_VIDEO) < 0) return;
+	if (PyModule_AddIntConstant(menum, "Text", PAYLOAD_TEXT) < 0) return;
+	if (PyModule_AddIntConstant(menum, "Other", PAYLOAD_OTHER) < 0) return;
+	// TODO: To remove. Deprecated enum values.
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_AUDIO_CONTINUOUS", PAYLOAD_AUDIO_CONTINUOUS) < 0) return;
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_AUDIO_PACKETIZED", PAYLOAD_AUDIO_PACKETIZED) < 0) return;
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_VIDEO", PAYLOAD_VIDEO) < 0) return;
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_TEXT", PAYLOAD_TEXT) < 0) return;
+	if (PyModule_AddIntConstant(menum, "PAYLOAD_OTHER", PAYLOAD_OTHER) < 0) return;
+
+{{#classes}}
+	Py_INCREF(&pylinphone_{{class_name}}Type);
+	PyModule_AddObject(m, "{{class_name}}", (PyObject *)&pylinphone_{{class_name}}Type);
+{{/classes}}
+
+	/* Hand-written classes. */
+	Py_INCREF(&pylinphone_VideoSizeType);
+	PyModule_AddObject(m, "VideoSize", (PyObject *)&pylinphone_VideoSizeType);
+	Py_INCREF(&pylinphone_SipTransportsType);
+	PyModule_AddObject(m, "SipTransports", (PyObject *)&pylinphone_SipTransportsType);
+
+	pylinphone_init_testing_module(m);
+}

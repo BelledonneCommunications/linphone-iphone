@@ -23,7 +23,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildArguments</key>
-					<value>CFLAGS=&quot;-g -Werror -Wall&quot; CXXFLAGS=&quot;-g&quot;</value>
+					<value>CFLAGS=&quot;-g -Werror -Wall&quot; CXXFLAGS=&quot;-g&quot; V=1</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildCommand</key>

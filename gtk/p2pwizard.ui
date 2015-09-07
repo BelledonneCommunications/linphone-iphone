@@ -8,8 +8,8 @@
     <child>
       <object class="GtkLabel" id="label1">
         <property name="visible">True</property>
-        <property name="label" translatable="yes">Welcome !
-This wizard will help you to setup a SIP account. 
+        <property name="label" translatable="yes">Welcome!
+This wizard will help you to setup a SIP account.
 </property>
         <property name="use_markup">True</property>
         <property name="justify">GTK_JUSTIFY_CENTER</property>

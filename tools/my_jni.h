@@ -35,7 +35,7 @@ static ReturnType call##Type##Method(JNIEnv *env, jobject obj, const char *class
 	}														\
 	jmethodID my_method = env->GetMethodID(my_class, methodName, methodSignature);					\
 	if(my_method == 0) {												\
-		ms_error("Can't get %s %s %s method", className, methodSignature);					\
+		ms_error("Can't get %s %s %s method", className, methodName, methodSignature);					\
 		return NULL;												\
 	}														\
 	va_list vl;													\

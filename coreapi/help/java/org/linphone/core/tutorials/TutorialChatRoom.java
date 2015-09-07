@@ -18,21 +18,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.core.tutorials;
 
+import java.nio.ByteBuffer;
+
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallStats;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
+import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCore.GlobalState;
+import org.linphone.core.LinphoneCore.LogCollectionUploadState;
 import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
+import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PublishState;
+import org.linphone.core.SubscriptionState;
 
 
 /**
@@ -67,7 +76,7 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	
 	public void show(LinphoneCore lc) {}
 	public void byeReceived(LinphoneCore lc, String from) {}
-	public void authInfoRequested(LinphoneCore lc, String realm, String username) {}
+	public void authInfoRequested(LinphoneCore lc, String realm, String username, String domain) {}
 	public void displayStatus(LinphoneCore lc, String message) {}
 	public void displayMessage(LinphoneCore lc, String message) {}
 	public void displayWarning(LinphoneCore lc, String message) {}
@@ -81,10 +90,6 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	public void callEncryptionChanged(LinphoneCore lc, LinphoneCall call,boolean encrypted, String authenticationToken) {}
 	public void notifyReceived(LinphoneCore lc, LinphoneCall call, LinphoneAddress from, byte[] event){}
 	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {}
-	
-	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {
-        //Deprecated
-	}
 
 	
 	
@@ -111,11 +116,11 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 		
 		// First instantiate the core Linphone object given only a listener.
 		// The listener will react to events in Linphone core.
-		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this);
+		LinphoneCore lc = LinphoneCoreFactory.instance().createLinphoneCore(this, null);
 
 		try {
 			// Next step is to create a chat room
-			LinphoneChatRoom chatRoom = lc.createChatRoom(destinationSipAddress);
+			LinphoneChatRoom chatRoom = lc.getOrCreateChatRoom(destinationSipAddress);
 			
 			// Send message
 			LinphoneChatMessage chatMessage = chatRoom.createLinphoneChatMessage("Hello world");
@@ -161,6 +166,89 @@ public class TutorialChatRoom implements LinphoneCoreListener, LinphoneChatMessa
 	public void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg,
 			org.linphone.core.LinphoneChatMessage.State state) {
 		write("Sent message [" + msg.getText() + "] new state is " + state.toString());
+	}
+
+	@Override
+	public void transferState(LinphoneCore lc, LinphoneCall call,
+			State new_call_state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void infoReceived(LinphoneCore lc, LinphoneCall call, LinphoneInfoMessage info) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void subscriptionStateChanged(LinphoneCore lc, LinphoneEvent ev,
+			SubscriptionState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
+			String eventName, LinphoneContent content) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void publishStateChanged(LinphoneCore lc, LinphoneEvent ev,
+			PublishState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
+		if (cr.isRemoteComposing())
+			write("Remote is writing a message");
+		else
+			write("Remote has stop writing");
+	}
+
+	@Override
+	public void configuringStatus(LinphoneCore lc,
+			RemoteProvisioningState state, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileTransferProgressIndication(LinphoneCore lc,
+			LinphoneChatMessage message, LinphoneContent content, int progress) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void fileTransferRecv(LinphoneCore lc, LinphoneChatMessage message,
+			LinphoneContent content, byte[] buffer, int size) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int fileTransferSend(LinphoneCore lc, LinphoneChatMessage message,
+			LinphoneContent content, ByteBuffer buffer, int size) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void uploadProgressIndication(LinphoneCore lc, int offset, int total) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uploadStateChanged(LinphoneCore lc,
+			LogCollectionUploadState state, String info) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

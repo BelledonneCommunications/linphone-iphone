@@ -1,19 +1,22 @@
 Software to install
 *******************
 
-Download lastest mingw-get-inst.exe from http://www.mingw.org
-Run mingw-get-inst.exe. Choose "download lastest catalogues".
-In the feature list, select:
-* C compiler
-* C++ compiler
-* Mingw developer toolkit
-Let the installer fetch and install everything.
+Download lastest mingw-get-setup.exe from http://www.mingw.org
+Run mingw-get-setup.exe.
+In the package list, select and install:
+* mingw-developer-toolkit
+* mingw32-base
+* mingw32-gcc-g++
+* mingw32-pthreads-w32
+* msys-base
+* msys-zip
+* msys-unzip
+* msys-wget
 
-In mingw shell, run
+For more information:
+http://www.mingw.org/wiki/Getting_Started
 
-mingw-get install msys-zip
-mingw-get install msys-unzip
-mingw-get install msys-wget
+In mingw shell (also refered as msys), run
 
 mkdir -p /opt/perl/bin
 cp /bin/perl /opt/perl/bin/.
@@ -26,7 +29,8 @@ Download lastest linphone-deps-win32 zip from
 http://download.savannah.gnu.org/releases-noredirect/linphone/misc
 using your browser. 
 
-Download lastest gtk+2 win32 bundle from http://www.gtk.org 
+Download gtk+-2.24.10 win32 _bundle_ from http://www.gtk.org, direct link:
+http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/gtk+-bundle_2.24.10-20120208_win32.zip 
 
 Install all these three package in /:
 
@@ -37,120 +41,183 @@ unzip <path to linphone-deps>
 
 #Install GTK+ Outcrop theme, the one used by linphone for distribution.
 cd /share/themes
-wget http://art.gnome.org/download/themes/gtk2/1122/GTK2-Outcrop.tar.gz
+wget ftp://ftp.gnome.org/mirror/gnome.org/teams/art.gnome.org/themes/gtk2/GTK2-Outcrop.tar.gz
 tar -xvzf GTK2-Outcrop.tar.gz
 
 #To get the translations working, remove from C:/MinGW/lib :
 libintl.a libintl.la libintl.dll.a
 
-* Download and install Inno Setup Compiler (required only if you run 'make setup.exe'). Add it to your windows Path environment variable.
+* Download and install Inno Setup Compiler (required only if you run
+'make setup.exe'). Add it to your windows Path environment variable.
 
-Get Linphone source code
-************************
-
-Install msys-git from (http://code.google.com/p/msysgit/). During installation you are asked to make a choice about how line endings are treated by git.
-Choose "Checkout line endings as they are, commit as they are". THIS CHOICE IS VERY IMPORTANT. OTHERS BREAK AUTOMAKE.
-
-It is recommended that you create a directory somewhere with a path without any spaces or ~ characters, for example
-c:\sources\
-Within msys-git bash, do
-cd /c/sources
-git clone git://git.linphone.org/linphone.git --recursive
+* Install msys-git from (http://msysgit.github.io/). During installation you
+are asked to make a choice about how line endings are treated by git. Choose
+"Checkout line endings as they are, commit as they are". THIS CHOICE IS VERY
+IMPORTANT. OTHERS BREAK AUTOMAKE.
 
 
-Building
-********
+General rules for compilation
+*****************************
 
-WARNING: During the build, windows might slow down suddenly. Using ctl+alt+del to start the windows system monitor,
- you might see a process 'LVpSRV.exe' or something like this that eats 90% of cpu.
-Kill it. Don't know what it is, but once killed, windows runs normally.
+* It is recommended that you create a directory somewhere with a path without
+  any spaces or ~ characters, for example c:\sources\. This is the place where
+  source code must be compiled.
+* git commands (to retrieve source code) must be performed within msys-git
+  terminal.
+* all other commands (configure, autogen.sh, make) must be done within the
+  mingw shell (msys). In both msys and msys-git windows, change into the
+  directory you created for sources:
+	cd /c/sources
 
-#Compile and install tunnel (optional, available under proprietary licensing)
+* make sure pkg-config works by adding this env variable to your terminal:
+	export PKG_CONFIG_PATH=/usr/lib/pkgconfig
 
-cd tunnel && ./autogen.sh && ./configure --prefix=/usr --enable-shared --disable-static  && make && make install
+Building belle-sip
+******************
+  * make sure that java version 1.6 is available in the PATH. java-1.7 will
+    not work with antlr generator.
+  * download the sources with msys-git shell using the following command:
+    $ git clone git://git.linphone.org/belle-sip.git
+  * compile and install 
+    $ ./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static
+    $ make && make install
 
-#Build linphone itself:
-#run autogen.sh after a git checkout or update
+Building Linphone
+*****************
 
-./autogen.sh
+  * download the sources using the following command:
+    $ git clone git://git.linphone.org/linphone.git --recursive
 
-./configure --prefix=/opt/linphone --enable-shared --disable-static
-#note: in order to use the tunnel, append --enable-tunnel to the configure line above.
+  * compile  
+    #always run autogen.sh after a git checkout or update
+    $ ./autogen.sh
 
-#compile:
+    $ ./configure --prefix=/usr --enable-shared --disable-static
+    #note: in order to use the tunnel (commercial extension), append
+    #--enable-tunnel to the configure line above.
 
-make
+    $ make
+    $ make install
 
-#now install to /opt/linphone, required for compilation of plugins.
+    #Option: make a portable binary zip of linphone
+    $ make zip
 
-make install
+    #additionally you can make binary installer if you have Inno Setup 5
+    installed in its default path
 
-#make a binary zip of linphone
+    $ make setup.exe
+    #now you're done, you have a fresh linphone windows installer in the
+    current directory.
 
-make zip
+Building plugins (optional)
+***************************
 
-#additionally you can make binary installer if you have Inno Setup 5 installed in its default path
-
-make setup.exe
-
-#now you're done, you have a fresh linphone windows installer in the current directory.
-
-
-
-#build plugins
-cd mediastreamer2/plugins/msx264
-./autogen.sh
-PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static
-#make a binary zip of this plugin
-make zip
-#or make an installer
-make setup.exe
-
-#the buddylookup plugin enables lookup of buddies in a remote database using xml-rpc over http/https.
-cd coreapi/plugins/buddylookup
-./autogen.sh
-PKG_CONFIG_PATH=/opt/linphone/lib/pkgconfig ./configure --prefix=/opt/linphone --enable-shared --disable-static 
-make
-#make a binary zip of this plugin
-make zip
+  This the example for msx264 (H264 plugin), the same applies for other
+  linphone plugins.
+  $ git clone git://git.linphone.org/msx264.git
+  $ cd msx264
+  $ ./autogen.sh
+  $ PKG_CONFIG_PATH=/usr/lib/pkgconfig ./configure --prefix=/usr --enable-shared --disable-static
+  #make a binary zip of this plugin
+  $ make zip
+  #or make an installer
+  $ make setup.exe
 
 
 ******************************************************
 *      Notes about linphone-deps generation          *
 ******************************************************
 
-Linphone-deps is a collection of linphone dependencies, that are for some of them difficult
-to find as windows binaries.
-These notes are useful if you want to upgrade part of the software that is included in the
-linphone-deps packages.
+Linphone-deps is a collection of linphone dependencies, that are for some of
+them difficult to find as windows binaries. These notes are useful if you want
+to upgrade part of the software that is included in the linphone-deps packages.
 
 List of software included in linphone-deps:
-libosip2  (compiled)
-libeXosip2 (compiled)
-libavcodec, libavutil, libavformat, libavdevice, libswscale (compiled, all these from ffmpeg)
+antlr3c (compiled)
+bzrtp (compiled)
+polarssl (compiled
+libsrtp (compiled)
+libavcodec, libavutil, libavformat, libavdevice, libswscale (compiled, all
+these from ffmpeg)
 libtheora (from the web)
 libx264 (compiled from the version distributed from linphone's web site)
 libogg (from the web)
-libspeex, libspeexdsp (compiled, statically to workaround a dll-related crash)
+libspeex, libspeexdsp (compiled)
 libgnutls (from the web)
 libgsm (from the web)
 libxml2 (compiled)
 libsoup (compiled)
+libsqlite3 (compiled)
 
 Remarks:
-For every package compiled that goes into linphone-deps, .la files (libtool files) must be removed to avoid libtool errors.
-When running "make install DESTDIR=<somepath>", somepath must be absolute and should not contain any ~ or space.
+For every package compiled that goes into linphone-deps, .la files (libtool
+files) must be removed to avoid libtool errors. When running "make install
+DESTDIR=<somepath>", somepath must be absolute and should not contain any ~ or
+space.
+
+- building antlr3c
+  * download the sources with:
+    $ git clone -b linphone git://git.linphone.org/antlr3.git
+  * compile and install
+    $ cd runtime/C
+    $ ./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static
+    $ make
+    $ make install
+    $ make install DESTDIR=/home/<myuser>/antlr3c-install
+    $ cp 
+
+- building polarssl
+  * download the sources with:
+    $ git clone -b linphone git://git.linphone.org/polarssl.git
+  * compile and install:
+    $ cd polarssl
+    $ make lib SHARED=1 WINDOWS=1
+    $ make install DESTDIR=/usr
+    $ make install DESTDIR=/home/<myuser>/polarssl-install
+
+- building libsrtp
+  *  download the sources with
+    $ git clone git://git.linphone.org/srtp.git
+  * compile with 
+    $ autoconf
+    $ ./configure --prefix=/usr
+    $ make libsrtp.a
+    $ make install
+    $ make install DESTDIR=/home/<myuser>/libsrtp-install
+
+- building bzrtp
+ * download the sources with msys-git shell using the following command:
+    $ git clone git://git.linphone.org/bzrtp.git
+  * compile and install 
+    $ ./autogen.sh
+    $ ./configure --prefix=/usr --enable-shared --disable-static
+    $ make && make install
+
+- building sqlite3
+  * download the sources on the following website:
+  http://www.sqlite.org/download.html (choose the sqlite-autoconf-3XXX.tar.gz)
+  
+  * install: 
+  ./configure
+  make && make install DESTDIR=/home/<myuser>/sqlite3-install
+  then copy the content of ~/sqlite3-install/usr/local/ into linphone-deps/. 	
 
 - building ffmpeg 
   ./configure --enable-shared --disable-static --enable-memalign-hack --extra-cflags="-fno-common" --enable-gpl && make
   make install DESTDIR=/home/<myuser>/ffmpeg-install
   Copy to ~/ffmpeg-install/usr/local/* to linphone-deps/.
-  Copy also all *.dll.a files from the build tree to lib/ directort of linphone-deps. These are the implibs necessary to link a program against the dlls.
+  Copy also all *.dll.a files from the build tree to lib/ directort of
+  linphone-deps. These are the implibs necessary to link a program against the
+  dlls.
 
-- building libxml2: the binaries found on the internet are generated with MSVC++, and for obscure reason they are not suitable for building libsoup 
+- building libxml2: the binaries found on the internet are generated with
+  MSVC++, and for obscure reason they are not suitable for building libsoup 
   (that requires libxml2).
   ./configure --enable-shared --disable-static && make && make install DESTDIR=/home/<myuser>/libxml2-install
   copy ~/libxml2-install/usr/local/* into linphone-deps/.
+
 
 - building x264:
  
@@ -169,12 +236,14 @@ When running "make install DESTDIR=<somepath>", somepath must be absolute and sh
 	- add to linphone-deps
 
 - building libsoup (only required for buddylookup plugin)
-	- download source from gnome ftp (warning: at the time of the writing only version 2.26.x can compile with the 
-		glib version supplied in the gtk-bundle, 2.27 requires a new version of glib)
+	- download source from gnome ftp (warning: at the time of the writing
+	  only version 2.26.x can compile with the glib version supplied in the
+	  gtk-bundle, 2.27 requires a new version of glib)
 	- uncompress libgnutls zip in /
 	- make sure you have libxml2 installed in /
-	- apply a bugfix patch (fix gnutls support on windows, completely broken otherwise). The patch
-		is in linphone-deps/src, apply it this way:
+	- apply a bugfix patch (fix gnutls support on windows, completely
+	  broken otherwise). The patch is in linphone-deps/src, apply it this
+	  way:
 		cd libsoup-2.26.*
 		cd libsoup
 		patch -p0 < libsoup-gnutls-bugfix.patch

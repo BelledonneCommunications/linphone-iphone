@@ -1,0 +1,60 @@
+#include "private.h"
+
+static PyObject * pylinphone_testing_module_method_get_random_token(PyObject *self, PyObject *args) {
+	PyObject *pyret;
+	char * cresult;
+	int _len;
+
+	if (!PyArg_ParseTuple(args, "i", &_len)) {
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%d)", __FUNCTION__, _len);
+	cresult = sal_get_random_token(_len);
+	pylinphone_dispatch_messages();
+
+	pyret = Py_BuildValue("z", cresult);
+	ms_free(cresult);
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static PyObject * pylinphone_testing_module_method_set_dns_user_hosts_file(PyObject *self, PyObject *args) {
+	PyObject *_core;
+	char *_path;
+	LinphoneCore *_core_native_ptr;
+
+	if (!PyArg_ParseTuple(args, "Oz", &_core, &_path)) {
+		return NULL;
+	}
+	if ((_core != Py_None) && !PyObject_IsInstance(_core, (PyObject *)&pylinphone_CoreType)) {
+		PyErr_SetString(PyExc_TypeError, "The '_core' argument must be a linphone.Core instance.");
+		return NULL;
+	}
+
+	if ((_core != NULL) && (_core != Py_None)) {
+		if ((_core_native_ptr = pylinphone_Core_get_native_ptr(_core)) == NULL) {
+			return NULL;
+		}
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %s)", __FUNCTION__, _core, _core_native_ptr, _path);
+	sal_set_dns_user_hosts_file(_core_native_ptr->sal, _path);
+	pylinphone_dispatch_messages();
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> None", __FUNCTION__);
+	Py_RETURN_NONE;
+}
+
+static PyMethodDef pylinphone_TestingModuleMethods[] = {
+	{ "get_random_token", pylinphone_testing_module_method_get_random_token, METH_VARARGS, "Gets a random token of the specified length." },
+	{ "set_dns_user_hosts_file", pylinphone_testing_module_method_set_dns_user_hosts_file, METH_VARARGS, "Allows to set a user specified hosts file." },
+	/* Sentinel */
+	{ NULL, NULL, 0, NULL }
+};
+
+static void pylinphone_init_testing_module(PyObject *linphone_module) {
+	PyObject *mtesting = Py_InitModule3("testing", pylinphone_TestingModuleMethods, "Python module adding some testing features for the Linphone library.");
+	Py_INCREF(mtesting);
+	if (PyModule_AddObject(linphone_module, "testing", mtesting) < 0) return;
+}

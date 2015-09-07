@@ -25,9 +25,7 @@
  ****************************************************************************/
 #include <string.h>
 #ifndef _WIN32_WCE
-#include <sys/time.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <errno.h>
 #include <signal.h>
 #include "private.h" /*coreapi/private.h, needed for LINPHONE_VERSION */
@@ -48,31 +46,24 @@
 #endif /*_WIN32_WCE*/
 #else
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <netdb.h>
 #include <sys/un.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #endif
-
-#if defined(_WIN32_WCE)
 
 #if !defined(PATH_MAX)
 #define PATH_MAX 256
 #endif /*PATH_MAX*/
+
+#if defined(_WIN32_WCE)
 
 #if !defined(strdup)
 #define strdup _strdup
 #endif /*strdup*/
 
 #endif /*_WIN32_WCE*/
-
-#ifdef HAVE_GETTEXT
-#include <libintl.h>
-#ifndef _
-#define _(String) gettext(String)
-#endif
-#else
-#define _(something)	(something)
-#endif
 
 #ifndef PACKAGE_DIR
 #define PACKAGE_DIR ""
@@ -117,13 +108,12 @@ static char **linephonec_readline_completion(const char *text,
 #endif
 
 /* These are callback for linphone core */
-static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm,
-	const char *username);
+static void linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 static void linphonec_display_refer (LinphoneCore * lc, const char *refer_to);
 static void linphonec_display_something (LinphoneCore * lc, const char *something);
 static void linphonec_display_url (LinphoneCore * lc, const char *something, const char *url);
 static void linphonec_display_warning (LinphoneCore * lc, const char *something);
-static void linphonec_notify_received(LinphoneCore *lc, LinphoneCall *call, const char *from,const char *event);
+static void linphonec_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState new_call_state);
 
 static void linphonec_notify_presence_received(LinphoneCore *lc,LinphoneFriend *fid);
 static void linphonec_new_unknown_subscriber(LinphoneCore *lc,
@@ -149,6 +139,7 @@ static char last_in_history[256];
 #endif
 //auto answer (-a) option
 static bool_t auto_answer=FALSE;
+static bool_t real_early_media_sending=FALSE;
 static bool_t answer_call=FALSE;
 static bool_t vcap_enabled=FALSE;
 static bool_t display_enabled=FALSE;
@@ -161,9 +152,10 @@ static int trace_level = 0;
 static char *logfile_name = NULL;
 static char configfile_name[PATH_MAX];
 static char zrtpsecrets[PATH_MAX];
+static char usr_certificates_path[PATH_MAX];
 static const char *factory_configfile_name=NULL;
 static char *sip_addr_to_call = NULL; /* for autocall */
-static int window_id = 0; /* 0=standalone window, or window id for embedding video */
+static void *window_id = NULL; /* NULL=standalone window, or window id for embedding video */
 #if !defined(_WIN32_WCE)
 static ortp_pipe_t client_sock=ORTP_PIPE_INVALID;
 #endif /*_WIN32_WCE*/
@@ -256,7 +248,7 @@ linphonec_display_url (LinphoneCore * lc, const char *something, const char *url
  * Linphone core callback
  */
 static void
-linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username)
+linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *username, const char *domain)
 {
 	/* no prompt possible when using pipes or tcp mode*/
 	if (unix_socket){
@@ -272,7 +264,7 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
 			return;
 		}
 
-		pending_auth=linphone_auth_info_new(username,NULL,NULL,NULL,realm);
+		pending_auth=linphone_auth_info_new(username,NULL,NULL,NULL,realm,domain);
 		auth_stack.elem[auth_stack.nitems++]=pending_auth;
 	}
 }
@@ -281,13 +273,14 @@ linphonec_prompt_for_auth(LinphoneCore *lc, const char *realm, const char *usern
  * Linphone core callback
  */
 static void
-linphonec_notify_received(LinphoneCore *lc, LinphoneCall *call, const char *from,const char *event)
+linphonec_transfer_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState new_call_state)
 {
-	if(!strcmp(event,"refer"))
-	{
-		linphonec_out("The distand endpoint %s of call %li has been transfered, you can safely close the call.\n",
-		              from,(long)linphone_call_get_user_pointer (call));
+	char *remote=linphone_call_get_remote_address_as_string(call);
+	if (new_call_state==LinphoneCallConnected){
+		linphonec_out("The distant endpoint %s of call %li has been transfered, you can safely close the call.\n",
+		              remote,(long)linphone_call_get_user_pointer (call));
 	}
+	ms_free(remote);
 }
 
 
@@ -362,10 +355,17 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 			linphone_call_enable_camera (call,linphonec_camera_enabled);
 			id=(long)linphone_call_get_user_pointer (call);
 			linphonec_set_caller(from);
+			linphonec_out("Receiving new incoming call from %s, assigned id %i\n", from,id);
 			if ( auto_answer)  {
 				answer_call=TRUE;
+			} else if (real_early_media_sending) {
+				LinphoneCallParams* callparams = linphone_core_create_default_call_parameters(lc);
+				linphonec_out("Sending early media using real hardware\n");
+				linphone_call_params_enable_early_media_sending(callparams, TRUE);
+				if (vcap_enabled) linphone_call_params_enable_video(callparams, TRUE);
+				linphone_core_accept_early_media_with_params(lc, call, callparams);
+				linphone_call_params_destroy(callparams);
 			}
-			linphonec_out("Receiving new incoming call from %s, assigned id %i\n", from,id);
 		break;
 		case LinphoneCallOutgoingInit:
 			linphonec_call_identify(call);
@@ -492,7 +492,6 @@ static void *pipe_thread(void*p){
 }
 
 static void start_pipe_reader(void){
-	ms_mutex_init(&prompt_mutex,NULL);
 	pipe_reader_run=TRUE;
 	ortp_thread_create(&pipe_reader_th,NULL,pipe_thread,NULL);
 }
@@ -528,6 +527,7 @@ char *linphonec_readline(char *prompt){
 		fprintf(stdout,"%s",prompt);
 		fflush(stdout);
 		while(1){
+
 			ms_mutex_lock(&prompt_mutex);
 			if (have_prompt){
 				char *ret=strdup(received_prompt);
@@ -538,15 +538,17 @@ char *linphonec_readline(char *prompt){
 			ms_mutex_unlock(&prompt_mutex);
 			linphonec_idle_call();
 #ifdef WIN32
-			Sleep(20);
-			/* Following is to get the video window going as it
-				 should. Maybe should we only have this on when the option -V
-				 or -D is on? */
-			MSG msg;
-	
-			if (PeekMessage(&msg, NULL, 0, 0,1)) {
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+			{
+				MSG msg;
+				Sleep(20);
+				/* Following is to get the video window going as it
+					should. Maybe should we only have this on when the option -V
+					or -D is on? */
+
+				if (PeekMessage(&msg, NULL, 0, 0,1)) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
 			}
 #else
 			usleep(20000);
@@ -628,8 +630,8 @@ int
 main (int argc, char *argv[]) {
 #endif
 	linphonec_vtable.call_state_changed=linphonec_call_state_changed;
-	linphonec_vtable.notify_presence_recv = linphonec_notify_presence_received;
-	linphonec_vtable.new_subscription_request = linphonec_new_unknown_subscriber;
+	linphonec_vtable.notify_presence_received = linphonec_notify_presence_received;
+	linphonec_vtable.new_subscription_requested = linphonec_new_unknown_subscriber;
 	linphonec_vtable.auth_info_requested = linphonec_prompt_for_auth;
 	linphonec_vtable.display_status = linphonec_display_status;
 	linphonec_vtable.display_message=linphonec_display_something;
@@ -638,9 +640,9 @@ main (int argc, char *argv[]) {
 	linphonec_vtable.text_received=linphonec_text_received;
 	linphonec_vtable.dtmf_received=linphonec_dtmf_received;
 	linphonec_vtable.refer_received=linphonec_display_refer;
-	linphonec_vtable.notify_recv=linphonec_notify_received;
+	linphonec_vtable.transfer_state_changed=linphonec_transfer_state_changed;
 	linphonec_vtable.call_encryption_changed=linphonec_call_encryption_changed;
-	
+
 	if (! linphonec_init(argc, argv) ) exit(EXIT_FAILURE);
 
 	linphonec_main_loop (linphonec);
@@ -649,6 +651,12 @@ main (int argc, char *argv[]) {
 
 	exit(EXIT_SUCCESS); /* should never reach here */
 }
+
+#ifdef _MSC_VER
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	return main(__argc, __argv);
+}
+#endif
 
 /*
  * Initialize linphonec
@@ -663,12 +671,14 @@ linphonec_init(int argc, char **argv)
 	 * Set initial values for global variables
 	 */
 	mylogfile = NULL;
-	
-	
+
+
 #ifndef _WIN32
 	snprintf(configfile_name, PATH_MAX, "%s/.linphonerc",
 			getenv("HOME"));
 	snprintf(zrtpsecrets, PATH_MAX, "%s/.linphone-zidcache",
+			getenv("HOME"));
+	snprintf(usr_certificates_path, PATH_MAX, "%s/.linphone-usr-crt",
 			getenv("HOME"));
 #elif defined(_WIN32_WCE)
 	strncpy(configfile_name,PACKAGE_DIR "\\linphonerc",PATH_MAX);
@@ -678,6 +688,8 @@ linphonec_init(int argc, char **argv)
 	snprintf(configfile_name, PATH_MAX, "%s/Linphone/linphonerc",
 			getenv("APPDATA"));
 	snprintf(zrtpsecrets, PATH_MAX, "%s/Linphone/linphone-zidcache",
+			getenv("APPDATA"));
+	snprintf(usr_certificates_path, PATH_MAX, "%s/Linphone/linphone-usr-crt",
 			getenv("APPDATA"));
 #endif
 	/* Handle configuration filename changes */
@@ -693,17 +705,6 @@ linphonec_init(int argc, char **argv)
 		default:
 			break;
 	}
-
-#ifdef ENABLE_NLS
-	if (NULL == bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR))
-		perror ("bindtextdomain failed");
-#ifndef __ARM__
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-#endif
-	textdomain (GETTEXT_PACKAGE);
-#else
-	printf ("NLS disabled.\n");
-#endif
 
 	linphonec_parse_cmdline(argc, argv);
 
@@ -733,11 +734,15 @@ linphonec_init(int argc, char **argv)
 	 * Initialize linphone core
 	 */
 	linphonec=linphone_core_new (&linphonec_vtable, configfile_name, factory_configfile_name, NULL);
+
+	linphone_core_set_user_agent(linphonec,"Linphonec", LINPHONE_VERSION);
 	linphone_core_set_zrtp_secrets_file(linphonec,zrtpsecrets);
-	linphone_core_enable_video(linphonec,vcap_enabled,display_enabled);
-	if (display_enabled && window_id != 0) 
+	linphone_core_set_user_certificates_path(linphonec,usr_certificates_path);
+	linphone_core_enable_video_capture(linphonec, vcap_enabled);
+	linphone_core_enable_video_display(linphonec, display_enabled);
+	if (display_enabled && (window_id != NULL))
 	{
-		printf ("Setting window_id: 0x%x\n", window_id);
+		printf("Setting window_id: 0x%p\n", window_id);
 		linphone_core_set_native_video_window_id(linphonec,window_id);
 	}
 
@@ -773,7 +778,7 @@ linphonec_finish(int exit_status)
 {
 	// Do not allow concurrent destroying to prevent glibc errors
 	static bool_t terminating=FALSE;
-	if (terminating) return; 
+	if (terminating) return;
 	terminating=TRUE;
 	linphonec_out("Terminating...\n");
 
@@ -792,6 +797,7 @@ linphonec_finish(int exit_status)
 	if (mylogfile != NULL && mylogfile != stdout)
 	{
 		fclose (mylogfile);
+		mylogfile=stdout;
 	}
 	printf("\n");
 	exit(exit_status);
@@ -818,12 +824,13 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 #ifdef HAVE_READLINE
 	rl_hook_func_t *old_event_hook;
 #endif
+	LinphoneAuthInfo *pending_auth;
 
 	if (reentrancy!=0) return 0;
-	
+
 	reentrancy++;
-	
-	LinphoneAuthInfo *pending_auth=auth_stack.elem[auth_stack.nitems-1];
+
+	pending_auth=auth_stack.elem[auth_stack.nitems-1];
 
 	snprintf(auth_prompt, 256, "Password for %s on %s: ",
 		pending_auth->username, pending_auth->realm);
@@ -905,12 +912,14 @@ print_usage (int exit_status)
 "  -l  logfile          specify the log file for your SIP phone\n"
 "  -s  sipaddress       specify the sip call to do at startup\n"
 "  -a                   enable auto answering for incoming calls\n"
+"  --real-early-media   enable sending early media using real audio/video (beware of privacy issue)\n"
 "  -V                   enable video features globally (disabled by default)\n"
 "  -C                   enable video capture only (disabled by default)\n"
 "  -D                   enable video display only (disabled by default)\n"
 "  -S                   show general state messages (disabled by default)\n"
 "  --wid  windowid      force embedding of video window into provided windowid (disabled by default)\n"
-"  -v or --version      display version and exits.\n");
+"  -v or --version      display version and exits.\n"
+);
 
   	exit(exit_status);
 }
@@ -957,28 +966,29 @@ static void x11_apply_video_params(VideoParams *params, Window window){
 
 
 static void lpc_apply_video_params(){
-	static unsigned long old_wid=0,old_pwid=0;
-	unsigned long wid=linphone_core_get_native_video_window_id (linphonec);
-	unsigned long pwid=linphone_core_get_native_preview_window_id (linphonec);
+	static void *old_wid=NULL;
+	static void *old_pwid=NULL;
+	void *wid=linphone_core_get_native_video_window_id(linphonec);
+	void *pwid=linphone_core_get_native_preview_window_id(linphonec);
 
-	if (wid!=0 && (lpc_video_params.refresh || old_wid!=wid)){
+	if (wid!=NULL && (lpc_video_params.refresh || old_wid!=wid)){
 		lpc_video_params.refresh=FALSE;
 #ifdef HAVE_X11_XLIB_H
 		if (lpc_video_params.wid==0){  // do not manage window if embedded
-			x11_apply_video_params(&lpc_video_params,wid);
+			x11_apply_video_params(&lpc_video_params,(Window)wid);
 		} else {
 		        linphone_core_show_video(linphonec, lpc_video_params.show);
 		}
 #endif
 	}
 	old_wid=wid;
-	if (pwid!=0 && (lpc_preview_params.refresh || old_pwid!=pwid)){
+	if (pwid!=NULL && (lpc_preview_params.refresh || old_pwid!=pwid)){
 		lpc_preview_params.refresh=FALSE;
 #ifdef HAVE_X11_XLIB_H
-		/*printf("wid=%lu pwid=%lu\n",wid,pwid);*/
-		if (lpc_preview_params.wid==0){  // do not manage window if embedded
+		/*printf("wid=%p pwid=%p\n",wid,pwid);*/
+		if (lpc_preview_params.wid==NULL){  // do not manage window if embedded
 			printf("Refreshing\n");
-			x11_apply_video_params(&lpc_preview_params,pwid);
+			x11_apply_video_params(&lpc_preview_params,(Window)pwid);
 		}
 #endif
 	}
@@ -1074,7 +1084,7 @@ linphonec_initialize_readline()
 	rl_attempted_completion_function = linephonec_readline_completion;
 
 	/* printf("Readline initialized.\n"); */
-        setlinebuf(stdout);
+	setlinebuf(stdout);
 	return 0;
 }
 
@@ -1149,7 +1159,6 @@ linphonec_main_loop (LinphoneCore * opm)
 			add_history(iptr);
 		}
 #endif
-
 		linphonec_parse_command_line(linphonec, iptr);
 		linphonec_command_finished();
 		free(input);
@@ -1193,15 +1202,21 @@ linphonec_parse_cmdline(int argc, char **argv)
 		else if (strncmp ("-c", argv[arg_num], 2) == 0)
 		{
 			if ( ++arg_num >= argc ) print_usage(EXIT_FAILURE);
+#ifdef _MSC_VER
+			if (strcmp(argv[arg_num], "NUL") != 0) {
+#endif
 #if !defined(_WIN32_WCE)
-			if (access(argv[arg_num],F_OK)!=0 )
-			{
-				fprintf (stderr,
-					"Cannot open config file %s.\n",
-					 argv[arg_num]);
-				exit(EXIT_FAILURE);
-			}
+				if (access(argv[arg_num], F_OK) != 0)
+				{
+					fprintf(stderr,
+						"Cannot open config file %s.\n",
+						argv[arg_num]);
+					exit(EXIT_FAILURE);
+				}
 #endif /*_WIN32_WCE*/
+#ifdef _MSC_VER
+			}
+#endif
 			snprintf(configfile_name, PATH_MAX, "%s", argv[arg_num]);
 		}
 		else if (strncmp ("-b", argv[arg_num], 2) == 0)
@@ -1227,6 +1242,10 @@ linphonec_parse_cmdline(int argc, char **argv)
                 else if (strncmp ("-a", argv[arg_num], 2) == 0)
                 {
                         auto_answer = TRUE;
+                }
+                else if (strncmp ("--real-early-media", argv[arg_num], strlen("--real-early-media")) == 0)
+                {
+                        real_early_media_sending = TRUE;
                 }
 		else if (strncmp ("-C", argv[arg_num], 2) == 0)
                 {
@@ -1266,7 +1285,7 @@ linphonec_parse_cmdline(int argc, char **argv)
 			arg_num++;
 			if (arg_num < argc) {
 				char *tmp;
-				window_id = strtol( argv[arg_num], &tmp, 0 );
+				window_id = (void *)strtol( argv[arg_num], &tmp, 0 );
 				lpc_video_params.wid = window_id;
 			}
 		}
@@ -1305,11 +1324,7 @@ handle_configfile_migration()
 	char *old_cfg_gui;
 	char *old_cfg_cli;
 	char *new_cfg;
-#if !defined(_WIN32_WCE)
 	const char *home = getenv("HOME");
-#else
-	const char *home = ".";
-#endif /*_WIN32_WCE*/
 	new_cfg = ms_strdup_printf("%s/.linphonerc", home);
 
 	/*
@@ -1400,6 +1415,7 @@ copy_file(const char *from, const char *to)
 		snprintf(message, 255, "Can't open %s for writing: %s\n",
 			to, strerror(errno));
 		fprintf(stderr, "%s", message);
+		fclose(in);
 		return 0;
 	}
 
@@ -1408,6 +1424,8 @@ copy_file(const char *from, const char *to)
 	{
 		if ( ! fwrite(buf, 1, n, out) )
 		{
+			fclose(in);
+			fclose(out);
 			return 0;
 		}
 	}

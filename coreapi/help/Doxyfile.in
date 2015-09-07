@@ -34,7 +34,7 @@ DETAILS_AT_TOP         = NO
 INHERIT_DOCS           = YES
 DISTRIBUTE_GROUP_DOC   = NO
 TAB_SIZE               = 8
-ALIASES                = 
+ALIASES                = mslist{1}="A list of \ref \1 objects. \xmlonly <mslist>\1</mslist> \endxmlonly"
 OPTIMIZE_OUTPUT_FOR_C  = YES
 OPTIMIZE_OUTPUT_JAVA   = NO
 SUBGROUPING            = YES
@@ -165,7 +165,7 @@ MAN_LINKS              = NO
 #---------------------------------------------------------------------------
 # configuration options related to the XML output
 #---------------------------------------------------------------------------
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 XML_OUTPUT             = xml
 XML_SCHEMA             = 
 XML_DTD                = 
@@ -190,7 +190,7 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = .
 INCLUDE_FILE_PATTERNS  = *.h
-PREDEFINED             = DOXYGEN
+PREDEFINED             = DOXYGEN MS2_PUBLIC= LINPHONE_PUBLIC=
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

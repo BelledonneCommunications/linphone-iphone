@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5dfa07b4-0be9-46a9-ba32-fdf5a55c580b}</ProjectGuid>
+    <RootNamespace>libxml2</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\..\libxml2\include;$(ProjectDir)..\..\..\..\libxml2\win32\VC10;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32;_WINDLL;_USRDLL;_CRT_SECURE_NO_WARNINGS;HAVE_WIN32_THREADS;HAVE_COMPILER_TLS;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>LIBXML_MODULES_ENABLED</UndefinePreprocessorDefinitions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)libxml2_port.h</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ImportLibrary>$(TargetDir)$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>install_headers.bat $(SolutionDir)$(Platform)\$(Configuration)\include</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Reference Include="Windows">
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="platform.winmd">
+      <IsWinMDFile>true</IsWinMDFile>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\libxml2\c14n.c" />
+    <ClCompile Include="..\..\..\..\libxml2\catalog.c" />
+    <ClCompile Include="..\..\..\..\libxml2\chvalid.c" />
+    <ClCompile Include="..\..\..\..\libxml2\debugXML.c" />
+    <ClCompile Include="..\..\..\..\libxml2\dict.c" />
+    <ClCompile Include="..\..\..\..\libxml2\DOCBparser.c" />
+    <ClCompile Include="..\..\..\..\libxml2\encoding.c" />
+    <ClCompile Include="..\..\..\..\libxml2\entities.c" />
+    <ClCompile Include="..\..\..\..\libxml2\error.c" />
+    <ClCompile Include="..\..\..\..\libxml2\globals.c" />
+    <ClCompile Include="..\..\..\..\libxml2\hash.c" />
+    <ClCompile Include="..\..\..\..\libxml2\HTMLparser.c" />
+    <ClCompile Include="..\..\..\..\libxml2\HTMLtree.c" />
+    <ClCompile Include="..\..\..\..\libxml2\legacy.c" />
+    <ClCompile Include="..\..\..\..\libxml2\list.c" />
+    <ClCompile Include="..\..\..\..\libxml2\nanoftp.c" />
+    <ClCompile Include="..\..\..\..\libxml2\nanohttp.c" />
+    <ClCompile Include="..\..\..\..\libxml2\parser.c" />
+    <ClCompile Include="..\..\..\..\libxml2\parserInternals.c" />
+    <ClCompile Include="..\..\..\..\libxml2\pattern.c" />
+    <ClCompile Include="..\..\..\..\libxml2\relaxng.c" />
+    <ClCompile Include="..\..\..\..\libxml2\SAX.c" />
+    <ClCompile Include="..\..\..\..\libxml2\SAX2.c" />
+    <ClCompile Include="..\..\..\..\libxml2\schematron.c" />
+    <ClCompile Include="..\..\..\..\libxml2\threads.c" />
+    <ClCompile Include="..\..\..\..\libxml2\tree.c" />
+    <ClCompile Include="..\..\..\..\libxml2\uri.c" />
+    <ClCompile Include="..\..\..\..\libxml2\valid.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xinclude.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xlink.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlcatalog.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlIO.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlmemory.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlmodule.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlreader.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlregexp.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlsave.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlschemas.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlschemastypes.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlstring.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlunicode.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xmlwriter.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xpath.c" />
+    <ClCompile Include="..\..\..\..\libxml2\xpointer.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\libxml2\elfgcchack.h" />
+    <ClInclude Include="..\..\..\..\libxml2\libxml.h" />
+    <ClInclude Include="..\..\..\..\libxml2\win32\VC10\config.h" />
+    <ClInclude Include="libxml2_port.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />
+</Project>

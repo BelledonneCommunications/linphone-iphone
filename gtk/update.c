@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <wininet.h>
 
-static int linphone_gtk_get_new_version(const char *version_url, char *version, size_t size){
+static int linphone_gtk_create_version(const char *version_url, char *version, size_t size){
 	DWORD dwDownloaded = 0;
 	HINTERNET  hSession = NULL, hConnect = NULL;
 	int ret=-1;
@@ -55,7 +55,7 @@ static int linphone_gtk_get_new_version(const char *version_url, char *version, 
 
 #else
 
-static int linphone_gtk_get_new_version(const char *url, char *version, size_t size){
+static int linphone_gtk_create_version(const char *url, char *version, size_t size){
 	
 	return -1;
 }
@@ -121,7 +121,7 @@ static int version_compare(const char *v1, const char *v2){
 static void *check_for_new_version(void *d){
 	const char *version_url=(const char *)d;
 	char version[256];
-	if (linphone_gtk_get_new_version(version_url,version,sizeof(version))==0){
+	if (linphone_gtk_create_version(version_url,version,sizeof(version))==0){
 		if (version_compare(version,LINPHONE_VERSION)>0){
 			const char *download_site=linphone_gtk_get_ui_config("download_site",NULL);
 			if (download_site)   {

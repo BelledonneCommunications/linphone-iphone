@@ -1,0 +1,16 @@
+#!/bin/bash
+
+CURL=/usr/bin/curl
+BUNZIP2=/usr/bin/bunzip2
+VERSION=1.4.0
+BASENAME=libopenh264-${VERSION}-osx64
+FILENAME=${BASENAME}.dylib.bz2
+TMPDIR=/tmp/linphone_installer
+
+mkdir ${TMPDIR}
+cd ${TMPDIR}
+${CURL} http://ciscobinary.openh264.org/${FILENAME} > ${FILENAME}
+${BUNZIP2} ${FILENAME}
+cp ${BASENAME}.dylib /Applications/Linphone.app/Contents/Resources/lib/libopenh264.0.dylib
+rm -r ${TMPDIR}
+

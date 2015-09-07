@@ -22,12 +22,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
+#include <assert.h>
 
 #ifdef WIN32
+#include <ws2tcpip.h>
 #include <windows.h>
 #include <winbase.h>
-#include <ws2tcpip.h>
 #include <ctype.h>
 #include <conio.h>
 #else
@@ -47,6 +48,7 @@
 #define STATUS_AUTOANSWER (1<<3)
 #define STATUS_IN_CONNECTED (1<<4) /* incoming call accepted */
 #define STATUS_OUT_CONNECTED (1<<5) /*outgoing call accepted */
+#define STATUS_IN_COMING (1<<6) /*incoming call pending */
 
 
 static int make_status_value(const char *status_string){
@@ -68,6 +70,9 @@ static int make_status_value(const char *status_string){
 	}
 	if (strstr(status_string,"hook=answered")){
 		ret|=STATUS_IN_CONNECTED;
+	}
+	if (strstr(status_string,"Incoming call from ")){
+		ret|=STATUS_IN_COMING;
 	}
 	return ret;
 }
@@ -125,11 +130,36 @@ static void print_usage(void){
 	exit(-1);
 }
 
+#ifdef WIN32
+static char *argv_to_line(int argc, char *argv[]) {
+	int i;
+	int line_length;
+	char *line;
+
+	assert( argc>=0 );
+
+	if(argc == 0) return NULL;
+
+	line_length = strlen(argv[0]);
+	for(i=1; i<argc; i++) {
+		line_length += strlen(argv[i]) + 1;
+	}
+
+	line = ortp_malloc0((line_length +1) * sizeof(char));
+	strcat(line, argv[0]);
+	for(i=1; i<argc; i++) {
+		strcat(line, " ");
+		strcat(line, argv[i]);
+	}
+	return line;
+}
+#endif
+
 #define MAX_ARGS 10
 
 #ifndef WIN32
 static void spawn_linphonec(int argc, char *argv[]){
-	char * args[10];
+	char * args[MAX_ARGS];
 	int i,j;
 	pid_t pid;
 	j=0;
@@ -155,7 +185,7 @@ static void spawn_linphonec(int argc, char *argv[]){
 		int fd;
 		/*we are the new process*/
 		setsid();
-		
+
 		fd = open("/dev/null", O_RDWR);
 		if (fd==-1){
 			fprintf(stderr,"Could not open /dev/null\n");
@@ -165,7 +195,7 @@ static void spawn_linphonec(int argc, char *argv[]){
 		dup2(fd, 1);
 		dup2(fd, 2);
 		close(fd);
-		
+
 		if (execvp("linphonec",args)==-1){
 			fprintf(stderr,"Fail to spawn linphonec: %s\n",strerror(errno));
 			exit(-1);
@@ -177,12 +207,22 @@ static void spawn_linphonec(int argc, char *argv[]){
 static void spawn_linphonec(int argc, char *argv[]){
 	PROCESS_INFORMATION pinfo;
 	STARTUPINFO si;
+	BOOL ret;
+	const char *cmd = "linphoned.exe --pipe -c NUL";
+	char *args_in_line = argv_to_line(argc, argv);
+	char *cmd_with_args;
+
 	ZeroMemory( &si, sizeof(si) );
 	si.cb = sizeof(si);
 	ZeroMemory( &pinfo, sizeof(pinfo) );
 
+	if(args_in_line) {
+		cmd_with_args = ortp_strdup_printf("%s %s", cmd, args_in_line);
+	} else {
+		cmd_with_args = ortp_strdup(cmd);
+	}
 
-	BOOL ret=CreateProcess(NULL,"linphoned.exe --pipe -c NUL",
+	ret=CreateProcess(NULL, cmd_with_args,
 		NULL,
 		NULL,
 		FALSE,
@@ -191,8 +231,12 @@ static void spawn_linphonec(int argc, char *argv[]){
 		NULL,
 		&si,
 		&pinfo);
+
+	if(args_in_line) ortp_free(args_in_line);
+	ortp_free(cmd_with_args);
+
 	if (!ret){
-		fprintf(stderr,"Spawning of linphonec.exe failed.\n");
+		fprintf(stderr,"Spawning of linphoned.exe failed.\n");
 	}else{
 		WaitForInputIdle(pinfo.hProcess,1000);
 	}
@@ -268,7 +312,7 @@ static int status_execute(int argc, char *argv[]){
 	char cmd[512];
 	char reply[DEFAULT_REPLY_SIZE];
 	int err;
-	
+
 	if (argc==1){
 		snprintf(cmd,sizeof(cmd),"status %s",argv[0]);
 		err=send_command(cmd,reply,sizeof(reply),TRUE);

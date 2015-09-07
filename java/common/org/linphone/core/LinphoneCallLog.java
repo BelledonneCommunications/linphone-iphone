@@ -24,7 +24,11 @@ package org.linphone.core;
 import java.util.Vector;
 
 
-
+/**
+ * Object representing a call log.
+ *
+ *
+**/
 public interface LinphoneCallLog {
 	/**
 	 * Represents call status
@@ -91,26 +95,30 @@ public interface LinphoneCallLog {
 	public CallDirection getDirection();
 	/**
 	 * get status of this call
-	 * @return
+	 * @return CallStatus
 	 */
 	public CallStatus getStatus();
 	
 	/**
-	 * @return a human readble String with the start date/time of the call
+	 * A human readable String with the start date/time of the call
+	 * @return String
 	 */
 	public String getStartDate();
 	
 	/**
-	 * @return a timestamp of the start date/time of the call in milliseconds since January 1st 1970
+	 * A  timestamp of the start date/time of the call in milliseconds since January 1st 1970
+	 * @return  long
 	 */
 	public long getTimestamp();
 	
 	/**
-	 * @return the call duration, in seconds
+	 * The call duration, in seconds
+	 * @return int
 	 */
 	public int getCallDuration();
 	/**
-	 * @return the call id from signaling
+	 *  Call id from signaling
+	 * @return int
 	 */
 	public int getCallId();
 }

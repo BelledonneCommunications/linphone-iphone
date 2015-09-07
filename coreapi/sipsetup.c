@@ -18,20 +18,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif
 
 #include "linphonecore.h"
 
 extern SipSetup linphone_sip_login;
-#ifdef BUILD_WIZARD
-extern SipSetup linphone_sip_wizard;
-#endif
 static SipSetup *all_sip_setups[]={
 	&linphone_sip_login,
-#ifdef BUILD_WIZARD
-	&linphone_sip_wizard,
-#endif
 	NULL
 };
 
@@ -146,7 +140,7 @@ int sip_setup_context_account_validated(SipSetupContext *ctx, const char *uri){
 	return -1;
 }
 
-int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd){
+int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *userid){
 	LinphoneAddress *from=linphone_address_new(uri);
 	if (from==NULL) {
 		ms_warning("Fail to parse %s",uri);
@@ -156,7 +150,7 @@ int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, cons
 	strncpy(ctx->username,linphone_address_get_username(from),sizeof(ctx->username));
 	linphone_address_destroy(from);
 	if (ctx->funcs->login_account)
-		return ctx->funcs->login_account(ctx,uri,passwd);
+		return ctx->funcs->login_account(ctx,uri,passwd,userid);
 	return -1;
 }
 

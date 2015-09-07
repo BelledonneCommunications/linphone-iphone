@@ -92,17 +92,17 @@ create_pixbuf_animation(const gchar     *filename)
 	gchar *pathname = NULL;
 	GdkPixbufAnimation *pixbuf;
 	GError *error = NULL;
-	
+
 	if (!filename || !filename[0])
 		return NULL;
-	
+
 	pathname = find_pixmap_file (filename);
-	
+
 	if (!pathname){
 		g_warning (_("Couldn't find pixmap file: %s"), filename);
 		return NULL;
 	}
-	
+
 	pixbuf = gdk_pixbuf_animation_new_from_file (pathname, &error);
 	if (!pixbuf){
 		fprintf (stderr, "Failed to load pixbuf file: %s: %s\n",
@@ -155,26 +155,13 @@ const char *linphone_gtk_get_lang(const char *config_file){
 
 void linphone_gtk_set_lang(const char *code){
 	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
-	const char *curlang;
-	#if defined(WIN32) || defined(__APPLE__)
-		curlang=getenv("LANG");
-	#else
-		curlang=getenv("LANGUAGE");
-	#endif
+	const char *curlang=g_getenv("LANGUAGE");
 	if (curlang!=NULL && strncmp(curlang,code,2)==0) {
 		/* do not loose the _territory@encoding part*/
 		return;
 	}
 	lp_config_set_string(cfg,"GtkUi","lang",code);
-#ifdef WIN32
-	char tmp[128];
-	snprintf(tmp,sizeof(tmp),"LANG=%s",code);
-	_putenv(tmp);
-#elif __APPLE__
-	setenv("LANG",code,1);
-#else 
-	setenv("LANGUAGE",code,1);
-#endif
+	g_setenv("LANGUAGE",code,1);
 }
 
 const gchar *linphone_gtk_get_ui_config(const char *key, const char *def){
@@ -201,6 +188,27 @@ void linphone_gtk_set_ui_config_int(const char *key , int val){
 void linphone_gtk_set_ui_config(const char *key , const char * val){
 	LpConfig *cfg=linphone_core_get_config(linphone_gtk_get_core());
 	lp_config_set_string(cfg,"GtkUi",key,val);
+}
+
+const char *linphone_gtk_get_sound_path(const char *name){
+	static char *ret=NULL;
+	const char *file;
+	file=linphone_gtk_get_ui_config(name,NULL);
+	if (file==NULL){
+		char *dirname=g_path_get_dirname(name);
+		if (strcmp(dirname,".")!=0){
+			g_free(dirname);
+			return name;
+		}
+		g_free(dirname);
+		file=name;
+	}
+	if (ret){
+		g_free(ret);
+		ret=NULL;
+	}
+	ret=g_build_filename(PACKAGE_SOUND_DIR,name,NULL);
+	return ret;
 }
 
 static void parse_item(const char *item, const char *window_name, GtkWidget *w,  gboolean show){

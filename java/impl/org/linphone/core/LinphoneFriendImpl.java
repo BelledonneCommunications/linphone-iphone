@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	protected final long nativePtr;
+	private native void finalize(long nativePtr);
 	private native long newLinphoneFriend(String friendUri);
 	private native void setAddress(long nativePtr,long friend);
 	private native long getAddress(long nativePtr);
@@ -30,38 +31,49 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	private native void enableSubscribes(long nativePtr,boolean value);
 	private native boolean isSubscribesEnabled(long nativePtr);
 	private native int getStatus(long nativePtr);
+	private native Object getPresenceModel(long nativePtr);
+	private native void setPresenceModel(long nativePtr, long presencePtr);
 	private native void edit(long nativePtr);
 	private native void done(long nativePtr);
-	
-	private native void  delete(long ptr);
-	boolean ownPtr = false;
+	private native Object getCore(long ptr);
+	private native void setRefKey(long nativePtr, String key);
+	private native String getRefKey(long nativePtr);
+
 	protected LinphoneFriendImpl()  {
 		nativePtr = newLinphoneFriend(null);
-	}	
+	}
 	protected LinphoneFriendImpl(String friendUri)  {
 		nativePtr = newLinphoneFriend(friendUri);
 	}
+
+	/*reserved for JNI */
 	protected LinphoneFriendImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
-		ownPtr=false;
 	}
 	protected void finalize() throws Throwable {
-		if (ownPtr) delete(nativePtr);
+		if (nativePtr != 0) {
+			finalize(nativePtr);
+		}
+		super.finalize();
 	}
 	public void setAddress(LinphoneAddress anAddress) {
 		this.setAddress(nativePtr, ((LinphoneAddressImpl)anAddress).nativePtr);
 	}
 	public LinphoneAddress getAddress() {
-		return new LinphoneAddressImpl(getAddress(nativePtr));
+		return new LinphoneAddressImpl(getAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
 	}
 	public void setIncSubscribePolicy(SubscribePolicy policy) {
-		setIncSubscribePolicy(nativePtr,policy.mValue);
+		synchronized(getSyncObject()){
+			setIncSubscribePolicy(nativePtr,policy.mValue);
+		}
 	}
 	public SubscribePolicy getIncSubscribePolicy() {
 		return SubscribePolicy.fromInt(getIncSubscribePolicy(nativePtr)) ;
 	}
 	public void enableSubscribes(boolean enable) {
-		enableSubscribes(nativePtr, enable);
+		synchronized(getSyncObject()){
+			enableSubscribes(nativePtr, enable);
+		}
 	}
 	public boolean isSubscribesEnabled() {
 		return isSubscribesEnabled(nativePtr);
@@ -69,13 +81,41 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	public OnlineStatus getStatus() {
 		return OnlineStatus.fromInt(getStatus(nativePtr));
 	}
+	public PresenceModel getPresenceModel() {
+		return (PresenceModel)getPresenceModel(nativePtr);
+	}
 	public void edit() {
-		edit(nativePtr);
+		synchronized(getSyncObject()){
+			edit(nativePtr);
+		}
 	}
 	public void done() {
-		done(nativePtr);
+		synchronized(getSyncObject()){
+			done(nativePtr);
+		}
 	}
 	public long getNativePtr() {
 		return nativePtr;
+	}
+	
+	/*
+	 * Returns a java object to synchronize this friend with.
+	 * Indeed some operation must be synchronized with the LinphoneCore object.
+	 * If the friend is not associated with a LinphoneCore object, it returns itself in order to avoid writing code for case where no synchronization is necessary.
+	 */
+	private Object getSyncObject(){
+		Object core=getCore(nativePtr);
+		if (core!=null) return core;
+		else return this;
+	}
+
+	public void setRefKey(String key){
+		synchronized(getSyncObject()){
+			setRefKey(nativePtr,key);
+		}
+	}
+
+	public String getRefKey(){
+		return getRefKey(nativePtr);
 	}
 }

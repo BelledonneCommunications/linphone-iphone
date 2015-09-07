@@ -47,13 +47,15 @@ void show_usage(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
+	lpc2xml_context *ctx;
+	LpConfig *lpc;
 	if(argc != 4) {
 		show_usage(argc, argv);
 		return -1;
 	}
-	
-	lpc2xml_context *ctx = lpc2xml_context_new(cb_function, NULL);
-	LpConfig *lpc = lp_config_new(argv[2]);
+
+	ctx = lpc2xml_context_new(cb_function, NULL);
+	lpc = lp_config_new(argv[2]);
 	lpc2xml_set_lpc(ctx, lpc);
 	if(strcmp("convert", argv[1]) == 0) {
 		lpc2xml_convert_file(ctx, argv[3]);

@@ -1,5 +1,11 @@
 #!/bin/sh
 
+srcdir=`dirname $0`
+test -z "$srcdir" && srcdir=.
+
+THEDIR=`pwd`
+cd $srcdir
+
 #AM_VERSION="1.10"
 if ! type aclocal-$AM_VERSION 1>/dev/null 2>&1; then
 	# automake-1.10 (recommended) is not available on Fedora 8
@@ -10,25 +16,31 @@ else
 	AUTOMAKE=automake-${AM_VERSION}
 fi
 
-if test -f /opt/local/bin/glibtoolize ; then
-        # darwin
-        LIBTOOLIZE=/opt/local/bin/glibtoolize
-else
-        LIBTOOLIZE=libtoolize
-fi
+LIBTOOLIZE="libtoolize"
+for lt in glibtoolize libtoolize15 libtoolize14 libtoolize13 ; do
+        if test -x /usr/bin/$lt ; then
+                LIBTOOLIZE=$lt ; break
+        fi
+        if test -x /usr/local/bin/$lt ; then
+                LIBTOOLIZE=$lt ; break
+        fi
+        if test -x /opt/local/bin/$lt ; then
+                LIBTOOLIZE=$lt ; break
+        fi
+done
+
 if test -d /opt/local/share/aclocal ; then
-        ACLOCAL_ARGS="-I /opt/local/share/aclocal"
+		ACLOCAL_ARGS="-I /opt/local/share/aclocal"
 fi
 
 if test -d /share/aclocal ; then
-        ACLOCAL_ARGS="$ACLOCAL_ARGS -I /share/aclocal"
+		ACLOCAL_ARGS="$ACLOCAL_ARGS -I /share/aclocal"
 fi
 
-if test -f /opt/local/bin/intltoolize ; then
-	#darwin
-	INTLTOOLIZE=/opt/local/bin/intltoolize
-else
-	#on mingw, it is important to invoke intltoolize with an absolute path to avoid a bug
+INTLTOOLIZE=$(which intltoolize)
+
+#workaround for mingw bug in intltoolize script.
+if test "$INTLTOOLIZE" = "/bin/intltoolize" ; then
 	INTLTOOLIZE=/usr/bin/intltoolize
 fi
 
@@ -42,12 +54,24 @@ autoheader
 $AUTOMAKE --force-missing --add-missing --copy
 autoconf
 
-if [ -x oRTP/autogen.sh ]; then
-	echo "Generating build scripts in oRTP..."
-	( cd oRTP && ./autogen.sh )
+set +x
+
+#install git pre-commit hooks if possible
+if [ -d .git/hooks ] && [ ! -f .git/hooks/pre-commit ]; then
+		cp .git-pre-commit .git/hooks/pre-commit
+		chmod +x .git/hooks/pre-commit
 fi
 
-if [ -x mediastreamer2/autogen.sh ]; then
-	echo "Generating build scripts in mediastreamer2..."
-	( cd mediastreamer2 && ./autogen.sh )
+if [ "$srcdir" = "." ]; then
+	if [ -x oRTP/autogen.sh ]; then
+		echo "Generating build scripts in oRTP..."
+		( cd oRTP && ./autogen.sh )
+	fi
+
+	if [ -x mediastreamer2/autogen.sh ]; then
+		echo "Generating build scripts in mediastreamer2..."
+		( cd mediastreamer2 && ./autogen.sh )
+	fi
 fi
+
+cd $THEDIR

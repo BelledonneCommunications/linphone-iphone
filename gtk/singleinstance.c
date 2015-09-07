@@ -33,17 +33,32 @@ gchar *make_name(const char *appname){
 	return g_strdup(appname);
 }
 
-static gboolean execute_wakeup(char *uri){
-	linphone_gtk_show_main_window();
-	if (strlen(uri)>0)	
-		linphone_gtk_refer_received(linphone_gtk_get_core(),uri);
-	g_free(uri);
+static gboolean execute_wakeup(char *buf){
+	char uri[255]={0};
+	int option;
+
+	if (strlen(buf)>1) sscanf(buf,"%i%s",&option,uri);
+	else sscanf(buf,"%i",&option);
+
+	switch(option){
+		case START_LINPHONE:
+			linphone_gtk_show_main_window();
+			break;
+		case START_AUDIO_ASSISTANT:
+			linphone_gtk_show_audio_assistant();
+			break;
+		case START_LINPHONE_WITH_CALL:
+			linphone_gtk_refer_received(linphone_gtk_get_core(),uri);
+			break;
+	};
+
+	g_free(buf);
 	return FALSE;
 }
 
 static void * server_pipe_thread(void *pointer){
 	ortp_pipe_t child;
-	
+
 	do{
 		child=ortp_server_pipe_accept_client(server_pipe);
 		if (server_pipe_running && child!=(ortp_pipe_t)-1){
@@ -65,18 +80,23 @@ static void linphone_gtk_init_pipe(const char *name){
 	server_pipe=ortp_server_pipe_create(name);
 	if (server_pipe==(ortp_pipe_t)-1){
 		g_warning("Fail to create server pipe for name %s: %s",name,strerror(errno));
+		return;
 	}
+	server_pipe_running=TRUE;
 	ms_thread_create(&pipe_thread,NULL,server_pipe_thread,NULL);
 }
 
-bool_t linphone_gtk_init_instance(const char *app_name, const char *addr_to_call){
+bool_t linphone_gtk_init_instance(const char *app_name, int option, const char *addr_to_call){
+	ortp_pipe_t p;
 	pipe_name=make_name(app_name);
-	ortp_pipe_t p=ortp_client_pipe_connect(pipe_name);
+	p=ortp_client_pipe_connect(pipe_name);
 	if (p!=(ortp_pipe_t)-1){
 		uint8_t buf[256]={0};
 		g_message("There is already a running instance.");
 		if (addr_to_call!=NULL){
-			strncpy((char*)buf,addr_to_call,sizeof(buf)-1);
+			sprintf((char *)buf,"%i%s",option,addr_to_call);
+		} else {
+			sprintf((char *)buf,"%i",option);
 		}
 		if (ortp_pipe_write(p,buf,sizeof(buf))==-1){
 			g_error("Fail to send wakeup command to running instance: %s",strerror(errno));

@@ -23,14 +23,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "mediastreamer2/mscommon.h"
 
+#ifndef LINPHONE_PUBLIC
+#define LINPHONE_PUBLIC MS2_PUBLIC
+#endif
+
 struct _SipSetup;
 
 struct _BuddyInfo;
+
+struct _LinphoneXmlRpcSession;
 
 
 struct _SipSetupContext{
 	struct _SipSetup *funcs;
 	struct _LinphoneProxyConfig *cfg;
+	struct _LinphoneXmlRpcSession *xmlrpc_session;
 	char domain[128];
 	char username[128];
 	void *data;
@@ -98,7 +105,7 @@ struct _SipSetup{
 	void (*uninit_instance)(SipSetupContext *ctx);
 	int (*account_exists)(SipSetupContext *ctx, const char *uri);
 	int (*create_account)(SipSetupContext *ctx, const char *uri, const char *passwd, const char *email, int suscribe);
-	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd);
+	int (*login_account)(SipSetupContext *ctx, const char *uri, const char *passwd, const char *userid);
 	int (*get_proxy)(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 	int (*get_stun_servers)(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
 	int (*get_relay)(SipSetupContext *ctx, char *relay, size_t size);
@@ -117,10 +124,10 @@ typedef struct _SipSetup SipSetup;
 extern "C"{
 #endif
 
-BuddyInfo *buddy_info_new();
+BuddyInfo *buddy_info_new(void);
 void buddy_info_free(BuddyInfo *info);
 
-void buddy_lookup_request_set_key(BuddyLookupRequest *req, const char *key);
+LINPHONE_PUBLIC void buddy_lookup_request_set_key(BuddyLookupRequest *req, const char *key);
 void buddy_lookup_request_set_max_results(BuddyLookupRequest *req, int ncount);
 
 
@@ -128,28 +135,28 @@ void sip_setup_register(SipSetup *ss);
 void sip_setup_register_all(void);
 SipSetup *sip_setup_lookup(const char *type_name);
 void sip_setup_unregister_all(void);
-unsigned int sip_setup_get_capabilities(SipSetup *s);
+LINPHONE_PUBLIC unsigned int sip_setup_get_capabilities(SipSetup *s);
 
 SipSetupContext * sip_setup_context_new(SipSetup *s, struct _LinphoneProxyConfig *cfg);
 int sip_setup_context_account_exists(SipSetupContext *ctx, const char *uri);
 int sip_setup_context_account_validated(SipSetupContext *ctx, const char *uri);
 int sip_setup_context_create_account(SipSetupContext *ctx, const char *uri, const char *passwd, const char *email, int suscribe);
-int sip_setup_context_get_capabilities(SipSetupContext *ctx);
-int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd);
+LINPHONE_PUBLIC int sip_setup_context_get_capabilities(SipSetupContext *ctx);
+LINPHONE_PUBLIC int sip_setup_context_login_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *userid);
 int sip_setup_context_get_proxy(SipSetupContext *ctx, const char *domain, char *proxy, size_t sz);
 int sip_setup_context_get_stun_servers(SipSetupContext *ctx, char *stun1, char *stun2, size_t size);
 int sip_setup_context_get_relay(SipSetupContext *ctx, char *relay, size_t size);
 
-BuddyLookupRequest *sip_setup_context_create_buddy_lookup_request(SipSetupContext *ctx);
-int sip_setup_context_buddy_lookup_submit(SipSetupContext *ctx , BuddyLookupRequest *req);
-int sip_setup_context_buddy_lookup_free(SipSetupContext *ctx , BuddyLookupRequest *req);
+LINPHONE_PUBLIC BuddyLookupRequest *sip_setup_context_create_buddy_lookup_request(SipSetupContext *ctx);
+LINPHONE_PUBLIC int sip_setup_context_buddy_lookup_submit(SipSetupContext *ctx , BuddyLookupRequest *req);
+LINPHONE_PUBLIC int sip_setup_context_buddy_lookup_free(SipSetupContext *ctx , BuddyLookupRequest *req);
 
 const char * sip_setup_context_get_notice(SipSetupContext *ctx);
 const char ** sip_setup_context_get_domains(SipSetupContext *ctx);
 
 void sip_setup_context_free(SipSetupContext *ctx);
 
-int sip_setup_context_logout(SipSetupContext *ctx);
+LINPHONE_PUBLIC int sip_setup_context_logout(SipSetupContext *ctx);
 
 /*internal methods for use WITHIN plugins: do not use elsewhere*/
 struct _LinphoneProxyConfig *sip_setup_context_get_proxy_config(const SipSetupContext *ctx);

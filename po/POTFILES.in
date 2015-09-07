@@ -12,6 +12,8 @@ gtk/buddylookup.c
 gtk/setupwizard.c
 gtk/incall_view.c
 gtk/loginframe.c
+gtk/config-fetching.c
+gtk/audio_assistant.c
 [type: gettext/glade]gtk/main.ui
 [type: gettext/glade]gtk/about.ui
 [type: gettext/glade]gtk/contact.ui
@@ -27,12 +29,21 @@ gtk/loginframe.c
 [type: gettext/glade]gtk/call_statistics.ui
 [type: gettext/glade]gtk/tunnel_config.ui
 [type: gettext/glade]gtk/keypad.ui
+[type: gettext/glade]gtk/ldap.ui
+[type: gettext/glade]gtk/config-uri.ui
+[type: gettext/glade]gtk/provisioning-fetch.ui
+[type: gettext/glade]gtk/chatroom_frame.ui
+[type: gettext/glade]gtk/callee_frame.ui
+[type: gettext/glade]gtk/conf_frame.ui
+[type: gettext/glade]gtk/in_call_frame.ui
+[type: gettext/glade]gtk/login_frame.ui
 coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/presence.c
 coreapi/friend.c
 coreapi/proxy.c
 coreapi/callbacks.c
-coreapi/sal_eXosip2.c
 coreapi/linphonecall.c
 
+coreapi/call_log.c
+gtk/videowindow.c

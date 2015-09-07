@@ -18,11 +18,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-
 class LinphoneCallImpl implements LinphoneCall {
  
 	protected final long nativePtr;
 	boolean ownPtr = false;
+	Object userData;
 	private LinphoneCallStats audioStats;
 	private LinphoneCallStats videoStats;
 
@@ -43,6 +43,7 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native int getDuration(long nativePtr);
 	private native float getCurrentQuality(long nativePtr);
 	private native float getAverageQuality(long nativePtr);
+	private native boolean mediaInProgress(long nativePtr);
 	
 	/*
 	 * This method must always be called from JNI, nothing else.
@@ -68,9 +69,11 @@ class LinphoneCallImpl implements LinphoneCall {
 		videoStats = stats;
 	}
 	public LinphoneCallStats getAudioStats() {
+		if (audioStats!=null) ((LinphoneCallStatsImpl)audioStats).updateRealTimeStats(this);
 		return audioStats;
 	}
 	public LinphoneCallStats getVideoStats() {
+		if (videoStats!=null) ((LinphoneCallStatsImpl)videoStats).updateRealTimeStats(this);
 		return videoStats;
 	}
 	public CallDirection getDirection() {
@@ -79,7 +82,7 @@ class LinphoneCallImpl implements LinphoneCall {
 	public LinphoneAddress getRemoteAddress() {
 		long lNativePtr = getRemoteAddress(nativePtr);
 		if (lNativePtr!=0) {
-			return new LinphoneAddressImpl(lNativePtr); 
+			return new LinphoneAddressImpl(lNativePtr,LinphoneAddressImpl.WrapMode.FromConst); 
 		} else {
 			return null;
 		}
@@ -165,6 +168,8 @@ class LinphoneCallImpl implements LinphoneCall {
 		return params.localConferenceMode();
 	}
 
+	public boolean mediaInProgress() { return mediaInProgress(nativePtr);}
+
 	@Override
 	public String toString() {
 		return "Call " + nativePtr;
@@ -205,4 +210,49 @@ class LinphoneCallImpl implements LinphoneCall {
 	public void stopRecording() {
 		stopRecording(nativePtr);
 	}
+	private native int getTransferState(long nativePtr);
+	@Override
+	public State getTransferState() {
+		return State.fromInt(getTransferState(nativePtr));
+	}
+	private native int sendInfoMessage(long callPtr, long msgptr);
+	@Override
+	public void sendInfoMessage(LinphoneInfoMessage msg) {
+		sendInfoMessage(nativePtr,((LinphoneInfoMessageImpl)msg).nativePtr);
+	}
+	private native Object getTransfererCall(long callPtr); 
+	@Override
+	public LinphoneCall getTransfererCall() {
+		return (LinphoneCall)getTransfererCall(nativePtr);
+	}
+	private native Object getTransferTargetCall(long callPtr);
+	@Override
+	public LinphoneCall getTransferTargetCall() {
+		return (LinphoneCall)getTransferTargetCall(nativePtr);
+	}
+	@Override
+	public Reason getReason() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	private native long getErrorInfo(long nativePtr);
+	@Override
+	public ErrorInfo getErrorInfo() {
+		return new ErrorInfoImpl(getErrorInfo(nativePtr));
+	}
+	@Override
+	public void setUserData(Object obj) {
+		userData = obj;
+	}
+	@Override
+	public Object getUserData() {
+		return userData;
+	}
+	
+	private native long getPlayer(long callPtr);
+	@Override
+	public LinphonePlayer getPlayer() {
+		return new LinphonePlayerImpl(getPlayer(nativePtr));
+	}
+
 }

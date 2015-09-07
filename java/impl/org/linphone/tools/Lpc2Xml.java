@@ -59,7 +59,7 @@ public class Lpc2Xml {
 	static {
 		try {
 			System.loadLibrary("xml2");
-			System.loadLibrary("lpc2xml");
+			//System.loadLibrary("lpc2xml");
 			mAvailable = true;
 		} catch (Throwable e) {
 			mAvailable = false;

@@ -1,0 +1,16 @@
+﻿<Application
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:liblinphone_tester"
+    xmlns:model="using:liblinphone_tester.DataModel" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+    x:Class="liblinphone_tester.App"
+    RequestedTheme="Light">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <model:UnitTestCaseStateToSymbolConverter x:Key="UnitTestCaseStateToSymbol"/>
+            <model:UnitTestCaseStateToSymbolColorConverter x:Key="UnitTestCaseStateToSymbolColor"/>
+            <model:OutputTraceLevelToColorConverter x:Key="OutputTraceLevelToColor"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
