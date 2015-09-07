@@ -23,11 +23,9 @@
 
 @implementation LinphoneLogger
 
-+ (void)logv:(OrtpLogLevel)severity
-		file:(const char *)file
-		line:(int)line
-	  format:(NSString *)format
-		args:(va_list)args {
++ (void)log:(OrtpLogLevel)severity file:(const char *)file line:(int)line format:(NSString *)format, ... {
+	va_list args;
+	va_start(args, format);
 	NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
 	int filesize = 20;
 	if (severity <= ORTP_DEBUG) {
@@ -38,12 +36,6 @@
 		ortp_log(severity, "%*s:%3d - %s", filesize, file + MAX((int)strlen(file) - filesize, 0), line,
 				 [str UTF8String]);
 	}
-}
-
-+ (void)log:(OrtpLogLevel)severity file:(const char *)file line:(int)line format:(NSString *)format, ... {
-	va_list args;
-	va_start(args, format);
-	[LinphoneLogger logv:severity file:file line:line format:format args:args];
 	va_end(args);
 }
 
