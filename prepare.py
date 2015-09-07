@@ -35,9 +35,9 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, 'submodules/cmake-builder')
 try:
     import prepare
-except:
+except Exception as e:
     error(
-        "Could not find prepare module, probably missing submodules/cmake-builder? Try running:\ngit submodule update --init --recursive")
+        "Could not find prepare module: {}, probably missing submodules/cmake-builder? Try running:\ngit submodule update --init --recursive".format(e))
     exit(1)
 
 
@@ -544,10 +544,12 @@ def main(argv=None):
     if args.list_features:
         tmpdir = tempfile.mkdtemp(prefix="linphone-iphone")
         tmptarget = IOSarm64Target()
+        tmptarget.abs_cmake_dir = tmpdir
 
         option_regex = re.compile("ENABLE_(.*):(.*)=(.*)")
         option_list = [""]
-        for line in Popen(tmptarget.cmake_command("Debug", False, True, additional_args),
+        build_type = 'Debug' if args.debug else 'Release'
+        for line in Popen(tmptarget.cmake_command(build_type, False, True, additional_args),
                           cwd=tmpdir, shell=False, stdout=PIPE).stdout.readlines():
             match = option_regex.match(line)
             if match is not None:
