@@ -2589,7 +2589,7 @@ LINPHONE_PUBLIC	int linphone_core_get_upload_ptime(LinphoneCore *lc);
  * @param[in] timeout_ms The SIP transport timeout in milliseconds.
  * @ingroup media_parameters
  */
-void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, int timeout_ms);
+LINPHONE_PUBLIC	void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, int timeout_ms);
 
 /**
  * Get the SIP transport timeout.
