@@ -64,9 +64,10 @@
 
 	// also append transient upload messages because they are not in history yet!
 	for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
-		if (linphone_chat_room_get_peer_address(linphone_chat_message_get_chat_room(ftd.message)) ==
-				linphone_chat_room_get_peer_address(chatRoom) &&
-			linphone_chat_message_is_outgoing(ftd.message)) {
+		const LinphoneAddress *ftd_peer =
+			linphone_chat_room_get_peer_address(linphone_chat_message_get_chat_room(ftd.message));
+		const LinphoneAddress *peer = linphone_chat_room_get_peer_address(chatRoom);
+		if (linphone_address_equal(ftd_peer, peer) && linphone_chat_message_is_outgoing(ftd.message)) {
 			LOGI(@"Appending transient upload message %p", ftd.message);
 			self->messageList = ms_list_append(self->messageList, linphone_chat_message_ref(ftd.message));
 		}
