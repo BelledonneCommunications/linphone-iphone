@@ -961,7 +961,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				[self createAccount:identity password:password email:email];
 			}
 		} else if ([[request method] isEqualToString:@"create_account_with_useragent"]) {
-			if ([response.value isEqualToNumber:[NSNumber numberWithInt:0]]) {
+			if ([response.object isEqualToNumber:[NSNumber numberWithInt:0]]) {
 				NSString *username = [WizardViewController findTextField:ViewElement_Username view:contentView].text;
 				NSString *password = [WizardViewController findTextField:ViewElement_Password view:contentView].text;
 				[self changeView:validateAccountView back:FALSE animation:TRUE];
