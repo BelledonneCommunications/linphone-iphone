@@ -198,7 +198,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		/*this happens after pausing the call locally. The streams are destroyed and then we wait the 200Ok to recreate them*/
 		linphone_call_init_media_streams (call);
 	}
-	
+
 	if (call->params->real_early_media && call->state==LinphoneCallOutgoingEarlyMedia){
 		prepare_early_media_forking(call);
 	}
@@ -476,7 +476,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 	LinphoneCallState next_state = LinphoneCallIdle;
 	const char *next_state_str = NULL;
 	LinphoneTaskList tl;
-	
+
 	switch (call->state){/*immediately notify the connected state, even if errors occur after*/
 		case LinphoneCallOutgoingProgress:
 		case LinphoneCallOutgoingRinging:
@@ -494,7 +494,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 		default:
 		break;
 	}
-	
+
 	linphone_task_list_init(&tl);
 	rmd=sal_call_get_remote_media_description(op);
 	/*set privacy*/
@@ -559,7 +559,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 				ms_error("call_accepted(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
 			break;
 		}
-		
+
 		if (next_state != LinphoneCallIdle){
 			linphone_call_update_remote_session_id_and_ver(call);
 			linphone_core_update_ice_state_in_call_stats(call);
@@ -600,7 +600,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 static void call_accepted(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	
+
 	if (call == NULL){
 		ms_warning("call_accepted: call does no longer exist.");
 		return ;
@@ -629,9 +629,9 @@ static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
 /* this callback is called when an incoming re-INVITE/ SIP UPDATE modifies the session*/
 static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t is_update){
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
-	
+
 	call->defer_update = lp_config_get_int(lc->config, "sip", "defer_update_default", FALSE);
-	
+
 	switch(call->state){
 		case LinphoneCallPausedByRemote:
 			if (sal_media_description_has_dir(rmd,SalStreamSendRecv) || sal_media_description_has_dir(rmd,SalStreamRecvOnly)){
@@ -714,9 +714,9 @@ static void call_updating(SalOp *op, bool_t is_update){
 	}else {
 		SalMediaDescription *md;
 		SalMediaDescription *prev_result_desc=call->resultdesc;
-		
+
 		call->expect_media_in_ack = FALSE;
-		
+
 		md=sal_call_get_final_media_description(call->op);
 		if (md && (sal_media_description_empty(md) || linphone_core_incompatible_security(lc,md))){
 			sal_call_decline(call->op,SalReasonNotAcceptable,NULL);
@@ -738,7 +738,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 static void call_ack(SalOp *op){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	
+
 	if (call == NULL){
 		ms_warning("call_ack(): no call for which an ack is expected");
 		return;
@@ -1250,17 +1250,19 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 		// Do not handle delivery status for isComposing messages.
 		return;
 	}
+	// check that the message does not belong to an already destroyed chat room - if so, do not invoke callbacks
+	if (chat_msg->chat_room != NULL) {
+		chat_msg->state=chatStatusSal2Linphone(status);
+		linphone_chat_message_update_state(chat_msg);
 
-	chat_msg->state=chatStatusSal2Linphone(status);
-	linphone_chat_message_update_state(chat_msg);
-
-	if (chat_msg && (chat_msg->cb || (chat_msg->callbacks && linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)))) {
-		ms_message("Notifying text delivery with status %s",linphone_chat_message_state_to_string(chat_msg->state));
-		if (chat_msg->callbacks && linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)) {
-			linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)(chat_msg, chat_msg->state);
-		} else {
-			/* Legacy */
-			chat_msg->cb(chat_msg,chat_msg->state,chat_msg->cb_ud);
+		if (chat_msg && (chat_msg->cb || (chat_msg->callbacks && linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)))) {
+			ms_message("Notifying text delivery with status %s",linphone_chat_message_state_to_string(chat_msg->state));
+			if (chat_msg->callbacks && linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)) {
+				linphone_chat_message_cbs_get_msg_state_changed(chat_msg->callbacks)(chat_msg, chat_msg->state);
+			} else {
+				/* Legacy */
+				chat_msg->cb(chat_msg,chat_msg->state,chat_msg->cb_ud);
+			}
 		}
 	}
 	if (status != SalTextDeliveryInProgress) { /*only release op if not in progress*/
