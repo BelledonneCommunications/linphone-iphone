@@ -29,6 +29,10 @@
                             <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="gee-PW-IqY" userLabel="backgroundColor">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="42"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                </imageView>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="0.0" width="72" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -50,14 +54,13 @@
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         </view>
                         <view contentMode="scaleToFill" id="33" userLabel="headerView">
                             <rect key="frame" x="0.0" y="40" width="375" height="150"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar.png" id="23" userLabel="avatarImage" customClass="UIRoundedImageView">
-                                    <rect key="frame" x="150" y="0.0" width="68" height="66"/>
+                                    <rect key="frame" x="150" y="1" width="68" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                         <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
@@ -154,6 +157,7 @@
         <image name="back.png" width="25" height="22"/>
         <image name="call_start_body_default.png" width="52" height="52"/>
         <image name="chat_start_body_default.png" width="52" height="52"/>
+        <image name="color_F.png" width="1" height="1"/>
         <image name="contact_add.png" width="35" height="30"/>
         <image name="linphone_user.png" width="27" height="23"/>
     </resources>

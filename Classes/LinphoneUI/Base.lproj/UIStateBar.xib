@@ -22,6 +22,10 @@
             <rect key="frame" x="0.0" y="0.0" width="360" height="42"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="mcm-kl-NzJ" userLabel="backgroundView">
+                    <rect key="frame" x="0.0" y="0.0" width="360" height="42"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                </imageView>
                 <view hidden="YES" contentMode="scaleToFill" id="0Vp-VF-wmX" userLabel="incallView">
                     <rect key="frame" x="0.0" y="0.0" width="360" height="42"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -85,7 +89,6 @@
                     </state>
                 </button>
             </subviews>
-            <color key="backgroundColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="148" y="122"/>
@@ -93,6 +96,7 @@
     </objects>
     <resources>
         <image name="call_quality_indicator_4.png" width="20" height="20"/>
+        <image name="color_A.png" width="1" height="1"/>
         <image name="led_disconnected.png" width="12" height="12"/>
         <image name="menu.png" width="19" height="19"/>
         <image name="security_ok.png" width="13" height="17"/>

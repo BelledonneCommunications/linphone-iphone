@@ -25,11 +25,15 @@
             <rect key="frame" x="0.0" y="0.0" width="360" height="63"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
             <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_C.png" id="svE-vh-ct2" userLabel="backgroundImage">
+                    <rect key="frame" x="0.0" y="0.0" width="360" height="63"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                </imageView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="historyButton" customClass="UIIconButton">
                     <rect key="frame" x="0.0" y="0.0" width="90" height="63"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="History"/>
-                    <state key="normal" image="footer_history.png" backgroundImage="color_C.png"/>
+                    <state key="normal" image="footer_history.png"/>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onHistoryClick:" destination="-1" eventType="touchUpInside" id="22"/>
@@ -53,7 +57,7 @@
                     <rect key="frame" x="180" y="0.0" width="90" height="63"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Dialer"/>
-                    <state key="normal" image="footer_dialer.png" backgroundImage="color_C.png"/>
+                    <state key="normal" image="footer_dialer.png"/>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onDialerClick:" destination="-1" eventType="touchUpInside" id="24"/>
@@ -118,7 +122,6 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="209" y="259.5"/>

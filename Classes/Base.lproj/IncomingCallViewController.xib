@@ -23,15 +23,15 @@
                     <rect key="frame" x="0.0" y="42" width="375" height="625"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="4" contentMode="left" text="INCOMING CALL" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="31" userLabel="headerLabel">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Cro-ww-VIC" userLabel="headerButton">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <accessibility key="accessibilityConfiguration" label="Incoming call"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
-                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
+                            <state key="normal" title="INCOMING CALL" backgroundImage="color_F.png">
+                                <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                        </button>
                         <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" image="avatar.png" id="19" userLabel="avatarImage" customClass="UIRoundedImageView">
                             <rect key="frame" x="46" y="58" width="283" height="283"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -102,6 +102,7 @@
         <image name="call_hangup.png" width="42" height="37"/>
         <image name="color_A.png" width="1" height="1"/>
         <image name="color_D.png" width="1" height="1"/>
+        <image name="color_F.png" width="1" height="1"/>
         <image name="color_I.png" width="1" height="1"/>
         <image name="color_L.png" width="1" height="1"/>
     </resources>

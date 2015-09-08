@@ -20,41 +20,31 @@
                     <rect key="frame" x="0.0" y="42" width="375" height="559"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="background.png" id="16" userLabel="background">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="559"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <accessibility key="accessibilityConfiguration" label=""/>
-                        </imageView>
                         <view contentMode="scaleToFill" id="6" userLabel="toolsBar">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="42"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="toolsbar_background.png" id="10" userLabel="barBackground">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="fso-nh-iJP" userLabel="backgroundColor">
+                                    <rect key="frame" x="0.0" y="1" width="375" height="42"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="8" userLabel="backButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="160" height="44"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Back"/>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="bPy-1d-07h" userLabel="backButton">
+                                    <rect key="frame" x="0.0" y="1" width="75" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="New Discussion"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" title="Back" backgroundImage="contact_back_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
+                                    <state key="normal" image="back.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="highlighted" backgroundImage="contact_back_over.png">
-                                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                                    </state>
                                     <connections>
-                                        <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="11"/>
+                                        <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="4zW-v3-vqp"/>
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="5" userLabel="tableView">
-                            <rect key="frame" x="0.0" y="59" width="375" height="500"/>
+                            <rect key="frame" x="0.0" y="42" width="375" height="517"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                             <inset key="contentInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
@@ -73,10 +63,8 @@
         </view>
     </objects>
     <resources>
-        <image name="background.png" width="5" height="88"/>
-        <image name="contact_back_default.png" width="320" height="88"/>
-        <image name="contact_back_over.png" width="320" height="88"/>
-        <image name="toolsbar_background.png" width="5" height="88"/>
+        <image name="back.png" width="25" height="22"/>
+        <image name="color_F.png" width="1" height="1"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

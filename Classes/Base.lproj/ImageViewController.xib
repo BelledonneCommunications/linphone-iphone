@@ -7,7 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ImageViewController">
             <connections>
-                <outlet property="backButton" destination="7" id="8"/>
+                <outlet property="backButton" destination="RW1-kp-wn7" id="DJc-Ps-J3p"/>
                 <outlet property="scrollView" destination="12" id="13"/>
                 <outlet property="view" destination="1" id="3"/>
             </connections>
@@ -21,36 +21,31 @@
                     <rect key="frame" x="0.0" y="42" width="375" height="559"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <view contentMode="scaleToFill" id="11" userLabel="toolbar">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <view contentMode="scaleToFill" id="2E4-s5-jYL" userLabel="toolsBar">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="42"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="toolsbar_background.png" id="6" userLabel="background">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="Rir-PV-D7o" userLabel="backgroundColor">
+                                    <rect key="frame" x="0.0" y="1" width="375" height="42"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="7" userLabel="backButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="160" height="44"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Back"/>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="RW1-kp-wn7" userLabel="backButton">
+                                    <rect key="frame" x="0.0" y="1" width="75" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="New Discussion"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" title="Back" backgroundImage="image_back_default.png">
-                                        <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
+                                    <state key="normal" image="back.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="highlighted" backgroundImage="image_back_over.png">
-                                        <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="deviceRGB"/>
-                                    </state>
                                     <connections>
-                                        <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="10"/>
+                                        <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="vyb-kn-xSQ"/>
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
                         <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" minimumZoomScale="0.0" maximumZoomScale="10" id="12" userLabel="scrollView" customClass="UIImageScrollView">
-                            <rect key="frame" x="0.0" y="44" width="375" height="515"/>
+                            <rect key="frame" x="0.0" y="42" width="375" height="517"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         </scrollView>
@@ -63,9 +58,8 @@
         </view>
     </objects>
     <resources>
-        <image name="image_back_default.png" width="320" height="88"/>
-        <image name="image_back_over.png" width="320" height="88"/>
-        <image name="toolsbar_background.png" width="5" height="88"/>
+        <image name="back.png" width="25" height="22"/>
+        <image name="color_F.png" width="1" height="1"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
