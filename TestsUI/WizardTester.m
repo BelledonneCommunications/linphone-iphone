@@ -100,24 +100,24 @@
 }
 
 - (void)testLinphoneLogin {
-
-	[self _linphoneLogin:[self me] withPW:@"testtest"];
+	[self _linphoneLogin:@"testios" withPW:@"testtest"];
 
 	// check the registration state
-	UIView *regState = [tester waitForViewWithAccessibilityLabel:@"Registration state"];
-	[tester waitForTimeInterval:1];
-	[tester expectView:regState toContainText:@"Registered"];
+	[tester waitForViewWithAccessibilityLabel:@"Registration state"
+										value:@"Registered"
+									   traits:UIAccessibilityTraitStaticText];
 }
 
 - (void)testLinphoneLoginWithBadPassword {
-	[self _linphoneLogin:[self me] withPW:@"badPass"];
+	[self _linphoneLogin:@"testios" withPW:@"badPass"];
 
 	[self setInvalidAccountSet:true];
 
 	UIView *alertViewText =
 		[tester waitForViewWithAccessibilityLabel:@"Registration failure" traits:UIAccessibilityTraitStaticText];
 	if (alertViewText) {
-		UIView *reason = [tester waitForViewWithAccessibilityLabel:@"Forbidden" traits:UIAccessibilityTraitStaticText];
+		UIView *reason = [tester waitForViewWithAccessibilityLabel:@"Incorrect username or password."
+															traits:UIAccessibilityTraitStaticText];
 		if (reason == nil) {
 			[tester fail];
 		} else {

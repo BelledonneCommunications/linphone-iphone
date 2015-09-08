@@ -203,6 +203,7 @@
 		break;
 	}
 	[registrationState setTitle:message forState:UIControlStateNormal];
+	registrationState.accessibilityValue = message;
 	[registrationState setImage:image forState:UIControlStateNormal];
 }
 

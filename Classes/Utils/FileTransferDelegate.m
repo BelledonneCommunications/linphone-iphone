@@ -137,19 +137,20 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 }
 
 - (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom {
-	[[[LinphoneManager instance] fileTransferDelegates] addObject:self];
+	[LinphoneManager.instance.fileTransferDelegates addObject:self];
 
 	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_lc(chatRoom));
 	_data = [NSMutableData dataWithData:UIImageJPEGRepresentation(image, 1.0)];
 	linphone_content_set_type(content, "image");
 	linphone_content_set_subtype(content, "jpeg");
 	linphone_content_set_name(content,
-							  [[NSString stringWithFormat:@"%li-%f.jpg", (long)[image hash],
+							  [[NSString stringWithFormat:@"%li-%f.jpg", (long)image.hash,
 														  [NSDate timeIntervalSinceReferenceDate]] UTF8String]);
-	linphone_content_set_size(content, [_data length]);
+	linphone_content_set_size(content, _data.length);
 
 	_message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
-	linphone_chat_message_ref(_message);
+	linphone_content_unref(content);
+
 	linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message),
 													 linphone_iphone_file_transfer_send);
 
@@ -158,7 +159,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		[LinphoneManager setValueInMessageAppData:[url absoluteString] forKey:@"localimage" inMessage:_message];
 	}
 
-	LOGI(@"%p Uploading content in %p", self, _message);
+	LOGI(@"%p Uploading content from message %p", self, _message);
 
 	linphone_chat_room_send_chat_message(chatRoom, _message);
 }
@@ -187,13 +188,17 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 - (void)stopAndDestroy {
 	[[[LinphoneManager instance] fileTransferDelegates] removeObject:self];
 	if (_message != NULL) {
-		LOGI(@"%p Cancelling transfer from %p", self, _message);
-		linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message), NULL);
-		linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(_message), NULL);
-		linphone_chat_message_cancel_file_transfer(_message);
-		linphone_chat_message_unref(_message);
+		LinphoneChatMessage *msg = _message;
+		_message = NULL;
+		LOGI(@"%p Cancelling transfer from %p", self, msg);
+		linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(msg), NULL);
+		linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(msg), NULL);
+		// when we cancel file transfer, this will automatically trigger NotDelivered callback... recalling ourself a
+		// second time
+		// so we have to unset message BEFORE calling this
+		linphone_chat_message_cancel_file_transfer(msg);
+		linphone_chat_message_unref(msg);
 	}
-	_message = nil;
 	_data = nil;
 	LOGI(@"%p Destroying", self);
 }

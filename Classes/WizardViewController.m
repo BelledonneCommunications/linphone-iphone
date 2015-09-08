@@ -198,7 +198,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)reset {
-	[self clearProxyConfig];
+	[[LinphoneManager instance] removeAllAccounts];
 	[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
 
 	LinphoneCore *lc = [LinphoneManager getLc];
@@ -320,17 +320,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_contentView setContentSize:[view bounds].size];
 }
 
-- (void)clearProxyConfig {
-	linphone_core_clear_proxy_config([LinphoneManager getLc]);
-	linphone_core_clear_all_auth_info([LinphoneManager getLc]);
-}
-
-- (void)setDefaultSettings:(LinphoneProxyConfig *)proxyCfg {
-	LinphoneManager *lm = [LinphoneManager instance];
-
-	[lm configurePushTokenForProxyConfig:proxyCfg];
-}
-
 - (BOOL)addProxyConfig:(NSString *)username
 			  password:(NSString *)password
 				domain:(NSString *)domain
@@ -388,9 +377,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneAuthInfo *info = linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL,
 													linphone_proxy_config_get_domain(proxyCfg));
 
-	[self setDefaultSettings:proxyCfg];
-
-	[self clearProxyConfig];
+	LinphoneManager *lm = [LinphoneManager instance];
+	[lm configurePushTokenForProxyConfig:proxyCfg];
+	[lm removeAllAccounts];
 
 	linphone_proxy_config_enable_register(proxyCfg, true);
 	linphone_core_add_auth_info(lc, info);
@@ -402,8 +391,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)addProvisionedProxy:(NSString *)username withPassword:(NSString *)password withDomain:(NSString *)domain {
-	[self clearProxyConfig];
-
+	[[LinphoneManager instance] removeAllAccounts];
 	LinphoneProxyConfig *proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
 
 	const char *addr = linphone_proxy_config_get_domain(proxyCfg);
@@ -505,6 +493,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	case LinphoneRegistrationFailed: {
 		_waitView.hidden = true;
+		if ([message isEqualToString:@"Forbidden"]) {
+			message = NSLocalizedString(@"Incorrect username or password.", nil);
+		}
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
 														message:message
 													   delegate:nil
@@ -893,9 +884,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  otherButtonTitles:nil, nil];
 		[errorView show];
 	} else if ([response object] != nil) { // Don't handle if not object: HTTP/Communication Error
-		NSString *value = [response object];
 		if ([[request method] isEqualToString:@"check_account"]) {
-			if ([value integerValue] == 1) {
+			if ([response.object isEqualToNumber:[NSNumber numberWithInt:1]]) {
 				UIAlertView *errorView =
 					[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check issue", nil)
 											   message:NSLocalizedString(@"Username already exists", nil)
@@ -911,7 +901,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				[self createAccount:identity password:password email:email];
 			}
 		} else if ([[request method] isEqualToString:@"create_account_with_useragent"]) {
-			if ([value integerValue] == 0) {
+			if ([response.object isEqualToNumber:[NSNumber numberWithInt:0]]) {
 				NSString *username = [WizardViewController findTextField:ViewElement_Username view:_contentView].text;
 				NSString *password = [WizardViewController findTextField:ViewElement_Password view:_contentView].text;
 				[self changeView:_validateAccountView back:FALSE animation:TRUE];
@@ -927,7 +917,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				[errorView show];
 			}
 		} else if ([[request method] isEqualToString:@"check_account_validated"]) {
-			if ([value integerValue] == 1) {
+			if ([response.object isEqualToNumber:[NSNumber numberWithInt:1]]) {
 				NSString *username = [WizardViewController findTextField:ViewElement_Username view:_contentView].text;
 				NSString *password = [WizardViewController findTextField:ViewElement_Password view:_contentView].text;
 				[self addProxyConfig:username password:password domain:nil withTransport:nil];

@@ -77,24 +77,36 @@ static RootViewManager *rootViewManagerInstance = nil;
 		currentViewController = newMainView;
 		LinphoneAppDelegate *delegate = (LinphoneAppDelegate *)[UIApplication sharedApplication].delegate;
 
-		[UIView transitionWithView:delegate.window
-			duration:0.3
-			options:UIViewAnimationOptionTransitionFlipFromLeft | UIViewAnimationOptionAllowAnimatedContent
-			animations:^{
-			  delegate.window.rootViewController = newMainView;
-			  // when going to landscape-enabled view, we have to get the current portrait frame and orientation,
-			  // because it could still have landscape-based size
-			  if (nextViewOrientation != previousOrientation && newMainView == self.rotatingViewController) {
-				  newMainView.view.frame = previousMainView.view.frame;
-				  [newMainView.mainViewController.view setFrame:previousMainView.mainViewController.view.frame];
-				  [newMainView willRotateToInterfaceOrientation:previousOrientation duration:0.3];
-				  [newMainView willAnimateRotationToInterfaceOrientation:previousOrientation duration:0.3];
-				  [newMainView didRotateFromInterfaceOrientation:nextViewOrientation];
-			  }
-
+		if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
+			[UIView transitionWithView:delegate.window
+				duration:0.3
+				options:UIViewAnimationOptionTransitionFlipFromLeft | UIViewAnimationOptionAllowAnimatedContent
+				animations:^{
+				  delegate.window.rootViewController = newMainView;
+				  // when going to landscape-enabled view, we have to get the current portrait frame and orientation,
+				  // because it could still have landscape-based size
+				  if (nextViewOrientation != previousOrientation && newMainView == self.rotatingViewController) {
+					  newMainView.view.frame = previousMainView.view.frame;
+					  [newMainView.mainViewController.view setFrame:previousMainView.mainViewController.view.frame];
+					  [newMainView willRotateToInterfaceOrientation:previousOrientation duration:0.3];
+					  [newMainView willAnimateRotationToInterfaceOrientation:previousOrientation duration:0.3];
+					  [newMainView didRotateFromInterfaceOrientation:nextViewOrientation];
+				  }
+				}
+				completion:^(BOOL finished){
+				}];
+		} else {
+			delegate.window.rootViewController = newMainView;
+			// when going to landscape-enabled view, we have to get the current portrait frame and orientation,
+			// because it could still have landscape-based size
+			if (nextViewOrientation != previousOrientation && newMainView == self.rotatingViewController) {
+				newMainView.view.frame = previousMainView.view.frame;
+				[newMainView.mainViewController.view setFrame:previousMainView.mainViewController.view.frame];
+				[newMainView willRotateToInterfaceOrientation:previousOrientation duration:0.];
+				[newMainView willAnimateRotationToInterfaceOrientation:previousOrientation duration:0.];
+				[newMainView didRotateFromInterfaceOrientation:nextViewOrientation];
 			}
-			completion:^(BOOL finished){
-			}];
+		}
 	}
 	return currentViewController;
 }
@@ -630,21 +642,28 @@ static RootViewManager *rootViewManagerInstance = nil;
 									 @"SIP account configuration in the settings.",
 									 nil);
 	} else {
-		lMessage = [NSString stringWithFormat:NSLocalizedString(@"Cannot call %@", nil), lUserName];
+		lMessage = [NSString stringWithFormat:NSLocalizedString(@"Cannot call %@.", nil), lUserName];
 	}
 
-	if (linphone_call_get_reason(call) == LinphoneReasonNotFound) {
-		lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ not registered", nil), lUserName];
-	} else {
-		if (message != nil) {
-			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@\nReason was: %@", nil), lMessage, message];
-		}
+	switch (linphone_call_get_reason(call)) {
+		case LinphoneReasonNotFound:
+			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is not registered.", nil), lUserName];
+			break;
+		case LinphoneReasonBusy:
+			lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@ is busy.", nil), lUserName];
+			break;
+		default:
+			if (message != nil) {
+				lMessage = [NSString stringWithFormat:NSLocalizedString(@"%@\nReason was: %@", nil), lMessage, message];
+			}
+			break;
 	}
+
 	lTitle = NSLocalizedString(@"Call failed", nil);
 	UIAlertView *error = [[UIAlertView alloc] initWithTitle:lTitle
 													message:lMessage
 												   delegate:nil
-										  cancelButtonTitle:NSLocalizedString(@"Dismiss", nil)
+										  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
 										  otherButtonTitles:nil];
 	[error show];
 }

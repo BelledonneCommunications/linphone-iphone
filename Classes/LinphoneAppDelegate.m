@@ -179,9 +179,8 @@
 		}
 	} else {
 		if (!instance.isTesting) {
-			NSUInteger notifTypes = UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound |
-									UIRemoteNotificationTypeBadge |
-									UIRemoteNotificationTypeNewsstandContentAvailability;
+			NSUInteger notifTypes =
+				UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;
 			[app registerForRemoteNotificationTypes:notifTypes];
 		}
 	}
@@ -318,7 +317,7 @@
 }
 
 - (LinphoneChatRoom *)findChatRoomForContact:(NSString *)contact {
-	MSList *rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+	const MSList *rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
 	const char *from = [contact UTF8String];
 	while (rooms) {
 		const LinphoneAddress *room_from_address = linphone_chat_room_get_peer_address((LinphoneChatRoom *)rooms->data);
@@ -446,7 +445,7 @@
 				[self application:application didReceiveLocalNotification:notification];
 			} else if ([identifier isEqualToString:@"mark_read"]) {
 				NSString *from = [notification.userInfo objectForKey:@"from_addr"];
-				LinphoneChatRoom *room = linphone_core_get_or_create_chat_room(lc, [from UTF8String]);
+				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
 				if (room) {
 					linphone_chat_room_mark_as_read(room);
 					[[PhoneMainView instance] updateApplicationBadgeNumber];

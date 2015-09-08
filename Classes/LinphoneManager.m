@@ -1382,28 +1382,14 @@ static BOOL libStarted = FALSE;
 	connectivity = none;
 
 	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
-
+	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
 	libmsilbc_init();
-#if defined(HAVE_SILK)
 	libmssilk_init();
-#endif
-#ifdef HAVE_AMR
-	libmsamr_init(); // load amr plugin if present from the liblinphone sdk
-#endif
-#ifdef HAVE_X264
-	libmsx264_init(); // load x264 plugin if present from the liblinphone sdk
-#endif
-#ifdef HAVE_OPENH264
-	libmsopenh264_init(); // load openh264 plugin if present from the liblinphone sdk
-#endif
-
-#if HAVE_G729
-	libmsbcg729_init(); // load g729 plugin
-#endif
-
-#ifdef HAVE_WEBRTC
+	libmsamr_init();
+	libmsx264_init();
+	libmsopenh264_init();
+	libmsbcg729_init();
 	libmswebrtc_init();
-#endif
 
 	// Set audio assets
 	const char *lRing =
@@ -1840,6 +1826,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 }
 
 - (void)call:(NSString *)address displayName:(NSString *)displayName transfer:(BOOL)transfer {
+	// First verify that network is available, abort otherwise.
 	if (!linphone_core_is_network_reachable(theLinphoneCore)) {
 		UIAlertView *error = [[UIAlertView alloc]
 				initWithTitle:NSLocalizedString(@"Network Error", nil)
@@ -1848,96 +1835,92 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 							  @"There is no network connection available, enable WIFI or WWAN prior to place a call",
 							  nil)
 					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
 			otherButtonTitles:nil];
 		[error show];
 		return;
 	}
 
+	// Then check that no GSM calls are in progress, abort otherwise.
 	CTCallCenter *callCenter = [[CTCallCenter alloc] init];
 	if ([callCenter currentCalls] != nil) {
 		LOGE(@"GSM call in progress, cancelling outgoing SIP call request");
-		UIAlertView *error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Cannot make call", nil)
-														message:NSLocalizedString(@"Please terminate GSM call", nil)
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-											  otherButtonTitles:nil];
+		UIAlertView *error =
+			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Cannot make call", nil)
+									   message:NSLocalizedString(@"Please terminate GSM call first.", nil)
+									  delegate:nil
+							 cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+							 otherButtonTitles:nil];
 		[error show];
 		return;
 	}
 
-	LinphoneProxyConfig *proxyCfg;
-	// get default proxy
-	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);
-	LinphoneCallParams *lcallParams = linphone_core_create_default_call_parameters(theLinphoneCore);
-	if ([self lpConfigBoolForKey:@"edge_opt_preference"]) {
-		bool low_bandwidth = self.network == network_2g;
-		if (low_bandwidth) {
-			LOGI(@"Low bandwidth mode");
-		}
-		linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
-	}
-	LinphoneCall *call = NULL;
-
-	BOOL addressIsASCII = [address canBeConvertedToEncoding:[NSString defaultCStringEncoding]];
-
-	if ([address length] == 0)
-		return; // just return
-	if (!addressIsASCII) {
-		UIAlertView *error =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
-									   message:NSLocalizedString(@"The address should only contain ASCII data", nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-							 otherButtonTitles:nil];
+	LinphoneAddress *addr = NULL;
+	// Continue by checking that the provided address is a valid SIP address, abort otherwise.
+	if ([address length] == 0) {
+		// no address provided... nothing to do
+	} else if (![address canBeConvertedToEncoding:[NSString defaultCStringEncoding]]) {
+		UIAlertView *error = [[UIAlertView alloc]
+				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
+					  message:NSLocalizedString(
+								  @"Some invalid characters where found in the given SIP address. Please correct it.",
+								  nil)
+					 delegate:nil
+			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+			otherButtonTitles:nil];
 		[error show];
-	}
-	LinphoneAddress *linphoneAddress =
-		linphone_core_interpret_url(theLinphoneCore, [address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-
-	if (linphoneAddress) {
-
-		if (displayName != nil) {
-			linphone_address_set_display_name(linphoneAddress,
-											  [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		}
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"])
-			linphone_address_set_domain(
-				linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
-									 cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		if (transfer) {
-			linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore),
-										[address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-		} else {
-			call = linphone_core_invite_address_with_params(theLinphoneCore, linphoneAddress, lcallParams);
-		}
-		linphone_address_destroy(linphoneAddress);
-
-	} else {
-
+	} else if ((addr = linphone_core_interpret_url(
+					theLinphoneCore, [address cStringUsingEncoding:[NSString defaultCStringEncoding]])) == NULL) {
 		UIAlertView *error = [[UIAlertView alloc]
 				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
 					  message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a "
 												@"call or use a valid SIP address (I.E sip:john@example.net)",
 												nil)
 					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
 			otherButtonTitles:nil];
 		[error show];
-	}
+	} else {
+		// Finally we can make the call
+		LinphoneProxyConfig *proxyCfg;
+		linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);
+		LinphoneCallParams *lcallParams = linphone_core_create_default_call_parameters(theLinphoneCore);
+		if ([self lpConfigBoolForKey:@"edge_opt_preference"] && (self.network == network_2g)) {
+			LOGI(@"Enabling low bandwidth mode");
+			linphone_call_params_enable_low_bandwidth(lcallParams, YES);
+		}
+		if (displayName != nil) {
+			linphone_address_set_display_name(addr,
+											  [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		}
+		if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"]) {
+			linphone_address_set_domain(
+				addr, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
+						  cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		}
 
-	if (call) {
-		// The LinphoneCallAppData object should be set on call creation with callback
-		// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
-		// We are NOT responsible for creating the AppData.
-		LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-		if (data == nil)
-			LOGE(@"New call instanciated but app data was not set. Expect it to crash.");
-		/* will be used later to notify user if video was not activated because of the linphone core*/
-		else
-			data->videoRequested = linphone_call_params_video_enabled(lcallParams);
+		if (transfer) {
+			char *caddr = linphone_address_as_string(addr);
+			linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), caddr);
+			ms_free(caddr);
+		} else {
+			LinphoneCall *call = linphone_core_invite_address_with_params(theLinphoneCore, addr, lcallParams);
+			if (call) {
+				// The LinphoneCallAppData object should be set on call creation with callback
+				// - (void)onCall:StateChanged:withMessage:. If not, we are in big trouble and expect it to crash
+				// We are NOT responsible for creating the AppData.
+				LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
+				if (data == nil) {
+					LOGE(@"New call instanciated but app data was not set. Expect it to crash.");
+					/* will be used later to notify user if video was not activated because of the linphone core*/
+				} else {
+					data->videoRequested = linphone_call_params_video_enabled(lcallParams);
+				}
+			}
+		}
+		linphone_address_destroy(addr);
+		linphone_call_params_destroy(lcallParams);
 	}
-	linphone_call_params_destroy(lcallParams);
 }
 
 #pragma mark - Property Functions
@@ -2020,8 +2003,8 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 
 + (int)unreadMessageCount {
 	int count = 0;
-	MSList *rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
-	MSList *item = rooms;
+	const MSList *rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+	const MSList *item = rooms;
 	while (item) {
 		LinphoneChatRoom *room = (LinphoneChatRoom *)item->data;
 		if (room) {
@@ -2286,4 +2269,10 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	// Query our in-app server to retrieve InApp purchases
 	[_iapManager retrievePurchases];
 }
+
+- (void)removeAllAccounts {
+	linphone_core_clear_proxy_config([LinphoneManager getLc]);
+	linphone_core_clear_all_auth_info([LinphoneManager getLc]);
+}
+
 @end

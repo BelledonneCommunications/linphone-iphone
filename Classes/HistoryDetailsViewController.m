@@ -232,11 +232,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onChatClick:(id)event {
-	LinphoneAddress *addr;
-	addr = linphone_call_log_get_remote_address(callLog);
-
-	char *lAddress = linphone_address_as_string_uri_only(addr);
-	if (lAddress == NULL)
+	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	if (addr == NULL)
 		return;
 	// Go to ChatRoom view
 	[[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
@@ -244,10 +241,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE],
 		ChatRoomViewController);
 	if (controller != nil) {
-		LinphoneChatRoom *room = linphone_core_get_or_create_chat_room([LinphoneManager getLc], lAddress);
+		LinphoneChatRoom *room = linphone_core_get_chat_room([LinphoneManager getLc], addr);
 		[controller setChatRoom:room];
 	}
-	ms_free(lAddress);
 }
 
 @end

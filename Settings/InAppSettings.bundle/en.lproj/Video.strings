@@ -2,7 +2,10 @@
 "Automatically accept" = "Automatically accept";
 "Show self view" = "Show self view";
 "Show preview" = "Show preview";
+"Video preset" = "Video preset";
 "Preferred video size" = "Preferred video size";
+"Preferred FPS" = "Preferred FPS";
+"Bandwidth limit in kbits/s" = "Bandwidth limit in kbits/s";
 "Codecs" = "Codecs";
 "MPEG-4" = "MPEG-4";
 "H.264" = "H.264";
