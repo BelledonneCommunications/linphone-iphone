@@ -4903,6 +4903,49 @@ static void call_record_with_custom_rtp_modifier(void) {
 
 #ifdef CALL_LOGS_STORAGE_ENABLED
 
+static void call_logs_migrate() {
+	LinphoneCoreManager* laure = linphone_core_manager_new("laure_call_logs_rc");
+	char *logs_db = create_filepath(bc_tester_get_writable_dir_prefix(), "call_logs", "db");
+	int i = 0;
+	int incoming_count = 0, outgoing_count = 0, missed_count = 0, aborted_count = 0, decline_count = 0, video_enabled_count = 0;
+	
+	linphone_core_set_call_logs_database_path(laure->lc, logs_db);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(laure->lc) == 8);
+	
+	for (; i < ms_list_size(laure->lc->call_logs); i++) {
+		LinphoneCallLog *log = ms_list_nth_data(laure->lc->call_logs, i);
+		LinphoneCallStatus state = linphone_call_log_get_status(log);
+		LinphoneCallDir direction = linphone_call_log_get_dir(log);
+		
+		if (state == LinphoneCallAborted) {
+			aborted_count += 1;
+		} else if (state == LinphoneCallMissed) {
+			missed_count += 1;
+		} else if (state == LinphoneCallDeclined) {
+			decline_count += 1;
+		}
+		
+		if (direction == LinphoneCallOutgoing) {
+			outgoing_count += 1;
+		} else {
+			incoming_count += 1;
+		}
+		
+		if (linphone_call_log_video_enabled(log)) {
+			video_enabled_count += 1;
+		}
+	}
+	BC_ASSERT_TRUE(incoming_count == 4);
+	BC_ASSERT_TRUE(outgoing_count == 4);
+	BC_ASSERT_TRUE(missed_count == 1);
+	BC_ASSERT_TRUE(aborted_count == 3);
+	BC_ASSERT_TRUE(decline_count == 0);
+	BC_ASSERT_TRUE(video_enabled_count == 3);
+	
+	remove(logs_db);
+	ms_free(logs_db);
+}
+
 static void call_logs_sqlite_storage() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -5083,6 +5126,7 @@ test_t call_tests[] = {
 	{ "Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback },
 	{ "Call with complex late offering", call_with_complex_late_offering },
 #ifdef CALL_LOGS_STORAGE_ENABLED
+	{ "Call log storage migration from rc to db", call_logs_migrate },
 	{ "Call log storage in sqlite database", call_logs_sqlite_storage },
 #endif
 	{ "Call with custom RTP Modifier", call_with_custom_rtp_modifier },
