@@ -1294,7 +1294,10 @@ static void ui_config_read(LinphoneCore *lc)
 		linphone_core_add_friend(lc,lf);
 		linphone_friend_unref(lf);
 	}
+	
+#ifndef CALL_LOGS_STORAGE_ENABLED
 	call_logs_read_from_config_file(lc);
+#endif
 }
 
 /*
@@ -4929,15 +4932,33 @@ LinphoneFirewallPolicy linphone_core_get_firewall_policy(const LinphoneCore *lc)
  * Call log related functions                                                  *
  ******************************************************************************/
 
-const MSList * linphone_core_get_call_logs(LinphoneCore *lc){
+void linphone_core_set_call_logs_database_path(LinphoneCore *lc, const char *path){
+	if (lc->logs_db_file){
+		ms_free(lc->logs_db_file);
+		lc->logs_db_file = NULL;
+	}
+	if (path) {
+		lc->logs_db_file = ms_strdup(path);
+		linphone_core_call_log_storage_init(lc);
+	}
+}
+
+const MSList* linphone_core_get_call_logs(LinphoneCore *lc) {
+#ifdef CALL_LOGS_STORAGE_ENABLED
+	linphone_call_log_get_history(lc);
+#endif
 	return lc->call_logs;
 }
 
-void linphone_core_clear_call_logs(LinphoneCore *lc){
+void linphone_core_clear_call_logs(LinphoneCore *lc) {
 	lc->missed_calls=0;
-	ms_list_for_each(lc->call_logs,(void (*)(void*))linphone_call_log_unref);
-	lc->call_logs=ms_list_free(lc->call_logs);
+#ifdef CALL_LOGS_STORAGE_ENABLED
+	linphone_call_log_delete_history(lc);
+#else
+	ms_list_for_each(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
+	lc->call_logs = ms_list_free(lc->call_logs);
 	call_logs_write_to_config_file(lc);
+#endif
 }
 
 int linphone_core_get_missed_calls_count(LinphoneCore *lc) {
@@ -4949,12 +4970,19 @@ void linphone_core_reset_missed_calls_count(LinphoneCore *lc) {
 }
 
 void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl){
+#ifdef CALL_LOGS_STORAGE_ENABLED
+	linphone_call_log_delete_log(lc, cl);
+#else
 	lc->call_logs = ms_list_remove(lc->call_logs, cl);
 	call_logs_write_to_config_file(lc);
 	linphone_call_log_unref(cl);
+#endif
 }
 
 
+/*******************************************************************************
+ * Video related functions                                                  *
+ ******************************************************************************/
 
 
 static void toggle_video_preview(LinphoneCore *lc, bool_t val){
@@ -6170,6 +6198,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_free_payload_types(lc);
 	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);
+	linphone_core_call_log_storage_close(lc);
 	ms_exit();
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();

@@ -259,7 +259,7 @@ gboolean linphone_gtk_get_audio_assistant_option(void){
 }
 
 static void linphone_gtk_init_liblinphone(const char *config_file,
-		const char *factory_config_file, const char *db_file) {
+		const char *factory_config_file, const char *chat_messages_db_file, const char *call_logs_db_file) {
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
 	gchar *user_certificates_dir=linphone_gtk_get_config_file(CERTIFICATES_PATH);
@@ -309,7 +309,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 		_linphone_gtk_enable_video(FALSE);
 		linphone_gtk_set_ui_config_int("videoselfview",0);
 	}
-	if (db_file) linphone_core_set_chat_database_path(the_core,db_file);
+	if (chat_messages_db_file) linphone_core_set_chat_database_path(the_core,chat_messages_db_file);
+	if (call_logs_db_file) linphone_core_set_call_logs_database_path(the_core, call_logs_db_file);
 }
 
 LinphoneCore *linphone_gtk_get_core(void){
@@ -2063,7 +2064,7 @@ int main(int argc, char *argv[]){
 	GdkPixbuf *pbuf;
 	const char *app_name="Linphone";
 	LpConfig *factory;
-	char *db_file;
+	char *chat_messages_db_file, *call_logs_db_file;
 	GError *error=NULL;
 	const char *tmp;
 
@@ -2213,9 +2214,13 @@ core_start:
 	linphone_gtk_create_log_window();
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
 
-	db_file=linphone_gtk_message_storage_get_db_file(NULL);
-	linphone_gtk_init_liblinphone(config_file, factory_config_file, db_file);
-	g_free(db_file);
+	chat_messages_db_file=linphone_gtk_message_storage_get_db_file(NULL);
+	call_logs_db_file = linphone_gtk_call_logs_storage_get_db_file(NULL);
+	linphone_gtk_init_liblinphone(config_file, factory_config_file, chat_messages_db_file, call_logs_db_file);
+	g_free(chat_messages_db_file);
+	g_free(call_logs_db_file);
+
+	linphone_gtk_call_log_update(the_ui);
 
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
