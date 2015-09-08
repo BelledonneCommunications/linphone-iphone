@@ -4901,8 +4901,11 @@ static void call_record_with_custom_rtp_modifier(void) {
 	custom_rtp_modifier(FALSE, TRUE);
 }
 
+#ifdef CALL_LOGS_STORAGE_ENABLED
+
 static void call_logs_sqlite_storage() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	char *logs_db  = bc_tester_file("logs.db");
 	MSList *logs = NULL;
 	LinphoneAddress *pauline = NULL;
@@ -4912,7 +4915,7 @@ static void call_logs_sqlite_storage() {
 
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
 	
-	simple_call_base(FALSE);
+	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 1);
 	
@@ -4931,6 +4934,8 @@ static void call_logs_sqlite_storage() {
 	remove(logs_db);
 	ms_free(logs_db);
 }
+
+#endif
 
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
