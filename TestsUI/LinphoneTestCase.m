@@ -11,6 +11,7 @@
 #import "LinphoneManager.h"
 
 #import "KIF/KIFTypist.h"
+#import "Utils.h"
 
 @implementation LinphoneTestCase
 

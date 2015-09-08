@@ -79,11 +79,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
-	if (use_system) {
-		_addContactButton.hidden = TRUE;
-	}
-
 	[_tableView loadData];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -170,8 +165,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	char *addrURI = linphone_address_as_string_uri_only(addr);
 	_addressLabel.text = [NSString stringWithUTF8String:addrURI];
 	ms_free(addrURI);
-
-	_addContactButton.hidden = contact || [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
 }
 
 #pragma mark - Action Functions

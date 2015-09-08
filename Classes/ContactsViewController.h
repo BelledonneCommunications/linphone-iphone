@@ -75,9 +75,8 @@ typedef enum _ContactSelectionMode {
 
 @end
 
-@interface ContactsViewController : UIViewController<UICompositeViewDelegate,ABPeoplePickerNavigationControllerDelegate,UISearchBarDelegate> {
-    BOOL use_systemView;
-}
+@interface ContactsViewController
+	: UIViewController <UICompositeViewDelegate, ABPeoplePickerNavigationControllerDelegate, UISearchBarDelegate>
 
 @property(strong, nonatomic) IBOutlet ContactsTableViewController *tableController;
 @property (nonatomic, strong) IBOutlet UINavigationController* sysViewController;

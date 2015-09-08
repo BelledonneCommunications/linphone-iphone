@@ -143,20 +143,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	frame.origin.y = toolBar.frame.origin.y + toolBar.frame.size.height;
 	_searchBar.frame = frame;
 
-	BOOL use_system = [[LinphoneManager instance] lpConfigBoolForKey:@"use_system_contacts"];
-	if (use_system && !self.sysViewController) { // use system contacts
-		ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
-		picker.peoplePickerDelegate = self;
-		picker.view.frame = self.view.frame;
-		[self.view addSubview:picker.view];
-		self.sysViewController = picker;
-		self.searchBar.hidden = TRUE;
-	} else if (!use_system) {
-		[self update];
-	} else {
-		// if table is already created, simply refresh buttons (selection mode changed, etc.)
-		[self refreshButtons];
-	}
+	[self update];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
