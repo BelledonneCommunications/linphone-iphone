@@ -4911,13 +4911,11 @@ static void call_logs_sqlite_storage() {
 	LinphoneAddress *laure = NULL;
 
 	linphone_core_set_call_logs_database_path(marie->lc, logs_db);
-
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
 	
 	BC_ASSERT_TRUE(call(pauline,marie));
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 1000);
 	end_call(pauline, marie);
-	
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 1);
 	
 	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
@@ -4928,6 +4926,23 @@ static void call_logs_sqlite_storage() {
 	logs = linphone_core_get_call_history_for_address(marie->lc, laure);
 	BC_ASSERT_TRUE(ms_list_size(logs) == 0);
 	ms_free(laure);
+	
+	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
+	BC_ASSERT_TRUE(ms_list_size(logs) == 1);
+	linphone_core_delete_call_log(marie->lc, (LinphoneCallLog *)ms_list_nth_data(logs, 0));
+	ms_list_free_with_data(logs, (void (*)(void*))linphone_call_log_unref);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
+	
+	BC_ASSERT_TRUE(call(pauline,marie));
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 1000);
+	end_call(pauline, marie);
+	BC_ASSERT_TRUE(call(pauline,marie));
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 1000);
+	end_call(pauline, marie);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 2);
+	
+	linphone_core_delete_call_history(marie->lc);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
