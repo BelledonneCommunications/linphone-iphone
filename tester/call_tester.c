@@ -4901,6 +4901,37 @@ static void call_record_with_custom_rtp_modifier(void) {
 	custom_rtp_modifier(FALSE, TRUE);
 }
 
+static void call_logs_sqlite_storage() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	char *logs_db  = bc_tester_file("logs.db");
+	MSList *logs = NULL;
+	LinphoneAddress *pauline = NULL;
+	LinphoneAddress *laure = NULL;
+
+	linphone_core_set_call_logs_database_path(marie->lc, logs_db);
+
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
+	
+	simple_call_base(FALSE);
+	
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 1);
+	
+	pauline = linphone_address_new("\"Pauline\" <sip:pauline@sip.example.org>");
+	logs = linphone_core_get_call_history_for_address(marie->lc, pauline);
+	BC_ASSERT_TRUE(ms_list_size(logs) == 1);
+	ms_list_free_with_data(logs, (void (*)(void*))linphone_call_log_unref);
+	ms_free(pauline);
+	
+	pauline = linphone_address_new("\"Laure\" <sip:laure@sip.example.org>");
+	logs = linphone_core_get_call_history_for_address(marie->lc, laure);
+	BC_ASSERT_TRUE(ms_list_size(logs) == 0);
+	ms_free(laure);
+
+	linphone_core_manager_destroy(marie);
+	remove(logs_db);
+	ms_free(logs_db);
+}
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -5031,6 +5062,9 @@ test_t call_tests[] = {
 	{ "Call with RTP IO mode", call_with_rtp_io_mode },
 	{ "Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback },
 	{ "Call with complex late offering", call_with_complex_late_offering },
+#ifdef CALL_LOGS_STORAGE_ENABLED
+	{ "Call log storage in sqlite database", call_logs_sqlite_storage },
+#endif
 	{ "Call with custom RTP Modifier", call_with_custom_rtp_modifier },
 	{ "Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier },
 	{ "Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier }

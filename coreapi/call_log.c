@@ -552,7 +552,7 @@ int linphone_core_get_call_history_size(LinphoneCore *lc) {
 	return numrows;
 }
 
-const MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, LinphoneAddress *addr) {
+MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, LinphoneAddress *addr) {
 	char *buf;
 	char *sipAddress;
 	uint64_t begin,end;
@@ -599,7 +599,7 @@ int linphone_core_get_call_history_size(LinphoneCore *lc) {
 	return 0;
 }
 
-const MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, LinphoneAddress *addr) {
+MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, LinphoneAddress *addr) {
 	return NULL;
 }
 
