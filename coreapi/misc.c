@@ -1833,4 +1833,3 @@ void linphone_task_list_run(LinphoneTaskList *t){
 void linphone_task_list_free(LinphoneTaskList *t){
 	t->hooks = ms_list_free_with_data(t->hooks, (void (*)(void*))ms_free);
 }
-

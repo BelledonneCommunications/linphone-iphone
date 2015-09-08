@@ -3651,16 +3651,23 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 
 }
 
-static void linphone_core_disconnected(LinphoneCore *lc, LinphoneCall *call){
-	char temp[256]={0};
+static void linphone_call_lost(LinphoneCall *call, LinphoneReason reason){
+	LinphoneCore *lc = call->core;
+	char *temp = NULL;
 	char *from=NULL;
 
 	from = linphone_call_get_remote_address_as_string(call);
-	snprintf(temp,sizeof(temp)-1,"Remote end %s seems to have disconnected, the call is going to be closed.",from ? from : "");
+	switch(reason){
+		case LinphoneReasonIOError:
+			temp = ms_strdup_printf("Call with %s disconnected because of network, it is going to be closed.", from ? from : "?");
+		break;
+		default:
+			temp = ms_strdup_printf("Media connectivity with %s is lost, call is going to be closed.", from ? from : "?");
+		break;
+	}
 	if (from) ms_free(from);
-
-	ms_message("On call [%p]: %s",call,temp);
-	linphone_core_notify_display_warning(lc,temp);
+	ms_message("LinphoneCall [%p]: %s",call, temp);
+	linphone_core_notify_display_warning(lc, temp);
 	linphone_core_terminate_call(lc,call);
 	linphone_core_play_named_tone(lc,LinphoneToneCallLost);
 }
@@ -3928,7 +3935,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 		&& call->audiostream->ms.state==MSStreamStarted && disconnect_timeout>0 )
 		disconnected=!audio_stream_alive(call->audiostream,disconnect_timeout);
 	if (disconnected)
-		linphone_core_disconnected(call->core,call);
+		linphone_call_lost(call, LinphoneReasonUnknown);
 }
 
 void linphone_call_log_completed(LinphoneCall *call){
@@ -4233,4 +4240,53 @@ RtpTransport* linphone_call_get_meta_rtcp_transport(LinphoneCall *call, int stre
 
 	rtp_session_get_transports(call->sessions[stream_index].rtp_session, &meta_rtp, &meta_rtcp);
 	return meta_rtcp;
+}
+
+void linphone_call_set_broken(LinphoneCall *call){
+	switch(call->state){
+		/*for all the early states, we prefer to drop the call*/
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallOutgoingRinging:
+		case LinphoneCallOutgoingEarlyMedia:
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallIncomingEarlyMedia:
+			linphone_call_lost(call, LinphoneReasonIOError);
+		break;
+		case LinphoneCallStreamsRunning:
+		case LinphoneCallPaused:
+		case LinphoneCallPausedByRemote:
+			call->broken = TRUE;
+		break;
+		default:
+			ms_error("linphone_call_set_broken() unimplemented case.");
+		break;
+	}
+}
+
+void linphone_call_repair_if_broken(LinphoneCall *call){
+	LinphoneCallParams *params;
+	
+	if (!call->broken) return;
+	
+	/*First, make sure that the proxy from which we received this call, or to which we routed this call is registered*/
+	if (!call->dest_proxy || linphone_proxy_config_get_state(call->dest_proxy) != LinphoneRegistrationOk) return;
+	
+	
+	switch (call->state){
+		case LinphoneCallStreamsRunning:
+		case LinphoneCallPaused:
+		case LinphoneCallPausedByRemote:
+			ms_message("LinphoneCall[%p] is going to be updated (reINVITE) in order to recover from lost connectivity", call);
+			if (call->ice_session){
+				ice_session_restart(call->ice_session);
+				ice_session_set_role(call->ice_session, IR_Controlling);
+			}
+			params = linphone_core_create_call_params(call->core, call);
+			linphone_core_update_call(call->core, call, params);
+			linphone_call_params_unref(params);
+		break;
+		default:
+			ms_error("linphone_call_resume_if_broken(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
+		break;
+	}
 }

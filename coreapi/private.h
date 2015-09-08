@@ -311,6 +311,7 @@ struct _LinphoneCall{
 	bool_t record_active;
 
 	bool_t paused_by_app;
+	bool_t broken; /*set to TRUE when the call is in broken state due to network disconnection or transport */
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCall);
@@ -935,6 +936,8 @@ LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
 void ec_calibrator_destroy(EcCalibrator *ecc);
 
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
+void linphone_call_set_broken(LinphoneCall *call);
+void linphone_call_repair_if_broken(LinphoneCall *call);
 void linphone_core_preempt_sound_resources(LinphoneCore *lc);
 int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 

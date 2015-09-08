@@ -4901,6 +4901,55 @@ static void call_record_with_custom_rtp_modifier(void) {
 	custom_rtp_modifier(FALSE, TRUE);
 }
 
+static void _call_with_network_switch(bool_t use_ice){
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	bool_t call_ok;
+	
+	if (use_ice){
+		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+	}
+	
+	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	if (!call_ok) goto end;
+	
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
+	if (use_ice) BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+	
+	/*marie looses the network and reconnects*/
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
+	
+	/*marie will reconnect and register*/
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
+	
+	/*pauline shall receive a reINVITE to update the session*/
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	
+	liblinphone_tester_check_rtcp(pauline, marie);
+	if (use_ice) BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+	
+	/*pauline shall be able to end the call without problem now*/
+	end_call(pauline, marie);
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_with_network_switch(void){
+	_call_with_network_switch(FALSE);
+}
+
+#if 0
+static void call_with_network_switch_and_ice(void){
+	_call_with_network_switch(TRUE);
+}
+#endif
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -5033,7 +5082,12 @@ test_t call_tests[] = {
 	{ "Call with complex late offering", call_with_complex_late_offering },
 	{ "Call with custom RTP Modifier", call_with_custom_rtp_modifier },
 	{ "Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier },
-	{ "Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier }
+	{ "Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier },
+	{ "Call with network switch", call_with_network_switch }
+#if 0
+	,
+	{ "Call with network switch and ICE", call_with_network_switch_and_ice }
+#endif
 };
 
 test_suite_t call_test_suite = {

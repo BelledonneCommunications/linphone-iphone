@@ -1512,8 +1512,13 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 		if (update_friends){
 			linphone_core_update_friends_subscriptions(lc,cfg,TRUE);
 		}
-		if (lc)
+		if (lc){
 			linphone_core_notify_registration_state_changed(lc,cfg,state,message);
+			if (lc->calls && lp_config_get_int(lc->config, "sip", "repair_broken_calls", 1)){
+				/*if we are registered and there were broken calls due to a past network disconnection, attempt to repair them*/
+				ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_repair_if_broken);
+			}
+		}
 	} else {
 		/*state already reported*/
 	}

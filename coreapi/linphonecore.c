@@ -3281,6 +3281,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 	}
 
 	if (params!=NULL){
+		call->broken = FALSE;
 		linphone_call_set_state(call,nextstate,"Updating call");
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 		has_video = call->params->has_video;
@@ -6200,6 +6201,8 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	if (!lc->network_reachable){
 		linphone_core_invalidate_friend_subscriptions(lc);
 		sal_reset_transports(lc->sal);
+		/*mark all calls as broken, so that they can be either dropped immediately or restaured when network will be back*/
+		ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_set_broken);
 	}else{
 		linphone_core_resolve_stun_server(lc);
 	}
