@@ -19,8 +19,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TPMultiLayoutViewController.h"
-#import "DTActionSheet.h"
-#import "SideMenuTableViewController.h"
+#import "PhoneMainView.h"
 
 @interface UIStateBar : TPMultiLayoutViewController<UIActionSheetDelegate> {
     DTActionSheet *securitySheet;

@@ -25,7 +25,6 @@
 #import <XMLRPCResponse.h>
 #import <XMLRPCRequest.h>
 
-#import "Utils.h"
 #import "LinphoneManager.h"
 
 #import "PhoneMainView.h"

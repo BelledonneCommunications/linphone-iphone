@@ -29,7 +29,6 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "UILinphone.h"
-#import "DTActionSheet.h"
 
 #include "linphone/linphonecore.h"
 

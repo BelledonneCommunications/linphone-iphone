@@ -24,7 +24,6 @@
 #import "UILinphone.h"
 #import "OrderedDictionary.h"
 #import "FastAddressBook.h"
-#import "Utils.h"
 
 @interface Entry : NSObject
 

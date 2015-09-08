@@ -28,8 +28,6 @@
 #import <XMLRPCResponse.h>
 #import <XMLRPCRequest.h>
 
-#import "DTAlertView.h"
-
 typedef enum _ViewElement {
 	ViewElement_Username = 100,
 	ViewElement_Password = 101,

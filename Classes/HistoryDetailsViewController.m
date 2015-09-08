@@ -20,7 +20,6 @@
 #import "HistoryDetailsViewController.h"
 #import "PhoneMainView.h"
 #import "FastAddressBook.h"
-#import "Utils.h"
 
 @implementation HistoryDetailsViewController {
 }
@@ -165,7 +164,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// this address should NEVER be NULL: if this assert is broken, the bug is elsewhere.
 	assert(addr != NULL);
 
-	[FastAddressBook setDisplayNameLabel:_contactLabel forAddress:addr];
+	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr];
 	_avatarImage.image =
 		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
 	char *addrURI = linphone_address_as_string_uri_only(addr);

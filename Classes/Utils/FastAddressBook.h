@@ -40,10 +40,9 @@
 + (NSString *)getContactDisplayName:(ABRecordRef)contact;
 + (UIImage *)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
 + (BOOL)contactHasValidSipDomain:(ABRecordRef)person;
-+ (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact;
 
++ (NSString *)displayNameForContact:(ABRecordRef)person;
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr;
-+ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr;
 
 + (BOOL)isSipURI:(NSString *)address;						  // should be removed
 + (NSString *)appendCountryCodeIfPossible:(NSString *)number; // should be removed

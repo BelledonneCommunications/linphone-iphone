@@ -19,8 +19,7 @@
 
 #import "UIPauseButton.h"
 #import "LinphoneManager.h"
-
-#include "linphone/linphonecore.h"
+#import "Utils.h"
 
 @implementation UIPauseButton
 

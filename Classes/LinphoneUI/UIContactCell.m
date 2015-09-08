@@ -45,7 +45,7 @@
 
 - (void)setContact:(ABRecordRef)acontact {
 	contact = acontact;
-	[FastAddressBook setDisplayNameLabel:nameLabel forContact:contact];
+	[ContactDisplay setDisplayNameLabel:nameLabel forContact:contact];
 	_linphoneImage.hidden = !([FastAddressBook contactHasValidSipDomain:contact]);
 }
 

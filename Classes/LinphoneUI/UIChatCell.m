@@ -69,7 +69,7 @@
 		return;
 	}
 	const LinphoneAddress *addr = linphone_chat_room_get_peer_address(chatRoom);
-	[FastAddressBook setDisplayNameLabel:addressLabel forAddress:addr];
+	[ContactDisplay setDisplayNameLabel:addressLabel forAddress:addr];
 	avatarImage.image =
 		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
 

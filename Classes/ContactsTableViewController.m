@@ -23,7 +23,6 @@
 #import "PhoneMainView.h"
 #import "UACellBackgroundView.h"
 #import "UILinphone.h"
-#import "Utils.h"
 
 @implementation ContactsTableViewController
 

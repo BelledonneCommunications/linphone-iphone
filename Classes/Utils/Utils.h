@@ -17,16 +17,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef LINPHONE_UTILS_H
-#define LINPHONE_UTILS_H
-
 #define DYNAMIC_CAST(x, cls)                        \
  ({                                                 \
     cls *inst_ = (cls *)(x);                        \
     [inst_ isKindOfClass:[cls class]]? inst_ : nil; \
  })
 
-#import <ortp/ortp.h>
+#import "LinphoneManager.h"
 
 @interface LinphoneLogger : NSObject {
 
@@ -63,10 +60,13 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 #define LOGE(...) LOGV(ORTP_ERROR, __VA_ARGS__)
 #define LOGF(...) LOGV(ORTP_FATAL, __VA_ARGS__)
 
-#endif
-
 @interface NSString(md5)
 
 - (NSString *)md5;
 
+@end
+
+@interface ContactDisplay : NSObject
++ (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact;
++ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr;
 @end

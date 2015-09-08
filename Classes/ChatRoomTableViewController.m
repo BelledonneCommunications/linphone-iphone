@@ -20,7 +20,6 @@
 #import "LinphoneManager.h"
 #import "ChatRoomTableViewController.h"
 #import "UIChatRoomCell.h"
-#import "Utils.h"
 #import "PhoneMainView.h"
 
 @implementation ChatRoomTableViewController

@@ -7,6 +7,8 @@
 //
 
 #import "FileTransferDelegate.h"
+#import "Utils.h"
+
 @interface FileTransferDelegate ()
 @property(strong) NSMutableData *data;
 @end

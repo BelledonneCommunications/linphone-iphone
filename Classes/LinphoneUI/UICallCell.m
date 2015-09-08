@@ -23,6 +23,7 @@
 #import "UILinphone.h"
 #import "LinphoneManager.h"
 #import "FastAddressBook.h"
+#import "Utils.h"
 
 @implementation UICallCellData
 

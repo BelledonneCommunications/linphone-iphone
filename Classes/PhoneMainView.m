@@ -22,8 +22,6 @@
 
 #import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
-#import "Utils.h"
-#import "DTActionSheet.h"
 
 static RootViewManager *rootViewManagerInstance = nil;
 

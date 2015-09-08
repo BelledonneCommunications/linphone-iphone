@@ -19,6 +19,7 @@
 
 #import "UIVideoButton.h"
 #include "LinphoneManager.h"
+#import "Utils.h"
 
 @implementation UIVideoButton {
 	BOOL last_update_state;

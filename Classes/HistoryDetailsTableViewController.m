@@ -8,6 +8,7 @@
 
 #import "HistoryDetailsTableViewController.h"
 #import "LinphoneManager.h"
+#import "Utils.h"
 
 @implementation HistoryDetailsTableViewController
 

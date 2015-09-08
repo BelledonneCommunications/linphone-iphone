@@ -19,12 +19,9 @@
 
 #import "ChatRoomViewController.h"
 #import "PhoneMainView.h"
-#import "DTActionSheet.h"
 #import "UILinphone.h"
-#import "DTAlertView.h"
 #import "Utils/FileTransferDelegate.h"
 #import <MobileCoreServices/UTCoreTypes.h>
-#import "Utils.h"
 #import "UIChatRoomCell.h"
 
 @implementation ChatRoomViewController
@@ -200,7 +197,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[error show];
 		return;
 	}
-	[FastAddressBook setDisplayNameLabel:addressLabel forAddress:linphoneAddress];
+	[ContactDisplay setDisplayNameLabel:addressLabel forAddress:linphoneAddress];
 	addressLabel.accessibilityValue = addressLabel.text;
 	avatarImage.image =
 		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:linphoneAddress] thumbnail:YES];

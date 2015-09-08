@@ -19,6 +19,7 @@
 
 #import "UICamSwitch.h"
 #include "LinphoneManager.h"
+#import "Utils.h"
 
 @implementation UICamSwitch
 @synthesize preview;

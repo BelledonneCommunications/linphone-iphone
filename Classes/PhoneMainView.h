@@ -4,43 +4,42 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or   
- *  (at your option) any later version.                                 
- *                                                                      
- *  This program is distributed in the hope that it will be useful,     
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of      
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       
- *  GNU General Public License for more details.                
- *                                                                      
- *  You should have received a copy of the GNU General Public License   
- *  along with this program; if not, write to the Free Software         
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */   
+ */
 
-#import <UIKit/UIKit.h>
 #import <MediaPlayer/MediaPlayer.h>
-
-#import "LinphoneManager.h"
-#import "UICompositeViewController.h"
 
 /* These imports are here so that we can import PhoneMainView.h without bothering to import all the rest of the view headers */
 #import "AboutViewController.h"
-#import "IncomingCallViewController.h"
 #import "ChatRoomViewController.h"
 #import "ChatViewController.h"
-#import "DialerViewController.h"
-#import "ContactsViewController.h"
-#import "ContactDetailsViewController.h"
 #import "ContactDetailsLabelViewController.h"
-#import "ImagePickerViewController.h"
-#import "HistoryViewController.h"
+#import "ContactDetailsViewController.h"
+#import "ContactsViewController.h"
+#import "DialerViewController.h"
 #import "HistoryDetailsViewController.h"
-#import "InCallViewController.h"
-#import "SettingsViewController.h"
-#import "WizardViewController.h"
-#import "IncomingCallViewController.h"
+#import "HistoryViewController.h"
 #import "ImageViewController.h"
+#import "InCallViewController.h"
+#import "IncomingCallViewController.h"
 #import "OutgoingCallViewController.h"
+#import "SettingsViewController.h"
+#import "SideMenuViewController.h"
+#import "WizardViewController.h"
+
+#import "DTAlertView.h"
+#import "DTActionSheet.h"
+#import "Utils.h"
 
 @class PhoneMainView;
 

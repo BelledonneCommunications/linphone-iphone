@@ -41,6 +41,7 @@
 #import "LinphoneIOSVersion.h"
 
 #import <AVFoundation/AVAudioPlayer.h>
+#import "Utils.h"
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
 

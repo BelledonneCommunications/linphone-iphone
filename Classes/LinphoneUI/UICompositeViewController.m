@@ -20,6 +20,7 @@
 #import "UICompositeViewController.h"
 
 #import "LinphoneAppDelegate.h"
+#import "Utils.h"
 
 @implementation UICompositeViewDescription
 

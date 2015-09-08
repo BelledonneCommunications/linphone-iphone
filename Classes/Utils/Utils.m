@@ -20,6 +20,8 @@
 #import "Utils.h"
 #include "linphone/linphonecore.h"
 #import <CommonCrypto/CommonDigest.h>
+#import "UILabel+Boldify.h"
+#import "FastAddressBook.h"
 
 @implementation LinphoneLogger
 
@@ -332,6 +334,23 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 	}
 
 	return output;
+}
+
+@end
+
+@implementation ContactDisplay
+
++ (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact {
+	label.text = [FastAddressBook displayNameForContact:contact];
+	NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
+	NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
+	if (lLocalizedLastName) {
+		[label boldSubstring:lLocalizedLastName];
+	}
+}
+
++ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
+	label.text = [FastAddressBook displayNameForAddress:addr];
 }
 
 @end

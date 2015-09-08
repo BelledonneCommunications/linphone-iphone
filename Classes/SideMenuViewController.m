@@ -22,7 +22,7 @@
 	LinphoneProxyConfig *default_proxy = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
 	if (default_proxy != NULL) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_identity_address(default_proxy);
-		[FastAddressBook setDisplayNameLabel:_nameLabel forAddress:addr];
+		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 		char *as_string = linphone_address_as_string(addr);
 		_addressLabel.text = [NSString stringWithUTF8String:as_string];
 		ms_free(as_string);

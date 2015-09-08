@@ -21,6 +21,7 @@
 #import "UICallCell.h"
 #import "UIConferenceHeader.h"
 #import "LinphoneManager.h"
+#import "Utils.h"
 
 @implementation InCallTableViewController
 

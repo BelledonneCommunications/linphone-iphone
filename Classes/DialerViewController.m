@@ -20,14 +20,8 @@
 #import <AVFoundation/AVAudioSession.h>
 #import <AudioToolbox/AudioToolbox.h>
 
-#import "DialerViewController.h"
-#import "IncallViewController.h"
-#import "DTAlertView.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
-#import "Utils.h"
-
-#include "linphone/linphonecore.h"
 
 @implementation DialerViewController
 

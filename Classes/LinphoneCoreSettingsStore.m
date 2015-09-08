@@ -18,7 +18,7 @@
  */
 
 #import "LinphoneCoreSettingsStore.h"
-#import "DTAlertView.h"
+#import "Utils.h"
 
 #include "linphone/lpconfig.h"
 

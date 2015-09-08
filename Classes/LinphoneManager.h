@@ -30,7 +30,6 @@
 #import "IASKSettingsStore.h"
 #import "IASKAppSettingsViewController.h"
 #import "FastAddressBook.h"
-#import "Utils.h"
 #import "InAppProductsManager.h"
 
 #include "linphone/linphonecore.h"

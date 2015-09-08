@@ -20,7 +20,7 @@
 #import "FastAddressBook.h"
 #import "LinphoneManager.h"
 #import "ContactsViewController.h"
-#import "UILabel+Boldify.h"
+#import "Utils.h"
 
 @implementation FastAddressBook
 
@@ -327,15 +327,6 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 	return match;
 }
 
-+ (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact {
-	label.text = [FastAddressBook displayNameForContact:contact];
-	NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
-	NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
-	if (lLocalizedLastName) {
-		[label boldSubstring:lLocalizedLastName];
-	}
-}
-
 + (NSString *)displayNameForContact:(ABRecordRef)contact {
 	NSString *ret = NSLocalizedString(@"Unknown", nil);
 	if (contact != nil) {
@@ -372,10 +363,6 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 		}
 	}
 	return ret;
-}
-
-+ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
-	label.text = [FastAddressBook displayNameForAddress:addr];
 }
 
 @end

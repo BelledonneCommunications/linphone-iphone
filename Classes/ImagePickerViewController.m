@@ -19,7 +19,6 @@
 
 #import "ImagePickerViewController.h"
 #import "PhoneMainView.h"
-#import "DTActionSheet.h"
 
 @implementation ImagePickerViewController
 

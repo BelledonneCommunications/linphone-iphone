@@ -32,8 +32,6 @@
 #import "IASKTextField.h"
 #include "linphone/lpconfig.h"
 
-#import "DTAlertView.h"
-
 #ifdef DEBUG
 @interface UIDevice (debug)
 

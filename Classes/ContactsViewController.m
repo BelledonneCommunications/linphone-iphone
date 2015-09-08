@@ -17,10 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "ContactsViewController.h"
 #import "PhoneMainView.h"
-#import "Utils.h"
-
 #import <AddressBook/ABPerson.h>
 
 @implementation ContactSelection
