@@ -4908,24 +4908,24 @@ static void call_logs_sqlite_storage() {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	char *logs_db  = bc_tester_file("logs.db");
 	MSList *logs = NULL;
-	LinphoneAddress *pauline = NULL;
+	LinphoneAddress *pauline_addr = NULL;
 	LinphoneAddress *laure = NULL;
 
 	linphone_core_set_call_logs_database_path(marie->lc, logs_db);
 
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
 	
-	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	BC_ASSERT_TRUE(call(pauline,marie));
 	
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 1);
 	
-	pauline = linphone_address_new("\"Pauline\" <sip:pauline@sip.example.org>");
-	logs = linphone_core_get_call_history_for_address(marie->lc, pauline);
+	pauline_addr = linphone_address_new("\"Pauline\" <sip:pauline@sip.example.org>");
+	logs = linphone_core_get_call_history_for_address(marie->lc, pauline_addr);
 	BC_ASSERT_TRUE(ms_list_size(logs) == 1);
 	ms_list_free_with_data(logs, (void (*)(void*))linphone_call_log_unref);
-	ms_free(pauline);
+	ms_free(pauline_addr);
 	
-	pauline = linphone_address_new("\"Laure\" <sip:laure@sip.example.org>");
+	laure = linphone_address_new("\"Laure\" <sip:laure@sip.example.org>");
 	logs = linphone_core_get_call_history_for_address(marie->lc, laure);
 	BC_ASSERT_TRUE(ms_list_size(logs) == 0);
 	ms_free(laure);
