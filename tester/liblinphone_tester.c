@@ -196,7 +196,7 @@ int main (int argc, char *argv[])
 
 	liblinphone_tester_init(NULL);
 
-	if (strstr(argv[0], ".libs")) {
+	if (strstr(argv[0], ".libs") && argv[0][0] == '/') {
 		char res_dir[128] = {0};
 		// this allows to launch liblinphone_tester from outside of tester directory
 		strncpy(res_dir, argv[0], strstr(argv[0], ".libs")-argv[0]);

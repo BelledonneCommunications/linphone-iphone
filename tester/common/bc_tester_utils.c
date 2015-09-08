@@ -445,11 +445,8 @@ void bc_tester_uninit(void) {
 }
 
 static void bc_tester_set_dir_prefix(char **prefix, const char *name) {
-	size_t len = strlen(name);
 	if (*prefix != NULL) free(*prefix);
-	*prefix = malloc(len + 1);
-	strncpy(*prefix, name, len);
-	(*prefix)[len] = '\0';
+	*prefix = strdup(name);
 }
 
 const char * bc_tester_get_resource_dir_prefix(void) {
@@ -474,7 +471,6 @@ static char * bc_tester_path(const char *prefix, const char *name) {
 		size_t len = strlen(prefix) + 1 + strlen(name) + 1;
 		file = malloc(len);
 		snprintf(file, len, "%s/%s", prefix, name);
-		file[strlen(file)] = '\0';
 	}
 	return file;
 }
