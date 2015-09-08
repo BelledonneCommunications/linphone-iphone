@@ -122,6 +122,19 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 	// root section
 	{
+		const MSList *accounts = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+		int count = ms_list_size(accounts);
+		for (int i = 1; i <= count; i++, accounts = accounts->next) {
+			NSString *key = [NSString stringWithFormat:@"account_%d_menu", i];
+			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)accounts->data;
+			[self setCString:linphone_address_get_username(linphone_proxy_config_get_identity_address(proxy))
+					  forKey:key];
+		}
+	}
+	// account section
+	{
+		// todo
+		/*
 		LinphoneProxyConfig *cfg = NULL;
 		linphone_core_get_default_proxy(lc, &cfg);
 		if (cfg) {
@@ -191,6 +204,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[self setCString:linphone_auth_info_get_ha1(ai) forKey:@"ha1_preference"];
 		}
 		[self setBool:[lm lpConfigBoolForKey:@"advanced_account_preference"] forKey:@"advanced_account_preference"];
+		 */
 	}
 
 	// audio section

@@ -58,17 +58,29 @@
 
 #pragma mark - Table View Controller
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return 1;
+	return ms_list_size(linphone_core_get_proxy_config_list([LinphoneManager getLc])) > 1 ? 2 : 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [_sideMenuEntries count];
+	if (section == 0) {
+		// default account is shown in the header already
+		return ms_list_size(linphone_core_get_proxy_config_list([LinphoneManager getLc])) - 1;
+	} else {
+		return [_sideMenuEntries count];
+	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	SideMenuEntry *entry = [_sideMenuEntries objectAtIndex:indexPath.row];
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
-	cell.textLabel.text = entry->title;
+	if (indexPath.section == 0) {
+		LinphoneProxyConfig *proxy =
+			ms_list_nth_data(linphone_core_get_proxy_config_list([LinphoneManager getLc]), (int)indexPath.row);
+		cell.textLabel.text = [NSString
+			stringWithUTF8String:linphone_address_get_username(linphone_proxy_config_get_identity_address(proxy))];
+	} else {
+		SideMenuEntry *entry = [_sideMenuEntries objectAtIndex:indexPath.row];
+		cell.textLabel.text = entry->title;
+	}
 	return cell;
 }
 

@@ -539,12 +539,31 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 
+	if ([specifier.key hasPrefix:@"account_"] && [specifier.key hasSuffix:@"_menu"]) {
+		const MSList *accounts = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+		int index = [[specifier.key substringFromIndex:@"account_".length] stringByReplacingOccurrencesOfString:@"_menu"
+																									 withString:@""]
+						.intValue -
+					1;
+		if (index < ms_list_size(accounts)) {
+			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)ms_list_nth_data(accounts, index);
+			NSString *name = [NSString
+				stringWithUTF8String:linphone_address_get_username(linphone_proxy_config_get_identity_address(proxy))];
+			[specifier.specifierDict setValue:name forKey:kIASKTitle];
+		}
+	}
+
 	return specifier;
 }
 
 - (NSSet *)findHiddenKeys {
 	LinphoneManager *lm = [LinphoneManager instance];
 	NSMutableSet *hiddenKeys = [NSMutableSet set];
+
+	const MSList *accounts = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+	for (int i = ms_list_size(accounts) + 1; i <= 5; i++) {
+		[hiddenKeys addObject:[NSString stringWithFormat:@"account_%d_menu", i]];
+	}
 
 	if (!linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
 		[hiddenKeys addObject:@"media_encryption_preference"];
@@ -657,15 +676,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return hiddenKeys;
 }
 
-- (void)goToWizard {
-	WizardViewController *controller =
-		DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[WizardViewController compositeViewDescription]],
-					 WizardViewController);
-	if (controller != nil) {
-		[controller reset];
-	}
-}
-
 #pragma mark - IASKSettingsDelegate Functions
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
@@ -692,20 +702,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 #endif
 	if ([key isEqual:@"wizard_button"]) {
-		if (linphone_core_get_default_proxy_config(lc) == NULL) {
-			[self goToWizard];
-			return;
-		}
-		UIAlertView *alert = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Warning", nil)
-					  message:
-						  NSLocalizedString(
-							  @"Launching the Wizard will delete any existing proxy config.\nAre you sure to want it?",
-							  nil)
-					 delegate:self
-			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-			otherButtonTitles:NSLocalizedString(@"Launch Wizard", nil), nil];
-		[alert show];
+		[PhoneMainView.instance changeCurrentView:WizardViewController.compositeViewDescription];
+		return;
 	} else if ([key isEqual:@"clear_proxy_button"]) {
 		if (linphone_core_get_default_proxy_config(lc) == NULL) {
 			return;
@@ -757,15 +755,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 						 name:filename];
 		ms_free(filepath);
 	}
-}
-
-#pragma mark - UIAlertView delegate
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex != 1)
-		return; /* cancel */
-	else
-		[self goToWizard];
 }
 
 #pragma mark - Mail composer for send log

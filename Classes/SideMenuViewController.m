@@ -32,6 +32,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[self updateHeader];
+	[_sideMenuTableViewController.tableView reloadData];
 }
 
 - (IBAction)onLateralSwipe:(id)sender {

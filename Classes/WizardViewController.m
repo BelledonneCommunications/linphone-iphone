@@ -377,7 +377,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	LinphoneManager *lm = [LinphoneManager instance];
 	[lm configurePushTokenForProxyConfig:proxyCfg];
-	[lm removeAllAccounts];
 
 	linphone_proxy_config_enable_register(proxyCfg, true);
 	linphone_core_add_auth_info(lc, info);
@@ -477,7 +476,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark -
 
-- (void)registrationUpdate:(LinphoneRegistrationState)state message:(NSString *)message {
+- (void)registrationUpdate:(LinphoneRegistrationState)state
+				  forProxy:(LinphoneProxyConfig *)proxy
+				   message:(NSString *)message {
+	// in wizard we only care about ourself
+	if (proxy != linphone_core_get_default_proxy_config([LinphoneManager getLc])) {
+		return;
+	}
+
 	switch (state) {
 	case LinphoneRegistrationOk: {
 		_waitView.hidden = true;
@@ -523,6 +529,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_enable_video_preview([LinphoneManager getLc], FALSE);
 	[[LinphoneManager instance] resetLinphoneCore];
 	linphone_core_enable_video_preview([LinphoneManager getLc], hasPreview);
+	// we will set the new default proxy config in the wizard
+	linphone_core_set_default_proxy_config([LinphoneManager getLc], NULL);
 }
 
 #pragma mark - UITextFieldDelegate Functions
@@ -864,7 +872,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)registrationUpdateEvent:(NSNotification *)notif {
 	NSString *message = [notif.userInfo objectForKey:@"message"];
-	[self registrationUpdate:[[notif.userInfo objectForKey:@"state"] intValue] message:message];
+	[self registrationUpdate:[[notif.userInfo objectForKey:@"state"] intValue]
+					forProxy:[[notif.userInfo objectForKeyedSubscript:@"cfg"] pointerValue]
+					 message:message];
 }
 
 #pragma mark - XMLRPCConnectionDelegate Functions

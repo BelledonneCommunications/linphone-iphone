@@ -491,7 +491,7 @@
                     <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Domain "/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" secureTextEntry="YES"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="AEK-wy-Dko"/>
                     </connections>
@@ -618,7 +618,7 @@
                     <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="Domain "/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" secureTextEntry="YES"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="6Mx-mR-LQx"/>
                     </connections>

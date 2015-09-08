@@ -622,10 +622,20 @@
 			}
 			completion:^(BOOL finished) {
 			  _sideMenuView.hidden = hidden;
+			  if (hidden) {
+				  [self.sideMenuViewController viewWillDisappear:animated];
+			  } else {
+				  [self.sideMenuViewController viewWillAppear:animated];
+			  }
 			}];
 	} else {
 		_sideMenuView.frame = d;
 		_sideMenuView.hidden = hidden;
+		if (hidden) {
+			[self.sideMenuViewController viewWillDisappear:animated];
+		} else {
+			[self.sideMenuViewController viewWillAppear:animated];
+		}
 	}
 }
 
