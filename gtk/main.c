@@ -1900,7 +1900,9 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_show_friends();
 	linphone_core_reset_missed_calls_count(linphone_gtk_get_core());
 	main_window=linphone_gtk_get_main_window();
+#ifndef CALL_LOGS_STORAGE_ENABLED
 	linphone_gtk_call_log_update(main_window);
+#endif
 
 	linphone_gtk_update_call_buttons (NULL);
 	g_object_set_data(G_OBJECT(main_window),"keypad",NULL);
@@ -2220,7 +2222,9 @@ core_start:
 	g_free(chat_messages_db_file);
 	g_free(call_logs_db_file);
 
+#ifdef CALL_LOGS_STORAGE_ENABLED
 	linphone_gtk_call_log_update(the_ui);
+#endif
 
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());

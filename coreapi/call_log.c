@@ -376,7 +376,7 @@ void linphone_core_call_log_storage_init(LinphoneCore *lc) {
 	const char *errmsg;
 	sqlite3 *db;
 
-	linphone_core_message_storage_close(lc);
+	linphone_core_call_log_storage_close(lc);
 
 	ret=_linphone_sqlite3_open(lc->logs_db_file, &db);
 	if(ret != SQLITE_OK) {
@@ -433,7 +433,7 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	log->video_enabled = atoi(argv[8]) == 1;
 	log->quality = atof(argv[9]);
 	
-	*list = ms_list_prepend(*list, log);
+	*list = ms_list_append(*list, log);
 	
 	return 0;
 }
@@ -443,7 +443,7 @@ void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, MSList **list)
 	int ret;
 	ret = sqlite3_exec(db, stmt, create_call_log, list, &errmsg);
 	if (ret != SQLITE_OK) {
-		ms_error("Error in creation: %s.", errmsg);
+		ms_error("linphone_sql_request: statement %s -> error sqlite3_exec(): %s.", stmt, errmsg);
 		sqlite3_free(errmsg);
 	}
 }
@@ -497,7 +497,7 @@ const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
 	
 	lc->call_logs = ms_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
 
-	buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id ASC LIMIT %i", lc->max_call_logs);
+	buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id DESC LIMIT %i", lc->max_call_logs);
 
 	begin = ortp_get_cur_time_ms();
 	linphone_sql_request_call_log(lc->logs_db, buf, &lc->call_logs);
@@ -526,9 +526,6 @@ void linphone_core_delete_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 	buf = sqlite3_mprintf("DELETE FROM call_history WHERE id = %i", log->storage_id);
 	linphone_sql_request_generic(lc->logs_db, buf);
 	sqlite3_free(buf);
-	
-	lc->call_logs = ms_list_remove(lc->call_logs, log);
-	linphone_call_log_unref(log);
 }
 
 int linphone_core_get_call_history_size(LinphoneCore *lc) {
@@ -562,7 +559,7 @@ MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const Linp
 	
 	/*since we want to append query parameters depending on arguments given, we use malloc instead of sqlite3_mprintf*/
 	sipAddress = linphone_address_as_string_uri_only(addr);
-	buf = sqlite3_mprintf("SELECT * FROM call_history WHERE caller LIKE '%%%q%%' OR callee LIKE '%%%q%%' ORDER BY id ASC", sipAddress, sipAddress); // The '%%%q%%' takes care of the eventual presence of a display name
+	buf = sqlite3_mprintf("SELECT * FROM call_history WHERE caller LIKE '%%%q%%' OR callee LIKE '%%%q%%' ORDER BY id DESC", sipAddress, sipAddress); // The '%%%q%%' takes care of the eventual presence of a display name
 
 	begin = ortp_get_cur_time_ms();
 	linphone_sql_request_call_log(lc->logs_db, buf, &result);

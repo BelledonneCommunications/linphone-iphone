@@ -3216,6 +3216,13 @@ LINPHONE_PUBLIC void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCal
 LINPHONE_PUBLIC void linphone_core_set_call_logs_database_path(LinphoneCore *lc, const char *path);
 
 /**
+ * Migrates the call logs from the linphonerc to the database if not done yet
+ * @ingroup initializing
+ * @param lc the linphone core
+**/
+LINPHONE_PUBLIC void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc);
+
+/**
  * @}
 **/
 
