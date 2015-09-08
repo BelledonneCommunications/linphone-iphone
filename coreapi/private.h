@@ -969,11 +969,11 @@ void call_logs_read_from_config_file(LinphoneCore *lc);
 void call_logs_write_to_config_file(LinphoneCore *lc);
 void linphone_core_call_log_storage_init(LinphoneCore *lc);
 void linphone_core_call_log_storage_close(LinphoneCore *lc);
-void linphone_call_log_store(LinphoneCore *lc, LinphoneCallLog *log);
-MSList *linphone_call_log_get_history(LinphoneCore *lc);
-void linphone_call_log_delete_history(LinphoneCore *lc);
-void linphone_call_log_delete_log(LinphoneCore *lc, LinphoneCallLog *log);
-int linphone_call_log_get_history_size(LinphoneCore *lc);
+void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log);
+const MSList *linphone_core_get_call_history(LinphoneCore *lc);
+void linphone_core_delete_call_history(LinphoneCore *lc);
+void linphone_core_delete_call_log(LinphoneCore *lc, LinphoneCallLog *log);
+int linphone_core_get_call_history_size(LinphoneCore *lc);
 
 int linphone_core_get_edge_bw(LinphoneCore *lc);
 int linphone_core_get_edge_ptime(LinphoneCore *lc);

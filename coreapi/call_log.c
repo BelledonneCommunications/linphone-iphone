@@ -274,7 +274,7 @@ void linphone_call_log_unref(LinphoneCallLog *cl) {
  * Constructor and destructor functions                                        *
  ******************************************************************************/
 
-static void _linphone_call_log_destroy(LinphoneCallLog *cl){
+static void _linphone_call_log_destroy(LinphoneCallLog *cl) {
 	if (cl->from!=NULL) linphone_address_destroy(cl->from);
 	if (cl->to!=NULL) linphone_address_destroy(cl->to);
 	if (cl->refkey!=NULL) ms_free(cl->refkey);
@@ -283,7 +283,7 @@ static void _linphone_call_log_destroy(LinphoneCallLog *cl){
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]);
 }
 
-LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to){
+LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to) {
 	LinphoneCallLog *cl=belle_sip_object_new(LinphoneCallLog);
 	cl->dir=dir;
 	cl->start_date_time=time(NULL);
@@ -321,7 +321,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallLog, belle_sip_object_t,
 
 #ifdef CALL_LOGS_STORAGE_ENABLED
 
-static void linphone_create_table(sqlite3* db){
+static void linphone_create_table(sqlite3* db) {
 	char* errmsg=NULL;
 	int ret;
 	ret=sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS call_history ("
@@ -390,7 +390,7 @@ void linphone_core_call_log_storage_init(LinphoneCore *lc) {
 	lc->logs_db = db;
 	
 	// Load the existing call logs
-	linphone_call_log_get_history(lc);
+	linphone_core_get_call_history(lc);
 }
 
 void linphone_core_call_log_storage_close(LinphoneCore *lc) {
@@ -413,7 +413,7 @@ void linphone_core_call_log_storage_close(LinphoneCore *lc) {
  * | 9  | quality
  */
 static int create_call_log(void *data, int argc, char **argv, char **colName) {
-	LinphoneCore *lc = (LinphoneCore *)data;
+	MSList **list = (MSList **)data;
 	LinphoneAddress *from;
 	LinphoneAddress *to;
 	LinphoneCallDir dir;
@@ -433,22 +433,22 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	log->video_enabled = atoi(argv[8]) == 1;
 	log->quality = atof(argv[9]);
 	
-	lc->call_logs = ms_list_prepend(lc->call_logs, linphone_call_log_ref(log));
+	*list = ms_list_prepend(*list, log);
 	
 	return 0;
 }
 
-void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, LinphoneCore *lc){
+void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, MSList **list) {
 	char* errmsg = NULL;
 	int ret;
-	ret = sqlite3_exec(db, stmt, create_call_log, lc, &errmsg);
+	ret = sqlite3_exec(db, stmt, create_call_log, list, &errmsg);
 	if (ret != SQLITE_OK) {
 		ms_error("Error in creation: %s.", errmsg);
 		sqlite3_free(errmsg);
 	}
 }
 
-int linphone_sql_request_generic(sqlite3* db, const char *stmt){
+int linphone_sql_request_generic(sqlite3* db, const char *stmt) {
 	char* errmsg = NULL;
 	int ret;
 	ret = sqlite3_exec(db, stmt, NULL, NULL, &errmsg);
@@ -459,7 +459,7 @@ int linphone_sql_request_generic(sqlite3* db, const char *stmt){
 	return ret;
 }
 
-void linphone_call_log_store(LinphoneCore *lc, LinphoneCallLog *log) {
+void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 	if (lc && lc->logs_db){
 		char *from, *to;
 		char *buf;
@@ -489,19 +489,18 @@ void linphone_call_log_store(LinphoneCore *lc, LinphoneCallLog *log) {
 	}
 }
 
-MSList *linphone_call_log_get_history(LinphoneCore *lc) {
+const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
 	char *buf;
 	uint64_t begin,end;
 
 	if (!lc || lc->logs_db == NULL) return NULL;
 	
-	ms_list_for_each(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
-	lc->call_logs = ms_list_free(lc->call_logs);
+	lc->call_logs = ms_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
 
 	buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id ASC LIMIT %i", lc->max_call_logs);
 
 	begin = ortp_get_cur_time_ms();
-	linphone_sql_request_call_log(lc->logs_db, buf, lc);
+	linphone_sql_request_call_log(lc->logs_db, buf, &lc->call_logs);
 	end = ortp_get_cur_time_ms();
 	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
 	sqlite3_free(buf);
@@ -509,7 +508,7 @@ MSList *linphone_call_log_get_history(LinphoneCore *lc) {
 	return lc->call_logs;
 }
 
-void linphone_call_log_delete_history(LinphoneCore *lc) {
+void linphone_core_delete_call_history(LinphoneCore *lc) {
 	char *buf;
 
 	if (!lc || lc->logs_db == NULL) return ;
@@ -519,7 +518,7 @@ void linphone_call_log_delete_history(LinphoneCore *lc) {
 	sqlite3_free(buf);
 }
 
-void linphone_call_log_delete_log(LinphoneCore *lc, LinphoneCallLog *log) {
+void linphone_core_delete_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 	char *buf;
 
 	if (!lc || lc->logs_db == NULL) return ;
@@ -532,7 +531,7 @@ void linphone_call_log_delete_log(LinphoneCore *lc, LinphoneCallLog *log) {
 	linphone_call_log_unref(log);
 }
 
-int linphone_call_log_get_history_size(LinphoneCore *lc) {
+int linphone_core_get_call_history_size(LinphoneCore *lc) {
 	int numrows = 0;
 	char *buf;
 	sqlite3_stmt *selectStatement;
@@ -553,60 +552,54 @@ int linphone_call_log_get_history_size(LinphoneCore *lc) {
 	return numrows;
 }
 
-const MSList * linphone_core_get_call_logs_for_address(LinphoneCore *lc, LinphoneAddress *addr) {
+const MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, LinphoneAddress *addr) {
 	char *buf;
 	char *sipAddress;
 	uint64_t begin,end;
-	MSList *result, *tmp;
+	MSList *result = NULL;
 
 	if (!lc || lc->logs_db == NULL || addr == NULL) return NULL;
-	
-	tmp = lc->call_logs;
-	lc->call_logs = NULL;
 	
 	/*since we want to append query parameters depending on arguments given, we use malloc instead of sqlite3_mprintf*/
 	sipAddress = linphone_address_as_string_uri_only(addr);
 	buf = sqlite3_mprintf("SELECT * FROM call_history WHERE caller LIKE '%%%q%%' OR callee LIKE '%%%q%%' ORDER BY id ASC", sipAddress, sipAddress); // The '%%%q%%' takes care of the eventual presence of a display name
 
 	begin = ortp_get_cur_time_ms();
-	linphone_sql_request_call_log(lc->logs_db, buf, lc);
+	linphone_sql_request_call_log(lc->logs_db, buf, &result);
 	end = ortp_get_cur_time_ms();
 	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
 	sqlite3_free(buf);
 	ms_free(sipAddress);
 	
-	result = lc->call_logs;
-	lc->call_logs = tmp;
-	tmp = NULL;
 	return result;
 }
 
 #else
 
-void linphone_core_call_log_storage_init(LinphoneCore *lc) {	
+void linphone_core_call_log_storage_init(LinphoneCore *lc) {
 }
 
 void linphone_core_call_log_storage_close(LinphoneCore *lc) {
 }
 
-void linphone_call_log_store(LinphoneCore *lc, LinphoneCallLog *log) {
+void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 }
 
-MSList *linphone_call_log_get_history(LinphoneCore *lc) {
+const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
 	return NULL;
 }
 
-void linphone_call_log_delete_history(LinphoneCore *lc) {
+void linphone_core_delete_call_history(LinphoneCore *lc) {
 }
 
-void linphone_call_log_delete_log(LinphoneCore *lc, LinphoneCallLog *log) {
+void linphone_core_delete_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 }
 
-int linphone_call_log_get_history_size(LinphoneCore *lc) {
+int linphone_core_get_call_history_size(LinphoneCore *lc) {
 	return 0;
 }
 
-const MSList * linphone_core_get_call_logs_for_address(LinphoneCore *lc, LinphoneAddress *addr) {
+const MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, LinphoneAddress *addr) {
 	return NULL;
 }
 

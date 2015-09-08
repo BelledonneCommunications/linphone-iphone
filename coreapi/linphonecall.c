@@ -3946,7 +3946,7 @@ void linphone_call_log_completed(LinphoneCall *call){
 		ms_free(info);
 	}
 #ifdef CALL_LOGS_STORAGE_ENABLED
-	linphone_call_log_store(lc, call->log);
+	linphone_core_store_call_log(lc, call->log);
 #else
 	lc->call_logs=ms_list_prepend(lc->call_logs,linphone_call_log_ref(call->log));
 	if (ms_list_size(lc->call_logs)>lc->max_call_logs){
