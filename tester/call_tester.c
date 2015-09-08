@@ -4916,6 +4916,8 @@ static void call_logs_sqlite_storage() {
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
 	
 	BC_ASSERT_TRUE(call(pauline,marie));
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
+	end_call(pauline, marie);
 	
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 1);
 	
