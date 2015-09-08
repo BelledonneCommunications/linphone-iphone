@@ -4906,9 +4906,8 @@ static void call_record_with_custom_rtp_modifier(void) {
 static void call_logs_sqlite_storage() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	char *logs_db  = bc_tester_file("logs.db");
+	char *logs_db = create_filepath(bc_tester_get_writable_dir_prefix(), "call_logs", "db");
 	MSList *logs = NULL;
-	LinphoneAddress *pauline_addr = NULL;
 	LinphoneAddress *laure = NULL;
 
 	linphone_core_set_call_logs_database_path(marie->lc, logs_db);
@@ -4916,16 +4915,14 @@ static void call_logs_sqlite_storage() {
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
 	
 	BC_ASSERT_TRUE(call(pauline,marie));
-	wait_for_until(pauline->lc, marie->lc, NULL, 5, 3000);
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 1000);
 	end_call(pauline, marie);
 	
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 1);
 	
-	pauline_addr = linphone_address_new("\"Pauline\" <sip:pauline@sip.example.org>");
-	logs = linphone_core_get_call_history_for_address(marie->lc, pauline_addr);
+	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
 	BC_ASSERT_TRUE(ms_list_size(logs) == 1);
 	ms_list_free_with_data(logs, (void (*)(void*))linphone_call_log_unref);
-	ms_free(pauline_addr);
 	
 	laure = linphone_address_new("\"Laure\" <sip:laure@sip.example.org>");
 	logs = linphone_core_get_call_history_for_address(marie->lc, laure);
@@ -4933,6 +4930,7 @@ static void call_logs_sqlite_storage() {
 	ms_free(laure);
 
 	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 	remove(logs_db);
 	ms_free(logs_db);
 }

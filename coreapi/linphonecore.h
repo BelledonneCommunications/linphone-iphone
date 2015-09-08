@@ -3176,7 +3176,7 @@ LINPHONE_PUBLIC const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
  * @param[in] lc LinphoneCore object
  * @return \mslist{LinphoneCallLog}
 **/
-LINPHONE_PUBLIC MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, LinphoneAddress *addr);
+LINPHONE_PUBLIC MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
 /**
  * Erase the call log.
