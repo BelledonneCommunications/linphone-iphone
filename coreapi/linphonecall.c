@@ -1311,11 +1311,11 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			break;
 		case LinphoneCallEnd:
 		case LinphoneCallError:
-			switch(call->non_op_error.reason){
-			case SalReasonDeclined:
+			switch(linphone_error_info_get_reason(linphone_call_get_error_info(call))) {
+			case LinphoneReasonDeclined:
 				call->log->status=LinphoneCallDeclined;
 				break;
-			case SalReasonRequestTimeout:
+			case LinphoneReasonNotAnswered:
 				call->log->status=LinphoneCallMissed;
 				break;
 			default:
