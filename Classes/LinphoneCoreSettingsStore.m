@@ -295,7 +295,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setInteger:linphone_core_get_upload_bandwidth(lc) forKey:@"upload_bandwidth_preference"];
 		[self setInteger:linphone_core_get_download_bandwidth(lc) forKey:@"download_bandwidth_preference"];
 		[self setBool:linphone_core_adaptive_rate_control_enabled(lc) forKey:@"adaptive_rate_control_preference"];
-		[self setCString:linphone_core_get_adaptive_rate_algorithm(lc) forKey:@"adaptive_rate_algorithm_preference"];
 	}
 
 	// tunnel section
@@ -705,8 +704,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			linphone_core_set_media_encryption(lc, LinphoneMediaEncryptionNone);
 
 		linphone_core_enable_adaptive_rate_control(lc, [self boolForKey:@"adaptive_rate_control_preference"]);
-		linphone_core_set_adaptive_rate_algorithm(lc, [[self stringForKey:@"adaptive_rate_algorithm_preference"]
-														  cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	}
 
 	// tunnel section
