@@ -295,9 +295,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 		linphone_core_get_default_proxy([LinphoneManager getLc], &conf);
 		if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" forSection:@"app"] && conf == NULL) {
 			already_shown = TRUE;
-			AssistantViewController *controller = DYNAMIC_CAST(
-				[[PhoneMainView instance] changeCurrentView:[AssistantViewController compositeViewDescription]],
-				AssistantViewController);
+			AssistantView *controller = DYNAMIC_CAST(
+				[[PhoneMainView instance] changeCurrentView:[AssistantView compositeViewDescription]], AssistantView);
 			if (controller != nil) {
 				[controller fillDefaultValues];
 			}
@@ -313,8 +312,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
 
 	// Don't handle call state during incoming call view
-	if ([[self currentView] equal:[IncomingCallViewController compositeViewDescription]] &&
-		state != LinphoneCallError && state != LinphoneCallEnd) {
+	if ([[self currentView] equal:[CallIncomingView compositeViewDescription]] && state != LinphoneCallError &&
+		state != LinphoneCallEnd) {
 		return;
 	}
 
@@ -325,13 +324,13 @@ static RootViewManager *rootViewManagerInstance = nil;
 			break;
 		}
 		case LinphoneCallOutgoingInit: {
-			[self changeCurrentView:[OutgoingCallViewController compositeViewDescription]];
+			[self changeCurrentView:[CallOutgoingView compositeViewDescription]];
 			break;
 		}
 		case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning: {
-			[self changeCurrentView:[InCallViewController compositeViewDescription]];
+			[self changeCurrentView:[CallView compositeViewDescription]];
 			break;
 		}
 		case LinphoneCallUpdatedByRemote: {
@@ -339,7 +338,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 			const LinphoneCallParams *remote = linphone_call_get_remote_params(call);
 
 			if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-				[self changeCurrentView:[InCallViewController compositeViewDescription]];
+				[self changeCurrentView:[CallView compositeViewDescription]];
 			}
 			break;
 		}
@@ -349,14 +348,14 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallEnd: {
 			if (canHideInCallView) {
 				// Go to dialer view
-				DialerViewController *controller = DYNAMIC_CAST(
-					[self changeCurrentView:[DialerViewController compositeViewDescription]], DialerViewController);
+				DialerView *controller =
+					DYNAMIC_CAST([self changeCurrentView:[DialerView compositeViewDescription]], DialerView);
 				if (controller != nil) {
 					[controller setAddress:@""];
 					[controller setTransferMode:FALSE];
 				}
 			} else {
-				[self changeCurrentView:[InCallViewController compositeViewDescription]];
+				[self changeCurrentView:[CallView compositeViewDescription]];
 			}
 			break;
 		}
@@ -413,7 +412,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		core = [LinphoneManager getLc];
 		LinphoneManager *lm = [LinphoneManager instance];
 		if (linphone_core_get_global_state(core) != LinphoneGlobalOn) {
-			[self changeCurrentView:[DialerViewController compositeViewDescription]];
+			[self changeCurrentView:[DialerView compositeViewDescription]];
 		} else if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"] == true) {
 			// TODO: Change to fist login view
 		} else {
@@ -421,11 +420,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 			// Change to default view
 			const MSList *list = linphone_core_get_proxy_config_list(core);
 			if (list != NULL || ([lm lpConfigBoolForKey:@"hide_assistant_preference"] == true) || lm.isTesting) {
-				[self changeCurrentView:[DialerViewController compositeViewDescription]];
+				[self changeCurrentView:[DialerView compositeViewDescription]];
 			} else {
-				AssistantViewController *controller = DYNAMIC_CAST(
-					[[PhoneMainView instance] changeCurrentView:[AssistantViewController compositeViewDescription]],
-					AssistantViewController);
+				AssistantView *controller =
+					DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[AssistantView compositeViewDescription]],
+								 AssistantView);
 				if (controller != nil) {
 					[controller reset];
 				}
@@ -472,26 +471,26 @@ static RootViewManager *rootViewManagerInstance = nil;
 + (CATransition *)getTransition:(UICompositeViewDescription *)old new:(UICompositeViewDescription *) new {
 	bool left = false;
 
-	if ([old equal:[ChatViewController compositeViewDescription]]) {
-		if ([new equal:[ContactsViewController compositeViewDescription]] ||
-			[new equal:[DialerViewController compositeViewDescription]] ||
-			[new equal:[HistoryViewController compositeViewDescription]]) {
+	if ([old equal:[ChatsListView compositeViewDescription]]) {
+		if ([new equal:[ContactsListView compositeViewDescription]] ||
+			[new equal:[DialerView compositeViewDescription]] ||
+			[new equal:[HistoryListView compositeViewDescription]]) {
 			left = true;
 		}
-	} else if ([old equal:[SettingsViewController compositeViewDescription]]) {
-		if ([new equal:[DialerViewController compositeViewDescription]] ||
-			[new equal:[ContactsViewController compositeViewDescription]] ||
-			[new equal:[HistoryViewController compositeViewDescription]] ||
-			[new equal:[ChatViewController compositeViewDescription]]) {
+	} else if ([old equal:[SettingsView compositeViewDescription]]) {
+		if ([new equal:[DialerView compositeViewDescription]] ||
+			[new equal:[ContactsListView compositeViewDescription]] ||
+			[new equal:[HistoryListView compositeViewDescription]] ||
+			[new equal:[ChatsListView compositeViewDescription]]) {
 			left = true;
 		}
-	} else if ([old equal:[DialerViewController compositeViewDescription]]) {
-		if ([new equal:[ContactsViewController compositeViewDescription]] ||
-			[new equal:[HistoryViewController compositeViewDescription]]) {
+	} else if ([old equal:[DialerView compositeViewDescription]]) {
+		if ([new equal:[ContactsListView compositeViewDescription]] ||
+			[new equal:[HistoryListView compositeViewDescription]]) {
 			left = true;
 		}
-	} else if ([old equal:[ContactsViewController compositeViewDescription]]) {
-		if ([new equal:[HistoryViewController compositeViewDescription]]) {
+	} else if ([old equal:[ContactsListView compositeViewDescription]]) {
+		if ([new equal:[HistoryListView compositeViewDescription]]) {
 			left = true;
 		}
 	}
@@ -705,15 +704,13 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 		} else {
 
-			IncomingCallViewController *controller = nil;
-			if (![currentView.name isEqualToString:[IncomingCallViewController compositeViewDescription].name]) {
+			CallIncomingView *controller = nil;
+			if (![currentView.name isEqualToString:[CallIncomingView compositeViewDescription].name]) {
 				controller = DYNAMIC_CAST(
-					[self changeCurrentView:[IncomingCallViewController compositeViewDescription] push:TRUE],
-					IncomingCallViewController);
+					[self changeCurrentView:[CallIncomingView compositeViewDescription] push:TRUE], CallIncomingView);
 			} else {
 				// controller is already presented, don't bother animating a transition
-				controller =
-					DYNAMIC_CAST([self.mainViewController getCurrentViewController], IncomingCallViewController);
+				controller = DYNAMIC_CAST([self.mainViewController getCurrentViewController], CallIncomingView);
 			}
 			AudioServicesPlaySystemSound(lm.sounds.vibrate);
 			if (controller != nil) {

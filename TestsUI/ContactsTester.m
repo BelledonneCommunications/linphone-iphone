@@ -8,7 +8,7 @@
 
 #import "ContactsTester.h"
 
-#import "ContactDetailsTableViewController.h"
+#import "ContactDetailsTableView.h"
 
 @implementation ContactsTester
 

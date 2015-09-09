@@ -252,9 +252,8 @@
 			NSString *sipUri = [[url resourceSpecifier]
 				stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
 
-			DialerViewController *controller = DYNAMIC_CAST(
-				[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]],
-				DialerViewController);
+			DialerView *controller = DYNAMIC_CAST(
+				[[PhoneMainView instance] changeCurrentView:[DialerView compositeViewDescription]], DialerView);
 			if (controller != nil) {
 				[controller setAddress:sipUri];
 			}
@@ -298,7 +297,7 @@
 
 					if ([loc_key isEqualToString:@"IM_MSG"]) {
 
-						[[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+						[[PhoneMainView instance] changeCurrentView:[ChatsListView compositeViewDescription]];
 
 					} else if ([loc_key isEqualToString:@"IC_MSG"]) {
 
@@ -349,22 +348,21 @@
 	} else if ([notification.userInfo objectForKey:@"from_addr"] != nil) {
 		NSString *remoteContact = (NSString *)[notification.userInfo objectForKey:@"from_addr"];
 		// Go to ChatRoom view
-		[[PhoneMainView instance] changeCurrentView:[ChatViewController compositeViewDescription]];
+		[[PhoneMainView instance] changeCurrentView:[ChatsListView compositeViewDescription]];
 		LinphoneChatRoom *room = [self findChatRoomForContact:remoteContact];
-		ChatRoomViewController *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription] push:TRUE],
-			ChatRoomViewController);
+		ChatConversationView *controller = DYNAMIC_CAST(
+			[[PhoneMainView instance] changeCurrentView:[ChatConversationView compositeViewDescription] push:TRUE],
+			ChatConversationView);
 		if (controller != nil && room != nil) {
 			[controller setChatRoom:room];
 		}
 	} else if ([notification.userInfo objectForKey:@"callLog"] != nil) {
 		NSString *callLog = (NSString *)[notification.userInfo objectForKey:@"callLog"];
 		// Go to HistoryDetails view
-		[[PhoneMainView instance] changeCurrentView:[HistoryViewController compositeViewDescription]];
-		HistoryDetailsViewController *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription]
-												   push:TRUE],
-			HistoryDetailsViewController);
+		[[PhoneMainView instance] changeCurrentView:[HistoryListView compositeViewDescription]];
+		HistoryDetailsView *controller = DYNAMIC_CAST(
+			[[PhoneMainView instance] changeCurrentView:[HistoryDetailsView compositeViewDescription] push:TRUE],
+			HistoryDetailsView);
 		if (controller != nil) {
 			[controller setCallLogId:callLog];
 		}

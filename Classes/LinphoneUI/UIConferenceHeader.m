@@ -29,7 +29,7 @@
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-	return [super initWithNibName:@"UIConferenceHeader" bundle:[NSBundle mainBundle]];
+	return [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 }
 
 #pragma mark - ViewController Functions

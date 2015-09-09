@@ -20,7 +20,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "UICallCell.h"
-#import "UILinphone.h"
 #import "LinphoneManager.h"
 #import "FastAddressBook.h"
 #import "Utils.h"

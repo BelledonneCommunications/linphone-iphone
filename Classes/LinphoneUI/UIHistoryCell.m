@@ -54,10 +54,9 @@
 - (IBAction)onDetails:(id)event {
 	if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
 		// Go to History details view
-		HistoryDetailsViewController *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance] changeCurrentView:[HistoryDetailsViewController compositeViewDescription]
-												   push:TRUE],
-			HistoryDetailsViewController);
+		HistoryDetailsView *controller = DYNAMIC_CAST(
+			[[PhoneMainView instance] changeCurrentView:[HistoryDetailsView compositeViewDescription] push:TRUE],
+			HistoryDetailsView);
 		if (controller != nil) {
 			[controller setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
 		}

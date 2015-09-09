@@ -20,22 +20,25 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 /* These imports are here so that we can import PhoneMainView.h without bothering to import all the rest of the view headers */
-#import "AboutViewController.h"
-#import "ChatRoomViewController.h"
-#import "ChatViewController.h"
-#import "ContactDetailsLabelViewController.h"
-#import "ContactDetailsViewController.h"
-#import "ContactsViewController.h"
-#import "DialerViewController.h"
-#import "HistoryDetailsViewController.h"
-#import "HistoryViewController.h"
-#import "ImageViewController.h"
-#import "InCallViewController.h"
-#import "IncomingCallViewController.h"
-#import "OutgoingCallViewController.h"
-#import "SettingsViewController.h"
-#import "SideMenuViewController.h"
-#import "AssistantViewController.h"
+#import "StatusBarView.h"
+#import "TabBarView.h"
+
+#import "AboutView.h"
+#import "ChatConversationView.h"
+#import "ChatsListView.h"
+#import "ContactDetailsLabelView.h"
+#import "ContactDetailsView.h"
+#import "ContactsListView.h"
+#import "DialerView.h"
+#import "HistoryDetailsView.h"
+#import "HistoryListView.h"
+#import "ImageView.h"
+#import "CallView.h"
+#import "CallIncomingView.h"
+#import "CallOutgoingView.h"
+#import "SettingsView.h"
+#import "SideMenuView.h"
+#import "AssistantView.h"
 
 #import "DTAlertView.h"
 #import "DTActionSheet.h"
@@ -61,7 +64,7 @@
 }
 
 @property (nonatomic, strong) IBOutlet UIView *statusBarBG;
-@property (nonatomic, strong) IBOutlet UICompositeViewController *mainViewController;
+@property(nonatomic, strong) IBOutlet UICompositeView *mainViewController;
 
 @property (nonatomic, strong) NSString* name;
 @property (weak, readonly) UICompositeViewDescription *currentView;

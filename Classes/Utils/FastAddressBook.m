@@ -19,7 +19,7 @@
 
 #import "FastAddressBook.h"
 #import "LinphoneManager.h"
-#import "ContactsViewController.h"
+#import "ContactsListView.h"
 #import "Utils.h"
 
 @implementation FastAddressBook
