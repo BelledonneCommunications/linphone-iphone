@@ -160,17 +160,14 @@
 	// create lots of chat rooms...
 	LinphoneCore *lc = [LinphoneManager getLc];
 	for (int i = 0; i < 100; i++) {
-		LinphoneChatRoom *room =
-			linphone_core_get_chat_room_from_uri(lc, [[NSString stringWithFormat:@"%@ - %d", [self me], i] UTF8String]);
-		linphone_chat_room_send_message(room, "Hello");
+		linphone_core_get_chat_room_from_uri(lc, [[NSString stringWithFormat:@"%@ - %d", [self me], i] UTF8String]);
 	}
-
-	[tester waitForTimeInterval:5]; // wait for all messages to be delivered
 
 	NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
 	[tester tapViewWithAccessibilityLabel:@"Chat"];
 	NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
 
+	XCTAssertEqual([[self findTableView:@"ChatRoom list"] numberOfRowsInSection:0], 100);
 	// conversation loading MUST be less than 1 sec
 	XCTAssertLessThan(after - before, 1.);
 }
