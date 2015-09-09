@@ -58,7 +58,7 @@
 
 #pragma mark - Table View Controller
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return ms_list_size(linphone_core_get_proxy_config_list([LinphoneManager getLc])) > 1 ? 2 : 1;
+	return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
