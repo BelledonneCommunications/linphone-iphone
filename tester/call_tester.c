@@ -4909,6 +4909,9 @@ static void call_logs_migrate() {
 	int i = 0;
 	int incoming_count = 0, outgoing_count = 0, missed_count = 0, aborted_count = 0, decline_count = 0, video_enabled_count = 0;
 	
+	call_logs_read_from_config_file(laure->lc);
+	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 8);
+	
 	linphone_core_set_call_logs_database_path(laure->lc, logs_db);
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(laure->lc) == 8);
 	
@@ -4942,8 +4945,13 @@ static void call_logs_migrate() {
 	BC_ASSERT_TRUE(decline_count == 0);
 	BC_ASSERT_TRUE(video_enabled_count == 3);
 	
+	laure->lc->call_logs = ms_list_free_with_data(laure->lc->call_logs, (void (*)(void*))linphone_call_log_unref);
+	call_logs_read_from_config_file(laure->lc);
+	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 0);
+	
 	remove(logs_db);
 	ms_free(logs_db);
+	linphone_core_manager_destroy(laure);
 }
 
 static void call_logs_sqlite_storage() {
