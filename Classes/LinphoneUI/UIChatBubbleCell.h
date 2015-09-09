@@ -26,7 +26,7 @@
 #include "linphone/linphonecore.h"
 #import "FileTransferDelegate.h"
 
-@interface UIChatConversationCell : UITransparentTVCell {
+@interface UIChatBubbleCell : UITransparentTVCell {
 	LinphoneChatMessage *chat;
 }
 

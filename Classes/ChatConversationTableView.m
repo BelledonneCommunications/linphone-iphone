@@ -168,9 +168,9 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *kCellId = @"UIChatRoomCell";
-	UIChatConversationCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+	UIChatBubbleCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
-		cell = [[UIChatConversationCell alloc] initWithIdentifier:kCellId];
+		cell = [[UIChatBubbleCell alloc] initWithIdentifier:kCellId];
 	}
 
 	LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
@@ -209,7 +209,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	LinphoneChatMessage *message = ms_list_nth_data(self->messageList, (int)[indexPath row]);
-	return [UIChatConversationCell height:message width:[self.view frame].size.width];
+	return [UIChatBubbleCell height:message width:[self.view frame].size.width];
 }
 
 @end

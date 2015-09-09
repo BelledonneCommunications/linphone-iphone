@@ -236,6 +236,8 @@
 		634CEE151B6630DB00D7A921 /* status_disconnected_phone.png in Resources */ = {isa = PBXBuildFile; fileRef = 634CED901B6630DB00D7A921 /* status_disconnected_phone.png */; };
 		634CEE161B6630DB00D7A921 /* valid.png in Resources */ = {isa = PBXBuildFile; fileRef = 634CED911B6630DB00D7A921 /* valid.png */; };
 		634CEE171B6630DB00D7A921 /* voicemail.png in Resources */ = {isa = PBXBuildFile; fileRef = 634CED921B6630DB00D7A921 /* voicemail.png */; };
+		635173F91BA082A40095EB0A /* UIChatBubblePhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 635173F81BA082A40095EB0A /* UIChatBubblePhotoCell.m */; };
+		635173FB1BA083290095EB0A /* UIChatBubblePhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 635173FA1BA083290095EB0A /* UIChatBubblePhotoCell.xib */; };
 		635775251B6673EC00C8B704 /* HistoryDetailsTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */; };
 		636316D11A1DEBCB0009B839 /* AboutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutView.xib */; };
 		636316D41A1DEC650009B839 /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsView.xib */; };
@@ -245,7 +247,7 @@
 		639CEAFD1A1DF4D9004DE38F /* StatusBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEAFF1A1DF4D9004DE38F /* StatusBarView.xib */; };
 		639CEB001A1DF4E4004DE38F /* UIHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB021A1DF4E4004DE38F /* UIHistoryCell.xib */; };
 		639CEB031A1DF4EB004DE38F /* UICompositeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB051A1DF4EB004DE38F /* UICompositeView.xib */; };
-		639CEB061A1DF4F1004DE38F /* UIChatConversationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB081A1DF4F1004DE38F /* UIChatConversationCell.xib */; };
+		639CEB061A1DF4F1004DE38F /* UIChatBubbleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB081A1DF4F1004DE38F /* UIChatBubbleCell.xib */; };
 		639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */; };
 		63AADBE81B6A0FF200AA16FD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC41B6A0FF200AA16FD /* Localizable.strings */; };
 		63AADBE91B6A0FF200AA16FD /* hold.wav in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC91B6A0FF200AA16FD /* hold.wav */; };
@@ -382,7 +384,7 @@
 		D381881115FE3F0B00C3EDCA /* UICallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881415FE3F0B00C3EDCA /* UICallCell.xib */; };
 		D381881915FE3FCA00C3EDCA /* CallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881C15FE3FCA00C3EDCA /* CallView.xib */; };
 		D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
-		D3A8BB7015A6C7D500F96BE5 /* UIChatConversationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A8BB6F15A6C7D500F96BE5 /* UIChatConversationCell.m */; };
+		D3A8BB7015A6C7D500F96BE5 /* UIChatBubbleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleCell.m */; };
 		D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
 		D3D5126C160B3A8E00946DF8 /* AssistantSubviews.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D5126A160B3A8E00946DF8 /* AssistantSubviews.xib */; };
 		D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
@@ -831,6 +833,9 @@
 		634CED901B6630DB00D7A921 /* status_disconnected_phone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = status_disconnected_phone.png; sourceTree = "<group>"; };
 		634CED911B6630DB00D7A921 /* valid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = valid.png; sourceTree = "<group>"; };
 		634CED921B6630DB00D7A921 /* voicemail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voicemail.png; sourceTree = "<group>"; };
+		635173F71BA082A40095EB0A /* UIChatBubblePhotoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChatBubblePhotoCell.h; sourceTree = "<group>"; };
+		635173F81BA082A40095EB0A /* UIChatBubblePhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatBubblePhotoCell.m; sourceTree = "<group>"; };
+		635173FA1BA083290095EB0A /* UIChatBubblePhotoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIChatBubblePhotoCell.xib; sourceTree = "<group>"; };
 		635775231B6673EC00C8B704 /* HistoryDetailsTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsTableView.h; sourceTree = "<group>"; };
 		635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsTableView.m; sourceTree = "<group>"; };
 		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutView.xib; sourceTree = "<group>"; };
@@ -845,7 +850,7 @@
 		639CEAFE1A1DF4D9004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/StatusBarView.xib; sourceTree = "<group>"; };
 		639CEB011A1DF4E4004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIHistoryCell.xib; sourceTree = "<group>"; };
 		639CEB041A1DF4EB004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICompositeView.xib; sourceTree = "<group>"; };
-		639CEB071A1DF4F1004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatConversationCell.xib; sourceTree = "<group>"; };
+		639CEB071A1DF4F1004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatBubbleCell.xib; sourceTree = "<group>"; };
 		639CEB0A1A1DF4FA004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatCell.xib; sourceTree = "<group>"; };
 		639CEB0C1A1DF528004DE38F /* fr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UICallCell.strings; sourceTree = "<group>"; };
 		639CEB0D1A1DF52C004DE38F /* ru */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/UICallCell.strings; sourceTree = "<group>"; };
@@ -1008,8 +1013,8 @@
 		D380801215C299D0005BE9BC /* ColorSpaceUtilites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ColorSpaceUtilites.m; path = Utils/ColorSpaceUtilites.m; sourceTree = "<group>"; };
 		D3A55FBA15877E5E003FD403 /* UIContactCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIContactCell.h; sourceTree = "<group>"; };
 		D3A55FBB15877E5E003FD403 /* UIContactCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIContactCell.m; sourceTree = "<group>"; };
-		D3A8BB6E15A6C7D500F96BE5 /* UIChatConversationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChatConversationCell.h; sourceTree = "<group>"; };
-		D3A8BB6F15A6C7D500F96BE5 /* UIChatConversationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatConversationCell.m; sourceTree = "<group>"; };
+		D3A8BB6E15A6C7D500F96BE5 /* UIChatBubbleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChatBubbleCell.h; sourceTree = "<group>"; };
+		D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatBubbleCell.m; sourceTree = "<group>"; };
 		D3C6526515AC1A8F0092A874 /* UIEditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEditableTableViewCell.h; sourceTree = "<group>"; };
 		D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIEditableTableViewCell.m; sourceTree = "<group>"; };
 		D3EA53FB159850E80037DC6B /* LinphoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneManager.h; sourceTree = "<group>"; };
@@ -1113,7 +1118,7 @@
 		F0AF06FD1A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/CallIncomingView.strings; sourceTree = "<group>"; };
 		F0AF07011A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UICallCell.strings; sourceTree = "<group>"; };
 		F0AF07021A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UIChatCell.strings; sourceTree = "<group>"; };
-		F0AF07031A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UIChatConversationCell.strings; sourceTree = "<group>"; };
+		F0AF07031A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UIChatBubbleCell.strings; sourceTree = "<group>"; };
 		F0AF07041A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UICompositeView.strings; sourceTree = "<group>"; };
 		F0AF07051A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UIConferenceHeader.strings; sourceTree = "<group>"; };
 		F0AF07061A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/UIContactCell.strings; sourceTree = "<group>"; };
@@ -1394,12 +1399,15 @@
 				D381881415FE3F0B00C3EDCA /* UICallCell.xib */,
 				22AA8AFF13D83F6300B30535 /* UICamSwitch.h */,
 				22AA8B0013D83F6300B30535 /* UICamSwitch.m */,
+				D3A8BB6E15A6C7D500F96BE5 /* UIChatBubbleCell.h */,
+				D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleCell.m */,
+				639CEB081A1DF4F1004DE38F /* UIChatBubbleCell.xib */,
+				635173F71BA082A40095EB0A /* UIChatBubblePhotoCell.h */,
+				635173F81BA082A40095EB0A /* UIChatBubblePhotoCell.m */,
+				635173FA1BA083290095EB0A /* UIChatBubblePhotoCell.xib */,
 				D3EA540F159853750037DC6B /* UIChatCell.h */,
 				D3EA5410159853750037DC6B /* UIChatCell.m */,
 				639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */,
-				D3A8BB6E15A6C7D500F96BE5 /* UIChatConversationCell.h */,
-				D3A8BB6F15A6C7D500F96BE5 /* UIChatConversationCell.m */,
-				639CEB081A1DF4F1004DE38F /* UIChatConversationCell.xib */,
 				D31B4B1E159876C0002E6C72 /* UICompositeView.h */,
 				D31B4B1F159876C0002E6C72 /* UICompositeView.m */,
 				639CEB051A1DF4EB004DE38F /* UICompositeView.xib */,
@@ -1564,8 +1572,8 @@
 		630589DD1B4E810900EFAE36 /* TestsUI */ = {
 			isa = PBXGroup;
 			children = (
-				63058A0A1B4E81B700EFAE36 /* Info.plist */,
 				630589F21B4E816900EFAE36 /* KIF.xcodeproj */,
+				63058A0A1B4E81B700EFAE36 /* Info.plist */,
 				630589DE1B4E810900EFAE36 /* ChatTester.h */,
 				630589DF1B4E810900EFAE36 /* ChatTester.m */,
 				630589E01B4E810900EFAE36 /* ContactsTester.h */,
@@ -2340,7 +2348,7 @@
 				634CEDD31B6630DB00D7A921 /* history_all_default.png in Resources */,
 				634CEDE11B6630DB00D7A921 /* menu.png in Resources */,
 				634CEDAB1B6630DB00D7A921 /* call_video_start.png in Resources */,
-				639CEB061A1DF4F1004DE38F /* UIChatConversationCell.xib in Resources */,
+				639CEB061A1DF4F1004DE38F /* UIChatBubbleCell.xib in Resources */,
 				63AADBF71B6A0FF200AA16FD /* linphonerc-factory~ipad in Resources */,
 				634CEDD11B6630DB00D7A921 /* footer_dialer.png in Resources */,
 				D38187B915FE342200C3EDCA /* ContactDetailsView.xib in Resources */,
@@ -2437,6 +2445,7 @@
 				F0938159188E629800A55DFA /* iTunesArtwork in Resources */,
 				634CEDC11B6630DB00D7A921 /* conference_start.png in Resources */,
 				634CEDAD1B6630DB00D7A921 /* camera_selected.png in Resources */,
+				635173FB1BA083290095EB0A /* UIChatBubblePhotoCell.xib in Resources */,
 				634CEDE01B6630DB00D7A921 /* list_details_over.png in Resources */,
 				634CEDC61B6630DB00D7A921 /* contacts_sip_selected.png in Resources */,
 				63AADBF91B6A0FF200AA16FD /* msg.caf in Resources */,
@@ -2564,6 +2573,7 @@
 				D3ED3EA71587334E006C0DE4 /* HistoryListTableView.m in Sources */,
 				D3ED3EB81587392C006C0DE4 /* HistoryListView.m in Sources */,
 				D35497FE15875372000081D8 /* ContactsListView.m in Sources */,
+				635173F91BA082A40095EB0A /* UIChatBubblePhotoCell.m in Sources */,
 				D3549816158761D0000081D8 /* ContactsListTableView.m in Sources */,
 				D35498211587716B000081D8 /* StatusBarView.m in Sources */,
 				D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */,
@@ -2593,7 +2603,7 @@
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
 				D3F795D615A582810077328B /* ChatConversationView.m in Sources */,
 				D32B6E2915A5BC440033019F /* ChatConversationTableView.m in Sources */,
-				D3A8BB7015A6C7D500F96BE5 /* UIChatConversationCell.m in Sources */,
+				D3A8BB7015A6C7D500F96BE5 /* UIChatBubbleCell.m in Sources */,
 				D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */,
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableView.m in Sources */,
 				63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */,
@@ -2813,13 +2823,13 @@
 			name = UICompositeView.xib;
 			sourceTree = "<group>";
 		};
-		639CEB081A1DF4F1004DE38F /* UIChatConversationCell.xib */ = {
+		639CEB081A1DF4F1004DE38F /* UIChatBubbleCell.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				639CEB071A1DF4F1004DE38F /* Base */,
 				F0AF07031A24BA770086C9C1 /* ar */,
 			);
-			name = UIChatConversationCell.xib;
+			name = UIChatBubbleCell.xib;
 			sourceTree = "<group>";
 		};
 		639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */ = {

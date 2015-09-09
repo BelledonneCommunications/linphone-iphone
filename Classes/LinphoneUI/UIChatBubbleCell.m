@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "UIChatConversationCell.h"
+#import "UIChatBubbleCell.h"
 #import "Utils.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
@@ -26,7 +26,7 @@
 #import <AssetsLibrary/ALAssetRepresentation.h>
 #include "linphone/linphonecore.h"
 
-@implementation UIChatConversationCell {
+@implementation UIChatBubbleCell {
 	FileTransferDelegate *ftd;
 }
 
@@ -193,7 +193,7 @@ static UIFont *CELL_FONT = nil;
 	} else {
 		[messageText setHidden:FALSE];
 		if (text) {
-			NSString *nstext = [UIChatConversationCell decodeTextMessage:text];
+			NSString *nstext = [UIChatBubbleCell decodeTextMessage:text];
 
 			/* We need to use an attributed string here so that data detector don't mess
 			* with the text style. See http://stackoverflow.com/a/20669356 */
@@ -272,7 +272,7 @@ static UIFont *CELL_FONT = nil;
 	CGSize messageSize;
 	const char *url = linphone_chat_message_get_external_body_url(chat);
 	const char *text = linphone_chat_message_get_text(chat);
-	NSString *messageText = text ? [UIChatConversationCell decodeTextMessage:text] : @"";
+	NSString *messageText = text ? [UIChatBubbleCell decodeTextMessage:text] : @"";
 	if (url == nil && linphone_chat_message_get_file_transfer_information(chat) == NULL) {
 		if (CELL_FONT == nil) {
 			CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
@@ -309,7 +309,7 @@ static UIFont *CELL_FONT = nil;
 }
 
 + (CGFloat)height:(LinphoneChatMessage *)chatMessage width:(int)width {
-	return [UIChatConversationCell viewSize:chatMessage width:width].height;
+	return [UIChatBubbleCell viewSize:chatMessage width:width].height;
 }
 
 #pragma mark - View Functions
@@ -320,7 +320,7 @@ static UIFont *CELL_FONT = nil;
 		// Resize inner
 		CGRect innerFrame;
 		BOOL is_outgoing = linphone_chat_message_is_outgoing(chat);
-		innerFrame.size = [UIChatConversationCell viewSize:chat width:[self frame].size.width];
+		innerFrame.size = [UIChatBubbleCell viewSize:chat width:[self frame].size.width];
 		if (!is_outgoing) { // Inverted
 			innerFrame.origin.x = 0.0f;
 			innerFrame.origin.y = 0.0f;
@@ -442,7 +442,7 @@ static UIFont *CELL_FONT = nil;
 }
 #pragma mark - State changed handling
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
-	UIChatConversationCell *thiz = (__bridge UIChatConversationCell *)linphone_chat_message_get_user_data(msg);
+	UIChatBubbleCell *thiz = (__bridge UIChatBubbleCell *)linphone_chat_message_get_user_data(msg);
 	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
 	if (linphone_chat_message_get_file_transfer_information(msg) != NULL) {
 		if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
