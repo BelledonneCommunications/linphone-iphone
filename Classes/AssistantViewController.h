@@ -1,4 +1,4 @@
-/* WizardViewController.h
+/* AssistantViewController.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -22,32 +22,28 @@
 #import "UICompositeViewController.h"
 #import "TPKeyboardAvoidingScrollView.h"
 
-@interface WizardViewController : TPMultiLayoutViewController
-<UITextFieldDelegate,
-    UICompositeViewDelegate,
-    XMLRPCConnectionDelegate,
-    UIGestureRecognizerDelegate,
-    UIAlertViewDelegate>
-{
-    @private
-    UITextField *activeTextField;
-    UIView *currentView;
-    UIView *nextView;
-    NSMutableArray *historyViews;
+@interface AssistantViewController
+	: TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate,
+								   UIGestureRecognizerDelegate, UIAlertViewDelegate> {
+  @private
+	UITextField *activeTextField;
+	UIView *currentView;
+	UIView *nextView;
+	NSMutableArray *historyViews;
 }
 
 @property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;
 
-@property (nonatomic, strong) IBOutlet UIView *choiceView;
-@property (nonatomic, strong) IBOutlet UIView *createAccountView;
-@property (nonatomic, strong) IBOutlet UIView *connectAccountView;
-@property (nonatomic, strong) IBOutlet UIView *externalAccountView;
-@property (nonatomic, strong) IBOutlet UIView *validateAccountView;
-@property (strong, nonatomic) IBOutlet UIView *provisionedAccountView;
+@property(nonatomic, strong) IBOutlet UIView *choiceView;
+@property(nonatomic, strong) IBOutlet UIView *createAccountView;
+@property(nonatomic, strong) IBOutlet UIView *connectAccountView;
+@property(nonatomic, strong) IBOutlet UIView *externalAccountView;
+@property(nonatomic, strong) IBOutlet UIView *validateAccountView;
+@property(strong, nonatomic) IBOutlet UIView *provisionedAccountView;
 
-@property (nonatomic, strong) IBOutlet UIView *waitView;
+@property(nonatomic, strong) IBOutlet UIView *waitView;
 
-@property (nonatomic, strong) IBOutlet UIButton *backButton;
+@property(nonatomic, strong) IBOutlet UIButton *backButton;
 @property(nonatomic, strong) IBOutlet UIButton *createChoiceButton;
 @property(nonatomic, strong) IBOutlet UIButton *connectChoiceButton;
 @property(nonatomic, strong) IBOutlet UIButton *externalChoiceButton;
@@ -60,12 +56,12 @@
 
 @property(strong, nonatomic) IBOutlet UIButton *createAccountButton;
 
-@property (strong, nonatomic) IBOutlet UITextField *provisionedUsername;
-@property (strong, nonatomic) IBOutlet UITextField *provisionedPassword;
-@property (strong, nonatomic) IBOutlet UITextField *provisionedDomain;
+@property(strong, nonatomic) IBOutlet UITextField *provisionedUsername;
+@property(strong, nonatomic) IBOutlet UITextField *provisionedPassword;
+@property(strong, nonatomic) IBOutlet UITextField *provisionedDomain;
 
-@property (nonatomic, strong) IBOutlet UIImageView *choiceViewLogoImageView;
-@property (strong, nonatomic) IBOutlet UISegmentedControl *transportChooser;
+@property(nonatomic, strong) IBOutlet UIImageView *choiceViewLogoImageView;
+@property(strong, nonatomic) IBOutlet UISegmentedControl *transportChooser;
 
 - (void)reset;
 - (void)fillDefaultValues;

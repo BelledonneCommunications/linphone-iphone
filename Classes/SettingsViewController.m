@@ -651,7 +651,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"preview_preference"];
 	}
 	if ([lm lpConfigBoolForKey:@"hide_run_assistant_preference"]) {
-		[hiddenKeys addObject:@"wizard_button"];
+		[hiddenKeys addObject:@"assistant_button"];
 	}
 
 	if (!linphone_core_tunnel_available()) {
@@ -701,8 +701,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 															object:self];
 	}
 #endif
-	if ([key isEqual:@"wizard_button"]) {
-		[PhoneMainView.instance changeCurrentView:WizardViewController.compositeViewDescription];
+	if ([key isEqual:@"assistant_button"]) {
+		[PhoneMainView.instance changeCurrentView:AssistantViewController.compositeViewDescription];
 		return;
 	} else if ([key isEqual:@"clear_proxy_button"]) {
 		if (linphone_core_get_default_proxy_config(lc) == NULL) {

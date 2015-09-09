@@ -35,7 +35,7 @@
 #import "OutgoingCallViewController.h"
 #import "SettingsViewController.h"
 #import "SideMenuViewController.h"
-#import "WizardViewController.h"
+#import "AssistantViewController.h"
 
 #import "DTAlertView.h"
 #import "DTActionSheet.h"

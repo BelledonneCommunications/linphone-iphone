@@ -1,5 +1,5 @@
 
-/* WizardViewController.m
+/* AssistantViewController.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -18,7 +18,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "WizardViewController.h"
+#import "AssistantViewController.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "UITextField+DoneButton.h"
@@ -39,14 +39,14 @@ typedef enum _ViewElement {
 	ViewElement_Username_Error = 404
 } ViewElement;
 
-@implementation WizardViewController
+@implementation AssistantViewController
 
 #pragma mark - Lifecycle Functions
 
 - (id)init {
-	self = [super initWithNibName:@"WizardViewController" bundle:[NSBundle mainBundle]];
+	self = [super initWithNibName:@"AssistantViewController" bundle:[NSBundle mainBundle]];
 	if (self != nil) {
-		[[NSBundle mainBundle] loadNibNamed:@"WizardViews" owner:self options:nil];
+		[[NSBundle mainBundle] loadNibNamed:@"AssistantViews" owner:self options:nil];
 		historyViews = [[NSMutableArray alloc] init];
 		currentView = nil;
 	}
@@ -63,8 +63,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
 	if (compositeDescription == nil) {
-		compositeDescription = [[UICompositeViewDescription alloc] init:@"Wizard"
-																content:@"WizardViewController"
+		compositeDescription = [[UICompositeViewDescription alloc] init:@"Assistant"
+																content:@"AssistantViewController"
 															   stateBar:@"UIStateBar"
 																 tabBar:nil
 															 fullscreen:false
@@ -132,7 +132,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[(UITextField *)view setText:@""];
 	} else {
 		for (UIView *subview in view.subviews) {
-			[WizardViewController cleanTextField:subview];
+			[AssistantViewController cleanTextField:subview];
 		}
 	}
 }
@@ -153,7 +153,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 					lc, NULL, linphone_address_get_username(addr), linphone_proxy_config_get_domain(current_conf));
 				linphone_address_destroy(addr);
 				if (auth) {
-					LOGI(@"A proxy config was set up with the remote provisioning, skip wizard");
+					LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
 					[self onDialerBackClick:nil];
 				}
 			}
@@ -168,13 +168,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 			const char *domain = linphone_address_get_domain(default_addr);
 			const char *username = linphone_address_get_username(default_addr);
 			if (domain && strlen(domain) > 0) {
-				// UITextField* domainfield = [WizardViewController findTextField:ViewElement_Domain
+				// UITextField* domainfield = [AssistantViewController findTextField:ViewElement_Domain
 				// view:_externalAccountView];
 				[_provisionedDomain setText:[NSString stringWithUTF8String:domain]];
 			}
 
 			if (username && strlen(username) > 0 && username[0] != '?') {
-				// UITextField* userField = [WizardViewController findTextField:ViewElement_Username
+				// UITextField* userField = [AssistantViewController findTextField:ViewElement_Username
 				// view:_externalAccountView];
 				[_provisionedUsername setText:[NSString stringWithUTF8String:username]];
 			}
@@ -187,12 +187,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)resetTextFields {
-	[WizardViewController cleanTextField:_choiceView];
-	[WizardViewController cleanTextField:_createAccountView];
-	[WizardViewController cleanTextField:_connectAccountView];
-	[WizardViewController cleanTextField:_externalAccountView];
-	[WizardViewController cleanTextField:_validateAccountView];
-	[WizardViewController cleanTextField:_provisionedAccountView];
+	[AssistantViewController cleanTextField:_choiceView];
+	[AssistantViewController cleanTextField:_createAccountView];
+	[AssistantViewController cleanTextField:_connectAccountView];
+	[AssistantViewController cleanTextField:_externalAccountView];
+	[AssistantViewController cleanTextField:_validateAccountView];
+	[AssistantViewController cleanTextField:_provisionedAccountView];
 }
 
 - (void)reset {
@@ -221,7 +221,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if ([child tag] == tag) {
 			return (UITextField *)child;
 		} else {
-			UIView *o = [WizardViewController findView:tag view:child];
+			UIView *o = [AssistantViewController findView:tag view:child];
 			if (o)
 				return o;
 		}
@@ -230,14 +230,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (UITextField *)findTextField:(ViewElement)tag view:(UIView *)view {
-	UIView *aview = [WizardViewController findView:tag view:view];
+	UIView *aview = [AssistantViewController findView:tag view:view];
 	if ([aview isKindOfClass:[UITextField class]])
 		return (UITextField *)aview;
 	return nil;
 }
 
 + (UILabel *)findLabel:(ViewElement)tag view:(UIView *)view {
-	UIView *aview = [WizardViewController findView:tag view:view];
+	UIView *aview = [AssistantViewController findView:tag view:view];
 	if ([aview isKindOfClass:[UILabel class]])
 		return (UILabel *)aview;
 	return nil;
@@ -249,7 +249,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)changeView:(UIView *)view back:(BOOL)back animation:(BOOL)animation {
 
-	static BOOL placement_done = NO; // indicates if the button placement has been done in the wizard choice view
+	static BOOL placement_done = NO; // indicates if the button placement has been done in the assistant choice view
 
 	// Change toolbar buttons following view
 	_backButton.enabled = (view == _choiceView);
@@ -262,9 +262,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		// [ External Btn ]
 		// [ Remote Prov  ]
 
-		BOOL show_logo = [[LinphoneManager instance] lpConfigBoolForKey:@"show_wizard_logo_in_choice_view_preference"];
-		BOOL show_extern = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_custom_account"];
-		BOOL show_new = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_wizard_create_account"];
+		BOOL show_logo =
+			[[LinphoneManager instance] lpConfigBoolForKey:@"show_assistant_logo_in_choice_view_preference"];
+		BOOL show_extern = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_assistant_custom_account"];
+		BOOL show_new = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_assistant_create_account"];
 
 		if (!placement_done) {
 			// visibility
@@ -422,7 +423,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   normalizedUserName, sizeof(normalizedUserName));
 	linphone_address_set_username(linphoneAddress, normalizedUserName);
 	linphone_address_set_domain(
-		linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] UTF8String]);
+		linphoneAddress,
+		[[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"assistant"] UTF8String]);
 	NSString *uri = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphoneAddress)];
 	NSString *scheme = [NSString stringWithUTF8String:linphone_address_get_scheme(linphoneAddress)];
 	return [uri substringFromIndex:[scheme length] + 1];
@@ -434,7 +436,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LOGI(@"XMLRPC check_account %@", username);
 
 	NSURL *URL =
-		[NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
+		[NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"assistant"]];
 	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
 	[request setMethod:@"check_account" withParameters:[NSArray arrayWithObjects:username, nil]];
 
@@ -449,7 +451,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LOGI(@"XMLRPC create_account_with_useragent %@ %@ %@ %@", identity, password, email, useragent);
 
 	NSURL *URL =
-		[NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
+		[NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"assistant"]];
 	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
 	[request setMethod:@"create_account_with_useragent"
 		withParameters:[NSArray arrayWithObjects:identity, password, email, useragent, nil]];
@@ -464,7 +466,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LOGI(@"XMLRPC check_account_validated %@", identity);
 
 	NSURL *URL =
-		[NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"wizard"]];
+		[NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"assistant"]];
 	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
 	[request setMethod:@"check_account_validated" withParameters:[NSArray arrayWithObjects:identity, nil]];
 
@@ -479,45 +481,45 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)registrationUpdate:(LinphoneRegistrationState)state
 				  forProxy:(LinphoneProxyConfig *)proxy
 				   message:(NSString *)message {
-	// in wizard we only care about ourself
+	// in assistant we only care about ourself
 	if (proxy != linphone_core_get_default_proxy_config([LinphoneManager getLc])) {
 		return;
 	}
 
 	switch (state) {
-	case LinphoneRegistrationOk: {
-		_waitView.hidden = true;
-		[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
-		break;
-	}
-	case LinphoneRegistrationNone:
-	case LinphoneRegistrationCleared: {
-		_waitView.hidden = true;
-		break;
-	}
-	case LinphoneRegistrationFailed: {
-		_waitView.hidden = true;
-		if ([message isEqualToString:@"Forbidden"]) {
-			message = NSLocalizedString(@"Incorrect username or password.", nil);
+		case LinphoneRegistrationOk: {
+			_waitView.hidden = true;
+			[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
+			break;
 		}
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
-														message:message
-													   delegate:nil
-											  cancelButtonTitle:@"OK"
-											  otherButtonTitles:nil];
-		[alert show];
-		break;
-	}
-	case LinphoneRegistrationProgress: {
-		_waitView.hidden = false;
-		break;
-	}
-	default:
-		break;
+		case LinphoneRegistrationNone:
+		case LinphoneRegistrationCleared: {
+			_waitView.hidden = true;
+			break;
+		}
+		case LinphoneRegistrationFailed: {
+			_waitView.hidden = true;
+			if ([message isEqualToString:@"Forbidden"]) {
+				message = NSLocalizedString(@"Incorrect username or password.", nil);
+			}
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
+															message:message
+														   delegate:nil
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+			[alert show];
+			break;
+		}
+		case LinphoneRegistrationProgress: {
+			_waitView.hidden = false;
+			break;
+		}
+		default:
+			break;
 	}
 }
 
-- (void)loadWizardConfig:(NSString *)rcFilename {
+- (void)loadAssistantConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
 	linphone_core_set_provisioning_uri([LinphoneManager getLc],
 									   [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
@@ -529,7 +531,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_enable_video_preview([LinphoneManager getLc], FALSE);
 	[[LinphoneManager instance] resetLinphoneCore];
 	linphone_core_enable_video_preview([LinphoneManager getLc], hasPreview);
-	// we will set the new default proxy config in the wizard
+	// we will set the new default proxy config in the assistant
 	linphone_core_set_default_proxy_config([LinphoneManager getLc], NULL);
 }
 
@@ -564,7 +566,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 
 		if (!isValidUsername) {
-			UILabel *error = [WizardViewController findLabel:ViewElement_Username_Error view:_contentView];
+			UILabel *error = [AssistantViewController findLabel:ViewElement_Username_Error view:_contentView];
 
 			// show error with fade animation
 			[error setText:[NSString stringWithFormat:NSLocalizedString(@"Illegal character in %@: %@", nil),
@@ -590,7 +592,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return YES;
 }
 - (void)hideError:(NSTimer *)timer {
-	UILabel *error_label = [WizardViewController findLabel:ViewElement_Username_Error view:_contentView];
+	UILabel *error_label = [AssistantViewController findLabel:ViewElement_Username_Error view:_contentView];
 	if (error_label) {
 		[UIView animateWithDuration:0.3
 			animations:^{
@@ -618,21 +620,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onCreateChoiceClick:(id)sender {
 	nextView = _createAccountView;
-	[self loadWizardConfig:@"wizard_linphone_create.rc"];
+	[self loadAssistantConfig:@"assistant_linphone_create.rc"];
 }
 
 - (IBAction)onConnectChoiceClick:(id)sender {
 	nextView = _connectAccountView;
-	[self loadWizardConfig:@"wizard_linphone_existing.rc"];
+	[self loadAssistantConfig:@"assistant_linphone_existing.rc"];
 }
 
 - (IBAction)onExternalChoiceClick:(id)sender {
 	nextView = _externalAccountView;
-	[self loadWizardConfig:@"wizard_external_sip.rc"];
+	[self loadAssistantConfig:@"assistant_external_sip.rc"];
 }
 
 - (IBAction)onCheckValidationClick:(id)sender {
-	NSString *username = [WizardViewController findTextField:ViewElement_Username view:_contentView].text;
+	NSString *username = [AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
 	NSString *identity = [self identityFromUsername:username];
 	[self checkAccountValidation:identity];
 }
@@ -712,17 +714,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onSignInExternalClick:(id)sender {
-	NSString *username = [WizardViewController findTextField:ViewElement_Username view:_contentView].text;
-	NSString *password = [WizardViewController findTextField:ViewElement_Password view:_contentView].text;
-	NSString *domain = [WizardViewController findTextField:ViewElement_Domain view:_contentView].text;
+	NSString *username = [AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
+	NSString *password = [AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
+	NSString *domain = [AssistantViewController findTextField:ViewElement_Domain view:_contentView].text;
 	NSString *transport = [_transportChooser titleForSegmentAtIndex:_transportChooser.selectedSegmentIndex];
 
 	[self verificationSignInWithUsername:username password:password domain:domain withTransport:transport];
 }
 
 - (IBAction)onSignInClick:(id)sender {
-	NSString *username = [WizardViewController findTextField:ViewElement_Username view:_contentView].text;
-	NSString *password = [WizardViewController findTextField:ViewElement_Password view:_contentView].text;
+	NSString *username = [AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
+	NSString *password = [AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
 
 	// domain and server will be configured from the default proxy values
 	[self verificationSignInWithUsername:username password:password domain:nil withTransport:nil];
@@ -733,8 +735,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 							   password2:(NSString *)password2
 								   email:(NSString *)email {
 	NSMutableString *errors = [NSMutableString string];
-	NSInteger username_length = [[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"wizard"];
-	NSInteger password_length = [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"wizard"];
+	NSInteger username_length =
+		[[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"assistant"];
+	NSInteger password_length =
+		[[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"assistant"];
 
 	if ([username length] < username_length) {
 		[errors
@@ -774,11 +778,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
-	UITextField *username_tf = [WizardViewController findTextField:ViewElement_Username view:_contentView];
+	UITextField *username_tf = [AssistantViewController findTextField:ViewElement_Username view:_contentView];
 	NSString *username = username_tf.text;
-	NSString *password = [WizardViewController findTextField:ViewElement_Password view:_contentView].text;
-	NSString *password2 = [WizardViewController findTextField:ViewElement_Password2 view:_contentView].text;
-	NSString *email = [WizardViewController findTextField:ViewElement_Email view:_contentView].text;
+	NSString *password = [AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
+	NSString *password2 = [AssistantViewController findTextField:ViewElement_Password2 view:_contentView].text;
+	NSString *email = [AssistantViewController findTextField:ViewElement_Email view:_contentView].text;
 
 	if ([self verificationRegisterWithUsername:username password:password password2:password2 email:email]) {
 		username = [username lowercaseString];
@@ -843,28 +847,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_waitView.hidden = true;
 
 	switch (status) {
-	case LinphoneConfiguringSuccessful:
-		if (nextView == nil) {
-			[self fillDefaultValues];
-		} else {
-			[self changeView:nextView back:false animation:TRUE];
-			nextView = nil;
+		case LinphoneConfiguringSuccessful:
+			if (nextView == nil) {
+				[self fillDefaultValues];
+			} else {
+				[self changeView:nextView back:false animation:TRUE];
+				nextView = nil;
+			}
+			break;
+		case LinphoneConfiguringFailed: {
+			NSString *error_message = [notif.userInfo valueForKey:@"message"];
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Provisioning Load error", nil)
+															message:error_message
+														   delegate:nil
+												  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+												  otherButtonTitles:nil];
+			[alert show];
+			break;
 		}
-		break;
-	case LinphoneConfiguringFailed: {
-		NSString *error_message = [notif.userInfo valueForKey:@"message"];
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Provisioning Load error", nil)
-														message:error_message
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-											  otherButtonTitles:nil];
-		[alert show];
-		break;
-	}
 
-	case LinphoneConfiguringSkipped:
-	default:
-		break;
+		case LinphoneConfiguringSkipped:
+		default:
+			break;
 	}
 }
 
@@ -902,19 +906,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 									 otherButtonTitles:nil, nil];
 				[errorView show];
 			} else {
-				NSString *username = [WizardViewController findTextField:ViewElement_Username view:_contentView].text;
-				NSString *password = [WizardViewController findTextField:ViewElement_Password view:_contentView].text;
-				NSString *email = [WizardViewController findTextField:ViewElement_Email view:_contentView].text;
+				NSString *username =
+					[AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
+				NSString *password =
+					[AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
+				NSString *email = [AssistantViewController findTextField:ViewElement_Email view:_contentView].text;
 				NSString *identity = [self identityFromUsername:username];
 				[self createAccount:identity password:password email:email];
 			}
 		} else if ([[request method] isEqualToString:@"create_account_with_useragent"]) {
 			if ([response.object isEqualToNumber:[NSNumber numberWithInt:0]]) {
-				NSString *username = [WizardViewController findTextField:ViewElement_Username view:_contentView].text;
-				NSString *password = [WizardViewController findTextField:ViewElement_Password view:_contentView].text;
+				NSString *username =
+					[AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
+				NSString *password =
+					[AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
 				[self changeView:_validateAccountView back:FALSE animation:TRUE];
-				[WizardViewController findTextField:ViewElement_Username view:_contentView].text = username;
-				[WizardViewController findTextField:ViewElement_Password view:_contentView].text = password;
+				[AssistantViewController findTextField:ViewElement_Username view:_contentView].text = username;
+				[AssistantViewController findTextField:ViewElement_Password view:_contentView].text = password;
 			} else {
 				UIAlertView *errorView = [[UIAlertView alloc]
 						initWithTitle:NSLocalizedString(@"Account creation issue", nil)
@@ -926,8 +934,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}
 		} else if ([[request method] isEqualToString:@"check_account_validated"]) {
 			if ([response.object isEqualToNumber:[NSNumber numberWithInt:1]]) {
-				NSString *username = [WizardViewController findTextField:ViewElement_Username view:_contentView].text;
-				NSString *password = [WizardViewController findTextField:ViewElement_Password view:_contentView].text;
+				NSString *username =
+					[AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
+				NSString *password =
+					[AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
 				[self addProxyConfig:username password:password domain:nil withTransport:nil];
 			} else {
 				UIAlertView *errorView =

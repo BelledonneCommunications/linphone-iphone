@@ -1,15 +1,15 @@
 //
-//  WizardTester.m
+//  AssistantTester.m
 //  linphone
 //
 //  Created by Guillaume on 17/01/2015.
 //
 //
 
-#import "WizardTester.h"
+#import "AssistantTester.h"
 #import <KIF/KIF.h>
 
-@implementation WizardTester
+@implementation AssistantTester
 
 - (void)beforeEach {
 	[super beforeEach];
@@ -18,8 +18,8 @@
 	[tester tapViewWithAccessibilityLabel:@"Settings"];
 	[tester tapViewWithAccessibilityLabel:@"Run assistant"];
 	[tester waitForTimeInterval:0.5];
-	if ([tester tryFindingViewWithAccessibilityLabel:@"Launch Wizard" error:nil]) {
-		[tester tapViewWithAccessibilityLabel:@"Launch Wizard"];
+	if ([tester tryFindingViewWithAccessibilityLabel:@"Launch Assistant" error:nil]) {
+		[tester tapViewWithAccessibilityLabel:@"Launch Assistant"];
 		[tester waitForTimeInterval:0.5];
 	}
 }
@@ -122,7 +122,7 @@
 			[tester fail];
 		} else {
 			[tester tapViewWithAccessibilityLabel:@"OK"];	 // alertview
-			[tester tapViewWithAccessibilityLabel:@"Cancel"]; // cancel wizard
+			[tester tapViewWithAccessibilityLabel:@"Cancel"]; // cancel assistant
 		}
 	} else {
 		[tester fail];

@@ -41,7 +41,7 @@
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Assistant", nil)
 											  tapBlock:^() {
 												[PhoneMainView.instance
-													changeCurrentView:WizardViewController.compositeViewDescription
+													changeCurrentView:AssistantViewController.compositeViewDescription
 																 push:NO
 															 animated:NO];
 											  }]];

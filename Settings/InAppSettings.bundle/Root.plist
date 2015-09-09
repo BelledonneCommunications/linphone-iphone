@@ -12,7 +12,7 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>wizard_button</string>
+			<string>assistant_button</string>
 			<key>Title</key>
 			<string>Run assistant</string>
 			<key>Type</key>

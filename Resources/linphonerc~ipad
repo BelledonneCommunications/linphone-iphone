@@ -62,8 +62,8 @@ enable_log_collect=0
 [default_values]
 reg_expires=600
 
-[wizard]
-service_url=https://www.linphone.org/wizard.php
+[assistant]
+service_url=https://www.linphone.org/assistant.php
 domain=sip.linphone.org
 proxy=sip.linphone.org
 password_length=6

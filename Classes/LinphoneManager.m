@@ -1896,7 +1896,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 		}
 		if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"]) {
 			linphone_address_set_domain(
-				addr, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
+				addr, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"assistant"]
 						  cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		}
 

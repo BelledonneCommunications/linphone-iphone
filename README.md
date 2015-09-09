@@ -123,7 +123,7 @@ MainStoryboard
                             #--> tabBar
 
 
-When the application is started, the phoneMainView gets asked to transition to the Dialer view or the Wizard view.
+When the application is started, the phoneMainView gets asked to transition to the Dialer view or the Assistant view.
 PhoneMainView exposes the -changeCurrentView: method, which will setup its
 Any Linphone view is actually presented in the UICompositeViewController, with or without a stateBar and tabBar.
 
