@@ -34,9 +34,10 @@ typedef enum _ViewElement {
 	ViewElement_Password2 = 102,
 	ViewElement_Email = 103,
 	ViewElement_Domain = 104,
+	ViewElement_Transport = 105,
 	ViewElement_Label = 200,
 	ViewElement_Error = 201,
-	ViewElement_Username_Error = 404
+	ViewElement_Username_Error = 404,
 } ViewElement;
 
 @implementation AssistantViewController
@@ -88,7 +89,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 												 name:kLinphoneConfiguringStateUpdate
 											   object:nil];
 
-	[self changeView:_choiceView back:FALSE animation:FALSE];
+	[self changeView:_welcomeView back:FALSE animation:FALSE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -98,30 +99,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
-	// By default select TCP
-	_transportChooser.selectedSegmentIndex = 1;
-
 	if ([LinphoneManager runningOnIpad]) {
-		[LinphoneUtils adjustFontSize:_choiceView mult:2.22f];
+		[LinphoneUtils adjustFontSize:_welcomeView mult:2.22f];
 		[LinphoneUtils adjustFontSize:_createAccountView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_connectAccountView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_externalAccountView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_validateAccountView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_provisionedAccountView mult:2.22f];
+		[LinphoneUtils adjustFontSize:_linphoneLoginView mult:2.22f];
+		[LinphoneUtils adjustFontSize:_loginView mult:2.22f];
+		[LinphoneUtils adjustFontSize:_createAccountActivationView mult:2.22f];
+		[LinphoneUtils adjustFontSize:_remoteProvisionningView mult:2.22f];
 	}
+}
 
-	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number"];
-	_createUsernameLabel.text =
-		usePhoneNumber ? NSLocalizedString(@"PHONE NUMBER", nil) : NSLocalizedString(@"USERNAME", nil);
-	for (UITextField *text in
-		 [NSArray arrayWithObjects:_provisionedUsername, _createUsername, _connectUsername, _externalUsername, nil]) {
-		if (usePhoneNumber) {
-			text.keyboardType = UIKeyboardTypePhonePad;
-			[text addDoneButton];
-		} else {
-			text.keyboardType = UIKeyboardTypeDefault;
-		}
+- (void)displayUsernameAsPhoneOrUsername {
+	BOOL usePhoneNumber = [LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number"];
+
+	NSString *label = usePhoneNumber ? NSLocalizedString(@"PHONE NUMBER", nil) : NSLocalizedString(@"USERNAME", nil);
+	[self findLabel:ViewElement_Username].text = label;
+
+	UITextField *text = [self findTextField:ViewElement_Username];
+	if (usePhoneNumber) {
+		text.keyboardType = UIKeyboardTypePhonePad;
+		[text addDoneButton];
+	} else {
+		text.keyboardType = UIKeyboardTypeDefault;
 	}
 }
 
@@ -168,31 +167,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 			const char *domain = linphone_address_get_domain(default_addr);
 			const char *username = linphone_address_get_username(default_addr);
 			if (domain && strlen(domain) > 0) {
-				// UITextField* domainfield = [AssistantViewController findTextField:ViewElement_Domain
-				// view:_externalAccountView];
-				[_provisionedDomain setText:[NSString stringWithUTF8String:domain]];
+				[self findTextField:ViewElement_Domain].text = [NSString stringWithUTF8String:domain];
 			}
-
 			if (username && strlen(username) > 0 && username[0] != '?') {
-				// UITextField* userField = [AssistantViewController findTextField:ViewElement_Username
-				// view:_externalAccountView];
-				[_provisionedUsername setText:[NSString stringWithUTF8String:username]];
+				[self findTextField:ViewElement_Username].text = [NSString stringWithUTF8String:username];
 			}
 		}
 	}
 
-	[self changeView:_provisionedAccountView back:FALSE animation:TRUE];
+	[self changeView:_remoteProvisionningView back:FALSE animation:TRUE];
 
 	linphone_proxy_config_destroy(default_conf);
 }
 
 - (void)resetTextFields {
-	[AssistantViewController cleanTextField:_choiceView];
+	[AssistantViewController cleanTextField:_welcomeView];
 	[AssistantViewController cleanTextField:_createAccountView];
-	[AssistantViewController cleanTextField:_connectAccountView];
-	[AssistantViewController cleanTextField:_externalAccountView];
-	[AssistantViewController cleanTextField:_validateAccountView];
-	[AssistantViewController cleanTextField:_provisionedAccountView];
+	[AssistantViewController cleanTextField:_linphoneLoginView];
+	[AssistantViewController cleanTextField:_loginView];
+	[AssistantViewController cleanTextField:_createAccountActivationView];
+	[AssistantViewController cleanTextField:_remoteProvisionningView];
 }
 
 - (void)reset {
@@ -212,16 +206,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_set_stun_server(lc, NULL);
 	linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
 	[self resetTextFields];
-	[self changeView:_choiceView back:FALSE animation:FALSE];
+	[self changeView:_welcomeView back:FALSE animation:FALSE];
 	_waitView.hidden = TRUE;
 }
 
-+ (UIView *)findView:(ViewElement)tag view:(UIView *)view {
+- (UIView *)findView:(ViewElement)tag inView:view ofType:(Class)type {
 	for (UIView *child in [view subviews]) {
-		if ([child tag] == tag) {
-			return (UITextField *)child;
+		if (child.tag == tag) {
+			return child;
 		} else {
-			UIView *o = [AssistantViewController findView:tag view:child];
+			UIView *o = [self findView:tag inView:child ofType:type];
 			if (o)
 				return o;
 		}
@@ -229,18 +223,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return nil;
 }
 
-+ (UITextField *)findTextField:(ViewElement)tag view:(UIView *)view {
-	UIView *aview = [AssistantViewController findView:tag view:view];
-	if ([aview isKindOfClass:[UITextField class]])
-		return (UITextField *)aview;
-	return nil;
+- (UITextField *)findTextField:(ViewElement)tag {
+	return (UITextField *)[self findView:tag inView:self.contentView ofType:[UITextField class]];
 }
 
-+ (UILabel *)findLabel:(ViewElement)tag view:(UIView *)view {
-	UIView *aview = [AssistantViewController findView:tag view:view];
-	if ([aview isKindOfClass:[UILabel class]])
-		return (UILabel *)aview;
-	return nil;
+- (UILabel *)findLabel:(ViewElement)tag {
+	return (UILabel *)[self findView:tag inView:self.contentView ofType:[UILabel class]];
 }
 
 - (void)clearHistory {
@@ -252,9 +240,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	static BOOL placement_done = NO; // indicates if the button placement has been done in the assistant choice view
 
 	// Change toolbar buttons following view
-	_backButton.enabled = (view == _choiceView);
+	_backButton.enabled = (view == _welcomeView);
 
-	if (view == _choiceView) {
+	[self displayUsernameAsPhoneOrUsername];
+
+	if (view == _welcomeView) {
 		// layout is this:
 		// [ Logo         ]
 		// [ Create Btn   ]
@@ -269,25 +259,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		if (!placement_done) {
 			// visibility
-			_choiceViewLogoImageView.hidden = !show_logo;
-			_externalChoiceButton.hidden = !show_extern;
-			_createChoiceButton.hidden = !show_new;
+			_welcomeLogoImage.hidden = !show_logo;
+			_gotoLoginButton.hidden = !show_extern;
+			_gotoCreateAccountButton.hidden = !show_new;
 
 			// placement
 			if (show_logo && show_new && !show_extern) {
 				// lower both remaining buttons
-				[_createChoiceButton setCenter:[_connectChoiceButton center]];
-				[_connectChoiceButton setCenter:[_externalChoiceButton center]];
+				[_gotoCreateAccountButton setCenter:[_gotoLinphoneLoginButton center]];
+				[_gotoLoginButton setCenter:[_gotoLoginButton center]];
 
 			} else if (!show_logo && !show_new && show_extern) {
 				// move up the extern button
-				[_externalChoiceButton setCenter:[_createChoiceButton center]];
+				[_gotoLoginButton setCenter:[_gotoCreateAccountButton center]];
 			}
 			placement_done = YES;
 		}
 		if (!show_extern && !show_logo) {
 			// no option to create or specify a custom account: go to connect view directly
-			view = _connectAccountView;
+			view = _linphoneLoginView;
 		}
 	}
 
@@ -566,7 +556,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 
 		if (!isValidUsername) {
-			UILabel *error = [AssistantViewController findLabel:ViewElement_Username_Error view:_contentView];
+			UILabel *error = [self findLabel:ViewElement_Username_Error];
 
 			// show error with fade animation
 			[error setText:[NSString stringWithFormat:NSLocalizedString(@"Illegal character in %@: %@", nil),
@@ -592,7 +582,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return YES;
 }
 - (void)hideError:(NSTimer *)timer {
-	UILabel *error_label = [AssistantViewController findLabel:ViewElement_Username_Error view:_contentView];
+	UILabel *error_label = [self findLabel:ViewElement_Username_Error];
 	if (error_label) {
 		[UIView animateWithDuration:0.3
 			animations:^{
@@ -618,28 +608,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[PhoneMainView instance] changeCurrentView:[DialerViewController compositeViewDescription]];
 }
 
-- (IBAction)onCreateChoiceClick:(id)sender {
+- (IBAction)onGotoCreateAccountClick:(id)sender {
 	nextView = _createAccountView;
 	[self loadAssistantConfig:@"assistant_linphone_create.rc"];
 }
 
-- (IBAction)onConnectChoiceClick:(id)sender {
-	nextView = _connectAccountView;
+- (IBAction)onGotoLinphoneLoginClick:(id)sender {
+	nextView = _linphoneLoginView;
 	[self loadAssistantConfig:@"assistant_linphone_existing.rc"];
 }
 
-- (IBAction)onExternalChoiceClick:(id)sender {
-	nextView = _externalAccountView;
+- (IBAction)onGotoLoginClick:(id)sender {
+	nextView = _loginView;
 	[self loadAssistantConfig:@"assistant_external_sip.rc"];
 }
 
-- (IBAction)onCheckValidationClick:(id)sender {
-	NSString *username = [AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
+- (IBAction)onCreateAccountActivationClick:(id)sender {
+	NSString *username = [self findTextField:ViewElement_Username].text;
 	NSString *identity = [self identityFromUsername:username];
 	[self checkAccountValidation:identity];
 }
 
-- (IBAction)onRemoteChoiceClick:(id)sender {
+- (IBAction)onGotoRemoteProvisionningClick:(id)sender {
 	UIAlertView *remoteInput = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter provisioning URL", @"")
 														  message:@""
 														 delegate:self
@@ -713,18 +703,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (IBAction)onSignInExternalClick:(id)sender {
-	NSString *username = [AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
-	NSString *password = [AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
-	NSString *domain = [AssistantViewController findTextField:ViewElement_Domain view:_contentView].text;
-	NSString *transport = [_transportChooser titleForSegmentAtIndex:_transportChooser.selectedSegmentIndex];
-
+- (IBAction)onLoginClick:(id)sender {
+	NSString *username = [self findTextField:ViewElement_Username].text;
+	NSString *password = [self findTextField:ViewElement_Password].text;
+	NSString *domain = [self findTextField:ViewElement_Domain].text;
+	UISegmentedControl *transportChooser =
+		(UISegmentedControl *)[self findView:ViewElement_Transport inView:_contentView ofType:UISegmentedControl.class];
+	NSString *transport = [transportChooser titleForSegmentAtIndex:transportChooser.selectedSegmentIndex];
 	[self verificationSignInWithUsername:username password:password domain:domain withTransport:transport];
 }
 
-- (IBAction)onSignInClick:(id)sender {
-	NSString *username = [AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
-	NSString *password = [AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
+- (IBAction)onLinphoneLoginClick:(id)sender {
+	NSString *username = [self findTextField:ViewElement_Username].text;
+	NSString *password = [self findTextField:ViewElement_Password].text;
 
 	// domain and server will be configured from the default proxy values
 	[self verificationSignInWithUsername:username password:password domain:nil withTransport:nil];
@@ -778,11 +769,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
-	UITextField *username_tf = [AssistantViewController findTextField:ViewElement_Username view:_contentView];
+	UITextField *username_tf = [self findTextField:ViewElement_Username];
 	NSString *username = username_tf.text;
-	NSString *password = [AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
-	NSString *password2 = [AssistantViewController findTextField:ViewElement_Password2 view:_contentView].text;
-	NSString *email = [AssistantViewController findTextField:ViewElement_Email view:_contentView].text;
+	NSString *password = [self findTextField:ViewElement_Password].text;
+	NSString *password2 = [self findTextField:ViewElement_Password2].text;
+	NSString *email = [self findTextField:ViewElement_Email].text;
 
 	if ([self verificationRegisterWithUsername:username password:password password2:password2 email:email]) {
 		username = [username lowercaseString];
@@ -792,9 +783,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (IBAction)onProvisionedLoginClick:(id)sender {
-	NSString *username = _provisionedUsername.text;
-	NSString *password = _provisionedPassword.text;
+- (IBAction)onRemoteProvisionningClick:(id)sender {
+	NSString *username = [self findTextField:ViewElement_Username].text;
+	NSString *password = [self findTextField:ViewElement_Password].text;
+	NSString *domain = [self findTextField:ViewElement_Domain].text;
 
 	NSMutableString *errors = [NSMutableString string];
 	if ([username length] == 0) {
@@ -812,7 +804,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[errorView show];
 	} else {
 		_waitView.hidden = false;
-		[self addProvisionedProxy:username withPassword:password withDomain:_provisionedDomain.text];
+		[self addProvisionedProxy:username withPassword:password withDomain:domain];
 	}
 }
 
@@ -906,23 +898,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 									 otherButtonTitles:nil, nil];
 				[errorView show];
 			} else {
-				NSString *username =
-					[AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
-				NSString *password =
-					[AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
-				NSString *email = [AssistantViewController findTextField:ViewElement_Email view:_contentView].text;
+				NSString *username = [self findTextField:ViewElement_Username].text;
+				NSString *password = [self findTextField:ViewElement_Password].text;
+				NSString *email = [self findTextField:ViewElement_Email].text;
 				NSString *identity = [self identityFromUsername:username];
 				[self createAccount:identity password:password email:email];
 			}
 		} else if ([[request method] isEqualToString:@"create_account_with_useragent"]) {
 			if ([response.object isEqualToNumber:[NSNumber numberWithInt:0]]) {
-				NSString *username =
-					[AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
-				NSString *password =
-					[AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
-				[self changeView:_validateAccountView back:FALSE animation:TRUE];
-				[AssistantViewController findTextField:ViewElement_Username view:_contentView].text = username;
-				[AssistantViewController findTextField:ViewElement_Password view:_contentView].text = password;
+				NSString *username = [self findTextField:ViewElement_Username].text;
+				NSString *password = [self findTextField:ViewElement_Password].text;
+				[self changeView:_createAccountActivationView back:FALSE animation:TRUE];
+				[self findTextField:ViewElement_Username].text = username;
+				[self findTextField:ViewElement_Password].text = password;
 			} else {
 				UIAlertView *errorView = [[UIAlertView alloc]
 						initWithTitle:NSLocalizedString(@"Account creation issue", nil)
@@ -934,10 +922,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}
 		} else if ([[request method] isEqualToString:@"check_account_validated"]) {
 			if ([response.object isEqualToNumber:[NSNumber numberWithInt:1]]) {
-				NSString *username =
-					[AssistantViewController findTextField:ViewElement_Username view:_contentView].text;
-				NSString *password =
-					[AssistantViewController findTextField:ViewElement_Password view:_contentView].text;
+				NSString *username = [self findTextField:ViewElement_Username].text;
+				NSString *password = [self findTextField:ViewElement_Password].text;
 				[self addProxyConfig:username password:password domain:nil withTransport:nil];
 			} else {
 				UIAlertView *errorView =
@@ -996,18 +982,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[LinphoneUtils buttonMultiViewApplyAttributes:attributes button:button];
 	}
 	view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
-}
-
-#pragma mark - UIGestureRecognizerDelegate Functions
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
-	if ([touch.view isKindOfClass:[UIButton class]]) {
-		/* we resign any keyboard that's displayed when a button is touched */
-		if ([LinphoneUtils findAndResignFirstResponder:currentView]) {
-			return NO;
-		}
-	}
-	return YES;
 }
 
 @end

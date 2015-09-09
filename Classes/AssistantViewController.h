@@ -22,9 +22,8 @@
 #import "UICompositeViewController.h"
 #import "TPKeyboardAvoidingScrollView.h"
 
-@interface AssistantViewController
-	: TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate,
-								   UIGestureRecognizerDelegate, UIAlertViewDelegate> {
+@interface AssistantViewController : TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate,
+																  XMLRPCConnectionDelegate, UIAlertViewDelegate> {
   @private
 	UITextField *activeTextField;
 	UIView *currentView;
@@ -32,36 +31,22 @@
 	NSMutableArray *historyViews;
 }
 
-@property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;
+@property(nonatomic, weak) IBOutlet TPKeyboardAvoidingScrollView *contentView;
+@property(nonatomic, weak) IBOutlet UIView *waitView;
+@property(nonatomic, weak) IBOutlet UIButton *backButton;
 
-@property(nonatomic, strong) IBOutlet UIView *choiceView;
-@property(nonatomic, strong) IBOutlet UIView *createAccountView;
-@property(nonatomic, strong) IBOutlet UIView *connectAccountView;
-@property(nonatomic, strong) IBOutlet UIView *externalAccountView;
-@property(nonatomic, strong) IBOutlet UIView *validateAccountView;
-@property(strong, nonatomic) IBOutlet UIView *provisionedAccountView;
+@property(nonatomic, weak) IBOutlet UIView *welcomeView;
+@property(nonatomic, weak) IBOutlet UIView *createAccountView;
+@property(nonatomic, weak) IBOutlet UIView *createAccountActivationView;
+@property(nonatomic, weak) IBOutlet UIView *linphoneLoginView;
+@property(nonatomic, weak) IBOutlet UIView *loginView;
+@property(weak, nonatomic) IBOutlet UIView *remoteProvisionningView;
 
-@property(nonatomic, strong) IBOutlet UIView *waitView;
-
-@property(nonatomic, strong) IBOutlet UIButton *backButton;
-@property(nonatomic, strong) IBOutlet UIButton *createChoiceButton;
-@property(nonatomic, strong) IBOutlet UIButton *connectChoiceButton;
-@property(nonatomic, strong) IBOutlet UIButton *externalChoiceButton;
-@property(strong, nonatomic) IBOutlet UIButton *remoteChoiceButton;
-
-@property(weak, nonatomic) IBOutlet UILabel *createUsernameLabel;
-@property(strong, nonatomic) IBOutlet UITextField *createUsername;
-@property(strong, nonatomic) IBOutlet UITextField *connectUsername;
-@property(strong, nonatomic) IBOutlet UITextField *externalUsername;
-
-@property(strong, nonatomic) IBOutlet UIButton *createAccountButton;
-
-@property(strong, nonatomic) IBOutlet UITextField *provisionedUsername;
-@property(strong, nonatomic) IBOutlet UITextField *provisionedPassword;
-@property(strong, nonatomic) IBOutlet UITextField *provisionedDomain;
-
-@property(nonatomic, strong) IBOutlet UIImageView *choiceViewLogoImageView;
-@property(strong, nonatomic) IBOutlet UISegmentedControl *transportChooser;
+@property(nonatomic, weak) IBOutlet UIImageView *welcomeLogoImage;
+@property(nonatomic, weak) IBOutlet UIButton *gotoCreateAccountButton;
+@property(nonatomic, weak) IBOutlet UIButton *gotoLinphoneLoginButton;
+@property(nonatomic, weak) IBOutlet UIButton *gotoLoginButton;
+@property(weak, nonatomic) IBOutlet UIButton *gotoRemoteProvisionningButton;
 
 - (void)reset;
 - (void)fillDefaultValues;
@@ -69,16 +54,15 @@
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onDialerBackClick:(id)sender;
 
-- (IBAction)onCreateChoiceClick:(id)sender;
-- (IBAction)onConnectChoiceClick:(id)sender;
-- (IBAction)onExternalChoiceClick:(id)sender;
-- (IBAction)onRemoteChoiceClick:(id)sender;
+- (IBAction)onGotoCreateAccountClick:(id)sender;
+- (IBAction)onGotoLinphoneLoginClick:(id)sender;
+- (IBAction)onGotoLoginClick:(id)sender;
+- (IBAction)onGotoRemoteProvisionningClick:(id)sender;
 
-- (IBAction)onCheckValidationClick:(id)sender;
-
-- (IBAction)onSignInClick:(id)sender;
-- (IBAction)onSignInExternalClick:(id)sender;
 - (IBAction)onCreateAccountClick:(id)sender;
-- (IBAction)onProvisionedLoginClick:(id)sender;
+- (IBAction)onCreateAccountActivationClick:(id)sender;
+- (IBAction)onLinphoneLoginClick:(id)sender;
+- (IBAction)onLoginClick:(id)sender;
+- (IBAction)onRemoteProvisionningClick:(id)sender;
 
 @end
