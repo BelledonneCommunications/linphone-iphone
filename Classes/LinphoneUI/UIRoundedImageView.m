@@ -8,6 +8,7 @@
 
 #import "UIRoundedImageView.h"
 #import <QuartzCore/QuartzCore.h>
+#import "Utils.h"
 
 @implementation UIRoundedImageView
 
@@ -25,6 +26,9 @@
 
 - (void)setImage:(UIImage *)image withRoundedRadius:(BOOL)rounded {
 	[super setImage:image];
+	if (image.size.width != image.size.height) {
+		LOGI(@"Image is not squared (%dx%d) - cropping it", image.size.width, image.size.height);
+	}
 	[self setRoundRadius:rounded];
 }
 

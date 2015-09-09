@@ -15,7 +15,7 @@
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <swipeGestureRecognizer direction="left" id="JRs-i1-zCl">
+        <swipeGestureRecognizer direction="left" id="JRs-i1-zCl" userLabel="OnLateralSwipe">
             <connections>
                 <action selector="onLateralSwipe:" destination="-1" id="5td-pZ-6Vc"/>
                 <outlet property="delegate" destination="-1" id="yhK-9x-aT0"/>
@@ -33,13 +33,16 @@
                             <rect key="frame" x="0.0" y="0.0" width="300" height="100"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="90B-Re-hmt" userLabel="backgroundColor">
+                                <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="90B-Re-hmt" userLabel="backgroundColor">
                                     <rect key="frame" x="0.0" y="0.0" width="300" height="100"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar.png" id="BNQ-7N-NGT" userLabel="avatarImage">
-                                    <rect key="frame" x="0.0" y="15" width="90" height="61"/>
+                                <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar.png" id="BNQ-7N-NGT" userLabel="avatarImage" customClass="UIRoundedImageView">
+                                    <rect key="frame" x="0.0" y="5" width="90" height="90"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="Kej-uL-ntg" appends="YES" id="eog-XV-xok"/>
+                                    </connections>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Joghn Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="XbU-2B-u1b" userLabel="nameLabel">
                                     <rect key="frame" x="98" y="15" width="194" height="31"/>
@@ -58,7 +61,7 @@
                             </subviews>
                             <gestureRecognizers/>
                             <connections>
-                                <outletCollection property="gestureRecognizers" destination="1kD-az-BAx" appends="YES" id="GzA-ju-Hpx"/>
+                                <outletCollection property="gestureRecognizers" destination="1kD-az-BAx" appends="YES" id="OGc-fj-HQy"/>
                             </connections>
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Ttt-1k-jAm">
@@ -89,7 +92,12 @@
             </connections>
             <point key="canvasLocation" x="815" y="194"/>
         </tableViewController>
-        <tapGestureRecognizer id="1kD-az-BAx">
+        <tapGestureRecognizer id="Kej-uL-ntg" userLabel="OnAvatarClicked">
+            <connections>
+                <action selector="onAvatarClick:" destination="-1" id="KyX-RA-m6A"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="1kD-az-BAx" userLabel="OnHeaderClicked">
             <connections>
                 <action selector="onHeaderClick:" destination="-1" id="yqn-58-lbb"/>
             </connections>

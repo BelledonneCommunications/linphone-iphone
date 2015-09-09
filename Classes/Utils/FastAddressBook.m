@@ -34,29 +34,6 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	return retString;
 }
 
-+ (UIImage *)squareImageCrop:(UIImage *)image {
-	UIImage *ret = nil;
-
-	// This calculates the crop area.
-
-	float originalWidth = image.size.width;
-	float originalHeight = image.size.height;
-
-	float edge = fminf(originalWidth, originalHeight);
-
-	float posX = (originalWidth - edge) / 2.0f;
-	float posY = (originalHeight - edge) / 2.0f;
-
-	CGRect cropSquare = CGRectMake(posX, posY, edge, edge);
-
-	CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], cropSquare);
-	ret = [UIImage imageWithCGImage:imageRef scale:image.scale orientation:image.imageOrientation];
-
-	CGImageRelease(imageRef);
-
-	return ret;
-}
-
 + (UIImage *)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail {
 	UIImage *retImage = nil;
 	if (contact && ABPersonHasImageData(contact)) {
@@ -70,7 +47,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	}
 	if (retImage.size.width != retImage.size.height) {
 		LOGW(@"Image is not square (%@): cropping it.", retImage.size);
-		retImage = [self squareImageCrop:retImage];
+		retImage = [retImage squareCrop];
 	}
 	return retImage;
 }

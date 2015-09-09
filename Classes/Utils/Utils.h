@@ -66,6 +66,12 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 @end
 
+@interface UIImage (squareCrop)
+
+- (UIImage *)squareCrop;
+
+@end
+
 @interface ContactDisplay : NSObject
 + (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact;
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr;

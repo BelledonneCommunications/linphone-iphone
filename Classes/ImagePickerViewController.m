@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#import <MobileCoreServices/UTCoreTypes.h>
+
 #import "ImagePickerViewController.h"
 #import "PhoneMainView.h"
 
@@ -159,6 +161,59 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[UIApplication sharedApplication]
 			setStatusBarStyle:UIStatusBarStyleBlackOpaque]; // Fix UIImagePickerController status bar style change
 	}
+}
+
++ (void)SelectImageFromDevice:(id<ImagePickerDelegate>)delegate
+				   atPosition:(CGRect)ipadPopoverPosition
+					   inView:(UIView *)view {
+	void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
+	  UICompositeViewDescription *description = [ImagePickerViewController compositeViewDescription];
+	  ImagePickerViewController *controller;
+	  if ([LinphoneManager runningOnIpad] && view) {
+		  controller =
+			  DYNAMIC_CAST([[PhoneMainView instance].mainViewController getCachedController:description.content],
+						   ImagePickerViewController);
+	  } else {
+		  controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:description push:TRUE],
+									ImagePickerViewController);
+	  }
+	  if (controller != nil) {
+		  controller.sourceType = type;
+
+		  // Displays a control that allows the user to choose picture or
+		  // movie capture, if both are available:
+		  controller.mediaTypes = [NSArray arrayWithObject:(NSString *)kUTTypeImage];
+
+		  // Hides the controls for moving & scaling pictures, or for
+		  // trimming movies. To instead show the controls, use YES.
+		  controller.allowsEditing = NO;
+		  controller.imagePickerDelegate = delegate;
+
+		  if ([LinphoneManager runningOnIpad] && view) {
+			  [controller.popoverController presentPopoverFromRect:ipadPopoverPosition
+															inView:view
+										  permittedArrowDirections:UIPopoverArrowDirectionAny
+														  animated:FALSE];
+		  }
+	  }
+	};
+
+	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source", nil)];
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		[sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
+							block:^() {
+							  block(UIImagePickerControllerSourceTypeCamera);
+							}];
+	}
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+		[sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
+							block:^() {
+							  block(UIImagePickerControllerSourceTypePhotoLibrary);
+							}];
+	}
+	[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+
+	[sheet showInView:[PhoneMainView instance].view];
 }
 
 @end

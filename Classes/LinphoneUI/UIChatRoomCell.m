@@ -159,8 +159,7 @@ static UIFont *CELL_FONT = nil;
 				messageText.hidden = YES;
 				[messageImageView startLoading];
 				__block LinphoneChatMessage *achat = chat;
-				[[LinphoneManager instance]
-						.photoLibrary assetForURL:imageUrl
+				[LinphoneManager.instance.photoLibrary assetForURL:imageUrl
 					resultBlock:^(ALAsset *asset) {
 					  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
 									 ^(void) {

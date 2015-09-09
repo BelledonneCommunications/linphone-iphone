@@ -36,4 +36,8 @@
 @property(nonatomic)           BOOL                                  allowsEditing;
 @property(nonatomic, readonly) UIPopoverController *popoverController;
 
++ (void)SelectImageFromDevice:(id<ImagePickerDelegate>)delegate
+				   atPosition:(CGRect)ipadPopoverPosition
+					   inView:(UIView *)view;
+
 @end

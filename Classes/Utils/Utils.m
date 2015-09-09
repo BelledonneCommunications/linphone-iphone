@@ -354,3 +354,30 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 }
 
 @end
+
+@implementation UIImage (squareCrop)
+
+- (UIImage *)squareCrop {
+	UIImage *ret = nil;
+
+	// This calculates the crop area.
+
+	float originalWidth = self.size.width;
+	float originalHeight = self.size.height;
+
+	float edge = fminf(originalWidth, originalHeight);
+
+	float posX = (originalWidth - edge) / 2.0f;
+	float posY = (originalHeight - edge) / 2.0f;
+
+	CGRect cropSquare = CGRectMake(posX, posY, edge, edge);
+
+	CGImageRef imageRef = CGImageCreateWithImageInRect([self CGImage], cropSquare);
+	ret = [UIImage imageWithCGImage:imageRef scale:self.scale orientation:self.imageOrientation];
+
+	CGImageRelease(imageRef);
+
+	return ret;
+}
+
+@end

@@ -21,7 +21,6 @@
 #import "PhoneMainView.h"
 #import "UILinphone.h"
 #import "Utils/FileTransferDelegate.h"
-#import <MobileCoreServices/UTCoreTypes.h>
 #import "UIChatRoomCell.h"
 
 @implementation ChatRoomViewController
@@ -461,56 +460,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 - (IBAction)onPictureClick:(id)event {
 	[messageField resignFirstResponder];
-
-	void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
-	  UICompositeViewDescription *description = [ImagePickerViewController compositeViewDescription];
-	  ImagePickerViewController *controller;
-	  if ([LinphoneManager runningOnIpad]) {
-		  controller =
-			  DYNAMIC_CAST([[PhoneMainView instance].mainViewController getCachedController:description.content],
-						   ImagePickerViewController);
-	  } else {
-		  controller = DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:description push:TRUE],
-									ImagePickerViewController);
-	  }
-	  if (controller != nil) {
-		  controller.sourceType = type;
-
-		  // Displays a control that allows the user to choose picture or
-		  // movie capture, if both are available:
-		  controller.mediaTypes = [NSArray arrayWithObject:(NSString *)kUTTypeImage];
-
-		  // Hides the controls for moving & scaling pictures, or for
-		  // trimming movies. To instead show the controls, use YES.
-		  controller.allowsEditing = NO;
-		  controller.imagePickerDelegate = self;
-
-		  if ([LinphoneManager runningOnIpad]) {
-			  CGRect rect = [self.messageView convertRect:[pictureButton frame] toView:self.view];
-			  [controller.popoverController presentPopoverFromRect:rect
-															inView:self.view
-										  permittedArrowDirections:UIPopoverArrowDirectionAny
-														  animated:FALSE];
-		  }
-	  }
-	};
-
-	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source", nil)];
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		[sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
-							block:^() {
-							  block(UIImagePickerControllerSourceTypeCamera);
-							}];
-	}
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-		[sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
-							block:^() {
-							  block(UIImagePickerControllerSourceTypePhotoLibrary);
-							}];
-	}
-	[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-
-	[sheet showInView:[PhoneMainView instance].view];
+	CGRect rect = [self.messageView convertRect:[pictureButton frame] toView:self.view];
+	[ImagePickerViewController SelectImageFromDevice:self atPosition:rect inView:self.view];
 }
 
 #pragma mark ChatRoomDelegate
