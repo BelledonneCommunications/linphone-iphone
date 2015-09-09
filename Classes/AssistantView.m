@@ -47,7 +47,7 @@ typedef enum _ViewElement {
 - (id)init {
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self != nil) {
-		[[NSBundle mainBundle] loadNibNamed:@"AssistantViews" owner:self options:nil];
+		[[NSBundle mainBundle] loadNibNamed:@"AssistantSubviews" owner:self options:nil];
 		historyViews = [[NSMutableArray alloc] init];
 		currentView = nil;
 	}
@@ -64,9 +64,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
 	if (compositeDescription == nil) {
-		compositeDescription = [[UICompositeViewDescription alloc] init:@"Assistant"
-																content:@"AssistantView"
-															   stateBar:@"StatusBarViewController"
+		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
+															   stateBar:StatusBarView.class
 																 tabBar:nil
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]

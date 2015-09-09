@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -8,14 +9,12 @@
             <connections>
                 <outlet property="createAccountActivationView" destination="101" id="cxQ-rX-4fA"/>
                 <outlet property="createAccountView" destination="44" id="70"/>
-                <outlet property="createUsername" destination="74" id="qzA-BS-SGt"/>
                 <outlet property="gotoCreateAccountButton" destination="36" id="bZf-lI-yJp"/>
                 <outlet property="gotoLoginButton" destination="39" id="uSY-cr-j4w"/>
                 <outlet property="gotoRemoteProvisionningButton" destination="Kbn-dL-C5h" id="pgT-y6-qKj"/>
                 <outlet property="linphoneLoginView" destination="52" id="9NX-6W-50g"/>
                 <outlet property="loginView" destination="56" id="bJH-N8-uPi"/>
                 <outlet property="remoteProvisionningView" destination="xVK-hL-6pe" id="kgd-JJ-OWw"/>
-                <outlet property="transportChooser" destination="Nrv-SM-lMf" id="7iR-aG-eQf"/>
                 <outlet property="welcomeView" destination="33" id="46a-AR-5mN"/>
             </connections>
         </placeholder>

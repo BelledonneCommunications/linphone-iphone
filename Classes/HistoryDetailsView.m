@@ -48,10 +48,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
 	if (compositeDescription == nil) {
-		compositeDescription = [[UICompositeViewDescription alloc] init:@"HistoryDetails"
-																content:@"HistoryDetailsView"
-															   stateBar:@"StatusBarViewController"
-																 tabBar:@"TabBarViewController"
+		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
+															   stateBar:StatusBarView.class
+																 tabBar:TabBarView.class
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]
 														   portraitMode:true];

@@ -27,7 +27,6 @@
 @interface UICompositeViewDescription : NSObject {
 }
 
-@property(strong) NSString *name;
 @property(strong) NSString *content;
 @property(strong) NSString *stateBar;
 @property(strong) NSString *tabBar;
@@ -38,10 +37,9 @@
 
 - (id)copy;
 - (BOOL)equal:(UICompositeViewDescription *)description;
-- (id)init:(NSString *)name
-		  content:(NSString *)content
-		 stateBar:(NSString *)stateBar
-		   tabBar:(NSString *)tabBar
+- (id)init:(Class)content
+		 stateBar:(Class)stateBar
+		   tabBar:(Class)tabBar
 	   fullscreen:(BOOL)fullscreen
 	landscapeMode:(BOOL)landscapeMode
 	 portraitMode:(BOOL)portraitMode;

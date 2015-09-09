@@ -70,10 +70,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
 	if (compositeDescription == nil) {
-		compositeDescription = [[UICompositeViewDescription alloc] init:@"ChatRoom"
-																content:@"ChatConversationView"
-															   stateBar:@"StatusBarViewController"
-																 tabBar:@"TabBarViewController"
+		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
+															   stateBar:StatusBarView.class
+																 tabBar:TabBarView.class
 															 fullscreen:false
 														  landscapeMode:false
 														   portraitMode:true];

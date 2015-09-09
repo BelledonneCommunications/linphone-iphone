@@ -57,7 +57,7 @@ static UIFont *CELL_FONT = nil;
 
 - (id)initWithIdentifier:(NSString *)identifier {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
-		[[NSBundle mainBundle] loadNibNamed:@"UIChatConversationCell" owner:self options:nil];
+		[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
 		imageTapGestureRecognizer =
 			[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onImageClick:)];
 		[messageImageView addGestureRecognizer:imageTapGestureRecognizer];

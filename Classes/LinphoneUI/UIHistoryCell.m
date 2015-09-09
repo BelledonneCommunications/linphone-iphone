@@ -31,7 +31,8 @@
 
 - (id)initWithIdentifier:(NSString *)identifier {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
-		NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIHistoryCell" owner:self options:nil];
+		NSArray *arrayOfViews =
+			[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
 
 		if ([arrayOfViews count] >= 1) {
 			[self.contentView addSubview:[arrayOfViews objectAtIndex:0]];

@@ -21,10 +21,10 @@
 
 #import "LinphoneAppDelegate.h"
 #import "Utils.h"
+#import "SideMenuView.h"
 
 @implementation UICompositeViewDescription
 
-@synthesize name;
 @synthesize content;
 @synthesize stateBar;
 @synthesize tabBar;
@@ -45,20 +45,18 @@
 }
 
 - (BOOL)equal:(UICompositeViewDescription *)description {
-	return [self.name compare:description.name] == NSOrderedSame;
+	return [self.content compare:description.content] == NSOrderedSame;
 }
 
-- (id)init:(NSString *)aname
-		  content:(NSString *)acontent
-		 stateBar:(NSString *)astateBar
-		   tabBar:(NSString *)atabBar
+- (id)init:(Class)acontent
+		 stateBar:(Class)astateBar
+		   tabBar:(Class)atabBar
 	   fullscreen:(BOOL)afullscreen
 	landscapeMode:(BOOL)alandscapeMode
 	 portraitMode:(BOOL)aportraitMode {
-	self.name = aname;
-	self.content = acontent;
-	self.stateBar = astateBar;
-	self.tabBar = atabBar;
+	self.content = NSStringFromClass(acontent);
+	self.stateBar = NSStringFromClass(astateBar);
+	self.tabBar = NSStringFromClass(atabBar);
 	self.fullscreen = afullscreen;
 	self.landscapeMode = alandscapeMode;
 	self.portraitMode = aportraitMode;
@@ -169,7 +167,7 @@
 	[self updateViewsFramesAccordingToLaunchOrientation];
 	[super viewDidLoad];
 
-	_sideMenuViewController = [self getCachedController:@"SideMenuViewController"];
+	_sideMenuViewController = [self getCachedController:NSStringFromClass(SideMenuView.class)];
 	[UICompositeView addSubView:_sideMenuViewController view:_sideMenuView];
 }
 

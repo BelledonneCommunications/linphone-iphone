@@ -19,7 +19,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TPMultiLayoutViewController.h"
-#import "PhoneMainView.h"
+#import "DTActionSheet.h"
 
 @interface StatusBarView : TPMultiLayoutViewController <UIActionSheetDelegate> {
 	DTActionSheet *securitySheet;

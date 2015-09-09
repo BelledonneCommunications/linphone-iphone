@@ -572,7 +572,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
 
 	if (force || ![view equal:vc.currentView] || vc != self) {
-		LOGI(@"PhoneMainView: Change current view to %@", [view name]);
+		LOGI(@"PhoneMainView: Change current view to %@", [view content]);
 		if (animated && transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
 		[vc.mainViewController setViewTransition:(animated ? transition : nil)];
@@ -705,7 +705,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		} else {
 
 			CallIncomingView *controller = nil;
-			if (![currentView.name isEqualToString:[CallIncomingView compositeViewDescription].name]) {
+			if (![currentView.content isEqualToString:[CallIncomingView compositeViewDescription].content]) {
 				controller = DYNAMIC_CAST(
 					[self changeCurrentView:[CallIncomingView compositeViewDescription] push:TRUE], CallIncomingView);
 			} else {

@@ -63,9 +63,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (UICompositeViewDescription *)compositeViewDescription {
 	if (compositeDescription == nil) {
-		compositeDescription = [[UICompositeViewDescription alloc] init:@"IncomingCall"
-																content:@"CallIncomingView"
-															   stateBar:@"StatusBarViewController"
+		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
+															   stateBar:StatusBarView.class
 																 tabBar:nil
 															 fullscreen:false
 														  landscapeMode:[LinphoneManager runningOnIpad]
