@@ -47,22 +47,19 @@
 
 @property(nonatomic, strong) IBOutlet UIView *videoGroup;
 @property(nonatomic, strong) IBOutlet UIView *videoView;
-#ifdef TEST_VIDEO_VIEW_CHANGE
-@property(nonatomic, retain) IBOutlet UIView *testVideoView;
-#endif
 @property(nonatomic, strong) IBOutlet UIView *videoPreview;
 @property(nonatomic, strong) IBOutlet UICamSwitch *videoCameraSwitch;
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView *videoWaitingForFirstImage;
 
 @property(nonatomic, strong) IBOutlet UIPauseButton *pauseButton;
-@property(nonatomic, strong) IBOutlet UIButton *conferenceButton;
+@property(nonatomic, strong) IBOutlet UIButton *optionsConferenceButton;
 @property(nonatomic, strong) IBOutlet UIVideoButton *videoButton;
 @property(nonatomic, strong) IBOutlet UIMicroButton *microButton;
 @property(nonatomic, strong) IBOutlet UISpeakerButton *speakerButton;
 @property(nonatomic, strong) IBOutlet UIToggleButton *routesButton;
 @property(nonatomic, strong) IBOutlet UIToggleButton *optionsButton;
 @property(nonatomic, strong) IBOutlet UIHangUpButton *hangupButton;
-@property(nonatomic, strong) IBOutlet UIView *padView;
+@property(nonatomic, strong) IBOutlet UIView *numpadView;
 @property(nonatomic, strong) IBOutlet UIView *routesView;
 @property(nonatomic, strong) IBOutlet UIView *optionsView;
 @property(nonatomic, strong) IBOutlet UIButton *routesReceiverButton;
@@ -70,10 +67,7 @@
 @property(nonatomic, strong) IBOutlet UIButton *routesBluetoothButton;
 @property(nonatomic, strong) IBOutlet UIButton *optionsAddButton;
 @property(nonatomic, strong) IBOutlet UIButton *optionsTransferButton;
-@property(nonatomic, strong) IBOutlet UIToggleButton *dialerButton;
-
-@property(nonatomic, strong) IBOutlet UIImageView *leftPadding;
-@property(nonatomic, strong) IBOutlet UIImageView *rightPadding;
+@property(nonatomic, strong) IBOutlet UIToggleButton *numpadButton;
 
 @property(nonatomic, strong) IBOutlet UIDigitButton *oneButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *twoButton;
@@ -95,7 +89,7 @@
 - (IBAction)onOptionsClick:(id)sender;
 - (IBAction)onOptionsTransferClick:(id)sender;
 - (IBAction)onOptionsAddClick:(id)sender;
-- (IBAction)onConferenceClick:(id)sender;
-- (IBAction)onPadClick:(id)sender;
+- (IBAction)onOptionsConferenceClick:(id)sender;
+- (IBAction)onNumpadClick:(id)sender;
 
 @end

@@ -333,7 +333,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (linphone_core_get_calls_nb(lc) > 1) {
 		if (![_pauseButton isHidden]) {
 			[_pauseButton setHidden:true];
-			[_conferenceButton setHidden:false];
+			[_optionsConferenceButton setHidden:false];
 		}
 		bool enabled = true;
 		const MSList *list = linphone_core_get_calls(lc);
@@ -347,11 +347,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}
 			list = list->next;
 		}
-		[_conferenceButton setEnabled:enabled];
+		[_optionsConferenceButton setEnabled:enabled];
 	} else {
 		if ([_pauseButton isHidden]) {
 			[_pauseButton setHidden:false];
-			[_conferenceButton setHidden:true];
+			[_optionsConferenceButton setHidden:true];
 		}
 	}
 
@@ -557,29 +557,29 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 #pragma mark - UI modification
 
 - (void)showPad:(BOOL)animated {
-	[_dialerButton setOn];
-	if ([_padView isHidden]) {
+	[_numpadButton setOn];
+	if ([_numpadView isHidden]) {
 		if (animated) {
 			[self showAnimation:@"show"
-						 target:_padView
+						 target:_numpadView
 					 completion:^(BOOL finished){
 					 }];
 		} else {
-			[_padView setHidden:FALSE];
+			[_numpadView setHidden:FALSE];
 		}
 	}
 }
 
 - (void)hidePad:(BOOL)animated {
-	[_dialerButton setOff];
-	if (![_padView isHidden]) {
+	[_numpadButton setOff];
+	if (![_numpadView isHidden]) {
 		if (animated) {
 			[self hideAnimation:@"hide"
-						 target:_padView
+						 target:_numpadView
 					 completion:^(BOOL finished){
 					 }];
 		} else {
-			[_padView setHidden:TRUE];
+			[_numpadView setHidden:TRUE];
 		}
 	}
 }
@@ -766,8 +766,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 #pragma mark - Action Functions
 
-- (IBAction)onPadClick:(id)sender {
-	if ([_padView isHidden]) {
+- (IBAction)onNumpadClick:(id)sender {
+	if ([_numpadView isHidden]) {
 		[self showPad:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
 	} else {
 		[self hidePad:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
@@ -828,7 +828,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	}
 }
 
-- (IBAction)onConferenceClick:(id)sender {
+- (IBAction)onOptionsConferenceClick:(id)sender {
 	linphone_core_add_all_to_conference([LinphoneManager getLc]);
 }
 

@@ -9,12 +9,41 @@
             <connections>
                 <outlet property="callTableController" destination="162" id="167"/>
                 <outlet property="callTableView" destination="106" id="109"/>
+                <outlet property="eightButton" destination="DRh-kc-UVM" id="BPp-sh-qBg"/>
+                <outlet property="fiveButton" destination="8Da-zK-V7e" id="URc-Ct-fu0"/>
+                <outlet property="fourButton" destination="653-Vb-YzA" id="x6R-Cq-7iJ"/>
+                <outlet property="hangupButton" destination="Xpw-A4-BZO" id="3hc-8p-CLb"/>
+                <outlet property="microButton" destination="pRH-Ao-h65" id="F5a-sf-J7B"/>
+                <outlet property="nineButton" destination="b8R-7P-jHK" id="LNS-eb-9bc"/>
+                <outlet property="numpadButton" destination="SRu-dB-r3e" id="Y2q-lE-f89"/>
+                <outlet property="numpadView" destination="ukG-i4-YMY" id="f2R-OM-ahP"/>
+                <outlet property="oneButton" destination="qZ8-m9-B0N" id="eOL-0X-pTJ"/>
+                <outlet property="optionsAddButton" destination="reb-7F-UDV" id="csG-P2-Td5"/>
+                <outlet property="optionsButton" destination="8Zx-MI-pUL" id="MVL-le-Ycm"/>
+                <outlet property="optionsConferenceButton" destination="06a-kv-hpZ" id="C57-v7-1C5"/>
+                <outlet property="optionsTransferButton" destination="S0k-bn-1bs" id="2fo-RR-nKy"/>
+                <outlet property="optionsView" destination="sHZ-53-Hta" id="HjK-Gc-HB2"/>
+                <outlet property="pauseButton" destination="7f5-7T-fV3" id="c3P-vq-8ux"/>
+                <outlet property="routesBluetoothButton" destination="6uv-FV-mUL" id="c0F-7q-0m5"/>
+                <outlet property="routesButton" destination="nQp-5y-kTy" id="2u8-g5-6T1"/>
+                <outlet property="routesReceiverButton" destination="jSA-bD-bCs" id="v17-cH-SBj"/>
+                <outlet property="routesSpeakerButton" destination="go9-SC-yzb" id="nyj-se-LKs"/>
+                <outlet property="routesView" destination="qcR-Qb-Bst" id="v5z-JE-9do"/>
+                <outlet property="sevenButton" destination="alZ-Kz-AVL" id="8F0-KQ-qon"/>
+                <outlet property="sharpButton" destination="DqJ-35-h1Y" id="012-Qs-2DN"/>
+                <outlet property="sixButton" destination="0fB-uk-rXS" id="L9Y-dc-TBo"/>
+                <outlet property="speakerButton" destination="F5S-kV-7Kv" id="dqI-kU-8xY"/>
+                <outlet property="starButton" destination="prH-qj-h0v" id="2cm-sA-fTV"/>
+                <outlet property="threeButton" destination="R2h-PD-GN2" id="6DQ-Cw-Okc"/>
+                <outlet property="twoButton" destination="U6v-Cg-9b8" id="Re4-oW-yjl"/>
+                <outlet property="videoButton" destination="HDb-mD-sWV" id="EUO-MD-lae"/>
                 <outlet property="videoCameraSwitch" destination="160" id="161"/>
                 <outlet property="videoGroup" destination="126" id="129"/>
                 <outlet property="videoPreview" destination="127" id="130"/>
                 <outlet property="videoView" destination="132" id="133"/>
                 <outlet property="videoWaitingForFirstImage" destination="144" id="145"/>
                 <outlet property="view" destination="lzH-M1-NdV" id="POo-R0-w8I"/>
+                <outlet property="zeroButton" destination="CUt-2U-nro" id="x70-o1-VIq"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -33,7 +62,7 @@
                     <rect key="frame" x="0.0" y="42" width="375" height="625"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="9">
+                        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="9" userLabel="callView">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="503"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -67,7 +96,7 @@
                                             </accessibility>
                                         </view>
                                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254" y="354.99999934763446" width="113" height="140"/>
+                                            <rect key="frame" x="254.00000029960563" y="354.99999967643191" width="113" height="140"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -107,7 +136,7 @@
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
-                        <view hidden="YES" contentMode="scaleToFill" id="ukG-i4-YMY" userLabel="pad">
+                        <view hidden="YES" contentMode="scaleToFill" id="ukG-i4-YMY" userLabel="numpadView">
                             <rect key="frame" x="0.0" y="75" width="375" height="428"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -127,15 +156,6 @@
                                     <accessibility key="accessibilityConfiguration" label="2"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" image="numpad_2.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                </button>
-                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="R2h-PD-GN2" userLabel="3" customClass="UIDigitButton">
-                                    <rect key="frame" x="254" y="0.0" width="121" height="102"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="3"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <state key="normal" image="numpad_3.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                 </button>
@@ -220,6 +240,15 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                 </button>
+                                <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="R2h-PD-GN2" userLabel="3" customClass="UIDigitButton">
+                                    <rect key="frame" x="254" y="0.0" width="121" height="102"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="3"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <state key="normal" image="numpad_3.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                </button>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
@@ -247,6 +276,9 @@
                                     <state key="highlighted">
                                         <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
+                                    <connections>
+                                        <action selector="onRoutesBluetoothClick:" destination="-1" eventType="touchUpInside" id="jQt-8b-aEw"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" tag="31" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="jSA-bD-bCs" userLabel="routesReceiverButton">
                                     <rect key="frame" x="0.0" y="66" width="94" height="66"/>
@@ -264,6 +296,9 @@
                                     <state key="highlighted">
                                         <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
+                                    <connections>
+                                        <action selector="onRoutesReceiverClick:" destination="-1" eventType="touchUpInside" id="f6c-TJ-p5t"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" tag="32" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="go9-SC-yzb" userLabel="routesSpeakerButton">
                                     <rect key="frame" x="0.0" y="132" width="94" height="66"/>
@@ -281,6 +316,9 @@
                                     <state key="highlighted">
                                         <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
+                                    <connections>
+                                        <action selector="onRoutesSpeakerClick:" destination="-1" eventType="touchUpInside" id="BPD-uO-J2t"/>
+                                    </connections>
                                 </button>
                             </subviews>
                         </view>
@@ -300,6 +338,9 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_L.png"/>
+                                    <connections>
+                                        <action selector="onOptionsConferenceClick:" destination="-1" eventType="touchUpInside" id="bQP-ga-R2R"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" tag="17" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="reb-7F-UDV" userLabel="optionsAddButton">
                                     <rect key="frame" x="0.0" y="66" width="94" height="66"/>
@@ -313,6 +354,9 @@
                                     <state key="disabled">
                                         <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
+                                    <connections>
+                                        <action selector="onOptionsAddClick:" destination="-1" eventType="touchUpInside" id="diW-wF-VRO"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" tag="16" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="S0k-bn-1bs" userLabel="optionsTransferButton">
                                     <rect key="frame" x="0.0" y="132" width="94" height="66"/>
@@ -326,6 +370,9 @@
                                     <state key="disabled">
                                         <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
+                                    <connections>
+                                        <action selector="onOptionsTransferClick:" destination="-1" eventType="touchUpInside" id="lJX-ud-MuS"/>
+                                    </connections>
                                 </button>
                             </subviews>
                         </view>
@@ -333,7 +380,7 @@
                             <rect key="frame" x="0.0" y="503" width="375" height="122"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <view contentMode="scaleToFill" id="OIH-ek-VgL">
+                                <view contentMode="scaleToFill" id="OIH-ek-VgL" userLabel="higherBar">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <subviews>
@@ -390,6 +437,9 @@
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
+                                            <connections>
+                                                <action selector="onRoutesClick:" destination="-1" eventType="touchUpInside" id="h2V-qf-kgC"/>
+                                            </connections>
                                         </button>
                                         <button opaque="NO" tag="23" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8Zx-MI-pUL" userLabel="optionsButton" customClass="UIToggleButton">
                                             <rect key="frame" x="282" y="0.0" width="94" height="66"/>
@@ -401,14 +451,17 @@
                                             </state>
                                             <state key="selected" image="options_selected.png"/>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
+                                            <connections>
+                                                <action selector="onOptionsClick:" destination="-1" eventType="touchUpInside" id="KZw-2M-V7E"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                 </view>
-                                <view contentMode="scaleToFill" id="8q9-3P-Fz0">
+                                <view contentMode="scaleToFill" id="8q9-3P-Fz0" userLabel="lowerBar">
                                     <rect key="frame" x="0.0" y="66" width="375" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <button opaque="NO" tag="27" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="SRu-dB-r3e" userLabel="dialerButton" customClass="UIToggleButton">
+                                        <button opaque="NO" tag="27" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="SRu-dB-r3e" userLabel="numpadButton" customClass="UIToggleButton">
                                             <rect key="frame" x="0.0" y="0.0" width="94" height="66"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Back"/>
@@ -416,6 +469,9 @@
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
+                                            <connections>
+                                                <action selector="onNumpadClick:" destination="-1" eventType="touchUpInside" id="pFD-jh-GhK"/>
+                                            </connections>
                                         </button>
                                         <button opaque="NO" tag="26" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Xpw-A4-BZO" userLabel="hangupButton" customClass="UIHangUpButton">
                                             <rect key="frame" x="94" y="0.0" width="188" height="66"/>
