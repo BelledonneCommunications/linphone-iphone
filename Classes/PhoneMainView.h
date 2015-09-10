@@ -44,6 +44,12 @@
 #import "DTActionSheet.h"
 #import "Utils.h"
 
+#define DYNAMIC_CAST(x, cls)                                                                                           \
+	({                                                                                                                 \
+		cls *inst_ = (cls *)(x);                                                                                       \
+		[inst_ isKindOfClass:[cls class]] ? inst_ : nil;                                                               \
+	})
+
 #define VIEW(x)                                                                                                        \
 	DYNAMIC_CAST([PhoneMainView.instance.mainViewController getCachedController:x.compositeViewDescription.content], x)
 

@@ -17,12 +17,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define DYNAMIC_CAST(x, cls)                        \
- ({                                                 \
-    cls *inst_ = (cls *)(x);                        \
-    [inst_ isKindOfClass:[cls class]]? inst_ : nil; \
- })
-
 #import "LinphoneManager.h"
 
 @interface LinphoneLogger : NSObject {

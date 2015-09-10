@@ -44,6 +44,7 @@ static UIFont *CELL_FONT = nil;
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
 		[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
 
+#if 0
 		// shift message box, otherwise it will collide with the bubble
 		CGRect messageCoords = _messageText.frame;
 		messageCoords.origin.x += 2;
@@ -52,19 +53,14 @@ static UIFont *CELL_FONT = nil;
 
 		_messageText.frame = messageCoords;
 		_messageText.allowSelectAll = TRUE;
+#endif
 	}
 
 	return self;
 }
 
 - (void)dealloc {
-	[self disconnectFromFileDelegate];
-	if (message) {
-		linphone_chat_message_set_user_data(message, NULL);
-		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(message), NULL);
-		linphone_chat_message_unref(message);
-		message = NULL;
-	}
+	[self setChatMessage:NULL];
 }
 
 #pragma mark -
