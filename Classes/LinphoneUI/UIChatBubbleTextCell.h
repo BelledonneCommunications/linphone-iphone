@@ -26,8 +26,6 @@
 
 @interface UIChatBubbleTextCell : UITransparentTVCell
 
-@property(nonatomic, weak) IBOutlet UIView *innerView;
-@property(nonatomic, weak) IBOutlet UIView *bubbleView;
 @property(nonatomic, weak) IBOutlet UIImageView *backgroundColor;
 @property(nonatomic, weak) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, weak) IBOutlet UILabel *contactDateLabel;

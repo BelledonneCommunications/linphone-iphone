@@ -26,8 +26,8 @@
 void uncaughtExceptionHandler(NSException *exception) {
 	NSLog(@"Crash: %@", exception);
 	NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
-	// Internal error reporting
-}
+	// Internal error reportingstx
+};
 
 #endif
 

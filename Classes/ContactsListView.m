@@ -86,7 +86,7 @@ static NSString *sNameOrEmailFilter;
 @synthesize linphoneButton;
 @synthesize backButton;
 @synthesize addButton;
-@synthesize toolBar;
+@synthesize topBar;
 
 typedef enum _HistoryView { History_All, History_Linphone, History_Search, History_MAX } HistoryView;
 
@@ -103,7 +103,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 + (UICompositeViewDescription *)compositeViewDescription {
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
-															   stateBar:StatusBarView.class
+															  statusBar:StatusBarView.class
 																 tabBar:TabBarView.class
 															 fullscreen:false
 														  landscapeMode:LinphoneManager.runningOnIpad
@@ -124,9 +124,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)relayoutTableView {
 	CGRect subViewFrame = self.view.frame;
-	// let the toolBar be visible
-	subViewFrame.origin.y += self.toolBar.frame.size.height;
-	subViewFrame.size.height -= self.toolBar.frame.size.height;
+	// let the top bar be visible
+	subViewFrame.origin.y += self.topBar.frame.size.height;
+	subViewFrame.size.height -= self.topBar.frame.size.height;
 	[UIView animateWithDuration:0.2
 					 animations:^{
 					   self.tableView.frame = subViewFrame;
@@ -143,7 +143,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// [searchText setFont:[UIFont fontWithName:@"CustomFont" size:12]];
 	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
 	CGRect frame = _searchBar.frame;
-	frame.origin.y = toolBar.frame.origin.y + toolBar.frame.size.height;
+	frame.origin.y = topBar.frame.origin.y + topBar.frame.size.height;
 	_searchBar.frame = frame;
 
 	[self update];
@@ -315,7 +315,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)viewDidUnload {
-	[self setToolBar:nil];
+	[self setTopBar:nil];
 	[super viewDidUnload];
 }
 @end

@@ -75,7 +75,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 + (UICompositeViewDescription *)compositeViewDescription {
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
-															   stateBar:StatusBarView.class
+															  statusBar:StatusBarView.class
 																 tabBar:nil
 															 fullscreen:false
 														  landscapeMode:false
@@ -281,7 +281,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 		[PhoneMainView.instance showTabBar:true];
-		[PhoneMainView.instance showStateBar:true];
+		[PhoneMainView.instance showStatusBar:true];
 		[callTableView setAlpha:1.0];
 		[videoCameraSwitch setAlpha:1.0];
 		[UIView commitAnimations];
@@ -309,7 +309,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[UIView commitAnimations];
 
 		[PhoneMainView.instance showTabBar:false];
-		[PhoneMainView.instance showStateBar:false];
+		[PhoneMainView.instance showStatusBar:false];
 	}
 }
 
@@ -365,7 +365,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[PhoneMainView.instance fullScreen:true];
 	[PhoneMainView.instance showTabBar:false];
-	[PhoneMainView.instance showStateBar:false];
+	[PhoneMainView.instance showStatusBar:false];
 
 #ifdef TEST_VIDEO_VIEW_CHANGE
 	[NSTimer scheduledTimerWithTimeInterval:5.0

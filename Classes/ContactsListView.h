@@ -80,7 +80,7 @@ typedef enum _ContactSelectionMode {
 
 @property(strong, nonatomic) IBOutlet ContactsListTableView *tableController;
 @property(nonatomic, strong) IBOutlet UINavigationController *sysViewController;
-@property(strong, nonatomic) IBOutlet UIView *toolBar;
+@property(strong, nonatomic) IBOutlet UIView *topBar;
 @property(nonatomic, strong) IBOutlet UIButton *allButton;
 @property(nonatomic, strong) IBOutlet UIButton *linphoneButton;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;

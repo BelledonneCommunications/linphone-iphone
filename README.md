@@ -114,9 +114,9 @@ MainStoryboard
         |
         | (mainViewController)
         |
-    UICompositeViewController : TPMultilayout
+    UICompositeView : TPMultilayout
                 |
-                #---> view  #--> stateBar
+                #---> view  #--> statusBar
                             |
                             #--> contentView
                             |
@@ -125,8 +125,8 @@ MainStoryboard
 
 When the application is started, the phoneMainView gets asked to transition to the Dialer view or the Assistant view.
 PhoneMainView exposes the -changeCurrentView: method, which will setup its
-Any Linphone view is actually presented in the UICompositeViewController, with or without a stateBar and tabBar.
+Any Linphone view is actually presented in the UICompositeView, with or without a statusBar and tabBar.
 
-The UICompositeViewController consists of 3 areas laid out vertically. From top to bottom: StateBar, Content and TabBar.
+The UICompositeView consists of 3 areas laid out vertically. From top to bottom: StatusBar, Content and TabBar.
 The TabBar is usually the UIMainBar, which is used as a navigation controller: clicking on each of the buttons will trigger
 a transition to another "view".

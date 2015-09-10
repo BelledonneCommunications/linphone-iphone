@@ -31,7 +31,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qO2-xf-enZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <viewController storyboardIdentifier="uicompositevc" nibName="UICompositeViewController" wantsFullScreenLayout="YES" id="emC-P9-oZj" userLabel="mainViewController" customClass="UICompositeView">
+                <viewController storyboardIdentifier="uicompositevc" nibName="UICompositeView" wantsFullScreenLayout="YES" id="emC-P9-oZj" userLabel="mainViewController" customClass="UICompositeView">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedStatusBarMetrics"/>
                 </viewController>

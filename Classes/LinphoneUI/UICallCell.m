@@ -23,6 +23,8 @@
 #import "LinphoneManager.h"
 #import "FastAddressBook.h"
 #import "Utils.h"
+#import "PhoneMainView.h"
+#import "CallTableView.h"
 
 @implementation UICallCellData
 
@@ -472,17 +474,9 @@
 }
 
 - (void)selfUpdate {
-	UITableView *parentTable = (UITableView *)self.superview;
-
-	while (parentTable != nil && ![parentTable isKindOfClass:[UITableView class]])
-		parentTable = (UITableView *)[parentTable superview];
-
-	if (parentTable != nil) {
-		NSIndexPath *index = [parentTable indexPathForCell:self];
-		if (index != nil) {
-			[parentTable reloadRowsAtIndexPaths:@[ index ] withRowAnimation:false];
-		}
-	}
+	UITableView *tableView = VIEW(CallView).callTableView;
+	NSIndexPath *index = [tableView indexPathForCell:self];
+	[tableView reloadRowsAtIndexPaths:@[ index ] withRowAnimation:false];
 }
 
 #pragma mark - Action Functions

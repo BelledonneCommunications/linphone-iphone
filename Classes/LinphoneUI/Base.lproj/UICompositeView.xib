@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <development version="6000" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
@@ -11,7 +12,7 @@
                 <outlet property="landscapeView" destination="20" id="25"/>
                 <outlet property="portraitView" destination="1" id="24"/>
                 <outlet property="sideMenuView" destination="26" id="37"/>
-                <outlet property="stateBarView" destination="14" id="18"/>
+                <outlet property="statusBarView" destination="14" id="jau-xd-cYL"/>
                 <outlet property="tabBarView" destination="16" id="19"/>
                 <outlet property="view" destination="1" id="3"/>
             </connections>
@@ -30,7 +31,7 @@
                         <outletCollection property="gestureRecognizers" destination="40" appends="YES" id="41"/>
                     </connections>
                 </view>
-                <view autoresizesSubviews="NO" tag="2" contentMode="scaleToFill" id="14" userLabel="stateBar" customClass="UITransparentView">
+                <view autoresizesSubviews="NO" tag="2" contentMode="scaleToFill" id="14" userLabel="statusBar" customClass="UITransparentView">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="42"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -59,7 +60,7 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
-                <view autoresizesSubviews="NO" tag="2" contentMode="scaleToFill" id="22" userLabel="stateBar" customClass="UITransparentView">
+                <view autoresizesSubviews="NO" tag="2" contentMode="scaleToFill" id="22" userLabel="statusBar" customClass="UITransparentView">
                     <rect key="frame" x="0.0" y="0.0" width="667" height="26"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>

@@ -32,7 +32,8 @@
 
 - (id)initWithIdentifier:(NSString *)identifier {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
-		[[NSBundle mainBundle] loadNibNamed:@"UIChatBubbleTextCell" owner:self options:nil];
+		NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIChatBubbleTextCell" owner:self options:nil];
+		[self.contentView addSubview:[arrayOfViews objectAtIndex:arrayOfViews.count - 1]];
 
 #if 0
 		// shift message box, otherwise it will collide with the bubble
@@ -158,23 +159,12 @@
 - (void)layoutSubviews {
 	[super layoutSubviews];
 	if (message != nil) {
-		BOOL is_outgoing = linphone_chat_message_is_outgoing(message);
-		CGRect innerFrame;
-		innerFrame.size = [ChatConversationTableView viewSize:message width:self.frame.size.width];
-		innerFrame.origin.y = 0.0f;
-		innerFrame.origin.x = is_outgoing ? self.frame.size.width - innerFrame.size.width : 0;
-		_innerView.frame = innerFrame;
-
-		CGRect messageFrame = _bubbleView.frame;
-		messageFrame.origin.y = (_innerView.frame.size.height - messageFrame.size.height) / 2;
-		if (!is_outgoing) {
-			messageFrame.origin.y += 5;
-		} else {
-			messageFrame.origin.y -= 5;
-		}
-		_backgroundColor.image =
-			is_outgoing ? [UIImage imageNamed:@"chat_bubble_outgoing"] : [UIImage imageNamed:@"chat_bubble_incoming"];
-		_bubbleView.frame = messageFrame;
+		//		BOOL is_outgoing = linphone_chat_message_is_outgoing(message);
+		CGRect newFrame;
+		newFrame.size = [ChatConversationTableView viewSize:message width:self.frame.size.width];
+		newFrame.origin.y = 0.0f;
+		//		newFrame.origin.x = is_outgoing ? self.contentView.frame.size.width - newFrame.size.width : 0;
+		self.contentView.frame = self.frame = newFrame;
 	}
 }
 

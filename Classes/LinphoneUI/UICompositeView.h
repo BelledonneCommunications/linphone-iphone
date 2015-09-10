@@ -1,4 +1,4 @@
-/* UICompositeViewController.h
+/* UICompositeView.h
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
  *
@@ -28,7 +28,7 @@
 }
 
 @property(strong) NSString *content;
-@property(strong) NSString *stateBar;
+@property(strong) NSString *statusBar;
 @property(strong) NSString *tabBar;
 @property(assign) BOOL fullscreen;
 @property(assign) BOOL landscapeMode;
@@ -38,7 +38,7 @@
 - (id)copy;
 - (BOOL)equal:(UICompositeViewDescription *)description;
 - (id)init:(Class)content
-		 stateBar:(Class)stateBar
+		statusBar:(Class)statusBar
 		   tabBar:(Class)tabBar
 	   fullscreen:(BOOL)fullscreen
 	landscapeMode:(BOOL)landscapeMode
@@ -62,15 +62,15 @@
 
 @property(strong) CATransition *viewTransition;
 
-@property(nonatomic, strong) IBOutlet UIView *stateBarView;
+@property(nonatomic, strong) IBOutlet UIView *statusBarView;
 @property(nonatomic, strong) IBOutlet UIView *contentView;
 @property(nonatomic, strong) IBOutlet UIView *tabBarView;
 @property(strong, nonatomic) IBOutlet UIView *sideMenuView;
 
 - (void)changeView:(UICompositeViewDescription *)description;
 - (void)setFullScreen:(BOOL)enabled;
-- (void)hideStateBar:(BOOL)hidden;
-- (void)hideToolBar:(BOOL)hidden;
+- (void)hideStatusBar:(BOOL)hidden;
+- (void)hideTopBar:(BOOL)hidden;
 - (void)hideSideMenu:(BOOL)hidden;
 - (BOOL)currentViewSupportsLandscape;
 - (UIViewController *)getCachedController:(NSString *)name;

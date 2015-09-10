@@ -65,7 +65,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 + (UICompositeViewDescription *)compositeViewDescription {
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
-															   stateBar:StatusBarView.class
+															  statusBar:StatusBarView.class
 																 tabBar:nil
 															 fullscreen:false
 														  landscapeMode:LinphoneManager.runningOnIpad
@@ -349,7 +349,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	static BOOL placement_done = NO; // indicates if the button placement has been done in the assistant choice view
 
-	// Change toolbar buttons following view
 	_backButton.enabled = (view != _welcomeView);
 
 	[self displayUsernameAsPhoneOrUsername];

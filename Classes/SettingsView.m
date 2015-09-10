@@ -309,11 +309,6 @@
 	return self;
 }
 
-- (void)drawRect:(CGRect)rect {
-	UIImage *img = [UIImage imageNamed:@"toolsbar_background.png"];
-	[img drawInRect:rect];
-}
-
 @end
 
 #pragma mark - UINavigationControllerEx Class
@@ -394,7 +389,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 + (UICompositeViewDescription *)compositeViewDescription {
 	if (compositeDescription == nil) {
 		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
-															   stateBar:StatusBarView.class
+															  statusBar:StatusBarView.class
 																 tabBar:TabBarView.class
 															 fullscreen:false
 														  landscapeMode:LinphoneManager.runningOnIpad
