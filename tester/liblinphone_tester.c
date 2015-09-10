@@ -196,12 +196,12 @@ int main (int argc, char *argv[])
 
 	liblinphone_tester_init(NULL);
 
-	if (strstr(argv[0], ".libs") && argv[0][0] == '/') {
-		char res_dir[128] = {0};
-		// this allows to launch liblinphone_tester from outside of tester directory
-		strncpy(res_dir, argv[0], strstr(argv[0], ".libs")-argv[0]);
-		bc_tester_set_resource_dir_prefix(res_dir);
-		bc_tester_set_writable_dir_prefix(res_dir);
+	// this allows to launch liblinphone_tester from outside of tester directory
+	if (strstr(argv[0], ".libs")) {
+		char* prefix = ms_strdup_printf("%s%s", argv[0][0]=='/'?"":"./", strstr(argv[0], ".libs"));
+		bc_tester_set_resource_dir_prefix(prefix);
+		bc_tester_set_writable_dir_prefix(prefix);
+		ms_free(prefix);
 	}
 
 	for(i = 1; i < argc; ++i) {
