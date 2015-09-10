@@ -151,7 +151,7 @@ JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
 	ms_set_jvm(ajvm);
-	
+
 #endif /*ANDROID*/
 	jvm=ajvm;
 	return JNI_VERSION_1_2;
@@ -1996,7 +1996,7 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration
 	if(sound_description != NULL && sound_description == &genericSoundDeviceDescriptor){
 		return TRUE;
 	}
-	
+
 	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
 	if (ms_snd_card_get_minimal_latency(sndcard) != 0) return FALSE;
 	return TRUE;
@@ -2182,16 +2182,17 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_normalizePhone
 	if (jnumber == 0) {
 		ms_error("cannot normalized null number");
 	}
+	char * normalized_phone;
 	const char* number = env->GetStringUTFChars(jnumber, NULL);
 	int len = env->GetStringLength(jnumber);
 	if (len == 0) {
 		ms_warning("cannot normalize empty number");
 		return jnumber;
 	}
-	char targetBuff[2*len];// returned number can be greater than origin (specially in case of prefix insertion
-	linphone_proxy_config_normalize_number((LinphoneProxyConfig*)proxyCfg,number,targetBuff,sizeof(targetBuff));
-	jstring normalizedNumber = env->NewStringUTF(targetBuff);
+	normalized_phone = linphone_proxy_config_normalize_phone_number((LinphoneProxyConfig*)proxyCfg,number);
+	jstring normalizedNumber = env->NewStringUTF(normalized_phone ? normalized_phone : number);
 	env->ReleaseStringUTFChars(jnumber, number);
+	ms_free(normalized_phone);
 	return normalizedNumber;
 }
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_lookupCCCFromIso(JNIEnv* env, jobject thiz, jlong proxyCfg, jstring jiso) {
@@ -3283,7 +3284,7 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
 	jobject jmessage = getChatMessage(env, msg);
 	env->DeleteLocalRef(clazz);
-	
+
 	jclass chatMessageStateClass = (jclass)env->FindClass("org/linphone/core/LinphoneChatMessage$State");
 	jmethodID chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass, "fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
 	env->CallVoidMethod(listener, method, jmessage, env->CallStaticObjectMethod(chatMessageStateClass, chatMessageStateFromIntId, (jint)state));
@@ -3326,7 +3327,7 @@ static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* 
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferReceived", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Lorg/linphone/core/LinphoneBuffer;)V");
 	env->DeleteLocalRef(clazz);
-	
+
 	jobject jmessage = getChatMessage(env, msg);
 	jobject jbuffer = buffer ? create_java_linphone_buffer(env, buffer) : NULL;
 	jobject jcontent = content ? create_java_linphone_content(env, content) : NULL;
@@ -3352,7 +3353,7 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferSent","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;IILorg/linphone/core/LinphoneBuffer;)V");
 	env->DeleteLocalRef(clazz);
-	
+
 	jobject jmessage = getChatMessage(env, msg);
 	jobject jbuffer = create_java_linphone_buffer(env, NULL);
 	jobject jcontent = content ? create_java_linphone_content(env, content) : NULL;
@@ -3360,7 +3361,7 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 	if (jcontent) {
 		env->DeleteLocalRef(jcontent);
 	}
-	
+
 	buffer = create_c_linphone_buffer_from_java_linphone_buffer(env, jbuffer);
 	env->DeleteLocalRef(jbuffer);
 	return buffer;
@@ -3370,7 +3371,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setListener(JNIEn
 	jobject listener = env->NewGlobalRef(jlistener);
 	LinphoneChatMessage *message = (LinphoneChatMessage *)ptr;
 	LinphoneChatMessageCbs *cbs;
-	
+
 	message->cb_ud = listener;
 	cbs = linphone_chat_message_get_callbacks(message);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_state_changed);
@@ -4649,7 +4650,7 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	}
 
 	jobject jobj = env->NewObject(contentClass, ctor, jname, jtype, jsubtype, jdata, jencoding, jsize);
-	
+
 	env->DeleteLocalRef(contentClass);
 	env->DeleteLocalRef(jtype);
 	env->DeleteLocalRef(jsubtype);
@@ -4659,7 +4660,7 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	if (jname) {
 		env->DeleteLocalRef(jname);
 	}
-	
+
 	return jobj;
 }
 
@@ -4695,7 +4696,7 @@ static LinphoneBuffer* create_c_linphone_buffer_from_java_linphone_buffer(JNIEnv
 	bufferClass = (jclass)env->FindClass("org/linphone/core/LinphoneBufferImpl");
 	getSizeMethod = env->GetMethodID(bufferClass, "getSize", "()I");
 	getDataMethod = env->GetMethodID(bufferClass, "getContent", "()[B");
-	
+
 	jsize = env->CallIntMethod(jbuffer, getSizeMethod);
 	jdata = env->CallObjectMethod(jbuffer, getDataMethod);
 	jcontent = reinterpret_cast<jbyteArray>(jdata);
@@ -4705,7 +4706,7 @@ static LinphoneBuffer* create_c_linphone_buffer_from_java_linphone_buffer(JNIEnv
 		env->ReleaseByteArrayElements(jcontent, (jbyte*)content, JNI_ABORT);
 	}
 	env->DeleteLocalRef(bufferClass);
-	
+
 	return buffer;
 }
 

@@ -881,68 +881,12 @@ static char* replace_icp_with_plus_new(char *phone, const char *icp){
 }
 
 bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len){
-	bool_t ret;
-	LinphoneProxyConfig *tmpproxy = proxy ? proxy : linphone_proxy_config_new();
+	char * normalized_phone = linphone_proxy_config_normalize_phone_number(proxy, username);
+	const char * output = normalized_phone ? normalized_phone : username;
 	memset(result, 0, result_len);
-	if (linphone_proxy_config_is_phone_number(tmpproxy, username)){
-		dial_plan_t dialplan = {0};
-		char *flatten=flatten_number(username);
-		ms_debug("Flattened number is '%s'",flatten);
-
-		/*username does not contain a dial prefix nor the tmpproxy, nothing else to do*/
-		if (tmpproxy->dial_prefix==NULL || tmpproxy->dial_prefix[0]=='\0'){
-			strncpy(result,flatten,result_len-1);
-		} else {
-			lookup_dial_plan_by_ccc(tmpproxy->dial_prefix,&dialplan);
-			ms_debug("Using dial plan '%s'",dialplan.country);
-			/* the number has international prefix or +, so nothing to do*/
-			if (flatten[0]=='+'){
-				ms_debug("Prefix already present.");
-				/*eventually replace the plus by the international calling prefix of the country*/
-				if (tmpproxy->dial_escape_plus) {
-					replace_plus_with_icp(flatten,result,result_len,dialplan.icp);
-				}else{
-					strncpy(result, flatten, result_len-1);
-				}
-			}else if (strstr(flatten,dialplan.icp)==flatten){
-				if (tmpproxy->dial_escape_plus){
-					strncpy(result, flatten, result_len-1);
-				}else{
-					replace_icp_with_plus(flatten, result, result_len, dialplan.icp);
-				}
-			}else{
-				int numlen;
-				int i=0;
-				int skip;
-				numlen=strlen(flatten);
-				/*keep at most national number significant digits */
-				skip=numlen-dialplan.nnl;
-				if (skip<0) skip=0;
-				/*first prepend international calling prefix or +*/
-				if (tmpproxy->dial_escape_plus){
-					strncpy(result,dialplan.icp,result_len);
-					i+=strlen(dialplan.icp);
-				}else{
-					strncpy(result,"+",result_len);
-					i+=1;
-				}
-				/*add prefix*/
-				if (result_len-i>strlen(dialplan.ccc)){
-					strcpy(result+i,dialplan.ccc);
-					i+=strlen(dialplan.ccc);
-				}
-				/*add user digits */
-				strncpy(result+i,flatten+skip,result_len-i-1);
-			}
-		}
-		ms_free(flatten);
-		ret = TRUE;
-	} else {
-		strncpy(result,username,result_len-1);
-		ret = FALSE;
-	}
-	if (proxy==NULL) ms_free(tmpproxy);
-	return ret;
+	memcpy(result, output, MIN(strlen(output) + 1, result_len));
+	ms_free(normalized_phone);
+	return output != username;
 }
 
 char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, const char *username) {
@@ -1042,11 +986,10 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 			if (uri==NULL){
 				return NULL;
 			} else {
-				char normalized_username[128];
+				char* normalized_phone = linphone_proxy_config_normalize_phone_number(proxy,username);
 				linphone_address_set_display_name(uri,NULL);
-				linphone_proxy_config_normalize_number(proxy,username,normalized_username,
-										sizeof(normalized_username));
-				linphone_address_set_username(uri,normalized_username);
+				linphone_address_set_username(uri,normalized_phone ? normalized_phone : username);
+				ms_free(normalized_phone);
 				return _linphone_core_destroy_addr_if_not_sip(uri);
 			}
 		} else {

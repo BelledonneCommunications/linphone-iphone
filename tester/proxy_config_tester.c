@@ -18,10 +18,18 @@
 
 #include "liblinphone_tester.h"
 
+#include <stdlib.h>
+
 const char* phone_normalization(LinphoneProxyConfig *proxy, const char* in) {
 	static char result[255];
-	linphone_proxy_config_normalize_number(proxy, in, result, 255-1);
-	return result;
+	char * output = linphone_proxy_config_normalize_phone_number(proxy, in);
+	if (output) {
+		memcpy(result, output, strlen(output)+1);
+		ms_free(output);
+		return result;
+	} else {
+		return NULL;
+	}
 }
 
 static void phone_normalization_without_proxy() {
@@ -32,7 +40,7 @@ static void phone_normalization_without_proxy() {
 	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "+33012345678"), "+33012345678");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "+3301234567891"), "+3301234567891");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "+33 01234567891"), "+3301234567891");
-	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "I_AM_NOT_A_NUMBER"), "I_AM_NOT_A_NUMBER"); // invalid phone number
+	BC_ASSERT_PTR_NULL(phone_normalization(NULL, "I_AM_NOT_A_NUMBER")); // invalid phone number
 }
 
 static void phone_normalization_with_proxy() {
@@ -50,7 +58,7 @@ static void phone_normalization_with_proxy() {
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "0012345678"), "+12345678");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "01 2345678"), "+33012345678");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "01234567891"), "+33234567891"); // invalid phone number (too long)
-	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "I_AM_NOT_A_NUMBER"), "I_AM_NOT_A_NUMBER"); // invalid phone number
+	BC_ASSERT_PTR_NULL(phone_normalization(proxy, "I_AM_NOT_A_NUMBER")); // invalid phone number
 
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+990012345678"), "+990012345678");
 
@@ -60,7 +68,7 @@ static void phone_normalization_with_proxy() {
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "+31952636505"), "+31952636505");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "0033952636505"), "+33952636505");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "0033952636505"), "+33952636505");
-	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "toto"), "toto");
+	BC_ASSERT_PTR_NULL(phone_normalization(proxy, "toto"));
 
 	linphone_proxy_config_set_dial_prefix(proxy, "99");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "0012345678"), "+12345678");
