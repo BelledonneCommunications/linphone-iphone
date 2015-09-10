@@ -848,35 +848,11 @@ static char *flatten_number(const char *number){
 	return result;
 }
 
-static void replace_plus_with_icp(const char *src, char *dest, size_t destlen, const char *icp){
-	int i=0;
-
-	if (icp && src[0]=='+' && (destlen>(i=strlen(icp))) ){
-		src++;
-		strncpy(dest, icp, destlen);
-	}
-
-	for(;(i<destlen-1) && *src!='\0';++i){
-		dest[i]=*src;
-		src++;
-	}
-	dest[i]='\0';
-}
-
-static void replace_icp_with_plus(const char *src, char *dest, size_t destlen, const char *icp){
-	int i=0;
-	if (strstr(src, icp) == src){
-		dest[0]='+';
-		i++;
-	}
-	strncpy(dest+i, src+strlen(icp), destlen-i-1);
-}
-
-static char* replace_plus_with_icp_new(char *phone, const char* icp){
+static char* replace_plus_with_icp(char *phone, const char* icp){
 	return (icp && phone[0]=='+') ? ms_strdup_printf("%s%s", icp, phone+1) : ms_strdup(phone);
 }
 
-static char* replace_icp_with_plus_new(char *phone, const char *icp){
+static char* replace_icp_with_plus(char *phone, const char *icp){
 	return (strstr(phone, icp) == phone) ?  ms_strdup_printf("+%s", phone+strlen(icp)) : ms_strdup(phone);
 }
 
@@ -905,9 +881,9 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 			if (flatten[0]=='+'||strstr(flatten,dialplan.icp)==flatten){
 				ms_debug("Prefix already present.");
 				if (tmpproxy->dial_escape_plus) {
-					result = replace_plus_with_icp_new(flatten,dialplan.icp);
+					result = replace_plus_with_icp(flatten,dialplan.icp);
 				} else {
-					result = replace_icp_with_plus_new(flatten,dialplan.icp);
+					result = replace_icp_with_plus(flatten,dialplan.icp);
 				}
 			}else{
 				/*0. keep at most national number significant digits */
