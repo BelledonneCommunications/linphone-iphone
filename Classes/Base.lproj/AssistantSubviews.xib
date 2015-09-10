@@ -10,6 +10,7 @@
                 <outlet property="createAccountActivationView" destination="101" id="cxQ-rX-4fA"/>
                 <outlet property="createAccountView" destination="44" id="70"/>
                 <outlet property="gotoCreateAccountButton" destination="36" id="bZf-lI-yJp"/>
+                <outlet property="gotoLinphoneLoginButton" destination="38" id="K1E-r5-WiL"/>
                 <outlet property="gotoLoginButton" destination="39" id="uSY-cr-j4w"/>
                 <outlet property="gotoRemoteProvisionningButton" destination="Kbn-dL-C5h" id="pgT-y6-qKj"/>
                 <outlet property="linphoneLoginView" destination="52" id="9NX-6W-50g"/>
@@ -527,7 +528,7 @@
                         </attributedString>
                     </state>
                     <connections>
-                        <action selector="onLinphoneLoginClick:" destination="-1" eventType="touchUpInside" id="8FC-Mf-dX8"/>
+                        <action selector="onLoginClick:" destination="-1" eventType="touchUpInside" id="LKg-hT-sDN"/>
                     </connections>
                 </button>
             </subviews>
@@ -637,7 +638,7 @@
                         </attributedString>
                     </state>
                     <connections>
-                        <action selector="onLinphoneLoginClick:" destination="-1" eventType="touchUpInside" id="xx5-CI-tlx"/>
+                        <action selector="onRemoteProvisionningClick:" destination="-1" eventType="touchUpInside" id="zsx-GM-Pjh"/>
                     </connections>
                 </button>
             </subviews>

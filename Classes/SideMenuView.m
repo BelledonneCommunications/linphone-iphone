@@ -28,8 +28,12 @@
 		char *as_string = linphone_address_as_string(addr);
 		_addressLabel.text = [NSString stringWithUTF8String:as_string];
 		ms_free(as_string);
-		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
+	} else {
+		_nameLabel.text = @"No account";
+		_addressLabel.text = NSLocalizedString(@"No address", nil);
 	}
+
+	// set avatar if available
 	NSURL *url = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"avatar"]];
 	if (url) {
 		[LinphoneManager.instance.photoLibrary assetForURL:url
@@ -42,7 +46,7 @@
 			  });
 			}
 			failureBlock:^(NSError *error) {
-			  LOGE(@"Can't read image");
+			  LOGE(@"Can't read avatar");
 			}];
 	} else {
 		[_avatarImage setImage:[UIImage imageNamed:@"avatar"]];
@@ -50,6 +54,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
 	[self updateHeader];
 	[_sideMenuTableViewController.tableView reloadData];
 }

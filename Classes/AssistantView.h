@@ -22,8 +22,8 @@
 #import "UICompositeView.h"
 #import "TPKeyboardAvoidingScrollView.h"
 
-@interface AssistantView : TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate,
-														XMLRPCConnectionDelegate, UIAlertViewDelegate> {
+@interface AssistantView
+	: TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate> {
   @private
 	UITextField *activeTextField;
 	UIView *currentView;
@@ -31,22 +31,22 @@
 	NSMutableArray *historyViews;
 }
 
-@property(nonatomic, weak) IBOutlet TPKeyboardAvoidingScrollView *contentView;
-@property(nonatomic, weak) IBOutlet UIView *waitView;
-@property(nonatomic, weak) IBOutlet UIButton *backButton;
+@property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;
+@property(nonatomic, strong) IBOutlet UIView *waitView;
+@property(nonatomic, strong) IBOutlet UIButton *backButton;
 
-@property(nonatomic, weak) IBOutlet UIView *welcomeView;
-@property(nonatomic, weak) IBOutlet UIView *createAccountView;
-@property(nonatomic, weak) IBOutlet UIView *createAccountActivationView;
-@property(nonatomic, weak) IBOutlet UIView *linphoneLoginView;
-@property(nonatomic, weak) IBOutlet UIView *loginView;
-@property(weak, nonatomic) IBOutlet UIView *remoteProvisionningView;
+@property(nonatomic, strong) IBOutlet UIView *welcomeView;
+@property(nonatomic, strong) IBOutlet UIView *createAccountView;
+@property(nonatomic, strong) IBOutlet UIView *createAccountActivationView;
+@property(nonatomic, strong) IBOutlet UIView *linphoneLoginView;
+@property(nonatomic, strong) IBOutlet UIView *loginView;
+@property(nonatomic, strong) IBOutlet UIView *remoteProvisionningView;
 
-@property(nonatomic, weak) IBOutlet UIImageView *welcomeLogoImage;
-@property(nonatomic, weak) IBOutlet UIButton *gotoCreateAccountButton;
-@property(nonatomic, weak) IBOutlet UIButton *gotoLinphoneLoginButton;
-@property(nonatomic, weak) IBOutlet UIButton *gotoLoginButton;
-@property(weak, nonatomic) IBOutlet UIButton *gotoRemoteProvisionningButton;
+@property(nonatomic, strong) IBOutlet UIImageView *welcomeLogoImage;
+@property(nonatomic, strong) IBOutlet UIButton *gotoCreateAccountButton;
+@property(nonatomic, strong) IBOutlet UIButton *gotoLinphoneLoginButton;
+@property(nonatomic, strong) IBOutlet UIButton *gotoLoginButton;
+@property(nonatomic, strong) IBOutlet UIButton *gotoRemoteProvisionningButton;
 
 - (void)reset;
 - (void)fillDefaultValues;

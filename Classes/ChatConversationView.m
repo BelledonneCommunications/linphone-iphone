@@ -166,9 +166,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	self->chatRoom = room;
 	[messageField setText:@""];
 	[tableController setChatRoom:room];
-	[self update];
-	linphone_chat_room_mark_as_read(chatRoom);
-	[self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
+	if (chatRoom != NULL) {
+		[self update];
+		linphone_chat_room_mark_as_read(chatRoom);
+		[self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
+	}
 	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 }
 
