@@ -138,8 +138,8 @@ static void chatTable_free_chatrooms(void *data) {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 	LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row]);
-	ChatsListTableView *view = VIEW(ChatConversationView);
-	[PhoneMainView.instance changeCurrentView:view push:TRUE];
+	ChatConversationView *view = VIEW(ChatConversationView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	[view setChatRoom:chatRoom];
 }
 

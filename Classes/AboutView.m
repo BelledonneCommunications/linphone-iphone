@@ -68,7 +68,7 @@
 										   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"],
 										   linphone_core_get_version()]];
 
-	if ([LinphoneManager runningOnIpad]) {
+	if (LinphoneManager.runningOnIpad) {
 		[LinphoneUtils adjustFontSize:self.view mult:2.22f];
 	}
 
@@ -93,10 +93,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:TabBarView.class
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark -

@@ -154,7 +154,7 @@
 		[UICallCell adaptSize:videoUploadBandwidthHeaderLabel field:videoUploadBandwidthLabel];
 		[UICallCell adaptSize:videoIceConnectivityHeaderLabel field:videoIceConnectivityLabel];
 
-		if ([LinphoneManager runningOnIpad]) {
+		if (LinphoneManager.runningOnIpad) {
 			[LinphoneUtils adjustFontSize:self.audioStatsView mult:2.22];
 			[LinphoneUtils adjustFontSize:self.videoStatsView mult:2.22];
 		}
@@ -200,11 +200,11 @@
 #pragma mark - Static Functions
 
 + (int)getMaximizedHeight {
-	return [LinphoneManager runningOnIpad] ? 600 : 300;
+	return LinphoneManager.runningOnIpad ? 600 : 300;
 }
 
 + (int)getMinimizedHeight {
-	return [LinphoneManager runningOnIpad] ? 126 : 63;
+	return LinphoneManager.runningOnIpad ? 126 : 63;
 }
 
 + (void)adaptSize:(UILabel *)label field:(UIView *)field {

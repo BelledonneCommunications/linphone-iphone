@@ -80,6 +80,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return compositeDescription;
 }
 
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
+}
+
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
@@ -481,7 +485,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 - (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
 	// Dismiss popover on iPad
-	if ([LinphoneManager runningOnIpad]) {
+	if (LinphoneManager.runningOnIpad) {
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
 

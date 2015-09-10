@@ -78,11 +78,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:TabBarView.class
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 		compositeDescription.darkBackground = true;
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - ViewController Functions
@@ -114,7 +118,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
 	[self callUpdate:call state:state];
 
-	if ([LinphoneManager runningOnIpad]) {
+	if (LinphoneManager.runningOnIpad) {
 		BOOL videoEnabled = linphone_core_video_enabled(lc);
 		BOOL previewPref = [mgr lpConfigBoolForKey:@"preview_preference"];
 
@@ -172,7 +176,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onOneLongClick:)];
 	[oneButton addGestureRecognizer:oneLongGesture];
 
-	if ([LinphoneManager runningOnIpad]) {
+	if (LinphoneManager.runningOnIpad) {
 		if ([LinphoneManager instance].frontCamId != nil) {
 			// only show camera switch button if we have more than 1 camera
 			[videoCameraSwitch setHidden:FALSE];
@@ -216,7 +220,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)coreUpdateEvent:(NSNotification *)notif {
-	if ([LinphoneManager runningOnIpad]) {
+	if (LinphoneManager.runningOnIpad) {
 		LinphoneCore *lc = [LinphoneManager getLc];
 		if (linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
 			linphone_core_set_native_preview_window_id(lc, (__bridge void *)(videoPreview));
@@ -399,11 +403,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[ContactSelection setNameOrEmailFilter:nil];
 	[ContactSelection enableEmailFilter:FALSE];
 	ContactsListView *view = VIEW(ContactsListView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+	[PhoneMainView.instance changeCurrentView:view.class.compositeViewDescription push:TRUE];
 }
 
 - (IBAction)onBackClick:(id)event {
-	[PhoneMainView.instance changeCurrentView:[CallView compositeViewDescription]];
+	[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
 }
 
 - (IBAction)onAddressChange:(id)sender {

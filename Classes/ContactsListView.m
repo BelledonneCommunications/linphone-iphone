@@ -106,10 +106,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:TabBarView.class
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - ViewController Functions
@@ -157,7 +161,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
 			otherButtonTitles:nil];
 		[error show];
-		[PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]];
+		[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 	}
 }
 
@@ -234,15 +238,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAddContactClick:(id)event {
 	// Go to Contact details view
-	ContactDetailsView *controller =
-		DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:[ContactDetailsView compositeViewDescription] push:TRUE],
-					 ContactDetailsView);
-	if (controller != nil) {
-		if ([ContactSelection getAddAddress] == nil) {
-			[controller newContact];
-		} else {
-			[controller newContact:[ContactSelection getAddAddress]];
-		}
+	ContactDetailsView *view = VIEW(ContactDetailsView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+	if ([ContactSelection getAddAddress] == nil) {
+		[view newContact];
+	} else {
+		[view newContact:[ContactSelection getAddAddress]];
 	}
 }
 
@@ -284,11 +285,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue, identifier);
 	NSString *phoneNumber = (NSString *)CFBridgingRelease(ABMultiValueCopyValueAtIndex(multiValue, valueIdx));
 	// Go to dialer view
-	DialerView *controller =
-		DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]], DialerView);
-	if (controller != nil) {
-		[controller call:phoneNumber displayName:(NSString *)CFBridgingRelease(ABRecordCopyCompositeName(person))];
-	}
+	DialerView *view = VIEW(DialerView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[view call:phoneNumber displayName:(NSString *)CFBridgingRelease(ABRecordCopyCompositeName(person))];
 	CFRelease(multiValue);
 	return false;
 }

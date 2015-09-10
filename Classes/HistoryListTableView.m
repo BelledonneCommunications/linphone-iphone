@@ -143,14 +143,9 @@
 	if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
 		LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 		char *uri = linphone_address_as_string(addr);
-
-		// Go to dialer view
-		DialerView *controller =
-			DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]], DialerView);
-		if (controller != nil) {
-			[controller call:[NSString stringWithUTF8String:uri]
-				 displayName:[FastAddressBook displayNameForAddress:addr]];
-		}
+		DialerView *view = VIEW(DialerView);
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+		[view call:[NSString stringWithUTF8String:uri] displayName:[FastAddressBook displayNameForAddress:addr]];
 		ms_free(uri);
 	}
 }

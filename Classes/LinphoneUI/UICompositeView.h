@@ -49,6 +49,7 @@
 @protocol UICompositeViewDelegate <NSObject>
 
 + (UICompositeViewDescription *)compositeViewDescription;
+- (UICompositeViewDescription *)compositeViewDescription;
 
 @end
 

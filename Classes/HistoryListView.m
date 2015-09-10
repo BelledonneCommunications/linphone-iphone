@@ -48,10 +48,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:TabBarView.class
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - ViewController Functions

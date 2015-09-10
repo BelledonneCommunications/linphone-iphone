@@ -230,15 +230,12 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	ABRecordRef lPerson = (__bridge ABRecordRef)([subDic objectForKey:[subDic keyAtIndex:[indexPath row]]]);
 
 	// Go to Contact details view
-	ContactDetailsView *controller =
-		DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:[ContactDetailsView compositeViewDescription] push:TRUE],
-					 ContactDetailsView);
-	if (controller != nil) {
-		if ([ContactSelection getSelectionMode] != ContactSelectionModeEdit) {
-			[controller setContact:lPerson];
-		} else {
-			[controller editContact:lPerson address:[ContactSelection getAddAddress]];
-		}
+	ContactDetailsView *view = VIEW(ContactDetailsView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+	if ([ContactSelection getSelectionMode] != ContactSelectionModeEdit) {
+		[view setContact:lPerson];
+	} else {
+		[view editContact:lPerson address:[ContactSelection getAddAddress]];
 	}
 }
 

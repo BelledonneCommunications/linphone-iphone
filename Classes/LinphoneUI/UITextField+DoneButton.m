@@ -14,7 +14,7 @@
 
 - (void)addDoneButton {
 	// actually on iPad there is a done button
-	if (![LinphoneManager runningOnIpad]) {
+	if (!LinphoneManager.runningOnIpad) {
 		UIToolbar *numberToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 50)];
 		numberToolbar.items = [NSArray
 			arrayWithObjects:[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Cancel", nil)

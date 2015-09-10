@@ -67,11 +67,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:nil
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 		compositeDescription.darkBackground = true;
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - Event Functions
@@ -92,7 +96,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)dismiss {
-	if ([[PhoneMainView.instance currentView] equal:[CallIncomingView compositeViewDescription]]) {
+	if ([[PhoneMainView.instance currentView] equal:CallIncomingView.compositeViewDescription]) {
 		[PhoneMainView.instance popCurrentView];
 	}
 }

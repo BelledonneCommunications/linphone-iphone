@@ -85,6 +85,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return compositeDescription;
 }
 
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
+}
+
 #pragma mark - ViewController Functions
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -272,7 +276,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		hideControlsTimer = nil;
 	}
 
-	if ([[PhoneMainView.instance currentView] equal:[CallView compositeViewDescription]] && videoShown) {
+	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription] && videoShown) {
 		// show controls
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
@@ -297,7 +301,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		hideControlsTimer = nil;
 	}
 
-	if ([[PhoneMainView.instance currentView] equal:[CallView compositeViewDescription]] && videoShown) {
+	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription] && videoShown) {
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 		[videoCameraSwitch setAlpha:0.0];
@@ -483,7 +487,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	  [timer invalidate];
 	};
 	[sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Decline", nil) block:cancelBlock];
-	if ([LinphoneManager runningOnIpad]) {
+	if (LinphoneManager.runningOnIpad) {
 		[sheet addCancelButtonWithTitle:NSLocalizedString(@"Decline", nil) block:cancelBlock];
 	}
 	[sheet showInView:PhoneMainView.instance.view];

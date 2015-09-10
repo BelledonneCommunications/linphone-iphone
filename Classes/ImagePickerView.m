@@ -36,7 +36,7 @@
 	self = [super init];
 	if (self != nil) {
 		pickerController = [[UIImagePickerController alloc] init];
-		if ([LinphoneManager runningOnIpad]) {
+		if (LinphoneManager.runningOnIpad) {
 			popoverController = [[UIPopoverController alloc] initWithContentViewController:pickerController];
 		}
 	}
@@ -53,11 +53,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:nil
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 		compositeDescription.darkBackground = false;
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - ViewController Functions
@@ -124,7 +128,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)dismiss {
-	if ([[PhoneMainView.instance currentView] equal:[ImagePickerView compositeViewDescription]]) {
+	if ([[PhoneMainView.instance currentView] equal:ImagePickerView.compositeViewDescription]) {
 		[PhoneMainView.instance popCurrentView];
 	}
 }
@@ -164,34 +168,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (void)SelectImageFromDevice:(id<ImagePickerDelegate>)delegate
 				   atPosition:(CGRect)ipadPopoverPosition
-					   inView:(UIView *)view {
+					   inView:(UIView *)ipadView {
 	void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
-	  UICompositeViewDescription *description = [ImagePickerView compositeViewDescription];
-	  ImagePickerView *controller;
-	  if ([LinphoneManager runningOnIpad] && view) {
-		  controller = DYNAMIC_CAST([PhoneMainView.instance.mainViewController getCachedController:description.content],
-									ImagePickerView);
-	  } else {
-		  controller = DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:description push:TRUE], ImagePickerView);
+	  ImagePickerView *view = VIEW(ImagePickerView);
+	  if (!LinphoneManager.runningOnIpad) {
+		  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	  }
-	  if (controller != nil) {
-		  controller.sourceType = type;
+	  view.sourceType = type;
 
-		  // Displays a control that allows the user to choose picture or
-		  // movie capture, if both are available:
-		  controller.mediaTypes = [NSArray arrayWithObject:(NSString *)kUTTypeImage];
+	  // Displays a control that allows the user to choose picture or
+	  // movie capture, if both are available:
+	  view.mediaTypes = [NSArray arrayWithObject:(NSString *)kUTTypeImage];
 
-		  // Hides the controls for moving & scaling pictures, or for
-		  // trimming movies. To instead show the controls, use YES.
-		  controller.allowsEditing = NO;
-		  controller.imagePickerDelegate = delegate;
+	  // Hides the controls for moving & scaling pictures, or for
+	  // trimming movies. To instead show the controls, use YES.
+	  view.allowsEditing = NO;
+	  view.imagePickerDelegate = delegate;
 
-		  if ([LinphoneManager runningOnIpad] && view) {
-			  [controller.popoverController presentPopoverFromRect:ipadPopoverPosition
-															inView:view
-										  permittedArrowDirections:UIPopoverArrowDirectionAny
-														  animated:FALSE];
-		  }
+	  if (LinphoneManager.runningOnIpad) {
+		  [view.popoverController presentPopoverFromRect:ipadPopoverPosition
+												  inView:ipadView
+								permittedArrowDirections:UIPopoverArrowDirectionAny
+												animated:FALSE];
 	  }
 	};
 

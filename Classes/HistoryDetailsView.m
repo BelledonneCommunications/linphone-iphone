@@ -52,10 +52,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:TabBarView.class
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - Property Functions
@@ -174,13 +178,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onContactClick:(id)event {
 	if (contact) {
-		ContactDetailsView *controller = DYNAMIC_CAST(
-			[PhoneMainView.instance changeCurrentView:[ContactDetailsView compositeViewDescription] push:TRUE],
-			ContactDetailsView);
-		if (controller != nil) {
-			[ContactSelection setSelectionMode:ContactSelectionModeNone];
-			[controller setContact:contact];
-		}
+		ContactDetailsView *view = VIEW(ContactDetailsView);
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[ContactSelection setSelectionMode:ContactSelectionModeNone];
+		[view setContact:contact];
 	}
 }
 
@@ -197,9 +198,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[ContactSelection setSipFilter:nil];
 			[ContactSelection enableEmailFilter:FALSE];
 			[ContactSelection setNameOrEmailFilter:nil];
-			DYNAMIC_CAST(
-				[PhoneMainView.instance changeCurrentView:[ContactsListView compositeViewDescription] push:TRUE],
-				ContactsListView);
+			[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription push:TRUE];
 			ms_free(lAddress);
 		}
 	}
@@ -212,11 +211,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		return;
 	NSString *displayName = [FastAddressBook displayNameForAddress:addr];
 
-	DialerView *controller =
-		DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]], DialerView);
-	if (controller != nil) {
-		[controller call:[NSString stringWithUTF8String:lAddress] displayName:displayName];
-	}
+	DialerView *view = VIEW(DialerView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[view call:[NSString stringWithUTF8String:lAddress] displayName:displayName];
 	ms_free(lAddress);
 }
 
@@ -224,15 +221,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	if (addr == NULL)
 		return;
-	// Go to ChatRoom view
-	[PhoneMainView.instance changeCurrentView:[ChatsListView compositeViewDescription]];
-	ChatConversationView *controller = DYNAMIC_CAST(
-		[PhoneMainView.instance changeCurrentView:[ChatConversationView compositeViewDescription] push:TRUE],
-		ChatConversationView);
-	if (controller != nil) {
-		LinphoneChatRoom *room = linphone_core_get_chat_room([LinphoneManager getLc], addr);
-		[controller setChatRoom:room];
-	}
+	[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
+	ChatConversationView *view = VIEW(ChatConversationView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+	LinphoneChatRoom *room = linphone_core_get_chat_room([LinphoneManager getLc], addr);
+	[view setChatRoom:room];
 }
 
 @end

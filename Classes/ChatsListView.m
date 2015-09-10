@@ -67,10 +67,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:TabBarView.class
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - Action Functions
@@ -81,7 +85,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_core_get_chat_room_from_uri([LinphoneManager getLc], [addressField.text UTF8String]);
 	if (room != nil) {
 		ChatConversationView *view = VIEW(ChatConversationView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE] [view setChatRoom:room];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[view setChatRoom:room];
 	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid address", nil)
 														message:@"Please specify the entire SIP address for the chat"
@@ -99,7 +104,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[ContactSelection setSipFilter:[LinphoneManager instance].contactFilter];
 		[ContactSelection enableEmailFilter:FALSE];
 		[ContactSelection setNameOrEmailFilter:nil];
-		[PhoneMainView.instance changeCurrentView:[ContactsListView compositeViewDescription] push:TRUE];
+		[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription push:TRUE];
 	} else {
 		[self startChatRoom];
 	}

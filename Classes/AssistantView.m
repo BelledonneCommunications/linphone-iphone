@@ -68,11 +68,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:nil
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 		compositeDescription.darkBackground = true;
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - ViewController Functions
@@ -98,7 +102,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	if ([LinphoneManager runningOnIpad]) {
+	if (LinphoneManager.runningOnIpad) {
 		[LinphoneUtils adjustFontSize:_welcomeView mult:2.22f];
 		[LinphoneUtils adjustFontSize:_createAccountView mult:2.22f];
 		[LinphoneUtils adjustFontSize:_linphoneLoginView mult:2.22f];
@@ -478,7 +482,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	switch (state) {
 		case LinphoneRegistrationOk: {
 			_waitView.hidden = true;
-			[PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]];
+			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 			break;
 		}
 		case LinphoneRegistrationNone:
@@ -604,7 +608,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDialerBackClick:(id)sender {
-	[PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]];
+	[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 }
 
 - (IBAction)onGotoCreateAccountClick:(id)sender {
@@ -689,7 +693,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 							 block:^{
 							   _waitView.hidden = true;
 							   [self addProxyConfig:username password:password domain:domain withTransport:transport];
-							   [PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]];
+							   [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 							 }];
 			[alert show];
 		} else {

@@ -128,10 +128,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:nil
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - Property Functions
@@ -147,7 +151,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)sender {
-	if ([[PhoneMainView.instance currentView] equal:[ImageView compositeViewDescription]]) {
+	if ([[PhoneMainView.instance currentView] equal:ImageView.compositeViewDescription]) {
 		[PhoneMainView.instance popCurrentView];
 	}
 }

@@ -266,7 +266,7 @@
 }
 
 - (IBAction)onAboutClick:(id)sender {
-	[PhoneMainView.instance changeCurrentView:[AboutView compositeViewDescription] push:TRUE];
+	[PhoneMainView.instance changeCurrentView:AboutView.compositeViewDescription push:TRUE];
 }
 
 @end
@@ -397,10 +397,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   stateBar:StatusBarView.class
 																 tabBar:TabBarView.class
 															 fullscreen:false
-														  landscapeMode:[LinphoneManager runningOnIpad]
+														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];
 	}
 	return compositeDescription;
+}
+
+- (UICompositeViewDescription *)compositeViewDescription {
+	return self.class.compositeViewDescription;
 }
 
 #pragma mark - ViewController Functions
@@ -646,7 +650,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"console_button"];
 	}
 
-	if (![LinphoneManager runningOnIpad]) {
+	if (!LinphoneManager.runningOnIpad) {
 		[hiddenKeys addObject:@"preview_preference"];
 	}
 	if ([lm lpConfigBoolForKey:@"hide_run_assistant_preference"]) {
@@ -723,7 +727,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[alert show];
 
 	} else if ([key isEqual:@"about_button"]) {
-		[PhoneMainView.instance changeCurrentView:[AboutView compositeViewDescription] push:TRUE];
+		[PhoneMainView.instance changeCurrentView:AboutView.compositeViewDescription push:TRUE];
 	} else if ([key isEqualToString:@"reset_logs_button"]) {
 		linphone_core_reset_log_collection();
 	} else if ([key isEqual:@"send_logs_button"]) {

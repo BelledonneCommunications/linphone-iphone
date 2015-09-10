@@ -611,7 +611,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 			if ([ContactSelection getSelectionMode] != ContactSelectionModeMessage) {
 				// Go to dialer view
 				DialerView *view = VIEW(DialerView);
-				[PhoneMainView.instance changeCurrentView:view];
+				[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 				[view call:dest displayName:displayName];
 			} else {
 				// Go to Chat room view
@@ -639,14 +639,11 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		}
 		if (key != nil) {
 			editingIndexPath = indexPath;
-			ContactDetailsLabelView *controller = DYNAMIC_CAST(
-				[PhoneMainView.instance changeCurrentView:[ContactDetailsLabelView compositeViewDescription] push:TRUE],
-				ContactDetailsLabelView);
-			if (controller != nil) {
-				[controller setDataList:[self getLocalizedLabels]];
-				[controller setSelectedData:key];
-				[controller setDelegate:self];
-			}
+			ContactDetailsLabelView *view = VIEW(ContactDetailsLabelView);
+			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+			[view setDataList:[self getLocalizedLabels]];
+			[view setSelectedData:key];
+			[view setDelegate:self];
 		}
 	}
 }
