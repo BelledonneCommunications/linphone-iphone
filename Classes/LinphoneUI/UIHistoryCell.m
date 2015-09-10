@@ -38,7 +38,7 @@
 			[self.contentView addSubview:[arrayOfViews objectAtIndex:0]];
 		}
 
-		self->callLog = NULL;
+		callLog = NULL;
 	}
 	return self;
 }

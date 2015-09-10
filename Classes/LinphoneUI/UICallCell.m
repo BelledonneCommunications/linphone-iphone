@@ -34,8 +34,8 @@
 - (id)init:(LinphoneCall *)acall {
 	self = [super init];
 	if (self != nil) {
-		self->view = UICallCellOtherView_Avatar;
-		self->call = acall;
+		view = UICallCellOtherView_Avatar;
+		call = acall;
 		image = [UIImage imageNamed:@"avatar_unknown.png"];
 		address = NSLocalizedString(@"Unknown", nil);
 		[self update];
@@ -126,24 +126,24 @@
 			[self addSubview:sub];
 		}
 
-		self->currentCall = FALSE;
+		currentCall = FALSE;
 
 		_outgoingRingCountLabel.hidden = YES;
 		_outgoingRingCountLabel.text = @"0";
 
-		self->detailsRightSwipeGestureRecognizer =
+		detailsRightSwipeGestureRecognizer =
 			[[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doDetailsSwipe:)];
 		[detailsRightSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionLeft];
 		[otherView addGestureRecognizer:detailsRightSwipeGestureRecognizer];
 
-		self->detailsRightSwipeGestureRecognizer =
+		detailsRightSwipeGestureRecognizer =
 			[[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(doDetailsSwipe:)];
 		[detailsRightSwipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionRight];
 		[otherView addGestureRecognizer:detailsRightSwipeGestureRecognizer];
 
-		[self->avatarView setHidden:TRUE];
-		[self->audioStatsView setHidden:TRUE];
-		[self->videoStatsView setHidden:TRUE];
+		[avatarView setHidden:TRUE];
+		[audioStatsView setHidden:TRUE];
+		[videoStatsView setHidden:TRUE];
 
 		[UICallCell adaptSize:audioCodecHeaderLabel field:audioCodecLabel];
 		[UICallCell adaptSize:audioDownloadBandwidthHeaderLabel field:audioDownloadBandwidthLabel];
@@ -447,17 +447,17 @@
 		return;
 	}
 	if (data->view == UICallCellOtherView_Avatar && avatarView.isHidden) {
-		[self->avatarView setHidden:FALSE];
-		[self->audioStatsView setHidden:TRUE];
-		[self->videoStatsView setHidden:TRUE];
+		[avatarView setHidden:FALSE];
+		[audioStatsView setHidden:TRUE];
+		[videoStatsView setHidden:TRUE];
 	} else if (data->view == UICallCellOtherView_AudioStats && audioStatsView.isHidden) {
-		[self->avatarView setHidden:TRUE];
-		[self->audioStatsView setHidden:FALSE];
-		[self->videoStatsView setHidden:TRUE];
+		[avatarView setHidden:TRUE];
+		[audioStatsView setHidden:FALSE];
+		[videoStatsView setHidden:TRUE];
 	} else if (data->view == UICallCellOtherView_VideoStats && videoStatsView.isHidden) {
-		[self->avatarView setHidden:TRUE];
-		[self->audioStatsView setHidden:TRUE];
-		[self->videoStatsView setHidden:FALSE];
+		[avatarView setHidden:TRUE];
+		[audioStatsView setHidden:TRUE];
+		[videoStatsView setHidden:FALSE];
 	}
 }
 

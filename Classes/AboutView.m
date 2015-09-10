@@ -39,8 +39,7 @@
 - (id)init {
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self != nil) {
-		self->linkTapGestureRecognizer =
-			[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLinkTap:)];
+		linkTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLinkTap:)];
 	}
 	return self;
 }

@@ -63,7 +63,7 @@ static UIFont *CELL_FONT = nil;
 	if (!chatRoom)
 		return;
 	[self clearMessageList];
-	self->messageList = linphone_chat_room_get_history(chatRoom, 0);
+	messageList = linphone_chat_room_get_history(chatRoom, 0);
 
 	// also append transient upload messages because they are not in history yet!
 	for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
@@ -72,7 +72,7 @@ static UIFont *CELL_FONT = nil;
 		const LinphoneAddress *peer = linphone_chat_room_get_peer_address(chatRoom);
 		if (linphone_address_equal(ftd_peer, peer) && linphone_chat_message_is_outgoing(ftd.message)) {
 			LOGI(@"Appending transient upload message %p", ftd.message);
-			self->messageList = ms_list_append(self->messageList, linphone_chat_message_ref(ftd.message));
+			messageList = ms_list_append(messageList, linphone_chat_message_ref(ftd.message));
 		}
 	}
 }
@@ -95,7 +95,7 @@ static UIFont *CELL_FONT = nil;
 }
 
 - (void)updateChatEntry:(LinphoneChatMessage *)chat {
-	NSInteger index = ms_list_index(self->messageList, chat);
+	NSInteger index = ms_list_index(messageList, chat);
 	if (index < 0) {
 		LOGW(@"chat entry doesn't exist");
 		return;
@@ -120,7 +120,7 @@ static UIFont *CELL_FONT = nil;
 		LOGE(@"No data to debug");
 		return;
 	}
-	MSList *item = self->messageList;
+	MSList *item = messageList;
 	int count = 0;
 	while (item) {
 		LinphoneChatMessage *msg = (LinphoneChatMessage *)item->data;
@@ -173,12 +173,12 @@ static UIFont *CELL_FONT = nil;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ms_list_size(self->messageList);
+	return ms_list_size(messageList);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = nil;
-	LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
+	LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
 	if (linphone_chat_message_get_file_transfer_information(chat) ||
 		linphone_chat_message_get_external_body_url(chat)) {
 		kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
@@ -201,7 +201,7 @@ static UIFont *CELL_FONT = nil;
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		[tableView beginUpdates];
-		LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
+		LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
 		if (chat) {
 			linphone_chat_room_delete_message(chatRoom, chat);
 			messageList = ms_list_remove(messageList, chat);
@@ -223,7 +223,7 @@ static UIFont *CELL_FONT = nil;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	LinphoneChatMessage *message = ms_list_nth_data(self->messageList, (int)[indexPath row]);
+	LinphoneChatMessage *message = ms_list_nth_data(messageList, (int)[indexPath row]);
 	return [self.class viewSize:message width:[self.view frame].size.width].height;
 }
 

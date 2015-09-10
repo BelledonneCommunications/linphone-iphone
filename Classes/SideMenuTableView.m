@@ -16,8 +16,8 @@
 
 - (id)initWithTitle:(NSString *)atitle tapBlock:(SideMenuEntryBlock)tapBlock {
 	if ((self = [super init])) {
-		self->title = atitle;
-		self->onTapBlock = tapBlock;
+		title = atitle;
+		onTapBlock = tapBlock;
 	}
 	return self;
 }

@@ -43,8 +43,8 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 - (id)init {
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self != nil) {
-		self->singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
-		self->videoZoomHandler = [[VideoZoomHandler alloc] init];
+		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
+		videoZoomHandler = [[VideoZoomHandler alloc] init];
 	}
 	return self;
 }

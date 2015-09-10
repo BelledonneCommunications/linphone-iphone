@@ -48,7 +48,7 @@
 #pragma mark - Property Funcitons
 
 - (void)setChatRoom:(LinphoneChatRoom *)achat {
-	self->chatRoom = achat;
+	chatRoom = achat;
 	[self update];
 }
 

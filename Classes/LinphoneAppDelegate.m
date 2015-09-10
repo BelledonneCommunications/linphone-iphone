@@ -39,7 +39,7 @@
 - (id)init {
 	self = [super init];
 	if (self != nil) {
-		self->startedInBackground = FALSE;
+		startedInBackground = FALSE;
 	}
 	return self;
 }

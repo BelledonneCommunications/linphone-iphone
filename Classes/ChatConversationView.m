@@ -45,17 +45,16 @@
 - (id)init {
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self != nil) {
-		self->scrollOnGrowingEnabled = TRUE;
-		self->chatRoom = NULL;
-		self->listTapGestureRecognizer =
-			[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onListTap:)];
+		scrollOnGrowingEnabled = TRUE;
+		chatRoom = NULL;
+		listTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onListTap:)];
 		self.listSwipeGestureRecognizer =
 			[[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onListSwipe:)];
-		self->imageQualities = [[OrderedDictionary alloc]
+		imageQualities = [[OrderedDictionary alloc]
 			initWithObjectsAndKeys:[NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
 								   [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
-		self->composingVisible = TRUE;
+		composingVisible = TRUE;
 	}
 	return self;
 }
@@ -163,7 +162,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
-	self->chatRoom = room;
+	chatRoom = room;
 	[messageField setText:@""];
 	[tableController setChatRoom:room];
 	if (chatRoom != NULL) {

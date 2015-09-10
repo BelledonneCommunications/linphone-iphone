@@ -57,7 +57,7 @@
 - (id)init {
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self) {
-		self->transferMode = FALSE;
+		transferMode = FALSE;
 	}
 	return self;
 }

@@ -36,7 +36,7 @@
 - (instancetype)init {
 	self = super.init;
 	if (self) {
-		self->data = nil;
+		data = nil;
 	}
 	return self;
 }

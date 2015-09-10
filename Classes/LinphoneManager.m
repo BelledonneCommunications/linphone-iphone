@@ -93,10 +93,10 @@ NSString *const kLinphoneInternalChatDBFilename = @"linphone_chats.db";
 @implementation LinphoneCallAppData
 - (id)init {
 	if ((self = [super init])) {
-		self->batteryWarningShown = FALSE;
-		self->notification = nil;
-		self->videoRequested = FALSE;
-		self->userInfos = [[NSMutableDictionary alloc] init];
+		batteryWarningShown = FALSE;
+		notification = nil;
+		videoRequested = FALSE;
+		userInfos = [[NSMutableDictionary alloc] init];
 	}
 	return self;
 }
@@ -275,7 +275,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 
 		pushCallIDs = [[NSMutableArray alloc] init];
 		photoLibrary = [[ALAssetsLibrary alloc] init];
-		self->_isTesting = [LinphoneManager isRunningTests];
+		_isTesting = [LinphoneManager isRunningTests];
 
 		[self renameDefaultSettings];
 		[self copyDefaultSettings];
