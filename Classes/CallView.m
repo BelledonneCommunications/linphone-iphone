@@ -62,7 +62,7 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 }
 
 - (void)dealloc {
-	[[PhoneMainView instance].view removeGestureRecognizer:singleFingerTap];
+	[PhoneMainView.instance.view removeGestureRecognizer:singleFingerTap];
 
 	// Remove all observer
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -94,7 +94,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	UIDevice *device = [UIDevice currentDevice];
 	device.proximityMonitoringEnabled = YES;
 
-	[[PhoneMainView instance] setVolumeHidden:TRUE];
+	[PhoneMainView.instance setVolumeHidden:TRUE];
 	hiddenVolume = TRUE;
 }
 
@@ -106,7 +106,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	if (hiddenVolume) {
-		[[PhoneMainView instance] setVolumeHidden:FALSE];
+		[PhoneMainView.instance setVolumeHidden:FALSE];
 		hiddenVolume = FALSE;
 	}
 
@@ -142,7 +142,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	UIDevice *device = [UIDevice currentDevice];
 	device.proximityMonitoringEnabled = NO;
 
-	[[PhoneMainView instance] fullScreen:false];
+	[PhoneMainView.instance fullScreen:false];
 	// Disable tap
 	[singleFingerTap setEnabled:FALSE];
 }
@@ -152,7 +152,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[singleFingerTap setNumberOfTapsRequired:1];
 	[singleFingerTap setCancelsTouchesInView:FALSE];
-	[[PhoneMainView instance].view addGestureRecognizer:singleFingerTap];
+	[PhoneMainView.instance.view addGestureRecognizer:singleFingerTap];
 
 	[videoZoomHandler setup:videoGroup];
 	videoGroup.alpha = 0;
@@ -167,7 +167,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidUnload {
 	[super viewDidUnload];
-	[[PhoneMainView instance].view removeGestureRecognizer:singleFingerTap];
+	[PhoneMainView.instance.view removeGestureRecognizer:singleFingerTap];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -187,7 +187,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneCore *lc = [LinphoneManager getLc];
 
 	if (hiddenVolume) {
-		[[PhoneMainView instance] setVolumeHidden:FALSE];
+		[PhoneMainView.instance setVolumeHidden:FALSE];
 		hiddenVolume = FALSE;
 	}
 
@@ -272,12 +272,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		hideControlsTimer = nil;
 	}
 
-	if ([[[PhoneMainView instance] currentView] equal:[CallView compositeViewDescription]] && videoShown) {
+	if ([[PhoneMainView.instance currentView] equal:[CallView compositeViewDescription]] && videoShown) {
 		// show controls
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
-		[[PhoneMainView instance] showTabBar:true];
-		[[PhoneMainView instance] showStateBar:true];
+		[PhoneMainView.instance showTabBar:true];
+		[PhoneMainView.instance showStateBar:true];
 		[callTableView setAlpha:1.0];
 		[videoCameraSwitch setAlpha:1.0];
 		[UIView commitAnimations];
@@ -297,15 +297,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 		hideControlsTimer = nil;
 	}
 
-	if ([[[PhoneMainView instance] currentView] equal:[CallView compositeViewDescription]] && videoShown) {
+	if ([[PhoneMainView.instance currentView] equal:[CallView compositeViewDescription]] && videoShown) {
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 		[videoCameraSwitch setAlpha:0.0];
 		[callTableView setAlpha:0.0];
 		[UIView commitAnimations];
 
-		[[PhoneMainView instance] showTabBar:false];
-		[[PhoneMainView instance] showStateBar:false];
+		[PhoneMainView.instance showTabBar:false];
+		[PhoneMainView.instance showStateBar:false];
 	}
 }
 
@@ -359,9 +359,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[videoCameraSwitch setAlpha:0.0];
 
-	[[PhoneMainView instance] fullScreen:true];
-	[[PhoneMainView instance] showTabBar:false];
-	[[PhoneMainView instance] showStateBar:false];
+	[PhoneMainView.instance fullScreen:true];
+	[PhoneMainView.instance showTabBar:false];
+	[PhoneMainView.instance showStateBar:false];
 
 #ifdef TEST_VIDEO_VIEW_CHANGE
 	[NSTimer scheduledTimerWithTimeInterval:5.0
@@ -393,7 +393,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	[videoGroup setAlpha:0.0];
-	[[PhoneMainView instance] showTabBar:true];
+	[PhoneMainView.instance showTabBar:true];
 
 	UIEdgeInsets insets = {10, 0, 25, 0};
 	[callTableView setContentInset:insets];
@@ -415,7 +415,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		hideControlsTimer = nil;
 	}
 
-	[[PhoneMainView instance] fullScreen:false];
+	[PhoneMainView.instance fullScreen:false];
 }
 
 - (void)displayVideoCall:(BOOL)animated {
@@ -486,7 +486,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	if ([LinphoneManager runningOnIpad]) {
 		[sheet addCancelButtonWithTitle:NSLocalizedString(@"Decline", nil) block:cancelBlock];
 	}
-	[sheet showInView:[PhoneMainView instance].view];
+	[sheet showInView:PhoneMainView.instance.view];
 }
 
 - (void)dismissVideoActionSheet:(NSTimer *)timer {

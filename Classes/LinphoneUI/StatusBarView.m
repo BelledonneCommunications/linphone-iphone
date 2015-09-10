@@ -320,7 +320,7 @@
 														   block:^() {
 															 weakSelf->securitySheet = nil;
 														   }];
-					[securitySheet showInView:[PhoneMainView instance].view];
+					[securitySheet showInView:PhoneMainView.instance.view];
 				}
 			}
 		}

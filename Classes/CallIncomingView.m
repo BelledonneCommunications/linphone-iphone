@@ -92,8 +92,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)dismiss {
-	if ([[[PhoneMainView instance] currentView] equal:[CallIncomingView compositeViewDescription]]) {
-		[[PhoneMainView instance] popCurrentView];
+	if ([[PhoneMainView.instance currentView] equal:[CallIncomingView compositeViewDescription]]) {
+		[PhoneMainView.instance popCurrentView];
 	}
 }
 

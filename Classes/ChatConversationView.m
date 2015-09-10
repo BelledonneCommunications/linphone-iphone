@@ -21,7 +21,7 @@
 #import "PhoneMainView.h"
 #import "Utils.h"
 #import "FileTransferDelegate.h"
-#import "UIChatConversationCell.h"
+#import "UIChatBubbleCell.h"
 
 @implementation ChatConversationView
 
@@ -183,7 +183,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	const LinphoneAddress *linphoneAddress = linphone_chat_room_get_peer_address(chatRoom);
 	if (linphoneAddress == NULL) {
-		[[PhoneMainView instance] popCurrentView];
+		[PhoneMainView.instance popCurrentView];
 		UIAlertView *error = [[UIAlertView alloc]
 				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
 					  message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to send a "
@@ -277,7 +277,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	  }
 	  [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
 	  dispatch_async(dispatch_get_main_queue(), ^{
-		[sheet showInView:[PhoneMainView instance].view];
+		[sheet showInView:PhoneMainView.instance.view];
 	  });
 	});
 }
@@ -425,7 +425,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 - (IBAction)onBackClick:(id)event {
 	[self.tableController setChatRoom:NULL];
-	[[PhoneMainView instance] popCurrentView];
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (IBAction)onEditClick:(id)event {
@@ -482,12 +482,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 - (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
 	// Dismiss popover on iPad
 	if ([LinphoneManager runningOnIpad]) {
-		UICompositeViewDescription *description = [ImagePickerView compositeViewDescription];
-		ImagePickerView *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance].mainViewController getCachedController:description.content], ImagePickerView);
-		if (controller != nil) {
-			[controller.popoverController dismissPopoverAnimated:TRUE];
-		}
+		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
 
 	NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
@@ -566,7 +561,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		  // Resize chat view
 		  {
 			  CGRect viewFrame = [[self view] frame];
-			  CGRect rect = [PhoneMainView instance].view.bounds;
+			  CGRect rect = PhoneMainView.instance.view.bounds;
 			  CGPoint pos = {viewFrame.size.width, viewFrame.size.height};
 			  CGPoint gPos =
 				  [self.view convertPoint:pos

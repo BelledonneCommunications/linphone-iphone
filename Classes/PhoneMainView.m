@@ -296,7 +296,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" forSection:@"app"] && conf == NULL) {
 			already_shown = TRUE;
 			AssistantView *controller = DYNAMIC_CAST(
-				[[PhoneMainView instance] changeCurrentView:[AssistantView compositeViewDescription]], AssistantView);
+				[PhoneMainView.instance changeCurrentView:[AssistantView compositeViewDescription]], AssistantView);
 			if (controller != nil) {
 				[controller fillDefaultValues];
 			}
@@ -422,9 +422,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 			if (list != NULL || ([lm lpConfigBoolForKey:@"hide_assistant_preference"] == true) || lm.isTesting) {
 				[self changeCurrentView:[DialerView compositeViewDescription]];
 			} else {
-				AssistantView *controller =
-					DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[AssistantView compositeViewDescription]],
-								 AssistantView);
+				AssistantView *controller = DYNAMIC_CAST(
+					[PhoneMainView.instance changeCurrentView:[AssistantView compositeViewDescription]], AssistantView);
 				if (controller != nil) {
 					[controller reset];
 				}
@@ -544,17 +543,17 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[mainViewController setFullScreen:enabled];
 }
 
-- (UIViewController *)changeCurrentView:(UICompositeViewDescription *)view {
-	return [self changeCurrentView:view push:FALSE];
+- (void)changeCurrentView:(UICompositeViewDescription *)view {
+	[self changeCurrentView:view push:FALSE];
 }
 
-- (UIViewController *)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push {
-	return [self changeCurrentView:view
-							  push:push
-						  animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+- (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push {
+	[self changeCurrentView:view
+					   push:push
+				   animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
 }
 
-- (UIViewController *)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated {
+- (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated {
 	BOOL force = push;
 	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
 	if (!push) {
@@ -562,7 +561,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		[viewStack removeAllObjects];
 	}
 	[viewStack addObject:view];
-	return [self _changeCurrentView:view transition:nil force:force animated:animated];
+	[self _changeCurrentView:view transition:nil force:force animated:animated];
 }
 
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view

@@ -77,8 +77,8 @@
 
 	if (startedInBackground) {
 		startedInBackground = FALSE;
-		[[PhoneMainView instance] startUp];
-		[[PhoneMainView instance] updateStatusBar:nil];
+		[PhoneMainView.instance startUp];
+		[PhoneMainView.instance updateStatusBar:nil];
 	}
 	LinphoneManager *instance = [LinphoneManager instance];
 
@@ -95,7 +95,7 @@
 			}
 			instance->currentCallContextBeforeGoingBackground.call = 0;
 		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
-			[[PhoneMainView instance] displayIncomingCall:call];
+			[PhoneMainView.instance displayIncomingCall:call];
 			// in this case, the ringing sound comes from the notification.
 			// To stop it we have to do the iOS7 ring fix...
 			[self fixRing];
@@ -203,8 +203,8 @@
 	// initialize UI
 	[self.window makeKeyAndVisible];
 	[RootViewManager setupWithPortrait:(PhoneMainView *)self.window.rootViewController];
-	[[PhoneMainView instance] startUp];
-	[[PhoneMainView instance] updateStatusBar:nil];
+	[PhoneMainView.instance startUp];
+	[PhoneMainView.instance updateStatusBar:nil];
 
 	NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
 	if (remoteNotif) {
@@ -253,7 +253,7 @@
 				stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
 
 			DialerView *controller = DYNAMIC_CAST(
-				[[PhoneMainView instance] changeCurrentView:[DialerView compositeViewDescription]], DialerView);
+				[PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]], DialerView);
 			if (controller != nil) {
 				[controller setAddress:sipUri];
 			}
@@ -297,7 +297,7 @@
 
 					if ([loc_key isEqualToString:@"IM_MSG"]) {
 
-						[[PhoneMainView instance] changeCurrentView:[ChatsListView compositeViewDescription]];
+						[PhoneMainView.instance changeCurrentView:[ChatsListView compositeViewDescription]];
 
 					} else if ([loc_key isEqualToString:@"IC_MSG"]) {
 
@@ -348,10 +348,10 @@
 	} else if ([notification.userInfo objectForKey:@"from_addr"] != nil) {
 		NSString *remoteContact = (NSString *)[notification.userInfo objectForKey:@"from_addr"];
 		// Go to ChatRoom view
-		[[PhoneMainView instance] changeCurrentView:[ChatsListView compositeViewDescription]];
+		[PhoneMainView.instance changeCurrentView:[ChatsListView compositeViewDescription]];
 		LinphoneChatRoom *room = [self findChatRoomForContact:remoteContact];
 		ChatConversationView *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance] changeCurrentView:[ChatConversationView compositeViewDescription] push:TRUE],
+			[PhoneMainView.instance changeCurrentView:[ChatConversationView compositeViewDescription] push:TRUE],
 			ChatConversationView);
 		if (controller != nil && room != nil) {
 			[controller setChatRoom:room];
@@ -359,9 +359,9 @@
 	} else if ([notification.userInfo objectForKey:@"callLog"] != nil) {
 		NSString *callLog = (NSString *)[notification.userInfo objectForKey:@"callLog"];
 		// Go to HistoryDetails view
-		[[PhoneMainView instance] changeCurrentView:[HistoryListView compositeViewDescription]];
+		[PhoneMainView.instance changeCurrentView:[HistoryListView compositeViewDescription]];
 		HistoryDetailsView *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance] changeCurrentView:[HistoryDetailsView compositeViewDescription] push:TRUE],
+			[PhoneMainView.instance changeCurrentView:[HistoryDetailsView compositeViewDescription] push:TRUE],
 			HistoryDetailsView);
 		if (controller != nil) {
 			[controller setCallLogId:callLog];
@@ -446,7 +446,7 @@
 				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
 				if (room) {
 					linphone_chat_room_mark_as_read(room);
-					[[PhoneMainView instance] updateApplicationBadgeNumber];
+					[PhoneMainView.instance updateApplicationBadgeNumber];
 				}
 			}
 		}
@@ -477,7 +477,7 @@
 			cancelButtonTitle:NSLocalizedString(@"OK", nil)
 			otherButtonTitles:nil];
 		[error show];
-		[[PhoneMainView instance] startUp];
+		[PhoneMainView.instance startUp];
 	}
 	if (state == LinphoneConfiguringFailed) {
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];

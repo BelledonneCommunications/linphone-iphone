@@ -610,24 +610,18 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 			NSString *displayName = [FastAddressBook getContactDisplayName:contact];
 			if ([ContactSelection getSelectionMode] != ContactSelectionModeMessage) {
 				// Go to dialer view
-				DialerView *controller = DYNAMIC_CAST(
-					[[PhoneMainView instance] changeCurrentView:[DialerView compositeViewDescription]], DialerView);
-				if (controller != nil) {
-					[controller call:dest displayName:displayName];
-				}
+				DialerView *view = VIEW(DialerView);
+				[PhoneMainView.instance changeCurrentView:view];
+				[view call:dest displayName:displayName];
 			} else {
 				// Go to Chat room view
-				[[PhoneMainView instance]
-					popToView:[ChatsListView compositeViewDescription]]; // Got to Chat and push ChatRoom
-				ChatConversationView *controller = DYNAMIC_CAST(
-					[[PhoneMainView instance] changeCurrentView:[ChatConversationView compositeViewDescription]
-														   push:TRUE],
-					ChatConversationView);
-				if (controller != nil) {
-					LinphoneChatRoom *room =
-						linphone_core_get_chat_room_from_uri([LinphoneManager getLc], [dest UTF8String]);
-					[controller setChatRoom:room];
-				}
+				[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+				// Then push ChatRoom
+				ChatConversationView *view = VIEW(ChatConversationView);
+				[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+				LinphoneChatRoom *room =
+					linphone_core_get_chat_room_from_uri([LinphoneManager getLc], [dest UTF8String]);
+				[view setChatRoom:room];
 			}
 		}
 	} else {
@@ -646,8 +640,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		if (key != nil) {
 			editingIndexPath = indexPath;
 			ContactDetailsLabelView *controller = DYNAMIC_CAST(
-				[[PhoneMainView instance] changeCurrentView:[ContactDetailsLabelView compositeViewDescription]
-													   push:TRUE],
+				[PhoneMainView.instance changeCurrentView:[ContactDetailsLabelView compositeViewDescription] push:TRUE],
 				ContactDetailsLabelView);
 			if (controller != nil) {
 				[controller setDataList:[self getLocalizedLabels]];

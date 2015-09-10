@@ -61,7 +61,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	ABAddressBookRevert(addressBook);
 	contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
 	if (contact == NULL) {
-		[[PhoneMainView instance] popCurrentView];
+		[PhoneMainView.instance popCurrentView];
 		return;
 	}
 	[tableController setContact:contact];
@@ -76,7 +76,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (void)removeContact {
 	if (contact == NULL) {
-		[[PhoneMainView instance] popCurrentView];
+		[PhoneMainView.instance popCurrentView];
 		return;
 	}
 
@@ -107,7 +107,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (void)saveData {
 	if (contact == NULL) {
-		[[PhoneMainView instance] popCurrentView];
+		[PhoneMainView.instance popCurrentView];
 		return;
 	}
 
@@ -248,7 +248,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([ContactSelection getSelectionMode] == ContactSelectionModeEdit) {
 		[ContactSelection setSelectionMode:ContactSelectionModeNone];
 	}
-	[[PhoneMainView instance] popCurrentView];
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (IBAction)onEditClick:(id)event {
@@ -265,7 +265,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)onRemove:(id)event {
 	[self disableEdit:FALSE];
 	[self removeContact];
-	[[PhoneMainView instance] popCurrentView];
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (void)onModification:(id)event {

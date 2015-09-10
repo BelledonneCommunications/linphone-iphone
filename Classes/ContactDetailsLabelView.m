@@ -49,8 +49,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)dismiss {
-	if ([[[PhoneMainView instance] currentView] equal:[ContactDetailsLabelView compositeViewDescription]]) {
-		[[PhoneMainView instance] popCurrentView];
+	if ([[PhoneMainView.instance currentView] equal:[ContactDetailsLabelView compositeViewDescription]]) {
+		[PhoneMainView.instance popCurrentView];
 	}
 }
 

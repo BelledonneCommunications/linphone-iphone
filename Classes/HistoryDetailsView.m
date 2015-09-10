@@ -150,7 +150,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// Pop if callLog is null
 	[self retrieveCallLog];
 	if (callLog == NULL) {
-		[[PhoneMainView instance] popCurrentView];
+		[PhoneMainView.instance popCurrentView];
 		return;
 	}
 
@@ -169,13 +169,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-	[[PhoneMainView instance] popCurrentView];
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (IBAction)onContactClick:(id)event {
 	if (contact) {
 		ContactDetailsView *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance] changeCurrentView:[ContactDetailsView compositeViewDescription] push:TRUE],
+			[PhoneMainView.instance changeCurrentView:[ContactDetailsView compositeViewDescription] push:TRUE],
 			ContactDetailsView);
 		if (controller != nil) {
 			[ContactSelection setSelectionMode:ContactSelectionModeNone];
@@ -198,7 +198,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[ContactSelection enableEmailFilter:FALSE];
 			[ContactSelection setNameOrEmailFilter:nil];
 			DYNAMIC_CAST(
-				[[PhoneMainView instance] changeCurrentView:[ContactsListView compositeViewDescription] push:TRUE],
+				[PhoneMainView.instance changeCurrentView:[ContactsListView compositeViewDescription] push:TRUE],
 				ContactsListView);
 			ms_free(lAddress);
 		}
@@ -213,7 +213,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSString *displayName = [FastAddressBook displayNameForAddress:addr];
 
 	DialerView *controller =
-		DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerView compositeViewDescription]], DialerView);
+		DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]], DialerView);
 	if (controller != nil) {
 		[controller call:[NSString stringWithUTF8String:lAddress] displayName:displayName];
 	}
@@ -225,9 +225,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (addr == NULL)
 		return;
 	// Go to ChatRoom view
-	[[PhoneMainView instance] changeCurrentView:[ChatsListView compositeViewDescription]];
+	[PhoneMainView.instance changeCurrentView:[ChatsListView compositeViewDescription]];
 	ChatConversationView *controller = DYNAMIC_CAST(
-		[[PhoneMainView instance] changeCurrentView:[ChatConversationView compositeViewDescription] push:TRUE],
+		[PhoneMainView.instance changeCurrentView:[ChatConversationView compositeViewDescription] push:TRUE],
 		ChatConversationView);
 	if (controller != nil) {
 		LinphoneChatRoom *room = linphone_core_get_chat_room([LinphoneManager getLc], addr);

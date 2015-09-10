@@ -266,7 +266,7 @@
 }
 
 - (IBAction)onAboutClick:(id)sender {
-	[[PhoneMainView instance] changeCurrentView:[AboutView compositeViewDescription] push:TRUE];
+	[PhoneMainView.instance changeCurrentView:[AboutView compositeViewDescription] push:TRUE];
 }
 
 @end
@@ -691,8 +691,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[LinphoneManager instance] destroyLinphoneCore];
 		[LinphoneManager instanceRelease];
 	} else if ([key isEqual:@"clear_cache_button"]) {
-		[[PhoneMainView instance]
-				.mainViewController clearCache:[NSArray arrayWithObject:[[PhoneMainView instance] currentView]]];
+		[PhoneMainView.instance.mainViewController
+			clearCache:[NSArray arrayWithObject:[PhoneMainView.instance currentView]]];
 	} else if ([key isEqual:@"battery_alert_button"]) {
 		[[UIDevice currentDevice] _setBatteryState:UIDeviceBatteryStateUnplugged];
 		[[UIDevice currentDevice] _setBatteryLevel:0.01f];
@@ -723,7 +723,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[alert show];
 
 	} else if ([key isEqual:@"about_button"]) {
-		[[PhoneMainView instance] changeCurrentView:[AboutView compositeViewDescription] push:TRUE];
+		[PhoneMainView.instance changeCurrentView:[AboutView compositeViewDescription] push:TRUE];
 	} else if ([key isEqualToString:@"reset_logs_button"]) {
 		linphone_core_reset_log_collection();
 	} else if ([key isEqual:@"send_logs_button"]) {

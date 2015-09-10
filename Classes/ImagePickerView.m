@@ -124,8 +124,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)dismiss {
-	if ([[[PhoneMainView instance] currentView] equal:[ImagePickerView compositeViewDescription]]) {
-		[[PhoneMainView instance] popCurrentView];
+	if ([[PhoneMainView.instance currentView] equal:[ImagePickerView compositeViewDescription]]) {
+		[PhoneMainView.instance popCurrentView];
 	}
 }
 
@@ -169,11 +169,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	  UICompositeViewDescription *description = [ImagePickerView compositeViewDescription];
 	  ImagePickerView *controller;
 	  if ([LinphoneManager runningOnIpad] && view) {
-		  controller = DYNAMIC_CAST(
-			  [[PhoneMainView instance].mainViewController getCachedController:description.content], ImagePickerView);
+		  controller = DYNAMIC_CAST([PhoneMainView.instance.mainViewController getCachedController:description.content],
+									ImagePickerView);
 	  } else {
-		  controller =
-			  DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:description push:TRUE], ImagePickerView);
+		  controller = DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:description push:TRUE], ImagePickerView);
 	  }
 	  if (controller != nil) {
 		  controller.sourceType = type;
@@ -211,7 +210,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
 
-	[sheet showInView:[PhoneMainView instance].view];
+	[sheet showInView:PhoneMainView.instance.view];
 }
 
 @end

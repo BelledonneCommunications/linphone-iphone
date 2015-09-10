@@ -145,8 +145,8 @@
 		char *uri = linphone_address_as_string(addr);
 
 		// Go to dialer view
-		DialerView *controller = DYNAMIC_CAST(
-			[[PhoneMainView instance] changeCurrentView:[DialerView compositeViewDescription]], DialerView);
+		DialerView *controller =
+			DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]], DialerView);
 		if (controller != nil) {
 			[controller call:[NSString stringWithUTF8String:uri]
 				 displayName:[FastAddressBook displayNameForAddress:addr]];

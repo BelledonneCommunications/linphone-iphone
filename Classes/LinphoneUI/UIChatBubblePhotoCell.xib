@@ -45,8 +45,8 @@
                     <rect key="frame" x="66" y="30" width="246" height="129"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Placeholder text is another very long ipsem lum dolorem..." id="Hnc-55-etE" userLabel="messageText">
-                            <rect key="frame" x="0.0" y="0.0" width="246" height="129"/>
+                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="Placeholder text is another very long ipsem lum dolorem...and it continues" id="Hnc-55-etE" userLabel="messageText">
+                            <rect key="frame" x="0.0" y="0.0" width="246" height="121"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -71,6 +71,10 @@
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splashscreen.png" id="yMW-cT-bpU" userLabel="image">
                             <rect key="frame" x="8" y="0.0" width="230" height="65"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <gestureRecognizers/>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="4oe-Ga-fHE"/>
+                            </connections>
                         </imageView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="N75-gL-R6t" userLabel="transferButton" customClass="UIRoundBorderedButton">
                             <rect key="frame" x="0.0" y="98" width="124" height="27"/>
@@ -80,6 +84,9 @@
                             </state>
                         </button>
                     </subviews>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="5ZI-Ip-lGl" appends="YES" id="zzJ-Rp-wx6"/>
+                    </connections>
                 </view>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat_message_inprogress.png" id="x07-o6-6s0" userLabel="messageStatusImage">
                     <rect key="frame" x="305" y="0.0" width="15" height="15"/>
@@ -91,6 +98,16 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="339" y="43.5"/>
         </view>
+        <tapGestureRecognizer id="aDF-hC-ddO" userLabel="imageClick">
+            <connections>
+                <action selector="onImageClick:" destination="-2" id="yv0-9g-sye"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="5ZI-Ip-lGl" userLabel="resendClick">
+            <connections>
+                <action selector="onResendClick:" destination="-2" id="0Vh-VO-NZU"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="avatar.png" width="261" height="261"/>

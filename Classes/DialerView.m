@@ -398,15 +398,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[ContactSelection setSipFilter:nil];
 	[ContactSelection setNameOrEmailFilter:nil];
 	[ContactSelection enableEmailFilter:FALSE];
-	ContactsListView *controller =
-		DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[ContactsListView compositeViewDescription] push:TRUE],
-					 ContactsListView);
-	if (controller != nil) {
-	}
+	ContactsListView *view = VIEW(ContactsListView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 }
 
 - (IBAction)onBackClick:(id)event {
-	[[PhoneMainView instance] changeCurrentView:[CallView compositeViewDescription]];
+	[PhoneMainView.instance changeCurrentView:[CallView compositeViewDescription]];
 }
 
 - (IBAction)onAddressChange:(id)sender {

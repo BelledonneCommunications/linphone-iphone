@@ -114,7 +114,7 @@ static NSString *const kDisappearAnimation = @"disappear";
 - (void)changeViewEvent:(NSNotification *)notif {
 	// UICompositeViewDescription *view = [notif.userInfo objectForKey: @"view"];
 	// if(view != nil)
-	[self updateSelectedButton:[[PhoneMainView instance] firstView]];
+	[self updateSelectedButton:[PhoneMainView.instance firstView]];
 }
 
 - (void)settingsUpdate:(NSNotification *)notif {
@@ -141,7 +141,7 @@ static NSString *const kDisappearAnimation = @"disappear";
 #pragma mark - UI Update
 
 - (void)update:(BOOL)appear {
-	[self updateSelectedButton:[[PhoneMainView instance] firstView]];
+	[self updateSelectedButton:[PhoneMainView.instance firstView]];
 	[self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:appear];
 	[self updateUnreadMessage:appear];
 }
@@ -236,7 +236,7 @@ static NSString *const kDisappearAnimation = @"disappear";
 #pragma mark - Action Functions
 
 - (IBAction)onHistoryClick:(id)event {
-	[[PhoneMainView instance] changeCurrentView:[HistoryListView compositeViewDescription]];
+	[PhoneMainView.instance changeCurrentView:[HistoryListView compositeViewDescription]];
 }
 
 - (IBAction)onContactsClick:(id)event {
@@ -245,19 +245,19 @@ static NSString *const kDisappearAnimation = @"disappear";
 	[ContactSelection setSipFilter:nil];
 	[ContactSelection enableEmailFilter:FALSE];
 	[ContactSelection setNameOrEmailFilter:nil];
-	[[PhoneMainView instance] changeCurrentView:[ContactsListView compositeViewDescription]];
+	[PhoneMainView.instance changeCurrentView:[ContactsListView compositeViewDescription]];
 }
 
 - (IBAction)onDialerClick:(id)event {
-	[[PhoneMainView instance] changeCurrentView:[DialerView compositeViewDescription]];
+	[PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]];
 }
 
 - (IBAction)onSettingsClick:(id)event {
-	[[PhoneMainView instance] changeCurrentView:[SettingsView compositeViewDescription]];
+	[PhoneMainView.instance changeCurrentView:[SettingsView compositeViewDescription]];
 }
 
 - (IBAction)onChatClick:(id)event {
-	[[PhoneMainView instance] changeCurrentView:[ChatsListView compositeViewDescription]];
+	[PhoneMainView.instance changeCurrentView:[ChatsListView compositeViewDescription]];
 }
 
 #pragma mark - Animation

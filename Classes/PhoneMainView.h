@@ -44,6 +44,9 @@
 #import "DTActionSheet.h"
 #import "Utils.h"
 
+#define VIEW(x)                                                                                                        \
+	DYNAMIC_CAST([PhoneMainView.instance.mainViewController getCachedController:x.compositeViewDescription.content], x)
+
 @class PhoneMainView;
 
 @interface RootViewManager : NSObject
@@ -70,9 +73,9 @@
 @property (weak, readonly) UICompositeViewDescription *currentView;
 @property (readonly, strong) MPVolumeView* volumeView;
 
-- (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView;
-- (UIViewController*)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;
-- (UIViewController *)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated;
+- (void)changeCurrentView:(UICompositeViewDescription *)currentView;
+- (void)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;
+- (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated;
 - (UIViewController*)popCurrentView;
 - (void)popToView:(UICompositeViewDescription *)currentView;
 - (UICompositeViewDescription *)firstView;

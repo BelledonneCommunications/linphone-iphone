@@ -392,7 +392,7 @@ static UIFont *CELL_FONT = nil;
 	} else {
 		if (![messageImageView isLoading]) {
 			ImageView *controller = DYNAMIC_CAST(
-				[[PhoneMainView instance] changeCurrentView:[ImageView compositeViewDescription] push:TRUE], ImageView);
+				[PhoneMainView.instance changeCurrentView:[ImageView compositeViewDescription] push:TRUE], ImageView);
 			if (controller != nil) {
 				CGImageRef fullScreenRef = [[messageImageView.fullImageUrl defaultRepresentation] fullScreenImage];
 				UIImage *fullScreen = [UIImage imageWithCGImage:fullScreenRef];
@@ -453,7 +453,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 			// message, so we must refresh the table when we change to this state to ensure that
 			// all transient messages apppear
 			//		ChatRoomViewController *controller = DYNAMIC_CAST(
-			//			[[PhoneMainView instance] changeCurrentView:[ChatRoomViewController compositeViewDescription]
+			//			[PhoneMainView.instance changeCurrentView:[ChatRoomViewController compositeViewDescription]
 			// push:TRUE],
 			//			ChatRoomViewController);
 			//		[controller.tableController setChatRoom:linphone_chat_message_get_chat_room(msg)];

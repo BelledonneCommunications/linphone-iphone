@@ -157,7 +157,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
 			otherButtonTitles:nil];
 		[error show];
-		[[PhoneMainView instance] changeCurrentView:[DialerView compositeViewDescription]];
+		[PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]];
 	}
 }
 
@@ -234,9 +234,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAddContactClick:(id)event {
 	// Go to Contact details view
-	ContactDetailsView *controller = DYNAMIC_CAST(
-		[[PhoneMainView instance] changeCurrentView:[ContactDetailsView compositeViewDescription] push:TRUE],
-		ContactDetailsView);
+	ContactDetailsView *controller =
+		DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:[ContactDetailsView compositeViewDescription] push:TRUE],
+					 ContactDetailsView);
 	if (controller != nil) {
 		if ([ContactSelection getAddAddress] == nil) {
 			[controller newContact];
@@ -247,7 +247,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onBackClick:(id)event {
-	[[PhoneMainView instance] popCurrentView];
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -266,7 +266,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - ABPeoplePickerDelegate
 
 - (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker {
-	[[PhoneMainView instance] popCurrentView];
+	[PhoneMainView.instance popCurrentView];
 	return;
 }
 
@@ -285,7 +285,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSString *phoneNumber = (NSString *)CFBridgingRelease(ABMultiValueCopyValueAtIndex(multiValue, valueIdx));
 	// Go to dialer view
 	DialerView *controller =
-		DYNAMIC_CAST([[PhoneMainView instance] changeCurrentView:[DialerView compositeViewDescription]], DialerView);
+		DYNAMIC_CAST([PhoneMainView.instance changeCurrentView:[DialerView compositeViewDescription]], DialerView);
 	if (controller != nil) {
 		[controller call:phoneNumber displayName:(NSString *)CFBridgingRelease(ABRecordCopyCompositeName(person))];
 	}

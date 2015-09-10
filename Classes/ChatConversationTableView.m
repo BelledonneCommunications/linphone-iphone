@@ -19,7 +19,7 @@
 
 #import "LinphoneManager.h"
 #import "ChatConversationTableView.h"
-#import "UIChatConversationCell.h"
+#import "UIChatBubbleCell.h"
 #import "PhoneMainView.h"
 
 @implementation ChatConversationTableView
