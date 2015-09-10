@@ -329,7 +329,7 @@
                                 </button>
                             </subviews>
                         </view>
-                        <view tag="18" contentMode="scaleToFill" id="mga-O5-mUn" userLabel="mainBar">
+                        <view tag="18" contentMode="scaleToFill" id="mga-O5-mUn" userLabel="bottomBar">
                             <rect key="frame" x="0.0" y="503" width="375" height="122"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <subviews>
