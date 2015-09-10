@@ -322,7 +322,7 @@
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */; };
 		D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D3196D3D15A32BD8007FEEBA /* UITransferButton.m */; };
-		D31AAF5E159B3919002C6B02 /* CallTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = D31AAF5D159B3919002C6B02 /* CallTableView.m */; };
+		D31AAF5E159B3919002C6B02 /* PausedCallsTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = D31AAF5D159B3919002C6B02 /* PausedCallsTableView.m */; };
 		D31B4B21159876C0002E6C72 /* UICompositeView.m in Sources */ = {isa = PBXBuildFile; fileRef = D31B4B1F159876C0002E6C72 /* UICompositeView.m */; };
 		D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D31C9C97158A1CDE00756B45 /* UIHistoryCell.m */; };
 		D3211BB0159C4EF10098460B /* UIConferenceHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = D3211BAE159C4EF00098460B /* UIConferenceHeader.m */; };
@@ -921,8 +921,8 @@
 		D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailsView.m; sourceTree = "<group>"; };
 		D3196D3C15A32BD7007FEEBA /* UITransferButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransferButton.h; sourceTree = "<group>"; };
 		D3196D3D15A32BD8007FEEBA /* UITransferButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransferButton.m; sourceTree = "<group>"; };
-		D31AAF5C159B3919002C6B02 /* CallTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallTableView.h; sourceTree = "<group>"; };
-		D31AAF5D159B3919002C6B02 /* CallTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallTableView.m; sourceTree = "<group>"; };
+		D31AAF5C159B3919002C6B02 /* PausedCallsTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PausedCallsTableView.h; sourceTree = "<group>"; };
+		D31AAF5D159B3919002C6B02 /* PausedCallsTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PausedCallsTableView.m; sourceTree = "<group>"; };
 		D31B4B1E159876C0002E6C72 /* UICompositeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICompositeView.h; sourceTree = "<group>"; };
 		D31B4B1F159876C0002E6C72 /* UICompositeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICompositeView.m; sourceTree = "<group>"; };
 		D31C9C96158A1CDE00756B45 /* UIHistoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIHistoryCell.h; sourceTree = "<group>"; };
@@ -1293,8 +1293,8 @@
 				6346100D1B61409800548952 /* CallOutgoingView.h */,
 				6346100E1B61409800548952 /* CallOutgoingView.m */,
 				634610101B6140A500548952 /* CallOutgoingView.xib */,
-				D31AAF5C159B3919002C6B02 /* CallTableView.h */,
-				D31AAF5D159B3919002C6B02 /* CallTableView.m */,
+				D31AAF5C159B3919002C6B02 /* PausedCallsTableView.h */,
+				D31AAF5D159B3919002C6B02 /* PausedCallsTableView.m */,
 				D3F83EE91582021700336684 /* CallView.h */,
 				D3F83EEA1582021700336684 /* CallView.m */,
 				D381881C15FE3FCA00C3EDCA /* CallView.xib */,
@@ -2594,7 +2594,7 @@
 				D3EA5411159853750037DC6B /* UIChatCell.m in Sources */,
 				D3F26BF115986B73005F9CAB /* CallIncomingView.m in Sources */,
 				D31B4B21159876C0002E6C72 /* UICompositeView.m in Sources */,
-				D31AAF5E159B3919002C6B02 /* CallTableView.m in Sources */,
+				D31AAF5E159B3919002C6B02 /* PausedCallsTableView.m in Sources */,
 				D3211BB0159C4EF10098460B /* UIConferenceHeader.m in Sources */,
 				D32460E6159D9AAD00BA7F3A /* UITransparentView.m in Sources */,
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,

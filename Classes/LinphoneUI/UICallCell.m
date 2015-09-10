@@ -24,17 +24,16 @@
 #import "FastAddressBook.h"
 #import "Utils.h"
 #import "PhoneMainView.h"
-#import "CallTableView.h"
+#import "PausedCallsTableView.h"
 
 @implementation UICallCellData
 
 @synthesize address;
 @synthesize image;
 
-- (id)init:(LinphoneCall *)acall minimized:(BOOL)minimized {
+- (id)init:(LinphoneCall *)acall {
 	self = [super init];
 	if (self != nil) {
-		self->minimize = minimized;
 		self->view = UICallCellOtherView_Avatar;
 		self->call = acall;
 		image = [UIImage imageNamed:@"avatar_unknown.png"];
@@ -202,10 +201,6 @@
 #pragma mark - Static Functions
 
 + (int)getMaximizedHeight {
-	return LinphoneManager.runningOnIpad ? 600 : 300;
-}
-
-+ (int)getMinimizedHeight {
 	return LinphoneManager.runningOnIpad ? 126 : 63;
 }
 
@@ -370,20 +365,13 @@
 	int duration = linphone_call_get_duration(call);
 	[stateLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60), nil]];
 
-	if (!data->minimize) {
-		CGRect frame = [self frame];
-		frame.size.height = [UICallCell getMaximizedHeight];
-		[self setFrame:frame];
-		frame = otherView.frame;
-		frame.size.height = [UICallCell getMaximizedHeight];
-		[otherView setHidden:false];
-		otherView.frame = frame;
-	} else {
-		CGRect frame = [self frame];
-		frame.size.height = [headerView frame].size.height;
-		[self setFrame:frame];
-		[otherView setHidden:true];
-	}
+	CGRect frame = [self frame];
+	frame.size.height = [UICallCell getMaximizedHeight];
+	[self setFrame:frame];
+	frame = otherView.frame;
+	frame.size.height = [UICallCell getMaximizedHeight];
+	[otherView setHidden:false];
+	otherView.frame = frame;
 
 	[self updateStats];
 
@@ -474,7 +462,7 @@
 }
 
 - (void)selfUpdate {
-	UITableView *tableView = VIEW(CallView).callTableView;
+	UITableView *tableView = VIEW(CallView).pausedCallsTableView.tableView;
 	NSIndexPath *index = [tableView indexPathForCell:self];
 	[tableView reloadRowsAtIndexPaths:@[ index ] withRowAnimation:false];
 }
@@ -483,7 +471,6 @@
 
 - (IBAction)doHeaderClick:(id)sender {
 	if (data) {
-		data->minimize = !data->minimize;
 		[self selfUpdate];
 	}
 }

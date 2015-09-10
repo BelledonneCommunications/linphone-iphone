@@ -17,47 +17,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "CallTableView.h"
+#import "PausedCallsTableView.h"
 #import "UICallCell.h"
 #import "UIConferenceHeader.h"
 #import "LinphoneManager.h"
 #import "Utils.h"
 
-@implementation CallTableView
+@implementation PausedCallsTableView
 
 static NSString *const kLinphoneInCallCellData = @"LinphoneInCallCellData";
 
 enum TableSection { ConferenceSection = 0, CallSection = 1 };
-
-#pragma mark - Lifecycle Functions
-
-- (void)initInCallTableViewController {
-	minimized = false;
-}
-
-- (id)init {
-	self = [super init];
-	if (self) {
-		[self initInCallTableViewController];
-	}
-	return self;
-}
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-	self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-	if (self) {
-		[self initInCallTableViewController];
-	}
-	return self;
-}
-
-- (id)initWithCoder:(NSCoder *)decoder {
-	self = [super initWithCoder:decoder];
-	if (self) {
-		[self initInCallTableViewController];
-	}
-	return self;
-}
 
 #pragma mark - ViewController Functions
 
@@ -88,7 +58,7 @@ enum TableSection { ConferenceSection = 0, CallSection = 1 };
 	const MSList *calls = linphone_core_get_calls(lc);
 
 	while (calls != 0) {
-		if (![CallTableView isInConference:((LinphoneCall *)calls->data)]) {
+		if (![PausedCallsTableView isInConference:((LinphoneCall *)calls->data)]) {
 			count++;
 		}
 		calls = calls->next;
@@ -100,7 +70,7 @@ enum TableSection { ConferenceSection = 0, CallSection = 1 };
 	const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
 
 	while (calls != 0) {
-		if ([CallTableView isInConference:(LinphoneCall *)calls->data] == conf) {
+		if ([PausedCallsTableView isInConference:(LinphoneCall *)calls->data] == conf) {
 			if (index == 0)
 				break;
 			index--;
@@ -136,7 +106,7 @@ enum TableSection { ConferenceSection = 0, CallSection = 1 };
 		if (appData != NULL) {
 			data = [appData->userInfos objectForKey:kLinphoneInCallCellData];
 			if (data == nil) {
-				data = [[UICallCellData alloc] init:call minimized:minimized];
+				data = [[UICallCellData alloc] init:call];
 				[appData->userInfos setObject:data forKey:kLinphoneInCallCellData];
 			}
 		}
@@ -166,35 +136,6 @@ enum TableSection { ConferenceSection = 0, CallSection = 1 };
 		}
 	}
 }
-
-- (void)minimizeAll {
-
-	const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
-	minimized = true;
-	while (list != NULL) {
-		UICallCellData *data = [self getCallData:(LinphoneCall *)list->data];
-		if (data) {
-			data->minimize = true;
-		} else {
-		}
-		list = list->next;
-	}
-	[[self tableView] reloadData];
-}
-
-- (void)maximizeAll {
-	const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
-	minimized = false;
-	while (list != NULL) {
-		UICallCellData *data = [self getCallData:(LinphoneCall *)list->data];
-		if (data) {
-			data->minimize = false;
-		}
-		list = list->next;
-	}
-	[[self tableView] reloadData];
-}
-
 #pragma mark - UITableViewDataSource Functions
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -208,7 +149,7 @@ enum TableSection { ConferenceSection = 0, CallSection = 1 };
 
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneCall *currentCall = linphone_core_get_current_call(lc);
-	LinphoneCall *call = [CallTableView retrieveCallAtIndex:indexPath.row inConference:inConference];
+	LinphoneCall *call = [PausedCallsTableView retrieveCallAtIndex:indexPath.row inConference:inConference];
 	[cell setData:[self addCallData:call]];
 
 	// Update cell
@@ -235,7 +176,7 @@ enum TableSection { ConferenceSection = 0, CallSection = 1 };
 	LinphoneCore *lc = [LinphoneManager getLc];
 
 	if (section == CallSection) {
-		count = [CallTableView callCount:lc];
+		count = [PausedCallsTableView callCount:lc];
 	} else {
 		count = linphone_core_get_conference_size(lc);
 		if (linphone_core_is_in_conference(lc)) {
@@ -305,11 +246,6 @@ enum TableSection { ConferenceSection = 0, CallSection = 1 };
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	bool inConference = indexPath.section == ConferenceSection;
-	LinphoneCall *call = [CallTableView retrieveCallAtIndex:indexPath.row inConference:inConference];
-	UICallCellData *data = [self getCallData:call];
-	if (data != nil && data->minimize)
-		return [UICallCell getMinimizedHeight];
 	return [UICallCell getMaximizedHeight];
 }
 

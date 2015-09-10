@@ -32,12 +32,11 @@ typedef enum _UICallCellOtherView {
 
 @interface UICallCellData : NSObject {
     @public
-    bool minimize;
     UICallCellOtherView view;
     LinphoneCall *call;
-}   
+}
 
-- (id)init:(LinphoneCall*) call minimized:(BOOL)minimized;
+- (id)init:(LinphoneCall *)call;
 
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) NSString *address;
@@ -111,6 +110,5 @@ typedef enum _UICallCellOtherView {
 - (IBAction)doDetailsSwipe:(UISwipeGestureRecognizer *)sender;
     
 + (int)getMaximizedHeight;
-+ (int)getMinimizedHeight;
 
 @end

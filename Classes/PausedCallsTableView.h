@@ -23,13 +23,9 @@
 
 #include "linphone/linphonecore.h"
 
-@interface CallTableView : UITableViewController {
+@interface PausedCallsTableView : UITableViewController {
   @private
 	NSTimer *updateTime;
-	BOOL minimized;
 }
-
-- (void)minimizeAll;
-- (void)maximizeAll;
 
 @end

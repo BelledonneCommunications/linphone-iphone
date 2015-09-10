@@ -23,7 +23,7 @@
 #import "UICamSwitch.h"
 
 #import "UICompositeView.h"
-#import "CallTableView.h"
+#import "PausedCallsTableView.h"
 
 #import "UIMicroButton.h"
 #import "UIPauseButton.h"
@@ -31,6 +31,7 @@
 #import "UIVideoButton.h"
 #import "UIHangUpButton.h"
 #import "UIDigitButton.h"
+#import "UIRoundedImageView.h"
 
 @class VideoView;
 
@@ -42,8 +43,7 @@
 	VideoZoomHandler *videoZoomHandler;
 }
 
-@property(nonatomic, strong) IBOutlet CallTableView *callTableController;
-@property(nonatomic, strong) IBOutlet UITableView *callTableView;
+@property(nonatomic, strong) IBOutlet PausedCallsTableView *pausedCallsTableView;
 
 @property(nonatomic, strong) IBOutlet UIView *videoGroup;
 @property(nonatomic, strong) IBOutlet UIView *videoView;
@@ -81,6 +81,10 @@
 @property(nonatomic, strong) IBOutlet UIDigitButton *starButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *zeroButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *sharpButton;
+@property(weak, nonatomic) IBOutlet UILabel *addressLabel;
+@property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
+@property(weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property(weak, nonatomic) IBOutlet UILabel *durationLabel;
 
 - (IBAction)onRoutesClick:(id)sender;
 - (IBAction)onRoutesBluetoothClick:(id)sender;

@@ -38,18 +38,6 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 	BOOL hiddenVolume;
 }
 
-@synthesize callTableController;
-@synthesize callTableView;
-
-@synthesize videoGroup;
-@synthesize videoView;
-@synthesize videoPreview;
-@synthesize videoCameraSwitch;
-@synthesize videoWaitingForFirstImage;
-#ifdef TEST_VIDEO_VIEW_CHANGE
-@synthesize testVideoView;
-#endif
-
 #pragma mark - Lifecycle Functions
 
 - (id)init {
@@ -136,8 +124,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self showSpeaker];
 
 	// Set windows (warn memory leaks)
-	linphone_core_set_native_video_window_id([LinphoneManager getLc], (__bridge void *)(videoView));
-	linphone_core_set_native_preview_window_id([LinphoneManager getLc], (__bridge void *)(videoPreview));
+	linphone_core_set_native_video_window_id([LinphoneManager getLc], (__bridge void *)(_videoView));
+	linphone_core_set_native_preview_window_id([LinphoneManager getLc], (__bridge void *)(_videoPreview));
 
 	// Enable tap
 	[singleFingerTap setEnabled:TRUE];
@@ -150,6 +138,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector:@selector(bluetoothAvailabilityUpdateEvent:)
 												 name:kLinphoneBluetoothAvailabilityUpdate
 											   object:nil];
+
+	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
+	char *uri = linphone_address_as_string_uri_only(addr);
+	_addressLabel.text = [NSString stringWithUTF8String:uri];
+	ms_free(uri);
+	_avatarImage.image =
+		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -178,15 +174,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[singleFingerTap setCancelsTouchesInView:FALSE];
 	[PhoneMainView.instance.view addGestureRecognizer:singleFingerTap];
 
-	[videoZoomHandler setup:videoGroup];
-	videoGroup.alpha = 0;
+	[videoZoomHandler setup:_videoGroup];
+	_videoGroup.alpha = 0;
 
-	[videoCameraSwitch setPreview:videoPreview];
+	[_videoCameraSwitch setPreview:_videoPreview];
 
 	UIPanGestureRecognizer *dragndrop =
 		[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(moveVideoPreview:)];
 	dragndrop.minimumNumberOfTouches = 1;
-	[self.videoPreview addGestureRecognizer:dragndrop];
+	[_videoPreview addGestureRecognizer:dragndrop];
 
 	[_pauseButton setType:UIPauseButtonType_CurrentCall call:nil];
 
@@ -243,7 +239,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	// Update table
-	[callTableView reloadData];
+	[_pausedCallsTableView.tableView reloadData];
 
 	// Fake call update
 	if (call == NULL) {
@@ -252,11 +248,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	switch (state) {
 		case LinphoneCallIncomingReceived:
-		case LinphoneCallOutgoingInit: {
-			if (linphone_core_get_calls_nb(lc) > 1) {
-				[callTableController minimizeAll];
-			}
-		}
+		case LinphoneCallOutgoingInit:
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning: {
 			// check video
@@ -306,12 +298,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			break;
 		}
 		case LinphoneCallEnd:
-		case LinphoneCallError: {
-			if (linphone_core_get_calls_nb(lc) <= 2 && !videoShown) {
-				[callTableController maximizeAll];
-			}
-			break;
-		}
+		case LinphoneCallError:
 		default:
 			break;
 	}
@@ -395,8 +382,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[UIView setAnimationDuration:0.3];
 		[PhoneMainView.instance showTabBar:true];
 		[PhoneMainView.instance showStatusBar:true];
-		[callTableView setAlpha:1.0];
-		[videoCameraSwitch setAlpha:1.0];
+		[_pausedCallsTableView.tableView setAlpha:1.0];
+		[_videoCameraSwitch setAlpha:1.0];
 		[UIView commitAnimations];
 
 		// hide controls in 5 sec
@@ -417,27 +404,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription] && videoShown) {
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
-		[videoCameraSwitch setAlpha:0.0];
-		[callTableView setAlpha:0.0];
+		[_videoCameraSwitch setAlpha:0.0];
+		[_pausedCallsTableView.tableView setAlpha:0.0];
 		[UIView commitAnimations];
 
 		[PhoneMainView.instance showTabBar:false];
 		[PhoneMainView.instance showStatusBar:false];
 	}
 }
-
-#ifdef TEST_VIDEO_VIEW_CHANGE
-// Define TEST_VIDEO_VIEW_CHANGE in IncallViewController.h to enable video view switching testing
-- (void)_debugChangeVideoView {
-	static bool normalView = false;
-	if (normalView) {
-		linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)videoView);
-	} else {
-		linphone_core_set_native_video_window_id([LinphoneManager getLc], (unsigned long)testVideoView);
-	}
-	normalView = !normalView;
-}
-#endif
 
 - (void)enableVideoDisplay:(BOOL)animation {
 	if (videoShown && animation)
@@ -452,29 +426,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[UIView setAnimationDuration:1.0];
 	}
 
-	[videoGroup setAlpha:1.0];
-	[callTableView setAlpha:0.0];
+	[_videoGroup setAlpha:1.0];
+	[_pausedCallsTableView.tableView setAlpha:0.0];
 
 	UIEdgeInsets insets = {33, 0, 25, 0};
-	[callTableView setContentInset:insets];
-	[callTableView setScrollIndicatorInsets:insets];
-	[callTableController minimizeAll];
+	[_pausedCallsTableView.tableView setContentInset:insets];
+	[_pausedCallsTableView.tableView setScrollIndicatorInsets:insets];
 
 	if (animation) {
 		[UIView commitAnimations];
 	}
 
 	if (linphone_core_self_view_enabled([LinphoneManager getLc])) {
-		[videoPreview setHidden:FALSE];
+		[_videoPreview setHidden:FALSE];
 	} else {
-		[videoPreview setHidden:TRUE];
+		[_videoPreview setHidden:TRUE];
 	}
 
 	if ([LinphoneManager instance].frontCamId != nil) {
 		// only show camera switch button if we have more than 1 camera
-		[videoCameraSwitch setHidden:FALSE];
+		[_videoCameraSwitch setHidden:FALSE];
 	}
-	[videoCameraSwitch setAlpha:0.0];
+	[_videoCameraSwitch setAlpha:0.0];
 
 	[PhoneMainView.instance fullScreen:true];
 	[PhoneMainView.instance showTabBar:false];
@@ -489,8 +462,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #endif
 	// [self batteryLevelChanged:nil];
 
-	[videoWaitingForFirstImage setHidden:NO];
-	[videoWaitingForFirstImage startAnimating];
+	[_videoWaitingForFirstImage setHidden:NO];
+	[_videoWaitingForFirstImage startAnimating];
 
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 	// linphone_call_params_get_used_video_codec return 0 if no video stream enabled
@@ -509,19 +482,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[UIView setAnimationDuration:1.0];
 	}
 
-	[videoGroup setAlpha:0.0];
+	[_videoGroup setAlpha:0.0];
 	[PhoneMainView.instance showTabBar:true];
 
 	UIEdgeInsets insets = {10, 0, 25, 0};
-	[callTableView setContentInset:insets];
-	[callTableView setScrollIndicatorInsets:insets];
-	[callTableView setAlpha:1.0];
-	if (linphone_core_get_calls_nb([LinphoneManager getLc]) <= 2) {
-		[callTableController maximizeAll];
-	}
+	[_pausedCallsTableView.tableView setContentInset:insets];
+	[_pausedCallsTableView.tableView setScrollIndicatorInsets:insets];
+	[_pausedCallsTableView.tableView setAlpha:1.0];
 
-	[callTableView setAlpha:1.0];
-	[videoCameraSwitch setHidden:TRUE];
+	[_pausedCallsTableView.tableView setAlpha:1.0];
+	[_videoCameraSwitch setHidden:TRUE];
 
 	if (animation) {
 		[UIView commitAnimations];
@@ -546,7 +516,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Spinner Functions
 
 - (void)hideSpinnerIndicator:(LinphoneCall *)call {
-	videoWaitingForFirstImage.hidden = TRUE;
+	_videoWaitingForFirstImage.hidden = TRUE;
 }
 
 static void hideSpinner(LinphoneCall *call, void *user_data) {
@@ -727,8 +697,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 #pragma mark VideoPreviewMoving
 
 - (void)moveVideoPreview:(UIPanGestureRecognizer *)dragndrop {
-	CGPoint center = [dragndrop locationInView:videoPreview.superview];
-	self.videoPreview.center = center;
+	CGPoint center = [dragndrop locationInView:_videoPreview.superview];
+	_videoPreview.center = center;
 	if (dragndrop.state == UIGestureRecognizerStateEnded) {
 		[self previewTouchLift];
 	}
@@ -745,7 +715,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)previewTouchLift {
-	CGRect previewFrame = self.videoPreview.frame;
+	CGRect previewFrame = _videoPreview.frame;
 	previewFrame.origin.x = [self coerce:previewFrame.origin.x
 							  betweenMin:5
 								  andMax:(self.view.frame.size.width - previewFrame.size.width - 5)];
@@ -753,12 +723,12 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 							  betweenMin:5
 								  andMax:(self.view.frame.size.height - previewFrame.size.height - 5)];
 
-	if (!CGRectEqualToRect(previewFrame, self.videoPreview.frame)) {
+	if (!CGRectEqualToRect(previewFrame, _videoPreview.frame)) {
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 		  [UIView animateWithDuration:0.3
 						   animations:^{
 							 LOGI(@"Recentering preview to %@", NSStringFromCGRect(previewFrame));
-							 self.videoPreview.frame = previewFrame;
+							 _videoPreview.frame = previewFrame;
 						   }];
 		});
 	}
