@@ -19,8 +19,18 @@
 
 #import "LinphoneManager.h"
 #import "ChatConversationTableView.h"
-#import "UIChatBubbleCell.h"
+#import "UIChatBubbleTextCell.h"
+#import "UIChatBubblePhotoCell.h"
 #import "PhoneMainView.h"
+
+static const CGFloat CELL_MIN_HEIGHT = 50.0f;
+static const CGFloat CELL_MIN_WIDTH = 150.0f;
+static const CGFloat CELL_MESSAGE_X_MARGIN = 26.0f + 10.0f;
+static const CGFloat CELL_MESSAGE_Y_MARGIN = 36.0f;
+static const CGFloat CELL_FONT_SIZE = 17.0f;
+static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
+static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
+static UIFont *CELL_FONT = nil;
 
 @implementation ChatConversationTableView
 
@@ -167,13 +177,18 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *kCellId = @"UIChatRoomCell";
-	UIChatBubbleCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-	if (cell == nil) {
-		cell = [[UIChatBubbleCell alloc] initWithIdentifier:kCellId];
-	}
-
+	NSString *kCellId = nil;
 	LinphoneChatMessage *chat = ms_list_nth_data(self->messageList, (int)[indexPath row]);
+	if (linphone_chat_message_get_file_transfer_information(chat) ||
+		linphone_chat_message_get_external_body_url(chat)) {
+		kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
+	} else {
+		kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
+	}
+	UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+	if (cell == nil) {
+		cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
+	}
 	[cell setChatMessage:chat];
 	[cell setChatRoomDelegate:chatRoomDelegate];
 	return cell;
@@ -209,7 +224,46 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	LinphoneChatMessage *message = ms_list_nth_data(self->messageList, (int)[indexPath row]);
-	return [UIChatBubbleCell height:message width:[self.view frame].size.width];
+	return [self.class viewSize:message width:[self.view frame].size.width].height;
+}
+
+#pragma mark - Cell dimension
+
++ (CGSize)viewSize:(LinphoneChatMessage *)message width:(int)width {
+	CGSize messageSize;
+	const char *url = linphone_chat_message_get_external_body_url(message);
+	if (url == nil && linphone_chat_message_get_file_transfer_information(message) == NULL) {
+		NSString *text = [UIChatBubbleTextCell TextMessageForChat:message];
+		if (CELL_FONT == nil) {
+			CELL_FONT = [UIFont systemFontOfSize:CELL_FONT_SIZE];
+		}
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+		if (UIDevice.currentDevice.systemVersion.doubleValue >= 7) {
+			messageSize =
+				[text boundingRectWithSize:CGSizeMake(width - CELL_MESSAGE_X_MARGIN, CGFLOAT_MAX)
+								   options:(NSStringDrawingUsesLineFragmentOrigin |
+											NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading)
+								attributes:@{
+									NSFontAttributeName : CELL_FONT
+								} context:nil]
+					.size;
+		} else
+#endif
+		{
+			messageSize = [text sizeWithFont:CELL_FONT
+						   constrainedToSize:CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
+							   lineBreakMode:NSLineBreakByTruncatingTail];
+		}
+	} else {
+		messageSize = CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT);
+	}
+	messageSize.height += CELL_MESSAGE_Y_MARGIN;
+	if (messageSize.height < CELL_MIN_HEIGHT)
+		messageSize.height = CELL_MIN_HEIGHT;
+	messageSize.width += CELL_MESSAGE_X_MARGIN;
+	if (messageSize.width < CELL_MIN_WIDTH)
+		messageSize.width = CELL_MIN_WIDTH;
+	return messageSize;
 }
 
 @end

@@ -21,7 +21,7 @@
 #import "PhoneMainView.h"
 #import "Utils.h"
 #import "FileTransferDelegate.h"
-#import "UIChatBubbleCell.h"
+#import "UIChatBubbleTextCell.h"
 
 @implementation ChatConversationView
 
