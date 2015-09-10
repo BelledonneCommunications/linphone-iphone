@@ -58,7 +58,7 @@ static void call_multicast_base(bool_t video) {
 		BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(marie),70,int,"%d");
 		if (video) {
 			/*check video path*/
-			linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(marie->lc),linphone_call_cb,marie->lc);
+			linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(marie->lc),linphone_call_iframe_decoded_cb,marie->lc);
 			linphone_call_send_vfu_request(linphone_core_get_current_call(marie->lc));
 			BC_ASSERT_TRUE( wait_for(marie->lc,pauline->lc,&marie->stat.number_of_IframeDecoded,1));
 		}
@@ -147,7 +147,7 @@ static void early_media_with_multicast_base(bool_t video) {
 		/* send a 183 to initiate the early media */
 		if (video) {
 			/*check video path*/
-			linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(pauline->lc),linphone_call_cb,pauline->lc);
+			linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(pauline->lc),linphone_call_iframe_decoded_cb,pauline->lc);
 		}
 		linphone_core_accept_early_media(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
@@ -158,7 +158,7 @@ static void early_media_with_multicast_base(bool_t video) {
 				/* send a 183 to initiate the early media */
 				if (video) {
 					/*check video path*/
-					linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(pauline2->lc),linphone_call_cb,pauline2->lc);
+					linphone_call_set_next_video_frame_decoded_callback(linphone_core_get_current_call(pauline2->lc),linphone_call_iframe_decoded_cb,pauline2->lc);
 				}
 				linphone_core_accept_early_media(pauline2->lc, linphone_core_get_current_call(pauline2->lc));
 

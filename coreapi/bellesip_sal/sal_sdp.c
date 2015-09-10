@@ -128,6 +128,12 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 	if (general_trr_int == TRUE) {
 		add_rtcp_fb_trr_int_attribute(media_desc, -1, trr_int);
 	}
+	if (stream->rtcp_fb.generic_nack_enabled == TRUE) {
+		add_rtcp_fb_nack_attribute(media_desc, -1, BELLE_SDP_RTCP_FB_NONE);
+	}
+	if (stream->rtcp_fb.tmmbr_enabled == TRUE) {
+		add_rtcp_fb_ccm_attribute(media_desc, -1, BELLE_SDP_RTCP_FB_TMMBR);
+	}
 
 	for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 		pt = (PayloadType *)pt_it->data;
@@ -261,7 +267,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 
 	/* insert DTLS session attribute if needed */
 	if ((stream->proto == SalProtoUdpTlsRtpSavpf) || (stream->proto == SalProtoUdpTlsRtpSavp)) {
-		char* ssrc_attribute = ms_strdup_printf("%u cname:%s",htonl(stream->rtp_ssrc),stream->rtcp_cname);
+		char* ssrc_attribute = ms_strdup_printf("%u cname:%s",stream->rtp_ssrc,stream->rtcp_cname);
 		if ((stream->dtls_role != SalDtlsRoleInvalid) && (strlen(stream->dtls_fingerprint)>0)) {
 			switch(stream->dtls_role) {
 				case SalDtlsRoleIsClient:
@@ -277,7 +283,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			}
 			belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("fingerprint",stream->dtls_fingerprint));
 		}
-		belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("ssrc",ssrc_attribute)); /* truc de Jehan a virer? */
+		belle_sdp_media_description_add_attribute(media_desc, belle_sdp_attribute_create("ssrc",ssrc_attribute));
 		ms_free(ssrc_attribute);
 	}
 
@@ -550,7 +556,7 @@ static void enable_avpf_for_stream(SalStreamDescription *stream) {
 	}
 }
 
-static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb_attribute, PayloadType *pt) {
+static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb_attribute, SalStreamDescription *stream, PayloadType *pt) {
 	PayloadTypeAvpfParams avpf_params = payload_type_get_avpf_params(pt);
 	switch (belle_sdp_rtcp_fb_attribute_get_type(fb_attribute)) {
 		case BELLE_SDP_RTCP_FB_ACK:
@@ -574,6 +580,8 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 					avpf_params.rpsi_compatibility = TRUE;
 					break;
 				case BELLE_SDP_RTCP_FB_NONE:
+					stream->rtcp_fb.generic_nack_enabled = TRUE;
+					break;
 				default:
 					break;
 			}
@@ -585,6 +593,9 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 			switch (belle_sdp_rtcp_fb_attribute_get_param(fb_attribute)) {
 				case BELLE_SDP_RTCP_FB_FIR:
 					avpf_params.features |= PAYLOAD_TYPE_AVPF_FIR;
+					break;
+				case BELLE_SDP_RTCP_FB_TMMBR:
+					stream->rtcp_fb.tmmbr_enabled = TRUE;
 					break;
 				default:
 					break;
@@ -612,7 +623,7 @@ static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_de
 			if (belle_sdp_rtcp_fb_attribute_get_id(fb_attribute) == -1) {
 				for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 					pt = (PayloadType *)pt_it->data;
-					apply_rtcp_fb_attribute_to_payload(fb_attribute, pt);
+					apply_rtcp_fb_attribute_to_payload(fb_attribute, stream, pt);
 				}
 			}
 		}
@@ -627,7 +638,7 @@ static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_de
 			for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 				pt = (PayloadType *)pt_it->data;
 				if (payload_type_get_number(pt) == (int)pt_num) {
-					apply_rtcp_fb_attribute_to_payload(fb_attribute, pt);
+					apply_rtcp_fb_attribute_to_payload(fb_attribute, stream, pt);
 				}
 			}
 		}

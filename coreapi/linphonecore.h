@@ -551,6 +551,7 @@ struct _LinphoneCallStats {
 	int updated; /**< Tell which RTCP packet has been updated (received_rtcp or sent_rtcp). Can be either LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE or LINPHONE_CALL_STATS_SENT_RTCP_UPDATE */
 	float rtcp_download_bandwidth; /**<RTCP download bandwidth measurement of received stream, expressed in kbit/s, including IP/UDP/RTP headers*/
 	float rtcp_upload_bandwidth; /**<RTCP download bandwidth measurement of sent stream, expressed in kbit/s, including IP/UDP/RTP headers*/
+	rtp_stats_t rtp_stats; /**< RTP stats */
 };
 
 /**
@@ -563,7 +564,7 @@ LINPHONE_PUBLIC float linphone_call_stats_get_sender_loss_rate(const LinphoneCal
 LINPHONE_PUBLIC float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats);
 LINPHONE_PUBLIC float linphone_call_stats_get_sender_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
 LINPHONE_PUBLIC float linphone_call_stats_get_receiver_interarrival_jitter(const LinphoneCallStats *stats, LinphoneCall *call);
-LINPHONE_PUBLIC rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *statss, LinphoneCall *call);
+LINPHONE_PUBLIC rtp_stats_t linphone_call_stats_get_rtp_stats(const LinphoneCallStats *statss);
 LINPHONE_PUBLIC uint64_t linphone_call_stats_get_late_packets_cumulative_number(const LinphoneCallStats *stats, LinphoneCall *call);
 LINPHONE_PUBLIC float linphone_call_stats_get_download_bandwidth(const LinphoneCallStats *stats);
 LINPHONE_PUBLIC float linphone_call_stats_get_upload_bandwidth(const LinphoneCallStats *stats);
@@ -598,7 +599,7 @@ LINPHONE_PUBLIC void linphone_player_close(LinphonePlayer *obj);
 LINPHONE_PUBLIC void linphone_player_destroy(LinphonePlayer *obj);
 
 /**
- * @brief Create an independent media file player.
+ * Create an independent media file player.
  * This player support WAVE and MATROSKA formats.
  * @param lc A LinphoneCore object
  * @param snd_card Playback sound card. If NULL, the sound card set in LinphoneCore will be used
@@ -609,7 +610,7 @@ LINPHONE_PUBLIC void linphone_player_destroy(LinphonePlayer *obj);
 LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *snd_card, const char *video_out, void *window_id);
 
 /**
- * @brief Check whether Matroksa format is supported by the player
+ * Check whether Matroksa format is supported by the player
  * @return TRUE if it is supported
  */
 LINPHONE_PUBLIC bool_t linphone_local_player_matroska_supported(void);
@@ -719,7 +720,21 @@ LINPHONE_PUBLIC	LinphoneReason linphone_call_get_reason(const LinphoneCall *call
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_call_get_error_info(const LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_user_agent(LinphoneCall *call);
 LINPHONE_PUBLIC	const char *linphone_call_get_remote_contact(LinphoneCall *call);
+
+/**
+ * Get the mesured playback volume level.
+ *
+ * @param call The call.
+ * @return float Volume level in percentage.
+ */
 LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
+
+/**
+ * Get the mesured record volume level
+ *
+ * @param call The call.
+ * @return float Volume level in percentage.
+ */
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 
 struct _LinphoneChatRoom;
@@ -732,40 +747,44 @@ LINPHONE_PUBLIC	struct _LinphoneChatRoom * linphone_call_get_chat_room(LinphoneC
 
 
 /**
- * @brief Get playback volume.
- * 
+ * Get speaker volume gain.
+ * If the sound backend supports it, the returned gain is equal to the gain set
+ * with the system mixer.
+ *
  * @param call The call.
- * @return double Percenatge of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
+ * @return Percenatge of the max supported volume gain. Valid values are in [ 0.0 : 1.0 ].
  * In case of failure, a negative value is returned
  */
-LINPHONE_PUBLIC double linphone_call_get_play_percent_volume(const LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_get_speaker_volume_gain(const LinphoneCall *call);
 
 /**
- * @brief Set playback volume.
- * 
+ * Set speaker volume gain.
+ * If the sound backend supports it, the new gain will synchronized with the system mixer.
+ *
  * @param call The call.
- * @param volume New volume in percentage of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
- * @return void
+ * @param volume Percentage of the max supported gain. Valid values are in [ 0.0 : 1.0 ].
  */
-LINPHONE_PUBLIC void linphone_call_set_play_percent_volume(LinphoneCall *call, double volume);
+LINPHONE_PUBLIC void linphone_call_set_speaker_volume_gain(LinphoneCall *call, float volume);
 
 /**
- * @brief Get record volume.
- * 
+ * Get microphone volume gain.
+ * If the sound backend supports it, the returned gain is equal to the gain set
+ * with the system mixer.
+ *
  * @param call The call.
- * @return double Percenatge of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
+ * @return double Percenatge of the max supported volume gain. Valid values are in [ 0.0 : 1.0 ].
  * In case of failure, a negative value is returned
  */
-LINPHONE_PUBLIC double linphone_call_get_record_percent_volume(const LinphoneCall *call);
+LINPHONE_PUBLIC float linphone_call_get_microphone_volume_gain(const LinphoneCall *call);
 
 /**
- * @brief Set record volume.
- * 
+ * Set microphone volume gain.
+ * If the sound backend supports it, the new gain will synchronized with the system mixer.
+ *
  * @param call The call.
- * @param volume New volume in percentage of the max supported volume. Valid values are in [ 0.0 : 1.0 ].
- * @return void
+ * @param volume Percentage of the max supported gain. Valid values are in [ 0.0 : 1.0 ].
  */
-LINPHONE_PUBLIC void linphone_call_set_record_percent_volume(LinphoneCall *call, double volume);
+LINPHONE_PUBLIC void linphone_call_set_microphone_volume_gain(LinphoneCall *call, float volume);
 
 LINPHONE_PUBLIC	float linphone_call_get_current_quality(LinphoneCall *call);
 LINPHONE_PUBLIC	float linphone_call_get_average_quality(LinphoneCall *call);
@@ -867,6 +886,66 @@ LINPHONE_PUBLIC	void linphone_call_enable_echo_limiter(LinphoneCall *call, bool_
 **/
 LINPHONE_PUBLIC	bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *call);
 
+/**
+ * Enum describing type of audio route.
+ * @ingroup call_control
+**/
+enum _LinphoneAudioRoute {
+	LinphoneAudioRouteEarpiece = MSAudioRouteEarpiece,
+	LinphoneAudioRouteSpeaker = MSAudioRouteSpeaker
+};
+
+/**
+ * Enum describing type of audio route.
+ * @ingroup call_control
+**/
+typedef enum _LinphoneAudioRoute LinphoneAudioRoute;
+
+/**
+ * Change the playback output device (currently only used for blackberry)
+ * @param call
+ * @param route the wanted audio route (earpiece, speaker, ...)
+ *
+ * @ingroup call_control
+**/
+LINPHONE_PUBLIC void linphone_call_set_audio_route(LinphoneCall *call, LinphoneAudioRoute route);
+
+/**
+ * Returns the number of stream for the given call.
+ * Currently there is only two (Audio, Video), but later there will be more.
+ * @param call
+ *
+ * @return 2
+**/
+LINPHONE_PUBLIC int linphone_call_get_stream_count(LinphoneCall *call);
+
+/**
+ * Returns the type of stream for the given stream index.
+ * @param call
+ * @param stream_index
+ *
+ * @return MsAudio if stream_index = 0, MsVideo otherwise
+**/
+LINPHONE_PUBLIC MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index);
+
+/**
+ * Returns the meta rtp transport for the given stream index.
+ * @param call
+ * @param stream_index
+ *
+ * @return a pointer to the meta rtp transport if it exists, NULL otherwise
+**/
+LINPHONE_PUBLIC RtpTransport* linphone_call_get_meta_rtp_transport(LinphoneCall *call, int stream_index);
+
+/**
+ * Returns the meta rtcp transport for the given stream index.
+ * @param call
+ * @param stream_index
+ *
+ * @return a pointer to the meta rtcp transport if it exists, NULL otherwise
+**/
+LINPHONE_PUBLIC RtpTransport* linphone_call_get_meta_rtcp_transport(LinphoneCall *call, int stream_index);
+
 /*keep this in sync with mediastreamer2/msvolume.h*/
 
 /**
@@ -879,6 +958,7 @@ LINPHONE_PUBLIC	bool_t linphone_call_echo_limiter_enabled(const LinphoneCall *ca
  * @addtogroup proxies
  * @{
 **/
+
 /**
  * The LinphoneProxyConfig object represents a proxy configuration to be used
  * by the LinphoneCore object.
@@ -913,6 +993,10 @@ typedef enum _LinphoneRegistrationState{
  * @param cs sate
  */
 LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegistrationState cs);
+
+/**
+ * @}
+ */
 
 #include "linphone_proxy_config.h"
 
@@ -1157,24 +1241,11 @@ typedef LinphoneBuffer * (*LinphoneChatMessageCbsFileTransferSendCb)(LinphoneCha
 typedef void (*LinphoneChatMessageCbsFileTransferProgressIndicationCb)(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 
 LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
-/**
- * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org
- * @param lc #LinphoneCore object
- * @param to destination address for messages
- * @return #LinphoneChatRoom where messaging can take place.
- * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
- */
-LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_create_chat_room(LinphoneCore *lc, const char *to);
-/**
- * Create a new chat room for messaging from a sip uri like sip:joe@sip.linphone.org if not already existing, else return exisiting one
- * @param lc #LinphoneCore object
- * @param to destination address for messages
- * @return #LinphoneChatRoom where messaging can take place.
- * @deprecated Use linphone_core_get_chat_room() or linphone_core_get_chat_room_from_uri() instead.
- */
-LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_get_or_create_chat_room(LinphoneCore *lc, const char *to);
+
+
 /**
  * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
+ * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
  * @param lc the linphone core
  * @param addr a linphone address.
  * @return #LinphoneChatRoom where messaging can take place.
@@ -1182,11 +1253,20 @@ LINPHONE_PUBLIC	LinphoneChatRoom * linphone_core_get_or_create_chat_room(Linphon
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr);
 /**
  * Get a chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
+ * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
  * @param lc The linphone core
  * @param to The destination address for messages.
  * @return #LinphoneChatRoom where messaging can take place.
 **/
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to);
+
+/**
+ * Removes a chatroom including all message history from the LinphoneCore.
+ * @param lc The linphone core
+ * @param to The chatroom.
+**/
+LINPHONE_PUBLIC void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr);
+
 /**
  * Inconditionnaly disable incoming chat messages.
  * @param lc the core
@@ -1258,17 +1338,17 @@ LINPHONE_PUBLIC void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void
 
  /**
  * Create a message attached to a dedicated chat room with a particular content.
- * Use #linphone_chat_room_send_message2 to initiate the transfer
+ * Use #linphone_chat_room_send_message to initiate the transfer
  * @param cr the chat room.
  * @param initial_content #LinphoneContent initial content. #LinphoneCoreVTable.file_transfer_send is invoked later to notify file transfer progress and collect next chunk of the message if #LinphoneContent.data is NULL.
  * @return a new #LinphoneChatMessage
  */
-LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, LinphoneContent* initial_content);
+LINPHONE_PUBLIC	LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent* initial_content);
 
 LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
 /**
  * Send a message to peer member of this chat room.
- * @deprecated linphone_chat_room_send_message2() gives more control on the message expedition.
+ * @deprecated Use linphone_chat_room_send_chat_message() instead.
  * @param cr #LinphoneChatRoom object
  * @param msg message to be sent
  */
@@ -1281,6 +1361,7 @@ LINPHONE_PUBLIC	void linphone_chat_room_send_message(LinphoneChatRoom *cr, const
  * @param ud user data for the status cb.
  * @deprecated Use linphone_chat_room_send_chat_message() instead.
  * @note The LinphoneChatMessage must not be destroyed until the the callback is called.
+ * The LinphoneChatMessage reference is transfered to the function and thus doesn't need to be unref'd by the application.
  */
 LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb,void* ud);
 /**
@@ -1289,6 +1370,7 @@ LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, Linp
  * @param[in] msg LinphoneChatMessage object
  * The state of the message sending will be notified via the callbacks defined in the LinphoneChatMessageCbs object that can be obtained
  * by calling linphone_chat_message_get_callbacks().
+ * The LinphoneChatMessage reference is transfered to the function and thus doesn't need to be unref'd by the application.
  */
 LINPHONE_PUBLIC void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 
@@ -1375,7 +1457,7 @@ LINPHONE_PUBLIC uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr)
  * @param[in] lc #LinphoneCore object
  * @return \mslist{LinphoneChatRoom}
 **/
-LINPHONE_PUBLIC MSList* linphone_core_get_chat_rooms(LinphoneCore *lc);
+LINPHONE_PUBLIC const MSList* linphone_core_get_chat_rooms(LinphoneCore *lc);
 LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *msg);
 
 /**
@@ -1516,7 +1598,7 @@ LINPHONE_PUBLIC	void linphone_chat_message_set_user_data(LinphoneChatMessage* me
 **/
 LINPHONE_PUBLIC LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg);
 /**
- * get peer address \link linphone_core_create_chat_room() associated to \endlink this #LinphoneChatRoom
+ * get peer address \link linphone_core_get_chat_room() associated to \endlink this #LinphoneChatRoom
  * @param cr #LinphoneChatRoom object
  * @return #LinphoneAddress peer address
  */
@@ -1722,7 +1804,7 @@ typedef void (*LinphoneCoreGlobalStateChangedCb)(LinphoneCore *lc, LinphoneGloba
  * @param lc the LinphoneCore
  * @param call the call object whose state is changed.
  * @param cstate the new state of the call
- * @param message an informational message about the state.
+ * @param message a non NULL informational message about the state.
  */
 typedef void (*LinphoneCoreCallStateChangedCb)(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
 
@@ -2273,6 +2355,21 @@ LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, co
 
 LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *url, const LinphoneCallParams *params);
 
+/**
+ * Initiates an outgoing call given a destination LinphoneAddress
+ *
+ * @ingroup call_control
+ * @param lc the LinphoneCore object
+ * @param addr the destination of the call (sip address).
+	@param params call parameters
+ *
+ * The LinphoneAddress can be constructed directly using linphone_address_new(), or
+ * created by linphone_core_interpret_url().
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @return a LinphoneCall object or NULL in case of failure
+**/
 LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params);
 
 LINPHONE_PUBLIC	int linphone_core_transfer_call(LinphoneCore *lc, LinphoneCall *call, const char *refer_to);
@@ -2530,7 +2627,7 @@ LINPHONE_PUBLIC	int linphone_core_get_upload_ptime(LinphoneCore *lc);
  * @param[in] timeout_ms The SIP transport timeout in milliseconds.
  * @ingroup media_parameters
  */
-void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, int timeout_ms);
+LINPHONE_PUBLIC	void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, int timeout_ms);
 
 /**
  * Get the SIP transport timeout.
@@ -2671,30 +2768,32 @@ LINPHONE_PUBLIC	int linphone_core_get_payload_type_number(LinphoneCore *lc, cons
 **/
 LINPHONE_PUBLIC void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, int number);
 
-LINPHONE_PUBLIC	const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
+LINPHONE_PUBLIC const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt);
 
-LINPHONE_PUBLIC	bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt);
+LINPHONE_PUBLIC bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const PayloadType *pt);
+
+/**
+ * @addtogroup proxies
+ * @{
+ */
 
 /**
  * Create a proxy config with default values from Linphone core.
  * @param[in] lc #LinphoneCore object
  * @return #LinphoneProxyConfig with default values set
- * @ingroup proxy
  */
-LINPHONE_PUBLIC	LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc);
 
 /**
  * Add a proxy configuration.
  * This will start registration on the proxy, if registration is enabled.
 **/
-LINPHONE_PUBLIC	int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
+LINPHONE_PUBLIC int linphone_core_add_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
 /**
  * Erase all proxies from config.
- *
- * @ingroup proxy
 **/
-LINPHONE_PUBLIC	void linphone_core_clear_proxy_config(LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_clear_proxy_config(LinphoneCore *lc);
 
 /**
  * Removes a proxy configuration.
@@ -2702,14 +2801,14 @@ LINPHONE_PUBLIC	void linphone_core_clear_proxy_config(LinphoneCore *lc);
  * LinphoneCore will then automatically unregister and place the proxy configuration
  * on a deleted list. For that reason, a removed proxy does NOT need to be freed.
 **/
-LINPHONE_PUBLIC	void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
+LINPHONE_PUBLIC void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
 
 /**
  * Returns an unmodifiable list of entered proxy configurations.
  * @param[in] lc The LinphoneCore object
  * @return \mslist{LinphoneProxyConfig}
 **/
-LINPHONE_PUBLIC	const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc);
+LINPHONE_PUBLIC const MSList *linphone_core_get_proxy_config_list(const LinphoneCore *lc);
 
 /** @deprecated Use linphone_core_set_default_proxy_config() instead. */
 #define linphone_core_set_default_proxy(lc, config) linphone_core_set_default_proxy_config(lc, config)
@@ -2720,7 +2819,7 @@ LINPHONE_PUBLIC void linphone_core_set_default_proxy_index(LinphoneCore *lc, int
  * @return the default proxy configuration, that is the one used to determine the current identity.
  * @deprecated Use linphone_core_get_default_proxy_config() instead.
 **/
-LINPHONE_PUBLIC	int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config);
+LINPHONE_PUBLIC int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config);
 
 /**
  * @return the default proxy configuration, that is the one used to determine the current identity.
@@ -2739,6 +2838,10 @@ LINPHONE_PUBLIC LinphoneProxyConfig * linphone_core_get_default_proxy_config(Lin
  * @param[in] config The proxy configuration to use as the default one.
 **/
 LINPHONE_PUBLIC void linphone_core_set_default_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *config);
+
+/**
+ * @}
+ */
 
 /**
  * Create an authentication information with default values from Linphone core.

@@ -557,9 +557,9 @@ static void bitrate_edited(GtkCellRendererText *renderer, gchar *path, gchar *ne
 	GtkListStore *store=(GtkListStore*)userdata;
 	GtkTreeIter iter;
 	float newbitrate=0;
-	
+
 	if (!new_text) return;
-	
+
 	if (sscanf(new_text, "%f", &newbitrate)!=1) return;
 
 	if (gtk_tree_model_get_iter_from_string(GTK_TREE_MODEL(store),&iter,path)){
@@ -606,10 +606,10 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 						"foreground",CODEC_COLOR,
                                                    NULL);
 	gtk_tree_view_append_column (listview, column);
-	
+
 	g_value_init(&editable, G_TYPE_BOOLEAN);
 	g_value_set_boolean(&editable, TRUE);
-	
+
 	renderer = gtk_cell_renderer_text_new ();
 	g_object_set_property(G_OBJECT(renderer), "editable", &editable);
 	column = gtk_tree_view_column_new_with_attributes (
@@ -620,7 +620,7 @@ static void linphone_gtk_init_codec_list(GtkTreeView *listview){
 		NULL);
 	g_signal_connect(G_OBJECT(renderer),"edited",G_CALLBACK(bitrate_edited),store);
 	gtk_tree_view_append_column (listview, column);
-	
+
 	renderer = gtk_cell_renderer_text_new ();
 	g_object_set_property(G_OBJECT(renderer), "editable", &editable);
 	column = gtk_tree_view_column_new_with_attributes (
@@ -785,13 +785,13 @@ static void linphone_gtk_codec_move(GtkWidget *button, int dir, int type){ /* 0=
 	if (gtk_tree_selection_count_selected_rows(sel) == 1){
 		MSList *sel_elem,*before;
 		MSList *codec_list;
-		
+
 		GList *selected_rows = gtk_tree_selection_get_selected_rows(sel, &mod);
 		gtk_tree_model_get_iter(mod, &iter, (GtkTreePath *)g_list_nth_data(selected_rows, 0));
 		gtk_tree_model_get(mod,&iter,CODEC_PRIVDATA,&pt,-1);
 		g_list_foreach(selected_rows, _g_list_func_destroy_tree_path, NULL);
 		g_list_free(selected_rows);
-		
+
 		if (pt->type==PAYLOAD_VIDEO)
 			codec_list=ms_list_copy(linphone_core_get_video_codecs(lc));
 		else codec_list=ms_list_copy(linphone_core_get_audio_codecs(lc));
@@ -885,6 +885,9 @@ void linphone_gtk_show_sip_accounts(GtkWidget *w){
 	GtkTreeModel *model=gtk_tree_view_get_model(v);
 	GtkListStore *store;
 	GtkTreeSelection *select;
+	const LinphoneProxyConfig *default_pc = linphone_core_get_default_proxy_config(linphone_gtk_get_core());
+	GtkTreePath *default_pc_path = NULL;
+
 	const MSList *elem;
 	if (!model){
 		GtkCellRenderer *renderer;
@@ -914,6 +917,11 @@ void linphone_gtk_show_sip_accounts(GtkWidget *w){
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,PROXY_CONFIG_IDENTITY,linphone_proxy_config_get_identity(cfg),
 					PROXY_CONFIG_REF,cfg,-1);
+		if(cfg == default_pc) default_pc_path = gtk_tree_model_get_path(GTK_TREE_MODEL(store), &iter);
+	}
+	if(default_pc_path) {
+		gtk_tree_selection_select_path(gtk_tree_view_get_selection(v), default_pc_path);
+		gtk_tree_path_free(default_pc_path);
 	}
 }
 
@@ -1892,4 +1900,16 @@ void linphone_gtk_enable_auto_answer(GtkToggleButton *checkbox, gpointer user_da
 void linphone_gtk_auto_answer_delay_changed(GtkSpinButton *spinbutton, gpointer user_data) {
 	int delay = gtk_spin_button_get_value(spinbutton);
 	linphone_gtk_set_ui_config_int("auto_answer_delay", delay);
+}
+
+void linphone_gtk_notebook_current_page_changed	(GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data) {
+#ifndef HAVE_LIBUDEV_H
+	if (page_num == 1) {
+		// Multimedia settings - we reload audio and video devices to detect
+		// hot-plugged devices
+		g_message("Opened multimedia page... reloading audio and video devices!");
+		linphone_gtk_reload_sound_devices();
+		linphone_gtk_reload_video_devices();
+	}
+#endif
 }

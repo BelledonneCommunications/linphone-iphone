@@ -160,7 +160,7 @@ int main(int argc, char *argv[]){
 
 
 	/*Next step is to create a chat room*/
-	chat_room = linphone_core_create_chat_room(lc,dest_friend);
+	chat_room = linphone_core_get_chat_room_from_uri(lc,dest_friend);
 
 	content = linphone_core_create_content(lc);
 	linphone_content_set_type(content,"text");
@@ -196,7 +196,6 @@ int main(int argc, char *argv[]){
 
 	printf("Shutting down...\n");
 	linphone_content_unref(content);
-	linphone_chat_room_destroy(chat_room);
 	linphone_core_destroy(lc);
 	printf("Exited\n");
 	return 0;

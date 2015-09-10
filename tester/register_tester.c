@@ -206,7 +206,7 @@ static void register_with_custom_headers(void){
 	wait_for(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk,initial_register_ok+1);
 	value=linphone_proxy_config_get_custom_header(cfg, "Server");
 	BC_ASSERT_PTR_NOT_NULL(value);
-	if (value) BC_ASSERT_TRUE(strstr(value, "Flexisip")!=NULL);
+	if (value) BC_ASSERT_PTR_NOT_NULL(strstr(value, "Flexisip"));
 	linphone_core_manager_destroy(marie);
 }
 
@@ -424,7 +424,7 @@ static void authenticated_register_with_wrong_credentials_with_params_base(const
 			const LinphoneErrorInfo *ei=linphone_proxy_config_get_error_info(cfg);
 			const char *phrase=linphone_error_info_get_phrase(ei);
 			BC_ASSERT_PTR_NOT_NULL(phrase);
-			if (phrase) BC_ASSERT_TRUE(strcmp(phrase,"Forbidden")==0);
+			if (phrase) BC_ASSERT_STRING_EQUAL(phrase,"Forbidden");
 			BC_ASSERT_EQUAL(linphone_error_info_get_protocol_code(ei),403, int, "%d");
 			BC_ASSERT_PTR_NULL(linphone_error_info_get_details(ei));
 		}
@@ -750,7 +750,7 @@ static void io_recv_error_without_active_register(){
 
 		/*nothing should happen because no active registration*/
 		wait_for_until(lc,lc, &dummy, 1, 3000);
-		BC_ASSERT_TRUE(counters->number_of_LinphoneRegistrationProgress == ms_list_size(linphone_core_get_proxy_config_list(lc)));
+		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationProgress, ms_list_size(linphone_core_get_proxy_config_list(lc)), int, "%d");
 
 		BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationFailed,0,int,"%d");
 

@@ -243,20 +243,23 @@ void linphone_gtk_friend_list_update_chat_picture(){
 	int nbmsg=0;
 	if (gtk_tree_model_get_iter_first(model,&iter)) {
 		do{
+			GdkPixbuf *pbuf = NULL;
 			gtk_tree_model_get (model, &iter,FRIEND_CHATROOM , &cr, -1);
 			nbmsg=linphone_chat_room_get_unread_messages_count(cr);
 			is_composing=linphone_chat_room_is_remote_composing(cr);
 			if(nbmsg != 0){
 				if (is_composing == TRUE)
-					gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_composing_unread_msg(),-1);
+					pbuf = create_composing_unread_msg();
 				else
-					gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_unread_msg(),-1);
+					pbuf = create_unread_msg();
 			} else {
 				if (is_composing == TRUE)
-					gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_composing_chat_picture(),-1);
+					pbuf = create_composing_chat_picture();
 				else
-					gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,create_chat_picture(),-1);
+					pbuf = create_chat_picture();
 			}
+			gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,pbuf,-1);
+			if (pbuf) g_object_unref(pbuf);
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}
 }
@@ -269,9 +272,7 @@ static gboolean grab_focus(GtkWidget *w){
 void linphone_gtk_friend_list_set_active_address(const LinphoneAddress *addr){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
-	LinphoneAddress *old_addr=(LinphoneAddress*)g_object_get_data(G_OBJECT(friendlist),"from");
-	g_object_set_data(G_OBJECT(friendlist),"from", addr ? linphone_address_clone(addr) : NULL);
-	if (old_addr) linphone_address_unref(old_addr);
+	g_object_set_data_full(G_OBJECT(friendlist),"from", addr ? linphone_address_clone(addr) : NULL, (GDestroyNotify)linphone_address_destroy);
 }
 
 const LinphoneAddress *linphone_gtk_friend_list_get_active_address(void){
@@ -831,6 +832,7 @@ void linphone_gtk_show_friends(void){
 		char *escaped=NULL;
 		//char buf[26]={0};
 		int nbmsg=0;
+		GdkPixbuf *pbuf, *pbuf2, *pbuf3;
 
 		/*if (lookup){
 			if (strstr(uri,search)==NULL){
@@ -844,14 +846,22 @@ void linphone_gtk_show_friends(void){
 			display=linphone_address_get_username(f_uri);
 		}
 		gtk_list_store_append(store,&iter);
+		pbuf = create_chat_picture();
+		pbuf2 = create_call_picture();
+		pbuf3 = send_subscribe ? create_status_picture(linphone_friend_get_status(lf)) : NULL;
 		gtk_list_store_set(store,&iter,FRIEND_NAME, display,FRIEND_ID,lf,
-			    FRIEND_PRESENCE_IMG, send_subscribe ? create_status_picture(linphone_friend_get_status(lf)) : NULL,
-				FRIEND_CHAT,create_chat_picture(),FRIEND_CALL,create_call_picture(),-1);
+			    FRIEND_PRESENCE_IMG, pbuf3,
+				FRIEND_CHAT,pbuf,FRIEND_CALL,pbuf2,-1);
+		g_object_unref(pbuf);
+		g_object_unref(pbuf2);
+		if (pbuf3) g_object_unref(pbuf3);
 		cr=linphone_gtk_create_chatroom(f_uri);
 		gtk_list_store_set(store,&iter,FRIEND_CHATROOM,cr,-1);
 		nbmsg=linphone_chat_room_get_unread_messages_count(cr);
 		if(nbmsg != 0){
-			gtk_list_store_set(store,&iter,FRIEND_CHAT,create_unread_msg(),-1);
+			pbuf = create_unread_msg();
+			gtk_list_store_set(store,&iter,FRIEND_CHAT,pbuf,-1);
+			g_object_unref(pbuf);
 		}
 		escaped=g_markup_escape_text(uri,-1);
 		gtk_list_store_set(store,&iter,FRIEND_SIP_ADDRESS,escaped,-1);

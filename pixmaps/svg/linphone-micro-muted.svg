@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="128"
+   height="128"
+   viewBox="0 0 128 128"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-micro-muted.svg"
+   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/hicolor/16x16/linphone-micro-muted.png"
+   inkscape:export-xdpi="11.25"
+   inkscape:export-ydpi="11.25">
+  <metadata
+     id="metadata17">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>micro_default</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1133"
+     id="namedview15"
+     showgrid="false"
+     inkscape:zoom="2.1454545"
+     inkscape:cx="-69.09746"
+     inkscape:cy="55"
+     inkscape:window-x="-6"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">micro_default</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <g
+     id="OUTILS"
+     sketch:type="MSPage"
+     style="fill:none;fill-rule:evenodd;stroke:none;stroke-width:1"
+     transform="matrix(1.1573849,0,0,1.1573849,13.973971,0.95399506)">
+    <g
+       id="linphone_v2.0_icones_buttons"
+       sketch:type="MSArtboardGroup"
+       transform="translate(-1684,-19406)">
+      <g
+         id="micro_default"
+         sketch:type="MSLayerGroup"
+         transform="translate(1650,19384)">
+        <path
+           d="m 60.741568,80.266982 c 0,8.687359 7.074072,15.733949 15.79633,15.733949 8.72491,0 15.798982,-7.04659 15.798982,-15.733949 l 0,-39.527749 C 92.33688,32.04659 85.262808,25 76.537898,25 67.81564,25 60.741568,32.04659 60.741568,40.739233 l 0,39.527749 0,0 z m 45.707652,-19.188548 0,17.172595 c 0,16.459216 -13.392336,29.796741 -29.911322,29.796741 m 0,0 0,18.55708 0,-18.55708 z m -9.307013,20.63116 18.618004,0 -18.618004,0 z m -20.602987,-67.600496 0,17.172595 c 0,16.459216 13.39234,29.796741 29.911326,29.796741 M 37,116.69154 117,36.987393 37,116.69154 Z"
+           id="micro_off"
+           sketch:type="MSShapeGroup"
+           inkscape:connector-curvature="0"
+           style="stroke:#444444;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" />
+        <rect
+           id="Rectangle-250-Copy-6"
+           sketch:type="MSShapeGroup"
+           x="0"
+           y="0"
+           width="154"
+           height="154"
+           style="fill:#ffffff;fill-opacity:0" />
+      </g>
+    </g>
+  </g>
+</svg>

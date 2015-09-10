@@ -362,7 +362,7 @@ static void simple_call_transfer(void) {
 
 	marie_calling_laure=linphone_core_get_current_call(marie->lc);
 	BC_ASSERT_PTR_NOT_NULL_FATAL(marie_calling_laure);
-	BC_ASSERT_TRUE(linphone_call_get_transferer_call(marie_calling_laure)==marie_calling_pauline);
+	BC_ASSERT_PTR_EQUAL(linphone_call_get_transferer_call(marie_calling_laure),marie_calling_pauline);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransferCallConnected,1,2000));
 

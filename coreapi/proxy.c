@@ -402,9 +402,10 @@ LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *cfg){
 	return ret;
 }
 
-void _linphone_proxy_config_unregister(LinphoneProxyConfig *cfg) {
-	if (cfg->op && cfg->state == LinphoneRegistrationOk) {
-		sal_unregister(cfg->op);
+void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj) {
+	if (obj->op && (obj->state == LinphoneRegistrationOk ||
+					(obj->state == LinphoneRegistrationProgress && obj->expires != 0))) {
+		sal_unregister(obj->op);
 	}
 }
 
@@ -1002,7 +1003,7 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 	char *tmpurl;
 	LinphoneAddress *uri;
 
-	if (*username=='\0') return NULL;
+	if (!username || *username=='\0') return NULL;
 
 	if (is_enum(username,&enum_domain)){
 		if (proxy) {
@@ -1035,8 +1036,9 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 		}
 
 		if (proxy!=NULL){
-			/* append the proxy domain suffix */
+			/* append the proxy domain suffix but remove any custom parameters/headers */
 			LinphoneAddress *uri=linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
+			linphone_address_clean(uri);
 			if (uri==NULL){
 				return NULL;
 			} else {
@@ -1489,6 +1491,13 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 	LinphoneCore *lc=cfg->lc;
 	bool_t update_friends=FALSE;
 
+	if (state==LinphoneRegistrationProgress) {
+		char *msg=ortp_strdup_printf(_("Refreshing on %s..."), linphone_proxy_config_get_identity(cfg));
+		linphone_core_notify_display_status(lc,msg);
+		ms_free(msg);
+
+	}
+
 	if (cfg->state!=state || state==LinphoneRegistrationOk) { /*allow multiple notification of LinphoneRegistrationOk for refreshing*/
 		ms_message("Proxy config [%p] for identity [%s] moving from state [%s] to [%s]"	, cfg,
 								linphone_proxy_config_get_identity(cfg),
@@ -1503,8 +1512,13 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 		if (update_friends){
 			linphone_core_update_friends_subscriptions(lc,cfg,TRUE);
 		}
-		if (lc)
+		if (lc){
 			linphone_core_notify_registration_state_changed(lc,cfg,state,message);
+			if (lc->calls && lp_config_get_int(lc->config, "sip", "repair_broken_calls", 1)){
+				/*if we are registered and there were broken calls due to a past network disconnection, attempt to repair them*/
+				ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_repair_if_broken);
+			}
+		}
 	} else {
 		/*state already reported*/
 	}

@@ -53,18 +53,21 @@ static void libLinphoneNativeOutputTraceHandler(OrtpLogLevel lev, const char *fm
 
 LibLinphoneTester::LibLinphoneTester()
 {
-	char writable_dir[MAX_WRITABLE_DIR_SIZE];
-	StorageFolder ^folder = ApplicationData::Current->LocalFolder;
-	const wchar_t *wwritable_dir = folder->Path->Data();
-	wcstombs(writable_dir, wwritable_dir, sizeof(writable_dir));
 	liblinphone_tester_init(nativeOutputTraceHandler);
 	bc_tester_set_resource_dir_prefix("Assets");
-	bc_tester_set_writable_dir_prefix(writable_dir);
 }
 
 LibLinphoneTester::~LibLinphoneTester()
 {
 	liblinphone_tester_uninit();
+}
+
+void LibLinphoneTester::setWritableDirectory(StorageFolder^ folder)
+{
+	char writable_dir[MAX_WRITABLE_DIR_SIZE] = { 0 };
+	const wchar_t *wwritable_dir = folder->Path->Data();
+	wcstombs(writable_dir, wwritable_dir, sizeof(writable_dir));
+	bc_tester_set_writable_dir_prefix(writable_dir);
 }
 
 void LibLinphoneTester::setOutputTraceListener(OutputTraceListener^ traceListener)

@@ -282,8 +282,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		LinphoneFriend *lf=NULL;
 		int duration=linphone_call_log_get_duration(cl);
 		time_t start_date_time=linphone_call_log_get_start_date(cl);
-		GdkPixbuf *incoming;
-		GdkPixbuf *outgoing;
+		GdkPixbuf *pbuf;
 
 #if GLIB_CHECK_VERSION(2,26,0)
 		if (start_date_time){
@@ -348,14 +347,13 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		g_free(seconds);
 		if (start_date) g_free(start_date);
 		gtk_tree_store_append (store,&iter,NULL);
-
-		incoming = create_pixbuf("call_status_incoming.png");
-		outgoing = create_pixbuf("call_status_outgoing.png");
+		pbuf = linphone_call_log_get_dir(cl)==LinphoneCallOutgoing ? create_pixbuf("call_status_outgoing.png") : create_pixbuf("call_status_incoming.png");
 		gtk_tree_store_set (store,&iter,
-		               0, linphone_call_log_get_dir(cl)==LinphoneCallOutgoing ? outgoing : incoming,
+		               0, pbuf,
 		               1, headtxt,2,cl,-1);
 		gtk_tree_store_append (store,&iter2,&iter);
 		gtk_tree_store_set (store,&iter2,1,logtxt,-1);
+		g_object_unref(pbuf);
 		ms_free(addr);
 		g_free(logtxt);
 		g_free(headtxt);

@@ -29,6 +29,7 @@ extern "C" {
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/msmediaplayer.h"
 #include "mediastreamer2/msutils.h"
+#include "devices.h"
 }
 #include "mediastreamer2/msjava.h"
 #include "private.h"
@@ -56,6 +57,9 @@ extern "C" void libmsbcg729_init();
 #endif
 #ifdef HAVE_WEBRTC
 extern "C" void libmswebrtc_init();
+#endif
+#ifdef HAVE_CODEC2
+extern "C" void libmscodec2_init();
 #endif
 #include <belle-sip/wakelock.h>
 #endif /*ANDROID*/
@@ -136,12 +140,18 @@ static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt,
 int dumbMethodForAllowingUsageOfCpuFeaturesFromStaticLibMediastream() {
 	return (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM && (android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0);
 }
+
+int dumbMethodForAllowingUsageOfMsAudioDiffFromStaticLibMediastream() {
+	return ms_audio_diff(NULL, NULL, NULL, 0, NULL, NULL);
+}
 #endif /*ANDROID*/
+
 
 JNIEXPORT jint JNICALL  JNI_OnLoad(JavaVM *ajvm, void *reserved)
 {
 #ifdef ANDROID
 	ms_set_jvm(ajvm);
+	
 #endif /*ANDROID*/
 	jvm=ajvm;
 	return JNI_VERSION_1_2;
@@ -371,12 +381,6 @@ public:
 			vTable->notify_presence_received = notify_presence_received;
 		}
 
-		/*void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from,String message);*/
-		textReceivedId = env->GetMethodID(listenerClass,"textReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneAddress;Ljava/lang/String;)V");
-		if (textReceivedId) {
-			vTable->text_received = text_received;
-		}
-
 		messageReceivedId = env->GetMethodID(listenerClass,"messageReceived","(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneChatRoom;Lorg/linphone/core/LinphoneChatMessage;)V");
 		if (messageReceivedId) {
 			vTable->message_received = message_received;
@@ -516,7 +520,6 @@ public:
 	jmethodID displayStatusId;
 	jmethodID newSubscriptionRequestId;
 	jmethodID notifyPresenceReceivedId;
-	jmethodID textReceivedId;
 	jmethodID messageReceivedId;
 	jmethodID isComposingReceivedId;
 	jmethodID dtmfReceivedId;
@@ -778,23 +781,6 @@ public:
 							,lcData->core
 							,getCall(env,call)
 							,dtmf);
-		handle_possible_java_exception(env, lcData->listener);
-	}
-	static void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) {
-		JNIEnv *env = 0;
-		jint result = jvm->AttachCurrentThread(&env,NULL);
-		if (result != 0) {
-			ms_error("cannot attach VM");
-			return;
-		}
-		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
-		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
-		env->CallVoidMethod(lcData->listener
-							,lcData->textReceivedId
-							,lcData->core
-							,env->NewObject(lcData->chatRoomClass,lcData->chatRoomCtrId,(jlong)room)
-							,env->NewObject(lcData->addressClass,lcData->addressCtrId,(jlong)from)
-							,message ? env->NewStringUTF(message) : NULL);
 		handle_possible_java_exception(env, lcData->listener);
 	}
 	static void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
@@ -1158,6 +1144,9 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 #endif
 #ifdef HAVE_WEBRTC
 	libmswebrtc_init();
+#endif
+#ifdef HAVE_CODEC2
+	libmscodec2_init();
 #endif
 
 	jobject core = env->NewGlobalRef(thiz);
@@ -2002,24 +1991,29 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration
 		ms_error("Could not get soundcard %s", card);
 		return TRUE;
 	}
+
+	SoundDeviceDescription *sound_description = sound_device_description_get();
+	if(sound_description != NULL && sound_description == &genericSoundDeviceDescriptor){
+		return TRUE;
+	}
 	
 	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
 	if (ms_snd_card_get_minimal_latency(sndcard) != 0) return FALSE;
 	return TRUE;
 }
 
-extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCanceler(JNIEnv *env, jobject thiz, jlong lc) {
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_hasBuiltInEchoCanceler(JNIEnv *env, jobject thiz, jlong lc) {
 	MSSndCard *sndcard;
 	MSSndCardManager *m = ms_snd_card_manager_get();
 	const char *card = linphone_core_get_capture_device((LinphoneCore*)lc);
 	sndcard = ms_snd_card_manager_get_card(m, card);
 	if (sndcard == NULL) {
 		ms_error("Could not get soundcard %s", card);
-		return TRUE;
+		return FALSE;
 	}
-	
-	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return FALSE;
-	return TRUE;
+
+	if (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_BUILTIN_ECHO_CANCELLER) return TRUE;
+	return FALSE;
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getMediaEncryption(JNIEnv*  env

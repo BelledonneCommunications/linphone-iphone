@@ -117,7 +117,7 @@ static gboolean _linphone_status_icon_desc_is_supported(
 	gboolean *result,
 	LinphoneStatusIconDescIsSupportedResultCb cb,
 	void *user_data) {
-	
+
 	return desc->is_supported(desc, result, cb, user_data);
 }
 
@@ -131,7 +131,7 @@ static void _linphone_status_icon_desc_is_supported_result_cb(
 	const _LinphoneStatusIconDesc *desc,
 	gboolean result,
 	_LinphoneStatusIconDescSearchCtx *ctx) {
-	
+
 	if(!result) {
 		ctx->i = g_slist_next(ctx->i);
 		for(; ctx->i; ctx->i = g_slist_next(ctx->i)) {
@@ -140,12 +140,12 @@ static void _linphone_status_icon_desc_is_supported_result_cb(
 				&result,
 				(LinphoneStatusIconDescIsSupportedResultCb)_linphone_status_icon_desc_is_supported_result_cb,
 				ctx)) {
-			
+
 				if(result) break;
 			} else return;
 		}
 	}
-	
+
 	if(ctx->i) {
 		const _LinphoneStatusIconDesc *desc = (const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0);
 		ms_message("StatusIcon: found implementation: %s", desc->impl_name);
@@ -153,7 +153,7 @@ static void _linphone_status_icon_desc_is_supported_result_cb(
 	} else {
 		g_warning("StatusIcon: no implementation found");
 	}
-	
+
 	g_free(ctx);
 }
 
@@ -161,21 +161,21 @@ static gboolean _linphone_status_icon_find_first_available_impl(
 	const _LinphoneStatusIconDesc **desc,
 	LinphoneStatusIconDescFindResultCb cb,
 	void *user_data) {
-	
+
 	gboolean result;
 	_LinphoneStatusIconDescSearchCtx *ctx = g_new0(_LinphoneStatusIconDescSearchCtx, 1);
 	ctx->cb = cb;
 	ctx->user_data = user_data;
-	
+
 	ms_message("StatusIcon: looking for implementation...");
-	
+
 	for(ctx->i=_linphone_status_icon_impls; ctx->i; ctx->i = g_slist_next(ctx->i)) {
 		if(_linphone_status_icon_desc_is_supported(
 			(const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0),
 			&result,
 			(LinphoneStatusIconDescIsSupportedResultCb)_linphone_status_icon_desc_is_supported_result_cb,
 			ctx)) {
-			
+
 			if(result) {
 				*desc = (const _LinphoneStatusIconDesc *)g_slist_nth_data(ctx->i, 0);
 				ms_message("StatusIcon: found implementation: %s", (*desc)->impl_name);
@@ -187,7 +187,7 @@ static gboolean _linphone_status_icon_find_first_available_impl(
 	}
 	g_warning("StatusIcon: no implementation found");
 	*desc = NULL;
-	
+
 sync_return:
 	g_free(ctx);
 	return 1;
@@ -266,15 +266,15 @@ void _linphone_status_icon_create_implementations_list(void) {
 gboolean linphone_status_icon_init(LinphoneStatusIconReadyCb ready_cb, void *user_data) {
 	const _LinphoneStatusIconDesc *desc;
 	void **ctx;
-	
+
 	ms_message("StatusIcon: Initialising");
-	
+
 	_linphone_status_icon_create_implementations_list();
-	
+
 	ctx = g_new(void *, 2);
 	ctx[0] = ready_cb;
 	ctx[1] = user_data;
-	
+
 	if(_linphone_status_icon_find_first_available_impl(&desc, _linphone_status_icon_init_cb, ctx)) {
 		_linphone_status_icon_selected_desc = desc;
 		g_free(ctx);
@@ -317,7 +317,7 @@ static void _linphone_status_icon_impl_gtk_popup_menu(GtkStatusIcon *status_icon
 
 static void _linphone_status_icon_impl_gtk_init(LinphoneStatusIcon *si) {
 	const char *icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
-	const char *call_icon_path=linphone_gtk_get_ui_config("start_call_icon","startcall-green.png");
+	const char *call_icon_path=linphone_gtk_get_ui_config("start_call_icon","call_start.png");
 	GdkPixbuf *pbuf=create_pixbuf(icon_path);
 	GtkStatusIcon *icon=gtk_status_icon_new_from_pixbuf(pbuf);
 	g_signal_connect_swapped(G_OBJECT(icon),"activate", G_CALLBACK(_linphone_status_icon_impl_gtk_on_click_cb), si);
@@ -375,7 +375,7 @@ static gboolean _linphone_status_icon_impl_is_supported(
 	gboolean *result,
 	LinphoneStatusIconDescIsSupportedResultCb cb,
 	void *user_data) {
-	
+
 	*result = 1;
 	return 1;
 }
@@ -409,7 +409,7 @@ static gboolean _linphone_status_icon_impl_gtkosx_app_is_supported(
 	gboolean *result,
 	LinphoneStatusIconDescIsSupportedResultCb cb,
 	void *user_data) {
-	
+
 	*result = 1;
 	return 1;
 }
@@ -472,10 +472,10 @@ static void _linphone_status_icon_impl_sn_start(LinphoneStatusIcon *si) {
 	BcStatusNotifierParams *params;
 	BcStatusNotifierToolTip *tooltip = bc_status_notifier_tool_tip_new("linphone", si->params->title, si->params->desc);
 	BcStatusNotifierSignalsVTable vtable = {NULL};
-	
+
 	vtable.activate_called_cb = _linphone_status_icon_impl_sn_activated_cb;
 	vtable.context_menu_called_cb = _linphone_status_icon_impl_sn_menu_called_cb;
-	
+
 	params = bc_status_notifier_params_new();
 	bc_status_notifier_params_set_dbus_prefix(params, "org.kde");
 	bc_status_notifier_params_set_category(params, BcStatusNotifierCategoryCommunications);
@@ -484,15 +484,15 @@ static void _linphone_status_icon_impl_sn_start(LinphoneStatusIcon *si) {
 	bc_status_notifier_params_set_icon_name(params, "linphone");
 	bc_status_notifier_params_set_tool_tip(params, tooltip);
 	bc_status_notifier_params_set_vtable(params, &vtable, si);
-	
+
 	bc_status_notifier_start(sn, params, NULL, NULL);
-	
+
 	bc_status_notifier_tool_tip_unref(tooltip);
 	bc_status_notifier_params_unref(params);
 }
 
 static void _linphone_status_icon_impl_sn_enable_blinking(LinphoneStatusIcon *si, gboolean val) {
-	BcStatusNotifier *sn = (BcStatusNotifier *)si->data; 
+	BcStatusNotifier *sn = (BcStatusNotifier *)si->data;
 	if(val) {
 		bc_status_notifier_update_status(sn, BcStatusNotifierStatusNeedsAttention);
 	} else {
@@ -513,16 +513,16 @@ static gboolean _linphone_status_icon_impl_sn_is_supported(
 	gboolean *result,
 	LinphoneStatusIconDescIsSupportedResultCb cb,
 	void *user_data) {
-	
+
 	_LinphoneStatusIconDesc *desc2;
 	void **data;
 	const char *desktop = g_getenv("XDG_CURRENT_DESKTOP");
-	
+
 	if(desktop == NULL || g_strcmp0(desktop, "KDE") != 0) {
 		*result = FALSE;
 		return TRUE;
 	}
-	
+
 	desc2 = g_new(_LinphoneStatusIconDesc, 1);
 	*desc2 = *desc;
 	data = g_new(void *, 3);

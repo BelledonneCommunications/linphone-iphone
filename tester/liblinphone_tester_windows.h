@@ -14,6 +14,7 @@ namespace liblinphone_tester_runtime_component
     public ref class LibLinphoneTester sealed
     {
     public:
+		void setWritableDirectory(Windows::Storage::StorageFolder^ folder);
 		void setOutputTraceListener(OutputTraceListener^ traceListener);
 		unsigned int nbTestSuites();
 		unsigned int nbTests(Platform::String^ suiteName);

@@ -37,6 +37,7 @@ namespace liblinphone_tester
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            LibLinphoneTester.Instance.setWritableDirectory(ApplicationData.Current.LocalFolder);
             _suites = UnitTestDataSource.GetSuites(LibLinphoneTester.Instance);
             TryAutoLaunch();
         }

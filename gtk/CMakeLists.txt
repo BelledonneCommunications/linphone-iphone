@@ -39,6 +39,11 @@ set(UI_FILES
 	sip_account.ui
 	tunnel_config.ui
 	waiting.ui
+	chatroom_frame.ui
+	in_call_frame.ui
+	conf_frame.ui
+	callee_frame.ui
+	login_frame.ui
 )
 
 set(PIXMAPS stock_people.png)
@@ -90,6 +95,10 @@ endif()
 if(ENABLE_NOTIFY)
 	target_include_directories(linphone-gtk PUBLIC ${NOTIFY_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${NOTIFY_LIBRARIES})
+endif()
+
+if (HAVE_LIBUDEV_H)
+	target_link_libraries(linphone-gtk udev)
 endif()
 
 install(TARGETS linphone-gtk

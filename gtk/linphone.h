@@ -98,16 +98,15 @@ GdkPixbuf *_gdk_pixbuf_new_from_memory_at_scale(const void *data, gint len, gint
 LINPHONE_PUBLIC void linphone_gtk_destroy_window(GtkWidget *window);
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_window(const char *window_name, GtkWidget *parent);
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_widget(GtkWidget *window, const char *name);
-LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_widget(const char *filename, const char *widget_name);
+LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_widget(const char* widget_name);
 
-const char *linphone_gtk_message_storage_get_db_file(const char *filename);
+char *linphone_gtk_message_storage_get_db_file(const char *filename);
 LINPHONE_PUBLIC void linphone_gtk_show_assistant(GtkWidget* parent);
 LINPHONE_PUBLIC void linphone_gtk_close_assistant(void);
 
 LINPHONE_PUBLIC LinphoneCore *linphone_gtk_get_core(void);
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_main_window();
 LINPHONE_PUBLIC void linphone_gtk_display_something(GtkMessageType type, const gchar *message);
-LINPHONE_PUBLIC void linphone_gtk_start_call(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_call_terminated();
 LINPHONE_PUBLIC void linphone_gtk_set_my_presence(LinphoneOnlineStatus ss);
 LINPHONE_PUBLIC void linphone_gtk_show_parameters(void);
@@ -213,7 +212,7 @@ LINPHONE_PUBLIC void linphone_gtk_in_call_show_video(LinphoneCall *call);
 LINPHONE_PUBLIC char *linphone_gtk_address(const LinphoneAddress *addr);/*return human readable identifier for a LinphoneAddress */
 LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_camera_preview_window(void);
 
-LINPHONE_PUBLIC void linphone_gtk_login_frame_connect_clicked(GtkWidget *button);
+LINPHONE_PUBLIC void linphone_gtk_login_frame_connect_clicked(GtkWidget *button, GtkWidget *login_frame);
 
 LINPHONE_PUBLIC gboolean linphone_gtk_call_log_reset_missed_call(GtkWidget *w, GdkEvent *event, gpointer user_data);
 LINPHONE_PUBLIC void linphone_gtk_history_row_activated(GtkWidget *treeview);
@@ -240,6 +239,7 @@ LINPHONE_PUBLIC void linphone_gtk_logout_clicked(void);
 LINPHONE_PUBLIC void linphone_gtk_about_response(GtkDialog *dialog, gint id);
 LINPHONE_PUBLIC void linphone_gtk_show_about(void);
 LINPHONE_PUBLIC void linphone_gtk_start_call(GtkWidget *w);
+LINPHONE_PUBLIC void linphone_gtk_start_chat(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_uri_bar_activate(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_terminate_call(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_decline_clicked(GtkWidget *button);
@@ -307,6 +307,7 @@ LINPHONE_PUBLIC void linphone_gtk_video_preset_changed(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_show_camera_preview_clicked(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_update_my_contact(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_add_proxy(GtkButton *button);
+LINPHONE_PUBLIC void linphone_gtk_show_sip_accounts(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_edit_proxy(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_remove_proxy(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_clear_passwords(GtkWidget *button);
@@ -333,3 +334,6 @@ LINPHONE_PUBLIC void linphone_gtk_proxy_cancel(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_proxy_address_changed(GtkEditable *editable);
 LINPHONE_PUBLIC void linphone_gtk_proxy_transport_changed(GtkWidget *combo);
 LINPHONE_PUBLIC void linphone_gtk_tunnel_ok(GtkButton *button);
+LINPHONE_PUBLIC void linphone_gtk_notebook_current_page_changed(GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer user_data);
+LINPHONE_PUBLIC void linphone_gtk_reload_sound_devices(void);
+LINPHONE_PUBLIC void linphone_gtk_reload_video_devices(void);

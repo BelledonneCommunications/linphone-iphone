@@ -160,26 +160,27 @@ static bool_t is_null_address(const char *addr){
 /*check for the presence of at least one stream with requested direction */
 static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
-
+	
 	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
 	for(i=0;i<md->nb_streams;++i){
 		const SalStreamDescription *ss=&md->streams[i];
 		if (!sal_stream_description_active(ss)) continue;
-		if (ss->dir==stream_dir) return TRUE;
-		/*compatibility check for phones that only used the null address and no attributes */
-		if (ss->dir==SalStreamSendRecv && stream_dir==SalStreamSendOnly && (is_null_address(md->addr) || is_null_address(ss->rtp_addr)))
+		if (ss->dir==stream_dir) {
 			return TRUE;
+		}
+		/*compatibility check for phones that only used the null address and no attributes */
+		if (ss->dir==SalStreamSendRecv && stream_dir==SalStreamSendOnly && (is_null_address(md->addr) || is_null_address(ss->rtp_addr))){
+			return TRUE;
+		}
 	}
 	return FALSE;
 }
 
 bool_t sal_media_description_has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	if (stream_dir==SalStreamRecvOnly){
-		if (has_dir(md,SalStreamSendOnly) || has_dir(md,SalStreamSendRecv)) return FALSE;
-		else return TRUE;
+		return has_dir(md, SalStreamRecvOnly) && !(has_dir(md,SalStreamSendOnly) || has_dir(md,SalStreamSendRecv));
 	}else if (stream_dir==SalStreamSendOnly){
-		if (has_dir(md,SalStreamRecvOnly) || has_dir(md,SalStreamSendRecv)) return FALSE;
-		else return TRUE;
+		return has_dir(md, SalStreamSendOnly) && !(has_dir(md,SalStreamRecvOnly) || has_dir(md,SalStreamSendRecv));
 	}else if (stream_dir==SalStreamSendRecv){
 		return has_dir(md,SalStreamSendRecv);
 	}else{

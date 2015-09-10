@@ -24,7 +24,7 @@ class RegisterCoreManager(CoreManager):
         self.lc.sip_transports = transport
         proxy_cfg = self.lc.create_proxy_config()
         from_address = create_address(domain)
-        proxy_cfg.identity = from_address.as_string()
+        proxy_cfg.identity_address = from_address
         server_addr = from_address.domain
         proxy_cfg.register_enabled = True
         proxy_cfg.expires = 1

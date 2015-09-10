@@ -128,8 +128,8 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 		pauline_call=linphone_core_get_current_call(pauline->lc);
 		BC_ASSERT_PTR_NOT_NULL(pauline_call);
 		if (pauline_call!=NULL){
-			BC_ASSERT_PTR_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(pauline_call)),
-				encryption);
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(pauline_call)),
+				encryption, int, "%d");
 		}
 		if (tunnel_mode == LinphoneTunnelModeEnable && with_sip){
 			/* make sure the call from pauline arrived from the tunnel by checking the contact address*/

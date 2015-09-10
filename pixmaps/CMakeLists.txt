@@ -20,50 +20,39 @@
 #
 ############################################################################
 
-set(PIXMAPS
-	active_chat.png
-	addcall-green.png
-	call.png
-	call_status_incoming.png
-	call_status_outgoing.png
-	chat_message_delivered.png
-	chat_message_inprogress.png
-	chat_message_not_delivered.png
-	chat.png
-	composing_active_chat.png
-	composing_chat.png
-	contact-orange.png
-	contact_starred.png
-	contact_unstarred.png
-	dialer-orange.png
-	dialer.png
-	history-orange.png
-	hold_off.png
-	hold_on.png
-	linphone-banner.png
-	linphone.icns
-	linphone.png
-	mic_active.png
-	mic_muted.png
-	notok.png
-	ok.png
-	speaker.png
-	startcall-green.png
-	startcall-small.png
-	status-green.png
-	status-offline.png
-	status-orange.png
-	status-red.png
-	stopcall-red.png
-	stopcall-small.png
-)
+set(ICONS_INSTALL_DIR ${PACKAGE_DATA_DIR}/icons/hicolor)
+
+file(GLOB PIXMAPS "*.png" "linphone.icns")
 
 install(FILES ${PIXMAPS}
 	DESTINATION ${PACKAGE_DATA_DIR}/pixmaps/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 
+install(FILES svg/linphone-micro-muted.svg
+	svg/linphone-speaker-muted.svg
+	svg/linphone-micro-enabled.svg
+	svg/linphone-speaker-enabled.svg
+	DESTINATION ${ICONS_INSTALL_DIR}/scalable/status
+	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+)
+
+install(FILES linphone-micro-muted.png
+	linphone-speaker-muted.png
+	linphone-micro-enabled.png
+	linphone-speaker-enabled.png
+	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
+	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+)
+
 install(FILES linphone.png
-	DESTINATION ${PACKAGE_DATA_DIR}/icons/hicolor/48x48/apps
+	DESTINATION ${ICONS_INSTALL_DIR}/48x48/apps
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
+
+if(WIN32)
+	install(FILES index.theme
+		DESTINATION ${ICONS_INSTALL_DIR}
+		PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+	)
+endif()

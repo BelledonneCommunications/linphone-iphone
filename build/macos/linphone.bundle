@@ -76,7 +76,7 @@
   </binary>
 
   <data>
-    ${prefix}/share/mime/globs
+    ${prefix}/share/mime/mime.cache
   </data>
 
   <binary>
@@ -134,6 +134,10 @@
 
   <data>
     ${prefix:linphone}/share/images
+  </data>
+
+  <data>
+    ${prefix:linphone}/share/icons
   </data>
 
 

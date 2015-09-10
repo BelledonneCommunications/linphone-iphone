@@ -94,6 +94,20 @@ static void fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *messag
 	sqlite3_free(buf);
 }
 
+
+
+// Called when fetching all conversations from database
+static int callback_all(void *data, int argc, char **argv, char **colName){
+	LinphoneCore* lc = (LinphoneCore*) data;
+	char* address = argv[0];
+	LinphoneAddress *addr = linphone_address_new(address);
+	if (addr){
+		linphone_core_get_chat_room(lc, addr);
+		linphone_address_destroy(addr);
+	}
+	return 0;
+}
+
 /* DB layout:
  * | 0  | storage_id
  * | 1  | localContact
@@ -106,13 +120,12 @@ static void fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *messag
  * | 8  | external body url
  * | 9  | utc timestamp
  * | 10 | app data text
- * | 11 | linphone content
+ * | 11 | linphone content id
  */
-static void create_chat_message(char **argv, void *data){
+static int create_chat_message(void *data, int argc, char **argv, char **colName){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
 	LinphoneAddress *from;
 	LinphoneAddress *to;
-
 	unsigned int storage_id = atoi(argv[0]);
 
 	// check if the message exists in the transient list, in which case we should return that one.
@@ -136,17 +149,12 @@ static void create_chat_message(char **argv, void *data){
 			linphone_address_destroy(to);
 		}
 
-		if( argv[9] != NULL ){
-			new_message->time = (time_t)atol(argv[9]);
-		} else {
-			new_message->time = time(NULL);
-		}
-
+		new_message->time = (time_t)atol(argv[9]);
 		new_message->is_read=atoi(argv[6]);
 		new_message->state=atoi(argv[7]);
 		new_message->storage_id=storage_id;
-		new_message->external_body_url= argv[8] ? ms_strdup(argv[8])  : NULL;
-		new_message->appdata          = argv[10]? ms_strdup(argv[10]) : NULL;
+		new_message->external_body_url= ms_strdup(argv[8]);
+		new_message->appdata          = ms_strdup(argv[10]);
 
 		if (argv[11] != NULL) {
 			int id = atoi(argv[11]);
@@ -156,25 +164,14 @@ static void create_chat_message(char **argv, void *data){
 		}
 	}
 	cr->messages_hist=ms_list_prepend(cr->messages_hist,new_message);
-}
 
-// Called when fetching all conversations from database
-static int callback_all(void *data, int argc, char **argv, char **colName){
-	LinphoneCore* lc = (LinphoneCore*) data;
-	char* address = argv[0];
-	linphone_core_get_or_create_chat_room(lc, address);
-	return 0;
-}
-
-static int callback(void *data, int argc, char **argv, char **colName){
-	create_chat_message(argv,data);
 	return 0;
 }
 
 void linphone_sql_request_message(sqlite3 *db,const char *stmt,LinphoneChatRoom *cr){
 	char* errmsg=NULL;
 	int ret;
-	ret=sqlite3_exec(db,stmt,callback,cr,&errmsg);
+	ret=sqlite3_exec(db,stmt,create_chat_message,cr,&errmsg);
 	if(ret != SQLITE_OK) {
 		ms_error("Error in creation: %s.", errmsg);
 		sqlite3_free(errmsg);
@@ -287,7 +284,7 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	char *buf;
 
 	if (lc->db==NULL) return ;
-	
+
 	// optimization: do not modify the database if no message is marked as unread
 	if(linphone_chat_room_get_unread_messages_count(cr) == 0) return;
 
@@ -297,7 +294,7 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 	ms_free(peer);
-	
+
 	cr->unread_count = 0;
 }
 
@@ -321,7 +318,7 @@ static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t un
 	int returnValue;
 
 	if (lc->db==NULL) return 0;
-	
+
 	// optimization: do not read database if the count is already available in memory
 	if(unread_only && cr->unread_count >= 0) return cr->unread_count;
 
@@ -336,11 +333,11 @@ static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t un
 	sqlite3_finalize(selectStatement);
 	sqlite3_free(buf);
 	ms_free(peer);
-	
+
 	/* no need to test the sign of cr->unread_count here
 	 * because it has been tested above */
 	if(unread_only) cr->unread_count = numrows;
-	
+
 	return numrows;
 }
 
@@ -361,7 +358,7 @@ void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage
 	buf=sqlite3_mprintf("DELETE FROM history WHERE id = %i;", msg->storage_id);
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
-	
+
 	if(cr->unread_count >= 0 && !msg->is_read) {
 		assert(cr->unread_count > 0);
 		cr->unread_count--;
@@ -380,7 +377,7 @@ void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 	ms_free(peer);
-	
+
 	if(cr->unread_count > 0) cr->unread_count = 0;
 }
 
@@ -618,7 +615,7 @@ static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 #elif defined(_WIN32)
 	int ret;
 	wchar_t db_file_utf16[MAX_PATH_SIZE];
-	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, MAX_PATH_SIZE, db_file_utf16, MAX_PATH_SIZE);
+	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, -1, db_file_utf16, MAX_PATH_SIZE);
 	if(ret == 0) db_file_utf16[0] = '\0';
 	return sqlite3_open16(db_file_utf16, db);
 #else
@@ -627,7 +624,7 @@ static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 	char *inbuf=db_file_locale, *outbuf=db_file_utf8;
 	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
 	iconv_t cb;
-	
+
 	strncpy(db_file_locale, db_file, MAX_PATH_SIZE-1);
 	cb = iconv_open("UTF-8", nl_langinfo(CODESET));
 	if(cb != (iconv_t)-1) {

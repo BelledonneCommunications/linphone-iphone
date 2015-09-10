@@ -105,15 +105,14 @@ class AccountManager:
     def check_account(self, cfg):
         create_account = False
         lc = cfg.core
-        identity = cfg.identity
-        id_addr = linphone.Address.new(identity)
+        id_addr = cfg.identity_address
         account = self._get_account(id_addr)
         if account is None:
-            linphonetester_logger.info("[TESTER] No account for {identity} exists, going to create one.".format(identity=identity))
+            linphonetester_logger.info("[TESTER] No account for {identity} exists, going to create one.".format(identity=id_addr.as_string()))
             account = Account(id_addr, self.unique_id)
             self.accounts.append(account)
             create_account = True
-        cfg.identity = account.modified_identity.as_string()
+        cfg.identity_address = account.modified_identity
         if create_account:
             self._create_account_on_server(account, cfg)
         ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
@@ -136,7 +135,7 @@ class AccountManager:
         cfg = lc.create_proxy_config()
         tmp_identity.password = account.password
         tmp_identity.set_header("X-Create-Account", "yes")
-        cfg.identity = tmp_identity.as_string()
+        cfg.identity_address = tmp_identity
         server_addr = linphone.Address.new(refcfg.server_addr)
         server_addr.transport = linphone.TransportType.Tcp;
         server_addr.port = 0
@@ -144,15 +143,15 @@ class AccountManager:
         cfg.expires = 3600
         lc.add_proxy_config(cfg)
         if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().auth_requested == True, 10000) != True:
-            linphonetester_logger.critical("[TESTER] Account for {identity} could not be created on server.".format(identity=refcfg.identity))
+            linphonetester_logger.critical("[TESTER] Account for {identity} could not be created on server.".format(identity=refcfg.identity_address.as_string()))
             sys.exit(-1)
         cfg.edit()
-        cfg.identity = account.modified_identity.as_string()
+        cfg.identity_address = account.modified_identity
         cfg.done()
         ai = linphone.AuthInfo.new(account.modified_identity.username, None, account.password, None, None, account.modified_identity.domain)
         lc.add_auth_info(ai)
         if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().created == True, 3000) != True:
-            linphonetester_logger.critical("[TESTER] Account for {identity} is not working on server.".format(identity=refcfg.identity))
+            linphonetester_logger.critical("[TESTER] Account for {identity} is not working on server.".format(identity=refcfg.identity_address.as_string()))
             sys.exit(-1)
         lc.remove_proxy_config(cfg)
         if AccountManager.wait_for_until(lc, None, lambda lc: lc.user_data().done == True, 3000) != True:
@@ -392,7 +391,7 @@ class CoreManager:
     def registration_state_changed(cls, lc, cfg, state, message):
         manager = lc.user_data()
         linphonetester_logger.info("[TESTER] New registration state {state} for user id [{identity}] at proxy [{addr}]".format(
-            state=linphone.RegistrationState.string(state), identity=cfg.identity, addr=cfg.server_addr))
+            state=linphone.RegistrationState.string(state), identity=cfg.identity_address.as_string(), addr=cfg.server_addr))
         if state == linphone.RegistrationState.None:
             manager.stats.number_of_LinphoneRegistrationNone += 1
         elif state == linphone.RegistrationState.Progress:
@@ -598,8 +597,7 @@ class CoreManager:
         self.enable_audio_codec("PCMU", 8000)
 
         if self.lc.default_proxy_config is not None:
-            self.identity = linphone.Address.new(self.lc.default_proxy_config.identity)
-            self.identity.clean()
+            self.lc.default_proxy_config.identity_address.clean()
 
     def enable_audio_codec(self, mime, rate):
         codecs = self.lc.audio_codecs

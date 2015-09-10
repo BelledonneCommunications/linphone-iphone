@@ -89,3 +89,6 @@ tester/record_for_lc_*.wav
 tester/record-call_with_file_player.wav
 tester/ZIDCache*.xml
 
+tester/stereo-record.wav
+.dirstamp
+git-clang-format.diff

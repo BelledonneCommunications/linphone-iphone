@@ -32,6 +32,11 @@ gtk/audio_assistant.c
 [type: gettext/glade]gtk/ldap.ui
 [type: gettext/glade]gtk/config-uri.ui
 [type: gettext/glade]gtk/provisioning-fetch.ui
+[type: gettext/glade]gtk/chatroom_frame.ui
+[type: gettext/glade]gtk/callee_frame.ui
+[type: gettext/glade]gtk/conf_frame.ui
+[type: gettext/glade]gtk/in_call_frame.ui
+[type: gettext/glade]gtk/login_frame.ui
 coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/presence.c

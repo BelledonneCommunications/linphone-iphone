@@ -211,6 +211,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+            <signal name="switch-page" handler="linphone_gtk_notebook_current_page_changed" swapped="no"/>
             <child>
               <object class="GtkVBox" id="sip_tab">
                 <property name="visible">True</property>

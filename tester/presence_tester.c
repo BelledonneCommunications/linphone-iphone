@@ -299,7 +299,7 @@ static void presence_information(void) {
 	BC_ASSERT_EQUAL(linphone_presence_activity_get_type(activity), LinphonePresenceActivitySteering, int, "%d");
 	description = linphone_presence_activity_get_description(activity);
 	BC_ASSERT_PTR_NOT_NULL(description);
-	if (description != NULL) BC_ASSERT_EQUAL(strcmp(description, bike_description), 0, int, "%d");
+	if (description != NULL) BC_ASSERT_STRING_EQUAL(description, bike_description);
 
 	/* Presence activity with description and note. */
 	presence = linphone_presence_model_new_with_activity_and_note(LinphonePresenceActivityVacation, NULL, vacation_note, vacation_lang);
@@ -317,7 +317,7 @@ static void presence_information(void) {
 		note_content = linphone_presence_note_get_content(note);
 		BC_ASSERT_PTR_NOT_NULL(note_content);
 		if (note_content != NULL) {
-			BC_ASSERT_EQUAL(strcmp(note_content, vacation_note), 0, int, "%d");
+			BC_ASSERT_STRING_EQUAL(note_content, vacation_note);
 		}
 	}
 
@@ -330,7 +330,7 @@ static void presence_information(void) {
 	contact2 = linphone_presence_model_get_contact(presence);
 	BC_ASSERT_PTR_NOT_NULL(contact2);
 	if (contact2 != NULL) {
-		BC_ASSERT_EQUAL(strcmp(contact, contact2), 0, int, "%d");
+		BC_ASSERT_STRING_EQUAL(contact, contact2);
 		ms_free(contact2);
 	}
 
@@ -341,7 +341,7 @@ static void presence_information(void) {
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityShopping,1);
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityShopping, 1, int, "%d");
 	presence_timestamp = linphone_presence_model_get_timestamp(presence);
-	BC_ASSERT_TRUE(presence_timestamp >= current_timestamp);
+	BC_ASSERT_GREATER(presence_timestamp , current_timestamp, unsigned, "%u");
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

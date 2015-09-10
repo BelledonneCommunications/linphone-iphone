@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="128"
+   height="128"
+   viewBox="0 0 128 128"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-speaker-muted.svg">
+  <metadata
+     id="metadata17">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>speaker_default</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1133"
+     id="namedview15"
+     showgrid="false"
+     inkscape:zoom="3.1052632"
+     inkscape:cx="-21.974575"
+     inkscape:cy="50.881356"
+     inkscape:window-x="-6"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">speaker_default</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:7.907;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+     inkscape:connector-curvature="0"
+     sketch:type="MSShapeGroup"
+     id="speaker_on"
+     d="m 5.9537866,85.995196 35.0560294,0 39.486939,32.139654 0,-110.6933772 -39.486939,32.1378002 -36.010725,0 0,46.415923 0.9546956,0 0,0 z M 99.920129,73.6577 c 6.355271,-6.282523 6.355271,-16.466647 0,-22.745467 m 15.080441,31.888053 c 11.46381,-11.329259 11.4657,-29.703232 0,-41.03249" />
+  <rect
+     style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:none;stroke-width:1"
+     height="243.52542"
+     width="243.52542"
+     y="-58.974552"
+     x="-58.254265"
+     sketch:type="MSShapeGroup"
+     id="Rectangle-250-Copy-7" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:8;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+     d="M 6.7627118,115.76271 122.05085,5.6271203"
+     id="path3348"
+     inkscape:connector-curvature="0" />
+</svg>

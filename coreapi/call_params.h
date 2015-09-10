@@ -34,11 +34,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * Indicates for a given media the stream direction
  * */
 enum _LinphoneMediaDirection {
+	LinphoneMediaDirectionInvalid = -1,
 	LinphoneMediaDirectionInactive, /** No active media not supported yet*/
 	LinphoneMediaDirectionSendOnly, /** Send only mode*/
 	LinphoneMediaDirectionRecvOnly, /** recv only mode*/
-	LinphoneMediaDirectionSendRecv, /*send receive mode not supported yet*/
-
+	LinphoneMediaDirectionSendRecv, /** send receive*/
 };
 /**
  * Typedef for enum

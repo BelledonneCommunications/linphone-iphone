@@ -54,15 +54,6 @@ public interface LinphoneCoreListener {
 	void notifyPresenceReceived(LinphoneCore lc, LinphoneFriend lf);
 
 	/**
-	 * invoked when a new text message is received
-	 * @param lc LinphoneCore
-	 * @param  room 	LinphoneChatRoom involved in this conversation. Can be be created by the framework in case the from is not present in any chat room.
-	 * @param from  	LinphoneAddress from
-	 * @param message 	incoming message
-	 */
-	void textReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneAddress from, String message);
-
-	/**
 	 * invoked when a new dtmf is received
 	 * @param lc 	LinphoneCore
 	 * @param call 	LinphoneCall involved in the dtmf sending

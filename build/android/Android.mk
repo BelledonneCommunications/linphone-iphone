@@ -118,6 +118,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../build/android \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
+	$(LOCAL_PATH)/../mediastreamer2/src/audiofilters/ \
 	$(LOCAL_PATH)/../../belle-sip/include \
 	$(LOCAL_PATH)/../../../gen \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
@@ -170,6 +171,11 @@ endif
 ifeq ($(BUILD_SILK),1)
 LOCAL_CFLAGS += -DHAVE_SILK
 LOCAL_STATIC_LIBRARIES += libmssilk
+endif
+
+ifeq ($(BUILD_CODEC2),1)
+LOCAL_CFLAGS += -DHAVE_CODEC2
+LOCAL_STATIC_LIBRARIES += libcodec2 libmscodec2
 endif
 
 ifneq ($(BUILD_WEBRTC_AECM)$(BUILD_WEBRTC_ISAC),00)

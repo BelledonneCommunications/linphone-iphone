@@ -92,7 +92,7 @@ LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op){
 	MSList *elem;
 	for (elem=l;elem!=NULL;elem=elem->next){
 		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
-		if (lf->insub==op) return lf;
+		if (ms_list_find(lf->insubs, op)) return lf;
 	}
 	return NULL;
 }
@@ -227,12 +227,24 @@ int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscri
 }
 
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence){
-	char *addr=linphone_address_as_string(linphone_friend_get_address(lf));
-	ms_message("Want to notify %s, insub=%p",addr,lf->insub);
-	ms_free(addr);
-	if (lf->insub!=NULL){
-		sal_notify_presence(lf->insub,(SalPresenceModel *)presence);
+	MSList *elem;
+	if (lf->insubs){
+		char *addr=linphone_address_as_string(linphone_friend_get_address(lf));
+		ms_message("Want to notify %s",addr);
+		ms_free(addr);
 	}
+	for(elem=lf->insubs; elem!=NULL; elem=elem->next){
+		SalOp *op = (SalOp*)elem->data;
+		sal_notify_presence(op,(SalPresenceModel *)presence);
+	}
+}
+
+void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op){
+	lf->insubs = ms_list_append(lf->insubs, op);
+}
+
+void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op){
+	lf->insubs = ms_list_remove(lf->insubs, op);
 }
 
 static void linphone_friend_unsubscribe(LinphoneFriend *lf){
@@ -260,17 +272,12 @@ static void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 
 void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	linphone_friend_unsubscribe(lf);
-	if (lf->insub){
-		sal_notify_presence_close(lf->insub);
+	ms_list_for_each(lf->insubs, (MSIterateFunc) sal_notify_presence_close);
 
-	}
 }
 
 static void _linphone_friend_destroy(LinphoneFriend *lf){
-	if (lf->insub) {
-		sal_op_release(lf->insub);
-		lf->insub=NULL;
-	}
+	lf->insubs = ms_list_free_with_data(lf->insubs, (MSIterateFunc) sal_op_release);
 	if (lf->outsub){
 		sal_op_release(lf->outsub);
 		lf->outsub=NULL;

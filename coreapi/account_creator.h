@@ -164,6 +164,20 @@ LINPHONE_PUBLIC const char * linphone_account_creator_get_route(const LinphoneAc
 /**
  * Set the email.
  * @param[in] creator LinphoneAccountCreator object
+ * @param[in] display_name The display name to set
+**/
+LINPHONE_PUBLIC void linphone_account_creator_set_display_name(LinphoneAccountCreator *creator, const char *display_name);
+
+/**
+ * Get the email.
+ * @param[in] creator LinphoneAccountCreator object
+ * @return The display name of the LinphoneAccountCreator
+**/
+LINPHONE_PUBLIC const char * linphone_account_creator_get_display_name(const LinphoneAccountCreator *creator);
+
+/**
+ * Set the email.
+ * @param[in] creator LinphoneAccountCreator object
  * @param[in] email The email to set
 **/
 LINPHONE_PUBLIC void linphone_account_creator_set_email(LinphoneAccountCreator *creator, const char *email);

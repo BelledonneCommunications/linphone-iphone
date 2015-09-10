@@ -81,7 +81,7 @@ int main(int argc, char *argv[]){
 
 
 	/*Next step is to create a chat root*/
-	chat_room = linphone_core_create_chat_room(lc,dest_friend);
+	chat_room = linphone_core_get_chat_room_from_uri(lc,dest_friend);
 
 	linphone_chat_room_send_message(chat_room,"Hello world"); /*sending message*/
 
@@ -92,7 +92,6 @@ int main(int argc, char *argv[]){
 	}
 
 	printf("Shutting down...\n");
-	linphone_chat_room_destroy(chat_room);
 	linphone_core_destroy(lc);
 	printf("Exited\n");
 	return 0;

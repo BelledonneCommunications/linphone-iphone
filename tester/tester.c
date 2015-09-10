@@ -44,6 +44,8 @@ const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 const char *userhostsfile = "tester_hosts";
 
+const char *liblinphone_tester_mire_id="Mire: Mire (synthetic moving picture)";
+
 static void network_reachable(LinphoneCore *lc, bool_t reachable) {
 	stats* counters;
 	ms_message("Network reachable [%s]",reachable?"TRUE":"FALSE");
@@ -111,7 +113,7 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 
 	if (file){
 		filepath = ms_strdup_printf("%s/%s", path, file);
-		BC_ASSERT_TRUE_FATAL(ortp_file_exist(filepath)==0);
+		BC_ASSERT_EQUAL_FATAL(ortp_file_exist(filepath),0,int, "%d");
 		config = lp_config_new_with_factory(NULL,filepath);
 	}
 
@@ -237,6 +239,10 @@ bool_t transport_supported(LinphoneTransportType transport) {
 }
 
 
+static void display_status(LinphoneCore *lc, const char *status){
+	ms_message("display_status(): %s",status);
+}
+
 LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	char *rc_path = NULL;
@@ -260,6 +266,7 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	mgr->v_table.network_reachable=network_reachable;
 	mgr->v_table.dtmf_received=dtmf_received;
 	mgr->v_table.call_stats_updated=call_stats_updated;
+	mgr->v_table.display_status=display_status;
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
@@ -431,12 +438,20 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&proxy_config_test_suite);
 }
 
-static bool_t linphone_core_manager_get_max_audio_bw_base(const int array[],int array_size) {
+static int linphone_core_manager_get_max_audio_bw_base(const int array[],int array_size) {
 	int i,result=0;
 	for (i=0; i<array_size; i++) {
 		result = MAX(result,array[i]);
 	}
 	return result;
+}
+
+static int linphone_core_manager_get_mean_audio_bw_base(const int array[],int array_size) {
+	int i,result=0;
+	for (i=0; i<array_size; i++) {
+		result += array[i];
+	}
+	return result/array_size;
 }
 
 int linphone_core_manager_get_max_audio_down_bw(const LinphoneCoreManager *mgr) {
@@ -445,6 +460,15 @@ int linphone_core_manager_get_max_audio_down_bw(const LinphoneCoreManager *mgr) 
 }
 int linphone_core_manager_get_max_audio_up_bw(const LinphoneCoreManager *mgr) {
 	return linphone_core_manager_get_max_audio_bw_base(mgr->stat.audio_upload_bandwidth
+			, sizeof(mgr->stat.audio_upload_bandwidth)/sizeof(int));
+}
+
+int linphone_core_manager_get_mean_audio_down_bw(const LinphoneCoreManager *mgr) {
+	return linphone_core_manager_get_mean_audio_bw_base(mgr->stat.audio_download_bandwidth
+			, sizeof(mgr->stat.audio_download_bandwidth)/sizeof(int));
+}
+int linphone_core_manager_get_mean_audio_up_bw(const LinphoneCoreManager *mgr) {
+	return linphone_core_manager_get_mean_audio_bw_base(mgr->stat.audio_upload_bandwidth
 			, sizeof(mgr->stat.audio_upload_bandwidth)/sizeof(int));
 }
 
