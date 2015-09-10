@@ -4910,10 +4910,10 @@ static void call_logs_migrate() {
 	int incoming_count = 0, outgoing_count = 0, missed_count = 0, aborted_count = 0, decline_count = 0, video_enabled_count = 0;
 	
 	call_logs_read_from_config_file(laure->lc);
-	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 8);
+	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 10);
 	
 	linphone_core_set_call_logs_database_path(laure->lc, logs_db);
-	BC_ASSERT_TRUE(linphone_core_get_call_history_size(laure->lc) == 8);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(laure->lc) == 10);
 	
 	for (; i < ms_list_size(laure->lc->call_logs); i++) {
 		LinphoneCallLog *log = ms_list_nth_data(laure->lc->call_logs, i);
@@ -4938,11 +4938,11 @@ static void call_logs_migrate() {
 			video_enabled_count += 1;
 		}
 	}
-	BC_ASSERT_TRUE(incoming_count == 4);
-	BC_ASSERT_TRUE(outgoing_count == 4);
+	BC_ASSERT_TRUE(incoming_count == 5);
+	BC_ASSERT_TRUE(outgoing_count == 5);
 	BC_ASSERT_TRUE(missed_count == 1);
 	BC_ASSERT_TRUE(aborted_count == 3);
-	BC_ASSERT_TRUE(decline_count == 0);
+	BC_ASSERT_TRUE(decline_count == 2);
 	BC_ASSERT_TRUE(video_enabled_count == 3);
 	
 	laure->lc->call_logs = ms_list_free_with_data(laure->lc->call_logs, (void (*)(void*))linphone_call_log_unref);
