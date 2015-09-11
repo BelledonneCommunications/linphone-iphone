@@ -2807,6 +2807,8 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 			if (lc->video_conf.preview_vsize.width!=0)
 				video_stream_set_preview_size(call->videostream,lc->video_conf.preview_vsize);
 			video_stream_set_fps(call->videostream,linphone_core_get_preferred_framerate(lc));
+			if (lp_config_get_int(lc->config, "video", "nowebcam_uses_normal_fps", 0))
+				call->videostream->staticimage_webcam_fps_optimization = FALSE;
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_enable_self_view(call->videostream,lc->video_conf.selfview);
 			if (call->video_window_id != NULL)
