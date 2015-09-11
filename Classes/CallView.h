@@ -23,7 +23,7 @@
 #import "UICamSwitch.h"
 
 #import "UICompositeView.h"
-#import "PausedCallsTableView.h"
+#import "CallPausedTableView.h"
 
 #import "UIMicroButton.h"
 #import "UIPauseButton.h"
@@ -43,7 +43,7 @@
 	VideoZoomHandler *videoZoomHandler;
 }
 
-@property(nonatomic, strong) IBOutlet PausedCallsTableView *pausedCallsTableView;
+@property(nonatomic, strong) IBOutlet CallPausedTableView *pausedCallsTableView;
 
 @property(nonatomic, strong) IBOutlet UIView *videoGroup;
 @property(nonatomic, strong) IBOutlet UIView *videoView;

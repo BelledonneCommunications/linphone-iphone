@@ -102,7 +102,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)update {
-	[self view]; // Force view load
+	//	[self view]; // Force view load
 
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];

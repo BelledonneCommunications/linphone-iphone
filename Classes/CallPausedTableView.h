@@ -19,11 +19,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UICallCell.h"
-
-#include "linphone/linphonecore.h"
-
-@interface PausedCallsTableView : UITableViewController {
+@interface CallPausedTableView : UITableViewController {
   @private
 	NSTimer *updateTime;
 }

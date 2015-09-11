@@ -110,6 +110,8 @@
 	LinphoneChatMessageState state = linphone_chat_message_get_state(message);
 	BOOL outgoing = linphone_chat_message_is_outgoing(message);
 
+	_backgroundColor.image = _bottomBarColor.image = [UIImage imageNamed:outgoing ? @"color_A" : @"color_F"];
+
 	if (!outgoing) {
 		_statusImage.accessibilityValue = @"incoming";
 		_statusImage.hidden = TRUE; // not useful for incoming chats..
@@ -159,11 +161,11 @@
 - (void)layoutSubviews {
 	[super layoutSubviews];
 	if (message != nil) {
-		//		BOOL is_outgoing = linphone_chat_message_is_outgoing(message);
+		BOOL is_outgoing = linphone_chat_message_is_outgoing(message);
 		CGRect newFrame;
 		newFrame.size = [ChatConversationTableView viewSize:message width:self.frame.size.width];
 		newFrame.origin.y = 0.0f;
-		//		newFrame.origin.x = is_outgoing ? self.contentView.frame.size.width - newFrame.size.width : 0;
+		newFrame.origin.x = is_outgoing ? self.contentView.frame.size.width - newFrame.size.width : 0;
 		self.contentView.frame = self.frame = newFrame;
 	}
 }

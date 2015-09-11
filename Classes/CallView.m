@@ -25,7 +25,6 @@
 #import <OpenGLES/EAGLDrawable.h>
 
 #import "CallView.h"
-#import "UICallCell.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
@@ -784,10 +783,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	// Go to dialer view
 	DialerView *view = VIEW(DialerView);
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	if (view != nil) {
-		[view setAddress:@""];
-		[view setTransferMode:FALSE];
-	}
+	[view setAddress:@""];
+	[view setTransferMode:FALSE];
 }
 
 - (IBAction)onOptionsClick:(id)sender {

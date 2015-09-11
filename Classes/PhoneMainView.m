@@ -307,8 +307,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneCallState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	NSString *message = [notif.userInfo objectForKey:@"message"];
 
-	bool canHideInCallView = (linphone_core_get_calls([LinphoneManager getLc]) == NULL);
-
 	// Don't handle call state during incoming call view
 	if ([[self currentView] equal:CallIncomingView.compositeViewDescription] && state != LinphoneCallError &&
 		state != LinphoneCallEnd) {
@@ -344,13 +342,15 @@ static RootViewManager *rootViewManagerInstance = nil;
 			[self displayCallError:call message:message];
 		}
 		case LinphoneCallEnd: {
-			if (canHideInCallView) {
+			const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
+			if (calls == NULL) {
 				// Go to dialer view
 				DialerView *view = VIEW(DialerView);
 				[self changeCurrentView:view.compositeViewDescription];
 				[view setAddress:@""];
 				[view setTransferMode:FALSE];
 			} else {
+				linphone_core_resume_call([LinphoneManager getLc], (LinphoneCall *)calls->data);
 				[self changeCurrentView:CallView.compositeViewDescription];
 			}
 			break;
