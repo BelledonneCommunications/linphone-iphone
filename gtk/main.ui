@@ -30,37 +30,27 @@
       <column type="gpointer"/>
       <!-- column-name sip_address -->
       <column type="gchararray"/>
-      <!-- column-name call_icon -->
-      <column type="gchararray"/>
       <!-- column-name chat_icon -->
       <column type="gchararray"/>
-      <!-- column-name icon_size -->
-      <column type="GtkIconSize"/>
     </columns>
     <data>
       <row>
         <col id="0">linphone-status-online</col>
         <col id="1">Toto</col>
         <col id="4">toto@sip.linphone.org</col>
-        <col id="5">linphone-call</col>
-        <col id="6">linphone-chat</col>
-        <col id="7">large-toolbar</col>
+        <col id="5">linphone-chat-nothing</col>
       </row>
       <row>
         <col id="0">linphone-status-offline</col>
         <col id="1">Toto2</col>
         <col id="4">toto2@sip.linphone.org</col>
-        <col id="5">linphone-call</col>
-        <col id="6">linphone-chat</col>
-        <col id="7">large-toolbar</col>
+        <col id="5">linphone-chat-nothing</col>
       </row>
       <row>
         <col id="0">linphone-status-offline</col>
         <col id="1">Toto3</col>
         <col id="4">toto3@sip.linphone.org</col>
-        <col id="5">linphone-call</col>
-        <col id="6">linphone-chat</col>
-        <col id="7">large-toolbar</col>
+        <col id="5">linphone-chat-nothing</col>
       </row>
     </data>
   </object>
@@ -486,7 +476,6 @@
                                   <object class="GtkCellRendererPixbuf" id="status_img_cell"/>
                                   <attributes>
                                     <attribute name="icon-name">0</attribute>
-                                    <attribute name="stock-size">7</attribute>
                                   </attributes>
                                 </child>
                               </object>
@@ -506,11 +495,9 @@
                             <child>
                               <object class="GtkTreeViewColumn" id="contact_call_column">
                                 <child>
-                                  <object class="GtkCellRendererPixbuf" id="contact_call_renderer"/>
-                                  <attributes>
-                                    <attribute name="icon-name">5</attribute>
-                                    <attribute name="stock-size">7</attribute>
-                                  </attributes>
+                                  <object class="GtkCellRendererPixbuf" id="contact_call_renderer">
+                                    <property name="icon_name">linphone-start-call2</property>
+                                  </object>
                                 </child>
                               </object>
                             </child>
@@ -519,8 +506,7 @@
                                 <child>
                                   <object class="GtkCellRendererPixbuf" id="contact_chat_renderer"/>
                                   <attributes>
-                                    <attribute name="icon-name">6</attribute>
-                                    <attribute name="stock-size">7</attribute>
+                                    <attribute name="icon-name">5</attribute>
                                   </attributes>
                                 </child>
                               </object>

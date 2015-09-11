@@ -28,9 +28,7 @@ enum{
 	FRIEND_ID,
 	FRIEND_CHATROOM,
 	FRIEND_SIP_ADDRESS,
-	FRIEND_CALL,
 	FRIEND_CHAT,
-	FRIEND_ICON_SIZE,
 	FRIEND_LIST_NCOL
 };
 
@@ -711,9 +709,7 @@ void linphone_gtk_show_friends(void){
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,FRIEND_NAME, display,FRIEND_ID,lf,
 				FRIEND_PRESENCE_IMG, send_subscribe ? status_to_icon_name(linphone_friend_get_status(lf)) : NULL,
-				FRIEND_CHAT,"linphone-chat-nothing",
-				FRIEND_CALL,"linphone-start-call2",
-				FRIEND_ICON_SIZE, GTK_ICON_SIZE_LARGE_TOOLBAR, -1);
+				FRIEND_CHAT,"linphone-chat-nothing", -1);
 		cr=linphone_gtk_create_chatroom(f_uri);
 		gtk_list_store_set(store,&iter,FRIEND_CHATROOM,cr,-1);
 		nbmsg=linphone_chat_room_get_unread_messages_count(cr);
