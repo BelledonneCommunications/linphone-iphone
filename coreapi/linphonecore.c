@@ -930,7 +930,7 @@ static void sip_config_read(LinphoneCore *lc)
 		if (hostname==NULL)
 			hostname="unknown-host";
 		if (username==NULL){
-			username="toto";
+			username="linphone";
 		}
 		contact=ortp_strdup_printf("sip:%s@%s",username,hostname);
 		linphone_core_set_primary_contact(lc,contact);
