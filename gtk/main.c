@@ -1752,23 +1752,6 @@ static void linphone_gtk_configure_main_window(){
 		tmp=g_strdup(home);
 		g_object_set_data_full(G_OBJECT(menu_item),"home",tmp, (GDestroyNotify)g_free);
 	}
-	{
-		/*
-		GdkPixbuf *pbuf=create_pixbuf("contact-orange.png");
-		if (pbuf) {
-			gtk_image_set_from_pixbuf(GTK_IMAGE(linphone_gtk_get_widget(w,"contact_tab_icon")),pbuf);
-			g_object_unref(G_OBJECT(pbuf));
-		}
-		*/
-	}
-	{
-		GdkPixbuf *pbuf=create_pixbuf("dialer.png");
-		if (pbuf) {
-			GtkButton *button=GTK_BUTTON(linphone_gtk_get_widget(w,"keypad"));
-			gtk_button_set_image(button,gtk_image_new_from_pixbuf (pbuf));
-			g_object_unref(pbuf);
-		}
-	}
 	if (linphone_gtk_can_manage_accounts()) {
 		gtk_widget_show(linphone_gtk_get_widget(w,"assistant_item"));
 	}

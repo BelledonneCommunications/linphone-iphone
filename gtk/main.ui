@@ -54,6 +54,12 @@
       </row>
     </data>
   </object>
+  <object class="GtkImage" id="dialer_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixel_size">32</property>
+    <property name="icon_name">linphone-show-dialer</property>
+  </object>
   <object class="GtkImage" id="edit_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -360,6 +366,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="image">dialer_image</property>
                     <signal name="clicked" handler="linphone_gtk_create_keypad" swapped="no"/>
                   </object>
                   <packing>

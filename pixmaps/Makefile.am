@@ -9,7 +9,6 @@ dist_pixmap_DATA= \
 	contact_starred.png contact_unstarred.png \
 	call_status_incoming.png call_status_outgoing.png \
 	ok.png \
-	dialer.png \
 	notok.png
 
 iconsdir=$(datadir)/icons/hicolor
@@ -48,5 +47,6 @@ dist_statussvgicons_DATA= \
 
 actions48iconsdir=$(iconsdir)/48x48/actions
 dist_actions48icons_DATA= \
-	linphone-start-call2.png
+	linphone-start-call2.png \
+	linphone-show-dialer.png
 )

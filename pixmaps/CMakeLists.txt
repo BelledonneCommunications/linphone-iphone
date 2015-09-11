@@ -61,6 +61,7 @@ install(FILES
 
 install(FILES
 	linphone-start-call2.png
+	linphone-show-dialer.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
