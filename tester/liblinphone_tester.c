@@ -196,9 +196,11 @@ int main (int argc, char *argv[])
 
 	liblinphone_tester_init(NULL);
 
-	// this allows to launch liblinphone_tester from outside of tester directory
+	// this allows to launch tester from outside of tester directory
 	if (strstr(argv[0], ".libs")) {
-		char* prefix = ms_strdup_printf("%s%s", argv[0][0]=='/'?"":"./", strstr(argv[0], ".libs"));
+		int prefix_length = strstr(argv[0], ".libs") - argv[0] + 1;
+		char *prefix = ms_strdup_printf("%s%.*s", argv[0][0] == '/' ? "" : "./", prefix_length, argv[0]);
+		ms_warning("Resource prefix set to %s", prefix);
 		bc_tester_set_resource_dir_prefix(prefix);
 		bc_tester_set_writable_dir_prefix(prefix);
 		ms_free(prefix);
