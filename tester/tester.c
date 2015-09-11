@@ -37,12 +37,16 @@ static int liblinphone_tester_keep_accounts_flag = 0;
 static int liblinphone_tester_keep_record_files = FALSE;
 int manager_count = 0;
 
+const MSAudioDiffParams audio_cmp_params = {10,2000};
+
 const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
 const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 const char *userhostsfile = "tester_hosts";
+
+const char *liblinphone_tester_mire_id="Mire: Mire (synthetic moving picture)";
 
 static void network_reachable(LinphoneCore *lc, bool_t reachable) {
 	stats* counters;
@@ -237,6 +241,10 @@ bool_t transport_supported(LinphoneTransportType transport) {
 }
 
 
+static void display_status(LinphoneCore *lc, const char *status){
+	ms_message("display_status(): %s",status);
+}
+
 LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	LinphoneCoreManager* mgr= ms_new0(LinphoneCoreManager,1);
 	char *rc_path = NULL;
@@ -260,6 +268,7 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	mgr->v_table.network_reachable=network_reachable;
 	mgr->v_table.dtmf_received=dtmf_received;
 	mgr->v_table.call_stats_updated=call_stats_updated;
+	mgr->v_table.display_status=display_status;
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);

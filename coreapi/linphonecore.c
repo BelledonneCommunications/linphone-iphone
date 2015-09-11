@@ -100,7 +100,6 @@ static ortp_mutex_t liblinphone_log_collection_mutex;
 static bool_t liblinphone_serialize_logs = FALSE;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
-static void linphone_core_free_hooks(LinphoneCore *lc);
 
 #include "enum.h"
 #include "contact_providers_priv.h"
@@ -931,7 +930,7 @@ static void sip_config_read(LinphoneCore *lc)
 		if (hostname==NULL)
 			hostname="unknown-host";
 		if (username==NULL){
-			username="toto";
+			username="linphone";
 		}
 		contact=ortp_strdup_printf("sip:%s@%s",username,hostname);
 		linphone_core_set_primary_contact(lc,contact);
@@ -1565,6 +1564,8 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_24,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_32,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_40,NULL,FALSE);
+	linphone_core_register_payload_type(lc,&payload_type_codec2,NULL,FALSE);
+
 
 
 
@@ -1588,7 +1589,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-
+	linphone_task_list_init(&lc->hooks);
 
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
 	_linphone_core_add_listener(lc, local_vtable, TRUE);
@@ -2767,7 +2768,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 	linphone_call_set_contact_op(call);
 
 	linphone_core_stop_dtmf_stream(lc);
-	linphone_call_make_local_media_description(lc,call);
+	linphone_call_make_local_media_description(call);
 
 	if (lc->ringstream==NULL) {
 		if (lc->sound_conf.play_sndcard && lc->sound_conf.capt_sndcard){
@@ -2923,21 +2924,6 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }
 
-/**
- * Initiates an outgoing call given a destination LinphoneAddress
- *
- * @ingroup call_control
- * @param lc the LinphoneCore object
- * @param addr the destination of the call (sip address).
-	@param params call parameters
- *
- * The LinphoneAddress can be constructed directly using linphone_address_new(), or
- * created by linphone_core_interpret_url().
- * The application doesn't own a reference to the returned LinphoneCall object.
- * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
- *
- * @return a LinphoneCall object or NULL in case of failure
-**/
 LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
 {
 	const char *from=NULL;
@@ -3185,16 +3171,16 @@ int linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall*
 		// if parameters are passed, update the media description
 		if ( params ) {
 			linphone_call_set_new_params(call,params);
-			linphone_call_make_local_media_description ( lc,call );
+			linphone_call_make_local_media_description (call);
 			sal_call_set_local_media_description ( call->op,call->localdesc );
 			sal_op_set_sent_custom_header ( call->op,params->custom_headers );
 		}
 
-		sal_call_notify_ringing(call->op,TRUE);
+		sal_call_notify_ringing(call->op, TRUE);
 
 		linphone_call_set_state(call,LinphoneCallIncomingEarlyMedia,"Incoming call early media");
 		md=sal_call_get_final_media_description(call->op);
-		if (md) linphone_core_update_streams(lc,call,md);
+		if (md) linphone_core_update_streams(lc, call, md, call->state);
 		return 0;
 	}else{
 		ms_error("Bad state %s for linphone_core_accept_early_media_with_params()", linphone_call_state_to_string(call->state));
@@ -3223,7 +3209,7 @@ int linphone_core_start_update_call(LinphoneCore *lc, LinphoneCall *call){
 
 	linphone_call_fill_media_multicast_addr(call);
 
-	if (!no_user_consent) linphone_call_make_local_media_description(lc,call);
+	if (!no_user_consent) linphone_call_make_local_media_description(call);
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
@@ -3285,6 +3271,8 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			nextstate=LinphoneCallEarlyUpdating;
 			break;
 		case LinphoneCallStreamsRunning:
+		case LinphoneCallPaused:
+		case LinphoneCallPausedByRemote:
 			nextstate=LinphoneCallUpdating;
 			break;
 		default:
@@ -3293,6 +3281,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 	}
 
 	if (params!=NULL){
+		call->broken = FALSE;
 		linphone_call_set_state(call,nextstate,"Updating call");
 #if defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 		has_video = call->params->has_video;
@@ -3332,7 +3321,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 #endif //defined(VIDEO_ENABLED) && defined(BUILD_UPNP)
 		if ((err = linphone_core_start_update_call(lc, call)) && call->state!=initial_state) {
 			/*Restore initial state*/
-			linphone_call_set_state(call,initial_state,NULL);
+			linphone_call_set_state(call,initial_state,"Restore initial state");
 		}
 
 	}else{
@@ -3341,7 +3330,7 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
 			video_stream_set_sent_video_size(call->videostream,linphone_core_get_preferred_video_size(lc));
 			video_stream_set_fps(call->videostream, linphone_core_get_preferred_framerate(lc));
 			if (call->camera_enabled && call->videostream->cam!=lc->video_conf.device){
-				video_stream_change_camera(call->videostream,call->cam = lc->video_conf.device);
+				video_stream_change_camera(call->videostream, lc->video_conf.device);
 			}else video_stream_update_video_params(call->videostream);
 		}
 #endif
@@ -3363,14 +3352,23 @@ int linphone_core_update_call(LinphoneCore *lc, LinphoneCall *call, const Linpho
  * Then, when the user responds to dialog prompt, it becomes possible to call linphone_core_accept_call_update() to answer
  * the reINVITE, with eventually video enabled in the LinphoneCallParams argument.
  *
- * @return 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a #LinphoneCallUpdatedByRemote notification, which is illegal.
+ * The #LinphoneCallUpdatedByRemote notification can also arrive when receiving an INVITE without SDP. In such case, an unchanged offer is made
+ * in the 200Ok, and when the ACK containing the SDP answer is received, #LinphoneCallUpdatedByRemote is triggered to notify the application of possible
+ * changes in the media session. However in such case defering the update has no meaning since we just generating an offer.
+ *
+ * @return 0 if successful, -1 if the linphone_core_defer_call_update() was done outside a valid #LinphoneCallUpdatedByRemote notification.
 **/
 int linphone_core_defer_call_update(LinphoneCore *lc, LinphoneCall *call){
 	if (call->state==LinphoneCallUpdatedByRemote){
+		if (call->expect_media_in_ack){
+			ms_error("linphone_core_defer_call_update() is not possible during a late offer incoming reINVITE (INVITE without SDP)");
+			return -1;
+		}
 		call->defer_update=TRUE;
 		return 0;
+	}else{
+		ms_error("linphone_core_defer_call_update() not done in state LinphoneCallUpdatedByRemote");
 	}
-	ms_error("linphone_core_defer_call_update() not done in state LinphoneCallUpdatedByRemote");
 	return -1;
 }
 
@@ -3382,7 +3380,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
 			return 0;
 		}
 	}
-	linphone_call_make_local_media_description(lc,call);
+	linphone_call_make_local_media_description(call);
 
 	linphone_call_update_remote_session_id_and_ver(call);
 	linphone_call_stop_ice_for_inactive_streams(call);
@@ -3390,7 +3388,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
 	if (md && !sal_media_description_empty(md)){
-		linphone_core_update_streams (lc,call,md);
+		linphone_core_update_streams(lc, call, md, next_state);
 		linphone_call_fix_call_parameters(call);
 	}
 	linphone_call_set_state(call,next_state,state_info);
@@ -3599,7 +3597,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 			linphone_call_set_compatible_incoming_call_parameters(call, md);
 		}
 		linphone_call_prepare_ice(call,TRUE);
-		linphone_call_make_local_media_description(lc,call);
+		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 		sal_op_set_sent_custom_header(call->op,params->custom_headers);
 	}
@@ -3625,7 +3623,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	new_md=sal_call_get_final_media_description(call->op);
 	if (new_md){
-		linphone_core_update_streams(lc, call, new_md);
+		linphone_core_update_streams(lc, call, new_md, LinphoneCallStreamsRunning);
 		linphone_call_fix_call_parameters(call);
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	}else call->expect_media_in_ack=TRUE;
@@ -3809,10 +3807,8 @@ int linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
 }
 
 /* Internal version that does not play tone indication*/
-int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
-{
+int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
 	const char *subject=NULL;
-	LinphoneCallParams *params;
 
 	if (call->state!=LinphoneCallStreamsRunning && call->state!=LinphoneCallPausedByRemote){
 		ms_warning("Cannot pause this call, it is not active.");
@@ -3826,15 +3822,8 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 		ms_error("No reason to pause this call, it is already paused or inactive.");
 		return -1;
 	}
-	params = linphone_call_params_copy(call->params);
-	linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendOnly);
-	if (lp_config_get_int(lc->config, "sip", "inactive_video_on_pause", 0)) {
-		linphone_call_params_set_video_direction(params, LinphoneMediaDirectionInactive);
-	} else {
-		linphone_call_params_set_video_direction(params, LinphoneMediaDirectionSendOnly);
-	}
-	linphone_call_make_local_media_description_with_params(lc, call, params);
-	linphone_call_params_unref(params);
+	linphone_call_set_state(call, LinphoneCallPausing, "Pausing call");
+	linphone_call_make_local_media_description(call);
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
@@ -3848,7 +3837,6 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call)
 	linphone_core_notify_display_status(lc,_("Pausing the current call..."));
 	if (call->audiostream || call->videostream)
 		linphone_call_stop_media_streams (call);
-	linphone_call_set_state(call,LinphoneCallPausing,"Pausing call");
 	call->paused_by_app=FALSE;
 	return 0;
 }
@@ -3915,7 +3903,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	 prevents the participants to hear it while the 200OK comes back.*/
 	if (call->audiostream) audio_stream_play(call->audiostream, NULL);
 
-	linphone_call_make_local_media_description(lc,call);
+	linphone_call_make_local_media_description(call);
 #ifdef BUILD_UPNP
 	if(call->upnp_session != NULL) {
 		linphone_core_update_local_media_description_from_upnp(call->localdesc, call->upnp_session);
@@ -6108,7 +6096,7 @@ LpConfig * linphone_core_create_lp_config(LinphoneCore *lc, const char *filename
 
 static void linphone_core_uninit(LinphoneCore *lc)
 {
-	linphone_core_free_hooks(lc);
+	linphone_task_list_free(&lc->hooks);
 	lc->video_conf.show_local = FALSE;
 
 	while(lc->calls)
@@ -6213,6 +6201,8 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 	if (!lc->network_reachable){
 		linphone_core_invalidate_friend_subscriptions(lc);
 		sal_reset_transports(lc->sal);
+		/*mark all calls as broken, so that they can be either dropped immediately or restaured when network will be back*/
+		ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_set_broken);
 	}else{
 		linphone_core_resolve_stun_server(lc);
 	}
@@ -6570,47 +6560,18 @@ void linphone_core_set_max_calls(LinphoneCore *lc, int max) {
 	lc->max_calls=max;
 }
 
-typedef struct Hook{
-	LinphoneCoreIterateHook fun;
-	void *data;
-}Hook;
-
-static Hook *hook_new(LinphoneCoreIterateHook hook, void *hook_data){
-	Hook *h=ms_new0(Hook,1);
-	h->fun=hook;
-	h->data=hook_data;
-	return h;
-}
-
-static void hook_invoke(Hook *h){
-	h->fun(h->data);
-}
 
 void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data){
-	lc->hooks=ms_list_append(lc->hooks,hook_new(hook,hook_data));
+	linphone_task_list_add(&lc->hooks, hook, hook_data);
 }
 
 static void linphone_core_run_hooks(LinphoneCore *lc){
-	ms_list_for_each(lc->hooks,(void (*)(void*))hook_invoke);
-}
-
-static void linphone_core_free_hooks(LinphoneCore *lc){
-	ms_list_for_each(lc->hooks,(void (*)(void*))ms_free);
-	ms_list_free(lc->hooks);
-	lc->hooks=NULL;
+	linphone_task_list_run(&lc->hooks);
 }
 
 void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data){
-	MSList *elem;
-	for(elem=lc->hooks;elem!=NULL;elem=elem->next){
-		Hook *h=(Hook*)elem->data;
-		if (h->fun==hook && h->data==hook_data){
-			lc->hooks = ms_list_remove_link(lc->hooks,elem);
-			ms_free(h);
-			return;
-		}
-	}
-	ms_error("linphone_core_remove_iterate_hook(): No such hook found.");
+	linphone_task_list_remove(&lc->hooks, hook, hook_data);
+
 }
 
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){

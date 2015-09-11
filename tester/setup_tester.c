@@ -233,13 +233,13 @@ void linphone_proxy_config_is_server_config_changed_test() {
 	linphone_proxy_config_destroy(proxy_config);
 }
 
-static void chat_root_test(void) {
+static void chat_room_test(void) {
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
 	memset (&v_table,0,sizeof(v_table));
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
 	BC_ASSERT_PTR_NOT_NULL_FATAL(lc);
-	linphone_core_create_chat_room(lc,"sip:toto@titi.com");
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room_from_uri(lc,"sip:toto@titi.com"));
 	linphone_core_destroy(lc);
 }
 
@@ -301,7 +301,7 @@ test_t setup_tests[] = {
 	{ "LPConfig zero_len value from buffer", linphone_lpconfig_from_buffer_zerolen_value },
 	{ "LPConfig zero_len value from file", linphone_lpconfig_from_file_zerolen_value },
 	{ "LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value },
-	{ "Chat room", chat_root_test },
+	{ "Chat room", chat_room_test },
 	{ "Devices reload", devices_reload_test },
 	{ "Codec usability", codec_usability_test }
 };

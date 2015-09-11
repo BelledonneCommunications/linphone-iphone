@@ -402,11 +402,15 @@ LINPHONE_PUBLIC bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig
  * @param result the newly normalized number
  * @param result_len the size of the normalized number \a result
  * @return TRUE if a phone number was recognized, FALSE otherwise.
+ * @deprecated use linphone_proxy_config_normalize_phone_number()
  */
 LINPHONE_PUBLIC bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const char *username, char *result, size_t result_len);
 
 /**
- * Same objective as linphone_proxy_config_normalize_number but allocates a new string
+ * Normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
+ * or +33888444222 depending on the #LinphoneProxyConfig object. However this argument is OPTIONNAL
+ * and if not provided, a default one will be used.
+ * This function will always generate a normalized username; if input is not a phone number, output will be a copy of input.
  * @param proxy #LinphoneProxyConfig object containing country code and/or escape symbol. If NULL passed, will use default configuration.
  * @param username the string to parse
  * @return NULL if invalid phone number, normalized phone number from username input otherwise.

@@ -63,8 +63,7 @@ static void message_forking(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	MSList* lcs=ms_list_append(NULL,marie->lc);
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 
 	lcs=ms_list_append(lcs,pauline->lc);
@@ -78,7 +77,6 @@ static void message_forking(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(pauline);
-	ms_free(to);
 	ms_list_free(lcs);
 }
 
@@ -88,8 +86,7 @@ static void message_forking_with_unreachable_recipients(void) {
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
 	MSList* lcs=ms_list_append(NULL,marie->lc);
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 
 	lcs=ms_list_append(lcs,pauline->lc);
@@ -121,7 +118,6 @@ static void message_forking_with_unreachable_recipients(void) {
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie3);
 	linphone_core_manager_destroy(pauline);
-	ms_free(to);
 	ms_list_free(lcs);
 }
 
@@ -131,8 +127,7 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
 	MSList* lcs=ms_list_append(NULL,marie->lc);
-	char* to = linphone_address_as_string(marie->identity);
-	LinphoneChatRoom* chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
 
 	lcs=ms_list_append(lcs,pauline->lc);
@@ -172,7 +167,6 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(marie3);
 	linphone_core_manager_destroy(pauline);
-	ms_free(to);
 	ms_list_free(lcs);
 }
 
@@ -729,7 +723,6 @@ static void call_with_ipv6(void) {
 static void file_transfer_message_rcs_to_external_body_client(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_init( "marie_rc");
-		char* to;
 		LinphoneChatRoom* chat_room;
 		LinphoneChatMessage* message;
 		LinphoneChatMessageCbs *cbs;
@@ -758,9 +751,8 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
 		/* create a chatroom on pauline's side */
-		to = linphone_address_as_string(marie->identity);
-		chat_room = linphone_core_create_chat_room(pauline->lc,to);
-		ms_free(to);
+
+		chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 		/* create a file transfer message */
 		content = linphone_core_create_content(pauline->lc);
 		linphone_content_set_type(content,"image");
@@ -803,14 +795,12 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 }
 
 void send_file_transfer_message_using_external_body_url(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
-	char *to;
 	LinphoneChatMessageCbs *cbs;
 	LinphoneChatRoom *chat_room;
 	LinphoneChatMessage *message;
 
 	/* create a chatroom on pauline's side */
-	to = linphone_address_as_string(marie->identity);
-	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
 	message = linphone_chat_room_create_message(chat_room, NULL);
 
@@ -876,7 +866,6 @@ static void file_transfer_message_external_body_to_rcs_client(void) {
 }
 
 static void dos_module_trigger(void) {
-	char *to;
 	LinphoneChatRoom *chat_room;
 	int i = 0;
 	const char* passmsg = "This one should pass through";
@@ -887,8 +876,7 @@ static void dos_module_trigger(void) {
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 
-	to = linphone_address_as_string(marie->identity);
-	chat_room = linphone_core_create_chat_room(pauline->lc,to);
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
 	do {
 		char msg[128];
@@ -913,7 +901,6 @@ static void dos_module_trigger(void) {
 	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	ms_free(to);
 }
 
 test_t flexisip_tests[] = {

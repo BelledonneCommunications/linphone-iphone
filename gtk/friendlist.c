@@ -216,9 +216,7 @@ static gboolean grab_focus(GtkWidget *w){
 void linphone_gtk_friend_list_set_active_address(const LinphoneAddress *addr){
 	GtkWidget *w=linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
-	LinphoneAddress *old_addr=(LinphoneAddress*)g_object_get_data(G_OBJECT(friendlist),"from");
-	g_object_set_data(G_OBJECT(friendlist),"from", addr ? linphone_address_clone(addr) : NULL);
-	if (old_addr) linphone_address_unref(old_addr);
+	g_object_set_data_full(G_OBJECT(friendlist),"from", addr ? linphone_address_clone(addr) : NULL, (GDestroyNotify)linphone_address_destroy);
 }
 
 const LinphoneAddress *linphone_gtk_friend_list_get_active_address(void){

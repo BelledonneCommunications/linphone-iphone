@@ -79,7 +79,7 @@ extern "C" {
 #endif
 
 #include <libintl.h>
-	
+
 #ifndef _
 #define _(String) dgettext(GETTEXT_PACKAGE,String)
 #endif
@@ -295,7 +295,6 @@ struct _LinphoneCall{
 	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
 	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
-	MSWebCam *cam; /*webcam use for this call*/
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
 	bool_t audio_muted;
@@ -312,6 +311,7 @@ struct _LinphoneCall{
 	bool_t record_active;
 
 	bool_t paused_by_app;
+	bool_t broken; /*set to TRUE when the call is in broken state due to network disconnection or transport */
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCall);
@@ -356,6 +356,8 @@ const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphonePro
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
+void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
+void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op);
 LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
 LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
 MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf);
@@ -450,7 +452,7 @@ void linphone_call_fix_call_parameters(LinphoneCall *call);
 void linphone_call_init_audio_stream(LinphoneCall *call);
 void linphone_call_init_video_stream(LinphoneCall *call);
 void linphone_call_init_media_streams(LinphoneCall *call);
-void linphone_call_start_media_streams(LinphoneCall *call, bool_t all_inputs_muted, bool_t send_ringbacktone);
+void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState target_state);
 void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_ice_session(LinphoneCall *call);
@@ -586,7 +588,7 @@ struct _LinphoneFriend{
 	belle_sip_object_t base;
 	void *user_data;
 	LinphoneAddress *uri;
-	SalOp *insub;
+	MSList *insubs; /*list of SalOp. There can be multiple instances of a same Friend that subscribe to our presence*/
 	SalOp *outsub;
 	LinphoneSubscribePolicy pol;
 	LinphonePresenceModel *presence;
@@ -757,6 +759,16 @@ const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID i
 int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params, LinphoneCallState next_state, const char *state_info);
 typedef struct _LinphoneConference LinphoneConference;
 
+typedef struct _LinphoneTaskList{
+	MSList *hooks;
+}LinphoneTaskList;
+
+void linphone_task_list_init(LinphoneTaskList *t);
+void linphone_task_list_add(LinphoneTaskList *t, LinphoneCoreIterateHook hook, void *hook_data);
+void linphone_task_list_remove(LinphoneTaskList *t, LinphoneCoreIterateHook hook, void *hook_data);
+void linphone_task_list_run(LinphoneTaskList *t);
+void linphone_task_list_free(LinphoneTaskList *t);
+
 struct _LinphoneCore
 {
 	MSList* vtable_refs;
@@ -804,7 +816,7 @@ struct _LinphoneCore
 	void *preview_window_id;
 	time_t netup_time; /*time when network went reachable */
 	struct _EcCalibrator *ecc;
-	MSList *hooks;
+	LinphoneTaskList hooks; /*tasks periodically executed in linphone_core_iterate()*/
 	LinphoneConference conf_ctx;
 	char* zrtp_secrets_cache;
 	char* user_certificates_path;
@@ -888,11 +900,11 @@ int linphone_core_set_as_current_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
-void linphone_call_make_local_media_description(LinphoneCore *lc, LinphoneCall *call);
+void linphone_call_make_local_media_description(LinphoneCall *call);
 void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params);
 void linphone_call_increment_local_media_description(LinphoneCall *call);
 void linphone_call_fill_media_multicast_addr(LinphoneCall *call);
-void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md);
+void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMediaDescription *new_md, LinphoneCallState target_state);
 
 bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt,  int bandwidth_limit);
 
@@ -924,6 +936,8 @@ LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
 void ec_calibrator_destroy(EcCalibrator *ecc);
 
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
+void linphone_call_set_broken(LinphoneCall *call);
+void linphone_call_repair_if_broken(LinphoneCall *call);
 void linphone_core_preempt_sound_resources(LinphoneCore *lc);
 int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 

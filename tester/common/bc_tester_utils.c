@@ -27,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CUnit/Basic.h"
 #include "CUnit/Automated.h"
+
 #ifdef _WIN32
 #if defined(__MINGW32__) || !defined(WINAPI_FAMILY_PARTITION) || !defined(WINAPI_PARTITION_DESKTOP)
 #define BC_TESTER_WINDOWS_DESKTOP 1
@@ -41,6 +42,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define BC_TESTER_WINDOWS_UNIVERSAL 1
 #endif
 #endif
+#endif
+
+#ifdef __linux
+/*for monitoring total space allocated via malloc*/
+#include <malloc.h>
 #endif
 
 
@@ -62,6 +68,8 @@ char* xml_file = "CUnitAutomated-Results.xml";
 int   xml_enabled = 0;
 char * suite_name;
 char * test_name;
+static long max_vm_kb = 0;
+
 void (*tester_printf_va)(int level, const char *fmt, va_list args);
 
 void bc_tester_printf(int level, const char *fmt, ...) {
@@ -186,6 +194,22 @@ static void test_complete_message_handler(const CU_pTest pTest,
 		}
 	}
 	bc_tester_printf(bc_printf_verbosity_info,"%s\n", result);
+#ifdef __linux
+	/* use mallinfo() to monitor allocated space. It is linux specific but other methods don't work:
+	 * setrlimit() RLIMIT_DATA doesn't count memory allocated via mmap() (which is used internally by malloc)
+	 * setrlimit() RLIMIT_AS works but also counts virtual memory allocated by thread stacks, which is very big and hardly controllable.
+	 * setrlimit() RLIMIT_RSS does nothing interesting on linux.
+	 * getrusage() of RSS is unreliable: memory blocks can be leaked without being read or written, which would not appear in RSS.
+	 * mallinfo() itself is the less worse solution. Allocated bytes are returned as 'int' so limited to 2GB
+	 */
+	if (max_vm_kb){
+		struct mallinfo minfo = mallinfo();
+		if (minfo.uordblks > max_vm_kb * 1024){
+			bc_tester_printf(bc_printf_verbosity_error, "The program exceeded the maximum ammount of memory allocatable (%i bytes), aborting now.\n", minfo.uordblks);
+			abort();
+		}
+	}
+#endif
 }
 #endif
 
@@ -256,6 +280,10 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 			}
 		}
 	}
+#ifdef __linux
+	bc_tester_printf(bc_printf_verbosity_info, "Still %i kilobytes allocated when all tests are finished.", mallinfo().uordblks/1024);
+#endif
+	
 	return CU_get_number_of_tests_failed()!=0;
 
 }
@@ -272,6 +300,7 @@ void bc_tester_helper(const char *name, const char* additionnal_helper) {
 #endif
 		"\t\t\t--xml\n"
 		"\t\t\t--xml-file <xml file name>\n"
+		"\t\t\t--max-alloc <size in ko> (maximum ammount of memory obtained via malloc allocator)\n"
 		"And additionally:\n"
 		"%s"
 		, name
@@ -300,9 +329,19 @@ void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list a
 	bc_printf_verbosity_info = iverbosity_info;
 }
 
+void bc_tester_set_max_vm(long max_vm_kb){
+#ifdef __linux
+	max_vm_kb = max_vm_kb;
+	bc_tester_printf(bc_printf_verbosity_info, "Maximum virtual memory space set to %li kilo bytes", max_vm_kb);
+#else
+	bc_tester_printf(bc_printf_verbosity_error,"Maximum virtual memory space setting is only implemented on Linux.");
+#endif
+}
+
 int bc_tester_parse_args(int argc, char **argv, int argid)
 {
 	int i = argid;
+	
 	if (strcmp(argv[i],"--help")==0){
 		return -1;
 	} else if (strcmp(argv[i],"--test")==0){
@@ -325,7 +364,10 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 		xml_enabled = 1;
 	} else if (strcmp(argv[i], "--xml") == 0){
 		xml_enabled = 1;
-	}else {
+	} else if (strcmp(argv[i], "--max-alloc") == 0){
+		CHECK_ARG("--max-alloc", ++i, argc);
+		max_vm_kb = atol(argv[i]);
+	} else {
 		bc_tester_printf(bc_printf_verbosity_error, "Unknown option \"%s\"\n", argv[i]);
 		return -1;
 	}
@@ -341,6 +383,10 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 
 int bc_tester_start(void) {
 	int ret;
+	
+	if (max_vm_kb)
+		bc_tester_set_max_vm(max_vm_kb);
+	
 	if( xml_enabled ){
 		size_t size = strlen(xml_file) + strlen(".tmp") + 1;
 		char * xml_tmp_file = malloc(sizeof(char) * size);
@@ -399,11 +445,8 @@ void bc_tester_uninit(void) {
 }
 
 static void bc_tester_set_dir_prefix(char **prefix, const char *name) {
-	size_t len = strlen(name);
 	if (*prefix != NULL) free(*prefix);
-	*prefix = malloc(len + 1);
-	strncpy(*prefix, name, len);
-	(*prefix)[len] = '\0';
+	*prefix = strdup(name);
 }
 
 const char * bc_tester_get_resource_dir_prefix(void) {
@@ -428,7 +471,6 @@ static char * bc_tester_path(const char *prefix, const char *name) {
 		size_t len = strlen(prefix) + 1 + strlen(name) + 1;
 		file = malloc(len);
 		snprintf(file, len, "%s/%s", prefix, name);
-		file[strlen(file)] = '\0';
 	}
 	return file;
 }

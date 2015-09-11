@@ -24,6 +24,7 @@
 
 #include "bc_tester_utils.h"
 #include "linphonecore.h"
+#include <mediastreamer2/msutils.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -310,7 +311,7 @@ void linphone_core_manager_check_accounts(LinphoneCoreManager *m);
 void account_manager_destroy(void);
 LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data);
 void liblinphone_tester_enable_ipv6(bool_t enabled);
-void linphone_call_cb(LinphoneCall *call,void * user_data);
+void linphone_call_iframe_decoded_cb(LinphoneCall *call,void * user_data);
 void call_paused_resumed_base(bool_t multicast);
 void simple_call_base(bool_t enable_multicast_recv_side);
 void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel, const char *marie_rc, const char *pauline_rc);
@@ -320,7 +321,7 @@ bool_t pause_call_1(LinphoneCoreManager* mgr_1,LinphoneCall* call_1,LinphoneCore
 bool_t compare_files(const char *path1, const char *path2);
 void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList* lcs,LinphoneMediaDirection audio_dir, LinphoneMediaDirection video_dir);
 
-static const int audio_cmp_max_shift=10;
+extern const MSAudioDiffParams audio_cmp_params;
 
 /*
  * this function return max value in the last 3 seconds*/
@@ -334,6 +335,8 @@ void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
 int liblinphone_tester_setup();
 void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, va_list args));
 void liblinphone_tester_uninit(void);
+
+extern const char *liblinphone_tester_mire_id;
 
 
 #ifdef __cplusplus

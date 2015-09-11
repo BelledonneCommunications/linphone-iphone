@@ -141,6 +141,10 @@ if(ENABLE_NLS)
 	include_directories(${INTL_INCLUDE_DIRS})
 endif()
 
+if(UNIX AND NOT APPLE)
+	include(CheckIncludeFiles)
+	check_include_files(libudev.h HAVE_LIBUDEV_H)
+endif()
 
 include_directories(
 	include/

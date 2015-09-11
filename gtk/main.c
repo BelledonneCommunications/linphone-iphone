@@ -1466,18 +1466,29 @@ static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphonePr
 	update_registration_status(cfg,rs);
 }
 
-void linphone_gtk_open_browser(const char *url){
-	/*in gtk 2.16, gtk_show_uri does not work...*/
-#ifndef WIN32
-#if GTK_CHECK_VERSION(2,18,3)
-	gtk_show_uri(NULL,url,GDK_CURRENT_TIME,NULL);
+void linphone_gtk_open_browser(const char *uri) {
+#ifdef __APPLE__
+	GError *error = NULL;
+	char cmd_line[256];
+
+	g_snprintf(cmd_line, sizeof(cmd_line), "%s %s", "/usr/bin/open", uri);
+	g_spawn_command_line_async(cmd_line, &error);
+	if (error) {
+		g_warning("Could not open %s: %s", uri, error->message);
+		g_error_free(error);
+	}
+#elif defined(WIN32)
+	HINSTANCE instance = ShellExecute(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL);
+	if ((int)instance <= 32) {
+		g_warning("Could not open %s (error #%i)", uri, (int)instance);
+	}
 #else
-	char cl[255];
-	snprintf(cl,sizeof(cl),"/usr/bin/x-www-browser %s",url);
-	g_spawn_command_line_async(cl,NULL);
-#endif
-#else /*WIN32*/
-	ShellExecute(0,"open",url,NULL,NULL,1);
+	GError *error = NULL;
+	gtk_show_uri(NULL, uri, GDK_CURRENT_TIME, &error);
+	if (error) {
+		g_warning("Could not open %s: %s", uri, error->message);
+		g_error_free(error);
+	}
 #endif
 }
 
@@ -1739,7 +1750,7 @@ static void linphone_gtk_configure_main_window(){
 		gchar *tmp;
 		GtkWidget *menu_item=linphone_gtk_get_widget(w,"home_item");
 		tmp=g_strdup(home);
-		g_object_set_data(G_OBJECT(menu_item),"home",tmp);
+		g_object_set_data_full(G_OBJECT(menu_item),"home",tmp, (GDestroyNotify)g_free);
 	}
 	{
 		/*
@@ -2043,6 +2054,10 @@ static void linphone_gtk_init_ui(void){
 	linphone_gtk_monitor_usb();
 }
 
+static void sigint_handler(int signum){
+	gtk_main_quit();
+}
+
 int main(int argc, char *argv[]){
 	char *config_file;
 	const char *factory_config_file;
@@ -2052,7 +2067,7 @@ int main(int argc, char *argv[]){
 	GdkPixbuf *pbuf;
 	const char *app_name="Linphone";
 	LpConfig *factory;
-	const char *db_file;
+	char *db_file;
 	GError *error=NULL;
 	const char *tmp;
 
@@ -2071,18 +2086,6 @@ int main(int argc, char *argv[]){
 	/*for pulseaudio:*/
 	g_setenv("PULSE_PROP_media.role", "phone", TRUE);
 #endif
-	
-	/* Add the data directory of the install prefix to XDG_DATA_DIRS
-	 * This environment variable is used by GTK+ to locate the directory
-	 * which stores icon images. */
-	tmp = g_getenv("XDG_DATA_DIRS");
-	if(tmp && strlen(tmp) > 0) {
-		char *xdg_data_dirs = g_strdup_printf("%s:%s", PACKAGE_DATA_DIR, tmp);
-		g_setenv("XDG_DATA_DIRS", xdg_data_dirs, TRUE);
-		g_free(xdg_data_dirs);
-	} else {
-		g_setenv("XDG_DATA_DIRS", PACKAGE_DATA_DIR, FALSE);
-	}
 
 	lang=linphone_gtk_get_lang(config_file);
 	if (lang == NULL || lang[0]=='\0'){
@@ -2203,13 +2206,15 @@ core_start:
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
 
 	db_file=linphone_gtk_message_storage_get_db_file(NULL);
-
 	linphone_gtk_init_liblinphone(config_file, factory_config_file, db_file);
+	g_free(db_file);
 
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)linphone_gtk_get_core());
 
+	signal(SIGINT, sigint_handler);
+	
 	gtk_main();
 	linphone_gtk_quit();
 

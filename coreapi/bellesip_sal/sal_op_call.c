@@ -302,10 +302,10 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 							&& (header_content_type = belle_sip_message_get_header_by_type(req,belle_sip_header_content_type_t))
 							&& strcmp("application",belle_sip_header_content_type_get_type(header_content_type))==0
 							&& strcmp("media_control+xml",belle_sip_header_content_type_get_subtype(header_content_type))==0) {
-						unsigned int retry_in =1000*((float)rand()/RAND_MAX);
-						belle_sip_source_t *s=sal_create_timer(op->base.root,vfu_retry,sal_op_ref(op), retry_in, "vfu request retry");
-						ms_message("Rejected vfu request on op [%p], just retry in [%ui] ms",op,retry_in);
-						belle_sip_object_unref(s);
+							unsigned int retry_in =1000*((float)rand()/RAND_MAX);
+							belle_sip_source_t *s=sal_create_timer(op->base.root,vfu_retry,sal_op_ref(op), retry_in, "vfu request retry");
+							ms_message("Rejected vfu request on op [%p], just retry in [%ui] ms",op,retry_in);
+							belle_sip_object_unref(s);
 						}else {
 								/*ignoring*/
 						}
@@ -323,7 +323,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 		}
 		break;
 		case BELLE_SIP_DIALOG_TERMINATED: {
-			if (code >= 300){
+			if (strcmp("INVITE",method)==0 && code >= 300){
 				call_set_error(op,response);
 			}
 		}
@@ -578,22 +578,27 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	case BELLE_SIP_DIALOG_CONFIRMED:
 		/*great ACK received*/
 		if (strcmp("ACK",method)==0) {
-			if (op->sdp_offering){
-				SalReason reason;
-				if (extract_sdp(op,BELLE_SIP_MESSAGE(req),&sdp,&reason)==0){
-					if (sdp){
-						if (op->base.remote_media)
-							sal_media_description_unref(op->base.remote_media);
-						op->base.remote_media=sal_media_description_new();
-						sdp_to_media_description(sdp,op->base.remote_media);
-						sdp_process(op);
-						belle_sip_object_unref(sdp);
-					}else{
-						ms_warning("SDP expected in ACK but not found.");
+			if (!op->pending_client_trans || 
+				!belle_sip_transaction_state_is_transient(belle_sip_transaction_get_state((belle_sip_transaction_t*)op->pending_client_trans))){
+				if (op->sdp_offering){
+					SalReason reason;
+					if (extract_sdp(op,BELLE_SIP_MESSAGE(req),&sdp,&reason)==0){
+						if (sdp){
+							if (op->base.remote_media)
+								sal_media_description_unref(op->base.remote_media);
+							op->base.remote_media=sal_media_description_new();
+							sdp_to_media_description(sdp,op->base.remote_media);
+							sdp_process(op);
+							belle_sip_object_unref(sdp);
+						}else{
+							ms_warning("SDP expected in ACK but not found.");
+						}
 					}
 				}
+				op->base.root->callbacks.call_ack(op);
+			}else{
+				ms_message("Ignored received ack since a new client transaction has been started since.");
 			}
-			op->base.root->callbacks.call_ack(op);
 		} else if(strcmp("BYE",method)==0) {
 			resp=sal_op_create_response_from_request(op,req,200);
 			belle_sip_server_transaction_send_response(server_transaction,resp);
