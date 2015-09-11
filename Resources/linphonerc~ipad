@@ -24,8 +24,8 @@ rtcp_xr_stat_summary_enabled=1
 rtcp_xr_voip_metrics_enabled=1
 
 [rtp]
-audio_rtp_port=7076
-video_rtp_port=9078
+audio_rtp_port=7200-7299
+video_rtp_port=9200-9299
 audio_jitt_comp=60
 video_jitt_comp=60
 nortp_timeout=30
