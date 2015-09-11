@@ -45,10 +45,10 @@
 
 - (void)update {
 	[self.tableView reloadData];
-
 	CGRect newOrigin = self.tableView.frame;
 	newOrigin.size.height =
-		[self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+		[self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] *
+		[self tableView:self.tableView numberOfRowsInSection:0];
 	newOrigin.origin.y = self.tableView.frame.origin.y + self.tableView.frame.size.height - newOrigin.size.height;
 	self.tableView.frame = newOrigin;
 }
@@ -56,7 +56,7 @@
 #pragma mark - UITableViewDataSource Functions
 - (LinphoneCall *)pausedCallForRow:(NSInteger)row {
 	const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
-	return (row < ms_list_size(calls) /* - 1*/) ? ms_list_nth_data(calls, (int)row) : NULL;
+	return (row < ms_list_size(calls) - 1) ? ms_list_nth_data(calls, (int)row) : NULL;
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -67,12 +67,12 @@
 	if (cell == nil) {
 		cell = [[UICallPausedCell alloc] initWithIdentifier:kCellId];
 	}
-	cell.call = [self pausedCallForRow:indexPath.row];
+	[cell setCall:[self pausedCallForRow:indexPath.row]];
 	return cell;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ms_list_size(linphone_core_get_calls([LinphoneManager getLc])) /* - 1*/;
+	return ms_list_size(linphone_core_get_calls([LinphoneManager getLc])) - 1;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -81,6 +81,13 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	return [self tableView:tableView cellForRowAtIndexPath:indexPath].frame.size.height;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+	return 1e-5;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return 1e-5;
 }
 
 @end

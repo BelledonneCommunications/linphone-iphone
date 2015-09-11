@@ -35,6 +35,7 @@
 
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
+
 	_avatarImage.image =
 		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
 
