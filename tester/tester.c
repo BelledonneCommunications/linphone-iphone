@@ -37,6 +37,8 @@ static int liblinphone_tester_keep_accounts_flag = 0;
 static int liblinphone_tester_keep_record_files = FALSE;
 int manager_count = 0;
 
+const MSAudioDiffParams audio_cmp_params = {10,2000};
+
 const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";

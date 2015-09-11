@@ -2415,7 +2415,7 @@ static void call_with_file_player(void) {
 		end_call(marie, pauline);
 		/*cannot run on iphone simulator because locks main loop beyond permitted time (should run
 		on another thread) */
-		BC_ASSERT_EQUAL(ms_audio_diff(hellopath,recordpath,&similar,audio_cmp_max_shift,NULL,NULL), 0, int, "%d");
+		BC_ASSERT_EQUAL(ms_audio_diff(hellopath,recordpath,&similar,&audio_cmp_params,NULL,NULL), 0, int, "%d");
 		if (similar>=threshold)
 			break;
 	}
@@ -2492,7 +2492,7 @@ static void call_with_mkv_file_player(void) {
 	}
 	end_call(marie, pauline);
 #ifdef DO_AUDIO_CMP
-	BC_ASSERT_EQUAL(ms_audio_diff(hellowav,recordpath,&similar,audio_cmp_max_shift,NULL,NULL),0,int,"%d");
+	BC_ASSERT_EQUAL(ms_audio_diff(hellowav,recordpath,&similar,&audio_cmp_params,NULL,NULL),0,int,"%d");
 	BC_ASSERT_GREATER(similar,threshold,double,"%f");
 	BC_ASSERT_LOWER(similar,1.0,double,"%f");
 	if(similar>threshold && similar<=1.0) {
@@ -4326,7 +4326,7 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 			min_threshold = .4f;
 			max_threshold = .6f;
 		}
-		BC_ASSERT_EQUAL(ms_audio_diff(recordpath, stereo_file,&similar,audio_cmp_max_shift,completion_cb,NULL), 0, int, "%d");
+		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file, recordpath,&similar,&audio_cmp_params,completion_cb,NULL), 0, int, "%d");
 		BC_ASSERT_GREATER(similar, min_threshold, double, "%g");
 		BC_ASSERT_LOWER(similar, max_threshold, double, "%g");
 		if (similar<min_threshold || similar>max_threshold){
@@ -4544,7 +4544,7 @@ static void call_with_rtp_io_mode(void) {
 		wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
 		end_call(pauline,marie);
 
-		BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, audio_cmp_max_shift, NULL, NULL), 0, int, "%d");
+		BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, &audio_cmp_params, NULL, NULL), 0, int, "%d");
 		if (similar>=threshold) break;
 	}
 	BC_ASSERT_GREATER(similar, threshold, double, "%g");
@@ -4819,7 +4819,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		end_call(pauline, marie);
 		
 		// Now we compute a similarity factor between the original file and the one we recorded on the callee side
-		BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, audio_cmp_max_shift, NULL, NULL), 0, int, "%d");
+		BC_ASSERT_EQUAL(ms_audio_diff(hellopath, recordpath, &similar, &audio_cmp_params, NULL, NULL), 0, int, "%d");
 		
 		BC_ASSERT_GREATER(similar, threshold, double, "%g");
 		BC_ASSERT_LOWER(similar, 1.0, double, "%g");
