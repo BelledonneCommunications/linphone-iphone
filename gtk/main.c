@@ -1696,48 +1696,22 @@ static void linphone_gtk_configure_main_window(){
 	static gboolean config_loaded=FALSE;
 	static const char *title;
 	static const char *home;
-	static const char *start_call_icon;
-	static const char *add_call_icon;
-	static const char *start_chat_icon;
 	static const char *search_icon;
 	static gboolean update_check_menu;
-	static gboolean buttons_have_borders;
 	static gboolean show_abcd;
 	GtkWidget *w=linphone_gtk_get_main_window();
 
 	if (!config_loaded){
 		title=linphone_gtk_get_ui_config("title","Linphone");
 		home=linphone_gtk_get_ui_config("home","http://www.linphone.org");
-		start_call_icon=linphone_gtk_get_ui_config("start_call_icon","call_start.png");
-		add_call_icon=linphone_gtk_get_ui_config("add_call_icon","call_add.png");
-		start_chat_icon=linphone_gtk_get_ui_config("start_chat_icon","chat_start.png");
 		search_icon=linphone_gtk_get_ui_config("directory_search_icon",NULL);
 		update_check_menu=linphone_gtk_get_ui_config_int("update_check_menu",0);
-		buttons_have_borders=linphone_gtk_get_ui_config_int("buttons_border",1);
 		show_abcd=linphone_gtk_get_ui_config_int("show_abcd",1);
 		config_loaded=TRUE;
 	}
 	linphone_gtk_configure_window(w,"main_window");
 	if (title) {
 		gtk_window_set_title(GTK_WINDOW(w),title);
-	}
-	if (start_call_icon){
-		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"start_call")),
-							create_pixmap (start_call_icon));
-		if (!buttons_have_borders)
-			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"start_call")),GTK_RELIEF_NONE);
-	}
-	if (add_call_icon){
-		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"add_call")),
-							create_pixmap (add_call_icon));
-		if (!buttons_have_borders)
-			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"add_call")),GTK_RELIEF_NONE);
-	}
-	if (start_chat_icon){
-		gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(w,"start_chat")),
-							create_pixmap (start_chat_icon));
-		if (!buttons_have_borders)
-			gtk_button_set_relief(GTK_BUTTON(linphone_gtk_get_widget(w,"start_chat")),GTK_RELIEF_NONE);
 	}
 	if (search_icon){
 		GdkPixbuf *pbuf=create_pixbuf(search_icon);

@@ -43,6 +43,12 @@ install(FILES
 )
 
 install(FILES
+	svg/linphone-start-call.svg
+	DESTINATION ${ICONS_INSTALL_DIR}/scalable/actions
+	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+)
+
+install(FILES
 	linphone-micro-muted.png
 	linphone-speaker-muted.png
 	linphone-micro-enabled.png
@@ -62,6 +68,9 @@ install(FILES
 install(FILES
 	linphone-start-call2.png
 	linphone-show-dialer.png
+	linphone-add-call.png
+	linphone-start-call.png
+	linphone-start-chat.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )

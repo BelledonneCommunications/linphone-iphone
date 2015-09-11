@@ -3,6 +3,12 @@
   <requires lib="gtk+" version="2.18"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <!-- interface-local-resource-path /home/francois/projects/linphone/linphone/pixmaps/hicolor -->
+  <object class="GtkImage" id="add_call_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixel_size">32</property>
+    <property name="icon_name">linphone-add-call</property>
+  </object>
   <object class="GtkImage" id="add_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -113,6 +119,18 @@
     <property name="can_focus">False</property>
     <property name="tooltip_text" translatable="yes">Delete</property>
     <property name="stock">gtk-remove</property>
+  </object>
+  <object class="GtkImage" id="start_call_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixel_size">32</property>
+    <property name="icon_name">linphone-start-call</property>
+  </object>
+  <object class="GtkImage" id="start_chat_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixel_size">32</property>
+    <property name="icon_name">linphone-start-chat</property>
   </object>
   <object class="GtkWindow" id="main">
     <property name="width_request">640</property>
@@ -380,6 +398,7 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="tooltip_text" translatable="yes">Initiate a new call</property>
+                    <property name="image">add_call_image</property>
                     <signal name="clicked" handler="linphone_gtk_start_call" swapped="no"/>
                   </object>
                   <packing>
@@ -394,6 +413,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="image">start_call_image</property>
                     <signal name="clicked" handler="linphone_gtk_start_call" swapped="no"/>
                   </object>
                   <packing>
@@ -407,6 +427,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="image">start_chat_image</property>
                     <signal name="clicked" handler="linphone_gtk_start_chat" swapped="no"/>
                   </object>
                   <packing>

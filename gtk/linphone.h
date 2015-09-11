@@ -61,6 +61,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #define LINPHONE_ICON "linphone.png"
+#define LINPHONE_ICON_NAME "linphone"
 
 enum {
 	COMPLETION_HISTORY,

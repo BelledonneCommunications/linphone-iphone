@@ -2,10 +2,9 @@ pixmapdir=$(datadir)/pixmaps/linphone
 dist_pixmap_DATA= \
 	hold_on.png hold_off.png \
 	linphone.png linphone-banner.png \
-	chat_start.png \
 	chat_message_inprogress.png chat_message_delivered.png chat_message_not_delivered.png\
 	contact-orange.png history-orange.png\
-	call_start.png startcall-small.png stopcall-red.png stopcall-small.png call_add.png linphone.icns \
+	startcall-small.png stopcall-red.png stopcall-small.png linphone.icns \
 	contact_starred.png contact_unstarred.png \
 	call_status_incoming.png call_status_outgoing.png \
 	ok.png \
@@ -48,5 +47,7 @@ dist_statussvgicons_DATA= \
 actions48iconsdir=$(iconsdir)/48x48/actions
 dist_actions48icons_DATA= \
 	linphone-start-call2.png \
-	linphone-show-dialer.png
+	linphone-show-dialer.png \
+	linphone-add-call.png \
+	linphone-start-call.png
 )
