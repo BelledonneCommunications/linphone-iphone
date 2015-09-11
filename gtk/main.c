@@ -2054,6 +2054,10 @@ static void linphone_gtk_init_ui(void){
 	linphone_gtk_monitor_usb();
 }
 
+static void sigint_handler(int signum){
+	gtk_main_quit();
+}
+
 int main(int argc, char *argv[]){
 	char *config_file;
 	const char *factory_config_file;
@@ -2209,6 +2213,8 @@ core_start:
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)linphone_gtk_get_core());
 
+	signal(SIGINT, sigint_handler);
+	
 	gtk_main();
 	linphone_gtk_quit();
 
