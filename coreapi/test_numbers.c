@@ -38,7 +38,7 @@ int main(int argc , char *argv[]){
 	normalized_number = linphone_proxy_config_normalize_phone_number(cfg,argv[1]);
 
 	if (!normalized_number) {
-		printf("Invalid phone number: %s\n", normalized_number)
+		printf("Invalid phone number: %s\n", normalized_number);
 	} else {
 		printf("Normalized number is %s\n",normalized_number);
 		/*check extracted ccc*/
