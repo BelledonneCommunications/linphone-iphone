@@ -50,4 +50,20 @@ lp_autoanswer_LDADD=\
 
 endif
 
+if ENABLE_TESTS
 
+noinst_PROGRAMS=test_lsd test_ecc test_numbers
+
+test_lsd_SOURCES=test_lsd.c
+test_lsd_CFLAGS=$(COMMON_CFLAGS)
+test_lsd_LDADD=$(top_builddir)/coreapi/liblinphone.la
+
+test_ecc_SOURCES=test_ecc.c
+test_ecc_CFLAGS=$(COMMON_CFLAGS)
+test_ecc_LDADD=$(top_builddir)/coreapi/liblinphone.la
+
+test_numbers_SOURCES=test_numbers.c
+test_numbers_CFLAGS=$(COMMON_CFLAGS)
+test_numbers_LDADD=$(top_builddir)/coreapi/liblinphone.la
+
+endif

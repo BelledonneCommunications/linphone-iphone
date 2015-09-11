@@ -144,22 +144,6 @@ liblinphone_la_LIBADD= \
 		$(ZLIB_LIBS)
 
 
-if ENABLE_TESTS
-noinst_PROGRAMS=test_lsd test_ecc test_numbers
-
-test_lsd_SOURCES=test_lsd.c
-
-test_lsd_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
-
-test_ecc_SOURCES=test_ecc.c
-
-test_ecc_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
-
-test_numbers_SOURCES=test_numbers.c
-
-test_numbers_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
-endif
-
 AM_CPPFLAGS=\
 	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir) \
 		$(ORTP_CFLAGS) \
