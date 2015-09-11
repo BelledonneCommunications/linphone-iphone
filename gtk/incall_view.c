@@ -795,10 +795,12 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 void linphone_gtk_in_call_view_set_paused(LinphoneCall *call){
 	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
 	GtkWidget *status=linphone_gtk_get_widget(callview,"in_call_status");
+	GtkWidget *record_bar = linphone_gtk_get_widget(callview, "record_hbox");
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Paused call</b>"));
 	linphone_gtk_in_call_show_video(call);
 	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_MEDIA_PAUSE,TRUE);
+	gtk_widget_show_all(record_bar);
 }
 
 void linphone_gtk_in_call_view_update_duration(LinphoneCall *call){
