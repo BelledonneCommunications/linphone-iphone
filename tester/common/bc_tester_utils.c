@@ -179,8 +179,8 @@ static void test_complete_message_handler(const CU_pTest pTest,
 	const CU_pSuite pSuite,
 	const CU_pFailureRecord pFailureList) {
 	int i;
-	char result[2048];
-	char buffer[2048];
+	char result[2048]={0};
+	char buffer[2048]={0};
 	CU_pFailureRecord pFailure = pFailureList;
 	snprintf(result, sizeof(result), "Suite [%s] Test [%s] %s in %lu secs"
 			, pSuite->pName, pTest->pName, pFailure?"failed":"passed",(unsigned long)(time(NULL) - test_start_time));
