@@ -196,6 +196,7 @@ int main (int argc, char *argv[])
 
 	liblinphone_tester_init(NULL);
 
+#ifndef WIN32   /*this hack doesn't work for argv[0]="c:\blablab\"*/
 	// this allows to launch tester from outside of tester directory
 	if (strstr(argv[0], ".libs")) {
 		int prefix_length = strstr(argv[0], ".libs") - argv[0] + 1;
@@ -205,6 +206,7 @@ int main (int argc, char *argv[])
 		bc_tester_set_writable_dir_prefix(prefix);
 		ms_free(prefix);
 	}
+#endif
 
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
