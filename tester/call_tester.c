@@ -3258,8 +3258,8 @@ static void multiple_early_media(void) {
 		/*wait a bit that streams are established*/
 		wait_for_list(lcs,&dummy,1,6000);
 		BC_ASSERT_GREATER(linphone_core_manager_get_max_audio_down_bw(pauline),70,int,"%i");
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>70);
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth>70);
+		BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie1), 70, int, "%i");
+		BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie2), 70, int, "%i");
 
 		linphone_core_accept_call(marie1->lc,linphone_core_get_current_call(marie1->lc));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneCallStreamsRunning,1,3000));
@@ -3270,8 +3270,8 @@ static void multiple_early_media(void) {
 
 		/*wait a bit that streams are established*/
 		wait_for_list(lcs,&dummy,1,3000);
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth>71);
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth>71);
+		BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(pauline), 71, int, "%i");
+		BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie1), 71, int, "%i");
 
 		/*send an INFO in reverse side to check that dialogs are properly established*/
 		info=linphone_core_create_info_message(marie1->lc);
@@ -3333,13 +3333,13 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 			BC_ASSERT_EQUAL(linphone_call_params_get_audio_direction(params), audio_dir, int, "%d");
 			switch (audio_dir) {
 				case LinphoneMediaDirectionInactive:
-					BC_ASSERT_TRUE(linphone_call_get_audio_stats(call)->upload_bandwidth<5);
+					BC_ASSERT_LOWER(linphone_call_get_audio_stats(call)->upload_bandwidth, 5, int, "%i");
 				case LinphoneMediaDirectionSendOnly:
-					BC_ASSERT_TRUE(linphone_call_get_video_stats(call)->download_bandwidth<5);
+					BC_ASSERT_LOWER(linphone_call_get_video_stats(call)->download_bandwidth, 5, int, "%i");
 					if (audio_dir == LinphoneMediaDirectionSendOnly) BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_upload_bandwidth,70,4000));
 					break;
 				case LinphoneMediaDirectionRecvOnly:
-					BC_ASSERT_TRUE(linphone_call_get_audio_stats(call)->upload_bandwidth<5);
+					BC_ASSERT_LOWER(linphone_call_get_audio_stats(call)->upload_bandwidth, 5, int, "%i");
 				case LinphoneMediaDirectionSendRecv:
 					BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_download_bandwidth,70,4000));
 					if (audio_dir == LinphoneMediaDirectionSendRecv) BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_upload_bandwidth,70,4000));
