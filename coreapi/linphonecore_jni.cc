@@ -1867,7 +1867,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getOrCreateChatRoom(JNI
 																			,jstring jto) {
 
 	const char* to = env->GetStringUTFChars(jto, NULL);
-	LinphoneChatRoom* lResult = linphone_core_get_or_create_chat_room((LinphoneCore*)lc,to);
+	LinphoneChatRoom* lResult = linphone_core_get_chat_room_from_uri((LinphoneCore*)lc,to);
 	env->ReleaseStringUTFChars(jto, to);
 	return (jlong)lResult;
 }
@@ -3086,11 +3086,6 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_markAsRead(JNIEnv*  
 	linphone_chat_room_mark_as_read((LinphoneChatRoom*)ptr);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_destroy(JNIEnv*  env
-																	,jobject  thiz
-																	,jlong ptr) {
-	linphone_chat_room_destroy((LinphoneChatRoom*)ptr);
-}
 
 extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferMessage(JNIEnv* env, jobject thiz, jlong ptr, jstring jname, jstring jtype, jstring jsubtype, jint data_size) {
 	LinphoneContentPrivate content = {0};
@@ -3389,7 +3384,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_unref(JNIEnv*  en
 extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getChatRooms(JNIEnv*  env
 																		   ,jobject  thiz
 																		   ,jlong ptr) {
-	MSList* chats = linphone_core_get_chat_rooms((LinphoneCore*)ptr);
+	const MSList* chats = linphone_core_get_chat_rooms((LinphoneCore*)ptr);
 	int chatsSize = ms_list_size(chats);
 	jlongArray jChats = env->NewLongArray(chatsSize);
 	jlong *jInternalArray = env->GetLongArrayElements(jChats, NULL);
