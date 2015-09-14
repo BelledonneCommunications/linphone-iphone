@@ -40,6 +40,7 @@
 #import "SideMenuView.h"
 #import "AssistantView.h"
 
+#import "UIConfirmationDialog.h"
 #import "DTAlertView.h"
 #import "DTActionSheet.h"
 #import "Utils.h"
