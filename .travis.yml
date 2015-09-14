@@ -1,11 +1,15 @@
 language: objective-c
 
+
 env:
     global:
         - secure: "JPPcWdmNIJiR3YcIwe0LRYce6qDdsiagO+eKKAp7eVk/wD9UHbz96Ms2FFkXxPhRJB1PA6Pf8FpAzIL2YRiJL9jRtKHSvtdF1cSto+57XyBkCsw7PkMVUIxp7fg6Wiwn3H3tucF8jisIkv/Pn7R+9EqePkZSqqu3+ig5AX9ApQ4="
         - KIF_SCREENSHOTS=$PWD/Screens
+git:
+  submodules: false
 
 before_install:
+    - git submodule update --init --recursive --depth 1
     - brew update 1>/dev/null
     - brew install doxygen nasm yasm optipng imagemagick coreutils intltool ninja antlr
     - brew upgrade cmake
@@ -14,7 +18,6 @@ before_install:
     - sudo mv gas-preprocessor.pl /usr/local/bin
     - sudo ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
     - sudo ln -s /usr/bin/strings /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings
-    - git submodule update --init --recursive --depth 1
 
 install:
     - ./prepare.py -d x86_64 -G Ninja
