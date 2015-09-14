@@ -1415,6 +1415,9 @@
 				D3211BAD159C4EF00098460B /* UIConferenceHeader.h */,
 				D3211BAE159C4EF00098460B /* UIConferenceHeader.m */,
 				D38187F315FE354000C3EDCA /* UIConferenceHeader.xib */,
+				63701DDD1BA32039006A9AE3 /* UIConfirmationDialog.h */,
+				63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */,
+				63701DD51BA31DA1006A9AE3 /* UIConfirmationDialog.xib */,
 				D3A55FBA15877E5E003FD403 /* UIContactCell.h */,
 				D3A55FBB15877E5E003FD403 /* UIContactCell.m */,
 				F088488D19FF8C41007FFCF3 /* UIContactCell.xib */,
@@ -1457,9 +1460,6 @@
 				D32460E5159D9AAD00BA7F3A /* UITransparentView.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
-				63701DD51BA31DA1006A9AE3 /* UIConfirmationDialog.xib */,
-				63701DDD1BA32039006A9AE3 /* UIConfirmationDialog.h */,
-				63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";

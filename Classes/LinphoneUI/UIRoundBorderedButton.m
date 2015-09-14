@@ -16,6 +16,7 @@
 	self.layer.borderWidth = .8;
 	self.layer.borderColor = [[UIColor blackColor] CGColor];
 	self.layer.cornerRadius = 4.f;
+	self.layer.masksToBounds = YES;
 
 	// capitalize title (should be already done though)
 	UIControlState states[] = {UIControlStateNormal, UIControlStateHighlighted, UIControlStateSelected,

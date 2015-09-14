@@ -38,6 +38,7 @@
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onCancelClick:(id)event;
 - (IBAction)onEditClick:(id)event;
+- (IBAction)onDeleteClick:(id)sender;
 
 - (void)newContact;
 - (void)newContact:(NSString *)address;

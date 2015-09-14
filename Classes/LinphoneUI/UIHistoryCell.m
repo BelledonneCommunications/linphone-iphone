@@ -37,7 +37,6 @@
 		if ([arrayOfViews count] >= 1) {
 			[self.contentView addSubview:[arrayOfViews objectAtIndex:0]];
 		}
-
 		callLog = NULL;
 	}
 	return self;
@@ -47,6 +46,7 @@
 
 - (void)setCallLog:(LinphoneCallLog *)acallLog {
 	callLog = acallLog;
+
 	[self update];
 }
 
@@ -74,16 +74,10 @@
 #pragma mark -
 
 - (NSString *)accessibilityValue {
-	// TODO: localize?
 	BOOL incoming = linphone_call_log_get_dir(callLog) == LinphoneCallIncoming;
 	BOOL missed = linphone_call_log_get_status(callLog) == LinphoneCallMissed;
-
-	NSString *call_type = @"Outgoing";
-	if (incoming) {
-		call_type = missed ? @"Missed" : @"Incoming";
-	}
-
-	return [NSString stringWithFormat:@"%@ from %@", call_type, displayNameLabel.text];
+	NSString *call_type = incoming ? (missed ? @"Missed" : @"Incoming") : @"Outgoing";
+	return [NSString stringWithFormat:@"%@ call from %@", call_type, displayNameLabel.text];
 }
 
 - (void)update {

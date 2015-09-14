@@ -6,6 +6,8 @@
 //
 //
 
+#include "UIRoundBorderedButton.h"
+
 typedef void (^UIConfirmationBlock)(void);
 
 @interface UIConfirmationDialog : UIViewController {
@@ -18,6 +20,8 @@ typedef void (^UIConfirmationBlock)(void);
 		  onCancelClick:(UIConfirmationBlock)onCancel
 	onConfirmationClick:(UIConfirmationBlock)onConfirm;
 
+@property(weak, nonatomic) IBOutlet UIRoundBorderedButton *cancelButton;
+@property(weak, nonatomic) IBOutlet UIRoundBorderedButton *confirmationButton;
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onConfirmationClick:(id)sender;

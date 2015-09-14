@@ -25,7 +25,6 @@
 #import "HistoryDetailsTableView.h"
 @interface HistoryDetailsView : UIViewController <UICompositeViewDelegate> {
   @private
-	ABRecordRef contact;
 	LinphoneCallLog *callLog;
 	NSDateFormatter *dateFormatter;
 }
@@ -35,7 +34,6 @@
 @property(nonatomic, strong) IBOutlet UIButton *addContactButton;
 @property(nonatomic, copy, setter=setCallLogId:) NSString *callLogId;
 @property(weak, nonatomic) IBOutlet UIView *headerView;
-@property(weak, nonatomic) IBOutlet UITableView *callsTableView;
 @property(strong, nonatomic) IBOutlet HistoryDetailsTableView *tableView;
 
 - (IBAction)onBackClick:(id)event;

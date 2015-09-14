@@ -266,10 +266,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)onRemove:(id)event {
-	[self disableEdit:FALSE];
-	[self removeContact];
-	[PhoneMainView.instance popCurrentView];
+- (IBAction)onDeleteClick:(id)sender {
+	NSString *msg = [NSString
+		stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete your contact %@?", nil), @"toto"];
+	[UIConfirmationDialog ShowWithMessage:msg
+							onCancelClick:nil
+					  onConfirmationClick:^() {
+						[self disableEdit:FALSE];
+						[self removeContact];
+						[PhoneMainView.instance popCurrentView];
+					  }];
 }
 
 - (void)onModification:(id)event {

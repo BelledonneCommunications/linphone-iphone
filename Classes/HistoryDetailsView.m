@@ -159,12 +159,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-	// this address should NEVER be NULL: if this assert is broken, the bug is elsewhere.
-	assert(addr != NULL);
-
-	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr];
-	_avatarImage.image =
-		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
+	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	_addContactButton.hidden = (contact != nil);
+	[ContactDisplay setDisplayNameLabel:_contactLabel forContact:contact];
+	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:NO];
 	char *addrURI = linphone_address_as_string_uri_only(addr);
 	_addressLabel.text = [NSString stringWithUTF8String:addrURI];
 	ms_free(addrURI);
@@ -177,30 +175,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onContactClick:(id)event {
-	if (contact) {
-		ContactDetailsView *view = VIEW(ContactDetailsView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
-		[ContactSelection setSelectionMode:ContactSelectionModeNone];
-		[view setContact:contact];
-	}
+	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	ContactDetailsView *view = VIEW(ContactDetailsView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+	[ContactSelection setSelectionMode:ContactSelectionModeNone];
+	[view setContact:contact];
 }
 
 - (IBAction)onAddContactClick:(id)event {
-	LinphoneAddress *addr;
+	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	char *lAddress = linphone_address_as_string_uri_only(addr);
+	if (lAddress != NULL) {
+		[ContactSelection setAddAddress:[NSString stringWithUTF8String:lAddress]];
+		[ContactSelection setSelectionMode:ContactSelectionModeEdit];
 
-	addr = linphone_call_log_get_remote_address(callLog);
-	if (addr != NULL) {
-		char *lAddress = linphone_address_as_string_uri_only(addr);
-		if (lAddress != NULL) {
-			[ContactSelection setAddAddress:[NSString stringWithUTF8String:lAddress]];
-			[ContactSelection setSelectionMode:ContactSelectionModeEdit];
-
-			[ContactSelection setSipFilter:nil];
-			[ContactSelection enableEmailFilter:FALSE];
-			[ContactSelection setNameOrEmailFilter:nil];
-			[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription push:TRUE];
-			ms_free(lAddress);
-		}
+		[ContactSelection setSipFilter:nil];
+		[ContactSelection enableEmailFilter:FALSE];
+		[ContactSelection setNameOrEmailFilter:nil];
+		[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription push:TRUE];
+		ms_free(lAddress);
 	}
 }
 

@@ -7,6 +7,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIConfirmationDialog">
             <connections>
+                <outlet property="cancelButton" destination="B1K-CB-3of" id="KKi-Xc-ldA"/>
+                <outlet property="confirmationButton" destination="SbQ-re-fGQ" id="yiv-a9-o8E"/>
                 <outlet property="titleLabel" destination="jLz-g1-cTe" id="qaj-OB-2r1"/>
                 <outlet property="view" destination="2Vb-Xy-rci" id="nNw-EJ-AY3"/>
             </connections>
@@ -17,7 +19,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <imageView userInteractionEnabled="NO" alpha="0.89999999999999991" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_C.png" id="cqN-1f-6SE" userLabel="backgroundColor">
-                    <rect key="frame" x="0.0" y="0.0" width="376" height="667"/>
+                    <rect key="frame" x="0.0" y="0.0" width="377" height="667"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Are you sure you want to delete all your selection?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jLz-g1-cTe" userLabel="titleLabel">
@@ -27,17 +29,6 @@
                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="SbQ-re-fGQ" userLabel="confirmationButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="206" y="319" width="141" height="40"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <state key="normal" title="DELETE" backgroundImage="color_A.png">
-                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <connections>
-                        <action selector="onConfirmationClick:" destination="-1" eventType="touchUpInside" id="0np-r7-R0W"/>
-                    </connections>
-                </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="B1K-CB-3of" userLabel="cancelButton" customClass="UIRoundBorderedButton">
                     <rect key="frame" x="28" y="319" width="141" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -47,6 +38,17 @@
                     </state>
                     <connections>
                         <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="LvF-N2-56g"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="SbQ-re-fGQ" userLabel="confirmationButton" customClass="UIRoundBorderedButton">
+                    <rect key="frame" x="206" y="319" width="141" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <state key="normal" title="DELETE" backgroundImage="color_A.png">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="onConfirmationClick:" destination="-1" eventType="touchUpInside" id="0np-r7-R0W"/>
                     </connections>
                 </button>
             </subviews>
