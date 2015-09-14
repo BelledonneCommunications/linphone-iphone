@@ -1360,7 +1360,6 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		if (cstate==LinphoneCallReleased) {/*shall be performed after  app notification*/
 			linphone_call_set_released(call);
 		}
-		linphone_core_soundcard_hint_check(lc);
 	}
 }
 
@@ -3221,6 +3220,8 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 		rtp_profile_destroy(call->rtp_io_video_profile);
 		call->rtp_io_video_profile = NULL;
 	}
+
+	linphone_core_soundcard_hint_check(call->core);
 }
 
 
@@ -4267,13 +4268,13 @@ void linphone_call_set_broken(LinphoneCall *call){
 
 void linphone_call_repair_if_broken(LinphoneCall *call){
 	LinphoneCallParams *params;
-	
+
 	if (!call->broken) return;
-	
+
 	/*First, make sure that the proxy from which we received this call, or to which we routed this call is registered*/
 	if (!call->dest_proxy || linphone_proxy_config_get_state(call->dest_proxy) != LinphoneRegistrationOk) return;
-	
-	
+
+
 	switch (call->state){
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallPaused:
