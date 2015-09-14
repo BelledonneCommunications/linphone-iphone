@@ -180,6 +180,10 @@
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
 		63D2680F1B174A5E00A2CC11 /* numpad_one_voicemail_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */; };
 		63D268101B174A5E00A2CC11 /* numpad_one_voicemail_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 63D2680E1B174A5E00A2CC11 /* numpad_one_voicemail_over.png */; };
+		63D5C1F11BA6FF4D002D1ABF /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AA1472527D0037138E /* libSKP_SILK_SDK.a */; };
+		63D5C1F51BA6FF4D002D1ABF /* libbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1F21BA6FF4D002D1ABF /* libbcg729.a */; };
+		63D5C1F61BA6FF4D002D1ABF /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1F31BA6FF4D002D1ABF /* libswresample.a */; };
+		63D5C1F71BA6FF4D002D1ABF /* libvo-amrwbenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1F41BA6FF4D002D1ABF /* libvo-amrwbenc.a */; };
 		63D7215D1B7394D200D70E65 /* libtunnel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D30BF33216A427BC00AF0026 /* libtunnel.a */; settings = {ATTRIBUTES = (Weak, ); }; };
 		63D7216C1B73973D00D70E65 /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFB13D7125500B30535 /* libx264.a */; settings = {ATTRIBUTES = (Weak, ); }; };
 		63D7216D1B73975900D70E65 /* libmsx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AA8AFC13D7125500B30535 /* libmsx264.a */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -1123,6 +1127,9 @@
 		63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
 		63D2680D1B174A5E00A2CC11 /* numpad_one_voicemail_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = numpad_one_voicemail_default.png; path = Resources/numpad_one_voicemail_default.png; sourceTree = "<group>"; };
 		63D2680E1B174A5E00A2CC11 /* numpad_one_voicemail_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = numpad_one_voicemail_over.png; path = Resources/numpad_one_voicemail_over.png; sourceTree = "<group>"; };
+		63D5C1F21BA6FF4D002D1ABF /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
+		63D5C1F31BA6FF4D002D1ABF /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = "liblinphone-sdk/apple-darwin/lib/libswresample.a"; sourceTree = "<group>"; };
+		63D5C1F41BA6FF4D002D1ABF /* libvo-amrwbenc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libvo-amrwbenc.a"; path = "liblinphone-sdk/apple-darwin/lib/libvo-amrwbenc.a"; sourceTree = "<group>"; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
 		63EA4C941B50189D00922857 /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
@@ -1891,6 +1898,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63D5C1F51BA6FF4D002D1ABF /* libbcg729.a in Frameworks */,
+				63D5C1F61BA6FF4D002D1ABF /* libswresample.a in Frameworks */,
+				63D5C1F71BA6FF4D002D1ABF /* libvo-amrwbenc.a in Frameworks */,
 				223CA7E616D9255800EF1BEC /* libantlr3c.a in Frameworks */,
 				22276E8313C73D3100210156 /* libavcodec.a in Frameworks */,
 				22276E8413C73D3100210156 /* libavutil.a in Frameworks */,
@@ -1901,19 +1911,13 @@
 				F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */,
 				D37EE10916032DA4003608A6 /* libmediastreamer_base.a in Frameworks */,
 				D37EE10A16032DA4003608A6 /* libmediastreamer_voip.a in Frameworks */,
-				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
-				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
-				226183B0147259670037138E /* libmssilk.a in Frameworks */,
-				1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */,
-				63D7216D1B73975900D70E65 /* libmsx264.a in Frameworks */,
-				63C510A01B8F48DB008A415A /* libmswebrtc.a in Frameworks */,
-				226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */,
 				63C5109E1B8F2603008A415A /* libopencore-amrnb.a in Frameworks */,
 				63C5109F1B8F2603008A415A /* libopencore-amrwb.a in Frameworks */,
-				22A10F3B11F8960300373793 /* libortp.a in Frameworks */,
 				22509042196BD902007863F6 /* libopenh264.a in Frameworks */,
 				22AF73C21754C0D100BE8398 /* libopus.a in Frameworks */,
+				22A10F3B11F8960300373793 /* libortp.a in Frameworks */,
 				57B0E360173C010400A476B8 /* libpolarssl.a in Frameworks */,
+				63D5C1F11BA6FF4D002D1ABF /* libSKP_SILK_SDK.a in Frameworks */,
 				220FAD3810765B400068D98F /* libspeex.a in Frameworks */,
 				220FAD3910765B400068D98F /* libspeexdsp.a in Frameworks */,
 				226183AE1472527D0037138E /* libsrtp.a in Frameworks */,
@@ -1921,6 +1925,13 @@
 				63D7215D1B7394D200D70E65 /* libtunnel.a in Frameworks */,
 				7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */,
 				63D7216C1B73973D00D70E65 /* libx264.a in Frameworks */,
+				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
+				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
+				226183B0147259670037138E /* libmssilk.a in Frameworks */,
+				1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */,
+				63D7216D1B73975900D70E65 /* libmsx264.a in Frameworks */,
+				63C510A01B8F48DB008A415A /* libmswebrtc.a in Frameworks */,
+				226CDAE014E2D0B800513B67 /* libmsbcg729.a in Frameworks */,
 				152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */,
 				344ABDF114850AE9007420B6 /* libc++.1.dylib in Frameworks */,
 				D32B6E2F15A5C0AC0033019F /* libsqlite3.dylib in Frameworks */,
@@ -2285,6 +2296,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63D5C1F21BA6FF4D002D1ABF /* libbcg729.a */,
+				63D5C1F31BA6FF4D002D1ABF /* libswresample.a */,
+				63D5C1F41BA6FF4D002D1ABF /* libvo-amrwbenc.a */,
 				63EA4C941B50189D00922857 /* libmswebrtc.a */,
 				63158FAC1B468E0E00969917 /* ImageOptim.sh */,
 				152F22351B15E889008C0621 /* libxml2.dylib */,
