@@ -495,8 +495,8 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr){
 			" linphone_core_get_chat_room() doesn't give a reference, there is no need to call linphone_chat_room_unref(). "
 			"In order to remove a chat room from the core, use linphone_core_delete_chat_room().",
 				cr);
+			cr->lc->chatrooms=ms_list_remove(cr->lc->chatrooms, cr);
 		}
-		cr->lc->chatrooms=ms_list_remove(cr->lc->chatrooms, cr);
 	}
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
