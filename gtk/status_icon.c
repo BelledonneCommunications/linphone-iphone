@@ -328,10 +328,10 @@ static void _linphone_status_icon_impl_gtk_init(LinphoneStatusIcon *si) {
 	si->data = icon;
 }
 
-// static void _linphone_status_icon_impl_gtk_uninit(LinphoneStatusIcon *si) {
-// 	GtkStatusIcon *icon = GTK_STATUS_ICON(si->data);
-// 	gtk_status_icon_set_visible(icon, FALSE);
-// }
+static void _linphone_status_icon_impl_gtk_uninit(LinphoneStatusIcon *si) {
+	GtkStatusIcon *icon = GTK_STATUS_ICON(si->data);
+	gtk_status_icon_set_visible(icon, FALSE);
+}
 
 static void _linphone_status_icon_impl_gtk_start(LinphoneStatusIcon *si) {
 	GtkStatusIcon *icon = GTK_STATUS_ICON(si->data);
@@ -383,7 +383,7 @@ static gboolean _linphone_status_icon_impl_is_supported(
 static const _LinphoneStatusIconDesc _linphone_status_icon_impl_gtk_desc = {
 	"gtk_status_icon",
 	_linphone_status_icon_impl_gtk_init,
-	NULL,
+	_linphone_status_icon_impl_gtk_uninit,
 	_linphone_status_icon_impl_gtk_start,
 	_linphone_status_icon_impl_enable_blinking,
 	_linphone_status_icon_impl_is_supported
