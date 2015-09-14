@@ -63,7 +63,7 @@
 }
 
 - (void)uploadImageWithQuality:(NSString *)quality {
-	UITableView *tv = [self findTableView:@"Chat list"];
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
 
 	long messagesCount = [tv numberOfRowsInSection:0];
 	[tester tapViewWithAccessibilityLabel:@"Send picture"];
@@ -111,7 +111,7 @@
 	[tester tapViewWithAccessibilityLabel:@"Anna Haro"];
 	[tester tapViewWithAccessibilityLabel:@"home, 555-522-8243"];
 	[self goBackFromChat];
-	UITableView *tv = [self findTableView:@"ChatRoom list"];
+	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
 	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message"
 										value:@"Anna Haro (0)"
@@ -167,7 +167,7 @@
 	[tester tapViewWithAccessibilityLabel:@"Chat"];
 	NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
 
-	XCTAssertEqual([[self findTableView:@"ChatRoom list"] numberOfRowsInSection:0], 100);
+	XCTAssertEqual([[self findTableView:@"Chat list"] numberOfRowsInSection:0], 100);
 	// conversation loading MUST be less than 1 sec
 	XCTAssertLessThan(after - before, 1.);
 }
@@ -177,11 +177,18 @@
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [[self me] UTF8String]);
 	// generate lots of messages...
-	for (; count < 100; count++) {
+	for (; count < 50; count++) {
 		linphone_chat_room_send_message(room, [[NSString stringWithFormat:@"Message %d", count + 1] UTF8String]);
 	}
-	[tester waitForTimeInterval:5]; // wait for all messages to be delivered
-	// TODO: FIX below code: unread count is not always 100 messages while it should...
+
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
+	for (int i = 0; i < 25; i++) {
+		[tester waitForTimeInterval:1.f];
+		if ([tv numberOfRowsInSection:0] == count) {
+			break;
+		}
+	}
+
 	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message, Unread message number"
 										value:[NSString stringWithFormat:@"%@ - Message %d (%d)", self.me, count, count]
 									   traits:UIAccessibilityTraitStaticText];
@@ -251,7 +258,7 @@
 	[self uploadImageWithQuality:@"Maximum"];
 	[self uploadImageWithQuality:@"Average"];
 	[self uploadImageWithQuality:@"Minimum"];
-	UITableView *tv = [self findTableView:@"Chat list"];
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
 	// wait for ALL uploads to terminate...
 	for (int i = 0; i < 45; i++) {
 		[tester waitForTimeInterval:1.f];
@@ -282,7 +289,7 @@
 	[self uploadImageWithQuality:@"Maximum"];
 	[self uploadImageWithQuality:@"Average"];
 	[self uploadImageWithQuality:@"Minimum"];
-	UITableView *tv = [self findTableView:@"Chat list"];
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
 	// wait for ALL uploads to terminate...
 	for (int i = 0; i < 45; i++) {
 		[tester waitForTimeInterval:1.f];

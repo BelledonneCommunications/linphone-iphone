@@ -238,6 +238,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LOGE(@"cannot set transport");
 	}
 
+	[LinphoneManager.instance lpConfigSetBool:TRUE forKey:@"file_transfer_migration_done"];
 	[[LinphoneManager instance] lpConfigSetString:@"" forKey:@"sharing_server_preference"];
 	[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"ice_preference"];
 	[[LinphoneManager instance] lpConfigSetString:@"" forKey:@"stun_preference"];

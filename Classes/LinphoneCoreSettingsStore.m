@@ -781,8 +781,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		[lm lpConfigSetInt:[self integerForKey:@"advanced_account_preference"] forKey:@"advanced_account_preference"];
 
-		NSString *sharing_server = [self stringForKey:@"sharing_server_preference"];
-		[[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
+		[[LinphoneManager instance] lpConfigSetString:[self stringForKey:@"sharing_server_preference"]
+											   forKey:@"sharing_server_preference"];
 	}
 
 	changedDict = [[NSMutableDictionary alloc] init];

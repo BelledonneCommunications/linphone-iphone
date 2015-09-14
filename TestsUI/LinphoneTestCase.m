@@ -121,7 +121,7 @@ static bool invalidAccount = true;
 		ms_free(server_addr);
 
 		LinphoneAuthInfo *testAuth = linphone_auth_info_new(linphone_address_get_username(testAddr), NULL,
-															linphone_address_get_password(testAddr), NULL, NULL,
+															linphone_address_get_username(testAddr), NULL, NULL,
 															linphone_address_get_domain(testAddr));
 
 		[[LinphoneManager instance] configurePushTokenForProxyConfig:testProxy];
