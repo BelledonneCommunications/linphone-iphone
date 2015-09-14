@@ -4950,6 +4950,109 @@ static void call_with_network_switch(void){
 static void call_with_network_switch_and_ice(void){
 	_call_with_network_switch(TRUE);
 }
+
+#endif 
+
+#ifdef CALL_LOGS_STORAGE_ENABLED
+
+static void call_logs_migrate() {
+	LinphoneCoreManager* laure = linphone_core_manager_new("laure_call_logs_rc");
+	char *logs_db = create_filepath(bc_tester_get_writable_dir_prefix(), "call_logs", "db");
+	int i = 0;
+	int incoming_count = 0, outgoing_count = 0, missed_count = 0, aborted_count = 0, decline_count = 0, video_enabled_count = 0;
+	
+	call_logs_read_from_config_file(laure->lc);
+	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 10);
+	
+	linphone_core_set_call_logs_database_path(laure->lc, logs_db);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(laure->lc) == 10);
+	
+	for (; i < ms_list_size(laure->lc->call_logs); i++) {
+		LinphoneCallLog *log = ms_list_nth_data(laure->lc->call_logs, i);
+		LinphoneCallStatus state = linphone_call_log_get_status(log);
+		LinphoneCallDir direction = linphone_call_log_get_dir(log);
+		
+		if (state == LinphoneCallAborted) {
+			aborted_count += 1;
+		} else if (state == LinphoneCallMissed) {
+			missed_count += 1;
+		} else if (state == LinphoneCallDeclined) {
+			decline_count += 1;
+		}
+		
+		if (direction == LinphoneCallOutgoing) {
+			outgoing_count += 1;
+		} else {
+			incoming_count += 1;
+		}
+		
+		if (linphone_call_log_video_enabled(log)) {
+			video_enabled_count += 1;
+		}
+	}
+	BC_ASSERT_TRUE(incoming_count == 5);
+	BC_ASSERT_TRUE(outgoing_count == 5);
+	BC_ASSERT_TRUE(missed_count == 1);
+	BC_ASSERT_TRUE(aborted_count == 3);
+	BC_ASSERT_TRUE(decline_count == 2);
+	BC_ASSERT_TRUE(video_enabled_count == 3);
+	
+	laure->lc->call_logs = ms_list_free_with_data(laure->lc->call_logs, (void (*)(void*))linphone_call_log_unref);
+	call_logs_read_from_config_file(laure->lc);
+	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 0);
+	
+	remove(logs_db);
+	ms_free(logs_db);
+	linphone_core_manager_destroy(laure);
+}
+
+static void call_logs_sqlite_storage() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	char *logs_db = create_filepath(bc_tester_get_writable_dir_prefix(), "call_logs", "db");
+	MSList *logs = NULL;
+	LinphoneAddress *laure = NULL;
+
+	linphone_core_set_call_logs_database_path(marie->lc, logs_db);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
+	
+	BC_ASSERT_TRUE(call(marie, pauline));
+	wait_for_until(marie->lc, pauline->lc, NULL, 5, 1000);
+	end_call(marie, pauline);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 1);
+	
+	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
+	BC_ASSERT_TRUE(ms_list_size(logs) == 1);
+	ms_list_free_with_data(logs, (void (*)(void*))linphone_call_log_unref);
+	
+	laure = linphone_address_new("\"Laure\" <sip:laure@sip.example.org>");
+	logs = linphone_core_get_call_history_for_address(marie->lc, laure);
+	BC_ASSERT_TRUE(ms_list_size(logs) == 0);
+	ms_free(laure);
+	
+	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
+	BC_ASSERT_TRUE(ms_list_size(logs) == 1);
+	linphone_core_delete_call_log(marie->lc, (LinphoneCallLog *)ms_list_nth_data(logs, 0));
+	ms_list_free_with_data(logs, (void (*)(void*))linphone_call_log_unref);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
+	
+	BC_ASSERT_TRUE(call(marie, pauline));
+	wait_for_until(marie->lc, pauline->lc, NULL, 5, 1000);
+	end_call(marie, pauline);
+	BC_ASSERT_TRUE(call(marie, pauline));
+	wait_for_until(marie->lc, pauline->lc, NULL, 5, 1000);
+	end_call(marie, pauline);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 2);
+	
+	linphone_core_delete_call_history(marie->lc);
+	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	remove(logs_db);
+	ms_free(logs_db);
+}
+
 #endif
 
 test_t call_tests[] = {
@@ -5082,6 +5185,10 @@ test_t call_tests[] = {
 	{ "Call with RTP IO mode", call_with_rtp_io_mode },
 	{ "Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback },
 	{ "Call with complex late offering", call_with_complex_late_offering },
+#ifdef CALL_LOGS_STORAGE_ENABLED
+	{ "Call log storage migration from rc to db", call_logs_migrate },
+	{ "Call log storage in sqlite database", call_logs_sqlite_storage },
+#endif
 	{ "Call with custom RTP Modifier", call_with_custom_rtp_modifier },
 	{ "Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier },
 	{ "Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier },
