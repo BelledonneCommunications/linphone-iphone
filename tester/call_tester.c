@@ -4319,12 +4319,12 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	}else{
 #if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
 		double similar;
-		double min_threshold = .6f;
+		double min_threshold = .75f; /*should be above 0.8 in best conditions*/
 		double max_threshold = 1.f;
 		if (!stereo){
-			/*when opus doesn't transmit stereo, the cross correlation is around 0.54 : as expected, it is not as good as in full stereo mode*/
+			/*when opus doesn't transmit stereo, the cross correlation is around 0.6 : as expected, it is not as good as in full stereo mode*/
 			min_threshold = .4f;
-			max_threshold = .6f;
+			max_threshold = .68f;
 		}
 		BC_ASSERT_EQUAL(ms_audio_diff(stereo_file, recordpath,&similar,&audio_cmp_params,completion_cb,NULL), 0, int, "%d");
 		BC_ASSERT_GREATER(similar, min_threshold, double, "%g");
