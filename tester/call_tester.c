@@ -4504,7 +4504,7 @@ static void call_with_rtp_io_mode(void) {
 	bool_t call_ok;
 	int attempts;
 	double similar=1;
-	const double threshold = 0.9;
+	const double threshold = 0.85;
 
 	/*this test is actually attempted three times in case of failure, because the audio comparison at the end is very sensitive to
 	 * jitter buffer drifts, which sometimes happen if the machine is unable to run the test in good realtime conditions */
@@ -4744,7 +4744,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	char *hellopath = bc_tester_res("sounds/ahbahouaismaisbon.wav"); // File to be played
 	char *recordpath = create_filepath(bc_tester_get_writable_dir_prefix(), "record-call_with_file_player", "wav"); // File to record the received sound
 	double similar = 1; // The factor of similarity between the played file and the one recorded
-	const double threshold = 0.9; // Minimum similarity value to consider the record file equal to the one sent
+	const double threshold = 0.85; // Minimum similarity value to consider the record file equal to the one sent
 	
 	// We create a new vtable to listen only to the call state changes, in order to plug our RTP Transport Modifier when the call will be established
 	v_table = linphone_core_v_table_new();
