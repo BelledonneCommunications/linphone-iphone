@@ -3171,6 +3171,14 @@ LINPHONE_PUBLIC void linphone_core_set_rtp_no_xmit_on_audio_mute(LinphoneCore *l
 LINPHONE_PUBLIC const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 
 /**
+ * Get the list of call logs (past calls) that matches the given #LinphoneAddress.
+ * At the contrary of linphone_core_get_call_logs, it is your responsability to unref the logs and free this list once you are done using it.
+ * @param[in] lc LinphoneCore object
+ * @return \mslist{LinphoneCallLog}
+**/
+LINPHONE_PUBLIC MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr);
+
+/**
  * Erase the call log.
  * @param[in] lc LinphoneCore object
 **/
@@ -3197,6 +3205,22 @@ LINPHONE_PUBLIC void linphone_core_reset_missed_calls_count(LinphoneCore *lc);
  * @param[in] call_log #LinphoneCallLog object to remove.
 **/
 LINPHONE_PUBLIC void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *call_log);
+
+/**
+ * Sets the database filename where call logs will be stored.
+ * If the file does not exist, it will be created.
+ * @ingroup initializing
+ * @param lc the linphone core
+ * @param path filesystem path
+**/
+LINPHONE_PUBLIC void linphone_core_set_call_logs_database_path(LinphoneCore *lc, const char *path);
+
+/**
+ * Migrates the call logs from the linphonerc to the database if not done yet
+ * @ingroup initializing
+ * @param lc the linphone core
+**/
+LINPHONE_PUBLIC void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc);
 
 /**
  * @}
