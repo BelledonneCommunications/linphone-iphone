@@ -14,7 +14,7 @@ before_install:
     - sudo mv gas-preprocessor.pl /usr/local/bin
     - sudo ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
     - sudo ln -s /usr/bin/strings /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings
-    - git submodule update --init --recursive
+    - git submodule update --init --recursive --depth 1
 
 install:
     - ./prepare.py -d x86_64 -G Ninja
