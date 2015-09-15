@@ -181,10 +181,9 @@
 		linphone_chat_room_send_message(room, [[NSString stringWithFormat:@"Message %d", count + 1] UTF8String]);
 	}
 
-	UITableView *tv = [self findTableView:@"ChatRoom list"];
 	for (int i = 0; i < 25; i++) {
 		[tester waitForTimeInterval:1.f];
-		if ([tv numberOfRowsInSection:0] == count) {
+		if (linphone_chat_room_get_history_size(room) == count * 2) {
 			break;
 		}
 	}
@@ -204,8 +203,6 @@
 - (void)testRemoveAllChats {
 	NSArray *uuids = [self getUUIDArrayOfSize:5];
 
-	[self removeAllRooms];
-
 	for (NSString *uuid in uuids) {
 		[self startChatWith:uuid];
 		[self sendMessage:@"Test"];
@@ -223,7 +220,7 @@
 								   traits:UIAccessibilityTraitButton]; // same as the first but it is "OK" on screen
 
 	// check that the tableview is empty
-	UITableView *tv = [self findTableView:@"ChatRoom list"];
+	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 0);
 
 	// test that there's no more chatrooms in the core
@@ -267,7 +264,7 @@
 	}
 	[tester waitForTimeInterval:.5f];
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
-	[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:1.f];
+	[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list" byFractionOfSizeHorizontal:0.f vertical:1.f];
 	for (int i = 0; i < 3; i++) {
 		// messages order is not known: if upload bitrate is huge, first image can be uploaded before last started
 		while (![tester tryFindingTappableViewWithAccessibilityLabel:@"Download" error:nil]) {
@@ -328,7 +325,7 @@
 	[self uploadImageWithQuality:@"Minimum"];
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 1);
 
-	UITableView *tv = [self findTableView:@"Chat list"];
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
 
 	// wait for the upload to terminate...
