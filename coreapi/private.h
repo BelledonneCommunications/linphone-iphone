@@ -117,6 +117,7 @@ struct _LinphoneCallParams{
 	LinphoneMediaEncryption media_encryption;
 	PayloadType *audio_codec; /*audio codec currently in use */
 	PayloadType *video_codec; /*video codec currently in use */
+	PayloadType *text_codec; /*text codec currently in use */
 	MSVideoSize sent_vsize; /* Size of the video currently being sent */
 	MSVideoSize recv_vsize; /* Size of the video currently being received */
 	float received_fps,sent_fps;
@@ -251,6 +252,7 @@ struct _LinphoneCall{
 	SalMediaDescription *resultdesc;
 	struct _RtpProfile *audio_profile;
 	struct _RtpProfile *video_profile;
+	struct _RtpProfile *text_profile;
 	struct _RtpProfile *rtp_io_audio_profile;
 	struct _RtpProfile *rtp_io_video_profile;
 	struct _LinphoneCallLog *log;
@@ -262,11 +264,13 @@ struct _LinphoneCall{
 	LinphoneCallState prevstate;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
 	LinphoneProxyConfig *dest_proxy;
-	PortConfig media_ports[2];
-	MSMediaStreamSessions sessions[2]; /*the rtp, srtp, zrtp contexts for each stream*/
-	StunCandidate ac,vc; /*audio video ip/port discovered by STUN*/
+	int main_audio_stream_index, main_video_stream_index, main_text_stream_index;
+	PortConfig media_ports[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
+	MSMediaStreamSessions sessions[SAL_MEDIA_DESCRIPTION_MAX_STREAMS]; /*the rtp, srtp, zrtp contexts for each stream*/
+	StunCandidate ac, vc, tc; /*audio video text ip/port discovered by STUN*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
+	struct _TextStream *textstream;
 	void *video_window_id;
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
@@ -278,8 +282,9 @@ struct _LinphoneCall{
 	OrtpEvQueue *audiostream_app_evq;
 	char *auth_token;
 	OrtpEvQueue *videostream_app_evq;
+	OrtpEvQueue *textstream_app_evq;
 	CallCallbackObj nextVideoFrameDecoded;
-	LinphoneCallStats stats[2];
+	LinphoneCallStats stats[3]; /* audio, video, text */
 #ifdef BUILD_UPNP
 	UpnpSession *upnp_session;
 #endif //BUILD_UPNP
@@ -453,6 +458,7 @@ void linphone_call_init_stats(LinphoneCallStats *stats, int type);
 void linphone_call_fix_call_parameters(LinphoneCall *call);
 void linphone_call_init_audio_stream(LinphoneCall *call);
 void linphone_call_init_video_stream(LinphoneCall *call);
+void linphone_call_init_text_stream(LinphoneCall *call);
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState target_state);
 void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
@@ -656,6 +662,8 @@ typedef struct rtp_config
 	char* video_multicast_addr;
 	int video_multicast_ttl;
 	bool_t video_multicast_enabled;
+	int text_rtp_min_port;
+	int text_rtp_max_port;
 }rtp_config_t;
 
 
@@ -701,6 +709,7 @@ typedef struct codecs_config
 {
 	MSList *audio_codecs;  /* list of audio codecs in order of preference*/
 	MSList *video_codecs;
+	MSList *text_codecs;
 	int dyn_pt;
 	int telephone_event_pt;
 }codecs_config_t;
@@ -717,6 +726,10 @@ typedef struct video_config{
 	bool_t selfview; /*during calls*/
 	bool_t reuse_preview_source;
 }video_config_t;
+
+typedef struct text_config{
+	bool_t enabled;
+}text_config_t;
 
 typedef struct ui_config
 {
@@ -781,11 +794,13 @@ struct _LinphoneCore
 	struct _LpConfig *config;
 	MSList *default_audio_codecs;
 	MSList *default_video_codecs;
+	MSList *default_text_codecs;
 	net_config_t net_conf;
 	sip_config_t sip_conf;
 	rtp_config_t rtp_conf;
 	sound_config_t sound_conf;
 	video_config_t video_conf;
+	text_config_t text_conf;
 	codecs_config_t codecs_conf;
 	ui_config_t ui_conf;
 	autoreplier_config_t autoreplier_conf;

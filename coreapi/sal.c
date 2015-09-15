@@ -617,8 +617,9 @@ void sal_auth_info_delete(SalAuthInfo* auth_info) {
 
 const char* sal_stream_type_to_string(SalStreamType type) {
 	switch (type) {
-	case SalAudio:return "audio";
-	case SalVideo:return "video";
+	case SalAudio: return "audio";
+	case SalVideo: return "video";
+	case SalText: return "text";
 	default: return "other";
 	}
 }

@@ -469,6 +469,7 @@ typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
 
 #define LINPHONE_CALL_STATS_AUDIO 0
 #define LINPHONE_CALL_STATS_VIDEO 1
+#define LINPHONE_CALL_STATS_TEXT  2
 
 /**
  * Enum describing ICE states.
@@ -2683,6 +2684,22 @@ LINPHONE_PUBLIC const MSList *linphone_core_get_video_codecs(const LinphoneCore 
 
 LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 
+/**
+ * Returns the list of available text codecs.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{PayloadType}
+ *
+ * This list is unmodifiable. The ->data field of the MSList points a PayloadType
+ * structure holding the codec information.
+ * It is possible to make copy of the list with ms_list_copy() in order to modify it
+ * (such as the order of codecs).
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC const MSList *linphone_core_get_text_codecs(const LinphoneCore *lc);
+
+
+LINPHONE_PUBLIC int linphone_core_set_text_codecs(LinphoneCore *lc, MSList *codecs);
+
 LINPHONE_PUBLIC void linphone_core_enable_generic_confort_noise(LinphoneCore *lc, bool_t enabled);
 
 LINPHONE_PUBLIC bool_t linphone_core_generic_confort_noise_enabled(const LinphoneCore *lc);
@@ -2931,6 +2948,10 @@ LINPHONE_PUBLIC	int linphone_core_get_video_port(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
+LINPHONE_PUBLIC	int linphone_core_get_text_port(const LinphoneCore *lc);
+
+LINPHONE_PUBLIC	void linphone_core_get_text_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+
 LINPHONE_PUBLIC	int linphone_core_get_nortp_timeout(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	void linphone_core_set_audio_port(LinphoneCore *lc, int port);
@@ -2940,6 +2961,10 @@ LINPHONE_PUBLIC	void linphone_core_set_audio_port_range(LinphoneCore *lc, int mi
 LINPHONE_PUBLIC	void linphone_core_set_video_port(LinphoneCore *lc, int port);
 
 LINPHONE_PUBLIC	void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_port);
+
+LINPHONE_PUBLIC	void linphone_core_set_text_port(LinphoneCore *lc, int port);
+
+LINPHONE_PUBLIC	void linphone_core_set_text_port_range(LinphoneCore *lc, int min_port, int max_port);
 
 LINPHONE_PUBLIC	void linphone_core_set_nortp_timeout(LinphoneCore *lc, int port);
 
@@ -4091,6 +4116,13 @@ LINPHONE_PUBLIC void linphone_core_set_video_preset(LinphoneCore *lc, const char
  * @return The name of the video preset used for video calls (can be NULL if the default video preset is used).
  */
 LINPHONE_PUBLIC const char * linphone_core_get_video_preset(const LinphoneCore *lc);
+
+/**
+ * Gets if realtime text is enabled or not
+ * @param[in] lc LinphoneCore object
+ * @return true if realtime text is enabled, false otherwise
+ */ 
+LINPHONE_PUBLIC bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

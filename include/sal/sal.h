@@ -126,6 +126,7 @@ void *sal_get_user_pointer(const Sal *sal);
 typedef enum {
 	SalAudio,
 	SalVideo,
+	SalText,
 	SalOther
 } SalStreamType;
 const char* sal_stream_type_to_string(SalStreamType type);

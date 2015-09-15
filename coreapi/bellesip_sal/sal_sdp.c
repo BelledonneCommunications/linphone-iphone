@@ -739,6 +739,8 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 		stream->type=SalAudio;
 	} else if ( strcasecmp ( "video", mtype ) == 0 ) {
 		stream->type=SalVideo;
+	} else if ( strcasecmp ( "text", mtype ) == 0 ) {
+		stream->type=SalText;
 	} else {
 		stream->type=SalOther;
 		strncpy ( stream->typeother,mtype,sizeof ( stream->typeother )-1 );
