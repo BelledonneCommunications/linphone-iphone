@@ -50,7 +50,7 @@
                             <accessibility key="accessibilityConfiguration" label="Enter an address"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="36"/>
-                            <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="emailAddress"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet"/>
                             <connections>
                                 <action selector="onAddressChange:" destination="-1" eventType="editingChanged" id="208"/>
                                 <outlet property="delegate" destination="-1" id="190"/>
