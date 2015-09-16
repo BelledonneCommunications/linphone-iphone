@@ -440,6 +440,9 @@ void liblinphone_tester_add_suites() {
 #endif
 	bc_tester_add_suite(&multicast_call_test_suite);
 	bc_tester_add_suite(&proxy_config_test_suite);
+#if HAVE_SIPP
+	bc_tester_add_suite(&complex_sip_call_test_suite);
+#endif
 }
 
 static int linphone_core_manager_get_max_audio_bw_base(const int array[],int array_size) {

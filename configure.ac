@@ -132,7 +132,7 @@ AC_CONFIG_COMMANDS([libtool-hacking],
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS=$(cd po && echo *.po | sed 's/\.po//g')
+ALL_LINGUAS=$(cd $srcdir/po && echo *.po | sed 's/\.po//g')
 AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
@@ -1057,6 +1057,10 @@ else
 fi
 AM_CONDITIONAL(HAVE_DOXYGEN, test "$DOXYGEN" != "false")
 
+AC_CHECK_PROG([SIPP],[sipp], [true], [false])
+if test "x$SIPP" != "xfalse" ; then
+	AC_DEFINE(HAVE_SIPP,1,[defined when SIPP is available])
+fi
 
 AC_CONFIG_FILES([
 	Makefile
