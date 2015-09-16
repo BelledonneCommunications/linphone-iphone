@@ -136,12 +136,12 @@ static bool invalidAccount = true;
 		linphone_auth_info_destroy(testAuth);
 		linphone_address_destroy(testAddr);
 
+		linphone_core_set_file_transfer_server(lc, "https://www.linphone.org:444/lft.php");
+
 		// reload address book to prepend proxy config domain to contacts' phone number
 		[[[LinphoneManager instance] fastAddressBook] reload];
 
-		[tester waitForViewWithAccessibilityLabel:@"Registration state"
-											value:@"Registered"
-										   traits:UIAccessibilityTraitStaticText];
+		[self waitForRegistration];
 
 		invalidAccount = false;
 	}
@@ -156,6 +156,21 @@ static bool invalidAccount = true;
 		XCTFail(@"Error: %@", err);
 	}
 	return tv;
+}
+
+- (void)waitForRegistration {
+	// wait for account to be registered
+	int timeout = 15;
+	while (timeout && [tester tryFindingViewWithAccessibilityLabel:@"Registration state"
+															 value:@"Registered"
+															traits:UIAccessibilityTraitStaticText
+															 error:nil]) {
+		[tester waitForTimeInterval:1];
+		timeout--;
+	}
+	[tester waitForViewWithAccessibilityLabel:@"Registration state"
+										value:@"Registered"
+									   traits:UIAccessibilityTraitStaticText];
 }
 
 @end

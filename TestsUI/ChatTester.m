@@ -275,7 +275,9 @@
 	for (int i = 0; i < 3; i++) {
 		// messages order is not known: if upload bitrate is huge, first image can be uploaded before last started
 		while (![tester tryFindingTappableViewWithAccessibilityLabel:@"Download" error:nil]) {
-			[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:-.1f];
+			[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list"
+							   byFractionOfSizeHorizontal:0.f
+												 vertical:-.1f];
 		}
 		[tester waitForViewWithAccessibilityLabel:@"Download"];
 		[tester tapViewWithAccessibilityLabel:@"Download"];
