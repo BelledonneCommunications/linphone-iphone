@@ -53,6 +53,8 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 	int err;
 	int port = linphone_address_get_port(dest);*/
 	char *identity_char;
+	char *scen;
+	FILE * sipp_out;
 	
 	/*currently we use direct connection because sipp do not properly set ACK request uri*/
 	mgr= linphone_core_manager_new2( "empty_rc", FALSE);
@@ -77,17 +79,20 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 	if (port > 0)
 		linphone_address_set_port(dest, port);
 	*/
-	char* scen = bc_tester_res("sipp/sip_update_within_icoming_reinvite_with_no_sdp.xml");
+	scen = bc_tester_res("sipp/sip_update_within_icoming_reinvite_with_no_sdp.xml");
 	
-	FILE * sipp_out = sip_start(scen
+	sipp_out = sip_start(scen
 								, linphone_address_get_username(mgr->identity)
 								, mgr->identity);
 
 	if (sipp_out) {
-		BC_ASSERT_TRUE(wait_for_until(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1,100000));
+		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
 		linphone_core_accept_call(mgr->lc, linphone_core_get_current_call(mgr->lc));
-		BC_ASSERT_TRUE(wait_for_until(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 2,100000));
+		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 2));
+		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
+		pclose(sipp_out);
 	}
+	linphone_core_manager_destroy(mgr);
 	
 }
 
