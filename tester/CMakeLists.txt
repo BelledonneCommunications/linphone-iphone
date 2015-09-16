@@ -45,7 +45,15 @@ set(SOURCE_FILES
 	tunnel_tester.c
 	upnp_tester.c
 	video_tester.c
-)
+	complex_sip_call.c
+	)
+
+find_program(SIPP_PROGRAM NAMES sipp sipp.exe)
+if(SIPP_PROGRAM)
+        add_definitions(-DHAVE_SIPP=1)
+else()
+ 	message(WARNING "Could not find sipp!")	
+endif()
 
 add_definitions(-DBC_CONFIG_FILE="config.h")
 
