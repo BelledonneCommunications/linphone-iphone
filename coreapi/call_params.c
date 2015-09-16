@@ -266,7 +266,7 @@ LinphoneCallParams * linphone_call_params_new(void) {
 	LinphoneCallParams *cp=belle_sip_object_new(LinphoneCallParams);
 	cp->audio_dir=LinphoneMediaDirectionSendRecv;
 	cp->video_dir=LinphoneMediaDirectionSendRecv;
-	cp->realtimetext_enabled=TRUE; /*fixme*/
+	cp->realtimetext_enabled = FALSE;
 	return cp;
 }
 

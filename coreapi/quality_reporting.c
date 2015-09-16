@@ -390,8 +390,8 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDescription * smd, SalStreamType sal_stream_type) {
 	int count;
 	if (smd != NULL) {
-		for (count = 0; count < smd->nb_streams; ++count) {
-			if (smd->streams[count].type == sal_stream_type) {
+		for (count = 0; count < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++count) {
+			if (sal_stream_description_active(&smd->streams[count]) && smd->streams[count].type == sal_stream_type) {
 				return &smd->streams[count];
 			}
 		}

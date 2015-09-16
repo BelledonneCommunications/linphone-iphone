@@ -66,7 +66,7 @@ static void sdp_process(SalOp *h){
 		/*for backward compatibility purpose*/
 		if(h->cnx_ip_to_0000_if_sendonly_enabled && sal_media_description_has_dir(h->result,SalStreamSendOnly)) {
 			set_addr_to_0000(h->result->addr);
-			for(i=0;i<h->result->nb_streams;++i){
+			for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 				if (h->result->streams[i].dir == SalStreamSendOnly)
 						set_addr_to_0000(h->result->streams[i].rtp_addr);
 						set_addr_to_0000(h->result->streams[i].rtcp_addr);
@@ -78,7 +78,7 @@ static void sdp_process(SalOp *h){
 		strcpy(h->result->addr,h->base.remote_media->addr);
 		h->result->bandwidth=h->base.remote_media->bandwidth;
 
-		for(i=0;i<h->result->nb_streams;++i){
+		for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 			/*copy back parameters from remote description that we need in our result description*/
 			if (h->result->streams[i].rtp_port!=0){ /*if stream was accepted*/
 				strcpy(h->result->streams[i].rtp_addr,h->base.remote_media->streams[i].rtp_addr);

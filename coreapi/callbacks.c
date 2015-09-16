@@ -49,7 +49,7 @@ void linphone_core_update_streams_destinations(LinphoneCore *lc, LinphoneCall *c
 	char *rtp_addr, *rtcp_addr;
 	int i;
 
-	for (i = 0; i < new_md->nb_streams; i++) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&new_md->streams[i])) continue;
 		if (new_md->streams[i].type == SalAudio) {
 			new_audiodesc = &new_md->streams[i];
@@ -188,8 +188,9 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		linphone_call_stop_media_streams (call);
 		if (md_changed & SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED){
 			ms_message("Media ip type has changed, destroying sessions context on call [%p]",call);
-			ms_media_stream_sessions_uninit(&call->sessions[0]);
-			ms_media_stream_sessions_uninit(&call->sessions[1]);
+			ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
+			ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
+			if (call->params->realtimetext_enabled) ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
 		}
 		linphone_call_init_media_streams (call);
 	}
@@ -368,7 +369,7 @@ static void try_early_media_forking(LinphoneCall *call, SalMediaDescription *md)
 	SalStreamDescription *ref_stream,*new_stream;
 	ms_message("Early media response received from another branch, checking if media can be forked to this new destination.");
 
-	for (i=0;i<cur_md->nb_streams;++i){
+	for (i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		if (!sal_stream_description_active(&cur_md->streams[i])) continue;
 		ref_stream=&cur_md->streams[i];
 		new_stream=&md->streams[i];

@@ -2831,8 +2831,9 @@ int linphone_core_proceed_with_invite_if_ready(LinphoneCore *lc, LinphoneCall *c
 int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_create_op(call);
 	linphone_call_stop_media_streams(call);
-	ms_media_stream_sessions_uninit(&call->sessions[0]);
-	ms_media_stream_sessions_uninit(&call->sessions[1]);
+	ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
+	ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
+	if (call->params->realtimetext_enabled) ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
 	linphone_call_init_media_streams(call);
 	return linphone_core_start_invite(lc,call, NULL);
 }
@@ -6156,6 +6157,11 @@ void rtp_config_uninit(LinphoneCore *lc)
 		lp_config_set_int(lc->config, "rtp", "video_rtp_port", config->video_rtp_min_port);
 	} else {
 		lp_config_set_range(lc->config, "rtp", "video_rtp_port", config->video_rtp_min_port, config->video_rtp_max_port);
+	}
+	if (config->text_rtp_min_port == config->text_rtp_max_port) {
+		lp_config_set_int(lc->config, "rtp", "text_rtp_port", config->text_rtp_min_port);
+	} else {
+		lp_config_set_range(lc->config, "rtp", "text_rtp_port", config->text_rtp_min_port, config->text_rtp_max_port);
 	}
 	lp_config_set_int(lc->config,"rtp","audio_jitt_comp",config->audio_jitt_comp);
 	lp_config_set_int(lc->config,"rtp","video_jitt_comp",config->video_jitt_comp);

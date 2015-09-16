@@ -493,9 +493,10 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 	int i,j;
 	const SalStreamDescription *ls,*rs;
 
-	for(i=0,j=0;i<local_offer->nb_streams;++i){
-		ms_message("Processing for stream %i",i);
+	for(i=0,j=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		ls=&local_offer->streams[i];
+		if (!sal_stream_description_active(ls)) continue;
+		ms_message("Processing for stream %i",i);
 		rs=sal_media_description_find_stream((SalMediaDescription*)remote_answer,ls->proto,ls->type);
 		if (rs) {
 			initiate_outgoing(ls,rs,&result->streams[j]);
@@ -522,7 +523,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 
 static bool_t local_stream_not_already_used(const SalMediaDescription *result, const SalStreamDescription *stream){
 	int i;
-	for(i=0;i<result->nb_streams;++i){
+	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		const SalStreamDescription *ss=&result->streams[i];
 		if (strcmp(ss->name,stream->name)==0){
 			ms_message("video stream already used in answer");
@@ -544,7 +545,7 @@ static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote) {
 
 static const SalStreamDescription *find_local_matching_stream(const SalMediaDescription *result, const SalMediaDescription *local_capabilities, const SalStreamDescription *remote_stream){
 	int i;
-	for(i=0;i<local_capabilities->nb_streams;++i){
+	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		const SalStreamDescription *ss=&local_capabilities->streams[i];
 		if (!sal_stream_description_active(ss)) continue;
 		if (ss->type==remote_stream->type && proto_compatible(ss->proto,remote_stream->proto)
@@ -564,8 +565,9 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	int i;
 	const SalStreamDescription *ls=NULL,*rs;
 
-	for(i=0;i<remote_offer->nb_streams;++i){
+	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		rs=&remote_offer->streams[i];
+		if (!sal_stream_description_active(rs)) continue;
 		if (rs->proto!=SalProtoOther){
 			ls=find_local_matching_stream(result,local_capabilities,rs);
 		}else ms_warning("Unknown protocol for mline %i, declining",i);
