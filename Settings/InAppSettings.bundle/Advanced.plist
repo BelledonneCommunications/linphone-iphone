@@ -176,7 +176,7 @@
 			<key>Title</key>
 			<string>Server URL</string>
 			<key>Key</key>
-			<string>sharing_server_preference</string>
+			<string>file_transfer_server_url_preference</string>
 			<key>IASKTextAlignment</key>
 			<string>IASKUITextAlignmentRight</string>
 		</dict>

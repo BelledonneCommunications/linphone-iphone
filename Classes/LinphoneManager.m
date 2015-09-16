@@ -531,9 +531,10 @@ exit_dbmigration:
 	}
 	/* File transfer migration */
 	if ([self lpConfigBoolForKey:@"file_transfer_migration_done"] == FALSE) {
-		NSString *newURL = @"https://www.linphone.org:444/lft.php";
-		LOGI(@"Migrating sharing server url from %@ to %@", [self lpConfigStringForKey:@"sharing_server_preference"], newURL);
-		[self lpConfigSetString:newURL forKey:@"sharing_server_preference"];
+		const char *newURL = "https://www.linphone.org:444/lft.php";
+		LOGI(@"Migrating sharing server url from %s to %s",
+			 linphone_core_get_file_transfer_server([LinphoneManager getLc]), newURL);
+		linphone_core_set_file_transfer_server([LinphoneManager getLc], newURL);
 		[self lpConfigSetBool:TRUE forKey:@"file_transfer_migration_done"];
 	}
 }
@@ -1328,11 +1329,6 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 		const char *imagePath = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		LOGI(@"Using '%s' as source image for no webcam", imagePath);
 		linphone_core_set_static_picture(theLinphoneCore, imagePath);
-	}
-
-	NSString *urlString = [self lpConfigStringForKey:@"sharing_server_preference"];
-	if (urlString) {
-		linphone_core_set_file_transfer_server(theLinphoneCore, [urlString UTF8String]);
 	}
 
 	/*DETECT cameras*/
