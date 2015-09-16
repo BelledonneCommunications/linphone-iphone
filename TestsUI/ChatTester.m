@@ -16,6 +16,8 @@
 - (void)beforeAll {
 	[super beforeAll];
 	[self switchToValidAccountIfNeeded];
+	// turn off logs for chat tests because there are way to much logs in liblinphone in filetransfer and sqlite
+	linphone_core_set_log_level(ORTP_WARNING);
 }
 
 - (void)beforeEach {
@@ -29,6 +31,7 @@
 
 - (void)afterAll {
 	[super afterAll];
+	linphone_core_set_log_level(ORTP_MESSAGE);
 	// at the end of tests, go back to chat rooms to display main bar
 	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Back" error:nil]) {
 		[self goBackFromChat];

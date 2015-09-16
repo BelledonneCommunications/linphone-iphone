@@ -2102,9 +2102,9 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 
 - (void)setLogsEnabled:(BOOL)enabled {
 	if ([LinphoneManager isRunningTests]) {
-		NSLog(@"Running tests, forcing logs to Warning level");
+		NSLog(@"Running tests, forcing logs to MESSAGE level");
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-		linphone_core_set_log_level(ORTP_WARNING);
+		linphone_core_set_log_level(ORTP_MESSAGE);
 	} else {
 		if (enabled) {
 			NSLog(@"Enabling debug logs");
