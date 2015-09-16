@@ -147,7 +147,11 @@
 	// check that the tableview is empty
 	UITableView *tv = nil;
 	NSError *err = nil;
-	if ([tester tryFindingAccessibilityElement:nil view:&tv withIdentifier:@"Chat list" tappable:false error:&err]) {
+	if ([tester tryFindingAccessibilityElement:nil
+										  view:&tv
+								withIdentifier:@"ChatRoom list"
+									  tappable:false
+										 error:&err]) {
 		XCTAssertNotNil(tv);
 		ASSERT_EQ([tv numberOfRowsInSection:0], 0); // no more messages
 	} else {
