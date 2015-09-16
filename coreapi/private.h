@@ -205,8 +205,8 @@ struct _LinphoneChatMessage {
 	LinphoneChatMessageCbs *callbacks;
 	LinphoneChatMessageDir dir;
 	char* message;
-	LinphoneChatMessageStateChangedCb cb;
-	void* cb_ud;
+	LinphoneChatMessageStateChangedCb message_state_changed_cb;
+	void* message_state_changed_user_data;
 	void* message_userdata;
 	char* appdata;
 	char* external_body_url;
@@ -501,7 +501,7 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 /*chat*/
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
-void linphone_chat_message_update_state(LinphoneChatMessage* chat_msg );
+void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 /**/
 
 struct _LinphoneProxyConfig

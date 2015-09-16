@@ -115,7 +115,9 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 
 	if (file){
 		filepath = ms_strdup_printf("%s/%s", path, file);
-		BC_ASSERT_EQUAL_FATAL(ortp_file_exist(filepath),0,int, "%d");
+		if (ortp_file_exist(filepath) != 0) {
+			ms_fatal("Could not find file %s in path %s, did you configured resources directory correctly?", file, path);
+		}
 		config = lp_config_new_with_factory(NULL,filepath);
 	}
 

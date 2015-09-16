@@ -784,7 +784,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1, int, "%d");
-		BC_ASSERT_TRUE(compare_files(send_filepath, receive_filepath));
+		compare_files(send_filepath, receive_filepath);
 
 		linphone_content_unref(content);
 		linphone_core_manager_destroy(marie);
