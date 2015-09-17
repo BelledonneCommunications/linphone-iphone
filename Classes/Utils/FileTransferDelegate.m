@@ -196,7 +196,6 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		// when we cancel file transfer, this will automatically trigger NotDelivered callback... recalling ourself a
 		// second time so we have to unset message BEFORE calling this
 		linphone_chat_message_cancel_file_transfer(msg);
-		linphone_chat_message_unref(msg);
 	}
 	_data = nil;
 	LOGI(@"%p Destroying", self);

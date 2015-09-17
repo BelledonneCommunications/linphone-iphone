@@ -9,7 +9,6 @@
 
 #ifdef __IPHONE_8_0
 // suppress these errors until we are ready to handle them
-#pragma message "Ignoring designated initializer warnings"
 #pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 #else
 // temporarily define an empty NS_DESIGNATED_INITIALIZER so we can use now,
