@@ -926,13 +926,5 @@ test_t flexisip_tests[] = {
 	{ "DoS module trigger by sending a lot of chat messages", dos_module_trigger }
 };
 
-
-test_suite_t flexisip_test_suite = {
-	"Flexisip",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(flexisip_tests) / sizeof(flexisip_tests[0]),
-	flexisip_tests
-};
-
-
+test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, NULL,
+									sizeof(flexisip_tests) / sizeof(flexisip_tests[0]), flexisip_tests};

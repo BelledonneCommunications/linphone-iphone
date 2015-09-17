@@ -108,10 +108,5 @@ test_t proxy_config_tests[] = {
 	{ "SIP URI normalization", sip_uri_normalization },
 };
 
-test_suite_t proxy_config_test_suite = {
-	"Proxy config",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(proxy_config_tests) / sizeof(proxy_config_tests[0]),
-	proxy_config_tests
-};
+test_suite_t proxy_config_test_suite = {"Proxy config", NULL, NULL, liblinphone_tester_before_each, NULL,
+										sizeof(proxy_config_tests) / sizeof(proxy_config_tests[0]), proxy_config_tests};

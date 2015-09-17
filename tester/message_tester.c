@@ -1658,11 +1658,5 @@ test_t message_tests[] = {
 	,{"file transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom}
 };
 
-test_suite_t message_test_suite = {
-	"Message",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(message_tests) / sizeof(message_tests[0]),
-	message_tests
-};
-
+test_suite_t message_test_suite = {"Message", NULL, NULL, liblinphone_tester_before_each, NULL,
+								   sizeof(message_tests) / sizeof(message_tests[0]), message_tests};

@@ -894,11 +894,5 @@ test_t register_tests[] = {
 	{ "Simple redirect", redirect}
 };
 
-test_suite_t register_test_suite = {
-	"Register",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(register_tests) / sizeof(register_tests[0]),
-	register_tests
-};
-
+test_suite_t register_test_suite = {"Register", NULL, NULL, liblinphone_tester_before_each, NULL,
+									sizeof(register_tests) / sizeof(register_tests[0]), register_tests};

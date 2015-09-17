@@ -27,14 +27,14 @@ static FILE *sip_start(const char *senario, const char* dest_username, LinphoneA
 	char *dest;
 	char *command;
 	FILE *file;
-	
+
 	if (linphone_address_get_port(dest_addres)>0)
 		dest = ms_strdup_printf("%s:%i",linphone_address_get_domain(dest_addres),linphone_address_get_port(dest_addres));
 	else
 		dest = ms_strdup_printf("%s",linphone_address_get_domain(dest_addres));
-	
+
 	command = ms_strdup_printf("sipp -sf %s -s %s %s -trace_err -trace_msg  -m 1 -d 1000 ",senario,dest_username,dest);
-	
+
 	ms_message("Starting sipp commad [%s]",command);
 	file = popen(command, "r");
 	ms_free(command);
@@ -55,7 +55,7 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 	char *identity_char;
 	char *scen;
 	FILE * sipp_out;
-	
+
 	/*currently we use direct connection because sipp do not properly set ACK request uri*/
 	mgr= linphone_core_manager_new2( "empty_rc", FALSE);
 	mgr->identity= linphone_core_get_primary_contact_parsed(mgr->lc);
@@ -72,15 +72,16 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 				  ,&addrinfo);
 	linphone_address_destroy(dest);
 	dest=linphone_address_new(NULL);
-	
+
 	wait_for(mgr->lc, mgr->lc, (int*)&addrinfo, 1);
-	err=getnameinfo((struct sockaddr *)addrinfo->ai_addr,addrinfo->ai_addrlen,ipstring,INET6_ADDRSTRLEN,NULL,0,NI_NUMERICHOST);
+	err=getnameinfo((struct sockaddr
+	*)addrinfo->ai_addr,addrinfo->ai_addrlen,ipstring,INET6_ADDRSTRLEN,NULL,0,NI_NUMERICHOST);
 	linphone_address_set_domain(dest, ipstring);
 	if (port > 0)
 		linphone_address_set_port(dest, port);
 	*/
 	scen = bc_tester_res("sipp/sip_update_within_icoming_reinvite_with_no_sdp.xml");
-	
+
 	sipp_out = sip_start(scen
 								, linphone_address_get_username(mgr->identity)
 								, mgr->identity);
@@ -93,18 +94,11 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 		pclose(sipp_out);
 	}
 	linphone_core_manager_destroy(mgr);
-	
 }
 
 static test_t tests[] = {
 	{ "SIP UPDATE within incoming reinvite witjout sdp", sip_update_within_icoming_reinvite_with_no_sdp},
 };
 
-test_suite_t complex_sip_call_test_suite = {
-	"Complex SIP Call",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(tests) / sizeof(tests[0]),
-	tests
-};
-
+test_suite_t complex_sip_call_test_suite = {"Complex SIP Call", NULL, NULL, liblinphone_tester_before_each, NULL,
+											sizeof(tests) / sizeof(tests[0]), tests};

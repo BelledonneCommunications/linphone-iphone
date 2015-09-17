@@ -479,12 +479,10 @@ int linphone_core_manager_get_mean_audio_up_bw(const LinphoneCoreManager *mgr) {
 			, sizeof(mgr->stat.audio_upload_bandwidth)/sizeof(int));
 }
 
-int liblinphone_tester_setup() {
+void liblinphone_tester_before_each() {
 	if (manager_count != 0) {
 		// crash in some linphone core have not been destroyed because if we continue
 		// it will crash in CUnit AND we should NEVER keep a manager alive
-		ms_fatal("%d linphone core manager still alive!", manager_count);
-		return 1;
+		ms_fatal("%d linphone core managers are still alive!", manager_count);
 	}
-	return 0;
 }

@@ -553,10 +553,5 @@ test_t multi_call_tests[] = {
 	{ "Incoming call accepted when outgoing call in outgoing ringing early media",incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media},
 };
 
-test_suite_t multi_call_test_suite = {
-	"Multi call",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(multi_call_tests) / sizeof(multi_call_tests[0]),
-	multi_call_tests
-};
+test_suite_t multi_call_test_suite = {"Multi call", NULL, NULL, liblinphone_tester_before_each, NULL,
+									  sizeof(multi_call_tests) / sizeof(multi_call_tests[0]), multi_call_tests};

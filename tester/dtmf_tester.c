@@ -171,10 +171,5 @@ test_t dtmf_tests[] = {
 	{ "Send DTMF using RFC2833 using Opus",send_dtmf_rfc2833_opus},
 };
 
-test_suite_t dtmf_test_suite = {
-	"DTMF",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(dtmf_tests) / sizeof(dtmf_tests[0]),
-	dtmf_tests
-};
+test_suite_t dtmf_test_suite = {"DTMF", NULL, NULL, liblinphone_tester_before_each, NULL,
+								sizeof(dtmf_tests) / sizeof(dtmf_tests[0]), dtmf_tests};
