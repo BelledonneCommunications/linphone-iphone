@@ -697,7 +697,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 		strncpy(md->streams[call->main_video_stream_index].name,"Video",sizeof(md->streams[call->main_video_stream_index].name)-1);
 		md->streams[call->main_video_stream_index].rtp_port=call->media_ports[call->main_video_stream_index].rtp_port;
 		md->streams[call->main_video_stream_index].rtcp_port=call->media_ports[call->main_video_stream_index].rtcp_port;
-		md->streams[call->main_video_stream_index].proto=md->streams[call->main_video_stream_index].proto;
+		md->streams[call->main_video_stream_index].proto=md->streams[call->main_audio_stream_index].proto;
 		md->streams[call->main_video_stream_index].dir=get_video_dir_from_call_params(params);
 		md->streams[call->main_video_stream_index].type=SalVideo;
 		codec_hints.bandwidth_limit=0;
