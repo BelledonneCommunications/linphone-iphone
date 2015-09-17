@@ -307,9 +307,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			cbs.process_auth_requested = process_auth_requested_upload;
 			l = belle_http_request_listener_create_from_callbacks(&cbs, msg);
 			belle_http_provider_send_request(msg->chat_room->lc->http_provider, msg->http_request, l);
-		}
-
-		if (code == 200) { /* file has been uplaoded correctly, get server reply and send it */
+		} else if (code == 200) { /* file has been uplaoded correctly, get server reply and send it */
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			belle_sip_object_unref(msg->http_request);
 			msg->http_request = NULL;
@@ -383,6 +381,9 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
 			linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 			_linphone_chat_room_send_message(msg->chat_room, msg);
+		} else {
+			ms_warning("Unhandled HTTP code response %d for file transfer", code);
+			linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
 		}
 	}
 }
@@ -580,99 +581,113 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
 		belle_http_request_listener_callbacks_t cbs = {0};
 		belle_http_request_listener_t *l;
-		belle_generic_uri_t *uri;
+		belle_generic_uri_t *uri = NULL;
 		const char *transfer_server = linphone_core_get_file_transfer_server(cr->lc);
 
 		if (transfer_server == NULL) {
 			ms_warning("Cannot send file transfer msg: no file transfer server configured.");
-			return;
+			goto error;
 		}
 		uri = belle_generic_uri_parse(transfer_server);
-
+		if (uri == NULL) {
+			ms_warning("Cannot send file transfer msg: incorrect file transfer server configured '%s'.", transfer_server);
+			goto error;
+		}
 		msg->http_request = belle_http_request_create("POST", uri, NULL, NULL, NULL);
-		belle_sip_object_ref(msg->http_request); /* keep a reference on the request to be able to cancel it */
+		if (msg->http_request == NULL) {
+			ms_warning("Could not create http request for uri %s", transfer_server);
+			goto error;
+		}
+
+		/* keep a reference on the request to be able to cancel it */
+		belle_sip_object_ref(msg->http_request);
 		cbs.process_response = linphone_chat_message_process_response_from_post_file;
 		cbs.process_io_error = process_io_error_upload;
 		cbs.process_auth_requested = process_auth_requested_upload;
-		l = belle_http_request_listener_create_from_callbacks(
-			&cbs, msg); /* give msg to listener to be able to start the actual file upload when server answer a 204 No
-						   content */
+		/* give msg to listener to be able to start the actual file upload when server answer a 204 No content */
+		l = belle_http_request_listener_create_from_callbacks(&cbs, msg);
 		belle_http_provider_send_request(cr->lc->http_provider, msg->http_request, l);
 		linphone_chat_message_unref(msg);
 		return;
-	}
-
-	if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0)) {
-		if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {
-			if (call->state == LinphoneCallConnected || call->state == LinphoneCallStreamsRunning ||
-				call->state == LinphoneCallPaused || call->state == LinphoneCallPausing ||
-				call->state == LinphoneCallPausedByRemote) {
-				ms_message("send SIP msg through the existing call.");
-				op = call->op;
-				identity = linphone_core_find_best_identity(cr->lc, linphone_call_get_remote_address(call));
-			}
+error:
+		if (uri) {
+			belle_sip_object_unref(uri);
 		}
-	}
-	msg->time = t;
-	if (op == NULL) {
-		LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
-		if (proxy) {
-			identity = linphone_proxy_config_get_identity(proxy);
-		} else
-			identity = linphone_core_get_primary_contact(cr->lc);
-		/*sending out of calls*/
-		msg->op = op = sal_op_new(cr->lc->sal);
-		linphone_configure_op(cr->lc, op, cr->peer_url, msg->custom_headers,
-							  lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
-		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
-	}
-
-	if (msg->external_body_url) {
-		content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", msg->external_body_url);
-		sal_message_send(op, identity, cr->peer, content_type, NULL, NULL);
-		ms_free(content_type);
+		linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+		linphone_chat_message_unref(msg);
 	} else {
-		char *peer_uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-		const char *content_type;
-
-		if (linphone_core_lime_enabled(cr->lc)) {
-			linphone_chat_message_ref(
-				msg); /* ref the msg or it may be destroyed by callback if the encryption failed */
-			if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
-				content_type =
-					"application/cipher.vnd.gsma.rcs-ft-http+xml"; /* it's a file transfer, content type shall be set to
-																	  application/cipher.vnd.gsma.rcs-ft-http+xml*/
-			} else {
-				content_type = "xml/cipher";
+		if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0)) {
+			if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {
+				if (call->state == LinphoneCallConnected || call->state == LinphoneCallStreamsRunning ||
+					call->state == LinphoneCallPaused || call->state == LinphoneCallPausing ||
+					call->state == LinphoneCallPausedByRemote) {
+					ms_message("send SIP msg through the existing call.");
+					op = call->op;
+					identity = linphone_core_find_best_identity(cr->lc, linphone_call_get_remote_address(call));
+				}
 			}
-		} else {
-			content_type = msg->content_type;
+		}
+		msg->time = t;
+		if (op == NULL) {
+			LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
+			if (proxy) {
+				identity = linphone_proxy_config_get_identity(proxy);
+			} else
+				identity = linphone_core_get_primary_contact(cr->lc);
+			/*sending out of calls*/
+			msg->op = op = sal_op_new(cr->lc->sal);
+			linphone_configure_op(cr->lc, op, cr->peer_url, msg->custom_headers,
+								  lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
+			sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 		}
 
-		if (content_type == NULL) {
-			sal_text_send(op, identity, cr->peer, msg->message);
+		if (msg->external_body_url) {
+			content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", msg->external_body_url);
+			sal_message_send(op, identity, cr->peer, content_type, NULL, NULL);
+			ms_free(content_type);
 		} else {
-			sal_message_send(op, identity, cr->peer, content_type, msg->message, peer_uri);
+			char *peer_uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+			const char *content_type;
+
+			if (linphone_core_lime_enabled(cr->lc)) {
+				/* ref the msg or it may be destroyed by callback if the encryption failed */
+				linphone_chat_message_ref(msg);
+				if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
+					/* it's a file transfer, content type shall be set to
+					application/cipher.vnd.gsma.rcs-ft-http+xml*/
+					content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
+				} else {
+					content_type = "xml/cipher";
+				}
+			} else {
+				content_type = msg->content_type;
+			}
+
+			if (content_type == NULL) {
+				sal_text_send(op, identity, cr->peer, msg->message);
+			} else {
+				sal_message_send(op, identity, cr->peer, content_type, msg->message, peer_uri);
+			}
+			ms_free(peer_uri);
 		}
-		ms_free(peer_uri);
+
+		msg->dir = LinphoneChatMessageOutgoing;
+		msg->from = linphone_address_new(identity);
+		msg->storage_id = linphone_chat_message_store(msg);
+
+		if (cr->unread_count >= 0 && !msg->is_read)
+			cr->unread_count++;
+
+		// add to transient list
+		cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
+
+		if (cr->is_composing == LinphoneIsComposingActive) {
+			cr->is_composing = LinphoneIsComposingIdle;
+		}
+		linphone_chat_room_delete_composing_idle_timer(cr);
+		linphone_chat_room_delete_composing_refresh_timer(cr);
+		linphone_chat_message_unref(msg);
 	}
-
-	msg->dir = LinphoneChatMessageOutgoing;
-	msg->from = linphone_address_new(identity);
-	msg->storage_id = linphone_chat_message_store(msg);
-
-	if (cr->unread_count >= 0 && !msg->is_read)
-		cr->unread_count++;
-
-	// add to transient list
-	cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
-
-	if (cr->is_composing == LinphoneIsComposingActive) {
-		cr->is_composing = LinphoneIsComposingIdle;
-	}
-	linphone_chat_room_delete_composing_idle_timer(cr);
-	linphone_chat_room_delete_composing_refresh_timer(cr);
-	linphone_chat_message_unref(msg);
 }
 
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
