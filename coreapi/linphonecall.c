@@ -881,10 +881,8 @@ static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from,
 	linphone_core_get_video_port_range(call->core, &min_port, &max_port);
 	port_config_set(call,call->main_video_stream_index,min_port,max_port);
 
-	if (call->params->realtimetext_enabled) {
-		linphone_core_get_text_port_range(call->core, &min_port, &max_port);
-		port_config_set(call,call->main_text_stream_index,min_port,max_port);
-	}
+	linphone_core_get_text_port_range(call->core, &min_port, &max_port);
+	port_config_set(call,call->main_text_stream_index,min_port,max_port);
 
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], LINPHONE_CALL_STATS_AUDIO);
 	linphone_call_init_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], LINPHONE_CALL_STATS_VIDEO);
@@ -1022,7 +1020,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	
 	call->main_audio_stream_index = LINPHONE_CALL_STATS_AUDIO;
 	call->main_video_stream_index = LINPHONE_CALL_STATS_VIDEO;
-	call->main_text_stream_index = params->realtimetext_enabled ? LINPHONE_CALL_STATS_TEXT : STREAM_INDEX_UNKNOWN;
+	call->main_text_stream_index = LINPHONE_CALL_STATS_TEXT;
 	
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
@@ -1089,18 +1087,73 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 }
 
 static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDescription *md) {
-	int i;
+	int i, j;
+	
 	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
-		if (md->streams[i].type == SalAudio && call->main_audio_stream_index == STREAM_INDEX_UNKNOWN) {
+		if (md->streams[i].type == SalAudio && i != call->main_audio_stream_index) {
 			call->main_audio_stream_index = i;
 			ms_message("audio stream index updated: %i", i);
-		} else if (md->streams[i].type == SalVideo && call->main_video_stream_index == STREAM_INDEX_UNKNOWN) {
+			
+			// Check that the default value of a another stream doesn't match the new one
+			if (i == call->main_video_stream_index) {
+				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (j != call->main_video_stream_index && j != call->main_text_stream_index) {
+						call->main_video_stream_index = j;
+						break;
+					}
+				}
+			}
+			if (i == call->main_text_stream_index) {
+				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (j != call->main_video_stream_index && j != call->main_text_stream_index) {
+						call->main_text_stream_index = j;
+						break;
+					}
+				}
+			}
+		} else if (md->streams[i].type == SalVideo && i != call->main_video_stream_index) {
 			call->main_video_stream_index = i;
 			ms_message("video stream index updated: %i", i);
-		} else if (md->streams[i].type == SalText && call->main_text_stream_index == STREAM_INDEX_UNKNOWN) {
+			
+			// Check that the default value of a another stream doesn't match the new one
+			if (i == call->main_audio_stream_index) {
+				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (j != call->main_audio_stream_index && j != call->main_text_stream_index) {
+						call->main_audio_stream_index = j;
+						break;
+					}
+				}
+			}
+			if (i == call->main_text_stream_index) {
+				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (j != call->main_audio_stream_index && j != call->main_text_stream_index) {
+						call->main_text_stream_index = j;
+						break;
+					}
+				}
+			}
+		} else if (md->streams[i].type == SalText && i != call->main_text_stream_index) {
 			call->main_text_stream_index = i;
 			ms_message("text stream index updated: %i", i);
+			
+			// Check that the default value of a another stream doesn't match the new one
+			if (i == call->main_video_stream_index) {
+				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (j != call->main_video_stream_index && j != call->main_audio_stream_index) {
+						call->main_video_stream_index = j;
+						break;
+					}
+				}
+			}
+			if (i == call->main_audio_stream_index) {
+				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (j != call->main_video_stream_index && j != call->main_audio_stream_index) {
+						call->main_audio_stream_index = j;
+						break;
+					}
+				}
+			}
 		}
 	}
 }
@@ -1111,9 +1164,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	LinphoneFirewallPolicy fpol;
 	int i;
 	
-	call->main_audio_stream_index = STREAM_INDEX_UNKNOWN;
-	call->main_video_stream_index = STREAM_INDEX_UNKNOWN;
-	call->main_text_stream_index = STREAM_INDEX_UNKNOWN;
+	call->main_audio_stream_index = LINPHONE_CALL_STATS_AUDIO;
+	call->main_video_stream_index = LINPHONE_CALL_STATS_VIDEO;
+	call->main_text_stream_index = LINPHONE_CALL_STATS_TEXT;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
@@ -2105,7 +2158,6 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	char rtcp_tool[128]={0};
 	char* cname;
 
-
 	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
 
 	if (call->audiostream != NULL) return;
@@ -2201,7 +2253,6 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	char* cname;
 	char rtcp_tool[128];
-
 
 	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
 
