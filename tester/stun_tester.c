@@ -72,8 +72,12 @@ static void linphone_stun_test_grab_ip()
 	int tmp=0;
 
 	memset(&dummy_call, 0, sizeof(LinphoneCall));
-	dummy_call.media_ports[0].rtp_port = 7078;
-	dummy_call.media_ports[1].rtp_port = 9078;
+	dummy_call.main_audio_stream_index = 0;
+	dummy_call.main_video_stream_index = 1;
+	dummy_call.main_text_stream_index = 2;
+	dummy_call.media_ports[dummy_call.main_audio_stream_index].rtp_port = 7078;
+	dummy_call.media_ports[dummy_call.main_video_stream_index].rtp_port = 9078;
+	dummy_call.media_ports[dummy_call.main_text_stream_index].rtp_port = 11078;
 
 	linphone_core_set_stun_server(lc_stun->lc, stun_address);
 	BC_ASSERT_STRING_EQUAL(stun_address, linphone_core_get_stun_server(lc_stun->lc));
@@ -91,6 +95,8 @@ static void linphone_stun_test_grab_ip()
 	BC_ASSERT( dummy_call.vc.addr[0] != '\0');
 	BC_ASSERT( dummy_call.vc.port != 0);
 #endif
+	BC_ASSERT( dummy_call.tc.addr[0] != '\0');
+	BC_ASSERT( dummy_call.tc.port != 0);
 
 	ms_message("STUN test result: local audio port maps to %s:%i",
 			dummy_call.ac.addr,
@@ -100,6 +106,9 @@ static void linphone_stun_test_grab_ip()
 			dummy_call.vc.addr,
 			dummy_call.vc.port);
 #endif
+	ms_message("STUN test result: local text port maps to %s:%i",
+			dummy_call.tc.addr,
+			dummy_call.tc.port);
 
 	linphone_core_manager_destroy(lc_stun);
 }

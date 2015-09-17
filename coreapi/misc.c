@@ -443,10 +443,9 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			sock2=create_socket(call->media_ports[call->main_video_stream_index].rtp_port);
 			if (sock2==-1) return -1;
 		}
-		if (call->params->realtimetext_enabled) {
-			sock3=create_socket(call->media_ports[call->main_text_stream_index].rtp_port);
-			if (sock3==-1) return -1;
-		}
+		sock3=create_socket(call->media_ports[call->main_text_stream_index].rtp_port);
+		if (sock3==-1) return -1;
+		
 		got_audio=FALSE;
 		got_video=FALSE;
 		got_text=FALSE;
