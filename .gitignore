@@ -50,6 +50,8 @@ coreapi/help/chatroom
 coreapi/help/doc/
 coreapi/help/helloworld
 coreapi/help/registration
+coreapi/help/realtimetext_receiver
+coreapi/help/realtimetext_sender
 coreapi/test_ecc
 coreapi/test_lsd
 gtk/version_date.h

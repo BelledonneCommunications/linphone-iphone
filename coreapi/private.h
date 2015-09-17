@@ -240,6 +240,8 @@ typedef struct _PortConfig{
 	int rtcp_port;
 }PortConfig;
 
+#define STREAM_INDEX_UNKNOWN -1
+
 struct _LinphoneCall{
 	belle_sip_object_t base;
 	void *user_data;

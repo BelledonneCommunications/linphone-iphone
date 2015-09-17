@@ -544,7 +544,7 @@ static bool_t proto_compatible(SalMediaProto local, SalMediaProto remote) {
 }
 
 static const SalStreamDescription *find_local_matching_stream(const SalMediaDescription *result, const SalMediaDescription *local_capabilities, const SalStreamDescription *remote_stream){
-	int i;
+		int i;
 	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		const SalStreamDescription *ss=&local_capabilities->streams[i];
 		if (!sal_stream_description_active(ss)) continue;

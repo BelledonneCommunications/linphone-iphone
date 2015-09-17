@@ -750,8 +750,8 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 
 	/* Deactivate inactive streams. */
 	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
-		if (md->streams[i].dir == SalStreamInactive) {
-			md->streams[i].rtp_port = 0;
+		if (md->streams[i].rtp_port == 0) {
+			md->streams[i].dir = SalStreamInactive;
 			md->streams[i].rtcp_port = 0;
 			if (call->biggestdesc && i < call->biggestdesc->nb_streams) {
 				md->streams[i].proto = call->biggestdesc->streams[i].proto;
@@ -1022,7 +1022,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	
 	call->main_audio_stream_index = LINPHONE_CALL_STATS_AUDIO;
 	call->main_video_stream_index = LINPHONE_CALL_STATS_VIDEO;
-	call->main_text_stream_index = params->realtimetext_enabled ? LINPHONE_CALL_STATS_TEXT : -1;
+	call->main_text_stream_index = params->realtimetext_enabled ? LINPHONE_CALL_STATS_TEXT : STREAM_INDEX_UNKNOWN;
 	
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
@@ -1088,15 +1088,32 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 
 }
 
+static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDescription *md) {
+	int i;
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		if (!sal_stream_description_active(&md->streams[i])) continue;
+		if (md->streams[i].type == SalAudio && call->main_audio_stream_index == STREAM_INDEX_UNKNOWN) {
+			call->main_audio_stream_index = i;
+			ms_message("audio stream index updated: %i", i);
+		} else if (md->streams[i].type == SalVideo && call->main_video_stream_index == STREAM_INDEX_UNKNOWN) {
+			call->main_video_stream_index = i;
+			ms_message("video stream index updated: %i", i);
+		} else if (md->streams[i].type == SalText && call->main_text_stream_index == STREAM_INDEX_UNKNOWN) {
+			call->main_text_stream_index = i;
+			ms_message("text stream index updated: %i", i);
+		}
+	}
+}
+
 LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, SalOp *op){
 	LinphoneCall *call = belle_sip_object_new(LinphoneCall);
 	SalMediaDescription *md;
 	LinphoneFirewallPolicy fpol;
 	int i;
 	
-	call->main_audio_stream_index = -1;
-	call->main_video_stream_index = -1;
-	call->main_text_stream_index = -1;
+	call->main_audio_stream_index = STREAM_INDEX_UNKNOWN;
+	call->main_video_stream_index = STREAM_INDEX_UNKNOWN;
+	call->main_text_stream_index = STREAM_INDEX_UNKNOWN;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
@@ -1106,6 +1123,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_incoming_select_ip_version(call);
 
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0));
+	
+	md = sal_call_get_remote_media_description(op);
+	linphone_call_compute_streams_indexes(call, md);
 
 	if (lc->sip_conf.ping_with_options){
 #ifdef BUILD_UPNP
@@ -1142,7 +1162,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	/*set privacy*/
 	call->current_params->privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
 	/*set video support */
-	md=sal_call_get_remote_media_description(op);
 	call->params->has_video = linphone_core_video_enabled(lc) && lc->video_policy.automatically_accept;
 	if (md) {
 		// It is licit to receive an INVITE without SDP
@@ -1159,19 +1178,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 					md->streams[i].multicast_role = SalMulticastReceiver;
 					strncpy(call->media_ports[i].multicast_ip,md->streams[i].rtp_addr,sizeof(call->media_ports[i].multicast_ip));
 				}
-				
-				if (sal_stream_description_active(&md->streams[i])) {
-					if (md->streams[i].type == SalAudio) {
-						call->main_audio_stream_index = i;
-						ms_message("audio stream index updated: %i", i);
-					} else if (md->streams[i].type == SalVideo) {
-						call->main_video_stream_index = i;
-						ms_message("video stream index updated: %i", i);
-					} else if (md->streams[i].type == SalText) {
-						call->main_text_stream_index = i;
-						ms_message("text stream index updated: %i", i);
-					}
-				} 
 			}
 		}
 	}

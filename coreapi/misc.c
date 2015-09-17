@@ -627,11 +627,13 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	const struct addrinfo *ai;
 	IceCheckList *audio_check_list;
 	IceCheckList *video_check_list;
+	IceCheckList *text_check_list;
 	const char *server = linphone_core_get_stun_server(lc);
 
 	if ((server == NULL) || (call->ice_session == NULL)) return -1;
 	audio_check_list = ice_session_check_list(call->ice_session, 0);
 	video_check_list = ice_session_check_list(call->ice_session, 1);
+	text_check_list = ice_session_check_list(call->ice_session, 2);
 	if (audio_check_list == NULL) return -1;
 
 	if (call->af==AF_INET6){
@@ -660,6 +662,12 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[call->main_video_stream_index].rtp_port, 1, NULL);
 		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[call->main_video_stream_index].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
+	}
+	if (call->params->realtimetext_enabled && (text_check_list != NULL)
+		&& (ice_check_list_state(text_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(text_check_list) == FALSE)) {
+		ice_add_local_candidate(text_check_list, "host", local_addr, call->media_ports[call->main_text_stream_index].rtp_port, 1, NULL);
+		ice_add_local_candidate(text_check_list, "host", local_addr, call->media_ports[call->main_text_stream_index].rtcp_port, 2, NULL);
+		call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateInProgress;
 	}
 
 	ms_message("ICE: gathering candidate from [%s]",server);

@@ -57,8 +57,10 @@ SalMediaDescription *sal_media_description_new(){
 	SalMediaDescription *md=ms_new0(SalMediaDescription,1);
 	int i;
 	md->refcount=1;
-	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;i++){
+	for(i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		md->streams[i].dir=SalStreamInactive;
+		md->streams[i].rtp_port = 0;
+		md->streams[i].rtcp_port = 0;
 	}
 	return md;
 }
@@ -86,8 +88,7 @@ void sal_media_description_unref(SalMediaDescription *md){
 	}
 }
 
-SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md,
-	SalMediaProto proto, SalStreamType type){
+SalStreamDescription *sal_media_description_find_stream(SalMediaDescription *md, SalMediaProto proto, SalStreamType type){
 	int i;
 	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		SalStreamDescription *ss=&md->streams[i];
