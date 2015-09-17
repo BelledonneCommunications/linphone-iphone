@@ -1178,7 +1178,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0));
 	
 	md = sal_call_get_remote_media_description(op);
-	linphone_call_compute_streams_indexes(call, md);
+	if (md) {
+		linphone_call_compute_streams_indexes(call, md);
+	}
 
 	if (lc->sip_conf.ping_with_options){
 #ifdef BUILD_UPNP
