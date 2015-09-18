@@ -208,7 +208,7 @@ static LinphoneStatusIcon *_linphone_status_icon_new(const _LinphoneStatusIconDe
 }
 
 static void _linphone_status_icon_free(LinphoneStatusIcon *obj) {
-	if(obj->desc->uninit) obj->desc->uninit(obj->data);
+	if(obj->desc->uninit) obj->desc->uninit(obj);
 	if(obj->params) linphone_status_icon_params_unref(obj->params);
 	g_free(obj);
 }
