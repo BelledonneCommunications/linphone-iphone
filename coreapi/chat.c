@@ -589,7 +589,7 @@ static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatM
 			goto error;
 		}
 		uri = belle_generic_uri_parse(transfer_server);
-		if (uri == NULL) {
+		if (uri == NULL || belle_generic_uri_get_host(uri)==NULL) {
 			ms_warning("Cannot send file transfer msg: incorrect file transfer server configured '%s'.", transfer_server);
 			goto error;
 		}
