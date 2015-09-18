@@ -141,13 +141,16 @@ void linphone_auth_info_destroy(LinphoneAuthInfo *obj){
 void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, int pos)
 {
 	char key[50];
+	bool_t store_ha1_passwd = lp_config_get_int(config, "sip", "store_ha1_passwd", 1);
+	
+	
 	sprintf(key,"auth_info_%i",pos);
 	lp_config_clean_section(config,key);
 
 	if (obj==NULL || lp_config_get_int(config, "sip", "store_auth_info", 1) == 0){
 		return;
 	}
-	if (!obj->ha1 && obj->realm && obj->passwd && (obj->username||obj->userid) && lp_config_get_int(config, "sip", "store_ha1_passwd", 1) == 1) {
+	if (!obj->ha1 && obj->realm && obj->passwd && (obj->username||obj->userid) && store_ha1_passwd) {
 		/*compute ha1 to avoid storing clear text password*/
 		obj->ha1=ms_malloc(33);
 		sal_auth_compute_ha1(obj->userid?obj->userid:obj->username,obj->realm,obj->passwd,obj->ha1);
@@ -160,8 +163,17 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	}
 	if (obj->ha1!=NULL){
 		lp_config_set_string(config,key,"ha1",obj->ha1);
-	} else if (obj->passwd!=NULL){ /*only write passwd if no ha1*/
-		lp_config_set_string(config,key,"passwd",obj->passwd);
+	}
+	if (obj->passwd != NULL){
+		if (store_ha1_passwd){
+			if (obj->ha1){
+				/*if we have our ha1 and store_ha1_passwd set to TRUE, then drop the clear text password for security*/
+				linphone_auth_info_set_passwd(obj, NULL);
+			}
+		}else{
+			/*we store clear text password only if store_ha1_passwd is FALSE*/
+			lp_config_set_string(config,key,"passwd",obj->passwd);
+		}
 	}
 	if (obj->realm!=NULL){
 		lp_config_set_string(config,key,"realm",obj->realm);
@@ -275,11 +287,26 @@ const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const cha
 	return ai;
 }
 
+/*the auth info is expected to be in the core's list*/
+void linphone_core_write_auth_info(LinphoneCore *lc, LinphoneAuthInfo *ai){
+	int i;
+	MSList *elem = lc->auth_info;
+	
+	if (!lc->sip_conf.save_auth_info) return;
+	
+	for (i=0; elem != NULL; elem = elem->next, i++){
+		if (ai == elem->data){
+			linphone_auth_info_write_config(lc->config, ai, i);
+		}
+	}
+}
+
 static void write_auth_infos(LinphoneCore *lc){
 	MSList *elem;
 	int i;
 
 	if (!linphone_core_ready(lc)) return;
+	if (!lc->sip_conf.save_auth_info) return;
 	for(elem=lc->auth_info,i=0;elem!=NULL;elem=ms_list_next(elem),i++){
 		LinphoneAuthInfo *ai=(LinphoneAuthInfo*)(elem->data);
 		linphone_auth_info_write_config(lc->config,ai,i);
@@ -353,7 +380,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			info->domain ? info->domain : "");
 	}
 	ms_list_free(l);
-	if(lc->sip_conf.save_auth_info) write_auth_infos(lc);
+	write_auth_infos(lc);
 }
 
 
@@ -373,7 +400,7 @@ void linphone_core_remove_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *in
 	if (r){
 		lc->auth_info=ms_list_remove(lc->auth_info,r);
 		linphone_auth_info_destroy(r);
-		if(lc->sip_conf.save_auth_info) write_auth_infos(lc);
+		write_auth_infos(lc);
 	}
 }
 

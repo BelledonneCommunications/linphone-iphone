@@ -1177,6 +1177,11 @@ static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 		sai->userid=ms_strdup(ai->userid?ai->userid:ai->username);
 		sai->password=ai->passwd?ms_strdup(ai->passwd):NULL;
 		sai->ha1=ai->ha1?ms_strdup(ai->ha1):NULL;
+		if (sai->realm && !ai->realm){
+			/*if realm was not known, then set it so that ha1 may eventually be calculated and clear text password dropped*/
+			linphone_auth_info_set_realm(ai, sai->realm);
+			linphone_core_write_auth_info(lc, ai);
+		}
 		return TRUE;
 	} else {
 		return FALSE;
