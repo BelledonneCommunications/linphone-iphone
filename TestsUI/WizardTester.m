@@ -29,11 +29,6 @@
 	[tester tapViewWithAccessibilityLabel:@"Dialer"];
 }
 
-#pragma mark - State
-
-+ (void)switchToValidAccountWithTester:(KIFTestCase *)testCase {
-}
-
 #pragma mark - Utilities
 
 - (void)_linphoneLogin:(NSString *)username withPW:(NSString *)pw {

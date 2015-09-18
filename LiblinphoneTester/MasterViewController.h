@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-NSMutableArray *lastLogs;
-NSString *const kLogsUpdateNotification;
+extern NSMutableArray *lastLogs;
+extern NSString *const kLogsUpdateNotification;
 
 @class DetailViewController;
 

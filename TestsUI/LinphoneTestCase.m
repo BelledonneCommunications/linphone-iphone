@@ -27,6 +27,7 @@
 
 - (void)beforeAll {
 	[super beforeAll];
+
 #if TARGET_IPHONE_SIMULATOR
 	while ([tester acknowledgeSystemAlert]) {
 		[tester waitForTimeInterval:.5f];
@@ -38,6 +39,10 @@
 			[tester tapViewWithAccessibilityLabel:button traits:UIAccessibilityTraitButton];
 		}
 	}
+}
+
+- (void)beforeEach {
+	[[LinphoneManager instance] lpConfigSetInt:NO forKey:@"animations_preference"];
 }
 
 - (NSString *)me {
@@ -59,16 +64,6 @@
 		[array setObject:[self getUUID] atIndexedSubscript:i];
 	}
 	return array;
-}
-
-static bool invalidAccount = true;
-
-- (void)setInvalidAccountSet:(BOOL)invalidAccountSet {
-	invalidAccount = invalidAccountSet;
-}
-
-- (BOOL)invalidAccountSet {
-	return invalidAccount;
 }
 
 - (BOOL)hasValidProxyConfig {
@@ -100,7 +95,7 @@ static bool invalidAccount = true;
 - (void)switchToValidAccountIfNeeded {
 	[UIView setAnimationsEnabled:false];
 
-	if (invalidAccount && ![self hasValidProxyConfig]) {
+	if (![self hasValidProxyConfig]) {
 		LOGI(@"Switching to a test account...");
 
 		LinphoneCore *lc = [LinphoneManager getLc];
@@ -142,8 +137,7 @@ static bool invalidAccount = true;
 		[[[LinphoneManager instance] fastAddressBook] reload];
 
 		[self waitForRegistration];
-
-		invalidAccount = false;
+		[[LinphoneManager instance] lpConfigSetInt:NO forKey:@"animations_preference"];
 	}
 }
 
