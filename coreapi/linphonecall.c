@@ -1336,7 +1336,15 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			break;
 		case LinphoneCallStreamsRunning:
 			if (call->prevstate == LinphoneCallUpdating || call->prevstate == LinphoneCallUpdatedByRemote) {
-				linphone_core_notify_display_status(lc,_("Call parameters were successfully modified."));
+				LinphoneReason reason = linphone_call_get_reason(call);
+				char *msg;
+				if (reason != LinphoneReasonNone) {
+					msg = ms_strdup(_("Call parameters were successfully modified."));
+				} else {
+					msg = ms_strdup_printf(_("Call parameters could not be modified: %s."), linphone_reason_to_string(reason));
+				}
+				linphone_core_notify_display_status(lc, msg);
+				ms_free(msg);
 			}
 			break;
 		default:
