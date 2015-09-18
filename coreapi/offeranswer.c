@@ -564,6 +564,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 					SalMediaDescription *result, bool_t one_matching_codec){
 	int i;
 	const SalStreamDescription *ls=NULL,*rs;
+	result->nb_streams = 0;
 
 	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		rs=&remote_offer->streams[i];
@@ -588,6 +589,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 					result->streams[i].rtcp_xr.enabled = TRUE;
 				}
 			}
+			result->nb_streams++;
 		}else {
 			ms_message("Declining mline %i, no corresponding stream in local capabilities description.",i);
 			/* create an inactive stream for the answer, as there where no matching stream in local capabilities */
@@ -603,7 +605,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 			}
 		}
 	}
-	result->nb_streams=i;
+
 	strcpy(result->username, local_capabilities->username);
 	strcpy(result->addr,local_capabilities->addr);
 	result->bandwidth=local_capabilities->bandwidth;
