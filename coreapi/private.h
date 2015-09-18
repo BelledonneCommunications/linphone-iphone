@@ -338,6 +338,7 @@ SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
 void linphone_core_write_auth_info(LinphoneCore *lc, LinphoneAuthInfo *ai);
+const LinphoneAuthInfo *_linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain, bool_t ignore_realm);
 
 void linphone_core_update_proxy_register(LinphoneCore *lc);
 void linphone_core_refresh_subscribes(LinphoneCore *lc);

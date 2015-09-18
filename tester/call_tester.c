@@ -3160,6 +3160,7 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 	LinphoneAuthInfo* wrong_auth_info=linphone_auth_info_clone(good_auth_info);
 	bool_t result=FALSE;
 	linphone_auth_info_set_passwd(wrong_auth_info,"passecretdutout");
+	linphone_auth_info_set_ha1(wrong_auth_info, NULL);
 	linphone_core_clear_all_auth_info(marie->lc);
 
 	if (user_agent) {

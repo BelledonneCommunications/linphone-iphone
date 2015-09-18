@@ -968,7 +968,7 @@ static void auth_failure(SalOp *op, SalAuthInfo* info) {
 	LinphoneAuthInfo *ai=NULL;
 
 	if( info != NULL ){
-		ai = (LinphoneAuthInfo*)linphone_core_find_auth_info(lc,info->realm,info->username,info->domain);
+		ai = (LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,info->realm,info->username,info->domain, TRUE);
 
 		if (ai){
 			ms_message("%s/%s/%s authentication fails.",info->realm,info->username,info->domain);
@@ -1172,7 +1172,7 @@ static bool_t fill_auth_info_with_client_certificate(LinphoneCore *lc, SalAuthIn
 }
 
 static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
-	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,sai->realm,sai->username,sai->domain);
+	LinphoneAuthInfo *ai=(LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,sai->realm,sai->username,sai->domain, FALSE);
 	if (ai) {
 		sai->userid=ms_strdup(ai->userid?ai->userid:ai->username);
 		sai->password=ai->passwd?ms_strdup(ai->passwd):NULL;

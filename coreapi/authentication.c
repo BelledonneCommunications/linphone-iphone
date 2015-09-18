@@ -230,7 +230,7 @@ static bool_t realm_match(const char *realm1, const char *realm2){
 	return FALSE;
 }
 
-static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *username, const char *realm, const char *domain){
+static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *username, const char *realm, const char *domain, bool_t ignore_realm){
 	MSList *elem;
 	const LinphoneAuthInfo *ret=NULL;
 
@@ -250,9 +250,9 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 					}
 					ret=pinfo;
 				}
-			} else if (domain && pinfo->domain && strcmp(domain,pinfo->domain)==0 && pinfo->ha1==NULL) {
+			} else if (domain && pinfo->domain && strcmp(domain,pinfo->domain)==0 && (pinfo->ha1==NULL || ignore_realm)) {
 				return pinfo;
-			} else if (!domain && pinfo->ha1==NULL) {
+			} else if (!domain && (pinfo->ha1==NULL || ignore_realm)) {
 				return pinfo;
 			}
 		}
@@ -260,6 +260,24 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
 	return ret;
 }
 
+
+const LinphoneAuthInfo *_linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain, bool_t ignore_realm){
+	const LinphoneAuthInfo *ai=NULL;
+	if (realm){
+		ai=find_auth_info(lc,username,realm,NULL, FALSE);
+		if (ai==NULL && domain){
+			ai=find_auth_info(lc,username,realm,domain, FALSE);
+		}
+	}
+	if (ai == NULL && domain != NULL) {
+		ai=find_auth_info(lc,username,NULL,domain, ignore_realm);
+	}
+	if (ai==NULL){
+		ai=find_auth_info(lc,username,NULL,NULL, ignore_realm);
+	}
+	/*if (ai) ms_message("linphone_core_find_auth_info(): returning auth info username=%s, realm=%s", ai->username, ai->realm);*/
+	return ai;
+}
 /**
  * Find authentication info matching realm, username, domain criteria.
  * First of all, (realm,username) pair are searched. If multiple results (which should not happen because realm are supposed to be unique), then domain is added to the search.
@@ -270,21 +288,7 @@ static const LinphoneAuthInfo *find_auth_info(LinphoneCore *lc, const char *user
  * @return a #LinphoneAuthInfo
 **/
 const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
-	const LinphoneAuthInfo *ai=NULL;
-	if (realm){
-		ai=find_auth_info(lc,username,realm,NULL);
-		if (ai==NULL && domain){
-			ai=find_auth_info(lc,username,realm,domain);
-		}
-	}
-	if (ai == NULL && domain != NULL) {
-		ai=find_auth_info(lc,username,NULL,domain);
-	}
-	if (ai==NULL){
-		ai=find_auth_info(lc,username,NULL,NULL);
-	}
-	/*if (ai) ms_message("linphone_core_find_auth_info(): returning auth info username=%s, realm=%s", ai->username, ai->realm);*/
-	return ai;
+	return _linphone_core_find_auth_info(lc, realm, username, domain, TRUE);
 }
 
 /*the auth info is expected to be in the core's list*/
@@ -348,7 +352,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 		SalOp *op=(SalOp*)elem->data;
 		LinphoneAuthInfo *ai;
 		const SalAuthInfo *req_sai=sal_op_get_auth_requested(op);
-		ai=(LinphoneAuthInfo*)linphone_core_find_auth_info(lc,req_sai->realm,req_sai->username,req_sai->domain);
+		ai=(LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,req_sai->realm,req_sai->username,req_sai->domain, FALSE);
 		if (ai){
 			SalAuthInfo sai;
 			MSList* proxy;
