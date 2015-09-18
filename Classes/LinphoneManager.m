@@ -568,7 +568,7 @@ static void dump_section(const char *section, void *data) {
 	lp_config_for_each_entry((const LpConfig *)data, section, dump_entry, &d);
 }
 
-+ (void)dumpLCConfig {
++ (void)dumpLcConfig {
 	if (theLinphoneCore) {
 		LpConfig *conf = [LinphoneManager instance].configDb;
 		lp_config_for_each_section(conf, dump_section, conf);
@@ -1067,25 +1067,26 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 }
 
 static void showNetworkFlags(SCNetworkReachabilityFlags flags) {
-	LOGI(@"Network connection flags:");
+	NSMutableString *log = [[NSMutableString alloc] initWithString:@"Network connection flags: "];
 	if (flags == 0)
-		LOGI(@"no flags.");
+		[log appendString:@"no flags."];
 	if (flags & kSCNetworkReachabilityFlagsTransientConnection)
-		LOGI(@"kSCNetworkReachabilityFlagsTransientConnection");
+		[log appendString:@"kSCNetworkReachabilityFlagsTransientConnection, "];
 	if (flags & kSCNetworkReachabilityFlagsReachable)
-		LOGI(@"kSCNetworkReachabilityFlagsReachable");
+		[log appendString:@"kSCNetworkReachabilityFlagsReachable, "];
 	if (flags & kSCNetworkReachabilityFlagsConnectionRequired)
-		LOGI(@"kSCNetworkReachabilityFlagsConnectionRequired");
+		[log appendString:@"kSCNetworkReachabilityFlagsConnectionRequired, "];
 	if (flags & kSCNetworkReachabilityFlagsConnectionOnTraffic)
-		LOGI(@"kSCNetworkReachabilityFlagsConnectionOnTraffic");
+		[log appendString:@"kSCNetworkReachabilityFlagsConnectionOnTraffic, "];
 	if (flags & kSCNetworkReachabilityFlagsConnectionOnDemand)
-		LOGI(@"kSCNetworkReachabilityFlagsConnectionOnDemand");
+		[log appendString:@"kSCNetworkReachabilityFlagsConnectionOnDemand, "];
 	if (flags & kSCNetworkReachabilityFlagsIsLocalAddress)
-		LOGI(@"kSCNetworkReachabilityFlagsIsLocalAddress");
+		[log appendString:@"kSCNetworkReachabilityFlagsIsLocalAddress, "];
 	if (flags & kSCNetworkReachabilityFlagsIsDirect)
-		LOGI(@"kSCNetworkReachabilityFlagsIsDirect");
+		[log appendString:@"kSCNetworkReachabilityFlagsIsDirect, "];
 	if (flags & kSCNetworkReachabilityFlagsIsWWAN)
-		LOGI(@"kSCNetworkReachabilityFlagsIsWWAN");
+		[log appendString:@"kSCNetworkReachabilityFlagsIsWWAN, "];
+	LOGI(@"%@", log);
 }
 
 static void networkReachabilityNotification(CFNotificationCenterRef center, void *observer, CFStringRef name,
