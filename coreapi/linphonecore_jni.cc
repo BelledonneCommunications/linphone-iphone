@@ -3274,7 +3274,7 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 		return;
 	}
 
-	jobject listener = (jobject) msg->cb_ud;
+	jobject listener = (jobject) msg->message_state_changed_user_data;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
 	jobject jmessage = getChatMessage(env, msg);
@@ -3298,7 +3298,7 @@ static void file_transfer_progress_indication(LinphoneChatMessage *msg, const Li
 		return;
 	}
 
-	jobject listener = (jobject) msg->cb_ud;
+	jobject listener = (jobject) msg->message_state_changed_user_data;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferProgressChanged", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;II)V");
 	env->DeleteLocalRef(clazz);
@@ -3318,7 +3318,7 @@ static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* 
 		return;
 	}
 
-	jobject listener = (jobject) msg->cb_ud;
+	jobject listener = (jobject) msg->message_state_changed_user_data;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferReceived", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Lorg/linphone/core/LinphoneBuffer;)V");
 	env->DeleteLocalRef(clazz);
@@ -3344,7 +3344,7 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 		return buffer;
 	}
 
-	jobject listener = (jobject) msg->cb_ud;
+	jobject listener = (jobject) msg->message_state_changed_user_data;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferSent","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;IILorg/linphone/core/LinphoneBuffer;)V");
 	env->DeleteLocalRef(clazz);
@@ -3367,7 +3367,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setListener(JNIEn
 	LinphoneChatMessage *message = (LinphoneChatMessage *)ptr;
 	LinphoneChatMessageCbs *cbs;
 
-	message->cb_ud = listener;
+	message->message_state_changed_user_data = listener;
 	cbs = linphone_chat_message_get_callbacks(message);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_state_changed);
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
