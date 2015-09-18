@@ -1295,9 +1295,7 @@ static void ui_config_read(LinphoneCore *lc)
 		linphone_friend_unref(lf);
 	}
 	
-#ifndef CALL_LOGS_STORAGE_ENABLED
 	call_logs_read_from_config_file(lc);
-#endif
 }
 
 /*
@@ -4948,20 +4946,27 @@ void linphone_core_set_call_logs_database_path(LinphoneCore *lc, const char *pat
 
 const MSList* linphone_core_get_call_logs(LinphoneCore *lc) {
 #ifdef CALL_LOGS_STORAGE_ENABLED
-	linphone_core_get_call_history(lc);
+	if (lc->logs_db) {
+		linphone_core_get_call_history(lc);
+	}
 #endif
 	return lc->call_logs;
 }
 
 void linphone_core_clear_call_logs(LinphoneCore *lc) {
+	bool_t call_logs_sqlite_db_found = FALSE;
 	lc->missed_calls=0;
 #ifdef CALL_LOGS_STORAGE_ENABLED
-	linphone_core_delete_call_history(lc);
-#else
-	ms_list_for_each(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
-	lc->call_logs = ms_list_free(lc->call_logs);
-	call_logs_write_to_config_file(lc);
+	if (lc->logs_db) {
+		call_logs_sqlite_db_found = TRUE;
+		linphone_core_delete_call_history(lc);
+	}
 #endif
+	if (!call_logs_sqlite_db_found) {
+		ms_list_for_each(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
+		lc->call_logs = ms_list_free(lc->call_logs);
+		call_logs_write_to_config_file(lc);
+	}
 }
 
 int linphone_core_get_missed_calls_count(LinphoneCore *lc) {
@@ -4973,13 +4978,18 @@ void linphone_core_reset_missed_calls_count(LinphoneCore *lc) {
 }
 
 void linphone_core_remove_call_log(LinphoneCore *lc, LinphoneCallLog *cl) {
+	bool_t call_logs_sqlite_db_found = FALSE;
 #ifdef CALL_LOGS_STORAGE_ENABLED
-	linphone_core_delete_call_log(lc, cl);
-#else
-	lc->call_logs = ms_list_remove(lc->call_logs, cl);
-	call_logs_write_to_config_file(lc);
-	linphone_call_log_unref(cl);
+	if (lc->logs_db) {
+		call_logs_sqlite_db_found = TRUE;
+		linphone_core_delete_call_log(lc, cl);
+	}
 #endif
+	if (!call_logs_sqlite_db_found) {
+		lc->call_logs = ms_list_remove(lc->call_logs, cl);
+		call_logs_write_to_config_file(lc);
+		linphone_call_log_unref(cl);
+	}
 }
 
 void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {

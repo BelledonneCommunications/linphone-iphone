@@ -4950,13 +4950,24 @@ static void call_with_network_switch_and_ice(void){
 
 #ifdef CALL_LOGS_STORAGE_ENABLED
 
+static void call_logs_if_no_db_set() {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new("laure_call_logs_rc");
+	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 10);
+	
+	BC_ASSERT_TRUE(call(marie, laure));
+	wait_for_until(marie->lc, laure->lc, NULL, 5, 1000);
+	end_call(marie, laure);
+	
+	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 11);
+}
+
 static void call_logs_migrate() {
 	LinphoneCoreManager* laure = linphone_core_manager_new("laure_call_logs_rc");
 	char *logs_db = create_filepath(bc_tester_get_writable_dir_prefix(), "call_logs", "db");
 	int i = 0;
 	int incoming_count = 0, outgoing_count = 0, missed_count = 0, aborted_count = 0, decline_count = 0, video_enabled_count = 0;
 
-	call_logs_read_from_config_file(laure->lc);
 	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 10);
 
 	linphone_core_set_call_logs_database_path(laure->lc, logs_db);
@@ -5181,6 +5192,7 @@ test_t call_tests[] = {
 	{ "Call with generic NACK RTCP feedback", call_with_generic_nack_rtcp_feedback },
 	{ "Call with complex late offering", call_with_complex_late_offering },
 #ifdef CALL_LOGS_STORAGE_ENABLED
+	{ "Call log working if no db set", call_logs_if_no_db_set },
 	{ "Call log storage migration from rc to db", call_logs_migrate },
 	{ "Call log storage in sqlite database", call_logs_sqlite_storage },
 #endif
