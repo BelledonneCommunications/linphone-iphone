@@ -2064,20 +2064,22 @@ static void sigint_handler(int signum){
 static void populate_xdg_data_dirs_envvar(void) {
 #ifndef WIN32
 	int i;
-	const gchar *value = g_getenv("XDG_DATA_DIRS");
-	if(value && strlen(value)) {
-		gchar **paths = g_strsplit(value, ":", -1);
-		for(i=0; paths[i] && strcmp(paths[i], PACKAGE_DATA_DIR) != 0; i++);
-		if(paths[i] == NULL) {
-			gchar *new_value = g_strdup_printf("%s:%s", value, PACKAGE_DATA_DIR);
-			g_setenv("XDG_DATA_DIRS", new_value, TRUE);
-			g_free(new_value);
-		}
-		g_strfreev(paths);
+	gchar *value;
+	gchar **paths;
+	
+	if(g_getenv("XDG_DATA_DIRS") == NULL) {
+		value = g_strdup("/usr/share:/usr/local/share:/opt/local/share");
 	} else {
-		g_warning("The XDG_DATA_DIRS environment variable is not set. If you experience missing icons, "
-			"consider setting it");
+		value = g_strdup(g_getenv("XDG_DATA_DIRS"));
 	}
+	paths = g_strsplit(value, ":", -1);
+	for(i=0; paths[i] && strcmp(paths[i], PACKAGE_DATA_DIR) != 0; i++);
+	if(paths[i] == NULL) {
+		gchar *new_value = g_strdup_printf("%s:%s", value, PACKAGE_DATA_DIR);
+		g_setenv("XDG_DATA_DIRS", new_value, TRUE);
+		g_free(new_value);
+	}
+	g_strfreev(paths);
 #endif
 }
 
