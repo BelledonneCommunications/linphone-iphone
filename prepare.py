@@ -341,7 +341,7 @@ libs_list={libs_list}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
-.SILENT: lipo
+.SILENT: sdk
 
 all: build
 
@@ -388,7 +388,7 @@ generate-dummy-%:
 \tlipo -create -output .dummy.tbd .dummy-*.tbd; \\
 \trm .dummy-*.tbd .dummy.c
 
-lipo:
+sdk:
 \tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
 \trm -rf liblinphone-sdk/apple-darwin && \\
 \tmkdir -p liblinphone-sdk/apple-darwin && \\
@@ -420,13 +420,13 @@ lipo:
 \tdone
 
 build: $(addprefix all-,$(archs))
-\t$(MAKE) lipo
+\t$(MAKE) sdk
 
 ipa: build
 \txcodebuild -configuration Release \\
 \t&& xcrun -sdk iphoneos PackageApplication -v build/Release-iphoneos/linphone.app -o $$PWD/linphone-iphone.ipa
 
-sdk: build
+sdkzip: sdk
 \techo "Generating SDK zip file for version $(LINPHONE_IPHONE_VERSION)"
 \tzip -r liblinphone-iphone-sdk-$(LINPHONE_IPHONE_VERSION).zip \\
 \tliblinphone-sdk/apple-darwin \\
@@ -459,7 +459,8 @@ help: help-prepare-options
 \t@echo "Available targets:"
 \t@echo ""
 \t@echo "   * all or build: builds all architectures and creates the liblinphone SDK"
-\t@echo "   * sdk: generates a ZIP archive of liblinphone-sdk/apple-darwin containing the SDK. Use this only after a full build."
+\t@echo "   * sdk: creates the liblinphone SDK. Use this only after a full build"
+\t@echo "   * zipsdk: generates a ZIP archive of liblinphone-sdk/apple-darwin containing the SDK. Use this only after SDK is built."
 \t@echo "   * zipres: creates a tar.gz file with all the resources (images)"
 \t@echo ""
 \t@echo "=== Advanced usage ==="
