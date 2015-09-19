@@ -61,6 +61,8 @@ install(FILES
 	linphone-chat-new-message.png
 	linphone-chat-writing.png
 	linphone-chat-new-message-and-writing.png
+	linphone-call-status-incoming.png
+	linphone-call-status-outgoing.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )

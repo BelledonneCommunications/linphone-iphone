@@ -6,7 +6,6 @@ dist_pixmap_DATA= \
 	contact-orange.png history-orange.png\
 	startcall-small.png stopcall-red.png stopcall-small.png linphone.icns \
 	contact_starred.png contact_unstarred.png \
-	call_status_incoming.png call_status_outgoing.png \
 	ok.png \
 	notok.png
 
@@ -31,7 +30,9 @@ dist_status48icons_DATA= \
 	linphone-chat-nothing.png \
 	linphone-chat-new-message.png \
 	linphone-chat-writing.png \
-	linphone-chat-new-message-and-writing.png
+	linphone-chat-new-message-and-writing.png \
+	linphone-call-status-incoming.png \
+	linphone-call_status-outgoing.png
 
 statussvgiconsdir=$(iconsdir)/scalable/status
 dist_statussvgicons_DATA= \
