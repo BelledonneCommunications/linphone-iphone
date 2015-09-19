@@ -39,23 +39,35 @@
 
 #define FILE_TRANSFER_KEY_SIZE 32
 
-
 static void linphone_chat_message_release(LinphoneChatMessage *msg);
 
-static LinphoneChatMessageCbs * linphone_chat_message_cbs_new(void) {
+static LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void) {
 	return belle_sip_object_new(LinphoneChatMessageCbs);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessageCbs);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatMessageCbs, belle_sip_object_t,
-	NULL, // destroy
-	NULL, // clone
-	NULL, // marshal
-	FALSE
-);
+						   NULL, // destroy
+						   NULL, // clone
+						   NULL, // marshal
+						   FALSE);
 
-LinphoneChatMessageCbs * linphone_chat_message_cbs_ref(LinphoneChatMessageCbs *cbs) {
+static void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
+	if (state != msg->state) {
+		ms_message("Chat message %p: moving from state %s to %s", msg, linphone_chat_message_state_to_string(msg->state),
+				   linphone_chat_message_state_to_string(state));
+		msg->state = state;
+		if (msg->message_state_changed_cb) {
+			msg->message_state_changed_cb(msg, msg->state, msg->message_state_changed_user_data);
+		}
+		if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
+			linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
+		}
+	}
+}
+
+LinphoneChatMessageCbs *linphone_chat_message_cbs_ref(LinphoneChatMessageCbs *cbs) {
 	belle_sip_object_ref(cbs);
 	return cbs;
 }
@@ -72,133 +84,142 @@ void linphone_chat_message_cbs_set_user_data(LinphoneChatMessageCbs *cbs, void *
 	cbs->user_data = ud;
 }
 
-LinphoneChatMessageCbsMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsMsgStateChangedCb
+linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs) {
 	return cbs->msg_state_changed;
 }
 
-void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsMsgStateChangedCb cb) {
+void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs,
+													 LinphoneChatMessageCbsMsgStateChangedCb cb) {
 	cbs->msg_state_changed = cb;
 }
 
-LinphoneChatMessageCbsFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferRecvCb
+linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_recv;
 }
 
-void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferRecvCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs,
+													  LinphoneChatMessageCbsFileTransferRecvCb cb) {
 	cbs->file_transfer_recv = cb;
 }
 
-LinphoneChatMessageCbsFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferSendCb
+linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_send;
 }
 
-void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferSendCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs,
+													  LinphoneChatMessageCbsFileTransferSendCb cb) {
 	cbs->file_transfer_send = cb;
 }
 
-LinphoneChatMessageCbsFileTransferProgressIndicationCb linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferProgressIndicationCb
+linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs) {
 	return cbs->file_transfer_progress_indication;
 }
 
-void linphone_chat_message_cbs_set_file_transfer_progress_indication(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferProgressIndicationCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_progress_indication(
+	LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferProgressIndicationCb cb) {
 	cbs->file_transfer_progress_indication = cb;
 }
 
+static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 
-static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg);
-
-static void process_io_error_upload(void *data, const belle_sip_io_error_event_t *event){
-	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
-	ms_error("I/O Error during file upload to %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
+static void process_io_error_upload(void *data, const belle_sip_io_error_event_t *event) {
+	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
+	ms_error("I/O Error during file upload to %s - msg [%p] chat room[%p]",
+			 linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
 	linphone_chat_message_cancel_file_transfer(msg);
 }
-static void process_auth_requested_upload(void *data, belle_sip_auth_event_t *event){
-	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
-	ms_error("Error during file upload: auth requested to connect %s - msg [%p] chat room[%p]", linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
+static void process_auth_requested_upload(void *data, belle_sip_auth_event_t *event) {
+	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
+	ms_error("Error during file upload: auth requested to connect %s - msg [%p] chat room[%p]",
+			 linphone_core_get_file_transfer_server(msg->chat_room->lc), msg, msg->chat_room);
 	linphone_chat_message_cancel_file_transfer(msg);
 }
 
-static void process_io_error_download(void *data, const belle_sip_io_error_event_t *event){
-	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+static void process_io_error_download(void *data, const belle_sip_io_error_event_t *event) {
+	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
 	ms_error("I/O Error during file download %s - msg [%p] chat room[%p]", msg->external_body_url, msg, msg->chat_room);
-	msg->state = LinphoneChatMessageStateFileTransferError;
-	if (msg->cb) {
-		msg->cb(msg, msg->state, msg->cb_ud);
-	}
-	if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
-	}
+	linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferError);
 }
-static void process_auth_requested_download(void *data, belle_sip_auth_event_t *event){
-	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
-	msg->state = LinphoneChatMessageStateFileTransferError;
-	ms_error("Error during file download : auth requested to get %s - msg [%p] chat room[%p]", msg->external_body_url, msg, msg->chat_room);
-	if (msg->cb) {
-		msg->cb(msg, msg->state, msg->cb_ud);
-	}
-	if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-		linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
-	}
+static void process_auth_requested_download(void *data, belle_sip_auth_event_t *event) {
+	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
+	linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferError);
+	ms_error("Error during file download : auth requested to get %s - msg [%p] chat room[%p]", msg->external_body_url,
+			 msg, msg->chat_room);
 }
 
-static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, size_t total){
-	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
-	if (!chatMsg->http_request || belle_http_request_is_cancelled(chatMsg->http_request)) {
-		ms_warning("Cancelled request for msg [%p], ignoring %s", chatMsg, __FUNCTION__);
+static void linphone_chat_message_file_transfer_on_progress(belle_sip_body_handler_t *bh, belle_sip_message_t *m,
+															void *data, size_t offset, size_t total) {
+	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
+	if (!msg->http_request || belle_http_request_is_cancelled(msg->http_request)) {
+		ms_warning("Cancelled request for msg [%p], ignoring %s", msg, __FUNCTION__);
 		return;
 	}
-	if (linphone_chat_message_cbs_get_file_transfer_progress_indication(chatMsg->callbacks)) {
-		linphone_chat_message_cbs_get_file_transfer_progress_indication(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, offset, total);
+	if (linphone_chat_message_cbs_get_file_transfer_progress_indication(msg->callbacks)) {
+		linphone_chat_message_cbs_get_file_transfer_progress_indication(msg->callbacks)(
+			msg, msg->file_transfer_information, offset, total);
 	} else {
 		/* Legacy: call back given by application level */
-		linphone_core_notify_file_transfer_progress_indication(chatMsg->chat_room->lc, chatMsg, chatMsg->file_transfer_information, offset, total);
+		linphone_core_notify_file_transfer_progress_indication(msg->chat_room->lc, msg, msg->file_transfer_information,
+															   offset, total);
 	}
 }
 
-static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, uint8_t *buffer, size_t *size){
-	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
-	LinphoneCore *lc = chatMsg->chat_room->lc;
+static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *m,
+															void *data, size_t offset, uint8_t *buffer, size_t *size) {
+	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
+	LinphoneCore *lc = msg->chat_room->lc;
 	char *buf = (char *)buffer;
 
-	if (!chatMsg->http_request || belle_http_request_is_cancelled(chatMsg->http_request)) {
-		ms_warning("Cancelled request for msg [%p], ignoring %s", chatMsg, __FUNCTION__);
+	if (!msg->http_request || belle_http_request_is_cancelled(msg->http_request)) {
+		ms_warning("Cancelled request for msg [%p], ignoring %s", msg, __FUNCTION__);
 		return BELLE_SIP_STOP;
 	}
 
 	/* if we've not reach the end of file yet, ask for more data*/
-	if (offset<linphone_content_get_size(chatMsg->file_transfer_information)){
+	if (offset < linphone_content_get_size(msg->file_transfer_information)) {
 		char *plainBuffer = NULL;
 
-		if (linphone_content_get_key(chatMsg->file_transfer_information) != NULL) { /* if we have a key to cipher the message, use it! */
+		if (linphone_content_get_key(msg->file_transfer_information) !=
+			NULL) { /* if we have a key to cipher the msg, use it! */
 			/* if this chunk is not the last one, the lenght must be a multiple of block cipher size(16 bytes)*/
-			if (offset+*size < linphone_content_get_size(chatMsg->file_transfer_information)) {
-				*size -=(*size%16);
+			if (offset + *size < linphone_content_get_size(msg->file_transfer_information)) {
+				*size -= (*size % 16);
 			}
 			plainBuffer = (char *)malloc(*size);
 		}
 
 		/* get data from call back */
-		if (linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)) {
-			LinphoneBuffer *lb = linphone_chat_message_cbs_get_file_transfer_send(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, offset, *size);
+		if (linphone_chat_message_cbs_get_file_transfer_send(msg->callbacks)) {
+			LinphoneBuffer *lb = linphone_chat_message_cbs_get_file_transfer_send(msg->callbacks)(
+				msg, msg->file_transfer_information, offset, *size);
 			if (lb == NULL) {
 				*size = 0;
 			} else {
 				*size = linphone_buffer_get_size(lb);
-				memcpy(plainBuffer?plainBuffer:buf, linphone_buffer_get_content(lb), *size);
+				memcpy(plainBuffer ? plainBuffer : buf, linphone_buffer_get_content(lb), *size);
 				linphone_buffer_unref(lb);
 			}
 		} else {
 			/* Legacy */
-			linphone_core_notify_file_transfer_send(lc, chatMsg, chatMsg->file_transfer_information, plainBuffer?plainBuffer:buf, size);
+			linphone_core_notify_file_transfer_send(lc, msg, msg->file_transfer_information,
+													plainBuffer ? plainBuffer : buf, size);
 		}
 
-		if (linphone_content_get_key(chatMsg->file_transfer_information) != NULL) { /* if we have a key to cipher the message, use it! */
-			lime_encryptFile(linphone_content_get_cryptoContext_address(chatMsg->file_transfer_information), (unsigned char *)linphone_content_get_key(chatMsg->file_transfer_information), *size, plainBuffer, (char*)buffer);
+		if (linphone_content_get_key(msg->file_transfer_information) !=
+			NULL) { /* if we have a key to cipher the msg, use it! */
+			lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
+							 (unsigned char *)linphone_content_get_key(msg->file_transfer_information), *size,
+							 plainBuffer, (char *)buffer);
 			free(plainBuffer);
 			/* check if we reach the end of file */
-			if (offset+*size >= linphone_content_get_size(chatMsg->file_transfer_information)) {
+			if (offset + *size >= linphone_content_get_size(msg->file_transfer_information)) {
 				/* conclude file ciphering by calling it context with a zero size */
-				lime_encryptFile(linphone_content_get_cryptoContext_address(chatMsg->file_transfer_information), NULL, 0, NULL, NULL);
+				lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0,
+								 NULL, NULL);
 			}
 		}
 	}
@@ -206,96 +227,118 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 	return BELLE_SIP_CONTINUE;
 }
 
-static void linphone_chat_message_process_response_from_post_file(void *data, const belle_http_response_event_t *event){
-	LinphoneChatMessage* msg=(LinphoneChatMessage *)data;
+static void linphone_chat_message_process_response_from_post_file(void *data,
+																  const belle_http_response_event_t *event) {
+	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
 
 	/* check the answer code */
-	if (event->response){
-		int code=belle_http_response_get_status_code(event->response);
-		if (code == 204) { /* this is the reply to the first post to the server - an empty message */
+	if (event->response) {
+		int code = belle_http_response_get_status_code(event->response);
+		if (code == 204) { /* this is the reply to the first post to the server - an empty msg */
 			/* start uploading the file */
-			belle_http_request_listener_callbacks_t cbs={0};
+			belle_http_request_listener_callbacks_t cbs = {0};
 			belle_http_request_listener_t *l;
 			belle_generic_uri_t *uri;
 			belle_sip_multipart_body_handler_t *bh;
-			char* ua;
+			char *ua;
 			char *first_part_header;
 			belle_sip_body_handler_t *first_part_bh;
 
 			/* shall we encrypt the file */
 			if (linphone_core_lime_for_file_sharing_enabled(msg->chat_room->lc)) {
-				char keyBuffer[FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of initial vector */
-				/* generate a random 192 bits key + 64 bits of initial vector and store it into the file_transfer_information->key field of the message */
+				char keyBuffer
+					[FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of
+												 initial vector */
+				/* generate a random 192 bits key + 64 bits of initial vector and store it into the
+				 * file_transfer_information->key field of the msg */
 				sal_get_random_bytes((unsigned char *)keyBuffer, FILE_TRANSFER_KEY_SIZE);
-				linphone_content_set_key(msg->file_transfer_information, keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
+				linphone_content_set_key(
+					msg->file_transfer_information, keyBuffer,
+					FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
 				/* temporary storage for the Content-disposition header value : use a generic filename to not leak it
-				 * Actual filename stored in msg->file_transfer_information->name will be set in encrypted message sended to the  */
+				 * Actual filename stored in msg->file_transfer_information->name will be set in encrypted msg
+				 * sended to the  */
 				first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"filename.txt\"");
 			} else {
 				/* temporary storage for the Content-disposition header value */
-				first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"", linphone_content_get_name(msg->file_transfer_information));
+				first_part_header = belle_sip_strdup_printf("form-data; name=\"File\"; filename=\"%s\"",
+															linphone_content_get_name(msg->file_transfer_information));
 			}
 
-			/* create a user body handler to take care of the file and add the content disposition and content-type headers */
+			/* create a user body handler to take care of the file and add the content disposition and content-type
+			 * headers */
 			if (msg->file_transfer_filepath != NULL) {
-				first_part_bh=(belle_sip_body_handler_t *)belle_sip_file_body_handler_new(msg->file_transfer_filepath,NULL,msg);
+				first_part_bh =
+					(belle_sip_body_handler_t *)belle_sip_file_body_handler_new(msg->file_transfer_filepath, NULL, msg);
 			} else if (linphone_content_get_buffer(msg->file_transfer_information) != NULL) {
-				first_part_bh=(belle_sip_body_handler_t *)belle_sip_memory_body_handler_new_from_buffer(
+				first_part_bh = (belle_sip_body_handler_t *)belle_sip_memory_body_handler_new_from_buffer(
 					linphone_content_get_buffer(msg->file_transfer_information),
-					linphone_content_get_size(msg->file_transfer_information),
-					NULL,msg);
+					linphone_content_get_size(msg->file_transfer_information), NULL, msg);
 			} else {
-				first_part_bh=(belle_sip_body_handler_t *)belle_sip_user_body_handler_new(linphone_content_get_size(msg->file_transfer_information),NULL,NULL,linphone_chat_message_file_transfer_on_send_body,msg);
+				first_part_bh = (belle_sip_body_handler_t *)belle_sip_user_body_handler_new(
+					linphone_content_get_size(msg->file_transfer_information), NULL, NULL,
+					linphone_chat_message_file_transfer_on_send_body, msg);
 			}
-			belle_sip_body_handler_add_header(first_part_bh, belle_sip_header_create("Content-disposition", first_part_header));
+			belle_sip_body_handler_add_header(first_part_bh,
+											  belle_sip_header_create("Content-disposition", first_part_header));
 			belle_sip_free(first_part_header);
-			belle_sip_body_handler_add_header(first_part_bh, (belle_sip_header_t *)belle_sip_header_content_type_create(linphone_content_get_type(msg->file_transfer_information), linphone_content_get_subtype(msg->file_transfer_information)));
+			belle_sip_body_handler_add_header(first_part_bh,
+											  (belle_sip_header_t *)belle_sip_header_content_type_create(
+												  linphone_content_get_type(msg->file_transfer_information),
+												  linphone_content_get_subtype(msg->file_transfer_information)));
 
-			/* insert it in a multipart body handler which will manage the boundaries of multipart message */
-			bh=belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg, first_part_bh);
+			/* insert it in a multipart body handler which will manage the boundaries of multipart msg */
+			bh = belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,
+													  first_part_bh);
 
-			/* create the http request: do not include the message header at this point, it is done by bellesip when setting the multipart body handler in the message */
+			/* create the http request: do not include the msg header at this point, it is done by bellesip when
+			 * setting the multipart body handler in the msg */
 			ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
-			uri=belle_generic_uri_parse(linphone_core_get_file_transfer_server(msg->chat_room->lc));
-			if (msg->http_request) belle_sip_object_unref(msg->http_request);
-			msg->http_request=belle_http_request_create("POST",
-										  uri,
-										  belle_sip_header_create("User-Agent",ua),
-										  NULL);
-			belle_sip_object_ref(msg->http_request);	/* keep a reference to the http request to be able to cancel it during upload */
+			uri = belle_generic_uri_parse(linphone_core_get_file_transfer_server(msg->chat_room->lc));
+			if (msg->http_request)
+				belle_sip_object_unref(msg->http_request);
+			msg->http_request = belle_http_request_create("POST", uri, belle_sip_header_create("User-Agent", ua), NULL);
+			belle_sip_object_ref(
+				msg->http_request); /* keep a reference to the http request to be able to cancel it during upload */
 			ms_free(ua);
-			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(msg->http_request),BELLE_SIP_BODY_HANDLER(bh));
-			cbs.process_response=linphone_chat_message_process_response_from_post_file;
-			cbs.process_io_error=process_io_error_upload;
-			cbs.process_auth_requested=process_auth_requested_upload;
-			l=belle_http_request_listener_create_from_callbacks(&cbs,msg);
-			belle_http_provider_send_request(msg->chat_room->lc->http_provider,msg->http_request,l);
-		}
-
-		if (code == 200 ) { /* file has been uplaoded correctly, get server reply and send it */
+			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(msg->http_request), BELLE_SIP_BODY_HANDLER(bh));
+			cbs.process_response = linphone_chat_message_process_response_from_post_file;
+			cbs.process_io_error = process_io_error_upload;
+			cbs.process_auth_requested = process_auth_requested_upload;
+			l = belle_http_request_listener_create_from_callbacks(&cbs, msg);
+			belle_http_provider_send_request(msg->chat_room->lc->http_provider, msg->http_request, l);
+		} else if (code == 200) { /* file has been uplaoded correctly, get server reply and send it */
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			belle_sip_object_unref(msg->http_request);
 			msg->http_request = NULL;
 
-			/* if we have an encryption key for the file, we must insert it into the message and restore the correct filename */
+			/* if we have an encryption key for the file, we must insert it into the msg and restore the correct
+			 * filename */
 			if (linphone_content_get_key(msg->file_transfer_information) != NULL) {
-				/* parse the message body */
+				/* parse the msg body */
 				xmlDocPtr xmlMessageBody = xmlParseDoc((const xmlChar *)body);
 
 				xmlNodePtr cur = xmlDocGetRootElement(xmlMessageBody);
 				if (cur != NULL) {
 					cur = cur->xmlChildrenNode;
-					while (cur!=NULL) {
-						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check it has a type="file" attribute */
+					while (cur != NULL) {
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check
+																					  it has a type="file" attribute */
 							xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
-							if(!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for : add a file-key children node */
-								xmlNodePtr fileInfoNodeChildren = cur->xmlChildrenNode; /* need to parse the children node to update the file-name one */
+							if (!xmlStrcmp(typeAttribute,
+										   (const xmlChar *)"file")) { /* this is the node we are looking for : add a
+																		  file-key children node */
+								xmlNodePtr fileInfoNodeChildren =
+									cur
+										->xmlChildrenNode; /* need to parse the children node to update the file-name
+															  one */
 								/* convert key to base64 */
-								int b64Size =  b64_encode(NULL, FILE_TRANSFER_KEY_SIZE, NULL, 0);
-								char *keyb64 = (char *)malloc(b64Size+1);
+								int b64Size = b64_encode(NULL, FILE_TRANSFER_KEY_SIZE, NULL, 0);
+								char *keyb64 = (char *)malloc(b64Size + 1);
 								int xmlStringLength;
 
-								b64Size = b64_encode(linphone_content_get_key(msg->file_transfer_information), FILE_TRANSFER_KEY_SIZE, keyb64, b64Size);
+								b64Size = b64_encode(linphone_content_get_key(msg->file_transfer_information),
+													 FILE_TRANSFER_KEY_SIZE, keyb64, b64Size);
 								keyb64[b64Size] = '\0'; /* libxml need a null terminated string */
 
 								/* add the node containing the key to the file-info node */
@@ -304,18 +347,23 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 								free(keyb64);
 
 								/* look for the file-name node and update its content */
-								while (fileInfoNodeChildren!=NULL) {
-									if (!xmlStrcmp(fileInfoNodeChildren->name, (const xmlChar *)"file-name")) { /* we found a the file-name node, update its content with the real filename */
+								while (fileInfoNodeChildren != NULL) {
+									if (!xmlStrcmp(
+											fileInfoNodeChildren->name,
+											(const xmlChar *)"file-name")) { /* we found a the file-name node, update
+																				its content with the real filename */
 										/* update node content */
-										xmlNodeSetContent(fileInfoNodeChildren, (const xmlChar *)(linphone_content_get_name(msg->file_transfer_information)));
+										xmlNodeSetContent(fileInfoNodeChildren,
+														  (const xmlChar *)(linphone_content_get_name(
+															  msg->file_transfer_information)));
 										break;
 									}
 									fileInfoNodeChildren = fileInfoNodeChildren->next;
 								}
 
-
 								/* dump the xml into msg->message */
-								xmlDocDumpFormatMemoryEnc(xmlMessageBody, (xmlChar **)&msg->message, &xmlStringLength, "UTF-8", 0);
+								xmlDocDumpFormatMemoryEnc(xmlMessageBody, (xmlChar **)&msg->message, &xmlStringLength,
+														  "UTF-8", 0);
 
 								break;
 							}
@@ -326,53 +374,48 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 				}
 				xmlFreeDoc(xmlMessageBody);
 
-			} else { /* no encryption key, transfer in plain, just copy the message sent by server */
+			} else { /* no encryption key, transfer in plain, just copy the msg sent by server */
 				msg->message = ms_strdup(body);
 			}
 
 			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
-			msg->state = LinphoneChatMessageStateFileTransferDone;
-			if (msg->cb) {
-				msg->cb(msg, msg->state, msg->cb_ud);
-			}
-			if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-				linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
-			}
+			linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 			_linphone_chat_room_send_message(msg->chat_room, msg);
+		} else {
+			ms_warning("Unhandled HTTP code response %d for file transfer", code);
+			linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
 		}
 	}
 }
 
-
-static void _linphone_chat_message_destroy(LinphoneChatMessage* msg);
+static void _linphone_chat_message_destroy(LinphoneChatMessage *msg);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatMessage);
 
-BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatMessage,belle_sip_object_t,
-	(belle_sip_object_destroy_t)_linphone_chat_message_destroy,
-	NULL, // clone
-	NULL, // marshal
-	FALSE
-);
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatMessage, belle_sip_object_t,
+						   (belle_sip_object_destroy_t)_linphone_chat_message_destroy,
+						   NULL, // clone
+						   NULL, // marshal
+						   FALSE);
 
-void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason){
-	lc->chat_deny_code=deny_reason;
+void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason) {
+	lc->chat_deny_code = deny_reason;
 }
 
-void linphone_core_enable_chat(LinphoneCore *lc){
-	lc->chat_deny_code=LinphoneReasonNone;
+void linphone_core_enable_chat(LinphoneCore *lc) {
+	lc->chat_deny_code = LinphoneReasonNone;
 }
 
-bool_t linphone_core_chat_enabled(const LinphoneCore *lc){
-	return lc->chat_deny_code!=LinphoneReasonNone;
+bool_t linphone_core_chat_enabled(const LinphoneCore *lc) {
+	return lc->chat_deny_code != LinphoneReasonNone;
 }
 
-const MSList* linphone_core_get_chat_rooms(LinphoneCore *lc) {
+const MSList *linphone_core_get_chat_rooms(LinphoneCore *lc) {
 	return lc->chatrooms;
 }
 
-static bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from){
-	return linphone_address_weak_equal(cr->peer_url,from);
+static bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from) {
+	return linphone_address_weak_equal(cr->peer_url, from);
 }
 
 static void _linphone_chat_room_destroy(LinphoneChatRoom *obj);
@@ -380,13 +423,12 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *obj);
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneChatRoom);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
-	(belle_sip_object_destroy_t)_linphone_chat_room_destroy,
-	NULL, // clone
-	NULL, // marshal
-	FALSE
-);
+						   (belle_sip_object_destroy_t)_linphone_chat_room_destroy,
+						   NULL, // clone
+						   NULL, // marshal
+						   FALSE);
 
-static LinphoneChatRoom * _linphone_core_create_chat_room(LinphoneCore *lc, LinphoneAddress *addr) {
+static LinphoneChatRoom *_linphone_core_create_chat_room(LinphoneCore *lc, LinphoneAddress *addr) {
 	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
 	cr->lc = lc;
 	cr->peer = linphone_address_as_string(addr);
@@ -396,7 +438,7 @@ static LinphoneChatRoom * _linphone_core_create_chat_room(LinphoneCore *lc, Linp
 	return cr;
 }
 
-static LinphoneChatRoom * _linphone_core_create_chat_room_from_url(LinphoneCore *lc, const char *to) {
+static LinphoneChatRoom *_linphone_core_create_chat_room_from_url(LinphoneCore *lc, const char *to) {
 	LinphoneAddress *parsed_url = NULL;
 	if ((parsed_url = linphone_core_interpret_url(lc, to)) != NULL) {
 		return _linphone_core_create_chat_room(lc, parsed_url);
@@ -404,36 +446,36 @@ static LinphoneChatRoom * _linphone_core_create_chat_room_from_url(LinphoneCore 
 	return NULL;
 }
 
-LinphoneChatRoom * _linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
-	LinphoneChatRoom *cr=NULL;
+LinphoneChatRoom *_linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr) {
+	LinphoneChatRoom *cr = NULL;
 	MSList *elem;
-	for(elem=lc->chatrooms;elem!=NULL;elem=ms_list_next(elem)){
-		cr=(LinphoneChatRoom*)elem->data;
-		if (linphone_chat_room_matches(cr,addr)){
+	for (elem = lc->chatrooms; elem != NULL; elem = ms_list_next(elem)) {
+		cr = (LinphoneChatRoom *)elem->data;
+		if (linphone_chat_room_matches(cr, addr)) {
 			break;
 		}
-		cr=NULL;
+		cr = NULL;
 	}
 	return cr;
 }
 
-static LinphoneChatRoom * _linphone_core_get_or_create_chat_room(LinphoneCore* lc, const char* to) {
-	LinphoneAddress *to_addr=linphone_core_interpret_url(lc,to);
+static LinphoneChatRoom *_linphone_core_get_or_create_chat_room(LinphoneCore *lc, const char *to) {
+	LinphoneAddress *to_addr = linphone_core_interpret_url(lc, to);
 	LinphoneChatRoom *ret;
 
-	if (to_addr==NULL){
-		ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s",to);
+	if (to_addr == NULL) {
+		ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s", to);
 		return NULL;
 	}
-	ret=_linphone_core_get_chat_room(lc,to_addr);
+	ret = _linphone_core_get_chat_room(lc, to_addr);
 	linphone_address_destroy(to_addr);
-	if (!ret){
-		ret=_linphone_core_create_chat_room_from_url(lc,to);
+	if (!ret) {
+		ret = _linphone_core_create_chat_room_from_url(lc, to);
 	}
 	return ret;
 }
 
-LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr){
+LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr) {
 	LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
 	if (!ret) {
 		ret = _linphone_core_create_chat_room(lc, linphone_address_clone(addr));
@@ -441,25 +483,23 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 	return ret;
 }
 
-void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr){
-	if (ms_list_find(lc->chatrooms, cr)){
+void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr) {
+	if (ms_list_find(lc->chatrooms, cr)) {
 		lc->chatrooms = ms_list_remove(cr->lc->chatrooms, cr);
 		linphone_chat_room_delete_history(cr);
 		linphone_chat_room_unref(cr);
-	}else{
-		ms_error("linphone_core_delete_chat_room(): chatroom [%p] isn't part of LinphoneCore.",
-			 cr);
+	} else {
+		ms_error("linphone_core_delete_chat_room(): chatroom [%p] isn't part of LinphoneCore.", cr);
 	}
-	
 }
 
-LinphoneChatRoom * linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
+LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
 	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
 static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
 	if (cr->composing_idle_timer) {
-		if(cr-> lc && cr->lc->sal)
+		if (cr->lc && cr->lc->sal)
 			sal_cancel_timer(cr->lc->sal, cr->composing_idle_timer);
 		belle_sip_object_unref(cr->composing_idle_timer);
 		cr->composing_idle_timer = NULL;
@@ -468,7 +508,7 @@ static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr)
 
 static void linphone_chat_room_delete_composing_refresh_timer(LinphoneChatRoom *cr) {
 	if (cr->composing_refresh_timer) {
-		if(cr->lc && cr->lc->sal)
+		if (cr->lc && cr->lc->sal)
 			sal_cancel_timer(cr->lc->sal, cr->composing_refresh_timer);
 		belle_sip_object_unref(cr->composing_refresh_timer);
 		cr->composing_refresh_timer = NULL;
@@ -477,26 +517,27 @@ static void linphone_chat_room_delete_composing_refresh_timer(LinphoneChatRoom *
 
 static void linphone_chat_room_delete_remote_composing_refresh_timer(LinphoneChatRoom *cr) {
 	if (cr->remote_composing_refresh_timer) {
-		if(cr->lc && cr->lc->sal)
+		if (cr->lc && cr->lc->sal)
 			sal_cancel_timer(cr->lc->sal, cr->remote_composing_refresh_timer);
 		belle_sip_object_unref(cr->remote_composing_refresh_timer);
 		cr->remote_composing_refresh_timer = NULL;
 	}
 }
 
-static void _linphone_chat_room_destroy(LinphoneChatRoom *cr){
-	ms_list_free_with_data(cr->transient_messages, (void (*)(void*))linphone_chat_message_release);
+static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
+	ms_list_free_with_data(cr->transient_messages, (void (*)(void *))linphone_chat_message_release);
 	linphone_chat_room_delete_composing_idle_timer(cr);
 	linphone_chat_room_delete_composing_refresh_timer(cr);
 	linphone_chat_room_delete_remote_composing_refresh_timer(cr);
 	if (cr->lc != NULL) {
-		if (ms_list_find(cr->lc->chatrooms, cr)){
+		if (ms_list_find(cr->lc->chatrooms, cr)) {
 			ms_error("LinphoneChatRoom[%p] is destroyed while still being used by the LinphoneCore. This is abnormal."
-			" linphone_core_get_chat_room() doesn't give a reference, there is no need to call linphone_chat_room_unref(). "
-			"In order to remove a chat room from the core, use linphone_core_delete_chat_room().",
-				cr);
+					 " linphone_core_get_chat_room() doesn't give a reference, there is no need to call "
+					 "linphone_chat_room_unref(). "
+					 "In order to remove a chat room from the core, use linphone_core_delete_chat_room().",
+					 cr);
+			cr->lc->chatrooms = ms_list_remove(cr->lc->chatrooms, cr);
 		}
-		cr->lc->chatrooms=ms_list_remove(cr->lc->chatrooms, cr);
 	}
 	linphone_address_destroy(cr->peer_url);
 	ms_free(cr->peer);
@@ -511,7 +552,7 @@ void linphone_chat_room_release(LinphoneChatRoom *cr) {
 	linphone_chat_room_unref(cr);
 }
 
-LinphoneChatRoom * linphone_chat_room_ref(LinphoneChatRoom *cr) {
+LinphoneChatRoom *linphone_chat_room_ref(LinphoneChatRoom *cr) {
 	belle_sip_object_ref(cr);
 	return cr;
 }
@@ -520,7 +561,7 @@ void linphone_chat_room_unref(LinphoneChatRoom *cr) {
 	belle_sip_object_unref(cr);
 }
 
-void * linphone_chat_room_get_user_data(const LinphoneChatRoom *cr) {
+void *linphone_chat_room_get_user_data(const LinphoneChatRoom *cr) {
 	return cr->user_data;
 }
 
@@ -528,194 +569,216 @@ void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void *ud) {
 	cr->user_data = ud;
 }
 
-
-static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage* msg){
-	SalOp *op=NULL;
+static void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	SalOp *op = NULL;
 	LinphoneCall *call;
-	char* content_type;
-	const char *identity=NULL;
-	time_t t=time(NULL);
+	char *content_type;
+	const char *identity = NULL;
+	time_t t = time(NULL);
 	linphone_chat_message_ref(msg);
 	/* Check if we shall upload a file to a server */
 	if (msg->file_transfer_information != NULL && msg->content_type == NULL) {
 		/* open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
-		belle_http_request_listener_callbacks_t cbs={0};
+		belle_http_request_listener_callbacks_t cbs = {0};
 		belle_http_request_listener_t *l;
-		belle_generic_uri_t *uri;
+		belle_generic_uri_t *uri = NULL;
 		const char *transfer_server = linphone_core_get_file_transfer_server(cr->lc);
 
 		if (transfer_server == NULL) {
-			ms_warning("Cannot send file transfer message: no file transfer server configured.");
-			return;
+			ms_warning("Cannot send file transfer msg: no file transfer server configured.");
+			goto error;
 		}
-		uri=belle_generic_uri_parse(transfer_server);
+		uri = belle_generic_uri_parse(transfer_server);
+		if (uri == NULL || belle_generic_uri_get_host(uri)==NULL) {
+			ms_warning("Cannot send file transfer msg: incorrect file transfer server configured '%s'.", transfer_server);
+			goto error;
+		}
+		msg->http_request = belle_http_request_create("POST", uri, NULL, NULL, NULL);
+		if (msg->http_request == NULL) {
+			ms_warning("Could not create http request for uri %s", transfer_server);
+			goto error;
+		}
 
-		msg->http_request=belle_http_request_create("POST",
-				uri,
-				NULL,
-				NULL,
-				NULL);
-		belle_sip_object_ref(msg->http_request);	/* keep a reference on the request to be able to cancel it */
-		cbs.process_response=linphone_chat_message_process_response_from_post_file;
-		cbs.process_io_error=process_io_error_upload;
-		cbs.process_auth_requested=process_auth_requested_upload;
-		l=belle_http_request_listener_create_from_callbacks(&cbs,msg); /* give msg to listener to be able to start the actual file upload when server answer a 204 No content */
-		belle_http_provider_send_request(cr->lc->http_provider,msg->http_request,l);
+		/* keep a reference on the request to be able to cancel it */
+		belle_sip_object_ref(msg->http_request);
+		cbs.process_response = linphone_chat_message_process_response_from_post_file;
+		cbs.process_io_error = process_io_error_upload;
+		cbs.process_auth_requested = process_auth_requested_upload;
+		/* give msg to listener to be able to start the actual file upload when server answer a 204 No content */
+		l = belle_http_request_listener_create_from_callbacks(&cbs, msg);
+		belle_http_provider_send_request(cr->lc->http_provider, msg->http_request, l);
 		linphone_chat_message_unref(msg);
 		return;
-	}
-
-	if (lp_config_get_int(cr->lc->config,"sip","chat_use_call_dialogs",0)){
-		if((call = linphone_core_get_call_by_remote_address(cr->lc,cr->peer))!=NULL){
-			if (call->state==LinphoneCallConnected ||
-			call->state==LinphoneCallStreamsRunning ||
-			call->state==LinphoneCallPaused ||
-			call->state==LinphoneCallPausing ||
-			call->state==LinphoneCallPausedByRemote){
-				ms_message("send SIP message through the existing call.");
-				op = call->op;
-				identity=linphone_core_find_best_identity(cr->lc,linphone_call_get_remote_address(call));
-			}
+error:
+		if (uri) {
+			belle_sip_object_unref(uri);
 		}
-	}
-	msg->time=t;
-	if (op==NULL){
-		LinphoneProxyConfig *proxy=linphone_core_lookup_known_proxy(cr->lc,cr->peer_url);
-		if (proxy){
-			identity=linphone_proxy_config_get_identity(proxy);
-		}else identity=linphone_core_get_primary_contact(cr->lc);
-		/*sending out of calls*/
-		msg->op = op = sal_op_new(cr->lc->sal);
-		linphone_configure_op(cr->lc,op,cr->peer_url,msg->custom_headers,lp_config_get_int(cr->lc->config,"sip","chat_msg_with_contact",0));
-		sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
-	}
-
-
-	if (msg->external_body_url) {
-		content_type=ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"",msg->external_body_url);
-		sal_message_send(op,identity,cr->peer,content_type, NULL, NULL);
-		ms_free(content_type);
+		linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+		linphone_chat_message_unref(msg);
 	} else {
-		char *peer_uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-		const char * content_type;
-
-		if (linphone_core_lime_enabled(cr->lc)) {
-			linphone_chat_message_ref(msg);  /* ref the message or it may be destroyed by callback if the encryption failed */
-			if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
-				content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml"; /* it's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml*/
-			} else {
-				content_type = "xml/cipher";
+		if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0)) {
+			if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {
+				if (call->state == LinphoneCallConnected || call->state == LinphoneCallStreamsRunning ||
+					call->state == LinphoneCallPaused || call->state == LinphoneCallPausing ||
+					call->state == LinphoneCallPausedByRemote) {
+					ms_message("send SIP msg through the existing call.");
+					op = call->op;
+					identity = linphone_core_find_best_identity(cr->lc, linphone_call_get_remote_address(call));
+				}
 			}
-		} else {
-			content_type = msg->content_type;
+		}
+		msg->time = t;
+		if (op == NULL) {
+			LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cr->lc, cr->peer_url);
+			if (proxy) {
+				identity = linphone_proxy_config_get_identity(proxy);
+			} else
+				identity = linphone_core_get_primary_contact(cr->lc);
+			/*sending out of calls*/
+			msg->op = op = sal_op_new(cr->lc->sal);
+			linphone_configure_op(cr->lc, op, cr->peer_url, msg->custom_headers,
+								  lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
+			sal_op_set_user_pointer(op, msg); /*if out of call, directly store msg*/
 		}
 
-		if (content_type == NULL) {
-			sal_text_send(op, identity, cr->peer,msg->message);
+		if (msg->external_body_url) {
+			content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", msg->external_body_url);
+			sal_message_send(op, identity, cr->peer, content_type, NULL, NULL);
+			ms_free(content_type);
 		} else {
-			sal_message_send(op, identity, cr->peer, content_type, msg->message, peer_uri);
+			char *peer_uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
+			const char *content_type;
+
+			if (linphone_core_lime_enabled(cr->lc)) {
+				/* ref the msg or it may be destroyed by callback if the encryption failed */
+				linphone_chat_message_ref(msg);
+				if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
+					/* it's a file transfer, content type shall be set to
+					application/cipher.vnd.gsma.rcs-ft-http+xml*/
+					content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
+				} else {
+					content_type = "xml/cipher";
+				}
+			} else {
+				content_type = msg->content_type;
+			}
+
+			if (content_type == NULL) {
+				sal_text_send(op, identity, cr->peer, msg->message);
+			} else {
+				sal_message_send(op, identity, cr->peer, content_type, msg->message, peer_uri);
+			}
+			ms_free(peer_uri);
 		}
-		ms_free(peer_uri);
+
+		msg->dir = LinphoneChatMessageOutgoing;
+		msg->from = linphone_address_new(identity);
+		msg->storage_id = linphone_chat_message_store(msg);
+
+		if (cr->unread_count >= 0 && !msg->is_read)
+			cr->unread_count++;
+
+		// add to transient list
+		cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
+
+		if (cr->is_composing == LinphoneIsComposingActive) {
+			cr->is_composing = LinphoneIsComposingIdle;
+		}
+		linphone_chat_room_delete_composing_idle_timer(cr);
+		linphone_chat_room_delete_composing_refresh_timer(cr);
+		linphone_chat_message_unref(msg);
 	}
-
-	msg->dir=LinphoneChatMessageOutgoing;
-	msg->from=linphone_address_new(identity);
-	msg->storage_id=linphone_chat_message_store(msg);
-
-	if(cr->unread_count >= 0 && !msg->is_read) cr->unread_count++;
-
-	// add to transient list
-	cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
-
-	if (cr->is_composing == LinphoneIsComposingActive) {
-		cr->is_composing = LinphoneIsComposingIdle;
-	}
-	linphone_chat_room_delete_composing_idle_timer(cr);
-	linphone_chat_room_delete_composing_refresh_timer(cr);
-	linphone_chat_message_unref(msg);
 }
 
-void linphone_chat_message_update_state(LinphoneChatMessage* chat_msg ) {
-	linphone_chat_message_store_state(chat_msg);
+void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
+	linphone_chat_message_set_state(msg, new_state);
+	linphone_chat_message_store_state(msg);
 
-	if( chat_msg->state == LinphoneChatMessageStateDelivered
-			|| chat_msg->state == LinphoneChatMessageStateNotDelivered ){
-		// message is not transient anymore, we can remove it from our transient list and unref it :
-		chat_msg->chat_room->transient_messages = ms_list_remove(chat_msg->chat_room->transient_messages, chat_msg);
-		linphone_chat_message_unref(chat_msg);
+	if (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateNotDelivered) {
+		// msg is not transient anymore, we can remove it from our transient list and unref it :
+		msg->chat_room->transient_messages = ms_list_remove(msg->chat_room->transient_messages, msg);
+		linphone_chat_message_unref(msg);
 	}
 }
 
 /**
- * Send a message to peer member of this chat room.
- * @deprecated linphone_chat_room_send_message2() gives more control on the message expedition.
+ * Send a msg to peer member of this chat room.
+ * @deprecated linphone_chat_room_send_message2() gives more control on the msg expedition.
  * @param cr #LinphoneChatRoom object
- * @param msg message to be sent
+ * @param msg msg to be sent
  */
 void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) {
-	_linphone_chat_room_send_message(cr,linphone_chat_room_create_message(cr,msg));
+	_linphone_chat_room_send_message(cr, linphone_chat_room_create_message(cr, msg));
 }
 
-void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg){
-	if (msg->message){
+void linphone_chat_room_message_received(LinphoneChatRoom *cr, LinphoneCore *lc, LinphoneChatMessage *msg) {
+	if (msg->message) {
 		/*legacy API*/
 		linphone_core_notify_text_message_received(lc, cr, msg->from, msg->message);
 	}
-	linphone_core_notify_message_received(lc, cr,msg);
+	linphone_core_notify_message_received(lc, cr, msg);
 	cr->remote_is_composing = LinphoneIsComposingIdle;
 	linphone_core_notify_is_composing_received(cr->lc, cr);
 }
 
-void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg){
-	LinphoneChatRoom *cr=NULL;
+void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg) {
+	LinphoneChatRoom *cr = NULL;
 	LinphoneAddress *addr;
-	LinphoneChatMessage* msg;
+	LinphoneChatMessage *msg;
 	const SalCustomHeader *ch;
 
-	addr=linphone_address_new(sal_msg->from);
+	addr = linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
-	cr=linphone_core_get_chat_room(lc,addr);
+	cr = linphone_core_get_chat_room(lc, addr);
 
-	if (sal_msg->content_type != NULL) { /* content_type field is, for now, used only for rcs file transfer but we shall strcmp it with "application/vnd.gsma.rcs-ft-http+xml" */
+	if (sal_msg->content_type !=
+		NULL) { /* content_type field is, for now, used only for rcs file transfer but we shall strcmp it with
+				   "application/vnd.gsma.rcs-ft-http+xml" */
 		xmlChar *file_url = NULL;
 		xmlDocPtr xmlMessageBody;
 		xmlNodePtr cur;
 
-		msg = linphone_chat_room_create_message(cr, NULL); /* create a message with empty body */
-		msg->content_type = ms_strdup(sal_msg->content_type); /* add the content_type "application/vnd.gsma.rcs-ft-http+xml" */
+		msg = linphone_chat_room_create_message(cr, NULL); /* create a msg with empty body */
+		msg->content_type =
+			ms_strdup(sal_msg->content_type); /* add the content_type "application/vnd.gsma.rcs-ft-http+xml" */
 		msg->file_transfer_information = linphone_content_new();
 
-		/* parse the message body to get all informations from it */
+		/* parse the msg body to get all informations from it */
 		xmlMessageBody = xmlParseDoc((const xmlChar *)sal_msg->text);
 
 		cur = xmlDocGetRootElement(xmlMessageBody);
 		if (cur != NULL) {
 			cur = cur->xmlChildrenNode;
-			while (cur!=NULL) {
-				if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check it has a type="file" attribute */
+			while (cur != NULL) {
+				if (!xmlStrcmp(
+						cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check it has a
+																	   type="file" attribute */
 					xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
-					if(!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for */
+					if (!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for */
 						cur = cur->xmlChildrenNode; /* now loop on the content of the file-info node */
-						while (cur!=NULL) {
+						while (cur != NULL) {
 							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) {
 								xmlChar *fileSizeString = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
-								linphone_content_set_size(msg->file_transfer_information, strtol((const char*)fileSizeString, NULL, 10));
+								linphone_content_set_size(msg->file_transfer_information,
+														  strtol((const char *)fileSizeString, NULL, 10));
 								xmlFree(fileSizeString);
 							}
 
 							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
-								linphone_content_set_name(msg->file_transfer_information, (const char *)xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1));
+								linphone_content_set_name(
+									msg->file_transfer_information,
+									(const char *)xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1));
 							}
 							if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
 								xmlChar *contentType = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 								int contentTypeIndex = 0;
 								char *type;
 								char *subtype;
-								while (contentType[contentTypeIndex]!='/' && contentType[contentTypeIndex]!='\0') {
+								while (contentType[contentTypeIndex] != '/' && contentType[contentTypeIndex] != '\0') {
 									contentTypeIndex++;
 								}
 								type = ms_strndup((char *)contentType, contentTypeIndex);
-								subtype = ms_strdup(((char *)contentType+contentTypeIndex+1));
+								subtype = ms_strdup(((char *)contentType + contentTypeIndex + 1));
 								linphone_content_set_type(msg->file_transfer_information, type);
 								linphone_content_set_subtype(msg->file_transfer_information, subtype);
 								ms_free(subtype);
@@ -723,22 +786,26 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 								xmlFree(contentType);
 							}
 							if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
-								file_url = 	xmlGetProp(cur, (const xmlChar *)"url");
+								file_url = xmlGetProp(cur, (const xmlChar *)"url");
 							}
 
-							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) { /* there is a key in the message: file has been encrypted */
+							if (!xmlStrcmp(cur->name,
+										   (const xmlChar *)"file-key")) { /* there is a key in the msg: file has
+																			  been encrypted */
 								/* convert the key from base 64 */
 								xmlChar *keyb64 = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 								int keyLength = b64_decode((char *)keyb64, strlen((char *)keyb64), NULL, 0);
 								uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
 								/* decode the key into local key buffer */
 								b64_decode((char *)keyb64, strlen((char *)keyb64), keyBuffer, keyLength);
-								linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, keyLength); /* duplicate key value into the linphone content private structure */
+								linphone_content_set_key(
+									msg->file_transfer_information, (char *)keyBuffer,
+									keyLength); /* duplicate key value into the linphone content private structure */
 								xmlFree(keyb64);
 								free(keyBuffer);
 							}
 
-							cur=cur->next;
+							cur = cur->next;
 						}
 						xmlFree(typeAttribute);
 						break;
@@ -752,35 +819,39 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 
 		linphone_chat_message_set_external_body_url(msg, (const char *)file_url);
 		xmlFree(file_url);
-	} else { /* message is not rcs file transfer, create it with provided sal_msg->text as ->message */
+	} else { /* msg is not rcs file transfer, create it with provided sal_msg->text as ->msg */
 		msg = linphone_chat_room_create_message(cr, sal_msg->text);
 	}
 	linphone_chat_message_set_from(msg, cr->peer_url);
 
 	{
 		LinphoneAddress *to;
-		to=sal_op_get_to(op) ? linphone_address_new(sal_op_get_to(op)) : linphone_address_new(linphone_core_get_identity(lc));
-		msg->to=to;
+		to = sal_op_get_to(op) ? linphone_address_new(sal_op_get_to(op))
+							   : linphone_address_new(linphone_core_get_identity(lc));
+		msg->to = to;
 	}
 
-	msg->time=sal_msg->time;
-	msg->state=LinphoneChatMessageStateDelivered;
-	msg->is_read=FALSE;
-	msg->dir=LinphoneChatMessageIncoming;
-	ch=sal_op_get_recv_custom_header(op);
-	if (ch) msg->custom_headers=sal_custom_header_clone(ch);
+	msg->time = sal_msg->time;
+	linphone_chat_message_set_state(msg, LinphoneChatMessageStateDelivered);
+	msg->is_read = FALSE;
+	msg->dir = LinphoneChatMessageIncoming;
+	ch = sal_op_get_recv_custom_header(op);
+	if (ch)
+		msg->custom_headers = sal_custom_header_clone(ch);
 
 	if (sal_msg->url) {
 		linphone_chat_message_set_external_body_url(msg, sal_msg->url);
 	}
 
 	linphone_address_destroy(addr);
-	msg->storage_id=linphone_chat_message_store(msg);
+	msg->storage_id = linphone_chat_message_store(msg);
 
-	if(cr->unread_count < 0) cr->unread_count = 1;
-	else cr->unread_count++;
+	if (cr->unread_count < 0)
+		cr->unread_count = 1;
+	else
+		cr->unread_count++;
 
-	linphone_chat_room_message_received(cr,lc,msg);
+	linphone_chat_room_message_received(cr, lc, msg);
 	linphone_chat_message_unref(msg);
 }
 
@@ -800,20 +871,24 @@ static void process_im_is_composing_notification(LinphoneChatRoom *cr, xmlparsin
 	xmlXPathObjectPtr iscomposing_object;
 	const char *state_str = NULL;
 	const char *refresh_str = NULL;
-	int refresh_duration = lp_config_get_int(cr->lc->config, "sip", "composing_remote_refresh_timeout", COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT);
+	int refresh_duration = lp_config_get_int(cr->lc->config, "sip", "composing_remote_refresh_timeout",
+											 COMPOSING_DEFAULT_REMOTE_REFRESH_TIMEOUT);
 	int i;
 	LinphoneIsComposingState state = LinphoneIsComposingIdle;
 
-	if (linphone_create_xml_xpath_context(xml_ctx) < 0) return;
+	if (linphone_create_xml_xpath_context(xml_ctx) < 0)
+		return;
 
-	xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"xsi", (const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
+	xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"xsi",
+					   (const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
 	iscomposing_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, iscomposing_prefix);
-	if (iscomposing_object != NULL){
-		if(iscomposing_object->nodesetval != NULL) {
+	if (iscomposing_object != NULL) {
+		if (iscomposing_object->nodesetval != NULL) {
 			for (i = 1; i <= iscomposing_object->nodesetval->nodeNr; i++) {
 				snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/xsi:state", iscomposing_prefix, i);
 				state_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
-				if (state_str == NULL) continue;
+				if (state_str == NULL)
+					continue;
 				snprintf(xpath_str, sizeof(xpath_str), "%s[%i]/xsi:refresh", iscomposing_prefix, i);
 				refresh_str = linphone_get_xml_text_content(xml_ctx, xpath_str);
 			}
@@ -828,7 +903,9 @@ static void process_im_is_composing_notification(LinphoneChatRoom *cr, xmlparsin
 				refresh_duration = atoi(refresh_str);
 			}
 			if (!cr->remote_composing_refresh_timer) {
-				cr->remote_composing_refresh_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_remote_refresh_composing_expired, cr, refresh_duration * 1000, "composing remote refresh timeout");
+				cr->remote_composing_refresh_timer =
+					sal_create_timer(cr->lc->sal, linphone_chat_room_remote_refresh_composing_expired, cr,
+									 refresh_duration * 1000, "composing remote refresh timeout");
 			} else {
 				belle_sip_source_set_timeout(cr->remote_composing_refresh_timer, refresh_duration * 1000);
 			}
@@ -848,7 +925,7 @@ static void process_im_is_composing_notification(LinphoneChatRoom *cr, xmlparsin
 static void linphone_chat_room_notify_is_composing(LinphoneChatRoom *cr, const char *text) {
 	xmlparsing_context_t *xml_ctx = linphone_xmlparsing_context_new();
 	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
-	xml_ctx->doc = xmlReadDoc((const unsigned char*)text, 0, NULL, 0);
+	xml_ctx->doc = xmlReadDoc((const unsigned char *)text, 0, NULL, 0);
 	if (xml_ctx->doc != NULL) {
 		process_im_is_composing_notification(cr, xml_ctx);
 	} else {
@@ -870,70 +947,71 @@ bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
 	return (cr->remote_is_composing == LinphoneIsComposingActive) ? TRUE : FALSE;
 }
 
-LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr){
+LinphoneCore *linphone_chat_room_get_lc(LinphoneChatRoom *cr) {
 	return cr->lc;
 }
 
-LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr){
+LinphoneCore *linphone_chat_room_get_core(LinphoneChatRoom *cr) {
 	return cr->lc;
 }
 
-const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr) {
+const LinphoneAddress *linphone_chat_room_get_peer_address(LinphoneChatRoom *cr) {
 	return cr->peer_url;
 }
 
-LinphoneChatMessage* linphone_chat_room_create_message(LinphoneChatRoom *cr, const char* message) {
-	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
-	msg->callbacks=linphone_chat_message_cbs_new();
-	msg->chat_room=(LinphoneChatRoom*)cr;
-	msg->message=message?ms_strdup(message):NULL;
-	msg->is_read=TRUE;
-	msg->content_type = NULL; /* this property is used only when transfering file */
+LinphoneChatMessage *linphone_chat_room_create_message(LinphoneChatRoom *cr, const char *message) {
+	LinphoneChatMessage *msg = belle_sip_object_new(LinphoneChatMessage);
+	msg->callbacks = linphone_chat_message_cbs_new();
+	msg->chat_room = (LinphoneChatRoom *)cr;
+	msg->message = message ? ms_strdup(message) : NULL;
+	msg->is_read = TRUE;
+	msg->content_type = NULL;			   /* this property is used only when transfering file */
 	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	msg->http_request = NULL;
 	return msg;
 }
 
-LinphoneChatMessage* linphone_chat_room_create_message_2(
-		LinphoneChatRoom *cr, const char* message, const char* external_body_url,
-		LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming) {
-	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+LinphoneChatMessage *linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char *message,
+														 const char *external_body_url, LinphoneChatMessageState state,
+														 time_t time, bool_t is_read, bool_t is_incoming) {
+	LinphoneCore *lc = linphone_chat_room_get_lc(cr);
 
-	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
-	msg->callbacks=linphone_chat_message_cbs_new();
-	msg->chat_room=(LinphoneChatRoom*)cr;
-	msg->message=message?ms_strdup(message):NULL;
-	msg->external_body_url=external_body_url?ms_strdup(external_body_url):NULL;
-	msg->time=time;
-	msg->state=state;
-	msg->is_read=is_read;
-	msg->content_type = NULL; /* this property is used only when transfering file */
+	LinphoneChatMessage *msg = belle_sip_object_new(LinphoneChatMessage);
+	msg->callbacks = linphone_chat_message_cbs_new();
+	msg->chat_room = (LinphoneChatRoom *)cr;
+	msg->message = message ? ms_strdup(message) : NULL;
+	msg->external_body_url = external_body_url ? ms_strdup(external_body_url) : NULL;
+	msg->time = time;
+	linphone_chat_message_set_state(msg, state);
+	msg->is_read = is_read;
+	msg->content_type = NULL;			   /* this property is used only when transfering file */
 	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	if (is_incoming) {
-		msg->dir=LinphoneChatMessageIncoming;
+		msg->dir = LinphoneChatMessageIncoming;
 		linphone_chat_message_set_from(msg, linphone_chat_room_get_peer_address(cr));
 		linphone_chat_message_set_to(msg, linphone_address_new(linphone_core_get_identity(lc)));
 	} else {
-		msg->dir=LinphoneChatMessageOutgoing;
+		msg->dir = LinphoneChatMessageOutgoing;
 		linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
 		linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(lc)));
 	}
 	return msg;
 }
 
-void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb, void* ud) {
-	msg->cb=status_cb;
-	msg->cb_ud=ud;
-	msg->state=LinphoneChatMessageStateInProgress;
+void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage *msg,
+									  LinphoneChatMessageStateChangedCb status_cb, void *ud) {
+	msg->message_state_changed_cb = status_cb;
+	msg->message_state_changed_user_data = ud;
+	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
 	_linphone_chat_room_send_message(cr, msg);
 }
 
 void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	msg->state = LinphoneChatMessageStateInProgress;
+	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
 	_linphone_chat_room_send_message(cr, msg);
 }
 
-static char * linphone_chat_room_create_is_composing_xml(LinphoneChatRoom *cr) {
+static char *linphone_chat_room_create_is_composing_xml(LinphoneChatRoom *cr) {
 	xmlBufferPtr buf;
 	xmlTextWriterPtr writer;
 	int err;
@@ -952,23 +1030,26 @@ static char * linphone_chat_room_create_is_composing_xml(LinphoneChatRoom *cr) {
 
 	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", NULL);
 	if (err >= 0) {
-		err = xmlTextWriterStartElementNS(writer, NULL, (const xmlChar *)"isComposing", (const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
+		err = xmlTextWriterStartElementNS(writer, NULL, (const xmlChar *)"isComposing",
+										  (const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
 	}
 	if (err >= 0) {
-		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"xsi",
-			NULL, (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance");
+		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"xsi", NULL,
+											(const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance");
 	}
 	if (err >= 0) {
-		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xsi", (const xmlChar *)"schemaLocation",
-			NULL, (const xmlChar *)"urn:ietf:params:xml:ns:im-composing iscomposing.xsd");
+		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xsi", (const xmlChar *)"schemaLocation", NULL,
+											(const xmlChar *)"urn:ietf:params:xml:ns:im-composing iscomposing.xsd");
 	}
 	if (err >= 0) {
 		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"state",
-			(cr->is_composing == LinphoneIsComposingActive) ? (const xmlChar *)"active" : (const xmlChar *)"idle");
+										(cr->is_composing == LinphoneIsComposingActive) ? (const xmlChar *)"active"
+																						: (const xmlChar *)"idle");
 	}
 	if ((err >= 0) && (cr->is_composing == LinphoneIsComposingActive)) {
-		char refresh_str[4] = { 0 };
-		int refresh_timeout = lp_config_get_int(cr->lc->config, "sip", "composing_refresh_timeout", COMPOSING_DEFAULT_REFRESH_TIMEOUT);
+		char refresh_str[4] = {0};
+		int refresh_timeout =
+			lp_config_get_int(cr->lc->config, "sip", "composing_refresh_timeout", COMPOSING_DEFAULT_REFRESH_TIMEOUT);
 		snprintf(refresh_str, sizeof(refresh_str), "%u", refresh_timeout);
 		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"refresh", (const xmlChar *)refresh_str);
 	}
@@ -999,7 +1080,8 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 		identity = linphone_core_get_primary_contact(cr->lc);
 	/*sending out of calls*/
 	op = sal_op_new(cr->lc->sal);
-	linphone_configure_op(cr->lc, op, cr->peer_url, NULL, lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
+	linphone_configure_op(cr->lc, op, cr->peer_url, NULL,
+						  lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
 
 	content = linphone_chat_room_create_is_composing_xml(cr);
 	if (content != NULL) {
@@ -1026,85 +1108,95 @@ static int linphone_chat_room_refresh_composing(void *data, unsigned int revents
 }
 
 void linphone_chat_room_compose(LinphoneChatRoom *cr) {
-	int idle_timeout = lp_config_get_int(cr->lc->config, "sip", "composing_idle_timeout", COMPOSING_DEFAULT_IDLE_TIMEOUT);
-	int refresh_timeout = lp_config_get_int(cr->lc->config, "sip", "composing_refresh_timeout", COMPOSING_DEFAULT_REFRESH_TIMEOUT);
+	int idle_timeout =
+		lp_config_get_int(cr->lc->config, "sip", "composing_idle_timeout", COMPOSING_DEFAULT_IDLE_TIMEOUT);
+	int refresh_timeout =
+		lp_config_get_int(cr->lc->config, "sip", "composing_refresh_timeout", COMPOSING_DEFAULT_REFRESH_TIMEOUT);
 	if (cr->is_composing == LinphoneIsComposingIdle) {
 		cr->is_composing = LinphoneIsComposingActive;
 		linphone_chat_room_send_is_composing_notification(cr);
 		if (!cr->composing_refresh_timer) {
-			cr->composing_refresh_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_refresh_composing, cr, refresh_timeout * 1000, "composing refresh timeout");
+			cr->composing_refresh_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_refresh_composing, cr,
+														   refresh_timeout * 1000, "composing refresh timeout");
 		} else {
 			belle_sip_source_set_timeout(cr->composing_refresh_timer, refresh_timeout * 1000);
 		}
 		if (!cr->composing_idle_timer) {
-			cr->composing_idle_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_stop_composing, cr, idle_timeout * 1000, "composing idle timeout");
+			cr->composing_idle_timer = sal_create_timer(cr->lc->sal, linphone_chat_room_stop_composing, cr,
+														idle_timeout * 1000, "composing idle timeout");
 		}
 	}
 	belle_sip_source_set_timeout(cr->composing_idle_timer, idle_timeout * 1000);
 }
 
-const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state) {
+const char *linphone_chat_message_state_to_string(const LinphoneChatMessageState state) {
 	switch (state) {
-		case LinphoneChatMessageStateIdle:return "LinphoneChatMessageStateIdle";
-		case LinphoneChatMessageStateInProgress:return "LinphoneChatMessageStateInProgress";
-		case LinphoneChatMessageStateDelivered:return "LinphoneChatMessageStateDelivered";
-		case LinphoneChatMessageStateNotDelivered:return "LinphoneChatMessageStateNotDelivered";
-		case LinphoneChatMessageStateFileTransferError:return "LinphoneChatMessageStateFileTransferError";
-		case LinphoneChatMessageStateFileTransferDone: return "LinphoneChatMessageStateFileTransferDone ";
+	case LinphoneChatMessageStateIdle:
+		return "LinphoneChatMessageStateIdle";
+	case LinphoneChatMessageStateInProgress:
+		return "LinphoneChatMessageStateInProgress";
+	case LinphoneChatMessageStateDelivered:
+		return "LinphoneChatMessageStateDelivered";
+	case LinphoneChatMessageStateNotDelivered:
+		return "LinphoneChatMessageStateNotDelivered";
+	case LinphoneChatMessageStateFileTransferError:
+		return "LinphoneChatMessageStateFileTransferError";
+	case LinphoneChatMessageStateFileTransferDone:
+		return "LinphoneChatMessageStateFileTransferDone ";
 	}
 	return NULL;
 }
 
-LinphoneChatRoom* linphone_chat_message_get_chat_room(LinphoneChatMessage *msg){
+LinphoneChatRoom *linphone_chat_message_get_chat_room(LinphoneChatMessage *msg) {
 	return msg->chat_room;
 }
 
-const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg) {
+const LinphoneAddress *linphone_chat_message_get_peer_address(LinphoneChatMessage *msg) {
 	return linphone_chat_room_get_peer_address(msg->chat_room);
 }
 
-void linphone_chat_message_set_user_data(LinphoneChatMessage* message,void* ud) {
-	message->message_userdata=ud;
+void linphone_chat_message_set_user_data(LinphoneChatMessage *msg, void *ud) {
+	msg->message_userdata = ud;
 }
 
-void* linphone_chat_message_get_user_data(const LinphoneChatMessage* message) {
-	return message->message_userdata;
+void *linphone_chat_message_get_user_data(const LinphoneChatMessage *msg) {
+	return msg->message_userdata;
 }
 
-const char* linphone_chat_message_get_external_body_url(const LinphoneChatMessage* message) {
-	return message->external_body_url;
+const char *linphone_chat_message_get_external_body_url(const LinphoneChatMessage *msg) {
+	return msg->external_body_url;
 }
 
-void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message, const char* url) {
-	if (message->external_body_url) {
-		ms_free(message->external_body_url);
+void linphone_chat_message_set_external_body_url(LinphoneChatMessage *msg, const char *url) {
+	if (msg->external_body_url) {
+		ms_free(msg->external_body_url);
 	}
-	message->external_body_url=url?ms_strdup(url):NULL;
+	msg->external_body_url = url ? ms_strdup(url) : NULL;
 }
 
-const char* linphone_chat_message_get_appdata(const LinphoneChatMessage* message){
-	return message->appdata;
+const char *linphone_chat_message_get_appdata(const LinphoneChatMessage *msg) {
+	return msg->appdata;
 }
 
-void linphone_chat_message_set_appdata(LinphoneChatMessage* message, const char* data){
-	if ( message->appdata ){
-		ms_free(message->appdata);
+void linphone_chat_message_set_appdata(LinphoneChatMessage *msg, const char *data) {
+	if (msg->appdata) {
+		ms_free(msg->appdata);
 	}
-	message->appdata = data? ms_strdup(data) : NULL;
-	linphone_chat_message_store_appdata(message);
+	msg->appdata = data ? ms_strdup(data) : NULL;
+	linphone_chat_message_store_appdata(msg);
 }
 
-
-const LinphoneContent *linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage*message) {
-	return message->file_transfer_information;
+const LinphoneContent *linphone_chat_message_get_file_transfer_information(const LinphoneChatMessage *msg) {
+	return msg->file_transfer_information;
 }
 
-static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *msg, void *data, size_t offset, const uint8_t *buffer, size_t size){
-	LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
-	LinphoneCore *lc = chatMsg->chat_room->lc;
+static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, void *data, size_t offset,
+						 const uint8_t *buffer, size_t size) {
+	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
+	LinphoneCore *lc = msg->chat_room->lc;
 
-	if (!chatMsg->http_request || belle_http_request_is_cancelled(chatMsg->http_request)) {
-		ms_warning("Cancelled request for msg [%p], ignoring %s", chatMsg, __FUNCTION__);
+	if (!msg->http_request || belle_http_request_is_cancelled(msg->http_request)) {
+		ms_warning("Cancelled request for msg [%p], ignoring %s", msg, __FUNCTION__);
 		return;
 	}
 
@@ -1113,52 +1205,58 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 		return;
 	}
 
-	if (linphone_content_get_key(chatMsg->file_transfer_information) != NULL) { /* we have a key, we must decrypt the file */
+	if (linphone_content_get_key(msg->file_transfer_information) !=
+		NULL) { /* we have a key, we must decrypt the file */
 		/* get data from callback to a plainBuffer */
 		char *plainBuffer = (char *)malloc(size);
-		lime_decryptFile(linphone_content_get_cryptoContext_address(chatMsg->file_transfer_information), (unsigned char *)linphone_content_get_key(chatMsg->file_transfer_information), size, plainBuffer, (char *)buffer);
-		if (linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)) {
+		lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
+						 (unsigned char *)linphone_content_get_key(msg->file_transfer_information), size, plainBuffer,
+						 (char *)buffer);
+		if (linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)) {
 			LinphoneBuffer *lb = linphone_buffer_new_from_data((unsigned char *)plainBuffer, size);
-			linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, lb);
+			linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)(msg, msg->file_transfer_information, lb);
 			linphone_buffer_unref(lb);
 		} else {
 			/* legacy: call back given by application level */
-			linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, plainBuffer, size);
+			linphone_core_notify_file_transfer_recv(lc, msg, msg->file_transfer_information, plainBuffer, size);
 		}
 		free(plainBuffer);
 	} else { /* regular file, no deciphering */
-		if (linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)) {
+		if (linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)) {
 			LinphoneBuffer *lb = linphone_buffer_new_from_data(buffer, size);
-			linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, lb);
+			linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)(msg, msg->file_transfer_information, lb);
 			linphone_buffer_unref(lb);
 		} else {
 			/* Legacy: call back given by application level */
-			linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, (char *)buffer, size);
+			linphone_core_notify_file_transfer_recv(lc, msg, msg->file_transfer_information, (char *)buffer, size);
 		}
 	}
 
 	return;
 }
 
-
-static LinphoneContent* linphone_chat_create_file_transfer_information_from_headers(const belle_sip_message_t* message ){
+static LinphoneContent *linphone_chat_create_file_transfer_information_from_headers(const belle_sip_message_t *m) {
 	LinphoneContent *content = linphone_content_new();
 
-	belle_sip_header_content_length_t* content_length_hdr = BELLE_SIP_HEADER_CONTENT_LENGTH(belle_sip_message_get_header(message, "Content-Length"));
-	belle_sip_header_content_type_t* content_type_hdr = BELLE_SIP_HEADER_CONTENT_TYPE(belle_sip_message_get_header(message, "Content-Type"));
-	const char* type = NULL,*subtype = NULL;
+	belle_sip_header_content_length_t *content_length_hdr =
+		BELLE_SIP_HEADER_CONTENT_LENGTH(belle_sip_message_get_header(m, "Content-Length"));
+	belle_sip_header_content_type_t *content_type_hdr =
+		BELLE_SIP_HEADER_CONTENT_TYPE(belle_sip_message_get_header(m, "Content-Type"));
+	const char *type = NULL, *subtype = NULL;
 
 	linphone_content_set_name(content, "");
 
-	if( content_type_hdr ){
+	if (content_type_hdr) {
 		type = belle_sip_header_content_type_get_type(content_type_hdr);
 		subtype = belle_sip_header_content_type_get_subtype(content_type_hdr);
-		ms_message("Extracted content type %s / %s from header", type?type:"", subtype?subtype:"");
-		if( type ) linphone_content_set_type(content, type);
-		if( subtype ) linphone_content_set_subtype(content, subtype);
+		ms_message("Extracted content type %s / %s from header", type ? type : "", subtype ? subtype : "");
+		if (type)
+			linphone_content_set_type(content, type);
+		if (subtype)
+			linphone_content_set_subtype(content, subtype);
 	}
 
-	if( content_length_hdr ){
+	if (content_length_hdr) {
 		linphone_content_set_size(content, belle_sip_header_content_length_get_content_length(content_length_hdr));
 		ms_message("Extracted content length %i from header", (int)linphone_content_get_size(content));
 	}
@@ -1166,32 +1264,35 @@ static LinphoneContent* linphone_chat_create_file_transfer_information_from_head
 	return content;
 }
 
-static void linphone_chat_process_response_headers_from_get_file(void *data, const belle_http_response_event_t *event){
-	if (event->response){
+static void linphone_chat_process_response_headers_from_get_file(void *data, const belle_http_response_event_t *event) {
+	if (event->response) {
 		/*we are receiving a response, set a specific body handler to acquire the response.
 		 * if not done, belle-sip will create a memory body handler, the default*/
-		LinphoneChatMessage *message=(LinphoneChatMessage *)belle_sip_object_data_get(BELLE_SIP_OBJECT(event->request),"message");
-		belle_sip_message_t* response = BELLE_SIP_MESSAGE(event->response);
+		LinphoneChatMessage *msg =
+			(LinphoneChatMessage *)belle_sip_object_data_get(BELLE_SIP_OBJECT(event->request), "msg");
+		belle_sip_message_t *response = BELLE_SIP_MESSAGE(event->response);
 		size_t body_size = 0;
 
-		if( message->file_transfer_information == NULL ){
-			ms_warning("No file transfer information for message %p: creating...", message);
-			message->file_transfer_information = linphone_chat_create_file_transfer_information_from_headers(response);
+		if (msg->file_transfer_information == NULL) {
+			ms_warning("No file transfer information for msg %p: creating...", msg);
+			msg->file_transfer_information = linphone_chat_create_file_transfer_information_from_headers(response);
 		}
 
-		if( message->file_transfer_information ){
-			body_size = linphone_content_get_size(message->file_transfer_information);
+		if (msg->file_transfer_information) {
+			body_size = linphone_content_get_size(msg->file_transfer_information);
 		}
 
-		if (message->file_transfer_filepath == NULL) {
+		if (msg->file_transfer_filepath == NULL) {
 			belle_sip_message_set_body_handler(
-				(belle_sip_message_t*)event->response,
-				(belle_sip_body_handler_t*)belle_sip_user_body_handler_new(body_size, linphone_chat_message_file_transfer_on_progress,on_recv_body,NULL,message)
-			);
+				(belle_sip_message_t *)event->response,
+				(belle_sip_body_handler_t *)belle_sip_user_body_handler_new(
+					body_size, linphone_chat_message_file_transfer_on_progress, on_recv_body, NULL, msg));
 		} else {
-			belle_sip_body_handler_t *bh = (belle_sip_body_handler_t *)belle_sip_file_body_handler_new(message->file_transfer_filepath, linphone_chat_message_file_transfer_on_progress, message);
+			belle_sip_body_handler_t *bh = (belle_sip_body_handler_t *)belle_sip_file_body_handler_new(
+				msg->file_transfer_filepath, linphone_chat_message_file_transfer_on_progress, msg);
 			if (belle_sip_body_handler_get_size(bh) == 0) {
-				/* If the size of the body has not been initialized from the file stat, use the one from the file_transfer_information. */
+				/* If the size of the body has not been initialized from the file stat, use the one from the
+				 * file_transfer_information. */
 				belle_sip_body_handler_set_size(bh, body_size);
 			}
 			belle_sip_message_set_body_handler((belle_sip_message_t *)event->response, bh);
@@ -1199,156 +1300,150 @@ static void linphone_chat_process_response_headers_from_get_file(void *data, con
 	}
 }
 
-static void linphone_chat_process_response_from_get_file(void *data, const belle_http_response_event_t *event){
+static void linphone_chat_process_response_from_get_file(void *data, const belle_http_response_event_t *event) {
 	/* check the answer code */
-	if (event->response){
-		int code=belle_http_response_get_status_code(event->response);
-		if (code==200) {
-			LinphoneChatMessage* chatMsg=(LinphoneChatMessage *)data;
-			LinphoneCore *lc = chatMsg->chat_room->lc;
+	if (event->response) {
+		int code = belle_http_response_get_status_code(event->response);
+		if (code == 200) {
+			LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
+			LinphoneCore *lc = msg->chat_room->lc;
 			/* if the file was encrypted, finish the decryption and free context */
-			if (linphone_content_get_key(chatMsg->file_transfer_information) != NULL) {
-				lime_decryptFile(linphone_content_get_cryptoContext_address(chatMsg->file_transfer_information), NULL, 0, NULL, NULL);
+			if (linphone_content_get_key(msg->file_transfer_information) != NULL) {
+				lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0,
+								 NULL, NULL);
 			}
 			/* file downloaded succesfully, call again the callback with size at zero */
-			if (linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)) {
+			if (linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)) {
 				LinphoneBuffer *lb = linphone_buffer_new();
-				linphone_chat_message_cbs_get_file_transfer_recv(chatMsg->callbacks)(chatMsg, chatMsg->file_transfer_information, lb);
+				linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)(msg, msg->file_transfer_information,
+																				 lb);
 				linphone_buffer_unref(lb);
 			} else {
-				linphone_core_notify_file_transfer_recv(lc, chatMsg, chatMsg->file_transfer_information, NULL, 0);
+				linphone_core_notify_file_transfer_recv(lc, msg, msg->file_transfer_information, NULL, 0);
 			}
-			chatMsg->state = LinphoneChatMessageStateFileTransferDone;
-			if (chatMsg->cb) {
-				chatMsg->cb(chatMsg, chatMsg->state, chatMsg->cb_ud);
-			}
-			if (linphone_chat_message_cbs_get_msg_state_changed(chatMsg->callbacks)) {
-				linphone_chat_message_cbs_get_msg_state_changed(chatMsg->callbacks)(chatMsg, chatMsg->state);
-			}
+			linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
 		}
 	}
 }
 
-void linphone_chat_message_download_file(LinphoneChatMessage *message) {
-	belle_http_request_listener_callbacks_t cbs={0};
+void linphone_chat_message_download_file(LinphoneChatMessage *msg) {
+	belle_http_request_listener_callbacks_t cbs = {0};
 	belle_http_request_listener_t *l;
 	belle_generic_uri_t *uri;
-	const char *url=message->external_body_url;
-	char* ua;
+	const char *url = msg->external_body_url;
+	char *ua;
 
 	if (url == NULL) {
-		ms_error("Cannot download file from chat message [%p] because url is NULL",message);
+		ms_error("Cannot download file from chat msg [%p] because url is NULL", msg);
 		return;
 	}
 	ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
-	uri=belle_generic_uri_parse(url);
+	uri = belle_generic_uri_parse(url);
 
-	message->http_request=belle_http_request_create("GET",
-				uri,
-				belle_sip_header_create("User-Agent",ua),
-				NULL);
-	belle_sip_object_ref(message->http_request);	/* keep a reference on the request to be able to cancel the download */
+	msg->http_request = belle_http_request_create("GET", uri, belle_sip_header_create("User-Agent", ua), NULL);
+	belle_sip_object_ref(msg->http_request); /* keep a reference on the request to be able to cancel the download */
 	ms_free(ua);
 
-	cbs.process_response_headers=linphone_chat_process_response_headers_from_get_file;
-	cbs.process_response=linphone_chat_process_response_from_get_file;
-	cbs.process_io_error=process_io_error_download;
-	cbs.process_auth_requested=process_auth_requested_download;
-	l=belle_http_request_listener_create_from_callbacks(&cbs, (void *)message);
-	belle_sip_object_data_set(BELLE_SIP_OBJECT(message->http_request),"message",(void *)message,NULL);
-	message->state = LinphoneChatMessageStateInProgress; /* start the download, status is In Progress */
-	belle_http_provider_send_request(message->chat_room->lc->http_provider,message->http_request,l);
+	cbs.process_response_headers = linphone_chat_process_response_headers_from_get_file;
+	cbs.process_response = linphone_chat_process_response_from_get_file;
+	cbs.process_io_error = process_io_error_download;
+	cbs.process_auth_requested = process_auth_requested_download;
+	l = belle_http_request_listener_create_from_callbacks(&cbs, (void *)msg);
+	belle_sip_object_data_set(BELLE_SIP_OBJECT(msg->http_request), "msg", (void *)msg, NULL);
+	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress); /* start the download, status is In Progress */
+	belle_http_provider_send_request(msg->chat_room->lc->http_provider, msg->http_request, l);
 }
 
-void linphone_chat_message_start_file_download(LinphoneChatMessage *message, LinphoneChatMessageStateChangedCb status_cb, void *ud) {
-	message->cb = status_cb;
-	message->cb_ud = ud;
-	linphone_chat_message_download_file(message);
+void linphone_chat_message_start_file_download(LinphoneChatMessage *msg,
+											   LinphoneChatMessageStateChangedCb status_cb, void *ud) {
+	msg->message_state_changed_cb = status_cb;
+	msg->message_state_changed_user_data = ud;
+	linphone_chat_message_download_file(msg);
 }
 
 void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 	if (msg->http_request) {
 		if (!belle_http_request_is_cancelled(msg->http_request)) {
-			ms_message("Cancelling file transfer %s - msg [%p] chat room[%p]", (msg->external_body_url==NULL)?linphone_core_get_file_transfer_server(msg->chat_room->lc):msg->external_body_url, msg, msg->chat_room);
+			ms_message("Cancelling file transfer %s - msg [%p] chat room[%p]",
+					   (msg->external_body_url == NULL) ? linphone_core_get_file_transfer_server(msg->chat_room->lc)
+														: msg->external_body_url,
+					   msg, msg->chat_room);
 
 			belle_http_provider_cancel_request(msg->chat_room->lc->http_provider, msg->http_request);
 			belle_sip_object_unref(msg->http_request);
 			msg->http_request = NULL;
-			msg->state = LinphoneChatMessageStateNotDelivered;
-			if (msg->cb) {
-				msg->cb(msg, msg->state, msg->cb_ud);
-			}
-			if (linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)) {
-				linphone_chat_message_cbs_get_msg_state_changed(msg->callbacks)(msg, msg->state);
-			}
+			linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
 		}
 	} else {
 		ms_message("No existing file transfer - nothing to cancel");
 	}
 }
 
-
-void linphone_chat_message_set_from_address(LinphoneChatMessage* message, const LinphoneAddress* from) {
-	if(message->from) linphone_address_destroy(message->from);
-	message->from=linphone_address_clone(from);
+void linphone_chat_message_set_from_address(LinphoneChatMessage *msg, const LinphoneAddress *from) {
+	if (msg->from)
+		linphone_address_destroy(msg->from);
+	msg->from = linphone_address_clone(from);
 }
 
-const LinphoneAddress* linphone_chat_message_get_from_address(const LinphoneChatMessage* message) {
-	return message->from;
+const LinphoneAddress *linphone_chat_message_get_from_address(const LinphoneChatMessage *msg) {
+	return msg->from;
 }
 
-void linphone_chat_message_set_to_address(LinphoneChatMessage* message, const LinphoneAddress* to) {
-	if(message->to) linphone_address_destroy(message->to);
-	message->to=linphone_address_clone(to);
+void linphone_chat_message_set_to_address(LinphoneChatMessage *msg, const LinphoneAddress *to) {
+	if (msg->to)
+		linphone_address_destroy(msg->to);
+	msg->to = linphone_address_clone(to);
 }
 
-const LinphoneAddress* linphone_chat_message_get_to_address(const LinphoneChatMessage* message){
-	if (message->to) return message->to;
-	if (message->dir==LinphoneChatMessageOutgoing){
-		return message->chat_room->peer_url;
+const LinphoneAddress *linphone_chat_message_get_to_address(const LinphoneChatMessage *msg) {
+	if (msg->to)
+		return msg->to;
+	if (msg->dir == LinphoneChatMessageOutgoing) {
+		return msg->chat_room->peer_url;
 	}
 	return NULL;
 }
 
-LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage* message){
-	return message->dir==LinphoneChatMessageOutgoing ? message->from : message->to;
+LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage *msg) {
+	return msg->dir == LinphoneChatMessageOutgoing ? msg->from : msg->to;
 }
 
-time_t linphone_chat_message_get_time(const LinphoneChatMessage* message) {
-	return message->time;
+time_t linphone_chat_message_get_time(const LinphoneChatMessage *msg) {
+	return msg->time;
 }
 
-LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message) {
-	return message->state;
+LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage *msg) {
+	return msg->state;
 }
 
-const char * linphone_chat_message_get_text(const LinphoneChatMessage* message) {
-	return message->message;
+const char *linphone_chat_message_get_text(const LinphoneChatMessage *msg) {
+	return msg->message;
 }
 
-void linphone_chat_message_add_custom_header(LinphoneChatMessage* message, const char *header_name, const char *header_value){
-	message->custom_headers=sal_custom_header_append(message->custom_headers,header_name,header_value);
+void linphone_chat_message_add_custom_header(LinphoneChatMessage *msg, const char *header_name,
+											 const char *header_value) {
+	msg->custom_headers = sal_custom_header_append(msg->custom_headers, header_name, header_value);
 }
 
-const char * linphone_chat_message_get_custom_header(LinphoneChatMessage* message, const char *header_name){
-	return sal_custom_header_find(message->custom_headers,header_name);
+const char *linphone_chat_message_get_custom_header(LinphoneChatMessage *msg, const char *header_name) {
+	return sal_custom_header_find(msg->custom_headers, header_name);
 }
 
-bool_t linphone_chat_message_is_read(LinphoneChatMessage* message) {
-	return message->is_read;
+bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {
+	return msg->is_read;
 }
 
-bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* message) {
-	return message->dir == LinphoneChatMessageOutgoing;
+bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage *msg) {
+	return msg->dir == LinphoneChatMessageOutgoing;
 }
 
-unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage* message) {
-	return message->storage_id;
+unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage *msg) {
+	return msg->storage_id;
 }
 
-LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg) {
+LinphoneChatMessage *linphone_chat_message_clone(const LinphoneChatMessage *msg) {
 	/*struct _LinphoneChatMessage {
-	 char* message;
+	 char* msg;
 	 LinphoneChatRoom* chat_room;
 	 LinphoneChatMessageStateChangeCb cb;
 	 void* cb_ud;
@@ -1359,35 +1454,47 @@ LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* msg)
 	 SalCustomHeader *custom_headers;
 	 LinphoneChatMessageState state;
 	 };*/
-	LinphoneChatMessage* new_message = linphone_chat_room_create_message(msg->chat_room,msg->message);
-	if (msg->external_body_url) new_message->external_body_url=ms_strdup(msg->external_body_url);
-	if (msg->appdata) new_message->appdata = ms_strdup(msg->appdata);
-	new_message->cb=msg->cb;
-	new_message->cb_ud=msg->cb_ud;
-	new_message->message_userdata=msg->message_userdata;
-	new_message->cb=msg->cb;
-	new_message->time=msg->time;
-	new_message->state=msg->state;
-	new_message->storage_id=msg->storage_id;
-	if (msg->from) new_message->from=linphone_address_clone(msg->from);
-	if (msg->file_transfer_filepath) new_message->file_transfer_filepath=ms_strdup(msg->file_transfer_filepath);
-	if (msg->file_transfer_information) new_message->file_transfer_information=linphone_content_copy(msg->file_transfer_information);
+	LinphoneChatMessage *new_message = linphone_chat_room_create_message(msg->chat_room, msg->message);
+	if (msg->external_body_url)
+		new_message->external_body_url = ms_strdup(msg->external_body_url);
+	if (msg->appdata)
+		new_message->appdata = ms_strdup(msg->appdata);
+	new_message->message_state_changed_cb = msg->message_state_changed_cb;
+	new_message->message_state_changed_user_data = msg->message_state_changed_user_data;
+	new_message->message_userdata = msg->message_userdata;
+	new_message->time = msg->time;
+	new_message->state = msg->state;
+	new_message->storage_id = msg->storage_id;
+	if (msg->from)
+		new_message->from = linphone_address_clone(msg->from);
+	if (msg->file_transfer_filepath)
+		new_message->file_transfer_filepath = ms_strdup(msg->file_transfer_filepath);
+	if (msg->file_transfer_information)
+		new_message->file_transfer_information = linphone_content_copy(msg->file_transfer_information);
 	return new_message;
 }
 
-void linphone_chat_message_destroy(LinphoneChatMessage* msg){
+void linphone_chat_message_destroy(LinphoneChatMessage *msg) {
 	belle_sip_object_unref(msg);
 }
 
-static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
-	if (msg->op) sal_op_release(msg->op);
-	if (msg->message) ms_free(msg->message);
-	if (msg->external_body_url) ms_free(msg->external_body_url);
-	if (msg->appdata) ms_free(msg->appdata);
-	if (msg->from) linphone_address_destroy(msg->from);
-	if (msg->to) linphone_address_destroy(msg->to);
-	if (msg->custom_headers) sal_custom_header_free(msg->custom_headers);
-	if (msg->content_type) ms_free(msg->content_type);
+static void _linphone_chat_message_destroy(LinphoneChatMessage *msg) {
+	if (msg->op)
+		sal_op_release(msg->op);
+	if (msg->message)
+		ms_free(msg->message);
+	if (msg->external_body_url)
+		ms_free(msg->external_body_url);
+	if (msg->appdata)
+		ms_free(msg->appdata);
+	if (msg->from)
+		linphone_address_destroy(msg->from);
+	if (msg->to)
+		linphone_address_destroy(msg->to);
+	if (msg->custom_headers)
+		sal_custom_header_free(msg->custom_headers);
+	if (msg->content_type)
+		ms_free(msg->content_type);
 	if (msg->file_transfer_information) {
 		linphone_content_unref(msg->file_transfer_information);
 	}
@@ -1397,29 +1504,28 @@ static void _linphone_chat_message_destroy(LinphoneChatMessage* msg) {
 	linphone_chat_message_cbs_unref(msg->callbacks);
 }
 
-LinphoneChatMessage * linphone_chat_message_ref(LinphoneChatMessage *msg){
+LinphoneChatMessage *linphone_chat_message_ref(LinphoneChatMessage *msg) {
 	belle_sip_object_ref(msg);
 	return msg;
 }
 
-void linphone_chat_message_unref(LinphoneChatMessage *msg){
+void linphone_chat_message_unref(LinphoneChatMessage *msg) {
 	belle_sip_object_unref(msg);
 }
 
-static void linphone_chat_message_release(LinphoneChatMessage *msg){
-	/*mark the chat message as orphan (it has no chat room anymore), and unref it*/
+static void linphone_chat_message_release(LinphoneChatMessage *msg) {
+	/*mark the chat msg as orphan (it has no chat room anymore), and unref it*/
 	msg->chat_room = NULL;
 	linphone_chat_message_unref(msg);
 }
 
-const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg){
+const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg) {
 	return linphone_error_info_from_sal_op(msg->op);
 }
 
-LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage* msg) {
+LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage *msg) {
 	return linphone_error_info_get_reason(linphone_chat_message_get_error_info(msg));
 }
-
 
 void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, const char *filepath) {
 	if (msg->file_transfer_filepath != NULL) {
@@ -1428,25 +1534,28 @@ void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, 
 	msg->file_transfer_filepath = ms_strdup(filepath);
 }
 
-const char * linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg) {
+const char *linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg) {
 	return msg->file_transfer_filepath;
 }
 
-LinphoneChatMessageCbs * linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg) {
+LinphoneChatMessageCbs *linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg) {
 	return msg->callbacks;
 }
 
-LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent* initial_content) {
-	LinphoneChatMessage* msg = belle_sip_object_new(LinphoneChatMessage);
-	msg->callbacks=linphone_chat_message_cbs_new();
-	msg->chat_room=(LinphoneChatRoom*)cr;
+LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr,
+																	 const LinphoneContent *initial_content) {
+	LinphoneChatMessage *msg = belle_sip_object_new(LinphoneChatMessage);
+	msg->callbacks = linphone_chat_message_cbs_new();
+	msg->chat_room = (LinphoneChatRoom *)cr;
 	msg->message = NULL;
-	msg->is_read=TRUE;
+	msg->is_read = TRUE;
 	msg->file_transfer_information = linphone_content_copy(initial_content);
-	msg->dir=LinphoneChatMessageOutgoing;
+	msg->dir = LinphoneChatMessageOutgoing;
 	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
 	linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(cr->lc)));
-	msg->content_type=NULL; /* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
-	msg->http_request=NULL; /* this will store the http request during file upload to the server */
+	msg->content_type =
+		NULL; /* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from
+				 server to the peers */
+	msg->http_request = NULL; /* this will store the http request during file upload to the server */
 	return msg;
 }

@@ -115,7 +115,9 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 
 	if (file){
 		filepath = ms_strdup_printf("%s/%s", path, file);
-		BC_ASSERT_EQUAL_FATAL(ortp_file_exist(filepath),0,int, "%d");
+		if (ortp_file_exist(filepath) != 0) {
+			ms_fatal("Could not find file %s in path %s, did you configured resources directory correctly?", file, path);
+		}
 		config = lp_config_new_with_factory(NULL,filepath);
 	}
 
@@ -438,6 +440,9 @@ void liblinphone_tester_add_suites() {
 #endif
 	bc_tester_add_suite(&multicast_call_test_suite);
 	bc_tester_add_suite(&proxy_config_test_suite);
+#if HAVE_SIPP
+	bc_tester_add_suite(&complex_sip_call_test_suite);
+#endif
 }
 
 static int linphone_core_manager_get_max_audio_bw_base(const int array[],int array_size) {
@@ -474,12 +479,10 @@ int linphone_core_manager_get_mean_audio_up_bw(const LinphoneCoreManager *mgr) {
 			, sizeof(mgr->stat.audio_upload_bandwidth)/sizeof(int));
 }
 
-int liblinphone_tester_setup() {
+void liblinphone_tester_before_each() {
 	if (manager_count != 0) {
 		// crash in some linphone core have not been destroyed because if we continue
 		// it will crash in CUnit AND we should NEVER keep a manager alive
-		ms_fatal("%d linphone core manager still alive!", manager_count);
-		return 1;
+		ms_fatal("%d linphone core managers are still alive!", manager_count);
 	}
-	return 0;
 }

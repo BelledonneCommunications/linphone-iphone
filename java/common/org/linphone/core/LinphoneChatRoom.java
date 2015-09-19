@@ -77,11 +77,6 @@ public interface LinphoneChatRoom {
 	LinphoneChatMessage[] getHistoryRange(int begin, int end);
 
 	/**
-	 * Destroys a LinphoneChatRoom.
-	 */
-	void destroy();
-
-	/**
 	 * Returns the amount of unread messages associated with the peer of this chatRoom.
 	 * @return the amount of unread messages
 	 */

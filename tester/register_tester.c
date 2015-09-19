@@ -358,8 +358,8 @@ static void authenticated_register_with_no_initial_credentials(){
 static void authenticated_register_with_late_credentials(){
 	LinphoneCoreManager *lcm;
 	stats* counters;
-	LCSipTransports transport = {5070,5070,0,5071};
 	char route[256];
+	LCSipTransports transport = {5070,5070,0,5071};
 
 	sprintf(route,"sip:%s",test_route);
 
@@ -368,6 +368,46 @@ static void authenticated_register_with_late_credentials(){
 	counters = get_stats(lcm->lc);
 	register_with_refresh_base_2(lcm->lc,FALSE,auth_domain,route,TRUE,transport);
 	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,1, int, "%d");
+	linphone_core_manager_destroy(lcm);
+}
+
+static void authenticated_register_with_provided_credentials(){
+	LinphoneCoreManager *lcm;
+	stats* counters;
+	LinphoneProxyConfig *cfg;
+	char route[256];
+	LinphoneAddress *from;
+	char *addr;
+	LinphoneAuthInfo *ai;
+
+	sprintf(route,"sip:%s",test_route);
+
+	lcm =  linphone_core_manager_new(NULL);
+
+	counters = get_stats(lcm->lc);
+	cfg = linphone_core_create_proxy_config(lcm->lc);
+	from = create_linphone_address(auth_domain);
+
+	linphone_proxy_config_set_identity(cfg, addr=linphone_address_as_string(from));
+	ms_free(addr);
+
+	linphone_proxy_config_enable_register(cfg,TRUE);
+	linphone_proxy_config_set_expires(cfg,1);
+	linphone_proxy_config_set_route(cfg, test_route);
+	linphone_proxy_config_set_server_addr(cfg,test_route);
+	linphone_address_destroy(from);
+	
+	ai = linphone_auth_info_new(test_username, NULL, test_password, NULL, NULL, NULL);
+	linphone_core_add_auth_info(lcm->lc, ai);
+
+	linphone_core_add_proxy_config(lcm->lc, cfg);
+	
+	BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,1));
+	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
+	
+	BC_ASSERT_PTR_NULL(lp_config_get_string(lcm->lc->config, "auth_info_0", "passwd", NULL));
+	BC_ASSERT_PTR_NOT_NULL(lp_config_get_string(lcm->lc->config, "auth_info_0", "ha1", NULL));
+	
 	linphone_core_manager_destroy(lcm);
 }
 
@@ -877,6 +917,7 @@ test_t register_tests[] = {
 	{ "Digest auth with wrong credentials without 403", authenticated_register_with_wrong_credentials_without_403},
 	{ "Authenticated register with wrong late credentials", authenticated_register_with_wrong_late_credentials},
 	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },
+	{ "Authenticated register with provided credentials", authenticated_register_with_provided_credentials },
 	{ "Register with refresh", simple_register_with_refresh },
 	{ "Authenticated register with refresh", simple_auth_register_with_refresh },
 	{ "Register with refresh and send error", register_with_refresh_with_send_error },
@@ -894,11 +935,5 @@ test_t register_tests[] = {
 	{ "Simple redirect", redirect}
 };
 
-test_suite_t register_test_suite = {
-	"Register",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(register_tests) / sizeof(register_tests[0]),
-	register_tests
-};
-
+test_suite_t register_test_suite = {"Register", NULL, NULL, liblinphone_tester_before_each, NULL,
+									sizeof(register_tests) / sizeof(register_tests[0]), register_tests};

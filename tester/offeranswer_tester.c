@@ -350,7 +350,7 @@ static void compatible_avpf_features(void) {
 
 	BC_ASSERT_TRUE((call_ok=call(marie, pauline)));
 	if (!call_ok) goto end;
-	
+
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 	check_avpf_features(marie->lc, lpt->avpf.features);
@@ -417,10 +417,5 @@ static test_t offeranswer_tests[] = {
 #endif
 };
 
-test_suite_t offeranswer_test_suite = {
-	"Offer-answer",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(offeranswer_tests) / sizeof(offeranswer_tests[0]),
-	offeranswer_tests
-};
+test_suite_t offeranswer_test_suite = {"Offer-answer", NULL, NULL, liblinphone_tester_before_each, NULL,
+									   sizeof(offeranswer_tests) / sizeof(offeranswer_tests[0]), offeranswer_tests};

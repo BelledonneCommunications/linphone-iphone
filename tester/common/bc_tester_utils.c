@@ -49,7 +49,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <malloc.h>
 #endif
 
-
 static char *bc_tester_resource_dir_prefix = NULL;
 static char *bc_tester_writable_dir_prefix = NULL;
 
@@ -82,7 +81,7 @@ void bc_tester_printf(int level, const char *fmt, ...) {
 int bc_tester_run_suite(test_suite_t *suite) {
 	int i;
 
-	CU_pSuite pSuite = CU_add_suite(suite->name, suite->init_func, suite->cleanup_func);
+	CU_pSuite pSuite = CU_add_suite(suite->name, suite->before_all, suite->after_all);
 
 	for (i = 0; i < suite->nb_tests; i++) {
 		if (NULL == CU_add_test(pSuite, suite->tests[i].name, suite->tests[i].func)) {
@@ -102,7 +101,7 @@ int bc_tester_suite_index(const char *suite_name) {
 	int i;
 
 	for (i = 0; i < nb_test_suites; i++) {
-		if ((strcmp(suite_name, test_suite[i]->name) == 0) && (strlen(suite_name) == strlen(test_suite[i]->name))) {
+		if (strcmp(suite_name, test_suite[i]->name) == 0) {
 			return i;
 		}
 	}
@@ -165,25 +164,35 @@ static void suite_start_message_handler(const CU_pSuite pSuite) {
 	suite_start_time = time(NULL);
 }
 static void suite_complete_message_handler(const CU_pSuite pSuite, const CU_pFailureRecord pFailure) {
-	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] ended in %lu sec\n", pSuite->pName, time(NULL) - suite_start_time);
+	bc_tester_printf(bc_printf_verbosity_info, "Suite [%s] ended in %lu sec\n", pSuite->pName,
+					 time(NULL) - suite_start_time);
 }
 
 static time_t test_start_time = 0;
 static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSuite) {
+	int suite_index = bc_tester_suite_index(pSuite->pName);
 	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] Test [%s] started", pSuite->pName,pTest->pName);
 	test_start_time = time(NULL);
+	if (test_suite[suite_index]->before_each) {
+		test_suite[suite_index]->before_each();
+	}
 }
 
 /*derivated from cunit*/
-static void test_complete_message_handler(const CU_pTest pTest,
-	const CU_pSuite pSuite,
-	const CU_pFailureRecord pFailureList) {
+static void test_complete_message_handler(const CU_pTest pTest, const CU_pSuite pSuite,
+										  const CU_pFailureRecord pFailureList) {
 	int i;
-	char result[2048];
-	char buffer[2048];
+	int suite_index = bc_tester_suite_index(pSuite->pName);
+	char result[2048]={0};
+	char buffer[2048]={0};
 	CU_pFailureRecord pFailure = pFailureList;
-	snprintf(result, sizeof(result), "Suite [%s] Test [%s] %s in %lu secs"
-			, pSuite->pName, pTest->pName, pFailure?"failed":"passed",(unsigned long)(time(NULL) - test_start_time));
+
+	if (test_suite[suite_index]->after_each) {
+		test_suite[suite_index]->after_each();
+	}
+
+	snprintf(result, sizeof(result), "Suite [%s] Test [%s] %s in %lu secs", pSuite->pName, pTest->pName,
+			 pFailure ? "failed" : "passed", (unsigned long)(time(NULL) - test_start_time));
 	if (pFailure) {
 		for (i = 1 ; (NULL != pFailure) ; pFailure = pFailure->pNext, i++) {
 			snprintf(buffer, sizeof(buffer), "\n    %d. %s:%u  - %s", i,
@@ -197,15 +206,20 @@ static void test_complete_message_handler(const CU_pTest pTest,
 #ifdef __linux
 	/* use mallinfo() to monitor allocated space. It is linux specific but other methods don't work:
 	 * setrlimit() RLIMIT_DATA doesn't count memory allocated via mmap() (which is used internally by malloc)
-	 * setrlimit() RLIMIT_AS works but also counts virtual memory allocated by thread stacks, which is very big and hardly controllable.
+	 * setrlimit() RLIMIT_AS works but also counts virtual memory allocated by thread stacks, which is very big and
+	 * hardly controllable.
 	 * setrlimit() RLIMIT_RSS does nothing interesting on linux.
-	 * getrusage() of RSS is unreliable: memory blocks can be leaked without being read or written, which would not appear in RSS.
+	 * getrusage() of RSS is unreliable: memory blocks can be leaked without being read or written, which would not
+	 * appear in RSS.
 	 * mallinfo() itself is the less worse solution. Allocated bytes are returned as 'int' so limited to 2GB
 	 */
-	if (max_vm_kb){
+	if (max_vm_kb) {
 		struct mallinfo minfo = mallinfo();
-		if (minfo.uordblks > max_vm_kb * 1024){
-			bc_tester_printf(bc_printf_verbosity_error, "The program exceeded the maximum ammount of memory allocatable (%i bytes), aborting now.\n", minfo.uordblks);
+		if (minfo.uordblks > max_vm_kb * 1024) {
+			bc_tester_printf(
+				bc_printf_verbosity_error,
+				"The program exceeded the maximum amount of memory allocatable (%i bytes), aborting now.\n",
+				minfo.uordblks);
 			abort();
 		}
 	}
@@ -281,30 +295,31 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 		}
 	}
 #ifdef __linux
-	bc_tester_printf(bc_printf_verbosity_info, "Still %i kilobytes allocated when all tests are finished.", mallinfo().uordblks/1024);
+	bc_tester_printf(bc_printf_verbosity_info, "Still %i kilobytes allocated when all tests are finished.",
+					 mallinfo().uordblks / 1024);
 #endif
-	
+
 	return CU_get_number_of_tests_failed()!=0;
 
 }
 
 
 void bc_tester_helper(const char *name, const char* additionnal_helper) {
-	bc_tester_printf(bc_printf_verbosity_info,"%s --help\n"
-		"\t\t\t--list-suites\n"
-		"\t\t\t--list-tests <suite>\n"
-		"\t\t\t--suite <suite name>\n"
-		"\t\t\t--test <test name>\n"
+	bc_tester_printf(bc_printf_verbosity_info,
+					 "%s --help\n"
+					 "\t\t\t--list-suites\n"
+					 "\t\t\t--list-tests <suite>\n"
+					 "\t\t\t--suite <suite name>\n"
+					 "\t\t\t--test <test name>\n"
 #ifdef HAVE_CU_CURSES
-		"\t\t\t--curses\n"
+					 "\t\t\t--curses\n"
 #endif
-		"\t\t\t--xml\n"
-		"\t\t\t--xml-file <xml file name>\n"
-		"\t\t\t--max-alloc <size in ko> (maximum ammount of memory obtained via malloc allocator)\n"
-		"And additionally:\n"
-		"%s"
-		, name
-		, additionnal_helper);
+					 "\t\t\t--xml\n"
+					 "\t\t\t--xml-file <xml file name>\n"
+					 "\t\t\t--max-alloc <size in ko> (maximum ammount of memory obtained via malloc allocator)\n"
+					 "And additionally:\n"
+					 "%s",
+					 name, additionnal_helper);
 }
 
 void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list args), int iverbosity_info, int iverbosity_error) {
@@ -329,19 +344,19 @@ void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list a
 	bc_printf_verbosity_info = iverbosity_info;
 }
 
-void bc_tester_set_max_vm(long max_vm_kb){
+void bc_tester_set_max_vm(long max_vm_kb) {
 #ifdef __linux
 	max_vm_kb = max_vm_kb;
 	bc_tester_printf(bc_printf_verbosity_info, "Maximum virtual memory space set to %li kilo bytes", max_vm_kb);
 #else
-	bc_tester_printf(bc_printf_verbosity_error,"Maximum virtual memory space setting is only implemented on Linux.");
+	bc_tester_printf(bc_printf_verbosity_error, "Maximum virtual memory space setting is only implemented on Linux.");
 #endif
 }
 
 int bc_tester_parse_args(int argc, char **argv, int argid)
 {
 	int i = argid;
-	
+
 	if (strcmp(argv[i],"--help")==0){
 		return -1;
 	} else if (strcmp(argv[i],"--test")==0){
@@ -364,7 +379,7 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 		xml_enabled = 1;
 	} else if (strcmp(argv[i], "--xml") == 0){
 		xml_enabled = 1;
-	} else if (strcmp(argv[i], "--max-alloc") == 0){
+	} else if (strcmp(argv[i], "--max-alloc") == 0) {
 		CHECK_ARG("--max-alloc", ++i, argc);
 		max_vm_kb = atol(argv[i]);
 	} else {
@@ -383,10 +398,10 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 
 int bc_tester_start(void) {
 	int ret;
-	
+
 	if (max_vm_kb)
 		bc_tester_set_max_vm(max_vm_kb);
-	
+
 	if( xml_enabled ){
 		size_t size = strlen(xml_file) + strlen(".tmp") + 1;
 		char * xml_tmp_file = malloc(sizeof(char) * size);

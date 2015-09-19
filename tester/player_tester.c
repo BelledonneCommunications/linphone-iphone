@@ -82,10 +82,5 @@ test_t player_tests[] = {
 	{	"Local MKV file"	,	playing_test	}
 };
 
-test_suite_t player_test_suite = {
-	"Player",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(player_tests) / sizeof(test_t),
-	player_tests
-};
+test_suite_t player_test_suite = {"Player", NULL, NULL, liblinphone_tester_before_each, NULL,
+								  sizeof(player_tests) / sizeof(test_t), player_tests};

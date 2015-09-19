@@ -511,9 +511,6 @@ static void early_media_call_forking(void) {
 	MSList *lcs=NULL;
 	LinphoneCallParams *params=linphone_core_create_default_call_parameters(pauline->lc);
 	LinphoneVideoPolicy pol;
-	LinphoneCall *marie1_call;
-	LinphoneCall *marie2_call;
-	LinphoneCall *pauline_call;
 	int dummy=0;
 
 	pol.automatically_accept=1;
@@ -548,18 +545,14 @@ static void early_media_call_forking(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,3000));
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1, int, "%d");
 
-	pauline_call=linphone_core_get_current_call(pauline->lc);
-	marie1_call=linphone_core_get_current_call(marie->lc);
-	marie2_call=linphone_core_get_current_call(marie2->lc);
-
 	/*wait a bit that streams are established*/
-	wait_for_list(lcs,&dummy,1,6000);
-	BC_ASSERT_GREATER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 60, int, "%d");
-	BC_ASSERT_LOWER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 99, int, "%d");
-	BC_ASSERT_GREATER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 60, int, "%d");
-	BC_ASSERT_LOWER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 99, int, "%d");
-	BC_ASSERT_GREATER(linphone_call_get_audio_stats(marie2_call)->download_bandwidth, 60, int, "%d");
-	BC_ASSERT_LOWER(linphone_call_get_audio_stats(marie2_call)->download_bandwidth, 99, int, "%d");
+	wait_for_list(lcs,&dummy,1,5000);
+	BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(pauline), 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_down_bw(pauline), 99, int, "%d");
+	BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie), 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_down_bw(marie), 99, int, "%d");
+	BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie2), 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_down_bw(marie2), 99, int, "%d");
 
 	linphone_core_accept_call(marie->lc,linphone_core_get_current_call(marie->lc));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,3000));
@@ -570,14 +563,12 @@ static void early_media_call_forking(void) {
 
 	/*wait a bit that streams are established*/
 	wait_for_list(lcs,&dummy,1,3000);
-	BC_ASSERT_GREATER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 60, int, "%d");
-	BC_ASSERT_LOWER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 99, int, "%d");
-	BC_ASSERT_GREATER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 60, int, "%d");
-	BC_ASSERT_LOWER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 99, int, "%d");
+	BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(pauline), 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_down_bw(pauline), 99, int, "%d");
+	BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(marie), 60, int, "%d");
+	BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_down_bw(marie), 99, int, "%d");
 
-	linphone_core_terminate_all_calls(pauline->lc);
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,5000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,5000));
+	end_call(pauline, marie);
 
 	ms_list_free(lcs);
 	linphone_core_manager_destroy(pauline);
@@ -772,7 +763,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
 		linphone_chat_room_send_chat_message(chat_room,message);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
-		fclose(file_to_send);
+		
 		if (marie->stat.last_received_chat_message ) {
 			cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
 			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
@@ -781,10 +772,10 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		}
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageFileTransferDone,1));
 
-		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
+		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d");
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1, int, "%d");
-		BC_ASSERT_TRUE(compare_files(send_filepath, receive_filepath));
+		compare_files(send_filepath, receive_filepath);
 
 		linphone_content_unref(content);
 		linphone_core_manager_destroy(marie);
@@ -926,13 +917,5 @@ test_t flexisip_tests[] = {
 	{ "DoS module trigger by sending a lot of chat messages", dos_module_trigger }
 };
 
-
-test_suite_t flexisip_test_suite = {
-	"Flexisip",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(flexisip_tests) / sizeof(flexisip_tests[0]),
-	flexisip_tests
-};
-
-
+test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, NULL,
+									sizeof(flexisip_tests) / sizeof(flexisip_tests[0]), flexisip_tests};

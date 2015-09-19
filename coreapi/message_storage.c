@@ -433,11 +433,6 @@ MSList *linphone_chat_room_get_history(LinphoneChatRoom *cr,int nb_message){
 	return linphone_chat_room_get_history_range(cr, 0, nb_message-1);
 }
 
-
-void linphone_close_storage(sqlite3* db){
-	sqlite3_close(db);
-}
-
 void linphone_create_table(sqlite3* db){
 	char* errmsg=NULL;
 	int ret;

@@ -430,13 +430,13 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 
 	linphone_core_invite_address_with_params(pauline->lc, marie1->identity, pauline_params);
 	linphone_call_params_destroy(pauline_params);
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
-	
+
 	marie1_call = linphone_core_get_current_call(marie1->lc);
 	marie2_call = linphone_core_get_current_call(marie2->lc);
-	
+
 	if (marie1_call){
 		linphone_call_set_next_video_frame_decoded_callback(marie1_call, linphone_call_iframe_decoded_cb, marie1->lc);
 	}
@@ -449,7 +449,6 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia, 1, 3000));
 
 	pauline_call = linphone_core_get_current_call(pauline->lc);
-	
 
 	BC_ASSERT_PTR_NOT_NULL(pauline_call);
 	BC_ASSERT_PTR_NOT_NULL(marie1_call);
@@ -457,7 +456,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 
 	if (pauline_call && marie1_call && marie2_call) {
 		linphone_call_set_next_video_frame_decoded_callback(pauline_call, linphone_call_iframe_decoded_cb, pauline->lc);
-		
+
 		/* wait a bit that streams are established */
 		wait_for_list(lcs, &dummy, 1, 3000);
 		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 0, float, "%f");
@@ -553,12 +552,7 @@ test_t video_tests[] = {
 
 };
 
-test_suite_t video_test_suite = {
-	"Video",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(video_tests) / sizeof(video_tests[0]),
-	video_tests
-};
+test_suite_t video_test_suite = {"Video", NULL, NULL, liblinphone_tester_before_each, NULL,
+								 sizeof(video_tests) / sizeof(video_tests[0]), video_tests};
 
 #endif /* VIDEO_ENABLED */

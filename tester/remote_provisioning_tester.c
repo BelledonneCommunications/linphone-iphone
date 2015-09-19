@@ -134,10 +134,6 @@ test_t remote_provisioning_tests[] = {
 	{ "Remote provisioning invalid URI", remote_provisioning_invalid_uri }
 };
 
-test_suite_t remote_provisioning_test_suite = {
-	"RemoteProvisioning",
-	NULL,
-	NULL,
-	sizeof(remote_provisioning_tests) / sizeof(remote_provisioning_tests[0]),
-	remote_provisioning_tests
-};
+test_suite_t remote_provisioning_test_suite = {"RemoteProvisioning", NULL, NULL, liblinphone_tester_before_each, NULL,
+											   sizeof(remote_provisioning_tests) / sizeof(remote_provisioning_tests[0]),
+											   remote_provisioning_tests};

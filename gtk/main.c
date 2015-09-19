@@ -259,7 +259,7 @@ gboolean linphone_gtk_get_audio_assistant_option(void){
 }
 
 static void linphone_gtk_init_liblinphone(const char *config_file,
-		const char *factory_config_file, const char *db_file) {
+		const char *factory_config_file, const char *chat_messages_db_file, const char *call_logs_db_file) {
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
 	gchar *user_certificates_dir=linphone_gtk_get_config_file(CERTIFICATES_PATH);
@@ -309,7 +309,8 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 		_linphone_gtk_enable_video(FALSE);
 		linphone_gtk_set_ui_config_int("videoselfview",0);
 	}
-	if (db_file) linphone_core_set_chat_database_path(the_core,db_file);
+	if (chat_messages_db_file) linphone_core_set_chat_database_path(the_core,chat_messages_db_file);
+	if (call_logs_db_file) linphone_core_set_call_logs_database_path(the_core, call_logs_db_file);
 }
 
 LinphoneCore *linphone_gtk_get_core(void){
@@ -1856,7 +1857,9 @@ static void linphone_gtk_init_main_window(){
 	linphone_gtk_show_friends();
 	linphone_core_reset_missed_calls_count(linphone_gtk_get_core());
 	main_window=linphone_gtk_get_main_window();
+#ifndef CALL_LOGS_STORAGE_ENABLED
 	linphone_gtk_call_log_update(main_window);
+#endif
 
 	linphone_gtk_update_call_buttons (NULL);
 	g_object_set_data(G_OBJECT(main_window),"keypad",NULL);
@@ -2015,6 +2018,28 @@ static void sigint_handler(int signum){
 	gtk_main_quit();
 }
 
+static void populate_xdg_data_dirs_envvar(void) {
+#ifndef WIN32
+	int i;
+	gchar *value;
+	gchar **paths;
+	
+	if(g_getenv("XDG_DATA_DIRS") == NULL) {
+		value = g_strdup("/usr/share:/usr/local/share:/opt/local/share");
+	} else {
+		value = g_strdup(g_getenv("XDG_DATA_DIRS"));
+	}
+	paths = g_strsplit(value, ":", -1);
+	for(i=0; paths[i] && strcmp(paths[i], PACKAGE_DATA_DIR) != 0; i++);
+	if(paths[i] == NULL) {
+		gchar *new_value = g_strdup_printf("%s:%s", value, PACKAGE_DATA_DIR);
+		g_setenv("XDG_DATA_DIRS", new_value, TRUE);
+		g_free(new_value);
+	}
+	g_strfreev(paths);
+#endif
+}
+
 int main(int argc, char *argv[]){
 	char *config_file;
 	const char *factory_config_file;
@@ -2024,7 +2049,7 @@ int main(int argc, char *argv[]){
 	GdkPixbuf *pbuf;
 	const char *app_name="Linphone";
 	LpConfig *factory;
-	char *db_file;
+	char *chat_messages_db_file, *call_logs_db_file;
 	GError *error=NULL;
 	const char *tmp;
 
@@ -2043,6 +2068,8 @@ int main(int argc, char *argv[]){
 	/*for pulseaudio:*/
 	g_setenv("PULSE_PROP_media.role", "phone", TRUE);
 #endif
+	
+	populate_xdg_data_dirs_envvar();
 
 	lang=linphone_gtk_get_lang(config_file);
 	if (lang == NULL || lang[0]=='\0'){
@@ -2162,9 +2189,15 @@ core_start:
 	linphone_gtk_create_log_window();
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
 
-	db_file=linphone_gtk_message_storage_get_db_file(NULL);
-	linphone_gtk_init_liblinphone(config_file, factory_config_file, db_file);
-	g_free(db_file);
+	chat_messages_db_file=linphone_gtk_message_storage_get_db_file(NULL);
+	call_logs_db_file = linphone_gtk_call_logs_storage_get_db_file(NULL);
+	linphone_gtk_init_liblinphone(config_file, factory_config_file, chat_messages_db_file, call_logs_db_file);
+	g_free(chat_messages_db_file);
+	g_free(call_logs_db_file);
+
+#ifdef CALL_LOGS_STORAGE_ENABLED
+	linphone_gtk_call_log_update(the_ui);
+#endif
 
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());

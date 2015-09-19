@@ -383,10 +383,6 @@ test_t quality_reporting_tests[] = {
 	{ "Sent using custom route", quality_reporting_sent_using_custom_route},
 };
 
-test_suite_t quality_reporting_test_suite = {
-	"QualityReporting",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(quality_reporting_tests) / sizeof(quality_reporting_tests[0]),
-	quality_reporting_tests
-};
+test_suite_t quality_reporting_test_suite = {"QualityReporting", NULL, NULL, liblinphone_tester_before_each, NULL,
+											 sizeof(quality_reporting_tests) / sizeof(quality_reporting_tests[0]),
+											 quality_reporting_tests};

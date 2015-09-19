@@ -171,6 +171,7 @@ struct _LinphoneCallLog{
 	char* call_id; /**unique id of a call*/
 	struct _LinphoneQualityReporting reporting;
 	bool_t video_enabled;
+	unsigned int storage_id;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCallLog);
@@ -204,8 +205,8 @@ struct _LinphoneChatMessage {
 	LinphoneChatMessageCbs *callbacks;
 	LinphoneChatMessageDir dir;
 	char* message;
-	LinphoneChatMessageStateChangedCb cb;
-	void* cb_ud;
+	LinphoneChatMessageStateChangedCb message_state_changed_cb;
+	void* message_state_changed_user_data;
 	void* message_userdata;
 	char* appdata;
 	char* external_body_url;
@@ -336,6 +337,8 @@ SalStreamDir get_audio_dir_from_call_params(const LinphoneCallParams *params);
 SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
+void linphone_core_write_auth_info(LinphoneCore *lc, LinphoneAuthInfo *ai);
+const LinphoneAuthInfo *_linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain, bool_t ignore_realm);
 
 void linphone_core_update_proxy_register(LinphoneCore *lc);
 void linphone_core_refresh_subscribes(LinphoneCore *lc);
@@ -500,7 +503,7 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 /*chat*/
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
-void linphone_chat_message_update_state(LinphoneChatMessage* chat_msg );
+void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 /**/
 
 struct _LinphoneProxyConfig
@@ -848,6 +851,10 @@ struct _LinphoneCore
 	sqlite3 *db;
 	bool_t debug_storage;
 #endif
+	char *logs_db_file;
+#ifdef CALL_LOGS_STORAGE_ENABLED
+	sqlite3 *logs_db;
+#endif
 #ifdef BUILD_UPNP
 	UpnpContext *upnp;
 #endif //BUILD_UPNP
@@ -965,6 +972,13 @@ void _linphone_core_codec_config_write(LinphoneCore *lc);
 #endif
 void call_logs_read_from_config_file(LinphoneCore *lc);
 void call_logs_write_to_config_file(LinphoneCore *lc);
+void linphone_core_call_log_storage_init(LinphoneCore *lc);
+void linphone_core_call_log_storage_close(LinphoneCore *lc);
+void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log);
+const MSList *linphone_core_get_call_history(LinphoneCore *lc);
+void linphone_core_delete_call_history(LinphoneCore *lc);
+void linphone_core_delete_call_log(LinphoneCore *lc, LinphoneCallLog *log);
+int linphone_core_get_call_history_size(LinphoneCore *lc);
 
 int linphone_core_get_edge_bw(LinphoneCore *lc);
 int linphone_core_get_edge_ptime(LinphoneCore *lc);

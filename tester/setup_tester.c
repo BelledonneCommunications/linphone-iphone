@@ -306,11 +306,5 @@ test_t setup_tests[] = {
 	{ "Codec usability", codec_usability_test }
 };
 
-test_suite_t setup_test_suite = {
-	"Setup",
-	liblinphone_tester_setup,
-	NULL,
-	sizeof(setup_tests) / sizeof(setup_tests[0]),
-	setup_tests
-};
-
+test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, NULL,
+								 sizeof(setup_tests) / sizeof(setup_tests[0]), setup_tests};

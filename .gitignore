@@ -92,3 +92,4 @@ tester/ZIDCache*.xml
 tester/stereo-record.wav
 .dirstamp
 git-clang-format.diff
+*.log

@@ -240,6 +240,14 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 			return;
 		}
 	}else if (strcmp("INVITE",method)==0) {
+		/*handle the case where we are receiving a request with to tag but it is not belonging to any dialog*/
+		belle_sip_header_to_t *to = belle_sip_message_get_header_by_type(req, belle_sip_header_to_t);
+		if (belle_sip_header_to_get_tag(to) != NULL){
+			ms_warning("Receiving INVITE with to-tag but no know dialog here. Rejecting.");
+			resp=belle_sip_response_create_from_request(req,481);
+			belle_sip_provider_send_response(sal->prov,resp);
+			return;
+		}
 		op=sal_op_new(sal);
 		op->dir=SalOpDirIncoming;
 		sal_op_call_fill_cbs(op);

@@ -35,9 +35,11 @@ extern int bc_printf_verbosity_info;
 extern int bc_printf_verbosity_error;
 
 typedef void (*test_function_t)(void);
-typedef int (*init_function_t)(void);
-typedef int (*cleanup_function_t)(void);
-typedef int (*test_suite_function_t)(const char *name);
+/** Function used in all suites - it is invoked before all and each tests and also after each and all tests
+  * @return 0 means success, otherwise it's an error
+**/
+typedef int (*pre_post_function_t)(void);
+// typedef int (*test_suite_function_t)(const char *name);
 
 typedef struct {
 	const char *name;
@@ -45,11 +47,14 @@ typedef struct {
 } test_t;
 
 typedef struct {
-	const char *name;
-	init_function_t init_func;
-	cleanup_function_t cleanup_func;
-	int nb_tests;
-	test_t *tests;
+	const char *name; /*suite name*/
+	pre_post_function_t
+		before_all; /*function invoked before running the suite. If not returning 0, suite is not launched. */
+	pre_post_function_t after_all; /*function invoked at the end of the suite, even if some tests failed. */
+	test_function_t before_each;   /*function invoked before each test within this suite. */
+	test_function_t after_each;	/*function invoked after each test within this suite, even if it failed. */
+	int nb_tests;				   /* number of tests */
+	test_t *tests;				   /* tests within this suite */
 } test_suite_t;
 
 #ifdef __cplusplus

@@ -132,7 +132,7 @@ AC_CONFIG_COMMANDS([libtool-hacking],
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS=$(cd po && echo *.po | sed 's/\.po//g')
+ALL_LINGUAS=$(cd $srcdir/po && echo *.po | sed 's/\.po//g')
 AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
@@ -894,7 +894,7 @@ if test x$enable_msg_storage != xfalse; then
 		AC_CHECK_LIB(sqlite3, sqlite3_open, [SQLITE3_LIBS+=" -lsqlite3 "; found_sqlite=yes], [foo=bar])
 	fi
 	if test "$found_sqlite" = "yes"; then
-		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+		SQLITE3_CFLAGS+=" -DMSG_STORAGE_ENABLED"
 		if test "$build_macos" = "yes" -o "$ios_found" = "yes"; then
 			SQLITE3_LIBS+=" -liconv"
 		fi
@@ -911,6 +911,41 @@ if test x$enable_msg_storage != xfalse; then
 fi
 
 AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
+
+AC_ARG_ENABLE(call-logs-storage,
+        [AS_HELP_STRING([--enable-call-logs-storage=[yes/no]], [Turn on compilation of call logs storage (default=auto)])],
+        [case "${enableval}" in
+                yes)    enable_call_logs_storage=true ;;
+                no)     enable_call_logs_storage=false ;;
+                *)      AC_MSG_ERROR(bad value ${enableval} for --enable-call-logs-storage) ;;
+        esac],
+        [enable_call_logs_storage=auto]
+)
+
+if test x$enable_call_logs_storage != xfalse; then
+        PKG_CHECK_MODULES(SQLITE3,[sqlite3 >= 3.6.0],[found_sqlite=yes],[found_sqlite=no])
+        if test "$found_sqlite" = "no"; then
+                dnl Check the lib presence in case the PKG-CONFIG version is not found
+                AC_CHECK_LIB(sqlite3, sqlite3_open, [SQLITE3_LIBS+=" -lsqlite3 "; found_sqlite=yes], [foo=bar])
+        fi
+        if test "$found_sqlite" = "yes"; then
+                SQLITE3_CFLAGS+=" -DCALL_LOGS_STORAGE_ENABLED"
+                if test "$build_macos" = "yes" -o "$ios_found" = "yes"; then
+                        SQLITE3_LIBS+=" -liconv"
+                fi
+                enable_call_logs_storage=true
+        else
+                if test x$enable_call_logs_storage = xtrue; then
+                        AC_MSG_ERROR([sqlite3, required for call logs storage, not found])
+                fi
+                enable_call_logs_storage=false
+        fi
+
+        AC_SUBST(SQLITE3_CFLAGS)
+        AC_SUBST(SQLITE3_LIBS)
+fi
+
+AM_CONDITIONAL(BUILD_CALL_LOGS_STORAGE, test x$enable_call_logs_storage = xtrue)
 
 PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.4.0])
 
@@ -1022,6 +1057,10 @@ else
 fi
 AM_CONDITIONAL(HAVE_DOXYGEN, test "$DOXYGEN" != "false")
 
+AC_CHECK_PROG([SIPP],[sipp], [true], [false])
+if test "x$SIPP" != "xfalse" ; then
+	AC_DEFINE(HAVE_SIPP,1,[defined when SIPP is available])
+fi
 
 AC_CONFIG_FILES([
 	Makefile
@@ -1065,6 +1104,7 @@ printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"				$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
+printf "* %-30s %s\n" "Call logs storage"       $enable_call_logs_storage
 printf "* %-30s %s\n" "IM encryption"		$lime
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap

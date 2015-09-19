@@ -1867,7 +1867,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getOrCreateChatRoom(JNI
 																			,jstring jto) {
 
 	const char* to = env->GetStringUTFChars(jto, NULL);
-	LinphoneChatRoom* lResult = linphone_core_get_or_create_chat_room((LinphoneCore*)lc,to);
+	LinphoneChatRoom* lResult = linphone_core_get_chat_room_from_uri((LinphoneCore*)lc,to);
 	env->ReleaseStringUTFChars(jto, to);
 	return (jlong)lResult;
 }
@@ -3086,11 +3086,6 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_markAsRead(JNIEnv*  
 	linphone_chat_room_mark_as_read((LinphoneChatRoom*)ptr);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_destroy(JNIEnv*  env
-																	,jobject  thiz
-																	,jlong ptr) {
-	linphone_chat_room_destroy((LinphoneChatRoom*)ptr);
-}
 
 extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferMessage(JNIEnv* env, jobject thiz, jlong ptr, jstring jname, jstring jtype, jstring jsubtype, jint data_size) {
 	LinphoneContentPrivate content = {0};
@@ -3279,7 +3274,7 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 		return;
 	}
 
-	jobject listener = (jobject) msg->cb_ud;
+	jobject listener = (jobject) msg->message_state_changed_user_data;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
 	jobject jmessage = getChatMessage(env, msg);
@@ -3303,7 +3298,7 @@ static void file_transfer_progress_indication(LinphoneChatMessage *msg, const Li
 		return;
 	}
 
-	jobject listener = (jobject) msg->cb_ud;
+	jobject listener = (jobject) msg->message_state_changed_user_data;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferProgressChanged", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;II)V");
 	env->DeleteLocalRef(clazz);
@@ -3323,7 +3318,7 @@ static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* 
 		return;
 	}
 
-	jobject listener = (jobject) msg->cb_ud;
+	jobject listener = (jobject) msg->message_state_changed_user_data;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferReceived", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Lorg/linphone/core/LinphoneBuffer;)V");
 	env->DeleteLocalRef(clazz);
@@ -3349,7 +3344,7 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 		return buffer;
 	}
 
-	jobject listener = (jobject) msg->cb_ud;
+	jobject listener = (jobject) msg->message_state_changed_user_data;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferSent","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;IILorg/linphone/core/LinphoneBuffer;)V");
 	env->DeleteLocalRef(clazz);
@@ -3372,7 +3367,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setListener(JNIEn
 	LinphoneChatMessage *message = (LinphoneChatMessage *)ptr;
 	LinphoneChatMessageCbs *cbs;
 
-	message->cb_ud = listener;
+	message->message_state_changed_user_data = listener;
 	cbs = linphone_chat_message_get_callbacks(message);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_state_changed);
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
@@ -3389,7 +3384,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_unref(JNIEnv*  en
 extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getChatRooms(JNIEnv*  env
 																		   ,jobject  thiz
 																		   ,jlong ptr) {
-	MSList* chats = linphone_core_get_chat_rooms((LinphoneCore*)ptr);
+	const MSList* chats = linphone_core_get_chat_rooms((LinphoneCore*)ptr);
 	int chatsSize = ms_list_size(chats);
 	jlongArray jChats = env->NewLongArray(chatsSize);
 	jlong *jInternalArray = env->GetLongArrayElements(jChats, NULL);

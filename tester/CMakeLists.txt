@@ -45,37 +45,41 @@ set(SOURCE_FILES
 	tunnel_tester.c
 	upnp_tester.c
 	video_tester.c
-)
+	complex_sip_call.c
+	)
+
+find_program(SIPP_PROGRAM NAMES sipp sipp.exe)
+if(SIPP_PROGRAM)
+        add_definitions(-DHAVE_SIPP=1)
+else()
+ 	message(WARNING "Could not find sipp!")	
+endif()
 
 add_definitions(-DBC_CONFIG_FILE="config.h")
 
 if(IOS)
-
-add_library(linphonetester STATIC ${SOURCE_FILES})
-target_include_directories(linphonetester PUBLIC ${CUNIT_INCLUDE_DIRS} PRIVATE common)
-target_link_libraries(linphonetester linphone ${CUNIT_LIBRARIES})
-install(TARGETS linphonetester
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-)
-install(FILES "liblinphone_tester.h" "common/bc_tester_utils.h"
-	DESTINATION include/linphone
-	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-)
-
+	add_library(linphonetester STATIC ${SOURCE_FILES})
+	target_include_directories(linphonetester PUBLIC ${CUNIT_INCLUDE_DIRS} PRIVATE common)
+	target_link_libraries(linphonetester linphone ${CUNIT_LIBRARIES})
+	install(TARGETS linphonetester
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+		)
+	install(FILES "liblinphone_tester.h" "common/bc_tester_utils.h"
+		DESTINATION include/linphone
+		PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+		)
 else()
-
-add_executable(liblinphone_tester ${SOURCE_FILES})
-set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(liblinphone_tester PUBLIC ${CUNIT_INCLUDE_DIRS} PRIVATE common)
-target_link_libraries(liblinphone_tester linphone ${CUNIT_LIBRARIES})
-if (GTK2_FOUND)
-	target_compile_definitions(liblinphone_tester PRIVATE HAVE_GTK)
-	target_include_directories(liblinphone_tester PUBLIC ${GTK2_INCLUDE_DIRS})
-	target_link_libraries(liblinphone_tester linphone ${GTK2_LIBRARIES})
-endif()
-
+	add_executable(liblinphone_tester ${SOURCE_FILES})
+	set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)
+	target_include_directories(liblinphone_tester PUBLIC ${CUNIT_INCLUDE_DIRS} PRIVATE common)
+	target_link_libraries(liblinphone_tester linphone ${CUNIT_LIBRARIES})
+	if (GTK2_FOUND)
+		target_compile_definitions(liblinphone_tester PRIVATE HAVE_GTK)
+		target_include_directories(liblinphone_tester PUBLIC ${GTK2_INCLUDE_DIRS})
+		target_link_libraries(liblinphone_tester linphone ${GTK2_LIBRARIES})
+	endif()
 endif()
 
