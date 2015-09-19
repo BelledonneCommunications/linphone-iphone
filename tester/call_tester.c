@@ -4961,6 +4961,8 @@ static void call_logs_if_no_db_set() {
 	end_call(marie, laure);
 	
 	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 11);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(laure);
 }
 
 static void call_logs_migrate() {
