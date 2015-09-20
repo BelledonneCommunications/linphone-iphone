@@ -3293,12 +3293,13 @@ static void multiple_early_media(void) {
 void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList* lcs,LinphoneMediaDirection audio_dir, LinphoneMediaDirection video_dir) {
 	BC_ASSERT_PTR_NOT_NULL(call);
 	if  (call) {
-		const LinphoneCallParams *params = linphone_call_get_current_params(call);
+		const LinphoneCallParams *params;
+		wait_for_list(lcs,NULL,0,3500); /*on some device, it may take 3 to 4s to get audio from mic*/
+		params = linphone_call_get_current_params(call);
 #ifdef VIDEO_ENABLED
 		if (video_dir != LinphoneMediaDirectionInvalid){
 			int current_recv_iframe = mgr->stat.number_of_IframeDecoded;
 			int expected_recv_iframe=0;
-			int dummy = 0;
 
 			if (video_dir != LinphoneMediaDirectionInactive){
 				BC_ASSERT_TRUE(linphone_call_params_video_enabled(params));
@@ -3307,18 +3308,15 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 			linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_iframe_decoded_cb,mgr->lc);
 			linphone_call_send_vfu_request(call);
 
-
-			wait_for_list(lcs,&dummy,1,2000); /*on some device, it may take 3 to 4s to get audio from mic*/
-
 			switch (video_dir) {
 			case LinphoneMediaDirectionInactive:
-				BC_ASSERT_TRUE(linphone_call_get_video_stats(call)->upload_bandwidth<5);
+				BC_ASSERT_LOWER(linphone_call_get_video_stats(call)->upload_bandwidth, 5, int, "%i");
 			case LinphoneMediaDirectionSendOnly:
 				expected_recv_iframe = 0;
-				BC_ASSERT_TRUE(linphone_call_get_video_stats(call)->download_bandwidth<5);
+				BC_ASSERT_LOWER(linphone_call_get_video_stats(call)->download_bandwidth, 5, int, "%i");
 				break;
 			case LinphoneMediaDirectionRecvOnly:
-				BC_ASSERT_TRUE(linphone_call_get_video_stats(call)->upload_bandwidth<5);
+				BC_ASSERT_LOWER(linphone_call_get_video_stats(call)->upload_bandwidth, 5, int, "%i");
 			case LinphoneMediaDirectionSendRecv:
 				expected_recv_iframe = 1;
 				break;
@@ -3333,16 +3331,16 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 			BC_ASSERT_EQUAL(linphone_call_params_get_audio_direction(params), audio_dir, int, "%d");
 			switch (audio_dir) {
 				case LinphoneMediaDirectionInactive:
-					BC_ASSERT_LOWER(linphone_call_get_audio_stats(call)->upload_bandwidth, 5, int, "%i");
+					BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_up_bw(mgr), 5, int, "%i");
 				case LinphoneMediaDirectionSendOnly:
 					BC_ASSERT_LOWER(linphone_call_get_video_stats(call)->download_bandwidth, 5, int, "%i");
-					if (audio_dir == LinphoneMediaDirectionSendOnly) BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_upload_bandwidth,70,4000));
+					BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_upload_bandwidth,70,4000));
 					break;
 				case LinphoneMediaDirectionRecvOnly:
-					BC_ASSERT_LOWER(linphone_call_get_audio_stats(call)->upload_bandwidth, 5, int, "%i");
+					BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_up_bw(mgr), 5, int, "%i");
 				case LinphoneMediaDirectionSendRecv:
-					BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_download_bandwidth,70,4000));
-					if (audio_dir == LinphoneMediaDirectionSendRecv) BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_upload_bandwidth,70,4000));
+					BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(mgr), 70, int, "%i");
+					BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_up_bw(mgr), 70, int, "%i");
 					break;
 				default:
 					break;
