@@ -22,6 +22,11 @@
 #include "lpconfig.h"
 #include "private.h"
 
+#ifdef _MSC_VER
+#define popen _popen
+#define pclose _pclose
+#endif
+
 
 static FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress* dest_addres) {
 	char *dest;
