@@ -4971,6 +4971,7 @@ static void call_logs_migrate() {
 	int i = 0;
 	int incoming_count = 0, outgoing_count = 0, missed_count = 0, aborted_count = 0, decline_count = 0, video_enabled_count = 0;
 
+	unlink(logs_db);
 	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 10);
 
 	linphone_core_set_call_logs_database_path(laure->lc, logs_db);
@@ -5010,7 +5011,7 @@ static void call_logs_migrate() {
 	call_logs_read_from_config_file(laure->lc);
 	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 0);
 
-	remove(logs_db);
+	unlink(logs_db);
 	ms_free(logs_db);
 	linphone_core_manager_destroy(laure);
 }
@@ -5021,6 +5022,8 @@ static void call_logs_sqlite_storage() {
 	char *logs_db = create_filepath(bc_tester_get_writable_dir_prefix(), "call_logs", "db");
 	MSList *logs = NULL;
 	LinphoneAddress *laure = NULL;
+	
+	unlink(logs_db);
 
 	linphone_core_set_call_logs_database_path(marie->lc, logs_db);
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
@@ -5058,7 +5061,7 @@ static void call_logs_sqlite_storage() {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-	remove(logs_db);
+	unlink(logs_db);
 	ms_free(logs_db);
 }
 
