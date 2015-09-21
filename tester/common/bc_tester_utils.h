@@ -72,7 +72,7 @@ void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list a
 					, int verbosity_info, int verbosity_error);
 void bc_tester_helper(const char *name, const char* additionnal_helper);
 int bc_tester_parse_args(int argc, char** argv, int argid);
-int bc_tester_start(void);
+int bc_tester_start(const char* prog_name);
 void bc_tester_add_suite(test_suite_t *suite);
 void bc_tester_uninit(void);
 void bc_tester_printf(int level, const char *fmt, ...);

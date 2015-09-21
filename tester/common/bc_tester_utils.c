@@ -307,38 +307,86 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 void bc_tester_helper(const char *name, const char* additionnal_helper) {
 	bc_tester_printf(bc_printf_verbosity_info,
 					 "%s --help\n"
+#ifdef HAVE_CU_CURSES
+					 "\t\t\t--curses\n"
+#endif
 					 "\t\t\t--list-suites\n"
 					 "\t\t\t--list-tests <suite>\n"
 					 "\t\t\t--suite <suite name>\n"
 					 "\t\t\t--test <test name>\n"
-#ifdef HAVE_CU_CURSES
-					 "\t\t\t--curses\n"
-#endif
+					 "\t\t\t--resource-dir <folder path> (directory where tester resource are located)\n"
+					 "\t\t\t--writable-dir <folder path> (directory where temporary files should be created)\n"
 					 "\t\t\t--xml\n"
 					 "\t\t\t--xml-file <xml file name>\n"
 					 "\t\t\t--max-alloc <size in ko> (maximum ammount of memory obtained via malloc allocator)\n"
 					 "And additionally:\n"
 					 "%s",
-					 name, additionnal_helper);
+					 name,
+					 additionnal_helper);
 }
 
-void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list args), int iverbosity_info, int iverbosity_error) {
+static int file_exists(const char* root_path) {
+	FILE* file;
+	char * sounds_path = malloc(sizeof(char)*strlen(root_path)+strlen("sounds"));
+	sprintf(sounds_path, "%ssounds", root_path);
+	file = fopen(sounds_path, "r");
+	int found = (file != NULL);
+	if (file) fclose(file);
+	return found;
+}
+
+static void detect_res_prefix(const char* prog) {
+	char* progpath = NULL;
+	char* prefix = NULL;
+
 #if defined(BC_TESTER_WINDOWS_PHONE) || defined(BC_TESTER_WINDOWS_UNIVERSAL)
 	bc_tester_set_resource_dir_prefix("Assets");
 #elif defined(__QNX__)
 	bc_tester_set_resource_dir_prefix("./app/native/assets/");
-#else
-	bc_tester_set_resource_dir_prefix(".");
 #endif
 
 #ifdef ANDROID
 	bc_tester_set_writable_dir_prefix("/data/data/org.linphone.tester/cache");
 #elif defined(__QNX__)
 	bc_tester_set_writable_dir_prefix("./tmp");
-#else
-	bc_tester_set_writable_dir_prefix(".");
 #endif
 
+	if (strchr(prog, '/') != NULL) {
+		progpath = strdup(prog);
+		progpath[strrchr(prog, '/') - prog + 1] = '\0';
+	} else if (strchr(prog, '\\') != NULL) {
+		progpath = strdup(prog);
+		progpath[strrchr(prog, '\\') - prog + 1] = '\0';
+	}
+
+	if (file_exists(".")) {
+		prefix = strdup(".");
+	} else if (file_exists("..")) {
+		prefix = strdup("..");
+	} else if (file_exists(progpath)) {
+		prefix = strdup(progpath);
+	}
+
+	if (progpath != NULL) {
+		free(progpath);
+	}
+	if (prefix != NULL) {
+		if (bc_tester_resource_dir_prefix == NULL) {
+			printf("Resource directory set to %s\n", prefix);
+			bc_tester_set_resource_dir_prefix(prefix);
+		}
+		if (bc_tester_writable_dir_prefix == NULL) {
+			printf("Writable directory set to %s\n", prefix);
+			bc_tester_set_resource_dir_prefix(prefix);
+		}
+		free(prefix);
+	} else if (bc_tester_resource_dir_prefix == NULL || bc_tester_writable_dir_prefix == NULL) {
+		printf("Could not find resource directory in %s! Please try again using option --resource-dir and/or --writable-dir.\n", progpath);
+		abort();
+	}
+}
+
+void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list args), int iverbosity_info, int iverbosity_error) {
 	tester_printf_va = ftester_printf;
 	bc_printf_verbosity_error = iverbosity_error;
 	bc_printf_verbosity_info = iverbosity_info;
@@ -382,6 +430,12 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	} else if (strcmp(argv[i], "--max-alloc") == 0) {
 		CHECK_ARG("--max-alloc", ++i, argc);
 		max_vm_kb = atol(argv[i]);
+	} else if (strcmp(argv[i], "--resource-dir") == 0) {
+		CHECK_ARG("--resource-dir", ++i, argc);
+		bc_tester_resource_dir_prefix = strdup(argv[i]);
+	} else if (strcmp(argv[i], "--writable-dir") == 0) {
+		CHECK_ARG("--writable-dir", ++i, argc);
+		bc_tester_writable_dir_prefix = strdup(argv[i]);
 	} else {
 		bc_tester_printf(bc_printf_verbosity_error, "Unknown option \"%s\"\n", argv[i]);
 		return -1;
@@ -396,8 +450,10 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	return i - argid + 1;
 }
 
-int bc_tester_start(void) {
+int bc_tester_start(const char* prog_name) {
 	int ret;
+
+	detect_res_prefix(prog_name);
 
 	if (max_vm_kb)
 		bc_tester_set_max_vm(max_vm_kb);

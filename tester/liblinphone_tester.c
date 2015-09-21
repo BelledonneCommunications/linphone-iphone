@@ -196,18 +196,6 @@ int main (int argc, char *argv[])
 
 	liblinphone_tester_init(NULL);
 
-#ifndef WIN32   /*this hack doesn't work for argv[0]="c:\blablab\"*/
-	// this allows to launch tester from outside of tester directory
-	if (strstr(argv[0], ".libs")) {
-		int prefix_length = strstr(argv[0], ".libs") - argv[0] + 1;
-		char *prefix = ms_strdup_printf("%s%.*s", argv[0][0] == '/' ? "" : "./", prefix_length, argv[0]);
-		ms_warning("Resource prefix set to %s", prefix);
-		bc_tester_set_resource_dir_prefix(prefix);
-		bc_tester_set_writable_dir_prefix(prefix);
-		ms_free(prefix);
-	}
-#endif
-
 	for(i = 1; i < argc; ++i) {
 		if (strcmp(argv[i], "--verbose") == 0) {
 			linphone_core_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
@@ -249,7 +237,7 @@ int main (int argc, char *argv[])
 		}
 	}
 
-	ret = bc_tester_start();
+	ret = bc_tester_start(argv[0]);
 	liblinphone_tester_uninit();
 	return ret;
 }
