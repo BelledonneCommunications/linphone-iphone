@@ -22,6 +22,23 @@
 #include "lpconfig.h"
 #include "private.h"
 
+void check_rtcp(LinphoneCall *call) {
+	MSTimeSpec ts;
+	
+	linphone_call_ref(call);
+	liblinphone_tester_clock_start(&ts);
+	do {
+		if (linphone_call_get_audio_stats(call)->round_trip_delay > 0.0 && (!linphone_call_log_video_enabled(linphone_call_get_call_log(call)) || linphone_call_get_video_stats(call)->round_trip_delay>0.0)) {
+			break;
+		}
+	} while (!liblinphone_tester_clock_elapsed(&ts, 15000));
+	BC_ASSERT_GREATER(linphone_call_get_audio_stats(call)->round_trip_delay,0.0,float,"%f");
+	if (linphone_call_log_video_enabled(linphone_call_get_call_log(call))) {
+		BC_ASSERT_GREATER(linphone_call_get_video_stats(call)->round_trip_delay,0.0,float,"%f");
+	}
+	
+	linphone_call_unref(call);
+}
 
 static FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress* dest_addres) {
 	char *dest;
@@ -103,11 +120,11 @@ static void call_with_video_mline_before_audio_in_sdp() {
 	
 	/*currently we use direct connection because sipp do not properly set ACK request uri*/
 	mgr= linphone_core_manager_new2( "empty_rc", FALSE);
-	mgr->identity= linphone_core_get_primary_contact_parsed(mgr->lc);
+	mgr->identity = linphone_core_get_primary_contact_parsed(mgr->lc);
 	linphone_address_set_username(mgr->identity,"marie");
-	identity_char=linphone_address_as_string(mgr->identity);
+	identity_char = linphone_address_as_string(mgr->identity);
 	linphone_core_set_primary_contact(mgr->lc,identity_char);
-	
+		
 	linphone_core_iterate(mgr->lc);
 	
 	scen = bc_tester_res("sipp/call_with_video_mline_before_audio_in_sdp.xml");
@@ -121,6 +138,11 @@ static void call_with_video_mline_before_audio_in_sdp() {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
 		BC_ASSERT_EQUAL(call->main_audio_stream_index, 1, int, "%d");
 		BC_ASSERT_EQUAL(call->main_video_stream_index, 0, int, "%d");
+		BC_ASSERT_TRUE(call->main_text_stream_index > 1);
+		BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(call)));
+		
+		check_rtcp(call);
+	
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
 		pclose(sipp_out);
 	}
