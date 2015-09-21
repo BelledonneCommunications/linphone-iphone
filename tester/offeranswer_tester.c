@@ -70,14 +70,9 @@ static void check_payload_type_numbers(LinphoneCall *call1, LinphoneCall *call2,
 }
 
 static void simple_call_with_different_codec_mappings(void) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCall *pauline_call;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
@@ -111,46 +106,28 @@ static void simple_call_with_different_codec_mappings(void) {
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void call_failed_because_of_codecs(void) {
-	int begin,leaked_objects;
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCall* out_call;
 
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
+	disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
+	disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
+	out_call = linphone_core_invite_address(pauline->lc,marie->identity);
+	linphone_call_ref(out_call);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
 
-	{
-		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-		LinphoneCall* out_call;
+	/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
+	BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable, int, "%d");
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0, int, "%d");
 
-		disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
-		disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
-		out_call = linphone_core_invite_address(pauline->lc,marie->identity);
-		linphone_call_ref(out_call);
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
-
-		/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
-		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
-		BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable, int, "%d");
-		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
-		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0, int, "%d");
-
-		linphone_call_unref(out_call);
-		linphone_core_manager_destroy(marie);
-		linphone_core_manager_destroy(pauline);
-	}
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 
 
@@ -417,5 +394,5 @@ static test_t offeranswer_tests[] = {
 #endif
 };
 
-test_suite_t offeranswer_test_suite = {"Offer-answer", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t offeranswer_test_suite = {"Offer-answer", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 									   sizeof(offeranswer_tests) / sizeof(offeranswer_tests[0]), offeranswer_tests};

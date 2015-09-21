@@ -416,7 +416,7 @@ LpConfig *lp_config_new_with_factory(const char *config_filename, const char *fa
 		lp_config_read_file(lpconfig, factory_config_filename);
 	}
 	return lpconfig;
-	
+
 fail:
 	ms_free(lpconfig);
 	return NULL;
@@ -429,6 +429,7 @@ int lp_config_read_file(LpConfig *lpconfig, const char *filename){
 		ms_message("Reading config information from %s", path);
 		lp_config_parse(lpconfig,f);
 		fclose(f);
+		ms_free(path);
 		return 0;
 	}
 	ms_warning("Fail to open file %s",path);
@@ -764,12 +765,12 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
 		char *realfilepath = lp_realpath(filepath, NULL);
 		FILE *file;
-		
+
 		ms_free(filename);
 		ms_free(filepath);
-		
+
 		if(realfilepath == NULL) return FALSE;
-		
+
 		file = fopen(realfilepath, "r");
 		ms_free(realfilepath);
 		if (file) {
@@ -785,14 +786,14 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 	char *filepath = NULL;
 	char *realfilepath = NULL;
 	FILE *file;
-	
+
 	if (lpconfig->filename == NULL) return;
-	
+
 	if(strlen(data) == 0) {
 		ms_warning("%s has not been created because there is no data to write", filename);
 		return;
 	}
-	
+
 	dup_config_file = ms_strdup(lpconfig->filename);
 	dir = _lp_config_dirname(dup_config_file);
 	filepath = ms_strdup_printf("%s/%s", dir, filename);
@@ -801,16 +802,16 @@ void lp_config_write_relative_file(const LpConfig *lpconfig, const char *filenam
 		ms_error("Could not resolv %s: %s", filepath, strerror(errno));
 		goto end;
 	}
-	
+
 	file = fopen(realfilepath, "w");
 	if(file == NULL) {
 		ms_error("Could not open %s for write", realfilepath);
 		goto end;
 	}
-	
+
 	fprintf(file, "%s", data);
 	fclose(file);
-	
+
 end:
 	ms_free(dup_config_file);
 	ms_free(filepath);
@@ -823,9 +824,9 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	char *filepath = NULL;
 	FILE *file = NULL;
 	char* realfilepath = NULL;
-	
+
 	if (lpconfig->filename == NULL) return -1;
-	
+
 	dup_config_file = ms_strdup(lpconfig->filename);
 	dir = _lp_config_dirname(dup_config_file);
 	filepath = ms_strdup_printf("%s/%s", dir, filename);
@@ -834,19 +835,19 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 		ms_error("Could not resolv %s: %s", filepath, strerror(errno));
 		goto err;
 	}
-	
+
 	file = fopen(realfilepath, "r");
 	if(file == NULL) {
 		ms_error("Could not open %s for read. %s", realfilepath, strerror(errno));
 		goto err;
 	}
-	
+
 	if(fread(data, 1, max_length, file)<=0) {
 		ms_error("%s could not be loaded. %s", realfilepath, strerror(errno));
 		goto err;
 	}
 	fclose(file);
-	
+
 	ms_free(dup_config_file);
 	ms_free(filepath);
 	ms_free(realfilepath);

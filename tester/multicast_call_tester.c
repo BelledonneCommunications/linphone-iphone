@@ -24,12 +24,8 @@
 
 static void call_multicast_base(bool_t video) {
 	LinphoneCoreManager *marie, *pauline;
-	int begin;
-	int leaked_objects;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
 
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
@@ -67,14 +63,6 @@ static void call_multicast_base(bool_t video) {
 	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
-	belle_sip_object_enable_leak_detector(FALSE);
-
 }
 
 static void call_multicast(void)  {
@@ -92,14 +80,10 @@ static void early_media_with_multicast_base(bool_t video) {
 	LinphoneCoreManager *marie, *pauline, *pauline2;
 	MSList* lcs = NULL;
 	int dummy=0;
-	int leaked_objects;
-	int begin;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
 	LpConfig *marie_lp;
 	LinphoneCallParams *params;
 
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 	marie   = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new("pauline_tcp_rc");
 	pauline2 = linphone_core_manager_new("pauline_tcp_rc");
@@ -237,13 +221,6 @@ static void early_media_with_multicast_base(bool_t video) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(pauline2);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects,0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
-	belle_sip_object_enable_leak_detector(FALSE);
 }
 
 static void early_media_with_multicast_audio() {
@@ -269,6 +246,6 @@ test_t multicast_call_tests[] = {
 #endif
 };
 
-test_suite_t multicast_call_test_suite = {"Multicast Call", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t multicast_call_test_suite = {"Multicast Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 										  sizeof(multicast_call_tests) / sizeof(multicast_call_tests[0]),
 										  multicast_call_tests};

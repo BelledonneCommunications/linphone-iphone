@@ -152,6 +152,7 @@ static void send_dtmfs_sequence_call_state_changed() {
 
 		BC_ASSERT_PTR_NULL(pauline->stat.dtmf_list_received);
 	}
+	end_call(marie, pauline);
 	send_dtmf_cleanup(marie, pauline);
 }
 
@@ -171,5 +172,5 @@ test_t dtmf_tests[] = {
 	{ "Send DTMF using RFC2833 using Opus",send_dtmf_rfc2833_opus},
 };
 
-test_suite_t dtmf_test_suite = {"DTMF", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t dtmf_test_suite = {"DTMF", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 								sizeof(dtmf_tests) / sizeof(dtmf_tests[0]), dtmf_tests};

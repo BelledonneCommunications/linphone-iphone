@@ -367,5 +367,5 @@ test_t event_tests[] = {
 	{ "Publish without automatic refresh",publish_no_auto_test }
 };
 
-test_suite_t event_test_suite = {"Event", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t event_test_suite = {"Event", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 								 sizeof(event_tests) / sizeof(event_tests[0]), event_tests};

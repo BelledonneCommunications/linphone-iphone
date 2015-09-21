@@ -158,6 +158,7 @@ static void quality_reporting_not_used_without_config() {
 		// but not this one since it is updated at the end of call
 		BC_ASSERT_PTR_NULL(call_marie->log->reporting.reports[0]->dialog_id);
 	}
+	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -190,7 +191,6 @@ static void quality_reporting_not_sent_if_call_not_started() {
 	// since the callee was busy, there should be no publish to do
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0, int, "%d");
-
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -211,6 +211,7 @@ static void quality_reporting_not_sent_if_low_bandwidth() {
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0, int, "%d");
 	}
 	linphone_call_params_destroy(marie_params);
+	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -287,6 +288,7 @@ static void quality_reporting_interval_report() {
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,60000));
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,1,60000));
 	}
+	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -334,6 +336,7 @@ static void quality_reporting_session_report_if_video_stopped() {
 	linphone_call_params_destroy(marie_params);
 	linphone_call_params_destroy(pauline_params);
 
+	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -383,6 +386,6 @@ test_t quality_reporting_tests[] = {
 	{ "Sent using custom route", quality_reporting_sent_using_custom_route},
 };
 
-test_suite_t quality_reporting_test_suite = {"QualityReporting", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t quality_reporting_test_suite = {"QualityReporting", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 											 sizeof(quality_reporting_tests) / sizeof(quality_reporting_tests[0]),
 											 quality_reporting_tests};

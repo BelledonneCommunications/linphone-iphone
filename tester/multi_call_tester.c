@@ -367,8 +367,11 @@ static void simple_call_transfer(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneTransferCallConnected,1,2000));
 
 	/*terminate marie to pauline call*/
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,2000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,1,2000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallReleased,1,2000));
+
+	end_call(marie, laure);
+	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,1,2000));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -416,6 +419,7 @@ static void unattended_call_transfer(void) {
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
 
+	end_call(laure, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
@@ -454,6 +458,8 @@ static void unattended_call_transfer_with_error(void) {
 
 		/*and call should be resumed*/
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,2000));
+
+		end_call(marie, pauline);
 	}
 
 	linphone_core_manager_destroy(marie);
@@ -474,7 +480,6 @@ static void call_transfer_existing_call_outgoing_call(void) {
 	bool_t call_ok=TRUE;
 	const MSList* calls;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
-
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
 
@@ -530,17 +535,21 @@ static void call_transfer_existing_call_outgoing_call(void) {
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,2000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,2,2000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,2000));
-	}
 
+		end_call(pauline, laure);
+	}
 	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
+	linphone_core_manager_destroy(pauline);
 	ms_list_free(lcs);
 }
 
 test_t multi_call_tests[] = {
 	{ "Call waiting indication", call_waiting_indication },
 	{ "Call waiting indication with privacy", call_waiting_indication_with_privacy },
+	{ "Incoming call accepted when outgoing call in progress",incoming_call_accepted_when_outgoing_call_in_progress},
+	{ "Incoming call accepted when outgoing call in outgoing ringing",incoming_call_accepted_when_outgoing_call_in_outgoing_ringing},
+	{ "Incoming call accepted when outgoing call in outgoing ringing early media",incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media},
 	{ "Simple conference", simple_conference },
 	{ "Simple conference with ICE",simple_conference_with_ice},
 	{ "Simple ZRTP conference with ICE",simple_zrtp_conference_with_ice},
@@ -548,10 +557,7 @@ test_t multi_call_tests[] = {
 	{ "Unattended call transfer", unattended_call_transfer },
 	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
-	{ "Incoming call accepted when outgoing call in progress",incoming_call_accepted_when_outgoing_call_in_progress},
-	{ "Incoming call accepted when outgoing call in outgoing ringing",incoming_call_accepted_when_outgoing_call_in_outgoing_ringing},
-	{ "Incoming call accepted when outgoing call in outgoing ringing early media",incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media},
 };
 
-test_suite_t multi_call_test_suite = {"Multi call", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t multi_call_test_suite = {"Multi call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 									  sizeof(multi_call_tests) / sizeof(multi_call_tests[0]), multi_call_tests};

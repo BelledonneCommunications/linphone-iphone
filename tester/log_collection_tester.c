@@ -324,6 +324,6 @@ test_t log_collection_tests[] = {
 	{ "Upload collected traces", upload_collected_traces}
 };
 
-test_suite_t log_collection_test_suite = {"LogCollection", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t log_collection_test_suite = {"LogCollection", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 										  sizeof(log_collection_tests) / sizeof(log_collection_tests[0]),
 										  log_collection_tests};

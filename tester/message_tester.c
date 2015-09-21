@@ -400,38 +400,22 @@ static void text_message_compatibility_mode(void) {
 }
 
 static void text_message_with_ack(void) {
-	int leaked_objects;
-	int begin;
-	LinphoneCoreManager* marie;
-	LinphoneCoreManager* pauline;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
-
-	marie = linphone_core_manager_new( "marie_rc");
-	pauline = linphone_core_manager_new( "pauline_tcp_rc");
-
-	{
-		LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-		LinphoneChatMessage* msg = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
-		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
-		int dummy=0;
-		wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge msg stored in the server*/
-		reset_counters(&marie->stat);
-		reset_counters(&pauline->stat);
-		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-		linphone_chat_room_send_chat_message(chat_room,msg);
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
-		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
-		linphone_core_manager_destroy(marie);
-		linphone_core_manager_destroy(pauline);
-	}
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	LinphoneChatMessage* msg = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
+	int dummy=0;
+	wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge msg stored in the server*/
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_room_send_chat_message(chat_room,msg);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 
 static void text_message_with_external_body(void) {
@@ -1027,7 +1011,6 @@ static void transfer_message_io_error_upload(void) {
 }
 
 static void transfer_message_io_error_download(void) {
-#if 0
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneChatRoom* chat_room;
@@ -1065,7 +1048,6 @@ static void transfer_message_io_error_download(void) {
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}
-#endif
 }
 
 static void transfer_message_upload_cancelled(void) {
@@ -1285,7 +1267,6 @@ static void file_transfer_2_messages_simultaneously() {
 }
 
 static void text_message_with_send_error(void) {
-#if 0
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
@@ -1326,7 +1307,6 @@ static void text_message_with_send_error(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-#endif
 }
 
 static void text_message_denied(void) {
@@ -1418,6 +1398,7 @@ static void info_message_with_args(bool_t with_content) {
 			BC_ASSERT_EQUAL(linphone_content_get_size(content),strlen(info_content), int, "%d");
 		}
 	}
+	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1689,56 +1670,54 @@ static void file_transfer_not_sent_if_url_moved_permanently() {
 }
 
 static void file_transfer_io_error_after_destroying_chatroom() {
-	ms_error("to be fixed");
-	// file_transfer_io_error("https://www.linphone.org:444/lft.php", TRUE);
+	file_transfer_io_error("https://www.linphone.org:444/lft.php", TRUE);
 }
 
 test_t message_tests[] = {
-	{"Text message", text_message}
-	,{"Text message within call's dialog", text_message_within_dialog}
-	,{"Text message with credentials from auth info cb", text_message_with_credential_from_auth_cb}
-	,{"Text message with privacy", text_message_with_privacy}
-	,{"Text message compatibility mode", text_message_compatibility_mode}
-	,{"Text message with ack", text_message_with_ack}
-	,{"Text message with send error", text_message_with_send_error}
-	,{"Text message with external body", text_message_with_external_body}
-	,{"Transfer message", transfer_message}
-	,{"Small transfer message", small_transfer_message}
-	,{"Transfer message with io error at upload", transfer_message_io_error_upload}
-	,{"Transfer message with io error at download", transfer_message_io_error_download}
-	,{"Transfer message upload cancelled", transfer_message_upload_cancelled}
-	,{"Transfer message download cancelled", transfer_message_download_cancelled}
-	,{"Transfer message using external body url", file_transfer_using_external_body_url}
-	,{"Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously}
-	,{"Text message denied", text_message_denied}
-	,{"Info message", info_message}
-	,{"Info message with body", info_message_with_body}
-	,{"IsComposing notification", is_composing_notification}
+	{"Text message", text_message},
+	{"Text message within call's dialog", text_message_within_dialog},
+	{"Text message with credentials from auth info cb", text_message_with_credential_from_auth_cb},
+	{"Text message with privacy", text_message_with_privacy},
+	{"Text message compatibility mode", text_message_compatibility_mode},
+	{"Text message with ack", text_message_with_ack},
+	{"Text message with send error", text_message_with_send_error},
+	{"Text message with external body", text_message_with_external_body},
+	{"Transfer message", transfer_message},
+	{"Small transfer message", small_transfer_message},
+	{"Transfer message with io error at upload", transfer_message_io_error_upload},
+	{"Transfer message with io error at download", transfer_message_io_error_download},
+	{"Transfer message upload cancelled", transfer_message_upload_cancelled},
+	{"Transfer message download cancelled", transfer_message_download_cancelled},
+	{"Transfer message using external body url", file_transfer_using_external_body_url},
+	{"Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously},
+	{"Text message denied", text_message_denied},
+	{"Info message", info_message},
+	{"Info message with body", info_message_with_body},
+	{"IsComposing notification", is_composing_notification},
 #ifdef HAVE_LIME
-	,{"Lime text message", lime_text_message}
-	,{"Lime transfer message", lime_transfer_message}
-	,{"Lime transfer message encryption only", lime_transfer_message_without_encryption}
-	,{"Lime unitary", lime_unit}
+	{"Lime text message", lime_text_message},
+	{"Lime transfer message", lime_transfer_message},
+	{"Lime transfer message encryption only", lime_transfer_message_without_encryption},
+	{"Lime unitary", lime_unit},
 #endif /* HAVE_LIME */
 #ifdef MSG_STORAGE_ENABLED
-	,{"Database migration", message_storage_migration}
-	,{"History count", history_messages_count}
-	,{"History range", history_range_full_test}
+	{"Database migration", message_storage_migration},
+	{"History count", history_messages_count},
+	{"History range", history_range_full_test},
 #endif
-	,{"Text status after destroying chat room", text_status_after_destroying_chat_room}
-	,{"Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url}
-	,{"Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found}
-	,{"Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently}
-	,{"Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom}
-	,{ "Real Time Text base", rtt_text_message}
-	,{ "Text status after destroying chat room", text_status_after_destroying_chat_room }
+	{"Text status after destroying chat room", text_status_after_destroying_chat_room},
+	{"Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url},
+	{"Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found},
+	{"Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently},
+	{"Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom},
+	{ "Real Time Text base", rtt_text_message},
 };
 
 test_suite_t message_test_suite = {
-	"Message", 
-	NULL, 
-	NULL, 
-	liblinphone_tester_before_each, 
+	"Message",
 	NULL,
+	NULL,
+	liblinphone_tester_before_each,
+	liblinphone_tester_after_each,
 	sizeof(message_tests) / sizeof(message_tests[0]), message_tests
 };

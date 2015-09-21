@@ -336,6 +336,7 @@ int linphone_core_manager_get_mean_audio_up_bw(const LinphoneCoreManager *mgr);
 void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled);
 
 void liblinphone_tester_before_each();
+void liblinphone_tester_after_each();
 void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, va_list args));
 void liblinphone_tester_uninit(void);
 

@@ -347,24 +347,21 @@ bool_t call(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr){
 }
 
 void end_call(LinphoneCoreManager *m1, LinphoneCoreManager *m2){
+	int previous_count_1 = m1->stat.number_of_LinphoneCallEnd;
+	int previous_count_2 = m2->stat.number_of_LinphoneCallEnd;
 	linphone_core_terminate_all_calls(m1->lc);
-	BC_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m1->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m2->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m1->stat.number_of_LinphoneCallReleased,1));
-	BC_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m2->stat.number_of_LinphoneCallReleased,1));
+	BC_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m1->stat.number_of_LinphoneCallEnd,previous_count_1+1));
+	BC_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m2->stat.number_of_LinphoneCallEnd,previous_count_2+1));
+	BC_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m1->stat.number_of_LinphoneCallReleased,previous_count_1+1));
+	BC_ASSERT_TRUE(wait_for(m1->lc,m2->lc,&m2->stat.number_of_LinphoneCallReleased,previous_count_2+1));
 }
 
 void simple_call_base(bool_t enable_multicast_recv_side) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	const LinphoneAddress *from;
 	LinphoneCall *pauline_call;
 	LinphoneProxyConfig* marie_cfg;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -408,12 +405,6 @@ void simple_call_base(bool_t enable_multicast_recv_side) {
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void simple_call() {
@@ -421,13 +412,9 @@ static void simple_call() {
 }
 
 static void call_with_timeouted_bye(void) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	belle_sip_timer_config_t timer_config;
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -454,12 +441,6 @@ static void call_with_timeouted_bye(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void direct_call_over_ipv6(){
@@ -534,6 +515,7 @@ static void call_outbound_with_multiple_proxy() {
 	// calling marie should go through the second proxy config
 	BC_ASSERT_TRUE(call(marie, pauline));
 
+	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -624,6 +606,8 @@ static void multiple_answers_call_with_media_relay(void) {
 	BC_ASSERT_TRUE( wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
 	BC_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 2000) );
 
+	end_call(marie1, pauline);
+	end_call(marie2, pauline);
 
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie1);
@@ -1109,6 +1093,7 @@ static void call_with_ice_no_sdp(void){
 
 	liblinphone_tester_check_rtcp(marie,pauline);
 
+	end_call(pauline, marie);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1997,6 +1982,8 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	if (video_removed_by_caller || video_removed_by_callee) {
 		BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
 	}
+
+	end_call(pauline, marie);
 
 end:
 	linphone_core_manager_destroy(marie);
@@ -3403,13 +3390,8 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 
 }
 static void accept_call_in_send_base(bool_t caller_has_ice) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager *pauline, *marie;
 	MSList *lcs=NULL;;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -3427,13 +3409,6 @@ static void accept_call_in_send_base(bool_t caller_has_ice) {
 	ms_free(lcs);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void accept_call_in_send_only(void)  {
@@ -3445,13 +3420,8 @@ static void accept_call_in_send_only_with_ice(void)  {
 }
 
 void two_accepted_call_in_send_only() {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager *pauline, *marie, *laure;
 	MSList *lcs=NULL;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -3473,14 +3443,6 @@ void two_accepted_call_in_send_only() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
-
 }
 #endif
 
@@ -3583,6 +3545,7 @@ static void video_call_snapshot(void) {
 		wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
 		BC_ASSERT_EQUAL(access(filename, F_OK), 0, int, "%d");
 		remove(filename);
+		end_call(marie, pauline);
 	}
 	ms_free(filename);
 	linphone_core_manager_destroy(marie);
@@ -3592,15 +3555,10 @@ static void video_call_snapshot(void) {
 #endif
 
 static void call_with_in_dialog_update(void) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCallParams *params;
 	bool_t call_ok;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -3621,24 +3579,13 @@ static void call_with_in_dialog_update(void) {
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 static void call_with_in_dialog_codec_change_base(bool_t no_sdp) {
-	int begin;
-	int leaked_objects;
 	int dummy=0;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCallParams *params;
 	bool_t call_ok;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -3670,12 +3617,6 @@ static void call_with_in_dialog_codec_change_base(bool_t no_sdp) {
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 static void call_with_in_dialog_codec_change(void) {
 	call_with_in_dialog_codec_change_base(FALSE);
@@ -3684,16 +3625,11 @@ static void call_with_in_dialog_codec_change_no_sdp(void) {
 	call_with_in_dialog_codec_change_base(TRUE);
 }
 static void call_with_custom_supported_tags(void) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	const LinphoneCallParams *remote_params;
 	const char *recv_supported;
 	bool_t call_ok;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -3712,12 +3648,6 @@ static void call_with_custom_supported_tags(void) {
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void call_log_from_taken_from_p_asserted_id(void) {
@@ -3882,15 +3812,10 @@ static void outgoing_reinvite_with_invalid_ack_sdp()  {
 
 
 static void call_with_paused_no_sdp_on_resume() {
-	int begin;
-	int leaked_objects;
 	int dummy=0;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCall* call_marie = NULL;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -3931,12 +3856,6 @@ end:
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ice ){
@@ -4027,16 +3946,11 @@ static void call_with_early_media_ice_and_no_sdp_in_200(){
 }
 
 static void call_with_generic_cn(void) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCall *pauline_call;
 	char *audio_file_with_silence=bc_tester_res("sounds/ahbahouaismaisbon.wav");
 	char *recorded_file=bc_tester_file("result.wav");
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -4076,11 +3990,6 @@ static void call_with_generic_cn(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 	ms_free(audio_file_with_silence);
 	ms_free(recorded_file);
 }
@@ -4109,14 +4018,10 @@ void static call_state_changed_3(LinphoneCore *lc, LinphoneCall *call, LinphoneC
 
 
 static void call_with_transport_change_base(bool_t succesfull_call) {
-	int begin;
-	int leaked_objects;
 	LCSipTransports sip_tr;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCoreVTable * v_table;
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 	v_table = linphone_core_v_table_new();
 	v_table->call_state_changed=call_state_changed_2;
 	marie = linphone_core_manager_new("marie_rc");
@@ -4146,13 +4051,6 @@ static void call_with_transport_change_base(bool_t succesfull_call) {
 	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects,0,int,"%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
-
 }
 static void call_with_transport_change_after_released(void) {
 	call_with_transport_change_base(TRUE);
@@ -4163,16 +4061,11 @@ static void unsucessfull_call_with_transport_change_after_released(void) {
 #ifdef VIDEO_ENABLED
 
 static void video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryption mode, bool_t no_sdp) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCallParams *params;
 	const LinphoneCallParams *current_params;
 	MSList *lcs=NULL;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -4226,12 +4119,6 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void video_call_with_re_invite_inactive_followed_by_re_invite() {
@@ -4271,17 +4158,12 @@ static void completion_cb(void *user_data, int percentage){
 }
 
 static void simple_stereo_call(const char *codec_name, int clock_rate, int bitrate_override, bool_t stereo) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	PayloadType *pt;
 	char *stereo_file = bc_tester_res("sounds/vrroom.wav");
 	char *recordpath = bc_tester_file("stereo-record.wav");
 	bool_t audio_cmp_failed = FALSE;
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -4341,12 +4223,6 @@ end:
 	linphone_core_manager_destroy(pauline);
 	ms_free(stereo_file);
 	ms_free(recordpath);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void simple_stereo_call_l16(void){
@@ -4956,11 +4832,11 @@ static void call_logs_if_no_db_set() {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new("laure_call_logs_rc");
 	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 10);
-	
+
 	BC_ASSERT_TRUE(call(marie, laure));
 	wait_for_until(marie->lc, laure->lc, NULL, 5, 1000);
 	end_call(marie, laure);
-	
+
 	BC_ASSERT_TRUE(ms_list_size(laure->lc->call_logs) == 11);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(laure);
@@ -5023,7 +4899,7 @@ static void call_logs_sqlite_storage() {
 	char *logs_db = create_filepath(bc_tester_get_writable_dir_prefix(), "call_logs", "db");
 	MSList *logs = NULL;
 	LinphoneAddress *laure = NULL;
-	
+
 	unlink(logs_db);
 
 	linphone_core_set_call_logs_database_path(marie->lc, logs_db);
@@ -5041,7 +4917,7 @@ static void call_logs_sqlite_storage() {
 	laure = linphone_address_new("\"Laure\" <sip:laure@sip.example.org>");
 	logs = linphone_core_get_call_history_for_address(marie->lc, laure);
 	BC_ASSERT_TRUE(ms_list_size(logs) == 0);
-	ms_free(laure);
+	linphone_address_destroy(laure);
 
 	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
 	BC_ASSERT_TRUE(ms_list_size(logs) == 1);
@@ -5049,9 +4925,14 @@ static void call_logs_sqlite_storage() {
 	ms_list_free_with_data(logs, (void (*)(void*))linphone_call_log_unref);
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);
 
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
 	BC_ASSERT_TRUE(call(marie, pauline));
 	wait_for_until(marie->lc, pauline->lc, NULL, 5, 1000);
 	end_call(marie, pauline);
+
+	reset_counters(&marie->stat);
+	reset_counters(&pauline->stat);
 	BC_ASSERT_TRUE(call(marie, pauline));
 	wait_for_until(marie->lc, pauline->lc, NULL, 5, 1000);
 	end_call(marie, pauline);
@@ -5213,5 +5094,5 @@ test_t call_tests[] = {
 #endif
 };
 
-test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 								sizeof(call_tests) / sizeof(call_tests[0]), call_tests};

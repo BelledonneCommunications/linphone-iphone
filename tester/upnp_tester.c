@@ -59,5 +59,5 @@ test_t upnp_tests[] = {
 	{ "Check ip address", upnp_check_ipaddress },
 };
 
-test_suite_t upnp_test_suite = {"Upnp", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t upnp_test_suite = {"Upnp", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 								sizeof(upnp_tests) / sizeof(upnp_tests[0]), upnp_tests};

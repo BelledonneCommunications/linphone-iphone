@@ -654,8 +654,6 @@ static void call_with_sips_not_achievable(void){
 }
 
 static void call_with_ipv6(void) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCall *pauline_call;
@@ -667,9 +665,6 @@ static void call_with_ipv6(void) {
 		ms_warning("Call with ipv6 not tested, no ipv6 connectivity");
 		return;
 	}
-
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
 
 	liblinphone_tester_enable_ipv6(TRUE);
 	marie = linphone_core_manager_new( "marie_rc");
@@ -703,11 +698,6 @@ static void call_with_ipv6(void) {
 	linphone_core_manager_destroy(pauline);
 	liblinphone_tester_enable_ipv6(FALSE);
 
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 	ortp_exit();
 }
 
@@ -763,7 +753,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
 		linphone_chat_room_send_chat_message(chat_room,message);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
-		
+
 		if (marie->stat.last_received_chat_message ) {
 			cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
 			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
@@ -917,5 +907,5 @@ test_t flexisip_tests[] = {
 	{ "DoS module trigger by sending a lot of chat messages", dos_module_trigger }
 };
 
-test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 									sizeof(flexisip_tests) / sizeof(flexisip_tests[0]), flexisip_tests};

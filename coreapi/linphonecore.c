@@ -1315,7 +1315,7 @@ static void ui_config_read(LinphoneCore *lc)
 		linphone_core_add_friend(lc,lf);
 		linphone_friend_unref(lf);
 	}
-	
+
 	call_logs_read_from_config_file(lc);
 }
 
@@ -2476,7 +2476,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	time_t current_real_time = ms_time(NULL);
 	bool_t one_second_elapsed=FALSE;
 	const char *remote_provisioning_uri = NULL;
-	
+
 	if (lc->network_reachable_to_be_notified) {
 		lc->network_reachable_to_be_notified=FALSE;
 		linphone_core_notify_network_reachable(lc,lc->network_reachable);
@@ -3787,6 +3787,7 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	{
 		call = the_call;
 	}
+	ms_message("Terminate call [%p] which is currently in state %s", call, linphone_call_state_to_string(call->state));
 	switch (call->state) {
 		case LinphoneCallReleased:
 		case LinphoneCallEnd:
@@ -5023,7 +5024,7 @@ void linphone_core_set_call_logs_database_path(LinphoneCore *lc, const char *pat
 	if (path) {
 		lc->logs_db_file = ms_strdup(path);
 		linphone_core_call_log_storage_init(lc);
-	
+
 		linphone_core_migrate_logs_from_rc_to_db(lc);
 	}
 }
@@ -5081,7 +5082,7 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 	LpConfig *lpc = NULL;
 	int original_logs_count, migrated_logs_count;
 	int i;
-	
+
 #ifndef CALL_LOGS_STORAGE_ENABLED
 	ms_warning("linphone has been compiled without sqlite, can't migrate call logs");
 	return;
@@ -5089,7 +5090,7 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 	if (!lc) {
 		return;
 	}
-	
+
 	lpc = linphone_core_get_config(lc);
 	if (!lpc) {
 		ms_warning("this core has been started without a rc file, nothing to migrate");
@@ -5099,16 +5100,16 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 		ms_warning("the call logs migration has already been done, skipping...");
 		return;
 	}
-	
-	// This is because there must have been a call previously to linphone_core_call_log_storage_init 
+
+	// This is because there must have been a call previously to linphone_core_call_log_storage_init
 	lc->call_logs = ms_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
-	
+
 	call_logs_read_from_config_file(lc);
 	if (!lc->call_logs) {
 		ms_warning("nothing to migrate, skipping...");
 		return;
 	}
-	
+
 	logs_to_migrate = lc->call_logs;
 	lc->call_logs = NULL;
 	// We can't use ms_list_for_each because logs_to_migrate are listed in the wrong order (latest first), and we want to store the logs latest last
@@ -5123,7 +5124,7 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 		int i = 0;
 		ms_debug("call logs migration successful: %i logs migrated", ms_list_size(lc->call_logs));
 		lp_config_set_int(lpc, "misc", "call_logs_migration_done", 1);
-	
+
 		for (; i < original_logs_count; i++) {
 			char logsection[32];
 			snprintf(logsection, sizeof(logsection), "call_log_%i", i);
@@ -5132,7 +5133,7 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
 	} else {
 		ms_error("not as many logs saved in db has logs read from rc (%i in rc against %i in db)!", original_logs_count, migrated_logs_count);
 	}
-	
+
 	ms_list_free_with_data(logs_to_migrate, (void (*)(void*))linphone_call_log_unref);
 }
 

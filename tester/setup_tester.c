@@ -189,6 +189,8 @@ void linphone_proxy_config_address_equal_test() {
 	linphone_address_destroy(b);
 	linphone_address_destroy(c);
 	linphone_address_destroy(d);
+	linphone_address_destroy(e);
+	linphone_address_destroy(f);
 }
 
 void linphone_proxy_config_is_server_config_changed_test() {
@@ -306,5 +308,5 @@ test_t setup_tests[] = {
 	{ "Codec usability", codec_usability_test }
 };
 
-test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 								 sizeof(setup_tests) / sizeof(setup_tests[0]), setup_tests};

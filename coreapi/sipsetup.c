@@ -76,6 +76,7 @@ void sip_setup_unregister_all(void){
 			ss->initialized=FALSE;
 		}
 	}
+	registered_sip_setups = ms_list_free(registered_sip_setups);
 }
 
 void buddy_lookup_request_set_key(BuddyLookupRequest *req, const char *key){

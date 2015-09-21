@@ -136,7 +136,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 	} else
 		/*checking to be done outside this functions*/
 	BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,0, int, "%d");
-
+	linphone_proxy_config_destroy(proxy_cfg);
 }
 
 static void register_with_refresh_base_2(LinphoneCore* lc
@@ -396,18 +396,19 @@ static void authenticated_register_with_provided_credentials(){
 	linphone_proxy_config_set_route(cfg, test_route);
 	linphone_proxy_config_set_server_addr(cfg,test_route);
 	linphone_address_destroy(from);
-	
+
 	ai = linphone_auth_info_new(test_username, NULL, test_password, NULL, NULL, NULL);
 	linphone_core_add_auth_info(lcm->lc, ai);
 
 	linphone_core_add_proxy_config(lcm->lc, cfg);
-	
+
 	BC_ASSERT_TRUE(wait_for(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationOk,1));
 	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
-	
+
 	BC_ASSERT_PTR_NULL(lp_config_get_string(lcm->lc->config, "auth_info_0", "passwd", NULL));
 	BC_ASSERT_PTR_NOT_NULL(lp_config_get_string(lcm->lc->config, "auth_info_0", "ha1", NULL));
-	
+
+	linphone_proxy_config_destroy(cfg);
 	linphone_core_manager_destroy(lcm);
 }
 
@@ -540,8 +541,8 @@ static void network_state_change(){
 static int get_number_of_udp_proxy(const LinphoneCore* lc) {
 	int number_of_udp_proxy=0;
 	LinphoneProxyConfig* proxy_cfg;
-	MSList* proxys;
-	for (proxys=(MSList*)linphone_core_get_proxy_config_list(lc);proxys!=NULL;proxys=proxys->next) {
+	const MSList* proxys;
+	for (proxys=linphone_core_get_proxy_config_list(lc);proxys!=NULL;proxys=proxys->next) {
 			proxy_cfg=(LinphoneProxyConfig*)proxys->data;
 			if (strcmp("udp",linphone_proxy_config_get_transport(proxy_cfg))==0)
 				number_of_udp_proxy++;
@@ -935,5 +936,5 @@ test_t register_tests[] = {
 	{ "Simple redirect", redirect}
 };
 
-test_suite_t register_test_suite = {"Register", NULL, NULL, liblinphone_tester_before_each, NULL,
+test_suite_t register_test_suite = {"Register", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 									sizeof(register_tests) / sizeof(register_tests[0]), register_tests};

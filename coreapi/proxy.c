@@ -904,7 +904,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 			ms_free(flatten);
 		}
 	}
-	if (proxy==NULL) ms_free(tmpproxy);
+	if (proxy==NULL) linphone_proxy_config_destroy(tmpproxy);
 	return result;
 }
 
@@ -1494,9 +1494,11 @@ const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) 
 		return NULL;
 	}
 
-	if ((route_addr || (route_addr=sal_address_new(addr))) && sal_address_get_transport(route_addr)) {
+	if (route_addr || (route_addr=sal_address_new(addr))) {
 		ret=sal_transport_to_string(sal_address_get_transport(route_addr));
-		if (!linphone_proxy_config_get_service_route(cfg)) sal_address_destroy(route_addr); /*destroy except for service route*/
+		if (!linphone_proxy_config_get_service_route(cfg)) {
+			sal_address_destroy(route_addr);
+		}
 	}
 
 	return ret;

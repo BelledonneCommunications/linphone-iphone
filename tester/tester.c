@@ -36,7 +36,7 @@ static bool_t liblinphone_tester_ipv6_enabled=FALSE;
 static int liblinphone_tester_keep_accounts_flag = 0;
 static int liblinphone_tester_keep_record_files = FALSE;
 int manager_count = 0;
-
+int leaked_objects_count = 0;
 const MSAudioDiffParams audio_cmp_params = {10,2000};
 
 const char* test_domain="sipopen.example.org";
@@ -376,6 +376,10 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 				unlink(record_file);
 			}
 		}
+
+		if (ms_list_size(mgr->lc->calls) != 0) {
+			ms_fatal("%s(): There are still %d calls pending, please terminates them before invoking me", __FUNCTION__, ms_list_size(mgr->lc->calls) );
+		}
 		linphone_core_destroy(mgr->lc);
 	}
 	if (mgr->identity) linphone_address_destroy(mgr->identity);
@@ -480,9 +484,21 @@ int linphone_core_manager_get_mean_audio_up_bw(const LinphoneCoreManager *mgr) {
 }
 
 void liblinphone_tester_before_each() {
+	belle_sip_object_enable_leak_detector(TRUE);
+	leaked_objects_count = belle_sip_object_get_object_count();
+}
+
+void liblinphone_tester_after_each() {
+	int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
+	// this will NOT be counted in tests fail but at least it will be shown
+	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
+	if (leaked_objects > 0) {
+		belle_sip_object_dump_active_objects();
+		ms_error("%d objects were leaked in latest test, please fix that!", leaked_objects);
+	}
+
 	if (manager_count != 0) {
-		// crash in some linphone core have not been destroyed because if we continue
-		// it will crash in CUnit AND we should NEVER keep a manager alive
 		ms_fatal("%d linphone core managers are still alive!", manager_count);
 	}
 }
+

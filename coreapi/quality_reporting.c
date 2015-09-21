@@ -260,7 +260,7 @@ static void append_metrics_to_buffer(char ** buffer, size_t * size, size_t * off
 }
 
 static int send_report(LinphoneCall* call, reporting_session_report_t * report, const char * report_event) {
-	LinphoneContent *content = linphone_content_new();
+	LinphoneContent *content;
 	int expires = -1;
 	size_t offset = 0;
 	size_t size = 2048;
@@ -293,6 +293,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	}
 
 	buffer = (char *) belle_sip_malloc(size);
+	content = linphone_content_new();
 	linphone_content_set_type(content, "application");
 	linphone_content_set_subtype(content, "vq-rtcpxr");
 
