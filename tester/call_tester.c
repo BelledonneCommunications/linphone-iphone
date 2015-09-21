@@ -3311,6 +3311,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 			switch (video_dir) {
 			case LinphoneMediaDirectionInactive:
 				BC_ASSERT_LOWER(linphone_call_get_video_stats(call)->upload_bandwidth, 5, int, "%i");
+				break;
 			case LinphoneMediaDirectionSendOnly:
 				expected_recv_iframe = 0;
 				BC_ASSERT_LOWER(linphone_call_get_video_stats(call)->download_bandwidth, 5, int, "%i");
@@ -3339,6 +3340,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 					break;
 				case LinphoneMediaDirectionRecvOnly:
 					BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_up_bw(mgr), 5, int, "%i");
+					break;
 				case LinphoneMediaDirectionSendRecv:
 					BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_down_bw(mgr), 70, int, "%i");
 					BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_up_bw(mgr), 70, int, "%i");
