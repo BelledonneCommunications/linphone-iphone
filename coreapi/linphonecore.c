@@ -2397,10 +2397,12 @@ static void linphone_core_do_plugin_tasks(LinphoneCore *lc){
 void linphone_core_iterate(LinphoneCore *lc){
 	MSList *calls;
 	LinphoneCall *call;
-	time_t curtime=time(NULL);
+	uint64_t curtime_ms = ms_get_cur_time_ms(); /*monotonic time*/
 	int elapsed;
+	time_t current_real_time = ms_time(NULL);
 	bool_t one_second_elapsed=FALSE;
 	const char *remote_provisioning_uri = NULL;
+	
 	if (lc->network_reachable_to_be_notified) {
 		lc->network_reachable_to_be_notified=FALSE;
 		linphone_core_notify_network_reachable(lc,lc->network_reachable);
@@ -2423,9 +2425,11 @@ void linphone_core_iterate(LinphoneCore *lc){
 			}
 		} // else linphone_configuring_terminated has already been called in linphone_core_init
 	}
-
-	if (curtime-lc->prevtime>=1){
-		lc->prevtime=curtime;
+	if (lc->prevtime_ms == 0){
+		lc->prevtime_ms = curtime_ms;
+	}
+	if (curtime_ms-lc->prevtime_ms >= 1000){
+		lc->prevtime_ms += 1000;
 		one_second_elapsed=TRUE;
 	}
 
@@ -2457,7 +2461,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 
 	if (lc->ringstream && lc->ringstream_autorelease && lc->dmfs_playing_start_time!=0
-		&& (curtime-lc->dmfs_playing_start_time)>5){
+		&& (curtime_ms/1000 - lc->dmfs_playing_start_time)>5){
 		MSPlayerState state;
 		bool_t stop=TRUE;
 		if (lc->ringstream->source && ms_filter_call_method(lc->ringstream->source,MS_PLAYER_GET_STATE,&state)==0){
@@ -2471,15 +2475,15 @@ void linphone_core_iterate(LinphoneCore *lc){
 
 	sal_iterate(lc->sal);
 	if (lc->msevq) ms_event_queue_pump(lc->msevq);
-	if (lc->auto_net_state_mon) monitor_network_state(lc,curtime);
+	if (lc->auto_net_state_mon) monitor_network_state(lc, current_real_time);
 
 	proxy_update(lc);
 
 	//we have to iterate for each call
-	calls= lc->calls;
+	calls = lc->calls;
 	while(calls!= NULL){
 		call = (LinphoneCall *)calls->data;
-		elapsed = curtime-call->log->start_date_time;
+		elapsed = current_real_time - call->log->start_date_time;
 		 /* get immediately a reference to next one in case the one
 		 we are going to examine is destroy and removed during
 		 linphone_core_start_invite() */
@@ -2514,7 +2518,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		}
 		if ( (lc->sip_conf.in_call_timeout > 0)
 			 && (call->log->connected_date_time != 0)
-			 && ((curtime - call->log->connected_date_time) > lc->sip_conf.in_call_timeout))
+			 && ((current_real_time - call->log->connected_date_time) > lc->sip_conf.in_call_timeout))
 		{
 			ms_message("in call timeout (%i)",lc->sip_conf.in_call_timeout);
 			linphone_core_terminate_call(lc,call);
@@ -2535,7 +2539,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	linphone_core_run_hooks(lc);
 	linphone_core_do_plugin_tasks(lc);
 
-	if (lc->network_reachable && lc->netup_time!=0 && (curtime-lc->netup_time)>3){
+	if (lc->network_reachable && lc->netup_time!=0 && (current_real_time-lc->netup_time)>3){
 		/*not do that immediately, take your time.*/
 		linphone_core_send_initial_subscribes(lc);
 	}
@@ -5760,11 +5764,11 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 
 		ringstream=lc->ringstream=ring_start(NULL,0,ringcard);
 		ms_filter_call_method(lc->ringstream->gendtmf,MS_DTMF_GEN_SET_DEFAULT_AMPLITUDE,&amp);
-		lc->dmfs_playing_start_time=time(NULL);
+		lc->dmfs_playing_start_time = ms_get_cur_time_ms()/1000;
 	}else{
 		ringstream=lc->ringstream;
 		if (lc->dmfs_playing_start_time!=0)
-			lc->dmfs_playing_start_time=time(NULL);
+			lc->dmfs_playing_start_time = ms_get_cur_time_ms()/1000;
 	}
 	if (rtype==LinphoneToneGenerator) return ringstream->gendtmf;
 	if (rtype==LinphoneLocalPlayer) return ringstream->source;

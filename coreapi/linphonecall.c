@@ -1325,7 +1325,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 			break;
 		case LinphoneCallConnected:
 			call->log->status=LinphoneCallSuccess;
-			call->log->connected_date_time=time(NULL);
+			call->log->connected_date_time = ms_time(NULL);
 			break;
 		case LinphoneCallReleased:
 #ifdef ANDROID
@@ -1726,7 +1726,7 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
 **/
 int linphone_call_get_duration(const LinphoneCall *call){
 	if (call->log->connected_date_time==0) return 0;
-	return time(NULL)-call->log->connected_date_time;
+	return ms_time(NULL)-call->log->connected_date_time;
 }
 
 /**
@@ -3638,18 +3638,17 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_upload_bandwidth=(as_active) ? (media_stream_get_rtcp_up_bw(as)*1e-3) : 0;
 	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth=(vs_active) ? (media_stream_get_rtcp_down_bw(vs)*1e-3) : 0;
 	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_upload_bandwidth=(vs_active) ? (media_stream_get_rtcp_up_bw(vs)*1e-3) : 0;
-	if (as_active) {
-		call->stats[LINPHONE_CALL_STATS_AUDIO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
-		call->stats[LINPHONE_CALL_STATS_AUDIO].updated=0;
-		update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], as);
-	}
-	if (vs_active) {
-		call->stats[LINPHONE_CALL_STATS_VIDEO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
-		call->stats[LINPHONE_CALL_STATS_VIDEO].updated=0;
-		update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], vs);
-	}
+	
+	call->stats[LINPHONE_CALL_STATS_AUDIO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
+	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
+	call->stats[LINPHONE_CALL_STATS_AUDIO].updated=0;
+	update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], as);
+
+	call->stats[LINPHONE_CALL_STATS_VIDEO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
+	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
+	call->stats[LINPHONE_CALL_STATS_VIDEO].updated=0;
+	update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], vs);
+	
 
 	ms_message(	"Bandwidth usage for call [%p]:\n"
 				"\tRTP  audio=[d=%5.1f,u=%5.1f], video=[d=%5.1f,u=%5.1f] kbits/sec\n"

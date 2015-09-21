@@ -3332,9 +3332,10 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 			switch (audio_dir) {
 				case LinphoneMediaDirectionInactive:
 					BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_up_bw(mgr), 5, int, "%i");
+					BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_down_bw(mgr), 5, int, "%i");
+					break;
 				case LinphoneMediaDirectionSendOnly:
-					BC_ASSERT_LOWER(linphone_call_get_video_stats(call)->download_bandwidth, 5, int, "%i");
-					BC_ASSERT_TRUE(wait_for_list(lcs,mgr->stat.current_audio_upload_bandwidth,70,4000));
+					BC_ASSERT_GREATER(linphone_core_manager_get_mean_audio_up_bw(mgr), 70, int, "%i");
 					break;
 				case LinphoneMediaDirectionRecvOnly:
 					BC_ASSERT_LOWER(linphone_core_manager_get_mean_audio_up_bw(mgr), 5, int, "%i");

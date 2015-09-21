@@ -811,7 +811,7 @@ struct _LinphoneCore
 	void *data;
 	char *play_file;
 	char *rec_file;
-	time_t prevtime;
+	uint64_t prevtime_ms;
 	int audio_bw; /*IP bw consumed by audio codec, set as soon as used codec is known, its purpose is to know the remaining bw for video*/
 	LinphoneCoreWaitingCallback wait_cb;
 	void *wait_ctx;
