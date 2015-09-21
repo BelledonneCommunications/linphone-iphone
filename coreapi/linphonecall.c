@@ -1099,6 +1099,7 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 			if (i == call->main_video_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
 					if (j != call->main_video_stream_index && j != call->main_text_stream_index) {
+						ms_message("%i was used for video stream ; now using %i", i, j);
 						call->main_video_stream_index = j;
 						break;
 					}
@@ -1107,6 +1108,7 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 			if (i == call->main_text_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
 					if (j != call->main_video_stream_index && j != call->main_text_stream_index) {
+						ms_message("%i was used for text stream ; now using %i", i, j);
 						call->main_text_stream_index = j;
 						break;
 					}
@@ -1120,6 +1122,7 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 			if (i == call->main_audio_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
 					if (j != call->main_audio_stream_index && j != call->main_text_stream_index) {
+						ms_message("%i was used for audio stream ; now using %i", i, j);
 						call->main_audio_stream_index = j;
 						break;
 					}
@@ -1128,6 +1131,7 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 			if (i == call->main_text_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
 					if (j != call->main_audio_stream_index && j != call->main_text_stream_index) {
+						ms_message("%i was used for text stream ; now using %i", i, j);
 						call->main_text_stream_index = j;
 						break;
 					}
@@ -1141,6 +1145,7 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 			if (i == call->main_video_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
 					if (j != call->main_video_stream_index && j != call->main_audio_stream_index) {
+						ms_message("%i was used for video stream ; now using %i", i, j);
 						call->main_video_stream_index = j;
 						break;
 					}
@@ -1149,6 +1154,7 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 			if (i == call->main_audio_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
 					if (j != call->main_video_stream_index && j != call->main_audio_stream_index) {
+						ms_message("%i was used for audio stream ; now using %i", i, j);
 						call->main_audio_stream_index = j;
 						break;
 					}
