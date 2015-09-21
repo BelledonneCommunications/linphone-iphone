@@ -377,7 +377,7 @@ static void detect_res_prefix(const char* prog) {
 		}
 		if (bc_tester_writable_dir_prefix == NULL) {
 			printf("Writable directory set to %s\n", prefix);
-			bc_tester_set_resource_dir_prefix(prefix);
+			bc_tester_set_writable_dir_prefix(prefix);
 		}
 		free(prefix);
 	} else if (bc_tester_resource_dir_prefix == NULL || bc_tester_writable_dir_prefix == NULL) {
