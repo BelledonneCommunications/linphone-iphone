@@ -33,7 +33,7 @@ static FILE *sip_start(const char *senario, const char* dest_username, LinphoneA
 	else
 		dest = ms_strdup_printf("%s",linphone_address_get_domain(dest_addres));
 	
-	command = ms_strdup_printf("sipp -sf %s -s %s %s -trace_err -trace_msg  -m 1 -d 1000 ",senario,dest_username,dest);
+	command = ms_strdup_printf("sipp -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000",senario,dest_username,dest);
 	
 	ms_message("Starting sipp commad [%s]",command);
 	file = popen(command, "r");
@@ -81,9 +81,7 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 	*/
 	scen = bc_tester_res("sipp/sip_update_within_icoming_reinvite_with_no_sdp.xml");
 	
-	sipp_out = sip_start(scen
-								, linphone_address_get_username(mgr->identity)
-								, mgr->identity);
+	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), mgr->identity);
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -96,8 +94,42 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 	
 }
 
+static void call_with_video_mline_before_audio_in_sdp() {
+	LinphoneCoreManager *mgr;
+	char *identity_char;
+	char *scen;
+	FILE * sipp_out;
+	LinphoneCall *call = NULL;
+	
+	/*currently we use direct connection because sipp do not properly set ACK request uri*/
+	mgr= linphone_core_manager_new2( "empty_rc", FALSE);
+	mgr->identity= linphone_core_get_primary_contact_parsed(mgr->lc);
+	linphone_address_set_username(mgr->identity,"marie");
+	identity_char=linphone_address_as_string(mgr->identity);
+	linphone_core_set_primary_contact(mgr->lc,identity_char);
+	
+	linphone_core_iterate(mgr->lc);
+	
+	scen = bc_tester_res("sipp/call_with_video_mline_before_audio_in_sdp.xml");
+	
+	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), mgr->identity);
+
+	if (sipp_out) {
+		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
+		call = linphone_core_get_current_call(mgr->lc);
+		linphone_core_accept_call(mgr->lc, call);
+		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
+		BC_ASSERT_EQUAL(call->main_audio_stream_index, 1, int, "%d");
+		BC_ASSERT_EQUAL(call->main_video_stream_index, 0, int, "%d");
+		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
+		pclose(sipp_out);
+	}
+	linphone_core_manager_destroy(mgr);
+}
+
 static test_t tests[] = {
-	{ "SIP UPDATE within incoming reinvite witjout sdp", sip_update_within_icoming_reinvite_with_no_sdp},
+	{ "SIP UPDATE within incoming reinvite without sdp", sip_update_within_icoming_reinvite_with_no_sdp },
+	{ "Call with video mline before audio in sdp", call_with_video_mline_before_audio_in_sdp },
 };
 
 test_suite_t complex_sip_call_test_suite = {

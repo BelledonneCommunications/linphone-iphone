@@ -2044,7 +2044,7 @@ static void port_config_set_random_choosed(LinphoneCall *call, int stream_index,
 }
 
 static void _linphone_call_prepare_ice_for_stream(LinphoneCall *call, int stream_index, bool_t create_checklist){
-	MediaStream *ms=stream_index == 0 ? (MediaStream*)call->audiostream : (MediaStream*)call->videostream;
+	MediaStream *ms = stream_index == call->main_audio_stream_index ? (MediaStream*)call->audiostream : stream_index == call->main_video_stream_index ? (MediaStream*)call->videostream : (MediaStream*)call->textstream;
 	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
 		IceCheckList *cl;
 		rtp_session_set_pktinfo(ms->sessions.rtp_session, TRUE);
