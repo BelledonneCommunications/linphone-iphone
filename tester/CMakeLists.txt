@@ -24,6 +24,7 @@ set(SOURCE_FILES
 	common/bc_tester_utils.c
 	accountmanager.c
 	call_tester.c
+	complex_sip_call_tester.c
 	dtmf_tester.c
 	eventapi_tester.c
 	flexisip_tester.c
@@ -45,14 +46,13 @@ set(SOURCE_FILES
 	tunnel_tester.c
 	upnp_tester.c
 	video_tester.c
-	complex_sip_call.c
 	)
 
 find_program(SIPP_PROGRAM NAMES sipp sipp.exe)
 if(SIPP_PROGRAM)
         add_definitions(-DHAVE_SIPP=1)
 else()
- 	message(WARNING "Could not find sipp!")	
+ 	message(WARNING "Could not find sipp!")
 endif()
 
 add_definitions(-DBC_CONFIG_FILE="config.h")

@@ -13,6 +13,7 @@ lib_LTLIBRARIES = liblinphonetester.la
 liblinphonetester_la_SOURCES = \
 				accountmanager.c \
 				call_tester.c \
+				complex_sip_call_tester.c \
 				dtmf_tester.c \
 				eventapi_tester.c \
 				flexisip_tester.c \
@@ -33,8 +34,7 @@ liblinphonetester_la_SOURCES = \
 				tester.c \
 				upnp_tester.c \
 				video_tester.c \
-				common/bc_tester_utils.c \ 
-				complex_sip_call.c
+				common/bc_tester_utils.c
 
 liblinphonetester_ladir = $(includedir)/linphone
 liblinphonetester_la_HEADERS = common/bc_tester_utils.h
