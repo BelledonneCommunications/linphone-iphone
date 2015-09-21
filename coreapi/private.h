@@ -511,6 +511,10 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
+void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
+void linphone_chat_room_upload_file(LinphoneChatMessage *msg);
+void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
+LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
 /**/
 
 struct _LinphoneProxyConfig

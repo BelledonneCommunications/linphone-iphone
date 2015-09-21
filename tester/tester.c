@@ -494,11 +494,11 @@ void liblinphone_tester_after_each() {
 	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 	if (leaked_objects > 0) {
 		belle_sip_object_dump_active_objects();
-		ms_error("%d objects were leaked in latest test, please fix that!", leaked_objects);
+		ms_error("%d object%s leaked in latest test, please fix that!", leaked_objects, leaked_objects>1?"s were":"was");
 	}
 
 	if (manager_count != 0) {
-		ms_fatal("%d linphone core managers are still alive!", manager_count);
+		ms_fatal("%d Linphone core managers are still alive!", manager_count);
 	}
 }
 

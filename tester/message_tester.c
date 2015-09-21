@@ -216,6 +216,7 @@ static void text_message_within_dialog(void) {
 
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 
@@ -482,6 +483,7 @@ LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
 	fseek(file_to_send, 0, SEEK_SET);
 
 	content = linphone_core_create_content(chat_room->lc);
+	belle_sip_object_set_name(&content->base, "nowebcam content");
 	linphone_content_set_type(content,"image");
 	linphone_content_set_subtype(content,"jpeg");
 	linphone_content_set_size(content,file_size); /*total size to be transfered*/
@@ -494,22 +496,19 @@ LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
 	linphone_chat_message_set_user_data(msg, file_to_send);
 
 	linphone_content_unref(content);
-
+	ms_free(send_filepath);
 	return msg;
 }
 
 static void transfer_message(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneChatRoom* chat_room;
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 		char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+		char *receive_filepath = bc_tester_file("receive_file.dump");
+		LinphoneChatRoom* chat_room;
 		LinphoneChatMessage* msg;
 		LinphoneChatMessageCbs *cbs;
-		char *receive_filepath = bc_tester_file("receive_file.dump");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-
-		reset_counters(&marie->stat);
-		reset_counters(&pauline->stat);
 
 		/* Globally configure an http file transfer server. */
 		linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
@@ -519,12 +518,7 @@ static void transfer_message(void) {
 		/* create a file transfer msg */
 		msg = create_message_from_nowebcam(chat_room);
 		cbs = linphone_chat_message_get_callbacks(msg);
-		{
-			int dummy=0;
-			wait_for_until(marie->lc,pauline->lc,&dummy,1,100); /*just to have time to purge msg stored in the server*/
-			reset_counters(&marie->stat);
-			reset_counters(&pauline->stat);
-		}
+
 		linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 		linphone_chat_room_send_chat_message(chat_room,msg);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
@@ -533,17 +527,16 @@ static void transfer_message(void) {
 			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 			linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
 			linphone_chat_message_download_file(marie->stat.last_received_chat_message);
+			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
+			compare_files(send_filepath, receive_filepath);
 		}
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
 
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); //sent twice because of file transfer
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
-		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1, int, "%d");
-		compare_files(send_filepath, receive_filepath);
 
-		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
 		ms_free(receive_filepath);
+		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}
 }
@@ -1037,14 +1030,14 @@ static void transfer_message_io_error_download(void) {
 			/* wait for file to be 50% downloaded */
 			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.progress_of_LinphoneFileTransfer, 50));
 			/* and simulate network error */
-			sal_set_recv_error(marie->lc->sal, -1);
+			belle_http_provider_set_recv_error(marie->lc->http_provider, -1);
 		}
 		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneMessageNotDelivered,1, 10000));
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d");
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0, int, "%d");
 
-		sal_set_recv_error(marie->lc->sal, 0);
+		belle_http_provider_set_recv_error(marie->lc->http_provider, 0);
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}
@@ -1675,7 +1668,7 @@ static void file_transfer_io_error_after_destroying_chatroom() {
 
 test_t message_tests[] = {
 	{"Text message", text_message},
-	{"Text message within call's dialog", text_message_within_dialog},
+	{"Text message within call dialog", text_message_within_dialog},
 	{"Text message with credentials from auth info cb", text_message_with_credential_from_auth_cb},
 	{"Text message with privacy", text_message_with_privacy},
 	{"Text message compatibility mode", text_message_compatibility_mode},

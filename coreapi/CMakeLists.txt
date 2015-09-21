@@ -52,6 +52,7 @@ set(SOURCE_FILES
 	call_log.c
 	call_params.c
 	chat.c
+	chat_file_transfer.c
 	conference.c
 	contactprovider.c
 	content.c
