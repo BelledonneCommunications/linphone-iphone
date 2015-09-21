@@ -328,9 +328,11 @@ void bc_tester_helper(const char *name, const char* additionnal_helper) {
 static int file_exists(const char* root_path) {
 	FILE* file;
 	char * sounds_path = malloc(sizeof(char)*strlen(root_path)+strlen("sounds"));
+	int found;
+	
 	sprintf(sounds_path, "%ssounds", root_path);
 	file = fopen(sounds_path, "r");
-	int found = (file != NULL);
+	found = (file != NULL);
 	if (file) fclose(file);
 	return found;
 }
