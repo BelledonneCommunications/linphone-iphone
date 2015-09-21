@@ -27,14 +27,17 @@ void check_rtcp(LinphoneCall *call) {
 	
 	linphone_call_ref(call);
 	liblinphone_tester_clock_start(&ts);
+	
 	do {
-		if (linphone_call_get_audio_stats(call)->round_trip_delay > 0.0 && (!linphone_call_log_video_enabled(linphone_call_get_call_log(call)) || linphone_call_get_video_stats(call)->round_trip_delay>0.0)) {
+		if (linphone_call_get_audio_stats(call)->round_trip_delay > 0.0 && (!linphone_call_log_video_enabled(linphone_call_get_call_log(call)) || linphone_call_get_video_stats(call)->round_trip_delay > 0.0)) {
 			break;
 		}
+		wait_for_until(call->core, NULL, NULL, 0, 20); /*just to sleep while iterating*/
 	} while (!liblinphone_tester_clock_elapsed(&ts, 15000));
-	BC_ASSERT_GREATER(linphone_call_get_audio_stats(call)->round_trip_delay,0.0,float,"%f");
+	
+	BC_ASSERT_GREATER(linphone_call_get_audio_stats(call)->round_trip_delay, 0.0, float, "%f");
 	if (linphone_call_log_video_enabled(linphone_call_get_call_log(call))) {
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(call)->round_trip_delay,0.0,float,"%f");
+		BC_ASSERT_GREATER(linphone_call_get_video_stats(call)->round_trip_delay, 0.0, float, "%f");
 	}
 	
 	linphone_call_unref(call);
