@@ -453,7 +453,6 @@ static UIFont *CELL_FONT = nil;
 #pragma mark - State changed handling
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
 	UIChatRoomCell *thiz = (__bridge UIChatRoomCell *)linphone_chat_message_get_user_data(msg);
-	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
 	if (linphone_chat_message_get_file_transfer_information(msg) != NULL) {
 		if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
 			// we need to refresh the tableview because the filetransfer delegate unreffed
@@ -470,8 +469,9 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 			// This is breaking interface too much, it must be fixed in file transfer cb.. meanwhile, disabling it.
 
 			if (thiz->ftd) {
-				[thiz->ftd stopAndDestroy];
+				FileTransferDelegate *c = thiz->ftd;
 				thiz->ftd = nil;
+				[c stopAndDestroy];
 			}
 		}
 	}

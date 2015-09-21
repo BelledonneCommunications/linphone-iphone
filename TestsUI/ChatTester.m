@@ -321,6 +321,13 @@
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
+- (void)testTransferDestroyRoomWhileUploading {
+	[self startChatWith:[self me]];
+	[self uploadImageWithQuality:@"Maximum"];
+	[self goBackFromChat];
+	[self removeAllRooms];
+}
+
 - (void)testTransferDownloadImage {
 	[self downloadImage];
 	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Cancel transfer"];
