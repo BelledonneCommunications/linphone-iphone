@@ -1088,16 +1088,23 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 
 static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDescription *md) {
 	int i, j;
+	bool_t audio_found = FALSE, video_found = FALSE, text_found = FALSE;
 	
 	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
-		if (md->streams[i].type == SalAudio && i != call->main_audio_stream_index) {
-			call->main_audio_stream_index = i;
-			ms_message("audio stream index updated: %i", i);
+		if (md->streams[i].type == SalAudio) {
+			if (!audio_found) {
+				call->main_audio_stream_index = i;
+				audio_found = TRUE;
+				ms_message("audio stream index found: %i, updating main audio stream index", i);
+			} else {
+				ms_message("audio stream index found: %i, but main audio stream already set to %i", i, call->main_audio_stream_index);
+			}
 			
 			// Check that the default value of a another stream doesn't match the new one
 			if (i == call->main_video_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (sal_stream_description_active(&md->streams[j])) continue;
 					if (j != call->main_video_stream_index && j != call->main_text_stream_index) {
 						ms_message("%i was used for video stream ; now using %i", i, j);
 						call->main_video_stream_index = j;
@@ -1107,6 +1114,7 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 			}
 			if (i == call->main_text_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (sal_stream_description_active(&md->streams[j])) continue;
 					if (j != call->main_video_stream_index && j != call->main_text_stream_index) {
 						ms_message("%i was used for text stream ; now using %i", i, j);
 						call->main_text_stream_index = j;
@@ -1114,13 +1122,19 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 					}
 				}
 			}
-		} else if (md->streams[i].type == SalVideo && i != call->main_video_stream_index) {
-			call->main_video_stream_index = i;
-			ms_message("video stream index updated: %i", i);
+		} else if (md->streams[i].type == SalVideo) {
+			if (!video_found) {
+				call->main_video_stream_index = i;
+				video_found = TRUE;
+				ms_message("video stream index found: %i, updating main video stream index", i);
+			} else {
+				ms_message("video stream index found: %i, but main video stream already set to %i", i, call->main_video_stream_index);
+			}
 			
 			// Check that the default value of a another stream doesn't match the new one
 			if (i == call->main_audio_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (sal_stream_description_active(&md->streams[j])) continue;
 					if (j != call->main_audio_stream_index && j != call->main_text_stream_index) {
 						ms_message("%i was used for audio stream ; now using %i", i, j);
 						call->main_audio_stream_index = j;
@@ -1130,6 +1144,7 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 			}
 			if (i == call->main_text_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (sal_stream_description_active(&md->streams[j])) continue;
 					if (j != call->main_audio_stream_index && j != call->main_text_stream_index) {
 						ms_message("%i was used for text stream ; now using %i", i, j);
 						call->main_text_stream_index = j;
@@ -1137,25 +1152,32 @@ static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDe
 					}
 				}
 			}
-		} else if (md->streams[i].type == SalText && i != call->main_text_stream_index) {
-			call->main_text_stream_index = i;
-			ms_message("text stream index updated: %i", i);
+		} else if (md->streams[i].type == SalText) {
+			if (!text_found) {
+				call->main_text_stream_index = i;
+				text_found = TRUE;
+				ms_message("text stream index found: %i, updating main text stream index", i);
+			} else {
+				ms_message("text stream index found: %i, but main text stream already set to %i", i, call->main_text_stream_index);
+			}
 			
 			// Check that the default value of a another stream doesn't match the new one
-			if (i == call->main_video_stream_index) {
+			if (i == call->main_audio_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (sal_stream_description_active(&md->streams[j])) continue;
 					if (j != call->main_video_stream_index && j != call->main_audio_stream_index) {
-						ms_message("%i was used for video stream ; now using %i", i, j);
-						call->main_video_stream_index = j;
+						ms_message("%i was used for audio stream ; now using %i", i, j);
+						call->main_audio_stream_index = j;
 						break;
 					}
 				}
 			}
-			if (i == call->main_audio_stream_index) {
+			if (i == call->main_video_stream_index) {
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; j++) {
+					if (sal_stream_description_active(&md->streams[j])) continue;
 					if (j != call->main_video_stream_index && j != call->main_audio_stream_index) {
-						ms_message("%i was used for audio stream ; now using %i", i, j);
-						call->main_audio_stream_index = j;
+						ms_message("%i was used for video stream ; now using %i", i, j);
+						call->main_video_stream_index = j;
 						break;
 					}
 				}
