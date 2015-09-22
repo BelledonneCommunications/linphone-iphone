@@ -383,6 +383,13 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		}
 
 		msg->dir = LinphoneChatMessageOutgoing;
+		if (msg->from){
+			/*
+			 * BUG
+			 * the file transfer message constructor sets the from, but doesn't do it as well as here.
+			 */
+			linphone_address_destroy(msg->from);
+		}
 		msg->from = linphone_address_new(identity);
 		msg->storage_id = linphone_chat_message_store(msg);
 
@@ -466,9 +473,11 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 							}
 
 							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
+								xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 								linphone_content_set_name(
 									msg->file_transfer_information,
-									(const char *)xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1));
+									(char *)filename);
+								xmlFree(filename);
 							}
 							if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
 								xmlChar *contentType = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
@@ -730,11 +739,11 @@ LinphoneChatMessage *linphone_chat_room_create_message_2(LinphoneChatRoom *cr, c
 	if (is_incoming) {
 		msg->dir = LinphoneChatMessageIncoming;
 		linphone_chat_message_set_from(msg, linphone_chat_room_get_peer_address(cr));
-		linphone_chat_message_set_to(msg, linphone_address_new(linphone_core_get_identity(lc)));
+		msg->to = linphone_address_new(linphone_core_get_identity(lc)); /*direct assignment*/
 	} else {
 		msg->dir = LinphoneChatMessageOutgoing;
 		linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
-		linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(lc)));
+		msg->from = linphone_address_new(linphone_core_get_identity(lc));/*direct assignment*/
 	}
 	return msg;
 }

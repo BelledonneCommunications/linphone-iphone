@@ -179,7 +179,8 @@ static const char* liblinphone_helper =
 		"\t\t\t--domain <test sip domain>\n"
 		"\t\t\t--auth-domain <test auth domain>\n"
 		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
-		"\t\t\t--keep-recorded-files\n";
+		"\t\t\t--keep-recorded-files\n"
+		"\t\t\t--disable-leak-detector\n";
 
 int main (int argc, char *argv[])
 {
@@ -225,6 +226,8 @@ int main (int argc, char *argv[])
 			userhostsfile=argv[i];
 		} else if (strcmp(argv[i],"--keep-recorded-files")==0){
 			liblinphone_tester_keep_recorded_files(TRUE);
+		} else if (strcmp(argv[i],"--disable-leak-detector")==0){
+			liblinphone_tester_disable_leak_detector(TRUE);
 		} else {
 			int bret = bc_tester_parse_args(argc, argv, i);
 			if (bret>0) {

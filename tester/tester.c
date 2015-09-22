@@ -35,6 +35,7 @@
 static bool_t liblinphone_tester_ipv6_enabled=FALSE;
 static int liblinphone_tester_keep_accounts_flag = 0;
 static int liblinphone_tester_keep_record_files = FALSE;
+static int liblinphone_tester_leak_detector_disabled = FALSE;
 int manager_count = 0;
 int leaked_objects_count = 0;
 const MSAudioDiffParams audio_cmp_params = {10,2000};
@@ -415,6 +416,10 @@ void liblinphone_tester_keep_recorded_files(int keep){
 	liblinphone_tester_keep_record_files = keep;
 }
 
+void liblinphone_tester_disable_leak_detector(int disabled){
+	liblinphone_tester_leak_detector_disabled = disabled;
+}
+
 void liblinphone_tester_clear_accounts(void){
 	account_manager_destroy();
 }
@@ -484,17 +489,21 @@ int linphone_core_manager_get_mean_audio_up_bw(const LinphoneCoreManager *mgr) {
 }
 
 void liblinphone_tester_before_each() {
-	belle_sip_object_enable_leak_detector(TRUE);
-	leaked_objects_count = belle_sip_object_get_object_count();
+	if (!liblinphone_tester_leak_detector_disabled){
+		belle_sip_object_enable_leak_detector(TRUE);
+		leaked_objects_count = belle_sip_object_get_object_count();
+	}
 }
 
 void liblinphone_tester_after_each() {
-	int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
-	// this will NOT be counted in tests fail but at least it will be shown
-	BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
-	if (leaked_objects > 0) {
-		belle_sip_object_dump_active_objects();
-		ms_error("%d object%s leaked in latest test, please fix that!", leaked_objects, leaked_objects>1?"s were":"was");
+	if (!liblinphone_tester_leak_detector_disabled){
+		int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
+		// this will NOT be counted in tests fail but at least it will be shown
+		BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
+		if (leaked_objects > 0) {
+			belle_sip_object_dump_active_objects();
+			ms_error("%d object%s leaked in latest test, please fix that!", leaked_objects, leaked_objects>1?"s were":"was");
+		}
 	}
 
 	if (manager_count != 0) {

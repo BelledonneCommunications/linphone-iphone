@@ -6299,6 +6299,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	if (lc->friends) /* FIXME we should wait until subscription to complete*/
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
+	
+	lc->chatrooms = ms_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
+	
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
 #ifdef VIDEO_ENABLED
 	if (lc->previewstream!=NULL){
@@ -6326,9 +6329,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		lc->upnp = NULL;
 	}
 #endif //BUILD_UPNP
-
-	ms_list_for_each(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
-	lc->chatrooms = ms_list_free(lc->chatrooms);
 
 	if (lp_config_needs_commit(lc->config)) lp_config_sync(lc->config);
 	lp_config_destroy(lc->config);

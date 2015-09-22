@@ -48,8 +48,12 @@ static void _release_http_request(LinphoneChatMessage* msg) {
 		}
 		belle_sip_object_unref(msg->http_request);
 		msg->http_request = NULL;
-		// unhold the reference on the message
-		linphone_chat_message_unref(msg);
+		if (msg->http_listener){
+			belle_sip_object_unref(msg->http_listener);
+			msg->http_listener = NULL;
+			// unhold the reference that the listener was holding on the message
+			linphone_chat_message_unref(msg);
+		}
 	}
 }
 
@@ -121,7 +125,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 			if (offset + *size < linphone_content_get_size(msg->file_transfer_information)) {
 				*size -= (*size % 16);
 			}
-			plainBuffer = (char *)malloc(*size);
+			plainBuffer = (char *)ms_malloc0(*size);
 		}
 
 		/* get data from call back */
@@ -146,7 +150,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 			lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
 							 (unsigned char *)linphone_content_get_key(msg->file_transfer_information), *size,
 							 plainBuffer, (char *)buffer);
-			free(plainBuffer);
+			ms_free(plainBuffer);
 			/* check if we reach the end of file */
 			if (offset + *size >= linphone_content_get_size(msg->file_transfer_information)) {
 				/* conclude file ciphering by calling it context with a zero size */
@@ -254,7 +258,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 															  one */
 								/* convert key to base64 */
 								int b64Size = b64_encode(NULL, FILE_TRANSFER_KEY_SIZE, NULL, 0);
-								char *keyb64 = (char *)malloc(b64Size + 1);
+								char *keyb64 = (char *)ms_malloc0(b64Size + 1);
 								int xmlStringLength;
 
 								b64Size = b64_encode(linphone_content_get_key(msg->file_transfer_information),
@@ -264,7 +268,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 								/* add the node containing the key to the file-info node */
 								xmlNewTextChild(cur, NULL, (const xmlChar *)"file-key", (const xmlChar *)keyb64);
 								xmlFree(typeAttribute);
-								free(keyb64);
+								ms_free(keyb64);
 
 								/* look for the file-name node and update its content */
 								while (fileInfoNodeChildren != NULL) {
@@ -338,7 +342,7 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 	if (linphone_content_get_key(msg->file_transfer_information) !=
 		NULL) { /* we have a key, we must decrypt the file */
 		/* get data from callback to a plainBuffer */
-		char *plainBuffer = (char *)malloc(size);
+		char *plainBuffer = (char *)ms_malloc0(size);
 		lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
 						 (unsigned char *)linphone_content_get_key(msg->file_transfer_information), size, plainBuffer,
 						 (char *)buffer);
@@ -350,7 +354,7 @@ static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t 
 			/* legacy: call back given by application level */
 			linphone_core_notify_file_transfer_recv(lc, msg, msg->file_transfer_information, plainBuffer, size);
 		}
-		free(plainBuffer);
+		ms_free(plainBuffer);
 	} else { /* regular file, no deciphering */
 		if (linphone_chat_message_cbs_get_file_transfer_recv(msg->callbacks)) {
 			LinphoneBuffer *lb = linphone_buffer_new_from_data(buffer, size);
@@ -454,13 +458,11 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 		} else {
 			ms_warning("Unhandled HTTP code response %d for file transfer", code);
 		}
-		ms_error("printf %d", code);
 		_release_http_request(msg);
 	}
 }
 
 void _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const char* url, const char* action, const belle_http_request_listener_callbacks_t *cbs) {
-	belle_http_request_listener_t *l;
 	belle_generic_uri_t *uri = NULL;
 	char* ua;
 
@@ -486,8 +488,8 @@ void _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const cha
 	belle_sip_object_ref(msg->http_request);
 
 	/* give msg to listener to be able to start the actual file upload when server answer a 204 No content */
-	l = belle_http_request_listener_create_from_callbacks(cbs, linphone_chat_message_ref(msg));
-	belle_http_provider_send_request(msg->chat_room->lc->http_provider, msg->http_request, l);
+	msg->http_listener = belle_http_request_listener_create_from_callbacks(cbs, linphone_chat_message_ref(msg));
+	belle_http_provider_send_request(msg->chat_room->lc->http_provider, msg->http_request, msg->http_listener);
 	return;
 error:
 	if (uri) {
@@ -552,7 +554,7 @@ LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneCha
 	msg->file_transfer_information = linphone_content_copy(initial_content);
 	msg->dir = LinphoneChatMessageOutgoing;
 	linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
-	linphone_chat_message_set_from(msg, linphone_address_new(linphone_core_get_identity(cr->lc)));
+	msg->from = linphone_address_new(linphone_core_get_identity(cr->lc)); /*direct assignment*/
 	/* this will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
 	msg->content_type = NULL;
 	/* this will store the http request during file upload to the server */

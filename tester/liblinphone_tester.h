@@ -80,6 +80,12 @@ extern void liblinphone_tester_keep_accounts( int keep );
 void liblinphone_tester_keep_recorded_files(int keep);
 
 /**
+ * @brief Disable the automatic object leak detection. This is useful because the object leak detector prevents valgrind from seeing the leaks.
+ * @details By default object leak detector is enabled.
+**/
+void liblinphone_tester_disable_leak_detector(int disabled);
+
+/**
  * @brief Clears the created accounts during the testing session.
  */
 extern void liblinphone_tester_clear_accounts(void);
