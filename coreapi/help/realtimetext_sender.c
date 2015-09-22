@@ -112,9 +112,14 @@ int main(int argc, char *argv[]){
 	/* main loop for sending message and doing background linphonecore work: */
 	while(running){
 		char character;
-		system ("/bin/stty raw"); /*to disable terminal buffering*/
+		/*to disable terminal buffering*/
+		if (system ("/bin/stty raw") == -1){
+			ms_error("/bin/stty error");
+		}
 		character = getchar();
-		system ("/bin/stty cooked");
+		if (system("/bin/stty cooked") == -1){
+			ms_error("/bin/stty error");
+		}
 		if (character==0x03) {/*CTRL C*/
 			running=0;
 			break;
