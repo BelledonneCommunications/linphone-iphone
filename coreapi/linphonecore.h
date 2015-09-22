@@ -469,6 +469,7 @@ typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
 
 #define LINPHONE_CALL_STATS_AUDIO 0
 #define LINPHONE_CALL_STATS_VIDEO 1
+#define LINPHONE_CALL_STATS_TEXT  2
 
 /**
  * Enum describing ICE states.
@@ -736,6 +737,15 @@ LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
  * @return float Volume level in percentage.
  */
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
+
+struct _LinphoneChatRoom;
+/**
+ * Create a new chat room for messaging from a call if not already existing, else return existing one
+ * @param call #LinphoneCall object
+ * @return #LinphoneChatRoom where messaging can take place.
+ */
+LINPHONE_PUBLIC	struct _LinphoneChatRoom * linphone_call_get_chat_room(LinphoneCall *call);
+
 
 /**
  * Get speaker volume gain.
@@ -1436,6 +1446,14 @@ LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_core(LinphoneChatRoom *cr);
 
 /**
+ * When realtime text is enabled #linphone_call_params_realtime_text_enabled, #LinphoneCoreIsComposingReceivedCb is call everytime a char is received from peer.
+ * At the end of remote typing a regular #LinphoneChatMessage is received with committed data from #LinphoneCoreMessageReceivedCb.
+ * @param[in] msg LinphoneChatMessage
+ * @returns  RFC 4103/T.140 char
+ */
+LINPHONE_PUBLIC uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr);
+
+/**
  * Returns an list of chat rooms
  * @param[in] lc #LinphoneCore object
  * @return \mslist{LinphoneChatRoom}
@@ -1640,6 +1658,27 @@ LINPHONE_PUBLIC void linphone_chat_message_set_file_transfer_filepath(LinphoneCh
  * @return The path to the file to use for the file transfer.
  */
 LINPHONE_PUBLIC const char * linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg);
+
+
+
+/**
+ * Fulfill a chat message char by char. Message linked to a Real Time Text Call send char in realtime following RFC 4103/T.140
+ * To commit a message, use #linphone_chat_room_send_message
+ * @param[in] msg LinphoneChatMessage
+ * @param[in] character T.140 char
+ * @returns 0 if succeed.
+ */
+LINPHONE_PUBLIC int linphone_chat_message_put_char(LinphoneChatMessage *msg,uint32_t charater);
+
+/**
+ * get Curent Call associated to this chatroom if any
+ * To commit a message, use #linphone_chat_room_send_message
+ * @param[in] room LinphoneChatRomm
+ * @returns LinphoneCall or NULL.
+ */
+LINPHONE_PUBLIC LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room);
+
+
 /**
  * Get the LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
  * @param[in] msg LinphoneChatMessage object
@@ -2645,6 +2684,22 @@ LINPHONE_PUBLIC const MSList *linphone_core_get_video_codecs(const LinphoneCore 
 
 LINPHONE_PUBLIC int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs);
 
+/**
+ * Returns the list of available text codecs.
+ * @param[in] lc The LinphoneCore object
+ * @return \mslist{PayloadType}
+ *
+ * This list is unmodifiable. The ->data field of the MSList points a PayloadType
+ * structure holding the codec information.
+ * It is possible to make copy of the list with ms_list_copy() in order to modify it
+ * (such as the order of codecs).
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC const MSList *linphone_core_get_text_codecs(const LinphoneCore *lc);
+
+
+LINPHONE_PUBLIC int linphone_core_set_text_codecs(LinphoneCore *lc, MSList *codecs);
+
 LINPHONE_PUBLIC void linphone_core_enable_generic_confort_noise(LinphoneCore *lc, bool_t enabled);
 
 LINPHONE_PUBLIC bool_t linphone_core_generic_confort_noise_enabled(const LinphoneCore *lc);
@@ -2893,6 +2948,10 @@ LINPHONE_PUBLIC	int linphone_core_get_video_port(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	void linphone_core_get_video_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
 
+LINPHONE_PUBLIC	int linphone_core_get_text_port(const LinphoneCore *lc);
+
+LINPHONE_PUBLIC	void linphone_core_get_text_port_range(const LinphoneCore *lc, int *min_port, int *max_port);
+
 LINPHONE_PUBLIC	int linphone_core_get_nortp_timeout(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	void linphone_core_set_audio_port(LinphoneCore *lc, int port);
@@ -2902,6 +2961,10 @@ LINPHONE_PUBLIC	void linphone_core_set_audio_port_range(LinphoneCore *lc, int mi
 LINPHONE_PUBLIC	void linphone_core_set_video_port(LinphoneCore *lc, int port);
 
 LINPHONE_PUBLIC	void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_port);
+
+LINPHONE_PUBLIC	void linphone_core_set_text_port(LinphoneCore *lc, int port);
+
+LINPHONE_PUBLIC	void linphone_core_set_text_port_range(LinphoneCore *lc, int min_port, int max_port);
 
 LINPHONE_PUBLIC	void linphone_core_set_nortp_timeout(LinphoneCore *lc, int port);
 
@@ -4053,6 +4116,13 @@ LINPHONE_PUBLIC void linphone_core_set_video_preset(LinphoneCore *lc, const char
  * @return The name of the video preset used for video calls (can be NULL if the default video preset is used).
  */
 LINPHONE_PUBLIC const char * linphone_core_get_video_preset(const LinphoneCore *lc);
+
+/**
+ * Gets if realtime text is enabled or not
+ * @param[in] lc LinphoneCore object
+ * @return true if realtime text is enabled, false otherwise
+ */ 
+LINPHONE_PUBLIC bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc);
 
 #ifdef __cplusplus
 }

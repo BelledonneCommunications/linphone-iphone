@@ -416,7 +416,8 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 		belle_sdp_session_description_add_attribute(session_desc, create_rtcp_xr_attribute(&desc->rtcp_xr));
 	}
 
-	for ( i=0; i<desc->nb_streams; i++ ) {
+	for ( i=0; i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++ ) {
+		if (!sal_stream_description_active(&desc->streams[i])) continue;
 		stream_description_to_sdp(session_desc, desc, &desc->streams[i]);
 	}
 	return session_desc;
@@ -739,6 +740,8 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 		stream->type=SalAudio;
 	} else if ( strcasecmp ( "video", mtype ) == 0 ) {
 		stream->type=SalVideo;
+	} else if ( strcasecmp ( "text", mtype ) == 0 ) {
+		stream->type=SalText;
 	} else {
 		stream->type=SalOther;
 		strncpy ( stream->typeother,mtype,sizeof ( stream->typeother )-1 );

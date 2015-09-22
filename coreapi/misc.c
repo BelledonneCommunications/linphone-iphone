@@ -62,7 +62,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed);
 
 bool_t linphone_core_payload_type_enabled(LinphoneCore *lc, const LinphonePayloadType *pt){
-	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
+	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt) || ms_list_find(lc->codecs_conf.text_codecs, (PayloadType*)pt)){
 		return payload_type_enabled(pt);
 	}
 	ms_error("Getting enablement status of codec not in audio or video list of PayloadType !");
@@ -75,7 +75,7 @@ bool_t linphone_core_payload_type_is_vbr(LinphoneCore *lc, const LinphonePayload
 }
 
 int linphone_core_enable_payload_type(LinphoneCore *lc, LinphonePayloadType *pt, bool_t enabled){
-	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt)){
+	if (ms_list_find(lc->codecs_conf.audio_codecs,pt) || ms_list_find(lc->codecs_conf.video_codecs,pt) || ms_list_find(lc->codecs_conf.text_codecs,pt)){
 		payload_type_set_enable(pt,enabled);
 		_linphone_core_codec_config_write(lc);
 		linphone_core_update_allocated_audio_bandwidth(lc);
@@ -106,7 +106,7 @@ const char *linphone_core_get_payload_type_description(LinphoneCore *lc, Payload
 }
 
 void linphone_core_set_payload_type_bitrate(LinphoneCore *lc, LinphonePayloadType *pt, int bitrate){
-	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt)){
+	if (ms_list_find(lc->codecs_conf.audio_codecs, (PayloadType*) pt) || ms_list_find(lc->codecs_conf.video_codecs, (PayloadType*)pt) || ms_list_find(lc->codecs_conf.text_codecs, (PayloadType*)pt)){
 		if (pt->type==PAYLOAD_VIDEO || pt->flags & PAYLOAD_TYPE_IS_VBR){
 			pt->normal_bitrate=bitrate*1000;
 			pt->flags|=PAYLOAD_TYPE_BITRATE_OVERRIDE;
@@ -409,22 +409,23 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 	const char *server=linphone_core_get_stun_server(lc);
 	StunCandidate *ac=&call->ac;
 	StunCandidate *vc=&call->vc;
+	StunCandidate *tc=&call->tc;
 
 	if (lc->sip_conf.ipv6_enabled){
 		ms_warning("stun support is not implemented for ipv6");
 		return -1;
 	}
-	if (call->media_ports[0].rtp_port==-1){
+	if (call->media_ports[call->main_audio_stream_index].rtp_port==-1){
 		ms_warning("Stun-only support not available for system random port");
 		return -1;
 	}
 	if (server!=NULL){
 		const struct addrinfo *ai=linphone_core_get_stun_server_addrinfo(lc);
-		ortp_socket_t sock1=-1, sock2=-1;
+		ortp_socket_t sock1=-1, sock2=-1, sock3=-1;
 		int loops=0;
 		bool_t video_enabled=linphone_core_video_enabled(lc);
-		bool_t got_audio,got_video;
-		bool_t cone_audio=FALSE,cone_video=FALSE;
+		bool_t got_audio,got_video,got_text;
+		bool_t cone_audio=FALSE,cone_video=FALSE,cone_text=FALSE;
 		struct timeval init,cur;
 		double elapsed;
 		int ret=0;
@@ -436,14 +437,18 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 		linphone_core_notify_display_status(lc,_("Stun lookup in progress..."));
 
 		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
-		sock1=create_socket(call->media_ports[0].rtp_port);
+		sock1=create_socket(call->media_ports[call->main_audio_stream_index].rtp_port);
 		if (sock1==-1) return -1;
 		if (video_enabled){
-			sock2=create_socket(call->media_ports[1].rtp_port);
+			sock2=create_socket(call->media_ports[call->main_video_stream_index].rtp_port);
 			if (sock2==-1) return -1;
 		}
+		sock3=create_socket(call->media_ports[call->main_text_stream_index].rtp_port);
+		if (sock3==-1) return -1;
+		
 		got_audio=FALSE;
 		got_video=FALSE;
+		got_text=FALSE;
 		ortp_gettimeofday(&init,NULL);
 		do{
 
@@ -455,6 +460,10 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 				if (sock2!=-1){
 					sendStunRequest(sock2,ai->ai_addr,ai->ai_addrlen,22,TRUE);
 					sendStunRequest(sock2,ai->ai_addr,ai->ai_addrlen,2,FALSE);
+				}
+				if (sock3!=-1){
+					sendStunRequest(sock3,ai->ai_addr,ai->ai_addrlen,33,TRUE);
+					sendStunRequest(sock3,ai->ai_addr,ai->ai_addrlen,3,FALSE);
 				}
 			}
 			ms_usleep(10000);
@@ -477,6 +486,15 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 					cone_video=TRUE;
 				got_video=TRUE;
 			}
+			if (recvStunResponse(sock3,tc->addr,
+							&tc->port,&id)>0){
+				ms_message("STUN test result: local text port maps to %s:%i",
+					tc->addr,
+					tc->port);
+				if (id==33)
+					cone_text=TRUE;
+				got_text=TRUE;
+			}
 			ortp_gettimeofday(&cur,NULL);
 			elapsed=((cur.tv_sec-init.tv_sec)*1000.0) +  ((cur.tv_usec-init.tv_usec)/1000.0);
 			if (elapsed>2000)  {
@@ -485,7 +503,7 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 				break;
 			}
 			loops++;
-		}while(!(got_audio && (got_video||sock2==-1)  ) );
+		}while(!(got_audio && (got_video||sock2==-1) && (got_text||sock3==-1)  ) );
 		if (ret==0) ret=(int)elapsed;
 		if (!got_audio){
 			ms_error("No stun server response for audio port.");
@@ -503,8 +521,18 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 				}
 			}
 		}
+		if (sock3!=-1){
+			if (!got_text){
+				ms_error("No stun server response for text port.");
+			}else{
+				if (!cone_text) {
+					ms_message("NAT is symmetric for text port.");
+				}
+			}
+		}
 		close_socket(sock1);
 		if (sock2!=-1) close_socket(sock2);
+		if (sock3!=-1) close_socket(sock3);
 		return ret;
 	}
 	return -1;
@@ -598,11 +626,13 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	const struct addrinfo *ai;
 	IceCheckList *audio_check_list;
 	IceCheckList *video_check_list;
+	IceCheckList *text_check_list;
 	const char *server = linphone_core_get_stun_server(lc);
 
 	if ((server == NULL) || (call->ice_session == NULL)) return -1;
 	audio_check_list = ice_session_check_list(call->ice_session, 0);
 	video_check_list = ice_session_check_list(call->ice_session, 1);
+	text_check_list = ice_session_check_list(call->ice_session, 2);
 	if (audio_check_list == NULL) return -1;
 
 	if (call->af==AF_INET6){
@@ -622,15 +652,21 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	if ((ice_check_list_state(audio_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(audio_check_list) == FALSE)) {
-		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[0].rtp_port, 1, NULL);
-		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[0].rtcp_port, 2, NULL);
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[call->main_audio_stream_index].rtp_port, 1, NULL);
+		ice_add_local_candidate(audio_check_list, "host", local_addr, call->media_ports[call->main_audio_stream_index].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
 	}
 	if (linphone_core_video_enabled(lc) && (video_check_list != NULL)
 		&& (ice_check_list_state(video_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(video_check_list) == FALSE)) {
-		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[1].rtp_port, 1, NULL);
-		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[1].rtcp_port, 2, NULL);
+		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[call->main_video_stream_index].rtp_port, 1, NULL);
+		ice_add_local_candidate(video_check_list, "host", local_addr, call->media_ports[call->main_video_stream_index].rtcp_port, 2, NULL);
 		call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
+	}
+	if (call->params->realtimetext_enabled && (text_check_list != NULL)
+		&& (ice_check_list_state(text_check_list) != ICL_Completed) && (ice_check_list_candidates_gathered(text_check_list) == FALSE)) {
+		ice_add_local_candidate(text_check_list, "host", local_addr, call->media_ports[call->main_text_stream_index].rtp_port, 1, NULL);
+		ice_add_local_candidate(text_check_list, "host", local_addr, call->media_ports[call->main_text_stream_index].rtcp_port, 2, NULL);
+		call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateInProgress;
 	}
 
 	ms_message("ICE: gathering candidate from [%s]",server);
@@ -759,7 +795,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 	}
 	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
 	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
-	for (i = 0; i < desc->nb_streams; i++) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		SalStreamDescription *stream = &desc->streams[i];
 		IceCheckList *cl = ice_session_check_list(session, i);
 		nb_candidates = 0;
@@ -866,9 +902,10 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 		ice_params_found=TRUE;
 	} else {
 		int i;
-		for (i = 0; i < md->nb_streams; i++) {
+		for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			if (!sal_stream_description_active(stream)) continue;
 			if (cl) {
 				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 					ice_params_found=TRUE;
@@ -887,9 +924,10 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			ice_session_restart(call->ice_session);
 			ice_restarted = TRUE;
 		} else {
-			for (i = 0; i < md->nb_streams; i++) {
+			for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 				const SalStreamDescription *stream = &md->streams[i];
 				IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+				if (!sal_stream_description_active(stream)) continue;
 				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
 					ice_session_restart(call->ice_session);
 					ice_restarted = TRUE;
@@ -906,9 +944,10 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			}
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 		}
-		for (i = 0; i < md->nb_streams; i++) {
+		for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			if (!sal_stream_description_active(stream)) continue;
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
 					if (ice_restarted == FALSE
@@ -925,9 +964,10 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 		}
 
 		/* Create ICE check lists if needed and parse ICE attributes. */
-		for (i = 0; i < md->nb_streams; i++) {
+		for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			if (!sal_stream_description_active(stream)) continue;
 			/*
 			if ((cl == NULL) && (i < md->n_active_streams)) {
 				cl = ice_check_list_new();
@@ -986,7 +1026,7 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 				}
 			}
 		}
-		for (i = 0; i < md->nb_streams; i++) {
+		for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 			IceCheckList * cl = ice_session_check_list(call->ice_session, i);
 			if (!sal_stream_description_active(&md->streams[i]) && (cl != NULL)) {
 				ice_session_remove_check_list_from_idx(call->ice_session, i);
@@ -1007,7 +1047,7 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md){
 	int i;
 
-	for (i = 0; md && i < md->nb_streams; i++) {
+	for (i = 0; md && i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (md->streams[i].type == SalVideo && md->streams[i].rtp_port!=0)
 			return TRUE;
 	}

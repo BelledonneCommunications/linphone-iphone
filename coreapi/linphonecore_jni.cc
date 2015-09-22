@@ -6180,3 +6180,27 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneCoreImpl_getVideoPreset
 	const char *tmp = linphone_core_get_video_preset((LinphoneCore *)lc);
 	return tmp ? env->NewStringUTF(tmp) : NULL;
 }
+
+extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getChatRoom(JNIEnv* env ,jobject thiz, jlong ptr) {
+	return (jlong) linphone_call_get_chat_room((LinphoneCall *) ptr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableRealTimeText(JNIEnv* env ,jobject thiz, jlong ptr, jboolean yesno) {
+	linphone_call_params_enable_realtime_text((LinphoneCallParams *)ptr, yesno);
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_realTimeTextEnabled(JNIEnv* env ,jobject thiz, jlong ptr) {
+	return linphone_call_params_realtime_text_enabled((LinphoneCallParams *)ptr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_putChar(JNIEnv* env ,jobject thiz, jlong ptr, jlong character) {
+	linphone_chat_message_put_char((LinphoneChatMessage *)ptr, character);
+}
+
+extern "C" jobject Java_org_linphone_core_LinphoneChatRoomImpl_getCall(JNIEnv* env ,jobject thiz, jlong ptr) {
+	return getCall(env, linphone_chat_room_get_call((LinphoneChatRoom *)ptr));
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_getChar(JNIEnv* env ,jobject thiz, jlong ptr) {
+	return linphone_chat_room_get_char((LinphoneChatRoom *)ptr);
+}

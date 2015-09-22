@@ -359,5 +359,12 @@ public interface LinphoneCall {
 	 * @return A player
 	 */
 	public LinphonePlayer getPlayer();
+	
+	/**
+	 * Create a new chat room for messaging from a call if not already existing, else return existing one
+	 * @return LinphoneChatRoom where messaging can take place.
+	 */
+	public LinphoneChatRoom getChatRoom() ;
+	
 
 }

@@ -139,4 +139,19 @@ public interface LinphoneChatRoom {
 	 * @param message
 	 */
 	void sendChatMessage(LinphoneChatMessage message);
+	
+	/**
+	 * get Curent Call associated to this chatroom if any
+	 * To commit a message, use #linphone_chat_room_send_message
+	 * @returns LinphoneCall or NULL.
+	 */
+	public LinphoneCall getCall();
+	/**
+	 * When realtime text is enabled LinphoneCallParams.realTimeTextEnabled, LinphoneCoreListener.isComposingReceived is call every time a char is received from peer.
+	 * At the end of remote typing a regular LinphoneChatMessage is received with committed data from LinphoneCoreListener.messageReceived .
+	 * @returns  RFC 4103/T.140 char
+	 */
+	long getChar();
+	
+	
 }

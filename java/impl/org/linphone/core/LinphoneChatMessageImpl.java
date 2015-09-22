@@ -154,4 +154,10 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	public void setListener(LinphoneChatMessageListener listener) {
 		setListener(nativePtr, listener);
 	}
+	
+	private native void putChar(long nativePtr, long character);
+	@Override
+	public void putChar(long character) throws LinphoneCoreException {
+		putChar(nativePtr, character);
+	}
 }

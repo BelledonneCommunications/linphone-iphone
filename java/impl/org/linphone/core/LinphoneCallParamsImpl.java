@@ -171,4 +171,16 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	public boolean videoMulticastEnabled() {
 		return videoMulticastEnabled(nativePtr);
 	}
+
+	private native void enableRealTimeText(long nativePtr, boolean yesno);
+	@Override
+	public void enableRealTimeText(boolean yesno) {
+		enableRealTimeText(nativePtr, yesno);
+	}
+
+	private native boolean realTimeTextEnabled(long nativePtr);
+	@Override
+	public boolean realTimeTextEnabled() {
+		return realTimeTextEnabled(nativePtr);
+	}
 }
