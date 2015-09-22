@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "liblinphone-tester", "liblinphone-tester.csproj", "{EC78E1D3-6FD8-4CAF-8D3F-6F4F97093BE5}"
 EndProject
@@ -62,6 +62,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "webrtc", "..\..\..\..\mswebrtc\webrtc\build\windows10\webrtc\webrtc.vcxproj", "{C5895B75-BDCF-406C-B803-9CB954E90F0C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmsbcg729", "..\..\..\..\bcg729\build\windows10\libmsbcg729\libmsbcg729.vcxproj", "{ACF5EA95-D647-4D0C-8F97-2CD9AAE8A2E0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmsopenh264", "..\..\..\..\msopenh264\build\windows10\libmsopenh264\libmsopenh264.vcxproj", "{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -439,6 +441,18 @@ Global
 		{ACF5EA95-D647-4D0C-8F97-2CD9AAE8A2E0}.Release|x64.Build.0 = Release|x64
 		{ACF5EA95-D647-4D0C-8F97-2CD9AAE8A2E0}.Release|x86.ActiveCfg = Release|Win32
 		{ACF5EA95-D647-4D0C-8F97-2CD9AAE8A2E0}.Release|x86.Build.0 = Release|Win32
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Debug|ARM.ActiveCfg = Debug|ARM
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Debug|ARM.Build.0 = Debug|ARM
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Debug|x64.ActiveCfg = Debug|x64
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Debug|x64.Build.0 = Debug|x64
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Debug|x86.ActiveCfg = Debug|Win32
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Debug|x86.Build.0 = Debug|Win32
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Release|ARM.ActiveCfg = Release|ARM
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Release|ARM.Build.0 = Release|ARM
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Release|x64.ActiveCfg = Release|x64
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Release|x64.Build.0 = Release|x64
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Release|x86.ActiveCfg = Release|Win32
+		{BB8EBB21-F22C-4A68-99CB-67FA36C495E3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

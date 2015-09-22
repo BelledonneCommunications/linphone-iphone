@@ -29,6 +29,9 @@
 #ifndef snprintf
 #define snprintf _snprintf
 #endif
+#ifndef strdup
+#define strdup _strdup
+#endif
 #endif
 
 extern int bc_printf_verbosity_info;

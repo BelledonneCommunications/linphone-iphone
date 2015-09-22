@@ -45,6 +45,9 @@
     <ProjectReference Include="..\..\..\..\..\msilbc\build\windows10\libmsilbc\libmsilbc.vcxproj">
       <Project>{6a18bbb9-08d1-41a8-be57-17fc992cc36f}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\msopenh264\build\windows10\libmsopenh264\libmsopenh264.vcxproj">
+      <Project>{bb8ebb21-f22c-4a68-99cb-67fa36c495e3}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\mssilk\build\windows10\libmssilk\libmssilk.vcxproj">
       <Project>{b84d5c3b-6de5-49c8-b3dd-5eb67b01a527}</Project>
     </ProjectReference>
@@ -97,6 +100,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <GenerateManifest>false</GenerateManifest>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
