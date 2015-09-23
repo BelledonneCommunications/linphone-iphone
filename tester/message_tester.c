@@ -216,7 +216,8 @@ static void text_message_within_dialog(void) {
 
 	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
+	// when using call dialogs, we will never receive delivered status
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,0,int,"%d");
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 
