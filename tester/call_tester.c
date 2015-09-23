@@ -1215,10 +1215,7 @@ void call_paused_resumed_base(bool_t multicast) {
 	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
 	BC_ASSERT_EQUAL(stats->cum_packet_loss, 0, int, "%d");
 
-	linphone_core_terminate_all_calls(pauline->lc);
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
-
+	end_call(pauline, marie);
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -1285,6 +1282,65 @@ static void call_paused_by_both() {
 	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
 	BC_ASSERT_EQUAL(stats->cum_packet_loss, 0, int, "%d");
 
+	end_call(marie, pauline);
+
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	ms_list_free(lcs);
+}
+
+/*this test makes sure that pause/resume will not bring up video by accident*/
+static void call_paused_resumed_with_video(){
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall* call_pauline, *call_marie;
+	MSList *lcs = NULL;
+	LinphoneVideoPolicy vpol;
+	bool_t call_ok;
+
+	lcs = ms_list_append(lcs, pauline->lc);
+	lcs = ms_list_append(lcs, marie->lc);
+	
+	vpol.automatically_accept = FALSE;
+	vpol.automatically_initiate = FALSE;
+	
+	linphone_core_set_video_policy(marie->lc, &vpol);
+	linphone_core_enable_video(marie->lc, TRUE, TRUE);
+	
+	vpol.automatically_accept = TRUE;
+	vpol.automatically_initiate = TRUE;
+	
+	linphone_core_set_video_policy(pauline->lc, &vpol);
+	linphone_core_enable_video(pauline->lc, TRUE, TRUE);
+	
+	BC_ASSERT_TRUE((call_ok=call(marie, pauline)));
+
+	if (!call_ok) goto end;
+
+	call_pauline = linphone_core_get_current_call(pauline->lc);
+	call_marie = linphone_core_get_current_call(marie->lc);
+
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
+
+	linphone_core_pause_call(pauline->lc,call_pauline);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPausing,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
+	BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_remote_params(call_marie)));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
+
+	/*stay in pause a little while in order to generate traffic*/
+	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
+
+	/*now pauline wants to resume*/
+	linphone_core_resume_call(pauline->lc, call_pauline);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallResuming,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,1));
+
+	BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_pauline)));
+	BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_marie)));
+	
 	end_call(marie, pauline);
 
 end:
@@ -4981,6 +5037,7 @@ test_t call_tests[] = {
 	{ "Call without SDP", call_with_no_sdp},
 	{ "Call without SDP and ACK without SDP", call_with_no_sdp_ack_without_sdp},
 	{ "Call paused resumed", call_paused_resumed },
+	{ "Call paused resumed with video", call_paused_resumed_with_video },
 	{ "Call paused by both parties", call_paused_by_both },
 	{ "Call paused resumed with loss", call_paused_resumed_with_loss },
 	{ "Call paused resumed from callee", call_paused_resumed_from_callee },

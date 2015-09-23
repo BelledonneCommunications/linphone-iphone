@@ -128,18 +128,19 @@ struct _LinphoneCallParams{
 	char *record_file;
 	char *session_name;
 	SalCustomHeader *custom_headers;
+	LinphonePrivacyMask privacy;
+	LinphoneMediaDirection audio_dir;
+	LinphoneMediaDirection video_dir;
 	bool_t has_video;
 	bool_t avpf_enabled; /* RTCP feedback messages are enabled */
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
+	
 	bool_t low_bandwidth;
 	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
 	uint16_t avpf_rr_interval; /*in milliseconds*/
-	LinphonePrivacyMask privacy;
-	LinphoneMediaDirection audio_dir;
-	LinphoneMediaDirection video_dir;
-	bool_t video_declined; /*use to keep  traces of declined video to avoid to re-offer video in case of automatic RE-INVITE*/
-	bool_t internal_call_update; /*use mark that call update was requested internally (might be by ice)*/
+	
+	bool_t internal_call_update; /*use mark that call update was requested internally (might be by ice) - unused for the moment*/
 	bool_t video_multicast_enabled;
 	bool_t audio_multicast_enabled;
 	bool_t realtimetext_enabled;

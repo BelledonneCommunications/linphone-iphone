@@ -702,6 +702,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 		ms_error("call_updating(): call doesn't exist anymore");
 		return ;
 	}
+	linphone_call_fix_call_parameters(call);
 	if (call->state!=LinphoneCallPaused){
 		/*Refresh the local description, but in paused state, we don't change anything.*/
 		linphone_call_make_local_media_description(call);

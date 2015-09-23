@@ -691,7 +691,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 		ms_warning("Cannot get audio local ssrc for call [%p]",call);
 	nb_active_streams++;
 
-	if (params->has_video && (!params->internal_call_update || !call->current_params->video_declined)){
+	if (params->has_video){
 		strncpy(md->streams[call->main_video_stream_index].rtp_addr,linphone_call_get_public_ip_for_stream(call,call->main_video_stream_index),sizeof(md->streams[call->main_video_stream_index].rtp_addr));
 		strncpy(md->streams[call->main_video_stream_index].rtcp_addr,linphone_call_get_public_ip_for_stream(call,call->main_video_stream_index),sizeof(md->streams[call->main_video_stream_index].rtcp_addr));
 		strncpy(md->streams[call->main_video_stream_index].name,"Video",sizeof(md->streams[call->main_video_stream_index].name)-1);
@@ -1083,7 +1083,7 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 	}else if (call->params->media_encryption != LinphoneMediaEncryptionZRTP){
 		call->params->media_encryption = LinphoneMediaEncryptionNone;
 	}
-
+	linphone_call_fix_call_parameters(call);
 }
 
 static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDescription *md) {
@@ -1385,11 +1385,19 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	}
 }
 
+/*function to be called at each incoming reINVITE, in order to adjust the video enablement parameter according to what is offered 
+ * and our local policy. Fixing the call->params to proper values avoid request video by accident during internal call updates, pauses and resumes*/
 void linphone_call_fix_call_parameters(LinphoneCall *call){
-	if (sal_call_is_offerer(call->op)) {
-		/*get remote params*/
-		const LinphoneCallParams* rcp = linphone_call_get_remote_params(call);
-		call->current_params->video_declined = call->params->has_video && !rcp->has_video;
+	const LinphoneCallParams* rcp = linphone_call_get_remote_params(call);
+	if (rcp){
+		if (call->params->has_video && !rcp->has_video){
+			ms_message("Call [%p]: disabling video in our call params because the remote doesn't want it.", call);
+			call->params->has_video = FALSE;
+		}
+		if (rcp->has_video && call->core->video_policy.automatically_accept && !call->params->has_video){
+			ms_message("Call [%p]: re-enabling video in our call params because the remote wants it and the policy allows to automatically accept.", call);
+			call->params->has_video = TRUE;
+		}
 	}
 }
 
