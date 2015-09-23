@@ -63,6 +63,8 @@ install(FILES
 	linphone-chat-new-message-and-writing.png
 	linphone-call-status-incoming.png
 	linphone-call-status-outgoing.png
+	linphone-contact-bookmarked.png
+	linphone-contact-not-bookmarked.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
