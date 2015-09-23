@@ -335,7 +335,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 					call->state == LinphoneCallPaused || call->state == LinphoneCallPausing ||
 					call->state == LinphoneCallPausedByRemote) {
 					ms_message("send SIP msg through the existing call.");
-					op = sal_op_ref(call->op);
+					op = call->op;
 					identity = linphone_core_find_best_identity(cr->lc, linphone_call_get_remote_address(call));
 				}
 			}
@@ -1090,7 +1090,6 @@ static void linphone_chat_message_release(LinphoneChatMessage *msg) {
 	if (msg->file_transfer_information != NULL) {
 		linphone_chat_message_cancel_file_transfer(msg);
 	}
-
 	/*mark the chat msg as orphan (it has no chat room anymore), and unref it*/
 	msg->chat_room = NULL;
 	linphone_chat_message_unref(msg);

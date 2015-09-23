@@ -35,17 +35,6 @@ static bool_t file_transfer_in_progress_and_valid(LinphoneChatMessage* msg) {
 
 static void _release_http_request(LinphoneChatMessage* msg) {
 	if (msg->http_request) {
-		if (!belle_http_request_is_cancelled(msg->http_request)) {
-			if (msg->chat_room) {
-				ms_message("Canceling file transfer %s - msg [%p] chat room[%p]"
-								, (msg->external_body_url == NULL) ? linphone_core_get_file_transfer_server(msg->chat_room->lc) : msg->external_body_url
-								, msg
-								, msg->chat_room);
-				belle_http_provider_cancel_request(msg->chat_room->lc->http_provider, msg->http_request);
-			} else {
-				ms_message("Warning: http request still running for ORPHAN msg [%p]: this is a memory leak", msg);
-			}
-		}
 		belle_sip_object_unref(msg->http_request);
 		msg->http_request = NULL;
 		if (msg->http_listener){
@@ -527,6 +516,17 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *msg,
 void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 	if (msg->http_request) {
 		linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+		if (!belle_http_request_is_cancelled(msg->http_request)) {
+			if (msg->chat_room) {
+				ms_message("Canceling file transfer %s - msg [%p] chat room[%p]"
+								, (msg->external_body_url == NULL) ? linphone_core_get_file_transfer_server(msg->chat_room->lc) : msg->external_body_url
+								, msg
+								, msg->chat_room);
+				belle_http_provider_cancel_request(msg->chat_room->lc->http_provider, msg->http_request);
+			} else {
+				ms_message("Warning: http request still running for ORPHAN msg [%p]: this is a memory leak", msg);
+			}
+		}
 		_release_http_request(msg);
 	} else {
 		ms_message("No existing file transfer - nothing to cancel");
