@@ -552,7 +552,7 @@ def main(argv=None):
             selected_platforms_dup += archs_simu
         else:
             selected_platforms_dup += [platform]
-    # unify platforms but provided order
+    # unify platforms but keep provided order
     selected_platforms = []
     for x in selected_platforms_dup:
         if x not in selected_platforms:

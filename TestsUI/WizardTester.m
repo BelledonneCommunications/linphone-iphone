@@ -42,8 +42,6 @@
 }
 
 - (void)_externalLoginWithProtocol:(NSString *)protocol {
-
-	[self setInvalidAccountSet:true];
 	[tester tapViewWithAccessibilityLabel:@"Start"];
 	[tester tapViewWithAccessibilityLabel:@"Sign in SIP account"];
 
