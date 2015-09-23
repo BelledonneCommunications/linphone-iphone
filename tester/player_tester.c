@@ -61,7 +61,7 @@ static void play_file(const char *filename, bool_t unsupported_format, const cha
 	BC_ASSERT_EQUAL(res, 0, int, "%d");
 	if(res == -1) goto fail;
 
-	BC_ASSERT_TRUE(wait_for_eof(&eof, &time, 100, 13000));
+	BC_ASSERT_TRUE(wait_for_eof(&eof, &time, 100, linphone_player_get_duration(player) * 1.05));
 
 	linphone_player_close(player);
 
@@ -71,7 +71,7 @@ static void play_file(const char *filename, bool_t unsupported_format, const cha
 }
 
 static void playing_test(void) {
-	char *filename = bc_tester_res("sounds/hello_opus_h264.mkv");
+	char *filename = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 	const char *audio_mime = "opus";
 	const char *video_mime = "h264";
 	play_file(filename, !linphone_local_player_matroska_supported(), audio_mime, video_mime);
