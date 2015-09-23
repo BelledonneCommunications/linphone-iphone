@@ -1,8 +1,7 @@
 pixmapdir=$(datadir)/pixmaps/linphone
 dist_pixmap_DATA= \
-	hold_on.png hold_off.png \
 	linphone.png linphone-banner.png \
-	startcall-small.png stopcall-red.png stopcall-small.png linphone.icns \
+	linphone.icns \
 	ok.png \
 	notok.png
 
@@ -50,6 +49,7 @@ dist_actions48icons_DATA= \
 	linphone-show-dialer.png \
 	linphone-add-call.png \
 	linphone-start-call.png \
+	linphone-stop-call.png \
 	linphone-hold-on \
 	linphone-hold-off
 )

@@ -75,6 +75,7 @@ install(FILES
 	linphone-add-call.png
 	linphone-start-call.png
 	linphone-start-chat.png
+	linphone-stop-call.png
 	linphone-hold-on.png
 	linphone-hold-off.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/actions
