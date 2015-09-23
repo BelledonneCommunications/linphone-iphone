@@ -8,6 +8,6 @@
 
 #import "LinphoneTestCase.h"
 
-@interface WizardTester : LinphoneTestCase
+@interface AssistantTester : LinphoneTestCase
 
 @end

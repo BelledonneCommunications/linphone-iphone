@@ -6,10 +6,10 @@
 //
 //
 
-#import "WizardTester.h"
+#import "AssistantTester.h"
 #import <KIF/KIF.h>
 
-@implementation WizardTester
+@implementation AssistantTester
 
 - (void)beforeEach {
 	[super beforeEach];

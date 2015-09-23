@@ -109,7 +109,7 @@
 		630589E71B4E810900EFAE36 /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589DF1B4E810900EFAE36 /* ChatTester.m */; };
 		630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E11B4E810900EFAE36 /* ContactsTester.m */; };
 		630589EA1B4E810900EFAE36 /* LinphoneTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E41B4E810900EFAE36 /* LinphoneTestCase.m */; };
-		630589EB1B4E810900EFAE36 /* WizardTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E61B4E810900EFAE36 /* WizardTester.m */; };
+		630589EB1B4E810900EFAE36 /* AssistantTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E61B4E810900EFAE36 /* AssistantTester.m */; };
 		63058A241B4E821E00EFAE36 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A0E1B4E821E00EFAE36 /* AppDelegate.m */; };
 		63058A251B4E821E00EFAE36 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63058A0F1B4E821E00EFAE36 /* InfoPlist.strings */; };
 		63058A261B4E821E00EFAE36 /* Main_iPad.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63058A111B4E821E00EFAE36 /* Main_iPad.strings */; };
@@ -1035,8 +1035,8 @@
 		630589E11B4E810900EFAE36 /* ContactsTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsTester.m; sourceTree = "<group>"; };
 		630589E31B4E810900EFAE36 /* LinphoneTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneTestCase.h; sourceTree = "<group>"; };
 		630589E41B4E810900EFAE36 /* LinphoneTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneTestCase.m; sourceTree = "<group>"; };
-		630589E51B4E810900EFAE36 /* WizardTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WizardTester.h; sourceTree = "<group>"; };
-		630589E61B4E810900EFAE36 /* WizardTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WizardTester.m; sourceTree = "<group>"; };
+		630589E51B4E810900EFAE36 /* AssistantTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssistantTester.h; sourceTree = "<group>"; };
+		630589E61B4E810900EFAE36 /* AssistantTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssistantTester.m; sourceTree = "<group>"; };
 		630589F21B4E816900EFAE36 /* KIF.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KIF.xcodeproj; path = Classes/KIF/KIF.xcodeproj; sourceTree = SOURCE_ROOT; };
 		63058A0A1B4E81B700EFAE36 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		63058A0D1B4E821E00EFAE36 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -2376,8 +2376,8 @@
 				630589F21B4E816900EFAE36 /* KIF.xcodeproj */,
 				630589E31B4E810900EFAE36 /* LinphoneTestCase.h */,
 				630589E41B4E810900EFAE36 /* LinphoneTestCase.m */,
-				630589E51B4E810900EFAE36 /* WizardTester.h */,
-				630589E61B4E810900EFAE36 /* WizardTester.m */,
+				630589E51B4E810900EFAE36 /* AssistantTester.h */,
+				630589E61B4E810900EFAE36 /* AssistantTester.m */,
 			);
 			path = TestsUI;
 			sourceTree = "<group>";
@@ -4122,7 +4122,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				630589EA1B4E810900EFAE36 /* LinphoneTestCase.m in Sources */,
-				630589EB1B4E810900EFAE36 /* WizardTester.m in Sources */,
+				630589EB1B4E810900EFAE36 /* AssistantTester.m in Sources */,
 				630589E71B4E810900EFAE36 /* ChatTester.m in Sources */,
 				63B910C21B8B5368004641C9 /* CallTester.m in Sources */,
 				630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */,
