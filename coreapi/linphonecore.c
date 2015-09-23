@@ -1513,7 +1513,10 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 		if (linphone_core_is_provisioning_transient(lc) == TRUE)
 			linphone_core_set_provisioning_uri(lc, NULL);
 	}
-
+	if (lc->provisioning_http_listener){
+		belle_sip_object_unref(lc->provisioning_http_listener);
+		lc->provisioning_http_listener = NULL;
+	}
 	linphone_core_start(lc);
 }
 
@@ -2486,6 +2489,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			belle_tls_verify_policy_t *tls_policy = belle_tls_verify_policy_new();
 			belle_tls_verify_policy_set_root_ca(tls_policy, sal_get_root_ca(lc->sal));
 			belle_http_provider_set_tls_verify_policy(lc->http_provider, tls_policy);
+			belle_sip_object_unref(tls_policy);
 		}
 
 		linphone_core_notify_display_status(lc, _("Configuring"));

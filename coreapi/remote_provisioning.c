@@ -112,7 +112,6 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 
 	} else if( scheme && strncmp(scheme, "http", 4) == 0 && host && strlen(host) > 0) {
 		belle_http_request_listener_callbacks_t belle_request_listener={0};
-		belle_http_request_listener_t *listener;
 		belle_http_request_t *request;
 
 		belle_request_listener.process_response=belle_request_process_response_event;
@@ -120,10 +119,10 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 		belle_request_listener.process_io_error=belle_request_process_io_error;
 		belle_request_listener.process_timeout=belle_request_process_timeout;
 
-		listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
+		lc->provisioning_http_listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
 
 		request=belle_http_request_create("GET",uri, NULL);
-		return belle_http_provider_send_request(lc->http_provider, request, listener);
+		return belle_http_provider_send_request(lc->http_provider, request, lc->provisioning_http_listener);
 	} else {
 		ms_error("Invalid provisioning URI [%s] (missing scheme or host ?)",remote_provisioning_uri);
 		return -1;

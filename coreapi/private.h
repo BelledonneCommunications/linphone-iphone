@@ -883,6 +883,7 @@ struct _LinphoneCore
 #endif //BUILD_UPNP
 	belle_http_provider_t *http_provider;
 	belle_tls_verify_policy_t *http_verify_policy;
+	belle_http_request_listener_t *provisioning_http_listener;
 	MSList *tones;
 	LinphoneReason chat_deny_code;
 	char *file_transfer_server;
