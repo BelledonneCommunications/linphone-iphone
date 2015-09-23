@@ -259,7 +259,6 @@ def install_git_hook():
 
 
 def generate_makefile(platforms, generator):
-    libs_list = extract_libs_list()
     packages = os.listdir('WORK/ios-' + platforms[0] + '/Build')
     packages.sort()
     arch_targets = ""
@@ -337,7 +336,6 @@ def generate_makefile(platforms, generator):
     makefile = """
 archs={archs}
 packages={packages}
-libs_list={libs_list}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
@@ -381,13 +379,6 @@ clean: $(addprefix clean-,$(packages))
 
 veryclean: $(addprefix veryclean-,$(packages))
 
-generate-dummy-%:
-\t@echo "[{archs}] Generating dummy $* static library." ; \\
-\tprintf "void $*_init() {{}}" | tr '-' '_' > .dummy.c ; \\
-\tfor arch in {archs}; do clang -mios-simulator-version-min=6.0 -c .dummy.c -arch $$arch -o .dummy-$$arch.tbd; done ; \\
-\tlipo -create -output .dummy.tbd .dummy-*.tbd; \\
-\trm .dummy-*.tbd .dummy.c
-
 sdk:
 \tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
 \trm -rf liblinphone-sdk/apple-darwin && \\
@@ -406,17 +397,6 @@ sdk:
 \t\t{multiarch} \\
 \t\techo "[{archs}] Mixing `basename $$archive` in $$destpath"; \\
 \t\tlipo -create $$all_paths -output $$destpath; \\
-\tdone && \\
-\tfor lib in {libs_list} ; do \\
-\t\tif [ $${{lib:0:5}} = "libms" ] ; then \\
-\t\t\tlibrary_path=liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/$${{lib}}.a ; \\
-\t\telse \\
-\t\t\tlibrary_path=liblinphone-sdk/apple-darwin/lib/$${{lib}}.a ; \\
-\t\tfi ; \\
-\t\tif ! test -f $$library_path ; then \\
-\t\t\t$(MAKE) generate-dummy-$$lib ; \\
-\t\t\tmv .dummy.tbd $$library_path ; \\
-\t\tfi \\
 \tdone
 
 build: $(addprefix all-,$(archs))
@@ -474,8 +454,7 @@ help: help-prepare-options
 """.format(archs=' '.join(platforms), arch_opts='|'.join(platforms),
            first_arch=platforms[0], options=' '.join(sys.argv),
            arch_targets=arch_targets, packages=' '.join(packages),
-           libs_list=' '.join(libs_list), multiarch=multiarch,
-           generator=generator)
+           multiarch=multiarch, generator=generator)
     f = open('Makefile', 'w')
     f.write(makefile)
     f.close()
@@ -525,6 +504,7 @@ def main(argv=None):
     if check_tools() != 0:
         return 1
 
+    additional_args += ["-DLINPHONE_BUILDER_DUMMY_LIBRARIES=" + ' '.join(extract_libs_list())]
     if args.debug_verbose is True:
         additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
     if args.enable_non_free_codecs is True:
