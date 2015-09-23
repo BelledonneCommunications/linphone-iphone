@@ -61,7 +61,7 @@ static void play_file(const char *filename, bool_t unsupported_format, const cha
 	BC_ASSERT_EQUAL(res, 0, int, "%d");
 	if(res == -1) goto fail;
 
-	BC_ASSERT_TRUE(wait_for_eof(&eof, &time, 100, 13000));
+	BC_ASSERT_TRUE(wait_for_eof(&eof, &time, 100, linphone_player_get_duration(player) * 1.05));
 
 	linphone_player_close(player);
 
@@ -70,16 +70,34 @@ static void play_file(const char *filename, bool_t unsupported_format, const cha
 	if(lc_manager) linphone_core_manager_destroy(lc_manager);
 }
 
-static void playing_test(void) {
-	char *filename = bc_tester_res("sounds/hello_opus_h264.mkv");
+static void sintel_trailer_opus_h264_test(void) {
+	char *filename = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 	const char *audio_mime = "opus";
-	const char *video_mime = "h264";
+	const char *video_mime = "H264";
+	play_file(filename, !linphone_local_player_matroska_supported(), audio_mime, video_mime);
+	ms_free(filename);
+}
+
+static void sintel_trailer_pcmu_h264_test(void) {
+	char *filename = bc_tester_res("sounds/sintel_trailer_pcmu_h264.mkv");
+	const char *audio_mime = "pcmu";
+	const char *video_mime = "H264";
+	play_file(filename, !linphone_local_player_matroska_supported(), audio_mime, video_mime);
+	ms_free(filename);
+}
+
+static void sintel_trailer_opus_vp8_test(void) {
+	char *filename = bc_tester_res("sounds/sintel_trailer_opus_vp8.mkv");
+	const char *audio_mime = "opus";
+	const char *video_mime = "VP8";
 	play_file(filename, !linphone_local_player_matroska_supported(), audio_mime, video_mime);
 	ms_free(filename);
 }
 
 test_t player_tests[] = {
-	{	"Local MKV file"	,	playing_test	}
+	{	"Sintel trailer opus/h264"	,	sintel_trailer_opus_h264_test	},
+	{	"Sintel trailer pcmu/h264"	,	sintel_trailer_pcmu_h264_test	},
+	{	"Sintel trailer opus/VP8"	,	sintel_trailer_opus_vp8_test	}
 };
 
 test_suite_t player_test_suite = {"Player", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

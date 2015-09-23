@@ -3449,7 +3449,7 @@ static char *create_filepath(const char *dir, const char *filename, const char *
 	return ms_strdup_printf("%s/%s.%s",dir,filename,ext);
 }
 
-static void record_call(const char *filename, bool_t enableVideo) {
+static void record_call(const char *filename, bool_t enableVideo, const char *video_codec) {
 	LinphoneCoreManager *marie = NULL;
 	LinphoneCoreManager *pauline = NULL;
 	LinphoneCallParams *marieParams = NULL;
@@ -3472,13 +3472,14 @@ static void record_call(const char *filename, bool_t enableVideo) {
 	paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
 
 #ifdef VIDEO_ENABLED
+	linphone_core_set_video_device(pauline->lc, liblinphone_tester_mire_id);
 	if(enableVideo) {
-		if((linphone_core_find_payload_type(marie->lc, "H264", -1, -1) != NULL)
-				&& (linphone_core_find_payload_type(pauline->lc, "H264", -1, -1) != NULL)) {
+		if(linphone_core_find_payload_type(marie->lc, video_codec, -1, -1)
+				&& linphone_core_find_payload_type(pauline->lc, video_codec, -1, -1)) {
 			linphone_call_params_enable_video(marieParams, TRUE);
 			linphone_call_params_enable_video(paulineParams, TRUE);
-			disable_all_video_codecs_except_one(marie->lc, "H264");
-			disable_all_video_codecs_except_one(pauline->lc, "H264");
+			disable_all_video_codecs_except_one(marie->lc, video_codec);
+			disable_all_video_codecs_except_one(pauline->lc, video_codec);
 		} else {
 			ms_warning("call_recording(): the H264 payload has not been found. Only sound will be recorded");
 		}
@@ -3512,12 +3513,16 @@ static void record_call(const char *filename, bool_t enableVideo) {
 }
 
 static void audio_call_recording_test(void) {
-	record_call("recording", FALSE);
+	record_call("recording", FALSE, NULL);
 }
 
 #ifdef VIDEO_ENABLED
-static void video_call_recording_test(void) {
-	record_call("recording", TRUE);
+static void video_call_recording_h264_test(void) {
+	record_call("recording", TRUE, "H264");
+}
+
+static void video_call_recording_vp8_test(void) {
+	record_call("recording", TRUE, "VP8");
 }
 
 static void video_call_snapshot(void) {
@@ -5015,7 +5020,8 @@ test_t call_tests[] = {
 	{ "Call with ICE and video added 3", call_with_ice_video_added_3 },
 	{ "Call with ICE and video added and refused", call_with_ice_video_added_and_refused },
 	{ "Video call with ICE accepted using call params",video_call_ice_params},
-	{ "Video call recording", video_call_recording_test },
+	{ "Video call recording (H264)", video_call_recording_h264_test },
+	{ "Video call recording (VP8)", video_call_recording_vp8_test },
 	{ "Snapshot", video_call_snapshot },
 	{ "Video call with early media and no matching audio codecs", video_call_with_early_media_no_matching_audio_codecs },
 	{ "DTLS SRTP video call",dtls_srtp_video_call},
