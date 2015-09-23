@@ -901,22 +901,13 @@ void linphone_gtk_enable_mute_button(GtkButton *button, gboolean sensitive){
 }
 
 void linphone_gtk_draw_hold_button(GtkButton *button, gboolean active){
+	const gchar *icon_name = active ? "linphone-hold-on" : "linphone-hold-off";
+	const gchar *label = active ? _("Resume") : _("Pause");
+	GtkWidget *image = gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_BUTTON);
 	g_object_set_data(G_OBJECT(button),"active",GINT_TO_POINTER(active));
-	if (active){
-		GtkWidget *image=create_pixmap("hold_off.png");
-		gtk_button_set_label(GTK_BUTTON(button),_("Resume"));
-		if (image!=NULL) {
-			gtk_button_set_image(GTK_BUTTON(button),image);
-			gtk_widget_show(image);
-		}
-	}else{
-		GtkWidget *image=create_pixmap("hold_on.png");
-		gtk_button_set_label(GTK_BUTTON(button),_("Pause"));
-		if (image!=NULL) {
-			gtk_button_set_image(GTK_BUTTON(button),image);
-			gtk_widget_show(image);
-		}
-	}
+	gtk_button_set_label(GTK_BUTTON(button),label);
+	gtk_button_set_image(GTK_BUTTON(button),image);
+	gtk_widget_show(image);
 }
 
 void linphone_gtk_hold_clicked(GtkButton *button){

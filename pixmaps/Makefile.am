@@ -49,5 +49,7 @@ dist_actions48icons_DATA= \
 	linphone-start-call2.png \
 	linphone-show-dialer.png \
 	linphone-add-call.png \
-	linphone-start-call.png
+	linphone-start-call.png \
+	linphone-hold-on \
+	linphone-hold-off
 )
