@@ -157,8 +157,9 @@ static void quality_reporting_not_used_without_config() {
 
 		// but not this one since it is updated at the end of call
 		BC_ASSERT_PTR_NULL(call_marie->log->reporting.reports[0]->dialog_id);
+		end_call(marie, pauline);
 	}
-	end_call(marie, pauline);
+	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -205,7 +206,7 @@ static void quality_reporting_not_sent_if_low_bandwidth() {
 	linphone_call_params_enable_low_bandwidth(marie_params,TRUE);
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, NULL, NULL, marie_params, NULL)) {
-		linphone_core_terminate_all_calls(marie->lc);
+		end_call(marie, pauline);
 
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishProgress,0, int, "%d");
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0, int, "%d");
@@ -230,7 +231,7 @@ static void quality_reporting_invalid_report() {
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, NULL, NULL)) {
 		linphone_reporting_set_on_report_send(call_marie, on_report_send_remove_fields);
 
-		linphone_core_terminate_all_calls(marie->lc);
+		end_call(marie, pauline);
 
 		BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1));
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishError,1,3000));
@@ -286,8 +287,8 @@ static void quality_reporting_interval_report() {
 		// PUBLISH submission to the collector should be ok
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,60000));
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,1,60000));
+		end_call(marie, pauline);
 	}
-	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -327,7 +328,7 @@ static void quality_reporting_session_report_if_video_stopped() {
 
 		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_pauline)));
 
-		linphone_core_terminate_all_calls(marie->lc);
+		end_call(marie, pauline);
 
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,2,5000));
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,2,5000));
@@ -359,9 +360,7 @@ static void quality_reporting_sent_using_custom_route() {
 	linphone_proxy_config_set_quality_reporting_collector(linphone_core_get_default_proxy_config(marie->lc), "sip:sip.linphone.org");
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, NULL, NULL)) {
-		linphone_core_terminate_all_calls(marie->lc);
-		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneCallReleased,1, 10000));
-		BC_ASSERT_TRUE(wait_for_until(pauline->lc,NULL,&pauline->stat.number_of_LinphoneCallReleased,1, 10000));
+		end_call(marie, pauline);
 
 		// PUBLISH submission to the collector should be ERROR since route is not valid
 		BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphonePublishProgress,1));
