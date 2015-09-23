@@ -281,7 +281,10 @@ static void rtt_text_message(void) {
 		{
 			LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
 			BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
-			BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg),"BLA BLA");
+			BC_ASSERT_PTR_NOT_NULL(msg);
+			if (msg) {
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg),"BLA BLA");
+			}
 		}
 	}
 
