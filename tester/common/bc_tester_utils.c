@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <time.h>
+#include <stdio.h>
 
 #include "CUnit/Basic.h"
 #include "CUnit/Automated.h"
@@ -69,12 +70,12 @@ char * suite_name;
 char * test_name;
 static long max_vm_kb = 0;
 
-void (*tester_printf_va)(int level, const char *fmt, va_list args);
+void (*tester_printf_va)(int level, const char *format, va_list args);
 
-void bc_tester_printf(int level, const char *fmt, ...) {
+void bc_tester_printf(int level, const char *format, ...) {
 	va_list args;
-	va_start (args, fmt);
-	tester_printf_va(level, fmt, args);
+	va_start (args, format);
+	tester_printf_va(level, format, args);
 	va_end (args);
 }
 
@@ -181,34 +182,28 @@ static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSu
 /*derivated from cunit*/
 static void test_complete_message_handler(const CU_pTest pTest, const CU_pSuite pSuite,
 										  const CU_pFailureRecord pFailureList) {
-	//should be done properly using dynamically growing buffer
-	#define BUFFER_SIZE 2048
 	int i;
-	int space_left = BUFFER_SIZE - 1;
 	int suite_index = bc_tester_suite_index(pSuite->pName);
-	char result[BUFFER_SIZE]={0};
-	char buffer[BUFFER_SIZE]={0};
 	CU_pFailureRecord pFailure = pFailureList;
-
-	snprintf(result, sizeof(result), "Suite [%s] Test [%s] %s in %lu secs", pSuite->pName, pTest->pName,
+	char *buffer = NULL;
+	char* result = bc_sprintf("Suite [%s] Test [%s] %s in %lu secs", pSuite->pName, pTest->pName,
 			 pFailure ? "failed" : "passed", (unsigned long)(time(NULL) - test_start_time));
-	space_left -= strlen(result);
+
 	if (pFailure) {
-		for (i = 1; (NULL != pFailure) && space_left > 0; pFailure = pFailure->pNext, i++) {
-			snprintf(buffer, BUFFER_SIZE, "\n    %d. %s:%u  - %s", i,
-				(NULL != pFailure->strFileName) ? pFailure->strFileName : "",
-				pFailure->uiLineNumber,
-				(NULL != pFailure->strCondition) ? pFailure->strCondition : "");
-			strncat(result, buffer, space_left);
-			space_left -= strlen(buffer);
+		for (i = 1; (NULL != pFailure); pFailure = pFailure->pNext, i++) {
+			buffer = bc_sprintf("%s\n    %d. %s:%u  - %s",
+									result,
+									i,
+									(NULL != pFailure->strFileName) ? pFailure->strFileName : "",
+									pFailure->uiLineNumber,
+									(NULL != pFailure->strCondition) ? pFailure->strCondition : "");
+			free(result);
+			result = buffer;
 		}
 	}
 
-	if (space_left <= 0) {
-		bc_tester_printf(bc_printf_verbosity_error,"%s (truncated!)", result);
-	} else {
-		bc_tester_printf(bc_printf_verbosity_info,"%s", result);
-	}
+	bc_tester_printf(bc_printf_verbosity_info,"%s", result);
+
 	if (test_suite[suite_index]->after_each) {
 		test_suite[suite_index]->after_each();
 	}
@@ -338,15 +333,13 @@ void bc_tester_helper(const char *name, const char* additionnal_helper) {
 }
 
 static int file_exists(const char* root_path) {
-	int found;
-	FILE* file;
-
-	char * res_path = malloc(sizeof(char)*(strlen(root_path)+strlen("/common/bc_completion")+1));
-	sprintf(res_path, "%s/common/bc_completion", root_path);
-	file = fopen(res_path, "r");
-	found = (file != NULL);
-	if (file) fclose(file);
+	char * res_path = bc_sprintf("%s/common/bc_completion", root_path);
+	FILE* file = fopen(res_path, "r");
+	int found = (file != NULL);
 	free(res_path);
+	if (file) {
+		fclose(file);
+	}
 	return found;
 }
 
@@ -381,8 +374,7 @@ static void detect_res_prefix(const char* prog) {
 		prefix = strdup("..");
 	} else if (progpath) {
 		//for autotools, binary is in .libs/ subdirectory
-		char * progpath2 = malloc(sizeof(char)*(strlen(progpath)+strlen("/../")+1));
-		sprintf(progpath2, "%s/../", progpath);
+		char * progpath2 = bc_sprintf("%s/../", progpath);
 		if (file_exists(progpath)) {
 			prefix = strdup(progpath);
 		} else if (file_exists(progpath2)) {
@@ -412,7 +404,7 @@ static void detect_res_prefix(const char* prog) {
 	}
 }
 
-void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list args), int iverbosity_info, int iverbosity_error) {
+void bc_tester_init(void (*ftester_printf)(int level, const char *format, va_list args), int iverbosity_info, int iverbosity_error) {
 	tester_printf_va = ftester_printf;
 	bc_printf_verbosity_error = iverbosity_error;
 	bc_printf_verbosity_info = iverbosity_info;
@@ -485,9 +477,7 @@ int bc_tester_start(const char* prog_name) {
 		bc_tester_set_max_vm(max_vm_kb);
 
 	if( xml_enabled ){
-		size_t size = strlen(xml_file) + strlen(".tmp") + 1;
-		char * xml_tmp_file = malloc(sizeof(char) * size);
-		snprintf(xml_tmp_file, size, "%s.tmp", xml_file);
+		char * xml_tmp_file = bc_sprintf("%s.tmp", xml_file);
 		CU_set_output_filename(xml_tmp_file);
 		free(xml_tmp_file);
 	}
@@ -518,9 +508,7 @@ void bc_tester_uninit(void) {
 
 	if( xml_enabled ){
 		/*create real xml file only if tester did not crash*/
-		size_t size = strlen(xml_file) + strlen(".tmp-Results.xml") + 1;
-		char * xml_tmp_file = malloc(sizeof(char) * size);
-		snprintf(xml_tmp_file, size, "%s.tmp-Results.xml", xml_file);
+		char * xml_tmp_file = bc_sprintf("%s.tmp-Results.xml", xml_file);
 		rename(xml_tmp_file, xml_file);
 		free(xml_tmp_file);
 	}
@@ -563,13 +551,11 @@ void bc_tester_set_writable_dir_prefix(const char *name) {
 }
 
 static char * bc_tester_path(const char *prefix, const char *name) {
-	char* file = NULL;
 	if (name) {
-		size_t len = strlen(prefix) + 1 + strlen(name) + 1;
-		file = malloc(len);
-		snprintf(file, len, "%s/%s", prefix, name);
+		return bc_sprintf("%s/%s", prefix, name);
+	} else {
+		return NULL;
 	}
-	return file;
 }
 
 char * bc_tester_res(const char *name) {
@@ -578,4 +564,54 @@ char * bc_tester_res(const char *name) {
 
 char * bc_tester_file(const char *name) {
 	return bc_tester_path(bc_tester_writable_dir_prefix, name);
+}
+
+char* bc_sprintfva(const char* format, va_list args) {
+	/* Guess we need no more than 100 bytes. */
+	int n, size = 200;
+	char *p,*np;
+#ifndef WIN32
+	va_list cap;/*copy of our argument list: a va_list cannot be re-used (SIGSEGV on linux 64 bits)*/
+#endif
+	if ((p = malloc(size)) == NULL)
+		return NULL;
+	while (1)
+	{
+		/* Try to print in the allocated space. */
+#ifndef WIN32
+		va_copy(cap,args);
+		n = vsnprintf (p, size, format, cap);
+		va_end(cap);
+#else
+		/*this works on 32 bits, luckily*/
+		n = vsnprintf (p, size, format, args);
+#endif
+		/* If that worked, return the string. */
+		if (n > -1 && n < size)
+			return p;
+		//printf("Reallocing space.\n");
+		/* Else try again with more space. */
+		if (n > -1)	/* glibc 2.1 */
+			size = n + 1;	/* precisely what is needed */
+		else		/* glibc 2.0 */
+			size *= 2;	/* twice the old size */
+		if ((np = realloc (p, size)) == NULL)
+		{
+			free(p);
+			return NULL;
+		}
+		else
+		{
+			p = np;
+		}
+	}
+}
+
+char* bc_sprintf(const char* format, ...) {
+	va_list args;
+	char* res;
+	va_start(args, format);
+	res = bc_sprintfva(format, args);
+	va_end (args);
+	return res;
 }
