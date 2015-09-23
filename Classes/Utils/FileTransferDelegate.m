@@ -68,7 +68,6 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 																  forKey:@"localimage"
 															   inMessage:message];
 						   }
-						   linphone_chat_message_unref(thiz.message);
 						   thiz.message = NULL;
 						   [[NSNotificationCenter defaultCenter]
 							   postNotificationName:kLinphoneFileTransferRecvUpdate
@@ -122,8 +121,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 
 		// this is the last time we will be notified, so destroy ourselve
 		if (remaining <= size) {
-			LOGI(@"Upload ended, unreffing %p", thiz.message);
-			linphone_chat_message_unref(thiz.message);
+			LOGI(@"Upload ended");
 			thiz.message = NULL;
 			[thiz stopAndDestroy];
 		}
@@ -168,9 +166,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	[[[LinphoneManager instance] fileTransferDelegates] addObject:self];
 
 	_message = message;
-	// we need to keep a ref on the message to continue downloading even if user quit a chatroom which destroy all chat
-	// messages
-	linphone_chat_message_ref(_message);
+
 	const char *url = linphone_chat_message_get_external_body_url(_message);
 	LOGI(@"%p Downloading content in %p from %s", self, message, url);
 
