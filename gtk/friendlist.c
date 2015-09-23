@@ -616,6 +616,8 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist){
 	gtk_tree_view_set_search_equal_func(GTK_TREE_VIEW(friendlist),friend_search_func,NULL,NULL);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(store),FRIEND_NAME,friend_sort,NULL,NULL);
 	gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
+	
+	g_object_set_data(G_OBJECT(friendlist), "friendlist_initialized", (gpointer)TRUE);
 }
 
 void linphone_gtk_show_directory_search(void){
@@ -683,7 +685,7 @@ void linphone_gtk_show_friends(void){
 	LinphoneChatRoom *cr=NULL;
 
 	linphone_gtk_show_directory_search();
-	if (gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist))==NULL){
+	if (!g_object_get_data(G_OBJECT(friendlist), "friendlist_initialized")) {
 		linphone_gtk_friend_list_init(friendlist);
 	}
 
