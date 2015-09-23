@@ -329,13 +329,13 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		char *content_type;
 		const char *identity = NULL;
 		msg->time = time(NULL);
-		if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0)) {
+		if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0) != 0) {
 			if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {
 				if (call->state == LinphoneCallConnected || call->state == LinphoneCallStreamsRunning ||
 					call->state == LinphoneCallPaused || call->state == LinphoneCallPausing ||
 					call->state == LinphoneCallPausedByRemote) {
 					ms_message("send SIP msg through the existing call.");
-					op = call->op;
+					op = sal_op_ref(call->op);
 					identity = linphone_core_find_best_identity(cr->lc, linphone_call_get_remote_address(call));
 				}
 			}

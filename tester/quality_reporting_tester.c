@@ -211,7 +211,6 @@ static void quality_reporting_not_sent_if_low_bandwidth() {
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,0, int, "%d");
 	}
 	linphone_call_params_destroy(marie_params);
-	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -336,7 +335,6 @@ static void quality_reporting_session_report_if_video_stopped() {
 	linphone_call_params_destroy(marie_params);
 	linphone_call_params_destroy(pauline_params);
 
-	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

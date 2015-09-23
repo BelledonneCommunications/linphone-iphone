@@ -371,7 +371,7 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	if (mgr->lc){
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
 		int unterminated_calls;
-		
+
 		if (!liblinphone_tester_keep_record_files && record_file){
 			if ((CU_get_number_of_failures()-mgr->number_of_cunit_error_at_creation)>0) {
 				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
@@ -504,6 +504,7 @@ void liblinphone_tester_after_each() {
 		BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 		if (leaked_objects > 0) {
 			belle_sip_object_dump_active_objects();
+			belle_sip_object_flush_active_objects();
 			ms_error("%d object%s leaked in latest test, please fix that!", leaked_objects, leaked_objects>1?"s were":"was");
 		}
 	}

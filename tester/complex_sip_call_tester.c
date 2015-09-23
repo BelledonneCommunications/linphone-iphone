@@ -58,7 +58,8 @@ static FILE *sip_start(const char *senario, const char* dest_username, LinphoneA
 	else
 		dest = ms_strdup_printf("%s",linphone_address_get_domain(dest_addres));
 
-	command = ms_strdup_printf("sipp -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000",senario,dest_username,dest);
+	//until errors logs are handled correctly and stop breaks output, they will be DISABLED
+	command = ms_strdup_printf("sipp -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000 2>/dev/null",senario,dest_username,dest);
 
 	ms_message("Starting sipp commad [%s]",command);
 	file = popen(command, "r");

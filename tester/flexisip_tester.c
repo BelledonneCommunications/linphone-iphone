@@ -222,38 +222,38 @@ static void call_forking_with_urgent_reply(void){
 	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* marie3 = linphone_core_manager_new( "marie_rc");
 	MSList* lcs=ms_list_append(NULL,pauline->lc);
-
 	lcs=ms_list_append(lcs,marie->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
 	lcs=ms_list_append(lcs,marie3->lc);
 
-	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
-	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
-	linphone_core_set_user_agent(marie3->lc,"Natted Linphone",NULL);
-	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	if (linphone_core_media_encryption_supported(pauline->lc,LinphoneMediaEncryptionSRTP)) {
+		linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+		linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
+		linphone_core_set_user_agent(marie3->lc,"Natted Linphone",NULL);
+		linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
 
-	BC_ASSERT_TRUE(linphone_core_media_encryption_supported(pauline->lc,LinphoneMediaEncryptionSRTP));
-	linphone_core_set_media_encryption(pauline->lc,LinphoneMediaEncryptionSRTP);
-	linphone_core_set_network_reachable(marie2->lc,FALSE);
-	linphone_core_set_network_reachable(marie3->lc,FALSE);
 
-	linphone_core_invite_address(pauline->lc,marie->identity);
-	/*pauline should hear ringback, after 5 seconds, when it will retry without SRTP*/
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,9000));
-	/*Marie should be ringing*/
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,1000));
+		linphone_core_set_media_encryption(pauline->lc,LinphoneMediaEncryptionSRTP);
+		linphone_core_set_network_reachable(marie2->lc,FALSE);
+		linphone_core_set_network_reachable(marie3->lc,FALSE);
 
-	/*marie accepts the call on its first device*/
-	linphone_core_accept_call(marie->lc,linphone_core_get_current_call(marie->lc));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+		linphone_core_invite_address(pauline->lc,marie->identity);
+		/*pauline should hear ringback, after 5 seconds, when it will retry without SRTP*/
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,9000));
+		/*Marie should be ringing*/
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,1000));
 
-	linphone_core_terminate_call(pauline->lc,linphone_core_get_current_call(pauline->lc));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+		/*marie accepts the call on its first device*/
+		linphone_core_accept_call(marie->lc,linphone_core_get_current_call(marie->lc));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 
+		linphone_core_terminate_call(pauline->lc,linphone_core_get_current_call(pauline->lc));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+	}
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);

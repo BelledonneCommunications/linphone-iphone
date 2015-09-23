@@ -181,24 +181,34 @@ static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSu
 /*derivated from cunit*/
 static void test_complete_message_handler(const CU_pTest pTest, const CU_pSuite pSuite,
 										  const CU_pFailureRecord pFailureList) {
+	//should be done properly using dynamically growing buffer
+	#define BUFFER_SIZE 2048
 	int i;
+	int space_left = BUFFER_SIZE - 1;
 	int suite_index = bc_tester_suite_index(pSuite->pName);
-	char result[2048]={0};
-	char buffer[2048]={0};
+	char result[BUFFER_SIZE]={0};
+	char buffer[BUFFER_SIZE]={0};
 	CU_pFailureRecord pFailure = pFailureList;
 
 	snprintf(result, sizeof(result), "Suite [%s] Test [%s] %s in %lu secs", pSuite->pName, pTest->pName,
 			 pFailure ? "failed" : "passed", (unsigned long)(time(NULL) - test_start_time));
+	space_left -= strlen(result);
 	if (pFailure) {
-		for (i = 1 ; (NULL != pFailure) ; pFailure = pFailure->pNext, i++) {
-			snprintf(buffer, sizeof(buffer), "\n    %d. %s:%u  - %s", i,
+		for (i = 1; (NULL != pFailure) && space_left > 0; pFailure = pFailure->pNext, i++) {
+			snprintf(buffer, BUFFER_SIZE, "\n    %d. %s:%u  - %s", i,
 				(NULL != pFailure->strFileName) ? pFailure->strFileName : "",
 				pFailure->uiLineNumber,
 				(NULL != pFailure->strCondition) ? pFailure->strCondition : "");
-			strncat(result, buffer, strlen(buffer));
+			strncat(result, buffer, space_left);
+			space_left -= strlen(buffer);
 		}
 	}
-	bc_tester_printf(bc_printf_verbosity_info,"%s", result);
+
+	if (space_left <= 0) {
+		bc_tester_printf(bc_printf_verbosity_error,"%s (truncated!)", result);
+	} else {
+		bc_tester_printf(bc_printf_verbosity_info,"%s", result);
+	}
 	if (test_suite[suite_index]->after_each) {
 		test_suite[suite_index]->after_each();
 	}
@@ -369,8 +379,16 @@ static void detect_res_prefix(const char* prog) {
 		prefix = strdup(".");
 	} else if (file_exists("..")) {
 		prefix = strdup("..");
-	} else if (progpath && file_exists(progpath)) {
-		prefix = strdup(progpath);
+	} else if (progpath) {
+		//for autotools, binary is in .libs/ subdirectory
+		char * progpath2 = malloc(sizeof(char)*(strlen(progpath)+strlen("/../")+1));
+		sprintf(progpath2, "%s/../", progpath);
+		if (file_exists(progpath)) {
+			prefix = strdup(progpath);
+		} else if (file_exists(progpath2)) {
+			prefix = strdup(progpath2);
+		}
+		free(progpath2);
 	}
 
 	if (prefix != NULL) {

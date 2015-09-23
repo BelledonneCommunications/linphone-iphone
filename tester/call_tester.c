@@ -606,7 +606,6 @@ static void multiple_answers_call_with_media_relay(void) {
 	BC_ASSERT_TRUE( wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
 	BC_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 2000) );
 
-	end_call(marie1, pauline);
 	end_call(marie2, pauline);
 
 	linphone_core_manager_destroy(pauline);
