@@ -3151,7 +3151,41 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 }
 
 static void linphone_call_start_text_stream(LinphoneCall *call) {
-	//TODO textstream
+	LinphoneCore *lc = call->core;
+	int used_pt = -1;
+	const SalStreamDescription *tstream;
+	
+	tstream = sal_media_description_find_best_stream(call->resultdesc, SalText);
+	if (tstream != NULL && tstream->dir != SalStreamInactive && tstream->rtp_port != 0) {
+		const char *rtp_addr=tstream->rtp_addr[0]!='\0' ? tstream->rtp_addr : call->resultdesc->addr;
+		const char *rtcp_addr=tstream->rtcp_addr[0]!='\0' ? tstream->rtcp_addr : call->resultdesc->addr;
+		const SalStreamDescription *local_st_desc = sal_media_description_find_stream(call->localdesc, tstream->proto, SalText);
+		bool_t is_multicast = ms_is_multicast(rtp_addr);
+		call->text_profile = make_profile(call, call->resultdesc, tstream, &used_pt);
+
+		if (used_pt != -1) {
+			call->current_params->text_codec = rtp_profile_get_payload(call->text_profile, used_pt);
+			call->current_params->realtimetext_enabled=TRUE;
+
+			if (sal_stream_description_has_srtp(tstream) == TRUE) {
+				int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, tstream->crypto_local_tag);
+				if (crypto_idx >= 0) {
+					ms_media_stream_sessions_set_srtp_recv_key_b64(&call->textstream->ms.sessions, tstream->crypto[0].algo,tstream->crypto[0].master_key);
+					ms_media_stream_sessions_set_srtp_send_key_b64(&call->textstream->ms.sessions, tstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+				}
+			}
+			configure_rtp_session_for_rtcp_fb(call, tstream);
+			configure_rtp_session_for_rtcp_xr(lc, call, SalText);
+			
+			if (is_multicast) rtp_session_set_multicast_ttl(call->textstream->ms.sessions.rtp_session,tstream->ttl);
+			
+			text_stream_start(call->textstream, call->text_profile, rtp_addr, tstream->rtp_port, rtcp_addr, (linphone_core_rtcp_enabled(lc) && !is_multicast)  ? (tstream->rtcp_port ? tstream->rtcp_port : tstream->rtp_port + 1) : 0, used_pt);
+
+			ms_media_stream_sessions_set_encryption_mandatory(&call->textstream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
+		} else ms_warning("No text stream accepted.");
+	} else {
+		ms_message("No valid text stream defined.");
+	}
 }
 
 static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)

@@ -840,39 +840,19 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 }
 
 uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr) {
-	if (cr->pending_message && strlen(cr->pending_message->message) > 0 ) {
-		return cr->pending_message->message[strlen(cr->pending_message->message)-1];
-	} else return 0;
+	return 0;
 }
-int linphone_chat_message_put_char(LinphoneChatMessage *msg,uint32_t charater) {
-	/*stubbed implementation using im-iscomposing+xml*/
-	LinphoneChatRoom *cr=linphone_chat_message_get_chat_room(msg);
-	char *content;
-	SalOp *op = sal_op_new(cr->lc->sal);
-	char* value;
-	const char* from;
-	LinphoneCall *call = cr->call;
-	cr->is_composing = LinphoneIsComposingActive;
-	content = linphone_chat_room_create_is_composing_xml(cr);
-	linphone_configure_op(cr->lc, op, cr->peer_url, NULL, lp_config_get_int(cr->lc->config, "sip", "chat_msg_with_contact", 0));
-	if (charater==' ')
-		value=ms_strdup("S P");
-	else
-		value=ms_strdup_printf("%c%c%c%c",((char*)&charater)[0],((char*)&charater)[1],((char*)&charater)[2],((char*)&charater)[3]);
-	sal_op_set_sent_custom_header(op,sal_custom_header_append(NULL,"X-RTT",value));
-	ms_free(value);
-	if (call->dir==LinphoneCallOutgoing) {
-		from = sal_op_get_from(call->op);
-	} else {
-		from = sal_op_get_to(call->op);
-	}
-	sal_message_send(op
-					, from
-					, cr->peer
-					, "application/im-iscomposing+xml"
-					, content
-					, NULL);
 
+int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t charater) {
+	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
+	LinphoneCall *call = cr->call;
+	
+	if (!call || !call->textstream) {
+		return -1;
+	}
+	
+	text_stream_putchar32(call->textstream, charater);
+	
 	return 0;
 }
 static int linphone_chat_room_stop_composing(void *data, unsigned int revents) {
