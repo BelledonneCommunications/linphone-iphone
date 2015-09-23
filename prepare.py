@@ -237,8 +237,8 @@ def check_tools():
         error("iOS SDK not found, please install Xcode from AppStore or equivalent.")
         reterr = 1
     else:
-        xcode_version = float(Popen("xcodebuild -version".split(" "), stdout=PIPE).stdout.read().split("\n")[0].split(" ")[1])
-        if xcode_version < 7.0:
+        xcode_version = int(Popen("xcodebuild -version".split(" "), stdout=PIPE).stdout.read().split("\n")[0].split(" ")[1].split(".")[0])
+        if xcode_version < 7:
             sdk_platform_path = Popen(
                 "xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "), stdout=PIPE, stderr=devnull).stdout.read()[:-1]
             sdk_strings_path = "{}/{}".format(sdk_platform_path, "Developer/usr/bin/strings")
@@ -562,17 +562,21 @@ def main(argv=None):
         shutil.rmtree(tmpdir)
         return 0
 
-    selected_platforms = []
+    selected_platforms_dup = []
     for platform in args.platform:
         if platform == 'all':
-            selected_platforms += archs_device + archs_simu
+            selected_platforms_dup += archs_device + archs_simu
         elif platform == 'devices':
-            selected_platforms += archs_device
+            selected_platforms_dup += archs_device
         elif platform == 'simulators':
-            selected_platforms += archs_simu
+            selected_platforms_dup += archs_simu
         else:
-            selected_platforms += [platform]
-    selected_platforms = list(set(selected_platforms))
+            selected_platforms_dup += [platform]
+    # unify platforms but provided order
+    selected_platforms = []
+    for x in selected_platforms_dup:
+        if x not in selected_platforms:
+            selected_platforms.append(x)
 
     for platform in selected_platforms:
         target = targets[platform]
