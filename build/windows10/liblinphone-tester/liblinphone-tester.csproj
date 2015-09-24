@@ -112,6 +112,8 @@
     <None Include="liblinphone-tester_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\WideLogo.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\images\nowebcamCIF.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -272,7 +274,6 @@
     <Content Include="Assets\Logo.png" />
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />
-    <Content Include="Assets\WideLogo.scale-100.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
