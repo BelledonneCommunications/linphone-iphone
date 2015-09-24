@@ -1205,7 +1205,7 @@ void sal_set_http_proxy_host(Sal *sal, const char *host) {
 	
 	if (lp){
 		belle_sip_tls_listening_point_set_http_proxy_host(lp,sal->http_proxy_host);
-		belle_sip_tls_listening_point_set_http_proxy_port(lp,sal->http_proxy_host);
+		belle_sip_tls_listening_point_set_http_proxy_port(lp,sal->http_proxy_port);
 	}
 }
 
