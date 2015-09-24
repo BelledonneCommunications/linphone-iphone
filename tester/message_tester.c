@@ -209,7 +209,7 @@ LinphoneChatMessage* create_message_from_nowebcam(LinphoneChatRoom *chat_room) {
 	cbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
-
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 	linphone_chat_message_set_user_data(msg, file_to_send);
 
 	linphone_content_unref(content);
@@ -433,6 +433,7 @@ void transfer_message_base(bool_t upload_error, bool_t download_error) {
 				cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
 				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+				linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 				linphone_chat_message_download_file(marie->stat.last_received_chat_message);
 
 				if (download_error) {
@@ -474,7 +475,6 @@ static void transfer_message_upload_cancelled(void) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneChatRoom* chat_room;
 		LinphoneChatMessage* msg;
-		LinphoneChatMessageCbs *cbs;
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
 		/* Globally configure an http file transfer server. */
@@ -484,9 +484,6 @@ static void transfer_message_upload_cancelled(void) {
 		chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
 		msg = create_message_from_nowebcam(chat_room);
-		cbs = linphone_chat_message_get_callbacks(msg);
-		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-		linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 		linphone_chat_room_send_chat_message(chat_room,msg);
 
 		/*wait for file to be 50% uploaded and cancel the transfer */
@@ -515,7 +512,7 @@ static void transfer_message_download_cancelled(void) {
 	/* create a chatroom on pauline's side */
 	chat_room = linphone_core_get_chat_room(pauline->lc,marie->identity);
 	msg = create_message_from_nowebcam(chat_room);
-	linphone_chat_room_send_message2(chat_room,msg,liblinphone_tester_chat_message_state_change,pauline->lc);
+	linphone_chat_room_send_message2(chat_room,msg,NULL,pauline->lc);
 
 	/* wait for marie to receive pauline's msg */
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
@@ -528,7 +525,6 @@ static void transfer_message_download_cancelled(void) {
 		/* wait for file to be 50% downloaded */
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.progress_of_LinphoneFileTransfer, 50));
 		/* and cancel the transfer */
-
 		linphone_chat_message_cancel_file_transfer(marie->stat.last_received_chat_message);
 	}
 
