@@ -47,6 +47,7 @@
     <ClCompile Include="..\..\..\coreapi\call_log.c" />
     <ClCompile Include="..\..\..\coreapi\call_params.c" />
     <ClCompile Include="..\..\..\coreapi\chat.c" />
+    <ClCompile Include="..\..\..\coreapi\chat_file_transfer.c" />
     <ClCompile Include="..\..\..\coreapi\conference.c" />
     <ClCompile Include="..\..\..\coreapi\content.c" />
     <ClCompile Include="..\..\..\coreapi\dict.c" />
