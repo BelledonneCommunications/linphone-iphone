@@ -362,6 +362,7 @@ static void detect_res_prefix(const char* prog) {
 #endif
 
 	if (prog != NULL) {
+		if (progpath) free(progpath);
 		progpath = strdup(prog);
 		if (strchr(prog, '/') != NULL) {
 			progpath[strrchr(prog, '/') - prog + 1] = '\0';

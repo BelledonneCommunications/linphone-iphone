@@ -1460,6 +1460,7 @@ static void linphone_core_register_static_payloads(LinphoneCore *lc){
 static void linphone_core_free_payload_types(LinphoneCore *lc){
 	ms_list_free_with_data(lc->default_audio_codecs, (void (*)(void*))payload_type_destroy);
 	ms_list_free_with_data(lc->default_video_codecs, (void (*)(void*))payload_type_destroy);
+	ms_list_free_with_data(lc->default_text_codecs, (void (*)(void*))payload_type_destroy);
 }
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message){
@@ -6257,6 +6258,7 @@ static void codecs_config_uninit(LinphoneCore *lc)
 	_linphone_core_codec_config_write(lc);
 	ms_list_free_with_data(lc->codecs_conf.audio_codecs, (void (*)(void*))payload_type_destroy);
 	ms_list_free_with_data(lc->codecs_conf.video_codecs, (void (*)(void*))payload_type_destroy);
+	ms_list_free_with_data(lc->codecs_conf.text_codecs, (void (*)(void*))payload_type_destroy);
 }
 
 void ui_config_uninit(LinphoneCore* lc)

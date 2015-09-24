@@ -411,6 +411,28 @@ static void simple_call() {
 	simple_call_base(FALSE);
 }
 
+static void automatic_call_termination() {
+	LinphoneCoreManager* marie;
+	LinphoneCoreManager* pauline;
+
+	marie = linphone_core_manager_new( "marie_rc");
+	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+
+	if (!BC_ASSERT_TRUE(call(marie,pauline))) goto end;
+
+	liblinphone_tester_check_rtcp(marie,pauline);
+	
+	linphone_core_destroy(pauline->lc);
+	pauline->lc = NULL;
+	/*marie shall receive the BYE*/
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
 static void call_with_timeouted_bye(void) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
@@ -4950,6 +4972,7 @@ test_t call_tests[] = {
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Call busy when calling self", call_busy_when_calling_self},
 	{ "Simple call", simple_call },
+	{ "Call terminated automatically by linphone_core_destroy", automatic_call_termination },
 	{ "Call with http proxy", call_with_http_proxy },
 	{ "Call with timeouted bye", call_with_timeouted_bye },
 	{ "Direct call over IPv6", direct_call_over_ipv6},
