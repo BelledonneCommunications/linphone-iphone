@@ -141,15 +141,19 @@ static void call_with_audio_mline_before_video_in_sdp() {
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
-		call = linphone_core_get_current_call(mgr->lc);
-		linphone_core_accept_call(mgr->lc, call);
-		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
-		BC_ASSERT_EQUAL(call->main_audio_stream_index, 0, int, "%d");
-		BC_ASSERT_EQUAL(call->main_video_stream_index, 1, int, "%d");
-		BC_ASSERT_TRUE(call->main_text_stream_index > 1);
-		BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(call)));
+		call = linphone_call_ref(linphone_core_get_current_call(mgr->lc));
+		BC_ASSERT_PTR_NOT_NULL(call);
+		if (call) {
+			linphone_core_accept_call(mgr->lc, call);
+			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
+			BC_ASSERT_EQUAL(call->main_audio_stream_index, 0, int, "%d");
+			BC_ASSERT_EQUAL(call->main_video_stream_index, 1, int, "%d");
+			BC_ASSERT_TRUE(call->main_text_stream_index > 1);
+			BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(call)));
 
-		check_rtcp(call);
+			check_rtcp(call);
+			linphone_call_unref(call);
+		}
 
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
 		pclose(sipp_out);
@@ -179,15 +183,19 @@ static void call_with_video_mline_before_audio_in_sdp() {
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
-		call = linphone_core_get_current_call(mgr->lc);
-		linphone_core_accept_call(mgr->lc, call);
-		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
-		BC_ASSERT_EQUAL(call->main_audio_stream_index, 1, int, "%d");
-		BC_ASSERT_EQUAL(call->main_video_stream_index, 0, int, "%d");
-		BC_ASSERT_TRUE(call->main_text_stream_index > 1);
-		BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(call)));
+		call = linphone_call_ref(linphone_core_get_current_call(mgr->lc));
+		BC_ASSERT_PTR_NOT_NULL(call);
+		if (call) {
+			linphone_core_accept_call(mgr->lc, call);
+			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
+			BC_ASSERT_EQUAL(call->main_audio_stream_index, 1, int, "%d");
+			BC_ASSERT_EQUAL(call->main_video_stream_index, 0, int, "%d");
+			BC_ASSERT_TRUE(call->main_text_stream_index > 1);
+			BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(call)));
 
-		check_rtcp(call);
+			check_rtcp(call);
+			linphone_call_unref(call);
+		}
 
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
 		pclose(sipp_out);
@@ -217,15 +225,19 @@ static void call_with_multiple_audio_mline_in_sdp() {
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
-		call = linphone_core_get_current_call(mgr->lc);
-		linphone_core_accept_call(mgr->lc, call);
-		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
-		BC_ASSERT_EQUAL(call->main_audio_stream_index, 0, int, "%d");
-		BC_ASSERT_EQUAL(call->main_video_stream_index, 2, int, "%d");
-		BC_ASSERT_TRUE(call->main_text_stream_index > 2);
-		BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(call)));
+		call = linphone_call_ref(linphone_core_get_current_call(mgr->lc));
+		BC_ASSERT_PTR_NOT_NULL(call);
+		if (call) {
+			linphone_core_accept_call(mgr->lc, call);
+			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
+			BC_ASSERT_EQUAL(call->main_audio_stream_index, 0, int, "%d");
+			BC_ASSERT_EQUAL(call->main_video_stream_index, 2, int, "%d");
+			BC_ASSERT_TRUE(call->main_text_stream_index > 2);
+			BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(call)));
 
-		check_rtcp(call);
+			check_rtcp(call);
+			linphone_call_unref(call);
+		}
 
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
 		pclose(sipp_out);
@@ -255,15 +267,19 @@ static void call_with_multiple_video_mline_in_sdp() {
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
-		call = linphone_core_get_current_call(mgr->lc);
-		linphone_core_accept_call(mgr->lc, call);
-		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
-		BC_ASSERT_EQUAL(call->main_audio_stream_index, 0, int, "%d");
-		BC_ASSERT_EQUAL(call->main_video_stream_index, 1, int, "%d");
-		BC_ASSERT_TRUE(call->main_text_stream_index > 3);
-		BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(call)));
+		call = linphone_call_ref(linphone_core_get_current_call(mgr->lc));
+		BC_ASSERT_PTR_NOT_NULL(call);
+		if (call) {
+			linphone_core_accept_call(mgr->lc, call);
+			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 1));
+			BC_ASSERT_EQUAL(call->main_audio_stream_index, 0, int, "%d");
+			BC_ASSERT_EQUAL(call->main_video_stream_index, 1, int, "%d");
+			BC_ASSERT_TRUE(call->main_text_stream_index > 3);
+			BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(call)));
 
-		check_rtcp(call);
+			check_rtcp(call);
+			linphone_call_unref(call);
+		}
 
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
 		pclose(sipp_out);

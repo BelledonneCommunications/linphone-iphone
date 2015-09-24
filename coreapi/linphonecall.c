@@ -3165,21 +3165,21 @@ static void linphone_call_start_text_stream(LinphoneCall *call) {
 	
 	tstream = sal_media_description_find_best_stream(call->resultdesc, SalText);
 	if (tstream != NULL && tstream->dir != SalStreamInactive && tstream->rtp_port != 0) {
-		const char *rtp_addr=tstream->rtp_addr[0]!='\0' ? tstream->rtp_addr : call->resultdesc->addr;
-		const char *rtcp_addr=tstream->rtcp_addr[0]!='\0' ? tstream->rtcp_addr : call->resultdesc->addr;
+		const char *rtp_addr = tstream->rtp_addr[0] != '\0' ? tstream->rtp_addr : call->resultdesc->addr;
+		const char *rtcp_addr = tstream->rtcp_addr[0] != '\0' ? tstream->rtcp_addr : call->resultdesc->addr;
 		const SalStreamDescription *local_st_desc = sal_media_description_find_stream(call->localdesc, tstream->proto, SalText);
 		bool_t is_multicast = ms_is_multicast(rtp_addr);
 		call->text_profile = make_profile(call, call->resultdesc, tstream, &used_pt);
 
 		if (used_pt != -1) {
 			call->current_params->text_codec = rtp_profile_get_payload(call->text_profile, used_pt);
-			call->current_params->realtimetext_enabled=TRUE;
+			call->current_params->realtimetext_enabled = TRUE;
 
 			if (sal_stream_description_has_srtp(tstream) == TRUE) {
 				int crypto_idx = find_crypto_index_from_tag(local_st_desc->crypto, tstream->crypto_local_tag);
 				if (crypto_idx >= 0) {
-					ms_media_stream_sessions_set_srtp_recv_key_b64(&call->textstream->ms.sessions, tstream->crypto[0].algo,tstream->crypto[0].master_key);
-					ms_media_stream_sessions_set_srtp_send_key_b64(&call->textstream->ms.sessions, tstream->crypto[0].algo,local_st_desc->crypto[crypto_idx].master_key);
+					ms_media_stream_sessions_set_srtp_recv_key_b64(&call->textstream->ms.sessions, tstream->crypto[0].algo, tstream->crypto[0].master_key);
+					ms_media_stream_sessions_set_srtp_send_key_b64(&call->textstream->ms.sessions, tstream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key);
 				}
 			}
 			configure_rtp_session_for_rtcp_fb(call, tstream);
