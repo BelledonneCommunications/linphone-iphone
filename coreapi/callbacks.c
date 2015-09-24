@@ -627,6 +627,19 @@ static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_params_unref(params);
 }
 
+static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
+	linphone_core_notify_display_status(lc,_("Call is updated by remote."));
+	linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
+	if (call->defer_update == FALSE){
+		linphone_core_accept_call_update(lc,call,NULL);
+	}else{
+		if (call->state == LinphoneCallUpdatedByRemote){
+			ms_message("LinphoneCall [%p]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call "
+				"linphone_core_accept_call_update() later.", call);
+		}
+	}
+}
+
 /* this callback is called when an incoming re-INVITE/ SIP UPDATE modifies the session*/
 static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t is_update){
 	SalMediaDescription *rmd=sal_call_get_remote_media_description(op);
@@ -638,12 +651,7 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 			if (sal_media_description_has_dir(rmd,SalStreamSendRecv) || sal_media_description_has_dir(rmd,SalStreamRecvOnly)){
 				call_resumed(lc,call);
 			}else{
-				/*we are staying in PausedByRemote*/
-				linphone_core_notify_display_status(lc,_("Call is updated by remote."));
-				linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
-				if (call->defer_update == FALSE){
-					linphone_core_accept_call_update(lc,call,NULL);
-				}
+				call_updated_by_remote(lc, call);
 			}
 		break;
 		/*SIP UPDATE CASE*/
@@ -660,11 +668,7 @@ static void call_updated(LinphoneCore *lc, LinphoneCall *call, SalOp *op, bool_t
 			if (sal_media_description_has_dir(rmd,SalStreamSendOnly) || sal_media_description_has_dir(rmd,SalStreamInactive)){
 				call_paused_by_remote(lc,call);
 			}else{
-				linphone_core_notify_display_status(lc,_("Call is updated by remote."));
-				linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
-				if (call->defer_update == FALSE){
-					linphone_core_accept_call_update(lc,call,NULL);
-				}
+				call_updated_by_remote(lc, call);
 			}
 		break;
 		case LinphoneCallPaused:

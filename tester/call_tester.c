@@ -1839,11 +1839,6 @@ void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
 	LinphoneCall* pauline_call;
 	LinphoneVideoPolicy marie_policy, pauline_policy;
 
-	linphone_core_enable_video_capture(marie->lc, TRUE);
-	linphone_core_enable_video_display(marie->lc, TRUE);
-	linphone_core_enable_video_capture(pauline->lc, TRUE);
-	linphone_core_enable_video_display(pauline->lc, FALSE);
-
 	if (using_policy) {
 		marie_policy.automatically_initiate=FALSE;
 		marie_policy.automatically_accept=TRUE;
@@ -1853,20 +1848,12 @@ void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
 		linphone_core_set_video_policy(marie->lc,&marie_policy);
 		linphone_core_set_video_policy(pauline->lc,&pauline_policy);
 	}
-	if (callee_video_enabled) {
-		linphone_core_enable_video_display(marie->lc, TRUE);
-		linphone_core_enable_video_capture(marie->lc, TRUE);
-	} else {
-		linphone_core_enable_video_display(marie->lc, FALSE);
-		linphone_core_enable_video_capture(marie->lc, FALSE);
-	}
-	if (caller_video_enabled) {
-		linphone_core_enable_video_display(pauline->lc, TRUE);
-		linphone_core_enable_video_capture(pauline->lc, TRUE);
-	} else {
-		linphone_core_enable_video_display(pauline->lc, FALSE);
-		linphone_core_enable_video_capture(pauline->lc, FALSE);
-	}
+	
+	linphone_core_enable_video_display(marie->lc, callee_video_enabled);
+	linphone_core_enable_video_capture(marie->lc, callee_video_enabled);
+	
+	linphone_core_enable_video_display(pauline->lc, caller_video_enabled);
+	linphone_core_enable_video_capture(pauline->lc, caller_video_enabled);
 
 	if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
 		marie->lc->user_certificates_path = bc_tester_file("certificates-marie");
@@ -1907,17 +1894,13 @@ void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
 			BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(marie_call)));
 			BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(pauline_call)));
 		}
-
 		liblinphone_tester_check_rtcp(marie,pauline);
-
 	}
-
 }
+
 static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
 	video_call_base_2(pauline,marie,using_policy,mode,callee_video_enabled,caller_video_enabled);
-	linphone_core_terminate_all_calls(pauline->lc);
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	end_call(pauline, marie);
 }
 static void video_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");

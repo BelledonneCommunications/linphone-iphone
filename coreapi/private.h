@@ -343,6 +343,7 @@ LinphoneCallParams * linphone_call_params_new(void);
 SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params);
 SalStreamDir get_audio_dir_from_call_params(const LinphoneCallParams *params);
 SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params);
+void linphone_call_params_set_custom_headers(LinphoneCallParams *params, const SalCustomHeader *ch);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
 void linphone_core_write_auth_info(LinphoneCore *lc, LinphoneAuthInfo *ai);

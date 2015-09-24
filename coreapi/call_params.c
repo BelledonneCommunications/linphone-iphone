@@ -72,6 +72,16 @@ SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params) {
 	return sal_dir_from_call_params_dir(linphone_call_params_get_video_direction(params));
 }
 
+void linphone_call_params_set_custom_headers(LinphoneCallParams *params, const SalCustomHeader *ch){
+	if (params->custom_headers){
+		sal_custom_header_free(params->custom_headers);
+		params->custom_headers = NULL;
+	}
+	if (ch){
+		params->custom_headers = sal_custom_header_clone(ch);
+	}
+}
+
 
 /*******************************************************************************
  * Public functions                                                            *

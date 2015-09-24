@@ -1394,7 +1394,7 @@ void linphone_call_fix_call_parameters(LinphoneCall *call){
 			ms_message("Call [%p]: disabling video in our call params because the remote doesn't want it.", call);
 			call->params->has_video = FALSE;
 		}
-		if (rcp->has_video && call->core->video_policy.automatically_accept && !call->params->has_video){
+		if (rcp->has_video && call->core->video_policy.automatically_accept && linphone_core_video_enabled(call->core) && !call->params->has_video){
 			ms_message("Call [%p]: re-enabling video in our call params because the remote wants it and the policy allows to automatically accept.", call);
 			call->params->has_video = TRUE;
 		}
@@ -1727,8 +1727,7 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 	if (call->op){
 		LinphoneCallParams *cp;
 		SalMediaDescription *md;
-		if (call->remote_params != NULL) linphone_call_params_unref(call->remote_params);
-		cp = call->remote_params = linphone_call_params_new();
+		
 		md=sal_call_get_remote_media_description(call->op);
 		if (md) {
 			SalStreamDescription *sd;
@@ -1736,7 +1735,9 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 			unsigned int nb_audio_streams = sal_media_description_nb_active_streams_of_type(md, SalAudio);
 			unsigned int nb_video_streams = sal_media_description_nb_active_streams_of_type(md, SalVideo);
 			unsigned int nb_text_streams = sal_media_description_nb_active_streams_of_type(md, SalText);
-
+			if (call->remote_params != NULL) linphone_call_params_unref(call->remote_params);
+			cp = call->remote_params = linphone_call_params_new();
+			
 			for (i = 0; i < nb_video_streams; i++) {
 				sd = sal_media_description_get_active_stream_of_type(md, SalVideo, i);
 				if (sal_stream_description_active(sd) == TRUE) cp->has_video = TRUE;
@@ -1757,8 +1758,8 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 			}
 			if (md->name[0]!='\0') linphone_call_params_set_session_name(cp,md->name);
 		}
-		cp->custom_headers=sal_custom_header_clone((SalCustomHeader*)sal_op_get_recv_custom_header(call->op));
-		return cp;
+		linphone_call_params_set_custom_headers(call->remote_params, sal_op_get_recv_custom_header(call->op));
+		return call->remote_params;
 	}
 	return NULL;
 }
