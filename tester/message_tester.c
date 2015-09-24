@@ -753,11 +753,8 @@ static FILE* fopen_from_write_dir(const char * name, const char * mode) {
 }
 
 void lime_transfer_message_base(bool_t encrypt_file) {
-	int i;
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneCoreManager *marie, *pauline;
-	LinphoneChatRoom *chat_room;
-	LinphoneContent *content;
 	LinphoneChatMessage *msg;
 	LinphoneChatMessageCbs *cbs;
 	char *pauline_id, *marie_id;
@@ -797,22 +794,10 @@ void lime_transfer_message_base(bool_t encrypt_file) {
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
 
-	/* create a chatroom on pauline's side */
-	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-
 	/* create a file transfer msg */
-	content = linphone_core_create_content(pauline->lc);
-	linphone_content_set_type(content,"text");
-	linphone_content_set_subtype(content,"plain");
-	linphone_content_set_size(content,sizeof(big_file)); /*total size to be transfered*/
-	linphone_content_set_name(content,"big_file.txt");
+	msg = create_message_from_nowebcam(linphone_core_get_chat_room(pauline->lc, marie->identity));
 
-	msg = linphone_chat_room_create_file_transfer_message(chat_room, content);
-
-	cbs = linphone_chat_message_get_callbacks(msg);
-	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_memory_file_transfer_send);
-	linphone_chat_room_send_chat_message(chat_room,msg);
+	linphone_chat_room_send_chat_message(msg->chat_room, msg);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
 	if (marie->stat.last_received_chat_message ) {
 		cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
@@ -825,8 +810,6 @@ void lime_transfer_message_base(bool_t encrypt_file) {
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1, int, "%d");
-
-	linphone_content_unref(content);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 
