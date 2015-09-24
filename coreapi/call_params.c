@@ -270,6 +270,7 @@ bool_t linphone_call_params_video_multicast_enabled(const LinphoneCallParams *pa
 static void _linphone_call_params_destroy(LinphoneCallParams *cp){
 	if (cp->record_file) ms_free(cp->record_file);
 	if (cp->custom_headers) sal_custom_header_free(cp->custom_headers);
+	if (cp->session_name) ms_free(cp->session_name);
 }
 
 LinphoneCallParams * linphone_call_params_new(void) {

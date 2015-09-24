@@ -204,7 +204,7 @@ static void test_complete_message_handler(const CU_pTest pTest, const CU_pSuite 
 	}
 
 	bc_tester_printf(bc_printf_verbosity_info,"%s", result);
-
+	free(result);
 	if (test_suite[suite_index]->after_each) {
 		test_suite[suite_index]->after_each();
 	}

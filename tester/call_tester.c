@@ -3476,12 +3476,13 @@ void two_accepted_call_in_send_only() {
 	reset_counters(&marie->stat);
 	accept_call_in_send_only_base(laure,marie,lcs);
 
-	end_call(marie,pauline);
-	end_call(laure,marie);
+	end_call(pauline, marie);
+	end_call(laure, marie);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
+	ms_list_free(lcs);
 }
 #endif
 
