@@ -112,6 +112,9 @@
     <None Include="liblinphone-tester_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\sounds\sintel_trailer_opus_h264.mkv" />
+    <Content Include="Assets\sounds\sintel_trailer_opus_vp8.mkv" />
+    <Content Include="Assets\sounds\sintel_trailer_pcmu_h264.mkv" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\WideLogo.png" />
     <Content Include="Properties\Default.rd.xml" />
@@ -236,9 +239,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\sounds\hello8000_mkv_ref.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\sounds\hello_opus_h264.mkv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\sounds\oldphone.wav">
