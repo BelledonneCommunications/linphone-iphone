@@ -97,6 +97,7 @@ archs_device = ['arm64', 'armv7']
 archs_simu = ['i386', 'x86_64']
 platforms = ['all', 'devices', 'simulators'] + archs_device + archs_simu
 
+
 class PlatformListAction(argparse.Action):
 
     def __call__(self, parser, namespace, values, option_string=None):
@@ -111,7 +112,8 @@ class PlatformListAction(argparse.Action):
 
 def gpl_disclaimer(platforms):
     cmakecache = 'WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0])
-    gpl_third_parties_enabled = "ENABLE_GPL_THIRD_PARTIES:BOOL=YES" in open(cmakecache).read() or "ENABLE_GPL_THIRD_PARTIES:BOOL=ON" in open(cmakecache).read()
+    gpl_third_parties_enabled = "ENABLE_GPL_THIRD_PARTIES:BOOL=YES" in open(
+        cmakecache).read() or "ENABLE_GPL_THIRD_PARTIES:BOOL=ON" in open(cmakecache).read()
 
     if gpl_third_parties_enabled:
         warning("\n***************************************************************************"
@@ -237,7 +239,8 @@ def check_tools():
         error("iOS SDK not found, please install Xcode from AppStore or equivalent.")
         reterr = 1
     else:
-        xcode_version = int(Popen("xcodebuild -version".split(" "), stdout=PIPE).stdout.read().split("\n")[0].split(" ")[1].split(".")[0])
+        xcode_version = int(
+            Popen("xcodebuild -version".split(" "), stdout=PIPE).stdout.read().split("\n")[0].split(" ")[1].split(".")[0])
         if xcode_version < 7:
             sdk_platform_path = Popen(
                 "xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "), stdout=PIPE, stderr=devnull).stdout.read()[:-1]
@@ -247,6 +250,20 @@ def check_tools():
                 error("strings binary missing, please run:\n\tsudo ln -s {} {}".format(strings_path, sdk_strings_path))
                 reterr = 1
 
+        # workaround until VPX find a correct patch..
+        if xcode_version < 7:
+            warn("Retrieving XCode6 version of libvpx until https://code.google.com/p/webm/issues/detail?id=1075&colspec=ID%20Pri%20mstone%20ReleaseBlock%20Type%20Component%20Status%20Owner%20Summary is solved...")
+            p = Popen("git checkout c74bf6d889992c3cabe017ec353ca85c323107cd".split(
+                " "), cwd="submodules/externals/libvpx")
+        else:
+            warn("Retrieving XCode7 version of libvpx until https://code.google.com/p/webm/issues/detail?id=1075&colspec=ID%20Pri%20mstone%20ReleaseBlock%20Type%20Component%20Status%20Owner%20Summary is solved...")
+            p = Popen("git checkout 0866e6ae9ed3d5b23f67b6afeee1a7e19e0ae2b6".split(
+                " "), cwd="submodules/externals/libvpx")
+        p.wait()
+        if p.returncode != 0:
+            error("""{} Failed to retrieve correct version of libvpx, ensure you ran:
+                git submodule sync
+                git submodule update --init --recursive""".format(p.returncode))
     return reterr
 
 
@@ -564,7 +581,7 @@ def main(argv=None):
         if args.clean:
             target.clean()
         else:
-            retcode = prepare.run (target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
+            retcode = prepare.run(target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
             if retcode != 0:
                 if retcode == 51:
                     Popen("make help-prepare-options".split(" "))
