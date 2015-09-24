@@ -136,18 +136,27 @@ def gpl_disclaimer(platforms):
                 "\n***************************************************************************")
 
 
-def extract_libs_list():
+def extract_from_xcode_project_with_regex(regex):
     l = []
-    # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
-    regex = re.compile("name = (\")*(lib(\S+))\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
     f = open('linphone.xcodeproj/project.pbxproj', 'r')
     lines = f.readlines()
     f.close()
     for line in lines:
         m = regex.search(line)
         if m is not None:
-            l += [m.group(2)]
+            l += [m.group(1)]
     return list(set(l))
+
+
+def extract_deployment_target():
+    regex = re.compile("IPHONEOS_DEPLOYMENT_TARGET = (.*);")
+    return extract_from_xcode_project_with_regex(regex)[0]
+
+
+def extract_libs_list():
+    # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
+    regex = re.compile("name = \"*(lib\S+)\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
+    return extract_from_xcode_project_with_regex(regex)
 
 
 missing_dependencies = {}
@@ -521,6 +530,7 @@ def main(argv=None):
     if check_tools() != 0:
         return 1
 
+    additional_args += ["-DLINPHONE_IOS_DEPLOYMENT_TARGET=" + extract_deployment_target()]
     additional_args += ["-DLINPHONE_BUILDER_DUMMY_LIBRARIES=" + ' '.join(extract_libs_list())]
     if args.debug_verbose is True:
         additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
