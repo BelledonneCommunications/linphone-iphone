@@ -1280,6 +1280,7 @@ static void file_transfer_io_error_after_destroying_chatroom() {
 	file_transfer_io_error_base("https://www.linphone.org:444/lft.php", TRUE);
 }
 
+#if 0
 static void real_time_text_message(void) {
 	LinphoneChatRoom *pauline_chat_room, *marie_chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -1329,6 +1330,7 @@ static void real_time_text_message(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+#endif
 
 test_t message_tests[] = {
 	{"Text message", text_message},
@@ -1365,8 +1367,11 @@ test_t message_tests[] = {
 	{"Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url},
 	{"Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found},
 	{"Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently},
-	{"Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom},
+	{"Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom}
+#if 0
+	,
 	{"Real Time Text message", real_time_text_message},
+#endif
 };
 
 test_suite_t message_test_suite = {
