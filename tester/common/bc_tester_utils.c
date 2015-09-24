@@ -51,7 +51,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 static char *bc_tester_resource_dir_prefix = NULL;
-static char *bc_tester_writable_dir_prefix = NULL;
+// by default writable will always write near the executable
+static char *bc_tester_writable_dir_prefix = ".";
 
 int bc_printf_verbosity_info;
 int bc_printf_verbosity_error;
@@ -346,6 +347,7 @@ static int file_exists(const char* root_path) {
 static void detect_res_prefix(const char* prog) {
 	char* progpath = strdup(prog);
 	char* prefix = NULL;
+	FILE* writable_file = NULL;
 
 #if defined(BC_TESTER_WINDOWS_PHONE) || defined(BC_TESTER_WINDOWS_UNIVERSAL)
 	bc_tester_set_resource_dir_prefix("Assets");
@@ -383,20 +385,41 @@ static void detect_res_prefix(const char* prog) {
 		free(progpath2);
 	}
 
+	if (bc_tester_resource_dir_prefix != NULL && !file_exists(bc_tester_resource_dir_prefix)) {
+		printf("Invalid provided resource directory: could not find expected resources in %s.\n", bc_tester_resource_dir_prefix);
+		free(bc_tester_resource_dir_prefix);
+		bc_tester_resource_dir_prefix = NULL;
+	}
+
 	if (prefix != NULL) {
-		if (bc_tester_resource_dir_prefix == NULL) {
+		if (bc_tester_resource_dir_prefix != NULL) {
 			printf("Resource directory set to %s\n", prefix);
 			bc_tester_set_resource_dir_prefix(prefix);
 		}
+
 		if (bc_tester_writable_dir_prefix == NULL) {
 			printf("Writable directory set to %s\n", prefix);
 			bc_tester_set_writable_dir_prefix(prefix);
 		}
 		free(prefix);
-	} else if (bc_tester_resource_dir_prefix == NULL || bc_tester_writable_dir_prefix == NULL) {
-		printf("Failed to detect resources for %s.\n", prog);
-		printf("Could not find resource directory in %s! Please try again using option --resource-dir and/or --writable-dir.\n", progpath);
-		abort();
+	}
+
+	// check that we can write in writable directory
+	if (bc_tester_writable_dir_prefix != NULL) {
+		writable_file = fopen("bc_tester_utils.tmp", "w");
+		if (writable_file) {
+			fclose(writable_file);
+		}
+	}
+	if (bc_tester_resource_dir_prefix == NULL || writable_file == NULL) {
+		if (bc_tester_resource_dir_prefix == NULL) {
+			printf("Failed to detect resources for %s.\n", prog);
+			printf("Could not find resource directory in %s! Please try again using option --resource-dir.\n", progpath);
+		}
+		if (writable_file == NULL) {
+			printf("Failed to write file in %s. Please try again using option --writable-dir.\n", bc_tester_writable_dir_prefix);
+		}
+		exit(1);
 	}
 
 	if (progpath != NULL) {

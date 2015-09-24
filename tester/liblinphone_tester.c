@@ -175,7 +175,6 @@ static const char* liblinphone_helper =
 		"\t\t\t--verbose\n"
 		"\t\t\t--silent\n"
 		"\t\t\t--log-file <output log file path>\n"
-		"\t\t\t--config <config path>\n"
 		"\t\t\t--domain <test sip domain>\n"
 		"\t\t\t--auth-domain <test auth domain>\n"
 		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
@@ -218,9 +217,6 @@ int main (int argc, char *argv[])
 		} else if (strcmp(argv[i],"--auth-domain")==0){
 			CHECK_ARG("--auth-domain", ++i, argc);
 			auth_domain=argv[i];
-		} else if (strcmp(argv[i],"--config")==0){
-			CHECK_ARG("--config", ++i, argc);
-			bc_tester_set_resource_dir_prefix(argv[i]);
 		}else if (strcmp(argv[i],"--dns-hosts")==0){
 			CHECK_ARG("--dns-hosts", ++i, argc);
 			userhostsfile=argv[i];
