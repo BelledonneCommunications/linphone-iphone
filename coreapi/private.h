@@ -331,7 +331,7 @@ LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, LinphoneAddr
 void linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 void linphone_call_set_contact_op(LinphoneCall* call);
-void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, const SalMediaDescription *md);
+void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, SalMediaDescription *md);
 /* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *local, LinphoneAddress * remote);
 void linphone_call_log_completed(LinphoneCall *call);
@@ -460,7 +460,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type);
-void linphone_call_fix_call_parameters(LinphoneCall *call);
+void linphone_call_fix_call_parameters(LinphoneCall *call, SalMediaDescription *rmd);
 void linphone_call_init_audio_stream(LinphoneCall *call);
 void linphone_call_init_video_stream(LinphoneCall *call);
 void linphone_call_init_text_stream(LinphoneCall *call);
@@ -933,6 +933,7 @@ int linphone_core_set_as_current_call(LinphoneCore *lc, LinphoneCall *call);
 int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
+void linphone_call_update_biggest_desc(LinphoneCall *call, SalMediaDescription *md);
 void linphone_call_make_local_media_description(LinphoneCall *call);
 void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params);
 void linphone_call_increment_local_media_description(LinphoneCall *call);

@@ -589,6 +589,18 @@ static const char *linphone_call_get_public_ip_for_stream(LinphoneCall *call, in
 	return public_ip;
 }
 
+void linphone_call_update_biggest_desc(LinphoneCall *call, SalMediaDescription *md){
+	if (call->biggestdesc==NULL || md->nb_streams>call->biggestdesc->nb_streams){
+		/*we have been offered and now are ready to proceed, or we added a new stream*/
+		/*store the media description to remember the mapping of calls*/
+		if (call->biggestdesc){
+			sal_media_description_unref(call->biggestdesc);
+			call->biggestdesc=NULL;
+		}
+		call->biggestdesc=sal_media_description_ref(md);
+	}
+}
+
 static void force_streams_dir_according_to_state(LinphoneCall *call, SalMediaDescription *md){
 	int i;
 
@@ -862,6 +874,9 @@ static void port_config_set(LinphoneCall *call, int stream_index, int min_port, 
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	int min_port, max_port;
 	ms_message("New LinphoneCall [%p] initialized (LinphoneCore version: %s)",call,linphone_core_get_version());
+	call->main_audio_stream_index = LINPHONE_CALL_STATS_AUDIO;
+	call->main_video_stream_index = LINPHONE_CALL_STATS_VIDEO;
+	call->main_text_stream_index = LINPHONE_CALL_STATS_TEXT;
 	call->state=LinphoneCallIdle;
 	call->transfer_state = LinphoneCallIdle;
 	call->log=linphone_call_log_new(call->dir, from, to);
@@ -1018,10 +1033,6 @@ void linphone_call_fill_media_multicast_addr(LinphoneCall *call) {
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg){
 	LinphoneCall *call = belle_sip_object_new(LinphoneCall);
 	
-	call->main_audio_stream_index = LINPHONE_CALL_STATS_AUDIO;
-	call->main_video_stream_index = LINPHONE_CALL_STATS_VIDEO;
-	call->main_text_stream_index = LINPHONE_CALL_STATS_TEXT;
-	
 	call->dir=LinphoneCallOutgoing;
 	call->core=lc;
 	linphone_call_outgoing_select_ip_version(call,to,cfg);
@@ -1066,7 +1077,7 @@ static void linphone_call_incoming_select_ip_version(LinphoneCall *call){
 /**
  * Fix call parameters on incoming call to eg. enable AVPF if the incoming call propose it and it is not enabled locally.
  */
-void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, const SalMediaDescription *md) {
+void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, SalMediaDescription *md) {
 	/* Handle AVPF, SRTP and DTLS. */
 	call->params->avpf_enabled = sal_media_description_has_avpf(md);
 	if (call->params->avpf_enabled == TRUE) {
@@ -1083,15 +1094,14 @@ void linphone_call_set_compatible_incoming_call_parameters(LinphoneCall *call, c
 	}else if (call->params->media_encryption != LinphoneMediaEncryptionZRTP){
 		call->params->media_encryption = LinphoneMediaEncryptionNone;
 	}
-	linphone_call_fix_call_parameters(call);
+	linphone_call_fix_call_parameters(call, md);
 }
 
-static void linphone_call_compute_streams_indexes(LinphoneCall *call, SalMediaDescription *md) {
+static void linphone_call_compute_streams_indexes(LinphoneCall *call, const SalMediaDescription *md) {
 	int i, j;
 	bool_t audio_found = FALSE, video_found = FALSE, text_found = FALSE;
 	
-	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
-		if (!sal_stream_description_active(&md->streams[i])) continue;
+	for (i = 0; i < md->nb_streams; i++) {
 		if (md->streams[i].type == SalAudio) {
 			if (!audio_found) {
 				call->main_audio_stream_index = i;
@@ -1191,10 +1201,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	SalMediaDescription *md;
 	LinphoneFirewallPolicy fpol;
 	int i;
-	
-	call->main_audio_stream_index = LINPHONE_CALL_STATS_AUDIO;
-	call->main_video_stream_index = LINPHONE_CALL_STATS_VIDEO;
-	call->main_text_stream_index = LINPHONE_CALL_STATS_TEXT;
 
 	call->dir=LinphoneCallIncoming;
 	sal_op_set_user_pointer(op,call);
@@ -1206,9 +1212,6 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0));
 	
 	md = sal_call_get_remote_media_description(op);
-	if (md) {
-		linphone_call_compute_streams_indexes(call, md);
-	}
 
 	if (lc->sip_conf.ping_with_options){
 #ifdef BUILD_UPNP
@@ -1385,10 +1388,19 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	}
 }
 
-/*function to be called at each incoming reINVITE, in order to adjust the video enablement parameter according to what is offered 
- * and our local policy. Fixing the call->params to proper values avoid request video by accident during internal call updates, pauses and resumes*/
-void linphone_call_fix_call_parameters(LinphoneCall *call){
-	const LinphoneCallParams* rcp = linphone_call_get_remote_params(call);
+/*function to be called at each incoming reINVITE, in order to adjust various local parameters to what is being offered by remote:
+ * - the video enablement parameter according to what is offered and our local policy.
+ * Fixing the call->params to proper values avoid request video by accident during internal call updates, pauses and resumes
+ * - the stream indexes.
+ */
+void linphone_call_fix_call_parameters(LinphoneCall *call, SalMediaDescription *rmd){
+	const LinphoneCallParams* rcp;
+	
+	if (rmd) {
+		linphone_call_compute_streams_indexes(call, rmd);
+		linphone_call_update_biggest_desc(call, rmd);
+	}
+	rcp = linphone_call_get_remote_params(call);
 	if (rcp){
 		if (call->params->has_video && !rcp->has_video){
 			ms_message("Call [%p]: disabling video in our call params because the remote doesn't want it.", call);

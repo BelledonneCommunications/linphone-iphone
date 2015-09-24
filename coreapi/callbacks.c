@@ -129,18 +129,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 		ms_error("linphone_core_update_streams() called with null media description");
 		return;
 	}
-	if (call->biggestdesc==NULL || new_md->nb_streams>call->biggestdesc->nb_streams){
-		/*we have been offered and now are ready to proceed, or we added a new stream*/
-		/*store the media description to remember the mapping of calls*/
-		if (call->biggestdesc){
-			sal_media_description_unref(call->biggestdesc);
-			call->biggestdesc=NULL;
-		}
-		if (sal_call_is_offerer(call->op))
-			call->biggestdesc=sal_media_description_ref(call->localdesc);
-		else
-			call->biggestdesc=sal_media_description_ref(sal_call_get_remote_media_description(call->op));
-	}
+	linphone_call_update_biggest_desc(call, call->localdesc);
 	sal_media_description_ref(new_md);
 	call->resultdesc=new_md;
 	if ((call->audiostream && call->audiostream->ms.state==MSStreamStarted) || (call->videostream && call->videostream->ms.state==MSStreamStarted)){
@@ -438,6 +427,8 @@ static void call_ringing(SalOp *h){
 		linphone_core_notify_display_status(lc,_("Remote ringing..."));
 		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");
 	}else{
+		/*initialize the remote call params by invoking linphone_call_get_remote_params(). This is useful as the SDP may not be present in the 200Ok*/
+		linphone_call_get_remote_params(call);
 		/*accept early media */
 		if ((call->audiostream && audio_stream_started(call->audiostream))
 #ifdef VIDEO_ENABLED
@@ -565,7 +556,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 			linphone_call_update_remote_session_id_and_ver(call);
 			linphone_core_update_ice_state_in_call_stats(call);
 			linphone_core_update_streams(lc, call, md, next_state);
-			linphone_call_fix_call_parameters(call);
+			linphone_call_fix_call_parameters(call, rmd);
 			linphone_call_set_state(call, next_state, next_state_str);
 		}else{
 			ms_error("BUG: next_state is not set in call_accepted(), current state is %s", linphone_call_state_to_string(call->state));
@@ -706,7 +697,7 @@ static void call_updating(SalOp *op, bool_t is_update){
 		ms_error("call_updating(): call doesn't exist anymore");
 		return ;
 	}
-	linphone_call_fix_call_parameters(call);
+	linphone_call_fix_call_parameters(call, rmd);
 	if (call->state!=LinphoneCallPaused){
 		/*Refresh the local description, but in paused state, we don't change anything.*/
 		linphone_call_make_local_media_description(call);

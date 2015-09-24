@@ -3478,7 +3478,6 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
 	md=sal_call_get_final_media_description(call->op);
 	if (md && !sal_media_description_empty(md)){
 		linphone_core_update_streams(lc, call, md, next_state);
-		linphone_call_fix_call_parameters(call);
 	}
 	linphone_call_set_state(call,next_state,state_info);
 	return 0;
@@ -3678,7 +3677,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	/*try to be best-effort in giving real local or routable contact address */
 	linphone_call_set_contact_op(call);
 	if (params){
-		const SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
+		SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
 		linphone_call_set_new_params(call,params);
 		// There might not be a md if the INVITE was lacking an SDP
 		// In this case we use the parameters as is.
@@ -3713,7 +3712,6 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	new_md=sal_call_get_final_media_description(call->op);
 	if (new_md){
 		linphone_core_update_streams(lc, call, new_md, LinphoneCallStreamsRunning);
-		linphone_call_fix_call_parameters(call);
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
 	}else call->expect_media_in_ack=TRUE;
 

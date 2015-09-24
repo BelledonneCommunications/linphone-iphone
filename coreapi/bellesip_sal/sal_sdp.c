@@ -416,8 +416,7 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 		belle_sdp_session_description_add_attribute(session_desc, create_rtcp_xr_attribute(&desc->rtcp_xr));
 	}
 
-	for ( i=0; i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++ ) {
-		if (!sal_stream_description_active(&desc->streams[i])) continue;
+	for ( i=0; i<desc->nb_streams; i++ ) {
 		stream_description_to_sdp(session_desc, desc, &desc->streams[i]);
 	}
 	return session_desc;

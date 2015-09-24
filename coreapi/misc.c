@@ -630,9 +630,9 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 	const char *server = linphone_core_get_stun_server(lc);
 
 	if ((server == NULL) || (call->ice_session == NULL)) return -1;
-	audio_check_list = ice_session_check_list(call->ice_session, 0);
-	video_check_list = ice_session_check_list(call->ice_session, 1);
-	text_check_list = ice_session_check_list(call->ice_session, 2);
+	audio_check_list = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
+	video_check_list = ice_session_check_list(call->ice_session, call->main_video_stream_index);
+	text_check_list = ice_session_check_list(call->ice_session, call->main_text_stream_index);
 	if (audio_check_list == NULL) return -1;
 
 	if (call->af==AF_INET6){
@@ -700,8 +700,8 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 	IceSessionState session_state;
 
 	if (call->ice_session == NULL) return;
-	audio_check_list = ice_session_check_list(call->ice_session, 0);
-	video_check_list = ice_session_check_list(call->ice_session, 1);
+	audio_check_list = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
+	video_check_list = ice_session_check_list(call->ice_session, call->main_video_stream_index);
 	if (audio_check_list == NULL) return;
 
 	session_state = ice_session_state(call->ice_session);
@@ -763,7 +763,8 @@ void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call) {
 	if (session == NULL) return;
 	if (ice_session_state(session) == IS_Completed) return;
 
-	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+	ms_message("linphone_call_stop_ice_for_inactive_streams: nb_streams = %i", desc->nb_streams);
+	for (i = 0; i < desc->nb_streams; i++) {
 		IceCheckList *cl = ice_session_check_list(session, i);
 		if (!sal_stream_description_active(&desc->streams[i]) && cl) {
 			ice_session_remove_check_list(session, cl);
@@ -795,7 +796,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 	}
 	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
 	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
-	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+	for (i = 0; i < desc->nb_streams; i++) {
 		SalStreamDescription *stream = &desc->streams[i];
 		IceCheckList *cl = ice_session_check_list(session, i);
 		nb_candidates = 0;
@@ -902,10 +903,9 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 		ice_params_found=TRUE;
 	} else {
 		int i;
-		for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		for (i = 0; i < md->nb_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-			if (!sal_stream_description_active(stream)) continue;
 			if (cl) {
 				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 					ice_params_found=TRUE;
@@ -924,10 +924,9 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			ice_session_restart(call->ice_session);
 			ice_restarted = TRUE;
 		} else {
-			for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+			for (i = 0; i < md->nb_streams; i++) {
 				const SalStreamDescription *stream = &md->streams[i];
 				IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-				if (!sal_stream_description_active(stream)) continue;
 				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
 					ice_session_restart(call->ice_session);
 					ice_restarted = TRUE;
@@ -944,10 +943,9 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			}
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 		}
-		for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		for (i = 0; i < md->nb_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-			if (!sal_stream_description_active(stream)) continue;
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
 					if (ice_restarted == FALSE
@@ -964,26 +962,10 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 		}
 
 		/* Create ICE check lists if needed and parse ICE attributes. */
-		for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		for (i = 0; i < md->nb_streams; i++) {
 			const SalStreamDescription *stream = &md->streams[i];
 			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-			if (!sal_stream_description_active(stream)) continue;
-			/*
-			if ((cl == NULL) && (i < md->n_active_streams)) {
-				cl = ice_check_list_new();
-				ice_session_add_check_list(call->ice_session, cl);
-				switch (stream->type) {
-					case SalAudio:
-						if (call->audiostream != NULL) call->audiostream->ms.ice_check_list = cl;
-						break;
-					case SalVideo:
-						if (call->videostream != NULL) call->videostream->ms.ice_check_list = cl;
-						break;
-					default:
-						break;
-				}
-			}
-			*/
+			
 			if (cl==NULL) continue;
 			if (stream->ice_mismatch == TRUE) {
 				ice_check_list_set_state(cl, ICL_Failed);
@@ -1008,7 +990,7 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 				}
 				if (ice_restarted == FALSE) {
 					bool_t losing_pairs_added = FALSE;
-					for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
+					for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
 						const SalIceRemoteCandidate *candidate = &stream->ice_remote_candidates[j];
 						const char *addr = NULL;
 						int port = 0;
@@ -1026,7 +1008,7 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 				}
 			}
 		}
-		for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		for (i = 0; i < md->nb_streams; i++) {
 			IceCheckList * cl = ice_session_check_list(call->ice_session, i);
 			if (!sal_stream_description_active(&md->streams[i]) && (cl != NULL)) {
 				ice_session_remove_check_list_from_idx(call->ice_session, i);
@@ -1047,7 +1029,7 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md){
 	int i;
 
-	for (i = 0; md && i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+	for (i = 0; md && i < md->nb_streams; i++) {
 		if (md->streams[i].type == SalVideo && md->streams[i].rtp_port!=0)
 			return TRUE;
 	}
