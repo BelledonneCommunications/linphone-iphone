@@ -485,7 +485,7 @@ static void call_outbound_with_multiple_proxy() {
 	LinphoneCoreManager* pauline = linphone_core_manager_new2( "pauline_tcp_rc", FALSE);
 
 	LinphoneProxyConfig* lpc = NULL;
-	LinphoneProxyConfig* registered_lpc = linphone_proxy_config_new();
+	LinphoneProxyConfig* registered_lpc = linphone_core_create_proxy_config(marie->lc);
 
 	linphone_core_get_default_proxy(marie->lc, &lpc);
 	linphone_core_set_default_proxy(marie->lc,NULL);
@@ -500,6 +500,7 @@ static void call_outbound_with_multiple_proxy() {
 	linphone_proxy_config_enable_register(registered_lpc, TRUE);
 
 	linphone_core_add_proxy_config(marie->lc, registered_lpc);
+	linphone_proxy_config_unref(registered_lpc);
 
 	// set first LPC to unreacheable proxy addr
 	linphone_proxy_config_edit(lpc);
@@ -2062,10 +2063,7 @@ static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
 
-	linphone_core_terminate_call(marie->lc, out_call);
-
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	end_call(marie, pauline);
 
 end:
 	linphone_call_unref(out_call);
@@ -2079,7 +2077,6 @@ static void video_call_limited_bandwidth(void) {
 
 	linphone_core_set_download_bandwidth(pauline->lc, 100);
 	video_call_base(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
-	end_call(pauline, marie);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -2720,6 +2717,7 @@ static void early_media_call_with_update_base(bool_t media_change){
 
 	linphone_call_params_set_session_name(pauline_params,UPDATED_SESSION_NAME);
 	linphone_core_update_call(pauline->lc, pauline_call, pauline_params);
+	linphone_call_params_destroy(pauline_params);
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEarlyUpdating,1,2000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallEarlyUpdatedByRemote,1,2000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,2000));
@@ -3452,6 +3450,8 @@ static void record_call(const char *filename, bool_t enableVideo, const char *vi
 		remove(filepath);
 		ms_free(filepath);
 	}
+	linphone_call_params_destroy(paulineParams);
+	linphone_call_params_destroy(marieParams);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 #if defined(HAVE_OPENH264) && defined(ANDROID)
@@ -3606,14 +3606,14 @@ static void call_log_from_taken_from_p_asserted_id(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall *c1,*c2;
 	LinphoneCallParams *params;
-	const char* paulie_asserted_id ="\"Paupauche\" <sip:pauline@super.net>";
-	LinphoneAddress *paulie_asserted_id_addr = linphone_address_new(paulie_asserted_id);
+	const char* pauline_asserted_id ="\"Paupauche\" <sip:pauline@super.net>";
+	LinphoneAddress *pauline_asserted_id_addr = linphone_address_new(pauline_asserted_id);
 	LpConfig *marie_lp;
 	bool_t call_ok;
 
 	params=linphone_core_create_default_call_parameters(pauline->lc);
 
-	linphone_call_params_add_custom_header(params,"P-Asserted-Identity",paulie_asserted_id);
+	linphone_call_params_add_custom_header(params,"P-Asserted-Identity",pauline_asserted_id);
 	/*fixme, should be able to add several time the same header linphone_call_params_add_custom_header(params,"P-Asserted-Identity","\"Paupauche\" <tel:+12345>");*/
 
 	marie_lp = linphone_core_get_config(marie->lc);
@@ -3631,8 +3631,8 @@ static void call_log_from_taken_from_p_asserted_id(void) {
 	BC_ASSERT_PTR_NOT_NULL(c2);
 
 	/*make sure remote identity is hidden*/
-	BC_ASSERT_TRUE(linphone_address_weak_equal(linphone_call_get_remote_address(c2),paulie_asserted_id_addr));
-
+	BC_ASSERT_TRUE(linphone_address_weak_equal(linphone_call_get_remote_address(c2),pauline_asserted_id_addr));
+	linphone_address_destroy(pauline_asserted_id_addr);
 	end_call(pauline, marie);
 end:
 	linphone_call_params_destroy(params);

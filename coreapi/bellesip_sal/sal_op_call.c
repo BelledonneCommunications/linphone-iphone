@@ -497,6 +497,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	belle_sip_header_t* call_info;
 	const char *method=belle_sip_request_get_method(req);
 	bool_t is_update=FALSE;
+	bool_t drop_op = FALSE;
 
 	if (strcmp("ACK",method)!=0){  /*ACK does'nt create srv transaction*/
 		server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
@@ -540,6 +541,9 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 					}
 				}
 				op->base.root->callbacks.call_received(op);
+			}else{
+				/*the INVITE was declined by process_sdp_for_invite(). As we are not inside an established dialog, we can drop the op immediately*/
+				drop_op = TRUE;
 			}
 			break;
 		} /* else same behavior as for EARLY state*/
@@ -667,7 +671,7 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 	}
 
 	if (server_transaction) belle_sip_object_unref(server_transaction);
-
+	if (drop_op) sal_op_release(op);
 }
 
 
