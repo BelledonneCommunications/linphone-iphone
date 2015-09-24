@@ -137,7 +137,8 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 }
 
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
-	if (state != msg->state) {
+	/* do not invoke callbacks on orphan messages */
+	if (state != msg->state && msg->chat_room != NULL) {
 		ms_message("Chat message %p: moving from state %s to %s", msg, linphone_chat_message_state_to_string(msg->state),
 				   linphone_chat_message_state_to_string(state));
 		msg->state = state;
@@ -846,13 +847,13 @@ uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr) {
 int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t charater) {
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
 	LinphoneCall *call = cr->call;
-	
+
 	if (!call || !call->textstream) {
 		return -1;
 	}
-	
+
 	text_stream_putchar32(call->textstream, charater);
-	
+
 	return 0;
 }
 static int linphone_chat_room_stop_composing(void *data, unsigned int revents) {
@@ -1087,11 +1088,11 @@ void linphone_chat_message_unref(LinphoneChatMessage *msg) {
 }
 
 static void linphone_chat_message_release(LinphoneChatMessage *msg) {
+	/*mark the chat msg as orphan (it has no chat room anymore), and unref it*/
+	msg->chat_room = NULL;
 	if (msg->file_transfer_information != NULL) {
 		linphone_chat_message_cancel_file_transfer(msg);
 	}
-	/*mark the chat msg as orphan (it has no chat room anymore), and unref it*/
-	msg->chat_room = NULL;
 	linphone_chat_message_unref(msg);
 }
 

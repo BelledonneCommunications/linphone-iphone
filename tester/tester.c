@@ -368,6 +368,9 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 }
 
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
+	if (mgr->stat.last_received_chat_message) {
+		linphone_chat_message_unref(mgr->stat.last_received_chat_message);
+	}
 	if (mgr->lc){
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
 		int unterminated_calls;
@@ -385,8 +388,9 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 		}
 		linphone_core_destroy(mgr->lc);
 	}
-	if (mgr->identity) linphone_address_destroy(mgr->identity);
-	if (mgr->stat.last_received_chat_message) linphone_chat_message_unref(mgr->stat.last_received_chat_message);
+	if (mgr->identity) {
+		linphone_address_destroy(mgr->identity);
+	}
 	manager_count--;
 
 	ms_free(mgr);
