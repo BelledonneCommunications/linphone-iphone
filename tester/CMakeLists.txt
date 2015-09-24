@@ -51,6 +51,7 @@ set(SOURCE_FILES
 find_program(SIPP_PROGRAM NAMES sipp sipp.exe)
 if(SIPP_PROGRAM)
         add_definitions(-DHAVE_SIPP=1)
+        add_definitions(-DSIPP_COMMAND="${SIPP_PROGRAM}")
 else()
  	message(WARNING "Could not find sipp!")
 endif()

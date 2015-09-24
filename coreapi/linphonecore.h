@@ -4124,6 +4124,34 @@ LINPHONE_PUBLIC const char * linphone_core_get_video_preset(const LinphoneCore *
  */ 
 LINPHONE_PUBLIC bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc);
 
+/**
+ * Set http proxy address to be used for signaling during next channel connection. Use #linphone_core_set_network_reachable FASLE/TRUE to force channel restart.
+ * @param[in] lc LinphoneCore object
+ * @param[in] hostname of IP adress of the http proxy (can be NULL to disable).
+ */
+LINPHONE_PUBLIC	void linphone_core_set_http_proxy_host(LinphoneCore *lc, const char *host) ;
+	
+/**
+ * Set http proxy port to be used for signaling.
+ * @param[in] lc LinphoneCore object
+ * @param[in] port of the http proxy.
+ */
+LINPHONE_PUBLIC void linphone_core_set_http_proxy_port(LinphoneCore *lc, int port) ;
+	
+/**
+ * Get http proxy address to be used for signaling.
+ * @param[in] lc LinphoneCore object
+ * @return hostname of IP adress of the http proxy (can be NULL to disable).
+ */
+LINPHONE_PUBLIC	const char *linphone_core_get_http_proxy_host(const LinphoneCore *lc);
+	
+/**
+ * Get http proxy port to be used for signaling.
+ * @param[in] lc LinphoneCore object
+ * @return port of the http proxy.
+ */
+LINPHONE_PUBLIC	int linphone_core_get_http_proxy_port(const LinphoneCore *lc);
+	
 #ifdef __cplusplus
 }
 #endif

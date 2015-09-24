@@ -622,7 +622,12 @@ static int sal_add_listen_port(Sal *ctx, SalAddress* addr, bool_t is_tunneled){
 	if (lp) {
 		belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
 		result = belle_sip_provider_add_listening_point(ctx->prov,lp);
-		if (sal_address_get_transport(addr)==SalTransportTLS) set_tls_properties(ctx);
+		if (sal_address_get_transport(addr)==SalTransportTLS) {
+			belle_sip_tls_listening_point_t *tls_lp = (belle_sip_tls_listening_point_t *)lp;
+			belle_sip_tls_listening_point_set_http_proxy_host(tls_lp,ctx->http_proxy_host);
+			belle_sip_tls_listening_point_set_http_proxy_port(tls_lp,ctx->http_proxy_port);
+			set_tls_properties(ctx);
+		}
 	} else {
 		return -1;
 	}
@@ -1190,3 +1195,34 @@ int sal_enable_pending_trans_checking(Sal *sal, bool_t value) {
 	sal->pending_trans_checking = value;
 	return 0;
 }
+void sal_set_http_proxy_host(Sal *sal, const char *host) {
+	belle_sip_tls_listening_point_t *lp=(belle_sip_tls_listening_point_t *)belle_sip_provider_get_listening_point(sal->prov,"TLS");
+	if (sal->http_proxy_host) ms_free (sal->http_proxy_host);
+	if (host)
+		sal->http_proxy_host = ms_strdup(host);
+	else
+		sal->http_proxy_host = NULL;
+	
+	if (lp){
+		belle_sip_tls_listening_point_set_http_proxy_host(lp,sal->http_proxy_host);
+		belle_sip_tls_listening_point_set_http_proxy_port(lp,sal->http_proxy_host);
+	}
+}
+
+void sal_set_http_proxy_port(Sal *sal, int port) {
+	belle_sip_tls_listening_point_t *lp=(belle_sip_tls_listening_point_t *)belle_sip_provider_get_listening_point(sal->prov,"TLS");
+	sal->http_proxy_port=port;
+	if (lp){
+		belle_sip_tls_listening_point_set_http_proxy_port(lp,sal->http_proxy_port);
+	}
+
+}
+const char *sal_get_http_proxy_host(const Sal *sal) {
+	return sal->http_proxy_host;
+}
+
+int sal_get_http_proxy_port(const Sal *sal) {
+	return sal->http_proxy_port;
+}
+
+

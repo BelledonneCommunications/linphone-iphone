@@ -842,6 +842,12 @@ void sal_end_background_task(unsigned long id);
 void sal_op_cnx_ip_to_0000_if_sendonly_enable(SalOp *sal,bool_t yesno);
 bool_t sal_op_cnx_ip_to_0000_if_sendonly_enabled(SalOp *sal);
 
+void sal_set_http_proxy_host(Sal *sal, const char *host) ;
+void sal_set_http_proxy_port(Sal *sal, int port) ;
+const char *sal_get_http_proxy_host(const Sal *sal);
+int sal_get_http_proxy_port(const Sal *sal);
+
+
 #endif
 
 

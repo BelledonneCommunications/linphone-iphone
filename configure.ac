@@ -1057,9 +1057,10 @@ else
 fi
 AM_CONDITIONAL(HAVE_DOXYGEN, test "$DOXYGEN" != "false")
 
-AC_CHECK_PROG([SIPP],[sipp], [true], [false])
+AC_PATH_PROG([SIPP],[sipp],[false])
 if test "x$SIPP" != "xfalse" ; then
 	AC_DEFINE(HAVE_SIPP,1,[defined when SIPP is available])
+	AC_DEFINE_UNQUOTED(SIPP_COMMAND,"$SIPP",[defined when SIPP is available])
 fi
 
 AC_CONFIG_FILES([

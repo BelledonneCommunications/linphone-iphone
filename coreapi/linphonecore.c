@@ -2193,7 +2193,10 @@ int _linphone_core_apply_transports(LinphoneCore *lc){
 	sal_unlisten_ports(sal);
 
 	listening_address = lp_config_get_string(lc->config,"sip","bind_address",anyaddr);
-
+	if (linphone_core_get_http_proxy_host(lc)) {
+		sal_set_http_proxy_host(sal, linphone_core_get_http_proxy_host(lc));
+		sal_set_http_proxy_port(sal,linphone_core_get_http_proxy_port(lc));
+	}
 	if (lc->tunnel && linphone_tunnel_sip_enabled(lc->tunnel) && linphone_tunnel_get_activated(lc->tunnel)){
 		if (sal_listen_port(sal,anyaddr,tr->udp_port,SalTransportUDP,TRUE)!=0){
 			transport_error(lc,"udp+tunnel",tr->udp_port);
@@ -7285,4 +7288,24 @@ LINPHONE_PUBLIC const char *linphone_core_log_collection_upload_state_to_string(
 
 bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc) {
 	return lc->text_conf.enabled;
+}
+void linphone_core_set_http_proxy_host(LinphoneCore *lc, const char *host) {
+	lp_config_set_string(lc->config,"sip","http_proxy_host",host);
+	if (lc->sal) {
+		sal_set_http_proxy_host(lc->sal,host);
+		sal_set_http_proxy_port(lc->sal,linphone_core_get_http_proxy_port(lc)); /*to make sure default value is set*/
+	}
+}
+	
+void linphone_core_set_http_proxy_port(LinphoneCore *lc, int port) {
+	lp_config_set_int(lc->config,"sip","http_proxy_port",port);
+	if (lc->sal)
+		sal_set_http_proxy_port(lc->sal,port);
+}
+const char *linphone_core_get_http_proxy_host(const LinphoneCore *lc) {
+	return lp_config_get_string(lc->config,"sip","http_proxy_host",NULL);
+}
+	
+int linphone_core_get_http_proxy_port(const LinphoneCore *lc) {
+	return lp_config_get_int(lc->config,"sip","http_proxy_port",3128);
 }

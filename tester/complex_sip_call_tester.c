@@ -49,6 +49,7 @@ void check_rtcp(LinphoneCall *call) {
 }
 
 static FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress* dest_addres) {
+#if HAVE_SIPP
 	char *dest;
 	char *command;
 	FILE *file;
@@ -57,15 +58,17 @@ static FILE *sip_start(const char *senario, const char* dest_username, LinphoneA
 		dest = ms_strdup_printf("%s:%i",linphone_address_get_domain(dest_addres),linphone_address_get_port(dest_addres));
 	else
 		dest = ms_strdup_printf("%s",linphone_address_get_domain(dest_addres));
-
 	//until errors logs are handled correctly and stop breaks output, they will be DISABLED
-	command = ms_strdup_printf("sipp -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000 2>/dev/null",senario,dest_username,dest);
+	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000",senario,dest_username,dest);
 
 	ms_message("Starting sipp commad [%s]",command);
 	file = popen(command, "r");
 	ms_free(command);
 	ms_free(dest);
 	return file;
+#else
+	return NULL;
+#endif
 }
 /*static void dest_server_server_resolved(void *data, const char *name, struct addrinfo *ai_list) {
 	*(struct addrinfo **)data =ai_list;

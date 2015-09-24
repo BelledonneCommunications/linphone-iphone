@@ -2421,7 +2421,7 @@ static void call_with_mkv_file_player(void) {
 	char *recordpath;
 	bool_t call_ok;
 #if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
-	double similar;
+	double similar=0.0;
 	const double threshold = 0.9;
 #define DO_AUDIO_CMP
 #endif
@@ -4890,6 +4890,36 @@ static void call_logs_sqlite_storage() {
 
 #endif
 
+
+static void call_with_http_proxy(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
+	bool_t call_ok;
+	LinphoneCall *marie_call;
+	LinphoneAddress *contact_addr;
+	struct hostent *he = gethostbyname("sip.linphone.org");
+	
+	if (!transport_supported(LinphoneTransportTls)) {
+	 ms_message("Test skipped because no tls support");
+	 goto end;
+	}
+	
+	linphone_core_set_http_proxy_host(pauline->lc,"sip.linphone.org");
+	linphone_core_set_network_reachable(pauline->lc, FALSE); /*to make sure channel is restarted*/
+	linphone_core_set_network_reachable(pauline->lc, TRUE);
+	
+	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	if (!call_ok) goto end;
+	
+	marie_call = linphone_core_get_current_call(marie->lc);
+	contact_addr = linphone_address_new(linphone_call_get_remote_contact(marie_call));
+	BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(contact_addr),inet_ntoa(*((struct in_addr **)he->h_addr_list)[0]));
+	linphone_address_destroy(contact_addr);
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	
+}
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -4899,6 +4929,7 @@ test_t call_tests[] = {
 	{ "Cancelled ringing call", cancelled_ringing_call },
 	{ "Call busy when calling self", call_busy_when_calling_self},
 	{ "Simple call", simple_call },
+	{ "Call with http proxy", call_with_http_proxy },
 	{ "Call with timeouted bye", call_with_timeouted_bye },
 	{ "Direct call over IPv6", direct_call_over_ipv6},
 	{ "Outbound call with multiple proxy possible", call_outbound_with_multiple_proxy },
