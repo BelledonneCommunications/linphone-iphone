@@ -458,6 +458,7 @@ void linphone_proxy_config_write_to_config_file(struct _LpConfig* config,Linphon
 
 void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *msg);
 void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalIsComposing *is_composing);
+void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call);
 
 void linphone_call_init_stats(LinphoneCallStats *stats, int type);
 void linphone_call_fix_call_parameters(LinphoneCall *call, SalMediaDescription *rmd);

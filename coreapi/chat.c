@@ -310,9 +310,15 @@ void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void *ud) {
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	/*stubed rtt text*/
 	if (cr->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(cr->call))) {
-		char crlf[4]="CRLF";
-		linphone_chat_message_put_char(msg,*(uint32_t*)crlf); /*CRLF*/
+		char crlf[4] = "CRLF";
+		linphone_chat_message_put_char(msg, *(uint32_t*)crlf); /*CRLF*/
 		linphone_chat_message_set_state(msg, LinphoneChatMessageStateDelivered);
+		
+		if (cr->is_composing == LinphoneIsComposingActive) {
+			cr->is_composing = LinphoneIsComposingIdle;
+		}
+		linphone_chat_room_delete_composing_idle_timer(cr);
+		linphone_chat_room_delete_composing_refresh_timer(cr);
 		return;
 	}
 	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
@@ -649,51 +655,6 @@ void linphone_core_is_composing_received(LinphoneCore *lc, SalOp *op, const SalI
 	LinphoneAddress *addr = linphone_address_new(is_composing->from);
 	LinphoneChatRoom *cr = _linphone_core_get_chat_room(lc, addr);
 	if (cr != NULL) {
-		/*rtt stub*/
-		LinphoneCall *call = linphone_core_find_call_from_uri(lc,cr->peer);
-		if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
-			const char * rtt;
-			if (cr->call == NULL) {
-				/*attach cr to call*/
-				cr->call = call;
-				linphone_call_ref(cr->call);
-			}
-			if (cr->pending_message == NULL) {
-				cr->pending_message = linphone_chat_room_create_message(cr,"");
-			}
-
-			rtt = sal_custom_header_find(sal_op_get_recv_custom_header(op),"X-RTT");
-			if (rtt) {
-				if (strcmp(rtt,"CRLF")==0) {
-					LinphoneChatMessage *msg = cr->pending_message;
-					/*forge a message*/
-					linphone_chat_message_set_from(msg, cr->peer_url);
-
-					{
-						LinphoneAddress *to;
-						to=sal_op_get_to(op) ? linphone_address_new(sal_op_get_to(op)) : linphone_address_new(linphone_core_get_identity(lc));
-						msg->to=to;
-					}
-
-					msg->time=ms_time(0);
-					msg->state=LinphoneChatMessageStateDelivered;
-					msg->is_read=FALSE;
-					msg->dir=LinphoneChatMessageIncoming;
-					msg->storage_id=linphone_chat_message_store(msg);
-
-					if(cr->unread_count < 0) cr->unread_count = 1;
-					else cr->unread_count++;
-
-					linphone_chat_room_message_received(cr,lc,msg);
-					linphone_chat_message_unref(msg);
-					cr->pending_message=NULL;
-				} else if (strcmp(rtt,"S P")==0) {
-					cr->pending_message->message=ms_strcat_printf(cr->pending_message->message," ");
-				} else {
-					cr->pending_message->message=ms_strcat_printf(cr->pending_message->message,rtt);
-				}
-			}
-		}
 		linphone_chat_room_notify_is_composing(cr, is_composing->text);
 	}
 	linphone_address_destroy(addr);
@@ -840,7 +801,52 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 	}
 }
 
+void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call) {
+	char *value = NULL;
+	
+	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
+		if (cr->call == NULL) {
+			/*attach cr to call*/
+			cr->call = call;
+			linphone_call_ref(cr->call);
+		}
+		if (cr->pending_message == NULL) {
+			cr->pending_message = linphone_chat_room_create_message(cr, "");
+		}
+		
+		value = ms_strdup_printf("%c%c%c%c",((char*)&character)[0],((char*)&character)[1],((char*)&character)[2],((char*)&character)[3]);
+		ms_message("Received RTT character: %s (%lu)", value, (unsigned long)character);
+		if (strcmp(value, "CRLF") == 0) {
+			// End of message
+			LinphoneChatMessage *msg = cr->pending_message;
+			ms_message("CRLF received, forge a message with content %s", cr->pending_message->message);
+			
+			linphone_chat_message_set_from(msg, cr->peer_url);
+			linphone_chat_message_set_to(msg, linphone_address_new(linphone_core_get_identity(lc)));
+			msg->time = ms_time(0);
+			msg->state = LinphoneChatMessageStateDelivered;
+			msg->is_read = FALSE;
+			msg->dir = LinphoneChatMessageIncoming;
+			msg->storage_id = linphone_chat_message_store(msg);
+
+			if (cr->unread_count < 0) cr->unread_count = 1;
+			else cr->unread_count++;
+			
+			linphone_chat_room_message_received(cr, lc, msg);
+			linphone_chat_message_unref(msg);
+			cr->pending_message = NULL;
+		} else {
+			cr->pending_message->message = ms_strcat_printf(cr->pending_message->message, value);
+			ms_message("Received text since beginning of RTT session or last CRLF is %s", cr->pending_message->message);
+		}
+		ms_free(value);
+	}
+}
+
 uint32_t linphone_chat_room_get_char(const LinphoneChatRoom *cr) {
+	if (cr->pending_message && strlen(cr->pending_message->message) > 0) {
+		return cr->pending_message->message[strlen(cr->pending_message->message)-1];
+	}
 	return 0;
 }
 
@@ -853,7 +859,7 @@ int linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t charater) 
 	}
 
 	text_stream_putchar32(call->textstream, charater);
-
+	linphone_chat_room_compose(cr);
 	return 0;
 }
 static int linphone_chat_room_stop_composing(void *data, unsigned int revents) {

@@ -375,8 +375,9 @@ static MSList *make_codec_list(LinphoneCore *lc, CodecConstraints * hints, SalSt
 		PayloadType *pt=(PayloadType*)it->data;
 		int num;
 
-		if (!(pt->flags & PAYLOAD_TYPE_ENABLED))
+		if (!payload_type_enabled(pt)) {
 			continue;
+		}
 		if (hints->bandwidth_limit>0 && !linphone_core_is_payload_type_usable_for_bandwidth(lc,pt,hints->bandwidth_limit)){
 			ms_message("Codec %s/%i eliminated because of audio bandwidth constraint of %i kbit/s",
 					pt->mime_type,pt->clock_rate,hints->bandwidth_limit);
@@ -1410,6 +1411,9 @@ void linphone_call_fix_call_parameters(LinphoneCall *call, SalMediaDescription *
 			ms_message("Call [%p]: re-enabling video in our call params because the remote wants it and the policy allows to automatically accept.", call);
 			call->params->has_video = TRUE;
 		}
+		if (rcp->realtimetext_enabled && !call->params->realtimetext_enabled) {
+			call->params->realtimetext_enabled = TRUE;
+		}
 	}
 }
 
@@ -1762,6 +1766,7 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 			for (i = 0; i < nb_text_streams; i++) {
 				sd = sal_media_description_get_active_stream_of_type(md, SalText, i);
 				if (sal_stream_description_has_srtp(sd) == TRUE) cp->media_encryption = LinphoneMediaEncryptionSRTP;
+				cp->realtimetext_enabled = TRUE;
 			}
 			if (!cp->has_video){
 				if (md->bandwidth>0 && md->bandwidth<=linphone_core_get_edge_bw(call->core)){
@@ -4242,7 +4247,8 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 		} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
 			linphone_core_dtmf_received(call,evd->info.telephone_event);
 		} else if (evt == ORTP_EVENT_RTT_CHARACTER_RECEIVED) {
-			//TODO
+			LinphoneChatRoom * chat_room = linphone_core_get_chat_room(call->core, linphone_call_get_remote_address(call));
+			linphone_core_real_time_text_received(call->core, chat_room, evd->info.received_rtt_character, call);
 		}
 		ortp_event_destroy(ev);
 	}

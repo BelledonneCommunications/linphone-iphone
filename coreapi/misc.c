@@ -242,6 +242,9 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 			}
 			else ret=FALSE;
 			break;
+		case PAYLOAD_TEXT:
+			ret=TRUE;
+			break;
 	}
 	return ret;
 }

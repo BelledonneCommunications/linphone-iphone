@@ -1117,6 +1117,8 @@ static PayloadType* find_payload_type_from_list(const char* type, int rate, int 
 static bool_t linphone_core_codec_supported(LinphoneCore *lc, SalStreamType type, const char *mime){
 	if (type == SalVideo && lp_config_get_int(lc->config, "video", "rtp_io", FALSE)){
 		return TRUE; /*in rtp io mode, we don't transcode video, thus we can support a format for which we have no encoder nor decoder.*/
+	} else if (type == SalText) {
+		return TRUE;
 	}
 	return ms_filter_codec_supported(mime);
 }
@@ -1420,7 +1422,7 @@ const char * linphone_core_get_version(void){
 }
 
 static void linphone_core_register_payload_type(LinphoneCore *lc, const PayloadType *const_pt, const char *recv_fmtp, bool_t enabled){
-	MSList **codec_list=const_pt->type==PAYLOAD_VIDEO ? &lc->default_video_codecs : &lc->default_audio_codecs;
+	MSList **codec_list = const_pt->type==PAYLOAD_VIDEO ? &lc->default_video_codecs : const_pt->type==PAYLOAD_TEXT ? &lc->default_text_codecs : &lc->default_audio_codecs;
 	if (linphone_core_codec_supported(lc, (const_pt->type == PAYLOAD_VIDEO) ? SalVideo : const_pt->type == PAYLOAD_TEXT ? SalText : SalAudio, const_pt->mime_type)){
 		PayloadType *pt=payload_type_clone(const_pt);
 		int number=-1;
@@ -1553,6 +1555,8 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_speex_nb,"vbr=on",TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcmu8000,NULL,TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcma8000,NULL,TRUE);
+	linphone_core_register_payload_type(lc,&payload_type_t140,NULL,TRUE);
+	linphone_core_register_payload_type(lc,&payload_type_t140_red,NULL,TRUE);
 
 	/*other audio codecs, not enabled by default, in order of preference*/
 	linphone_core_register_payload_type(lc,&payload_type_gsm,NULL,FALSE);
@@ -1590,9 +1594,6 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_32,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_aal2_g726_40,NULL,FALSE);
 	linphone_core_register_payload_type(lc,&payload_type_codec2,NULL,FALSE);
-
-	linphone_core_register_payload_type(lc,&payload_type_t140,NULL,TRUE);
-	linphone_core_register_payload_type(lc,&payload_type_t140_red,NULL,TRUE);
 
 
 #ifdef VIDEO_ENABLED

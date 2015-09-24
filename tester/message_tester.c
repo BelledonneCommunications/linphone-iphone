@@ -1334,14 +1334,15 @@ static void real_time_text_message(void) {
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
 		{
 			LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
-			BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 			BC_ASSERT_PTR_NOT_NULL(msg);
 			if (msg) {
 				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg),"BLA BLA");
 			}
 		}
+		linphone_chat_message_destroy(rtt_message);
 	}
 	end_call(marie, pauline);
+	linphone_call_params_destroy(marie_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
