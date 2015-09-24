@@ -4897,12 +4897,32 @@ static void call_with_http_proxy(void) {
 	bool_t call_ok;
 	LinphoneCall *marie_call;
 	LinphoneAddress *contact_addr;
-	struct hostent *he = gethostbyname("sip.linphone.org");
+	struct addrinfo *res=NULL;
+	struct addrinfo hints = {0};
+	char ip[NI_MAXHOST];
+	int err;
 	
 	if (!transport_supported(LinphoneTransportTls)) {
-	 ms_message("Test skipped because no tls support");
-	 goto end;
+		ms_message("Test skipped because no tls support");
+		goto end;
 	}
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+
+	err = getaddrinfo("sip.linphone.org","8888", &hints, &res);
+	if (err !=0){
+		ms_error("call_with_http_proxy(): getaddrinfo() error: %s", gai_strerror(err));
+	}
+	BC_ASSERT_PTR_NOT_NULL(res);
+	if (!res) goto end;
+	
+	BC_ASSERT_EQUAL(err=getnameinfo(res->ai_addr, res->ai_addrlen, ip, sizeof(ip)-1, NULL, 0, NI_NUMERICHOST), 0, int, "%i");
+	if (err != 0){
+		ms_error("call_with_http_proxy(): getnameinfo() error: %s", gai_strerror(err));
+		goto end;
+	}
+	
+	freeaddrinfo(res);
 	
 	linphone_core_set_http_proxy_host(pauline->lc,"sip.linphone.org");
 	linphone_core_set_network_reachable(pauline->lc, FALSE); /*to make sure channel is restarted*/
@@ -4913,8 +4933,9 @@ static void call_with_http_proxy(void) {
 	
 	marie_call = linphone_core_get_current_call(marie->lc);
 	contact_addr = linphone_address_new(linphone_call_get_remote_contact(marie_call));
-	BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(contact_addr),inet_ntoa(*((struct in_addr **)he->h_addr_list)[0]));
+	BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(contact_addr),ip);
 	linphone_address_destroy(contact_addr);
+	end_call(marie, pauline);
 end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
