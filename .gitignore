@@ -97,3 +97,4 @@ tester/stereo-record.wav
 .dirstamp
 git-clang-format.diff
 *.log
+.bc_tester_utils.tmp

@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 static char *bc_tester_resource_dir_prefix = NULL;
 // by default writable will always write near the executable
-static char *bc_tester_writable_dir_prefix = ".";
+static char *bc_tester_writable_dir_prefix = NULL;
 
 int bc_printf_verbosity_info;
 int bc_printf_verbosity_error;
@@ -392,7 +392,7 @@ static void detect_res_prefix(const char* prog) {
 	}
 
 	if (prefix != NULL) {
-		if (bc_tester_resource_dir_prefix != NULL) {
+		if (bc_tester_resource_dir_prefix == NULL) {
 			printf("Resource directory set to %s\n", prefix);
 			bc_tester_set_resource_dir_prefix(prefix);
 		}
@@ -406,7 +406,7 @@ static void detect_res_prefix(const char* prog) {
 
 	// check that we can write in writable directory
 	if (bc_tester_writable_dir_prefix != NULL) {
-		writable_file = fopen("bc_tester_utils.tmp", "w");
+		writable_file = fopen(".bc_tester_utils.tmp", "w");
 		if (writable_file) {
 			fclose(writable_file);
 		}
@@ -431,6 +431,7 @@ void bc_tester_init(void (*ftester_printf)(int level, const char *format, va_lis
 	tester_printf_va = ftester_printf;
 	bc_printf_verbosity_error = iverbosity_error;
 	bc_printf_verbosity_info = iverbosity_info;
+	bc_tester_writable_dir_prefix = strdup(".");
 }
 
 void bc_tester_set_max_vm(long max_vm_kb) {
