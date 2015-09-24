@@ -2522,6 +2522,7 @@ static void call_with_mkv_file_player(void) {
 		int res = linphone_player_open(player,hellomkv,on_eof,marie);
 		if(!ms_filter_codec_supported("opus")) {
 			BC_ASSERT_EQUAL(res, -1, int, "%d");
+			end_call(marie, pauline);
 			goto end;
 		}
 		BC_ASSERT_EQUAL(res, 0, int, "%d");
