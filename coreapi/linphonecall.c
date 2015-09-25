@@ -4247,7 +4247,7 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 		} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
 			linphone_core_dtmf_received(call,evd->info.telephone_event);
 		} else if (evt == ORTP_EVENT_RTT_CHARACTER_RECEIVED) {
-			LinphoneChatRoom * chat_room = linphone_core_get_chat_room(call->core, linphone_call_get_remote_address(call));
+			LinphoneChatRoom * chat_room = linphone_call_get_chat_room(call);
 			linphone_core_real_time_text_received(call->core, chat_room, evd->info.received_rtt_character, call);
 		}
 		ortp_event_destroy(ev);

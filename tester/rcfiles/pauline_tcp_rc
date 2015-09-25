@@ -31,6 +31,7 @@ dial_escape_plus=0
 [rtp]
 audio_rtp_port=18070-28000
 video_rtp_port=39072-49000
+text_rtp_port=49001-55000
 
 [video]
 display=0

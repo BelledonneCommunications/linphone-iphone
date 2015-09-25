@@ -32,6 +32,7 @@ subscribe=0
 [rtp]
 audio_rtp_port=18070-28000
 video_rtp_port=28070-38000
+text_rtp_port=39000-49000
 
 [video]
 display=0

@@ -1282,16 +1282,15 @@ static void file_transfer_io_error_after_destroying_chatroom() {
 	file_transfer_io_error_base("https://www.linphone.org:444/lft.php", TRUE);
 }
 
-#if 0
 static void real_time_text_message(void) {
-	LinphoneChatRoom *pauline_chat_room, *marie_chat_room;
+	LinphoneChatRoom *pauline_chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallParams *marie_params = linphone_core_create_default_call_parameters(marie->lc);
 	LinphoneCall *pauline_call, *marie_call;
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
 
-	BC_ASSERT_TRUE(call_with_caller_params(marie,pauline,marie_params));
+	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	marie_call=linphone_core_get_current_call(marie->lc);
 	BC_ASSERT_TRUE(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(pauline_call)));
@@ -1299,30 +1298,25 @@ static void real_time_text_message(void) {
 	pauline_chat_room = linphone_call_get_chat_room(pauline_call);
 	BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 	if (pauline_chat_room) {
-		const char* message = "BLA BLA";
+		const char* message = "Lorem Ipsum Belledonnum Communicatum";
 		int i;
 		LinphoneChatMessage*  rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 
-		linphone_chat_message_put_char(rtt_message,'Y');
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneIsComposingActiveReceived,1));
-		marie_chat_room = linphone_call_get_chat_room(marie_call);
-		BC_ASSERT_PTR_NOT_NULL(marie_chat_room);
-
 		for (i = 0; i < strlen(message); i++) {
 			linphone_chat_message_put_char(rtt_message,message[i]);
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneIsComposingActiveReceived,i+2,200));
-			BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room),message[i],char,"%c");
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+			BC_ASSERT_EQUAL(linphone_chat_room_get_char(linphone_call_get_chat_room(marie_call)), message[i], char, "%c");
 		}
 
 		/*Commit the message, triggers a NEW LINE in T.140 */
 		linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
 		{
 			LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
 			BC_ASSERT_PTR_NOT_NULL(msg);
 			if (msg) {
-				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg),"BLA BLA");
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message);
 			}
 		}
 		linphone_chat_message_destroy(rtt_message);
@@ -1332,7 +1326,6 @@ static void real_time_text_message(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-#endif
 
 
 void file_transfer_with_http_proxy(void) {
@@ -1382,11 +1375,8 @@ test_t message_tests[] = {
 	{"Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url},
 	{"Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found},
 	{"Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently},
-	{"Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom}
-#if 0
-	,
+	{"Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom},
 	{"Real Time Text message", real_time_text_message},
-#endif
 };
 
 test_suite_t message_test_suite = {
