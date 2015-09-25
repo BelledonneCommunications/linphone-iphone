@@ -394,70 +394,73 @@ static void text_message_with_external_body(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, bool_t upload_error, bool_t download_error) {
+	char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
+	char *receive_filepath = bc_tester_file("receive_file.dump");
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* msg;
+	LinphoneChatMessageCbs *cbs;
+
+	/* Globally configure an http file transfer server. */
+	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
+
+	/* create a chatroom on pauline's side */
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	/* create a file transfer msg */
+	msg = create_message_from_nowebcam(chat_room);
+	linphone_chat_room_send_chat_message(chat_room,msg);
+
+	if (upload_error) {
+		/*wait for file to be 25% uploaded and simulate a network error*/
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.progress_of_LinphoneFileTransfer,25));
+		sal_set_send_error(pauline->lc->sal, -1);
+
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
+
+		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageNotDelivered,1, int, "%d");
+		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0, int, "%d");
+
+		sal_set_send_error(pauline->lc->sal, 0);
+
+		linphone_core_refresh_registers(pauline->lc); /*to make sure registration is back in registered and so it can be later unregistered*/
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneRegistrationOk,pauline->stat.number_of_LinphoneRegistrationOk+1));
+	} else {
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
+		if (marie->stat.last_received_chat_message ) {
+			cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
+			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+			linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+			linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+			linphone_chat_message_download_file(marie->stat.last_received_chat_message);
+
+			if (download_error) {
+				/* wait for file to be 50% downloaded */
+				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.progress_of_LinphoneFileTransfer, 50));
+				/* and simulate network error */
+				belle_http_provider_set_recv_error(marie->lc->http_provider, -1);
+				BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneMessageNotDelivered,1, 10000));
+				belle_http_provider_set_recv_error(marie->lc->http_provider, 0);
+			} else {
+				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
+				compare_files(send_filepath, receive_filepath);
+			}
+		}
+		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); //sent twice because of file transfer
+		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
+	}
+	ms_free(send_filepath);
+	ms_free(receive_filepath);
+}
+
 void transfer_message_base(bool_t upload_error, bool_t download_error) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-		char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
-		char *receive_filepath = bc_tester_file("receive_file.dump");
-		LinphoneChatRoom* chat_room;
-		LinphoneChatMessage* msg;
-		LinphoneChatMessageCbs *cbs;
-
-		/* Globally configure an http file transfer server. */
-		linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
-
-		/* create a chatroom on pauline's side */
-		chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-		/* create a file transfer msg */
-		msg = create_message_from_nowebcam(chat_room);
-		linphone_chat_room_send_chat_message(chat_room,msg);
-
-		if (upload_error) {
-			/*wait for file to be 25% uploaded and simulate a network error*/
-			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.progress_of_LinphoneFileTransfer,25));
-			sal_set_send_error(pauline->lc->sal, -1);
-
-			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
-
-			BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageNotDelivered,1, int, "%d");
-			BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0, int, "%d");
-
-			sal_set_send_error(pauline->lc->sal, 0);
-
-			linphone_core_refresh_registers(pauline->lc); /*to make sure registration is back in registered and so it can be later unregistered*/
-			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneRegistrationOk,pauline->stat.number_of_LinphoneRegistrationOk+1));
-		} else {
-			BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
-			if (marie->stat.last_received_chat_message ) {
-				cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
-				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
-				linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
-				linphone_chat_message_download_file(marie->stat.last_received_chat_message);
-
-				if (download_error) {
-					/* wait for file to be 50% downloaded */
-					BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.progress_of_LinphoneFileTransfer, 50));
-					/* and simulate network error */
-					belle_http_provider_set_recv_error(marie->lc->http_provider, -1);
-					BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneMessageNotDelivered,1, 10000));
-					belle_http_provider_set_recv_error(marie->lc->http_provider, 0);
-				} else {
-					BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
-					compare_files(send_filepath, receive_filepath);
-				}
-			}
-			BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); //sent twice because of file transfer
-			BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
-		}
-		ms_free(send_filepath);
-		ms_free(receive_filepath);
+		transfer_message_base2(marie,pauline,upload_error,download_error);
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}
 }
-
 static void transfer_message() {
 	transfer_message_base(FALSE, FALSE);
 }
@@ -1331,6 +1334,18 @@ static void real_time_text_message(void) {
 }
 #endif
 
+
+void file_transfer_with_http_proxy(void) {
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+		linphone_core_set_http_proxy_host(marie->lc, "sip.linphone.org");
+		transfer_message_base2(marie,pauline,FALSE,FALSE);
+		linphone_core_manager_destroy(pauline);
+		linphone_core_manager_destroy(marie);
+	}
+}
+
 test_t message_tests[] = {
 	{"Text message", text_message},
 	{"Text message within call dialog", text_message_within_call_dialog},
@@ -1341,6 +1356,7 @@ test_t message_tests[] = {
 	{"Text message with send error", text_message_with_send_error},
 	{"Text message with external body", text_message_with_external_body},
 	{"Transfer message", transfer_message},
+	{"Transfer message with http proxy", file_transfer_with_http_proxy},
 	{"Transfer message with upload io error", transfer_message_with_upload_io_error},
 	{"Transfer message with download io error", transfer_message_with_download_io_error},
 	{"Transfer message upload cancelled", transfer_message_upload_cancelled},
