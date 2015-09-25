@@ -52,8 +52,6 @@ struct Sal{
 	bool_t enable_sip_update; /*true by default*/
 	SalOpSDPHandling default_sdp_handling;
 	bool_t pending_trans_checking; /*testing purpose*/
-	char *http_proxy_host;
-	int http_proxy_port;
 };
 
 typedef enum SalOpState {

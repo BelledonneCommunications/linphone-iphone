@@ -1634,7 +1634,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->msevq=ms_factory_get_event_queue(ms_factory_get_fallback());
 
 	lc->sal=sal_init();
-
+	sal_set_http_proxy_host(lc->sal, linphone_core_get_http_proxy_host(lc));
+	sal_set_http_proxy_port(lc->sal, linphone_core_get_http_proxy_port(lc));
+	
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
 
