@@ -847,8 +847,8 @@ void lime_transfer_message_base(bool_t encrypt_file) {
 	}
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1));
 
-	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
-	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,2, int, "%d"); // file transfer
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); // file transfer
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1, int, "%d");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
