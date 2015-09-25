@@ -1300,12 +1300,13 @@ static void real_time_text_message(void) {
 	if (pauline_chat_room) {
 		const char* message = "Lorem Ipsum Belledonnum Communicatum";
 		int i;
-		LinphoneChatMessage*  rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+		LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+		LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
 
 		for (i = 0; i < strlen(message); i++) {
-			linphone_chat_message_put_char(rtt_message,message[i]);
+			linphone_chat_message_put_char(rtt_message, message[i]);
 			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
-			BC_ASSERT_EQUAL(linphone_chat_room_get_char(linphone_call_get_chat_room(marie_call)), message[i], char, "%c");
+			BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
 		}
 
 		/*Commit the message, triggers a NEW LINE in T.140 */
