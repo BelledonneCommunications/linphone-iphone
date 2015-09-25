@@ -758,10 +758,9 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state));
 }
 
-void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call) {
+void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDescription *desc) {
 	int i;
 	IceSession *session = call->ice_session;
-	SalMediaDescription *desc = call->localdesc;
 
 	if (session == NULL) return;
 	if (ice_session_state(session) == IS_Completed) return;

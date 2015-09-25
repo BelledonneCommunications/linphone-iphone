@@ -3479,10 +3479,10 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
 	linphone_call_make_local_media_description(call);
 
 	linphone_call_update_remote_session_id_and_ver(call);
-	linphone_call_stop_ice_for_inactive_streams(call);
 	sal_call_set_local_media_description(call->op,call->localdesc);
 	sal_call_accept(call->op);
 	md=sal_call_get_final_media_description(call->op);
+	linphone_call_stop_ice_for_inactive_streams(call, md);
 	if (md && !sal_media_description_empty(md)){
 		linphone_core_update_streams(lc, call, md, next_state);
 	}
@@ -3711,12 +3711,13 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	}
 
 	linphone_call_update_remote_session_id_and_ver(call);
-	linphone_call_stop_ice_for_inactive_streams(call);
+	
 	sal_call_accept(call->op);
 	linphone_core_notify_display_status(lc,_("Connected."));
 	lc->current_call=call;
 	linphone_call_set_state(call,LinphoneCallConnected,"Connected");
 	new_md=sal_call_get_final_media_description(call->op);
+	linphone_call_stop_ice_for_inactive_streams(call, new_md);
 	if (new_md){
 		linphone_core_update_streams(lc, call, new_md, LinphoneCallStreamsRunning);
 		linphone_call_set_state(call,LinphoneCallStreamsRunning,"Connected (streams running)");
