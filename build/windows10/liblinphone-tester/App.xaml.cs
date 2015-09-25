@@ -110,5 +110,23 @@ namespace liblinphone_tester
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
+
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            if (args.Kind == ActivationKind.Protocol)
+            {
+                var protocolArgs = (ProtocolActivatedEventArgs)args;
+                var uri = protocolArgs.Uri;
+                Frame rootFrame = Window.Current.Content as Frame;
+                if (rootFrame == null)
+                    rootFrame = new Frame();
+
+                rootFrame.NavigationFailed += OnNavigationFailed;
+                rootFrame.Navigate(typeof(MainPage), uri);
+                Window.Current.Content = rootFrame;
+                Window.Current.Activate();
+            }
+            base.OnActivated(args);
+        }
     }
 }

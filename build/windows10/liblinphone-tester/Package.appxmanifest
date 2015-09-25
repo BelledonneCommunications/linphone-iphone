@@ -23,6 +23,11 @@
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="liblinphone-tester" />
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

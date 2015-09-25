@@ -110,7 +110,7 @@ void LibLinphoneTester::runAllToXml()
 		init(true);
 		FILE *f = fopen(logFile, "w");
 		ortp_set_log_file(f);
-		bc_tester_start("liblinphone-tester");
+		bc_tester_start(NULL);
 		bc_tester_uninit();
 		fclose(f);
 		free(xmlFile);
