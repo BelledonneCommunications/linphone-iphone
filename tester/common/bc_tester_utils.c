@@ -523,10 +523,13 @@ void bc_tester_add_suite(test_suite_t *suite) {
 }
 
 void bc_tester_uninit(void) {
+	/*BUG: do not display list of failures on mingw, it crashes mysteriously*/
+#if !defined(WIN32) && !defined(_MSC_VER)
 	/* Redisplay list of failed tests on end */
 	if (CU_get_number_of_failure_records()){
 		CU_basic_show_failures(CU_get_failure_list());
 	}
+#endif
 	CU_cleanup_registry();
 	/*add missing final newline*/
 	bc_tester_printf(bc_printf_verbosity_info,"");
