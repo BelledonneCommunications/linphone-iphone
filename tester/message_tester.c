@@ -1320,7 +1320,6 @@ static void real_time_text_message(void) {
 				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message);
 			}
 		}
-		linphone_chat_message_destroy(rtt_message);
 	}
 	end_call(marie, pauline);
 	linphone_call_params_destroy(marie_params);

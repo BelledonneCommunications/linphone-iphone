@@ -3554,12 +3554,17 @@ void linphone_call_stop_media_streams(LinphoneCall *call){
 	if (call->audio_profile){
 		rtp_profile_destroy(call->audio_profile);
 		call->audio_profile=NULL;
-		unset_rtp_profile(call,0);
+		unset_rtp_profile(call,call->main_audio_stream_index);
 	}
 	if (call->video_profile){
 		rtp_profile_destroy(call->video_profile);
 		call->video_profile=NULL;
-		unset_rtp_profile(call,1);
+		unset_rtp_profile(call,call->main_video_stream_index);
+	}
+	if (call->text_profile){
+		rtp_profile_destroy(call->text_profile);
+		call->text_profile=NULL;
+		unset_rtp_profile(call,call->main_text_stream_index);
 	}
 	if (call->rtp_io_audio_profile) {
 		rtp_profile_destroy(call->rtp_io_audio_profile);

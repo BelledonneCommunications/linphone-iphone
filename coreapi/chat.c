@@ -320,8 +320,9 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 	/*stubed rtt text*/
 	if (cr->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(cr->call))) {
 		char crlf[2] = "\r\n";
-		linphone_chat_message_put_char(msg, *(uint32_t*)crlf); // CRLF
+		linphone_chat_message_put_char(msg, *(uint16_t*)crlf); // CRLF
 		linphone_chat_message_set_state(msg, LinphoneChatMessageStateDelivered);
+		linphone_chat_message_unref(msg);
 		return;
 	}
 	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
@@ -812,13 +813,16 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 			cr->pending_message = linphone_chat_room_create_message(cr, "");
 		}
 		
-		if (character == *(uint32_t*)crlf) {
+		if (character == (uint32_t)*(uint16_t*)crlf) {
 			// End of message
 			LinphoneChatMessage *msg = cr->pending_message;
 			ms_message("CRLF received, forge a message with content %s", cr->pending_message->message);
 			
 			linphone_chat_message_set_from(msg, cr->peer_url);
-			linphone_chat_message_set_to(msg, linphone_address_new(linphone_core_get_identity(lc)));
+			if (msg->to)
+				linphone_address_destroy(msg->to);
+			msg->to = call->dest_proxy ? linphone_address_clone(call->dest_proxy->identity_address) : 
+					linphone_address_new(linphone_core_get_identity(lc));
 			msg->time = ms_time(0);
 			msg->state = LinphoneChatMessageStateDelivered;
 			msg->is_read = FALSE;
