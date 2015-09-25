@@ -96,7 +96,7 @@
 	[self startChatWith:[self me]];
 	[self uploadImageWithQuality:@"Minimum"];
 	// wait for the upload to terminate...
-	for (int i = 0; i < 15; i++) {
+	for (int i = 0; i < 45; i++) {
 		[tester waitForTimeInterval:1.f];
 		if ([[[LinphoneManager instance] fileTransferDelegates] count] == 0)
 			break;
@@ -257,22 +257,21 @@
 	[self goBackFromChat];
 }
 
-- (void)testTransfer3DownloadsSimultanously {
+- (void)testTransfer2TransfersSimultanously {
 	[self startChatWith:[self me]];
-	[self uploadImageWithQuality:@"Maximum"];
-	[self uploadImageWithQuality:@"Average"];
+	[self uploadImageWithQuality:@"Minimum"];
 	[self uploadImageWithQuality:@"Minimum"];
 	UITableView *tv = [self findTableView:@"ChatRoom list"];
 	// wait for ALL uploads to terminate...
 	for (int i = 0; i < 45; i++) {
 		[tester waitForTimeInterval:1.f];
-		if ([tv numberOfRowsInSection:0] == 6)
+		if ([tv numberOfRowsInSection:0] == 4)
 			break;
 	}
 	[tester waitForTimeInterval:.5f];
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
 	[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list" byFractionOfSizeHorizontal:0.f vertical:1.f];
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 2; i++) {
 		// messages order is not known: if upload bitrate is huge, first image can be uploaded before last started
 		while (![tester tryFindingTappableViewWithAccessibilityLabel:@"Download" error:nil]) {
 			[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list"
@@ -286,25 +285,6 @@
 	while ([LinphoneManager instance].fileTransferDelegates.count > 0) {
 		[tester waitForTimeInterval:.5];
 	}
-	[self goBackFromChat];
-}
-
-- (void)testTransfer3UploadsSimultanously {
-	[self startChatWith:[self me]];
-	// use Maximum quality to be sure that first transfer is not terminated when the third begins
-	[self uploadImageWithQuality:@"Maximum"];
-	[self uploadImageWithQuality:@"Average"];
-	[self uploadImageWithQuality:@"Minimum"];
-	UITableView *tv = [self findTableView:@"ChatRoom list"];
-	// wait for ALL uploads to terminate...
-	for (int i = 0; i < 45; i++) {
-		[tester waitForTimeInterval:1.f];
-		if ([tv numberOfRowsInSection:0] == 6)
-			break;
-	}
-	[tester waitForTimeInterval:.5f];
-	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
-	ASSERT_EQ([tv numberOfRowsInSection:0], 6);
 	[self goBackFromChat];
 }
 
@@ -331,28 +311,6 @@
 - (void)testTransferDownloadImage {
 	[self downloadImage];
 	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Cancel transfer"];
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
-}
-
-- (void)testTransferUploadImage {
-	[self startChatWith:[self me]];
-
-	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
-	[self uploadImageWithQuality:@"Minimum"];
-	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 1);
-
-	UITableView *tv = [self findTableView:@"ChatRoom list"];
-	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
-
-	// wait for the upload to terminate...
-	for (int i = 0; i < 15; i++) {
-		[tester waitForTimeInterval:1.f];
-		if ([[[LinphoneManager instance] fileTransferDelegates] count] == 0)
-			break;
-	}
-	[tester waitForViewWithAccessibilityLabel:@"Download"];
-
-	ASSERT_EQ([tv numberOfRowsInSection:0], 2);
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
