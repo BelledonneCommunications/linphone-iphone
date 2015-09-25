@@ -46,6 +46,8 @@ extern "C" {
 #endif
 
 struct _LinphoneCore;
+struct _LinphoneChatRoom;
+
 /**
  * Linphone core main object created by function linphone_core_new() .
  * @ingroup initializing
@@ -738,13 +740,14 @@ LINPHONE_PUBLIC	float linphone_call_get_play_volume(LinphoneCall *call);
  */
 LINPHONE_PUBLIC	float linphone_call_get_record_volume(LinphoneCall *call);
 
-struct _LinphoneChatRoom;
 /**
- * Create a new chat room for messaging from a call if not already existing, else return existing one
+ * Create a new chat room for messaging from a call if not already existing, else return existing one.
+ * No reference is given to the caller: the chat room will be deleted when the call is ended.
  * @param call #LinphoneCall object
  * @return #LinphoneChatRoom where messaging can take place.
  */
 LINPHONE_PUBLIC	struct _LinphoneChatRoom * linphone_call_get_chat_room(LinphoneCall *call);
+
 
 
 /**
@@ -1163,7 +1166,6 @@ LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpCon
 #endif
 
 
-struct _LinphoneChatRoom;
 /**
  * @addtogroup chatroom
  * @{

@@ -130,9 +130,6 @@ static void _linphone_chat_room_destroy(LinphoneChatRoom *cr) {
 	linphone_address_destroy(cr->peer_url);
 	if (cr->pending_message)
 		linphone_chat_message_destroy(cr->pending_message);
-	if (cr->call)
-		linphone_call_unref(cr->call);
-
 	ms_free(cr->peer);
 }
 
@@ -185,13 +182,25 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoom, belle_sip_object_t,
 						   NULL, // marshal
 						   FALSE);
 
-static LinphoneChatRoom *_linphone_core_create_chat_room(LinphoneCore *lc, LinphoneAddress *addr) {
+static LinphoneChatRoom *_linphone_core_create_chat_room_base(LinphoneCore *lc, LinphoneAddress *addr){
 	LinphoneChatRoom *cr = belle_sip_object_new(LinphoneChatRoom);
 	cr->lc = lc;
 	cr->peer = linphone_address_as_string(addr);
 	cr->peer_url = addr;
 	cr->unread_count = -1;
+	return cr;
+}
+
+static LinphoneChatRoom *_linphone_core_create_chat_room(LinphoneCore *lc, LinphoneAddress *addr) {
+	LinphoneChatRoom *cr = _linphone_core_create_chat_room_base(lc, addr);
 	lc->chatrooms = ms_list_append(lc->chatrooms, (void *)cr);
+	return cr;
+}
+
+LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call){
+	LinphoneChatRoom *cr = _linphone_core_create_chat_room_base(call->core, 
+		linphone_address_clone(linphone_call_get_remote_address(call)));
+	cr->call = call;
 	return cr;
 }
 
@@ -799,11 +808,6 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 	char crlf[2] = "\r\n";
 	
 	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
-		if (cr->call == NULL) {
-			/*attach cr to call*/
-			cr->call = call;
-			linphone_call_ref(cr->call);
-		}
 		if (cr->pending_message == NULL) {
 			cr->pending_message = linphone_chat_room_create_message(cr, "");
 		}

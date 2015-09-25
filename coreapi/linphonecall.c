@@ -631,7 +631,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	MSList *l;
 	SalMediaDescription *old_md=call->localdesc;
 	int i;
-	int nb_active_streams = 0;
+	int max_index = 0;
 	SalMediaDescription *md=sal_media_description_new();
 	LinphoneAddress *addr;
 	const char *subject;
@@ -702,17 +702,19 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	}
 	else
 		ms_warning("Cannot get audio local ssrc for call [%p]",call);
-	nb_active_streams++;
+	if (call->main_audio_stream_index > max_index)
+		max_index = call->main_audio_stream_index;
 
+	md->streams[call->main_video_stream_index].proto=md->streams[call->main_audio_stream_index].proto;
+	md->streams[call->main_video_stream_index].dir=get_video_dir_from_call_params(params);
+	md->streams[call->main_video_stream_index].type=SalVideo;
+	strncpy(md->streams[call->main_video_stream_index].name,"Video",sizeof(md->streams[call->main_video_stream_index].name)-1);
+	
 	if (params->has_video){
 		strncpy(md->streams[call->main_video_stream_index].rtp_addr,linphone_call_get_public_ip_for_stream(call,call->main_video_stream_index),sizeof(md->streams[call->main_video_stream_index].rtp_addr));
 		strncpy(md->streams[call->main_video_stream_index].rtcp_addr,linphone_call_get_public_ip_for_stream(call,call->main_video_stream_index),sizeof(md->streams[call->main_video_stream_index].rtcp_addr));
-		strncpy(md->streams[call->main_video_stream_index].name,"Video",sizeof(md->streams[call->main_video_stream_index].name)-1);
 		md->streams[call->main_video_stream_index].rtp_port=call->media_ports[call->main_video_stream_index].rtp_port;
 		md->streams[call->main_video_stream_index].rtcp_port=call->media_ports[call->main_video_stream_index].rtcp_port;
-		md->streams[call->main_video_stream_index].proto=md->streams[call->main_audio_stream_index].proto;
-		md->streams[call->main_video_stream_index].dir=get_video_dir_from_call_params(params);
-		md->streams[call->main_video_stream_index].type=SalVideo;
 		codec_hints.bandwidth_limit=0;
 		codec_hints.max_codecs=-1;
 		codec_hints.previously_used=old_md ? old_md->streams[call->main_video_stream_index].already_assigned_payloads : NULL;
@@ -726,20 +728,24 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 		}
 		else
 			ms_warning("Cannot get video local ssrc for call [%p]",call);
-		nb_active_streams++;
+		if (call->main_video_stream_index > max_index)
+			max_index = call->main_video_stream_index;
 	} else {
 		ms_message("Don't put video stream on local offer for call [%p]",call);
+		md->streams[call->main_video_stream_index].dir = SalStreamInactive;
 	}
 	
+	md->streams[call->main_text_stream_index].proto=md->streams[call->main_text_stream_index].proto;
+	md->streams[call->main_text_stream_index].dir=SalStreamSendRecv;
+	md->streams[call->main_text_stream_index].type=SalText;
+	strncpy(md->streams[call->main_text_stream_index].name,"Text",sizeof(md->streams[call->main_text_stream_index].name)-1);
 	if (params->realtimetext_enabled) {
 		strncpy(md->streams[call->main_text_stream_index].rtp_addr,linphone_call_get_public_ip_for_stream(call,call->main_text_stream_index),sizeof(md->streams[call->main_text_stream_index].rtp_addr));
 		strncpy(md->streams[call->main_text_stream_index].rtcp_addr,linphone_call_get_public_ip_for_stream(call,call->main_text_stream_index),sizeof(md->streams[call->main_text_stream_index].rtcp_addr));
-		strncpy(md->streams[call->main_text_stream_index].name,"Text",sizeof(md->streams[call->main_text_stream_index].name)-1);
+		
 		md->streams[call->main_text_stream_index].rtp_port=call->media_ports[call->main_text_stream_index].rtp_port;
 		md->streams[call->main_text_stream_index].rtcp_port=call->media_ports[call->main_text_stream_index].rtcp_port;
-		md->streams[call->main_text_stream_index].proto=md->streams[call->main_text_stream_index].proto;
-		md->streams[call->main_text_stream_index].dir=SalStreamSendRecv;
-		md->streams[call->main_text_stream_index].type=SalText;
+		
 		codec_hints.bandwidth_limit=0;
 		codec_hints.max_codecs=-1;
 		codec_hints.previously_used=old_md ? old_md->streams[call->main_text_stream_index].already_assigned_payloads : NULL;
@@ -753,28 +759,23 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 		}
 		else
 			ms_warning("Cannot get text local ssrc for call [%p]",call);
-		nb_active_streams++;
+		if (call->main_text_stream_index > max_index)
+			max_index = call->main_text_stream_index;
 	} else {
 		ms_message("Don't put text stream on local offer for call [%p]",call);
+		md->streams[call->main_text_stream_index].dir = SalStreamInactive;
 	}
 
-	if (md->nb_streams < nb_active_streams)
-		md->nb_streams = nb_active_streams;
+	md->nb_streams = max_index+1;
 
-	/* Deactivate inactive streams. */
-	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+	/* Deactivate unused streams. */
+	for (i = md->nb_streams; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (md->streams[i].rtp_port == 0) {
 			md->streams[i].dir = SalStreamInactive;
-			md->streams[i].rtcp_port = 0;
 			if (call->biggestdesc && i < call->biggestdesc->nb_streams) {
 				md->streams[i].proto = call->biggestdesc->streams[i].proto;
 				md->streams[i].type = call->biggestdesc->streams[i].type;
 			}
-			codec_hints.bandwidth_limit=0;
-			codec_hints.max_codecs=1;
-			codec_hints.previously_used=NULL;
-			l = make_codec_list(lc, &codec_hints, SalVideo, lc->codecs_conf.video_codecs);
-			md->streams[i].payloads = l;
 		}
 	}
 	setup_encryption_keys(call,md);
@@ -1359,6 +1360,10 @@ static void linphone_call_set_released(LinphoneCall *call){
 		linphone_call_unref(call->transfer_target);
 		call->transfer_target=NULL;
 	}
+	if (call->chat_room){
+		linphone_chat_room_unref(call->chat_room);
+		call->chat_room = NULL;
+	}
 	linphone_call_unref(call);
 }
 
@@ -1386,6 +1391,9 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (call->ringing_beep){
 		linphone_core_stop_dtmf(lc);
 		call->ringing_beep=FALSE;
+	}
+	if (call->chat_room){
+		call->chat_room->call = NULL;
 	}
 }
 
@@ -4566,10 +4574,12 @@ void linphone_call_set_audio_route(LinphoneCall *call, LinphoneAudioRoute route)
 }
 
 LinphoneChatRoom * linphone_call_get_chat_room(LinphoneCall *call) {
-	/*stubbed implementation*/
-	LinphoneChatRoom * chat_room = linphone_core_get_chat_room(call->core,linphone_call_get_remote_address(call));
-	chat_room->call=linphone_call_ref(call);
-	return chat_room;
+	if (!call->chat_room){
+		if (call->state != LinphoneCallReleased && call->state != LinphoneCallEnd){
+			call->chat_room = _linphone_core_create_chat_room_from_call(call);
+		}
+	}
+	return call->chat_room;
 }
 
 int linphone_call_get_stream_count(LinphoneCall *call) {
