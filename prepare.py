@@ -258,21 +258,6 @@ def check_tools():
                 strings_path = find_executable("strings")
                 error("strings binary missing, please run:\n\tsudo ln -s {} {}".format(strings_path, sdk_strings_path))
                 reterr = 1
-
-        # workaround until VPX find a correct patch..
-        if xcode_version < 7:
-            warn("Retrieving XCode6 version of libvpx until https://code.google.com/p/webm/issues/detail?id=1075&colspec=ID%20Pri%20mstone%20ReleaseBlock%20Type%20Component%20Status%20Owner%20Summary is solved...")
-            p = Popen("git checkout c74bf6d889992c3cabe017ec353ca85c323107cd".split(
-                " "), cwd="submodules/externals/libvpx")
-        else:
-            warn("Retrieving XCode7 version of libvpx until https://code.google.com/p/webm/issues/detail?id=1075&colspec=ID%20Pri%20mstone%20ReleaseBlock%20Type%20Component%20Status%20Owner%20Summary is solved...")
-            p = Popen("git checkout 0866e6ae9ed3d5b23f67b6afeee1a7e19e0ae2b6".split(
-                " "), cwd="submodules/externals/libvpx")
-        p.wait()
-        if p.returncode != 0:
-            error("""{} Failed to retrieve correct version of libvpx, ensure you ran:
-                git submodule sync
-                git submodule update --init --recursive""".format(p.returncode))
     return reterr
 
 
