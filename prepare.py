@@ -307,6 +307,9 @@ def generate_makefile(platforms, generator):
 \t\t$(MAKE) {arch}-veryclean-$$package; \\
 \tdone
 
+{arch}-build-dummy_libraries:
+\t{generator} WORK/ios-{arch}/cmake EP_dummy_libraries
+
 {arch}-build-%: package-in-list-%
 \trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-update; \\
 \t{generator} WORK/ios-{arch}/cmake EP_$*
