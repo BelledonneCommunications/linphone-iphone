@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CUnit/Basic.h"
 #include "CUnit/Automated.h"
+#include "CUnit/MyMem.h"
 
 #ifdef _WIN32
 #if defined(__MINGW32__) || !defined(WINAPI_FAMILY_PARTITION) || !defined(WINAPI_PARTITION_DESKTOP)
@@ -147,7 +148,7 @@ static void all_complete_message_handler(const CU_pFailureRecord pFailure) {
 #ifdef HAVE_CU_GET_SUITE
 	char * results = CU_get_run_results_string();
 	bc_tester_printf(bc_printf_verbosity_info,"\n%s",results);
-	free(results);
+	CU_FREE(results);
 #endif
 }
 
@@ -204,7 +205,7 @@ static void test_complete_message_handler(const CU_pTest pTest, const CU_pSuite 
 	}
 
 	bc_tester_printf(bc_printf_verbosity_info,"%s", result);
-	free(result);
+
 	if (test_suite[suite_index]->after_each) {
 		test_suite[suite_index]->after_each();
 	}
@@ -345,7 +346,7 @@ static int file_exists(const char* root_path) {
 }
 
 static void detect_res_prefix(const char* prog) {
-	char* progpath = strdup(prog);
+	char* progpath = NULL;
 	char* prefix = NULL;
 	FILE* writable_file = NULL;
 
@@ -362,7 +363,6 @@ static void detect_res_prefix(const char* prog) {
 #endif
 
 	if (prog != NULL) {
-		if (progpath) free(progpath);
 		progpath = strdup(prog);
 		if (strchr(prog, '/') != NULL) {
 			progpath[strrchr(prog, '/') - prog + 1] = '\0';
@@ -407,10 +407,12 @@ static void detect_res_prefix(const char* prog) {
 
 	// check that we can write in writable directory
 	if (bc_tester_writable_dir_prefix != NULL) {
-		writable_file = fopen(".bc_tester_utils.tmp", "w");
+		char * writable_file_path = bc_sprintf("%s/%s", bc_tester_writable_dir_prefix, ".bc_tester_utils.tmp");
+		writable_file = fopen(writable_file_path, "w");
 		if (writable_file) {
 			fclose(writable_file);
 		}
+		free(writable_file_path);
 	}
 	if (bc_tester_resource_dir_prefix == NULL || writable_file == NULL) {
 		if (bc_tester_resource_dir_prefix == NULL) {
@@ -523,6 +525,7 @@ void bc_tester_add_suite(test_suite_t *suite) {
 }
 
 void bc_tester_uninit(void) {
+	/* Redisplay list of failed tests on end */
 	/*BUG: do not display list of failures on mingw, it crashes mysteriously*/
 #if !defined(WIN32) && !defined(_MSC_VER)
 	/* Redisplay list of failed tests on end */
