@@ -862,6 +862,7 @@ public:
 			env->CallVoidMethod(callobj, lcData->callSetVideoStatsId, statsobj);
 		env->CallVoidMethod(lcData->listener, lcData->callStatsUpdatedId, lcData->core, callobj, statsobj);
 		handle_possible_java_exception(env, lcData->listener);
+		if (statsobj) env->DeleteLocalRef(statsobj);
 	}
 	static void transferStateChanged(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState remote_call_state){
 		JNIEnv *env = 0;
