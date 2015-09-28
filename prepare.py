@@ -275,7 +275,7 @@ def generate_makefile(platforms, generator):
     arch_targets = ""
     for arch in platforms:
         arch_targets += """
-{arch}: all-{arch}
+{arch}: {arch}-build
 
 {arch}-build:
 \t@for package in $(packages); do \\
@@ -357,37 +357,20 @@ LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 all: build
 
-{arch_targets}
-all-%:
-\t@for package in $(packages); do \\
-\t\trm -f WORK/ios-$*/Stamp/EP_$$package/EP_$$package-update; \\
-\tdone
-\t{generator} WORK/ios-$*/cmake
-
 package-in-list-%:
 \tif ! grep -q " $* " <<< " $(packages) "; then \\
 \t\techo "$* not in list of available packages: $(packages)"; \\
 \t\texit 3; \\
 \tfi
 
-build-%: package-in-list-%
-\t@for arch in $(archs); do \\
-\t\techo "==== starting build of $* for arch $$arch ===="; \\
-\t\t$(MAKE) $$arch-build-$*; \\
-\tdone
+build-%: package-in-list-% $(addsuffix -build-%, $(archs))
+\t@echo "Build of $* terminated"
 
-clean-%: package-in-list-%
-\t@for arch in $(archs); do \\
-\t\techo "==== starting clean of $* for arch $$arch ===="; \\
-\t\t$(MAKE) $$arch-clean-$*; \\
-\tdone
+clean-%: package-in-list-% $(addsuffix -clean, $(archs))
+\t@echo "Clean of $* terminated"
 
-veryclean-%: package-in-list-%
-\t@for arch in $(archs); do \\
-\t\techo "==== starting veryclean of $* for arch $$arch ===="; \\
-\t\t$(MAKE) $$arch-veryclean-$*; \\
-\tdone; \\
-\techo "Run 'make build-$*' to rebuild $* correctly."
+veryclean-%: package-in-list-% $(addsuffix -veryclean, $(archs))
+\t@echo "Veryclean of $* terminated"
 
 clean: $(addprefix clean-,$(packages))
 
@@ -413,7 +396,7 @@ sdk:
 \t\tlipo -create $$all_paths -output $$destpath; \\
 \tdone
 
-build: $(addprefix all-,$(archs))
+build: $(addsuffix -build, $(archs))
 \t$(MAKE) sdk
 
 ipa: build
@@ -439,6 +422,8 @@ push-transifex:
 zipres:
 \t@tar -czf ios_assets.tar.gz Resources iTunesArtwork
 
+{arch_targets}
+
 help-prepare-options:
 \t@echo "prepare.py was previously executed with the following options:"
 \t@echo "   {options}"
@@ -460,10 +445,12 @@ help: help-prepare-options
 \t@echo "=== Advanced usage ==="
 \t@echo ""
 \t@echo "   * build-[package]: builds the package for all architectures"
-\t@echo "   * clean-[package]: cleans the package for all architectures"
+\t@echo "   * clean-[package]: cleans package compilation for all architectures"
+\t@echo "   * veryclean-[package]: cleans the package for all architectures"
 \t@echo ""
 \t@echo "   * [{arch_opts}]-build-[package]: builds a package for the selected architecture"
-\t@echo "   * [{arch_opts}]-clean-[package]: cleans the package for the selected architecture"
+\t@echo "   * [{arch_opts}]-clean-[package]: cleans package compilation for the selected architecture"
+\t@echo "   * [{arch_opts}]-veryclean-[package]: cleans the package for the selected architecture"
 \t@echo ""
 """.format(archs=' '.join(platforms), arch_opts='|'.join(platforms),
            first_arch=platforms[0], options=' '.join(sys.argv),
