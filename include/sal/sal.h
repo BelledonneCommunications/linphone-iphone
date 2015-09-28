@@ -76,6 +76,7 @@ typedef enum {
 #define SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED				(1<<4)
 #define SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED		(1<<5) /* use to notify when switching from multicast to unicast*/
 #define SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION	(1<<6) /* use force graph reconstruction*/
+#define SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED			(1<<7)
 
 
 

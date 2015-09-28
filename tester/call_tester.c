@@ -4783,11 +4783,9 @@ static void call_with_network_switch(void){
 	_call_with_network_switch(FALSE);
 }
 
-#if 0
 static void call_with_network_switch_and_ice(void){
 	_call_with_network_switch(TRUE);
 }
-#endif
 
 #ifdef CALL_LOGS_STORAGE_ENABLED
 
@@ -5105,11 +5103,8 @@ test_t call_tests[] = {
 	{ "Call with custom RTP Modifier", call_with_custom_rtp_modifier },
 	{ "Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier },
 	{ "Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier },
-	{ "Call with network switch", call_with_network_switch }
-#if 0
-	,
+	{ "Call with network switch", call_with_network_switch },
 	{ "Call with network switch and ICE", call_with_network_switch_and_ice }
-#endif
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
