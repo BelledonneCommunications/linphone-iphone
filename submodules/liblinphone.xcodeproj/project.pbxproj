@@ -108,7 +108,6 @@
 		225D64671521BFA6008B2E81 /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA6F311F6CF9F00621220 /* utils.h */; };
 		225D64811521BFA6008B2E81 /* zrtp.h in Headers */ = {isa = PBXBuildFile; fileRef = 7014533B13FA7ECA00A01D86 /* zrtp.h */; };
 		225D64F21521BFA6008B2E81 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
-		225D64F31521BFA6008B2E81 /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DBA0147660BB00DEE054 /* libSKP_SILK_SDK.a */; };
 		225D64FC1521C009008B2E81 /* liblinphone_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* liblinphone_Prefix.pch */; };
 		225D64FD1521C009008B2E81 /* allfilters.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5BE11F6CF7600621220 /* allfilters.h */; };
 		225D64FE1521C009008B2E81 /* dsptools.h in Headers */ = {isa = PBXBuildFile; fileRef = 222CA5BF11F6CF7600621220 /* dsptools.h */; };
@@ -317,7 +316,6 @@
 		22C8D0DF1769F8FF00DAFB4E /* speexec.c in Sources */ = {isa = PBXBuildFile; fileRef = 22D07CE416F3BFCB009F2C9E /* speexec.c */; };
 		22C8D0E01769F8FF00DAFB4E /* msopus.c in Sources */ = {isa = PBXBuildFile; fileRef = 22AF73BD1753E83700BE8398 /* msopus.c */; };
 		22C8D0E21769F8FF00DAFB4E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
-		22C8D0E31769F8FF00DAFB4E /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2211DBA0147660BB00DEE054 /* libSKP_SILK_SDK.a */; };
 		22C8D0ED176A079600DAFB4E /* aac-eld.c in Sources */ = {isa = PBXBuildFile; fileRef = 22C8D0EC176A079600DAFB4E /* aac-eld.c */; };
 		22DD19C113A8D7FA0018ECD4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22DD19C013A8D7FA0018ECD4 /* UIKit.framework */; };
 		22DD19C213A8D7FA0018ECD4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
@@ -538,7 +536,6 @@
 		220ED1A613A9040700AC21E0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		220ED1A813A9041800AC21E0 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2211DB9E14765CEC00DEE054 /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmssilk.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmssilk.a"; sourceTree = "<group>"; };
-		2211DBA0147660BB00DEE054 /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "../liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		221DCB6A153584410025E54D /* yuv2rgb.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = yuv2rgb.fs; sourceTree = "<group>"; };
 		221DCB6B153584410025E54D /* yuv2rgb.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = yuv2rgb.vs; sourceTree = "<group>"; };
 		221F589913AB4EEE00D603C9 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -813,7 +810,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				225D64F21521BFA6008B2E81 /* Foundation.framework in Frameworks */,
-				225D64F31521BFA6008B2E81 /* libSKP_SILK_SDK.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -830,7 +826,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				22C8D0E21769F8FF00DAFB4E /* Foundation.framework in Frameworks */,
-				22C8D0E31769F8FF00DAFB4E /* libSKP_SILK_SDK.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1385,7 +1380,6 @@
 				22DD19C013A8D7FA0018ECD4 /* UIKit.framework */,
 				22DD19C313A8D7FA0018ECD4 /* CoreGraphics.framework */,
 				22AF73BF1753F3E100BE8398 /* libopus.a */,
-				2211DBA0147660BB00DEE054 /* libSKP_SILK_SDK.a */,
 				2211DB9E14765CEC00DEE054 /* libmssilk.a */,
 				7066FC0913E830B800EFC6DC /* libvpx.a */,
 				70E542F013E147CE002BA2C0 /* QuartzCore.framework */,

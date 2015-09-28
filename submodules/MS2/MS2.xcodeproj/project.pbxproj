@@ -33,7 +33,6 @@
 		F03A97B81AFA563200651655 /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A31AFA563200651655 /* libopus.a */; };
 		F03A97B91AFA563200651655 /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A41AFA563200651655 /* libortp.a */; };
 		F03A97BA1AFA563200651655 /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A51AFA563200651655 /* libpolarssl.a */; };
-		F03A97BB1AFA563200651655 /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A61AFA563200651655 /* libSKP_SILK_SDK.a */; };
 		F03A97BC1AFA563200651655 /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A71AFA563200651655 /* libspeex.a */; };
 		F03A97BD1AFA563200651655 /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A81AFA563200651655 /* libspeexdsp.a */; };
 		F03A97BE1AFA563200651655 /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A97A91AFA563200651655 /* libsrtp.a */; };
@@ -96,7 +95,6 @@
 		F03A97A31AFA563200651655 /* libopus.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopus.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libopus.a"; sourceTree = "<group>"; };
 		F03A97A41AFA563200651655 /* libortp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libortp.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libortp.a"; sourceTree = "<group>"; };
 		F03A97A51AFA563200651655 /* libpolarssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpolarssl.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libpolarssl.a"; sourceTree = "<group>"; };
-		F03A97A61AFA563200651655 /* libSKP_SILK_SDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSKP_SILK_SDK.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libSKP_SILK_SDK.a"; sourceTree = "<group>"; };
 		F03A97A71AFA563200651655 /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libspeex.a"; sourceTree = "<group>"; };
 		F03A97A81AFA563200651655 /* libspeexdsp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeexdsp.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
 		F03A97A91AFA563200651655 /* libsrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsrtp.a; path = "../../../liblinphone-sdk/apple-darwin/lib/libsrtp.a"; sourceTree = "<group>"; };
@@ -134,7 +132,6 @@
 				F03A97B91AFA563200651655 /* libortp.a in Frameworks */,
 				F03A97CA1AFA565C00651655 /* libxml2.a in Frameworks */,
 				F03A97981AFA561A00651655 /* libmsx264.a in Frameworks */,
-				F03A97BB1AFA563200651655 /* libSKP_SILK_SDK.a in Frameworks */,
 				F03A97B81AFA563200651655 /* libopus.a in Frameworks */,
 				F03A97B31AFA563200651655 /* libmediastreamer_base.a in Frameworks */,
 				F03A97B41AFA563200651655 /* libmediastreamer_voip.a in Frameworks */,
@@ -259,7 +256,6 @@
 				F03A97A31AFA563200651655 /* libopus.a */,
 				F03A97A41AFA563200651655 /* libortp.a */,
 				F03A97A51AFA563200651655 /* libpolarssl.a */,
-				F03A97A61AFA563200651655 /* libSKP_SILK_SDK.a */,
 				F03A97A71AFA563200651655 /* libspeex.a */,
 				F03A97A81AFA563200651655 /* libspeexdsp.a */,
 				F03A97A91AFA563200651655 /* libsrtp.a */,

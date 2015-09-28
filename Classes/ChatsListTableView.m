@@ -51,7 +51,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	self.tableView.accessibilityIdentifier = @"ChatRoom list";
+	self.tableView.accessibilityIdentifier = @"Chat list";
 	[self loadData];
 }
 
@@ -165,11 +165,15 @@ static void chatTable_free_chatrooms(void *data) {
 			linphone_chat_room_set_user_data(chatRoom, NULL);
 		}
 
+		FileTransferDelegate *ftdToDelete = nil;
 		for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
 			if (linphone_chat_message_get_chat_room(ftd.message) == chatRoom) {
-				[ftd cancel];
+				ftdToDelete = ftd;
+				break;
 			}
 		}
+		[ftdToDelete cancel];
+
 		linphone_core_delete_chat_room(linphone_chat_room_get_lc(chatRoom), chatRoom);
 		data = ms_list_remove(data, chatRoom);
 

@@ -310,7 +310,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LOGE(@"cannot set transport");
 	}
 
-	[[LinphoneManager instance] lpConfigSetString:@"" forKey:@"sharing_server_preference"];
 	[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"ice_preference"];
 	[[LinphoneManager instance] lpConfigSetString:@"" forKey:@"stun_preference"];
 	linphone_core_set_stun_server(lc, NULL);

@@ -112,7 +112,8 @@ class PlatformListAction(argparse.Action):
 
 def gpl_disclaimer(platforms):
     cmakecache = 'WORK/ios-{arch}/cmake/CMakeCache.txt'.format(arch=platforms[0])
-    gpl_third_parties_enabled = "ENABLE_GPL_THIRD_PARTIES:BOOL=YES" in open(cmakecache).read() or "ENABLE_GPL_THIRD_PARTIES:BOOL=ON" in open(cmakecache).read()
+    gpl_third_parties_enabled = "ENABLE_GPL_THIRD_PARTIES:BOOL=YES" in open(
+        cmakecache).read() or "ENABLE_GPL_THIRD_PARTIES:BOOL=ON" in open(cmakecache).read()
 
     if gpl_third_parties_enabled:
         warning("\n***************************************************************************"
@@ -135,18 +136,27 @@ def gpl_disclaimer(platforms):
                 "\n***************************************************************************")
 
 
-def extract_libs_list():
+def extract_from_xcode_project_with_regex(regex):
     l = []
-    # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
-    regex = re.compile("name = (\")*(lib(\S+))\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
     f = open('linphone.xcodeproj/project.pbxproj', 'r')
     lines = f.readlines()
     f.close()
     for line in lines:
         m = regex.search(line)
         if m is not None:
-            l += [m.group(2)]
+            l += [m.group(1)]
     return list(set(l))
+
+
+def extract_deployment_target():
+    regex = re.compile("IPHONEOS_DEPLOYMENT_TARGET = (.*);")
+    return extract_from_xcode_project_with_regex(regex)[0]
+
+
+def extract_libs_list():
+    # name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
+    regex = re.compile("name = \"*(lib\S+)\.a(\")*; path = \"liblinphone-sdk/apple-darwin/")
+    return extract_from_xcode_project_with_regex(regex)
 
 
 missing_dependencies = {}
@@ -238,14 +248,16 @@ def check_tools():
         error("iOS SDK not found, please install Xcode from AppStore or equivalent.")
         reterr = 1
     else:
-        sdk_platform_path = Popen(
-            "xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "), stdout=PIPE, stderr=devnull).stdout.read()[:-1]
-        sdk_strings_path = "{}/{}".format(sdk_platform_path, "Developer/usr/bin/strings")
-        if not os.path.isfile(sdk_strings_path):
-            strings_path = find_executable("strings")
-            error("strings binary missing, please run:\n\tsudo ln -s {} {}".format(strings_path, sdk_strings_path))
-            reterr = 1
-
+        xcode_version = int(
+            Popen("xcodebuild -version".split(" "), stdout=PIPE).stdout.read().split("\n")[0].split(" ")[1].split(".")[0])
+        if xcode_version < 7:
+            sdk_platform_path = Popen(
+                "xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "), stdout=PIPE, stderr=devnull).stdout.read()[:-1]
+            sdk_strings_path = "{}/{}".format(sdk_platform_path, "Developer/usr/bin/strings")
+            if not os.path.isfile(sdk_strings_path):
+                strings_path = find_executable("strings")
+                error("strings binary missing, please run:\n\tsudo ln -s {} {}".format(strings_path, sdk_strings_path))
+                reterr = 1
     return reterr
 
 
@@ -258,7 +270,6 @@ def install_git_hook():
 
 
 def generate_makefile(platforms, generator):
-    libs_list = extract_libs_list()
     packages = os.listdir('WORK/ios-' + platforms[0] + '/Build')
     packages.sort()
     arch_targets = ""
@@ -280,6 +291,9 @@ def generate_makefile(platforms, generator):
 \t@for package in $(packages); do \\
 \t\t$(MAKE) {arch}-veryclean-$$package; \\
 \tdone
+
+{arch}-build-dummy_libraries:
+\t{generator} WORK/ios-{arch}/cmake EP_dummy_libraries
 
 {arch}-build-%: package-in-list-%
 \trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-update; \\
@@ -336,11 +350,10 @@ def generate_makefile(platforms, generator):
     makefile = """
 archs={archs}
 packages={packages}
-libs_list={libs_list}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
-.SILENT: lipo
+.SILENT: sdk
 
 all: build
 
@@ -380,14 +393,7 @@ clean: $(addprefix clean-,$(packages))
 
 veryclean: $(addprefix veryclean-,$(packages))
 
-generate-dummy-%:
-\t@echo "[{archs}] Generating dummy $* static library." ; \\
-\tprintf "void $*_init() {{}}" | tr '-' '_' > .dummy.c ; \\
-\tfor arch in {archs}; do clang -c .dummy.c -arch $$arch -o .dummy-$$arch.a; done ; \\
-\tlipo -create -output .dummy.a .dummy-*.a ; \\
-\trm .dummy-*.a .dummy.c
-
-lipo:
+sdk:
 \tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
 \trm -rf liblinphone-sdk/apple-darwin && \\
 \tmkdir -p liblinphone-sdk/apple-darwin && \\
@@ -405,27 +411,16 @@ lipo:
 \t\t{multiarch} \\
 \t\techo "[{archs}] Mixing `basename $$archive` in $$destpath"; \\
 \t\tlipo -create $$all_paths -output $$destpath; \\
-\tdone && \\
-\tfor lib in {libs_list} ; do \\
-\t\tif [ $${{lib:0:5}} = "libms" ] ; then \\
-\t\t\tlibrary_path=liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/$${{lib}}.a ; \\
-\t\telse \\
-\t\t\tlibrary_path=liblinphone-sdk/apple-darwin/lib/$${{lib}}.a ; \\
-\t\tfi ; \\
-\t\tif ! test -f $$library_path ; then \\
-\t\t\t$(MAKE) generate-dummy-$$lib ; \\
-\t\t\tmv .dummy.a $$library_path ; \\
-\t\tfi \\
 \tdone
 
 build: $(addprefix all-,$(archs))
-\t$(MAKE) lipo
+\t$(MAKE) sdk
 
 ipa: build
 \txcodebuild -configuration Release \\
 \t&& xcrun -sdk iphoneos PackageApplication -v build/Release-iphoneos/linphone.app -o $$PWD/linphone-iphone.ipa
 
-sdk: build
+zipsdk: sdk
 \techo "Generating SDK zip file for version $(LINPHONE_IPHONE_VERSION)"
 \tzip -r liblinphone-iphone-sdk-$(LINPHONE_IPHONE_VERSION).zip \\
 \tliblinphone-sdk/apple-darwin \\
@@ -458,7 +453,8 @@ help: help-prepare-options
 \t@echo "Available targets:"
 \t@echo ""
 \t@echo "   * all or build: builds all architectures and creates the liblinphone SDK"
-\t@echo "   * sdk: generates a ZIP archive of liblinphone-sdk/apple-darwin containing the SDK. Use this only after a full build."
+\t@echo "   * sdk: creates the liblinphone SDK. Use this only after a full build"
+\t@echo "   * zipsdk: generates a ZIP archive of liblinphone-sdk/apple-darwin containing the SDK. Use this only after SDK is built."
 \t@echo "   * zipres: creates a tar.gz file with all the resources (images)"
 \t@echo ""
 \t@echo "=== Advanced usage ==="
@@ -472,8 +468,7 @@ help: help-prepare-options
 """.format(archs=' '.join(platforms), arch_opts='|'.join(platforms),
            first_arch=platforms[0], options=' '.join(sys.argv),
            arch_targets=arch_targets, packages=' '.join(packages),
-           libs_list=' '.join(libs_list), multiarch=multiarch,
-           generator=generator)
+           multiarch=multiarch, generator=generator)
     f = open('Makefile', 'w')
     f.write(makefile)
     f.close()
@@ -523,6 +518,8 @@ def main(argv=None):
     if check_tools() != 0:
         return 1
 
+    additional_args += ["-DLINPHONE_IOS_DEPLOYMENT_TARGET=" + extract_deployment_target()]
+    additional_args += ["-DLINPHONE_BUILDER_DUMMY_LIBRARIES=" + ' '.join(extract_libs_list())]
     if args.debug_verbose is True:
         additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
     if args.enable_non_free_codecs is True:
@@ -560,17 +557,21 @@ def main(argv=None):
         shutil.rmtree(tmpdir)
         return 0
 
-    selected_platforms = []
+    selected_platforms_dup = []
     for platform in args.platform:
         if platform == 'all':
-            selected_platforms += archs_device + archs_simu
+            selected_platforms_dup += archs_device + archs_simu
         elif platform == 'devices':
-            selected_platforms += archs_device
+            selected_platforms_dup += archs_device
         elif platform == 'simulators':
-            selected_platforms += archs_simu
+            selected_platforms_dup += archs_simu
         else:
-            selected_platforms += [platform]
-    selected_platforms = list(set(selected_platforms))
+            selected_platforms_dup += [platform]
+    # unify platforms but keep provided order
+    selected_platforms = []
+    for x in selected_platforms_dup:
+        if x not in selected_platforms:
+            selected_platforms.append(x)
 
     for platform in selected_platforms:
         target = targets[platform]
@@ -578,7 +579,7 @@ def main(argv=None):
         if args.clean:
             target.clean()
         else:
-            retcode = prepare.run (target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
+            retcode = prepare.run(target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
             if retcode != 0:
                 if retcode == 51:
                     Popen("make help-prepare-options".split(" "))

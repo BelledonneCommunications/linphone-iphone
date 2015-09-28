@@ -70,7 +70,6 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 																  forKey:@"localimage"
 															   inMessage:message];
 						   }
-						   linphone_chat_message_unref(thiz.message);
 						   thiz.message = NULL;
 						   [[NSNotificationCenter defaultCenter]
 							   postNotificationName:kLinphoneFileTransferRecvUpdate
@@ -124,8 +123,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 
 		// this is the last time we will be notified, so destroy ourselve
 		if (remaining <= size) {
-			LOGI(@"Upload ended, unreffing %p", thiz.message);
-			linphone_chat_message_unref(thiz.message);
+			LOGI(@"Upload ended");
 			thiz.message = NULL;
 			[thiz stopAndDestroy];
 		}
@@ -170,9 +168,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	[[[LinphoneManager instance] fileTransferDelegates] addObject:self];
 
 	_message = message;
-	// we need to keep a ref on the message to continue downloading even if user quit a chatroom which destroy all chat
-	// messages
-	linphone_chat_message_ref(_message);
+
 	const char *url = linphone_chat_message_get_external_body_url(_message);
 	LOGI(@"%p Downloading content in %p from %s", self, message, url);
 
@@ -196,10 +192,8 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(msg), NULL);
 		linphone_chat_message_cbs_set_file_transfer_recv(linphone_chat_message_get_callbacks(msg), NULL);
 		// when we cancel file transfer, this will automatically trigger NotDelivered callback... recalling ourself a
-		// second time
-		// so we have to unset message BEFORE calling this
+		// second time so we have to unset message BEFORE calling this
 		linphone_chat_message_cancel_file_transfer(msg);
-		linphone_chat_message_unref(msg);
 	}
 	_data = nil;
 	LOGI(@"%p Destroying", self);

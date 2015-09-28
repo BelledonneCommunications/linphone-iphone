@@ -17,10 +17,10 @@
 
 	<section name="app">
 		<entry name="pushnotification_preference" overwrite="true">0</entry>
-		<entry name="sharing_server_preference" overwrite="true"></entry>
 		<entry name="ice_preference" overwrite="true">1</entry>
 		<entry name="stun_preference" overwrite="true">stun.linphone.org</entry>
 		<entry name="random_port_preference" overwrite="true">1</entry>
+		<entry name="file_transfer_migration_done" overwrite="true">1</entry>
 	</section>
 
 	<section name="net">
@@ -34,4 +34,7 @@
 		<entry name="sip_tls_port" overwrite="true">-1</entry>
 	</section>
 
+	<section name="misc">
+		<entry name="file_transfer_server_url" overwrite="true"></entry>
+	</section>
 </config>

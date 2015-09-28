@@ -532,9 +532,10 @@ exit_dbmigration:
 	}
 	/* File transfer migration */
 	if ([self lpConfigBoolForKey:@"file_transfer_migration_done"] == FALSE) {
-		NSString *newURL = @"https://www.linphone.org:444/lft.php";
-		LOGI(@"Migrating sharing server url from %@ to %@", [self lpConfigStringForKey:@"sharing_server_preference"], newURL);
-		[self lpConfigSetString:newURL forKey:@"sharing_server_preference"];
+		const char *newURL = "https://www.linphone.org:444/lft.php";
+		LOGI(@"Migrating sharing server url from %s to %s",
+			 linphone_core_get_file_transfer_server([LinphoneManager getLc]), newURL);
+		linphone_core_set_file_transfer_server([LinphoneManager getLc], newURL);
 		[self lpConfigSetBool:TRUE forKey:@"file_transfer_migration_done"];
 	}
 }
@@ -568,7 +569,7 @@ static void dump_section(const char *section, void *data) {
 	lp_config_for_each_entry((const LpConfig *)data, section, dump_entry, &d);
 }
 
-+ (void)dumpLCConfig {
++ (void)dumpLcConfig {
 	if (theLinphoneCore) {
 		LpConfig *conf = [LinphoneManager instance].configDb;
 		lp_config_for_each_section(conf, dump_section, conf);
@@ -1022,25 +1023,26 @@ static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChat
 }
 
 static void showNetworkFlags(SCNetworkReachabilityFlags flags) {
-	LOGI(@"Network connection flags:");
+	NSMutableString *log = [[NSMutableString alloc] initWithString:@"Network connection flags: "];
 	if (flags == 0)
-		LOGI(@"no flags.");
+		[log appendString:@"no flags."];
 	if (flags & kSCNetworkReachabilityFlagsTransientConnection)
-		LOGI(@"kSCNetworkReachabilityFlagsTransientConnection");
+		[log appendString:@"kSCNetworkReachabilityFlagsTransientConnection, "];
 	if (flags & kSCNetworkReachabilityFlagsReachable)
-		LOGI(@"kSCNetworkReachabilityFlagsReachable");
+		[log appendString:@"kSCNetworkReachabilityFlagsReachable, "];
 	if (flags & kSCNetworkReachabilityFlagsConnectionRequired)
-		LOGI(@"kSCNetworkReachabilityFlagsConnectionRequired");
+		[log appendString:@"kSCNetworkReachabilityFlagsConnectionRequired, "];
 	if (flags & kSCNetworkReachabilityFlagsConnectionOnTraffic)
-		LOGI(@"kSCNetworkReachabilityFlagsConnectionOnTraffic");
+		[log appendString:@"kSCNetworkReachabilityFlagsConnectionOnTraffic, "];
 	if (flags & kSCNetworkReachabilityFlagsConnectionOnDemand)
-		LOGI(@"kSCNetworkReachabilityFlagsConnectionOnDemand");
+		[log appendString:@"kSCNetworkReachabilityFlagsConnectionOnDemand, "];
 	if (flags & kSCNetworkReachabilityFlagsIsLocalAddress)
-		LOGI(@"kSCNetworkReachabilityFlagsIsLocalAddress");
+		[log appendString:@"kSCNetworkReachabilityFlagsIsLocalAddress, "];
 	if (flags & kSCNetworkReachabilityFlagsIsDirect)
-		LOGI(@"kSCNetworkReachabilityFlagsIsDirect");
+		[log appendString:@"kSCNetworkReachabilityFlagsIsDirect, "];
 	if (flags & kSCNetworkReachabilityFlagsIsWWAN)
-		LOGI(@"kSCNetworkReachabilityFlagsIsWWAN");
+		[log appendString:@"kSCNetworkReachabilityFlagsIsWWAN, "];
+	LOGI(@"%@", log);
 }
 
 static void networkReachabilityNotification(CFNotificationCenterRef center, void *observer, CFStringRef name,
@@ -1274,7 +1276,8 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 										[zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	linphone_core_set_chat_database_path(theLinphoneCore,
 										 [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-
+	linphone_core_set_call_logs_database_path(theLinphoneCore,
+											  [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	[self migrationLinphoneSettings];
 
 	[self setupNetworkReachabilityCallback];
@@ -1284,11 +1287,6 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 		const char *imagePath = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
 		LOGI(@"Using '%s' as source image for no webcam", imagePath);
 		linphone_core_set_static_picture(theLinphoneCore, imagePath);
-	}
-
-	NSString *urlString = [self lpConfigStringForKey:@"sharing_server_preference"];
-	if (urlString) {
-		linphone_core_set_file_transfer_server(theLinphoneCore, [urlString UTF8String]);
 	}
 
 	/*DETECT cameras*/
@@ -2062,9 +2060,9 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 
 - (void)setLogsEnabled:(BOOL)enabled {
 	if ([LinphoneManager isRunningTests]) {
-		NSLog(@"Running tests, forcing logs to Warning level");
+		NSLog(@"Running tests, forcing logs to MESSAGE level");
 		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-		linphone_core_set_log_level(ORTP_WARNING);
+		linphone_core_set_log_level(ORTP_MESSAGE);
 	} else {
 		if (enabled) {
 			NSLog(@"Enabling debug logs");

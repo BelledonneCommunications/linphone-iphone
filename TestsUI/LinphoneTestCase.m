@@ -28,6 +28,7 @@
 
 - (void)beforeAll {
 	[super beforeAll];
+
 #if TARGET_IPHONE_SIMULATOR
 	while ([tester acknowledgeSystemAlert]) {
 		[tester waitForTimeInterval:.5f];
@@ -39,6 +40,10 @@
 			[tester tapViewWithAccessibilityLabel:button traits:UIAccessibilityTraitButton];
 		}
 	}
+}
+
+- (void)beforeEach {
+	[[LinphoneManager instance] lpConfigSetInt:NO forKey:@"animations_preference"];
 }
 
 - (NSString *)me {
@@ -60,16 +65,6 @@
 		[array setObject:[self getUUID] atIndexedSubscript:i];
 	}
 	return array;
-}
-
-static bool invalidAccount = true;
-
-- (void)setInvalidAccountSet:(BOOL)invalidAccountSet {
-	invalidAccount = invalidAccountSet;
-}
-
-- (BOOL)invalidAccountSet {
-	return invalidAccount;
 }
 
 - (BOOL)hasValidProxyConfig {
@@ -101,7 +96,7 @@ static bool invalidAccount = true;
 - (void)switchToValidAccountIfNeeded {
 	[UIView setAnimationsEnabled:false];
 
-	if (invalidAccount && ![self hasValidProxyConfig]) {
+	if (![self hasValidProxyConfig]) {
 		LOGI(@"Switching to a test account...");
 
 		LinphoneCore *lc = [LinphoneManager getLc];
@@ -122,7 +117,7 @@ static bool invalidAccount = true;
 		ms_free(server_addr);
 
 		LinphoneAuthInfo *testAuth = linphone_auth_info_new(linphone_address_get_username(testAddr), NULL,
-															linphone_address_get_password(testAddr), NULL, NULL,
+															linphone_address_get_username(testAddr), NULL, NULL,
 															linphone_address_get_domain(testAddr));
 
 		[[LinphoneManager instance] configurePushTokenForProxyConfig:testProxy];
@@ -137,14 +132,13 @@ static bool invalidAccount = true;
 		linphone_auth_info_destroy(testAuth);
 		linphone_address_destroy(testAddr);
 
+		linphone_core_set_file_transfer_server(lc, "https://www.linphone.org:444/lft.php");
+
 		// reload address book to prepend proxy config domain to contacts' phone number
 		[[[LinphoneManager instance] fastAddressBook] reload];
 
-		[tester waitForViewWithAccessibilityLabel:@"Registration state"
-											value:@"Registered"
-										   traits:UIAccessibilityTraitStaticText];
-
-		invalidAccount = false;
+		[self waitForRegistration];
+		[[LinphoneManager instance] lpConfigSetInt:NO forKey:@"animations_preference"];
 	}
 }
 
@@ -157,6 +151,21 @@ static bool invalidAccount = true;
 		XCTFail(@"Error: %@", err);
 	}
 	return tv;
+}
+
+- (void)waitForRegistration {
+	// wait for account to be registered
+	int timeout = 15;
+	while (timeout && [tester tryFindingViewWithAccessibilityLabel:@"Registration state"
+															 value:@"Registered"
+															traits:UIAccessibilityTraitStaticText
+															 error:nil]) {
+		[tester waitForTimeInterval:1];
+		timeout--;
+	}
+	[tester waitForViewWithAccessibilityLabel:@"Registration state"
+										value:@"Registered"
+									   traits:UIAccessibilityTraitStaticText];
 }
 
 @end

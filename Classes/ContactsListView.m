@@ -252,7 +252,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-	[self searchBar:searchBar textDidChange:nil];
+	[self searchBar:searchBar textDidChange:@""];
 	[searchBar resignFirstResponder];
 }
 

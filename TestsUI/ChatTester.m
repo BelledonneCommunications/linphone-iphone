@@ -16,6 +16,8 @@
 - (void)beforeAll {
 	[super beforeAll];
 	[self switchToValidAccountIfNeeded];
+	// turn off logs for chat tests because there are way to much logs in liblinphone in filetransfer and sqlite
+	linphone_core_set_log_level(ORTP_WARNING);
 }
 
 - (void)beforeEach {
@@ -29,6 +31,7 @@
 
 - (void)afterAll {
 	[super afterAll];
+	linphone_core_set_log_level(ORTP_MESSAGE);
 	// at the end of tests, go back to chat rooms to display main bar
 	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Back" error:nil]) {
 		[self goBackFromChat];
@@ -63,7 +66,7 @@
 }
 
 - (void)uploadImageWithQuality:(NSString *)quality {
-	UITableView *tv = [self findTableView:@"Chat list"];
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
 
 	long messagesCount = [tv numberOfRowsInSection:0];
 	[tester tapViewWithAccessibilityLabel:@"Send picture"];
@@ -93,7 +96,7 @@
 	[self startChatWith:[self me]];
 	[self uploadImageWithQuality:@"Minimum"];
 	// wait for the upload to terminate...
-	for (int i = 0; i < 15; i++) {
+	for (int i = 0; i < 45; i++) {
 		[tester waitForTimeInterval:1.f];
 		if ([[[LinphoneManager instance] fileTransferDelegates] count] == 0)
 			break;
@@ -111,7 +114,7 @@
 	[tester tapViewWithAccessibilityLabel:@"Anna Haro"];
 	[tester tapViewWithAccessibilityLabel:@"home, 555-522-8243"];
 	[self goBackFromChat];
-	UITableView *tv = [self findTableView:@"ChatRoom list"];
+	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
 	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message"
 										value:@"Anna Haro (0)"
@@ -144,7 +147,11 @@
 	// check that the tableview is empty
 	UITableView *tv = nil;
 	NSError *err = nil;
-	if ([tester tryFindingAccessibilityElement:nil view:&tv withIdentifier:@"Chat list" tappable:false error:&err]) {
+	if ([tester tryFindingAccessibilityElement:nil
+										  view:&tv
+								withIdentifier:@"ChatRoom list"
+									  tappable:false
+										 error:&err]) {
 		XCTAssertNotNil(tv);
 		ASSERT_EQ([tv numberOfRowsInSection:0], 0); // no more messages
 	} else {
@@ -167,7 +174,7 @@
 	[tester tapViewWithAccessibilityLabel:@"Chat"];
 	NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
 
-	XCTAssertEqual([[self findTableView:@"ChatRoom list"] numberOfRowsInSection:0], 100);
+	XCTAssertEqual([[self findTableView:@"Chat list"] numberOfRowsInSection:0], 100);
 	// conversation loading MUST be less than 1 sec
 	XCTAssertLessThan(after - before, 1.);
 }
@@ -177,11 +184,17 @@
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [[self me] UTF8String]);
 	// generate lots of messages...
-	for (; count < 100; count++) {
+	for (; count < 50; count++) {
 		linphone_chat_room_send_message(room, [[NSString stringWithFormat:@"Message %d", count + 1] UTF8String]);
 	}
-	[tester waitForTimeInterval:5]; // wait for all messages to be delivered
-	// TODO: FIX below code: unread count is not always 100 messages while it should...
+
+	for (int i = 0; i < 25; i++) {
+		[tester waitForTimeInterval:1.f];
+		if (linphone_chat_room_get_history_size(room) == count * 2) {
+			break;
+		}
+	}
+
 	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message, Unread message number"
 										value:[NSString stringWithFormat:@"%@ - Message %d (%d)", self.me, count, count]
 									   traits:UIAccessibilityTraitStaticText];
@@ -196,8 +209,6 @@
 
 - (void)testRemoveAllChats {
 	NSArray *uuids = [self getUUIDArrayOfSize:5];
-
-	[self removeAllRooms];
 
 	for (NSString *uuid in uuids) {
 		[self startChatWith:uuid];
@@ -216,7 +227,7 @@
 								   traits:UIAccessibilityTraitButton]; // same as the first but it is "OK" on screen
 
 	// check that the tableview is empty
-	UITableView *tv = [self findTableView:@"ChatRoom list"];
+	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 0);
 
 	// test that there's no more chatrooms in the core
@@ -246,25 +257,26 @@
 	[self goBackFromChat];
 }
 
-- (void)testTransfer3DownloadsSimultanously {
+- (void)testTransfer2TransfersSimultanously {
 	[self startChatWith:[self me]];
-	[self uploadImageWithQuality:@"Maximum"];
-	[self uploadImageWithQuality:@"Average"];
 	[self uploadImageWithQuality:@"Minimum"];
-	UITableView *tv = [self findTableView:@"Chat list"];
+	[self uploadImageWithQuality:@"Minimum"];
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
 	// wait for ALL uploads to terminate...
 	for (int i = 0; i < 45; i++) {
 		[tester waitForTimeInterval:1.f];
-		if ([tv numberOfRowsInSection:0] == 6)
+		if ([tv numberOfRowsInSection:0] == 4)
 			break;
 	}
 	[tester waitForTimeInterval:.5f];
 	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
-	[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:1.f];
-	for (int i = 0; i < 3; i++) {
+	[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list" byFractionOfSizeHorizontal:0.f vertical:1.f];
+	for (int i = 0; i < 2; i++) {
 		// messages order is not known: if upload bitrate is huge, first image can be uploaded before last started
 		while (![tester tryFindingTappableViewWithAccessibilityLabel:@"Download" error:nil]) {
-			[tester scrollViewWithAccessibilityIdentifier:@"Chat list" byFractionOfSizeHorizontal:0.f vertical:-.1f];
+			[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list"
+							   byFractionOfSizeHorizontal:0.f
+												 vertical:-.1f];
 		}
 		[tester waitForViewWithAccessibilityLabel:@"Download"];
 		[tester tapViewWithAccessibilityLabel:@"Download"];
@@ -273,25 +285,6 @@
 	while ([LinphoneManager instance].fileTransferDelegates.count > 0) {
 		[tester waitForTimeInterval:.5];
 	}
-	[self goBackFromChat];
-}
-
-- (void)testTransfer3UploadsSimultanously {
-	[self startChatWith:[self me]];
-	// use Maximum quality to be sure that first transfer is not terminated when the third begins
-	[self uploadImageWithQuality:@"Maximum"];
-	[self uploadImageWithQuality:@"Average"];
-	[self uploadImageWithQuality:@"Minimum"];
-	UITableView *tv = [self findTableView:@"Chat list"];
-	// wait for ALL uploads to terminate...
-	for (int i = 0; i < 45; i++) {
-		[tester waitForTimeInterval:1.f];
-		if ([tv numberOfRowsInSection:0] == 6)
-			break;
-	}
-	[tester waitForTimeInterval:.5f];
-	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
-	ASSERT_EQ([tv numberOfRowsInSection:0], 6);
 	[self goBackFromChat];
 }
 
@@ -308,31 +301,16 @@
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
+- (void)testTransferDestroyRoomWhileUploading {
+	[self startChatWith:[self me]];
+	[self uploadImageWithQuality:@"Maximum"];
+	[self goBackFromChat];
+	[self removeAllRooms];
+}
+
 - (void)testTransferDownloadImage {
 	[self downloadImage];
 	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Cancel transfer"];
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
-}
-
-- (void)testTransferUploadImage {
-	[self startChatWith:[self me]];
-
-	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 0);
-	[self uploadImageWithQuality:@"Minimum"];
-	ASSERT_EQ([[LinphoneManager instance] fileTransferDelegates].count, 1);
-
-	UITableView *tv = [self findTableView:@"Chat list"];
-	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
-
-	// wait for the upload to terminate...
-	for (int i = 0; i < 15; i++) {
-		[tester waitForTimeInterval:1.f];
-		if ([[[LinphoneManager instance] fileTransferDelegates] count] == 0)
-			break;
-	}
-	[tester waitForViewWithAccessibilityLabel:@"Download"];
-
-	ASSERT_EQ([tv numberOfRowsInSection:0], 2);
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 

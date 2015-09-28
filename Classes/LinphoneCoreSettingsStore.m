@@ -346,7 +346,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[self setCString:linphone_address_get_username(parsed) forKey:@"primary_username_preference"];
 		}
 		linphone_address_destroy(parsed);
-		[self setObject:[lm lpConfigStringForKey:@"sharing_server_preference"] forKey:@"sharing_server_preference"];
+		[self setCString:linphone_core_get_file_transfer_server(lc) forKey:@"file_transfer_server_url_preference"];
 	}
 
 	changedDict = [[NSMutableDictionary alloc] init];
@@ -795,8 +795,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		[lm lpConfigSetInt:[self integerForKey:@"advanced_account_preference"] forKey:@"advanced_account_preference"];
 
-		NSString *sharing_server = [self stringForKey:@"sharing_server_preference"];
-		[[LinphoneManager instance] lpConfigSetString:sharing_server forKey:@"sharing_server_preference"];
+		linphone_core_set_file_transfer_server(lc,
+											   [[self stringForKey:@"file_transfer_server_url_preference"] UTF8String]);
 	}
 
 	changedDict = [[NSMutableDictionary alloc] init];
