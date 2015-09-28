@@ -84,7 +84,7 @@ static GtkWidget * create_conference_panel(void){
 	GtkWidget *conf_frame=linphone_gtk_create_widget("conf_frame");
 	GtkWidget *conf_box=linphone_gtk_get_widget(conf_frame,"conf_box");
 	GtkWidget *button_conf=linphone_gtk_get_widget(conf_frame,"terminate_conf");
-	GtkWidget *image=create_pixmap("stopcall-small.png");
+	GtkWidget *image=gtk_image_new_from_icon_name("linphone-stop-call", GTK_ICON_SIZE_BUTTON);
 	GtkWidget *box;
 	GtkWidget *viewswitch=linphone_gtk_get_widget(mw,"viewswitch");
 	GtkWidget *participant;

@@ -1,20 +1,8 @@
 pixmapdir=$(datadir)/pixmaps/linphone
 dist_pixmap_DATA= \
-	hold_on.png hold_off.png \
 	linphone.png linphone-banner.png \
-	status-green.png \
-	status-orange.png \
-	status-red.png \
-	status-offline.png \
-	call.png \
-	chat.png chat_start.png active_chat.png composing_chat.png composing_active_chat.png\
-	chat_message_inprogress.png chat_message_delivered.png chat_message_not_delivered.png\
-	contact-orange.png history-orange.png\
-	call_start.png startcall-small.png stopcall-red.png stopcall-small.png call_add.png linphone.icns \
-	contact_starred.png contact_unstarred.png \
-	call_status_incoming.png call_status_outgoing.png \
+	linphone.icns \
 	ok.png \
-	dialer.png \
 	notok.png
 
 iconsdir=$(datadir)/icons/hicolor
@@ -30,12 +18,38 @@ dist_status48icons_DATA= \
 	linphone-micro-muted.png \
 	linphone-speaker-muted.png \
 	linphone-micro-enabled.png \
-	linphone-speaker-enabled.png
+	linphone-speaker-enabled.png \
+	linphone-status-online.png \
+	linphone-status-away.png \
+	linphone-status-donotdisturb.png \
+	linphone-status-offline.png \
+	linphone-chat-nothing.png \
+	linphone-chat-new-message.png \
+	linphone-chat-writing.png \
+	linphone-chat-new-message-and-writing.png \
+	linphone-call-status-incoming.png \
+	linphone-call_status-outgoing.png \
+	linphone-contact-bookmarked.png \
+	linphone-contact-not-bookmarked.png
 
 statussvgiconsdir=$(iconsdir)/scalable/status
 dist_statussvgicons_DATA= \
 	svg/linphone-micro-muted.svg \
 	svg/linphone-speaker-muted.svg \
 	svg/linphone-micro-enabled.svg \
-	svg/linphone-speaker-enabled.svg
+	svg/linphone-speaker-enabled.svg \
+	svg/linphone-status-online.svg \
+	svg/linphone-status-away.svg \
+	svg/linphone-status-donotdisturb.svg \
+	svg/linphone-status-offline.svg
 
+actions48iconsdir=$(iconsdir)/48x48/actions
+dist_actions48icons_DATA= \
+	linphone-start-call2.png \
+	linphone-show-dialer.png \
+	linphone-add-call.png \
+	linphone-start-call.png \
+	linphone-stop-call.png \
+	linphone-hold-on \
+	linphone-hold-off
+)
