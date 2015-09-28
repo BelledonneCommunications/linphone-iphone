@@ -1,9 +1,7 @@
 pixmapdir=$(datadir)/pixmaps/linphone
 dist_pixmap_DATA= \
 	linphone.png linphone-banner.png \
-	linphone.icns \
-	ok.png \
-	notok.png
+	linphone.icns
 
 iconsdir=$(datadir)/icons/hicolor
 if BUILD_WIN32

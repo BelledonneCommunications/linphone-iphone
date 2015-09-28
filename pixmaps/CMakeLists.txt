@@ -22,9 +22,7 @@
 
 set(ICONS_INSTALL_DIR ${PACKAGE_DATA_DIR}/icons/hicolor)
 
-file(GLOB PIXMAPS "*.png" "linphone.icns")
-
-install(FILES ${PIXMAPS}
+install(FILES "linphone.png" "linphone.icns" "linphone-banner.png"
 	DESTINATION ${PACKAGE_DATA_DIR}/pixmaps/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
