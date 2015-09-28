@@ -205,6 +205,7 @@ static void test_complete_message_handler(const CU_pTest pTest, const CU_pSuite 
 	}
 
 	bc_tester_printf(bc_printf_verbosity_info,"%s", result);
+	free(result);
 
 	if (test_suite[suite_index]->after_each) {
 		test_suite[suite_index]->after_each();
@@ -347,20 +348,7 @@ static int file_exists(const char* root_path) {
 
 static void detect_res_prefix(const char* prog) {
 	char* progpath = NULL;
-	char* prefix = NULL;
 	FILE* writable_file = NULL;
-
-#if defined(BC_TESTER_WINDOWS_PHONE) || defined(BC_TESTER_WINDOWS_UNIVERSAL)
-	bc_tester_set_resource_dir_prefix("Assets");
-#elif defined(__QNX__)
-	bc_tester_set_resource_dir_prefix("./app/native/assets/");
-#endif
-
-#ifdef ANDROID
-	bc_tester_set_writable_dir_prefix("/data/data/org.linphone.tester/cache");
-#elif defined(__QNX__)
-	bc_tester_set_writable_dir_prefix("./tmp");
-#endif
 
 	if (prog != NULL) {
 		progpath = strdup(prog);
@@ -370,40 +358,45 @@ static void detect_res_prefix(const char* prog) {
 			progpath[strrchr(prog, '\\') - prog + 1] = '\0';
 		}
 	}
+#if !defined(BC_TESTER_WINDOWS_PHONE) && !defined(BC_TESTER_WINDOWS_UNIVERSAL) && !defined(__QNX__) && !defined(ANDROID) && !defined(IOS)
+	{
+		char* prefix = NULL;
 
-	if (file_exists(".")) {
-		prefix = strdup(".");
-	} else if (file_exists("..")) {
-		prefix = strdup("..");
-	} else if (progpath) {
-		//for autotools, binary is in .libs/ subdirectory
-		char * progpath2 = bc_sprintf("%s/../", progpath);
-		if (file_exists(progpath)) {
-			prefix = strdup(progpath);
-		} else if (file_exists(progpath2)) {
-			prefix = strdup(progpath2);
-		}
-		free(progpath2);
-	}
-
-	if (bc_tester_resource_dir_prefix != NULL && !file_exists(bc_tester_resource_dir_prefix)) {
-		printf("Invalid provided resource directory: could not find expected resources in %s.\n", bc_tester_resource_dir_prefix);
-		free(bc_tester_resource_dir_prefix);
-		bc_tester_resource_dir_prefix = NULL;
-	}
-
-	if (prefix != NULL) {
-		if (bc_tester_resource_dir_prefix == NULL) {
-			printf("Resource directory set to %s\n", prefix);
-			bc_tester_set_resource_dir_prefix(prefix);
+		if (file_exists(".")) {
+			prefix = strdup(".");
+		} else if (file_exists("..")) {
+			prefix = strdup("..");
+		} else if (progpath) {
+			//for autotools, binary is in .libs/ subdirectory
+			char * progpath2 = bc_sprintf("%s/../", progpath);
+			if (file_exists(progpath)) {
+				prefix = strdup(progpath);
+			} else if (file_exists(progpath2)) {
+				prefix = strdup(progpath2);
+			}
+			free(progpath2);
 		}
 
-		if (bc_tester_writable_dir_prefix == NULL) {
-			printf("Writable directory set to %s\n", prefix);
-			bc_tester_set_writable_dir_prefix(prefix);
+		if (bc_tester_resource_dir_prefix != NULL && !file_exists(bc_tester_resource_dir_prefix)) {
+			bc_tester_printf(bc_printf_verbosity_error, "Invalid provided resource directory: could not find expected resources in %s.\n", bc_tester_resource_dir_prefix);
+			free(bc_tester_resource_dir_prefix);
+			bc_tester_resource_dir_prefix = NULL;
 		}
-		free(prefix);
+
+		if (prefix != NULL) {
+			if (bc_tester_resource_dir_prefix == NULL) {
+				bc_tester_printf(bc_printf_verbosity_error, "Resource directory set to %s\n", prefix);
+				bc_tester_set_resource_dir_prefix(prefix);
+			}
+
+			if (bc_tester_writable_dir_prefix == NULL) {
+				bc_tester_printf(bc_printf_verbosity_error, "Writable directory set to %s\n", prefix);
+				bc_tester_set_writable_dir_prefix(prefix);
+			}
+			free(prefix);
+		}
 	}
+#endif
 
 	// check that we can write in writable directory
 	if (bc_tester_writable_dir_prefix != NULL) {
@@ -416,13 +409,13 @@ static void detect_res_prefix(const char* prog) {
 	}
 	if (bc_tester_resource_dir_prefix == NULL || writable_file == NULL) {
 		if (bc_tester_resource_dir_prefix == NULL) {
-			printf("Failed to detect resources for %s.\n", prog);
-			printf("Could not find resource directory in %s! Please try again using option --resource-dir.\n", progpath);
+			bc_tester_printf(bc_printf_verbosity_error, "Failed to detect resources for %s.\n", prog);
+			bc_tester_printf(bc_printf_verbosity_error, "Could not find resource directory in %s! Please try again using option --resource-dir.\n", progpath);
 		}
 		if (writable_file == NULL) {
-			printf("Failed to write file in %s. Please try again using option --writable-dir.\n", bc_tester_writable_dir_prefix);
+			bc_tester_printf(bc_printf_verbosity_error, "Failed to write file in %s. Please try again using option --writable-dir.\n", bc_tester_writable_dir_prefix);
 		}
-		exit(1);
+		abort();
 	}
 
 	if (progpath != NULL) {
@@ -620,7 +613,7 @@ char* bc_sprintfva(const char* format, va_list args) {
 		/* If that worked, return the string. */
 		if (n > -1 && n < size)
 			return p;
-		//printf("Reallocing space.\n");
+		//bc_tester_printf(bc_printf_verbosity_error, "Reallocing space.\n");
 		/* Else try again with more space. */
 		if (n > -1)	/* glibc 2.1 */
 			size = n + 1;	/* precisely what is needed */
