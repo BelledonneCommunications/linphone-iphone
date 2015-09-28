@@ -28,7 +28,7 @@ dist_status48icons_DATA= \
 	linphone-chat-writing.png \
 	linphone-chat-new-message-and-writing.png \
 	linphone-call-status-incoming.png \
-	linphone-call_status-outgoing.png \
+	linphone-call-status-outgoing.png \
 	linphone-contact-bookmarked.png \
 	linphone-contact-not-bookmarked.png
 
@@ -50,6 +50,6 @@ dist_actions48icons_DATA= \
 	linphone-add-call.png \
 	linphone-start-call.png \
 	linphone-stop-call.png \
-	linphone-hold-on \
-	linphone-hold-off
-)
+	linphone-hold-on.png \
+	linphone-hold-off.png
+
