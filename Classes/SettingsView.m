@@ -754,15 +754,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-#pragma mark - UIAlertView delegate
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (buttonIndex != 1)
-		return; /* cancel */
-	else
-		[self goToWizard];
-}
-
 #pragma mark - Mail composer for sending logs
 
 - (void)sendEmailWithDebugAttachments {
