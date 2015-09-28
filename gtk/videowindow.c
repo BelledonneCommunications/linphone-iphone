@@ -227,13 +227,14 @@ static GtkWidget *show_video_controls(GtkWidget *video_window){
 		gboolean isfullscreen=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(video_window),"fullscreen"));
 		const char *stock_button=isfullscreen ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN;
 		gint response_id=isfullscreen ? GTK_RESPONSE_NO : GTK_RESPONSE_YES ;
+		GtkWidget *image = gtk_image_new_from_icon_name(linphone_gtk_get_ui_config("stop_call_icon_name","linphone-stop-call"), GTK_ICON_SIZE_BUTTON);
 		gint timeout;
 		GtkWidget *button;
 		w=gtk_dialog_new_with_buttons("",GTK_WINDOW(video_window),GTK_DIALOG_DESTROY_WITH_PARENT,stock_button,response_id,NULL);
 		gtk_window_set_opacity(GTK_WINDOW(w),0.5);
 		gtk_window_set_decorated(GTK_WINDOW(w),FALSE);
 		button=gtk_button_new_with_label(_("Hang up"));
-		gtk_button_set_image(GTK_BUTTON(button),create_pixmap (linphone_gtk_get_ui_config("stop_call_icon","stopcall-small.png")));
+		gtk_button_set_image(GTK_BUTTON(button), image);
 		gtk_widget_show(button);
 		gtk_dialog_add_action_widget(GTK_DIALOG(w),button,GTK_RESPONSE_REJECT);
 		g_signal_connect(w,"response",(GCallback)on_controls_response,video_window);
