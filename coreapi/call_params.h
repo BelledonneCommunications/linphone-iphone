@@ -102,6 +102,13 @@ LINPHONE_PUBLIC void linphone_call_params_enable_early_media_sending(LinphoneCal
 LINPHONE_PUBLIC void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t enabled);
 
 /**
+ * Enable audio stream.
+ * @param[in] cp LinphoneCallParams object
+ * @param[in] enabled A boolean value telling whether to enable audio or not.
+**/
+LINPHONE_PUBLIC void linphone_call_params_enable_audio(LinphoneCallParams *cp, bool_t enabled);
+
+/**
  * Enable video stream.
  * @param[in] cp LinphoneCallParams object
  * @param[in] enabled A boolean value telling whether to enable video or not.
@@ -253,6 +260,13 @@ LINPHONE_PUBLIC void linphone_call_params_set_record_file(LinphoneCallParams *cp
  * @param[in] name The session name to be used.
 **/
 LINPHONE_PUBLIC void linphone_call_params_set_session_name(LinphoneCallParams *cp, const char *name);
+
+/**
+ * Tell whether audio is enabled or not.
+ * @param[in] cp LinphoneCallParams object
+ * @return A boolean value telling whether audio is enabled or not.
+**/
+LINPHONE_PUBLIC bool_t linphone_call_params_audio_enabled(const LinphoneCallParams *cp);
 
 /**
  * Tell whether video is enabled or not.

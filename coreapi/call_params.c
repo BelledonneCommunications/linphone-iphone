@@ -116,6 +116,12 @@ void linphone_call_params_enable_low_bandwidth(LinphoneCallParams *cp, bool_t en
 	cp->low_bandwidth=enabled;
 }
 
+void linphone_call_params_enable_audio(LinphoneCallParams *cp, bool_t enabled){
+	cp->has_audio=enabled;
+	if (enabled && cp->audio_dir==LinphoneMediaDirectionInactive)
+		cp->audio_dir=LinphoneMediaDirectionSendRecv;
+}
+
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 	cp->has_video=enabled;
 	if (enabled && cp->video_dir==LinphoneMediaDirectionInactive)
@@ -206,6 +212,10 @@ void linphone_call_params_set_session_name(LinphoneCallParams *cp, const char *n
 	if (name) cp->session_name=ms_strdup(name);
 }
 
+bool_t linphone_call_params_audio_enabled(const LinphoneCallParams *cp){
+	return cp->has_audio;
+}
+
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
 }
@@ -277,6 +287,7 @@ LinphoneCallParams * linphone_call_params_new(void) {
 	LinphoneCallParams *cp=belle_sip_object_new(LinphoneCallParams);
 	cp->audio_dir=LinphoneMediaDirectionSendRecv;
 	cp->video_dir=LinphoneMediaDirectionSendRecv;
+	cp->has_audio=TRUE;
 	cp->realtimetext_enabled = FALSE;
 	return cp;
 }

@@ -131,6 +131,7 @@ struct _LinphoneCallParams{
 	LinphonePrivacyMask privacy;
 	LinphoneMediaDirection audio_dir;
 	LinphoneMediaDirection video_dir;
+	bool_t has_audio;
 	bool_t has_video;
 	bool_t avpf_enabled; /* RTCP feedback messages are enabled */
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
