@@ -32,29 +32,32 @@ static void eof_callback(LinphonePlayer *player, void *user_data) {
 	*eof = TRUE;
 }
 
-static void play_file(const char *filename, bool_t unsupported_format, const char *audio_mime, const char *video_mime) {
+static void play_file(const char *filename, bool_t supported_format, const char *audio_mime, const char *video_mime) {
 	LinphoneCoreManager *lc_manager;
 	LinphonePlayer *player;
 	int res, time = 0;
 	bool_t eof = FALSE;
+	bool_t audio_codec_supported;
+	bool_t video_codec_supported;
 
 	lc_manager = linphone_core_manager_new("marie_rc");
 	BC_ASSERT_PTR_NOT_NULL(lc_manager);
 	if(lc_manager == NULL) return;
+	
+	audio_codec_supported = (audio_mime && ms_filter_codec_supported(audio_mime));
+	video_codec_supported = (video_mime && ms_filter_codec_supported(video_mime));
 
 	player = linphone_core_create_local_player(lc_manager->lc, ms_snd_card_manager_get_default_card(ms_snd_card_manager_get()), video_stream_get_default_video_renderer(), 0);
 	BC_ASSERT_PTR_NOT_NULL(player);
 	if(player == NULL) goto fail;
 
 	res = linphone_player_open(player, filename, eof_callback, &eof);
-	if(unsupported_format
-			|| (audio_mime == NULL && video_mime == NULL)
-			|| (video_mime == NULL && audio_mime && !ms_filter_codec_supported(audio_mime))
-			|| (audio_mime == NULL && video_mime && !ms_filter_codec_supported(video_mime))) {
-		BC_ASSERT_EQUAL(res, -1, int, "%d");
-	} else {
+	if(supported_format && (audio_codec_supported || video_codec_supported)) {
 		BC_ASSERT_EQUAL(res, 0, int, "%d");
+	} else {
+		BC_ASSERT_EQUAL(res, -1, int, "%d");
 	}
+	
 	if(res == -1) goto fail;
 
 	res = linphone_player_start(player);
@@ -74,7 +77,7 @@ static void sintel_trailer_opus_h264_test(void) {
 	char *filename = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 	const char *audio_mime = "opus";
 	const char *video_mime = "H264";
-	play_file(filename, !linphone_local_player_matroska_supported(), audio_mime, video_mime);
+	play_file(filename, linphone_local_player_matroska_supported(), audio_mime, video_mime);
 	ms_free(filename);
 }
 
@@ -82,7 +85,7 @@ static void sintel_trailer_pcmu_h264_test(void) {
 	char *filename = bc_tester_res("sounds/sintel_trailer_pcmu_h264.mkv");
 	const char *audio_mime = "pcmu";
 	const char *video_mime = "H264";
-	play_file(filename, !linphone_local_player_matroska_supported(), audio_mime, video_mime);
+	play_file(filename, linphone_local_player_matroska_supported(), audio_mime, video_mime);
 	ms_free(filename);
 }
 
@@ -90,7 +93,7 @@ static void sintel_trailer_opus_vp8_test(void) {
 	char *filename = bc_tester_res("sounds/sintel_trailer_opus_vp8.mkv");
 	const char *audio_mime = "opus";
 	const char *video_mime = "VP8";
-	play_file(filename, !linphone_local_player_matroska_supported(), audio_mime, video_mime);
+	play_file(filename, linphone_local_player_matroska_supported(), audio_mime, video_mime);
 	ms_free(filename);
 }
 
