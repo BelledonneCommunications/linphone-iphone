@@ -57,8 +57,14 @@
     <ProjectReference Include="..\..\..\..\..\mswebrtc\build\windows10\libmswebrtc\libmswebrtc.vcxproj">
       <Project>{878cf9d3-9761-479e-a715-a1de9f99cb78}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\mswinrtvid\windows10\libmswinrtvid\libmswinrtvid.vcxproj">
+      <Project>{2d0e44c4-e51d-4911-b876-345d1e5e5209}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\zlib\build\windows10\zlib\zlib.vcxproj">
       <Project>{a34f450d-392d-4660-9618-810bd695b3b0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\mediastreamer2\build\windows10\mswinrtjpeg2yuv\mswinrtjpeg2yuv.vcxproj">
+      <Project>{545f846d-7f19-4d6d-a50b-172a7c9b61e7}</Project>
     </ProjectReference>
     <ProjectReference Include="..\liblinphone-tester-static\liblinphone-tester-static.vcxproj">
       <Project>{9eb3fe8d-2d91-4d29-a3bb-98ddb51d45b7}</Project>
