@@ -169,6 +169,7 @@ static NSString *const kAllTestsName = @"Run All tests";
 		LOGE(@"Test already in progress");
 		return;
 	}
+
 	in_progress = TRUE;
 	for (NSIndexPath *index in paths) {
 		TestItem *test = _tests[index.row];
@@ -198,6 +199,7 @@ static NSString *const kAllTestsName = @"Run All tests";
 			  LOGI(@"Test Passed!");
 			  test.state = TestStatePassed;
 		  }
+		  [self.tableView scrollToRowAtIndexPath:index atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
 		  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 			[self updateItem:paths withAnimation:TRUE];
 		  });
