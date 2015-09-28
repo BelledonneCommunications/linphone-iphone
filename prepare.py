@@ -238,7 +238,7 @@ def check_tools():
         sudo mv gas-preprocessor.pl {}""".format(package_manager_info[detect_package_manager() + "-binary-path"]))
         reterr = 1
 
-    if not os.path.isdir("submodules/linphone/mediastreamer2") or not os.path.isdir("submodules/linphone/oRTP"):
+    if not os.path.isdir("submodules/linphone/mediastreamer2/src") or not os.path.isdir("submodules/linphone/oRTP/src"):
         error("Missing some git submodules. Did you run:\n\tgit submodule update --init --recursive")
         reterr = 1
 
