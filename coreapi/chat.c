@@ -319,8 +319,8 @@ void linphone_chat_room_set_user_data(LinphoneChatRoom *cr, void *ud) {
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	/*stubed rtt text*/
 	if (cr->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(cr->call))) {
-		char crlf[2] = "\r\n";
-		linphone_chat_message_put_char(msg, *(uint16_t*)crlf); // CRLF
+		uint32_t new_line = 0x2028;
+		linphone_chat_message_put_char(msg, new_line); // New Line
 		linphone_chat_message_set_state(msg, LinphoneChatMessageStateDelivered);
 		linphone_chat_message_unref(msg);
 		return;
@@ -806,17 +806,16 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 }
 
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call) {
-	char crlf[2] = "\r\n";
-	
+	uint32_t new_line = 0x2028;
 	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
 		if (cr->pending_message == NULL) {
 			cr->pending_message = linphone_chat_room_create_message(cr, "");
 		}
 		
-		if (character == (uint32_t)*(uint16_t*)crlf) {
+		if (character == new_line) {
 			// End of message
 			LinphoneChatMessage *msg = cr->pending_message;
-			ms_message("CRLF received, forge a message with content %s", cr->pending_message->message);
+			ms_message("New line received, forge a message with content %s", cr->pending_message->message);
 			
 			linphone_chat_message_set_from(msg, cr->peer_url);
 			if (msg->to)
