@@ -41,6 +41,4 @@
 - (void)updateChatEntry:(LinphoneChatMessage *)chat;
 - (void)setChatRoom:(LinphoneChatRoom *)room;
 
-+ (CGSize)viewSize:(LinphoneChatMessage *)message width:(int)width;
-
 @end

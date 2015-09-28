@@ -114,6 +114,7 @@
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 	}
+	[super setEditing:editing animated:animated];
 	if (editing) {
 		[deleteButton setAlpha:1.0f];
 	} else {

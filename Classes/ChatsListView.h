@@ -28,10 +28,15 @@
 }
 
 @property(nonatomic, strong) IBOutlet ChatsListTableView *tableController;
-@property(nonatomic, strong) IBOutlet UIToggleButton *editButton;
+@property(nonatomic, strong) IBOutlet UIButton *editButton;
 @property(nonatomic, strong) IBOutlet UITextField *addressField;
+@property(weak, nonatomic) IBOutlet UIButton *toggleSelectionButton;
+@property(weak, nonatomic) IBOutlet UIButton *backButton;
+@property(weak, nonatomic) IBOutlet UIButton *addButton;
+@property(weak, nonatomic) IBOutlet UIButton *deleteButton;
 
 - (IBAction)onAddClick:(id)event;
-- (IBAction)onEditClick:(id)event;
+- (IBAction)onEditToggle:(id)event;
+- (IBAction)onSelectionToggle:(id)sender;
 
 @end

@@ -22,10 +22,6 @@
 
 @implementation ChatsListView
 
-@synthesize tableController;
-@synthesize editButton;
-@synthesize addressField;
-
 #pragma mark - Lifecycle Functions
 
 - (id)init {
@@ -40,9 +36,7 @@
 											 selector:@selector(textReceivedEvent:)
 												 name:kLinphoneMessageReceived
 											   object:nil];
-	if ([tableController isEditing])
-		[tableController setEditing:FALSE animated:FALSE];
-	[editButton setOff];
+	[self setEditing:NO];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -54,7 +48,7 @@
 #pragma mark - Event Functions
 
 - (void)textReceivedEvent:(NSNotification *)notif {
-	[tableController loadData];
+	[_tableController loadData];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -82,7 +76,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)startChatRoom {
 	// Push ChatRoom
 	LinphoneChatRoom *room =
-		linphone_core_get_chat_room_from_uri([LinphoneManager getLc], [addressField.text UTF8String]);
+		linphone_core_get_chat_room_from_uri([LinphoneManager getLc], [_addressField.text UTF8String]);
 	if (room != nil) {
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
@@ -95,10 +89,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 											  otherButtonTitles:nil];
 		[alert show];
 	}
-	addressField.text = @"";
+	_addressField.text = @"";
 }
+
 - (IBAction)onAddClick:(id)event {
-	if ([[addressField text] length] == 0) { // if no address is manually set, lauch address book
+	if (_addressField.text.length == 0) { // if no address is manually set, lauch address book
 		[ContactSelection setSelectionMode:ContactSelectionModeMessage];
 		[ContactSelection setAddAddress:nil];
 		[ContactSelection setSipFilter:[LinphoneManager instance].contactFilter];
@@ -110,15 +105,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (IBAction)onEditClick:(id)event {
-	[tableController setEditing:![tableController isEditing] animated:TRUE];
+- (void)setEditing:(BOOL)editing {
+	[_tableController setEditing:editing animated:TRUE];
+	_toggleSelectionButton.hidden = _backButton.hidden = _deleteButton.hidden = !editing;
+	_addButton.hidden = _editButton.hidden = editing;
+}
+
+- (IBAction)onEditToggle:(id)event {
+	[self setEditing:!_tableController.isEditing];
+}
+
+- (IBAction)onSelectionToggle:(id)sender {
 }
 
 #pragma mark - UITextFieldDelegate Functions
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[addressField resignFirstResponder];
-	if ([[addressField text] length] > 0)
+	[_addressField resignFirstResponder];
+	if (_addressField.text.length > 0)
 		[self startChatRoom];
 	return YES;
 }

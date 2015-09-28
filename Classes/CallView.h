@@ -51,6 +51,8 @@
 @property(nonatomic, strong) IBOutlet UICamSwitch *videoCameraSwitch;
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView *videoWaitingForFirstImage;
 
+@property(weak, nonatomic) IBOutlet UIView *callView;
+
 @property(nonatomic, strong) IBOutlet UIPauseButton *pauseButton;
 @property(nonatomic, strong) IBOutlet UIButton *optionsConferenceButton;
 @property(nonatomic, strong) IBOutlet UIVideoButton *videoButton;

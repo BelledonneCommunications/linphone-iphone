@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="addressLabel" destination="8bV-K4-3TY" id="aqZ-1x-isL"/>
                 <outlet property="avatarImage" destination="fZy-K5-yQp" id="hOl-IQ-c9B"/>
+                <outlet property="callView" destination="9" id="TKY-dp-lKv"/>
                 <outlet property="durationLabel" destination="Oy8-QO-Jwb" id="mUT-TX-gLp"/>
                 <outlet property="eightButton" destination="DRh-kc-UVM" id="BPp-sh-qBg"/>
                 <outlet property="fiveButton" destination="8Da-zK-V7e" id="URc-Ct-fu0"/>
@@ -116,7 +117,7 @@
                                             </accessibility>
                                         </view>
                                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254" y="355" width="113" height="140"/>
+                                            <rect key="frame" x="254.00000029960563" y="354.99999967643191" width="113" height="140"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>

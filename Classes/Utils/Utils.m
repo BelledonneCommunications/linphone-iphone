@@ -353,7 +353,12 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 }
 
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
-	label.text = [FastAddressBook displayNameForAddress:addr];
+	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	if (contact) {
+		[ContactDisplay setDisplayNameLabel:label forContact:contact];
+	} else {
+		label.text = [FastAddressBook displayNameForAddress:addr];
+	}
 }
 
 @end

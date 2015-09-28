@@ -32,21 +32,14 @@
 
 - (id)initWithIdentifier:(NSString *)identifier {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
-		NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@"UIChatBubbleTextCell" owner:self options:nil];
-		[self.contentView addSubview:[arrayOfViews objectAtIndex:arrayOfViews.count - 1]];
-
-#if 0
-		// shift message box, otherwise it will collide with the bubble
-		CGRect messageCoords = _messageText.frame;
-		messageCoords.origin.x += 2;
-		messageCoords.origin.y += 2;
-		messageCoords.size.width -= 5;
-
-		_messageText.frame = messageCoords;
-		_messageText.allowSelectAll = TRUE;
-#endif
+		NSArray *arrayOfViews =
+			[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
+		// resize cell to match .nib size. It is needed when resized the cell to
+		// correctly adapt its height too
+		UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:arrayOfViews.count - 1]);
+		[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
+		[self addSubview:sub];
 	}
-
 	return self;
 }
 
@@ -98,7 +91,7 @@
 	NSAttributedString *attr_text =
 		[[NSAttributedString alloc] initWithString:self.textMessage
 										attributes:@{
-											NSFontAttributeName : [UIFont systemFontOfSize:17.0],
+											NSFontAttributeName : _messageText.font,
 											NSForegroundColorAttributeName : [UIColor darkGrayColor]
 										}];
 	_messageText.attributedText = attr_text;
@@ -110,7 +103,7 @@
 	LinphoneChatMessageState state = linphone_chat_message_get_state(message);
 	BOOL outgoing = linphone_chat_message_is_outgoing(message);
 
-	_backgroundColor.image = _bottomBarColor.image = [UIImage imageNamed:outgoing ? @"color_A" : @"color_F"];
+	//	_backgroundColor.image = _bottomBarColor.image = [UIImage imageNamed:outgoing ? @"color_A" : @"color_F"];
 
 	if (!outgoing) {
 		_statusImage.accessibilityValue = @"incoming";
@@ -153,20 +146,6 @@
 	_deleteButton.hidden = !editing;
 	if (animated) {
 		[UIView commitAnimations];
-	}
-}
-
-#pragma mark - View Functions
-
-- (void)layoutSubviews {
-	[super layoutSubviews];
-	if (message != nil) {
-		BOOL is_outgoing = linphone_chat_message_is_outgoing(message);
-		CGRect newFrame;
-		newFrame.size = [ChatConversationTableView viewSize:message width:self.frame.size.width];
-		newFrame.origin.y = 0.0f;
-		newFrame.origin.x = is_outgoing ? self.contentView.frame.size.width - newFrame.size.width : 0;
-		self.contentView.frame = self.frame = newFrame;
 	}
 }
 
@@ -222,6 +201,67 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	UIChatBubbleTextCell *thiz = (__bridge UIChatBubbleTextCell *)linphone_chat_message_get_user_data(msg);
 	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
 	[thiz update];
+}
+
+#pragma mark - Bubble size computing
+
+- (CGSize)viewSizeWithWidth:(int)width {
+	static const CGFloat TEXT_MIN_HEIGHT = 50.0f;
+	static const CGFloat TEXT_MIN_WIDTH = 150.0f;
+	static const CGFloat MARGIN_WIDTH = 47 + 10;
+	static const CGFloat MARGIN_HEIGHT = 12 + 10;
+	static const CGFloat IMAGE_HEIGHT = 100.0f; // TODO: move that in bubblephpto
+	static const CGFloat IMAGE_WIDTH = 100.0f;
+
+	CGSize messageSize;
+	int messageAvailableWidth = width - MARGIN_WIDTH;
+
+	const char *url = linphone_chat_message_get_external_body_url(message);
+	if (url == nil && linphone_chat_message_get_file_transfer_information(message) == NULL) {
+		NSString *text = [UIChatBubbleTextCell TextMessageForChat:message];
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+		if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
+			messageSize =
+				[text boundingRectWithSize:CGSizeMake(messageAvailableWidth, CGFLOAT_MAX)
+								   options:(NSStringDrawingUsesLineFragmentOrigin |
+											NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading)
+								attributes:@{
+									NSFontAttributeName : _messageText.font
+								} context:nil]
+					.size;
+		} else
+#endif
+		{
+			messageSize = [text sizeWithFont:_messageText.font
+						   constrainedToSize:CGSizeMake(messageAvailableWidth, 10000.0f)
+							   lineBreakMode:NSLineBreakByTruncatingTail];
+		}
+	} else {
+		messageSize = CGSizeMake(IMAGE_WIDTH, IMAGE_HEIGHT);
+	}
+
+	messageSize.width = MAX(TEXT_MIN_WIDTH, messageSize.width);
+	messageSize.height = MAX(TEXT_MIN_HEIGHT, messageSize.height);
+
+	CGSize bubbleSize = messageSize;
+	bubbleSize.width += MARGIN_WIDTH;
+	bubbleSize.height += MARGIN_HEIGHT;
+
+	LOGE(@"%d %fx%f for %@", width, bubbleSize.width, bubbleSize.height,
+		 [UIChatBubbleTextCell TextMessageForChat:message]);
+	return bubbleSize;
+}
+
+- (void)layoutSubviews {
+	[super layoutSubviews];
+	if (message != nil) {
+		BOOL is_outgoing = linphone_chat_message_is_outgoing(message);
+		CGRect bubbleFrame = _bubbleView.frame;
+		bubbleFrame.size = [self viewSizeWithWidth:self.frame.size.width];
+		bubbleFrame.origin.x = is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0;
+		_bubbleView.frame = bubbleFrame;
+	}
 }
 
 @end

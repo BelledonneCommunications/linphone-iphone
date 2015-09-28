@@ -7,7 +7,12 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatsListView">
             <connections>
+                <outlet property="addButton" destination="Z5G-IF-PBY" id="Tzw-rz-Bwe"/>
+                <outlet property="backButton" destination="10" id="FsP-zG-prA"/>
+                <outlet property="deleteButton" destination="e4g-nB-qYa" id="NMN-nd-I3d"/>
+                <outlet property="editButton" destination="UxT-TB-Ri4" id="ycg-Aw-nDB"/>
                 <outlet property="tableController" destination="4" id="18"/>
+                <outlet property="toggleSelectionButton" destination="9" id="I4D-lq-R48"/>
                 <outlet property="view" destination="5" id="14"/>
             </connections>
         </placeholder>
@@ -45,7 +50,7 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <connections>
-                                        <action selector="onAddClick:" destination="-1" eventType="touchUpInside" id="20"/>
+                                        <action selector="onEditToggle:" destination="-1" eventType="touchUpInside" id="ye7-fY-hzW"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Z5G-IF-PBY" userLabel="addButton">
@@ -61,7 +66,7 @@
                                         <action selector="onAddClick:" destination="-1" eventType="touchUpInside" id="g4q-By-6nW"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="selectAllButton" customClass="UIToggleButton">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="toggleSelectionButton">
                                     <rect key="frame" x="211.00000607732113" y="0.0" width="76" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
@@ -70,8 +75,11 @@
                                     <state key="normal" image="select_all.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <connections>
+                                        <action selector="onSelectionToggle:" destination="-1" eventType="touchUpInside" id="cGl-4j-f3b"/>
+                                    </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="UxT-TB-Ri4" userLabel="editButton" customClass="UIToggleButton">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="UxT-TB-Ri4" userLabel="editButton">
                                     <rect key="frame" x="300" y="0.0" width="75" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
@@ -81,10 +89,10 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <connections>
-                                        <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="Paf-as-rSa"/>
+                                        <action selector="onEditToggle:" destination="-1" eventType="touchUpInside" id="WZN-yP-LAu"/>
                                     </connections>
                                 </button>
-                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="e4g-nB-qYa" userLabel="deleteButton" customClass="UIToggleButton">
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="e4g-nB-qYa" userLabel="deleteButton">
                                     <rect key="frame" x="300" y="0.0" width="75" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
@@ -96,7 +104,7 @@
                                 </button>
                             </subviews>
                         </view>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="6" userLabel="tableView">
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="6" userLabel="tableView">
                             <rect key="frame" x="0.0" y="42" width="375" height="517"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

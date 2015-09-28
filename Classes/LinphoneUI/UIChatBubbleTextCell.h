@@ -34,6 +34,9 @@
 @property(nonatomic, weak) IBOutlet UIButton *deleteButton;
 @property(weak, nonatomic) IBOutlet UIImageView *bottomBarColor;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
+@property(strong, nonatomic) IBOutlet UIView *bubbleView;
+
+- (CGSize)viewSizeWithWidth:(int)width;
 
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 

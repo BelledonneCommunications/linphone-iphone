@@ -10,6 +10,7 @@
                 <outlet property="avatarImage" destination="P1c-sD-eOv" id="h5P-hl-jbX"/>
                 <outlet property="backgroundColor" destination="q2R-Zv-e5a" id="35T-Du-1AF"/>
                 <outlet property="bottomBarColor" destination="mlr-pl-B6T" id="4Lk-Vn-E8h"/>
+                <outlet property="bubbleView" destination="ucH-2r-rar" id="XWU-yi-1z8"/>
                 <outlet property="contactDateLabel" destination="GRe-ur-aSb" id="DQA-v4-IjX"/>
                 <outlet property="messageText" destination="CYa-If-oB4" id="7xm-UF-1qB"/>
                 <outlet property="statusImage" destination="nLy-JO-TyL" id="9uf-2G-m8d"/>
@@ -21,63 +22,73 @@
                 <action selector="onResendClick:" destination="-2" id="Xsy-zb-b7x"/>
             </connections>
         </tapGestureRecognizer>
-        <view contentMode="scaleToFill" id="vdk-RV-QRU">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
-            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+        <view contentMode="scaleToFill" id="ucH-2r-rar">
+            <rect key="frame" x="0.0" y="0.0" width="357" height="199"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" alpha="0.19999999999999968" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="q2R-Zv-e5a" userLabel="backgroundColor">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                </imageView>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar.png" id="P1c-sD-eOv" userLabel="avatarImage" customClass="UIRoundedImageView">
-                    <rect key="frame" x="8" y="5" width="50" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <accessibility key="accessibilityConfiguration" label="Contact avatar">
-                        <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
-                        <bool key="isElement" value="YES"/>
-                    </accessibility>
-                </imageView>
-                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="Placeholder text is another very long ipsem lum dolorem...and it continues" id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
-                    <rect key="frame" x="66" y="23" width="246" height="34"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                </textView>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat_message_inprogress.png" id="nLy-JO-TyL" userLabel="statusImage">
-                    <rect key="frame" x="305" y="0.0" width="15" height="15"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                </imageView>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="mlr-pl-B6T" userLabel="bottomBarColor">
-                    <rect key="frame" x="0.0" y="58" width="320" height="2"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                </imageView>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="GRe-ur-aSb" userLabel="contactDateLabel">
-                    <rect key="frame" x="66" y="0.0" width="246" height="27"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <accessibility key="accessibilityConfiguration" label="Contact name"/>
-                    <attributedString key="attributedText">
-                        <fragment content="11:35 John ">
-                            <attributes>
-                                <color key="NSColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <font key="NSFont" size="16" name="HelveticaNeue"/>
-                                <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="truncatingTail" baseWritingDirection="natural"/>
-                            </attributes>
-                        </fragment>
-                        <fragment content="Doe">
-                            <attributes>
-                                <color key="NSColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <font key="NSFont" size="16" name="HelveticaNeue-Bold"/>
-                                <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="truncatingTail" baseWritingDirection="natural"/>
-                            </attributes>
-                        </fragment>
-                    </attributedString>
-                    <nil key="highlightedColor"/>
-                </label>
+                <view contentMode="scaleToFill" id="vdk-RV-QRU" userLabel="innerView">
+                    <rect key="frame" x="6" y="5" width="345" height="189"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" alpha="0.19999999999999968" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="q2R-Zv-e5a" userLabel="backgroundColor">
+                            <rect key="frame" x="0.0" y="0.0" width="345" height="189"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                        </imageView>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar.png" id="P1c-sD-eOv" userLabel="avatarImage" customClass="UIRoundedImageView">
+                            <rect key="frame" x="8" y="2" width="40" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Contact avatar">
+                                <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
+                                <bool key="isElement" value="YES"/>
+                            </accessibility>
+                        </imageView>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="GRe-ur-aSb" userLabel="contactDateLabel">
+                            <rect key="frame" x="48" y="0.0" width="246" height="20"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Contact name"/>
+                            <attributedString key="attributedText">
+                                <fragment content="11:35 John ">
+                                    <attributes>
+                                        <color key="NSColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <font key="NSFont" size="16" name="HelveticaNeue"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="truncatingTail" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                                <fragment content="Doe">
+                                    <attributes>
+                                        <color key="NSColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <font key="NSFont" size="16" name="HelveticaNeue-Bold"/>
+                                        <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="truncatingTail" baseWritingDirection="natural"/>
+                                    </attributes>
+                                </fragment>
+                            </attributedString>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
+                            <rect key="frame" x="48" y="10" width="299" height="168"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <string key="text">static const CGFloat CELL_MESSAGE_WIDTH_MARGIN = 26.0f + 10.0f + 48;
+static const CGFloat CELL_MESSAGE_HEIGHT_MARGIN = 10.0f + 10;
+static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
+static const CGFloat CELL_IMAGE_WIDTH = 100.0f;</string>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            <dataDetectorType key="dataDetectorTypes" link="YES"/>
+                        </textView>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat_message_inprogress.png" id="nLy-JO-TyL" userLabel="statusImage">
+                            <rect key="frame" x="330" y="0.0" width="15" height="15"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        </imageView>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="mlr-pl-B6T" userLabel="bottomBarColor">
+                            <rect key="frame" x="0.0" y="188" width="345" height="1"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        </imageView>
+                    </subviews>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="339" y="43"/>
         </view>
     </objects>
     <resources>

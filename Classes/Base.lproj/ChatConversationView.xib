@@ -8,12 +8,10 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatConversationView">
             <connections>
                 <outlet property="addressLabel" destination="40" id="43"/>
-                <outlet property="avatarImage" destination="41" id="44"/>
                 <outlet property="chatView" destination="49" id="54"/>
                 <outlet property="composeIndicatorView" destination="fx4-ao-53M" id="xk5-nK-lur"/>
                 <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
                 <outlet property="editButton" destination="10" id="35"/>
-                <outlet property="headerView" destination="39" id="45"/>
                 <outlet property="messageField" destination="CPp-ts-xy0" id="wPX-Uo-vZQ"/>
                 <outlet property="messageView" destination="14" id="89"/>
                 <outlet property="pictureButton" destination="73" id="84"/>
@@ -40,7 +38,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="72" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -53,8 +51,27 @@
                                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="12"/>
                                     </connections>
                                 </button>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Contact1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="40" userLabel="addressLabel">
+                                    <rect key="frame" x="75" y="0.0" width="150" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact name">
+                                        <accessibilityTraits key="traits" none="YES"/>
+                                    </accessibility>
+                                    <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wzg-i0-spp" userLabel="callButton" customClass="UIIconButton">
+                                    <rect key="frame" x="225" y="0.0" width="75" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <state key="normal" image="status_busy.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_start_body_disabled.png"/>
+                                    <state key="highlighted" image="call_start_body_over.png"/>
+                                </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="10" userLabel="editButton" customClass="UIToggleButton">
-                                    <rect key="frame" x="303" y="0.0" width="72" height="40"/>
+                                    <rect key="frame" x="300" y="0.0" width="75" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -73,42 +90,8 @@
                             <rect key="frame" x="0.0" y="44" width="375" height="515"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <view clipsSubviews="YES" contentMode="scaleToFill" id="39" userLabel="headerView">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="80"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                    <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar.png" id="41" userLabel="avatarImage" customClass="UIRoundedImageView">
-                                            <rect key="frame" x="20" y="6" width="65" height="65"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <accessibility key="accessibilityConfiguration" label="Contact avatar">
-                                                <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
-                                                <bool key="isElement" value="YES"/>
-                                            </accessibility>
-                                        </imageView>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Contact1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="40" userLabel="addressLabel">
-                                            <rect key="frame" x="93" y="17" width="189" height="43"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                            <accessibility key="accessibilityConfiguration" label="Contact name">
-                                                <accessibilityTraits key="traits" none="YES"/>
-                                            </accessibility>
-                                            <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wzg-i0-spp" userLabel="callButton" customClass="UIIconButton">
-                                            <rect key="frame" x="287" y="6" width="65" height="65"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <state key="normal" image="call_start_body_default.png">
-                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                            </state>
-                                            <state key="disabled" image="call_start_body_disabled.png"/>
-                                            <state key="highlighted" image="call_start_body_over.png"/>
-                                        </button>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="tableView">
-                                    <rect key="frame" x="0.0" y="80" width="375" height="338"/>
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="tableView">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="418"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <gestureRecognizers/>
@@ -195,9 +178,7 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="avatar.png" width="261" height="261"/>
         <image name="back.png" width="25" height="22"/>
-        <image name="call_start_body_default.png" width="52" height="52"/>
         <image name="call_start_body_disabled.png" width="52" height="52"/>
         <image name="call_start_body_over.png" width="52" height="52"/>
         <image name="chat_picture_default.png" width="25" height="19"/>
@@ -207,6 +188,7 @@
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="edit_list.png" width="31" height="29"/>
+        <image name="status_busy.png" width="28" height="29"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
