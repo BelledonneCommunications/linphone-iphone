@@ -1327,6 +1327,104 @@ static void real_time_text_message(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void real_time_text_conversation(void) {
+	LinphoneChatRoom *pauline_chat_room, *marie_chat_room;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCallParams *marie_params = linphone_core_create_default_call_parameters(marie->lc);
+	LinphoneCall *pauline_call, *marie_call;
+	linphone_call_params_enable_realtime_text(marie_params,TRUE);
+
+	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+	marie_call=linphone_core_get_current_call(marie->lc);
+	BC_ASSERT_TRUE(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(pauline_call)));
+
+	pauline_chat_room = linphone_call_get_chat_room(pauline_call);
+	BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
+	marie_chat_room = linphone_call_get_chat_room(marie_call);
+	BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
+	if (pauline_chat_room && marie_chat_room) {
+		const char* message1_1 = "Lorem Ipsum";
+		const char* message1_2 = "Muspi Merol";
+		const char* message2_1 = "Belledonnum Communicatum";
+		const char* message2_2 = "Mutacinummoc Munnodelleb";
+		int i;
+		LinphoneChatMessage* pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+		LinphoneChatMessage* marie_rtt_message = linphone_chat_room_create_message(marie_chat_room,NULL);
+
+		for (i = 0; i < strlen(message1_1); i++) {
+			linphone_chat_message_put_char(pauline_rtt_message, message1_1[i]);
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+			BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message1_1[i], char, "%c");
+			
+			linphone_chat_message_put_char(marie_rtt_message, message1_2[i]);
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+			BC_ASSERT_EQUAL(linphone_chat_room_get_char(pauline_chat_room), message1_2[i], char, "%c");
+		}
+
+		/*Commit the message, triggers a NEW LINE in T.140 */
+		linphone_chat_room_send_chat_message(pauline_chat_room, pauline_rtt_message);
+		linphone_chat_room_send_chat_message(marie_chat_room, marie_rtt_message);
+
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+		{
+			LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
+			BC_ASSERT_PTR_NOT_NULL(msg);
+			if (msg) {
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message1_1);
+			}
+		}
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageReceived, 1));
+		{
+			LinphoneChatMessage * msg = pauline->stat.last_received_chat_message;
+			BC_ASSERT_PTR_NOT_NULL(msg);
+			if (msg) {
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message1_2);
+			}
+		}
+		
+		reset_counters(&pauline->stat);
+		reset_counters(&marie->stat);
+		pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+		marie_rtt_message = linphone_chat_room_create_message(marie_chat_room,NULL);
+		
+		for (i = 0; i < strlen(message2_1); i++) {
+			linphone_chat_message_put_char(pauline_rtt_message, message2_1[i]);
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+			BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message2_1[i], char, "%c");
+			
+			linphone_chat_message_put_char(marie_rtt_message, message2_2[i]);
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+			BC_ASSERT_EQUAL(linphone_chat_room_get_char(pauline_chat_room), message2_2[i], char, "%c");
+		}
+
+		/*Commit the message, triggers a NEW LINE in T.140 */
+		linphone_chat_room_send_chat_message(pauline_chat_room, pauline_rtt_message);
+		linphone_chat_room_send_chat_message(marie_chat_room, marie_rtt_message);
+
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+		{
+			LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
+			BC_ASSERT_PTR_NOT_NULL(msg);
+			if (msg) {
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message2_1);
+			}
+		}
+		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageReceived, 1));
+		{
+			LinphoneChatMessage * msg = pauline->stat.last_received_chat_message;
+			BC_ASSERT_PTR_NOT_NULL(msg);
+			if (msg) {
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message2_2);
+			}
+		}
+	}
+	end_call(marie, pauline);
+	linphone_call_params_destroy(marie_params);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
 
 void file_transfer_with_http_proxy(void) {
 	if (transport_supported(LinphoneTransportTls)) {
@@ -1377,6 +1475,7 @@ test_t message_tests[] = {
 	{"Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently},
 	{"Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom},
 	{"Real Time Text message", real_time_text_message},
+	{"Real Time Text conversation", real_time_text_conversation},
 };
 
 test_suite_t message_test_suite = {
