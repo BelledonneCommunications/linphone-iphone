@@ -327,7 +327,6 @@ void linphone_gtk_destroy_main_window() {
 }
 
 static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name){
-	static const char *icon_path=NULL;
 	static const char *hiddens=NULL;
 	static const char *shown=NULL;
 	static bool_t config_loaded=FALSE;
@@ -335,28 +334,10 @@ static void linphone_gtk_configure_window(GtkWidget *w, const char *window_name)
 	if (config_loaded==FALSE){
 		hiddens=linphone_gtk_get_ui_config("hidden_widgets",NULL);
 		shown=linphone_gtk_get_ui_config("shown_widgets",NULL);
-		icon_path=linphone_gtk_get_ui_config("icon",LINPHONE_ICON);
 		config_loaded=TRUE;
 	}
-	if (hiddens)
-		linphone_gtk_visibility_set(hiddens,window_name,w,FALSE);
-	if (shown)
-		linphone_gtk_visibility_set(shown,window_name,w,TRUE);
-	if (icon_path) {
-		GdkPixbuf *pbuf=create_pixbuf(icon_path);
-		if(pbuf) {
-			GList *pbuf_list = NULL;
-			GdkPixbuf *pbuf_16=gdk_pixbuf_scale_simple(pbuf, 16, 16, GDK_INTERP_BILINEAR);
-			GdkPixbuf *pbuf_32=gdk_pixbuf_scale_simple(pbuf, 32, 32, GDK_INTERP_BILINEAR);
-			pbuf_list = g_list_append(pbuf_list, pbuf);
-			pbuf_list = g_list_append(pbuf_list, pbuf_16);
-			pbuf_list = g_list_append(pbuf_list, pbuf_32);
-			gtk_window_set_icon_list(GTK_WINDOW(w), pbuf_list);
-			gtk_window_set_default_icon_list(pbuf_list);
-			g_list_foreach(pbuf_list, (GFunc)g_object_unref,NULL);
-			g_list_free(pbuf_list);
-		}
-	}
+	if (hiddens) linphone_gtk_visibility_set(hiddens,window_name,w,FALSE);
+	if (shown) linphone_gtk_visibility_set(shown,window_name,w,TRUE);
 }
 
 static int get_ui_file(const char *name, char *path, int pathsize){
@@ -1209,10 +1190,14 @@ static NotifyNotification* build_notification(const char *title, const char *bod
 	);
 #ifndef HAVE_NOTIFY1
 	{
-		const char *icon_path = linphone_gtk_get_ui_config("icon", LINPHONE_ICON);
-		GdkPixbuf *pbuf = create_pixbuf(icon_path);
-		/*with notify1, this function makes the notification crash the app with obscure dbus glib critical errors*/
-		notify_notification_set_icon_from_pixbuf(n, pbuf);
+		GError *error = NULL;
+		const char *icon_name = linphone_gtk_get_ui_config("icon_name", LINPHONE_ICON_NAME);
+		GdkPixbuf *pbuf = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), icon_name, 48, 0, &error);
+		if(error) {
+			g_warning("Could not load '%s' icon: %s", icon_name, error->message);
+			g_error_free(error);
+		}
+		notify_notification_set_image_from_pixbuf(n, pbuf);
 	}
 #endif
 	return n;
@@ -2045,8 +2030,7 @@ int main(int argc, char *argv[]){
 	const char *factory_config_file;
 	const char *lang;
 	GtkSettings *settings;
-	const char *icon_path=LINPHONE_ICON;
-	GdkPixbuf *pbuf;
+	const char *icon_name=LINPHONE_ICON_NAME;
 	const char *app_name="Linphone";
 	LpConfig *factory;
 	char *chat_messages_db_file, *call_logs_db_file;
@@ -2157,14 +2141,10 @@ int main(int argc, char *argv[]){
 		factory=lp_config_new(NULL);
 		lp_config_read_file(factory,factory_config_file);
 		app_name=lp_config_get_string(factory,"GtkUi","title","Linphone");
-		icon_path=lp_config_get_string(factory,"GtkUi","icon",LINPHONE_ICON);
+		icon_name=lp_config_get_string(factory,"GtkUi","icon_name",LINPHONE_ICON_NAME);
 	}
 	g_set_application_name(app_name);
-	pbuf=create_pixbuf(icon_path);
-	if (pbuf) {
-		gtk_window_set_default_icon(pbuf);
-		g_object_unref(pbuf);
-	}
+	gtk_window_set_default_icon_name(icon_name);
 
 #ifdef HAVE_GTK_OSX
 	GtkosxApplication *theMacApp = gtkosx_application_get();
