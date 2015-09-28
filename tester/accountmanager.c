@@ -146,7 +146,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_proxy_config_set_server_addr(cfg,tmp);
 	ms_free(tmp);
 	linphone_address_unref(server_addr);
-	linphone_proxy_config_set_expires(cfg,3600);
+	linphone_proxy_config_set_expires(cfg,3*3600); //accounts are valid 3 hours
 
 	linphone_core_add_proxy_config(lc,cfg);
 
