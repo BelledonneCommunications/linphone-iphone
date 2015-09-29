@@ -77,9 +77,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-
-	//	editButton.hidden = ([[tableController.tableView dataSource] tableView:tableController.tableView
-	// numberOfRowsInSection:0] == 0);
+	[self hideEditIfNeeded];
 }
 
 - (void)viewDidLoad {
@@ -88,6 +86,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 #pragma mark -
+
+- (void)hideEditIfNeeded {
+	editButton.hidden = ([tableController tableView:tableController.tableView numberOfRowsInSection:0] == 0);
+}
 
 - (void)changeView:(HistoryView)view {
 	if (view == History_All) {
@@ -103,9 +105,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else {
 		missedButton.selected = FALSE;
 	}
-
-	//	editButton.hidden = ([[tableController.tableView dataSource] tableView:tableController.tableView
-	// numberOfRowsInSection:0] == 0);
+	[self hideEditIfNeeded];
 }
 
 #pragma mark - Action Functions
@@ -126,8 +126,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onDeleteClick:(id)event {
 	linphone_core_clear_call_logs([LinphoneManager getLc]);
 	[tableController loadData];
-	//	editButton.hidden = ([[tableController.tableView dataSource] tableView:tableController.tableView
-	// numberOfRowsInSection:0] == 0);
+	[self hideEditIfNeeded];
 	if ([editButton isSelected]) {
 		[editButton toggle];
 		[self onEditClick:nil];

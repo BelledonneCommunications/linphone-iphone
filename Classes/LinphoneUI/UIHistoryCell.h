@@ -32,6 +32,8 @@
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, strong) IBOutlet UILabel *displayNameLabel;
 @property(weak, nonatomic) IBOutlet UIImageView *stateImage;
+@property(weak, nonatomic) IBOutlet UIButton *detailsButton;
+@property(weak, nonatomic) IBOutlet UIButton *checkBoxButton;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

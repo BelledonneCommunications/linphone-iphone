@@ -24,13 +24,16 @@
 #import "UACellBackgroundView.h"
 #import "Utils.h"
 
-@implementation HistoryListTableView
+@implementation HistoryListTableView {
+	NSMutableArray *selectedItems;
+}
 
 @synthesize missedFilter;
 
 #pragma mark - Lifecycle Functions
 
 - (void)initHistoryTableViewController {
+	selectedItems = [[NSMutableArray alloc] init];
 	callLogs = [[NSMutableArray alloc] init];
 	missedFilter = false;
 }
@@ -140,13 +143,25 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
-	if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
-		LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-		char *uri = linphone_address_as_string(addr);
-		DialerView *view = VIEW(DialerView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-		[view call:[NSString stringWithUTF8String:uri] displayName:[FastAddressBook displayNameForAddress:addr]];
-		ms_free(uri);
+
+	if ([self isEditing]) {
+		UIHistoryCell *cell = (UIHistoryCell *)[self tableView:tableView cellForRowAtIndexPath:indexPath];
+		if ([selectedItems containsObject:indexPath]) {
+			[selectedItems removeObject:indexPath];
+			cell.checkBoxButton.selected = YES;
+		} else {
+			[selectedItems addObject:indexPath];
+			cell.checkBoxButton.selected = NO;
+		}
+	} else {
+		if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
+			LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+			char *uri = linphone_address_as_string(addr);
+			DialerView *view = VIEW(DialerView);
+			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+			[view call:[NSString stringWithUTF8String:uri] displayName:[FastAddressBook displayNameForAddress:addr]];
+			ms_free(uri);
+		}
 	}
 }
 
