@@ -700,31 +700,36 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 {
 	IceCheckList *audio_check_list;
 	IceCheckList *video_check_list;
+	IceCheckList *text_check_list;
 	IceSessionState session_state;
 
 	if (call->ice_session == NULL) return;
 	audio_check_list = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
 	video_check_list = ice_session_check_list(call->ice_session, call->main_video_stream_index);
+	text_check_list = ice_session_check_list(call->ice_session, call->main_text_stream_index);
 	if (audio_check_list == NULL) return;
 
 	session_state = ice_session_state(call->ice_session);
 	if ((session_state == IS_Completed) || ((session_state == IS_Failed) && (ice_session_has_completed_check_list(call->ice_session) == TRUE))) {
-		if (ice_check_list_state(audio_check_list) == ICL_Completed) {
-			switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
-				case ICT_HostCandidate:
-					call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
-					break;
-				case ICT_ServerReflexiveCandidate:
-				case ICT_PeerReflexiveCandidate:
-					call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
-					break;
-				case ICT_RelayedCandidate:
-					call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
-					break;
+		if (call->params->has_audio && (audio_check_list != NULL)) {
+			if (ice_check_list_state(audio_check_list) == ICL_Completed) {
+				switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
+					case ICT_HostCandidate:
+						call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateHostConnection;
+						break;
+					case ICT_ServerReflexiveCandidate:
+					case ICT_PeerReflexiveCandidate:
+						call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateReflexiveConnection;
+						break;
+					case ICT_RelayedCandidate:
+						call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateRelayConnection;
+						break;
+				}
+			} else {
+				call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
 			}
-		} else {
-			call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
-		}
+		}else call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateNotActivated;
+		
 		if (call->params->has_video && (video_check_list != NULL)) {
 			if (ice_check_list_state(video_check_list) == ICL_Completed) {
 				switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
@@ -743,19 +748,44 @@ void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call)
 				call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 			}
 		}else call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateNotActivated;
+		
+		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
+			if (ice_check_list_state(text_check_list) == ICL_Completed) {
+				switch (ice_check_list_selected_valid_candidate_type(text_check_list)) {
+					case ICT_HostCandidate:
+						call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateHostConnection;
+						break;
+					case ICT_ServerReflexiveCandidate:
+					case ICT_PeerReflexiveCandidate:
+						call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateReflexiveConnection;
+						break;
+					case ICT_RelayedCandidate:
+						call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateRelayConnection;
+						break;
+				}
+			} else {
+				call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateFailed;
+			}
+		}else call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateNotActivated;
 	} else if (session_state == IS_Running) {
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateInProgress;
 		if (call->params->has_video && (video_check_list != NULL)) {
 			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateInProgress;
+		}
+		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
+			call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateInProgress;
 		}
 	} else {
 		call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state = LinphoneIceStateFailed;
 		if (call->params->has_video && (video_check_list != NULL)) {
 			call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state = LinphoneIceStateFailed;
 		}
+		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
+			call->stats[LINPHONE_CALL_STATS_TEXT].ice_state = LinphoneIceStateFailed;
+		}
 	}
-	ms_message("Call [%p] New ICE state: audio: [%s]    video: [%s]", call,
-		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state));
+	ms_message("Call [%p] New ICE state: audio: [%s]    video: [%s]    text: [%s]", call,
+		   linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_AUDIO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_VIDEO].ice_state), linphone_ice_state_to_string(call->stats[LINPHONE_CALL_STATS_TEXT].ice_state));
 }
 
 void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDescription *desc) {
@@ -895,6 +925,8 @@ static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed){
 		call->audiostream->ms.ice_check_list=NULL;
 	if (call->videostream && call->videostream->ms.ice_check_list==removed)
 		call->videostream->ms.ice_check_list=NULL;
+	if (call->textstream && call->textstream->ms.ice_check_list==removed)
+		call->textstream->ms.ice_check_list=NULL;
 }
 
 void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)

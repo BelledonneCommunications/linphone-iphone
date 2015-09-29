@@ -737,7 +737,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 		md->streams[call->main_video_stream_index].dir = SalStreamInactive;
 	}
 	
-	md->streams[call->main_text_stream_index].proto=md->streams[call->main_text_stream_index].proto;
+	md->streams[call->main_text_stream_index].proto=md->streams[call->main_audio_stream_index].proto;
 	md->streams[call->main_text_stream_index].dir=SalStreamSendRecv;
 	md->streams[call->main_text_stream_index].type=SalText;
 	strncpy(md->streams[call->main_text_stream_index].name,"Text",sizeof(md->streams[call->main_text_stream_index].name)-1);
@@ -3755,6 +3755,17 @@ const LinphoneCallStats *linphone_call_get_video_stats(LinphoneCall *call) {
 	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_VIDEO];
 	if (call->videostream){
 		update_local_stats(stats,(MediaStream*)call->videostream);
+	}
+	return stats;
+}
+
+/**
+ * Access last known statistics for video stream, for a given call.
+**/
+const LinphoneCallStats *linphone_call_get_text_stats(LinphoneCall *call) {
+	LinphoneCallStats *stats = &call->stats[LINPHONE_CALL_STATS_TEXT];
+	if (call->textstream){
+		update_local_stats(stats,(MediaStream*)call->textstream);
 	}
 	return stats;
 }

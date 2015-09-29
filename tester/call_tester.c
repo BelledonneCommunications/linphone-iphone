@@ -988,7 +988,8 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	LinphoneCall *c1,*c2;
 	bool_t audio_success=FALSE;
 	bool_t video_success=FALSE;
-	bool_t video_enabled;
+	bool_t text_success=FALSE;
+	bool_t video_enabled, realtime_text_enabled;
 	MSTimeSpec ts;
 
 	c1=linphone_core_get_current_call(caller->lc);
@@ -1001,7 +1002,9 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	linphone_call_ref(c2);
 
 	BC_ASSERT_EQUAL(linphone_call_params_video_enabled(linphone_call_get_current_params(c1)),linphone_call_params_video_enabled(linphone_call_get_current_params(c2)), int, "%d");
+	BC_ASSERT_EQUAL(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(c1)),linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(c2)), int, "%d");
 	video_enabled=linphone_call_params_video_enabled(linphone_call_get_current_params(c1));
+	realtime_text_enabled=linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(c1));
 	liblinphone_tester_clock_start(&ts);
 	do{
 		if ((c1 != NULL) && (c2 != NULL)) {
@@ -1032,6 +1035,22 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 		}while(!liblinphone_tester_clock_elapsed(&ts,10000));
 	}
 
+	if (realtime_text_enabled){
+		liblinphone_tester_clock_start(&ts);
+		do{
+			if ((c1 != NULL) && (c2 != NULL)) {
+				if (linphone_call_get_text_stats(c1)->ice_state==state &&
+					linphone_call_get_text_stats(c2)->ice_state==state ){
+					text_success=TRUE;
+					break;
+				}
+				linphone_core_iterate(caller->lc);
+				linphone_core_iterate(callee->lc);
+			}
+			ms_usleep(20000);
+		}while(!liblinphone_tester_clock_elapsed(&ts,10000));
+	}
+
 	 /*make sure encryption mode are preserved*/
 	if (c1) {
 		const LinphoneCallParams* call_param = linphone_call_get_current_params(c1);
@@ -1043,7 +1062,7 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	}
 	linphone_call_unref(c1);
 	linphone_call_unref(c2);
-	return video_enabled ? audio_success && video_success : audio_success;
+	return video_enabled ? (realtime_text_enabled ? text_success && audio_success && video_success : audio_success && video_success) : realtime_text_enabled ? text_success && audio_success : audio_success;
 }
 
 static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
@@ -1057,8 +1076,10 @@ static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager
 	if (random_ports){
 		linphone_core_set_audio_port(marie->lc,-1);
 		linphone_core_set_video_port(marie->lc,-1);
+		linphone_core_set_text_port(marie->lc, -1);
 		linphone_core_set_audio_port(pauline->lc,-1);
 		linphone_core_set_video_port(pauline->lc,-1);
+		linphone_core_set_text_port(pauline->lc, -1);
 	}
 
 
@@ -2069,6 +2090,7 @@ static void call_with_ice_video_and_rtt(void) {
 	linphone_call_params_enable_realtime_text(params, TRUE);
 	BC_ASSERT_TRUE(call_ok = call_with_caller_params(pauline, marie, params));
 	if (!call_ok) goto end;
+	BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
 	
 	marie_call = linphone_core_get_current_call(marie->lc);
 	BC_ASSERT_TRUE(linphone_call_params_audio_enabled(linphone_call_get_current_params(marie_call)));
