@@ -884,7 +884,6 @@ static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 		LinphoneCallParams *params=linphone_core_create_default_call_parameters(lc);
 		gchar *record_file=linphone_gtk_get_record_path(addr,FALSE);
 		linphone_call_params_set_record_file(params,record_file);
-		linphone_call_params_enable_realtime_text(params, TRUE);
 		linphone_core_invite_address_with_params(lc,addr,params);
 		completion_add_text(GTK_ENTRY(uri_bar),entered);
 		linphone_address_destroy(addr);
