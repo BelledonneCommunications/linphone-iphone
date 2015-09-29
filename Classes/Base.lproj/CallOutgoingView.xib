@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CallOutgoingView">
@@ -35,7 +36,7 @@
                             <rect key="frame" x="46" y="58" width="283" height="283"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Contact avatar">
-                                <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
+                                <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
                                 <bool key="isElement" value="YES"/>
                             </accessibility>
                         </imageView>
@@ -46,9 +47,9 @@
                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="2fa-Ag-3GW" userLabel="addressLabel">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="2fa-Ag-3GW" userLabel="addressLabel">
                             <rect key="frame" x="90" y="399" width="194" height="22"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
@@ -107,19 +108,14 @@
         </view>
     </objects>
     <resources>
-        <image name="avatar.png" width="261" height="261"/>
-        <image name="call_hangup.png" width="42" height="37"/>
+        <image name="avatar.png" width="255" height="255"/>
+        <image name="call_hangup.png" width="41" height="36"/>
         <image name="color_D.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="color_I.png" width="1" height="1"/>
-        <image name="micro_default.png" width="30" height="38"/>
-        <image name="micro_selected.png" width="30" height="38"/>
-        <image name="speaker_default.png" width="28" height="26"/>
-        <image name="speaker_selected.png" width="28" height="26"/>
+        <image name="micro_default.png" width="29" height="37"/>
+        <image name="micro_selected.png" width="29" height="37"/>
+        <image name="speaker_default.png" width="27" height="25"/>
+        <image name="speaker_selected.png" width="27" height="25"/>
     </resources>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4"/>
-    </simulatedMetricsContainer>
 </document>

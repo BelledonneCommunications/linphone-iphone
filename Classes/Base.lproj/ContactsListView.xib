@@ -101,6 +101,9 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="SYP-yf-EhC"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="addButton" customClass="UIIconButton">
                                     <rect key="frame" x="300" y="0.0" width="75" height="42"/>
@@ -162,15 +165,15 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="back.png" width="48" height="44"/>
+        <image name="back.png" width="24" height="21"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
-        <image name="contact_add.png" width="69" height="59"/>
-        <image name="contacts_all_default.png" width="65" height="55"/>
-        <image name="contacts_all_selected.png" width="65" height="55"/>
-        <image name="contacts_sip_default.png" width="77" height="60"/>
-        <image name="contacts_sip_selected.png" width="77" height="60"/>
-        <image name="delete.png" width="43" height="56"/>
-        <image name="edit_list.png" width="60" height="57"/>
+        <image name="contact_add.png" width="34" height="29"/>
+        <image name="contacts_all_default.png" width="32" height="27"/>
+        <image name="contacts_all_selected.png" width="32" height="27"/>
+        <image name="contacts_sip_default.png" width="38" height="29"/>
+        <image name="contacts_sip_selected.png" width="38" height="29"/>
+        <image name="delete.png" width="21" height="27"/>
+        <image name="edit_list.png" width="29" height="28"/>
     </resources>
 </document>

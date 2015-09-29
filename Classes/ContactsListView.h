@@ -92,5 +92,6 @@ typedef enum _ContactSelectionMode {
 - (IBAction)onLinphoneClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;
 - (IBAction)onBackClick:(id)event;
+- (IBAction)onEditClick:(id)sender;
 
 @end

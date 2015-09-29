@@ -22,7 +22,6 @@
 
 @implementation HistoryListView
 
-@synthesize tableView;
 @synthesize tableController;
 
 @synthesize allButton;
@@ -79,7 +78,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 
-	editButton.hidden = ([[tableView dataSource] tableView:tableView numberOfRowsInSection:0] == 0);
+	//	editButton.hidden = ([[tableController.tableView dataSource] tableView:tableController.tableView
+	// numberOfRowsInSection:0] == 0);
 }
 
 - (void)viewDidLoad {
@@ -104,7 +104,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		missedButton.selected = FALSE;
 	}
 
-	editButton.hidden = ([[tableView dataSource] tableView:tableView numberOfRowsInSection:0] == 0);
+	//	editButton.hidden = ([[tableController.tableView dataSource] tableView:tableController.tableView
+	// numberOfRowsInSection:0] == 0);
 }
 
 #pragma mark - Action Functions
@@ -125,7 +126,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onDeleteClick:(id)event {
 	linphone_core_clear_call_logs([LinphoneManager getLc]);
 	[tableController loadData];
-	editButton.hidden = ([[tableView dataSource] tableView:tableView numberOfRowsInSection:0] == 0);
+	//	editButton.hidden = ([[tableController.tableView dataSource] tableView:tableController.tableView
+	// numberOfRowsInSection:0] == 0);
 	if ([editButton isSelected]) {
 		[editButton toggle];
 		[self onEditClick:nil];

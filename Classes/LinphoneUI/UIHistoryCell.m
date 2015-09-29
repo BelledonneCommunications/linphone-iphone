@@ -63,7 +63,7 @@
 
 - (IBAction)onDelete:(id)event {
 	if (callLog != NULL) {
-		UITableView *tableView = VIEW(HistoryListView).tableView;
+		UITableView *tableView = VIEW(HistoryListView).tableController.tableView;
 		NSIndexPath *indexPath = [tableView indexPathForCell:self];
 		[[tableView dataSource] tableView:tableView
 					   commitEditingStyle:UITableViewCellEditingStyleDelete

@@ -243,6 +243,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[PhoneMainView.instance popCurrentView];
 }
 
+- (IBAction)onEditClick:(id)sender {
+}
+
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	[self searchBar:searchBar textDidChange:@""];
 	[searchBar resignFirstResponder];
