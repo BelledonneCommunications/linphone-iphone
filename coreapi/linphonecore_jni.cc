@@ -6205,3 +6205,27 @@ extern "C" jobject Java_org_linphone_core_LinphoneChatRoomImpl_getCall(JNIEnv* e
 extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_getChar(JNIEnv* env ,jobject thiz, jlong ptr) {
 	return linphone_chat_room_get_char((LinphoneChatRoom *)ptr);
 }
+
+static void _next_video_frame_decoded_callback(LinphoneCall *call, void *user_data) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return;
+	}
+
+	jobject listener = (jobject) user_data;
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "onNextVideoFrameDecoded","(Lorg/linphone/core/LinphoneCall;)V");
+	env->DeleteLocalRef(clazz);
+
+	jobject jcall = getCall(env, call);
+	env->CallVoidMethod(listener, method, jcall);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallImpl_setListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+	jobject listener = env->NewGlobalRef(jlistener);
+	LinphoneCall *call = (LinphoneCall *)ptr;
+	linphone_call_set_next_video_frame_decoded_callback(call, _next_video_frame_decoded_callback, listener);
+}

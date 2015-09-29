@@ -44,6 +44,7 @@ class LinphoneCallImpl implements LinphoneCall {
 	private native float getCurrentQuality(long nativePtr);
 	private native float getAverageQuality(long nativePtr);
 	private native boolean mediaInProgress(long nativePtr);
+	private native void setListener(long ptr, LinphoneCallListener listener);
 	
 	/*
 	 * This method must always be called from JNI, nothing else.
@@ -261,4 +262,8 @@ class LinphoneCallImpl implements LinphoneCall {
 		return new LinphoneChatRoomImpl(getChatRoom(nativePtr));
 	}
 
+	@Override
+	public void setListener(LinphoneCallListener listener) {
+		setListener(nativePtr, listener);
+	}
 }
