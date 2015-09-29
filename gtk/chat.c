@@ -399,11 +399,13 @@ static GdkColor *_linphone_gtk_chatroom_get_link_color(GtkWidget *chatview) {
 	return (GdkColor *)g_value_get_boxed(&color_value);
 }
 
-static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent *event, GtkTextIter *iter, gpointer user_data) {
+static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent *event, GtkTextIter *iter, GtkWidget *chat_view) {
 	if(event->type == GDK_BUTTON_PRESS) {
 		GtkTextIter uri_begin = *iter;
 		GtkTextIter uri_end = *iter;
 		gchar *uri = NULL;
+		LinphoneChatRoom *chat_room = (LinphoneChatRoom *)g_object_get_data(G_OBJECT(chat_view), "cr");
+		
 		gtk_text_iter_backward_to_tag_toggle(&uri_begin, tag);
 		gtk_text_iter_forward_to_tag_toggle(&uri_end, tag);
 		uri = gtk_text_iter_get_slice(&uri_begin, &uri_end);
@@ -415,6 +417,10 @@ static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent 
 			gtk_menu_popup(menu, NULL, NULL, NULL, NULL, 3, gdk_event_get_time(event));
 		}
 		g_free(uri);
+		
+		linphone_chat_room_mark_as_read(chat_room);
+		linphone_gtk_friend_list_update_chat_picture();
+		
 		return TRUE;
 	}
 	return FALSE;
@@ -532,7 +538,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 		"underline", PANGO_UNDERLINE_SINGLE,
 		"foreground_gdk", _linphone_gtk_chatroom_get_link_color(chat_view),
 		NULL);
-	g_signal_connect(G_OBJECT(tmp_tag), "event", G_CALLBACK(link_event_handler), NULL);
+	g_signal_connect(G_OBJECT(tmp_tag), "event", G_CALLBACK(link_event_handler), chat_view);
 	g_signal_connect(G_OBJECT(text), "event", G_CALLBACK(chatroom_event), NULL);
 	gtk_menu_shell_append(GTK_MENU_SHELL(link_ctx_menu), link_ctx_menu_copy_item);
 	g_signal_connect(G_OBJECT(link_ctx_menu_copy_item), "activate", G_CALLBACK(copy_uri_into_clipboard_handler), NULL);
