@@ -121,11 +121,6 @@ static void chatTable_free_chatrooms(void *data) {
 	UIChatCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
 		cell = [[UIChatCell alloc] initWithIdentifier:kCellId];
-
-		// Background View
-		UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
-		cell.selectedBackgroundView = selectedBackgroundView;
-		[selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
 	}
 
 	[cell setChatRoom:(LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row])];

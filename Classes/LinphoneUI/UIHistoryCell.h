@@ -19,21 +19,19 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UICheckBoxTVCell.h"
 #import "UIRoundedImageView.h"
+#import "UIIconButton.h"
 
 #include "linphone/linphonecore.h"
 
-@interface UIHistoryCell : UICheckBoxTVCell {
-}
+@interface UIHistoryCell : UITableViewCell
 
 @property (nonatomic, assign) LinphoneCallLog *callLog;
 
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, strong) IBOutlet UILabel *displayNameLabel;
 @property(weak, nonatomic) IBOutlet UIImageView *stateImage;
-@property(weak, nonatomic) IBOutlet UIButton *detailsButton;
-@property(weak, nonatomic) IBOutlet UIButton *checkBoxButton;
+@property(weak, nonatomic) IBOutlet UIIconButton *detailsButton;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

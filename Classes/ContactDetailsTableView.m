@@ -491,11 +491,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		[cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		[cell setBackgroundColor:[UIColor whiteColor]];
-
-		// Background View
-		UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
-		cell.selectedBackgroundView = selectedBackgroundView;
-		[selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
 	}
 
 	NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];

@@ -18,10 +18,8 @@
  */  
 
 #import <UIKit/UIKit.h>
-#import "UICheckBoxTVCell.h"
 
-@interface UIEditableTableViewCell : UICheckBoxTVCell {
-}
+@interface UIEditableTableViewCell : UITableViewCell
 
 @property (nonatomic, strong) IBOutlet UIView *verticalSep;
 @property (nonatomic, strong) IBOutlet UITextField *detailTextField;

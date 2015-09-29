@@ -89,6 +89,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)hideEditIfNeeded {
 	editButton.hidden = ([tableController tableView:tableController.tableView numberOfRowsInSection:0] == 0);
+	if ([editButton isSelected]) {
+		[editButton toggle];
+		[self onEditClick:nil];
+	}
 }
 
 - (void)changeView:(HistoryView)view {
@@ -124,13 +128,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)event {
-	linphone_core_clear_call_logs([LinphoneManager getLc]);
+	for (id log in tableController.selectedItems) {
+		linphone_core_remove_call_log([LinphoneManager getLc], (LinphoneCallLog *)[log pointerValue]);
+	}
 	[tableController loadData];
 	[self hideEditIfNeeded];
-	if ([editButton isSelected]) {
-		[editButton toggle];
-		[self onEditClick:nil];
-	}
 }
 
 @end

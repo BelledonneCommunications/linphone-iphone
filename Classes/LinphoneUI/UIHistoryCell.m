@@ -39,6 +39,7 @@
 		UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:0]);
 		[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
 		[self addSubview:sub];
+		self.selectionStyle = UITableViewCellSelectionStyleNone;
 		callLog = NULL;
 	}
 	return self;
@@ -109,10 +110,8 @@
 		[UIView setAnimationDuration:0.3];
 	}
 	if (editing) {
-		[_checkBoxButton setAlpha:1.0f];
 		[_detailsButton setAlpha:0.0f];
 	} else {
-		[_checkBoxButton setAlpha:0.0f];
 		[_detailsButton setAlpha:1.0f];
 	}
 	if (animated) {

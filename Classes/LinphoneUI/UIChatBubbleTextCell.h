@@ -19,12 +19,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UICheckBoxTVCell.h"
 #import "UITextViewNoDefine.h"
 #import "ChatConversationTableView.h"
 #import "UIRoundedImageView.h"
 
-@interface UIChatBubbleTextCell : UICheckBoxTVCell
+@interface UIChatBubbleTextCell : UITableViewCell
 
 @property(nonatomic, weak) IBOutlet UIImageView *backgroundColor;
 @property(nonatomic, weak) IBOutlet UIRoundedImageView *avatarImage;

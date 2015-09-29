@@ -19,13 +19,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UICheckBoxTVCell.h"
 #import "UIRoundedImageView.h"
 #import "UIIconButton.h"
 
 #include "linphone/linphonecore.h"
 
-@interface UIChatCell : UICheckBoxTVCell {
+@interface UIChatCell : UITableViewCell {
 	LinphoneChatRoom *chatRoom;
 }
 

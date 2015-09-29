@@ -106,11 +106,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
-
-	// Background View
-	UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
-	cell.selectedBackgroundView = selectedBackgroundView;
-	[selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
 	return cell;
 }
 
@@ -257,11 +252,6 @@
 	} else {
 		cell.detailTextLabel.textColor = LINPHONE_MAIN_COLOR;
 	}
-
-	// Background View
-	UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
-	cell.selectedBackgroundView = selectedBackgroundView;
-	[selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
 	return cell;
 }
 

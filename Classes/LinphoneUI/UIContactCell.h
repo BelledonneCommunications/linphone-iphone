@@ -19,10 +19,8 @@
 
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
-#import "UICheckBoxTVCell.h"
 
-@interface UIContactCell : UICheckBoxTVCell {
-}
+@interface UIContactCell : UITableViewCell
 
 @property(nonatomic, strong) IBOutlet UILabel *nameLabel;
 @property (nonatomic, strong) IBOutlet UIImageView *avatarImage;

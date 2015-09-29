@@ -88,11 +88,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	UITableViewCell *cell = [atableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
 		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kCellId];
-
-		// Background View
-		UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
-		cell.selectedBackgroundView = selectedBackgroundView;
-		[selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
 	}
 	NSString *key = [[dataList allKeys] objectAtIndex:[indexPath row]];
 	[cell.textLabel setText:[dataList objectForKey:key]];

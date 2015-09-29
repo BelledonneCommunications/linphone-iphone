@@ -19,7 +19,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HistoryListTableView : UITableViewController {
+#import "UICheckBoxTVTableViewController.h"
+
+@interface HistoryListTableView : UICheckBoxTVTableViewController {
   @private
 	NSMutableArray *callLogs;
 }

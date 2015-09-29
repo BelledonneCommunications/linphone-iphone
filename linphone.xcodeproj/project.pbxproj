@@ -89,6 +89,7 @@
 		6334DDFB1BBAC99400631900 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		6334DDFC1BBAC99B00631900 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
 		6334DDFD1BBAC9A200631900 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
+		6334DE001BBAD5AA00631900 /* UICheckBoxTVTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */; };
 		633756391B67BAF400E21BAD /* SideMenuTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756381B67BAF400E21BAD /* SideMenuTableView.m */; };
 		633756451B67D2B200E21BAD /* SideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756431B67D2B100E21BAD /* SideMenuView.m */; };
 		633756461B67D2B200E21BAD /* SideMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 633756441B67D2B100E21BAD /* SideMenuView.xib */; };
@@ -105,7 +106,6 @@
 		63701DD61BA31DA1006A9AE3 /* UIConfirmationDialog.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63701DD51BA31DA1006A9AE3 /* UIConfirmationDialog.xib */; };
 		63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */; };
 		637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 637157A01B283FE200C91677 /* FileTransferDelegate.m */; };
-		637527121BBA8C3800FDEA6F /* UICheckBoxTVCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637527111BBA8C3800FDEA6F /* UICheckBoxTVCell.xib */; };
 		637527C91BBA8EF700FDEA6F /* add_field_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 6375271A1BBA8EF700FDEA6F /* add_field_default.png */; };
 		637527CA1BBA8EF700FDEA6F /* add_field_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 6375271B1BBA8EF700FDEA6F /* add_field_over.png */; };
 		637527CB1BBA8EF700FDEA6F /* avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 6375271C1BBA8EF700FDEA6F /* avatar.png */; };
@@ -439,7 +439,6 @@
 		F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
 		F05BAA631A5D75BC00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
 		F0642EF119DAC891009DB336 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */; };
-		F066515517F9A02E0064280C /* UICheckBoxTVCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F066515417F9A02E0064280C /* UICheckBoxTVCell.m */; };
 		F088488A19FF8C41007FFCF3 /* UIContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F088488D19FF8C41007FFCF3 /* UIContactCell.xib */; };
 		F08D468D1AA86849001E8CB5 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
 		F08F118619C09C6B007D70C2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -697,6 +696,8 @@
 		6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedButton.m; sourceTree = "<group>"; };
 		631348311B6FA53300C6BDCB /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = "liblinphone-sdk/apple-darwin/share/linphone/rootca.pem"; sourceTree = SOURCE_ROOT; };
 		63158FAC1B468E0E00969917 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ImageOptim.sh; path = Tools/ImageOptim.sh; sourceTree = "<group>"; };
+		6334DDFE1BBAD5AA00631900 /* UICheckBoxTVTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBoxTVTableViewController.h; sourceTree = "<group>"; };
+		6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICheckBoxTVTableViewController.m; sourceTree = "<group>"; };
 		633756371B67BAF400E21BAD /* SideMenuTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuTableView.h; sourceTree = "<group>"; };
 		633756381B67BAF400E21BAD /* SideMenuTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideMenuTableView.m; sourceTree = "<group>"; };
 		633756421B67D2B100E21BAD /* SideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuView.h; sourceTree = "<group>"; };
@@ -725,7 +726,6 @@
 		63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIConfirmationDialog.m; sourceTree = "<group>"; };
 		6371579F1B283FE200C91677 /* FileTransferDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileTransferDelegate.h; path = Utils/FileTransferDelegate.h; sourceTree = "<group>"; };
 		637157A01B283FE200C91677 /* FileTransferDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileTransferDelegate.m; path = Utils/FileTransferDelegate.m; sourceTree = "<group>"; };
-		637527111BBA8C3800FDEA6F /* UICheckBoxTVCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UICheckBoxTVCell.xib; sourceTree = "<group>"; };
 		6375271A1BBA8EF700FDEA6F /* add_field_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_field_default.png; sourceTree = "<group>"; };
 		6375271B1BBA8EF700FDEA6F /* add_field_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_field_over.png; sourceTree = "<group>"; };
 		6375271C1BBA8EF700FDEA6F /* avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = avatar.png; sourceTree = "<group>"; };
@@ -1100,8 +1100,6 @@
 		F05BAA611A5D594E00411815 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		F0642EF019DAC891009DB336 /* MainStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainStoryboard.storyboard; sourceTree = "<group>"; };
 		F0642EF719DAF32E009DB336 /* DTWeakSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTWeakSupport.h; sourceTree = "<group>"; };
-		F066515317F9A02E0064280C /* UICheckBoxTVCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBoxTVCell.h; sourceTree = "<group>"; };
-		F066515417F9A02E0064280C /* UICheckBoxTVCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICheckBoxTVCell.m; sourceTree = "<group>"; };
 		F088488C19FF8C41007FFCF3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIContactCell.xib; sourceTree = "<group>"; };
 		F088488F19FF8C44007FFCF3 /* fr */ = {isa = PBXFileReference; fileEncoding = 2483028224; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/UIContactCell.strings; sourceTree = "<group>"; };
 		F08F118419C09C6A007D70C2 /* liblinphoneTesterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = liblinphoneTesterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1337,10 +1335,10 @@
 				22E0A81D111C44E100B04932 /* AboutView.h */,
 				22E0A81C111C44E100B04932 /* AboutView.m */,
 				636316D31A1DEBCB0009B839 /* AboutView.xib */,
+				D3D5126A160B3A8E00946DF8 /* AssistantSubviews.xib */,
 				D350F20B15A43BB100149E54 /* AssistantView.h */,
 				D350F20C15A43BB100149E54 /* AssistantView.m */,
 				D38187E015FE348A00C3EDCA /* AssistantView.xib */,
-				D3D5126A160B3A8E00946DF8 /* AssistantSubviews.xib */,
 				D3F26BEE15986B71005F9CAB /* CallIncomingView.h */,
 				D3F26BEF15986B71005F9CAB /* CallIncomingView.m */,
 				D38187DC15FE347700C3EDCA /* CallIncomingView.xib */,
@@ -1461,9 +1459,6 @@
 				D3EA540F159853750037DC6B /* UIChatCell.h */,
 				D3EA5410159853750037DC6B /* UIChatCell.m */,
 				639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */,
-				F066515317F9A02E0064280C /* UICheckBoxTVCell.h */,
-				F066515417F9A02E0064280C /* UICheckBoxTVCell.m */,
-				637527111BBA8C3800FDEA6F /* UICheckBoxTVCell.xib */,
 				D31B4B1E159876C0002E6C72 /* UICompositeView.h */,
 				D31B4B1F159876C0002E6C72 /* UICompositeView.m */,
 				639CEB051A1DF4EB004DE38F /* UICompositeView.xib */,
@@ -1511,6 +1506,8 @@
 				D3196D3D15A32BD8007FEEBA /* UITransferButton.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
+				6334DDFE1BBAD5AA00631900 /* UICheckBoxTVTableViewController.h */,
+				6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -2478,7 +2475,6 @@
 				637528171BBA8EF700FDEA6F /* footer_contacts.png in Resources */,
 				637528051BBA8EF700FDEA6F /* color_L.png in Resources */,
 				63AADBEA1B6A0FF200AA16FD /* Images.xcassets in Resources */,
-				637527121BBA8C3800FDEA6F /* UICheckBoxTVCell.xib in Resources */,
 				637528461BBA8EF700FDEA6F /* options_selected.png in Resources */,
 				637527F31BBA8EF700FDEA6F /* chat_start_body_default.png in Resources */,
 				63701DD61BA31DA1006A9AE3 /* UIConfirmationDialog.xib in Resources */,
@@ -2684,7 +2680,6 @@
 				C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */,
 				63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */,
 				635775251B6673EC00C8B704 /* HistoryDetailsTableView.m in Sources */,
-				F066515517F9A02E0064280C /* UICheckBoxTVCell.m in Sources */,
 				D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */,
 				6346100F1B61409800548952 /* CallOutgoingView.m in Sources */,
 				D35860D615B549B500513429 /* Utils.m in Sources */,
@@ -2695,6 +2690,7 @@
 				D3807FC515C28940005BE9BC /* DCRoundSwitchToggleLayer.m in Sources */,
 				D3807FE815C2894A005BE9BC /* IASKAppSettingsViewController.m in Sources */,
 				D3807FEA15C2894A005BE9BC /* IASKAppSettingsWebViewController.m in Sources */,
+				6334DE001BBAD5AA00631900 /* UICheckBoxTVTableViewController.m in Sources */,
 				D3807FEC15C2894A005BE9BC /* IASKSpecifierValuesViewController.m in Sources */,
 				D3807FEE15C2894A005BE9BC /* IASKSettingsReader.m in Sources */,
 				D3807FF015C2894A005BE9BC /* IASKSettingsStore.m in Sources */,

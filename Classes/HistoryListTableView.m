@@ -24,16 +24,13 @@
 #import "UACellBackgroundView.h"
 #import "Utils.h"
 
-@implementation HistoryListTableView {
-	NSMutableArray *selectedItems;
-}
+@implementation HistoryListTableView
 
 @synthesize missedFilter;
 
 #pragma mark - Lifecycle Functions
 
 - (void)initHistoryTableViewController {
-	selectedItems = [[NSMutableArray alloc] init];
 	callLogs = [[NSMutableArray alloc] init];
 	missedFilter = false;
 }
@@ -111,7 +108,7 @@
 		}
 		logs = ms_list_next(logs);
 	}
-	[[self tableView] reloadData];
+	[super loadData];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -127,33 +124,21 @@
 	UIHistoryCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
 		cell = [[UIHistoryCell alloc] initWithIdentifier:kCellId];
-		// Background View
-		UACellBackgroundView *selectedBackgroundView = [[UACellBackgroundView alloc] initWithFrame:CGRectZero];
-		cell.selectedBackgroundView = selectedBackgroundView;
-		[selectedBackgroundView setBackgroundColor:LINPHONE_TABLE_CELL_BACKGROUND_COLOR];
 	}
 
-	LinphoneCallLog *log = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
+	id logId = [callLogs objectAtIndex:indexPath.row];
+	LinphoneCallLog *log = [logId pointerValue];
 	[cell setCallLog:log];
-
+	[super accessoryForCell:cell atPath:indexPath];
 	return cell;
 }
 
 #pragma mark - UITableViewDelegate Functions
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
-
+	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	if ([self isEditing]) {
-		UIHistoryCell *cell = (UIHistoryCell *)[self tableView:tableView cellForRowAtIndexPath:indexPath];
-		if ([selectedItems containsObject:indexPath]) {
-			[selectedItems removeObject:indexPath];
-			cell.checkBoxButton.selected = YES;
-		} else {
-			[selectedItems addObject:indexPath];
-			cell.checkBoxButton.selected = NO;
-		}
-	} else {
+		LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
 		if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
 			LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 			char *uri = linphone_address_as_string(addr);

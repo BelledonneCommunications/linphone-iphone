@@ -20,12 +20,11 @@
 #import <UIKit/UIKit.h>
 
 #import "UILoadingImageView.h"
-#import "UICheckBoxTVCell.h"
 #import "UITextViewNoDefine.h"
 #import "FileTransferDelegate.h"
 #import "ChatConversationTableView.h"
 
-@interface UIChatBubblePhotoCell : UICheckBoxTVCell
+@interface UIChatBubblePhotoCell : UITableViewCell
 
 //@property(nonatomic, strong) IBOutlet UIView *innerView;
 //@property(nonatomic, strong) IBOutlet UIView *bubbleView;
