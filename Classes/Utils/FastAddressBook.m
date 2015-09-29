@@ -133,6 +133,10 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 										withString:@""
 										   options:0
 											 range:NSMakeRange(0, [lNormalizedAddress length])];
+    [lNormalizedAddress replaceOccurrencesOfString:@"#"
+                                        withString:@""
+                                           options:0
+                                             range:NSMakeRange(0, [lNormalizedAddress length])];
 	return [FastAddressBook appendCountryCodeIfPossible:lNormalizedAddress];
 }
 
