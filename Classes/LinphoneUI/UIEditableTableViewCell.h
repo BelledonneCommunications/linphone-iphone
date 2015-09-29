@@ -18,9 +18,9 @@
  */  
 
 #import <UIKit/UIKit.h>
-#import "UITransparentTVCell.h"
+#import "UICheckBoxTVCell.h"
 
-@interface UIEditableTableViewCell : UITransparentTVCell {
+@interface UIEditableTableViewCell : UICheckBoxTVCell {
 }
 
 @property (nonatomic, strong) IBOutlet UIView *verticalSep;

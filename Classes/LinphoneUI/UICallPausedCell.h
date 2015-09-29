@@ -6,12 +6,12 @@
 //
 //
 
-#import "UITransparentTVCell.h"
+#import "UICheckBoxTVCell.h"
 
 #import "UIRoundedImageView.h"
 #import "LinphoneManager.h"
 
-@interface UICallPausedCell : UITransparentTVCell
+@interface UICallPausedCell : UICheckBoxTVCell
 
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;

@@ -19,14 +19,14 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UITransparentTVCell.h"
+#import "UICheckBoxTVCell.h"
 #import "UIRoundedImageView.h"
 #import "UIIconButton.h"
 
 #include "linphone/linphonecore.h"
 
-@interface UIChatCell : UITransparentTVCell {
-    LinphoneChatRoom* chatRoom;
+@interface UIChatCell : UICheckBoxTVCell {
+	LinphoneChatRoom *chatRoom;
 }
 
 @property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;

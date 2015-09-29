@@ -19,12 +19,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UITransparentTVCell.h"
+#import "UICheckBoxTVCell.h"
 #import "UIRoundedImageView.h"
 
 #include "linphone/linphonecore.h"
 
-@interface UIHistoryCell : UITransparentTVCell {
+@interface UIHistoryCell : UICheckBoxTVCell {
 }
 
 @property (nonatomic, assign) LinphoneCallLog *callLog;

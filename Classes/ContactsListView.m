@@ -165,17 +165,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)centerTextOnIcon:(UIButton *)button {
-	UIEdgeInsets inset = button.titleEdgeInsets;
-	inset.left = -(button.imageView.frame.size.width);
-	button.titleEdgeInsets = inset;
-}
-
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[self changeView:History_All];
-	[self centerTextOnIcon:allButton];
-	[self centerTextOnIcon:linphoneButton];
 }
 
 #pragma mark -

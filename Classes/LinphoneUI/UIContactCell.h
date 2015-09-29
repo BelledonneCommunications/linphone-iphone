@@ -19,9 +19,9 @@
 
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
-#import "UITransparentTVCell.h"
+#import "UICheckBoxTVCell.h"
 
-@interface UIContactCell : UITransparentTVCell {
+@interface UIContactCell : UICheckBoxTVCell {
 }
 
 @property(nonatomic, strong) IBOutlet UILabel *nameLabel;
