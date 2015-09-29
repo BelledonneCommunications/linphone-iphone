@@ -335,6 +335,7 @@ void bc_tester_helper(const char *name, const char* additionnal_helper) {
 					 additionnal_helper);
 }
 
+#if !defined(BC_TESTER_WINDOWS_PHONE) && !defined(BC_TESTER_WINDOWS_UNIVERSAL) && !defined(__QNX__) && !defined(ANDROID) && !defined(IOS)
 static int file_exists(const char* root_path) {
 	char * res_path = bc_sprintf("%s/common/bc_completion", root_path);
 	FILE* file = fopen(res_path, "r");
@@ -345,6 +346,7 @@ static int file_exists(const char* root_path) {
 	}
 	return found;
 }
+#endif
 
 static void detect_res_prefix(const char* prog) {
 	char* progpath = NULL;
