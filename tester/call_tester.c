@@ -2041,6 +2041,46 @@ static void call_with_ice_video_added_and_refused(void) {
 	_call_with_ice_video(caller_policy, callee_policy, TRUE, FALSE, FALSE, FALSE);
 }
 
+static void call_with_ice_video_and_rtt(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	bool_t call_ok;
+	LinphoneVideoPolicy policy = { TRUE, TRUE };
+	LinphoneCallParams *params = NULL;
+	LinphoneCall *marie_call = NULL;
+
+	linphone_core_set_video_policy(pauline->lc, &policy);
+	linphone_core_set_video_policy(marie->lc, &policy);
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, FALSE);
+	linphone_core_enable_video_capture(pauline->lc, FALSE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
+	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
+	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+
+	linphone_core_set_audio_port(marie->lc, -1);
+	linphone_core_set_video_port(marie->lc, -1);
+	linphone_core_set_text_port(marie->lc, -1);
+	linphone_core_set_audio_port(pauline->lc, -1);
+	linphone_core_set_video_port(pauline->lc, -1);
+	linphone_core_set_text_port(pauline->lc, -1);
+
+	params = linphone_core_create_default_call_parameters(pauline->lc);
+	linphone_call_params_enable_realtime_text(params, TRUE);
+	BC_ASSERT_TRUE(call_ok = call_with_caller_params(pauline, marie, params));
+	if (!call_ok) goto end;
+	
+	marie_call = linphone_core_get_current_call(marie->lc);
+	BC_ASSERT_TRUE(linphone_call_params_audio_enabled(linphone_call_get_current_params(marie_call)));
+	BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(marie_call)));
+	BC_ASSERT_TRUE(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(marie_call)));
+
+	end_call(pauline, marie);
+end:
+	linphone_call_params_destroy(params);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
 
 static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -5030,6 +5070,7 @@ test_t call_tests[] = {
 	{ "Call with ICE and video added 2", call_with_ice_video_added_2 },
 	{ "Call with ICE and video added 3", call_with_ice_video_added_3 },
 	{ "Call with ICE and video added and refused", call_with_ice_video_added_and_refused },
+	{ "Call with ICE, video and realtime text", call_with_ice_video_and_rtt },
 	{ "Video call with ICE accepted using call params",video_call_ice_params},
 	{ "Video call recording (H264)", video_call_recording_h264_test },
 	{ "Video call recording (VP8)", video_call_recording_vp8_test },
