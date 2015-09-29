@@ -790,8 +790,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"../liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -810,8 +810,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"../liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -833,8 +833,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"../liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -853,8 +853,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"../liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -876,7 +876,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -895,7 +895,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -917,7 +917,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -936,7 +936,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
