@@ -3050,11 +3050,6 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 
 	parsed_url2=linphone_address_new(from);
 
-	/*rtt text stub*/
-	if (cp->realtimetext_enabled) {
-		linphone_call_params_add_custom_header(cp,"X-RTT","on");
-	}
-
 	call=linphone_call_new_outgoing(lc,parsed_url2,linphone_address_clone(addr),cp,proxy);
 
 	if(linphone_core_add_call(lc,call)!= 0)

@@ -1282,17 +1282,27 @@ static void file_transfer_io_error_after_destroying_chatroom() {
 	file_transfer_io_error_base("https://www.linphone.org:444/lft.php", TRUE);
 }
 
-static void real_time_text(bool_t audio_stream_enabled) {
+static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled) {
 	LinphoneChatRoom *pauline_chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	LinphoneCallParams *marie_params = linphone_core_create_default_call_parameters(marie->lc);
+	LinphoneCallParams *marie_params = NULL;
 	LinphoneCall *pauline_call, *marie_call;
+	
+	if (srtp_enabled) {
+		BC_ASSERT_TRUE(linphone_core_media_encryption_supported(marie->lc, LinphoneMediaEncryptionSRTP));
+		linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionSRTP);
+		linphone_core_set_media_encryption(pauline->lc, LinphoneMediaEncryptionSRTP);
+		linphone_core_set_media_encryption_mandatory(marie->lc, TRUE);
+		linphone_core_set_media_encryption_mandatory(pauline->lc, TRUE);
+	}
+
+	marie_params = linphone_core_create_default_call_parameters(marie->lc);
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
 	if (!audio_stream_enabled) {
 		linphone_call_params_enable_audio(marie_params,FALSE);
 	}
-
+	
 	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	marie_call=linphone_core_get_current_call(marie->lc);
@@ -1332,7 +1342,7 @@ static void real_time_text(bool_t audio_stream_enabled) {
 }
 
 static void real_time_text_message(void) {
-	real_time_text(TRUE);
+	real_time_text(TRUE, FALSE);
 }
 
 static void real_time_text_conversation(void) {
@@ -1435,7 +1445,11 @@ static void real_time_text_conversation(void) {
 }
 
 static void real_time_text_without_audio(void) {
-	real_time_text(FALSE);
+	real_time_text(FALSE, FALSE);
+}
+
+static void real_time_text_srtp(void) {
+	real_time_text(TRUE, TRUE);
 }
 
 void file_transfer_with_http_proxy(void) {
@@ -1489,6 +1503,7 @@ test_t message_tests[] = {
 	{"Real Time Text message", real_time_text_message},
 	{"Real Time Text conversation", real_time_text_conversation},
 	{"Real Time Text without audio", real_time_text_without_audio},
+	{"Real Time Text with srtp", real_time_text_srtp},
 };
 
 test_suite_t message_test_suite = {

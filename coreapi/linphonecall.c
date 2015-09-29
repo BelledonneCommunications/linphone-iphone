@@ -705,6 +705,9 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 			ms_warning("Cannot get audio local ssrc for call [%p]",call);
 		if (call->main_audio_stream_index > max_index)
 			max_index = call->main_audio_stream_index;
+	} else {
+		ms_message("Don't put audio stream on local offer for call [%p]",call);
+		md->streams[call->main_audio_stream_index].dir = SalStreamInactive;
 	}
 
 	md->streams[call->main_video_stream_index].proto=md->streams[call->main_audio_stream_index].proto;
