@@ -445,7 +445,7 @@ static int setup_encryption_key(SalSrtpCryptoAlgo *crypto, MSCryptoSuite suite, 
 		case MS_CRYPTO_SUITE_INVALID:
 		break;
 	}
-	if (keylen==0 || !generate_b64_crypto_key(30, crypto->master_key, SAL_SRTP_KEY_SIZE)){
+	if (keylen==0 || !generate_b64_crypto_key(keylen, crypto->master_key, SAL_SRTP_KEY_SIZE)){
 		ms_error("Could not generate SRTP key.");
 		crypto->algo = 0;
 		return -1;
