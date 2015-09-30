@@ -103,7 +103,7 @@ static void chatTable_free_chatrooms(void *data) {
 		ms_list_free_with_data(data, chatTable_free_chatrooms);
 	}
 	data = [self sortChatRooms];
-	[[self tableView] reloadData];
+	[super loadData];
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -124,18 +124,20 @@ static void chatTable_free_chatrooms(void *data) {
 	}
 
 	[cell setChatRoom:(LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row])];
-
+	[super accessoryForCell:cell atPath:indexPath];
 	return cell;
 }
 
 #pragma mark - UITableViewDelegate Functions
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:indexPath animated:NO];
-	LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row]);
-	ChatConversationView *view = VIEW(ChatConversationView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
-	[view setChatRoom:chatRoom];
+	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
+	if (![self isEditing]) {
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row]);
+		ChatConversationView *view = VIEW(ChatConversationView);
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[view setChatRoom:chatRoom];
+	}
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
