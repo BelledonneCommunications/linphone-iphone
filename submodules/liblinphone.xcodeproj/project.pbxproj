@@ -2139,6 +2139,7 @@
 					externals/speex/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "arm64 armv7";
@@ -2625,7 +2626,6 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -2852,7 +2852,6 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
@@ -2899,7 +2898,6 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -2956,7 +2954,6 @@
 				INFOPLIST_FILE = "mediastream-tester Tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mediastream-tester.app/mediastream-tester";
 			};
@@ -3110,7 +3107,6 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "mediastream-tester";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
@@ -3171,7 +3167,6 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "mediastream-tester";
 				PROVISIONING_PROFILE = "";
@@ -3234,7 +3229,6 @@
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib",
 					"$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
-				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "mediastream-tester";
 				PROVISIONING_PROFILE = "";

@@ -101,7 +101,6 @@
 		63D5C1661BA6E765002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C1671BA6E765002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
 		63D5C1681BA6E765002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
-		63D5C1691BA6E765002D1ABF /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11A1BA6E4F0002D1ABF /* libSKP_SILK_SDK.a */; };
 		63D5C16A1BA6E765002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C16B1BA6E765002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C16C1BA6E765002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -151,7 +150,6 @@
 		63D5C1991BA6E92A002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C19A1BA6E92A002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
 		63D5C19B1BA6E92A002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
-		63D5C19C1BA6E92A002D1ABF /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11A1BA6E4F0002D1ABF /* libSKP_SILK_SDK.a */; };
 		63D5C19D1BA6E92A002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C19E1BA6E92A002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C19F1BA6E92A002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -181,7 +179,6 @@
 		63D5C1B71BA6E95C002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C1B81BA6E95C002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
 		63D5C1B91BA6E95C002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
-		63D5C1BA1BA6E95C002D1ABF /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11A1BA6E4F0002D1ABF /* libSKP_SILK_SDK.a */; };
 		63D5C1BB1BA6E95C002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C1BC1BA6E95C002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C1BD1BA6E95C002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -365,7 +362,6 @@
 				63D5C1661BA6E765002D1ABF /* libopus.a in Frameworks */,
 				63D5C1671BA6E765002D1ABF /* libortp.a in Frameworks */,
 				63D5C1681BA6E765002D1ABF /* libpolarssl.a in Frameworks */,
-				63D5C1691BA6E765002D1ABF /* libSKP_SILK_SDK.a in Frameworks */,
 				63D5C16A1BA6E765002D1ABF /* libspeex.a in Frameworks */,
 				63D5C16B1BA6E765002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C16C1BA6E765002D1ABF /* libsrtp.a in Frameworks */,
@@ -402,7 +398,6 @@
 				63D5C1991BA6E92A002D1ABF /* libopus.a in Frameworks */,
 				63D5C19A1BA6E92A002D1ABF /* libortp.a in Frameworks */,
 				63D5C19B1BA6E92A002D1ABF /* libpolarssl.a in Frameworks */,
-				63D5C19C1BA6E92A002D1ABF /* libSKP_SILK_SDK.a in Frameworks */,
 				63D5C19D1BA6E92A002D1ABF /* libspeex.a in Frameworks */,
 				63D5C19E1BA6E92A002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C19F1BA6E92A002D1ABF /* libsrtp.a in Frameworks */,
@@ -452,7 +447,6 @@
 				63D5C1B71BA6E95C002D1ABF /* libopus.a in Frameworks */,
 				63D5C1B81BA6E95C002D1ABF /* libortp.a in Frameworks */,
 				63D5C1B91BA6E95C002D1ABF /* libpolarssl.a in Frameworks */,
-				63D5C1BA1BA6E95C002D1ABF /* libSKP_SILK_SDK.a in Frameworks */,
 				63D5C1BB1BA6E95C002D1ABF /* libspeex.a in Frameworks */,
 				63D5C1BC1BA6E95C002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C1BD1BA6E95C002D1ABF /* libsrtp.a in Frameworks */,
@@ -955,6 +949,7 @@
 				HEADER_SEARCH_PATHS = "../liblinphone-sdk/apple-darwin/include";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "../liblinphone-sdk/apple-darwin/lib";
+				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 			};
