@@ -24,12 +24,11 @@
 #import "ChatsListTableView.h"
 #import "UICompositeView.h"
 
-@interface ChatsListView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
+@interface ChatsListView : UIViewController <UICompositeViewDelegate> {
 }
 
 @property(nonatomic, strong) IBOutlet ChatsListTableView *tableController;
 @property(nonatomic, strong) IBOutlet UIButton *editButton;
-@property(nonatomic, strong) IBOutlet UITextField *addressField;
 @property(weak, nonatomic) IBOutlet UIButton *toggleSelectionButton;
 @property(weak, nonatomic) IBOutlet UIButton *backButton;
 @property(weak, nonatomic) IBOutlet UIButton *addButton;

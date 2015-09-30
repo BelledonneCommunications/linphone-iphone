@@ -73,36 +73,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Action Functions
 
-- (void)startChatRoom {
-	// Push ChatRoom
-	LinphoneChatRoom *room =
-		linphone_core_get_chat_room_from_uri([LinphoneManager getLc], [_addressField.text UTF8String]);
-	if (room != nil) {
-		ChatConversationView *view = VIEW(ChatConversationView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
-		[view setChatRoom:room];
-	} else {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid address", nil)
-														message:@"Please specify the entire SIP address for the chat"
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-											  otherButtonTitles:nil];
-		[alert show];
-	}
-	_addressField.text = @"";
-}
-
 - (IBAction)onAddClick:(id)event {
-	if (_addressField.text.length == 0) { // if no address is manually set, lauch address book
-		[ContactSelection setSelectionMode:ContactSelectionModeMessage];
-		[ContactSelection setAddAddress:nil];
-		[ContactSelection setSipFilter:[LinphoneManager instance].contactFilter];
-		[ContactSelection enableEmailFilter:FALSE];
-		[ContactSelection setNameOrEmailFilter:nil];
-		[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription push:TRUE];
-	} else {
-		[self startChatRoom];
-	}
+	ChatConversationView *view = VIEW(ChatConversationView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+	[view setChatRoom:NULL];
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -118,12 +92,4 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onSelectionToggle:(id)sender {
 }
 
-#pragma mark - UITextFieldDelegate Functions
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[_addressField resignFirstResponder];
-	if (_addressField.text.length > 0)
-		[self startChatRoom];
-	return YES;
-}
 @end

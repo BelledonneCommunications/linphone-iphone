@@ -163,12 +163,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	chatRoom = room;
 	[messageField setText:@""];
 	[tableController setChatRoom:room];
+
 	if (chatRoom != NULL) {
+		_createChatView.hidden = YES;
+		chatView.hidden = NO;
 		[self update];
 		linphone_chat_room_mark_as_read(chatRoom);
 		[self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
+	} else {
+		_createChatView.hidden = NO;
+		chatView.hidden = YES;
 	}
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {

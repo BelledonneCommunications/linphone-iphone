@@ -48,8 +48,8 @@
 @property(nonatomic, strong) IBOutlet UISwipeGestureRecognizer *listSwipeGestureRecognizer;
 @property(strong, nonatomic) IBOutlet UILabel *composeLabel;
 @property(strong, nonatomic) IBOutlet UIView *composeIndicatorView;
-
 @property(nonatomic, strong) IBOutlet UIButton *pictureButton;
+@property(weak, nonatomic) IBOutlet UIView *createChatView;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;
