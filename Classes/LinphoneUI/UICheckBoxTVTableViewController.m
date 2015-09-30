@@ -43,7 +43,19 @@
 	[self accessoryForCell:cell atPath:indexPath];
 }
 
+- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
+		   editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+	// Detemine if it's in editing mode
+	if (self.editing) {
+		return UITableViewCellEditingStyleDelete;
+	}
+	return UITableViewCellEditingStyleNone;
+}
+
+#pragma mark -
+
 - (void)accessoryForCell:(UITableViewCell *)cell atPath:(NSIndexPath *)indexPath {
+	cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	if ([self isEditing]) {
 		UIImage *image = nil;
 		if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
@@ -80,7 +92,7 @@
 - (void)removeSelection {
 	// we must iterate through selected items in reverse order
 	[_selectedItems sortUsingComparator:^(NSIndexPath *obj1, NSIndexPath *obj2) {
-	  return [obj1 compare:obj2];
+	  return [obj2 compare:obj1];
 	}];
 	for (NSIndexPath *indexPath in _selectedItems) {
 		[self tableView:self.tableView

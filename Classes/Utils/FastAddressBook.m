@@ -341,4 +341,28 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 	return ret;
 }
 
+- (int)removeContact:(ABRecordRef)contact {
+	// Remove contact from book
+	if (contact && ABRecordGetRecordID(contact) != kABRecordInvalidID) {
+		CFErrorRef error = NULL;
+		ABAddressBookRemoveRecord(addressBook, contact, (CFErrorRef *)&error);
+		if (error != NULL) {
+			LOGE(@"Remove contact %p: Fail(%@)", contact, [(__bridge NSError *)error localizedDescription]);
+		} else {
+			LOGI(@"Remove contact %p: Success!", contact);
+		}
+		contact = NULL;
+
+		// Save address book
+		error = NULL;
+		ABAddressBookSave(addressBook, (CFErrorRef *)&error);
+		if (error != NULL) {
+			LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
+		} else {
+			LOGI(@"Save AddressBook: Success!");
+		}
+		return error ? -1 : 0;
+	}
+	return -2;
+}
 @end

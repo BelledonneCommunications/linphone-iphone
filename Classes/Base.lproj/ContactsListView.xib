@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ContactsListView">
@@ -10,10 +10,10 @@
                 <outlet property="addButton" destination="6" id="91"/>
                 <outlet property="allButton" destination="4" id="27"/>
                 <outlet property="backButton" destination="87" id="90"/>
+                <outlet property="deleteButton" destination="aJI-VJ-xN6" id="nXJ-rR-zmW"/>
                 <outlet property="linphoneButton" destination="5" id="31"/>
                 <outlet property="searchBar" destination="5jE-oF-d45" id="xfS-xo-2Bm"/>
                 <outlet property="tableController" destination="TJG-JZ-YRR" id="0lt-gC-EOm"/>
-                <outlet property="tableView" destination="zOo-FS-W6l" id="T4d-56-Bgi"/>
                 <outlet property="topBar" destination="3" id="w1O-2o-b18"/>
                 <outlet property="view" destination="2" id="16"/>
             </connections>
@@ -127,10 +127,13 @@
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="XEW-2B-Q5j"/>
+                                    </connections>
                                 </button>
                             </subviews>
                         </view>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="zOo-FS-W6l" userLabel="tableView">
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="zOo-FS-W6l" userLabel="tableView">
                             <rect key="frame" x="0.0" y="86" width="375" height="475"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -176,4 +179,9 @@
         <image name="delete.png" width="21" height="27"/>
         <image name="edit_list.png" width="29" height="28"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>

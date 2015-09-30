@@ -22,6 +22,7 @@
 
 #import "UICompositeView.h"
 #import "ContactsListTableView.h"
+#import "UIIconButton.h"
 
 typedef enum _ContactSelectionMode {
 	ContactSelectionModeNone,
@@ -79,19 +80,19 @@ typedef enum _ContactSelectionMode {
 	: UIViewController <UICompositeViewDelegate, ABPeoplePickerNavigationControllerDelegate, UISearchBarDelegate>
 
 @property(strong, nonatomic) IBOutlet ContactsListTableView *tableController;
-@property(nonatomic, strong) IBOutlet UINavigationController *sysViewController;
 @property(strong, nonatomic) IBOutlet UIView *topBar;
 @property(nonatomic, strong) IBOutlet UIButton *allButton;
 @property(nonatomic, strong) IBOutlet UIButton *linphoneButton;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;
 @property(nonatomic, strong) IBOutlet UIButton *addButton;
 @property(strong, nonatomic) IBOutlet UISearchBar *searchBar;
-@property(weak, nonatomic) IBOutlet UITableView *tableView;
+@property(weak, nonatomic) IBOutlet UIIconButton *deleteButton;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onLinphoneClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)sender;
+- (IBAction)onDeleteClick:(id)sender;
 
 @end

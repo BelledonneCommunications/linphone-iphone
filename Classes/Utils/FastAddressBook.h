@@ -29,6 +29,7 @@
 
 - (void)reload;
 - (void)saveAddressBook;
+- (int)removeContact:(ABRecordRef)contact;
 
 + (BOOL)isAuthorized;
 

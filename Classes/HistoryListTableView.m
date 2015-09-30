@@ -137,7 +137,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
-	if ([self isEditing]) {
+	if (![self isEditing]) {
 		LinphoneCallLog *callLog = [[_callLogs objectAtIndex:[indexPath row]] pointerValue];
 		if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
 			LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
@@ -148,15 +148,6 @@
 			ms_free(uri);
 		}
 	}
-}
-
-- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
-		   editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-	// Detemine if it's in editing mode
-	if (self.editing) {
-		return UITableViewCellEditingStyleDelete;
-	}
-	return UITableViewCellEditingStyleNone;
 }
 
 - (void)tableView:(UITableView *)tableView

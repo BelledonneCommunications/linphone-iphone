@@ -75,34 +75,12 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)removeContact {
-	if (contact == NULL) {
-		[PhoneMainView.instance popCurrentView];
-		return;
-	}
-
-	// Remove contact from book
-	if (ABRecordGetRecordID(contact) != kABRecordInvalidID) {
-		CFErrorRef error = NULL;
-		ABAddressBookRemoveRecord(addressBook, contact, (CFErrorRef *)&error);
-		if (error != NULL) {
-			LOGE(@"Remove contact %p: Fail(%@)", contact, [(__bridge NSError *)error localizedDescription]);
-		} else {
-			LOGI(@"Remove contact %p: Success!", contact);
-		}
-		contact = NULL;
-
-		// Save address book
-		error = NULL;
+	if (contact != NULL) {
 		inhibUpdate = TRUE;
-		ABAddressBookSave(addressBook, (CFErrorRef *)&error);
+		[[[LinphoneManager instance] fastAddressBook] removeContact:contact];
 		inhibUpdate = FALSE;
-		if (error != NULL) {
-			LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
-		} else {
-			LOGI(@"Save AddressBook: Success!");
-		}
-		[[LinphoneManager instance].fastAddressBook reload];
 	}
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (void)saveData {

@@ -35,9 +35,11 @@
 		NSArray *arrayOfViews =
 			[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
 
-		if ([arrayOfViews count] >= 1) {
-			[self.contentView addSubview:[arrayOfViews objectAtIndex:0]];
-		}
+		// resize cell to match .nib size. It is needed when resized the cell to
+		// correctly adapt its height too
+		UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:0]);
+		[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
+		[self addSubview:sub];
 	}
 	return self;
 }
@@ -74,6 +76,20 @@
 		[nameLabel setTextColor:[UIColor whiteColor]];
 	} else {
 		[nameLabel setTextColor:[UIColor blackColor]];
+	}
+}
+
+- (void)setEditing:(BOOL)editing {
+	[self setEditing:editing animated:FALSE];
+}
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+	if (animated) {
+		[UIView beginAnimations:nil context:nil];
+		[UIView setAnimationDuration:0.3];
+	}
+	if (animated) {
+		[UIView commitAnimations];
 	}
 }
 

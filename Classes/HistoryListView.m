@@ -22,13 +22,6 @@
 
 @implementation HistoryListView
 
-@synthesize tableController;
-
-@synthesize allButton;
-@synthesize missedButton;
-@synthesize editButton;
-@synthesize deleteButton;
-
 typedef enum _HistoryView { History_All, History_Missed, History_MAX } HistoryView;
 
 #pragma mark - Lifecycle Functions
@@ -62,11 +55,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	if ([tableController isEditing]) {
-		[tableController setEditing:FALSE animated:FALSE];
+	if ([_tableController isEditing]) {
+		[_tableController setEditing:FALSE animated:FALSE];
 	}
-	[deleteButton setHidden:TRUE];
-	[editButton setOff];
+	[_deleteButton setHidden:TRUE];
+	[_editButton setOff];
 	[self changeView:History_All];
 
 	// Reset missed call
@@ -88,26 +81,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)hideEditIfNeeded {
-	editButton.hidden = ([tableController tableView:tableController.tableView numberOfRowsInSection:0] == 0);
-	if ([editButton isSelected]) {
-		[editButton toggle];
+	_editButton.hidden = ([_tableController tableView:_tableController.tableView numberOfRowsInSection:0] == 0);
+	if ([_editButton isSelected]) {
+		[_editButton toggle];
 		[self onEditClick:nil];
 	}
 }
 
 - (void)changeView:(HistoryView)view {
 	if (view == History_All) {
-		allButton.selected = TRUE;
-		[tableController setMissedFilter:FALSE];
+		_allButton.selected = TRUE;
+		[_tableController setMissedFilter:FALSE];
 	} else {
-		allButton.selected = FALSE;
+		_allButton.selected = FALSE;
 	}
 
 	if (view == History_Missed) {
-		missedButton.selected = TRUE;
-		[tableController setMissedFilter:TRUE];
+		_missedButton.selected = TRUE;
+		[_tableController setMissedFilter:TRUE];
 	} else {
-		missedButton.selected = FALSE;
+		_missedButton.selected = FALSE;
 	}
 	[self hideEditIfNeeded];
 }
@@ -123,19 +116,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditClick:(id)event {
-	[tableController setEditing:![tableController isEditing] animated:TRUE];
-	[deleteButton setHidden:![tableController isEditing]];
+	[_tableController setEditing:!_tableController.isEditing animated:TRUE];
+	_deleteButton.hidden = !_tableController.isEditing;
 }
 
 - (IBAction)onDeleteClick:(id)event {
 	NSString *msg =
 		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d history?", nil),
-								   tableController.selectedItems.count];
+								   _tableController.selectedItems.count];
 	[UIConfirmationDialog ShowWithMessage:msg
 							onCancelClick:nil
 					  onConfirmationClick:^() {
-						[tableController removeSelection];
-						[tableController loadData];
+						[_tableController removeSelection];
+						[_tableController loadData];
 						[self hideEditIfNeeded];
 					  }];
 }

@@ -78,10 +78,6 @@ static NSString *sNameOrEmailFilter;
 @implementation ContactsListView
 
 @synthesize tableController;
-@synthesize tableView;
-
-@synthesize sysViewController;
-
 @synthesize allButton;
 @synthesize linphoneButton;
 @synthesize backButton;
@@ -129,7 +125,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	subViewFrame.size.height -= self.topBar.frame.size.height;
 	[UIView animateWithDuration:0.2
 					 animations:^{
-					   self.tableView.frame = subViewFrame;
+					   self.tableController.tableView.frame = subViewFrame;
 					 }];
 }
 
@@ -239,6 +235,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditClick:(id)sender {
+	[tableController setEditing:!tableController.isEditing animated:TRUE];
+	_deleteButton.hidden = !tableController.isEditing;
+	addButton.hidden = !_deleteButton.hidden;
+}
+
+- (IBAction)onDeleteClick:(id)sender {
+	NSString *msg =
+		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d contacts?", nil),
+								   tableController.selectedItems.count];
+	[UIConfirmationDialog ShowWithMessage:msg
+							onCancelClick:nil
+					  onConfirmationClick:^() {
+						[tableController removeSelection];
+						[tableController loadData];
+					  }];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
