@@ -245,8 +245,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
-	NSString *msg = [NSString
-		stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete your contact %@?", nil), @"toto"];
+	NSString *msg = NSLocalizedString(@"Are you sure that you want to delete your contact?", nil);
 	[UIConfirmationDialog ShowWithMessage:msg
 							onCancelClick:nil
 					  onConfirmationClick:^() {
