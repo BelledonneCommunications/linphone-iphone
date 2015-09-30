@@ -931,15 +931,22 @@ static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed){
 
 void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
 {
+	const SalStreamDescription *stream;
+	IceCheckList *cl = NULL;
+	bool_t default_candidate = FALSE;
+	const char *addr = NULL;
+	int port = 0;
+	int componentID = 0;
 	bool_t ice_restarted = FALSE;
 	bool_t ice_params_found=FALSE;
+	int i, j;
+		
 	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0'))  {
 		ice_params_found=TRUE;
 	} else {
-		int i;
 		for (i = 0; i < md->nb_streams; i++) {
-			const SalStreamDescription *stream = &md->streams[i];
-			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			stream = &md->streams[i];
+			cl = ice_session_check_list(call->ice_session, i);
 			if (cl) {
 				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 					ice_params_found=TRUE;
@@ -951,16 +958,14 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 		}
 	}
 	if (ice_params_found) {
-		int i, j;
-
 		/* Check for ICE restart and set remote credentials. */
 		if ((strcmp(md->addr, "0.0.0.0") == 0) || (strcmp(md->addr, "::0") == 0)) {
 			ice_session_restart(call->ice_session);
 			ice_restarted = TRUE;
 		} else {
 			for (i = 0; i < md->nb_streams; i++) {
-				const SalStreamDescription *stream = &md->streams[i];
-				IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+				stream = &md->streams[i];
+				cl = ice_session_check_list(call->ice_session, i);
 				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
 					ice_session_restart(call->ice_session);
 					ice_restarted = TRUE;
@@ -978,8 +983,8 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 		}
 		for (i = 0; i < md->nb_streams; i++) {
-			const SalStreamDescription *stream = &md->streams[i];
-			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			stream = &md->streams[i];
+			cl = ice_session_check_list(call->ice_session, i);
 			if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
 				if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
 					if (ice_restarted == FALSE
@@ -997,8 +1002,8 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 
 		/* Create ICE check lists if needed and parse ICE attributes. */
 		for (i = 0; i < md->nb_streams; i++) {
-			const SalStreamDescription *stream = &md->streams[i];
-			IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+			stream = &md->streams[i];
+			cl = ice_session_check_list(call->ice_session, i);
 			
 			if (cl==NULL) continue;
 			if (stream->ice_mismatch == TRUE) {
@@ -1011,9 +1016,9 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
 				for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
 					const SalIceCandidate *candidate = &stream->ice_candidates[j];
-					bool_t default_candidate = FALSE;
-					const char *addr = NULL;
-					int port = 0;
+					default_candidate = FALSE;
+					addr = NULL;
+					port = 0;
 					if (candidate->addr[0] == '\0') break;
 					if ((candidate->componentID == 0) || (candidate->componentID > 2)) continue;
 					get_default_addr_and_port(candidate->componentID, md, stream, &addr, &port);
@@ -1025,17 +1030,17 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 				if (ice_restarted == FALSE) {
 					bool_t losing_pairs_added = FALSE;
 					for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
-						const SalIceRemoteCandidate *candidate = &stream->ice_remote_candidates[j];
-						const char *addr = NULL;
-						int port = 0;
-						int componentID = j + 1;
-						if (candidate->addr[0] == '\0') break;
+						const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
+						addr = NULL;
+						port = 0;
+						componentID = j + 1;
+						if (remote_candidate->addr[0] == '\0') break;
 						get_default_addr_and_port(componentID, md, stream, &addr, &port);
 						if (j == 0) {
 							/* If we receive a re-invite and we finished ICE processing on our side, use the candidates given by the remote. */
 							ice_check_list_unselect_valid_pairs(cl);
 						}
-						ice_add_losing_pair(cl, j + 1, candidate->addr, candidate->port, addr, port);
+						ice_add_losing_pair(cl, j + 1, remote_candidate->addr, remote_candidate->port, addr, port);
 						losing_pairs_added = TRUE;
 					}
 					if (losing_pairs_added == TRUE) ice_check_list_check_completed(cl);
@@ -1043,7 +1048,7 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			}
 		}
 		for (i = 0; i < md->nb_streams; i++) {
-			IceCheckList * cl = ice_session_check_list(call->ice_session, i);
+			cl = ice_session_check_list(call->ice_session, i);
 			if (!sal_stream_description_active(&md->streams[i]) && (cl != NULL)) {
 				ice_session_remove_check_list_from_idx(call->ice_session, i);
 				clear_ice_check_list(call, cl);
