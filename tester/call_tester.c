@@ -2061,6 +2061,7 @@ static void call_with_ice_video_added_and_refused(void) {
 	LinphoneVideoPolicy callee_policy = { FALSE, FALSE };
 	_call_with_ice_video(caller_policy, callee_policy, TRUE, FALSE, FALSE, FALSE);
 }
+#if ICE_WAS_WORKING_WITH_REAL_TIME_TEXT /*which is not the case at the moment*/
 
 static void call_with_ice_video_and_rtt(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -2103,6 +2104,8 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+#endif
 
 static void video_call_with_early_media_no_matching_audio_codecs(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
@@ -5092,7 +5095,9 @@ test_t call_tests[] = {
 	{ "Call with ICE and video added 2", call_with_ice_video_added_2 },
 	{ "Call with ICE and video added 3", call_with_ice_video_added_3 },
 	{ "Call with ICE and video added and refused", call_with_ice_video_added_and_refused },
+#if ICE_WAS_WORKING_WITH_REAL_TIME_TEXT
 	{ "Call with ICE, video and realtime text", call_with_ice_video_and_rtt },
+#endif
 	{ "Video call with ICE accepted using call params",video_call_ice_params},
 	{ "Video call recording (H264)", video_call_recording_h264_test },
 	{ "Video call recording (VP8)", video_call_recording_vp8_test },
