@@ -12,7 +12,6 @@
 
 @property(nonatomic, strong) NSArray *names;
 @property(nonatomic, strong) NSArray *searchResults;
-@property(nonatomic, strong) UISearchDisplayController *searchController;
 
 @end
 
@@ -261,7 +260,7 @@
 //===============================================
 
 - (void)configureTableView:(UITableView *)tableView {
-
+	//
 	tableView.separatorInset = UIEdgeInsetsZero;
 
 	[tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cellId"];
@@ -283,20 +282,20 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
-	if (tableView == self.tableView) {
+	//	if (tableView == self.tableView) {
 		return [self.names count];
-	} else {
-		return [self.searchResults count];
-	}
+		//	} else {
+		//		return [self.searchResults count];
+		//	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cellId" forIndexPath:indexPath];
 
-	NSString *name = (tableView == self.tableView) ? self.names[indexPath.row] : self.searchResults[indexPath.row];
-
-	cell.textLabel.text = name;
+	//	NSString *name = (tableView == self.tableView) ? self.names[indexPath.row] : self.searchResults[indexPath.row];
+	//
+	//	cell.textLabel.text = name;
 
 	return cell;
 }
@@ -306,61 +305,26 @@
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-//===============================================
-#pragma mark -
-#pragma mark UISearchDisplayDelegate
-//===============================================
+#pragma mark - searchBar delegate
 
-- (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller {
-	NSLog(@"🔦 | will begin search");
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+	// display searchtext in UPPERCASE
+	// searchBar.text = [searchText uppercaseString];
+	//	searchBar.showsCancelButton = (searchText.length > 0);
+	//	[ContactSelection setNameOrEmailFilter:searchText];
+	//	[tableController loadData];
 }
-- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller {
-	NSLog(@"🔦 | did begin search");
-}
-- (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller {
-	NSLog(@"🔦 | will end search");
-}
-- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller {
-	NSLog(@"🔦 | did end search");
-}
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-  didLoadSearchResultsTableView:(UITableView *)tableView {
-	NSLog(@"🔦 | did load table");
-	[self configureTableView:tableView];
-}
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-	willUnloadSearchResultsTableView:(UITableView *)tableView {
-	NSLog(@"🔦 | will unload table");
-}
-- (void)searchDisplayController:(UISearchDisplayController *)controller
- willShowSearchResultsTableView:(UITableView *)tableView {
-	NSLog(@"🔦 | will show table");
-}
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-  didShowSearchResultsTableView:(UITableView *)tableView {
-	NSLog(@"🔦 | did show table");
-}
-- (void)searchDisplayController:(UISearchDisplayController *)controller
- willHideSearchResultsTableView:(UITableView *)tableView {
-	NSLog(@"🔦 | will hide table");
-}
-- (void)searchDisplayController:(UISearchDisplayController *)controller
-  didHideSearchResultsTableView:(UITableView *)tableView {
-	NSLog(@"🔦 | did hide table");
-}
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller
-	shouldReloadTableForSearchString:(NSString *)searchString {
-	NSLog(@"🔦 | should reload table for search string?");
 
-	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", searchString];
-	self.searchResults = [self.names filteredArrayUsingPredicate:predicate];
-
-	return YES;
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+	//	[searchBar setShowsCancelButton:FALSE animated:TRUE];
 }
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller
-shouldReloadTableForSearchScope:(NSInteger)searchOption {
-	NSLog(@"🔦 | should reload table for search scope?");
-	return YES;
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+	//	[searchBar setShowsCancelButton:TRUE animated:TRUE];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+	//	[searchBar resignFirstResponder];
 }
 
 @end

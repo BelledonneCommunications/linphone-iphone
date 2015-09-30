@@ -142,7 +142,6 @@
                             <color key="separatorColor" red="0.7254902124" green="0.76862746479999999" blue="0.79607844350000001" alpha="1" colorSpace="deviceRGB"/>
                             <connections>
                                 <outlet property="dataSource" destination="TJG-JZ-YRR" id="334-RR-jEi"/>
-                                <outlet property="delegate" destination="TJG-JZ-YRR" id="X6c-qc-fGw"/>
                             </connections>
                         </tableView>
                         <searchBar contentMode="redraw" showsCancelButton="YES" id="5jE-oF-d45" userLabel="searchBar">
@@ -150,7 +149,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits"/>
                             <connections>
-                                <outlet property="delegate" destination="-1" id="4jL-Rv-dW7"/>
+                                <outlet property="delegate" destination="TJG-JZ-YRR" id="8Hr-Dq-RVQ"/>
                             </connections>
                         </searchBar>
                     </subviews>
