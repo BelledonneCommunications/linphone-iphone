@@ -14,5 +14,6 @@
 
 - (void)loadData;
 - (void)accessoryForCell:(UITableViewCell *)cell atPath:(NSIndexPath *)indexPath;
+- (void)removeSelection;
 
 @end

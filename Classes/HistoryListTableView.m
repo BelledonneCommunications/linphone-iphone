@@ -31,7 +31,7 @@
 #pragma mark - Lifecycle Functions
 
 - (void)initHistoryTableViewController {
-	callLogs = [[NSMutableArray alloc] init];
+	_callLogs = [[NSMutableArray alloc] init];
 	missedFilter = false;
 }
 
@@ -95,16 +95,16 @@
 #pragma mark - UITableViewDataSource Functions
 
 - (void)loadData {
-	[callLogs removeAllObjects];
+	[_callLogs removeAllObjects];
 	const MSList *logs = linphone_core_get_call_logs([LinphoneManager getLc]);
 	while (logs != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
 		if (missedFilter) {
 			if (linphone_call_log_get_status(log) == LinphoneCallMissed) {
-				[callLogs addObject:[NSValue valueWithPointer:log]];
+				[_callLogs addObject:[NSValue valueWithPointer:log]];
 			}
 		} else {
-			[callLogs addObject:[NSValue valueWithPointer:log]];
+			[_callLogs addObject:[NSValue valueWithPointer:log]];
 		}
 		logs = ms_list_next(logs);
 	}
@@ -116,7 +116,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [callLogs count];
+	return [_callLogs count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -126,7 +126,7 @@
 		cell = [[UIHistoryCell alloc] initWithIdentifier:kCellId];
 	}
 
-	id logId = [callLogs objectAtIndex:indexPath.row];
+	id logId = [_callLogs objectAtIndex:indexPath.row];
 	LinphoneCallLog *log = [logId pointerValue];
 	[cell setCallLog:log];
 	[super accessoryForCell:cell atPath:indexPath];
@@ -138,7 +138,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	if ([self isEditing]) {
-		LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
+		LinphoneCallLog *callLog = [[_callLogs objectAtIndex:[indexPath row]] pointerValue];
 		if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
 			LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 			char *uri = linphone_address_as_string(addr);
@@ -164,9 +164,9 @@
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		[tableView beginUpdates];
-		LinphoneCallLog *callLog = [[callLogs objectAtIndex:[indexPath row]] pointerValue];
+		LinphoneCallLog *callLog = [[_callLogs objectAtIndex:[indexPath row]] pointerValue];
 		linphone_core_remove_call_log([LinphoneManager getLc], callLog);
-		[callLogs removeObjectAtIndex:[indexPath row]];
+		[_callLogs removeObjectAtIndex:[indexPath row]];
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 						 withRowAnimation:UITableViewRowAnimationFade];
 		[tableView endUpdates];

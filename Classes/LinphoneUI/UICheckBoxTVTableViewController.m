@@ -21,6 +21,12 @@
 
 @implementation UICheckBoxTVTableViewController
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+	self = [super initWithCoder:aDecoder];
+	_selectedItems = [[NSMutableArray alloc] init];
+	return self;
+}
+
 - (instancetype)init {
 	self = [super init];
 	_selectedItems = [[NSMutableArray alloc] init];
@@ -61,12 +67,27 @@
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
 	[super setEditing:editing animated:animated];
+
+	// when switching editing mode, we must reload all cells to remove/add checkboxes
 	[self loadData];
 }
 
 - (void)loadData {
 	[_selectedItems removeAllObjects];
 	[self.tableView reloadData];
+}
+
+- (void)removeSelection {
+	// we must iterate through selected items in reverse order
+	[_selectedItems sortUsingComparator:^(NSIndexPath *obj1, NSIndexPath *obj2) {
+	  return [obj1 compare:obj2];
+	}];
+	for (NSIndexPath *indexPath in _selectedItems) {
+		[self tableView:self.tableView
+			commitEditingStyle:UITableViewCellEditingStyleDelete
+			 forRowAtIndexPath:indexPath];
+	}
+	[_selectedItems removeAllObjects];
 }
 
 @end

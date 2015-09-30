@@ -22,11 +22,11 @@
 #import "UICheckBoxTVTableViewController.h"
 
 @interface HistoryListTableView : UICheckBoxTVTableViewController {
-  @private
-	NSMutableArray *callLogs;
 }
+
 - (void)loadData;
 
+@property(nonatomic, readonly) NSMutableArray *callLogs;
 @property(nonatomic, assign) BOOL missedFilter;
 
 @end

@@ -136,11 +136,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	// cannot change search bar icon nor text font from the interface builder...
-	// [_searchBar setImage:[UIImage imageNamed:@"contact_search.png" ] forSearchBarIcon:UISearchBarIconSearch
-	// state:UIControlStateNormal];
-	// UITextField *searchText = [_searchBar valueForKey:@"_searchField"];
-	// [searchText setFont:[UIFont fontWithName:@"CustomFont" size:12]];
 	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
 	CGRect frame = _searchBar.frame;
 	frame.origin.y = topBar.frame.origin.y + topBar.frame.size.height;

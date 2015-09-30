@@ -128,11 +128,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)event {
-	for (id log in tableController.selectedItems) {
-		linphone_core_remove_call_log([LinphoneManager getLc], (LinphoneCallLog *)[log pointerValue]);
-	}
-	[tableController loadData];
-	[self hideEditIfNeeded];
+	NSString *msg =
+		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d history?", nil),
+								   tableController.selectedItems.count];
+	[UIConfirmationDialog ShowWithMessage:msg
+							onCancelClick:nil
+					  onConfirmationClick:^() {
+						[tableController removeSelection];
+						[tableController loadData];
+						[self hideEditIfNeeded];
+					  }];
 }
 
 @end
