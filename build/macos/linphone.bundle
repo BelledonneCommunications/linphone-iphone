@@ -72,10 +72,6 @@
      ${prefix}/lib/${gtkdir}/modules/*.so
   </binary>
 
-  <binary>
-     ${prefix}/lib/gdk-pixbuf-2.0
-  </binary>
-
   <data>
     ${prefix}/share/mime/mime.cache
   </data>
@@ -97,6 +93,10 @@
   <binary>
     ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/*.so
   </binary>
+
+  <data>
+    ${prefix}/etc/gtk-2.0/gdk-pixbuf.loaders
+  </data>
 
    <!--binary>
     ${prefix}/lib/pango/${pkg:pango:pango_module_version}/modules/
