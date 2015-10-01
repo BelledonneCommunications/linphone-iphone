@@ -3532,7 +3532,7 @@ static void record_call(const char *filename, bool_t enableVideo, const char *vi
 			wait_for_until(marie->lc,pauline->lc,&dummy,1,5000);
 			linphone_call_stop_recording(callInst);
 			end_call(marie, pauline);
-			BC_ASSERT_EQUAL(ortp_file_exist(filepath, F_OK), 0, int, "%d");
+			BC_ASSERT_EQUAL(ortp_file_exist(filepath), 0, int, "%d");
 		}
 		remove(filepath);
 		ms_free(filepath);
@@ -3581,7 +3581,7 @@ static void video_call_snapshot(void) {
 	if((call_succeeded == TRUE) && (callInst != NULL)) {
 		linphone_call_take_video_snapshot(callInst, filename);
 		wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
-		BC_ASSERT_EQUAL(ortp_file_exist(filename, F_OK), 0, int, "%d");
+		BC_ASSERT_EQUAL(ortp_file_exist(filename), 0, int, "%d");
 		remove(filename);
 		end_call(marie, pauline);
 	}
