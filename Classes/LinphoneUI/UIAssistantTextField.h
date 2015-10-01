@@ -15,7 +15,8 @@ typedef BOOL (^UIDisplayError)(NSString *inputEntry);
 @property(nonatomic) UILabel *errorLabel;
 @property(nonatomic, readonly) UIDisplayError showErrorPredicate;
 @property(nonatomic, readonly) NSString *lastText;
-@property(atomic, readonly) BOOL canShowError;
+// we should show error only when user finished editted the field at least once
+@property(atomic) BOOL canShowError;
 
 - (void)showError:(NSString *)msg when:(UIDisplayError)pred;
 - (void)showError:(NSString *)msg;

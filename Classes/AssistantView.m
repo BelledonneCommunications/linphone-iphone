@@ -36,9 +36,8 @@ typedef enum _ViewElement {
 	ViewElement_Email = 103,
 	ViewElement_Domain = 104,
 	ViewElement_Transport = 105,
+	ViewElement_Username_Label = 106,
 	ViewElement_NextButton = 130,
-	ViewElement_Label = 200,
-	ViewElement_Error = 201,
 } ViewElement;
 
 @implementation AssistantView
@@ -135,6 +134,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[LinphoneManager getLc],
 		[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" forSection:@"assistant" withDefault:@""]
 			.UTF8String);
+	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
 	linphone_account_creator_cbs_set_existence_tested(linphone_account_creator_get_callbacks(account_creator),
 													  assistant_existence_tested);
 	linphone_account_creator_cbs_set_create_account(linphone_account_creator_get_callbacks(account_creator),
@@ -341,7 +341,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	BOOL usePhoneNumber = [LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number"];
 
 	NSString *label = usePhoneNumber ? NSLocalizedString(@"PHONE NUMBER", nil) : NSLocalizedString(@"USERNAME", nil);
-	[self findLabel:ViewElement_Username].text = label;
+	[self findLabel:ViewElement_Username_Label].text = label;
 
 	UITextField *text = [self findTextField:ViewElement_Username];
 	if (usePhoneNumber) {
@@ -353,8 +353,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (void)cleanTextField:(UIView *)view {
-	if ([view isKindOfClass:[UITextField class]]) {
-		[(UITextField *)view setText:@""];
+	if ([view isKindOfClass:UIAssistantTextField.class]) {
+		[(UIAssistantTextField *)view setText:@""];
+		((UIAssistantTextField *)view).canShowError = NO;
 	} else {
 		for (UIView *subview in view.subviews) {
 			[AssistantView cleanTextField:subview];
@@ -396,30 +397,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)prepareErrorLabels {
 	UIAssistantTextField *createUsername = [self findTextField:ViewElement_Username];
-	[createUsername
-		showError:NSLocalizedString(@"Invalid entry", nil)
-			 when:^BOOL(NSString *inputEntry) {
-			   NSString *oldRegex =
-				   [LinphoneManager.instance lpConfigStringForKey:@"username_regex" forSection:@"assistant"];
-			   // new account for linphone accounts must follow a specific regex
-			   if (currentView == _createAccountView) {
-				   [LinphoneManager.instance lpConfigSetString:@"^[a-z0-9-_\\.]*$"
-														forKey:@"username_regex"
-													forSection:@"assistant"];
-			   }
-			   LinphoneAccountCreatorStatus s =
-				   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
-			   [LinphoneManager.instance lpConfigSetString:oldRegex forKey:@"username_regex" forSection:@"assistant"];
-			   createUsername.errorLabel.text = [self errorForStatus:s];
-			   return s != LinphoneAccountCreatorOk;
-			 }];
+	[createUsername showError:[self errorForStatus:LinphoneAccountCreatorUsernameInvalid]
+						 when:^BOOL(NSString *inputEntry) {
+						   LinphoneAccountCreatorStatus s =
+							   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
+						   createUsername.errorLabel.text = [self errorForStatus:s];
+						   return s != LinphoneAccountCreatorOk;
+						 }];
 
 	UIAssistantTextField *password = [self findTextField:ViewElement_Password];
-	[password showError:NSLocalizedString(@"Password is too short.", nil)
+	[password showError:[self errorForStatus:LinphoneAccountCreatorPasswordTooShort]
 				   when:^BOOL(NSString *inputEntry) {
-					 NSInteger password_length =
-						 [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"assistant"];
-					 return password_length > 0 && inputEntry.length < password_length;
+					 LinphoneAccountCreatorStatus s =
+						 linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
+					 password.errorLabel.text = [self errorForStatus:s];
+					 return s != LinphoneAccountCreatorOk;
 				   }];
 
 	UIAssistantTextField *password2 = [self findTextField:ViewElement_Password2];
@@ -429,11 +421,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 					}];
 
 	UIAssistantTextField *email = [self findTextField:ViewElement_Email];
-	[email showError:NSLocalizedString(@"Invalid email address.", nil)
+	[email showError:[self errorForStatus:LinphoneAccountCreatorEmailInvalid]
 				when:^BOOL(NSString *inputEntry) {
-				  NSPredicate *emailTest =
-					  [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @".+@.+\\.[A-Za-z]{2}[A-Za-z]*"];
-				  return ![emailTest evaluateWithObject:inputEntry];
+				  LinphoneAccountCreatorStatus s =
+					  linphone_account_creator_set_email(account_creator, inputEntry.UTF8String);
+				  email.errorLabel.text = [self errorForStatus:s];
+				  return s != LinphoneAccountCreatorOk;
 				}];
 
 	[self shouldEnableNextButton];
@@ -524,12 +517,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 void assistant_existence_tested(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorOk) {
-		thiz.waitView.hidden = YES;
 		[[thiz findTextField:ViewElement_Username] showError:NSLocalizedString(@"This name is already taken.", nil)];
 		[thiz findButton:ViewElement_NextButton].enabled = NO;
-	} else {
-		thiz.waitView.hidden = NO;
 	}
 }
 
@@ -563,10 +554,10 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 			initWithTitle:NSLocalizedString(@"Account validation failed.", nil)
 				  message:
 					  NSLocalizedString(
-						  @"Your account could not be verified yet. You can skip this validation or try again later.",
+						  @"Your account could not be checked yet. You can skip this validation or try again later.",
 						  nil)];
-		[alert addCancelButtonWithTitle:NSLocalizedString(@"Try again", nil) block:nil];
-		[alert addButtonWithTitle:NSLocalizedString(@"Ignore", nil)
+		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+		[alert addButtonWithTitle:NSLocalizedString(@"Skip verification", nil)
 							block:^{
 							  [thiz addProxyConfig:linphone_account_creator_configure(creator)];
 							  [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];

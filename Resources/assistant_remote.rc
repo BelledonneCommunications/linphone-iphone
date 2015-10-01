@@ -10,10 +10,10 @@
 		<entry name="publish" overwrite="true">0</entry>
 		<entry name="dial_escape_plus" overwrite="true">0</entry>
 	</section>
-	<section name="wizard">
-		<entry name="service_url" overwrite="true"></entry>
+	<section name="assistant">
+		<entry name="xmlrpc_url" overwrite="true"></entry>
+		<entry name="sharing_server" overwrite="true"></entry>
 	</section>
-
 	<section name="app">
 		<entry name="pushnotification_preference" overwrite="true">0</entry>
 		<entry name="ice_preference" overwrite="true"></entry>

@@ -16,8 +16,11 @@
 		<entry name="realm" overwrite="true">sip.linphone.org</entry>
 	</section>
 
-	<section name="wizard">
-		<entry name="service_url" overwrite="true">https://www.linphone.org/wizard.php</entry>
+	<section name="assistant">
+		<entry name="username_regex" overwrite="true">^[a-z0-9-_\\.]*$</entry>
+		<entry name="domain" overwrite="true">sip.linphone.org</entry>
+		<entry name="xmlrpc_url" overwrite="true">https://www.linphone.org/assistant.php</entry>
+		<entry name="sharing_server" overwrite="true">https://www.linphone.org:444/lft.php</entry>
 	</section>
 
 	<section name="app">
