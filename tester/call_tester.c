@@ -3311,7 +3311,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, MSList*
 	BC_ASSERT_PTR_NOT_NULL(call);
 	if  (call) {
 		const LinphoneCallParams *params;
-		wait_for_list(lcs,NULL,0,3500); /*on some device, it may take 3 to 4s to get audio from mic*/
+		wait_for_list(lcs,NULL,0,5000); /*on some device, it may take 3 to 4s to get audio from mic*/
 		params = linphone_call_get_current_params(call);
 #ifdef VIDEO_ENABLED
 		if (video_dir != LinphoneMediaDirectionInvalid){
