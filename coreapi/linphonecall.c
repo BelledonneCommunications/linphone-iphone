@@ -53,8 +53,8 @@ MSWebCam *get_nowebcam_device(){
 }
 
 
-static bool_t generate_b64_crypto_key(int key_length, char* key_out, size_t key_out_size) {
-	int b64_size;
+static bool_t generate_b64_crypto_key(size_t key_length, char* key_out, size_t key_out_size) {
+	size_t b64_size;
 	uint8_t* tmp = (uint8_t*) ms_malloc0(key_length);
 	if (sal_get_random_bytes(tmp, key_length)==NULL) {
 		ms_error("Failed to generate random key");
@@ -428,7 +428,7 @@ static void update_media_description_from_stun(SalMediaDescription *md, const St
 }
 
 static int setup_encryption_key(SalSrtpCryptoAlgo *crypto, MSCryptoSuite suite, unsigned int tag){
-	int keylen=0;
+	size_t keylen=0;
 	crypto->tag=tag;
 	crypto->algo=suite;
 	switch(suite){
@@ -1936,7 +1936,7 @@ bool_t linphone_call_has_transfer_pending(const LinphoneCall *call){
 **/
 int linphone_call_get_duration(const LinphoneCall *call){
 	if (call->log->connected_date_time==0) return 0;
-	return ms_time(NULL)-call->log->connected_date_time;
+	return (int)(ms_time(NULL) - call->log->connected_date_time);
 }
 
 /**
@@ -2503,7 +2503,7 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	float mic_gain=lc->sound_conf.soft_mic_lev;
 	float thres = 0;
 	float recv_gain;
-	float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05);
+	float ng_thres=lp_config_get_float(lc->config,"sound","ng_thres",0.05f);
 	float ng_floorgain=lp_config_get_float(lc->config,"sound","ng_floorgain",0);
 	int dc_removal=lp_config_get_int(lc->config,"sound","dc_removal",0);
 	float speed;
@@ -2532,7 +2532,7 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 		sustain=lp_config_get_int(lc->config,"sound","el_sustain",-1);
 		transmit_thres=lp_config_get_float(lc->config,"sound","el_transmit_thres",-1);
 		f=st->volsend;
-		if (speed==-1) speed=0.03;
+		if (speed==-1) speed=0.03f;
 		if (force==-1) force=25;
 		ms_filter_call_method(f,MS_VOLUME_SET_EA_SPEED,&speed);
 		ms_filter_call_method(f,MS_VOLUME_SET_EA_FORCE,&force);
@@ -2548,7 +2548,7 @@ void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t mute
 	}
 	if (st->volrecv){
 		/* parameters for a limited noise-gate effect, using echo limiter threshold */
-		floorgain = 1/pow(10,(mic_gain)/10);
+		floorgain = (float)(1/pow(10,mic_gain/10));
 		spk_agc=lp_config_get_int(lc->config,"sound","speaker_agc_enabled",0);
 		ms_filter_call_method(st->volrecv, MS_VOLUME_ENABLE_AGC, &spk_agc);
 		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_NOISE_GATE_THRESHOLD,&ng_thres);
@@ -3460,7 +3460,7 @@ static void linphone_call_log_fill_stats(LinphoneCallLog *log, MediaStream *st){
 	float quality=media_stream_get_average_quality_rating(st);
 	if (quality>=0){
 		if (log->quality!=-1){
-			log->quality*=quality/5.0;
+			log->quality*=quality/5.0f;
 		}else log->quality=quality;
 	}
 }
@@ -3482,7 +3482,7 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 		media_stream_reclaim_sessions(&call->audiostream->ms,&call->sessions[call->main_audio_stream_index]);
 
 		if (call->audiostream->ec){
-			const char *state_str=NULL;
+			char *state_str=NULL;
 			ms_filter_call_method(call->audiostream->ec,MS_ECHO_CANCELLER_GET_STATE_STRING,&state_str);
 			if (state_str){
 				ms_message("Writing echo canceler state, %i bytes",(int)strlen(state_str));
@@ -3703,19 +3703,19 @@ void linphone_call_set_microphone_volume_gain(LinphoneCall *call, float volume) 
  * active audio stream exist. Otherwise it returns the quality rating.
 **/
 float linphone_call_get_current_quality(LinphoneCall *call){
-	float audio_rating=-1;
-	float video_rating=-1;
+	float audio_rating=-1.f;
+	float video_rating=-1.f;
 	float result;
 	if (call->audiostream){
-		audio_rating=media_stream_get_quality_rating((MediaStream*)call->audiostream)/5.0;
+		audio_rating=media_stream_get_quality_rating((MediaStream*)call->audiostream)/5.0f;
 	}
 	if (call->videostream){
-		video_rating=media_stream_get_quality_rating((MediaStream*)call->videostream)/5.0;
+		video_rating=media_stream_get_quality_rating((MediaStream*)call->videostream)/5.0f;
 	}
 	if (audio_rating<0 && video_rating<0) result=-1;
-	else if (audio_rating<0) result=video_rating*5.0;
-	else if (video_rating<0) result=audio_rating*5.0;
-	else result=audio_rating*video_rating*5.0;
+	else if (audio_rating<0) result=video_rating*5.0f;
+	else if (video_rating<0) result=audio_rating*5.0f;
+	else result=audio_rating*video_rating*5.0f;
 	return result;
 }
 
@@ -3812,7 +3812,7 @@ float linphone_call_stats_get_sender_loss_rate(const LinphoneCallStats *stats) {
 		srb = rtcp_RR_get_report_block(stats->sent_rtcp, 0);
 	if (!srb)
 		return 0.0;
-	return 100.0 * report_block_get_fraction_lost(srb) / 256.0;
+	return 100.0f * report_block_get_fraction_lost(srb) / 256.0f;
 }
 
 /**
@@ -3833,7 +3833,7 @@ float linphone_call_stats_get_receiver_loss_rate(const LinphoneCallStats *stats)
 		rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
 	if (!rrb)
 		return 0.0;
-	return 100.0 * report_block_get_fraction_lost(rrb) / 256.0;
+	return 100.0f * report_block_get_fraction_lost(rrb) / 256.0f;
 }
 
 /**
@@ -3988,14 +3988,14 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	bool_t as_active =  as ? (media_stream_get_state(as) == MSStreamStarted) : FALSE;
 	bool_t vs_active =  vs ? (media_stream_get_state(vs) == MSStreamStarted) : FALSE;
 
-	call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth=(as_active) ? (media_stream_get_down_bw(as)*1e-3) : 0;
-	call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth=(as_active) ? (media_stream_get_up_bw(as)*1e-3) : 0;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth=(vs_active) ? (media_stream_get_down_bw(vs)*1e-3) : 0;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth=(vs_active) ? (media_stream_get_up_bw(vs)*1e-3) : 0;
-	call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_download_bandwidth=(as_active) ? (media_stream_get_rtcp_down_bw(as)*1e-3) : 0;
-	call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_upload_bandwidth=(as_active) ? (media_stream_get_rtcp_up_bw(as)*1e-3) : 0;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth=(vs_active) ? (media_stream_get_rtcp_down_bw(vs)*1e-3) : 0;
-	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_upload_bandwidth=(vs_active) ? (media_stream_get_rtcp_up_bw(vs)*1e-3) : 0;
+	call->stats[LINPHONE_CALL_STATS_AUDIO].download_bandwidth=(as_active) ? (float)(media_stream_get_down_bw(as)*1e-3) : 0.f;
+	call->stats[LINPHONE_CALL_STATS_AUDIO].upload_bandwidth=(as_active) ? (float)(media_stream_get_up_bw(as)*1e-3) : 0.f;
+	call->stats[LINPHONE_CALL_STATS_VIDEO].download_bandwidth=(vs_active) ? (float)(media_stream_get_down_bw(vs)*1e-3) : 0.f;
+	call->stats[LINPHONE_CALL_STATS_VIDEO].upload_bandwidth=(vs_active) ? (float)(media_stream_get_up_bw(vs)*1e-3) : 0.f;
+	call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_download_bandwidth=(as_active) ? (float)(media_stream_get_rtcp_down_bw(as)*1e-3) : 0.f;
+	call->stats[LINPHONE_CALL_STATS_AUDIO].rtcp_upload_bandwidth=(as_active) ? (float)(media_stream_get_rtcp_up_bw(as)*1e-3) : 0.f;
+	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_download_bandwidth=(vs_active) ? (float)(media_stream_get_rtcp_down_bw(vs)*1e-3) : 0.f;
+	call->stats[LINPHONE_CALL_STATS_VIDEO].rtcp_upload_bandwidth=(vs_active) ? (float)(media_stream_get_rtcp_up_bw(vs)*1e-3) : 0.f;
 
 	call->stats[LINPHONE_CALL_STATS_AUDIO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
 	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
@@ -4400,7 +4400,7 @@ void linphone_call_zoom_video(LinphoneCall* call, float zoom_factor, float* cx, 
 
 		if (zoom_factor < 1)
 			zoom_factor = 1;
-		halfsize = 0.5 * 1.0 / zoom_factor;
+		halfsize = 0.5f * 1.0f / zoom_factor;
 
 		if ((*cx - halfsize) < 0)
 			*cx = 0 + halfsize;

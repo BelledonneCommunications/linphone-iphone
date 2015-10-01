@@ -161,21 +161,21 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	strncpy(expected_tone.tone_name,"freq1",sizeof(expected_tone.tone_name));
 	expected_tone.frequency=2000;
 	expected_tone.min_duration=40;
-	expected_tone.min_amplitude=0.1;
+	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
 	
 	strncpy(expected_tone.tone_name,"freq2",sizeof(expected_tone.tone_name));
 	expected_tone.frequency=2300;
 	expected_tone.min_duration=40;
-	expected_tone.min_amplitude=0.1;
+	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
 	
 	strncpy(expected_tone.tone_name,"freq3",sizeof(expected_tone.tone_name));
 	expected_tone.frequency=2500;
 	expected_tone.min_duration=40;
-	expected_tone.min_amplitude=0.1;
+	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
 	
@@ -208,7 +208,7 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	ms_sleep(1);
 	
 	if (ecc->freq1 && ecc->freq2 && ecc->freq3) {
-		int delay=ecc->acc/3;
+		int delay=(int)(ecc->acc/3);
 		if (delay<0){
 			ms_error("Quite surprising calibration result, delay=%i",delay);
 			ecc->status=LinphoneEcCalibratorFailed;

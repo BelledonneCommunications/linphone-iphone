@@ -515,7 +515,7 @@ void linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessag
 																			  been encrypted */
 								/* convert the key from base 64 */
 								xmlChar *keyb64 = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
-								int keyLength = b64_decode((char *)keyb64, strlen((char *)keyb64), NULL, 0);
+								size_t keyLength = b64_decode((char *)keyb64, strlen((char *)keyb64), NULL, 0);
 								uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
 								/* decode the key into local key buffer */
 								b64_decode((char *)keyb64, strlen((char *)keyb64), keyBuffer, keyLength);

@@ -31,9 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 static char *create_enum_domain(const char *number){
-	int len=strlen(number);
+	size_t len=strlen(number);
 	char *domain=ms_malloc((len*2)+10);
-	int i,j;
+	size_t i,j;
 	
 	for (i=0,j=len-1;j>=0;j--){
 		domain[i]=number[j];

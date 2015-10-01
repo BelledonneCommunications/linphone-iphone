@@ -233,7 +233,7 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 		case PAYLOAD_AUDIO_CONTINUOUS:
 		case PAYLOAD_AUDIO_PACKETIZED:
 			codec_band=get_audio_payload_bandwidth(lc,pt,bandwidth_limit);
-			ret=bandwidth_is_greater(bandwidth_limit,codec_band);
+			ret=bandwidth_is_greater(bandwidth_limit,(int)codec_band);
 			/*ms_message("Payload %s: codec_bandwidth=%g, bandwidth_limit=%i",pt->mime_type,codec_band,bandwidth_limit);*/
 			break;
 		case PAYLOAD_VIDEO:
@@ -381,7 +381,7 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 	}
 	if (!res) return -1;
 	memcpy(ss,res->ai_addr,res->ai_addrlen);
-	*socklen=res->ai_addrlen;
+	*socklen=(socklen_t)res->ai_addrlen;
 	freeaddrinfo(res);
 	return 0;
 }
@@ -458,15 +458,15 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			int id;
 			if (loops%20==0){
 				ms_message("Sending stun requests...");
-				sendStunRequest(sock1,ai->ai_addr,ai->ai_addrlen,11,TRUE);
-				sendStunRequest(sock1,ai->ai_addr,ai->ai_addrlen,1,FALSE);
+				sendStunRequest((int)sock1,ai->ai_addr,(socklen_t)ai->ai_addrlen,11,TRUE);
+				sendStunRequest((int)sock1,ai->ai_addr,(socklen_t)ai->ai_addrlen,1,FALSE);
 				if (sock2!=-1){
-					sendStunRequest(sock2,ai->ai_addr,ai->ai_addrlen,22,TRUE);
-					sendStunRequest(sock2,ai->ai_addr,ai->ai_addrlen,2,FALSE);
+					sendStunRequest((int)sock2,ai->ai_addr,(socklen_t)ai->ai_addrlen,22,TRUE);
+					sendStunRequest((int)sock2,ai->ai_addr,(socklen_t)ai->ai_addrlen,2,FALSE);
 				}
 				if (sock3!=-1){
-					sendStunRequest(sock3,ai->ai_addr,ai->ai_addrlen,33,TRUE);
-					sendStunRequest(sock3,ai->ai_addr,ai->ai_addrlen,3,FALSE);
+					sendStunRequest((int)sock3,ai->ai_addr,(socklen_t)ai->ai_addrlen,33,TRUE);
+					sendStunRequest((int)sock3,ai->ai_addr,(socklen_t)ai->ai_addrlen,3,FALSE);
 				}
 			}
 			ms_usleep(10000);
@@ -674,7 +674,7 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 
 	ms_message("ICE: gathering candidate from [%s]",server);
 	/* Gather local srflx candidates. */
-	ice_session_gather_candidates(call->ice_session, ai->ai_addr, ai->ai_addrlen);
+	ice_session_gather_candidates(call->ice_session, ai->ai_addr, (socklen_t)ai->ai_addrlen);
 	return 0;
 }
 
@@ -1188,7 +1188,7 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 	if (err<0){
 		ms_warning("Error in setsockopt: %s",strerror(errno));
 	}
-	err=connect(sock,res->ai_addr,res->ai_addrlen);
+	err=connect(sock,res->ai_addr,(int)res->ai_addrlen);
 	if (err<0) {
 		/*the network isn't reachable*/
 		if (getSocketErrorCode()!=ENETUNREACH) ms_error("Error in connect: %s",strerror(errno));

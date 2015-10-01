@@ -231,7 +231,7 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 	LpSectionParam *params = NULL;
 	char *pos1,*pos2;
 	int nbs;
-	int size=strlen(line)+1;
+	size_t size=strlen(line)+1;
 	char *secname=ms_malloc(size);
 	char *key=ms_malloc(size);
 	char *value=ms_malloc(size);

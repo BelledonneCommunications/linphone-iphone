@@ -51,7 +51,7 @@ void linphone_xmlparsing_context_destroy(xmlparsing_context_t *ctx) {
 
 void linphone_xmlparsing_genericxml_error(void *ctx, const char *fmt, ...) {
 	xmlparsing_context_t *xmlCtx = (xmlparsing_context_t *)ctx;
-	int sl = strlen(xmlCtx->errorBuffer);
+	size_t sl = strlen(xmlCtx->errorBuffer);
 	va_list args;
 	va_start(args, fmt);
 	vsnprintf(xmlCtx->errorBuffer + sl, XMLPARSING_BUFFER_LEN - sl, fmt, args);

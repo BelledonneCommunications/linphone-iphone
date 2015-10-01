@@ -759,8 +759,8 @@ SalPrivacy sal_op_get_privacy(const SalOp* op);
 
 
 
-#define payload_type_set_number(pt,n)		(pt)->user_data=(void*)((long)n);
-#define payload_type_get_number(pt)		((int)(long)(pt)->user_data)
+#define payload_type_set_number(pt,n)		(pt)->user_data=(void*)((intptr_t)n);
+#define payload_type_get_number(pt)		((int)(intptr_t)(pt)->user_data)
 
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen);

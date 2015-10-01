@@ -410,7 +410,7 @@ static int log_collection_upload_on_send_body(belle_sip_user_body_handler_t *bh,
 #else
 		FILE *log_file = fopen(log_filename, "r");
 #endif
-		if (fseek(log_file, offset, SEEK_SET)) {
+		if (fseek(log_file, (long)offset, SEEK_SET)) {
 			ms_error("Cannot seek file [%s] at position [%lu] errno [%s]",log_filename,(unsigned long)offset,strerror(errno));
 
 		} else {
@@ -537,16 +537,16 @@ static void process_response_from_post_file_log_collection(void *data, const bel
  */
 static int compress_file(FILE *input_file, COMPRESS_FILE_PTR output_file) {
 	char buffer[131072]; /* 128kB */
-	int bytes;
+	size_t bytes;
 
 	while ((bytes = fread(buffer, 1, sizeof(buffer), input_file)) > 0) {
-		if (bytes < 0) return bytes;
 #ifdef HAVE_ZLIB
-		bytes = gzwrite(output_file, buffer, bytes);
+		int res = gzwrite(output_file, buffer, (unsigned int)bytes);
+		if (res < 0) return 0;
 #else
 		bytes = fwrite(buffer, 1, bytes, output_file);
+		if (bytes < 0) return (int)bytes;
 #endif
-		if (bytes < 0) return bytes;
 	}
 	return 0;
 }
@@ -569,7 +569,7 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	input_file = fopen(input_filename, "r");
 	if (input_file == NULL) goto error;
 	ret = compress_file(input_file, output_file);
-	if (ret < 0) goto error;
+	if (ret == 0) goto error;
 	fclose(input_file);
 	ms_free(input_filename);
 	input_filename = ms_strdup_printf("%s/%s2.log",
@@ -578,7 +578,7 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	input_file = fopen(input_filename, "r");
 	if (input_file != NULL) {
 		ret = compress_file(input_file, output_file);
-		if (ret < 0) goto error;
+		if (ret == 0) goto error;
 	}
 
 error:
@@ -2568,7 +2568,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	calls = lc->calls;
 	while(calls!= NULL){
 		call = (LinphoneCall *)calls->data;
-		elapsed = current_real_time - call->log->start_date_time;
+		elapsed = (int)(current_real_time - call->log->start_date_time);
 		 /* get immediately a reference to next one in case the one
 		 we are going to examine is destroy and removed during
 		 linphone_core_start_invite() */
@@ -5844,7 +5844,7 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 		return NULL;
 	}
 	if (lc->ringstream==NULL){
-		float amp=lp_config_get_float(lc->config,"sound","dtmf_player_amp",0.1);
+		float amp=lp_config_get_float(lc->config,"sound","dtmf_player_amp",0.1f);
 		MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
 		if (ringcard == NULL)
 			return NULL;

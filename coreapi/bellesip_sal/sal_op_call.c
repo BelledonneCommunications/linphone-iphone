@@ -302,7 +302,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 							&& (header_content_type = belle_sip_message_get_header_by_type(req,belle_sip_header_content_type_t))
 							&& strcmp("application",belle_sip_header_content_type_get_type(header_content_type))==0
 							&& strcmp("media_control+xml",belle_sip_header_content_type_get_subtype(header_content_type))==0) {
-							unsigned int retry_in =1000*((float)rand()/RAND_MAX);
+							unsigned int retry_in = (unsigned int)(1000*((float)rand()/RAND_MAX));
 							belle_sip_source_t *s=sal_create_timer(op->base.root,vfu_retry,sal_op_ref(op), retry_in, "vfu request retry");
 							ms_message("Rejected vfu request on op [%p], just retry in [%ui] ms",op,retry_in);
 							belle_sip_object_unref(s);

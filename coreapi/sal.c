@@ -728,14 +728,14 @@ const char* sal_privacy_to_string(SalPrivacy privacy) {
 }
 
 static void remove_trailing_spaces(char *line){
-	int i;
+	size_t i;
 	for(i=strlen(line)-1;i>=0;--i){
 		if (isspace(line[i])) line[i]='\0';
 		else break;
 	}
 }
 
-static int line_get_value(const char *input, const char *key, char *value, size_t value_size, int *read){
+static int line_get_value(const char *input, const char *key, char *value, size_t value_size, size_t *read){
 	const char *end=strchr(input,'\n');
 	char line[256]={0};
 	char key_candidate[256];
@@ -760,7 +760,7 @@ static int line_get_value(const char *input, const char *key, char *value, size_
 }
 
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size){
-	int read=0;
+	size_t read=0;
 
 	do{
 		if (line_get_value(data,key,value,value_size,&read))

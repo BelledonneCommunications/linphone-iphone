@@ -246,7 +246,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 										->xmlChildrenNode; /* need to parse the children node to update the file-name
 															  one */
 								/* convert key to base64 */
-								int b64Size = b64_encode(NULL, FILE_TRANSFER_KEY_SIZE, NULL, 0);
+								size_t b64Size = b64_encode(NULL, FILE_TRANSFER_KEY_SIZE, NULL, 0);
 								char *keyb64 = (char *)ms_malloc0(b64Size + 1);
 								int xmlStringLength;
 

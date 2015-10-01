@@ -74,7 +74,7 @@ static void lpc2xml_log(lpc2xml_context *xmlCtx, int level, const char *fmt, ...
 
 static void lpc2xml_genericxml_error(void *ctx, const char *fmt, ...) {
 	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
-	int sl = strlen(xmlCtx->errorBuffer);
+	size_t sl = strlen(xmlCtx->errorBuffer);
 	va_list args;
 	va_start(args, fmt);
 	vsnprintf(xmlCtx->errorBuffer + sl, LPC2XML_BZ-sl, fmt, args);

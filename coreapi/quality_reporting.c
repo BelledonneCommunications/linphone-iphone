@@ -44,7 +44,7 @@ static char * float_to_one_decimal_string(float f) {
 	float rounded_f = floorf(f * 10 + .5f) / 10;
 
 	int floor_part = (int) rounded_f;
-	int one_decimal_part = floorf (10 * (rounded_f - floor_part) + .5f);
+	int one_decimal_part = (int)floorf(10 * (rounded_f - floor_part) + .5f);
 
 	return ms_strdup_printf("%d.%d", floor_part, one_decimal_part);
 }
@@ -442,11 +442,11 @@ static void qos_analyzer_on_action_suggested(void *user_data, int datac, const c
 			if (streams[i]->encoder!=NULL){
 				if (ms_filter_has_method(streams[i]->encoder,MS_FILTER_GET_BITRATE)){
 					ms_filter_call_method(streams[i]->encoder,MS_FILTER_GET_BITRATE,&bitrate[i]);
-					bitrate[i] /= 1000.f;
+					bitrate[i] /= 1000;
 				}
 			}
-			up_bw[i] = media_stream_get_up_bw(streams[i])/1000.f;
-			down_bw[i] = media_stream_get_down_bw(streams[i])/1000.f;
+			up_bw[i] = (int)(media_stream_get_up_bw(streams[i])/1000.f);
+			down_bw[i] = (int)(media_stream_get_down_bw(streams[i])/1000.f);
 		}
 	}
 	if (call->audiostream!=NULL){
@@ -628,14 +628,14 @@ void linphone_reporting_on_rtcp_update(LinphoneCall *call, SalStreamType stats_t
 
 			if (rtt > 1e-6){
 				metrics->rtcp_sr_count++;
-				metrics->delay.round_trip_delay += 1000*rtt;
+				metrics->delay.round_trip_delay += (int)(1000*rtt);
 			}
 		}
 	}while(rtcp_next_packet(block));
 
 	/* check if we should send an interval report - use a random sending time to
 	dispatch reports and avoid sending them too close from each other */
-	if (report_interval>0 && ms_time(NULL)-report->last_report_date>reporting_rand(report_interval)){
+	if ((report_interval > 0) && ((float)(ms_time(NULL) - report->last_report_date) > reporting_rand((float)report_interval))) {
 		linphone_reporting_update_media_info(call, stats_type);
 		send_report(call, report, "VQIntervalReport");
 	}
