@@ -343,15 +343,15 @@ static void publish_test_with_args(bool_t refresh, int expires){
 	linphone_core_manager_destroy(pauline);
 }
 
-static void publish_test(){
+static void publish_test(void){
 	publish_test_with_args(TRUE,5);
 }
 
-static void publish_no_auto_test(){
+static void publish_no_auto_test(void){
 	publish_test_with_args(FALSE,5);
 }
 
-static void publish_without_expires(){
+static void publish_without_expires(void){
 	publish_test_with_args(TRUE,-1);
 }
 

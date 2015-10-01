@@ -32,7 +32,7 @@ const char* phone_normalization(LinphoneProxyConfig *proxy, const char* in) {
 	}
 }
 
-static void phone_normalization_without_proxy() {
+static void phone_normalization_without_proxy(void) {
 	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "012 345 6789"), "0123456789");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "+33123456789"), "+33123456789");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(NULL, "+33012345678"), "+33012345678");
@@ -43,7 +43,7 @@ static void phone_normalization_without_proxy() {
 	BC_ASSERT_PTR_NULL(phone_normalization(NULL, "I_AM_NOT_A_NUMBER")); // invalid phone number
 }
 
-static void phone_normalization_with_proxy() {
+static void phone_normalization_with_proxy(void) {
 	LinphoneProxyConfig *proxy = linphone_proxy_config_new();
 	linphone_proxy_config_set_dial_prefix(proxy, "33");
 	BC_ASSERT_STRING_EQUAL(phone_normalization(proxy, "012 3456 789"), "+33123456789");

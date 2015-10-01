@@ -141,11 +141,11 @@ static void simple_publish_with_expire(int expires) {
 	linphone_core_manager_destroy(marie);
 }
 
-static void simple_publish() {
+static void simple_publish(void) {
 	simple_publish_with_expire(-1);
 }
 
-static void publish_with_expires() {
+static void publish_with_expires(void) {
 	simple_publish_with_expire(1);
 }
 
@@ -341,7 +341,7 @@ static void presence_information(void) {
 	wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityShopping,1);
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePresenceActivityShopping, 1, int, "%d");
 	presence_timestamp = linphone_presence_model_get_timestamp(presence);
-	BC_ASSERT_GREATER(presence_timestamp , current_timestamp, unsigned, "%u");
+	BC_ASSERT_GREATER((unsigned)presence_timestamp , (unsigned)current_timestamp, unsigned, "%u");
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

@@ -503,7 +503,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 }
 #endif /*HAVE_GTK*/
 
-static void enable_disable_camera_after_camera_switches() {
+static void enable_disable_camera_after_camera_switches(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	const char *currentCamId = (char*)linphone_core_get_video_device(marie->lc);

@@ -237,26 +237,26 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 	return log_time;
 }
 
-static void collect_files_disabled()  {
+static void collect_files_disabled(void)  {
 	LinphoneCoreManager* marie = setup(FALSE);
 	BC_ASSERT_PTR_NULL(linphone_core_compress_log_collection(marie->lc));
 	collect_cleanup(marie);
 }
 
-static void collect_files_filled() {
+static void collect_files_filled(void) {
 	LinphoneCoreManager* marie = setup(TRUE);
 	check_file(marie);
 	collect_cleanup(marie);
 }
 
-static void collect_files_small_size()  {
+static void collect_files_small_size(void)  {
 	LinphoneCoreManager* marie = setup(TRUE);
 	linphone_core_set_log_collection_max_file_size(5000);
 	check_file(marie);
 	collect_cleanup(marie);
 }
 
-static void collect_files_changing_size()  {
+static void collect_files_changing_size(void)  {
 	LinphoneCoreManager* marie = setup(TRUE);
 	int waiting = 100;
 
@@ -282,14 +282,14 @@ static void logCollectionUploadStateChangedCb(LinphoneCore *lc, LinphoneCoreLogC
 			break;
 		case LinphoneCoreLogCollectionUploadStateDelivered:
 			counters->number_of_LinphoneCoreLogCollectionUploadStateDelivered++;
-			BC_ASSERT_GREATER(strlen(info), 0, int, "%d");
+			BC_ASSERT_GREATER((int)strlen(info), 0, int, "%d");
 			break;
 		case LinphoneCoreLogCollectionUploadStateNotDelivered:
 			counters->number_of_LinphoneCoreLogCollectionUploadStateNotDelivered++;
 			break;
 	}
 }
-static void upload_collected_traces()  {
+static void upload_collected_traces(void)  {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = setup(TRUE);
 		int waiting = 100;

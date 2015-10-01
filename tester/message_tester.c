@@ -97,7 +97,7 @@ LinphoneBuffer * tester_file_transfer_send(LinphoneChatMessage *msg, const Linph
 	FILE *file_to_send = linphone_chat_message_get_user_data(msg);
 	fseek(file_to_send, 0, SEEK_END);
 	file_size = ftell(file_to_send);
-	fseek(file_to_send, offset, SEEK_SET);
+	fseek(file_to_send, (long)offset, SEEK_SET);
 	size_to_send = MIN(size, file_size - offset);
 	buf = ms_malloc(size_to_send);
 	if (fread(buf, size_to_send, 1, file_to_send)!=size_to_send){
@@ -179,7 +179,7 @@ void compare_files(const char *path1, const char *path2) {
 	buf2 = (uint8_t*)ms_load_path_content(path2, &size2);
 	BC_ASSERT_PTR_NOT_NULL(buf1);
 	BC_ASSERT_PTR_NOT_NULL(buf2);
-	BC_ASSERT_EQUAL(size1, size2, uint8_t, "%u");
+	BC_ASSERT_EQUAL((uint8_t)size1, (uint8_t)size2, uint8_t, "%u");
 	BC_ASSERT_EQUAL(memcmp(buf1, buf2, size1), 0, int, "%d");
 	ms_free(buf1);
 	ms_free(buf2);
@@ -461,7 +461,7 @@ void transfer_message_base(bool_t upload_error, bool_t download_error) {
 		linphone_core_manager_destroy(marie);
 	}
 }
-static void transfer_message() {
+static void transfer_message(void) {
 	transfer_message_base(FALSE, FALSE);
 }
 
@@ -574,7 +574,7 @@ static void file_transfer_using_external_body_url(void) {
 	}
 }
 
-static void file_transfer_2_messages_simultaneously() {
+static void file_transfer_2_messages_simultaneously(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneChatRoom* pauline_room;
@@ -712,7 +712,7 @@ void info_message_base(bool_t with_content) {
 			if (linphone_content_get_type(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_type(content),"application");
 			if (linphone_content_get_subtype(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_subtype(content),"somexml");
 			if (linphone_content_get_buffer(content))BC_ASSERT_STRING_EQUAL((const char*)linphone_content_get_buffer(content),info_content);
-			BC_ASSERT_EQUAL(linphone_content_get_size(content),strlen(info_content), int, "%d");
+			BC_ASSERT_EQUAL((int)linphone_content_get_size(content),(int)strlen(info_content), int, "%d");
 		}
 	}
 	end_call(marie, pauline);
@@ -720,11 +720,11 @@ void info_message_base(bool_t with_content) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void info_message(){
+static void info_message(void){
 	info_message_base(FALSE);
 }
 
-static void info_message_with_body(){
+static void info_message_with_body(void){
 	info_message_base(TRUE);
 }
 
@@ -857,11 +857,11 @@ void lime_transfer_message_base(bool_t encrypt_file) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static  void lime_transfer_message() {
+static  void lime_transfer_message(void) {
 	lime_transfer_message_base(TRUE);
 }
 
-static  void lime_transfer_message_without_encryption() {
+static  void lime_transfer_message_without_encryption(void) {
 	lime_transfer_message_base(FALSE);
 }
 
@@ -1110,7 +1110,7 @@ void history_message_count_helper(LinphoneChatRoom* chatroom, int x, int y, int 
 	ms_list_free_with_data(messages, (void (*)(void *))linphone_chat_message_unref);
 }
 
-static void database_migration() {
+static void database_migration(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	char *src_db = bc_tester_res("messages.db");
 	char *tmp_db  = bc_tester_file("tmp.db");
@@ -1137,7 +1137,7 @@ static void database_migration() {
 	ms_free(tmp_db);
 }
 
-static void history_range(){
+static void history_range(void){
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
 	LinphoneChatRoom *chatroom;
@@ -1177,7 +1177,7 @@ static void history_range(){
 	ms_free(tmp_db);
 }
 
-static void history_count() {
+static void history_count(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
 	LinphoneChatRoom *chatroom;
@@ -1236,7 +1236,7 @@ static void history_count() {
 }
 #endif
 
-static void text_status_after_destroying_chat_room() {
+static void text_status_after_destroying_chat_room(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneChatRoom *chatroom = linphone_core_get_chat_room_from_uri(marie->lc, "<sip:Jehan@sip.linphone.org>");
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(chatroom, "hello");
@@ -1266,19 +1266,19 @@ void file_transfer_io_error_base(char *server_url, bool_t destroy_room) {
 	linphone_core_manager_destroy(marie);
 }
 
-static void file_transfer_not_sent_if_invalid_url() {
+static void file_transfer_not_sent_if_invalid_url(void) {
 	file_transfer_io_error_base("INVALID URL", FALSE);
 }
 
-static void file_transfer_not_sent_if_host_not_found() {
+static void file_transfer_not_sent_if_host_not_found(void) {
 	file_transfer_io_error_base("https://not_existing_url.com", FALSE);
 }
 
-static void file_transfer_not_sent_if_url_moved_permanently() {
+static void file_transfer_not_sent_if_url_moved_permanently(void) {
 	file_transfer_io_error_base("http://linphone.org/toto.php", FALSE);
 }
 
-static void file_transfer_io_error_after_destroying_chatroom() {
+static void file_transfer_io_error_after_destroying_chatroom(void) {
 	file_transfer_io_error_base("https://www.linphone.org:444/lft.php", TRUE);
 }
 

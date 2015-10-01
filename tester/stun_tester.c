@@ -36,7 +36,7 @@ static int test_stun_encode( char*buffer, size_t len, bool_t expect_fail )
 	memset(&username,0,sizeof(username));
 	memset(&password,0,sizeof(password));
 	stunBuildReqSimple( &req, &username, TRUE , TRUE , 11);
-	len = stunEncodeMessage( &req, buffer, len, &password);
+	len = stunEncodeMessage( &req, buffer, (unsigned int)len, &password);
 	if (len<=0){
 		if( expect_fail )
 			ms_message("Fail to encode stun message (EXPECTED).\n");
@@ -44,11 +44,11 @@ static int test_stun_encode( char*buffer, size_t len, bool_t expect_fail )
 			ms_error("Fail to encode stun message.\n");
 		return -1;
 	}
-	return len;
+	return (int)len;
 }
 
 
-static void linphone_stun_test_encode()
+static void linphone_stun_test_encode(void)
 {
 	char smallBuff[12];
 	size_t smallLen = 12;
@@ -64,7 +64,7 @@ static void linphone_stun_test_encode()
 }
 
 
-static void linphone_stun_test_grab_ip()
+static void linphone_stun_test_grab_ip(void)
 {
 	LinphoneCoreManager* lc_stun = linphone_core_manager_new2( "stun_rc", FALSE);
 	LinphoneCall dummy_call;

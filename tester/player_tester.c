@@ -64,7 +64,7 @@ static void play_file(const char *filename, bool_t supported_format, const char 
 	BC_ASSERT_EQUAL(res, 0, int, "%d");
 	if(res == -1) goto fail;
 
-	BC_ASSERT_TRUE(wait_for_eof(&eof, &time, 100, linphone_player_get_duration(player) * 1.05));
+	BC_ASSERT_TRUE(wait_for_eof(&eof, &time, 100, (int)(linphone_player_get_duration(player) * 1.05)));
 
 	linphone_player_close(player);
 

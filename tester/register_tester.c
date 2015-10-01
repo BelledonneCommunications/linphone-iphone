@@ -159,7 +159,7 @@ static void register_with_refresh(LinphoneCoreManager* lcm, bool_t refresh,const
 	BC_ASSERT_EQUAL(counters->number_of_LinphoneRegistrationCleared,1, int, "%d");
 }
 
-static void register_with_refresh_with_send_error() {
+static void register_with_refresh_with_send_error(void) {
 	int retry=0;
 	LinphoneCoreManager* lcm = create_lcm_with_auth(1);
 	stats* counters = &lcm->stat;
@@ -183,7 +183,7 @@ static void register_with_refresh_with_send_error() {
 	linphone_core_manager_destroy(lcm);
 }
 
-static void simple_register(){
+static void simple_register(void){
 	LinphoneCoreManager* lcm = create_lcm();
 	stats* counters = &lcm->stat;
 	register_with_refresh(lcm,FALSE,NULL,NULL);
@@ -210,7 +210,7 @@ static void register_with_custom_headers(void){
 	linphone_core_manager_destroy(marie);
 }
 
-static void simple_unregister(){
+static void simple_unregister(void){
 	LinphoneCoreManager* lcm = create_lcm();
 	stats* counters = &lcm->stat;
 	LinphoneProxyConfig* proxy_config;
@@ -229,7 +229,7 @@ static void simple_unregister(){
 	linphone_core_manager_destroy(lcm);
 }
 
-static void change_expires(){
+static void change_expires(void){
 	LinphoneCoreManager* lcm = create_lcm();
 	stats* counters = &lcm->stat;
 	LinphoneProxyConfig* proxy_config;
@@ -257,7 +257,7 @@ static void change_expires(){
 }
 
 /*take care of min expires configuration from server*/
-static void simple_register_with_refresh() {
+static void simple_register_with_refresh(void) {
 	LinphoneCoreManager* lcm = create_lcm();
 	stats* counters = &lcm->stat;
 	register_with_refresh(lcm,TRUE,NULL,NULL);
@@ -265,7 +265,7 @@ static void simple_register_with_refresh() {
 	linphone_core_manager_destroy(lcm);
 }
 
-static void simple_auth_register_with_refresh() {
+static void simple_auth_register_with_refresh(void) {
 	LinphoneCoreManager* lcm = create_lcm_with_auth(1);
 	stats* counters = &lcm->stat;
 	char route[256];
@@ -275,7 +275,7 @@ static void simple_auth_register_with_refresh() {
 	linphone_core_manager_destroy(lcm);
 }
 
-static void simple_tcp_register(){
+static void simple_tcp_register(void){
 	char route[256];
 	LinphoneCoreManager* lcm;
 	sprintf(route,"sip:%s;transport=tcp",test_route);
@@ -284,7 +284,7 @@ static void simple_tcp_register(){
 	linphone_core_manager_destroy(lcm);
 }
 
-static void simple_tcp_register_compatibility_mode(){
+static void simple_tcp_register_compatibility_mode(void){
 	char route[256];
 	LinphoneCoreManager* lcm;
 	LCSipTransports transport = {0,5070,0,0};
@@ -294,7 +294,7 @@ static void simple_tcp_register_compatibility_mode(){
 	linphone_core_manager_destroy(lcm);
 }
 
-static void simple_tls_register(){
+static void simple_tls_register(void){
 	if (transport_supported(LinphoneTransportTls)) {
 		char route[256];
 		LinphoneCoreManager* lcm = create_lcm();
@@ -305,7 +305,7 @@ static void simple_tls_register(){
 }
 
 
-static void simple_authenticated_register(){
+static void simple_authenticated_register(void){
 	stats* counters;
 	LinphoneCoreManager* lcm = create_lcm();
 	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
@@ -318,7 +318,7 @@ static void simple_authenticated_register(){
 	linphone_core_manager_destroy(lcm);
 }
 
-static void ha1_authenticated_register(){
+static void ha1_authenticated_register(void){
 	stats* counters;
 	LinphoneCoreManager* lcm = create_lcm();
 	char ha1[33];
@@ -334,7 +334,7 @@ static void ha1_authenticated_register(){
 	linphone_core_manager_destroy(lcm);
 }
 
-static void authenticated_register_with_no_initial_credentials(){
+static void authenticated_register_with_no_initial_credentials(void){
 	LinphoneCoreManager *lcm;
 	LinphoneCoreVTable* vtable = linphone_core_v_table_new();
 	stats* counters;
@@ -355,7 +355,7 @@ static void authenticated_register_with_no_initial_credentials(){
 }
 
 
-static void authenticated_register_with_late_credentials(){
+static void authenticated_register_with_late_credentials(void){
 	LinphoneCoreManager *lcm;
 	stats* counters;
 	char route[256];
@@ -371,7 +371,7 @@ static void authenticated_register_with_late_credentials(){
 	linphone_core_manager_destroy(lcm);
 }
 
-static void authenticated_register_with_provided_credentials(){
+static void authenticated_register_with_provided_credentials(void){
 	LinphoneCoreManager *lcm;
 	stats* counters;
 	LinphoneProxyConfig *cfg;
@@ -412,7 +412,7 @@ static void authenticated_register_with_provided_credentials(){
 	linphone_core_manager_destroy(lcm);
 }
 
-static void authenticated_register_with_wrong_late_credentials(){
+static void authenticated_register_with_wrong_late_credentials(void){
 	LinphoneCoreManager *lcm;
 	stats* counters;
 	LCSipTransports transport = {5070,5070,0,5071};
@@ -477,10 +477,10 @@ static void authenticated_register_with_wrong_credentials_with_params(const char
 	authenticated_register_with_wrong_credentials_with_params_base(user_agent,lcm);
 	linphone_core_manager_destroy(lcm);
 }
-static void authenticated_register_with_wrong_credentials() {
+static void authenticated_register_with_wrong_credentials(void) {
 	authenticated_register_with_wrong_credentials_with_params(NULL);
 }
-static void authenticated_register_with_wrong_credentials_2() {
+static void authenticated_register_with_wrong_credentials_2(void) {
 	LinphoneCoreManager *lcm = linphone_core_manager_new(NULL);
 	stats* counters = get_stats(lcm->lc);
 	int current_in_progress;
@@ -498,7 +498,7 @@ static void authenticated_register_with_wrong_credentials_2() {
 
 	linphone_core_manager_destroy(lcm);
 }
-static void authenticated_register_with_wrong_credentials_without_403() {
+static void authenticated_register_with_wrong_credentials_without_403(void) {
 	authenticated_register_with_wrong_credentials_with_params("tester-no-403");
 }
 static LinphoneCoreManager* configure_lcm(void) {
@@ -512,14 +512,14 @@ static LinphoneCoreManager* configure_lcm(void) {
 	return NULL;
 }
 
-static void multiple_proxy(){
+static void multiple_proxy(void){
 	LinphoneCoreManager *lcm=configure_lcm();
 	if (lcm) {
 		linphone_core_manager_destroy(lcm);
 	}
 }
 
-static void network_state_change(){
+static void network_state_change(void){
 	int register_ok;
 	stats *counters;
 	LinphoneCoreManager *lcm=configure_lcm();
@@ -549,7 +549,7 @@ static int get_number_of_udp_proxy(const LinphoneCore* lc) {
 	}
 	return number_of_udp_proxy;
 }
-static void transport_change(){
+static void transport_change(void){
 	LinphoneCoreManager *lcm;
 	LinphoneCore* lc;
 	int register_ok;
@@ -582,7 +582,7 @@ static void transport_change(){
 	}
 }
 
-static void proxy_transport_change(){
+static void proxy_transport_change(void){
 	LinphoneCoreManager* lcm = create_lcm();
 	stats* counters = &lcm->stat;
 	LinphoneProxyConfig* proxy_config;
@@ -617,7 +617,7 @@ static void proxy_transport_change(){
 	linphone_core_manager_destroy(lcm);
 
 }
-static void proxy_transport_change_with_wrong_port() {
+static void proxy_transport_change_with_wrong_port(void) {
 	LinphoneCoreManager* lcm = create_lcm();
 	stats* counters = &lcm->stat;
 	LinphoneProxyConfig* proxy_config;
@@ -648,7 +648,7 @@ static void proxy_transport_change_with_wrong_port() {
 
 }
 
-static void proxy_transport_change_with_wrong_port_givin_up() {
+static void proxy_transport_change_with_wrong_port_givin_up(void) {
 	LinphoneCoreManager* lcm = create_lcm();
 	stats* counters = &lcm->stat;
 	LinphoneProxyConfig* proxy_config;
@@ -677,7 +677,7 @@ static void proxy_transport_change_with_wrong_port_givin_up() {
 
 }
 
-static void io_recv_error(){
+static void io_recv_error(void){
 	LinphoneCoreManager *lcm;
 	LinphoneCore* lc;
 	int register_ok;
@@ -702,7 +702,7 @@ static void io_recv_error(){
 	}
 }
 
-static void io_recv_error_retry_immediatly(){
+static void io_recv_error_retry_immediatly(void){
 	LinphoneCoreManager *lcm;
 	LinphoneCore* lc;
 	int register_ok;
@@ -727,7 +727,7 @@ static void io_recv_error_retry_immediatly(){
 	}
 }
 
-static void io_recv_error_late_recovery(){
+static void io_recv_error_late_recovery(void){
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager *lcm;
 		LinphoneCore* lc;
@@ -762,7 +762,7 @@ static void io_recv_error_late_recovery(){
 	}
 }
 
-static void io_recv_error_without_active_register(){
+static void io_recv_error_without_active_register(void){
 	LinphoneCoreManager *lcm;
 	LinphoneCore* lc;
 	int register_ok;
@@ -802,7 +802,7 @@ static void io_recv_error_without_active_register(){
 }
 
 
-static void tls_certificate_failure(){
+static void tls_certificate_failure(void){
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* lcm;
 		LinphoneCore *lc;
@@ -828,7 +828,7 @@ static void tls_certificate_failure(){
 }
 
 /*the purpose of this test is to check that will not block the proxy config during SSL handshake for entire life in case of mistaken configuration*/
-static void tls_with_non_tls_server(){
+static void tls_with_non_tls_server(void){
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager *lcm;
 		LinphoneProxyConfig* proxy_cfg;
@@ -852,7 +852,7 @@ static void tls_with_non_tls_server(){
 	}
 }
 
-static void tls_alt_name_register(){
+static void tls_alt_name_register(void){
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* lcm;
 		LinphoneCore *lc;
@@ -869,7 +869,7 @@ static void tls_alt_name_register(){
 	}
 }
 
-static void tls_wildcard_register(){
+static void tls_wildcard_register(void){
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* lcm;
 		LinphoneCore *lc;
@@ -886,7 +886,7 @@ static void tls_wildcard_register(){
 	}
 }
 
-static void redirect(){
+static void redirect(void){
 	char route[256];
 	LinphoneCoreManager* lcm;
 	LCSipTransports transport = {-1,0,0,0};

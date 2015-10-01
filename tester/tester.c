@@ -404,7 +404,7 @@ int liblinphone_tester_ipv6_available(void){
 		socklen_t slen=sizeof(ss);
 		char localip[128];
 		int port=0;
-		belle_sip_get_src_addr_for(ai->ai_addr,ai->ai_addrlen,(struct sockaddr*) &ss,&slen,4444);
+		belle_sip_get_src_addr_for(ai->ai_addr,(socklen_t)ai->ai_addrlen,(struct sockaddr*) &ss,&slen,4444);
 		src.ai_addr=(struct sockaddr*) &ss;
 		src.ai_addrlen=slen;
 		belle_sip_addrinfo_to_ip(&src,localip, sizeof(localip),&port);
@@ -494,14 +494,14 @@ int linphone_core_manager_get_mean_audio_up_bw(const LinphoneCoreManager *mgr) {
 			, sizeof(mgr->stat.audio_upload_bandwidth)/sizeof(int));
 }
 
-void liblinphone_tester_before_each() {
+void liblinphone_tester_before_each(void) {
 	if (!liblinphone_tester_leak_detector_disabled){
 		belle_sip_object_enable_leak_detector(TRUE);
 		leaked_objects_count = belle_sip_object_get_object_count();
 	}
 }
 
-void liblinphone_tester_after_each() {
+void liblinphone_tester_after_each(void) {
 	if (!liblinphone_tester_leak_detector_disabled){
 		int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
 		// this will NOT be counted in tests fail but at least it will be shown

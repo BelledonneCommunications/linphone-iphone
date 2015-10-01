@@ -72,7 +72,7 @@ void send_dtmf_base(LinphoneCoreManager **pmarie, LinphoneCoreManager **ppauline
 		linphone_call_send_dtmfs(marie_call, dtmf_seq);
 
 		/*wait for the DTMF sequence to be received from pauline*/
-		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, dtmf_count_prev + strlen(dtmf_seq), 10000 + dtmf_delay_ms * strlen(dtmf_seq)));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.dtmf_count, (int)(dtmf_count_prev + strlen(dtmf_seq)), (int)(10000 + dtmf_delay_ms * strlen(dtmf_seq))));
 		expected = (dtmf!='\0')?ms_strdup_printf("%c%s",dtmf,dtmf_seq):ms_strdup(dtmf_seq);
 	}
 
@@ -102,38 +102,38 @@ void send_dtmf_cleanup(LinphoneCoreManager *marie, LinphoneCoreManager *pauline)
 	linphone_core_manager_destroy(pauline);
 }
 
-static void send_dtmf_rfc2833() {
+static void send_dtmf_rfc2833(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, TRUE,FALSE,'1',NULL,FALSE);
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmf_sip_info() {
+static void send_dtmf_sip_info(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, FALSE,TRUE,'#',NULL,FALSE);
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmfs_sequence_rfc2833() {
+static void send_dtmfs_sequence_rfc2833(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, TRUE,FALSE,'\0',"1230#",FALSE);
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmfs_sequence_sip_info() {
+static void send_dtmfs_sequence_sip_info(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, FALSE,TRUE,'\0',"1230#",FALSE);
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmfs_sequence_not_ready() {
+static void send_dtmfs_sequence_not_ready(void) {
 	LinphoneCoreManager *marie;
 	marie = linphone_core_manager_new( "marie_rc");
 	BC_ASSERT_EQUAL(linphone_call_send_dtmfs(linphone_core_get_current_call(marie->lc), "123"), -1, int, "%d");
 	linphone_core_manager_destroy(marie);
 }
 
-static void send_dtmfs_sequence_call_state_changed() {
+static void send_dtmfs_sequence_call_state_changed(void) {
 	LinphoneCoreManager *marie, *pauline;
 	LinphoneCall *marie_call = NULL;
 	send_dtmf_base(&marie, &pauline, FALSE,TRUE,'\0',NULL,FALSE);
@@ -156,7 +156,7 @@ static void send_dtmfs_sequence_call_state_changed() {
 	send_dtmf_cleanup(marie, pauline);
 }
 
-static void send_dtmf_rfc2833_opus() {
+static void send_dtmf_rfc2833_opus(void) {
 	LinphoneCoreManager *marie, *pauline;
 	send_dtmf_base(&marie, &pauline, TRUE,FALSE,'1',NULL,TRUE);
 	send_dtmf_cleanup(marie, pauline);

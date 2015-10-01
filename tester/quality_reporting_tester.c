@@ -141,7 +141,7 @@ bool_t create_call_for_quality_reporting_tests(
 	return call_succeeded;
 }
 
-static void quality_reporting_not_used_without_config() {
+static void quality_reporting_not_used_without_config(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* call_marie = NULL;
@@ -164,7 +164,7 @@ static void quality_reporting_not_used_without_config() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void quality_reporting_not_sent_if_call_not_started() {
+static void quality_reporting_not_sent_if_call_not_started(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallLog* out_call_log;
@@ -197,7 +197,7 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void quality_reporting_not_sent_if_low_bandwidth() {
+static void quality_reporting_not_sent_if_low_bandwidth(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallParams* marie_params;
@@ -222,7 +222,7 @@ void on_report_send_remove_fields(const LinphoneCall *call, SalStreamType stream
 	strncpy(body, "corrupted report is corrupted", strlen("corrupted report is corrupted"));
 }
 
-static void quality_reporting_invalid_report() {
+static void quality_reporting_invalid_report(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* call_marie = NULL;
@@ -242,7 +242,7 @@ static void quality_reporting_invalid_report() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void quality_reporting_at_call_termination() {
+static void quality_reporting_at_call_termination(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc_rtcp_xr");
 	LinphoneCall* call_marie = NULL;
@@ -271,7 +271,7 @@ static void quality_reporting_at_call_termination() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void quality_reporting_interval_report() {
+static void quality_reporting_interval_report(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc_rtcp_xr");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc_rtcp_xr");
 	LinphoneCall* call_marie = NULL;
@@ -293,7 +293,7 @@ static void quality_reporting_interval_report() {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void quality_reporting_session_report_if_video_stopped() {
+static void quality_reporting_session_report_if_video_stopped(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc_rtcp_xr");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* call_pauline = NULL;
@@ -346,7 +346,7 @@ void publish_report_with_route_state_changed(LinphoneCore *lc, LinphoneEvent *ev
 	}
 }
 
-static void quality_reporting_sent_using_custom_route() {
+static void quality_reporting_sent_using_custom_route(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_quality_reporting_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCall* call_marie = NULL;

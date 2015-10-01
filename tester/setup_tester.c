@@ -71,7 +71,7 @@ static void core_sip_transport_test(void) {
 	linphone_core_destroy(lc);
 }
 
-static void linphone_interpret_url_test()
+static void linphone_interpret_url_test(void)
 {
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
@@ -94,7 +94,7 @@ static void linphone_interpret_url_test()
 	linphone_core_destroy ( lc );
 }
 
-static void linphone_lpconfig_from_buffer(){
+static void linphone_lpconfig_from_buffer(void){
 	const char* buffer = "[buffer]\ntest=ok";
 	const char* buffer_linebreaks = "[buffer_linebreaks]\n\n\n\r\n\n\r\ntest=ok";
 	LpConfig* conf;
@@ -108,7 +108,7 @@ static void linphone_lpconfig_from_buffer(){
 	lp_config_destroy(conf);
 }
 
-static void linphone_lpconfig_from_buffer_zerolen_value(){
+static void linphone_lpconfig_from_buffer_zerolen_value(void){
 	/* parameters that have no value should return NULL, not "". */
 	const char* zerolen = "[test]\nzero_len=\nnon_zero_len=test";
 	LpConfig* conf;
@@ -124,7 +124,7 @@ static void linphone_lpconfig_from_buffer_zerolen_value(){
 	lp_config_destroy(conf);
 }
 
-static void linphone_lpconfig_from_file_zerolen_value(){
+static void linphone_lpconfig_from_file_zerolen_value(void){
 	/* parameters that have no value should return NULL, not "". */
 	const char* zero_rc_file = "zero_length_params_rc";
 	char* rc_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_get_resource_dir_prefix(), zero_rc_file);
@@ -146,7 +146,7 @@ static void linphone_lpconfig_from_file_zerolen_value(){
 	lp_config_destroy(conf);
 }
 
-static void linphone_lpconfig_from_xml_zerolen_value(){
+static void linphone_lpconfig_from_xml_zerolen_value(void){
 	const char* zero_xml_file = "remote_zero_length_params_rc";
 	char* xml_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_get_resource_dir_prefix(), zero_xml_file);
 	LpConfig* conf;
@@ -167,7 +167,7 @@ static void linphone_lpconfig_from_xml_zerolen_value(){
 	ms_free(xml_path);
 }
 
-void linphone_proxy_config_address_equal_test() {
+void linphone_proxy_config_address_equal_test(void) {
 	LinphoneAddress *a = linphone_address_new("sip:toto@titi");
 	LinphoneAddress *b = linphone_address_new("sips:toto@titi");
 	LinphoneAddress *c = linphone_address_new("sip:toto@titi;transport=tcp");
@@ -193,7 +193,7 @@ void linphone_proxy_config_address_equal_test() {
 	linphone_address_destroy(f);
 }
 
-void linphone_proxy_config_is_server_config_changed_test() {
+void linphone_proxy_config_is_server_config_changed_test(void) {
 	LinphoneProxyConfig* proxy_config = linphone_proxy_config_new();
 
 	linphone_proxy_config_done(proxy_config); /*test done without edit*/

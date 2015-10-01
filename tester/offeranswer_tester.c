@@ -191,7 +191,7 @@ end:
 }
 
 static void profile_call(bool_t avpf1, LinphoneMediaEncryption srtp1, bool_t avpf2, LinphoneMediaEncryption srtp2, const char *expected_profile) {
-	return profile_call_base(avpf1, srtp1, avpf2,srtp2,FALSE,expected_profile);
+	profile_call_base(avpf1, srtp1, avpf2,srtp2,FALSE,expected_profile);
 }
 static void avp_to_avp_call(void) {
 	profile_call(FALSE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionNone, "RTP/AVP");

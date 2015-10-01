@@ -68,7 +68,7 @@ static void call_multicast_base(bool_t video) {
 static void call_multicast(void)  {
 	call_multicast_base(FALSE);
 }
-static void multicast_audio_with_pause_resume() {
+static void multicast_audio_with_pause_resume(void) {
 	call_paused_resumed_base(TRUE);
 }
 #ifdef VIDEO_ENABLED
@@ -223,14 +223,14 @@ static void early_media_with_multicast_base(bool_t video) {
 	linphone_core_manager_destroy(pauline2);
 }
 
-static void early_media_with_multicast_audio() {
+static void early_media_with_multicast_audio(void) {
 	early_media_with_multicast_base(FALSE);
 }
-static void unicast_incoming_with_multicast_audio_on() {
+static void unicast_incoming_with_multicast_audio_on(void) {
 	simple_call_base(TRUE);
 }
 #ifdef VIDEO_ENABLED
-static void early_media_with_multicast_video() {
+static void early_media_with_multicast_video(void) {
 	early_media_with_multicast_base(TRUE);
 }
 #endif
