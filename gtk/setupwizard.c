@@ -30,7 +30,7 @@ static LinphoneAccountCreator * linphone_gtk_assistant_get_creator(GtkWidget *w)
 	return (LinphoneAccountCreator *)g_object_get_data(G_OBJECT(w), "creator");
 }
 
-static void linphone_gtk_account_validate_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+static void linphone_gtk_create_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
 	GtkWidget *assistant = (GtkWidget *)linphone_account_creator_get_user_data(creator);
 	if (status == LinphoneAccountCreatorOk) {
 		// Go to page_6_linphone_account_validation_wait
@@ -44,7 +44,7 @@ static void linphone_gtk_account_validate_cb(LinphoneAccountCreator *creator, Li
 
 static void create_account(GtkWidget *assistant) {
 	LinphoneAccountCreator *creator = linphone_gtk_assistant_get_creator(assistant);
-	linphone_account_creator_validate(creator);
+	linphone_account_creator_create_account(creator);
 }
 
 static void linphone_gtk_test_account_validation_cb(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
@@ -522,7 +522,7 @@ static LinphoneAccountCreator * linphone_gtk_assistant_init(GtkWidget *w) {
 	linphone_account_creator_set_user_data(creator, w);
 	linphone_account_creator_cbs_set_existence_tested(cbs, linphone_gtk_test_account_existence_cb);
 	linphone_account_creator_cbs_set_validation_tested(cbs, linphone_gtk_test_account_validation_cb);
-	linphone_account_creator_cbs_set_validated(cbs, linphone_gtk_account_validate_cb);
+	linphone_account_creator_cbs_set_create_account(cbs, linphone_gtk_create_account_cb);
 	g_object_set_data(G_OBJECT(w), "creator", creator);
 	return creator;
 }
