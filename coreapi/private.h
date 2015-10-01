@@ -136,11 +136,11 @@ struct _LinphoneCallParams{
 	bool_t avpf_enabled; /* RTCP feedback messages are enabled */
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
-	
+
 	bool_t low_bandwidth;
 	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
 	uint16_t avpf_rr_interval; /*in milliseconds*/
-	
+
 	bool_t internal_call_update; /*use mark that call update was requested internally (might be by ice) - unused for the moment*/
 	bool_t video_multicast_enabled;
 	bool_t audio_multicast_enabled;
@@ -1123,7 +1123,7 @@ struct _LinphoneAccountCreatorCbs {
 	void *user_data;
 	LinphoneAccountCreatorCbsExistenceTestedCb existence_tested;
 	LinphoneAccountCreatorCbsValidationTestedCb validation_tested;
-	LinphoneAccountCreatorCbsValidatedCb validated;
+	LinphoneAccountCreatorCbsCreateAccountCb create_account;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreatorCbs);
@@ -1142,6 +1142,7 @@ struct _LinphoneAccountCreator {
 	char *email;
 	bool_t subscribe_to_newsletter;
 	char *display_name;
+	LinphoneTransportType transport;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);
