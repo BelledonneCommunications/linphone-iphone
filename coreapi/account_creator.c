@@ -99,10 +99,14 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneAccountCreator, belle_sip_object_t,
 
 LinphoneAccountCreator * linphone_account_creator_new(LinphoneCore *core, const char *xmlrpc_url) {
 	LinphoneAccountCreator *creator;
+	const char* domain = lp_config_get_string(core->config, "assistant", "domain", NULL);
 	creator = belle_sip_object_new(LinphoneAccountCreator);
 	creator->callbacks = linphone_account_creator_cbs_new();
 	creator->core = core;
 	creator->xmlrpc_session = linphone_xml_rpc_session_new(core, xmlrpc_url);
+	if (domain) {
+		linphone_account_creator_set_domain(creator, domain);
+	}
 	return creator;
 }
 
@@ -294,8 +298,12 @@ LinphoneAccountCreatorStatus linphone_account_creator_test_existence(LinphoneAcc
 	LinphoneXmlRpcRequest *request;
 	char *identity;
 
-	if (!creator->username || !creator->domain) return LinphoneAccountCreatorFailed;
-
+	if (!creator->username || !creator->domain) {
+		if (creator->callbacks->existence_tested != NULL) {
+			creator->callbacks->existence_tested(creator, LinphoneAccountCreatorFailed);
+		}
+		return LinphoneAccountCreatorFailed;
+	}
 	identity = ms_strdup_printf("%s@%s", creator->username, creator->domain);
 	request = linphone_xml_rpc_request_new_with_args("check_account", LinphoneXmlRpcArgInt,
 		LinphoneXmlRpcArgString, identity,
@@ -324,7 +332,12 @@ LinphoneAccountCreatorStatus linphone_account_creator_test_validation(LinphoneAc
 	LinphoneXmlRpcRequest *request;
 	char *identity;
 
-	if (!creator->username || !creator->domain) return LinphoneAccountCreatorFailed;
+	if (!creator->username || !creator->domain) {
+		if (creator->callbacks->validation_tested != NULL) {
+			creator->callbacks->validation_tested(creator, LinphoneAccountCreatorFailed);
+		}
+		return LinphoneAccountCreatorFailed;
+	}
 
 	identity = ms_strdup_printf("%s@%s", creator->username, creator->domain);
 	request = linphone_xml_rpc_request_new_with_args("check_account_validated", LinphoneXmlRpcArgInt,
@@ -354,7 +367,12 @@ LinphoneAccountCreatorStatus linphone_account_creator_create_account(LinphoneAcc
 	LinphoneXmlRpcRequest *request;
 	char *identity;
 
-	if (!creator->username || !creator->domain) return LinphoneAccountCreatorFailed;
+	if (!creator->username || !creator->domain) {
+		if (creator->callbacks->create_account != NULL) {
+			creator->callbacks->create_account(creator, LinphoneAccountCreatorFailed);
+		}
+		return LinphoneAccountCreatorFailed;
+	}
 
 	identity = ms_strdup_printf("%s@%s", creator->username, creator->domain);
 	request = linphone_xml_rpc_request_new_with_args("create_account", LinphoneXmlRpcArgInt,

@@ -400,14 +400,23 @@ void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, Linph
 	belle_sip_memory_body_handler_t *bh;
 	const char *data;
 	LinphoneContent *content;
-
 	linphone_xml_rpc_request_ref(request);
+
+	uri = belle_generic_uri_parse(session->url);
+	if (!uri) {
+		ms_error("Could not send request, URL %s is invalid", session->url);
+		belle_sip_object_unref(uri);
+		process_io_error_from_post_xml_rpc_request(request, NULL);
+		return;
+	}
+	req = belle_http_request_create("POST", uri, belle_sip_header_content_type_create("text", "xml"), NULL);
+	if (!req) {
+		process_io_error_from_post_xml_rpc_request(request, NULL);
+	}
 	content = linphone_content_new();
 	linphone_content_set_type(content, "text");
 	linphone_content_set_subtype(content, "xml");
 	linphone_content_set_string_buffer(content, linphone_xml_rpc_request_get_content(request));
-	uri = belle_generic_uri_parse(session->url);
-	req = belle_http_request_create("POST", uri, belle_sip_header_content_type_create("text", "xml"), NULL);
 	data = linphone_xml_rpc_request_get_content(request);
 	bh = belle_sip_memory_body_handler_new_copy_from_buffer(data, strlen(data), NULL, NULL);
 	belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(bh));
