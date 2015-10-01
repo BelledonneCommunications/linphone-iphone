@@ -22,10 +22,9 @@
 #import "UICompositeView.h"
 #import "TPKeyboardAvoidingScrollView.h"
 
-@interface AssistantView
-	: TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, XMLRPCConnectionDelegate> {
+@interface AssistantView : TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate> {
   @private
-	UITextField *activeTextField;
+	LinphoneAccountCreator *account_creator;
 	UIView *currentView;
 	UIView *nextView;
 	NSMutableArray *historyViews;
@@ -52,7 +51,7 @@
 - (void)fillDefaultValues;
 
 - (IBAction)onBackClick:(id)sender;
-- (IBAction)onDialerBackClick:(id)sender;
+- (IBAction)onDialerClick:(id)sender;
 
 - (IBAction)onGotoCreateAccountClick:(id)sender;
 - (IBAction)onGotoLinphoneLoginClick:(id)sender;
@@ -64,5 +63,7 @@
 - (IBAction)onLinphoneLoginClick:(id)sender;
 - (IBAction)onLoginClick:(id)sender;
 - (IBAction)onRemoteProvisionningClick:(id)sender;
+
+- (IBAction)onTransportChange:(id)sender;
 
 @end

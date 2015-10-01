@@ -22,6 +22,7 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "UITextField+DoneButton.h"
+#import "UIAssistantTextField.h"
 
 #import <XMLRPCConnection.h>
 #import <XMLRPCConnectionManager.h>
@@ -35,9 +36,9 @@ typedef enum _ViewElement {
 	ViewElement_Email = 103,
 	ViewElement_Domain = 104,
 	ViewElement_Transport = 105,
+	ViewElement_NextButton = 130,
 	ViewElement_Label = 200,
 	ViewElement_Error = 201,
-	ViewElement_Username_Error = 404,
 } ViewElement;
 
 @implementation AssistantView
@@ -52,10 +53,6 @@ typedef enum _ViewElement {
 		currentView = nil;
 	}
 	return self;
-}
-
-- (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -118,185 +115,35 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Utils
 
-- (void)displayUsernameAsPhoneOrUsername {
-	BOOL usePhoneNumber = [LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number"];
+- (void)loadAssistantConfig:(NSString *)rcFilename {
+	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
+	linphone_core_set_provisioning_uri([LinphoneManager getLc],
+									   [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
 
-	NSString *label = usePhoneNumber ? NSLocalizedString(@"PHONE NUMBER", nil) : NSLocalizedString(@"USERNAME", nil);
-	[self findLabel:ViewElement_Username].text = label;
+	// For some reason, video preview hangs for 15seconds when resetting linphone core from here...
+	// to avoid it, we disable it before and reenable it after core restart.
+	BOOL hasPreview = linphone_core_video_preview_enabled([LinphoneManager getLc]);
+	linphone_core_enable_video_preview([LinphoneManager getLc], FALSE);
 
-	UITextField *text = [self findTextField:ViewElement_Username];
-	if (usePhoneNumber) {
-		text.keyboardType = UIKeyboardTypePhonePad;
-		[text addDoneButton];
-	} else {
-		text.keyboardType = UIKeyboardTypeDefault;
+	if (account_creator) {
+		linphone_account_creator_unref(account_creator);
+		account_creator = NULL;
 	}
-}
-
-- (BOOL)verificationWithUsername:(NSString *)username
-						password:(NSString *)password
-						  domain:(NSString *)domain
-				   withTransport:(NSString *)transport {
-	NSMutableString *errors = [NSMutableString string];
-	if ([username length] == 0) {
-		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.\n", nil)]];
-	}
-
-	if (domain != nil && [domain length] == 0) {
-		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid domain.\n", nil)]];
-	}
-
-	if ([errors length]) {
-		UIAlertView *errorView =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)", nil)
-									   message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-							 otherButtonTitles:nil, nil];
-		[errorView show];
-		return FALSE;
-	}
-	return TRUE;
-}
-- (void)verificationSignInWithUsername:(NSString *)username
-							  password:(NSString *)password
-								domain:(NSString *)domain
-						 withTransport:(NSString *)transport {
-	if ([self verificationWithUsername:username password:password domain:domain withTransport:transport]) {
-		_waitView.hidden = false;
-		if ([LinphoneManager instance].connectivity == none) {
-			DTAlertView *alert = [[DTAlertView alloc]
-				initWithTitle:NSLocalizedString(@"No connectivity", nil)
-					  message:NSLocalizedString(@"You can either skip verification or connect to the Internet first.",
-												nil)];
-			[alert addCancelButtonWithTitle:NSLocalizedString(@"Stay here", nil)
-									  block:^{
-										_waitView.hidden = true;
-									  }];
-			[alert
-				addButtonWithTitle:NSLocalizedString(@"Continue", nil)
-							 block:^{
-							   _waitView.hidden = true;
-							   [self addProxyConfig:username password:password domain:domain withTransport:transport];
-							   [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
-							 }];
-			[alert show];
-		} else {
-			BOOL success = [self addProxyConfig:username password:password domain:domain withTransport:transport];
-			if (!success) {
-				_waitView.hidden = true;
-			}
-		}
-	}
-}
-
-- (BOOL)verificationRegisterWithUsername:(NSString *)username
-								password:(NSString *)password
-							   password2:(NSString *)password2
-								   email:(NSString *)email {
-	NSMutableString *errors = [NSMutableString string];
-	NSInteger username_length =
-		[[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"assistant"];
-	NSInteger password_length =
-		[[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"assistant"];
-
-	if ([username length] < username_length) {
-		[errors
-			appendString:[NSString stringWithFormat:NSLocalizedString(
-														@"The username is too short (minimum %d characters).\n", nil),
-													username_length]];
-	}
-
-	if ([password length] < password_length) {
-		[errors
-			appendString:[NSString stringWithFormat:NSLocalizedString(
-														@"The password is too short (minimum %d characters).\n", nil),
-													password_length]];
-	}
-
-	if (![password2 isEqualToString:password]) {
-		[errors appendString:NSLocalizedString(@"The passwords are different.\n", nil)];
-	}
-
-	NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @".+@.+\\.[A-Za-z]{2}[A-Za-z]*"];
-	if (![emailTest evaluateWithObject:email]) {
-		[errors appendString:NSLocalizedString(@"The email is invalid.\n", nil)];
-	}
-
-	if ([errors length]) {
-		UIAlertView *errorView =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)", nil)
-									   message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-							 otherButtonTitles:nil, nil];
-		[errorView show];
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-+ (void)cleanTextField:(UIView *)view {
-	if ([view isKindOfClass:[UITextField class]]) {
-		[(UITextField *)view setText:@""];
-	} else {
-		for (UIView *subview in view.subviews) {
-			[AssistantView cleanTextField:subview];
-		}
-	}
-}
-
-- (void)fillDefaultValues {
-	LinphoneCore *lc = [LinphoneManager getLc];
-	[self resetTextFields];
-
-	LinphoneProxyConfig *current_conf = NULL;
-	linphone_core_get_default_proxy([LinphoneManager getLc], &current_conf);
-	if (current_conf != NULL) {
-		const char *proxy_addr = linphone_proxy_config_get_identity(current_conf);
-		if (proxy_addr) {
-			LinphoneAddress *addr = linphone_address_new(proxy_addr);
-			if (addr) {
-				const LinphoneAuthInfo *auth = linphone_core_find_auth_info(
-					lc, NULL, linphone_address_get_username(addr), linphone_proxy_config_get_domain(current_conf));
-				linphone_address_destroy(addr);
-				if (auth) {
-					LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
-					[self onDialerBackClick:nil];
-				}
-			}
-		}
-	}
-
-	LinphoneProxyConfig *default_conf = linphone_core_create_proxy_config([LinphoneManager getLc]);
-	const char *identity = linphone_proxy_config_get_identity(default_conf);
-	if (identity) {
-		LinphoneAddress *default_addr = linphone_address_new(identity);
-		if (default_addr) {
-			const char *domain = linphone_address_get_domain(default_addr);
-			const char *username = linphone_address_get_username(default_addr);
-			if (domain && strlen(domain) > 0) {
-				[self findTextField:ViewElement_Domain].text = [NSString stringWithUTF8String:domain];
-			}
-			if (username && strlen(username) > 0 && username[0] != '?') {
-				[self findTextField:ViewElement_Username].text = [NSString stringWithUTF8String:username];
-			}
-		}
-	}
-
-	[self changeView:_remoteProvisionningView back:FALSE animation:TRUE];
-
-	linphone_proxy_config_destroy(default_conf);
-}
-
-- (void)resetTextFields {
-	[AssistantView cleanTextField:_welcomeView];
-	[AssistantView cleanTextField:_createAccountView];
-	[AssistantView cleanTextField:_linphoneLoginView];
-	[AssistantView cleanTextField:_loginView];
-	[AssistantView cleanTextField:_createAccountActivationView];
-	[AssistantView cleanTextField:_remoteProvisionningView];
+	[[LinphoneManager instance] resetLinphoneCore];
+	account_creator = linphone_account_creator_new(
+		[LinphoneManager getLc],
+		[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" forSection:@"assistant" withDefault:@""]
+			.UTF8String);
+	linphone_account_creator_cbs_set_existence_tested(linphone_account_creator_get_callbacks(account_creator),
+													  assistant_existence_tested);
+	linphone_account_creator_cbs_set_create_account(linphone_account_creator_get_callbacks(account_creator),
+													assistant_create_account);
+	linphone_account_creator_cbs_set_validation_tested(linphone_account_creator_get_callbacks(account_creator),
+													   assistant_validation_tested);
+	linphone_core_enable_video_preview([LinphoneManager getLc], hasPreview);
+	// we will set the new default proxy config in the assistant
+	linphone_core_set_default_proxy_config([LinphoneManager getLc], NULL);
 }
 
 - (void)reset {
@@ -317,49 +164,68 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self resetTextFields];
 	[self changeView:_welcomeView back:FALSE animation:FALSE];
 	_waitView.hidden = TRUE;
-}
 
-- (UIView *)findView:(ViewElement)tag inView:view ofType:(Class)type {
-	for (UIView *child in [view subviews]) {
-		if (child.tag == tag) {
-			return child;
-		} else {
-			UIView *o = [self findView:tag inView:child ofType:type];
-			if (o)
-				return o;
-		}
-	}
-	return nil;
-}
-
-- (UITextField *)findTextField:(ViewElement)tag {
-	return (UITextField *)[self findView:tag inView:self.contentView ofType:[UITextField class]];
-}
-
-- (UILabel *)findLabel:(ViewElement)tag {
-	return (UILabel *)[self findView:tag inView:self.contentView ofType:[UILabel class]];
 }
 
 - (void)clearHistory {
 	[historyViews removeAllObjects];
 }
 
+- (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status {
+	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number" forSection:@"assistant"];
+	NSMutableString *err = [[NSMutableString alloc] init];
+	if ((status & LinphoneAccountCreatorEmailInvalid) != 0) {
+		[err appendString:NSLocalizedString(@"Invalid email.", nil)];
+	}
+	if ((status & LinphoneAccountCreatorUsernameInvalid) != 0) {
+		[err appendString:usePhoneNumber ? NSLocalizedString(@"Invalid phone number.", nil)
+										 : NSLocalizedString(@"Invalid username.", nil)];
+	}
+	if ((status & LinphoneAccountCreatorUsernameTooShort) != 0) {
+		[err appendString:usePhoneNumber ? NSLocalizedString(@"Phone number too short.", nil)
+										 : NSLocalizedString(@"Username too short.", nil)];
+	}
+	if ((status & LinphoneAccountCreatorUsernameInvalidSize) != 0) {
+		[err appendString:usePhoneNumber ? NSLocalizedString(@"Phone number length invalid.", nil)
+										 : NSLocalizedString(@"Username length invalid.", nil)];
+	}
+	if ((status & LinphoneAccountCreatorPasswordTooShort) != 0) {
+		[err appendString:NSLocalizedString(@"Password too short.", nil)];
+	}
+	if ((status & LinphoneAccountCreatorDomainInvalid) != 0) {
+		[err appendString:NSLocalizedString(@"Invalid domain.", nil)];
+	}
+	if ((status & LinphoneAccountCreatorRouteInvalid) != 0) {
+		[err appendString:NSLocalizedString(@"Invalid route.", nil)];
+	}
+	if ((status & LinphoneAccountCreatorDisplayNameInvalid) != 0) {
+		[err appendString:NSLocalizedString(@"Invalid display name.", nil)];
+	}
+	return err;
+}
+
+- (BOOL)addProxyConfig:(LinphoneProxyConfig *)proxy {
+	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneManager *lm = [LinphoneManager instance];
+	[lm configurePushTokenForProxyConfig:proxy];
+	linphone_core_set_default_proxy_config(lc, proxy);
+	// reload address book to prepend proxy config domain to contacts' phone number
+	// todo: STOP doing that!
+	[[[LinphoneManager instance] fastAddressBook] reload];
+	return TRUE;
+}
+
+#pragma mark - UI update
+
 - (void)changeView:(UIView *)view back:(BOOL)back animation:(BOOL)animation {
 
 	static BOOL placement_done = NO; // indicates if the button placement has been done in the assistant choice view
 
-	_backButton.enabled = (view != _welcomeView);
+	_backButton.hidden = (view == _welcomeView);
 
 	[self displayUsernameAsPhoneOrUsername];
 
 	if (view == _welcomeView) {
-		// layout is this:
-		// [ Logo         ]
-		// [ Create Btn   ]
-		// [ Connect Btn  ]
-		// [ External Btn ]
-		// [ Remote Prov  ]
-
 		BOOL show_logo =
 			[[LinphoneManager instance] lpConfigBoolForKey:@"show_assistant_logo_in_choice_view_preference"];
 		BOOL show_extern = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_assistant_custom_account"];
@@ -415,117 +281,171 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_contentView insertSubview:view atIndex:0];
 	[view setFrame:[_contentView bounds]];
 	[_contentView setContentSize:[view bounds].size];
+
+	[self prepareErrorLabels];
 }
 
-- (BOOL)addProxyConfig:(NSString *)username
-			  password:(NSString *)password
-				domain:(NSString *)domain
-		 withTransport:(NSString *)transport {
+- (void)fillDefaultValues {
 	LinphoneCore *lc = [LinphoneManager getLc];
-	LinphoneProxyConfig *proxyCfg = linphone_core_create_proxy_config(lc);
-	NSString *server_address = domain;
+	[self resetTextFields];
 
-	char normalizedUserName[256];
-	linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]],
-										   normalizedUserName, sizeof(normalizedUserName));
-
-	const char *identity = linphone_proxy_config_get_identity(proxyCfg);
-	if (!identity || !*identity)
-		identity = "sip:user@example.com";
-
-	LinphoneAddress *linphoneAddress = linphone_address_new(identity);
-	linphone_address_set_username(linphoneAddress, normalizedUserName);
-
-	if (domain && [domain length] != 0) {
-		if (transport != nil) {
-			server_address =
-				[NSString stringWithFormat:@"%@;transport=%@", server_address, [transport lowercaseString]];
+	LinphoneProxyConfig *current_conf = NULL;
+	linphone_core_get_default_proxy([LinphoneManager getLc], &current_conf);
+	if (current_conf != NULL) {
+		const char *proxy_addr = linphone_proxy_config_get_identity(current_conf);
+		if (proxy_addr) {
+			LinphoneAddress *addr = linphone_address_new(proxy_addr);
+			if (addr) {
+				const LinphoneAuthInfo *auth = linphone_core_find_auth_info(
+					lc, NULL, linphone_address_get_username(addr), linphone_proxy_config_get_domain(current_conf));
+				linphone_address_destroy(addr);
+				if (auth) {
+					LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
+					[self onDialerClick:nil];
+				}
+			}
 		}
-		// when the domain is specified (for external login), take it as the server address
-		linphone_proxy_config_set_server_addr(proxyCfg, [server_address UTF8String]);
-		linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
 	}
 
-	char *extractedAddres = linphone_address_as_string_uri_only(linphoneAddress);
-
-	LinphoneAddress *parsedAddress = linphone_address_new(extractedAddres);
-	ms_free(extractedAddres);
-
-	if (parsedAddress == NULL || !linphone_address_is_sip(parsedAddress)) {
-		if (parsedAddress)
-			linphone_address_destroy(parsedAddress);
-		UIAlertView *errorView =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)", nil)
-									   message:NSLocalizedString(@"Please enter a valid username", nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-							 otherButtonTitles:nil, nil];
-		[errorView show];
-		return FALSE;
+	LinphoneProxyConfig *default_conf = linphone_core_create_proxy_config([LinphoneManager getLc]);
+	const char *identity = linphone_proxy_config_get_identity(default_conf);
+	if (identity) {
+		LinphoneAddress *default_addr = linphone_address_new(identity);
+		if (default_addr) {
+			const char *domain = linphone_address_get_domain(default_addr);
+			const char *username = linphone_address_get_username(default_addr);
+			if (domain && strlen(domain) > 0) {
+				[self findTextField:ViewElement_Domain].text = [NSString stringWithUTF8String:domain];
+			}
+			if (username && strlen(username) > 0 && username[0] != '?') {
+				[self findTextField:ViewElement_Username].text = [NSString stringWithUTF8String:username];
+			}
+		}
 	}
 
-	char *c_parsedAddress = linphone_address_as_string_uri_only(parsedAddress);
+	[self changeView:_remoteProvisionningView back:FALSE animation:TRUE];
 
-	linphone_proxy_config_set_identity(proxyCfg, c_parsedAddress);
-
-	linphone_address_destroy(parsedAddress);
-	ms_free(c_parsedAddress);
-
-	LinphoneAuthInfo *info = linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL,
-													linphone_proxy_config_get_domain(proxyCfg));
-
-	LinphoneManager *lm = [LinphoneManager instance];
-	[lm configurePushTokenForProxyConfig:proxyCfg];
-
-	linphone_proxy_config_enable_register(proxyCfg, true);
-	linphone_core_add_auth_info(lc, info);
-	linphone_core_add_proxy_config(lc, proxyCfg);
-	linphone_core_set_default_proxy_config(lc, proxyCfg);
-	// reload address book to prepend proxy config domain to contacts' phone number
-	[[[LinphoneManager instance] fastAddressBook] reload];
-	return TRUE;
+	linphone_proxy_config_destroy(default_conf);
 }
 
-- (void)addProvisionedProxy:(NSString *)username withPassword:(NSString *)password withDomain:(NSString *)domain {
-	[[LinphoneManager instance] removeAllAccounts];
-	LinphoneProxyConfig *proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
-
-	const char *addr = linphone_proxy_config_get_domain(proxyCfg);
-	char normalizedUsername[256];
-	LinphoneAddress *linphoneAddress = linphone_address_new(addr);
-
-	linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]],
-										   normalizedUsername, sizeof(normalizedUsername));
-
-	linphone_address_set_username(linphoneAddress, normalizedUsername);
-	linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
-
-	const char *identity = linphone_address_as_string_uri_only(linphoneAddress);
-	linphone_proxy_config_set_identity(proxyCfg, identity);
-
-	LinphoneAuthInfo *info =
-		linphone_auth_info_new([username UTF8String], NULL, [password UTF8String], NULL, NULL, [domain UTF8String]);
-
-	linphone_proxy_config_enable_register(proxyCfg, true);
-	linphone_core_add_auth_info([LinphoneManager getLc], info);
-	linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
-	linphone_core_set_default_proxy_config([LinphoneManager getLc], proxyCfg);
-	// reload address book to prepend proxy config domain to contacts' phone number
-	[[[LinphoneManager instance] fastAddressBook] reload];
+- (void)resetTextFields {
+	[AssistantView cleanTextField:_welcomeView];
+	[AssistantView cleanTextField:_createAccountView];
+	[AssistantView cleanTextField:_linphoneLoginView];
+	[AssistantView cleanTextField:_loginView];
+	[AssistantView cleanTextField:_createAccountActivationView];
+	[AssistantView cleanTextField:_remoteProvisionningView];
 }
 
-- (NSString *)identityFromUsername:(NSString *)username {
-	char normalizedUserName[256];
-	LinphoneAddress *linphoneAddress = linphone_address_new("sip:user@domain.com");
-	linphone_proxy_config_normalize_number(NULL, [username cStringUsingEncoding:[NSString defaultCStringEncoding]],
-										   normalizedUserName, sizeof(normalizedUserName));
-	linphone_address_set_username(linphoneAddress, normalizedUserName);
-	linphone_address_set_domain(
-		linphoneAddress,
-		[[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"assistant"] UTF8String]);
-	NSString *uri = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphoneAddress)];
-	NSString *scheme = [NSString stringWithUTF8String:linphone_address_get_scheme(linphoneAddress)];
-	return [uri substringFromIndex:[scheme length] + 1];
+- (void)displayUsernameAsPhoneOrUsername {
+	BOOL usePhoneNumber = [LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number"];
+
+	NSString *label = usePhoneNumber ? NSLocalizedString(@"PHONE NUMBER", nil) : NSLocalizedString(@"USERNAME", nil);
+	[self findLabel:ViewElement_Username].text = label;
+
+	UITextField *text = [self findTextField:ViewElement_Username];
+	if (usePhoneNumber) {
+		text.keyboardType = UIKeyboardTypePhonePad;
+		[text addDoneButton];
+	} else {
+		text.keyboardType = UIKeyboardTypeDefault;
+	}
+}
+
++ (void)cleanTextField:(UIView *)view {
+	if ([view isKindOfClass:[UITextField class]]) {
+		[(UITextField *)view setText:@""];
+	} else {
+		for (UIView *subview in view.subviews) {
+			[AssistantView cleanTextField:subview];
+		}
+	}
+}
+
+- (void)shouldEnableNextButton {
+	[self findButton:ViewElement_NextButton].enabled =
+		(![self findTextField:ViewElement_Username].isInvalid && ![self findTextField:ViewElement_Password].isInvalid &&
+		 ![self findTextField:ViewElement_Password2].isInvalid && ![self findTextField:ViewElement_Domain].isInvalid &&
+		 ![self findTextField:ViewElement_Email].isInvalid);
+}
+
+- (UIView *)findView:(ViewElement)tag inView:view ofType:(Class)type {
+	for (UIView *child in [view subviews]) {
+		if (child.tag == tag) {
+			return child;
+		} else {
+			UIView *o = [self findView:tag inView:child ofType:type];
+			if (o)
+				return o;
+		}
+	}
+	return nil;
+}
+
+- (UIAssistantTextField *)findTextField:(ViewElement)tag {
+	return (UIAssistantTextField *)[self findView:tag inView:self.contentView ofType:[UIAssistantTextField class]];
+}
+
+- (UIButton *)findButton:(ViewElement)tag {
+	return (UIButton *)[self findView:tag inView:self.contentView ofType:[UIButton class]];
+}
+
+- (UILabel *)findLabel:(ViewElement)tag {
+	return (UILabel *)[self findView:tag inView:self.contentView ofType:[UILabel class]];
+}
+
+- (void)prepareErrorLabels {
+	UIAssistantTextField *createUsername = [self findTextField:ViewElement_Username];
+	[createUsername
+		showError:NSLocalizedString(@"Invalid entry", nil)
+			 when:^BOOL(NSString *inputEntry) {
+			   NSString *oldRegex =
+				   [LinphoneManager.instance lpConfigStringForKey:@"username_regex" forSection:@"assistant"];
+			   // new account for linphone accounts must follow a specific regex
+			   if (currentView == _createAccountView) {
+				   [LinphoneManager.instance lpConfigSetString:@"^[a-z0-9-_\\.]*$"
+														forKey:@"username_regex"
+													forSection:@"assistant"];
+			   }
+			   LinphoneAccountCreatorStatus s =
+				   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
+			   [LinphoneManager.instance lpConfigSetString:oldRegex forKey:@"username_regex" forSection:@"assistant"];
+			   createUsername.errorLabel.text = [self errorForStatus:s];
+			   return s != LinphoneAccountCreatorOk;
+			 }];
+
+	UIAssistantTextField *password = [self findTextField:ViewElement_Password];
+	[password showError:NSLocalizedString(@"Password is too short.", nil)
+				   when:^BOOL(NSString *inputEntry) {
+					 NSInteger password_length =
+						 [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"assistant"];
+					 return password_length > 0 && inputEntry.length < password_length;
+				   }];
+
+	UIAssistantTextField *password2 = [self findTextField:ViewElement_Password2];
+	[password2 showError:NSLocalizedString(@"Passwords do not match.", nil)
+					when:^BOOL(NSString *inputEntry) {
+					  return ![inputEntry isEqualToString:[self findTextField:ViewElement_Password].text];
+					}];
+
+	UIAssistantTextField *email = [self findTextField:ViewElement_Email];
+	[email showError:NSLocalizedString(@"Invalid email address.", nil)
+				when:^BOOL(NSString *inputEntry) {
+				  NSPredicate *emailTest =
+					  [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @".+@.+\\.[A-Za-z]{2}[A-Za-z]*"];
+				  return ![emailTest evaluateWithObject:inputEntry];
+				}];
+
+	[self shouldEnableNextButton];
+}
+
+#pragma mark - Event Functions
+
+- (void)registrationUpdateEvent:(NSNotification *)notif {
+	NSString *message = [notif.userInfo objectForKey:@"message"];
+	[self registrationUpdate:[[notif.userInfo objectForKey:@"state"] intValue]
+					forProxy:[[notif.userInfo objectForKeyedSubscript:@"cfg"] pointerValue]
+					 message:message];
 }
 
 - (void)registrationUpdate:(LinphoneRegistrationState)state
@@ -569,255 +489,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)loadAssistantConfig:(NSString *)rcFilename {
-	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
-	linphone_core_set_provisioning_uri([LinphoneManager getLc],
-									   [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
-
-	// For some reason, video preview hangs for 15seconds when resetting linphone core from here...
-	// to avoid it, we disable it before and reenable it after core restart.
-	BOOL hasPreview = linphone_core_video_preview_enabled([LinphoneManager getLc]);
-	linphone_core_enable_video_preview([LinphoneManager getLc], FALSE);
-	[[LinphoneManager instance] resetLinphoneCore];
-	linphone_core_enable_video_preview([LinphoneManager getLc], hasPreview);
-	// we will set the new default proxy config in the assistant
-	linphone_core_set_default_proxy_config([LinphoneManager getLc], NULL);
-}
-
-#pragma mark - Linphone XMLRPC
-
-- (void)checkUserExist:(NSString *)username {
-	LOGI(@"XMLRPC check_account %@", username);
-
-	NSURL *URL =
-		[NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"assistant"]];
-	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
-	[request setMethod:@"check_account" withParameters:[NSArray arrayWithObjects:username, nil]];
-
-	XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
-	[manager spawnConnectionWithXMLRPCRequest:request delegate:self];
-
-	_waitView.hidden = false;
-}
-
-- (void)createAccount:(NSString *)identity password:(NSString *)password email:(NSString *)email {
-	NSString *useragent = [LinphoneManager getUserAgent];
-	LOGI(@"XMLRPC create_account_with_useragent %@ %@ %@ %@", identity, password, email, useragent);
-
-	NSURL *URL =
-		[NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"assistant"]];
-	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
-	[request setMethod:@"create_account_with_useragent"
-		withParameters:[NSArray arrayWithObjects:identity, password, email, useragent, nil]];
-
-	XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
-	[manager spawnConnectionWithXMLRPCRequest:request delegate:self];
-
-	_waitView.hidden = false;
-}
-
-- (void)checkAccountValidation:(NSString *)identity {
-	LOGI(@"XMLRPC check_account_validated %@", identity);
-
-	NSURL *URL =
-		[NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"service_url" forSection:@"assistant"]];
-	XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
-	[request setMethod:@"check_account_validated" withParameters:[NSArray arrayWithObjects:identity, nil]];
-
-	XMLRPCConnectionManager *manager = [XMLRPCConnectionManager sharedManager];
-	[manager spawnConnectionWithXMLRPCRequest:request delegate:self];
-
-	_waitView.hidden = false;
-}
-
-#pragma mark - UITextFieldDelegate Functions
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[textField resignFirstResponder];
-	return YES;
-}
-
-- (void)textFieldDidBeginEditing:(UITextField *)textField {
-	activeTextField = textField;
-}
-
-- (BOOL)textField:(UITextField *)textField
-	shouldChangeCharactersInRange:(NSRange)range
-				replacementString:(NSString *)string {
-	// only validate the username when creating a new account
-	if ((textField.tag == ViewElement_Username) && (currentView == _createAccountView)) {
-		BOOL isValidUsername = YES;
-		BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number"];
-		if (usePhoneNumber) {
-			isValidUsername = linphone_proxy_config_is_phone_number(NULL, [string UTF8String]);
-		} else {
-			NSRegularExpression *regex =
-				[NSRegularExpression regularExpressionWithPattern:@"^[a-z0-9-_\\.]*$"
-														  options:NSRegularExpressionCaseInsensitive
-															error:nil];
-
-			NSArray *matches = [regex matchesInString:string options:0 range:NSMakeRange(0, [string length])];
-			isValidUsername = ([matches count] != 0);
-		}
-
-		if (!isValidUsername) {
-			UILabel *error = [self findLabel:ViewElement_Username_Error];
-
-			// show error with fade animation
-			[error setText:[NSString stringWithFormat:NSLocalizedString(@"Illegal character in %@: %@", nil),
-													  usePhoneNumber ? NSLocalizedString(@"phone number", nil)
-																	 : NSLocalizedString(@"username", nil),
-													  string]];
-			error.alpha = 0;
-			error.hidden = NO;
-			[UIView animateWithDuration:0.3
-							 animations:^{
-							   error.alpha = 1;
-							 }];
-
-			// hide again in 2s
-			[NSTimer scheduledTimerWithTimeInterval:2.0f
-											 target:self
-										   selector:@selector(hideError:)
-										   userInfo:nil
-											repeats:NO];
-			return NO;
-		}
-	}
-	return YES;
-}
-- (void)hideError:(NSTimer *)timer {
-	UILabel *error_label = [self findLabel:ViewElement_Username_Error];
-	if (error_label) {
-		[UIView animateWithDuration:0.3
-			animations:^{
-			  error_label.alpha = 0;
-			}
-			completion:^(BOOL finished) {
-			  error_label.hidden = YES;
-			}];
-	}
-}
-
-#pragma mark - Action Functions
-
-- (IBAction)onLoginClick:(id)sender {
-	NSString *username = [self findTextField:ViewElement_Username].text;
-	NSString *password = [self findTextField:ViewElement_Password].text;
-	NSString *domain = [self findTextField:ViewElement_Domain].text;
-	UISegmentedControl *transportChooser =
-		(UISegmentedControl *)[self findView:ViewElement_Transport inView:_contentView ofType:UISegmentedControl.class];
-	NSString *transport = [transportChooser titleForSegmentAtIndex:transportChooser.selectedSegmentIndex];
-	[self verificationSignInWithUsername:username password:password domain:domain withTransport:transport];
-}
-
-- (IBAction)onLinphoneLoginClick:(id)sender {
-	NSString *username = [self findTextField:ViewElement_Username].text;
-	NSString *password = [self findTextField:ViewElement_Password].text;
-
-	// domain and server will be configured from the default proxy values
-	[self verificationSignInWithUsername:username password:password domain:nil withTransport:nil];
-}
-
-- (IBAction)onCreateAccountClick:(id)sender {
-	UITextField *username_tf = [self findTextField:ViewElement_Username];
-	NSString *username = username_tf.text;
-	NSString *password = [self findTextField:ViewElement_Password].text;
-	NSString *password2 = [self findTextField:ViewElement_Password2].text;
-	NSString *email = [self findTextField:ViewElement_Email].text;
-
-	if ([self verificationRegisterWithUsername:username password:password password2:password2 email:email]) {
-		username = [username lowercaseString];
-		[username_tf setText:username];
-		NSString *identity = [self identityFromUsername:username];
-		[self checkUserExist:identity];
-	}
-}
-
-- (IBAction)onBackClick:(id)sender {
-	if ([historyViews count] > 0) {
-		UIView *view = [historyViews lastObject];
-		[historyViews removeLastObject];
-		[self changeView:view back:TRUE animation:TRUE];
-	}
-}
-
-- (IBAction)onDialerBackClick:(id)sender {
-	[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
-}
-
-- (IBAction)onGotoCreateAccountClick:(id)sender {
-	nextView = _createAccountView;
-	[self loadAssistantConfig:@"assistant_linphone_create.rc"];
-}
-
-- (IBAction)onGotoLinphoneLoginClick:(id)sender {
-	nextView = _linphoneLoginView;
-	[self loadAssistantConfig:@"assistant_linphone_existing.rc"];
-}
-
-- (IBAction)onGotoLoginClick:(id)sender {
-	nextView = _loginView;
-	[self loadAssistantConfig:@"assistant_external_sip.rc"];
-}
-
-- (IBAction)onCreateAccountActivationClick:(id)sender {
-	NSString *username = [self findTextField:ViewElement_Username].text;
-	NSString *identity = [self identityFromUsername:username];
-	[self checkAccountValidation:identity];
-}
-
-- (IBAction)onGotoRemoteProvisionningClick:(id)sender {
-	UIAlertView *remoteInput = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter provisioning URL", @"")
-														  message:@""
-														 delegate:self
-												cancelButtonTitle:NSLocalizedString(@"Cancel", @"")
-												otherButtonTitles:NSLocalizedString(@"Fetch", @""), nil];
-	remoteInput.alertViewStyle = UIAlertViewStylePlainTextInput;
-
-	UITextField *prov_url = [remoteInput textFieldAtIndex:0];
-	prov_url.keyboardType = UIKeyboardTypeURL;
-	prov_url.text = [[LinphoneManager instance] lpConfigStringForKey:@"config-uri" forSection:@"misc"];
-	prov_url.placeholder = @"URL";
-
-	[remoteInput show];
-}
-
-- (IBAction)onRemoteProvisionningClick:(id)sender {
-	NSString *username = [self findTextField:ViewElement_Username].text;
-	NSString *password = [self findTextField:ViewElement_Password].text;
-	NSString *domain = [self findTextField:ViewElement_Domain].text;
-
-	NSMutableString *errors = [NSMutableString string];
-	if ([username length] == 0) {
-
-		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.\n", nil)]];
-	}
-
-	if ([errors length]) {
-		UIAlertView *errorView =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)", nil)
-									   message:[errors substringWithRange:NSMakeRange(0, [errors length] - 1)]
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-							 otherButtonTitles:nil, nil];
-		[errorView show];
-	} else {
-		_waitView.hidden = false;
-		[self addProvisionedProxy:username withPassword:password withDomain:domain];
-	}
-}
-
-#pragma mark - Event Functions
-
-- (void)registrationUpdateEvent:(NSNotification *)notif {
-	NSString *message = [notif.userInfo objectForKey:@"message"];
-	[self registrationUpdate:[[notif.userInfo objectForKey:@"state"] intValue]
-					forProxy:[[notif.userInfo objectForKeyedSubscript:@"cfg"] pointerValue]
-					 message:message];
-}
-
 - (void)configuringUpdate:(NSNotification *)notif {
 	LinphoneConfiguringState status = (LinphoneConfiguringState)[[notif.userInfo valueForKey:@"state"] integerValue];
 
@@ -849,93 +520,163 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-#pragma mark - XMLRPCConnectionDelegate Functions
+#pragma mark - Account creator callbacks
 
-- (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
-	LOGI(@"XMLRPC %@: %@", [request method], [response body]);
-	_waitView.hidden = true;
-	if ([response isFault]) {
-		NSString *errorString =
-			[NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [response faultString]];
-		UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
-															message:errorString
-														   delegate:nil
-												  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-												  otherButtonTitles:nil, nil];
-		[errorView show];
-	} else if ([response object] != nil) { // Don't handle if not object: HTTP/Communication Error
-		if ([[request method] isEqualToString:@"check_account"]) {
-			if ([response.object isEqualToNumber:[NSNumber numberWithInt:1]]) {
-				UIAlertView *errorView =
-					[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check issue", nil)
-											   message:NSLocalizedString(@"Username already exists", nil)
-											  delegate:nil
-									 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-									 otherButtonTitles:nil, nil];
-				[errorView show];
-			} else {
-				NSString *username = [self findTextField:ViewElement_Username].text;
-				NSString *password = [self findTextField:ViewElement_Password].text;
-				NSString *email = [self findTextField:ViewElement_Email].text;
-				NSString *identity = [self identityFromUsername:username];
-				[self createAccount:identity password:password email:email];
-			}
-		} else if ([[request method] isEqualToString:@"create_account_with_useragent"]) {
-			if ([response.object isEqualToNumber:[NSNumber numberWithInt:0]]) {
-				NSString *username = [self findTextField:ViewElement_Username].text;
-				NSString *password = [self findTextField:ViewElement_Password].text;
-				[self changeView:_createAccountActivationView back:FALSE animation:TRUE];
-				[self findTextField:ViewElement_Username].text = username;
-				[self findTextField:ViewElement_Password].text = password;
-			} else {
-				UIAlertView *errorView = [[UIAlertView alloc]
-						initWithTitle:NSLocalizedString(@"Account creation issue", nil)
-							  message:NSLocalizedString(@"Can't create the account. Please try again.", nil)
-							 delegate:nil
-					cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-					otherButtonTitles:nil, nil];
-				[errorView show];
-			}
-		} else if ([[request method] isEqualToString:@"check_account_validated"]) {
-			if ([response.object isEqualToNumber:[NSNumber numberWithInt:1]]) {
-				NSString *username = [self findTextField:ViewElement_Username].text;
-				NSString *password = [self findTextField:ViewElement_Password].text;
-				[self addProxyConfig:username password:password domain:nil withTransport:nil];
-			} else {
-				UIAlertView *errorView =
-					[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account validation issue", nil)
-											   message:NSLocalizedString(@"Your account is not validate yet.", nil)
-											  delegate:nil
-									 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-									 otherButtonTitles:nil, nil];
-				[errorView show];
-			}
-		}
+void assistant_existence_tested(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	if (status == LinphoneAccountCreatorOk) {
+		thiz.waitView.hidden = YES;
+		[[thiz findTextField:ViewElement_Username] showError:NSLocalizedString(@"This name is already taken.", nil)];
+		[thiz findButton:ViewElement_NextButton].enabled = NO;
+	} else {
+		thiz.waitView.hidden = NO;
 	}
 }
 
-- (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
-	NSString *errorString =
-		[NSString stringWithFormat:NSLocalizedString(@"Communication issue (%@)", nil), [error localizedDescription]];
-	UIAlertView *errorView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Communication issue", nil)
-														message:errorString
-													   delegate:nil
-											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-											  otherButtonTitles:nil, nil];
-	[errorView show];
-	_waitView.hidden = true;
+void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	thiz.waitView.hidden = YES;
+	if (status == LinphoneAccountCreatorOk) {
+		NSString *username = [thiz findTextField:ViewElement_Username].text;
+		NSString *password = [thiz findTextField:ViewElement_Password].text;
+		[thiz changeView:thiz.createAccountActivationView back:FALSE animation:TRUE];
+		[thiz findTextField:ViewElement_Username].text = username;
+		[thiz findTextField:ViewElement_Password].text = password;
+	} else {
+		UIAlertView *errorView =
+			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account creation issue", nil)
+									   message:NSLocalizedString(@"Can't create the account. Please try again.", nil)
+									  delegate:nil
+							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+							 otherButtonTitles:nil, nil];
+		[errorView show];
+	}
 }
 
-- (BOOL)request:(XMLRPCRequest *)request canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
-	return FALSE;
+void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
+	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
+	thiz.waitView.hidden = YES;
+	if (status == LinphoneAccountCreatorOk) {
+		[thiz addProxyConfig:linphone_account_creator_configure(creator)];
+	} else {
+		DTAlertView *alert = [[DTAlertView alloc]
+			initWithTitle:NSLocalizedString(@"Account validation failed.", nil)
+				  message:
+					  NSLocalizedString(
+						  @"Your account could not be verified yet. You can skip this validation or try again later.",
+						  nil)];
+		[alert addCancelButtonWithTitle:NSLocalizedString(@"Try again", nil) block:nil];
+		[alert addButtonWithTitle:NSLocalizedString(@"Ignore", nil)
+							block:^{
+							  [thiz addProxyConfig:linphone_account_creator_configure(creator)];
+							  [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+							}];
+		[alert show];
+	}
 }
 
-- (void)request:(XMLRPCRequest *)request didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+#pragma mark - UITextFieldDelegate Functions
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
+	[atf textFieldDidEndEditing:atf];
 }
 
-- (void)request:(XMLRPCRequest *)request didCancelAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return YES;
 }
 
+- (BOOL)textField:(UITextField *)textField
+	shouldChangeCharactersInRange:(NSRange)range
+				replacementString:(NSString *)string {
+	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
+	[atf textField:atf shouldChangeCharactersInRange:range replacementString:string];
+	[self shouldEnableNextButton];
+	if (atf.tag == ViewElement_Username && currentView == _createAccountView) {
+		textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string.lowercaseString];
+		return NO;
+	}
+	return YES;
+}
+
+#pragma mark - Action Functions
+
+- (IBAction)onGotoCreateAccountClick:(id)sender {
+	nextView = _createAccountView;
+	[self loadAssistantConfig:@"assistant_linphone_create.rc"];
+}
+
+- (IBAction)onGotoLinphoneLoginClick:(id)sender {
+	nextView = _linphoneLoginView;
+	[self loadAssistantConfig:@"assistant_linphone_existing.rc"];
+}
+
+- (IBAction)onGotoLoginClick:(id)sender {
+	nextView = _loginView;
+	[self loadAssistantConfig:@"assistant_external_sip.rc"];
+}
+
+- (IBAction)onGotoRemoteProvisionningClick:(id)sender {
+	UIAlertView *remoteInput = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter provisioning URL", @"")
+														  message:@""
+														 delegate:self
+												cancelButtonTitle:NSLocalizedString(@"Cancel", @"")
+												otherButtonTitles:NSLocalizedString(@"Fetch", @""), nil];
+	remoteInput.alertViewStyle = UIAlertViewStylePlainTextInput;
+
+	UITextField *prov_url = [remoteInput textFieldAtIndex:0];
+	prov_url.keyboardType = UIKeyboardTypeURL;
+	prov_url.text = [[LinphoneManager instance] lpConfigStringForKey:@"config-uri" forSection:@"misc"];
+	prov_url.placeholder = @"URL";
+
+	[remoteInput show];
+}
+
+- (IBAction)onCreateAccountClick:(id)sender {
+	linphone_account_creator_test_existence(account_creator);
+	_waitView.hidden = NO;
+}
+
+- (IBAction)onCreateAccountActivationClick:(id)sender {
+	linphone_account_creator_create_account(account_creator);
+	_waitView.hidden = NO;
+}
+
+- (IBAction)onLinphoneLoginClick:(id)sender {
+	_waitView.hidden = NO;
+	linphone_account_creator_test_validation(account_creator);
+}
+
+- (IBAction)onLoginClick:(id)sender {
+	_waitView.hidden = NO;
+	linphone_account_creator_test_validation(account_creator);
+}
+
+- (IBAction)onRemoteProvisionningClick:(id)sender {
+	_waitView.hidden = NO;
+	[self addProxyConfig:linphone_account_creator_configure(account_creator)];
+}
+
+- (IBAction)onTransportChange:(id)sender {
+	UISegmentedControl *transports = sender;
+	NSString *type = [transports titleForSegmentAtIndex:[transports selectedSegmentIndex]];
+	linphone_account_creator_set_transport(account_creator, linphone_transport_parse(type.lowercaseString.UTF8String));
+}
+
+- (IBAction)onBackClick:(id)sender {
+	if ([historyViews count] > 0) {
+		UIView *view = [historyViews lastObject];
+		[historyViews removeLastObject];
+		[self changeView:view back:TRUE animation:TRUE];
+	}
+}
+
+- (IBAction)onDialerClick:(id)sender {
+	[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+}
+
+// TODO: remove that!
 #pragma mark - TPMultiLayoutViewController Functions
 
 - (NSDictionary *)attributesForView:(UIView *)view {

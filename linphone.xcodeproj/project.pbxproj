@@ -312,6 +312,7 @@
 		63BC49D41BA1AA6F004EC273 /* UIChatBubbleTextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63BC49D31BA1AA6F004EC273 /* UIChatBubbleTextCell.xib */; };
 		63BC49E21BA2CDFC004EC273 /* UICallPausedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC49E11BA2CDFC004EC273 /* UICallPausedCell.m */; };
 		63BC49EA1BA2CEDF004EC273 /* UICallPausedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63BC49E91BA2CEDF004EC273 /* UICallPausedCell.xib */; };
+		63C441C31BBC23ED0053DC5E /* UIAssistantTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
 		63CFEDE81B9EDD74007EA5BD /* libantlr3c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223CA7E416D9255800EF1BEC /* libantlr3c.a */; };
 		63CFEDE91B9EDD74007EA5BD /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8013C73D3100210156 /* libavcodec.a */; };
@@ -946,6 +947,8 @@
 		63BC49E01BA2CDFC004EC273 /* UICallPausedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallPausedCell.h; sourceTree = "<group>"; };
 		63BC49E11BA2CDFC004EC273 /* UICallPausedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallPausedCell.m; sourceTree = "<group>"; };
 		63BC49E91BA2CEDF004EC273 /* UICallPausedCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UICallPausedCell.xib; sourceTree = "<group>"; };
+		63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAssistantTextField.h; sourceTree = "<group>"; };
+		63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAssistantTextField.m; sourceTree = "<group>"; };
 		63CD4B4D1A5AAC8C00B84282 /* DTAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAlertView.h; sourceTree = "<group>"; };
 		63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
 		63CFEDE21B9EDD36007EA5BD /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = "liblinphone-sdk/apple-darwin/lib/libswresample.a"; sourceTree = "<group>"; };
@@ -1513,6 +1516,8 @@
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
 				6334DDFE1BBAD5AA00631900 /* UICheckBoxTVTableViewController.h */,
 				6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */,
+				63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */,
+				63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -2687,6 +2692,7 @@
 				63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */,
 				635775251B6673EC00C8B704 /* HistoryDetailsTableView.m in Sources */,
 				D3F9A9EE15AF277E0045320F /* UACellBackgroundView.m in Sources */,
+				63C441C31BBC23ED0053DC5E /* UIAssistantTextField.m in Sources */,
 				6346100F1B61409800548952 /* CallOutgoingView.m in Sources */,
 				D35860D615B549B500513429 /* Utils.m in Sources */,
 				D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */,

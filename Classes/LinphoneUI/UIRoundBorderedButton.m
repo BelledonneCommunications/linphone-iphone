@@ -14,7 +14,7 @@
 
 - (id)initBorders {
 	self.layer.borderWidth = .8;
-	self.layer.borderColor = [[UIColor blackColor] CGColor];
+	self.layer.borderColor = [self.titleLabel.textColor CGColor];
 	self.layer.cornerRadius = 4.f;
 	self.layer.masksToBounds = YES;
 
@@ -39,6 +39,11 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	return [[super initWithFrame:frame] initBorders];
+}
+
+- (void)setEnabled:(BOOL)enabled {
+	[super setEnabled:enabled];
+	self.layer.borderColor = [self.titleLabel.textColor CGColor];
 }
 
 @end
