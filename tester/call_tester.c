@@ -1385,7 +1385,7 @@ end:
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_rtcp_sent, rtcp_count_current+1, 10000)); \
 	stats = rtp_session_get_stats(call_pauline->audiostream->ms.sessions.rtp_session); \
 	loss_percentage = stats->cum_packet_loss * 100.f / (stats->packet_recv + stats->cum_packet_loss); \
-	BC_ASSERT_LOWER(.75 * params.loss_rate , loss_percentage, float, "%f"); \
+	BC_ASSERT_GREATER(loss_percentage, .75 * params.loss_rate, float, "%f"); \
 	BC_ASSERT_LOWER(loss_percentage , 1.25 * params.loss_rate, float, "%f")
 
 static void call_paused_resumed_with_loss(void) {
@@ -2572,6 +2572,9 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 	LinphoneCoreManager* marie = linphone_core_manager_new(marie_rc);
 	LinphoneCoreManager* pauline = linphone_core_manager_new(pauline_rc);
 	bool_t call_ok;
+	
+	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
+	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 
 	if (enable_relay) {
 		linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
@@ -2643,7 +2646,7 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 					BC_ASSERT_TRUE(check_ice(pauline,marie,enable_tunnel?LinphoneIceStateReflexiveConnection:LinphoneIceStateHostConnection));
 
 				liblinphone_tester_check_rtcp(marie,pauline);
-				/*wait for ice to found the direct path*/
+				/*make sure video is properly received and decoded*/
 				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_IframeDecoded,1));
 			} else {
 				ms_warning ("not tested because video not available");
