@@ -779,9 +779,6 @@ MSList * sal_get_pending_auths(Sal *sal){
 	return ms_list_copy(sal->pending_auths);
 }
 
-#define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
-#define payload_type_get_number(pt)		((int)(long)(pt)->user_data)
-
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen){
 	strncpy(ip,address_family==AF_INET6 ? "::1" : "127.0.0.1",iplen);
