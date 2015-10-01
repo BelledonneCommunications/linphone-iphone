@@ -87,6 +87,7 @@ LINPHONE_PUBLIC int linphone_proxy_config_set_identity_address(LinphoneProxyConf
  * Sets a SIP route.
  * When a route is set, all outgoing calls will go to the route's destination if this proxy
  * is the default one (see linphone_core_set_default_proxy() ).
+ * @Return -1 if route is invalid, 0 otherwise.
 **/
 LINPHONE_PUBLIC int linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route);
 

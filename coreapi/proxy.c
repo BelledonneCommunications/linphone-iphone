@@ -259,11 +259,6 @@ const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
 	return cfg->identity_address ? linphone_address_get_domain(cfg->identity_address) : NULL;
 }
 
-/**
- * Sets a SIP route.
- * When a route is set, all outgoing calls will go to the route's destination if this proxy
- * is the default one (see linphone_core_set_default_proxy() ).
-**/
 int linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route)
 {
 	if (cfg->reg_route!=NULL){
@@ -280,13 +275,13 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route)
 		addr=sal_address_new(tmp);
 		if (addr!=NULL){
 			sal_address_destroy(addr);
+			cfg->reg_route=tmp;
+			return 0;
 		}else{
 			ms_free(tmp);
-			tmp=NULL;
 		}
-		cfg->reg_route=tmp;
 	}
-	return 0;
+	return -1;
 }
 
 bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *cfg){
