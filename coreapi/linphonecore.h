@@ -2990,6 +2990,7 @@ LINPHONE_PUBLIC	int linphone_core_get_sip_transports(LinphoneCore *lc, LCSipTran
 LINPHONE_PUBLIC void linphone_core_get_sip_transports_used(LinphoneCore *lc, LCSipTransports *tr);
 
 LINPHONE_PUBLIC	bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTransportType tp);
+
 /**
  *
  * Give access to the UDP sip socket. Can be useful to configure this socket as persistent I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP)
@@ -4124,7 +4125,7 @@ LINPHONE_PUBLIC const char * linphone_core_get_video_preset(const LinphoneCore *
  * Gets if realtime text is enabled or not
  * @param[in] lc LinphoneCore object
  * @return true if realtime text is enabled, false otherwise
- */ 
+ */
 LINPHONE_PUBLIC bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc);
 
 /**
@@ -4133,28 +4134,41 @@ LINPHONE_PUBLIC bool_t linphone_core_realtime_text_enabled(LinphoneCore *lc);
  * @param[in] hostname of IP adress of the http proxy (can be NULL to disable).
  */
 LINPHONE_PUBLIC	void linphone_core_set_http_proxy_host(LinphoneCore *lc, const char *host) ;
-	
+
 /**
  * Set http proxy port to be used for signaling.
  * @param[in] lc LinphoneCore object
  * @param[in] port of the http proxy.
  */
 LINPHONE_PUBLIC void linphone_core_set_http_proxy_port(LinphoneCore *lc, int port) ;
-	
+
 /**
  * Get http proxy address to be used for signaling.
  * @param[in] lc LinphoneCore object
  * @return hostname of IP adress of the http proxy (can be NULL to disable).
  */
 LINPHONE_PUBLIC	const char *linphone_core_get_http_proxy_host(const LinphoneCore *lc);
-	
+
 /**
  * Get http proxy port to be used for signaling.
  * @param[in] lc LinphoneCore object
  * @return port of the http proxy.
  */
 LINPHONE_PUBLIC	int linphone_core_get_http_proxy_port(const LinphoneCore *lc);
-	
+
+/**
+ * Converts a LinphoneTransportType enum to a lowercase string.
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC const char* linphone_transport_to_string(LinphoneTransportType transport);
+
+/**
+ * Converts a lowercase string to a LinphoneTransportType enum.
+ * @ingroup misc
+ * @return Transport matching input, or LinphoneTransportUdp if nothing is found
+**/
+LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* transport);
+
 #ifdef __cplusplus
 }
 #endif

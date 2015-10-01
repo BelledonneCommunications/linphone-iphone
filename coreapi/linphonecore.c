@@ -1234,14 +1234,14 @@ static void codecs_config_read(LinphoneCore *lc)
 	if( lp_config_get_int(lc->config, "misc", "add_missing_video_codecs", 1) == 1 ){
 		video_codecs=add_missing_codecs(lc->default_video_codecs,video_codecs);
 	}
-	
+
 	for (i=0;get_codec(lc,SalText,i,&pt);i++){
 		if (pt){
 			text_codecs=codec_append_if_new(text_codecs, pt);
 		}
 	}
 	text_codecs = add_missing_codecs(lc->default_text_codecs, text_codecs);
-	
+
 	linphone_core_set_audio_codecs(lc,audio_codecs);
 	linphone_core_set_video_codecs(lc,video_codecs);
 	linphone_core_set_text_codecs(lc, text_codecs);
@@ -1636,7 +1636,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->sal=sal_init();
 	sal_set_http_proxy_host(lc->sal, linphone_core_get_http_proxy_host(lc));
 	sal_set_http_proxy_port(lc->sal, linphone_core_get_http_proxy_port(lc));
-	
+
 	sal_set_user_pointer(lc->sal,lc);
 	sal_set_callbacks(lc->sal,&linphone_sal_callbacks);
 
@@ -1823,7 +1823,7 @@ int linphone_core_set_video_codecs(LinphoneCore *lc, MSList *codecs){
 int linphone_core_set_text_codecs(LinphoneCore *lc, MSList *codecs) {
 	if (lc->codecs_conf.text_codecs != NULL)
 		ms_list_free(lc->codecs_conf.text_codecs);
-	
+
 	lc->codecs_conf.text_codecs = codecs;
 	_linphone_core_codec_config_write(lc);
 	return 0;
@@ -2051,7 +2051,7 @@ void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_
 	lc->rtp_conf.video_rtp_min_port=min_port;
 	lc->rtp_conf.video_rtp_max_port=max_port;
 }
- 
+
 /**
  * Sets the UDP port used for text streaming.
  * A value if -1 will request the system to allocate the local port randomly.
@@ -2062,7 +2062,7 @@ void linphone_core_set_video_port_range(LinphoneCore *lc, int min_port, int max_
 void linphone_core_set_text_port(LinphoneCore *lc, int port) {
 	lc->rtp_conf.text_rtp_min_port = lc->rtp_conf.text_rtp_max_port = port;
 }
- 
+
 /**
  * Sets the UDP port range from which to randomly select the port used for text streaming.
  * @ingroup media_parameters
@@ -3707,7 +3707,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	}
 
 	linphone_call_update_remote_session_id_and_ver(call);
-	
+
 	sal_call_accept(call->op);
 	linphone_core_notify_display_status(lc,_("Connected."));
 	lc->current_call=call;
@@ -6306,9 +6306,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	if (lc->friends) /* FIXME we should wait until subscription to complete*/
 		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
-	
+
 	lc->chatrooms = ms_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
-	
+
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
 #ifdef VIDEO_ENABLED
 	if (lc->previewstream!=NULL){
@@ -7299,7 +7299,7 @@ void linphone_core_set_http_proxy_host(LinphoneCore *lc, const char *host) {
 		sal_set_http_proxy_port(lc->sal,linphone_core_get_http_proxy_port(lc)); /*to make sure default value is set*/
 	}
 }
-	
+
 void linphone_core_set_http_proxy_port(LinphoneCore *lc, int port) {
 	lp_config_set_int(lc->config,"sip","http_proxy_port",port);
 	if (lc->sal)
@@ -7308,7 +7308,16 @@ void linphone_core_set_http_proxy_port(LinphoneCore *lc, int port) {
 const char *linphone_core_get_http_proxy_host(const LinphoneCore *lc) {
 	return lp_config_get_string(lc->config,"sip","http_proxy_host",NULL);
 }
-	
+
 int linphone_core_get_http_proxy_port(const LinphoneCore *lc) {
 	return lp_config_get_int(lc->config,"sip","http_proxy_port",3128);
 }
+
+const char* linphone_transport_to_string(LinphoneTransportType transport) {
+	return sal_transport_to_string((SalTransport)transport);
+}
+
+LinphoneTransportType linphone_transport_parse(const char* transport) {
+	return (LinphoneTransportType)sal_transport_parse(transport);
+}
+
