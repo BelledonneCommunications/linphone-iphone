@@ -1301,6 +1301,8 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled) {
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
 	if (!audio_stream_enabled) {
 		linphone_call_params_enable_audio(marie_params,FALSE);
+		linphone_core_set_nortp_timeout(marie->lc, 10);
+		linphone_core_set_nortp_timeout(pauline->lc, 10);
 	}
 	
 	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
@@ -1325,11 +1327,12 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled) {
 				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
 				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
 			}
+			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 		}
 
 		if (!audio_stream_enabled) {
 			int dummy = 0;
-			wait_for_until(pauline->lc, marie->lc, &dummy, 1, 30000); /* Wait to see if call is dropped after 30 secs */
+			wait_for_until(pauline->lc, marie->lc, &dummy, 1, 13000); /* Wait to see if call is dropped after the nortp_timeout */
 			BC_ASSERT_FALSE(marie->stat.number_of_LinphoneCallEnd > 0);
 			BC_ASSERT_FALSE(pauline->stat.number_of_LinphoneCallEnd > 0);
 		}
