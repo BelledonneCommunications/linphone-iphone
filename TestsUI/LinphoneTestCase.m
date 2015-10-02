@@ -154,7 +154,7 @@
 
 - (void)waitForRegistration {
 	// wait for account to be registered
-	int timeout = 15; // TODO: check why this is so wrong...
+	int timeout = 15;
 	while (timeout &&
 		   ![tester tryFindingViewWithAccessibilityLabel:@"Registration state"
 												   value:@"Registered"

@@ -116,4 +116,11 @@
 	}
 }
 
+- (void)testRemoteProvisioning {
+	[tester tapViewWithAccessibilityLabel:@"Start"];
+	[tester tapViewWithAccessibilityLabel:@"Remote provisioning"];
+	[tester enterTextIntoCurrentFirstResponder:@"smtp.linphone.org/testios_xml"];
+	[tester tapViewWithAccessibilityLabel:@"Fetch"];
+	[self waitForRegistration];
+}
 @end
