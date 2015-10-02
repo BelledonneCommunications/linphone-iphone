@@ -352,6 +352,10 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 
 extern const char *liblinphone_tester_mire_id;
 
+FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress* dest_addres);
+
+		
+
 
 #ifdef __cplusplus
 };

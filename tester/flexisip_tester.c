@@ -884,6 +884,81 @@ static void dos_module_trigger(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+#define USE_PRESENCE_SERVER 1
+
+#if USE_PRESENCE_SERVER
+
+static void test_subscribe_notify_with_sipp_publisher(void) {
+	char *scen;
+	FILE * sipp_out;
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	/*just to get an identity*/
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	
+	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
+	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
+	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
+	ms_free(lf_identity);
+	
+	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);
+	
+	linphone_core_add_friend(pauline->lc,lf);
+	
+	/*wait for subscribe acknowledgment*/
+	wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,1,2000);
+	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
+	
+	scen = bc_tester_res("sipp/simple_publish.xml");
+	
+	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
+	
+	if (TRUE/*sipp_out*/) {
+		/*wait for marie status*/
+		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
+		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
+		pclose(sipp_out);
+	}
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
+	char *scen;
+	FILE * sipp_out;
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	/*just to get an identity*/
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	
+	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
+	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
+	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
+	ms_free(lf_identity);
+	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);
+	
+	linphone_core_add_friend(pauline->lc,lf);
+	
+	/*wait for subscribe acknowledgment*/
+	wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,1,2000);
+	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
+	
+	scen = bc_tester_res("sipp/double_publish_with_error.xml");
+	
+	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
+	
+	if (TRUE/*sipp_out*/) {
+		/*wait for marie status*/
+		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
+		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
+		pclose(sipp_out);
+		BC_ASSERT_EQUAL(pauline->stat.number_of_NotifyReceived,2,int, "%d");
+	}
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+#endif
+
 test_t flexisip_tests[] = {
 	{ "Subscribe forking", subscribe_forking },
 	{ "Message forking", message_forking },
@@ -901,6 +976,10 @@ test_t flexisip_tests[] = {
 	{ "Call with sips", call_with_sips },
 	{ "Call with sips not achievable", call_with_sips_not_achievable },
 	{ "Call with ipv6", call_with_ipv6 },
+#if USE_PRESENCE_SERVER
+	{ "Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher },
+	{ "Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish },
+#endif
 	{ "File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client },
 	{ "File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client },
 	{ "File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client },

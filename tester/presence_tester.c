@@ -429,7 +429,7 @@ static void subscribe_presence_expired(void){
 }
 
 
-#define USE_PRESENCE_SERVER 0
+#define USE_PRESENCE_SERVER 1
 
 #if USE_PRESENCE_SERVER
 static void test_subscribe_notify_publish(void) {
