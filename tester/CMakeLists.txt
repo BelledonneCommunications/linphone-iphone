@@ -48,12 +48,13 @@ set(SOURCE_FILES
 	video_tester.c
 	)
 
-find_program(SIPP_PROGRAM NAMES sipp sipp.exe)
+#executable must be available on root path, not host one
+find_program(SIPP_PROGRAM NAMES sipp sipp.exe ONLY_CMAKE_FIND_ROOT_PATH)
 if(SIPP_PROGRAM)
-        add_definitions(-DHAVE_SIPP=1)
-        add_definitions(-DSIPP_COMMAND="${SIPP_PROGRAM}")
+	add_definitions(-DHAVE_SIPP=1)
+	add_definitions(-DSIPP_COMMAND="${SIPP_PROGRAM}")
 else()
- 	message(WARNING "Could not find sipp!")
+	message(WARNING "Could not find sipp!")
 endif()
 
 add_definitions(-DBC_CONFIG_FILE="config.h")
