@@ -489,8 +489,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		LinphoneAddress *from = linphone_address_new(identity);
 		if (from != 0) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
-			info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, password, ha1, NULL,
-										  linphone_proxy_config_get_domain(proxyCfg));
+			info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, password ? password : NULL,
+										  password ? NULL : ha1, NULL, linphone_proxy_config_get_domain(proxyCfg));
 			linphone_address_destroy(from);
 		}
 
