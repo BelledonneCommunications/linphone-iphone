@@ -171,7 +171,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalIncludeDirectories>$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\include;$(ProjectDir)..\..\..\coreapi;$(ProjectDir)..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\sqlite;$(ProjectDir)..\..\..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>HAVE_CONFIG_H;HAVE_ZLIB;VIDEO_ENABLED;IN_LINPHONE;LINPHONE_PLUGINS_DIR="\\linphone\\plugins";_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HAVE_CONFIG_H;HAVE_ZLIB;MSG_STORAGE_ENABLED;VIDEO_ENABLED;IN_LINPHONE;LINPHONE_PLUGINS_DIR="\\linphone\\plugins";_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
