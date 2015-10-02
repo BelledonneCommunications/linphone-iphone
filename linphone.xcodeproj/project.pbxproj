@@ -3963,7 +3963,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "test -f liblinphone-sdk/apple-darwin/share/linphone/rootca.pem || (echo 'liblinphone SDK not found. Please refer to the README but you need to compile liblinphone SDK before building Linphone application' && exit 1)";
+			shellScript = "test -f liblinphone-sdk/apple-darwin/share/linphone/rootca.pem || (echo 'liblinphone SDK not found. Please refer to the README: you have to compile liblinphone SDK before building Linphone application.' && exit 1)";
 		};
 		D33CF34715D3985000CD4B85 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

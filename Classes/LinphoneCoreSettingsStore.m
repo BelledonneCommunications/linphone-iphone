@@ -431,9 +431,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			proxy = linphone_address_as_string_uri_only(proxy_addr);
 		}
 
-		// use proxy as route if outbound_proxy is enabled
-		route = isOutboundProxy ? proxy : NULL;
-
 		// possible valid config detected, try to modify current proxy or create new one if none existing
 		linphone_core_get_default_proxy(lc, &proxyCfg);
 		if (proxyCfg == NULL) {
@@ -459,6 +456,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			error = NSLocalizedString(@"Invalid username or domain", nil);
 			goto bad_proxy;
 		}
+		// use proxy as route if outbound_proxy is enabled
+		route = isOutboundProxy ? proxy : NULL;
 		if (linphone_proxy_config_set_server_addr(proxyCfg, proxy) == -1) {
 			error = NSLocalizedString(@"Invalid proxy address", nil);
 			goto bad_proxy;

@@ -469,7 +469,7 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <point key="canvasLocation" x="927" y="912"/>
         </view>
-        <view tag="176" contentMode="scaleToFill" id="101" userLabel="validateAccountView">
+        <view contentMode="scaleToFill" id="101" userLabel="validateAccountView">
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
