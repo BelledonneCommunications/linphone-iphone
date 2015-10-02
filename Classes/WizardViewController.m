@@ -365,6 +365,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	// Set current view
+	LOGI(@"Changig assistant view %d -> %d", currentView.tag, view.tag);
 	currentView = view;
 	[contentView insertSubview:view atIndex:0];
 	[view setFrame:[contentView bounds]];
