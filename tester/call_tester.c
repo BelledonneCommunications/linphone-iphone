@@ -4161,18 +4161,21 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite(void) {
 static void video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp(void) {
 	video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryptionNone, TRUE);
 }
+
 static void srtp_video_call_with_re_invite_inactive_followed_by_re_invite(void) {
 	if (ms_srtp_supported())
 		video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryptionSRTP,FALSE);
 	else
 		ms_message("srtp_video_call_with_re_invite_inactive_followed_by_re_invite skipped, missing srtp support");
 }
+
 static void srtp_video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp(void) {
 	if (ms_srtp_supported())
 		video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryptionSRTP, TRUE);
 	else
 		ms_message("srtp_video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp skipped, missing srtp support");
 }
+
 static void video_call_ice_params(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -4182,6 +4185,90 @@ static void video_call_ice_params(void) {
 	video_call_base(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void classic_video_entry_phone_setup(void) {
+	LinphoneCoreManager *callee_mgr = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCallParams *early_media_params = NULL;
+	LinphoneCallParams *in_call_params = NULL;
+	LinphoneCall *callee_call = NULL;
+	LinphoneVideoPolicy vpol = { TRUE, TRUE };
+	MSList *lcs = NULL;
+	int retry = 0;
+	bool_t ok;
+
+	lcs = ms_list_append(lcs, caller_mgr->lc);
+	lcs = ms_list_append(lcs, callee_mgr->lc);
+
+	linphone_core_enable_video(caller_mgr->lc, TRUE, TRUE);
+	linphone_core_enable_video(callee_mgr->lc, TRUE, TRUE);
+	linphone_core_set_avpf_mode(caller_mgr->lc, LinphoneAVPFEnabled);
+	linphone_core_set_avpf_mode(callee_mgr->lc, LinphoneAVPFEnabled);
+	linphone_core_set_video_policy(caller_mgr->lc, &vpol);
+	linphone_core_set_video_policy(callee_mgr->lc, &vpol);
+	linphone_core_set_video_device(caller_mgr->lc, liblinphone_tester_mire_id);
+	linphone_core_set_video_device(callee_mgr->lc, liblinphone_tester_mire_id);
+
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(caller_mgr->lc, callee_mgr->identity));
+
+	ok = wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1);
+	BC_ASSERT_TRUE(ok);
+	if (!ok) goto end;
+	BC_ASSERT_TRUE(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress == 1);
+
+	callee_call = linphone_core_get_call_by_remote_address2(callee_mgr->lc, caller_mgr->identity);
+	early_media_params = linphone_core_create_call_params(callee_mgr->lc, callee_call);
+	linphone_call_params_set_audio_direction(early_media_params, LinphoneMediaDirectionInactive);
+	linphone_call_params_set_video_direction(early_media_params, LinphoneMediaDirectionRecvOnly);
+	linphone_core_accept_early_media_with_params(callee_mgr->lc, callee_call, early_media_params);
+	linphone_call_params_destroy(early_media_params);
+
+	while ((caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia != 1) && (retry++ < 100)) {
+		linphone_core_iterate(caller_mgr->lc);
+		linphone_core_iterate(callee_mgr->lc);
+		ms_usleep(20000);
+	}
+	BC_ASSERT_TRUE(caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia == 1);
+	BC_ASSERT_TRUE(callee_mgr->stat.number_of_LinphoneCallIncomingEarlyMedia == 1);
+
+	check_media_direction(callee_mgr, callee_call, lcs, LinphoneMediaDirectionInactive, LinphoneMediaDirectionRecvOnly);
+	callee_call = linphone_core_get_call_by_remote_address2(callee_mgr->lc, caller_mgr->identity);
+	in_call_params = linphone_core_create_call_params(callee_mgr->lc, callee_call);
+	linphone_call_params_set_audio_direction(in_call_params, LinphoneMediaDirectionSendRecv);
+	linphone_call_params_set_video_direction(in_call_params, LinphoneMediaDirectionSendRecv);
+	linphone_core_accept_call_with_params(callee_mgr->lc, callee_call, in_call_params);
+	linphone_call_params_destroy(in_call_params);
+
+	BC_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallConnected, 1));
+	BC_ASSERT_TRUE(wait_for(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallConnected, 1));
+
+	ok = wait_for_until(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, 1, 2000)
+		&& wait_for_until(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallStreamsRunning, 1, 2000);
+	BC_ASSERT_TRUE(ok);
+	if (!ok) goto end;
+	check_media_direction(callee_mgr, callee_call, lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionSendRecv);
+
+	callee_call = linphone_core_get_current_call(callee_mgr->lc);
+	in_call_params = linphone_core_create_call_params(callee_mgr->lc, callee_call);
+	linphone_call_params_set_audio_direction(in_call_params, LinphoneMediaDirectionRecvOnly);
+	linphone_call_params_set_video_direction(in_call_params, LinphoneMediaDirectionSendOnly);
+	linphone_core_update_call(callee_mgr->lc, callee_call, in_call_params);
+	linphone_call_params_destroy(in_call_params);
+
+	ok = wait_for_until(callee_mgr->lc, caller_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallStreamsRunning, 2, 2000)
+		&& wait_for_until(callee_mgr->lc, caller_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallStreamsRunning, 2, 2000);
+	BC_ASSERT_TRUE(ok);
+	if (!ok) goto end;
+	callee_call = linphone_core_get_current_call(callee_mgr->lc);
+	check_media_direction(callee_mgr, callee_call, lcs, LinphoneMediaDirectionRecvOnly, LinphoneMediaDirectionSendOnly);
+
+	end_call(caller_mgr, callee_mgr);
+
+end:
+	linphone_core_manager_destroy(callee_mgr);
+	linphone_core_manager_destroy(caller_mgr);
+	ms_list_free(lcs);
 }
 #endif
 
@@ -5117,7 +5204,8 @@ test_t call_tests[] = {
 	{ "Video call with re-invite(inactive) followed by re-invite(no sdp)", video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp},
 	{ "SRTP Video call with re-invite(inactive) followed by re-invite", srtp_video_call_with_re_invite_inactive_followed_by_re_invite},
 	{ "SRTP Video call with re-invite(inactive) followed by re-invite(no sdp)", srtp_video_call_with_re_invite_inactive_followed_by_re_invite_no_sdp},
-	#endif
+	{ "Classic video entry phone setup", classic_video_entry_phone_setup },
+#endif
 	{ "SRTP ice call", srtp_ice_call },
 	{ "ZRTP ice call", zrtp_ice_call },
 	{ "ZRTP ice call with relay", zrtp_ice_call_with_relay},
