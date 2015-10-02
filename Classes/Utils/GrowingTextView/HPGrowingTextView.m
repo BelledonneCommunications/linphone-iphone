@@ -366,13 +366,11 @@
         CGRect size = [textToMeasure boundingRectWithSize:CGSizeMake(CGRectGetWidth(frame), MAXFLOAT)
                                                   options:NSStringDrawingUsesLineFragmentOrigin
                                                   context:nil];
-        
-        return CGRectGetHeight(size) + fudgeFactor.height;
-    }
-    else
-    {
-        return self.internalTextView.contentSize.height;
-    }
+
+		return ceil(CGRectGetHeight(size) + fudgeFactor.height);
+	} else {
+		return self.internalTextView.contentSize.height;
+	}
 #else
     return self.internalTextView.contentSize.height;
 #endif
