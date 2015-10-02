@@ -635,7 +635,7 @@ static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 	// Some platforms do not provide a way to create temporary files which are needed
 	// for transactions... so we work in memory only
 	// see http ://www.sqlite.org/compile.html#temp_store
-	ret = sqlite3_exec(db, "PRAGMA temp_store=MEMORY", NULL, NULL, &errmsg);
+	ret = sqlite3_exec(*db, "PRAGMA temp_store=MEMORY", NULL, NULL, &errmsg);
 	if (ret != SQLITE_OK) {
 		ms_error("Cannot set sqlite3 temporary store to memory: %s.", errmsg);
 		sqlite3_free(errmsg);
