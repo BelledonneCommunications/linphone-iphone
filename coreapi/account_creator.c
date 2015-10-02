@@ -19,7 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "account_creator.h"
 #include "private.h"
+#if !_WIN32
 #include "regex.h"
+#endif
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreatorCbs);
 
@@ -164,12 +166,16 @@ static LinphoneAccountCreatorStatus validate_uri(const char* username, const cha
 }
 
 static bool_t is_matching_regex(const char *entry, const char* regex) {
+#if _WIN32
+	return TRUE;
+#else
 	regex_t regex_pattern;
 	int res;
 	regcomp(&regex_pattern, regex, 0);
 	res = regexec(&regex_pattern, entry, 0, NULL, 0);
 	regfree(&regex_pattern);
 	return (res != REG_NOMATCH);
+#endif
 }
 
 LinphoneAccountCreatorStatus linphone_account_creator_set_username(LinphoneAccountCreator *creator, const char *username) {
