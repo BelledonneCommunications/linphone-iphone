@@ -93,6 +93,9 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\messages.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -297,7 +300,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>XCopy /I /Y $(ProjectDir)..\..\..\tester\tester_hosts $(ProjectDir)Assets\
+    <PreBuildEvent>XCopy /I /Y $(ProjectDir)..\..\..\tester\messages.db $(ProjectDir)Assets\
+XCopy /I /Y $(ProjectDir)..\..\..\tester\tester_hosts $(ProjectDir)Assets\
 XCopy /I /Y $(ProjectDir)..\..\..\tester\certificates\altname $(ProjectDir)Assets\certificates\altname
 XCopy /I /Y $(ProjectDir)..\..\..\tester\certificates\cn $(ProjectDir)Assets\certificates\cn
 XCopy /I /Y $(ProjectDir)..\..\..\tester\images $(ProjectDir)Assets\images
