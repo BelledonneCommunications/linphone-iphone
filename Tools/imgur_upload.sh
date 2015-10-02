@@ -2,7 +2,7 @@
 
 # Install underscore-cli for hacking
 if ! which underscore &> /dev/null; then
-	npm install -g underscore-cli
+	npm install -g underscore-cli >/dev/null
 fi
 
 cd $KIF_SCREENSHOTS
