@@ -605,14 +605,15 @@ void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug){
 }
 
 static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
-#if defined(ANDROID) || defined(__QNXNTO__)
-	return sqlite3_open(db_file, db);
-#elif defined(_WIN32)
+	char* errmsg = NULL;
 	int ret;
+#if defined(ANDROID) || defined(__QNXNTO__)
+	ret = sqlite3_open(db_file, db);
+#elif defined(_WIN32)
 	wchar_t db_file_utf16[MAX_PATH_SIZE];
 	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, -1, db_file_utf16, MAX_PATH_SIZE);
 	if(ret == 0) db_file_utf16[0] = '\0';
-	return sqlite3_open16(db_file_utf16, db);
+	ret = sqlite3_open16(db_file_utf16, db);
 #else
 	char db_file_locale[MAX_PATH_SIZE] = {'\0'};
 	char db_file_utf8[MAX_PATH_SIZE] = "";
@@ -628,8 +629,18 @@ static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 		if(ret == -1) db_file_utf8[0] = '\0';
 		iconv_close(cb);
 	}
-	return sqlite3_open(db_file_utf8, db);
+	ret = sqlite3_open(db_file_utf8, db);
 #endif
+	if (ret != SQLITE_OK) return ret;
+	// Some platforms do not provide a way to create temporary files which are needed
+	// for transactions... so we work in memory only
+	// see http ://www.sqlite.org/compile.html#temp_store
+	ret = sqlite3_exec(db, "PRAGMA temp_store=MEMORY", NULL, NULL, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_error("Cannot set sqlite3 temporary store to memory: %s.", errmsg);
+		sqlite3_free(errmsg);
+	}
+	return ret;
 }
 
 void linphone_core_message_storage_init(LinphoneCore *lc){
