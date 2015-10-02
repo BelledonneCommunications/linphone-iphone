@@ -194,6 +194,9 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 												  forKey:firstChar
 												selector:@selector(caseInsensitiveCompare:)];
 						}
+						while ([subDic objectForKey:name2ASCII] != nil) {
+							name2ASCII = [name2ASCII stringByAppendingString:@"_"];
+						}
 						[subDic insertObject:lPerson forKey:name2ASCII selector:@selector(caseInsensitiveCompare:)];
 					}
 				}
