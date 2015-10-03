@@ -304,7 +304,7 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 			wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallEncryptedOn,initial_callee.number_of_LinphoneCallEncryptedOn+1);
 		{
 			const LinphoneCallParams* call_param = linphone_call_get_current_params(callee_call);
-			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc), int, "%d");
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(callee_mgr->lc), int, "%d");
 			call_param = linphone_call_get_current_params(linphone_core_get_current_call(caller_mgr->lc));
 			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(call_param),linphone_core_get_media_encryption(caller_mgr->lc), int, "%d");
 
@@ -3460,6 +3460,7 @@ void two_accepted_call_in_send_only(void) {
 	MSList *lcs=NULL;
 
 	marie = linphone_core_manager_new("marie_rc");
+	linphone_core_use_files(marie->lc, TRUE);
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	laure = linphone_core_manager_new("laure_rc");
 
@@ -3468,7 +3469,6 @@ void two_accepted_call_in_send_only(void) {
 	lcs=ms_list_append(lcs,laure->lc);
 
 	accept_call_in_send_only_base(pauline,marie,lcs);
-
 
 	reset_counters(&marie->stat);
 	accept_call_in_send_only_base(laure,marie,lcs);

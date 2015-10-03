@@ -1672,6 +1672,7 @@ static unsigned int linphone_call_get_n_active_streams(const LinphoneCall *call)
 **/
 const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 	SalMediaDescription *md=call->resultdesc;
+	int all_streams_encrypted = 0;
 #ifdef VIDEO_ENABLED
 	VideoStream *vstream;
 #endif
@@ -1698,17 +1699,21 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 
 	switch (call->params->media_encryption) {
 	case LinphoneMediaEncryptionZRTP:
-		if (linphone_call_all_streams_encrypted(call) && linphone_call_get_authentication_token(call)) {
+		if ((all_streams_encrypted = linphone_call_all_streams_encrypted(call)) && linphone_call_get_authentication_token(call)) {
 			call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
 		} else {
+			ms_message("Encryption was resquested to be %s, but isn't effective (all_streams_encrypted=%i, auth_token=%s)",
+				   linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted, call->auth_token);
 			call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 		}
 		break;
 	case LinphoneMediaEncryptionDTLS:
 	case LinphoneMediaEncryptionSRTP:
-		if (linphone_call_get_n_active_streams(call)==0 || linphone_call_all_streams_encrypted(call)) {
+		if (linphone_call_get_n_active_streams(call)==0 || (all_streams_encrypted = linphone_call_all_streams_encrypted(call))) {
 			call->current_params->media_encryption = call->params->media_encryption;
 		} else {
+			ms_message("Encryption was resquested to be %s, but isn't effective (all_streams_encrypted=%i)",
+				   linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted);
 			call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 		}
 		break;
