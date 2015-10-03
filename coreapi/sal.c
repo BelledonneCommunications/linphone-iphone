@@ -336,6 +336,47 @@ int sal_stream_description_equals(const SalStreamDescription *sd1, const SalStre
 	return result;
 }
 
+char * sal_media_description_print_differences(int result){
+	char *out = NULL;
+	if (result & SAL_MEDIA_DESCRIPTION_CODEC_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "CODEC_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "NETWORK_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED){
+		out = ms_strcat_printf(out, "%s ", "ICE_RESTART_DETECTED");
+		result &= ~SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "CRYPTO_KEYS_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "NETWORK_XXXCAST_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_NETWORK_XXXCAST_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "STREAMS_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_STREAMS_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED){
+		out = ms_strcat_printf(out, "%s ", "CRYPTO_POLICY_CHANGED");
+		result &= ~SAL_MEDIA_DESCRIPTION_CRYPTO_POLICY_CHANGED;
+	}
+	if (result & SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION){
+		out = ms_strcat_printf(out, "%s ", "FORCE_STREAM_RECONSTRUCTION");
+		result &= ~SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION;
+	}
+	if (result){
+		ms_fatal("There are unhandled result bitmasks in sal_media_description_print_differences(), fix it");
+	}
+	if (!out) out = ms_strdup("NONE");
+	return out;
+}
+
 int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaDescription *md2) {
 	int result = SAL_MEDIA_DESCRIPTION_UNCHANGED;
 	int i;
@@ -356,6 +397,7 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	}
 	return result;
 }
+
 static void assign_address(SalAddress** address, const char *value){
 	if (*address){
 		sal_address_destroy(*address);

@@ -2636,7 +2636,6 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 				linphone_core_iterate(pauline->lc);
 				ms_usleep(20000);
 			}
-
 		}
 
 		if (policy == LinphonePolicyUseIce){
@@ -2646,13 +2645,13 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 #ifdef VIDEO_ENABLED
 		if (enable_video) {
 			if (linphone_core_video_supported(marie->lc)) {
-				add_video(pauline,marie, TRUE);
-				if (policy == LinphonePolicyUseIce)
-					BC_ASSERT_TRUE(check_ice(pauline,marie,enable_tunnel?LinphoneIceStateReflexiveConnection:LinphoneIceStateHostConnection));
-
+				BC_ASSERT_TRUE(add_video(pauline,marie, TRUE));
+				if (policy == LinphonePolicyUseIce){
+					BC_ASSERT_TRUE(check_ice(pauline, marie, 
+						enable_tunnel?LinphoneIceStateReflexiveConnection:LinphoneIceStateHostConnection));
+				}
 				liblinphone_tester_check_rtcp(marie,pauline);
-				/*make sure video is properly received and decoded*/
-				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_IframeDecoded,1));
+			
 			} else {
 				ms_warning ("not tested because video not available");
 			}

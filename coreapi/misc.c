@@ -795,7 +795,6 @@ void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDes
 	if (session == NULL) return;
 	if (ice_session_state(session) == IS_Completed) return;
 
-	ms_message("linphone_call_stop_ice_for_inactive_streams: nb_streams = %i", desc->nb_streams);
 	for (i = 0; i < desc->nb_streams; i++) {
 		IceCheckList *cl = ice_session_check_list(session, i);
 		if (!sal_stream_description_active(&desc->streams[i]) && cl) {

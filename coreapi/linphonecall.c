@@ -105,25 +105,30 @@ bool_t linphone_call_get_authentication_token_verified(LinphoneCall *call){
 	return call->auth_token_verified;
 }
 
+static bool_t at_least_one_stream_started(const LinphoneCall *call){
+	return (call->audiostream && media_stream_get_state((MediaStream *)call->audiostream) == MSStreamStarted )
+		|| (call->videostream && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted)
+		|| (call->textstream && media_stream_get_state((MediaStream *)call->textstream) == MSStreamStarted);
+}
+
 static bool_t linphone_call_all_streams_encrypted(const LinphoneCall *call) {
 	int number_of_encrypted_stream = 0;
 	int number_of_active_stream = 0;
-	if (call) {
-		if (call->audiostream && media_stream_get_state((MediaStream *)call->audiostream) == MSStreamStarted) {
-			number_of_active_stream++;
-			if(media_stream_secured((MediaStream *)call->audiostream))
-				number_of_encrypted_stream++;
-		}
-		if (call->videostream && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
-			number_of_active_stream++;
-			if (media_stream_secured((MediaStream *)call->videostream))
-				number_of_encrypted_stream++;
-		}
-		if (call->textstream && media_stream_get_state((MediaStream *)call->textstream) == MSStreamStarted) {
-			number_of_active_stream++;
-			if (media_stream_secured((MediaStream *)call->textstream))
-				number_of_encrypted_stream++;
-		}
+	
+	if (call->audiostream && media_stream_get_state((MediaStream *)call->audiostream) == MSStreamStarted) {
+		number_of_active_stream++;
+		if(media_stream_secured((MediaStream *)call->audiostream))
+			number_of_encrypted_stream++;
+	}
+	if (call->videostream && media_stream_get_state((MediaStream *)call->videostream) == MSStreamStarted) {
+		number_of_active_stream++;
+		if (media_stream_secured((MediaStream *)call->videostream))
+			number_of_encrypted_stream++;
+	}
+	if (call->textstream && media_stream_get_state((MediaStream *)call->textstream) == MSStreamStarted) {
+		number_of_active_stream++;
+		if (media_stream_secured((MediaStream *)call->textstream))
+			number_of_encrypted_stream++;
 	}
 	return number_of_active_stream>0 && number_of_active_stream==number_of_encrypted_stream;
 }
@@ -1658,6 +1663,7 @@ LinphoneCall * linphone_call_ref(LinphoneCall *obj){
 void linphone_call_unref(LinphoneCall *obj){
 	belle_sip_object_unref(obj);
 }
+
 static unsigned int linphone_call_get_n_active_streams(const LinphoneCall *call) {
 	SalMediaDescription *md=NULL;
 	if (call->op)
@@ -1699,23 +1705,27 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 
 	switch (call->params->media_encryption) {
 	case LinphoneMediaEncryptionZRTP:
-		if ((all_streams_encrypted = linphone_call_all_streams_encrypted(call)) && linphone_call_get_authentication_token(call)) {
-			call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
-		} else {
-			ms_message("Encryption was resquested to be %s, but isn't effective (all_streams_encrypted=%i, auth_token=%s)",
-				   linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted, call->auth_token);
-			call->current_params->media_encryption=LinphoneMediaEncryptionNone;
-		}
+		if (at_least_one_stream_started(call)){
+			if ((all_streams_encrypted = linphone_call_all_streams_encrypted(call)) && linphone_call_get_authentication_token(call)) {
+				call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
+			} else {
+				ms_message("Encryption was resquested to be %s, but isn't effective (all_streams_encrypted=%i, auth_token=%s)",
+					linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted, call->auth_token);
+				call->current_params->media_encryption=LinphoneMediaEncryptionNone;
+			}
+		}//else don't update the state if all streams are shutdown.
 		break;
 	case LinphoneMediaEncryptionDTLS:
 	case LinphoneMediaEncryptionSRTP:
-		if (linphone_call_get_n_active_streams(call)==0 || (all_streams_encrypted = linphone_call_all_streams_encrypted(call))) {
-			call->current_params->media_encryption = call->params->media_encryption;
-		} else {
-			ms_message("Encryption was resquested to be %s, but isn't effective (all_streams_encrypted=%i)",
-				   linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted);
-			call->current_params->media_encryption=LinphoneMediaEncryptionNone;
-		}
+		if (at_least_one_stream_started(call)){
+			if (linphone_call_get_n_active_streams(call)==0 || (all_streams_encrypted = linphone_call_all_streams_encrypted(call))) {
+				call->current_params->media_encryption = call->params->media_encryption;
+			} else {
+				ms_message("Encryption was resquested to be %s, but isn't effective (all_streams_encrypted=%i)",
+					linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted);
+				call->current_params->media_encryption=LinphoneMediaEncryptionNone;
+			}
+		}//else don't update the state if all streams are shutdown.
 		break;
 	case LinphoneMediaEncryptionNone:
 		call->current_params->media_encryption=LinphoneMediaEncryptionNone;

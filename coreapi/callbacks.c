@@ -36,10 +36,12 @@ static void register_failure(SalOp *op);
 
 static int media_parameters_changed(LinphoneCall *call, SalMediaDescription *oldmd, SalMediaDescription *newmd) {
 	int result=0;
+	char *tmp=NULL;
 	if (call->params->in_conference != call->current_params->in_conference) return SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION;
 	if (call->up_bw != linphone_core_get_upload_bandwidth(call->core)) return SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION;
-	if (call->localdesc_changed) ms_message("Local description has changed: %i", call->localdesc_changed);
+	if (call->localdesc_changed) ms_message("Local description has changed: %s", tmp = sal_media_description_print_differences(call->localdesc_changed));
 	result = call->localdesc_changed | sal_media_description_equals(oldmd, newmd);
+	if (tmp) ms_free(tmp);
 	return result;
 }
 
