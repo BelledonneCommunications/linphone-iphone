@@ -42,6 +42,7 @@ static const char *EC_STATE_STORE = ".linphone.ecstate";
 
 static void linphone_call_stats_uninit(LinphoneCallStats *stats);
 static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress *remote_addr);
+static void _linphone_call_set_next_video_frame_decoded_trigger(LinphoneCall *call);
 
 
 MSWebCam *get_nowebcam_device(){
@@ -2083,8 +2084,11 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 			break;
 		case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
 			ms_message("First video frame decoded successfully");
-			if (call->nextVideoFrameDecoded._func != NULL)
+			if (call->nextVideoFrameDecoded._func != NULL){
 				call->nextVideoFrameDecoded._func(call, call->nextVideoFrameDecoded._user_data);
+				call->nextVideoFrameDecoded._func = NULL;
+				call->nextVideoFrameDecoded._user_data = NULL;
+			}
 			break;
 		case MS_VIDEO_DECODER_SEND_PLI:
 		case MS_VIDEO_DECODER_SEND_SLI:
@@ -2098,13 +2102,17 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 }
 #endif
 
+static void _linphone_call_set_next_video_frame_decoded_trigger(LinphoneCall *call){
+#ifdef VIDEO_ENABLED
+	if (call->nextVideoFrameDecoded._func && call->videostream && call->videostream->ms.decoder)
+		ms_filter_call_method_noarg(call->videostream->ms.decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
+#endif
+}
+
 void linphone_call_set_next_video_frame_decoded_callback(LinphoneCall *call, LinphoneCallCbFunc cb, void* user_data) {
 	call->nextVideoFrameDecoded._func = cb;
 	call->nextVideoFrameDecoded._user_data = user_data;
-#ifdef VIDEO_ENABLED
-	if (call->videostream && call->videostream->ms.decoder)
-		ms_filter_call_method_noarg(call->videostream->ms.decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
-#endif
+	_linphone_call_set_next_video_frame_decoded_trigger(call);
 }
 
 static void port_config_set_random_choosed(LinphoneCall *call, int stream_index, RtpSession *session){
@@ -3177,6 +3185,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 					}
 				}
 				ms_media_stream_sessions_set_encryption_mandatory(&call->videostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
+				_linphone_call_set_next_video_frame_decoded_trigger(call);
 			}
 		}else ms_warning("No video stream accepted.");
 	}else{
