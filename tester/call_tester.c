@@ -2023,9 +2023,11 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	}
 	if (video_added_by_caller || video_added_by_callee) {
 		BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
-		/* Wait for ICE reINVITEs to complete. */
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4)
-			&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
+		if (linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))){
+			/* Wait for ICE reINVITEs to complete if video was really added */
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4)
+				&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
+		}
 	}
 
 	if (video_removed_by_caller) {
