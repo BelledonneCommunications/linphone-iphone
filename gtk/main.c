@@ -63,6 +63,7 @@ const char *this_program_ident_string="linphone_ident_string=" LINPHONE_VERSION;
 static LinphoneCore *the_core=NULL;
 static GtkWidget *the_ui=NULL;
 static LinphoneLDAPContactProvider* ldap_provider = NULL;
+static GRegex *uri_regex = NULL;
 
 static void linphone_gtk_global_state_changed(LinphoneCore *lc, LinphoneGlobalState state, const char*str);
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState rs, const char *msg);
@@ -2023,6 +2024,26 @@ static void populate_xdg_data_dirs_envvar(void) {
 	}
 	g_strfreev(paths);
 #endif
+}
+
+static void free_uri_regex(void) {
+	if(uri_regex) g_regex_unref(uri_regex);
+}
+
+const GRegex *linphone_gtk_get_uri_regex(void) {
+	const gchar *pattern = "\\b[a-z0-9]+://[\\S]+\\b";
+	GError *error = NULL;
+	if(uri_regex == NULL) {
+		uri_regex = g_regex_new(pattern, G_REGEX_OPTIMIZE, 0, &error);
+		if(error) {
+			g_warning("Could not parse regex pattern for URIs: %s", error->message);
+			g_error_free(error);
+			uri_regex = NULL;
+			return NULL;
+		}
+		atexit(free_uri_regex);
+	}
+	return uri_regex;
 }
 
 int main(int argc, char *argv[]){

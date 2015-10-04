@@ -139,35 +139,13 @@ static gboolean scroll_to_end(GtkTextView *w){
 	return FALSE;
 }
 
-static gboolean word_starts_with(const GtkTextIter *word_start, const char *prefix) {
-	gboolean res;
-	gchar *schema = NULL;
-	GtkTextIter end = *word_start;
-	gtk_text_iter_forward_chars(&end, strlen(prefix));
-	schema = gtk_text_iter_get_slice(word_start, &end);
-	res = ( g_strcmp0(schema, prefix) == 0 );
-	g_free(schema);
-	return res;
-}
-
-static gboolean is_space(gunichar ch, gpointer user_data) {
-	return g_unichar_isspace(ch);
-}
-
-static void insert_link_tags(GtkTextBuffer *buffer, const GtkTextIter *begin, const GtkTextIter *end) {
-	GtkTextIter iter = *begin;
-	while(gtk_text_iter_compare(&iter, end) < 0) {
-		if(gtk_text_iter_starts_word(&iter) && (
-				word_starts_with(&iter, "http://") ||
-				word_starts_with(&iter, "https://") ||
-				word_starts_with(&iter, "ftp://") ||
-				word_starts_with(&iter, "ftps://"))) {
-			GtkTextIter uri_begin = iter;
-			if(gtk_text_iter_forward_find_char(&iter, is_space, NULL, end)) {
-				gtk_text_buffer_apply_tag_by_name(buffer, "link", &uri_begin, &iter);
-			}
-		}
-		gtk_text_iter_forward_char(&iter);
+static void write_body(GtkTextBuffer *buffer, GtkTextIter *iter, const gchar *text, gint len, gboolean is_me, gboolean is_link) {
+	const char *me_tag_name = is_me ? "me" : NULL;
+	const char *link_tag_name = is_link ? "link" : NULL;
+	if(me_tag_name) {
+		gtk_text_buffer_insert_with_tags_by_name(buffer, iter, text, len, "body", me_tag_name, link_tag_name, NULL);
+	} else {
+		gtk_text_buffer_insert_with_tags_by_name(buffer, iter, text, len, "body", link_tag_name, NULL);
 	}
 }
 
@@ -175,11 +153,13 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
                  gboolean me,LinphoneChatRoom *cr,LinphoneChatMessage *msg, gboolean hist){
 	GtkTextView *text=GTK_TEXT_VIEW(linphone_gtk_get_widget(w,"textview"));
 	GtkTextBuffer *buffer=gtk_text_view_get_buffer(text);
-	GtkTextIter iter, link_start;
-	GtkTextMark *link_start_mark = NULL;
+	GtkTextIter iter;
 	char *from_str=linphone_address_as_string_uri_only(from);
 	gchar *from_message=(gchar *)g_object_get_data(G_OBJECT(w),"from_message");
 	GHashTable *table=(GHashTable*)g_object_get_data(G_OBJECT(w),"table");
+	const GRegex *uri_regex = linphone_gtk_get_uri_regex();
+	GMatchInfo *match_info = NULL;
+	const char *message = linphone_chat_message_get_text(msg);
 	time_t t;
 	char buf[80];
 	time_t tnow;
@@ -199,14 +179,21 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	}
 	ms_free(from_str);
 
-	link_start_mark = gtk_text_buffer_create_mark(buffer, NULL, &iter, TRUE);
-	gtk_text_buffer_insert_with_tags_by_name(buffer, &iter, linphone_chat_message_get_text(msg), -1,
-	                                         "body", me ? "me" : NULL, NULL);
+	// Inserts message body and tags URIs as hypertext links
+	if(g_regex_match(uri_regex, message, 0, &match_info)) {
+		int pos = 0, start, end;
+		do {
+			g_match_info_fetch_pos(match_info, 0, &start, &end);
+			if(pos < start) write_body(buffer, &iter, &message[pos], start-pos, me, FALSE);
+			write_body(buffer, &iter, &message[start], end-start, me, TRUE);
+			pos = end;
+		} while(g_match_info_next(match_info, NULL));
+	} else {
+		write_body(buffer, &iter, message, -1, me, FALSE);
+	}
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
-	gtk_text_buffer_get_iter_at_mark(buffer, &link_start, link_start_mark);
-	insert_link_tags(buffer, &link_start, &iter);
-	gtk_text_buffer_delete_mark(buffer, link_start_mark);
-
+	g_match_info_free(match_info);
+	
 	t=linphone_chat_message_get_time(msg);
 	switch (linphone_chat_message_get_state (msg)){
 		case LinphoneChatMessageStateInProgress:
