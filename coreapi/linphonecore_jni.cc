@@ -3276,6 +3276,11 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 	}
 
 	jobject listener = (jobject) msg->message_state_changed_user_data;
+	
+	if (listener == NULL) {
+		ms_error("message_state_changed() notification without listener");
+		return ;
+	}
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
 	jobject jmessage = getChatMessage(env, msg);
@@ -3287,6 +3292,7 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 
 	if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
 		env->DeleteGlobalRef(listener);
+		msg->message_state_changed_user_data = NULL;
 	}
 	env->DeleteLocalRef(chatMessageStateClass);
 }
