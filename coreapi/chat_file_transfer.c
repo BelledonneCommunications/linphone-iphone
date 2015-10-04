@@ -451,7 +451,7 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 	}
 }
 
-void _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const char* url, const char* action, const belle_http_request_listener_callbacks_t *cbs) {
+int _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const char* url, const char* action, const belle_http_request_listener_callbacks_t *cbs) {
 	belle_generic_uri_t *uri = NULL;
 	char* ua;
 
@@ -479,31 +479,41 @@ void _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const cha
 	/* give msg to listener to be able to start the actual file upload when server answer a 204 No content */
 	msg->http_listener = belle_http_request_listener_create_from_callbacks(cbs, linphone_chat_message_ref(msg));
 	belle_http_provider_send_request(msg->chat_room->lc->http_provider, msg->http_request, msg->http_listener);
-	return;
+	return 0;
 error:
 	if (uri) {
 		belle_sip_object_unref(uri);
 	}
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+	return -1;
 }
 
-void linphone_chat_room_upload_file(LinphoneChatMessage *msg) {
+int linphone_chat_room_upload_file(LinphoneChatMessage *msg) {
 	belle_http_request_listener_callbacks_t cbs = {0};
+	int err;
+	
 	cbs.process_response = linphone_chat_message_process_response_from_post_file;
 	cbs.process_io_error = linphone_chat_message_process_io_error_upload;
 	cbs.process_auth_requested = linphone_chat_message_process_auth_requested_upload;
-	_linphone_chat_room_start_http_transfer(msg, linphone_core_get_file_transfer_server(msg->chat_room->lc), "POST", &cbs);
+	err = _linphone_chat_room_start_http_transfer(msg, linphone_core_get_file_transfer_server(msg->chat_room->lc), "POST", &cbs);
+	if (err == -1){
+		linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+	}
+	return err;
 }
 
-void linphone_chat_message_download_file(LinphoneChatMessage *msg) {
+int linphone_chat_message_download_file(LinphoneChatMessage *msg) {
 	belle_http_request_listener_callbacks_t cbs = {0};
+	int err;
+	
 	cbs.process_response_headers = linphone_chat_process_response_headers_from_get_file;
 	cbs.process_response = linphone_chat_process_response_from_get_file;
 	cbs.process_io_error = linphone_chat_message_process_io_error_download;
 	cbs.process_auth_requested = linphone_chat_message_process_auth_requested_download;
-	_linphone_chat_room_start_http_transfer(msg, msg->external_body_url, "GET", &cbs);
+	err = _linphone_chat_room_start_http_transfer(msg, msg->external_body_url, "GET", &cbs);
+	if (err == -1) return -1;
 	/* start the download, status is In Progress */
 	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
+	return 0;
 }
 
 void linphone_chat_message_start_file_download(LinphoneChatMessage *msg,
