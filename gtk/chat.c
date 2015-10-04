@@ -166,6 +166,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	struct tm *tm;
 	int tnow_day;
 	int tnow_year;
+	int pos = 0, start, end;
 
 	gtk_text_buffer_get_end_iter(buffer, &iter);
 	if (g_strcmp0(from_message,from_str)!=0){
@@ -180,17 +181,15 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	ms_free(from_str);
 
 	// Inserts message body and tags URIs as hypertext links
-	if(g_regex_match(uri_regex, message, 0, &match_info)) {
-		int pos = 0, start, end;
-		do {
-			g_match_info_fetch_pos(match_info, 0, &start, &end);
-			if(pos < start) write_body(buffer, &iter, &message[pos], start-pos, me, FALSE);
-			write_body(buffer, &iter, &message[start], end-start, me, TRUE);
-			pos = end;
-		} while(g_match_info_next(match_info, NULL));
-	} else {
-		write_body(buffer, &iter, message, -1, me, FALSE);
+	g_regex_match(uri_regex, message, 0, &match_info);
+	while(g_match_info_matches(match_info)) {
+		g_match_info_fetch_pos(match_info, 0, &start, &end);
+		if(pos < start) write_body(buffer, &iter, &message[pos], start-pos, me, FALSE);
+		write_body(buffer, &iter, &message[start], end-start, me, TRUE);
+		pos = end;
+		g_match_info_next(match_info, NULL);
 	}
+	if(pos < strlen(message)) write_body(buffer, &iter, &message[pos], -1, me, FALSE); 
 	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
 	g_match_info_free(match_info);
 	
