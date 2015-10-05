@@ -168,6 +168,17 @@ void liblinphone_tester_uninit(void) {
 	bc_tester_uninit();
 }
 
+int liblinphone_tester_set_log_file(const char *filename) {
+	log_file = fopen(filename, "w");
+	if (!log_file) {
+		ms_error("Cannot open file [%s] for writing logs because [%s]", filename, strerror(errno));
+		return -1;
+	}
+	ms_message("Redirecting traces to file [%s]", filename);
+	ortp_set_log_file(log_file);
+	return 0;
+}
+
 
 #if !__ios && !(defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL))
 
@@ -203,14 +214,7 @@ int main (int argc, char *argv[])
 			linphone_core_set_log_level(ORTP_FATAL);
 		} else if (strcmp(argv[i],"--log-file")==0){
 			CHECK_ARG("--log-file", ++i, argc);
-			log_file=fopen(argv[i],"w");
-			if (!log_file) {
-				ms_error("Cannot open file [%s] for writing logs because [%s]",argv[i],strerror(errno));
-				return -2;
-			} else {
-				ms_message("Redirecting traces to file [%s]",argv[i]);
-				ortp_set_log_file(log_file);
-			}
+			if (liblinphone_tester_set_log_file(argv[i]) < 0) return -2;
 		} else if (strcmp(argv[i],"--domain")==0){
 			CHECK_ARG("--domain", ++i, argc);
 			test_domain=argv[i];
