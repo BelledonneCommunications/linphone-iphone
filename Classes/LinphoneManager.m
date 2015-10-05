@@ -1293,10 +1293,10 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 	const char *lRootCa =
 		[[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
-	linphone_core_set_user_agent(theLinphoneCore,
-								 [[[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-									 stringByAppendingString:@"Iphone"] UTF8String],
-								 LINPHONE_IOS_VERSION);
+	NSString *device = [NSString
+		stringWithFormat:@"%@_%@_iOS%@", [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
+						 [LinphoneUtils deviceName], UIDevice.currentDevice.systemVersion];
+	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, LINPHONE_IOS_VERSION);
 
 	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"];
 

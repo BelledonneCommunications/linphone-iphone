@@ -46,6 +46,7 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 + (void)buttonFixStatesForTabs:(UIButton*)button;
 + (void)buttonMultiViewAddAttributes:(NSMutableDictionary*)attributes button:(UIButton*)button;
 + (void)buttonMultiViewApplyAttributes:(NSDictionary*)attributes button:(UIButton*)button;
++ (NSString *)deviceName;
 
 @end
 

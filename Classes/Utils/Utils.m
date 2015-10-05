@@ -20,6 +20,7 @@
 #import "Utils.h"
 #include "linphone/linphonecore.h"
 #import <CommonCrypto/CommonDigest.h>
+#import <sys/utsname.h>
 
 @implementation LinphoneLogger
 
@@ -296,6 +297,13 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 		return [dict objectForKey:key];
 	}
 	return nil;
+}
+
++ (NSString *)deviceName {
+	struct utsname systemInfo;
+	uname(&systemInfo);
+
+	return [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
 }
 
 @end
