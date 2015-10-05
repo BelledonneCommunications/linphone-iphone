@@ -37,11 +37,14 @@ namespace liblinphone_tester
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            LibLinphoneTester.Instance.setWritableDirectory(ApplicationData.Current.LocalFolder);
-            _suites = UnitTestDataSource.GetSuites(LibLinphoneTester.Instance);
             if ((e.Parameter is Uri) && (e.Parameter.ToString().Equals("liblinphone-tester:autolaunch")))
             {
                 AutoLaunch();
+            }
+            else
+            {
+                LibLinphoneTester.Instance.initialize(ApplicationData.Current.LocalFolder, true);
+                _suites = UnitTestDataSource.GetSuites(LibLinphoneTester.Instance);
             }
         }
 
@@ -181,6 +184,7 @@ namespace liblinphone_tester
             CommandBar.IsEnabled = false;
             ProgressIndicator.IsIndeterminate = true;
             ProgressIndicator.IsEnabled = true;
+            LibLinphoneTester.Instance.initialize(ApplicationData.Current.LocalFolder, false);
             LibLinphoneTester.Instance.runAllToXml();
             if (LibLinphoneTester.Instance.AsyncAction != null)
             {

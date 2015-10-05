@@ -14,12 +14,12 @@ namespace liblinphone_tester_runtime_component
     public ref class LibLinphoneTester sealed
     {
     public:
-		void setWritableDirectory(Windows::Storage::StorageFolder^ folder);
 		void setOutputTraceListener(OutputTraceListener^ traceListener);
 		unsigned int nbTestSuites();
 		unsigned int nbTests(Platform::String^ suiteName);
 		Platform::String^ testSuiteName(int index);
 		Platform::String^ testName(Platform::String^ suiteName, int testIndex);
+		void initialize(Windows::Storage::StorageFolder^ writableDirectory, Platform::Boolean ui);
 		bool run(Platform::String^ suiteName, Platform::String^ caseName, Platform::Boolean verbose);
 		void runAllToXml();
 
@@ -34,7 +34,6 @@ namespace liblinphone_tester_runtime_component
 	private:
 		LibLinphoneTester();
 		~LibLinphoneTester();
-		void init(bool verbose);
 
 		static LibLinphoneTester^ _instance;
 		Windows::Foundation::IAsyncAction^ _asyncAction;

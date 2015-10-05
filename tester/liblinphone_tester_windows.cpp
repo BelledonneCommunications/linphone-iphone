@@ -53,8 +53,6 @@ static void libLinphoneNativeOutputTraceHandler(OrtpLogLevel lev, const char *fm
 
 LibLinphoneTester::LibLinphoneTester()
 {
-	liblinphone_tester_init(nativeOutputTraceHandler);
-	bc_tester_set_resource_dir_prefix("Assets");
 }
 
 LibLinphoneTester::~LibLinphoneTester()
@@ -62,26 +60,34 @@ LibLinphoneTester::~LibLinphoneTester()
 	liblinphone_tester_uninit();
 }
 
-void LibLinphoneTester::setWritableDirectory(StorageFolder^ folder)
-{
-	char writable_dir[MAX_WRITABLE_DIR_SIZE] = { 0 };
-	const wchar_t *wwritable_dir = folder->Path->Data();
-	wcstombs(writable_dir, wwritable_dir, sizeof(writable_dir));
-	bc_tester_set_writable_dir_prefix(writable_dir);
-}
-
 void LibLinphoneTester::setOutputTraceListener(OutputTraceListener^ traceListener)
 {
 	sTraceListener = traceListener;
 }
 
-void LibLinphoneTester::init(bool verbose)
+void LibLinphoneTester::initialize(StorageFolder^ writableDirectory, Platform::Boolean ui)
 {
-	if (verbose) {
+	if (ui) {
+		liblinphone_tester_init(nativeOutputTraceHandler);
+	} else {
+		liblinphone_tester_init(NULL);
 		linphone_core_set_log_level_mask((OrtpLogLevel)(ORTP_MESSAGE | ORTP_WARNING | ORTP_ERROR | ORTP_FATAL));
 	}
-	else {
-		linphone_core_set_log_level_mask(ORTP_FATAL);
+
+	char writable_dir[MAX_WRITABLE_DIR_SIZE] = { 0 };
+	const wchar_t *wwritable_dir = writableDirectory->Path->Data();
+	wcstombs(writable_dir, wwritable_dir, sizeof(writable_dir));
+	bc_tester_set_writable_dir_prefix(writable_dir);
+	bc_tester_set_resource_dir_prefix("Assets");
+
+	if (!ui) {
+		char *xmlFile = bc_tester_file("LibLinphoneWindows10.xml");
+		char *args[] = { "--xml-file", xmlFile };
+		bc_tester_parse_args(2, args, 0);
+
+		char *logFile = bc_tester_file("LibLinphoneWindows10.log");
+		liblinphone_tester_set_log_file(logFile);
+		free(logFile);
 	}
 }
 
@@ -95,7 +101,12 @@ bool LibLinphoneTester::run(Platform::String^ suiteName, Platform::String^ caseN
 	wcstombs(csuitename, wssuitename.c_str(), sizeof(csuitename));
 	wcstombs(ccasename, wscasename.c_str(), sizeof(ccasename));
 
-	init(verbose);
+	if (verbose) {
+		linphone_core_set_log_level_mask((OrtpLogLevel)(ORTP_MESSAGE | ORTP_WARNING | ORTP_ERROR | ORTP_FATAL));
+	}
+	else {
+		linphone_core_set_log_level_mask(ORTP_FATAL);
+	}
 	linphone_core_set_log_handler(libLinphoneNativeOutputTraceHandler);
 	return bc_tester_run_tests(wssuitename == all ? 0 : csuitename, wscasename == all ? 0 : ccasename) != 0;
 }
@@ -103,18 +114,8 @@ bool LibLinphoneTester::run(Platform::String^ suiteName, Platform::String^ caseN
 void LibLinphoneTester::runAllToXml()
 {
 	auto workItem = ref new WorkItemHandler([this](IAsyncAction ^workItem) {
-		char *xmlFile = bc_tester_file("LibLinphoneWindows10.xml");
-		char *logFile = bc_tester_file("LibLinphoneWindows10.log");
-		char *args[] = { "--xml-file", xmlFile };
-		bc_tester_parse_args(2, args, 0);
-		init(true);
-		FILE *f = fopen(logFile, "w");
-		ortp_set_log_file(f);
 		bc_tester_start(NULL);
 		bc_tester_uninit();
-		fclose(f);
-		free(xmlFile);
-		free(logFile);
 	});
 	_asyncAction = ThreadPool::RunAsync(workItem);
 }
