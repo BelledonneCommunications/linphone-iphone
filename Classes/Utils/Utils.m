@@ -29,13 +29,14 @@
 	va_start(args, format);
 	NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
 	int filesize = 20;
+	const char *filename = strchr(file, '/') ? strrchr(file, '/') + 1 : file;
 	if (severity <= ORTP_DEBUG) {
 		// lol: ortp_debug(XXX) can be disabled at compile time, but ortp_log(ORTP_DEBUG, xxx) will always be valid even
 		//      not in debug build...
-		ortp_debug("%*s:%3d - %s", filesize, file + MAX((int)strlen(file) - filesize, 0), line, [str UTF8String]);
+		ortp_debug("%*s:%3d - %s", filesize, filename + MAX((int)strlen(filename) - filesize, 0), line, str.UTF8String);
 	} else {
-		ortp_log(severity, "%*s:%3d - %s", filesize, file + MAX((int)strlen(file) - filesize, 0), line,
-				 [str UTF8String]);
+		ortp_log(severity, "%*s:%3d - %s", filesize, filename + MAX((int)strlen(filename) - filesize, 0), line,
+				 str.UTF8String);
 	}
 	va_end(args);
 }
