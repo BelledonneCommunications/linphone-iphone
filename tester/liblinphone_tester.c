@@ -169,6 +169,9 @@ void liblinphone_tester_uninit(void) {
 }
 
 int liblinphone_tester_set_log_file(const char *filename) {
+	if (log_file) {
+		fclose(log_file);
+	}
 	log_file = fopen(filename, "w");
 	if (!log_file) {
 		ms_error("Cannot open file [%s] for writing logs because [%s]", filename, strerror(errno));
