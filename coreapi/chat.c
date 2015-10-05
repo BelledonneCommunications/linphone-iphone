@@ -339,7 +339,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		LinphoneCall *call;
 		char *content_type;
 		const char *identity = NULL;
-		msg->time = time(NULL);
+		msg->time = ms_time(0);
 		if (lp_config_get_int(cr->lc->config, "sip", "chat_use_call_dialogs", 0) != 0) {
 			if ((call = linphone_core_get_call_by_remote_address(cr->lc, cr->peer)) != NULL) {
 				if (call->state == LinphoneCallConnected || call->state == LinphoneCallStreamsRunning ||
@@ -690,6 +690,7 @@ LinphoneChatMessage *linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 	msg->content_type = NULL;			   /* this property is used only when transfering file */
 	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	msg->http_request = NULL;
+	msg->time = ms_time(0);
 	return msg;
 }
 

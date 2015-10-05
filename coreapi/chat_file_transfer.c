@@ -569,5 +569,6 @@ LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneCha
 	msg->content_type = NULL;
 	/* this will store the http request during file upload to the server */
 	msg->http_request = NULL;
+	msg->time = ms_time(0);
 	return msg;
 }
