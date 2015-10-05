@@ -279,9 +279,11 @@ int linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route)
 			return 0;
 		}else{
 			ms_free(tmp);
+			return -1;
 		}
+	} else {
+		return 0;
 	}
-	return -1;
 }
 
 bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *cfg){
