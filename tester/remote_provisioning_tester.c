@@ -110,6 +110,8 @@ static void remote_provisioning_file(void) {
 	return;
 #elif defined(ANDROID)
 	marie = linphone_core_manager_new2("marie_remote_localfile_android_rc", FALSE);
+#elif defined(LINPHONE_WINDOWS_UNIVERSAL)
+	marie = linphone_core_manager_new2("marie_remote_localfile_win10_rc", FALSE);
 #else
 	marie = linphone_core_manager_new2("marie_remote_localfile_rc", FALSE);
 #endif

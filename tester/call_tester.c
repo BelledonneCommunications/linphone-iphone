@@ -3586,10 +3586,14 @@ static void video_call_snapshot(void) {
 	BC_ASSERT_TRUE(call_succeeded = call_with_params(marie, pauline, marieParams, paulineParams));
 	BC_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
 	if((call_succeeded == TRUE) && (callInst != NULL)) {
-		linphone_call_take_video_snapshot(callInst, filename);
-		wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
-		BC_ASSERT_EQUAL(ortp_file_exist(filename), 0, int, "%d");
-		remove(filename);
+		int jpeg_support = linphone_call_take_video_snapshot(callInst, filename);
+		if (jpeg_support < 0) {
+			ms_warning("No jpegwriter support!");
+		} else {
+			wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
+			BC_ASSERT_EQUAL(ortp_file_exist(filename), 0, int, "%d");
+			remove(filename);
+		}
 		end_call(marie, pauline);
 	}
 	ms_free(filename);
