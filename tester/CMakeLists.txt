@@ -82,4 +82,3 @@ else()
 		target_link_libraries(liblinphone_tester linphone ${GTK2_LIBRARIES})
 	endif()
 endif()
-

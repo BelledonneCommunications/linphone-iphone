@@ -36,7 +36,7 @@ if(DOXYGEN_FOUND)
 			COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile ${DOC_INPUT_FILES}
 		)
-		add_custom_target(doc ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
+		add_custom_target(linphone-doc ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
 		install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc/html" "${CMAKE_CURRENT_BINARY_DIR}/doc/xml"
 			DESTINATION "share/doc/linphone-${LINPHONE_VERSION}")
 	else()
