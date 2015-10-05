@@ -171,6 +171,11 @@ void lp_config_remove_section(LpConfig *lpconfig, LpSection *section){
 	lp_section_destroy(section);
 }
 
+void lp_section_remove_item(LpSection *sec, LpItem *item){
+	sec->items=ms_list_remove(sec->items,(void *)item);
+	lp_item_destroy(item);
+}
+
 static bool_t is_first_char(const char *start, const char *pos){
 	const char *p;
 	for(p=start;p<pos;p++){
@@ -208,6 +213,20 @@ LpSectionParam *lp_section_find_param(const LpSection *sec, const char *key){
 		param = (LpSectionParam*)elem->data;
 		if (strcmp(param->key, key) == 0) {
 			return param;
+		}
+	}
+	return NULL;
+}
+
+LpItem *lp_section_find_comment(const LpSection *sec, const char *comment){
+	MSList *elem;
+	LpItem *item;
+	/*printf("Looking for item %s\n",name);*/
+	for (elem=sec->items;elem!=NULL;elem=ms_list_next(elem)){
+		item=(LpItem*)elem->data;
+		if (item->is_comment && strcmp(item->value,comment)==0) {
+			/*printf("Item %s found\n",name);*/
+			return item;
 		}
 	}
 	return NULL;
@@ -283,6 +302,10 @@ static LpSection* lp_config_parse_line(LpConfig* lpconfig, const char* line, LpS
 		if (is_a_comment(line)){
 			if (cur){
 				LpItem *comment=lp_comment_new(line);
+				item=lp_section_find_comment(cur,comment->value);
+				if (item!=NULL) {
+					lp_section_remove_item(cur, item);
+				}
 				lp_section_add_item(cur,comment);
 			}
 		}else{
@@ -465,11 +488,6 @@ void lp_config_unref(LpConfig *lpconfig){
 
 void lp_config_destroy(LpConfig *lpconfig){
 	lp_config_unref(lpconfig);
-}
-
-void lp_section_remove_item(LpSection *sec, LpItem *item){
-	sec->items=ms_list_remove(sec->items,(void *)item);
-	lp_item_destroy(item);
 }
 
 const char *lp_config_get_section_param_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_value){
