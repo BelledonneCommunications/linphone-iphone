@@ -97,6 +97,8 @@ static char * liblinphone_log_collection_path = NULL;
 static char * liblinphone_log_collection_prefix = NULL;
 static int liblinphone_log_collection_max_file_size = LOG_COLLECTION_DEFAULT_MAX_FILE_SIZE;
 static ortp_mutex_t liblinphone_log_collection_mutex;
+static FILE * liblinphone_log_collection_file = NULL;
+static size_t liblinphone_log_collection_file_size = 0;
 static bool_t liblinphone_serialize_logs = FALSE;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
 static void linphone_core_run_hooks(LinphoneCore *lc);
@@ -203,16 +205,68 @@ void linphone_core_set_log_level_mask(OrtpLogLevel loglevel) {
 	}
 }
 
+static int _open_log_collection_file_with_idx(int idx) {
+	struct stat statbuf;
+	char *log_filename;
+
+	log_filename = ortp_strdup_printf("%s/%s%d.log",
+		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
+		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
+		idx);
+	liblinphone_log_collection_file = fopen(log_filename, "a");
+	ortp_free(log_filename);
+	if (liblinphone_log_collection_file == NULL) return -1;
+
+	fstat(fileno(liblinphone_log_collection_file), &statbuf);
+	if (statbuf.st_size > liblinphone_log_collection_max_file_size) {
+		fclose(liblinphone_log_collection_file);
+		return -1;
+	}
+
+	liblinphone_log_collection_file_size = statbuf.st_size;
+	return 0;
+}
+
+static void _rotate_log_collection_files(void) {
+	char *log_filename1;
+	char *log_filename2;
+
+	log_filename1 = ortp_strdup_printf("%s/%s1.log",
+		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
+		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX);
+	log_filename2 = ortp_strdup_printf("%s/%s2.log",
+		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
+		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX);
+	unlink(log_filename1);
+	rename(log_filename2, log_filename1);
+	ortp_free(log_filename1);
+	ortp_free(log_filename2);
+}
+
+static void _open_log_collection_file(void) {
+	if (_open_log_collection_file_with_idx(1) < 0) {
+		if (_open_log_collection_file_with_idx(2) < 0) {
+			_rotate_log_collection_files();
+			_open_log_collection_file_with_idx(2);
+		}
+	}
+}
+
+static void _close_log_collection_file(void) {
+	if (liblinphone_log_collection_file) {
+		fclose(liblinphone_log_collection_file);
+		liblinphone_log_collection_file = NULL;
+		liblinphone_log_collection_file_size = 0;
+	}
+}
+
 static void linphone_core_log_collection_handler(OrtpLogLevel level, const char *fmt, va_list args) {
 	const char *lname="undef";
 	char *msg;
-	char *log_filename1;
-	char *log_filename2;
-	FILE *log_file;
 	struct timeval tp;
 	struct tm *lt;
 	time_t tt;
-	struct stat statbuf;
+	int ret;
 
 	if (liblinphone_log_func != NULL) {
 #ifndef _WIN32
@@ -251,34 +305,26 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 	}
 	msg = ortp_strdup_vprintf(fmt, args);
 
-	log_filename1 = ortp_strdup_printf("%s/%s1.log",
-		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
-		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX);
-	log_filename2 = ortp_strdup_printf("%s/%s2.log",
-		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
-		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX);
-	ortp_mutex_lock(&liblinphone_log_collection_mutex);
-	log_file = fopen(log_filename1, "a");
-	fstat(fileno(log_file), &statbuf);
-	if (statbuf.st_size > liblinphone_log_collection_max_file_size) {
-		fclose(log_file);
-		log_file = fopen(log_filename2, "a");
-		fstat(fileno(log_file), &statbuf);
-		if (statbuf.st_size > liblinphone_log_collection_max_file_size) {
-			fclose(log_file);
-			unlink(log_filename1);
-			rename(log_filename2, log_filename1);
-			log_file = fopen(log_filename2, "a");
-		}
+	if (liblinphone_log_collection_file == NULL) {
+		ortp_mutex_lock(&liblinphone_log_collection_mutex);
+		_open_log_collection_file();
+		ortp_mutex_unlock(&liblinphone_log_collection_mutex);
 	}
-	fprintf(log_file,"%i-%.2i-%.2i %.2i:%.2i:%.2i:%.3i %s %s\n",
-		1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), lname, msg);
-	fflush(log_file);
-	fclose(log_file);
-	ortp_mutex_unlock(&liblinphone_log_collection_mutex);
+	if (liblinphone_log_collection_file) {
+		ortp_mutex_lock(&liblinphone_log_collection_mutex);
+		ret = fprintf(liblinphone_log_collection_file,"%i-%.2i-%.2i %.2i:%.2i:%.2i:%.3i %s %s\n",
+			1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), lname, msg);
+		fflush(liblinphone_log_collection_file);
+		if (ret > 0) {
+			liblinphone_log_collection_file_size += ret;
+			if (liblinphone_log_collection_file_size > liblinphone_log_collection_max_file_size) {
+				_close_log_collection_file();
+				_open_log_collection_file();
+			}
+		}
+		ortp_mutex_unlock(&liblinphone_log_collection_mutex);
+	}
 
-	ortp_free(log_filename1);
-	ortp_free(log_filename2);
 	ortp_free(msg);
 }
 
@@ -667,6 +713,8 @@ void linphone_core_reset_log_collection() {
 		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX);
 	unlink(filename);
 	ms_free(filename);
+	liblinphone_log_collection_file = NULL;
+	liblinphone_log_collection_file_size = 0;
 	ortp_mutex_unlock(&liblinphone_log_collection_mutex);
 }
 
