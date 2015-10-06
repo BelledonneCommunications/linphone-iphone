@@ -181,17 +181,19 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	ms_free(from_str);
 
 	// Inserts message body and tags URIs as hypertext links
-	g_regex_match(uri_regex, message, 0, &match_info);
-	while(g_match_info_matches(match_info)) {
-		g_match_info_fetch_pos(match_info, 0, &start, &end);
-		if(pos < start) write_body(buffer, &iter, &message[pos], start-pos, me, FALSE);
-		write_body(buffer, &iter, &message[start], end-start, me, TRUE);
-		pos = end;
-		g_match_info_next(match_info, NULL);
+	if(message) {
+		g_regex_match(uri_regex, message, 0, &match_info);
+		while(g_match_info_matches(match_info)) {
+			g_match_info_fetch_pos(match_info, 0, &start, &end);
+			if(pos < start) write_body(buffer, &iter, &message[pos], start-pos, me, FALSE);
+			write_body(buffer, &iter, &message[start], end-start, me, TRUE);
+			pos = end;
+			g_match_info_next(match_info, NULL);
+		}
+		if(pos < strlen(message)) write_body(buffer, &iter, &message[pos], -1, me, FALSE); 
+		gtk_text_buffer_insert(buffer,&iter,"\n",-1);
+		g_match_info_free(match_info);
 	}
-	if(pos < strlen(message)) write_body(buffer, &iter, &message[pos], -1, me, FALSE); 
-	gtk_text_buffer_insert(buffer,&iter,"\n",-1);
-	g_match_info_free(match_info);
 	
 	t=linphone_chat_message_get_time(msg);
 	switch (linphone_chat_message_get_state (msg)){
