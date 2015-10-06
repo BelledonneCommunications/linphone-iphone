@@ -3246,6 +3246,13 @@ LINPHONE_PUBLIC const MSList * linphone_core_get_call_logs(LinphoneCore *lc);
 LINPHONE_PUBLIC MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr);
 
 /**
+ * Get the latest outgoing call log.
+ * @param[in] lc LinphoneCore object
+ * @return {LinphoneCallLog}
+**/
+LINPHONE_PUBLIC LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc);
+
+/**
  * Erase the call log.
  * @param[in] lc LinphoneCore object
 **/

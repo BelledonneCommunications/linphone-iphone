@@ -571,6 +571,30 @@ MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const Linp
 	return result;
 }
 
+LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc) {
+	char *buf;
+	uint64_t begin,end;
+	MSList *list = NULL;
+	LinphoneCallLog* result = NULL;
+
+	if (!lc || lc->logs_db == NULL) return NULL;
+	
+	/*since we want to append query parameters depending on arguments given, we use malloc instead of sqlite3_mprintf*/
+	buf = sqlite3_mprintf("SELECT * FROM call_history WHERE direction = 0 ORDER BY id DESC LIMIT 1");
+
+	begin = ortp_get_cur_time_ms();
+	linphone_sql_request_call_log(lc->logs_db, buf, &list);
+	end = ortp_get_cur_time_ms();
+	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
+	sqlite3_free(buf);
+	
+	if (list) {
+		result = (LinphoneCallLog*)list->data;
+	}
+	
+	return result;
+}
+
 #else
 
 void linphone_core_call_log_storage_init(LinphoneCore *lc) {
@@ -597,6 +621,10 @@ int linphone_core_get_call_history_size(LinphoneCore *lc) {
 }
 
 MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const LinphoneAddress *addr) {
+	return NULL;
+}
+
+const LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc) {
 	return NULL;
 }
 

@@ -5007,6 +5007,16 @@ static void call_logs_migrate(void) {
 	BC_ASSERT_TRUE(aborted_count == 3);
 	BC_ASSERT_TRUE(decline_count == 2);
 	BC_ASSERT_TRUE(video_enabled_count == 3);
+	
+	{
+		LinphoneCallLog *log = linphone_core_get_last_outgoing_call_log(laure->lc);
+		BC_ASSERT_PTR_NOT_NULL(log);
+		if (log) {
+			BC_ASSERT_EQUAL((int)log->start_date_time, 1441738272, int, "%d");
+			linphone_call_log_unref(log);
+			log = NULL;
+		}
+	}
 
 	laure->lc->call_logs = ms_list_free_with_data(laure->lc->call_logs, (void (*)(void*))linphone_call_log_unref);
 	call_logs_read_from_config_file(laure->lc);
