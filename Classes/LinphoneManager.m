@@ -892,7 +892,14 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 												   const char *domain) {
 	// let the wizard handle its own errors
 	if ([PhoneMainView.instance currentView] != WizardViewController.compositeViewDescription) {
-		DTAlertView *alertView = [[DTAlertView alloc]
+		static DTAlertView *alertView = nil;
+
+		// avoid having multiple popups
+		if ([alertView isVisible]) {
+			[alertView dismissWithClickedButtonIndex:0 animated:NO];
+		}
+
+		alertView = [[DTAlertView alloc]
 			initWithTitle:NSLocalizedString(@"Authentication needed.", nil)
 				  message:[NSString stringWithFormat:NSLocalizedString(@"Registration failed because authentication is "
 																	   @"missing or invalid for %s@%s.\nYou can "
