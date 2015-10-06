@@ -491,6 +491,11 @@ int linphone_chat_room_upload_file(LinphoneChatMessage *msg) {
 	belle_http_request_listener_callbacks_t cbs = {0};
 	int err;
 	
+	if (msg->http_request){
+		ms_error("linphone_chat_room_upload_file(): there is already an upload in progress.");
+		return -1;
+	}
+	
 	cbs.process_response = linphone_chat_message_process_response_from_post_file;
 	cbs.process_io_error = linphone_chat_message_process_io_error_upload;
 	cbs.process_auth_requested = linphone_chat_message_process_auth_requested_upload;
@@ -505,6 +510,10 @@ int linphone_chat_message_download_file(LinphoneChatMessage *msg) {
 	belle_http_request_listener_callbacks_t cbs = {0};
 	int err;
 	
+	if (msg->http_request){
+		ms_error("linphone_chat_message_download_file(): there is already a download in progress");
+		return -1;
+	}
 	cbs.process_response_headers = linphone_chat_process_response_headers_from_get_file;
 	cbs.process_response = linphone_chat_process_response_from_get_file;
 	cbs.process_io_error = linphone_chat_message_process_io_error_download;

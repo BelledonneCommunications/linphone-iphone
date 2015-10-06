@@ -929,7 +929,7 @@ LINPHONE_PUBLIC int linphone_call_get_stream_count(LinphoneCall *call);
  * @param call
  * @param stream_index
  *
- * @return MsAudio if stream_index = 0, MsVideo otherwise
+ * @return the type (MSAudio, MSVideo, MSText) of the stream of given index.
 **/
 LINPHONE_PUBLIC MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index);
 
