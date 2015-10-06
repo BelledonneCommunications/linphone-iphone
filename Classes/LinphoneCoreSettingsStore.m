@@ -485,12 +485,23 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_proxy_config_set_expires(proxyCfg, expire);
 
 		// setup auth info
-		LinphoneAddress *from = linphone_address_new(identity);
-		if (from != 0) {
-			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
-			info = linphone_auth_info_new(linphone_address_get_username(from), userid_str, password ? password : NULL,
-										  password ? NULL : ha1, NULL, linphone_proxy_config_get_domain(proxyCfg));
-			linphone_address_destroy(from);
+		if (linphone_core_get_auth_info_list(lc)) {
+			info = linphone_auth_info_clone(linphone_core_get_auth_info_list(lc)->data);
+			linphone_auth_info_set_username(info, username.UTF8String);
+			if (password) {
+				linphone_auth_info_set_passwd(info, password);
+				linphone_auth_info_set_ha1(info, NULL);
+			}
+			linphone_auth_info_set_domain(info, linphone_proxy_config_get_domain(proxyCfg));
+		} else {
+			LinphoneAddress *from = linphone_address_new(identity);
+			if (from) {
+				const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
+				info = linphone_auth_info_new(
+					linphone_address_get_username(from), userid_str, password ? password : NULL, password ? NULL : ha1,
+					linphone_proxy_config_get_realm(proxyCfg), linphone_proxy_config_get_domain(proxyCfg));
+				linphone_address_destroy(from);
+			}
 		}
 
 		// We reached here without hitting the goto: the new settings are correct, so replace the previous ones.
