@@ -777,7 +777,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 		md->streams[call->main_text_stream_index].dir = SalStreamInactive;
 	}
 
-	md->nb_streams = max_index+1;
+	md->nb_streams = MAX(md->nb_streams,max_index+1);
 
 	/* Deactivate unused streams. */
 	for (i = md->nb_streams; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {

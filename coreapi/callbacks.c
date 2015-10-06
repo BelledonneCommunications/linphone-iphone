@@ -703,6 +703,12 @@ static void call_updating(SalOp *op, bool_t is_update){
 	linphone_call_fix_call_parameters(call, rmd);
 	if (call->state!=LinphoneCallPaused){
 		/*Refresh the local description, but in paused state, we don't change anything.*/
+		if (rmd == NULL && lp_config_get_int(call->core->config,"sip","sdp_200_ack_follow_video_policy",0)) {
+			ms_message("Applying default policy for offering SDP on call [%p]",call);
+			LinphoneCallParams *p=linphone_core_create_default_call_parameters (lc);
+			linphone_call_set_new_params(call, p);
+			linphone_call_params_destroy(p);
+		}
 		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op,call->localdesc);
 	}

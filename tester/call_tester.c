@@ -1321,7 +1321,7 @@ end:
 }
 
 /*this test makes sure that pause/resume will not bring up video by accident*/
-static void call_paused_resumed_with_video(void){
+static void call_paused_resumed_with_video_base(bool_t sdp_200_ack,bool_t use_video_policy_for_re_invite_sdp_200){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_pauline, *call_marie;
@@ -1333,12 +1333,12 @@ static void call_paused_resumed_with_video(void){
 	lcs = ms_list_append(lcs, marie->lc);
 	
 	vpol.automatically_accept = FALSE;
-	vpol.automatically_initiate = FALSE;
+	vpol.automatically_initiate = TRUE; /* needed to present a video mline*/
 	
 	linphone_core_set_video_policy(marie->lc, &vpol);
 	linphone_core_enable_video(marie->lc, TRUE, TRUE);
 	
-	vpol.automatically_accept = TRUE;
+	vpol.automatically_accept = FALSE;
 	vpol.automatically_initiate = TRUE;
 	
 	linphone_core_set_video_policy(pauline->lc, &vpol);
@@ -1362,15 +1362,33 @@ static void call_paused_resumed_with_video(void){
 	/*stay in pause a little while in order to generate traffic*/
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
 
+	/*check if video stream is still offered even if disabled*/
+	
+	BC_ASSERT_EQUAL(call_pauline->localdesc->nb_streams, 2, int, "%i");
+	BC_ASSERT_EQUAL(call_marie->localdesc->nb_streams, 2, int, "%i");
+	
+	
+	linphone_core_enable_sdp_200_ack(pauline->lc,sdp_200_ack);
+	
+	if (use_video_policy_for_re_invite_sdp_200) {
+		LpConfig *marie_lp;
+		marie_lp = linphone_core_get_config(marie->lc);
+		lp_config_set_int(marie_lp,"sip","sdp_200_ack_follow_video_policy",1);
+	
+	}
 	/*now pauline wants to resume*/
 	linphone_core_resume_call(pauline->lc, call_pauline);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallResuming,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 
-	BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_pauline)));
-	BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_marie)));
-	
+	if (use_video_policy_for_re_invite_sdp_200) {
+		/*make sure video was offered*/
+		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_remote_params(call_pauline)));
+	} else {
+		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_pauline)));
+		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_marie)));
+	}
 	end_call(marie, pauline);
 
 end:
@@ -1378,6 +1396,17 @@ end:
 	linphone_core_manager_destroy(pauline);
 	ms_list_free(lcs);
 }
+static void call_paused_resumed_with_video(void){
+	call_paused_resumed_with_video_base(FALSE, FALSE);
+}
+
+static void call_paused_resumed_with_no_sdp_ack(void){
+	call_paused_resumed_with_video_base(TRUE, FALSE);
+}
+static void call_paused_resumed_with_no_sdp_ack_using_video_policy(void){
+	call_paused_resumed_with_video_base(TRUE, TRUE);
+}
+
 
 #define CHECK_CURRENT_LOSS_RATE() \
 	rtcp_count_current = pauline->stat.number_of_rtcp_sent; \
@@ -5165,6 +5194,8 @@ test_t call_tests[] = {
 	{ "Call without SDP and ACK without SDP", call_with_no_sdp_ack_without_sdp},
 	{ "Call paused resumed", call_paused_resumed },
 	{ "Call paused resumed with video", call_paused_resumed_with_video },
+	{ "Call paused resumed with video no sdp ack", call_paused_resumed_with_no_sdp_ack},
+	{ "Call paused resumed with video no sdk ack using video policy for resume offers",call_paused_resumed_with_no_sdp_ack_using_video_policy},
 	{ "Call paused by both parties", call_paused_by_both },
 	{ "Call paused resumed with loss", call_paused_resumed_with_loss },
 	{ "Call paused resumed from callee", call_paused_resumed_from_callee },
