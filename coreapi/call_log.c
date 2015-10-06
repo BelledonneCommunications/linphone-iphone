@@ -624,7 +624,7 @@ MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const Linp
 	return NULL;
 }
 
-const LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc) {
+LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc) {
 	return NULL;
 }
 
