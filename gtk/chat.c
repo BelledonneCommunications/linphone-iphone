@@ -31,6 +31,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define CONFIG_FILE ".linphone-history.db"
 
+#include "regex.h"
+
+GRegex *uri_regex = NULL;
+
+static void free_uri_regex(void) {
+	if(uri_regex) g_regex_unref(uri_regex);
+}
+
+static const GRegex *get_uri_regex(void) {
+	const gchar *pattern = BC_REGEX_URI;
+	GError *error = NULL;
+	if(uri_regex == NULL) {
+		uri_regex = g_regex_new(pattern, G_REGEX_OPTIMIZE, 0, &error);
+		if(error) {
+			g_warning("Could not parse regex pattern for URIs: %s", error->message);
+			g_error_free(error);
+			uri_regex = NULL;
+			return NULL;
+		}
+		atexit(free_uri_regex);
+	}
+	return uri_regex;
+}
+
 char *linphone_gtk_message_storage_get_db_file(const char *filename){
 	const int path_max=1024;
 	char *db_file=NULL;
@@ -157,7 +181,7 @@ void linphone_gtk_push_text(GtkWidget *w, const LinphoneAddress *from,
 	char *from_str=linphone_address_as_string_uri_only(from);
 	gchar *from_message=(gchar *)g_object_get_data(G_OBJECT(w),"from_message");
 	GHashTable *table=(GHashTable*)g_object_get_data(G_OBJECT(w),"table");
-	const GRegex *uri_regex = linphone_gtk_get_uri_regex();
+	const GRegex *uri_regex = get_uri_regex();
 	GMatchInfo *match_info = NULL;
 	const char *message = linphone_chat_message_get_text(msg);
 	time_t t;
