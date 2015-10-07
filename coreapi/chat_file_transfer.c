@@ -225,77 +225,82 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			linphone_chat_message_unref(msg);
 		} else if (code == 200) { /* file has been uplaoded correctly, get server reply and send it */
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
-			/* if we have an encryption key for the file, we must insert it into the msg and restore the correct
-			 * filename */
-			if (linphone_content_get_key(msg->file_transfer_information) != NULL) {
-				/* parse the msg body */
-				xmlDocPtr xmlMessageBody = xmlParseDoc((const xmlChar *)body);
+			if (body && strlen(body) > 0) {
+				/* if we have an encryption key for the file, we must insert it into the msg and restore the correct
+				 * filename */
+				if (linphone_content_get_key(msg->file_transfer_information) != NULL) {
+					/* parse the msg body */
+					xmlDocPtr xmlMessageBody = xmlParseDoc((const xmlChar *)body);
 
-				xmlNodePtr cur = xmlDocGetRootElement(xmlMessageBody);
-				if (cur != NULL) {
-					cur = cur->xmlChildrenNode;
-					while (cur != NULL) {
-						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check
-																					  it has a type="file" attribute */
-							xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
-							if (!xmlStrcmp(typeAttribute,
-										   (const xmlChar *)"file")) { /* this is the node we are looking for : add a
-																		  file-key children node */
-								xmlNodePtr fileInfoNodeChildren =
-									cur
-										->xmlChildrenNode; /* need to parse the children node to update the file-name
-															  one */
-								/* convert key to base64 */
-								size_t b64Size = b64_encode(NULL, FILE_TRANSFER_KEY_SIZE, NULL, 0);
-								char *keyb64 = (char *)ms_malloc0(b64Size + 1);
-								int xmlStringLength;
+					xmlNodePtr cur = xmlDocGetRootElement(xmlMessageBody);
+					if (cur != NULL) {
+						cur = cur->xmlChildrenNode;
+						while (cur != NULL) {
+							if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) { /* we found a file info node, check
+																						  it has a type="file" attribute */
+								xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
+								if (!xmlStrcmp(typeAttribute,
+											   (const xmlChar *)"file")) { /* this is the node we are looking for : add a
+																			  file-key children node */
+									xmlNodePtr fileInfoNodeChildren =
+										cur
+											->xmlChildrenNode; /* need to parse the children node to update the file-name
+																  one */
+									/* convert key to base64 */
+									size_t b64Size = b64_encode(NULL, FILE_TRANSFER_KEY_SIZE, NULL, 0);
+									char *keyb64 = (char *)ms_malloc0(b64Size + 1);
+									int xmlStringLength;
 
-								b64Size = b64_encode(linphone_content_get_key(msg->file_transfer_information),
-													 FILE_TRANSFER_KEY_SIZE, keyb64, b64Size);
-								keyb64[b64Size] = '\0'; /* libxml need a null terminated string */
+									b64Size = b64_encode(linphone_content_get_key(msg->file_transfer_information),
+														 FILE_TRANSFER_KEY_SIZE, keyb64, b64Size);
+									keyb64[b64Size] = '\0'; /* libxml need a null terminated string */
 
-								/* add the node containing the key to the file-info node */
-								xmlNewTextChild(cur, NULL, (const xmlChar *)"file-key", (const xmlChar *)keyb64);
-								xmlFree(typeAttribute);
-								ms_free(keyb64);
+									/* add the node containing the key to the file-info node */
+									xmlNewTextChild(cur, NULL, (const xmlChar *)"file-key", (const xmlChar *)keyb64);
+									xmlFree(typeAttribute);
+									ms_free(keyb64);
 
-								/* look for the file-name node and update its content */
-								while (fileInfoNodeChildren != NULL) {
-									if (!xmlStrcmp(
-											fileInfoNodeChildren->name,
-											(const xmlChar *)"file-name")) { /* we found a the file-name node, update
-																				its content with the real filename */
-										/* update node content */
-										xmlNodeSetContent(fileInfoNodeChildren,
-														  (const xmlChar *)(linphone_content_get_name(
-															  msg->file_transfer_information)));
-										break;
+									/* look for the file-name node and update its content */
+									while (fileInfoNodeChildren != NULL) {
+										if (!xmlStrcmp(
+												fileInfoNodeChildren->name,
+												(const xmlChar *)"file-name")) { /* we found a the file-name node, update
+																					its content with the real filename */
+											/* update node content */
+											xmlNodeSetContent(fileInfoNodeChildren,
+															  (const xmlChar *)(linphone_content_get_name(
+																  msg->file_transfer_information)));
+											break;
+										}
+										fileInfoNodeChildren = fileInfoNodeChildren->next;
 									}
-									fileInfoNodeChildren = fileInfoNodeChildren->next;
+
+									/* dump the xml into msg->message */
+									xmlDocDumpFormatMemoryEnc(xmlMessageBody, (xmlChar **)&msg->message, &xmlStringLength,
+															  "UTF-8", 0);
+
+									break;
 								}
-
-								/* dump the xml into msg->message */
-								xmlDocDumpFormatMemoryEnc(xmlMessageBody, (xmlChar **)&msg->message, &xmlStringLength,
-														  "UTF-8", 0);
-
-								break;
+								xmlFree(typeAttribute);
 							}
-							xmlFree(typeAttribute);
+							cur = cur->next;
 						}
-						cur = cur->next;
 					}
+					xmlFreeDoc(xmlMessageBody);
+				} else { /* no encryption key, transfer in plain, just copy the msg sent by server */
+					msg->message = ms_strdup(body);
 				}
-				xmlFreeDoc(xmlMessageBody);
-			} else { /* no encryption key, transfer in plain, just copy the msg sent by server */
-				msg->message = ms_strdup(body);
+				msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
+				linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
+				linphone_chat_message_ref(msg);
+				_release_http_request(msg);
+				_linphone_chat_room_send_message(msg->chat_room, msg);
+				linphone_chat_message_unref(msg);
+			} else {
+				ms_warning("Received empty response from server, file transfer failed");
+				linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+				_release_http_request(msg);
 			}
-			msg->content_type = ms_strdup("application/vnd.gsma.rcs-ft-http+xml");
-			linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
-
-			linphone_chat_message_ref(msg);
-			_release_http_request(msg);
-			_linphone_chat_room_send_message(msg->chat_room, msg);
-			linphone_chat_message_unref(msg);
 		} else {
 			ms_warning("Unhandled HTTP code response %d for file transfer", code);
 			linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
@@ -490,12 +495,12 @@ error:
 int linphone_chat_room_upload_file(LinphoneChatMessage *msg) {
 	belle_http_request_listener_callbacks_t cbs = {0};
 	int err;
-	
+
 	if (msg->http_request){
 		ms_error("linphone_chat_room_upload_file(): there is already an upload in progress.");
 		return -1;
 	}
-	
+
 	cbs.process_response = linphone_chat_message_process_response_from_post_file;
 	cbs.process_io_error = linphone_chat_message_process_io_error_upload;
 	cbs.process_auth_requested = linphone_chat_message_process_auth_requested_upload;
@@ -509,7 +514,7 @@ int linphone_chat_room_upload_file(LinphoneChatMessage *msg) {
 int linphone_chat_message_download_file(LinphoneChatMessage *msg) {
 	belle_http_request_listener_callbacks_t cbs = {0};
 	int err;
-	
+
 	if (msg->http_request){
 		ms_error("linphone_chat_message_download_file(): there is already a download in progress");
 		return -1;
