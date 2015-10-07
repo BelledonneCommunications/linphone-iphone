@@ -611,7 +611,7 @@ public interface LinphoneCore {
 	 * @param call the LinphoneCall, must be in the {@link LinphoneCall.State#IncomingReceived} state.
 	 * @param reason the reason for rejecting the call: {@link Reason#Declined}  or {@link Reason#Busy}
 	 */
-	public void declineCall(LinphoneCall aCall, Reason reason);
+	public void declineCall(LinphoneCall call, Reason reason);
 	/**
 	 * Returns The LinphoneCall the current call if one is in call
 	 *
@@ -700,7 +700,7 @@ public interface LinphoneCore {
 	 * Calling this method with true trigger Linphone to initiate a registration process for all proxy
 	 * configuration with parameter register set to enable.
 	 * This method disable the automatic registration mode. It means you must call this method after each network state changes
-	 * @param network state
+	 * @param isReachable network state
 	 *
 	 */
 	public void setNetworkReachable(boolean isReachable);
@@ -747,7 +747,7 @@ public interface LinphoneCore {
 
 	/**
 	 * Initiate a dtmf signal if in call
-	 * @param send dtmf ['0'..'9'] | '#', '*'
+	 * @param number send dtmf ['0'..'9'] | '#', '*'
 	 */
 	void sendDtmf(char number);
 	/**
@@ -800,7 +800,7 @@ public interface LinphoneCore {
 	/**
 	 * Enable payload type
 	 * @param pt payload type to enable, can be retrieve from {@link #findPayloadType}
-	 * @param true if enabled
+	 * @param enable for enable or disable the payload type
 	 * @exception LinphoneCoreException
 	 *
 	 */
@@ -968,6 +968,13 @@ public interface LinphoneCore {
 	 * @return {@link LinphoneChatRoom} where messaging can take place.
 	 */
 	LinphoneChatRoom getOrCreateChatRoom(String to);
+	/**
+	 * Create a new chat room for messaging from a linphone address
+	 * @param to 	destination address for messages
+	 *
+	 * @return {@link LinphoneChatRoom} where messaging can take place.
+	 */
+	LinphoneChatRoom getChatRoom(LinphoneAddress to);
 	/**
 	 * Set the native video window id where the video is to be displayed.
 	 * On Android, it must be of type {@link AndroidVideoWindowImpl}
@@ -1833,6 +1840,11 @@ public interface LinphoneCore {
 	public int migrateToMultiTransport();
 
 	/**
+	 * Migrates the call logs from the linphonerc to the database if not done yet
+	 **/
+	public void migrateCallLogs();
+
+	/**
 	 * When receiving an incoming, accept to start a media session as early-media.
 	 * This means the call is not accepted but audio & video streams can be established if the remote party supports early media.
 	 * However, unlike after call acceptance, mic and camera input are not sent during early-media, though received audio & video are played normally.
@@ -1848,8 +1860,8 @@ public interface LinphoneCore {
 	 * Accept an early media session for an incoming call.
 	 * This is identical as calling linphone_core_accept_early_media_with_params() with NULL call parameters.
 	 * @see linphone_core_accept_early_media_with_params()
-	 * @param lc the core
 	 * @param call the incoming call
+	 * @param params
 	 * @return true if successful, false otherwise.
 	 */
 	public boolean acceptEarlyMediaWithParams(LinphoneCall call, LinphoneCallParams params);

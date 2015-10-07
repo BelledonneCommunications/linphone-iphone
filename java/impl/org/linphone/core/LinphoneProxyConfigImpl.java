@@ -70,6 +70,8 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 
 	private native void setIdentity(long ptr,String identity);
 	private native String getIdentity(long ptr);
+	private native void setAddress(long ptr, long address);
+	private native long getAddress(long ptr);
 	private native int setProxy(long ptr,String proxy);
 	private native String getProxy(long ptr);
 
@@ -82,6 +84,7 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	private native String getDialPrefix(long ptr);
 
 	private native String normalizePhoneNumber(long ptr,String number);
+	private native long normalizeSipUri(long ptr,String username);
 
 	private native String getDomain(long ptr);
 
@@ -125,6 +128,11 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 		setIdentity(nativePtr,identity);
 	}
 
+	public void setAddress(LinphoneAddress address) throws LinphoneCoreException {
+		isValid();
+		setAddress(nativePtr,((LinphoneAddressImpl)address).nativePtr);
+	}
+
 	public void setProxy(String proxyUri) throws LinphoneCoreException {
 		isValid();
 		if (setProxy(nativePtr,proxyUri)!=0) {
@@ -134,6 +142,15 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public String normalizePhoneNumber(String number) {
 		isValid();
 		return normalizePhoneNumber(nativePtr,number);
+	}
+	public LinphoneAddress normalizeSipUri(String username) {
+		isValid();
+		long ptr = normalizeSipUri(nativePtr,username);
+		if (ptr==0) {
+			return null;
+		} else {
+			return new LinphoneAddressImpl(ptr,LinphoneAddressImpl.WrapMode.FromConst);
+		}
 	}
 	public void setDialPrefix(String prefix) {
 		isValid();
@@ -158,6 +175,15 @@ class LinphoneProxyConfigImpl implements LinphoneProxyConfig {
 	public String getIdentity() {
 		isValid();
 		return getIdentity(nativePtr);
+	}
+	public LinphoneAddress getAddress() {
+		isValid();
+		long ptr = getAddress(nativePtr);
+		if (ptr==0) {
+			return null;
+		} else {
+			return new LinphoneAddressImpl(ptr,LinphoneAddressImpl.WrapMode.FromConst);
+		}
 	}
 	public String getProxy() {
 		isValid();

@@ -98,6 +98,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setPresenceModel(long nativePtr, long presencePtr);
 	private native Object getPresenceModel(long nativePtr);
 	private native long getOrCreateChatRoom(long nativePtr,String to);
+	private native long getChatRoom(long nativePtr,long to);
 	private native void enableVideo(long nativePtr,boolean vcap_enabled,boolean display_enabled);
 	private native boolean isVideoEnabled(long nativePtr);
 	private native boolean isVideoSupported(long nativePtr);
@@ -161,8 +162,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native String getPrimaryContactUsername(long nativePtr);
 	private native String getPrimaryContactDisplayName(long nativePtr);
 	private native void setChatDatabasePath(long nativePtr, String path);
+	private native void setCallLogsDatabasePath(long nativePtr, String path);
 	private native long[] getChatRooms(long nativePtr);
 	private native int migrateToMultiTransport(long nativePtr);
+	private native void migrateCallLogs(long nativePtr);
 	private native void setCallErrorTone(long nativePtr, int reason, String path);
 	private native void enableSdp200Ack(long nativePtr,boolean enable);
 	private native boolean isSdp200AckEnabled(long nativePtr);
@@ -459,6 +462,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public synchronized LinphoneChatRoom getOrCreateChatRoom(String to) {
 		return new LinphoneChatRoomImpl(getOrCreateChatRoom(nativePtr,to));
+	}
+	public synchronized LinphoneChatRoom getChatRoom(LinphoneAddress to) {
+		return new LinphoneChatRoomImpl(getChatRoom(nativePtr,((LinphoneAddressImpl)to).nativePtr));
 	}
 	public synchronized void setPreviewWindow(Object w) {
 		setPreviewWindowId(nativePtr,w);
@@ -1173,6 +1179,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setChatDatabasePath(nativePtr, path);
 	}
 
+	public synchronized void setCallLogsDatabasePath(String path) {
+		setCallLogsDatabasePath(nativePtr, path);
+	}
+
 	public synchronized LinphoneChatRoom[] getChatRooms() {
 		long[] typesPtr = getChatRooms(nativePtr);
 		if (typesPtr == null) return null;
@@ -1222,6 +1232,11 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public synchronized int migrateToMultiTransport() {
 		return migrateToMultiTransport(nativePtr);
+	}
+
+	@Override
+	public synchronized void migrateCallLogs() {
+		migrateCallLogs(nativePtr);
 	}
 
 	private native boolean acceptEarlyMedia(long lc, long call);

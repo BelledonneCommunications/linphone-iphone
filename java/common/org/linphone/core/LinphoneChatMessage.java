@@ -221,7 +221,7 @@ public interface LinphoneChatMessage {
 	/**
 	 * Start the download of the file referenced in a LinphoneChatMessage from remote server.
 	 */
-	void downloadFile();
+	int downloadFile();
 	
 	/**
 	 * Set the callbacks associated with the LinphoneChatMessage.

@@ -1244,6 +1244,12 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setChatDatabasePath(JNIE
 	env->ReleaseStringUTFChars(jpath, path);
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCallLogsDatabasePath( JNIEnv* env, jobject  thiz, jlong lc, jstring jpath) {
+		const char* path = env->GetStringUTFChars(jpath, NULL);
+		linphone_core_set_call_logs_database_path((LinphoneCore*)lc, path);
+		env->ReleaseStringUTFChars(jpath, path);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPrimaryContact2(JNIEnv* env, jobject  thiz, jlong lc, jstring jcontact) {
 	const char* contact = env->GetStringUTFChars(jcontact, NULL);
 	linphone_core_set_primary_contact((LinphoneCore*)lc, contact);
@@ -1496,6 +1502,12 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getNumberOfCallLogs(	JNI
 		,jobject  thiz
 		,jlong lc) {
 		return (jint)ms_list_size(linphone_core_get_call_logs((LinphoneCore*)lc));
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_migrateCallLogs(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+		linphone_core_migrate_logs_from_rc_to_db((LinphoneCore *)lc);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMtu(JNIEnv*  env
@@ -1873,6 +1885,14 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getOrCreateChatRoom(JNI
 	return (jlong)lResult;
 }
 
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getChatRoom(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong lc
+																		,jlong to) {
+	LinphoneChatRoom* lResult = linphone_core_get_chat_room((LinphoneCore*)lc,(LinphoneAddress *)to);
+	return (jlong)lResult;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableVideo(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
@@ -2080,7 +2100,6 @@ extern "C" JNIEXPORT jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_ch
 	return (jboolean) linphone_core_chat_enabled((LinphoneCore*)ptr);
 }
 
-
 //ProxyConfig
 
 extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_createProxyConfig(JNIEnv* env, jobject thiz, jlong lc) {
@@ -2109,6 +2128,12 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_getIdentity(JN
 	} else {
 		return NULL;
 	}
+}
+extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_getAddress(JNIEnv* env, jobject thiz, jlong proxyCfg) {
+	return (jlong) linphone_proxy_config_get_identity_address((LinphoneProxyConfig*)proxyCfg);
+}
+extern "C" void Java_org_linphone_core_LinphoneProxyConfigImpl_setAddress(JNIEnv* env,jobject thiz,jlong proxyCfg,jlong jidentity) {
+	linphone_proxy_config_set_identity_address((LinphoneProxyConfig*)proxyCfg, (LinphoneAddress*) jidentity);
 }
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_setProxy(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jproxy) {
 	const char* proxy = env->GetStringUTFChars(jproxy, NULL);
@@ -2195,6 +2220,12 @@ extern "C" jstring Java_org_linphone_core_LinphoneProxyConfigImpl_normalizePhone
 	env->ReleaseStringUTFChars(jnumber, number);
 	ms_free(normalized_phone);
 	return normalizedNumber;
+}
+extern "C" jlong Java_org_linphone_core_LinphoneProxyConfigImpl_normalizeSipUri(JNIEnv* env,jobject thiz,jlong proxyCfg,jstring jusername) {
+	const char* username = env->GetStringUTFChars(jusername, NULL);
+	LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri((LinphoneProxyConfig*)proxyCfg, username);
+	env->ReleaseStringUTFChars(jusername, username);
+	return (jlong) addr;
 }
 extern "C" jint Java_org_linphone_core_LinphoneProxyConfigImpl_lookupCCCFromIso(JNIEnv* env, jobject thiz, jlong proxyCfg, jstring jiso) {
 	const char* iso = env->GetStringUTFChars(jiso, NULL);
@@ -3261,10 +3292,10 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setFileTransferFi
 	env->ReleaseStringUTFChars(jpath, path);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_downloadFile(JNIEnv*  env
+extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_downloadFile(JNIEnv*  env
 																		 ,jobject  thiz
 																		 ,jlong ptr) {
-	linphone_chat_message_download_file((LinphoneChatMessage*)ptr);
+	return (jint) linphone_chat_message_download_file((LinphoneChatMessage*)ptr);
 }
 
 static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageState state) {
