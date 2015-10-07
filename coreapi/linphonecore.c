@@ -2532,6 +2532,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	uint64_t curtime_ms = ms_get_cur_time_ms(); /*monotonic time*/
 	int elapsed;
 	time_t current_real_time = ms_time(NULL);
+	int64_t diff_time;
 	bool_t one_second_elapsed=FALSE;
 	const char *remote_provisioning_uri = NULL;
 
@@ -2561,9 +2562,15 @@ void linphone_core_iterate(LinphoneCore *lc){
 	if (lc->prevtime_ms == 0){
 		lc->prevtime_ms = curtime_ms;
 	}
-	if (curtime_ms-lc->prevtime_ms >= 1000){
-		lc->prevtime_ms += 1000;
+	if ((diff_time=curtime_ms-lc->prevtime_ms) >= 1000){
 		one_second_elapsed=TRUE;
+		if (diff_time>3000){
+			/*since monotonic time doesn't increment while machine is sleeping, we don't want to catchup too much*/
+			lc->prevtime_ms = curtime_ms;
+		}else{
+			lc->prevtime_ms += 1000;
+			
+		}
 	}
 
 	if (lc->ecc!=NULL){
