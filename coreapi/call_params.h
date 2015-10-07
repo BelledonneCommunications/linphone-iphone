@@ -400,6 +400,7 @@ LINPHONE_PUBLIC void linphone_call_params_add_custom_sdp_attribute(LinphoneCallP
 /**
  * Add a custom attribute related to a specific stream in the SDP exchanged within SIP messages during a call.
  * @param[in] params The #LinphoneCallParams to add a custom SDP attribute to.
+ * @param[in] type The type of the stream to add a custom SDP attribute to.
  * @param[in] attribute_name The name of the attribute to add.
  * @param[in] attribute_value The content value of the attribute to add.
  * @ingroup media_parameters
@@ -411,14 +412,17 @@ LINPHONE_PUBLIC void linphone_call_params_add_custom_sdp_media_attribute(Linphon
  * @param[in] params The #LinphoneCallParams to get the custom SDP attribute from.
  * @param[in] attribute_name The name of the attribute to get.
  * @return The content value of the attribute or NULL if not found.
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC const char * linphone_call_params_get_custom_sdp_attribute(const LinphoneCallParams *params, const char *attribute_name);
 
 /**
  * Get a custom SDP attribute that is related to a specific stream.
  * @param[in] params The #LinphoneCallParams to get the custom SDP attribute from.
+ * @param[in] type The type of the stream to add a custom SDP attribute to.
  * @param[in] attribute_name The name of the attribute to get.
  * @return The content value of the attribute or NULL if not found.
+ * @ingroup media_parameters
 **/
 LINPHONE_PUBLIC const char * linphone_call_params_get_custom_sdp_media_attribute(const LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name);
 

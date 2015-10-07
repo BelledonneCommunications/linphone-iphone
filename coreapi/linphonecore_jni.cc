@@ -3657,6 +3657,36 @@ extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_addCustomHeader(JN
 	env->ReleaseStringUTFChars(jheader_value, header_value);
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_addCustomSdpAttribute(JNIEnv *env, jobject thiz, jlong ptr, jstring jname, jstring jvalue) {
+	const char *name = env->GetStringUTFChars(jname, NULL);
+	const char *value = env->GetStringUTFChars(jvalue, NULL);
+	linphone_call_params_add_custom_sdp_attribute((LinphoneCallParams *)ptr, name, value);
+	env->ReleaseStringUTFChars(jname, name);
+	env->ReleaseStringUTFChars(jvalue, value);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_addCustomSdpMediaAttribute(JNIEnv *env, jobject thiz, jlong ptr, jint jtype, jstring jname, jstring jvalue) {
+	const char *name = env->GetStringUTFChars(jname, NULL);
+	const char *value = env->GetStringUTFChars(jvalue, NULL);
+	linphone_call_params_add_custom_sdp_media_attribute((LinphoneCallParams *)ptr, (LinphoneStreamType)jtype, name, value);
+	env->ReleaseStringUTFChars(jname, name);
+	env->ReleaseStringUTFChars(jvalue, value);
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_getCustomSdpAttribute(JNIEnv *env, jobject thiz, jlong ptr, jstring jname) {
+	const char *name = env->GetStringUTFChars(jname, NULL);
+	const char *value = linphone_call_params_get_custom_sdp_attribute((LinphoneCallParams *)ptr, name);
+	env->ReleaseStringUTFChars(jname, name);
+	return value ? env->NewStringUTF(value) : NULL;
+}
+
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_getCustomSdpMediaAttribute(JNIEnv *env, jobject thiz, jlong ptr, jint jtype, jstring jname) {
+	const char *name = env->GetStringUTFChars(jname, NULL);
+	const char *value = linphone_call_params_get_custom_sdp_media_attribute((LinphoneCallParams *)ptr, (LinphoneStreamType)jtype, name);
+	env->ReleaseStringUTFChars(jname, name);
+	return value ? env->NewStringUTF(value) : NULL;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setRecordFile(JNIEnv *env, jobject thiz, jlong lcp, jstring jrecord_file){
 	if (jrecord_file){
 		const char* record_file=env->GetStringUTFChars(jrecord_file, NULL);

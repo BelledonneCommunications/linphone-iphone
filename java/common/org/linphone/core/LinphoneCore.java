@@ -251,6 +251,48 @@ public interface LinphoneCore {
 		}
 	}
 	/**
+	 * Stream type enum-like.
+	 *
+	 */
+	static public final class StreamType {
+
+		static private Vector<StreamType> values = new Vector<StreamType>();
+		/**
+		 * Audio
+		 */
+		static public final StreamType Audio = new StreamType(0, "Audio");
+		/**
+		 * Video
+		 */
+		static public final StreamType Video = new StreamType(1, "Video");
+		/**
+		 * Text
+		 */
+		static public final StreamType Text = new StreamType(2, "Text");
+		/**
+		 * Unknown
+		 */
+		static public final StreamType Unknown = new StreamType(3, "Unknown");
+		protected final int mValue;
+		private final String mStringValue;
+
+		private StreamType(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+		public static StreamType fromInt(int value) {
+			for (int i = 0; i < values.size(); i++) {
+				StreamType stype = (StreamType) values.elementAt(i);
+				if (stype.mValue == value) return stype;
+			}
+			throw new RuntimeException("StreamType not found [" + value + "]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
 	 * Media (RTP) encryption enum-like.
 	 *
 	 */

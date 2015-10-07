@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 import org.linphone.core.LinphoneCore.MediaEncryption;
+import org.linphone.core.LinphoneCore.StreamType;
 
 public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	protected final long nativePtr;
@@ -105,6 +106,30 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	@Override
 	public String getCustomHeader(String name) {
 		return getCustomHeader(nativePtr,name);
+	}
+
+	private native void addCustomSdpAttribute(long nativePtr, String name, String value); 
+	@Override
+	public void addCustomSdpAttribute(String name, String value) {
+		addCustomSdpAttribute(nativePtr, name, value);
+	}
+
+	private native void addCustomSdpMediaAttribute(long nativePtr, int type, String name, String value); 
+	@Override
+	public void addCustomSdpMediaAttribute(StreamType type, String name, String value) {
+		addCustomSdpMediaAttribute(nativePtr, type.mValue, name, value);
+	}
+
+	private native String getCustomSdpAttribute(long nativePtr, String name);
+	@Override
+	public String getCustomSdpAttribute(String name) {
+		return getCustomSdpAttribute(nativePtr, name);
+	}
+
+	private native String getCustomSdpMediaAttribute(long nativePtr, int type, String name);
+	@Override
+	public String getCustomSdpMediaAttribute(StreamType type, String name) {
+		return getCustomSdpMediaAttribute(nativePtr, type.mValue, name);
 	}
 
 	private native void setPrivacy(long nativePtr, int mask);
