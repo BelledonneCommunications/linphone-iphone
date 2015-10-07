@@ -34,7 +34,8 @@ function generate_localizable_from_sources {
 	#WARNING: sed issue "extra characters at the end of g command" means that
 	# we are trying to modify an UTF-16 file which is not supported..
 	localizable_en=$root_directory/Resources/en.lproj/Localizable.strings
-	find $root_directory/Classes -name '*.m' | xargs genstrings -u -a -o $(dirname $localizable_en)
+	rm -f $localizable_en
+	find $root_directory/Classes -name '*.m' | xargs genstrings -u -a -o "$(dirname $localizable_en)"
 }
 
 ##### 2. Generate .strings for all XIB files
