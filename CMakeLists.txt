@@ -56,7 +56,6 @@ option(ENABLE_DEBUG_LOGS "Turn on or off debug level logs." NO)
 option(ENABLE_NLS "Build with internationalisation support" YES)
 option(ENABLE_CALL_LOGS_STORAGE "Turn on compilation of call logs storage." YES)
 
-set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
