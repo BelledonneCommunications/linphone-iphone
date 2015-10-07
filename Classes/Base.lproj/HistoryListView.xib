@@ -114,6 +114,7 @@
         <tableViewController autoresizesArchivedViewToFullSize="NO" id="18" userLabel="tableController" customClass="HistoryListTableView">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
+                <outlet property="deleteButton" destination="35" id="n8o-lE-u1t"/>
                 <outlet property="view" destination="17" id="25"/>
             </connections>
             <point key="canvasLocation" x="596" y="305"/>

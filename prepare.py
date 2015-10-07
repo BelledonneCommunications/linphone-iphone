@@ -238,7 +238,7 @@ def check_tools():
         sudo mv gas-preprocessor.pl {}""".format(package_manager_info[detect_package_manager() + "-binary-path"]))
         reterr = 1
 
-    if not os.path.isdir("submodules/linphone/mediastreamer2") or not os.path.isdir("submodules/linphone/oRTP"):
+    if not os.path.isdir("submodules/linphone/mediastreamer2/src") or not os.path.isdir("submodules/linphone/oRTP/src"):
         error("Missing some git submodules. Did you run:\n\tgit submodule update --init --recursive")
         reterr = 1
 
@@ -482,7 +482,7 @@ def main(argv=None):
     argparser.add_argument(
         '--enable-non-free-codecs', help="Enable non-free codecs such as OpenH264, MPEG4, etc.. Final application must comply with their respective license (see README.md).", action='store_true')
     argparser.add_argument(
-        '-G' '--generator', help="CMake build system generator (default: Unix Makefiles).", default='Unix Makefiles', choices=['Unix Makefiles', 'Ninja'], dest='generator')
+        '-G' '--generator', help="CMake build system generator (default: Unix Makefiles, use cmake -h to get the complete list).", default='Unix Makefiles', dest='generator')
     argparser.add_argument(
         '-L', '--list-cmake-variables', help="List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
     argparser.add_argument(
@@ -495,12 +495,6 @@ def main(argv=None):
     args, additional_args = argparser.parse_known_args()
 
     additional_args += ["-G", args.generator]
-    if args.generator == 'Ninja':
-        if not check_is_installed("ninja", "it"):
-            return 1
-        generator = 'ninja -C'
-    else:
-        generator = '$(MAKE) -C'
 
     if check_tools() != 0:
         return 1
@@ -578,7 +572,18 @@ def main(argv=None):
             os.remove('Makefile')
     elif selected_platforms:
         install_git_hook()
-        generate_makefile(selected_platforms, generator)
+
+        # only generated makefile if we are using Ninja or Makefile
+        if args.generator == 'Ninja':
+            if not check_is_installed("ninja", "it"):
+                return 1
+            generate_makefile(selected_platforms, 'ninja -C')
+        elif args.generator == "Unix Makefiles":
+            generate_makefile(selected_platforms, '$(MAKE) -C')
+        elif args.generator == "Xcode":
+            print("You can now open Xcode project with: open WORK/cmake/Project.xcodeproj")
+        else:
+            print("Not generating meta-makefile for generator {}.".format(args.generator))
 
     return 0
 

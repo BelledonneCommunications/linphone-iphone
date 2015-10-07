@@ -65,7 +65,6 @@
 		63D5C13B1BA6E504002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C13C1BA6E504002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
 		63D5C13D1BA6E504002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
-		63D5C13E1BA6E504002D1ABF /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11A1BA6E4F0002D1ABF /* libSKP_SILK_SDK.a */; };
 		63D5C13F1BA6E504002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C1401BA6E504002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C1411BA6E504002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -102,7 +101,6 @@
 		63D5C1661BA6E765002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C1671BA6E765002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
 		63D5C1681BA6E765002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
-		63D5C1691BA6E765002D1ABF /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11A1BA6E4F0002D1ABF /* libSKP_SILK_SDK.a */; };
 		63D5C16A1BA6E765002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C16B1BA6E765002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C16C1BA6E765002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -152,7 +150,6 @@
 		63D5C1991BA6E92A002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C19A1BA6E92A002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
 		63D5C19B1BA6E92A002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
-		63D5C19C1BA6E92A002D1ABF /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11A1BA6E4F0002D1ABF /* libSKP_SILK_SDK.a */; };
 		63D5C19D1BA6E92A002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C19E1BA6E92A002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C19F1BA6E92A002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -182,7 +179,6 @@
 		63D5C1B71BA6E95C002D1ABF /* libopus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1171BA6E4F0002D1ABF /* libopus.a */; };
 		63D5C1B81BA6E95C002D1ABF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1181BA6E4F0002D1ABF /* libortp.a */; };
 		63D5C1B91BA6E95C002D1ABF /* libpolarssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1191BA6E4F0002D1ABF /* libpolarssl.a */; };
-		63D5C1BA1BA6E95C002D1ABF /* libSKP_SILK_SDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11A1BA6E4F0002D1ABF /* libSKP_SILK_SDK.a */; };
 		63D5C1BB1BA6E95C002D1ABF /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11B1BA6E4F0002D1ABF /* libspeex.a */; };
 		63D5C1BC1BA6E95C002D1ABF /* libspeexdsp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11C1BA6E4F0002D1ABF /* libspeexdsp.a */; };
 		63D5C1BD1BA6E95C002D1ABF /* libsrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C11D1BA6E4F0002D1ABF /* libsrtp.a */; };
@@ -294,7 +290,6 @@
 				63D5C13B1BA6E504002D1ABF /* libopus.a in Frameworks */,
 				63D5C13C1BA6E504002D1ABF /* libortp.a in Frameworks */,
 				63D5C13D1BA6E504002D1ABF /* libpolarssl.a in Frameworks */,
-				63D5C13E1BA6E504002D1ABF /* libSKP_SILK_SDK.a in Frameworks */,
 				63D5C13F1BA6E504002D1ABF /* libspeex.a in Frameworks */,
 				63D5C1401BA6E504002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C1411BA6E504002D1ABF /* libsrtp.a in Frameworks */,
@@ -367,7 +362,6 @@
 				63D5C1661BA6E765002D1ABF /* libopus.a in Frameworks */,
 				63D5C1671BA6E765002D1ABF /* libortp.a in Frameworks */,
 				63D5C1681BA6E765002D1ABF /* libpolarssl.a in Frameworks */,
-				63D5C1691BA6E765002D1ABF /* libSKP_SILK_SDK.a in Frameworks */,
 				63D5C16A1BA6E765002D1ABF /* libspeex.a in Frameworks */,
 				63D5C16B1BA6E765002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C16C1BA6E765002D1ABF /* libsrtp.a in Frameworks */,
@@ -404,7 +398,6 @@
 				63D5C1991BA6E92A002D1ABF /* libopus.a in Frameworks */,
 				63D5C19A1BA6E92A002D1ABF /* libortp.a in Frameworks */,
 				63D5C19B1BA6E92A002D1ABF /* libpolarssl.a in Frameworks */,
-				63D5C19C1BA6E92A002D1ABF /* libSKP_SILK_SDK.a in Frameworks */,
 				63D5C19D1BA6E92A002D1ABF /* libspeex.a in Frameworks */,
 				63D5C19E1BA6E92A002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C19F1BA6E92A002D1ABF /* libsrtp.a in Frameworks */,
@@ -454,7 +447,6 @@
 				63D5C1B71BA6E95C002D1ABF /* libopus.a in Frameworks */,
 				63D5C1B81BA6E95C002D1ABF /* libortp.a in Frameworks */,
 				63D5C1B91BA6E95C002D1ABF /* libpolarssl.a in Frameworks */,
-				63D5C1BA1BA6E95C002D1ABF /* libSKP_SILK_SDK.a in Frameworks */,
 				63D5C1BB1BA6E95C002D1ABF /* libspeex.a in Frameworks */,
 				63D5C1BC1BA6E95C002D1ABF /* libspeexdsp.a in Frameworks */,
 				63D5C1BD1BA6E95C002D1ABF /* libsrtp.a in Frameworks */,
@@ -790,8 +782,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"../liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -810,8 +802,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"../liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -833,8 +825,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"../liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -853,8 +845,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
+					"../liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -876,7 +868,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -895,7 +887,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -917,7 +909,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -936,7 +928,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/gpelloux/code/ios/linphone-iphone/liblinphone-sdk/apple-darwin/lib",
+					"../liblinphone-sdk/apple-darwin/lib",
 				);
 				PRODUCT_NAME = "hello-world";
 				SDKROOT = iphoneos;
@@ -949,13 +941,15 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../liblinphone-sdk/apple-darwin/include";
+				HEADER_SEARCH_PATHS = "../liblinphone-sdk/apple-darwin/include";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib";
+				LIBRARY_SEARCH_PATHS = "../liblinphone-sdk/apple-darwin/lib";
+				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 			};
@@ -966,12 +960,13 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../liblinphone-sdk/apple-darwin/include";
+				HEADER_SEARCH_PATHS = "../liblinphone-sdk/apple-darwin/include";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../liblinphone-sdk/apple-darwin/lib";
+				LIBRARY_SEARCH_PATHS = "../liblinphone-sdk/apple-darwin/lib";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;

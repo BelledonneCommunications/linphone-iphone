@@ -142,6 +142,7 @@
                             <color key="separatorColor" red="0.7254902124" green="0.76862746479999999" blue="0.79607844350000001" alpha="1" colorSpace="deviceRGB"/>
                             <connections>
                                 <outlet property="dataSource" destination="TJG-JZ-YRR" id="334-RR-jEi"/>
+                                <outlet property="delegate" destination="TJG-JZ-YRR" id="V1N-gI-U4J"/>
                             </connections>
                         </tableView>
                         <searchBar contentMode="redraw" showsCancelButton="YES" id="5jE-oF-d45" userLabel="searchBar">
@@ -161,6 +162,7 @@
         </view>
         <tableViewController id="TJG-JZ-YRR" userLabel="tableController" customClass="ContactsListTableView">
             <connections>
+                <outlet property="deleteButton" destination="aJI-VJ-xN6" id="aDS-tk-vAO"/>
                 <outlet property="view" destination="zOo-FS-W6l" id="cM7-Da-i7e"/>
             </connections>
             <point key="canvasLocation" x="510" y="206"/>

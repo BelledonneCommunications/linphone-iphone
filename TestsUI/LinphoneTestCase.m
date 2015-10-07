@@ -156,10 +156,11 @@
 - (void)waitForRegistration {
 	// wait for account to be registered
 	int timeout = 15;
-	while (timeout && [tester tryFindingViewWithAccessibilityLabel:@"Registration state"
-															 value:@"Registered"
-															traits:UIAccessibilityTraitStaticText
-															 error:nil]) {
+	while (timeout &&
+		   ![tester tryFindingViewWithAccessibilityLabel:@"Registration state"
+												   value:@"Registered"
+												  traits:UIAccessibilityTraitStaticText
+												   error:nil]) {
 		[tester waitForTimeInterval:1];
 		timeout--;
 	}

@@ -36,6 +36,7 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 + (void)buttonFixStates:(UIButton*)button;
 + (void)buttonMultiViewAddAttributes:(NSMutableDictionary*)attributes button:(UIButton*)button;
 + (void)buttonMultiViewApplyAttributes:(NSDictionary*)attributes button:(UIButton*)button;
++ (NSString *)deviceName;
 
 + (NSString *)timeToString:(time_t)time withStyle:(NSDateFormatterStyle)style;
 

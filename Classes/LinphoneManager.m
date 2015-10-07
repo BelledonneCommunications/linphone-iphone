@@ -42,6 +42,8 @@
 
 #import <AVFoundation/AVAudioPlayer.h>
 #import "Utils.h"
+#import "Utils/DTFoundation/DTAlertView.h"
+#import "PhoneMainView.h"
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
 
@@ -860,6 +862,51 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
 }
 
+#pragma mark - Auth info Function
+
+static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char *realm, const char *username,
+												   const char *domain) {
+	// let the wizard handle its own errors
+	if ([PhoneMainView.instance currentView] != WizardViewController.compositeViewDescription) {
+		static DTAlertView *alertView = nil;
+
+		// avoid having multiple popups
+		if ([alertView isVisible]) {
+			[alertView dismissWithClickedButtonIndex:0 animated:NO];
+		}
+
+		alertView = [[DTAlertView alloc]
+			initWithTitle:NSLocalizedString(@"Authentication needed.", nil)
+				  message:[NSString stringWithFormat:NSLocalizedString(@"Registration failed because authentication is "
+																	   @"missing or invalid for %s@%s.\nYou can "
+																	   @"provide password again, or check your "
+																	   @"account configuration in the settings.",
+																	   nil),
+													 username, realm]];
+		alertView.alertViewStyle = UIAlertViewStyleSecureTextInput;
+		[alertView addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+		__weak UITextField *passwordField = [alertView textFieldAtIndex:0];
+
+		[alertView addButtonWithTitle:NSLocalizedString(@"Continue", nil)
+								block:^{
+								  LinphoneAuthInfo *info = (LinphoneAuthInfo *)linphone_core_find_auth_info(
+									  [LinphoneManager getLc], realm, username, domain);
+								  if (info) {
+									  linphone_auth_info_set_passwd(info, passwordField.text.UTF8String);
+									  linphone_auth_info_set_ha1(info, NULL);
+									  linphone_proxy_config_refresh_register(
+										  linphone_core_get_default_proxy_config([LinphoneManager getLc]));
+								  } else {
+									  LOGE(@"Could not find auth info associated with %s@%s, going to settings!",
+										   username, domain);
+									  [[PhoneMainView instance]
+										  changeCurrentView:[SettingsViewController compositeViewDescription]];
+								  }
+								}];
+		[alertView show];
+	}
+}
+
 #pragma mark - Text Received Functions
 
 - (void)onMessageReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room message:(LinphoneChatMessage *)msg {
@@ -1210,7 +1257,7 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 											  .registration_state_changed = linphone_iphone_registration_state,
 											  .notify_presence_received = NULL,
 											  .new_subscription_requested = NULL,
-											  .auth_info_requested = NULL,
+											  .auth_info_requested = linphone_iphone_popup_password_request,
 											  .display_status = linphone_iphone_display_status,
 											  .display_message = linphone_iphone_log_user_info,
 											  .display_warning = linphone_iphone_log_user_warning,
@@ -1249,10 +1296,10 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 	const char *lRootCa =
 		[[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
-	linphone_core_set_user_agent(theLinphoneCore,
-								 [[[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-									 stringByAppendingString:@"Iphone"] UTF8String],
-								 LINPHONE_IOS_VERSION);
+	NSString *device = [NSString
+		stringWithFormat:@"%@_%@_iOS%@", [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
+						 [LinphoneUtils deviceName], UIDevice.currentDevice.systemVersion];
+	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, LINPHONE_IOS_VERSION);
 
 	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"];
 

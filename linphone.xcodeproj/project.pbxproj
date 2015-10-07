@@ -2593,6 +2593,19 @@
 			shellPath = /bin/sh;
 			shellScript = $SRCROOT/Tools/git_version.sh;
 		};
+		63F0162D1BB3E9D5001FAD87 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "test -f liblinphone-sdk/apple-darwin/share/linphone/rootca.pem || (echo 'liblinphone SDK not found. Please refer to the README: you have to compile liblinphone SDK before building Linphone application.' && exit 1)";
+		};
 		D33CF34715D3985000CD4B85 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

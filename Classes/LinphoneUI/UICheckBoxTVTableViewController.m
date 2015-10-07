@@ -69,12 +69,13 @@
 		[checkBoxButton setImage:image forState:UIControlStateNormal];
 		[checkBoxButton setFrame:CGRectMake(0, 0, 19, 19)];
 		[checkBoxButton setBackgroundColor:[UIColor clearColor]];
-
+		checkBoxButton.userInteractionEnabled = NO;
 		cell.accessoryView = checkBoxButton;
 	} else {
 		cell.accessoryView = nil;
 		cell.accessoryType = UITableViewCellAccessoryNone;
 	}
+	_deleteButton.enabled = (_selectedItems.count != 0);
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
@@ -100,6 +101,13 @@
 			 forRowAtIndexPath:indexPath];
 	}
 	[_selectedItems removeAllObjects];
+}
+
+- (void)onSelectionToggle:(id)sender {
+	if (_selectedItems.count == 0) {
+		[self table]
+	} else {
+	}
 }
 
 @end

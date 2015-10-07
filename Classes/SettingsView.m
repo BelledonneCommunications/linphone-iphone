@@ -787,8 +787,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)emailAttachments:(NSArray *)attachments {
 	NSString *error = nil;
 #if TARGET_IPHONE_SIMULATOR
-	error =
-		NSLocalizedString(@"Cannot send emails on the Simulator. To test this feature, please use a real device.", nil);
+	error = @"Cannot send emails on the Simulator. To test this feature, please use a real device.";
 #else
 	if ([MFMailComposeViewController canSendMail] == NO) {
 		error = NSLocalizedString(
@@ -808,12 +807,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
 		picker.mailComposeDelegate = self;
 
-		[picker setSubject:NSLocalizedString(@"Linphone iOS Logs", nil)];
+		[picker setSubject:@"Linphone iOS Logs"];
 		[picker setToRecipients:[NSArray arrayWithObjects:@"linphone-iphone@belledonne-communications.com", nil]];
-		[picker setMessageBody:NSLocalizedString(@"Here are information about an issue I had on my device.\nI was "
-												 @"doing ...\nI expected Linphone to ...\nInstead, I got an "
-												 @"unexpected result: ...",
-												 nil)
+		[picker setMessageBody:@"Here are information about an issue I had on my device.\nI was "
+							   @"doing ...\nI expected Linphone to ...\nInstead, I got an "
+							   @"unexpected result: ..."
 						isHTML:NO];
 		for (NSArray *attachment in attachments) {
 			if ([[NSFileManager defaultManager] fileExistsAtPath:attachment[0]]) {
