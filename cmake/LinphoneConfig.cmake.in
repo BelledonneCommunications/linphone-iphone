@@ -29,7 +29,10 @@
 #  LINPHONE_CPPFLAGS - The compilation flags needed to use linphone
 #  LINPHONE_LDFLAGS - The linking flags needed to use linphone
 
-include("${CMAKE_CURRENT_LIST_DIR}/LinphoneTargets.cmake")
+if(NOT LINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS)
+	include("${CMAKE_CURRENT_LIST_DIR}/LinphoneTargets.cmake")
+endif()
+
 find_package(Mediastreamer2 REQUIRED)
 find_package(BelleSIP REQUIRED)
 if(@ENABLE_TUNNEL@)
