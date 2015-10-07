@@ -112,6 +112,23 @@ enum _LinphoneTransportType{
 typedef enum _LinphoneTransportType LinphoneTransportType;
 
 /**
+ * Enum describing the stream types.
+ * @ingroup initializing
+**/
+enum _LinphoneStreamType {
+	LinphoneStreamTypeAudio,
+	LinphoneStreamTypeVideo,
+	LinphoneStreamTypeText,
+	LinphoneStreamTypeUnknown /* WARNING: Make sure this value remains the last one in the list */
+};
+
+/**
+ * Enum describing the stream types.
+ * @ingroup initializing
+**/
+typedef enum _LinphoneStreamType LinphoneStreamType;
+
+/**
  * Object that represents a SIP address.
  *
  * The LinphoneAddress is an opaque object to represents SIP addresses, ie
@@ -469,9 +486,9 @@ typedef struct _LinphoneVideoPolicy LinphoneVideoPolicy;
  * @{
 **/
 
-#define LINPHONE_CALL_STATS_AUDIO 0
-#define LINPHONE_CALL_STATS_VIDEO 1
-#define LINPHONE_CALL_STATS_TEXT  2
+#define LINPHONE_CALL_STATS_AUDIO ((int)LinphoneStreamTypeAudio)
+#define LINPHONE_CALL_STATS_VIDEO ((int)LinphoneStreamTypeVideo)
+#define LINPHONE_CALL_STATS_TEXT  ((int)LinphoneStreamTypeText)
 
 /**
  * Enum describing ICE states.

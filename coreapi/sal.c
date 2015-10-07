@@ -72,7 +72,9 @@ static void sal_media_description_destroy(SalMediaDescription *md){
 		ms_list_free_with_data(md->streams[i].already_assigned_payloads,(void (*)(void *))payload_type_destroy);
 		md->streams[i].payloads=NULL;
 		md->streams[i].already_assigned_payloads=NULL;
+		sal_custom_sdp_attribute_free(md->streams[i].custom_sdp_attributes);
 	}
+	sal_custom_sdp_attribute_free(md->custom_sdp_attributes);
 	ms_free(md);
 }
 

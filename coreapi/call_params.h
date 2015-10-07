@@ -388,6 +388,40 @@ LINPHONE_PUBLIC int linphone_call_params_enable_realtime_text(LinphoneCallParams
 **/
 LINPHONE_PUBLIC bool_t linphone_call_params_realtime_text_enabled(const LinphoneCallParams *params);
 
+/**
+ * Add a custom attribute related to all the streams in the SDP exchanged within SIP messages during a call.
+ * @param[in] params The #LinphoneCallParams to add a custom SDP attribute to.
+ * @param[in] attribute_name The name of the attribute to add.
+ * @param[in] attribute_value The content value of the attribute to add.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_call_params_add_custom_sdp_attribute(LinphoneCallParams *params, const char *attribute_name, const char *attribute_value);
+
+/**
+ * Add a custom attribute related to a specific stream in the SDP exchanged within SIP messages during a call.
+ * @param[in] params The #LinphoneCallParams to add a custom SDP attribute to.
+ * @param[in] attribute_name The name of the attribute to add.
+ * @param[in] attribute_value The content value of the attribute to add.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_call_params_add_custom_sdp_media_attribute(LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name, const char *attribute_value);
+
+/**
+ * Get a custom SDP attribute that is related to all the streams.
+ * @param[in] params The #LinphoneCallParams to get the custom SDP attribute from.
+ * @param[in] attribute_name The name of the attribute to get.
+ * @return The content value of the attribute or NULL if not found.
+**/
+LINPHONE_PUBLIC const char * linphone_call_params_get_custom_sdp_attribute(const LinphoneCallParams *params, const char *attribute_name);
+
+/**
+ * Get a custom SDP attribute that is related to a specific stream.
+ * @param[in] params The #LinphoneCallParams to get the custom SDP attribute from.
+ * @param[in] attribute_name The name of the attribute to get.
+ * @return The content value of the attribute or NULL if not found.
+**/
+LINPHONE_PUBLIC const char * linphone_call_params_get_custom_sdp_media_attribute(const LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name);
+
 
 /*******************************************************************************
  * DEPRECATED                                                                  *

@@ -29,7 +29,7 @@ void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_typ
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
 	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
 	MediaStream * ms;
-	if (stream_type == LINPHONE_CALL_STATS_AUDIO){
+	if (stream_type == SalAudio){
 		ms = (MediaStream*)call->audiostream;
 	}else{
 		ms = (MediaStream*)call->videostream;

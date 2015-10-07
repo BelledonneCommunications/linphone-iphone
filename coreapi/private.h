@@ -128,6 +128,8 @@ struct _LinphoneCallParams{
 	char *record_file;
 	char *session_name;
 	SalCustomHeader *custom_headers;
+	SalCustomSdpAttribute *custom_sdp_attributes;
+	SalCustomSdpAttribute *custom_sdp_media_attributes[LinphoneStreamTypeUnknown];
 	LinphonePrivacyMask privacy;
 	LinphoneMediaDirection audio_dir;
 	LinphoneMediaDirection video_dir;
@@ -346,6 +348,8 @@ SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params);
 SalStreamDir get_audio_dir_from_call_params(const LinphoneCallParams *params);
 SalStreamDir get_video_dir_from_call_params(const LinphoneCallParams *params);
 void linphone_call_params_set_custom_headers(LinphoneCallParams *params, const SalCustomHeader *ch);
+void linphone_call_params_set_custom_sdp_attributes(LinphoneCallParams *params, const SalCustomSdpAttribute *csa);
+void linphone_call_params_set_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type, const SalCustomSdpAttribute *csa);
 
 void linphone_auth_info_write_config(struct _LpConfig *config, LinphoneAuthInfo *obj, int pos);
 void linphone_core_write_auth_info(LinphoneCore *lc, LinphoneAuthInfo *ai);

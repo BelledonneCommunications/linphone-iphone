@@ -1209,6 +1209,40 @@ static void call_with_custom_headers(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_custom_sdp_attributes(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall *call_marie, *call_pauline;
+	LinphoneCallParams *params;
+	const LinphoneCallParams *marie_remote_params;
+	const char *value;
+
+	params = linphone_core_create_default_call_parameters(marie->lc);
+	linphone_call_params_add_custom_sdp_attribute(params, "weather", "bad");
+	linphone_call_params_add_custom_sdp_attribute(params, "working", "yes");
+	linphone_call_params_add_custom_sdp_media_attribute(params, LinphoneStreamTypeAudio, "sleeping", "almost");
+	BC_ASSERT_TRUE(call_with_caller_params(pauline, marie, params));
+	linphone_call_params_destroy(params);
+
+	call_marie = linphone_core_get_current_call(marie->lc);
+	call_pauline = linphone_core_get_current_call(pauline->lc);
+	BC_ASSERT_PTR_NOT_NULL(call_marie);
+	BC_ASSERT_PTR_NOT_NULL(call_pauline);
+
+	marie_remote_params = linphone_call_get_remote_params(call_marie);
+	value = linphone_call_params_get_custom_sdp_attribute(marie_remote_params, "weather");
+	BC_ASSERT_PTR_NOT_NULL(value);
+	BC_ASSERT_STRING_EQUAL(value, "bad");
+	value = linphone_call_params_get_custom_sdp_media_attribute(marie_remote_params, LinphoneStreamTypeAudio, "sleeping");
+	BC_ASSERT_PTR_NOT_NULL(value);
+	BC_ASSERT_STRING_EQUAL(value, "almost");
+
+	end_call(pauline, marie);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 void call_paused_resumed_base(bool_t multicast) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -5271,6 +5305,7 @@ test_t call_tests[] = {
 	{ "Call from ICE to not ICE",ice_to_not_ice},
 	{ "Call from not ICE to ICE",not_ice_to_ice},
 	{ "Call with custom headers",call_with_custom_headers},
+	{ "Call with custom SDP attributes", call_with_custom_sdp_attributes },
 	{ "Call established with rejected INFO",call_established_with_rejected_info},
 	{ "Call established with rejected RE-INVITE",call_established_with_rejected_reinvite},
 	{ "Call established with rejected incoming RE-INVITE", call_established_with_rejected_incoming_reinvite },

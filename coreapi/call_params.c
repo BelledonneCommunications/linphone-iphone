@@ -82,6 +82,26 @@ void linphone_call_params_set_custom_headers(LinphoneCallParams *params, const S
 	}
 }
 
+void linphone_call_params_set_custom_sdp_attributes(LinphoneCallParams *params, const SalCustomSdpAttribute *csa) {
+	if (params->custom_sdp_attributes) {
+		sal_custom_sdp_attribute_free(params->custom_sdp_attributes);
+		params->custom_sdp_attributes = NULL;
+	}
+	if (csa) {
+		params->custom_sdp_attributes = sal_custom_sdp_attribute_clone(csa);
+	}
+}
+
+void linphone_call_params_set_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type, const SalCustomSdpAttribute *csa) {
+	if (params->custom_sdp_media_attributes[type]) {
+		sal_custom_sdp_attribute_free(params->custom_sdp_media_attributes[type]);
+		params->custom_sdp_media_attributes[type] = NULL;
+	}
+	if (csa) {
+		params->custom_sdp_media_attributes[type] = sal_custom_sdp_attribute_clone(csa);
+	}
+}
+
 
 /*******************************************************************************
  * Public functions                                                            *
@@ -91,7 +111,16 @@ void linphone_call_params_add_custom_header(LinphoneCallParams *params, const ch
 	params->custom_headers=sal_custom_header_append(params->custom_headers,header_name,header_value);
 }
 
+void linphone_call_params_add_custom_sdp_attribute(LinphoneCallParams *params, const char *attribute_name, const char *attribute_value) {
+	params->custom_sdp_attributes = sal_custom_sdp_attribute_append(params->custom_sdp_attributes, attribute_name, attribute_value);
+}
+
+void linphone_call_params_add_custom_sdp_media_attribute(LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name, const char *attribute_value) {
+	params->custom_sdp_media_attributes[type] = sal_custom_sdp_attribute_append(params->custom_sdp_media_attributes[type], attribute_name, attribute_value);
+}
+
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
+	unsigned int i;
 	LinphoneCallParams *ncp=linphone_call_params_new();
 	memcpy(ncp,cp,sizeof(LinphoneCallParams));
 	if (cp->record_file) ncp->record_file=ms_strdup(cp->record_file);
@@ -100,6 +129,10 @@ LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
 	 * The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient.
 	 */
 	if (cp->custom_headers) ncp->custom_headers=sal_custom_header_clone(cp->custom_headers);
+	if (cp->custom_sdp_attributes) ncp->custom_sdp_attributes = sal_custom_sdp_attribute_clone(cp->custom_sdp_attributes);
+	for (i = 0; i < (unsigned int)LinphoneStreamTypeUnknown; i++) {
+		if (cp->custom_sdp_media_attributes[i]) ncp->custom_sdp_media_attributes[i] = sal_custom_sdp_attribute_clone(cp->custom_sdp_media_attributes[i]);
+	}
 
 	return ncp;
 }
@@ -122,6 +155,11 @@ void linphone_call_params_enable_audio(LinphoneCallParams *cp, bool_t enabled){
 		cp->audio_dir=LinphoneMediaDirectionSendRecv;
 }
 
+int linphone_call_params_enable_realtime_text(LinphoneCallParams *params, bool_t yesno) {
+	params->realtimetext_enabled=yesno;
+	return 0;
+}
+
 void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 	cp->has_video=enabled;
 	if (enabled && cp->video_dir==LinphoneMediaDirectionInactive)
@@ -130,6 +168,14 @@ void linphone_call_params_enable_video(LinphoneCallParams *cp, bool_t enabled){
 
 const char *linphone_call_params_get_custom_header(const LinphoneCallParams *params, const char *header_name){
 	return sal_custom_header_find(params->custom_headers,header_name);
+}
+
+const char * linphone_call_params_get_custom_sdp_attribute(const LinphoneCallParams *params, const char *attribute_name) {
+	return sal_custom_sdp_attribute_find(params->custom_sdp_attributes, attribute_name);
+}
+
+const char * linphone_call_params_get_custom_sdp_media_attribute(const LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name) {
+	return sal_custom_sdp_attribute_find(params->custom_sdp_media_attributes[type], attribute_name);
 }
 
 bool_t linphone_call_params_get_local_conference_mode(const LinphoneCallParams *cp){
@@ -216,6 +262,10 @@ bool_t linphone_call_params_audio_enabled(const LinphoneCallParams *cp){
 	return cp->has_audio;
 }
 
+bool_t linphone_call_params_realtime_text_enabled(const LinphoneCallParams *params) {
+	return params->realtimetext_enabled;
+}
+
 bool_t linphone_call_params_video_enabled(const LinphoneCallParams *cp){
 	return cp->has_video;
 }
@@ -278,8 +328,13 @@ bool_t linphone_call_params_video_multicast_enabled(const LinphoneCallParams *pa
  ******************************************************************************/
 
 static void _linphone_call_params_destroy(LinphoneCallParams *cp){
+	unsigned int i;
 	if (cp->record_file) ms_free(cp->record_file);
 	if (cp->custom_headers) sal_custom_header_free(cp->custom_headers);
+	if (cp->custom_sdp_attributes) sal_custom_sdp_attribute_free(cp->custom_sdp_attributes);
+	for (i = 0; i < (unsigned int)LinphoneStreamTypeUnknown; i++) {
+		if (cp->custom_sdp_media_attributes[i]) sal_custom_sdp_attribute_free(cp->custom_sdp_media_attributes[i]);
+	}
 	if (cp->session_name) ms_free(cp->session_name);
 }
 
@@ -305,12 +360,3 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneCallParams, belle_sip_object_t,
 	NULL, // marshal
 	FALSE
 );
-
-int linphone_call_params_enable_realtime_text(LinphoneCallParams *params, bool_t yesno) {
-	params->realtimetext_enabled=yesno;
-	return 0;
-}
-
-bool_t linphone_call_params_realtime_text_enabled(const LinphoneCallParams *params) {
-	return params->realtimetext_enabled;
-}

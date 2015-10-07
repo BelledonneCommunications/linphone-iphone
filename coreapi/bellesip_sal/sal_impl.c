@@ -924,6 +924,40 @@ const SalCustomHeader *sal_op_get_recv_custom_header(SalOp *op){
 	return b->recv_custom_headers;
 }
 
+SalCustomSdpAttribute * sal_custom_sdp_attribute_append(SalCustomSdpAttribute *csa, const char *name, const char *value) {
+	belle_sdp_session_description_t *desc = (belle_sdp_session_description_t *)csa;
+	belle_sdp_attribute_t *attr;
+
+	if (desc == NULL) {
+		desc = (belle_sdp_session_description_t *)belle_sdp_session_description_new();
+		belle_sip_object_ref(desc);
+	}
+	attr = BELLE_SDP_ATTRIBUTE(belle_sdp_raw_attribute_create(name, value));
+	if (attr == NULL) {
+		belle_sip_error("Fail to create custom SDP attribute.");
+		return (SalCustomSdpAttribute*)desc;
+	}
+	belle_sdp_session_description_add_attribute(desc, attr);
+	return (SalCustomSdpAttribute *)desc;
+}
+
+const char * sal_custom_sdp_attribute_find(const SalCustomSdpAttribute *csa, const char *name) {
+	if (csa) {
+		return belle_sdp_session_description_get_attribute_value((belle_sdp_session_description_t *)csa, name);
+	}
+	return NULL;
+}
+
+void sal_custom_sdp_attribute_free(SalCustomSdpAttribute *csa) {
+	if (csa == NULL) return;
+	belle_sip_object_unref((belle_sdp_session_description_t *)csa);
+}
+
+SalCustomSdpAttribute * sal_custom_sdp_attribute_clone(const SalCustomSdpAttribute *csa) {
+	if (csa == NULL) return NULL;
+	return (SalCustomSdpAttribute *)belle_sip_object_ref((belle_sdp_session_description_t *)csa);
+}
+
 void sal_set_uuid(Sal *sal, const char *uuid){
 	if (sal->uuid){
 		ms_free(sal->uuid);
