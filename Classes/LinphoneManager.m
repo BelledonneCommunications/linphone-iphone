@@ -702,7 +702,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 					data->notification.repeatInterval = 0;
 
 					data->notification.alertBody =
-						[NSString stringWithFormat:NSLocalizedString(@"IC_MSG", nil), address];
+						[NSString stringWithFormat:NSLocalizedString(@"Incoming call from %@", nil), address];
 					data->notification.alertAction = NSLocalizedString(@"Answer", nil);
 					data->notification.userInfo = @{ @"callId" : callId, @"timer" : [NSNumber numberWithInt:1] };
 					data->notification.applicationIconBadgeNumber = 1;
@@ -976,7 +976,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 				notif.category = @"incoming_msg";
 			}
-			notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), address];
+			notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"Incoming message from %@", nil), address];
 			notif.alertAction = NSLocalizedString(@"Show", nil);
 			notif.soundName = @"msg.caf";
 			notif.userInfo = @{ @"from" : address, @"from_addr" : remote_uri, @"call-id" : callID };
@@ -2043,8 +2043,6 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 		for (int i = 0; i < [tokenData length]; ++i) {
 			[tokenString appendFormat:@"%02X", (unsigned int)tokenBuffer[i]];
 		}
-// NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
-// NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
 #ifdef USE_APN_DEV
 #define APPMODE_SUFFIX @"dev"
 #else
