@@ -3535,12 +3535,13 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 		}
 		update_rtp_stats(call, call->main_audio_stream_index);
 		audio_stream_stop(call->audiostream);
+		call->audiostream=NULL;
 		linphone_call_handle_stream_events(call, call->main_audio_stream_index);
 		rtp_session_unregister_event_queue(call->sessions[call->main_audio_stream_index].rtp_session, call->audiostream_app_evq);
 		ortp_ev_queue_flush(call->audiostream_app_evq);
 		ortp_ev_queue_destroy(call->audiostream_app_evq);
 		call->audiostream_app_evq=NULL;
-		call->audiostream=NULL;
+		
 		call->current_params->audio_codec = NULL;
 	}
 }
@@ -4270,26 +4271,27 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 	OrtpEvQueue *evq;
 	OrtpEvent *ev;
 
-	if (ms==NULL) return;
-	/* Ensure there is no dangling ICE check list. */
-	if (call->ice_session == NULL) ms->ice_check_list = NULL;
+	if (ms){
+		/* Ensure there is no dangling ICE check list. */
+		if (call->ice_session == NULL) ms->ice_check_list = NULL;
 
-	switch(ms->type){
-		case MSAudio:
-			audio_stream_iterate((AudioStream*)ms);
-		break;
-		case MSVideo:
-#ifdef VIDEO_ENABLED
-			video_stream_iterate((VideoStream*)ms);
-#endif
-		break;
-		case MSText:
-			text_stream_iterate((TextStream*)ms);
-		break;
-		default:
-			ms_error("linphone_call_handle_stream_events(): unsupported stream type.");
-			return;
-		break;
+		switch(ms->type){
+			case MSAudio:
+				audio_stream_iterate((AudioStream*)ms);
+			break;
+			case MSVideo:
+	#ifdef VIDEO_ENABLED
+				video_stream_iterate((VideoStream*)ms);
+	#endif
+			break;
+			case MSText:
+				text_stream_iterate((TextStream*)ms);
+			break;
+			default:
+				ms_error("linphone_call_handle_stream_events(): unsupported stream type.");
+				return;
+			break;
+		}
 	}
 	/*yes the event queue has to be taken at each iteration, because ice events may perform operations re-creating the streams*/
 	while ((evq = stream_index == call->main_audio_stream_index ? call->audiostream_app_evq : (stream_index == call->main_video_stream_index ? call->videostream_app_evq : call->textstream_app_evq))  && (NULL != (ev=ortp_ev_queue_get(evq)))){
@@ -4297,25 +4299,25 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 		OrtpEventData *evd=ortp_event_get_data(ev);
 
 		int stats_index = stream_index == call->main_audio_stream_index ? LINPHONE_CALL_STATS_AUDIO : (stream_index == call->main_video_stream_index ? LINPHONE_CALL_STATS_VIDEO : LINPHONE_CALL_STATS_TEXT);
-		linphone_call_stats_fill(&call->stats[stats_index],ms,ev);
+		if (ms) linphone_call_stats_fill(&call->stats[stats_index],ms,ev);
 		linphone_call_notify_stats_updated(call,stats_index);
 
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
-			if (ms->type==MSAudio)
+			if (stream_index == call->main_audio_stream_index)
 				linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
-			else if (ms->type==MSVideo)
+			else if (stream_index == call->main_video_stream_index)
 				propagate_encryption_changed(call);
 		} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
-			if (ms->type==MSAudio)
+			if (stream_index == call->main_audio_stream_index)
 				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
 		} else if (evt == ORTP_EVENT_DTLS_ENCRYPTION_CHANGED) {
-			if (ms->type==MSAudio)
+			if (stream_index == call->main_audio_stream_index)
 				linphone_call_audiostream_encryption_changed(call, evd->info.dtls_stream_encrypted);
-			else if (ms->type==MSVideo)
+			else if (stream_index == call->main_video_stream_index)
 				propagate_encryption_changed(call);
 		}else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
 			|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
-			handle_ice_events(call, ev);
+			if (ms) handle_ice_events(call, ev);
 		} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
 			linphone_core_dtmf_received(call,evd->info.telephone_event);
 		} else if (evt == ORTP_EVENT_RTT_CHARACTER_RECEIVED) {
