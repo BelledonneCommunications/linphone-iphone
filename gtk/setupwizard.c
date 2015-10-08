@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "linphone.h"
+#include "regex.h"
 #include <glib.h>
 #include <glib/gprintf.h>
 
@@ -372,7 +373,7 @@ static void linphone_account_creation_email_changed(GtkEntry *entry, GtkWidget *
 	GtkImage* isEmailOk = GTK_IMAGE(g_object_get_data(G_OBJECT(w), "emailOk"));
 	GtkWidget *assistant = gtk_widget_get_toplevel(w);
 
-	if (g_regex_match_simple("^[a-z0-9]([a-z0-9_\\+\\.-]+)@[a-z0-9]([a-z0-9\\.-]+)\\.[a-z]{2,}$", gtk_entry_get_text(email), 0, 0)) {
+	if (g_regex_match_simple("^" BC_REGEX_RESTRICTIVE_EMAIL_ADDR "$", gtk_entry_get_text(email), 0, 0)) {
 		g_object_set_data(G_OBJECT(w), "is_email_correct", GINT_TO_POINTER(1));
 		gtk_image_set_from_stock(isEmailOk, GTK_STOCK_OK, GTK_ICON_SIZE_LARGE_TOOLBAR);
 	} else {
