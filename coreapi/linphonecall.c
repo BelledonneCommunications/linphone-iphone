@@ -4048,7 +4048,7 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	call->stats[LINPHONE_CALL_STATS_VIDEO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
 	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
 	call->stats[LINPHONE_CALL_STATS_VIDEO].updated=0;
-	update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], vs);
+	if (vs) update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], vs);
 
 
 	ms_message(	"Bandwidth usage for call [%p]:\n"
