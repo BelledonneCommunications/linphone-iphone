@@ -293,6 +293,52 @@ public interface LinphoneCore {
 		}
 	}
 	/**
+	 * Stream type enum-like.
+	 *
+	 */
+	static public final class MediaDirection {
+
+		static private Vector<MediaDirection> values = new Vector<MediaDirection>();
+		/**
+		 * Invalid
+		 */
+		static public final MediaDirection Invalid = new MediaDirection(-1, "Invalid");
+		/**
+		 * Inactive
+		 */
+		static public final MediaDirection Inactive = new MediaDirection(0, "Inactive");
+		/**
+		 * SendOnly
+		 */
+		static public final MediaDirection SendOnly = new MediaDirection(1, "SendOnly");
+		/**
+		 * RecvOnly
+		 */
+		static public final MediaDirection RecvOnly = new MediaDirection(2, "RecvOnly");
+		/**
+		 * SendRecv
+		 */
+		static public final MediaDirection SendRecv = new MediaDirection(3, "SendRecv");
+		protected final int mValue;
+		private final String mStringValue;
+
+		private MediaDirection(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+		public static MediaDirection fromInt(int value) {
+			for (int i = 0; i < values.size(); i++) {
+				MediaDirection dir = (MediaDirection) values.elementAt(i);
+				if (dir.mValue == value) return dir;
+			}
+			throw new RuntimeException("MediaDirection not found [" + value + "]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
 	 * Media (RTP) encryption enum-like.
 	 *
 	 */

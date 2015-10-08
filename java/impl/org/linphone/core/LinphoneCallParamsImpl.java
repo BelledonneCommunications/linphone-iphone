@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
+import org.linphone.core.LinphoneCore.MediaDirection;
 import org.linphone.core.LinphoneCore.MediaEncryption;
 import org.linphone.core.LinphoneCore.StreamType;
 
@@ -207,5 +208,29 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	@Override
 	public boolean realTimeTextEnabled() {
 		return realTimeTextEnabled(nativePtr);
+	}
+
+	private native int getAudioDirection(long nativePtr);
+	@Override
+	public MediaDirection getAudioDirection() {
+		return MediaDirection.fromInt(getAudioDirection(nativePtr));
+	}
+
+	private native int getVideoDirection(long nativePtr);
+	@Override
+	public MediaDirection getVideoDirection() {
+		return MediaDirection.fromInt(getVideoDirection(nativePtr));
+	}
+
+	private native void setAudioDirection(long nativePtr, int direction);
+	@Override
+	public void setAudioDirection(MediaDirection direction) {
+		setAudioDirection(nativePtr, direction.mValue);
+	}
+
+	private native void setVideoDirection(long nativePtr, int direction);
+	@Override
+	public void setVideoDirection(MediaDirection direction) {
+		setVideoDirection(nativePtr, direction.mValue);
 	}
 }

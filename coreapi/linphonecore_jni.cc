@@ -3744,6 +3744,23 @@ extern "C" jintArray Java_org_linphone_core_LinphoneCallParamsImpl_getReceivedVi
 	return arr;
 }
 
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_getAudioDirection(JNIEnv *env, jobject thiz, jlong ptr) {
+	return (jint)linphone_call_params_get_audio_direction((LinphoneCallParams *)ptr);
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_getVideoDirection(JNIEnv *env, jobject thiz, jlong ptr) {
+	return (jint)linphone_call_params_get_video_direction((LinphoneCallParams *)ptr);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_setAudioDirection(JNIEnv *env, jobject thiz, jlong ptr, jint jdir) {
+	linphone_call_params_set_audio_direction((LinphoneCallParams *)ptr, (LinphoneMediaDirection)jdir);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_setVideoDirection(JNIEnv *env, jobject thiz, jlong ptr, jint jdir) {
+	linphone_call_params_set_video_direction((LinphoneCallParams *)ptr, (LinphoneMediaDirection)jdir);
+}
+
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_destroy(JNIEnv *env, jobject thiz, jlong lc){
 	return linphone_call_params_destroy((LinphoneCallParams*)lc);
 }

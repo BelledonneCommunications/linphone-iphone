@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
+import org.linphone.core.LinphoneCore.MediaDirection;
 import org.linphone.core.LinphoneCore.MediaEncryption;
 import org.linphone.core.LinphoneCore.StreamType;
 /**
@@ -201,6 +202,28 @@ public interface LinphoneCallParams {
 	 * @returns returns true if call rtt is activated.
 	**/
 	boolean realTimeTextEnabled();
-	
-	
+
+	/**
+	 * Get the audio stream direction.
+	 * @return The audio stream direction associated with the call params.
+	**/
+	MediaDirection getAudioDirection();
+
+	/**
+	 * Get the video stream direction.
+	 * @return The video stream direction associated with the call params.
+	**/
+	MediaDirection getVideoDirection();
+
+	/**
+	 * Set the audio stream direction.
+	 * @param The audio stream direction associated with this call params.
+	**/
+	void setAudioDirection(MediaDirection dir);
+
+	/**
+	 * Set the video stream direction.
+	 * @param The video stream direction associated with this call params.
+	**/
+	void setVideoDirection(MediaDirection dir);
 }
