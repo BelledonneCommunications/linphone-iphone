@@ -73,10 +73,10 @@
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onCancelClick:" destination="18" eventType="touchUpInside" id="DAX-W6-l0H"/>
-                                        <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="vIn-o6-Ui0"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="WQf-rB-DUt"/>
                                     </connections>
                                 </button>
-                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="nhN-oH-LQ9" userLabel="toggleSelectionButton" customClass="UIIconButton">
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="nhN-oH-LQ9" userLabel="toggleSelectionButton" customClass="UIIconButton">
                                     <rect key="frame" x="225" y="0.0" width="75" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
@@ -114,7 +114,7 @@
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onEditClick:" destination="18" eventType="touchUpInside" id="5Ft-HW-cVh"/>
-                                        <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="7uo-X1-sO5"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="9gC-6R-w0j"/>
                                     </connections>
                                 </button>
                             </subviews>

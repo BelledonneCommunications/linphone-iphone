@@ -47,6 +47,7 @@
 	cell.accessoryType = (cell.accessoryType == UITableViewCellAccessoryCheckmark) ? UITableViewCellAccessoryNone
 																				   : UITableViewCellAccessoryCheckmark;
 	[self accessoryForCell:cell atPath:indexPath];
+	_toggleSelectionButton.selected = (_selectedItems.count == 0);
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
@@ -82,7 +83,6 @@
 		cell.accessoryType = UITableViewCellAccessoryNone;
 	}
 	_deleteButton.enabled = (_selectedItems.count != 0);
-	_editButton.enabled = [self tableView:self.tableView numberOfRowsInSection:0] != 0;
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
@@ -90,6 +90,7 @@
 
 	_editButton.hidden = editing;
 	_deleteButton.hidden = _cancelButton.hidden = _toggleSelectionButton.hidden = !editing;
+	_toggleSelectionButton.selected = NO;
 
 	// when switching editing mode, we must reload all cells to remove/add checkboxes
 	[self loadData];
@@ -98,6 +99,9 @@
 - (void)loadData {
 	[_selectedItems removeAllObjects];
 	[self.tableView reloadData];
+
+	_editButton.enabled = ([self numberOfSectionsInTableView:self.tableView] > 0 &&
+						   [self tableView:self.tableView numberOfRowsInSection:0] != 0);
 }
 
 - (void)removeSelection {
@@ -116,12 +120,13 @@
 - (void)onSelectionToggle:(id)sender {
 	[_selectedItems removeAllObjects];
 	UIButton *button = (UIButton *)sender;
+	button.selected = !button.selected; // TODO: why do we need that?
 	for (int i = 0; i < [self numberOfSectionsInTableView:self.tableView]; i++) {
 		for (int j = 0; j < [self tableView:self.tableView numberOfRowsInSection:i]; j++) {
 			NSIndexPath *idx = [NSIndexPath indexPathForRow:j inSection:i];
-			UITableViewCell *cell = [self tableView:self.tableView cellForRowAtIndexPath:idx];
-			cell.accessoryType = (button.state == UIControlStateSelected) ? UITableViewRowAnimationNone
-																		  : UITableViewCellAccessoryCheckmark;
+
+			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:idx];
+			cell.accessoryType = button.selected ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
 			[self accessoryForCell:cell atPath:idx];
 		}
 	}

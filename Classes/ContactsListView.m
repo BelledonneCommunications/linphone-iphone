@@ -80,7 +80,6 @@ static NSString *sNameOrEmailFilter;
 @synthesize tableController;
 @synthesize allButton;
 @synthesize linphoneButton;
-@synthesize backButton;
 @synthesize addButton;
 @synthesize topBar;
 
@@ -184,17 +183,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)refreshButtons {
-	switch ([ContactSelection getSelectionMode]) {
-		case ContactSelectionModePhone:
-		case ContactSelectionModeMessage:
-			[addButton setHidden:TRUE];
-			[backButton setHidden:FALSE];
-			break;
-		default:
-			[addButton setHidden:FALSE];
-			[backButton setHidden:TRUE];
-			break;
-	}
+	[addButton setHidden:FALSE];
+
 	if ([ContactSelection getSipFilter]) {
 		allButton.selected = FALSE;
 		linphoneButton.selected = TRUE;
@@ -230,26 +220,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (IBAction)onBackClick:(id)event {
-	[PhoneMainView.instance popCurrentView];
-}
-
-- (IBAction)onEditClick:(id)sender {
-	[tableController setEditing:!tableController.isEditing animated:TRUE];
-	_deleteButton.hidden = !tableController.isEditing;
-	addButton.hidden = !_deleteButton.hidden;
-}
-
 - (IBAction)onDeleteClick:(id)sender {
 	NSString *msg =
 		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d contacts?", nil),
 								   tableController.selectedItems.count];
 	[UIConfirmationDialog ShowWithMessage:msg
-							onCancelClick:nil
-					  onConfirmationClick:^() {
-						[tableController removeSelection];
-						[tableController loadData];
-					  }];
+		onCancelClick:^() {
+		  [self onEditionChangeClick:nil];
+		}
+		onConfirmationClick:^() {
+		  [tableController removeSelection];
+		  [tableController loadData];
+		}];
+}
+
+- (IBAction)onEditionChangeClick:(id)sender {
+	allButton.hidden = linphoneButton.hidden = addButton.hidden = self.tableController.isEditing;
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -315,8 +301,4 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[searchBar resignFirstResponder];
 }
 
-- (void)viewDidUnload {
-	[self setTopBar:nil];
-	[super viewDidUnload];
-}
 @end

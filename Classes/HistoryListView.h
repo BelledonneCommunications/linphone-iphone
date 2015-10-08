@@ -34,7 +34,6 @@
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onMissedClick:(id)event;
 - (IBAction)onDeleteClick:(id)event;
-- (IBAction)onEditClick:(id)sender;
-- (IBAction)onCancelClick:(id)sender;
+- (IBAction)onEditionChangeClick:(id)sender;
 
 @end

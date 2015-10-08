@@ -59,7 +59,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[_tableController setEditing:FALSE animated:FALSE];
 	}
 	[self changeView:History_All];
-	[self updateTopBar];
+	[self onEditionChangeClick:nil];
 
 	// Reset missed call
 	linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
@@ -95,31 +95,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self changeView:History_Missed];
 }
 
-- (void)updateTopBar {
-	_allButton.hidden = _missedButton.hidden = self.tableController.isEditing;
-}
-
 - (IBAction)onDeleteClick:(id)event {
 	NSString *msg =
 		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d history?", nil),
 								   _tableController.selectedItems.count];
 	[UIConfirmationDialog ShowWithMessage:msg
 		onCancelClick:^() {
-		  [self updateTopBar];
+		  [self onEditionChangeClick:nil];
 		}
 		onConfirmationClick:^() {
 		  [_tableController removeSelection];
 		  [_tableController loadData];
-		  [self updateTopBar];
+		  [self onEditionChangeClick:nil];
 		}];
 }
 
-- (IBAction)onEditClick:(id)sender {
-	[self updateTopBar];
-}
-
-- (IBAction)onCancelClick:(id)sender {
-	[self updateTopBar];
+- (IBAction)onEditionChangeClick:(id)sender {
+	_allButton.hidden = _missedButton.hidden = self.tableController.isEditing;
 }
 
 @end

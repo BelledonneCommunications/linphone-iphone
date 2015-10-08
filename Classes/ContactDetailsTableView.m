@@ -603,21 +603,10 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 		}
 		if (dest != nil) {
 			NSString *displayName = [FastAddressBook getContactDisplayName:contact];
-			if ([ContactSelection getSelectionMode] != ContactSelectionModeMessage) {
-				// Go to dialer view
-				DialerView *view = VIEW(DialerView);
-				[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-				[view call:dest displayName:displayName];
-			} else {
-				// Go to Chat room view
-				[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
-				// Then push ChatRoom
-				ChatConversationView *view = VIEW(ChatConversationView);
-				[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
-				LinphoneChatRoom *room =
-					linphone_core_get_chat_room_from_uri([LinphoneManager getLc], [dest UTF8String]);
-				[view setChatRoom:room];
-			}
+			// Go to dialer view
+			DialerView *view = VIEW(DialerView);
+			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+			[view call:dest displayName:displayName];
 		}
 	} else {
 		NSString *key = nil;
