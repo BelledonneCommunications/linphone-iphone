@@ -43,6 +43,7 @@ static const char *EC_STATE_STORE = ".linphone.ecstate";
 static void linphone_call_stats_uninit(LinphoneCallStats *stats);
 static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress *remote_addr);
 static void _linphone_call_set_next_video_frame_decoded_trigger(LinphoneCall *call);
+void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index);
 
 
 MSWebCam *get_nowebcam_device(){
@@ -3534,6 +3535,7 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 		}
 		update_rtp_stats(call, call->main_audio_stream_index);
 		audio_stream_stop(call->audiostream);
+		linphone_call_handle_stream_events(call, call->main_audio_stream_index);
 		rtp_session_unregister_event_queue(call->sessions[call->main_audio_stream_index].rtp_session, call->audiostream_app_evq);
 		ortp_ev_queue_flush(call->audiostream_app_evq);
 		ortp_ev_queue_destroy(call->audiostream_app_evq);
@@ -3552,6 +3554,7 @@ static void linphone_call_stop_video_stream(LinphoneCall *call) {
 		update_rtp_stats(call, call->main_video_stream_index);
 		video_stream_stop(call->videostream);
 		call->videostream=NULL;
+		linphone_call_handle_stream_events(call, call->main_video_stream_index);
 		rtp_session_unregister_event_queue(call->sessions[call->main_video_stream_index].rtp_session, call->videostream_app_evq);
 		ortp_ev_queue_flush(call->videostream_app_evq);
 		ortp_ev_queue_destroy(call->videostream_app_evq);
@@ -3574,6 +3577,7 @@ static void linphone_call_stop_text_stream(LinphoneCall *call) {
 		text_stream_stop(call->textstream);
 		call->textstream = NULL;
 		update_rtp_stats(call, call->main_text_stream_index);
+		linphone_call_handle_stream_events(call, call->main_video_stream_index);
 		rtp_session_unregister_event_queue(call->sessions[call->main_text_stream_index].rtp_session, call->textstream_app_evq);
 		ortp_ev_queue_flush(call->textstream_app_evq);
 		ortp_ev_queue_destroy(call->textstream_app_evq);
