@@ -89,7 +89,7 @@ tester/linphone_log.gz.txt
 tools/auto_answer
 tools/lp-autoanswer
 build/macos/pkg-distribution.xml
-tester/record_for_lc_*.wav
+record_for_lc_*.wav
 tester/record-call_with_file_player.wav
 tester/ZIDCache*.xml
 
