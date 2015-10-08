@@ -1065,6 +1065,19 @@ static bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee
 	return video_enabled ? (realtime_text_enabled ? text_success && audio_success && video_success : audio_success && video_success) : realtime_text_enabled ? text_success && audio_success : audio_success;
 }
 
+static void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *callee, unsigned int caller_nb_media_starts, unsigned int callee_nb_media_starts) {
+	LinphoneCall *c1 = linphone_core_get_current_call(caller->lc);
+	LinphoneCall *c2 = linphone_core_get_current_call(callee->lc);
+	BC_ASSERT_PTR_NOT_NULL(c1);
+	BC_ASSERT_PTR_NOT_NULL(c2);
+	if (c1) {
+		BC_ASSERT_EQUAL(c1->nb_media_starts, caller_nb_media_starts, unsigned int, "%u");
+	}
+	if (c2) {
+		BC_ASSERT_EQUAL(c2->nb_media_starts, callee_nb_media_starts, unsigned int, "%u");
+	}
+}
+
 static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
 	if (callee_with_ice){
 		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
@@ -1087,23 +1100,12 @@ static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager
 		return;
 
 	if (callee_with_ice && caller_with_ice) {
-		LinphoneCall *c1, *c2;
-
 		/*wait for the ICE reINVITE to complete*/
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 
 		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
-		c1 = linphone_core_get_current_call(pauline->lc);
-		c2 = linphone_core_get_current_call(marie->lc);
-		BC_ASSERT_PTR_NOT_NULL(c1);
-		BC_ASSERT_PTR_NOT_NULL(c2);
-		if (c1) {
-			BC_ASSERT_EQUAL(c1->nb_media_starts, 1, unsigned int, "%u");
-		}
-		if (c2) {
-			BC_ASSERT_EQUAL(c2->nb_media_starts, 1, unsigned int, "%u");
-		}
+		check_nb_media_starts(pauline, marie, 1, 1);
 	}
 
 	liblinphone_tester_check_rtcp(marie,pauline);
@@ -2070,6 +2072,7 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	bool_t call_ok;
+	unsigned int nb_media_starts = 1;
 
 	linphone_core_set_video_policy(pauline->lc, &caller_policy);
 	linphone_core_set_video_policy(marie->lc, &callee_policy);
@@ -2088,6 +2091,8 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	/* Wait for ICE reINVITEs to complete. */
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2)
 		&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts);
+	nb_media_starts++;
 
 	if (video_added_by_caller) {
 		BC_ASSERT_TRUE(add_video(marie, pauline, FALSE));
@@ -2100,6 +2105,8 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 			/* Wait for ICE reINVITEs to complete if video was really added */
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4)
 				&& wait_for(pauline->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
+			check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts);
+			nb_media_starts++;
 		}
 	}
 
@@ -2110,6 +2117,8 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	}
 	if (video_removed_by_caller || video_removed_by_callee) {
 		BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateHostConnection));
+		check_nb_media_starts(pauline, marie, nb_media_starts, nb_media_starts);
+		nb_media_starts++;
 	}
 
 	end_call(pauline, marie);
@@ -2139,6 +2148,12 @@ static void call_with_ice_video_added_and_refused(void) {
 	LinphoneVideoPolicy callee_policy = { FALSE, FALSE };
 	_call_with_ice_video(caller_policy, callee_policy, TRUE, FALSE, FALSE, FALSE);
 }
+
+static void call_with_ice_video_added_with_video_policies_to_false(void) {
+	LinphoneVideoPolicy vpol = { FALSE, FALSE };
+	_call_with_ice_video(vpol, vpol, FALSE, TRUE, FALSE, FALSE);
+}
+
 #if ICE_WAS_WORKING_WITH_REAL_TIME_TEXT /*which is not the case at the moment*/
 
 static void call_with_ice_video_and_rtt(void) {
@@ -5306,6 +5321,7 @@ test_t call_tests[] = {
 	{ "Call with ICE and video added 2", call_with_ice_video_added_2 },
 	{ "Call with ICE and video added 3", call_with_ice_video_added_3 },
 	{ "Call with ICE and video added and refused", call_with_ice_video_added_and_refused },
+	{ "Call with ICE and video added with video policies to false", call_with_ice_video_added_with_video_policies_to_false },
 #if ICE_WAS_WORKING_WITH_REAL_TIME_TEXT
 	{ "Call with ICE, video and realtime text", call_with_ice_video_and_rtt },
 #endif

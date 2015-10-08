@@ -511,6 +511,8 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 	result->nb_streams=local_offer->nb_streams;
 	result->bandwidth=remote_answer->bandwidth;
 	strcpy(result->addr,remote_answer->addr);
+	strcpy(result->ice_pwd, local_offer->ice_pwd);
+	strcpy(result->ice_ufrag, local_offer->ice_ufrag);
 	memcpy(&result->rtcp_xr, &local_offer->rtcp_xr, sizeof(result->rtcp_xr));
 	if ((local_offer->rtcp_xr.enabled == TRUE) && (remote_answer->rtcp_xr.enabled == FALSE)) {
 		result->rtcp_xr.enabled = FALSE;
