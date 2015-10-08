@@ -31,7 +31,6 @@
 @property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
 @property (nonatomic, strong) IBOutlet UILabel* addressLabel;
 @property (nonatomic, strong) IBOutlet UILabel* chatContentLabel;
-@property (nonatomic, strong) IBOutlet UIButton * deleteButton;
 @property(weak, nonatomic) IBOutlet UILabel *chatLatestTimeLabel;
 @property(weak, nonatomic) IBOutlet UIIconButton *unreadCountButton;
 

@@ -79,17 +79,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[view setChatRoom:NULL];
 }
 
-- (void)setEditing:(BOOL)editing {
-	[_tableController setEditing:editing animated:TRUE];
-	_toggleSelectionButton.hidden = _backButton.hidden = _deleteButton.hidden = !editing;
-	_addButton.hidden = _editButton.hidden = editing;
+- (IBAction)onEditionChangeClick:(id)sender {
+	_addButton.hidden = self.tableController.isEditing;
 }
 
-- (IBAction)onEditToggle:(id)event {
-	[self setEditing:!_tableController.isEditing];
+- (IBAction)onDeleteClick:(id)sender {
+	NSString *msg =
+		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d conversations?", nil),
+								   _tableController.selectedItems.count];
+	[UIConfirmationDialog ShowWithMessage:msg
+		onCancelClick:^() {
+		  [self onEditionChangeClick:nil];
+		}
+		onConfirmationClick:^() {
+		  [_tableController removeSelection];
+		  [_tableController loadData];
+		  [self onEditionChangeClick:nil];
+		}];
 }
 
-- (IBAction)onSelectionToggle:(id)sender {
-}
 
 @end

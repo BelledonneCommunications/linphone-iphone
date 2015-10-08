@@ -27,7 +27,6 @@
 @synthesize avatarImage;
 @synthesize addressLabel;
 @synthesize chatContentLabel;
-@synthesize deleteButton;
 @synthesize unreadCountButton;
 
 #pragma mark - Lifecycle Functions
@@ -37,10 +36,11 @@
 		NSArray *arrayOfViews =
 			[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
 
-		if ([arrayOfViews count] >= 1) {
-
-			[self.contentView addSubview:[arrayOfViews objectAtIndex:0]];
-		}
+		// resize cell to match .nib size. It is needed when resized the cell to
+		// correctly adapt its height too
+		UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:0]);
+		[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
+		[self addSubview:sub];
 	}
 	return self;
 }
@@ -114,11 +114,10 @@
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 	}
-	[super setEditing:editing animated:animated];
 	if (editing) {
-		[deleteButton setAlpha:1.0f];
+		[unreadCountButton setAlpha:0.0f];
 	} else {
-		[deleteButton setAlpha:0.0f];
+		[unreadCountButton setAlpha:1.0f];
 	}
 	if (animated) {
 		[UIView commitAnimations];
