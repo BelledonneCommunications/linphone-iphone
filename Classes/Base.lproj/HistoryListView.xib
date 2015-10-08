@@ -8,8 +8,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HistoryListView">
             <connections>
                 <outlet property="allButton" destination="4" id="27"/>
-                <outlet property="deleteButton" destination="35" id="36"/>
-                <outlet property="editButton" destination="6" id="33"/>
                 <outlet property="missedButton" destination="5" id="28"/>
                 <outlet property="tableController" destination="18" id="26"/>
                 <outlet property="view" destination="2" id="16"/>
@@ -32,25 +30,12 @@
                                     <rect key="frame" x="0.0" y="-1" width="375" height="42"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="35" userLabel="deleteButton" customClass="UIIconButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="94" height="40"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
-                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="delete.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="selected" backgroundImage="color_E.png"/>
-                                    <connections>
-                                        <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="37"/>
-                                    </connections>
-                                </button>
                                 <view contentMode="scaleToFill" id="38" userLabel="switchView">
-                                    <rect key="frame" x="94" y="0.0" width="188" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="150" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
-                                            <rect key="frame" x="0.0" y="0.0" width="94" height="40"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="75" height="40"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="All contacts filter"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="16" maxX="0.0" maxY="0.0"/>
@@ -63,7 +48,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="missedButton" customClass="UIIconButton">
-                                            <rect key="frame" x="94" y="0.0" width="94" height="40"/>
+                                            <rect key="frame" x="75" y="0.0" width="75" height="40"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Missed contacts filter"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="16" maxX="0.0" maxY="0.0"/>
@@ -77,8 +62,49 @@
                                         </button>
                                     </subviews>
                                 </view>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="editButton" customClass="UIToggleButton">
-                                    <rect key="frame" x="281" y="0.0" width="94" height="40"/>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="00K-MU-NUc" userLabel="cancelButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="cancel_edit.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="selected" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onCancelClick:" destination="18" eventType="touchUpInside" id="DAX-W6-l0H"/>
+                                        <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="vIn-o6-Ui0"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="nhN-oH-LQ9" userLabel="toggleSelectionButton" customClass="UIIconButton">
+                                    <rect key="frame" x="225" y="0.0" width="75" height="42"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Edit"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="select_all.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="selected" image="deselect_all.png"/>
+                                    <connections>
+                                        <action selector="onSelectionToggle:" destination="18" eventType="touchUpInside" id="ADr-KR-SmA"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="35" userLabel="deleteButton" customClass="UIIconButton">
+                                    <rect key="frame" x="300" y="0.0" width="75" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="delete.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="selected" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="37"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="editButton" customClass="UIIconButton">
+                                    <rect key="frame" x="300" y="0.0" width="75" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
@@ -87,7 +113,8 @@
                                     </state>
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
-                                        <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="32"/>
+                                        <action selector="onEditClick:" destination="18" eventType="touchUpInside" id="5Ft-HW-cVh"/>
+                                        <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="7uo-X1-sO5"/>
                                     </connections>
                                 </button>
                             </subviews>
@@ -110,25 +137,32 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="245.5" y="373.5"/>
         </view>
         <tableViewController autoresizesArchivedViewToFullSize="NO" id="18" userLabel="tableController" customClass="HistoryListTableView">
             <extendedEdge key="edgesForExtendedLayout"/>
             <connections>
+                <outlet property="cancelButton" destination="00K-MU-NUc" id="KSi-MC-Usk"/>
                 <outlet property="deleteButton" destination="35" id="n8o-lE-u1t"/>
+                <outlet property="editButton" destination="6" id="Sgc-Z3-NeQ"/>
+                <outlet property="toggleSelectionButton" destination="nhN-oH-LQ9" id="77r-l0-3Yi"/>
                 <outlet property="view" destination="17" id="25"/>
             </connections>
             <point key="canvasLocation" x="596" y="305"/>
         </tableViewController>
     </objects>
     <resources>
+        <image name="cancel_edit.png" width="29" height="29"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="delete.png" width="21" height="27"/>
+        <image name="deselect_all.png" width="26" height="26"/>
         <image name="edit_list.png" width="29" height="28"/>
         <image name="history_all_default.png" width="32" height="31"/>
         <image name="history_all_selected.png" width="32" height="31"/>
         <image name="history_missed_default.png" width="32" height="32"/>
         <image name="history_missed_selected.png" width="32" height="32"/>
+        <image name="select_all.png" width="26" height="26"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

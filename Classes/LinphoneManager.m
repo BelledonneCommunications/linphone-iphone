@@ -867,7 +867,7 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char *realm, const char *username,
 												   const char *domain) {
 	// let the wizard handle its own errors
-	if ([PhoneMainView.instance currentView] != WizardViewController.compositeViewDescription) {
+	if ([PhoneMainView.instance currentView] != AssistantView.compositeViewDescription) {
 		static DTAlertView *alertView = nil;
 
 		// avoid having multiple popups
@@ -900,7 +900,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 									  LOGE(@"Could not find auth info associated with %s@%s, going to settings!",
 										   username, domain);
 									  [[PhoneMainView instance]
-										  changeCurrentView:[SettingsViewController compositeViewDescription]];
+										  changeCurrentView:SettingsView.compositeViewDescription];
 								  }
 								}];
 		[alertView show];

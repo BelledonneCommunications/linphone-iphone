@@ -18,6 +18,7 @@
  */
 
 #import "UICheckBoxTVTableViewController.h"
+#import "Utils.h"
 
 @implementation UICheckBoxTVTableViewController
 
@@ -34,6 +35,11 @@
 }
 
 #pragma mark - UITableViewDelegate Functions
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	_editButton.enabled = [self tableView:self.tableView numberOfRowsInSection:0] != 0;
+}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
@@ -76,10 +82,14 @@
 		cell.accessoryType = UITableViewCellAccessoryNone;
 	}
 	_deleteButton.enabled = (_selectedItems.count != 0);
+	_editButton.enabled = [self tableView:self.tableView numberOfRowsInSection:0] != 0;
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
 	[super setEditing:editing animated:animated];
+
+	_editButton.hidden = editing;
+	_deleteButton.hidden = _cancelButton.hidden = _toggleSelectionButton.hidden = !editing;
 
 	// when switching editing mode, we must reload all cells to remove/add checkboxes
 	[self loadData];
@@ -104,10 +114,25 @@
 }
 
 - (void)onSelectionToggle:(id)sender {
-	if (_selectedItems.count == 0) {
-		[self table]
-	} else {
+	[_selectedItems removeAllObjects];
+	UIButton *button = (UIButton *)sender;
+	for (int i = 0; i < [self numberOfSectionsInTableView:self.tableView]; i++) {
+		for (int j = 0; j < [self tableView:self.tableView numberOfRowsInSection:i]; j++) {
+			NSIndexPath *idx = [NSIndexPath indexPathForRow:j inSection:i];
+			UITableViewCell *cell = [self tableView:self.tableView cellForRowAtIndexPath:idx];
+			cell.accessoryType = (button.state == UIControlStateSelected) ? UITableViewRowAnimationNone
+																		  : UITableViewCellAccessoryCheckmark;
+			[self accessoryForCell:cell atPath:idx];
+		}
 	}
+}
+
+- (IBAction)onEditClick:(id)sender {
+	[self setEditing:YES animated:YES];
+}
+
+- (IBAction)onCancelClick:(id)sender {
+	[self setEditing:NO animated:YES];
 }
 
 @end

@@ -58,9 +58,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([_tableController isEditing]) {
 		[_tableController setEditing:FALSE animated:FALSE];
 	}
-	[_deleteButton setHidden:TRUE];
-	[_editButton setOff];
 	[self changeView:History_All];
+	[self updateTopBar];
 
 	// Reset missed call
 	linphone_core_reset_missed_calls_count([LinphoneManager getLc]);
@@ -68,25 +67,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallUpdate object:self];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-	[self hideEditIfNeeded];
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-	[self changeView:History_All];
-}
-
 #pragma mark -
-
-- (void)hideEditIfNeeded {
-	_editButton.hidden = ([_tableController tableView:_tableController.tableView numberOfRowsInSection:0] == 0);
-	if ([_editButton isSelected]) {
-		[_editButton toggle];
-		[self onEditClick:nil];
-	}
-}
 
 - (void)changeView:(HistoryView)view {
 	if (view == History_All) {
@@ -102,7 +83,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else {
 		_missedButton.selected = FALSE;
 	}
-	[self hideEditIfNeeded];
 }
 
 #pragma mark - Action Functions
@@ -115,9 +95,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self changeView:History_Missed];
 }
 
-- (IBAction)onEditClick:(id)event {
-	[_tableController setEditing:!_tableController.isEditing animated:TRUE];
-	_deleteButton.hidden = !_tableController.isEditing;
+- (void)updateTopBar {
+	_allButton.hidden = _missedButton.hidden = self.tableController.isEditing;
 }
 
 - (IBAction)onDeleteClick:(id)event {
@@ -125,12 +104,22 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d history?", nil),
 								   _tableController.selectedItems.count];
 	[UIConfirmationDialog ShowWithMessage:msg
-							onCancelClick:nil
-					  onConfirmationClick:^() {
-						[_tableController removeSelection];
-						[_tableController loadData];
-						[self hideEditIfNeeded];
-					  }];
+		onCancelClick:^() {
+		  [self updateTopBar];
+		}
+		onConfirmationClick:^() {
+		  [_tableController removeSelection];
+		  [_tableController loadData];
+		  [self updateTopBar];
+		}];
+}
+
+- (IBAction)onEditClick:(id)sender {
+	[self updateTopBar];
+}
+
+- (IBAction)onCancelClick:(id)sender {
+	[self updateTopBar];
 }
 
 @end

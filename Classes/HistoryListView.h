@@ -30,12 +30,11 @@
 
 @property(nonatomic, strong) IBOutlet UIButton *allButton;
 @property(nonatomic, strong) IBOutlet UIButton *missedButton;
-@property(nonatomic, strong) IBOutlet UIToggleButton *editButton;
-@property(nonatomic, strong) IBOutlet UIButton *deleteButton;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onMissedClick:(id)event;
-- (IBAction)onEditClick:(id)event;
 - (IBAction)onDeleteClick:(id)event;
+- (IBAction)onEditClick:(id)sender;
+- (IBAction)onCancelClick:(id)sender;
 
 @end
