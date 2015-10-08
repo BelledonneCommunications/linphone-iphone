@@ -265,6 +265,7 @@ static GtkWidget *create_video_window(LinphoneCall *call){
 	addr=linphone_call_get_remote_address(call);
 	remote=linphone_gtk_address(addr);
 	video_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	/*gtk_window_set_transient_for(GTK_WINDOW(video_window), GTK_WINDOW(linphone_gtk_get_main_window()));*/
 	title=g_strdup_printf("%s - Video call with %s",linphone_gtk_get_ui_config("title","Linphone"),remote);
 	ms_free(remote);
 	gtk_window_set_title(GTK_WINDOW(video_window),title);
@@ -301,6 +302,7 @@ void linphone_gtk_in_call_show_video(LinphoneCall *call){
 				g_object_set_data(G_OBJECT(callview),"video_window",video_window);
 			}
 			linphone_core_set_native_video_window_id(lc,get_native_handle(gtk_widget_get_window(video_window)));
+			gtk_window_present(GTK_WINDOW(video_window));
 		}else{
 			if (video_window){
 				gtk_widget_destroy(video_window);
