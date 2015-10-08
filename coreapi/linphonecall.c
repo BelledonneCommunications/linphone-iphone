@@ -3353,6 +3353,8 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 		ms_fatal("start_media_stream() called without prior init !");
 		return;
 	}
+
+	call->nb_media_starts++;
 #if defined(VIDEO_ENABLED)
 	if (vstream!=NULL && vstream->dir!=SalStreamInactive && vstream->payloads!=NULL){
 		/*when video is used, do not make adaptive rate control on audio, it is stupid.*/

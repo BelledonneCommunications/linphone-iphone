@@ -1087,11 +1087,23 @@ static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager
 		return;
 
 	if (callee_with_ice && caller_with_ice) {
+		LinphoneCall *c1, *c2;
+
 		/*wait for the ICE reINVITE to complete*/
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 
 		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+		c1 = linphone_core_get_current_call(pauline->lc);
+		c2 = linphone_core_get_current_call(marie->lc);
+		BC_ASSERT_PTR_NOT_NULL(c1);
+		BC_ASSERT_PTR_NOT_NULL(c2);
+		if (c1) {
+			BC_ASSERT_EQUAL(c1->nb_media_starts, 1, unsigned int, "%u");
+		}
+		if (c2) {
+			BC_ASSERT_EQUAL(c2->nb_media_starts, 1, unsigned int, "%u");
+		}
 	}
 
 	liblinphone_tester_check_rtcp(marie,pauline);

@@ -328,8 +328,8 @@ int sal_stream_description_equals(const SalStreamDescription *sd1, const SalStre
 	if (sd1->dir != sd2->dir) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 
 	/* ICE */
-	if (sd1->ice_ufrag != sd2->ice_ufrag) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
-	if (sd1->ice_pwd != sd2->ice_pwd) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(sd1->ice_ufrag, sd2->ice_ufrag) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(sd1->ice_pwd, sd2->ice_pwd) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
 
 	/*DTLS*/
 	if (sd1->dtls_role != sd2->dtls_role) result |= SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED;
@@ -390,8 +390,8 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 
 	/* ICE */
-	if (md1->ice_ufrag != md2->ice_ufrag) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
-	if (md1->ice_pwd != md2->ice_pwd) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(md1->ice_ufrag, md2->ice_ufrag) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(md1->ice_pwd, md2->ice_pwd) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
 
 	for(i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
 		if (!sal_stream_description_active(&md1->streams[i]) && !sal_stream_description_active(&md2->streams[i])) continue;
