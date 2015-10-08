@@ -98,6 +98,14 @@ static void early_media_with_multicast_base(bool_t video) {
 		linphone_core_enable_video_display(pauline2->lc, TRUE);
 		linphone_core_enable_video_capture(marie->lc, TRUE);
 		linphone_core_enable_video_display(marie->lc, FALSE);
+		
+		linphone_core_set_video_device(pauline->lc, liblinphone_tester_mire_id);
+		linphone_core_set_video_device(pauline2->lc, liblinphone_tester_mire_id);
+		linphone_core_set_video_device(marie->lc, liblinphone_tester_mire_id);
+		
+		linphone_core_set_avpf_mode(pauline->lc, LinphoneAVPFEnabled);
+		linphone_core_set_avpf_mode(pauline2->lc, LinphoneAVPFEnabled);
+		linphone_core_set_avpf_mode(marie->lc, LinphoneAVPFEnabled);
 
 		marie_policy.automatically_initiate=TRUE;
 		marie_policy.automatically_accept=TRUE;
@@ -181,7 +189,7 @@ static void early_media_with_multicast_base(bool_t video) {
 			BC_ASSERT_TRUE(linphone_call_params_video_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc))));
 			BC_ASSERT_TRUE(linphone_call_params_video_multicast_enabled(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc))));
 		}
-		params=linphone_call_params_copy(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)));
+		params = linphone_core_create_call_params(pauline->lc, linphone_core_get_current_call(pauline->lc));
 
 		linphone_call_params_enable_audio_multicast(params,FALSE);
 		linphone_call_params_enable_video_multicast(params,FALSE);
