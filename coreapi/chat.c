@@ -198,7 +198,7 @@ static LinphoneChatRoom *_linphone_core_create_chat_room(LinphoneCore *lc, Linph
 }
 
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call){
-	LinphoneChatRoom *cr = _linphone_core_create_chat_room_base(call->core, 
+	LinphoneChatRoom *cr = _linphone_core_create_chat_room_base(call->core,
 		linphone_address_clone(linphone_call_get_remote_address(call)));
 	cr->call = call;
 	return cr;
@@ -325,7 +325,6 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		linphone_chat_message_unref(msg);
 		return;
 	}
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
 
 	// add to transient list
 	cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
@@ -412,7 +411,9 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		}
 		linphone_chat_room_delete_composing_idle_timer(cr);
 		linphone_chat_room_delete_composing_refresh_timer(cr);
+
 	}
+	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
 }
 
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
@@ -812,16 +813,16 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 		if (cr->pending_message == NULL) {
 			cr->pending_message = linphone_chat_room_create_message(cr, "");
 		}
-		
+
 		if (character == new_line) {
 			// End of message
 			LinphoneChatMessage *msg = cr->pending_message;
 			ms_message("New line received, forge a message with content %s", cr->pending_message->message);
-			
+
 			linphone_chat_message_set_from(msg, cr->peer_url);
 			if (msg->to)
 				linphone_address_destroy(msg->to);
-			msg->to = call->dest_proxy ? linphone_address_clone(call->dest_proxy->identity_address) : 
+			msg->to = call->dest_proxy ? linphone_address_clone(call->dest_proxy->identity_address) :
 					linphone_address_new(linphone_core_get_identity(lc));
 			msg->time = ms_time(0);
 			msg->state = LinphoneChatMessageStateDelivered;
@@ -831,7 +832,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 
 			if (cr->unread_count < 0) cr->unread_count = 1;
 			else cr->unread_count++;
-			
+
 			linphone_chat_room_message_received(cr, lc, msg);
 			linphone_chat_message_unref(msg);
 			cr->pending_message = NULL;
@@ -840,7 +841,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 			cr->pending_message->message = ms_strcat_printf(cr->pending_message->message, value);
 			ms_message("Received RTT character: %s (%lu), pending text is %s", value, (unsigned long)character, cr->pending_message->message);
 			ms_free(value);
-			
+
 			cr->remote_is_composing = LinphoneIsComposingActive;
 			linphone_core_notify_is_composing_received(cr->lc, cr);
 		}
