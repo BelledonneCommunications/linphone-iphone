@@ -497,7 +497,7 @@
                               <object class="GtkTreeViewColumn" id="presence_status_column">
                                 <child>
                                   <object class="GtkCellRendererPixbuf" id="status_img_cell">
-                                    <property name="stock_size">2</property>
+                                    <property name="stock_size">3</property>
                                   </object>
                                   <attributes>
                                     <attribute name="icon-name">0</attribute>
@@ -522,7 +522,7 @@
                                 <child>
                                   <object class="GtkCellRendererPixbuf" id="contact_call_renderer">
                                     <property name="icon_name">linphone-start-call2</property>
-                                    <property name="stock_size">2</property>
+                                    <property name="stock_size">3</property>
                                   </object>
                                 </child>
                               </object>
@@ -531,7 +531,7 @@
                               <object class="GtkTreeViewColumn" id="contact_chat_column">
                                 <child>
                                   <object class="GtkCellRendererPixbuf" id="contact_chat_renderer">
-                                    <property name="stock_size">2</property>
+                                    <property name="stock_size">3</property>
                                   </object>
                                   <attributes>
                                     <attribute name="icon-name">5</attribute>
