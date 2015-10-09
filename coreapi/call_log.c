@@ -343,6 +343,26 @@ static void linphone_create_table(sqlite3* db) {
 	}
 }
 
+void linphone_update_call_log_table(sqlite3* db) {
+	char* errmsg=NULL;
+	int ret;
+
+	// for image url storage
+	ret=sqlite3_exec(db,"ALTER TABLE call_history ADD COLUMN call_id TEXT;",NULL,NULL,&errmsg);
+	if(ret != SQLITE_OK) {
+		ms_message("Table already up to date: %s.", errmsg);
+		sqlite3_free(errmsg);
+	} else {
+		ret=sqlite3_exec(db,"ALTER TABLE call_history ADD COLUMN refkey TEXT;",NULL,NULL,&errmsg);
+		if(ret != SQLITE_OK) {
+			ms_message("Table already up to date: %s.", errmsg);
+			sqlite3_free(errmsg);
+		} else {
+			ms_debug("Table call_history updated successfully for call_id and refkey.");
+		}
+	}
+}
+
 static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 #if defined(ANDROID) || defined(__QNXNTO__)
 	return sqlite3_open(db_file, db);
@@ -387,6 +407,7 @@ void linphone_core_call_log_storage_init(LinphoneCore *lc) {
 	}
 
 	linphone_create_table(db);
+	linphone_update_call_log_table(db);
 	lc->logs_db = db;
 	
 	// Load the existing call logs
@@ -411,6 +432,8 @@ void linphone_core_call_log_storage_close(LinphoneCore *lc) {
  * | 7  | status
  * | 8  | video enabled (1 or 0)
  * | 9  | quality
+ * | 10 | call_id
+ * | 11 | refkey
  */
 static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	MSList **list = (MSList **)data;
@@ -432,6 +455,14 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	log->status = (LinphoneCallStatus) atoi(argv[7]);
 	log->video_enabled = atoi(argv[8]) == 1;
 	log->quality = atof(argv[9]);
+	if (argc > 10) {
+		if (argv[10] != NULL) {
+			log->call_id = ms_strdup(argv[10]);
+		}
+		if (argv[10] != NULL) {
+			log->refkey = ms_strdup(argv[11]);
+		}
+	}
 	
 	*list = ms_list_append(*list, log);
 	
@@ -466,7 +497,7 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 		
 		from = linphone_address_as_string(log->from);
 		to = linphone_address_as_string(log->to);
-		buf = sqlite3_mprintf("INSERT INTO call_history VALUES(NULL,%Q,%Q,%i,%i,%lld,%lld,%i,%i,%f);",
+		buf = sqlite3_mprintf("INSERT INTO call_history VALUES(NULL,%Q,%Q,%i,%i,%lld,%lld,%i,%i,%f,%Q,%Q);",
 						from,
 						to,
 						log->dir,
@@ -475,7 +506,9 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 						(int64_t)log->connected_date_time,
 						log->status,
 						log->video_enabled ? 1 : 0,
-						log->quality
+						log->quality,
+						log->call_id,
+						log->refkey
 					);
 		linphone_sql_request_generic(lc->logs_db, buf);
 		sqlite3_free(buf);
