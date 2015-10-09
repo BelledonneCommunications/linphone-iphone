@@ -271,29 +271,21 @@ def install_git_hook():
 
 def generate_makefile(platforms, generator):
     packages = os.listdir('WORK/ios-' + platforms[0] + '/Build')
+    packages.remove('dummy_libraries')
     packages.sort()
     arch_targets = ""
     for arch in platforms:
         arch_targets += """
 {arch}: {arch}-build
 
-{arch}-build:
-\t@for package in $(packages); do \\
-\t\t$(MAKE) {arch}-build-$$package; \\
-\tdone
+{arch}-build: $(addprefix {arch}-build-, $(packages))
+\t@echo "Done"
 
-{arch}-clean:
-\t@for package in $(packages); do \\
-\t\t$(MAKE) {arch}-clean-$$package; \\
-\tdone
+{arch}-clean: $(addprefix {arch}-clean-, $(packages))
+\t@echo "Done"
 
-{arch}-veryclean:
-\t@for package in $(packages); do \\
-\t\t$(MAKE) {arch}-veryclean-$$package; \\
-\tdone
-
-{arch}-build-dummy_libraries:
-\t{generator} WORK/ios-{arch}/cmake EP_dummy_libraries
+{arch}-veryclean: $(addprefix {arch}-veryclean-, $(packages))
+\t@echo "Done"
 
 {arch}-build-%: package-in-list-%
 \trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-update; \\
@@ -354,7 +346,8 @@ LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
 .SILENT: sdk
-
+#turn off parallelism because it is not yet handled properly
+.NOTPARALLEL:
 all: build
 
 package-in-list-%:
@@ -377,6 +370,7 @@ clean: $(addprefix clean-,$(packages))
 veryclean: $(addprefix veryclean-,$(packages))
 
 sdk:
+\tfor arch in $$archs; do {generator} WORK/ios-$arch/cmake EP_dummy_libraries; done && \\
 \tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
 \trm -rf liblinphone-sdk/apple-darwin && \\
 \tmkdir -p liblinphone-sdk/apple-darwin && \\

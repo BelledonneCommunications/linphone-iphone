@@ -524,7 +524,8 @@ exit_dbmigration:
 			// we want to enable quality reporting for the proxies that are on linphone.org
 			if (addr && strstr(addr, "sip.linphone.org") != 0) {
 				LOGI(@"Migrating proxy config to send quality report");
-				linphone_proxy_config_set_quality_reporting_collector(proxy, "sip:voip-metrics@sip.linphone.org");
+				linphone_proxy_config_set_quality_reporting_collector(
+					proxy, "sip:voip-metrics@sip.linphone.org;transport=tls");
 				linphone_proxy_config_set_quality_reporting_interval(proxy, 180);
 				linphone_proxy_config_enable_quality_reporting(proxy, TRUE);
 			}
@@ -1323,8 +1324,7 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 										[zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	linphone_core_set_chat_database_path(theLinphoneCore,
 										 [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-	linphone_core_set_call_logs_database_path(theLinphoneCore,
-											  [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+
 	[self migrationLinphoneSettings];
 
 	[self setupNetworkReachabilityCallback];
