@@ -370,7 +370,7 @@ clean: $(addprefix clean-,$(packages))
 veryclean: $(addprefix veryclean-,$(packages))
 
 sdk:
-\tfor arch in $$archs; do {generator} WORK/ios-$arch/cmake EP_dummy_libraries; done && \\
+\tfor arch in $(archs); do {generator} WORK/ios-$$arch/cmake EP_dummy_libraries; done && \\
 \tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
 \trm -rf liblinphone-sdk/apple-darwin && \\
 \tmkdir -p liblinphone-sdk/apple-darwin && \\
