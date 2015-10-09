@@ -354,7 +354,7 @@ extern const char *liblinphone_tester_mire_id;
 
 FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress* dest_addres);
 
-		
+void wait_core(LinphoneCore *core) ;
 
 
 #ifdef __cplusplus

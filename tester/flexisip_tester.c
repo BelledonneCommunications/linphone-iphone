@@ -945,7 +945,7 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
 	
-	if (TRUE/*sipp_out*/) {
+	if (sipp_out) {
 		/*wait for marie status*/
 		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
 		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
@@ -955,6 +955,22 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void test_publish_unpublish(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneProxyConfig* proxy;
+	
+	linphone_core_get_default_proxy(marie->lc,&proxy);
+	linphone_proxy_config_edit(proxy);
+	linphone_proxy_config_enable_publish(proxy,TRUE);
+	linphone_proxy_config_done(proxy);
+	wait_core(marie->lc);
+	linphone_proxy_config_edit(proxy);
+	linphone_proxy_config_enable_publish(proxy,FALSE);
+	linphone_proxy_config_done(proxy);
+	wait_core(marie->lc);
+	linphone_core_manager_destroy(marie);
 }
 
 #endif
@@ -979,6 +995,7 @@ test_t flexisip_tests[] = {
 #if USE_PRESENCE_SERVER
 	{ "Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher },
 	{ "Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish },
+	{ "Publish/unpublish", test_publish_unpublish },
 #endif
 	{ "File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client },
 	{ "File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client },

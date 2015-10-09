@@ -115,7 +115,7 @@ void notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf) {
 	}
 }
 
-static void wait_core(LinphoneCore *core) {
+void wait_core(LinphoneCore *core) {
 	int i;
 
 	for (i = 0; i < 10; i++) {
