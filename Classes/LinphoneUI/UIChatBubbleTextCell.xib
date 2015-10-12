@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -24,9 +24,9 @@
         </tapGestureRecognizer>
         <view contentMode="scaleToFill" id="ucH-2r-rar">
             <rect key="frame" x="0.0" y="0.0" width="357" height="199"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="vdk-RV-QRU" userLabel="innerView">
+                <view clipsSubviews="YES" contentMode="scaleToFill" id="vdk-RV-QRU" userLabel="innerView">
                     <rect key="frame" x="6" y="5" width="345" height="189"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
@@ -36,7 +36,7 @@
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar.png" id="P1c-sD-eOv" userLabel="avatarImage" customClass="UIRoundedImageView">
                             <rect key="frame" x="8" y="2" width="40" height="40"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                 <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
                                 <bool key="isElement" value="YES"/>
@@ -66,7 +66,7 @@
                         </label>
                         <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
                             <rect key="frame" x="48" y="10" width="299" height="168"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <string key="text">static const CGFloat CELL_MESSAGE_WIDTH_MARGIN = 26.0f + 10.0f + 48;
 static const CGFloat CELL_MESSAGE_HEIGHT_MARGIN = 10.0f + 10;
 static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
@@ -77,7 +77,7 @@ static const CGFloat CELL_IMAGE_WIDTH = 100.0f;</string>
                         </textView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat_message_inprogress.png" id="nLy-JO-TyL" userLabel="statusImage">
                             <rect key="frame" x="330" y="0.0" width="15" height="15"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="mlr-pl-B6T" userLabel="bottomBarColor">
                             <rect key="frame" x="0.0" y="188" width="345" height="1"/>
@@ -92,8 +92,8 @@ static const CGFloat CELL_IMAGE_WIDTH = 100.0f;</string>
         </view>
     </objects>
     <resources>
-        <image name="avatar.png" width="261" height="261"/>
-        <image name="chat_message_inprogress.png" width="12" height="12"/>
+        <image name="avatar.png" width="255" height="255"/>
+        <image name="chat_message_inprogress.png" width="11" height="12"/>
         <image name="color_A.png" width="1" height="1"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

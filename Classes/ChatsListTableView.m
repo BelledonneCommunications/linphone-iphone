@@ -138,8 +138,8 @@ static void chatTable_free_chatrooms(void *data) {
 	if (![self isEditing]) {
 		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row]);
 		ChatConversationView *view = VIEW(ChatConversationView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 		[view setChatRoom:chatRoom];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	}
 }
 
