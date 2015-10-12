@@ -46,7 +46,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		retImage = [UIImage imageNamed:@"avatar"];
 	}
 	if (retImage.size.width != retImage.size.height) {
-		LOGW(@"Image is not square (%@): cropping it.", retImage.size);
+		LOGW(@"Image is not square (%dx%d): cropping it.", retImage.size.width, retImage.size.height);
 		retImage = [retImage squareCrop];
 	}
 	return retImage;
