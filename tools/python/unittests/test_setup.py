@@ -5,9 +5,6 @@ import os
 
 class TestSetup:
 
-    def test_address(self):
-        create_address(None)
-
     def test_version(self):
         lc = linphone.Core.new({}, None, None)
         assert_equals(lc.version.find("unknown"), -1)
