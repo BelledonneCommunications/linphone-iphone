@@ -1720,7 +1720,7 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 				call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
 			} else {
 				ms_message("Encryption was resquested to be %s, but isn't effective (all_streams_encrypted=%i, auth_token=%s)",
-					linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted, call->auth_token);
+					linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted, call->auth_token == NULL ? "" : call->auth_token);
 				call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 			}
 		}//else don't update the state if all streams are shutdown.
