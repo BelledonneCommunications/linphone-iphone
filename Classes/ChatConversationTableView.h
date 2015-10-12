@@ -20,6 +20,8 @@
 #import <UIKit/UIKit.h>
 #include "linphone/linphonecore.h"
 
+#import "UICheckBoxTVTableViewController.h"
+
 @protocol ChatConversationDelegate <NSObject>
 
 - (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url;
@@ -27,7 +29,7 @@
 
 @end
 
-@interface ChatConversationTableView : UITableViewController {
+@interface ChatConversationTableView : UICheckBoxTVTableViewController {
   @private
 	LinphoneChatRoom *chatRoom;
 	MSList *messageList;

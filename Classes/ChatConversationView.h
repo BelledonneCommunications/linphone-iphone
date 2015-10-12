@@ -49,7 +49,8 @@
 @property(strong, nonatomic) IBOutlet UILabel *composeLabel;
 @property(strong, nonatomic) IBOutlet UIView *composeIndicatorView;
 @property(nonatomic, strong) IBOutlet UIButton *pictureButton;
-@property(weak, nonatomic) IBOutlet UIView *createChatView;
+@property(weak, nonatomic) IBOutlet UIIconButton *backButton;
+@property(weak, nonatomic) IBOutlet UIIconButton *callButton;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;
@@ -58,6 +59,8 @@
 - (IBAction)onPictureClick:(id)event;
 - (IBAction)onListTap:(id)sender;
 - (IBAction)onCallClick:(id)sender;
+- (IBAction)onDeleteClick:(id)sender;
+- (IBAction)onEditionChangeClick:(id)sender;
 
 - (void)setChatRoom:(LinphoneChatRoom *)room;
 

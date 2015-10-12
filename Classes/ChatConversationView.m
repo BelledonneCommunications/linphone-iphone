@@ -25,21 +25,6 @@
 
 @implementation ChatConversationView
 
-@synthesize messageField;
-@synthesize tableController;
-@synthesize sendButton;
-@synthesize editButton;
-@synthesize addressLabel;
-@synthesize composeLabel;
-@synthesize composeIndicatorView;
-@synthesize avatarImage;
-@synthesize headerView;
-@synthesize chatView;
-@synthesize messageView;
-@synthesize listTapGestureRecognizer;
-@synthesize listSwipeGestureRecognizer;
-@synthesize pictureButton;
-
 #pragma mark - Lifecycle Functions
 
 - (id)init {
@@ -47,8 +32,8 @@
 	if (self != nil) {
 		scrollOnGrowingEnabled = TRUE;
 		chatRoom = NULL;
-		listTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onListTap:)];
-		self.listSwipeGestureRecognizer =
+		_listTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onListTap:)];
+		_listSwipeGestureRecognizer =
 			[[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onListSwipe:)];
 		imageQualities = [[OrderedDictionary alloc]
 			initWithObjectsAndKeys:[NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
@@ -87,14 +72,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[tableController setChatRoomDelegate:self];
+	[_tableController setChatRoomDelegate:self];
 
-	[tableController.tableView addGestureRecognizer:listTapGestureRecognizer];
-	[listTapGestureRecognizer setEnabled:FALSE];
+	[_tableController.tableView addGestureRecognizer:_listTapGestureRecognizer];
+	[_listTapGestureRecognizer setEnabled:FALSE];
 
-	listSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
-	[tableController.tableView addGestureRecognizer:listSwipeGestureRecognizer];
-	listSwipeGestureRecognizer.enabled = TRUE;
+	_listSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+	[_tableController.tableView addGestureRecognizer:_listSwipeGestureRecognizer];
+	_listSwipeGestureRecognizer.enabled = TRUE;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -124,19 +109,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 												 name:kLinphoneTextComposeEvent
 											   object:nil];
 
-	if ([tableController isEditing])
-		[tableController setEditing:FALSE animated:FALSE];
-	[editButton setOff];
-	[[tableController tableView] reloadData];
+	if ([_tableController isEditing])
+		[_tableController setEditing:FALSE animated:FALSE];
+	[_editButton setOff];
+	[[_tableController tableView] reloadData];
 
 	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server([LinphoneManager getLc]) != NULL;
-	[pictureButton setEnabled:fileSharingEnabled];
+	[_pictureButton setEnabled:fileSharingEnabled];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	[messageField resignFirstResponder];
+	[_messageField resignFirstResponder];
 
 	[self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
 
@@ -145,7 +130,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-	[tableController scrollToBottom:true];
+	[_tableController scrollToBottom:true];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -161,19 +146,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
 	chatRoom = room;
-	[messageField setText:@""];
-	[tableController setChatRoom:room];
+	[_messageField setText:@""];
+	[_tableController setChatRoom:room];
 
 	if (chatRoom != NULL) {
-		_createChatView.hidden = YES;
-		chatView.hidden = NO;
+		_chatView.hidden = NO;
 		[self update];
 		linphone_chat_room_mark_as_read(chatRoom);
 		[self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 	} else {
-		_createChatView.hidden = NO;
-		chatView.hidden = YES;
+		_chatView.hidden = YES;
 	}
 }
 
@@ -204,9 +187,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[error show];
 		return;
 	}
-	[ContactDisplay setDisplayNameLabel:addressLabel forAddress:linphoneAddress];
-	addressLabel.accessibilityValue = addressLabel.text;
-	avatarImage.image =
+	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:linphoneAddress];
+	_addressLabel.accessibilityValue = _addressLabel.text;
+	_avatarImage.image =
 		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:linphoneAddress] thumbnail:YES];
 }
 
@@ -235,8 +218,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		[LinphoneManager setValueInMessageAppData:[internalUrl absoluteString] forKey:@"localimage" inMessage:msg];
 	}
 
-	[tableController addChatEntry:msg];
-	[tableController scrollToBottom:true];
+	[_tableController addChatEntry:msg];
+	[_tableController scrollToBottom:true];
 
 	linphone_chat_room_send_message2(chatRoom, msg, message_status, (__bridge void *)(self));
 
@@ -297,13 +280,13 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	if (composingVisible == visible)
 		return;
 
-	CGRect keyboardFrame = [self.messageView frame];
-	CGRect newComposingFrame = [self.composeIndicatorView frame];
-	CGRect newTableFrame = [self.tableController.tableView frame];
+	CGRect keyboardFrame = [_messageView frame];
+	CGRect newComposingFrame = [_composeIndicatorView frame];
+	CGRect newTableFrame = [_tableController.tableView frame];
 
 	if (visible) {
-		composeLabel.text =
-			[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), addressLabel.text];
+		_composeLabel.text =
+			[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), _addressLabel.text];
 		// pull up the composing frame and shrink the table view
 
 		newTableFrame.size.height -= newComposingFrame.size.height;
@@ -316,11 +299,11 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	composingVisible = visible;
 	[UIView animateWithDuration:delay
 		animations:^{
-		  self.tableController.tableView.frame = newTableFrame;
-		  self.composeIndicatorView.frame = newComposingFrame;
+		  _tableController.tableView.frame = newTableFrame;
+		  _composeIndicatorView.frame = newComposingFrame;
 		}
 		completion:^(BOOL finished) {
-		  [self.tableController scrollToBottom:TRUE];
+		  [_tableController scrollToBottom:TRUE];
 		}];
 }
 
@@ -345,8 +328,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 				linphone_chat_room_mark_as_read(room);
 				[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 			}
-			[tableController addChatEntry:chat];
-			[tableController scrollToLastUnread:TRUE];
+			[_tableController addChatEntry:chat];
+			[_tableController scrollToLastUnread:TRUE];
 		}
 	}
 	ms_free(fromStr);
@@ -364,22 +347,22 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 #pragma mark - UITextFieldDelegate Functions
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
-	if (editButton.selected) {
-		[tableController setEditing:FALSE animated:TRUE];
-		[editButton setOff];
+	if (_editButton.selected) {
+		[_tableController setEditing:FALSE animated:TRUE];
+		[_editButton setOff];
 	}
-	[listTapGestureRecognizer setEnabled:TRUE];
+	[_listTapGestureRecognizer setEnabled:TRUE];
 	return TRUE;
 }
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView {
-	[listTapGestureRecognizer setEnabled:FALSE];
+	[_listTapGestureRecognizer setEnabled:FALSE];
 	return TRUE;
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
 	if ([text isEqualToString:@"\n"]) {
-		[listTapGestureRecognizer setEnabled:FALSE];
+		[_listTapGestureRecognizer setEnabled:FALSE];
 		[self onSendClick:nil];
 		textView.text = @"";
 		return NO;
@@ -394,7 +377,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView {
-	[listTapGestureRecognizer setEnabled:FALSE];
+	[_listTapGestureRecognizer setEnabled:FALSE];
 	[textView resignFirstResponder];
 }
 
@@ -403,30 +386,30 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	int diff = height - growingTextView.bounds.size.height;
 
 	if (diff != 0) {
-		CGRect messageRect = [messageView frame];
+		CGRect messageRect = [_messageView frame];
 		messageRect.origin.y -= diff;
 		messageRect.size.height += diff;
-		[messageView setFrame:messageRect];
+		[_messageView setFrame:messageRect];
 
 		// Always stay at bottom
 		if (scrollOnGrowingEnabled) {
-			CGRect tableFrame = [tableController.view frame];
-			CGPoint contentPt = [tableController.tableView contentOffset];
+			CGRect tableFrame = [_tableController.view frame];
+			CGPoint contentPt = [_tableController.tableView contentOffset];
 			contentPt.y += diff;
-			if (contentPt.y + tableFrame.size.height > tableController.tableView.contentSize.height)
+			if (contentPt.y + tableFrame.size.height > _tableController.tableView.contentSize.height)
 				contentPt.y += diff;
-			[tableController.tableView setContentOffset:contentPt animated:FALSE];
+			[_tableController.tableView setContentOffset:contentPt animated:FALSE];
 		}
 
-		CGRect tableRect = [tableController.view frame];
+		CGRect tableRect = [_tableController.view frame];
 		tableRect.size.height -= diff;
-		[tableController.view setFrame:tableRect];
+		[_tableController.view setFrame:tableRect];
 
 		// if we're showing the compose message, update it position
-		if (![composeLabel isHidden]) {
-			CGRect frame = [composeLabel frame];
+		if (![_composeLabel isHidden]) {
+			CGRect frame = [_composeLabel frame];
 			frame.origin.y -= diff;
-			[composeLabel setFrame:frame];
+			[_composeLabel setFrame:frame];
 		}
 	}
 }*/
@@ -434,26 +417,26 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-	[self.tableController setChatRoom:NULL];
+	[_tableController setChatRoom:NULL];
 	[PhoneMainView.instance popCurrentView];
 }
 
 - (IBAction)onEditClick:(id)event {
-	[tableController setEditing:![tableController isEditing] animated:TRUE];
-	[messageField resignFirstResponder];
+	[_tableController setEditing:![_tableController isEditing] animated:TRUE];
+	[_messageField resignFirstResponder];
 }
 
 - (IBAction)onSendClick:(id)event {
-	if ([self sendMessage:[messageField text] withExterlBodyUrl:nil withInternalURL:nil]) {
+	if ([self sendMessage:[_messageField text] withExterlBodyUrl:nil withInternalURL:nil]) {
 		scrollOnGrowingEnabled = FALSE;
-		[messageField setText:@""];
+		[_messageField setText:@""];
 		scrollOnGrowingEnabled = TRUE;
 		[self onMessageChange:nil];
 	}
 }
 
 - (IBAction)onListTap:(id)sender {
-	[messageField resignFirstResponder];
+	[_messageField resignFirstResponder];
 }
 
 - (IBAction)onCallClick:(id)sender {
@@ -465,21 +448,41 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	[view call:[NSString stringWithUTF8String:uri] displayName:displayName];
 	ms_free(uri);
 }
+
+- (IBAction)onDeleteClick:(id)sender {
+	NSString *msg =
+		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d messages?", nil),
+								   _tableController.selectedItems.count];
+	[UIConfirmationDialog ShowWithMessage:msg
+		onCancelClick:^() {
+		  [self onEditionChangeClick:nil];
+		}
+		onConfirmationClick:^() {
+		  [_tableController removeSelection];
+		  [_tableController loadData];
+		  [self onEditionChangeClick:nil];
+		}];
+}
+
+- (IBAction)onEditionChangeClick:(id)sender {
+	_backButton.hidden = _callButton.hidden = _tableController.isEditing;
+}
+
 - (IBAction)onListSwipe:(id)sender {
 	[self onBackClick:sender];
 }
 
 - (IBAction)onMessageChange:(id)sender {
-	if ([[messageField text] length] > 0) {
-		[sendButton setEnabled:TRUE];
+	if ([[_messageField text] length] > 0) {
+		[_sendButton setEnabled:TRUE];
 	} else {
-		[sendButton setEnabled:FALSE];
+		[_sendButton setEnabled:FALSE];
 	}
 }
 
 - (IBAction)onPictureClick:(id)event {
-	[messageField resignFirstResponder];
-	CGRect rect = [self.messageView convertRect:[pictureButton frame] toView:self.view];
+	[_messageField resignFirstResponder];
+	CGRect rect = [_messageView convertRect:[_pictureButton frame] toView:self.view];
 	[ImagePickerView SelectImageFromDevice:self atPosition:rect inView:self.view];
 }
 
@@ -488,8 +491,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 - (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url {
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
 	[fileTransfer upload:image withURL:url forChatRoom:chatRoom];
-	[tableController addChatEntry:linphone_chat_message_ref(fileTransfer.message)];
-	[tableController scrollToBottom:true];
+	[_tableController addChatEntry:linphone_chat_message_ref(fileTransfer.message)];
+	[_tableController scrollToBottom:true];
 	return TRUE;
 }
 
@@ -517,37 +520,37 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		delay:0
 		options:UIViewAnimationOptionBeginFromCurrentState
 		animations:^{
-		  CGFloat composeIndicatorCompensation = composingVisible ? composeIndicatorView.frame.size.height : 0.0f;
+		  CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
 
 		  // Resize chat view
 		  {
-			  CGRect chatFrame = [[self chatView] frame];
+			  CGRect chatFrame = [_chatView frame];
 			  chatFrame.size.height = [[self view] frame].size.height - chatFrame.origin.y;
-			  [[self chatView] setFrame:chatFrame];
+			  [_chatView setFrame:chatFrame];
 		  }
 
 		  // Move header view back into place (was hidden before)
 		  {
-			  CGRect headerFrame = [headerView frame];
+			  CGRect headerFrame = [_headerView frame];
 			  headerFrame.origin.y = 0;
-			  [headerView setFrame:headerFrame];
-			  [headerView setAlpha:1.0];
+			  [_headerView setFrame:headerFrame];
+			  [_headerView setAlpha:1.0];
 		  }
 
 		  // Resize & Move table view
 		  {
-			  CGRect tableFrame = [tableController.view frame];
-			  tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
+			  CGRect tableFrame = [_tableController.view frame];
+			  tableFrame.origin.y = [_headerView frame].origin.y + [_headerView frame].size.height;
 			  tableFrame.size.height =
-				  [messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
-			  [tableController.view setFrame:tableFrame];
+				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
+			  [_tableController.view setFrame:tableFrame];
 
 			  // Scroll to bottom
-			  NSInteger lastSection = [tableController.tableView numberOfSections] - 1;
+			  NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
 			  if (lastSection >= 0) {
-				  NSInteger lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
+				  NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
 				  if (lastRow >= 0) {
-					  [tableController.tableView
+					  [_tableController.tableView
 						  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
 								atScrollPosition:UITableViewScrollPositionBottom
 										animated:FALSE];
@@ -562,7 +565,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 - (void)keyboardWillShow:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-	CGFloat composeIndicatorCompensation = composingVisible ? composeIndicatorView.frame.size.height : 0.0f;
+	CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
 
 	[UIView animateWithDuration:duration
 		delay:0
@@ -590,34 +593,34 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 			  float diff = (rect.size.height - gPos.y - endFrame.size.height);
 			  if (diff > 0)
 				  diff = 0;
-			  CGRect chatFrame = [[self chatView] frame];
+			  CGRect chatFrame = [_chatView frame];
 			  chatFrame.size.height = viewFrame.size.height - chatFrame.origin.y + diff;
-			  [[self chatView] setFrame:chatFrame];
+			  [_chatView setFrame:chatFrame];
 		  }
 
 		  // Move header view
 		  {
-			  CGRect headerFrame = [headerView frame];
+			  CGRect headerFrame = [_headerView frame];
 			  headerFrame.origin.y = -headerFrame.size.height;
-			  [headerView setFrame:headerFrame];
-			  [headerView setAlpha:0.0];
+			  [_headerView setFrame:headerFrame];
+			  [_headerView setAlpha:0.0];
 		  }
 
 		  // Resize & Move table view
 		  {
-			  CGRect tableFrame = [tableController.view frame];
-			  tableFrame.origin.y = [headerView frame].origin.y + [headerView frame].size.height;
+			  CGRect tableFrame = [_tableController.view frame];
+			  tableFrame.origin.y = [_headerView frame].origin.y + [_headerView frame].size.height;
 			  tableFrame.size.height =
-				  [messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
-			  [tableController.view setFrame:tableFrame];
+				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
+			  [_tableController.view setFrame:tableFrame];
 		  }
 
 		  // Scroll
-		  NSInteger lastSection = [tableController.tableView numberOfSections] - 1;
+		  NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
 		  if (lastSection >= 0) {
-			  NSInteger lastRow = [tableController.tableView numberOfRowsInSection:lastSection] - 1;
+			  NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
 			  if (lastRow >= 0) {
-				  [tableController.tableView
+				  [_tableController.tableView
 					  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
 							atScrollPosition:UITableViewScrollPositionBottom
 									animated:FALSE];

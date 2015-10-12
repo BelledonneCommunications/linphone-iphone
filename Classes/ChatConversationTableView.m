@@ -182,6 +182,7 @@
 	}
 	[cell setChatMessage:chat];
 	[cell setChatRoomDelegate:chatRoomDelegate];
+	[super accessoryForCell:cell atPath:indexPath];
 	return cell;
 }
 
@@ -202,15 +203,6 @@
 		}
 		[tableView endUpdates];
 	}
-}
-
-- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
-		   editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-	// Detemine if it's in editing mode
-	if (self.editing) {
-		return UITableViewCellEditingStyleDelete;
-	}
-	return UITableViewCellEditingStyleNone;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

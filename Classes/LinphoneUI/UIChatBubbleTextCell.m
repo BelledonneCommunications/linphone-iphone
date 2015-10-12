@@ -141,6 +141,7 @@
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+	_messageText.userInteractionEnabled = !editing;
 	if (animated) {
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
@@ -270,11 +271,13 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 - (void)layoutSubviews {
 	[super layoutSubviews];
 	if (message != nil) {
+		UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
 		BOOL is_outgoing = linphone_chat_message_is_outgoing(message);
 		CGRect bubbleFrame = _bubbleView.frame;
 		bubbleFrame.size = [self viewSizeWithWidth:self.frame.size.width];
 		bubbleFrame.size.width += 10;
-		bubbleFrame.origin.x = is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0;
+		bubbleFrame.origin.x =
+			tableView.isEditing ? 0 : (is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0);
 		_bubbleView.frame = bubbleFrame;
 	}
 }

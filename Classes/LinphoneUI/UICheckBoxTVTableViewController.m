@@ -50,15 +50,6 @@
 	_toggleSelectionButton.selected = (_selectedItems.count == 0);
 }
 
-- (UITableViewCellEditingStyle)tableView:(UITableView *)aTableView
-		   editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-	// Detemine if it's in editing mode
-	if (self.editing) {
-		return UITableViewCellEditingStyleDelete;
-	}
-	return UITableViewCellEditingStyleNone;
-}
-
 #pragma mark -
 
 - (void)accessoryForCell:(UITableViewCell *)cell atPath:(NSIndexPath *)indexPath {

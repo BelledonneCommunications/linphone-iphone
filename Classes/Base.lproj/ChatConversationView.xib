@@ -8,10 +8,11 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatConversationView">
             <connections>
                 <outlet property="addressLabel" destination="40" id="43"/>
+                <outlet property="backButton" destination="9" id="9Pw-ZA-KcF"/>
+                <outlet property="callButton" destination="Wzg-i0-spp" id="w9L-aT-1AD"/>
                 <outlet property="chatView" destination="bJF-qS-vBP" id="AF2-NN-muZ"/>
                 <outlet property="composeIndicatorView" destination="fx4-ao-53M" id="xk5-nK-lur"/>
                 <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
-                <outlet property="editButton" destination="10" id="35"/>
                 <outlet property="messageField" destination="CPp-ts-xy0" id="wPX-Uo-vZQ"/>
                 <outlet property="messageView" destination="14" id="89"/>
                 <outlet property="pictureButton" destination="73" id="84"/>
@@ -73,32 +74,73 @@
                                         <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="Dsf-nS-K3V"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="10" userLabel="editButton" customClass="UIToggleButton">
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wag-Nx-kd6" userLabel="deleteButton" customClass="UIIconButton">
                                     <rect key="frame" x="300" y="0.0" width="75" height="40"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="delete.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="selected" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="JoY-wC-JQy"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="FqM-Ud-i58" userLabel="editButton" customClass="UIIconButton">
+                                    <rect key="frame" x="300" y="0.0" width="75" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="edit_list.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
-                                        <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="13"/>
+                                        <action selector="onEditClick:" destination="29" eventType="touchUpInside" id="2Q7-xM-Shx"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="0we-lw-TyJ"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="c9z-aq-2UP" userLabel="toggleSelectionButton" customClass="UIIconButton">
+                                    <rect key="frame" x="225" y="0.0" width="75" height="42"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Edit"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="select_all.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="selected" image="deselect_all.png"/>
+                                    <connections>
+                                        <action selector="onSelectionToggle:" destination="29" eventType="touchUpInside" id="eP5-bU-LEA"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="bci-3K-AcG" userLabel="cancelButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="cancel_edit.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="selected" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onCancelClick:" destination="29" eventType="touchUpInside" id="tdO-wP-Ttr"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="c6C-ow-Yhi"/>
                                     </connections>
                                 </button>
                             </subviews>
                         </view>
                         <view contentMode="scaleToFill" id="49" userLabel="contentView">
-                            <rect key="frame" x="0.0" y="40" width="375" height="515"/>
+                            <rect key="frame" x="0.0" y="40" width="375" height="519"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <view contentMode="scaleToFill" id="bJF-qS-vBP" userLabel="chatView">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="450"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="453"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="messagesTableView">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="422"/>
+                                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="messagesTableView">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="425"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <gestureRecognizers/>
@@ -108,7 +150,7 @@
                                             </connections>
                                         </tableView>
                                         <view contentMode="scaleToFill" id="fx4-ao-53M" userLabel="composeIndicatorView">
-                                            <rect key="frame" x="0.0" y="427" width="375" height="22"/>
+                                            <rect key="frame" x="0.0" y="430" width="375" height="22"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
@@ -124,9 +166,13 @@
                                     </subviews>
                                 </view>
                                 <view contentMode="scaleToFill" id="14" userLabel="messageView">
-                                    <rect key="frame" x="0.0" y="449" width="375" height="66"/>
+                                    <rect key="frame" x="0.0" y="453" width="375" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="pGT-LQ-zpg" userLabel="backgroundColor">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="73" userLabel="pictureButton">
                                             <rect key="frame" x="0.0" y="2" width="72" height="63"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
@@ -164,7 +210,6 @@
                                             </connections>
                                         </button>
                                     </subviews>
-                                    <color key="backgroundColor" red="0.50196078430000002" green="0.50196078430000002" blue="0.50196078430000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
                             </subviews>
                         </view>
@@ -181,6 +226,10 @@
             <extendedEdge key="edgesForExtendedLayout"/>
             <nil key="simulatedStatusBarMetrics"/>
             <connections>
+                <outlet property="cancelButton" destination="bci-3K-AcG" id="ZTI-gJ-SEL"/>
+                <outlet property="deleteButton" destination="Wag-Nx-kd6" id="hOb-3g-mnR"/>
+                <outlet property="editButton" destination="FqM-Ud-i58" id="9L7-rC-Aqy"/>
+                <outlet property="toggleSelectionButton" destination="c9z-aq-2UP" id="a2J-JQ-rhX"/>
                 <outlet property="view" destination="8" id="g4m-ne-lbP"/>
             </connections>
             <point key="canvasLocation" x="639" y="328"/>
@@ -191,13 +240,17 @@
         <image name="call_alt_start.png" width="29" height="29"/>
         <image name="call_start_body_disabled.png" width="51" height="51"/>
         <image name="call_start_body_over.png" width="51" height="51"/>
+        <image name="cancel_edit.png" width="29" height="29"/>
         <image name="chat_picture_default.png" width="25" height="19"/>
         <image name="chat_picture_over.png" width="42" height="42"/>
         <image name="chat_send_default.png" width="40" height="40"/>
         <image name="chat_send_over.png" width="40" height="40"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
+        <image name="delete.png" width="21" height="27"/>
+        <image name="deselect_all.png" width="26" height="26"/>
         <image name="edit_list.png" width="29" height="28"/>
+        <image name="select_all.png" width="26" height="26"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
