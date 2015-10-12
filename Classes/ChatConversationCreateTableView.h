@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ChatConversationSearchTableView : UITableViewController <UISearchBarDelegate>
+@interface ChatConversationCreateTableView : UITableViewController <UISearchBarDelegate>
 
 @end

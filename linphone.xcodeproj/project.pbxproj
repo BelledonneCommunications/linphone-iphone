@@ -90,10 +90,11 @@
 		6334DDFC1BBAC99B00631900 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
 		6334DDFD1BBAC9A200631900 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
 		6334DE001BBAD5AA00631900 /* UICheckBoxTVTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */; };
+		633671611BCBAAD200BFCBDE /* ChatConversationCreateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */; };
 		633756391B67BAF400E21BAD /* SideMenuTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756381B67BAF400E21BAD /* SideMenuTableView.m */; };
 		633756451B67D2B200E21BAD /* SideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756431B67D2B100E21BAD /* SideMenuView.m */; };
 		633756461B67D2B200E21BAD /* SideMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 633756441B67D2B100E21BAD /* SideMenuView.xib */; };
-		6341807C1BBC103100F71761 /* ChatConversationSearchTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6341807B1BBC103100F71761 /* ChatConversationSearchTableView.m */; };
+		6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6341807B1BBC103100F71761 /* ChatConversationCreateTableView.m */; };
 		634610061B61330300548952 /* UILabel+Boldify.m in Sources */ = {isa = PBXBuildFile; fileRef = 634610051B61330300548952 /* UILabel+Boldify.m */; };
 		6346100F1B61409800548952 /* CallOutgoingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6346100E1B61409800548952 /* CallOutgoingView.m */; };
 		634610121B6140A500548952 /* CallOutgoingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 634610101B6140A500548952 /* CallOutgoingView.xib */; };
@@ -309,6 +310,9 @@
 		63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A071B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m */; };
 		63B81A0F1B57DA33009604A6 /* TPKeyboardAvoidingTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A091B57DA33009604A6 /* TPKeyboardAvoidingTableView.m */; };
 		63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A0B1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m */; };
+		63B8D68C1BCBE65600C12B09 /* ChatConversationCreateView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63B8D68E1BCBE65600C12B09 /* ChatConversationCreateView.xib */; };
+		63B8D6A21BCBF43100C12B09 /* UIChatCreateCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */; };
+		63B8D6A31BCBF43100C12B09 /* UIChatCreateCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63B8D6A11BCBF43100C12B09 /* UIChatCreateCell.xib */; };
 		63BC49D41BA1AA6F004EC273 /* UIChatBubbleTextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63BC49D31BA1AA6F004EC273 /* UIChatBubbleTextCell.xib */; };
 		63BC49E21BA2CDFC004EC273 /* UICallPausedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC49E11BA2CDFC004EC273 /* UICallPausedCell.m */; };
 		63BC49EA1BA2CEDF004EC273 /* UICallPausedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63BC49E91BA2CEDF004EC273 /* UICallPausedCell.xib */; };
@@ -700,14 +704,16 @@
 		63158FAC1B468E0E00969917 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ImageOptim.sh; path = Tools/ImageOptim.sh; sourceTree = "<group>"; };
 		6334DDFE1BBAD5AA00631900 /* UICheckBoxTVTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBoxTVTableViewController.h; sourceTree = "<group>"; };
 		6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICheckBoxTVTableViewController.m; sourceTree = "<group>"; };
+		6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateView.h; sourceTree = "<group>"; };
+		6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateView.m; sourceTree = "<group>"; };
 		633756371B67BAF400E21BAD /* SideMenuTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuTableView.h; sourceTree = "<group>"; };
 		633756381B67BAF400E21BAD /* SideMenuTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideMenuTableView.m; sourceTree = "<group>"; };
 		633756421B67D2B100E21BAD /* SideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuView.h; sourceTree = "<group>"; };
 		633756431B67D2B100E21BAD /* SideMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideMenuView.m; sourceTree = "<group>"; };
 		633756441B67D2B100E21BAD /* SideMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SideMenuView.xib; sourceTree = "<group>"; };
 		633E388219FFB0F400936D1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		6341807A1BBC103100F71761 /* ChatConversationSearchTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationSearchTableView.h; sourceTree = "<group>"; };
-		6341807B1BBC103100F71761 /* ChatConversationSearchTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatConversationSearchTableView.m; sourceTree = "<group>"; };
+		6341807A1BBC103100F71761 /* ChatConversationCreateTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateTableView.h; sourceTree = "<group>"; };
+		6341807B1BBC103100F71761 /* ChatConversationCreateTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateTableView.m; sourceTree = "<group>"; };
 		634610041B61330300548952 /* UILabel+Boldify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+Boldify.h"; sourceTree = "<group>"; };
 		634610051B61330300548952 /* UILabel+Boldify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Boldify.m"; sourceTree = "<group>"; };
 		6346100D1B61409800548952 /* CallOutgoingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallOutgoingView.h; sourceTree = "<group>"; };
@@ -943,6 +949,10 @@
 		63B81A091B57DA33009604A6 /* TPKeyboardAvoidingTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingTableView.m; sourceTree = "<group>"; };
 		63B81A0A1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+TPKeyboardAvoidingAdditions.h"; sourceTree = "<group>"; };
 		63B81A0B1B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+TPKeyboardAvoidingAdditions.m"; sourceTree = "<group>"; };
+		63B8D68D1BCBE65600C12B09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ChatConversationCreateView.xib; sourceTree = "<group>"; };
+		63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChatCreateCell.h; sourceTree = "<group>"; };
+		63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatCreateCell.m; sourceTree = "<group>"; };
+		63B8D6A11BCBF43100C12B09 /* UIChatCreateCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIChatCreateCell.xib; sourceTree = "<group>"; };
 		63BC49D31BA1AA6F004EC273 /* UIChatBubbleTextCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIChatBubbleTextCell.xib; sourceTree = "<group>"; };
 		63BC49E01BA2CDFC004EC273 /* UICallPausedCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallPausedCell.h; sourceTree = "<group>"; };
 		63BC49E11BA2CDFC004EC273 /* UICallPausedCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallPausedCell.m; sourceTree = "<group>"; };
@@ -1356,8 +1366,11 @@
 				D3F83EE91582021700336684 /* CallView.h */,
 				D3F83EEA1582021700336684 /* CallView.m */,
 				D381881C15FE3FCA00C3EDCA /* CallView.xib */,
-				6341807A1BBC103100F71761 /* ChatConversationSearchTableView.h */,
-				6341807B1BBC103100F71761 /* ChatConversationSearchTableView.m */,
+				6341807A1BBC103100F71761 /* ChatConversationCreateTableView.h */,
+				6341807B1BBC103100F71761 /* ChatConversationCreateTableView.m */,
+				6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */,
+				6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */,
+				63B8D68E1BCBE65600C12B09 /* ChatConversationCreateView.xib */,
 				D32B6E2715A5BC430033019F /* ChatConversationTableView.h */,
 				D32B6E2815A5BC430033019F /* ChatConversationTableView.m */,
 				D3F795D315A582800077328B /* ChatConversationView.h */,
@@ -1518,6 +1531,9 @@
 				6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */,
 				63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */,
 				63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */,
+				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
+				63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */,
+				63B8D6A11BCBF43100C12B09 /* UIChatCreateCell.xib */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -2394,6 +2410,7 @@
 				637528401BBA8EF700FDEA6F /* numpad_hash_over.png in Resources */,
 				637527F41BBA8EF700FDEA6F /* chat_start_body_disabled.png in Resources */,
 				637527DE1BBA8EF700FDEA6F /* call_status_missed.png in Resources */,
+				63B8D68C1BCBE65600C12B09 /* ChatConversationCreateView.xib in Resources */,
 				6375286B1BBA8EF700FDEA6F /* status_away_phone.png in Resources */,
 				637528231BBA8EF700FDEA6F /* led_error.png in Resources */,
 				637527D11BBA8EF700FDEA6F /* call_alt_start.png in Resources */,
@@ -2435,6 +2452,7 @@
 				637527D51BBA8EF700FDEA6F /* call_quality_indicator_0.png in Resources */,
 				D38187CD15FE346700C3EDCA /* HistoryDetailsView.xib in Resources */,
 				637527D81BBA8EF700FDEA6F /* call_quality_indicator_3.png in Resources */,
+				63B8D6A31BCBF43100C12B09 /* UIChatCreateCell.xib in Resources */,
 				6375284B1BBA8EF700FDEA6F /* pause_big_over_selected.png in Resources */,
 				F0642EF119DAC891009DB336 /* MainStoryboard.storyboard in Resources */,
 				6375284C1BBA8EF700FDEA6F /* pause_small_default.png in Resources */,
@@ -2593,19 +2611,6 @@
 			shellPath = /bin/sh;
 			shellScript = $SRCROOT/Tools/git_version.sh;
 		};
-		63F0162D1BB3E9D5001FAD87 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "test -f liblinphone-sdk/apple-darwin/share/linphone/rootca.pem || (echo 'liblinphone SDK not found. Please refer to the README: you have to compile liblinphone SDK before building Linphone application.' && exit 1)";
-		};
 		D33CF34715D3985000CD4B85 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2645,6 +2650,7 @@
 				22F2508E107141E100AC9B3F /* DialerView.m in Sources */,
 				633756451B67D2B200E21BAD /* SideMenuView.m in Sources */,
 				22E0A822111C44E100B04932 /* AboutView.m in Sources */,
+				633671611BCBAAD200BFCBDE /* ChatConversationCreateView.m in Sources */,
 				634610061B61330300548952 /* UILabel+Boldify.m in Sources */,
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,
 				633756391B67BAF400E21BAD /* SideMenuTableView.m in Sources */,
@@ -2656,6 +2662,7 @@
 				63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */,
 				22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */,
 				22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */,
+				63B8D6A21BCBF43100C12B09 /* UIChatCreateCell.m in Sources */,
 				636BC9971B5F921B00C754CE /* UIIconButton.m in Sources */,
 				340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */,
 				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
@@ -2669,7 +2676,7 @@
 				D3549816158761D0000081D8 /* ContactsListTableView.m in Sources */,
 				D35498211587716B000081D8 /* StatusBarView.m in Sources */,
 				D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */,
-				6341807C1BBC103100F71761 /* ChatConversationSearchTableView.m in Sources */,
+				6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */,
 				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
 				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
 				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
@@ -2938,6 +2945,14 @@
 				63AADBE71B6A0FF200AA16FD /* zh_TW */,
 			);
 			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		63B8D68E1BCBE65600C12B09 /* ChatConversationCreateView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63B8D68D1BCBE65600C12B09 /* Base */,
+			);
+			name = ChatConversationCreateView.xib;
 			sourceTree = "<group>";
 		};
 		D37EE11016035793003608A6 /* ImageView.xib */ = {

@@ -24,12 +24,6 @@
 
 typedef enum _HistoryView { History_All, History_Missed, History_MAX } HistoryView;
 
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	return [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-}
-
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;

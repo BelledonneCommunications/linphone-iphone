@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -117,7 +117,7 @@
                                             </accessibility>
                                         </view>
                                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254.00000029960563" y="354.99999967643191" width="113" height="140"/>
+                                            <rect key="frame" x="254" y="354.99999934763446" width="113" height="140"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -538,43 +538,43 @@
         </view>
     </objects>
     <resources>
-        <image name="avatar.png" width="261" height="261"/>
-        <image name="call_hangup.png" width="42" height="37"/>
-        <image name="camera_default.png" width="33" height="19"/>
-        <image name="camera_selected.png" width="33" height="19"/>
-        <image name="camera_switch_default.png" width="52" height="52"/>
-        <image name="camera_switch_disabled.png" width="52" height="52"/>
-        <image name="camera_switch_over.png" width="52" height="52"/>
+        <image name="avatar.png" width="255" height="255"/>
+        <image name="call_hangup.png" width="41" height="36"/>
+        <image name="camera_default.png" width="32" height="19"/>
+        <image name="camera_selected.png" width="32" height="19"/>
+        <image name="camera_switch_default.png" width="51" height="50"/>
+        <image name="camera_switch_disabled.png" width="51" height="50"/>
+        <image name="camera_switch_over.png" width="51" height="50"/>
         <image name="color_C.png" width="1" height="1"/>
         <image name="color_D.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="color_L.png" width="1" height="1"/>
-        <image name="conference_start.png" width="34" height="34"/>
-        <image name="footer_chat.png" width="28" height="28"/>
-        <image name="footer_dialer.png" width="28" height="28"/>
-        <image name="micro_default.png" width="30" height="38"/>
-        <image name="micro_selected.png" width="30" height="38"/>
-        <image name="numpad_0.png" width="53" height="50"/>
-        <image name="numpad_1.png" width="53" height="49"/>
-        <image name="numpad_2.png" width="53" height="50"/>
-        <image name="numpad_3.png" width="53" height="50"/>
-        <image name="numpad_4.png" width="53" height="49"/>
-        <image name="numpad_5.png" width="53" height="49"/>
-        <image name="numpad_6.png" width="53" height="50"/>
-        <image name="numpad_7.png" width="53" height="49"/>
-        <image name="numpad_8.png" width="53" height="50"/>
-        <image name="numpad_9.png" width="53" height="50"/>
+        <image name="conference_start.png" width="33" height="33"/>
+        <image name="footer_chat.png" width="27" height="27"/>
+        <image name="footer_dialer.png" width="27" height="27"/>
+        <image name="micro_default.png" width="29" height="37"/>
+        <image name="micro_selected.png" width="29" height="37"/>
+        <image name="numpad_0.png" width="52" height="48"/>
+        <image name="numpad_1.png" width="52" height="48"/>
+        <image name="numpad_2.png" width="52" height="48"/>
+        <image name="numpad_3.png" width="52" height="48"/>
+        <image name="numpad_4.png" width="52" height="48"/>
+        <image name="numpad_5.png" width="52" height="48"/>
+        <image name="numpad_6.png" width="52" height="48"/>
+        <image name="numpad_7.png" width="52" height="48"/>
+        <image name="numpad_8.png" width="52" height="48"/>
+        <image name="numpad_9.png" width="52" height="48"/>
         <image name="numpad_sharp.png" width="53" height="50"/>
-        <image name="numpad_star.png" width="53" height="52"/>
-        <image name="options_add_call.png" width="30" height="31"/>
-        <image name="options_default.png" width="26" height="26"/>
-        <image name="options_selected.png" width="26" height="26"/>
-        <image name="options_transfer_call.png" width="30" height="31"/>
-        <image name="pause_big_default.png" width="52" height="52"/>
-        <image name="pause_big_disabled.png" width="52" height="52"/>
-        <image name="pause_big_over_selected.png" width="52" height="52"/>
-        <image name="speaker_default.png" width="28" height="26"/>
-        <image name="speaker_selected.png" width="28" height="26"/>
+        <image name="numpad_star.png" width="52" height="50"/>
+        <image name="options_add_call.png" width="29" height="30"/>
+        <image name="options_default.png" width="25" height="25"/>
+        <image name="options_selected.png" width="25" height="25"/>
+        <image name="options_transfer_call.png" width="29" height="30"/>
+        <image name="pause_big_default.png" width="51" height="50"/>
+        <image name="pause_big_disabled.png" width="51" height="50"/>
+        <image name="pause_big_over_selected.png" width="51" height="50"/>
+        <image name="speaker_default.png" width="27" height="25"/>
+        <image name="speaker_selected.png" width="27" height="25"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

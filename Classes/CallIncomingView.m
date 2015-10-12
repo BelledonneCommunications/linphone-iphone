@@ -30,16 +30,6 @@
 @synthesize call;
 @synthesize delegate;
 
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	return [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-}
-
-- (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - ViewController Functions
 
 - (void)viewWillAppear:(BOOL)animated {

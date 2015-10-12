@@ -20,13 +20,8 @@
 #import "ChatsListView.h"
 #import "PhoneMainView.h"
 
+#import "ChatConversationCreateView.h"
 @implementation ChatsListView
-
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	return [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-}
 
 #pragma mark - ViewController Functions
 
@@ -74,9 +69,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAddClick:(id)event {
-	ChatConversationView *view = VIEW(ChatConversationView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
-	[view setChatRoom:NULL];
+	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:YES];
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {

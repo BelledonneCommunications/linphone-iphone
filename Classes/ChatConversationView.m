@@ -455,6 +455,16 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 - (IBAction)onListTap:(id)sender {
 	[messageField resignFirstResponder];
 }
+
+- (IBAction)onCallClick:(id)sender {
+	NSString *displayName = [FastAddressBook getContactDisplayName:linphone_chat_room_get_peer_address(chatRoom)];
+	// Go to dialer view
+	DialerView *view = VIEW(DialerView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	char *uri = linphone_address_as_string(linphone_chat_room_get_peer_address(chatRoom));
+	[view call:[NSString stringWithUTF8String:uri] displayName:displayName];
+	ms_free(uri);
+}
 - (IBAction)onListSwipe:(id)sender {
 	[self onBackClick:sender];
 }

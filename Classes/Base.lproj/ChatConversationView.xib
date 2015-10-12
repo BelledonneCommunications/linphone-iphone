@@ -64,11 +64,14 @@
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wzg-i0-spp" userLabel="callButton" customClass="UIIconButton">
                                     <rect key="frame" x="225" y="0.0" width="75" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <state key="normal" image="status_busy.png">
+                                    <state key="normal" image="call_alt_start.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <state key="disabled" image="call_start_body_disabled.png"/>
                                     <state key="highlighted" image="call_start_body_over.png"/>
+                                    <connections>
+                                        <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="Dsf-nS-K3V"/>
+                                    </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="10" userLabel="editButton" customClass="UIToggleButton">
                                     <rect key="frame" x="300" y="0.0" width="75" height="40"/>
@@ -87,15 +90,15 @@
                             </subviews>
                         </view>
                         <view contentMode="scaleToFill" id="49" userLabel="contentView">
-                            <rect key="frame" x="0.0" y="44" width="375" height="515"/>
+                            <rect key="frame" x="0.0" y="40" width="375" height="515"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <view contentMode="scaleToFill" id="bJF-qS-vBP" userLabel="chatView">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="446"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="450"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="messagesTableView">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="418"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="422"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <gestureRecognizers/>
@@ -105,7 +108,7 @@
                                             </connections>
                                         </tableView>
                                         <view contentMode="scaleToFill" id="fx4-ao-53M" userLabel="composeIndicatorView">
-                                            <rect key="frame" x="0.0" y="426" width="375" height="22"/>
+                                            <rect key="frame" x="0.0" y="427" width="375" height="22"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
@@ -185,6 +188,7 @@
     </objects>
     <resources>
         <image name="back.png" width="24" height="21"/>
+        <image name="call_alt_start.png" width="29" height="29"/>
         <image name="call_start_body_disabled.png" width="51" height="51"/>
         <image name="call_start_body_over.png" width="51" height="51"/>
         <image name="chat_picture_default.png" width="25" height="19"/>
@@ -194,7 +198,6 @@
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="edit_list.png" width="29" height="28"/>
-        <image name="status_busy.png" width="27" height="28"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

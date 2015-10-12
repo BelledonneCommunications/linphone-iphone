@@ -34,11 +34,6 @@
 
 #pragma mark - Lifecycle Functions
 
-- (id)init {
-	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-	return self;
-}
-
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[callQualityTimer invalidate];

@@ -112,12 +112,6 @@
 @synthesize backButton;
 @synthesize image;
 
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	return [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-}
-
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;

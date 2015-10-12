@@ -54,9 +54,8 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 + (ABRecordRef)getContact:(NSString *)address {
 	if (LinphoneManager.instance.fastAddressBook != nil) {
-		@synchronized(LinphoneManager.instance.fastAddressBook->addressBookMap) {
-			return (
-				__bridge ABRecordRef)[LinphoneManager.instance.fastAddressBook->addressBookMap objectForKey:address];
+		@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {
+			return (__bridge ABRecordRef)[LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
 		}
 	}
 	return nil;
@@ -137,7 +136,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (FastAddressBook *)init {
 	if ((self = [super init]) != nil) {
-		addressBookMap = [NSMutableDictionary dictionary];
+		_addressBookMap = [NSMutableDictionary dictionary];
 		addressBook = nil;
 		[self reload];
 	}
@@ -179,8 +178,8 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (void)loadData {
 	ABAddressBookRevert(addressBook);
-	@synchronized(addressBookMap) {
-		[addressBookMap removeAllObjects];
+	@synchronized(_addressBookMap) {
+		[_addressBookMap removeAllObjects];
 
 		CFArrayRef lContacts = ABAddressBookCopyArrayOfAllPeople(addressBook);
 		CFIndex count = CFArrayGetCount(lContacts);
@@ -198,7 +197,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 						if (lNormalizedSipKey != NULL)
 							lNormalizedKey = lNormalizedSipKey;
 
-						[addressBookMap setObject:(__bridge id)(lPerson)forKey:lNormalizedKey];
+						[_addressBookMap setObject:(__bridge id)(lPerson) forKey:lNormalizedKey];
 
 						CFRelease(lValue);
 					}
@@ -227,9 +226,9 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 								(__bridge NSString *)CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey);
 							NSString *lNormalizedKey = [FastAddressBook normalizeSipURI:lValue];
 							if (lNormalizedKey != NULL) {
-								[addressBookMap setObject:(__bridge id)(lPerson)forKey:lNormalizedKey];
+								[_addressBookMap setObject:(__bridge id)(lPerson) forKey:lNormalizedKey];
 							} else {
-								[addressBookMap setObject:(__bridge id)(lPerson)forKey:lValue];
+								[_addressBookMap setObject:(__bridge id)(lPerson) forKey:lValue];
 							}
 						}
 						CFRelease(lDict);

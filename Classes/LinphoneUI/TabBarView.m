@@ -36,12 +36,6 @@ static NSString *const kDisappearAnimation = @"disappear";
 @synthesize chatNotificationView;
 @synthesize chatNotificationLabel;
 
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	return [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-}
-
 #pragma mark - ViewController Functions
 
 - (void)viewWillAppear:(BOOL)animated {

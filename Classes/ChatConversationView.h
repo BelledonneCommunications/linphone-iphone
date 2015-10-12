@@ -57,6 +57,7 @@
 - (IBAction)onSendClick:(id)event;
 - (IBAction)onPictureClick:(id)event;
 - (IBAction)onListTap:(id)sender;
+- (IBAction)onCallClick:(id)sender;
 
 - (void)setChatRoom:(LinphoneChatRoom *)room;
 

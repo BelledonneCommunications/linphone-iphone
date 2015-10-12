@@ -14,12 +14,6 @@
 
 @implementation SideMenuView
 
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	return [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-}
-
 - (void)updateHeader {
 	LinphoneProxyConfig *default_proxy = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
 	if (default_proxy != NULL) {

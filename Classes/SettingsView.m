@@ -361,17 +361,6 @@
 @synthesize settingsController;
 @synthesize navigationController;
 
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	return [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-}
-
-- (void)dealloc {
-	// Remove all observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;

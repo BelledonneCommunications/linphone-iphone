@@ -26,18 +26,6 @@
 @synthesize stateImage;
 @synthesize pauseButton;
 
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	return [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-}
-
-#pragma mark - ViewController Functions
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-}
-
 #pragma mark - Static size Functions
 
 + (int)getHeight {
