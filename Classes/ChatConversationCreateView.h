@@ -10,8 +10,10 @@
 #import "ChatConversationCreateTableView.h"
 #import "UICompositeView.h"
 
-@interface ChatConversationCreateView : UIViewController <UICompositeViewDelegate, UISearchBarDelegate>
+@interface ChatConversationCreateView : UIViewController <UICompositeViewDelegate>
+
 @property(strong, nonatomic) IBOutlet ChatConversationCreateTableView *tableController;
+
 - (IBAction)onBackClick:(id)sender;
 
 @end

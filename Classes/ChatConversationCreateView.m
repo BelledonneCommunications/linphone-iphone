@@ -33,26 +33,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - searchBar delegate
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-	//	// display searchtext in UPPERCASE
-	//	// searchBar.text = [searchText uppercaseString];
-	//	searchBar.showsCancelButton = (searchText.length > 0);
-	//	[ContactSelection setNameOrEmailFilter:searchText];
-	//	[tableController loadData];
-}
-
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
-	[searchBar setShowsCancelButton:FALSE animated:TRUE];
-}
-
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-	[searchBar setShowsCancelButton:TRUE animated:TRUE];
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-	[searchBar resignFirstResponder];
-}
-
 - (IBAction)onBackClick:(id)sender {
 	[PhoneMainView.instance popCurrentView];
 }

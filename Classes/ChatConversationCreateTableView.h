@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface ChatConversationCreateTableView : UITableViewController <UISearchBarDelegate>
+@property(weak, nonatomic) IBOutlet UISearchBar *searchBar;
 
 @end

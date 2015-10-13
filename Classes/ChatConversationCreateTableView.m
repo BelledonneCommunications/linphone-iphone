@@ -26,6 +26,7 @@
 		[self.contacts addObject:ref];
 		[self.allContacts addObject:ref];
 	}
+	[_searchBar becomeFirstResponder];
 }
 
 - (void)reloadDataWithFilter:(NSString *)filter {

@@ -73,6 +73,7 @@
             <extendedEdge key="edgesForExtendedLayout"/>
             <nil key="simulatedStatusBarMetrics"/>
             <connections>
+                <outlet property="searchBar" destination="Rd9-hK-nqR" id="rLn-7q-CwC"/>
                 <outlet property="view" destination="6" id="13"/>
             </connections>
         </tableViewController>
