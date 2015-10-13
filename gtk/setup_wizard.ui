@@ -7,6 +7,12 @@
     <property name="border_width">12</property>
     <property name="title" translatable="yes">SIP account configuration assistant</property>
     <property name="resizable">False</property>
+    <signal name="close" handler="linphone_gtk_assistant_closed" swapped="no"/>
+    <signal name="cancel" handler="linphone_gtk_assistant_closed" swapped="no"/>
+    <signal name="prepare" handler="linphone_gtk_assistant_prepare" swapped="no"/>
+    <child>
+      <placeholder/>
+    </child>
     <child>
       <object class="GtkLabel" id="page0">
         <property name="visible">True</property>
@@ -134,6 +140,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <signal name="changed" handler="linphone_gtk_external_account_configuration_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -163,6 +170,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <signal name="changed" handler="linphone_gtk_external_account_configuration_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -191,6 +199,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <signal name="changed" handler="linphone_gtk_external_account_configuration_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -219,6 +228,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <signal name="changed" handler="linphone_gtk_external_account_configuration_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -284,6 +294,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <signal name="changed" handler="linphone_gtk_account_configuration_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -363,6 +374,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <signal name="changed" handler="linphone_gtk_account_creation_email_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -405,6 +417,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <signal name="changed" handler="linphone_gtk_account_creation_username_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -448,6 +461,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <signal name="changed" handler="linphone_gtk_account_creation_password_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -477,6 +491,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="secondary_icon_activatable">False</property>
             <property name="primary_icon_sensitive">True</property>
             <property name="secondary_icon_sensitive">True</property>
+            <signal name="changed" handler="linphone_gtk_account_creation_password_changed" swapped="no"/>
           </object>
           <packing>
             <property name="left_attach">1</property>

@@ -20,7 +20,8 @@ UI_FILES=	about.ui \
 		in_call_frame.ui \
 		conf_frame.ui \
 		callee_frame.ui \
-		login_frame.ui
+		login_frame.ui \
+		setup_wizard.ui
 
 PIXMAPS=	\
 		stock_people.png

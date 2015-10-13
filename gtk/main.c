@@ -1978,7 +1978,7 @@ static void linphone_gtk_init_ui(void){
 #ifdef BUILD_WIZARD
 	// Veryfing if at least one sip account is configured. If not, show wizard
 	if (linphone_core_get_proxy_config_list(linphone_gtk_get_core()) == NULL) {
-		linphone_gtk_show_assistant(the_ui);
+		linphone_gtk_show_assistant();
 	}
 #endif
 

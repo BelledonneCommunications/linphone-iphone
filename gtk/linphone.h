@@ -60,6 +60,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONE_VERSION LINPHONE_VERSION_DATE
 #endif
 
+#include "setupwizard.h"
+
 #define LINPHONE_ICON "linphone.png"
 #define LINPHONE_ICON_NAME "linphone"
 
@@ -103,7 +105,6 @@ LINPHONE_PUBLIC GtkWidget *linphone_gtk_create_widget(const char* widget_name);
 
 char *linphone_gtk_message_storage_get_db_file(const char *filename);
 char *linphone_gtk_call_logs_storage_get_db_file(const char *filename);
-LINPHONE_PUBLIC void linphone_gtk_show_assistant(GtkWidget* parent);
 LINPHONE_PUBLIC void linphone_gtk_close_assistant(void);
 
 LINPHONE_PUBLIC LinphoneCore *linphone_gtk_get_core(void);

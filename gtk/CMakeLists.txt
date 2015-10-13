@@ -44,6 +44,7 @@ set(UI_FILES
 	conf_frame.ui
 	callee_frame.ui
 	login_frame.ui
+	setup_wizard.ui
 )
 
 set(PIXMAPS stock_people.png)
