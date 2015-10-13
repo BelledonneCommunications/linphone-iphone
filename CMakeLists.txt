@@ -238,6 +238,13 @@ if(ENABLE_VIDEO)
 endif()
 
 
+if(LINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS)
+	set(EXPORT_TARGETS_NAME "LinphoneBuilder")
+else()
+	set(EXPORT_TARGETS_NAME "Linphone")
+endif()
+
+
 add_subdirectory(coreapi)
 add_subdirectory(share)
 if(ENABLE_CONSOLE_UI)
@@ -262,9 +269,8 @@ write_basic_package_version_file(
 	VERSION ${LINPHONE_VERSION}
 	COMPATIBILITY AnyNewerVersion
 )
-export(EXPORT LinphoneTargets
+export(EXPORT ${EXPORT_TARGETS_NAME}Targets
 	FILE "${CMAKE_CURRENT_BINARY_DIR}/LinphoneTargets.cmake"
-	NAMESPACE BelledonneCommunications::
 )
 configure_file(cmake/LinphoneConfig.cmake.in
 	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfig.cmake"
@@ -272,9 +278,8 @@ configure_file(cmake/LinphoneConfig.cmake.in
 )
 
 set(ConfigPackageLocation lib/cmake/Linphone)
-install(EXPORT LinphoneTargets
+install(EXPORT ${EXPORT_TARGETS_NAME}Targets
 	FILE LinphoneTargets.cmake
-	NAMESPACE BelledonneCommunications::
 	DESTINATION ${ConfigPackageLocation}
 )
 install(FILES

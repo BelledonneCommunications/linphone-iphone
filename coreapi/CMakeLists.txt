@@ -188,7 +188,7 @@ if(ICONV_FOUND)
 	endif()
 endif()
 
-install(TARGETS linphone EXPORT LinphoneTargets
+install(TARGETS linphone EXPORT ${EXPORT_TARGETS_NAME}Targets
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
