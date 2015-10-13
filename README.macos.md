@@ -78,7 +78,7 @@ The next pieces need to be compiled manually.
 
 * Install libvpx (Must be manualy build because the macport recipe does not support 'macosx_deployment_target')
 
-	git clone https://chromium.googlesource.com/webm/libvpx -b v1.3.0
+	git clone https://chromium.googlesource.com/webm/libvpx -b v1.4.0
 	cd libvpx
 	./configure --prefix=/opt/local \
 		--target=x86_64-darwin10-gcc \
@@ -143,15 +143,12 @@ The next pieces need to be compiled manually.
 
 ### Generate portable bundle
 
-If you want to generate a portable bundle, then install `gtk-mac-bundler`:
+If you want to generate a portable bundle, then install `gtk-mac-bundler` linphone fork:
 
-        git clone https://github.com/jralls/gtk-mac-bundler.git
-        cd gtk-mac-bundler
-	git checkout 6e2ed855aaeae43c29436c342ae83568573b5636
+	git clone git://git.linphone.org/gtk-mac-bundler.git
+	cd gtk-mac-bundler
 	make install
-        export PATH=$PATH:~/.local/bin
-        # make this dummy charset.alias file for the bundler to be happy:
-        sudo touch /opt/local/lib/charset.alias
+    export PATH=$PATH:~/.local/bin
 	# set writing right for owner on the libssl and libcrypto libraries in order gtk-mac-bundler
 	# be able to rewrite their rpath
 	sudo chmod u+w /opt/local/lib/libssl.1.0.0.dylib /opt/local/lib/libcrypto.1.0.0.dylib
@@ -180,11 +177,11 @@ The resulting bundle is located in Linphone build directory, together with a zip
 
 * For a better appearance, you can install `gtk-quartz-engine` (a GTK theme) that makes GTK application more similar to other Mac applications (but not perfect).
 	sudo port install gnome-common
-        git clone https://github.com/jralls/gtk-quartz-engine.git
-        cd gtk-quartz-engine
-        ./autogen.sh
-        ./configure --prefix=/opt/local CFLAGS="$CFLAGS -Wno-error" && make
-        sudo make install
+	git clone https://github.com/jralls/gtk-quartz-engine.git
+	cd gtk-quartz-engine
+	./autogen.sh
+	./configure --prefix=/opt/local CFLAGS="$CFLAGS -Wno-error" && make
+	sudo make install
 
 Generate a new bundle to have it included.
 
