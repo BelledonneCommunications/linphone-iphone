@@ -122,12 +122,6 @@ JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_clearAccounts(JNIEnv *env
 }
 #endif /* ANDROID */
 
-#ifdef __QNX__
-static void liblinphone_tester_qnx_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
-	ortp_qnx_log_handler("liblinphone_tester", lev, fmt, args);
-}
-#endif /* __QNX__ */
-
 static void log_handler(int lev, const char *fmt, va_list args) {
 #ifdef _WIN32
 	vfprintf(lev == ORTP_ERROR ? stderr : stdout, fmt, args);
@@ -154,8 +148,6 @@ void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, v
 	if (! log_file) {
 #if defined(ANDROID)
 		linphone_core_set_log_handler(liblinphone_android_ortp_log_handler);
-#elif defined(__QNX__)
-		linphone_core_set_log_handler(liblinphone_tester_qnx_log_handler);
 #endif
 	}
 
