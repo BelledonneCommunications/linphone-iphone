@@ -1679,7 +1679,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_register_default_codecs(lc);
 	/* Get the mediastreamer2 event queue */
 	/* This allows to run event's callback in linphone_core_iterate() */
-	lc->msevq=ms_factory_get_event_queue(ms_factory_get_fallback());
+	lc->msevq=ms_factory_create_event_queue(ms_factory_get_fallback());
 
 	lc->sal=sal_init();
 	sal_set_http_proxy_host(lc->sal, linphone_core_get_http_proxy_host(lc));
