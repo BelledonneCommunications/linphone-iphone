@@ -38,7 +38,12 @@
 				[_contacts addObject:contact];
 			}
 		}
+		// also add current entry, if not listed
+		if (![_contacts containsObject:filter]) {
+			[_contacts insertObject:filter atIndex:0];
+		}
 	}
+
 	[self.tableView reloadData];
 }
 
@@ -59,7 +64,8 @@
 	}
 
 	cell.addressLabel.text = _contacts[indexPath.row];
-	const LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);
+	const LinphoneAddress *addr =
+		linphone_core_interpret_url([LinphoneManager getLc], cell.addressLabel.text.UTF8String);
 	[ContactDisplay setDisplayNameLabel:cell.displayNameLabel forAddress:addr];
 
 	return cell;
