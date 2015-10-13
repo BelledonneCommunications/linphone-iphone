@@ -40,8 +40,12 @@
 			}
 		}
 		// also add current entry, if not listed
-		if (![_contacts containsObject:filter]) {
-			[_contacts insertObject:filter atIndex:0];
+		const LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], filter.UTF8String);
+		char *uri = linphone_address_as_string(addr);
+		NSString *nsuri = [NSString stringWithUTF8String:uri];
+		ms_free(uri);
+		if (![_contacts containsObject:nsuri]) {
+			[_contacts insertObject:nsuri atIndex:0];
 		}
 	}
 
@@ -64,11 +68,17 @@
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
 	}
 
-	cell.addressLabel.text = _contacts[indexPath.row];
 	const LinphoneAddress *addr =
-		linphone_core_interpret_url([LinphoneManager getLc], cell.addressLabel.text.UTF8String);
-	[ContactDisplay setDisplayNameLabel:cell.displayNameLabel forAddress:addr];
-
+		linphone_core_interpret_url([LinphoneManager getLc], ((NSString *)_contacts[indexPath.row]).UTF8String);
+	if (addr) {
+		char *uri = linphone_address_as_string(addr);
+		cell.addressLabel.text = [NSString stringWithUTF8String:uri];
+		ms_free(uri);
+		[ContactDisplay setDisplayNameLabel:cell.displayNameLabel forAddress:addr];
+	} else {
+		cell.displayNameLabel.text = _contacts[indexPath.row];
+		cell.addressLabel.text = NSLocalizedString(@"Invalid address", nil);
+	}
 	return cell;
 }
 

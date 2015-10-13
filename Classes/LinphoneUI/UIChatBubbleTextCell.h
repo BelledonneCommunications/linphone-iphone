@@ -25,6 +25,7 @@
 
 @interface UIChatBubbleTextCell : UITableViewCell
 
+@property(readonly, nonatomic) LinphoneChatMessage *message;
 @property(nonatomic, weak) IBOutlet UIImageView *backgroundColorImage;
 @property(nonatomic, weak) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, weak) IBOutlet UILabel *contactDateLabel;
@@ -40,7 +41,9 @@
 
 - (IBAction)onDeleteClick:(id)event;
 - (IBAction)onResendClick:(id)event;
+- (void)update;
 
 + (NSString *)TextMessageForChat:(LinphoneChatMessage *)message;
+- (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font;
 
 @end

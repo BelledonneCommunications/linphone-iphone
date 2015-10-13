@@ -23,31 +23,21 @@
 #import "UITextViewNoDefine.h"
 #import "FileTransferDelegate.h"
 #import "ChatConversationTableView.h"
+#import "UIChatBubbleTextCell.h"
 
-@interface UIChatBubblePhotoCell : UITableViewCell
+@interface UIChatBubblePhotoCell : UIChatBubbleTextCell
 
-//@property(nonatomic, strong) IBOutlet UIView *innerView;
-//@property(nonatomic, strong) IBOutlet UIView *bubbleView;
-//@property(nonatomic, strong) IBOutlet UIImageView *backgroundImage;
-//@property(nonatomic, strong) IBOutlet UITextViewNoDefine *messageText;
-//@property(nonatomic, strong) IBOutlet UILoadingImageView *messageImageView;
-//@property(nonatomic, strong) IBOutlet UIButton *deleteButton;
-//@property(nonatomic, strong) IBOutlet UILabel *dateLabel;
-//@property(nonatomic, strong) IBOutlet UIImageView *statusImage;
-//@property(nonatomic, strong) IBOutlet UIButton *downloadButton;
-//@property(weak, nonatomic) IBOutlet UIProgressView *fileTransferProgress;
-//@property(weak, nonatomic) IBOutlet UIButton *cancelButton;
-//@property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
-//
-//+ (CGFloat)height:(LinphoneChatMessage *)chatMessage width:(int)width;
-//
-//- (void)setChatMessage:(LinphoneChatMessage *)message;
-//- (void)connectToFileDelegate:(FileTransferDelegate *)ftd;
-//
-//- (IBAction)onDeleteClick:(id)event;
-//- (IBAction)onDownloadClick:(id)event;
-//- (IBAction)onImageClick:(id)event;
-//- (IBAction)onCancelDownloadClick:(id)sender;
-//- (IBAction)onResendClick:(id)event;
+@property(nonatomic, strong) IBOutlet UILoadingImageView *messageImageView;
+@property(nonatomic, strong) IBOutlet UIButton *downloadButton;
+@property(weak, nonatomic) IBOutlet UIProgressView *fileTransferProgress;
+@property(weak, nonatomic) IBOutlet UIButton *cancelButton;
+@property(weak, nonatomic) IBOutlet UIView *imageSubView;
+
+- (void)setChatMessage:(LinphoneChatMessage *)message;
+- (void)connectToFileDelegate:(FileTransferDelegate *)ftd;
+- (IBAction)onDownloadClick:(id)event;
+- (IBAction)onImageClick:(id)event;
+- (IBAction)onCancelClick:(id)sender;
+- (IBAction)onResendClick:(id)event;
 
 @end

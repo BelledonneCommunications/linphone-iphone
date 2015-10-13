@@ -124,6 +124,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		// this is the last time we will be notified, so destroy ourselve
 		if (remaining <= size) {
 			LOGI(@"Upload ended");
+			linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(thiz.message), NULL);
 			thiz.message = NULL;
 			[thiz stopAndDestroy];
 		}

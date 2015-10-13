@@ -25,8 +25,6 @@
 
 @implementation ChatConversationTableView
 
-@synthesize chatRoomDelegate;
-
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
@@ -181,7 +179,7 @@
 		cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
 	}
 	[cell setChatMessage:chat];
-	[cell setChatRoomDelegate:chatRoomDelegate];
+	[cell setChatRoomDelegate:_chatRoomDelegate];
 	[super accessoryForCell:cell atPath:indexPath];
 	return cell;
 }

@@ -24,9 +24,7 @@
 #import <AssetsLibrary/ALAsset.h>
 #import <AssetsLibrary/ALAssetRepresentation.h>
 
-@implementation UIChatBubbleTextCell {
-	LinphoneChatMessage *message;
-}
+@implementation UIChatBubbleTextCell
 
 #pragma mark - Lifecycle Functions
 
@@ -50,60 +48,63 @@
 #pragma mark -
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
-	if (amessage == message) {
+	if (amessage == _message) {
 		return;
 	}
 
-	if (message) {
-		linphone_chat_message_unref(message);
-		linphone_chat_message_set_user_data(message, NULL);
-		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(message), NULL);
+	if (_message) {
+		linphone_chat_message_unref(_message);
+		linphone_chat_message_set_user_data(_message, NULL);
+		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(_message), NULL);
 	}
 
-	message = amessage;
+	_message = amessage;
 	if (amessage) {
-		linphone_chat_message_ref(message);
-		linphone_chat_message_set_user_data(message, (void *)CFBridgingRetain(self));
-		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(message), message_status);
+		linphone_chat_message_ref(_message);
+		linphone_chat_message_set_user_data(_message, (void *)CFBridgingRetain(self));
+		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(_message), message_status);
 		[self update];
 	}
 }
 
-+ (NSString *)TextMessageForChat:(LinphoneChatMessage *)message {
-	const char *text = linphone_chat_message_get_text(message);
++ (NSString *)TextMessageForChat:(LinphoneChatMessage *)_message {
+	const char *text = linphone_chat_message_get_text(_message) ?: "";
 	return [NSString stringWithUTF8String:text] ?: [NSString stringWithCString:text encoding:NSASCIIStringEncoding]
 													   ?: NSLocalizedString(@"(invalid string)", nil);
 }
 
 - (NSString *)textMessage {
-	return [self.class TextMessageForChat:message];
+	return [self.class TextMessageForChat:_message];
 }
 
 - (void)update {
-	if (message == nil) {
-		LOGW(@"Cannot update message room cell: null message");
+	if (_message == nil) {
+		LOGW(@"Cannot update _message room cell: null _message");
 		return;
 	}
-	[_messageText setHidden:FALSE];
-	/* We need to use an attributed string here so that data detector don't mess
-	 * with the text style. See http://stackoverflow.com/a/20669356 */
 
-	NSAttributedString *attr_text =
-		[[NSAttributedString alloc] initWithString:self.textMessage
-										attributes:@{
-											NSFontAttributeName : _messageText.font,
-											NSForegroundColorAttributeName : [UIColor darkGrayColor]
-										}];
-	_messageText.attributedText = attr_text;
+	if (_messageText) {
+		[_messageText setHidden:FALSE];
+		/* We need to use an attributed string here so that data detector don't mess
+		 * with the text style. See http://stackoverflow.com/a/20669356 */
+
+		NSAttributedString *attr_text =
+			[[NSAttributedString alloc] initWithString:self.textMessage
+											attributes:@{
+												NSFontAttributeName : _messageText.font,
+												NSForegroundColorAttributeName : [UIColor darkGrayColor]
+											}];
+		_messageText.attributedText = attr_text;
+	}
 
 	// Date
 	_contactDateLabel.text = [NSString
-		stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(message)
+		stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(_message)
 													   withStyle:NSDateFormatterShortStyle],
-						 [FastAddressBook displayNameForAddress:linphone_chat_message_get_peer_address(message)]];
+						 [FastAddressBook displayNameForAddress:linphone_chat_message_get_peer_address(_message)]];
 
-	LinphoneChatMessageState state = linphone_chat_message_get_state(message);
-	BOOL outgoing = linphone_chat_message_is_outgoing(message);
+	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);
+	BOOL outgoing = linphone_chat_message_is_outgoing(_message);
 
 	_backgroundColorImage.image = _bottomBarColor.image = [UIImage imageNamed:(outgoing ? @"color_A" : @"color_D")];
 	if (!outgoing) {
@@ -129,9 +130,9 @@
 	}
 
 	if (outgoing) {
-		[_messageText setAccessibilityLabel:@"Outgoing message"];
+		[_messageText setAccessibilityLabel:@"Outgoing _message"];
 	} else {
-		[_messageText setAccessibilityLabel:@"Incoming message"];
+		[_messageText setAccessibilityLabel:@"Incoming _message"];
 	}
 }
 
@@ -146,7 +147,7 @@
 #pragma mark - Action Functions
 
 - (IBAction)onDeleteClick:(id)event {
-	if (message != NULL) {
+	if (_message != NULL) {
 		UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
 		NSIndexPath *indexPath = [tableView indexPathForCell:self];
 		[tableView.dataSource tableView:tableView
@@ -156,13 +157,13 @@
 }
 
 - (IBAction)onResendClick:(id)event {
-	if (message == nil)
+	if (_message == nil)
 		return;
 
-	LinphoneChatMessageState state = linphone_chat_message_get_state(message);
+	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);
 	if (state == LinphoneChatMessageStateNotDelivered) {
-		if (linphone_chat_message_get_file_transfer_information(message) != NULL) {
-			NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:message];
+		if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
+			NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
 			NSURL *imageUrl = [NSURL URLWithString:localImage];
 
 			[self onDeleteClick:nil];
@@ -199,56 +200,46 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 #pragma mark - Bubble size computing
 
+- (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+	if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
+		return [text boundingRectWithSize:size
+								  options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+							   attributes:@{
+								   NSFontAttributeName : font
+							   }
+								  context:nil]
+			.size;
+	}
+#endif
+	{ return [text sizeWithFont:font constrainedToSize:size lineBreakMode:NSLineBreakByCharWrapping]; }
+}
+
 - (CGSize)viewSizeWithWidth:(int)width {
 	static const CGFloat TEXT_MIN_HEIGHT = 32.;
 	static const CGFloat TEXT_MIN_WIDTH = 150.0f;
 	static const CGFloat MARGIN_WIDTH = 60;
 	static const CGFloat MARGIN_HEIGHT = 19 + 16 /*this 16 is because textview add some top&bottom padding*/;
-	static const CGFloat IMAGE_HEIGHT = 100.0f; // TODO: move that in bubblephoto
+	static const CGFloat IMAGE_HEIGHT = 100.0f;
 	static const CGFloat IMAGE_WIDTH = 100.0f;
 	static const CGFloat CHECK_BOX_WIDTH = 40;
 
-	CGSize messageSize, dateSize;
 	int messageAvailableWidth = width - MARGIN_WIDTH - CHECK_BOX_WIDTH;
 
-	const char *url = linphone_chat_message_get_external_body_url(message);
-	if (url == nil && linphone_chat_message_get_file_transfer_information(message) == NULL) {
-		NSString *text = [UIChatBubbleTextCell TextMessageForChat:message];
+	const char *url = linphone_chat_message_get_external_body_url(_message);
+	NSString *text = [UIChatBubbleTextCell TextMessageForChat:_message];
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-		if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
-			messageSize =
-				[text boundingRectWithSize:CGSizeMake(messageAvailableWidth, CGFLOAT_MAX)
-								   options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
-								attributes:@{
-									NSFontAttributeName : _messageText.font
-								}
-								   context:nil]
-					.size;
-			dateSize = [_contactDateLabel.text boundingRectWithSize:_contactDateLabel.frame.size
-															options:(NSStringDrawingUsesLineFragmentOrigin |
-
-																	 NSStringDrawingUsesFontLeading)
-														 attributes:@{
-															 NSFontAttributeName : _contactDateLabel.font
-														 }
-															context:nil]
-						   .size;
-		} else
-#endif
-		{
-			messageSize = [text sizeWithFont:_messageText.font
-						   constrainedToSize:CGSizeMake(messageAvailableWidth, CGFLOAT_MAX)
-							   lineBreakMode:NSLineBreakByCharWrapping];
-			dateSize = [_contactDateLabel.text sizeWithFont:_contactDateLabel.font
-										  constrainedToSize:_contactDateLabel.frame.size
-											  lineBreakMode:NSLineBreakByCharWrapping];
-		}
-	} else {
+	CGSize messageSize;
+	if (url != nil || linphone_chat_message_get_file_transfer_information(_message) != NULL) {
 		messageSize = CGSizeMake(IMAGE_WIDTH, IMAGE_HEIGHT);
+	} else {
+		messageSize =
+			[self computeBoundingBox:text size:CGSizeMake(messageAvailableWidth, CGFLOAT_MAX) font:_messageText.font];
+		messageSize.width = MAX(TEXT_MIN_WIDTH, ceil(messageSize.width));
+		messageSize.height = MAX(TEXT_MIN_HEIGHT, ceil(messageSize.height));
 	}
-	messageSize.width = MAX(TEXT_MIN_WIDTH, ceil(messageSize.width));
-	messageSize.height = MAX(TEXT_MIN_HEIGHT, ceil(messageSize.height));
+	CGSize dateSize =
+		[self computeBoundingBox:_contactDateLabel.text size:_contactDateLabel.frame.size font:_contactDateLabel.font];
 
 	CGSize bubbleSize;
 	bubbleSize.width = MAX(messageSize.width, dateSize.width + _statusImage.frame.size.width + 5) + MARGIN_WIDTH;
@@ -259,9 +250,9 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 - (void)layoutSubviews {
 	[super layoutSubviews];
-	if (message != nil) {
+	if (_message != nil) {
 		UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
-		BOOL is_outgoing = linphone_chat_message_is_outgoing(message);
+		BOOL is_outgoing = linphone_chat_message_is_outgoing(_message);
 		CGRect bubbleFrame = _bubbleView.frame;
 		bubbleFrame.size = [self viewSizeWithWidth:self.frame.size.width];
 		bubbleFrame.origin.x =
