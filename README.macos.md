@@ -32,7 +32,7 @@ In order to enable generation of bundle for older MacOS version, it is recommend
 Install `GTK`. It is recommended to use the `quartz` backend for better integration.
 
         sudo port install gtk2 +quartz +no_x11
-        sudo port install gtk-osx-application +no_python
+        sudo port install gtk-osx-application-gtk2 +no_python
         sudo port install hicolor-icon-theme
 
 #### Using HomeBrew
