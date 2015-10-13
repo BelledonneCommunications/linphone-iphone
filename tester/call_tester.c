@@ -4368,10 +4368,12 @@ end:
 }
 #endif
 
+#if !defined(__arm__) && !defined(__arm64__) && !TARGET_IPHONE_SIMULATOR && !defined(ANDROID)
 static void completion_cb(void *user_data, int percentage){
 	fprintf(stdout,"%i %% completed\r",percentage);
 	fflush(stdout);
 }
+#endif
 
 static void simple_stereo_call(const char *codec_name, int clock_rate, int bitrate_override, bool_t stereo) {
 	LinphoneCoreManager* marie;
