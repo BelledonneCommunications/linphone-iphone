@@ -25,12 +25,11 @@
 
 @interface UIChatBubbleTextCell : UITableViewCell
 
-@property(nonatomic, weak) IBOutlet UIImageView *backgroundColor;
+@property(nonatomic, weak) IBOutlet UIImageView *backgroundColorImage;
 @property(nonatomic, weak) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, weak) IBOutlet UILabel *contactDateLabel;
 @property(nonatomic, weak) IBOutlet UIImageView *statusImage;
 @property(nonatomic, weak) IBOutlet UITextViewNoDefine *messageText;
-@property(nonatomic, weak) IBOutlet UIButton *deleteButton;
 @property(weak, nonatomic) IBOutlet UIImageView *bottomBarColor;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 @property(strong, nonatomic) IBOutlet UIView *bubbleView;

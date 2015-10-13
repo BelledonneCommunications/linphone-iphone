@@ -8,7 +8,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIChatBubbleTextCell">
             <connections>
                 <outlet property="avatarImage" destination="P1c-sD-eOv" id="h5P-hl-jbX"/>
-                <outlet property="backgroundColor" destination="q2R-Zv-e5a" id="35T-Du-1AF"/>
+                <outlet property="backgroundColorImage" destination="ZIO-Cb-28G" id="asA-a1-Rko"/>
                 <outlet property="bottomBarColor" destination="mlr-pl-B6T" id="4Lk-Vn-E8h"/>
                 <outlet property="bubbleView" destination="ucH-2r-rar" id="XWU-yi-1z8"/>
                 <outlet property="contactDateLabel" destination="GRe-ur-aSb" id="DQA-v4-IjX"/>
@@ -23,19 +23,19 @@
             </connections>
         </tapGestureRecognizer>
         <view contentMode="scaleToFill" id="ucH-2r-rar">
-            <rect key="frame" x="0.0" y="0.0" width="357" height="199"/>
+            <rect key="frame" x="0.0" y="0.0" width="334" height="171"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view clipsSubviews="YES" contentMode="scaleToFill" id="vdk-RV-QRU" userLabel="innerView">
-                    <rect key="frame" x="6" y="5" width="345" height="189"/>
+                    <rect key="frame" x="6" y="5" width="322" height="161"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" alpha="0.19999999999999968" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="q2R-Zv-e5a" userLabel="backgroundColor">
-                            <rect key="frame" x="0.0" y="0.0" width="345" height="189"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                        <imageView userInteractionEnabled="NO" alpha="0.20000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="ZIO-Cb-28G" userLabel="backgroundColorImage">
+                            <rect key="frame" x="0.0" y="0.0" width="322" height="161"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="avatar.png" id="P1c-sD-eOv" userLabel="avatarImage" customClass="UIRoundedImageView">
-                            <rect key="frame" x="8" y="2" width="40" height="40"/>
+                            <rect key="frame" x="7" y="2" width="40" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                 <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
@@ -65,22 +65,19 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
-                            <rect key="frame" x="48" y="10" width="299" height="168"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <string key="text">static const CGFloat CELL_MESSAGE_WIDTH_MARGIN = 26.0f + 10.0f + 48;
-static const CGFloat CELL_MESSAGE_HEIGHT_MARGIN = 10.0f + 10;
-static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
-static const CGFloat CELL_IMAGE_WIDTH = 100.0f;</string>
-                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <rect key="frame" x="48" y="9" width="268" height="152"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <string key="text">https://beta.itunes.apple.com/v1/invite/deb3eac7cecf43c7a33cfd2300e480f0a1a5f645a88240e8b0fe9951b7f1eae215762a66?ct=Z2V957B3D6&amp;pt=2003</string>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             <dataDetectorType key="dataDetectorTypes" link="YES"/>
                         </textView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat_message_inprogress.png" id="nLy-JO-TyL" userLabel="statusImage">
-                            <rect key="frame" x="330" y="0.0" width="15" height="15"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                            <rect key="frame" x="307" y="0.0" width="15" height="15"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="mlr-pl-B6T" userLabel="bottomBarColor">
-                            <rect key="frame" x="0.0" y="188" width="345" height="1"/>
+                            <rect key="frame" x="0.0" y="160" width="322" height="1"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                         </imageView>
                     </subviews>

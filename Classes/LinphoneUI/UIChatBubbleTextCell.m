@@ -105,8 +105,7 @@
 	LinphoneChatMessageState state = linphone_chat_message_get_state(message);
 	BOOL outgoing = linphone_chat_message_is_outgoing(message);
 
-	//	_backgroundColor.image = _bottomBarColor.image = [UIImage imageNamed:outgoing ? @"color_A" : @"color_F"];
-
+	_backgroundColorImage.image = _bottomBarColor.image = [UIImage imageNamed:(outgoing ? @"color_A" : @"color_D")];
 	if (!outgoing) {
 		_statusImage.accessibilityValue = @"incoming";
 		_statusImage.hidden = TRUE; // not useful for incoming chats..
@@ -142,14 +141,6 @@
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
 	_messageText.userInteractionEnabled = !editing;
-	if (animated) {
-		[UIView beginAnimations:nil context:nil];
-		[UIView setAnimationDuration:0.3];
-	}
-	_deleteButton.hidden = !editing;
-	if (animated) {
-		[UIView commitAnimations];
-	}
 }
 
 #pragma mark - Action Functions
@@ -209,15 +200,16 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 #pragma mark - Bubble size computing
 
 - (CGSize)viewSizeWithWidth:(int)width {
-	static const CGFloat TEXT_MIN_HEIGHT = 50.0f;
+	static const CGFloat TEXT_MIN_HEIGHT = 32.;
 	static const CGFloat TEXT_MIN_WIDTH = 150.0f;
-	static const CGFloat MARGIN_WIDTH = 47 + 10;
-	static const CGFloat MARGIN_HEIGHT = 12 + 10;
-	static const CGFloat IMAGE_HEIGHT = 100.0f; // TODO: move that in bubblephpto
+	static const CGFloat MARGIN_WIDTH = 60;
+	static const CGFloat MARGIN_HEIGHT = 19 + 16 /*this 16 is because textview add some top&bottom padding*/;
+	static const CGFloat IMAGE_HEIGHT = 100.0f; // TODO: move that in bubblephoto
 	static const CGFloat IMAGE_WIDTH = 100.0f;
+	static const CGFloat CHECK_BOX_WIDTH = 40;
 
 	CGSize messageSize, dateSize;
-	int messageAvailableWidth = width - MARGIN_WIDTH;
+	int messageAvailableWidth = width - MARGIN_WIDTH - CHECK_BOX_WIDTH;
 
 	const char *url = linphone_chat_message_get_external_body_url(message);
 	if (url == nil && linphone_chat_message_get_file_transfer_information(message) == NULL) {
@@ -227,15 +219,15 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
 			messageSize =
 				[text boundingRectWithSize:CGSizeMake(messageAvailableWidth, CGFLOAT_MAX)
-								   options:(NSStringDrawingUsesLineFragmentOrigin |
-											NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading)
+								   options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
 								attributes:@{
 									NSFontAttributeName : _messageText.font
-								} context:nil]
+								}
+								   context:nil]
 					.size;
 			dateSize = [_contactDateLabel.text boundingRectWithSize:_contactDateLabel.frame.size
 															options:(NSStringDrawingUsesLineFragmentOrigin |
-																	 NSStringDrawingTruncatesLastVisibleLine |
+
 																	 NSStringDrawingUsesFontLeading)
 														 attributes:@{
 															 NSFontAttributeName : _contactDateLabel.font
@@ -246,25 +238,22 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 #endif
 		{
 			messageSize = [text sizeWithFont:_messageText.font
-						   constrainedToSize:CGSizeMake(messageAvailableWidth, 10000.0f)
-							   lineBreakMode:NSLineBreakByTruncatingTail];
-			dateSize = [text sizeWithFont:_contactDateLabel.font
-						constrainedToSize:_contactDateLabel.frame.size
-							lineBreakMode:NSLineBreakByTruncatingTail];
+						   constrainedToSize:CGSizeMake(messageAvailableWidth, CGFLOAT_MAX)
+							   lineBreakMode:NSLineBreakByCharWrapping];
+			dateSize = [_contactDateLabel.text sizeWithFont:_contactDateLabel.font
+										  constrainedToSize:_contactDateLabel.frame.size
+											  lineBreakMode:NSLineBreakByCharWrapping];
 		}
 	} else {
 		messageSize = CGSizeMake(IMAGE_WIDTH, IMAGE_HEIGHT);
 	}
+	messageSize.width = MAX(TEXT_MIN_WIDTH, ceil(messageSize.width));
+	messageSize.height = MAX(TEXT_MIN_HEIGHT, ceil(messageSize.height));
 
-	messageSize.width = MAX(TEXT_MIN_WIDTH, messageSize.width);
-	messageSize.height = MAX(TEXT_MIN_HEIGHT, messageSize.height);
+	CGSize bubbleSize;
+	bubbleSize.width = MAX(messageSize.width, dateSize.width + _statusImage.frame.size.width + 5) + MARGIN_WIDTH;
+	bubbleSize.height = messageSize.height + MARGIN_HEIGHT;
 
-	CGSize bubbleSize = messageSize;
-	bubbleSize.width = MAX(messageSize.width, dateSize.width) + MARGIN_WIDTH;
-	bubbleSize.height += MARGIN_HEIGHT;
-
-	LOGE(@"%d %fx%f for %@", width, bubbleSize.width, bubbleSize.height,
-		 [UIChatBubbleTextCell TextMessageForChat:message]);
 	return bubbleSize;
 }
 
@@ -275,7 +264,6 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		BOOL is_outgoing = linphone_chat_message_is_outgoing(message);
 		CGRect bubbleFrame = _bubbleView.frame;
 		bubbleFrame.size = [self viewSizeWithWidth:self.frame.size.width];
-		bubbleFrame.size.width += 10;
 		bubbleFrame.origin.x =
 			tableView.isEditing ? 0 : (is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0);
 		_bubbleView.frame = bubbleFrame;
