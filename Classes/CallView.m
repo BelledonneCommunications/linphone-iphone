@@ -122,6 +122,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self hidePad:FALSE];
 	[self showSpeaker];
 	[self callDurationUpdate];
+	[self onCurrentCallChange];
 
 	// Set windows (warn memory leaks)
 	linphone_core_set_native_video_window_id([LinphoneManager getLc], (__bridge void *)(_videoView));
@@ -138,14 +139,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector:@selector(bluetoothAvailabilityUpdateEvent:)
 												 name:kLinphoneBluetoothAvailabilityUpdate
 											   object:nil];
-
-	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
-	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
-	char *uri = linphone_address_as_string_uri_only(addr);
-	_addressLabel.text = [NSString stringWithUTF8String:uri];
-	ms_free(uri);
-	_avatarImage.image =
-		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
 
 	[NSTimer scheduledTimerWithTimeInterval:1
 									 target:self
@@ -235,80 +228,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 #pragma mark -
-
-- (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
-	LinphoneCore *lc = [LinphoneManager getLc];
-	[self updateBottomBar:call state:state];
-	if (hiddenVolume) {
-		[PhoneMainView.instance setVolumeHidden:FALSE];
-		hiddenVolume = FALSE;
-	}
-
-	// Update table
-	[_pausedCallsTableView.tableView reloadData];
-
-	// Fake call update
-	if (call == NULL) {
-		return;
-	}
-
-	switch (state) {
-		case LinphoneCallIncomingReceived:
-		case LinphoneCallOutgoingInit:
-		case LinphoneCallConnected:
-		case LinphoneCallStreamsRunning: {
-			// check video
-			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-				[self displayVideoCall:animated];
-			} else {
-				[self displayTableCall:animated];
-				const LinphoneCallParams *param = linphone_call_get_current_params(call);
-				const LinphoneCallAppData *callAppData =
-					(__bridge const LinphoneCallAppData *)(linphone_call_get_user_pointer(call));
-				if (state == LinphoneCallStreamsRunning && callAppData->videoRequested &&
-					linphone_call_params_low_bandwidth_enabled(param)) {
-					// too bad video was not enabled because low bandwidth
-					UIAlertView *alert = [[UIAlertView alloc]
-							initWithTitle:NSLocalizedString(@"Low bandwidth", nil)
-								  message:NSLocalizedString(@"Video cannot be activated because of low bandwidth "
-															@"condition, only audio is available",
-															nil)
-								 delegate:nil
-						cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-						otherButtonTitles:nil];
-					[alert show];
-					callAppData->videoRequested = FALSE; /*reset field*/
-				}
-			}
-			break;
-		}
-		case LinphoneCallUpdatedByRemote: {
-			const LinphoneCallParams *current = linphone_call_get_current_params(call);
-			const LinphoneCallParams *remote = linphone_call_get_remote_params(call);
-
-			/* remote wants to add video */
-			if (linphone_core_video_enabled(lc) && !linphone_call_params_video_enabled(current) &&
-				linphone_call_params_video_enabled(remote) &&
-				!linphone_core_get_video_policy(lc)->automatically_accept) {
-				linphone_core_defer_call_update(lc, call);
-				[self displayAskToEnableVideoCall:call];
-			} else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-				[self displayTableCall:animated];
-			}
-			break;
-		}
-		case LinphoneCallPausing:
-		case LinphoneCallPaused:
-		case LinphoneCallPausedByRemote: {
-			[self displayTableCall:animated];
-			break;
-		}
-		case LinphoneCallEnd:
-		case LinphoneCallError:
-		default:
-			break;
-	}
-}
 
 - (void)updateBottomBar:(LinphoneCall *)call state:(LinphoneCallState)state {
 	LinphoneCore *lc = [LinphoneManager getLc];
@@ -491,12 +410,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_videoGroup setAlpha:0.0];
 	[PhoneMainView.instance showTabBar:true];
 
-	UIEdgeInsets insets = {10, 0, 25, 0};
-	[_pausedCallsTableView.tableView setContentInset:insets];
-	[_pausedCallsTableView.tableView setScrollIndicatorInsets:insets];
+	//	UIEdgeInsets insets = {10, 0, 25, 0};
+	//	[_pausedCallsTableView.tableView setContentInset:insets];
+	//	[_pausedCallsTableView.tableView setScrollIndicatorInsets:insets];
 	[_pausedCallsTableView.tableView setAlpha:1.0];
 
-	[_pausedCallsTableView.tableView setAlpha:1.0];
 	[_videoCameraSwitch setHidden:TRUE];
 
 	if (animation) {
@@ -537,6 +455,22 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	if (call) {
 		int duration = linphone_call_get_duration(call);
 		_durationLabel.text = [NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60)];
+	}
+}
+
+- (void)onCurrentCallChange {
+	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	if (call) {
+		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
+		char *uri = linphone_address_as_string_uri_only(addr);
+		_addressLabel.text = [NSString stringWithUTF8String:uri];
+		ms_free(uri);
+		_avatarImage.image =
+			[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
+		_noActiveCallView.hidden = YES;
+	} else {
+		_noActiveCallView.hidden = NO;
 	}
 }
 
@@ -657,6 +591,93 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	LinphoneCall *call = [[notif.userInfo objectForKey:@"call"] pointerValue];
 	LinphoneCallState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	[self callUpdate:call state:state animated:TRUE];
+}
+
+- (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
+	LinphoneCore *lc = [LinphoneManager getLc];
+	[self updateBottomBar:call state:state];
+	if (hiddenVolume) {
+		[PhoneMainView.instance setVolumeHidden:FALSE];
+		hiddenVolume = FALSE;
+	}
+
+	// Update table
+	[_pausedCallsTableView.tableView reloadData];
+
+	static LinphoneCall *currentCall = NULL;
+	if (!currentCall || linphone_core_get_current_call(lc) != currentCall) {
+		currentCall = linphone_core_get_current_call(lc);
+		[self onCurrentCallChange];
+	}
+
+	// Fake call update
+	if (call == NULL) {
+		return;
+	}
+
+	if (state != LinphoneCallPausedByRemote) {
+		_pausedByRemoteView.hidden = YES;
+	}
+
+	switch (state) {
+		case LinphoneCallIncomingReceived:
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallConnected:
+		case LinphoneCallStreamsRunning: {
+			// check video
+			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
+				[self displayVideoCall:animated];
+			} else {
+				[self displayTableCall:animated];
+				const LinphoneCallParams *param = linphone_call_get_current_params(call);
+				const LinphoneCallAppData *callAppData =
+					(__bridge const LinphoneCallAppData *)(linphone_call_get_user_pointer(call));
+				if (state == LinphoneCallStreamsRunning && callAppData->videoRequested &&
+					linphone_call_params_low_bandwidth_enabled(param)) {
+					// too bad video was not enabled because low bandwidth
+					UIAlertView *alert = [[UIAlertView alloc]
+							initWithTitle:NSLocalizedString(@"Low bandwidth", nil)
+								  message:NSLocalizedString(@"Video cannot be activated because of low bandwidth "
+															@"condition, only audio is available",
+															nil)
+								 delegate:nil
+						cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+						otherButtonTitles:nil];
+					[alert show];
+					callAppData->videoRequested = FALSE; /*reset field*/
+				}
+			}
+			break;
+		}
+		case LinphoneCallUpdatedByRemote: {
+			const LinphoneCallParams *current = linphone_call_get_current_params(call);
+			const LinphoneCallParams *remote = linphone_call_get_remote_params(call);
+
+			/* remote wants to add video */
+			if (linphone_core_video_enabled(lc) && !linphone_call_params_video_enabled(current) &&
+				linphone_call_params_video_enabled(remote) &&
+				!linphone_core_get_video_policy(lc)->automatically_accept) {
+				linphone_core_defer_call_update(lc, call);
+				[self displayAskToEnableVideoCall:call];
+			} else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
+				[self displayTableCall:animated];
+			}
+			break;
+		}
+		case LinphoneCallPausing:
+		case LinphoneCallPaused:
+			[self displayTableCall:animated];
+			break;
+		case LinphoneCallPausedByRemote:
+			if (call == linphone_core_get_current_call(lc)) {
+				_pausedByRemoteView.hidden = NO;
+			}
+			break;
+		case LinphoneCallEnd:
+		case LinphoneCallError:
+		default:
+			break;
+	}
 }
 
 #pragma mark - ActionSheet Functions

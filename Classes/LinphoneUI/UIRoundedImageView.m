@@ -27,7 +27,7 @@
 - (void)setImage:(UIImage *)image withRoundedRadius:(BOOL)rounded {
 	[super setImage:image];
 	if (image.size.width != image.size.height) {
-		LOGI(@"Image is not squared (%dx%d) - cropping it", image.size.width, image.size.height);
+		LOGI(@"Image is not squared (%fx%f) - cropping it", image.size.width, image.size.height);
 	}
 	[self setRoundRadius:rounded];
 }

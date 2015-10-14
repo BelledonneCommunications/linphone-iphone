@@ -55,12 +55,12 @@
                     <rect key="frame" x="322" y="3" width="45" height="45"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Pause"/>
-                    <state key="normal" image="pause_big_default.png">
+                    <state key="normal" image="pause_small_default.png">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
-                    <state key="disabled" image="pause_big_disabled.png"/>
-                    <state key="selected" image="pause_big_over_selected.png"/>
-                    <state key="highlighted" image="pause_big_over_selected.png"/>
+                    <state key="disabled" image="pause_small_disabled.png"/>
+                    <state key="selected" image="pause_small_over_selected.png"/>
+                    <state key="highlighted" image="pause_small_over_selected.png"/>
                 </button>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="tZi-KI-viq" userLabel="durationLabel">
                     <rect key="frame" x="245" y="7" width="69" height="37"/>
@@ -87,9 +87,9 @@
     <resources>
         <image name="avatar.png" width="255" height="255"/>
         <image name="color_A.png" width="1" height="1"/>
-        <image name="pause_big_default.png" width="51" height="50"/>
-        <image name="pause_big_disabled.png" width="51" height="50"/>
-        <image name="pause_big_over_selected.png" width="51" height="50"/>
+        <image name="pause_small_default.png" width="34" height="34"/>
+        <image name="pause_small_disabled.png" width="34" height="34"/>
+        <image name="pause_small_over_selected.png" width="34" height="34"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

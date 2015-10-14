@@ -87,6 +87,8 @@
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property(weak, nonatomic) IBOutlet UILabel *durationLabel;
+@property(weak, nonatomic) IBOutlet UIView *pausedByRemoteView;
+@property(weak, nonatomic) IBOutlet UIView *noActiveCallView;
 
 - (IBAction)onRoutesClick:(id)sender;
 - (IBAction)onRoutesBluetoothClick:(id)sender;
