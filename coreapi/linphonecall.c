@@ -1785,6 +1785,7 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 		SalMediaDescription *md;
 		const SalCustomHeader *ch;
 
+		md=sal_call_get_remote_media_description(call->op);
 		if (md) {
 			SalStreamDescription *sd;
 			unsigned int i;
