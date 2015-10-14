@@ -183,8 +183,8 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)loadData {
-	ABAddressBookRevert(addressBook);
 	@synchronized(addressBookMap) {
+		ABAddressBookRevert(addressBook);
 		[addressBookMap removeAllObjects];
 
 		CFArrayRef lContacts = ABAddressBookCopyArrayOfAllPeople(addressBook);
