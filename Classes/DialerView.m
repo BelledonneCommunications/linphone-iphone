@@ -413,17 +413,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([self displayDebugPopup:self.addressField.text]) {
 		self.addressField.text = @"";
 	}
-	if ([[addressField text] length] > 0) {
-		[addContactButton setEnabled:TRUE];
-		[backspaceButton setEnabled:TRUE];
-		[addCallButton setEnabled:TRUE];
-		[transferButton setEnabled:TRUE];
-	} else {
-		[addContactButton setEnabled:FALSE];
-		[backspaceButton setEnabled:FALSE];
-		[addCallButton setEnabled:FALSE];
-		[transferButton setEnabled:FALSE];
-	}
+	addContactButton.enabled = backspaceButton.enabled = addCallButton.enabled = transferButton.enabled =
+		([[addressField text] length] > 0);
 }
 
 - (IBAction)onBackspaceClick:(id)sender {

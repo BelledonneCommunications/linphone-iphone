@@ -268,7 +268,7 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 	// Check if one of the contact' sip URI matches the expected SIP filter
 	ABMultiValueRef personSipAddresses = ABRecordCopyValue(person, kABPersonInstantMessageProperty);
 	BOOL match = false;
-	NSString *domain = [ContactSelection getSipFilter];
+	NSString *domain = LinphoneManager.instance.contactFilter;
 
 	for (int i = 0; i < ABMultiValueGetCount(personSipAddresses) && !match; ++i) {
 		CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(personSipAddresses, i);

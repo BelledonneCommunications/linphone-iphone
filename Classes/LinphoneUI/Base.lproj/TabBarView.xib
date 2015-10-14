@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -15,7 +16,7 @@
                 <outlet property="historyNotificationLabel" destination="34" id="35"/>
                 <outlet property="historyNotificationView" destination="32" id="36"/>
                 <outlet property="portraitView" destination="3" id="43"/>
-                <outlet property="selectedBtnView" destination="Aqd-gD-0a2" id="drm-pL-5S6"/>
+                <outlet property="selectedButtonImage" destination="eC3-Hw-cqQ" id="PFh-X5-jX7"/>
                 <outlet property="view" destination="3" id="14"/>
             </connections>
         </placeholder>
@@ -73,11 +74,10 @@
                         <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="26"/>
                     </connections>
                 </button>
-                <view contentMode="scaleToFill" id="Aqd-gD-0a2" userLabel="selectedBtnView">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="eC3-Hw-cqQ" userLabel="selectedButtonImage">
                     <rect key="frame" x="180" y="60" width="90" height="3"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
-                    <color key="backgroundColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                </view>
+                </imageView>
                 <view autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="37" userLabel="chatNotificationView">
                     <rect key="frame" x="338" y="0.0" width="21" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -127,13 +127,13 @@
         </view>
     </objects>
     <resources>
-        <image name="chat_list_indicator.png" width="21" height="21"/>
+        <image name="chat_list_indicator.png" width="20" height="20"/>
         <image name="color_A.png" width="1" height="1"/>
         <image name="color_C.png" width="1" height="1"/>
-        <image name="footer_chat.png" width="28" height="28"/>
-        <image name="footer_contacts.png" width="30" height="30"/>
-        <image name="footer_dialer.png" width="28" height="28"/>
-        <image name="footer_history.png" width="30" height="30"/>
+        <image name="footer_chat.png" width="27" height="27"/>
+        <image name="footer_contacts.png" width="29" height="29"/>
+        <image name="footer_dialer.png" width="27" height="27"/>
+        <image name="footer_history.png" width="29" height="29"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

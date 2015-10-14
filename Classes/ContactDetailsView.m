@@ -22,12 +22,6 @@
 
 @implementation ContactDetailsView
 
-@synthesize tableController;
-@synthesize contact;
-@synthesize editButton;
-@synthesize backButton;
-@synthesize cancelButton;
-
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
 
 #pragma mark - Lifecycle Functions
@@ -51,21 +45,21 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (void)resetData {
 	[self disableEdit:FALSE];
-	if (contact == NULL) {
+	if (_contact == NULL) {
 		ABAddressBookRevert(addressBook);
 		return;
 	}
 
-	LOGI(@"Reset data to contact %p", contact);
-	ABRecordID recordID = ABRecordGetRecordID(contact);
+	LOGI(@"Reset data to contact %p", _contact);
+	ABRecordID recordID = ABRecordGetRecordID(_contact);
 	ABAddressBookRevert(addressBook);
-	contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
-	if (contact == NULL) {
+	_contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
+	if (_contact == NULL) {
 		[PhoneMainView.instance popCurrentView];
 		return;
 	}
-	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:NO];
-	[tableController setContact:contact];
+	_avatarImage.image = [FastAddressBook getContactImage:_contact thumbnail:NO];
+	[_tableController setContact:_contact];
 }
 
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
@@ -76,28 +70,28 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)removeContact {
-	if (contact != NULL) {
+	if (_contact != NULL) {
 		inhibUpdate = TRUE;
-		[[[LinphoneManager instance] fastAddressBook] removeContact:contact];
+		[[[LinphoneManager instance] fastAddressBook] removeContact:_contact];
 		inhibUpdate = FALSE;
 	}
 	[PhoneMainView.instance popCurrentView];
 }
 
 - (void)saveData {
-	if (contact == NULL) {
+	if (_contact == NULL) {
 		[PhoneMainView.instance popCurrentView];
 		return;
 	}
 
 	// Add contact to book
 	CFErrorRef error = NULL;
-	if (ABRecordGetRecordID(contact) == kABRecordInvalidID) {
-		ABAddressBookAddRecord(addressBook, contact, (CFErrorRef *)&error);
+	if (ABRecordGetRecordID(_contact) == kABRecordInvalidID) {
+		ABAddressBookAddRecord(addressBook, _contact, (CFErrorRef *)&error);
 		if (error != NULL) {
-			LOGE(@"Add contact %p: Fail(%@)", contact, [(__bridge NSError *)error localizedDescription]);
+			LOGE(@"Add contact %p: Fail(%@)", _contact, [(__bridge NSError *)error localizedDescription]);
 		} else {
-			LOGI(@"Add contact %p: Success!", contact);
+			LOGI(@"Add contact %p: Success!", _contact);
 		}
 	}
 
@@ -115,15 +109,15 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)selectContact:(ABRecordRef)acontact andReload:(BOOL)reload {
-	contact = NULL;
+	_contact = NULL;
 	[self resetData];
-	contact = acontact;
-	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:NO];
-	[tableController setContact:contact];
+	_contact = acontact;
+	_avatarImage.image = [FastAddressBook getContactImage:_contact thumbnail:NO];
+	[_tableController setContact:_contact];
 
 	if (reload) {
 		[self enableEdit:FALSE];
-		[[tableController tableView] reloadData];
+		[[_tableController tableView] reloadData];
 	}
 }
 
@@ -134,17 +128,17 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 	if (([username rangeOfString:@"@"].length > 0) &&
 		([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true)) {
-		[tableController addEmailField:username];
+		[_tableController addEmailField:username];
 	} else if ((linphone_proxy_config_is_phone_number(NULL, [username UTF8String])) &&
 			   ([[LinphoneManager instance] lpConfigBoolForKey:@"save_new_contacts_as_phone_number"] == true)) {
-		[tableController addPhoneField:username];
+		[_tableController addPhoneField:username];
 	} else {
-		[tableController addSipField:address];
+		[_tableController addSipField:address];
 	}
 	linphone_address_destroy(linphoneAddress);
 
 	[self enableEdit:FALSE];
-	[[tableController tableView] reloadData];
+	[[_tableController tableView] reloadData];
 }
 
 - (void)newContact {
@@ -175,9 +169,9 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	[super viewWillAppear:animated];
 	if ([ContactSelection getSelectionMode] == ContactSelectionModeEdit ||
 		[ContactSelection getSelectionMode] == ContactSelectionModeNone) {
-		[editButton setHidden:FALSE];
+		[_editButton setHidden:FALSE];
 	} else {
-		[editButton setHidden:TRUE];
+		[_editButton setHidden:TRUE];
 	}
 }
 
@@ -204,21 +198,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)enableEdit:(BOOL)animated {
-	if (![tableController isEditing]) {
-		[tableController setEditing:TRUE animated:animated];
+	if (!_tableController.isEditing) {
+		[_tableController setEditing:TRUE animated:animated];
 	}
-	[editButton setOn];
-	[cancelButton setHidden:FALSE];
-	[backButton setHidden:TRUE];
+	[_editButton setOn];
+	[_cancelButton setHidden:FALSE];
+	[_backButton setHidden:TRUE];
 }
 
 - (void)disableEdit:(BOOL)animated {
-	if ([tableController isEditing]) {
-		[tableController setEditing:FALSE animated:animated];
+	if (_tableController.isEditing) {
+		[_tableController setEditing:FALSE animated:animated];
 	}
-	[editButton setOff];
-	[cancelButton setHidden:TRUE];
-	[backButton setHidden:FALSE];
+	[_editButton setOff];
+	[_cancelButton setHidden:TRUE];
+	[_backButton setHidden:FALSE];
 }
 
 #pragma mark - Action Functions
@@ -236,8 +230,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditClick:(id)event {
-	if ([tableController isEditing]) {
-		if ([tableController isValid]) {
+	if (_tableController.isEditing) {
+		if ([_tableController isValid]) {
 			[self disableEdit:TRUE];
 			[self saveData];
 		}
@@ -258,16 +252,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAvatarClick:(id)sender {
-	if (tableController.isEditing) {
+	if (_tableController.isEditing) {
 		[ImagePickerView SelectImageFromDevice:self atPosition:CGRectNull inView:nil];
 	}
 }
 
 - (void)onModification:(id)event {
-	if (![tableController isEditing] || [tableController isValid]) {
-		[editButton setEnabled:TRUE];
+	if (!_tableController.isEditing || [_tableController isValid]) {
+		[_editButton setEnabled:TRUE];
 	} else {
-		[editButton setEnabled:FALSE];
+		[_editButton setEnabled:FALSE];
 	}
 }
 
@@ -276,7 +270,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
 	FastAddressBook *fab = [LinphoneManager instance].fastAddressBook;
 	CFErrorRef error = NULL;
-	if (!ABPersonRemoveImageData(contact, (CFErrorRef *)&error)) {
+	if (!ABPersonRemoveImageData(_contact, (CFErrorRef *)&error)) {
 		LOGI(@"Can't remove entry: %@", [(__bridge NSError *)error localizedDescription]);
 	}
 	NSData *dataRef = UIImageJPEGRepresentation(image, 0.9f);
@@ -284,7 +278,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[fab saveAddressBook];
 
-	if (!ABPersonSetImageData(contact, cfdata, (CFErrorRef *)&error)) {
+	if (!ABPersonSetImageData(_contact, cfdata, (CFErrorRef *)&error)) {
 		LOGI(@"Can't add entry: %@", [(__bridge NSError *)error localizedDescription]);
 	} else {
 		[fab saveAddressBook];
@@ -292,6 +286,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	CFRelease(cfdata);
 
-	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:NO];
+	_avatarImage.image = [FastAddressBook getContactImage:_contact thumbnail:NO];
 }
 @end

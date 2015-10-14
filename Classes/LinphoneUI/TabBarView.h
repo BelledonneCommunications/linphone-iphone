@@ -31,7 +31,7 @@
 @property(nonatomic, strong) IBOutlet UILabel *historyNotificationLabel;
 @property(nonatomic, strong) IBOutlet UIView *chatNotificationView;
 @property(nonatomic, strong) IBOutlet UILabel *chatNotificationLabel;
-@property(weak, nonatomic) IBOutlet UIView *selectedBtnView;
+@property(weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
 
 - (IBAction)onHistoryClick:(id)event;
 - (IBAction)onContactsClick:(id)event;

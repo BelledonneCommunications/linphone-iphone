@@ -216,7 +216,7 @@ static NSString *const kDisappearAnimation = @"disappear";
 	contactsButton.selected = [view equal:ContactsListView.compositeViewDescription];
 	dialerButton.selected = [view equal:DialerView.compositeViewDescription];
 	chatButton.selected = [view equal:ChatsListView.compositeViewDescription];
-	CGRect selectedNewFrame = _selectedBtnView.frame;
+	CGRect selectedNewFrame = _selectedButtonImage.frame;
 	selectedNewFrame.origin.x =
 		(historyButton.selected
 			 ? historyButton.frame.origin.x
@@ -224,7 +224,7 @@ static NSString *const kDisappearAnimation = @"disappear";
 					? contactsButton.frame.origin.x
 					: (dialerButton.selected ? dialerButton.frame.origin.x
 											 : (chatButton.selected ? chatButton.frame.origin.x : 0))));
-	_selectedBtnView.frame = selectedNewFrame;
+	_selectedButtonImage.frame = selectedNewFrame;
 }
 
 #pragma mark - Action Functions

@@ -107,28 +107,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-- (void)relayoutTableView {
-	CGRect subViewFrame = self.view.frame;
-	// let the top bar be visible
-	subViewFrame.origin.y += self.topBar.frame.size.height;
-	subViewFrame.size.height -= self.topBar.frame.size.height;
-	[UIView animateWithDuration:0.2
-					 animations:^{
-					   self.tableController.tableView.frame = subViewFrame;
-					 }];
-}
+//- (void)relayoutTableView {
+//	CGRect subViewFrame = self.view.frame;
+//	// let the top bar be visible
+//	subViewFrame.origin.y += self.topBar.frame.size.height + self.searchBar.frame.size.height;
+//	subViewFrame.size.height -= self.topBar.frame.size.height + self.searchBar.frame.size.height;
+//	[UIView animateWithDuration:0.2
+//					 animations:^{
+//					   self.tableController.tableView.frame = subViewFrame;
+//					 }];
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
 	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
-	CGRect frame = _searchBar.frame;
-	frame.origin.y = topBar.frame.origin.y + topBar.frame.size.height;
-	_searchBar.frame = frame;
 
 	[self update];
 }
@@ -167,7 +160,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	if (view == History_Linphone) {
-		[ContactSelection setSipFilter:[LinphoneManager instance].contactFilter];
+		[ContactSelection setSipFilter:LinphoneManager.instance.contactFilter];
 		[ContactSelection enableEmailFilter:FALSE];
 		[tableController loadData];
 		linphoneButton.selected = TRUE;
@@ -239,11 +232,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - Rotation handling
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-	// the searchbar overlaps the subview in most rotation cases, we have to re-layout the view manually:
-	[self relayoutTableView];
-}
+//- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+//	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+//	// the searchbar overlaps the subview in most rotation cases, we have to re-layout the view manually:
+//	[self relayoutTableView];
+//}
 
 #pragma mark - ABPeoplePickerDelegate
 
