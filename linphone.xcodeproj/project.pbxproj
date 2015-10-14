@@ -358,6 +358,7 @@
 		63EEE4061BBA9B010087D3AF /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EE916006F0700B92522 /* libmediastreamer_base.a */; };
 		63EEE4071BBA9B010087D3AF /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
 		63EEE4081BBA9B010087D3AF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
+		63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
@@ -971,6 +972,8 @@
 		63EEE40B1BBA9B1B0087D3AF /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		63EEE40D1BBA9B250087D3AF /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		63EF7FDC1A24B5810017A416 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
+		63F1DF421BCE618E00EDED90 /* UIAddressTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAddressTextField.h; sourceTree = "<group>"; };
+		63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddressTextField.m; sourceTree = "<group>"; };
 		63FB30331A680E73008CA393 /* UIRoundedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundedImageView.h; sourceTree = "<group>"; };
 		63FB30341A680E73008CA393 /* UIRoundedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundedImageView.m; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
@@ -1529,6 +1532,8 @@
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
 				6334DDFE1BBAD5AA00631900 /* UICheckBoxTVTableViewController.h */,
 				6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */,
+				63F1DF421BCE618E00EDED90 /* UIAddressTextField.h */,
+				63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */,
 				63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */,
 				63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */,
 				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
@@ -2690,6 +2695,7 @@
 				63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */,
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
 				63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */,
+				63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */,
 				D3EA540D1598528B0037DC6B /* ChatsListTableView.m in Sources */,
 				D3EA5411159853750037DC6B /* UIChatCell.m in Sources */,
 				D3F26BF115986B73005F9CAB /* CallIncomingView.m in Sources */,

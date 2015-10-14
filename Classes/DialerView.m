@@ -397,6 +397,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAddContactClick:(id)event {
+	[ContactSelection setSelectionMode:ContactSelectionModeEdit];
 	[ContactSelection setAddAddress:[addressField text]];
 	[ContactSelection setSipFilter:nil];
 	[ContactSelection setNameOrEmailFilter:nil];

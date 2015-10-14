@@ -681,14 +681,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([key isEqual:@"assistant_button"]) {
 		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
 		return;
-	} else if ([key isEqual:@"clear_proxy_button"]) {
+	} else if ([key isEqual:@"remove_proxy_button"]) {
 		if (linphone_core_get_default_proxy_config(lc) == NULL) {
 			return;
 		}
 
 		DTAlertView *alert = [[DTAlertView alloc]
 			initWithTitle:NSLocalizedString(@"Warning", nil)
-				  message:NSLocalizedString(@"Are you sure to want to clear your proxy setup?", nil)];
+				  message:NSLocalizedString(@"Are you sure to want to remove your proxy setup?", nil)];
 
 		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
 		[alert addButtonWithTitle:NSLocalizedString(@"Yes", nil)

@@ -7,7 +7,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CallView">
             <connections>
-                <outlet property="addressLabel" destination="8bV-K4-3TY" id="aqZ-1x-isL"/>
                 <outlet property="avatarImage" destination="fZy-K5-yQp" id="hOl-IQ-c9B"/>
                 <outlet property="callView" destination="9" id="TKY-dp-lKv"/>
                 <outlet property="durationLabel" destination="Oy8-QO-Jwb" id="mUT-TX-gLp"/>
@@ -70,13 +69,6 @@
                             <rect key="frame" x="0.0" y="0.0" width="375" height="503"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="8bV-K4-3TY" userLabel="addressLabel">
-                                    <rect key="frame" x="90" y="241" width="194" height="22"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
                                 <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" image="avatar.png" id="fZy-K5-yQp" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="46" y="110" width="283" height="283"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
@@ -86,7 +78,7 @@
                                     </accessibility>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="KPa-Rm-Qni" userLabel="nameLabel">
-                                    <rect key="frame" x="46" y="236" width="283" height="32"/>
+                                    <rect key="frame" x="46" y="400" width="283" height="32"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="37"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -117,7 +109,7 @@
                                             </accessibility>
                                         </view>
                                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254" y="354.99999934763446" width="113" height="140"/>
+                                            <rect key="frame" x="254.00000029960563" y="355" width="113" height="140"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -144,7 +136,7 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <button opaque="NO" tag="24" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7f5-7T-fV3" userLabel="pauseButton" customClass="UIPauseButton">
-                                    <rect key="frame" x="293" y="50" width="52" height="52"/>
+                                    <rect key="frame" x="310" y="370" width="52" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Pause"/>
                                     <state key="normal" image="pause_big_default.png">

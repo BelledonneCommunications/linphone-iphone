@@ -609,6 +609,8 @@
 	[LinphoneUtils findAndResignFirstResponder:self.view];
 
 	CGRect d = _sideMenuView.frame;
+	d.origin.x = hidden ? 0 : -d.size.width;
+	_sideMenuView.frame = d;
 	d.origin.x = hidden ? -d.size.width : 0;
 
 	if (animated) {

@@ -121,6 +121,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self hideOptions:FALSE];
 	[self hidePad:FALSE];
 	[self showSpeaker];
+	[self callDurationUpdate];
 
 	// Set windows (warn memory leaks)
 	linphone_core_set_native_video_window_id([LinphoneManager getLc], (__bridge void *)(_videoView));
@@ -145,6 +146,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ms_free(uri);
 	_avatarImage.image =
 		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
+
+	[NSTimer scheduledTimerWithTimeInterval:1
+									 target:self
+								   selector:@selector(callDurationUpdate)
+								   userInfo:nil
+									repeats:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -524,6 +531,14 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 #pragma mark - UI modification
+
+- (void)callDurationUpdate {
+	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	if (call) {
+		int duration = linphone_call_get_duration(call);
+		_durationLabel.text = [NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60)];
+	}
+}
 
 - (void)showPad:(BOOL)animated {
 	[_numpadButton setOn];

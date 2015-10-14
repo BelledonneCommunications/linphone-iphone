@@ -106,9 +106,10 @@ static NSString *const kDisappearAnimation = @"disappear";
 }
 
 - (void)changeViewEvent:(NSNotification *)notif {
-	// UICompositeViewDescription *view = [notif.userInfo objectForKey: @"view"];
-	// if(view != nil)
-	[self updateSelectedButton:[PhoneMainView.instance firstView]];
+	UICompositeViewDescription *view = [notif.userInfo objectForKey:@"view"];
+	if (view != nil) {
+		[self updateSelectedButton:view];
+	}
 }
 
 - (void)settingsUpdate:(NSNotification *)notif {

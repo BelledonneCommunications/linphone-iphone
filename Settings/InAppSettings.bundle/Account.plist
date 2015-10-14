@@ -6,9 +6,9 @@
 	<array>
 		<dict>
 			<key>Key</key>
-			<string>clear_proxy_button</string>
+			<string>remove_proxy_button</string>
 			<key>Title</key>
-			<string>Clear Account</string>
+			<string>Remove Account</string>
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>
