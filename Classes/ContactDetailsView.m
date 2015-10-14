@@ -64,6 +64,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		[PhoneMainView.instance popCurrentView];
 		return;
 	}
+	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:NO];
 	[tableController setContact:contact];
 }
 
@@ -117,6 +118,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	contact = NULL;
 	[self resetData];
 	contact = acontact;
+	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:NO];
 	[tableController setContact:contact];
 
 	if (reload) {
@@ -255,6 +257,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 					  }];
 }
 
+- (IBAction)onAvatarClick:(id)sender {
+	if (tableController.isEditing) {
+		[ImagePickerView SelectImageFromDevice:self atPosition:CGRectNull inView:nil];
+	}
+}
+
 - (void)onModification:(id)event {
 	if (![tableController isEditing] || [tableController isValid]) {
 		[editButton setEnabled:TRUE];
@@ -263,4 +271,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+#pragma mark - Image picker delegate
+
+- (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
+	FastAddressBook *fab = [LinphoneManager instance].fastAddressBook;
+	CFErrorRef error = NULL;
+	if (!ABPersonRemoveImageData(contact, (CFErrorRef *)&error)) {
+		LOGI(@"Can't remove entry: %@", [(__bridge NSError *)error localizedDescription]);
+	}
+	NSData *dataRef = UIImageJPEGRepresentation(image, 0.9f);
+	CFDataRef cfdata = CFDataCreate(NULL, [dataRef bytes], [dataRef length]);
+
+	[fab saveAddressBook];
+
+	if (!ABPersonSetImageData(contact, cfdata, (CFErrorRef *)&error)) {
+		LOGI(@"Can't add entry: %@", [(__bridge NSError *)error localizedDescription]);
+	} else {
+		[fab saveAddressBook];
+	}
+
+	CFRelease(cfdata);
+
+	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:NO];
+}
 @end

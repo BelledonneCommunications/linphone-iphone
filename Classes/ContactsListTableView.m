@@ -209,8 +209,19 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	return cell;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-	return nil; // [addressBookMap keyAtIndex:section];
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIView *tempView = [[UIView alloc] initWithFrame:CGRectMake(0, 200, 300, 244)];
+	tempView.backgroundColor = [UIColor clearColor];
+
+	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 300, 44)];
+	tempLabel.backgroundColor = [UIColor clearColor];
+	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A"]];
+	tempLabel.text = [addressBookMap keyAtIndex:section];
+	tempLabel.textAlignment = NSTextAlignmentCenter;
+	tempLabel.font = [UIFont boldSystemFontOfSize:17];
+	[tempView addSubview:tempLabel];
+
+	return tempView;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -23,8 +23,11 @@
 #import "UICompositeView.h"
 #import "UIToggleButton.h"
 #import "ContactDetailsTableView.h"
+#import "UIRoundedImageView.h"
+#import "ImagePickerView.h"
 
-@interface ContactDetailsView : UIViewController <UICompositeViewDelegate, ContactDetailsDelegate> {
+@interface ContactDetailsView
+	: UIViewController <UICompositeViewDelegate, ContactDetailsDelegate, ImagePickerDelegate> {
 	ABAddressBookRef addressBook;
 	BOOL inhibUpdate;
 }
@@ -34,11 +37,13 @@
 @property(nonatomic, strong) IBOutlet UIToggleButton *editButton;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;
 @property(nonatomic, strong) IBOutlet UIButton *cancelButton;
+@property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onCancelClick:(id)event;
 - (IBAction)onEditClick:(id)event;
 - (IBAction)onDeleteClick:(id)sender;
+- (IBAction)onAvatarClick:(id)sender;
 
 - (void)newContact;
 - (void)newContact:(NSString *)address;
