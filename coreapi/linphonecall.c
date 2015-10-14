@@ -1437,10 +1437,12 @@ void linphone_call_fix_call_parameters(LinphoneCall *call, SalMediaDescription *
 			ms_message("Call [%p]: disabling video in our call params because the remote doesn't want it.", call);
 			call->params->has_video = FALSE;
 		}
+		/*
 		if (rcp->has_video && call->core->video_policy.automatically_accept && linphone_core_video_enabled(call->core) && !call->params->has_video){
 			ms_message("Call [%p]: re-enabling video in our call params because the remote wants it and the policy allows to automatically accept.", call);
 			call->params->has_video = TRUE;
 		}
+		*/
 		if (rcp->realtimetext_enabled && !call->params->realtimetext_enabled) {
 			call->params->realtimetext_enabled = TRUE;
 		}

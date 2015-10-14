@@ -1920,6 +1920,52 @@ end:
 static void call_with_declined_video(void) {
 	call_with_declined_video_base(FALSE);
 }
+
+static void call_with_declined_video_despite_policy(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall* marie_call;
+	LinphoneCall* pauline_call;
+	LinphoneVideoPolicy marie_policy, pauline_policy;
+	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
+	bool_t call_ok;
+
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, FALSE);
+
+	pauline_policy.automatically_initiate=TRUE;
+	pauline_policy.automatically_accept=TRUE;
+	marie_policy.automatically_initiate=TRUE;
+	marie_policy.automatically_accept=TRUE;
+
+	linphone_core_set_video_policy(marie->lc,&marie_policy);
+	linphone_core_set_video_policy(pauline->lc,&pauline_policy);
+
+	caller_test_params.base=linphone_core_create_default_call_parameters(pauline->lc);
+
+	callee_test_params.base=linphone_core_create_default_call_parameters(marie->lc);
+	linphone_call_params_enable_video(callee_test_params.base,FALSE);
+
+	BC_ASSERT_TRUE((call_ok=call_with_params2(pauline,marie,&caller_test_params,&callee_test_params,FALSE)));
+	if (!call_ok) goto end;
+
+	linphone_call_params_destroy(caller_test_params.base);
+	if (callee_test_params.base) linphone_call_params_destroy(callee_test_params.base);
+	marie_call=linphone_core_get_current_call(marie->lc);
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+
+	BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(marie_call)));
+	BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(pauline_call)));
+
+	end_call(pauline, marie);
+
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void call_with_declined_video_using_policy(void) {
 	call_with_declined_video_base(TRUE);
 }
@@ -5319,6 +5365,7 @@ test_t call_tests[] = {
 	{ "Call with several video switches", call_with_several_video_switches },
 	{ "SRTP call with several video switches", srtp_call_with_several_video_switches },
 	{ "Call with video declined", call_with_declined_video},
+	{ "Call with video declined despite policy", call_with_declined_video_despite_policy},
 	{ "Call with video declined using policy", call_with_declined_video_using_policy},
 	{ "Call with multiple early media", multiple_early_media },
 	{ "Call with ICE from video to non-video", call_with_ice_video_to_novideo},
