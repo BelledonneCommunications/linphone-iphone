@@ -973,6 +973,70 @@ static void test_publish_unpublish(void) {
 	linphone_core_manager_destroy(marie);
 }
 
+static void test_list_subscribe (void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
+	
+	char *list =	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+					"<resource-lists xmlns=\"urn:ietf:params:xml:ns:resource-lists\"\n"
+					"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+					"<list>\n"
+						"\t<entry uri=\"%s\" />\n"
+						"\t<entry uri=\"%s\" />\n"
+					"</list>\n"
+					"</resource-lists>\n";
+	
+	
+	LinphoneEvent *lev;
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	char * pauline_uri=linphone_address_as_string_uri_only(pauline->identity);
+	char * laure_uri=linphone_address_as_string_uri_only(laure->identity);
+	char * subscribe_content = ms_strdup_printf(list,pauline_uri,laure_uri);
+	LinphoneContent* content = linphone_core_create_content(marie->lc);
+	LinphoneAddress *list_name = linphone_address_new("sip:mescops@sip.example.org");
+	ms_free(pauline_uri);
+	ms_free(laure_uri);
+	
+	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=ms_list_append(lcs,laure->lc);
+	
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"resource-lists+xml");
+	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	
+	lev=linphone_core_create_subscribe(marie->lc,list_name,"presence",60);
+	
+	linphone_event_add_custom_header(lev,"Supported","eventlist");
+	linphone_event_add_custom_header(lev,"Accept","application/pidf+xml, application/rlmi+xml");
+	
+	linphone_event_send_subscribe(lev,content);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
+	//BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
+
+//	if (pauline->stat.number_of_LinphoneSubscriptionIncomingReceived == 1) {
+//		/*check good receipt of custom headers*/
+//		BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header"),"pouet");
+//		BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header2"),"pimpon");
+//	}
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
+//	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
+	
+	/*make sure marie receives first notification before terminating*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
+	
+	linphone_event_terminate(lev);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
+	
+	ms_free(subscribe_content);
+	linphone_address_destroy(list_name);
+	linphone_content_unref(content);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+}
 #endif
 
 test_t flexisip_tests[] = {
@@ -996,6 +1060,7 @@ test_t flexisip_tests[] = {
 	{ "Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher },
 	{ "Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish },
 	{ "Publish/unpublish", test_publish_unpublish },
+	{ "List subscribe", test_list_subscribe },
 #endif
 	{ "File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client },
 	{ "File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client },
