@@ -9,6 +9,9 @@
             <connections>
                 <outlet property="avatarImage" destination="fZy-K5-yQp" id="hOl-IQ-c9B"/>
                 <outlet property="callView" destination="9" id="TKY-dp-lKv"/>
+                <outlet property="conferenceCallsTable" destination="sif-q0-7oE" id="Fjr-dB-s4q"/>
+                <outlet property="conferencePauseButton" destination="sJD-Z5-eEX" id="iKj-A8-re0"/>
+                <outlet property="conferenceView" destination="0Ju-u5-N7A" id="H5K-Nv-IKI"/>
                 <outlet property="durationLabel" destination="Oy8-QO-Jwb" id="mUT-TX-gLp"/>
                 <outlet property="eightButton" destination="DRh-kc-UVM" id="BPp-sh-qBg"/>
                 <outlet property="fiveButton" destination="8Da-zK-V7e" id="URc-Ct-fu0"/>
@@ -28,7 +31,7 @@
                 <outlet property="optionsView" destination="sHZ-53-Hta" id="HjK-Gc-HB2"/>
                 <outlet property="pauseButton" destination="7f5-7T-fV3" id="c3P-vq-8ux"/>
                 <outlet property="pausedByRemoteView" destination="0MR-ml-8RY" id="fzQ-lE-Tny"/>
-                <outlet property="pausedCallsTableView" destination="162" id="4Zj-Gb-Pdt"/>
+                <outlet property="pausedCallsTable" destination="162" id="ffv-xP-AXk"/>
                 <outlet property="routesBluetoothButton" destination="6uv-FV-mUL" id="c0F-7q-0m5"/>
                 <outlet property="routesButton" destination="nQp-5y-kTy" id="2u8-g5-6T1"/>
                 <outlet property="routesReceiverButton" destination="jSA-bD-bCs" id="v17-cH-SBj"/>
@@ -59,6 +62,13 @@
             </connections>
             <point key="canvasLocation" x="126" y="-34"/>
         </tableViewController>
+        <tableViewController id="sif-q0-7oE" userLabel="conferenceCallsTableController" customClass="CallConferenceTableView">
+            <extendedEdge key="edgesForExtendedLayout"/>
+            <connections>
+                <outlet property="view" destination="vgc-Mn-pga" id="1xm-46-qIt"/>
+            </connections>
+            <point key="canvasLocation" x="126" y="-34"/>
+        </tableViewController>
         <view contentMode="scaleToFill" id="a4W-5M-X2Z" userLabel="iphone6View">
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -67,7 +77,42 @@
                     <rect key="frame" x="0.0" y="42" width="375" height="625"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="9" userLabel="callView">
+                        <view contentMode="scaleToFill" id="0Ju-u5-N7A" userLabel="conferenceView">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="503"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Conference" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="8ep-1F-Gkg" userLabel="nameLabel">
+                                    <rect key="frame" x="10" y="0.0" width="313" height="52"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="37"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" tag="24" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="sJD-Z5-eEX" userLabel="pauseButton" customClass="UIPauseButton">
+                                    <rect key="frame" x="323" y="0.0" width="52" height="52"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Pause"/>
+                                    <state key="normal" image="pause_big_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="pause_big_disabled.png"/>
+                                    <state key="selected" image="pause_big_over_selected.png"/>
+                                    <state key="highlighted" image="pause_big_over_selected.png"/>
+                                </button>
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" allowsSelection="NO" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" id="vgc-Mn-pga" userLabel="conferenceCallsTableView">
+                                    <rect key="frame" x="0.0" y="52" width="375" height="451"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <connections>
+                                        <outlet property="dataSource" destination="sif-q0-7oE" id="Oes-Ng-FKF"/>
+                                        <outlet property="delegate" destination="sif-q0-7oE" id="1oo-Xs-pb0"/>
+                                    </connections>
+                                </tableView>
+                            </subviews>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
+                        <view hidden="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="9" userLabel="callView">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="503"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -111,7 +156,7 @@
                                             </accessibility>
                                         </view>
                                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254.00000029960563" y="355" width="113" height="140"/>
+                                            <rect key="frame" x="254.00000029960563" y="354.99999967643191" width="113" height="140"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -166,26 +211,26 @@
                                     <state key="selected" image="pause_big_over_selected.png"/>
                                     <state key="highlighted" image="pause_big_over_selected.png"/>
                                 </button>
-                                <view hidden="YES" contentMode="scaleToFill" id="aqL-q2-eR2" userLabel="noActiveCallView">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="503"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="waiting_time.png" id="4uU-gc-9XK" userLabel="pausedImage">
-                                            <rect key="frame" x="0.0" y="200" width="375" height="71"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You have paused all your calls" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="b5q-sb-qbU" userLabel="pausedLabel">
-                                            <rect key="frame" x="0.0" y="241" width="375" height="100"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </view>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
+                        <view hidden="YES" contentMode="scaleToFill" id="aqL-q2-eR2" userLabel="noActiveCallView">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="503"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="waiting_time.png" id="4uU-gc-9XK" userLabel="pausedImage">
+                                    <rect key="frame" x="0.0" y="200" width="375" height="71"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                </imageView>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You have paused all your calls" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="b5q-sb-qbU" userLabel="pausedLabel">
+                                    <rect key="frame" x="0.0" y="241" width="375" height="100"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" allowsSelection="NO" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" id="106" userLabel="pausedCallsTableView">
                             <rect key="frame" x="0.0" y="453" width="375" height="50"/>

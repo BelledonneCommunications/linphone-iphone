@@ -190,7 +190,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:linphoneAddress];
 	_addressLabel.accessibilityValue = _addressLabel.text;
 	_avatarImage.image =
-		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:linphoneAddress] thumbnail:YES];
+		[FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:linphoneAddress] thumbnail:YES];
 }
 
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {

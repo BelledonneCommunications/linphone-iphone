@@ -76,14 +76,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self callUpdate:acall state:astate];
 }
 
-#pragma mark -
-
 - (void)callUpdate:(LinphoneCall *)acall state:(LinphoneCallState)astate {
 	if (call == acall && (astate == LinphoneCallEnd || astate == LinphoneCallError)) {
 		[delegate incomingCallAborted:call];
 		[self dismiss];
+	} else if ([LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]) {
+		LinphoneCallState state = linphone_call_get_state(call);
+		if (state == LinphoneCallIncomingReceived || state == LinphoneCallIncomingEarlyMedia) {
+			[self onAcceptClick:nil];
+		}
 	}
 }
+
+#pragma mark -
 
 - (void)dismiss {
 	if ([[PhoneMainView.instance currentView] equal:CallIncomingView.compositeViewDescription]) {
@@ -99,8 +104,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	char *uri = linphone_address_as_string_uri_only(addr);
 	addressLabel.text = [NSString stringWithUTF8String:uri];
 	ms_free(uri);
-	avatarImage.image =
-		[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
+	avatarImage.image = [FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:NO];
 }
 
 #pragma mark - Property Functions

@@ -60,7 +60,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	return nil;
 }
 
-+ (ABRecordRef)getContactWithLinphoneAddress:(const LinphoneAddress *)address {
++ (ABRecordRef)getContactWithAddress:(const LinphoneAddress *)address {
 	ABRecordRef contact = nil;
 	if (address) {
 		char *uri = linphone_address_as_string_uri_only(address);
@@ -324,7 +324,7 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr {
 	NSString *ret = NSLocalizedString(@"Unknown", nil);
-	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
 	if (contact) {
 		ret = [FastAddressBook displayNameForContact:contact];
 	} else {

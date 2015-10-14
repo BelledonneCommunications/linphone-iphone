@@ -36,8 +36,8 @@
 	int filesize = 20;
 	const char *filename = strchr(file, '/') ? strrchr(file, '/') + 1 : file;
 	if (severity <= ORTP_DEBUG) {
-		// lol: ortp_debug(XXX) can be disabled at compile time, but ortp_log(ORTP_DEBUG, xxx) will always be valid even
-		//      not in debug build...
+		// ortp_debug(XXX) can be disabled at compile time, but ortp_log(ORTP_DEBUG, xxx) will always be valid even
+		// not in debug build...
 		ortp_debug("%*s:%3d - %s", filesize, filename + MAX((int)strlen(filename) - filesize, 0), line, str.UTF8String);
 	} else {
 		ortp_log(severity, "%*s:%3d - %s", filesize, filename + MAX((int)strlen(filename) - filesize, 0), line,
@@ -362,7 +362,7 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 }
 
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
-	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
 	if (contact) {
 		[ContactDisplay setDisplayNameLabel:label forContact:contact];
 	} else {

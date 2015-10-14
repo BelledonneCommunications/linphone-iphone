@@ -17,13 +17,13 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "CallPausedTableView.h"
-#import "UICallPausedCell.h"
+#import "CallConferenceTableView.h"
+#import "UICallConferenceCell.h"
 #import "UIConferenceHeader.h"
 #import "LinphoneManager.h"
 #import "Utils.h"
 
-@implementation CallPausedTableView
+@implementation CallConferenceTableView
 
 #pragma mark - ViewController Functions
 
@@ -45,12 +45,6 @@
 
 - (void)update {
 	[self.tableView reloadData];
-	CGRect newOrigin = self.tableView.frame;
-	newOrigin.size.height =
-		[self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] *
-		[self tableView:self.tableView numberOfRowsInSection:0];
-	newOrigin.origin.y += self.tableView.frame.size.height - newOrigin.size.height;
-	self.tableView.frame = newOrigin;
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -58,7 +52,7 @@
 	const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
 	int i = -1;
 	while (calls) {
-		if (linphone_call_get_state(calls->data) == LinphoneCallPaused) {
+		if (linphone_call_is_in_conference(calls->data)) {
 			i++;
 			if (i == row)
 				break;
@@ -71,10 +65,10 @@
 #pragma mark - UITableViewDataSource Functions
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	NSString *kCellId = NSStringFromClass(UICallPausedCell.class);
-	UICallPausedCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+	NSString *kCellId = NSStringFromClass(UICallConferenceCell.class);
+	UICallConferenceCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
-		cell = [[UICallPausedCell alloc] initWithIdentifier:kCellId];
+		cell = [[UICallConferenceCell alloc] initWithIdentifier:kCellId];
 	}
 	[cell setCall:[self conferenceCallForRow:indexPath.row]];
 	return cell;
@@ -84,7 +78,7 @@
 	const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
 	int count = 0;
 	while (calls) {
-		if (linphone_call_get_state(calls->data) == LinphoneCallPaused) {
+		if (linphone_call_is_in_conference(calls->data)) {
 			count++;
 		}
 		calls = calls->next;

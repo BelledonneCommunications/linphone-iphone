@@ -6,10 +6,10 @@
 //
 //
 
-#import "UICallPausedCell.h"
+#import "UICallConferenceCell.h"
 #import "Utils.h"
 
-@implementation UICallPausedCell
+@implementation UICallConferenceCell
 
 - (id)initWithIdentifier:(NSString *)identifier {
 	self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
@@ -28,18 +28,22 @@
 }
 
 - (void)setCall:(LinphoneCall *)call {
-	if (!call) {
-		LOGW(@"Cannot update call cell: null call or data");
+	_call = call;
+	if (!call || !linphone_call_is_in_conference(call)) {
+		LOGF(@"Invalid call: either NULL or not in conference.");
 		return;
 	}
 
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 
-	_avatarImage.image = [FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:NO];
+	_avatarImage.image = [FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:YES];
 
 	int duration = linphone_call_get_duration(call);
 	[_durationLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60), nil]];
 }
 
+- (IBAction)onKickClick:(id)sender {
+	linphone_core_remove_from_conference([LinphoneManager getLc], _call);
+}
 @end

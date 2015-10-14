@@ -159,7 +159,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
 	_addContactButton.hidden = (contact != nil);
 	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr];
 	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:NO];
@@ -176,7 +176,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onContactClick:(id)event {
 	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
 	ContactDetailsView *view = VIEW(ContactDetailsView);
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	[ContactSelection setSelectionMode:ContactSelectionModeNone];

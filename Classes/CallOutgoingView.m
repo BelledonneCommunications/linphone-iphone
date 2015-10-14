@@ -56,7 +56,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_addressLabel.text = [NSString stringWithUTF8String:uri];
 		ms_free(uri);
 		_avatarImage.image =
-			[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
+			[FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:NO];
 	}
 }
 

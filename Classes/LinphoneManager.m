@@ -1316,9 +1316,9 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 	const char *lRingBack =
 		[[LinphoneManager bundleFile:@"ringback.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
-	const char *lPlay =
-		[[LinphoneManager bundleFile:@"hold.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	linphone_core_set_play_file(theLinphoneCore, lPlay);
+	//	const char *lPlay =
+	//		[[LinphoneManager bundleFile:@"hold.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	//	linphone_core_set_play_file(theLinphoneCore, lPlay);
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore,
 										[zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
@@ -1444,9 +1444,9 @@ static BOOL libStarted = FALSE;
 	const char *lRingBack =
 		[[LinphoneManager bundleFile:@"ringback.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
 	lp_config_set_string(configDb, "sound", "ringback_tone", lRingBack);
-	const char *lPlay =
-		[[LinphoneManager bundleFile:@"hold.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
-	lp_config_set_string(configDb, "sound", "hold_music", lPlay);
+	//	const char *lPlay =
+	//		[[LinphoneManager bundleFile:@"hold.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	//	lp_config_set_string(configDb, "sound", "hold_music", lPlay);
 
 	theLinphoneCore =
 		linphone_core_new_with_config(&linphonec_vtable, configDb, (__bridge void *)(self) /* user_data */);

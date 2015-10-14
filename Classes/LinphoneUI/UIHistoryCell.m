@@ -95,7 +95,7 @@
 	_stateImage.image = image;
 
 	[ContactDisplay setDisplayNameLabel:displayNameLabel forAddress:addr];
-	ABRecordRef contact = [FastAddressBook getContactWithLinphoneAddress:addr];
+	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
 	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:TRUE];
 }
 

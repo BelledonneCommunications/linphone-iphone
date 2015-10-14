@@ -188,6 +188,16 @@
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Auto answer call immediately</string>
+			<key>Key</key>
+			<string>enable_auto_answer</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

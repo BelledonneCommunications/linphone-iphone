@@ -359,6 +359,9 @@
 		63EEE4071BBA9B010087D3AF /* libmediastreamer_voip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22405EEA16006F0700B92522 /* libmediastreamer_voip.a */; };
 		63EEE4081BBA9B010087D3AF /* libortp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2C10765B400068D98F /* libortp.a */; };
 		63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */; };
+		63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */; };
+		63F1DF4F1BCE985F00EDED90 /* UICallConferenceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4D1BCE985F00EDED90 /* UICallConferenceCell.m */; };
+		63F1DF511BCE986A00EDED90 /* UICallConferenceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63F1DF531BCE986A00EDED90 /* UICallConferenceCell.xib */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
@@ -974,6 +977,11 @@
 		63EF7FDC1A24B5810017A416 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
 		63F1DF421BCE618E00EDED90 /* UIAddressTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAddressTextField.h; sourceTree = "<group>"; };
 		63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAddressTextField.m; sourceTree = "<group>"; };
+		63F1DF491BCE983100EDED90 /* CallConferenceTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallConferenceTableView.h; sourceTree = "<group>"; };
+		63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallConferenceTableView.m; sourceTree = "<group>"; };
+		63F1DF4C1BCE985F00EDED90 /* UICallConferenceCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICallConferenceCell.h; sourceTree = "<group>"; };
+		63F1DF4D1BCE985F00EDED90 /* UICallConferenceCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICallConferenceCell.m; sourceTree = "<group>"; };
+		63F1DF521BCE986A00EDED90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICallConferenceCell.xib; sourceTree = "<group>"; };
 		63FB30331A680E73008CA393 /* UIRoundedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundedImageView.h; sourceTree = "<group>"; };
 		63FB30341A680E73008CA393 /* UIRoundedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundedImageView.m; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
@@ -1358,6 +1366,8 @@
 				D350F20B15A43BB100149E54 /* AssistantView.h */,
 				D350F20C15A43BB100149E54 /* AssistantView.m */,
 				D38187E015FE348A00C3EDCA /* AssistantView.xib */,
+				63F1DF491BCE983100EDED90 /* CallConferenceTableView.h */,
+				63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */,
 				D3F26BEE15986B71005F9CAB /* CallIncomingView.h */,
 				D3F26BEF15986B71005F9CAB /* CallIncomingView.m */,
 				D38187DC15FE347700C3EDCA /* CallIncomingView.xib */,
@@ -1465,10 +1475,17 @@
 		2214EB7012F84668002A5394 /* LinphoneUI */ = {
 			isa = PBXGroup;
 			children = (
+				63F1DF421BCE618E00EDED90 /* UIAddressTextField.h */,
+				63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */,
+				63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */,
+				63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */,
 				22C7555E1317E59C007BC101 /* UIBluetoothButton.h */,
 				22C7555F1317E59C007BC101 /* UIBluetoothButton.m */,
 				2214EB7812F846B1002A5394 /* UICallButton.h */,
 				2214EB7912F846B1002A5394 /* UICallButton.m */,
+				63F1DF4C1BCE985F00EDED90 /* UICallConferenceCell.h */,
+				63F1DF4D1BCE985F00EDED90 /* UICallConferenceCell.m */,
+				63F1DF531BCE986A00EDED90 /* UICallConferenceCell.xib */,
 				63BC49E01BA2CDFC004EC273 /* UICallPausedCell.h */,
 				63BC49E11BA2CDFC004EC273 /* UICallPausedCell.m */,
 				63BC49E91BA2CEDF004EC273 /* UICallPausedCell.xib */,
@@ -1483,6 +1500,11 @@
 				D3EA540F159853750037DC6B /* UIChatCell.h */,
 				D3EA5410159853750037DC6B /* UIChatCell.m */,
 				639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */,
+				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
+				63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */,
+				63B8D6A11BCBF43100C12B09 /* UIChatCreateCell.xib */,
+				6334DDFE1BBAD5AA00631900 /* UICheckBoxTVTableViewController.h */,
+				6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */,
 				D31B4B1E159876C0002E6C72 /* UICompositeView.h */,
 				D31B4B1F159876C0002E6C72 /* UICompositeView.m */,
 				639CEB051A1DF4EB004DE38F /* UICompositeView.xib */,
@@ -1530,15 +1552,6 @@
 				D3196D3D15A32BD8007FEEBA /* UITransferButton.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
-				6334DDFE1BBAD5AA00631900 /* UICheckBoxTVTableViewController.h */,
-				6334DDFF1BBAD5AA00631900 /* UICheckBoxTVTableViewController.m */,
-				63F1DF421BCE618E00EDED90 /* UIAddressTextField.h */,
-				63F1DF431BCE618E00EDED90 /* UIAddressTextField.m */,
-				63C441C11BBC23ED0053DC5E /* UIAssistantTextField.h */,
-				63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */,
-				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
-				63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */,
-				63B8D6A11BCBF43100C12B09 /* UIChatCreateCell.xib */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -2476,6 +2489,7 @@
 				637528071BBA8EF700FDEA6F /* conference_exit_over.png in Resources */,
 				63158FAD1B468E0E00969917 /* ImageOptim.sh in Resources */,
 				637528391BBA8EF700FDEA6F /* numpad_7.png in Resources */,
+				63F1DF511BCE986A00EDED90 /* UICallConferenceCell.xib in Resources */,
 				637528661BBA8EF700FDEA6F /* status_available.png in Resources */,
 				63AADBE91B6A0FF200AA16FD /* hold.wav in Resources */,
 				637528471BBA8EF700FDEA6F /* options_start_conference.png in Resources */,
@@ -2672,6 +2686,7 @@
 				340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */,
 				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 				D3F83EEC1582021700336684 /* CallView.m in Sources */,
+				63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */,
 				D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */,
 				D3ED3E871586291E006C0DE4 /* TabBarView.m in Sources */,
 				D3ED3EA71587334E006C0DE4 /* HistoryListTableView.m in Sources */,
@@ -2691,6 +2706,7 @@
 				63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
 				F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */,
 				63B81A0D1B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m in Sources */,
+				63F1DF4F1BCE985F00EDED90 /* UICallConferenceCell.m in Sources */,
 				D37DC6C11594AE1800B2A5EB /* LinphoneCoreSettingsStore.m in Sources */,
 				63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */,
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
@@ -2959,6 +2975,14 @@
 				63B8D68D1BCBE65600C12B09 /* Base */,
 			);
 			name = ChatConversationCreateView.xib;
+			sourceTree = "<group>";
+		};
+		63F1DF531BCE986A00EDED90 /* UICallConferenceCell.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63F1DF521BCE986A00EDED90 /* Base */,
+			);
+			name = UICallConferenceCell.xib;
 			sourceTree = "<group>";
 		};
 		D37EE11016035793003608A6 /* ImageView.xib */ = {

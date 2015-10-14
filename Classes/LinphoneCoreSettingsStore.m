@@ -130,6 +130,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[self setCString:linphone_address_get_username(linphone_proxy_config_get_identity_address(proxy))
 					  forKey:key];
 		}
+
+		[self setBool:linphone_core_video_enabled(lc) forKey:@"enable_video_preference"];
+		[self setBool:[LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]
+			   forKey:@"enable_auto_answer_preference"];
 	}
 	// account section
 	{
@@ -173,7 +177,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 				[self setCString:tname forKey:@"transport_preference"];
 				[self setBool:(linphone_proxy_config_get_route(cfg) != NULL)forKey:@"outbound_proxy_preference"];
 				[self setBool:linphone_proxy_config_avpf_enabled(cfg) forKey:@"avpf_preference"];
-				[self setBool:linphone_core_video_enabled(lc) forKey:@"enable_video_preference"];
 
 				// actually in Advanced section but proxy config dependent
 				[self setInteger:linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
@@ -591,6 +594,9 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		bool enableVideo = [self boolForKey:@"enable_video_preference"];
 		linphone_core_enable_video(lc, enableVideo, enableVideo);
+
+		bool enableAutoAnswer = [self boolForKey:@"enable_auto_answer_preference"];
+		[LinphoneManager.instance lpConfigSetBool:enableAutoAnswer forKey:@"auto_answer"];
 	}
 
 	// audio section

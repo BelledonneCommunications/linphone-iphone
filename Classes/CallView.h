@@ -43,7 +43,7 @@
 	VideoZoomHandler *videoZoomHandler;
 }
 
-@property(nonatomic, strong) IBOutlet CallPausedTableView *pausedCallsTableView;
+@property(nonatomic, strong) IBOutlet CallPausedTableView *pausedCallsTable;
 
 @property(nonatomic, strong) IBOutlet UIView *videoGroup;
 @property(nonatomic, strong) IBOutlet UIView *videoView;
@@ -89,6 +89,9 @@
 @property(weak, nonatomic) IBOutlet UILabel *durationLabel;
 @property(weak, nonatomic) IBOutlet UIView *pausedByRemoteView;
 @property(weak, nonatomic) IBOutlet UIView *noActiveCallView;
+@property(weak, nonatomic) IBOutlet UIView *conferenceView;
+@property(strong, nonatomic) IBOutlet CallPausedTableView *conferenceCallsTable;
+@property(weak, nonatomic) IBOutlet UIPauseButton *conferencePauseButton;
 
 - (IBAction)onRoutesClick:(id)sender;
 - (IBAction)onRoutesBluetoothClick:(id)sender;

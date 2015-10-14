@@ -183,8 +183,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	dragndrop.minimumNumberOfTouches = 1;
 	[_videoPreview addGestureRecognizer:dragndrop];
 
-	[_pauseButton setType:UIPauseButtonType_CurrentCall call:nil];
-
 	[_zeroButton setDigit:'0'];
 	[_zeroButton setDtmf:true];
 	[_oneButton setDigit:'1'];
@@ -235,18 +233,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_speakerButton update];
 	[_microButton update];
 	[_pauseButton update];
+	[_conferencePauseButton update];
 	[_videoButton update];
 	[_hangupButton update];
 
-	_optionsButton.enabled =
-		(state == LinphoneCallPaused || state == LinphoneCallPausing || state == LinphoneCallStreamsRunning);
+	_optionsButton.enabled = !linphone_call_media_in_progress(call);
 
 	// Show Pause/Conference button following call count
 	if (linphone_core_get_calls_nb(lc) > 1) {
-		if (![_pauseButton isHidden]) {
-			[_pauseButton setHidden:true];
-			[_optionsConferenceButton setHidden:false];
-		}
 		bool enabled = true;
 		const MSList *list = linphone_core_get_calls(lc);
 		while (list != NULL) {
@@ -259,12 +253,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 			}
 			list = list->next;
 		}
-		[_optionsConferenceButton setEnabled:enabled];
+		_optionsConferenceButton.enabled = enabled;
 	} else {
-		if ([_pauseButton isHidden]) {
-			[_pauseButton setHidden:false];
-			[_optionsConferenceButton setHidden:true];
-		}
+		_optionsConferenceButton.enabled = NO;
 	}
 
 	// Disable transfert in conference
@@ -307,7 +298,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[UIView setAnimationDuration:0.3];
 		[PhoneMainView.instance showTabBar:true];
 		[PhoneMainView.instance showStatusBar:true];
-		[_pausedCallsTableView.tableView setAlpha:1.0];
+		[_pausedCallsTable.tableView setAlpha:1.0];
 		[_videoCameraSwitch setAlpha:1.0];
 		[UIView commitAnimations];
 
@@ -330,7 +321,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 		[_videoCameraSwitch setAlpha:0.0];
-		[_pausedCallsTableView.tableView setAlpha:0.0];
+		[_pausedCallsTable.tableView setAlpha:0.0];
 		[UIView commitAnimations];
 
 		[PhoneMainView.instance showTabBar:false];
@@ -352,11 +343,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	[_videoGroup setAlpha:1.0];
-	[_pausedCallsTableView.tableView setAlpha:0.0];
+	[_pausedCallsTable.tableView setAlpha:0.0];
 
-	UIEdgeInsets insets = {33, 0, 25, 0};
-	[_pausedCallsTableView.tableView setContentInset:insets];
-	[_pausedCallsTableView.tableView setScrollIndicatorInsets:insets];
+	//	UIEdgeInsets insets = {33, 0, 25, 0};
+	//	[_pausedCallsTableView.tableView setContentInset:insets];
+	//	[_pausedCallsTableView.tableView setScrollIndicatorInsets:insets];
 
 	if (animation) {
 		[UIView commitAnimations];
@@ -413,7 +404,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	//	UIEdgeInsets insets = {10, 0, 25, 0};
 	//	[_pausedCallsTableView.tableView setContentInset:insets];
 	//	[_pausedCallsTableView.tableView setScrollIndicatorInsets:insets];
-	[_pausedCallsTableView.tableView setAlpha:1.0];
+	[_pausedCallsTable.tableView setAlpha:1.0];
 
 	[_videoCameraSwitch setHidden:TRUE];
 
@@ -460,17 +451,23 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (void)onCurrentCallChange {
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-	if (call) {
+	if (!call) {
+		_noActiveCallView.hidden = NO;
+		return;
+	}
+
+	_callView.hidden = linphone_call_is_in_conference(call);
+	_conferenceView.hidden = !_callView.hidden;
+	_noActiveCallView.hidden = YES;
+
+	if (call && !linphone_call_is_in_conference(call)) {
 		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 		char *uri = linphone_address_as_string_uri_only(addr);
 		_addressLabel.text = [NSString stringWithUTF8String:uri];
 		ms_free(uri);
 		_avatarImage.image =
-			[FastAddressBook getContactImage:[FastAddressBook getContactWithLinphoneAddress:addr] thumbnail:NO];
-		_noActiveCallView.hidden = YES;
-	} else {
-		_noActiveCallView.hidden = NO;
+			[FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:NO];
 	}
 }
 
@@ -478,8 +475,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[_numpadButton setOn];
 	if ([_numpadView isHidden]) {
 		if (animated) {
-			[self showAnimation:@"show"
-						 target:_numpadView
+			[self showAnimation:_numpadView
 					 completion:^(BOOL finished){
 					 }];
 		} else {
@@ -492,8 +488,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[_numpadButton setOff];
 	if (![_numpadView isHidden]) {
 		if (animated) {
-			[self hideAnimation:@"hide"
-						 target:_numpadView
+			[self hideAnimation:_numpadView
 					 completion:^(BOOL finished){
 					 }];
 		} else {
@@ -511,8 +506,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 											 [[LinphoneManager instance] speakerEnabled])];
 		if ([_routesView isHidden]) {
 			if (animated) {
-				[self showAnimation:@"show"
-							 target:_routesView
+				[self showAnimation:_routesView
 						 completion:^(BOOL finished){
 						 }];
 			} else {
@@ -527,8 +521,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[_routesButton setOff];
 		if (![_routesView isHidden]) {
 			if (animated) {
-				[self hideAnimation:@"hide"
-							 target:_routesView
+				[self hideAnimation:_routesView
 						 completion:^(BOOL finished){
 						 }];
 			} else {
@@ -542,8 +535,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[_optionsButton setOn];
 	if ([_optionsView isHidden]) {
 		if (animated) {
-			[self showAnimation:@"show"
-						 target:_optionsView
+			[self showAnimation:_optionsView
 					 completion:^(BOOL finished){
 					 }];
 		} else {
@@ -556,8 +548,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[_optionsButton setOff];
 	if (![_optionsView isHidden]) {
 		if (animated) {
-			[self hideAnimation:@"hide"
-						 target:_optionsView
+			[self hideAnimation:_optionsView
 					 completion:^(BOOL finished){
 					 }];
 		} else {
@@ -601,8 +592,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		hiddenVolume = FALSE;
 	}
 
-	// Update table
-	[_pausedCallsTableView.tableView reloadData];
+	// Update tables
+	[_pausedCallsTable.tableView reloadData];
+	[_conferenceCallsTable.tableView reloadData];
 
 	static LinphoneCall *currentCall = NULL;
 	if (!currentCall || linphone_core_get_current_call(lc) != currentCall) {
@@ -837,44 +829,39 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 #pragma mark - Animation
 
-- (void)showAnimation:(NSString *)animationID target:(UIView *)target completion:(void (^)(BOOL finished))completion {
-	CGRect frame = [target frame];
+- (void)showAnimation:(UIView *)target completion:(void (^)(BOOL finished))completion {
+	CGRect frame = target.frame;
 	int original_y = frame.origin.y;
-	frame.origin.y = [[self view] frame].size.height;
-	[target setFrame:frame];
-	[target setHidden:FALSE];
+	frame.origin.y = self.view.frame.size.height;
+	target.frame = frame;
+	frame.origin.y = original_y;
+	target.hidden = NO;
 	[UIView animateWithDuration:0.5
 		delay:0.0
 		options:UIViewAnimationOptionCurveEaseOut
 		animations:^{
-		  CGRect frame = [target frame];
-		  frame.origin.y = original_y;
-		  [target setFrame:frame];
+		  target.frame = frame;
 		}
 		completion:^(BOOL finished) {
-		  CGRect frame = [target frame];
-		  frame.origin.y = original_y;
-		  [target setFrame:frame];
 		  completion(finished);
 		}];
 }
 
-- (void)hideAnimation:(NSString *)animationID target:(UIView *)target completion:(void (^)(BOOL finished))completion {
-	CGRect frame = [target frame];
-	int original_y = frame.origin.y;
+- (void)hideAnimation:(UIView *)target completion:(void (^)(BOOL finished))completion {
+	int original_y = target.frame.origin.y;
+	CGRect newFrame = target.frame;
+	newFrame.origin.y = self.view.frame.size.height;
 	[UIView animateWithDuration:0.5
 		delay:0.0
 		options:UIViewAnimationOptionCurveEaseIn
 		animations:^{
-		  CGRect frame = [target frame];
-		  frame.origin.y = [[self view] frame].size.height;
-		  [target setFrame:frame];
+		  target.frame = newFrame;
 		}
 		completion:^(BOOL finished) {
-		  CGRect frame = [target frame];
-		  frame.origin.y = original_y;
-		  [target setHidden:TRUE];
-		  [target setFrame:frame];
+		  CGRect originFrame = target.frame;
+		  originFrame.origin.y = original_y;
+		  target.hidden = YES;
+		  target.frame = originFrame;
 		  completion(finished);
 		}];
 }
