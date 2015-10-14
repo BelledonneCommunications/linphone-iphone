@@ -6458,6 +6458,9 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 		ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_set_broken);
 	}else{
 		linphone_core_resolve_stun_server(lc);
+		if (lp_config_get_int(lc->config, "net", "recreate_sockets_when_network_is_up", 0)){
+			ms_list_for_each(lc->calls, (MSIterateFunc)linphone_call_refresh_sockets);
+		}
 	}
 #ifdef BUILD_UPNP
 	if(lc->upnp == NULL) {

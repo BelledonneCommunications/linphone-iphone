@@ -4761,3 +4761,14 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 		break;
 	}
 }
+
+void linphone_call_refresh_sockets(LinphoneCall *call){
+	int i;
+	for (i=0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
+		MSMediaStreamSessions *mss = &call->sessions[i];
+		if (mss->rtp_session){
+			rtp_session_refresh_sockets(mss->rtp_session);
+		}
+	}
+}
+

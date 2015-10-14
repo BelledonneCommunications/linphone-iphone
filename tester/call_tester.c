@@ -5042,16 +5042,24 @@ static void call_record_with_custom_rtp_modifier(void) {
 	custom_rtp_modifier(FALSE, TRUE);
 }
 
-static void _call_with_network_switch(bool_t use_ice){
+static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	MSList *lcs = NULL;
 	bool_t call_ok;
+	
+	lcs = ms_list_append(lcs, marie->lc);
+	lcs = ms_list_append(lcs, pauline->lc);
 
 	if (use_ice){
 		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
 		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
 	}
-
+	if (with_socket_refresh){
+		lp_config_set_int(linphone_core_get_config(marie->lc), "net", "recreate_sockets_when_network_is_up", 1);
+		lp_config_set_int(linphone_core_get_config(pauline->lc), "net", "recreate_sockets_when_network_is_up", 1);
+	}
+	
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
 	if (!call_ok) goto end;
 
@@ -5071,22 +5079,29 @@ static void _call_with_network_switch(bool_t use_ice){
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
 
+	/*check that media is back*/
+	check_media_direction(marie, linphone_core_get_current_call(marie->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInvalid);
 	liblinphone_tester_check_rtcp(pauline, marie);
 	if (use_ice) BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 
 	/*pauline shall be able to end the call without problem now*/
 	end_call(pauline, marie);
 end:
+	ms_list_free(lcs);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 
 static void call_with_network_switch(void){
-	_call_with_network_switch(FALSE);
+	_call_with_network_switch(FALSE, FALSE);
 }
 
 static void call_with_network_switch_and_ice(void){
-	_call_with_network_switch(TRUE);
+	_call_with_network_switch(TRUE, FALSE);
+}
+
+static void call_with_network_switch_and_socket_refresh(void){
+	_call_with_network_switch(TRUE, TRUE);
 }
 
 #ifdef CALL_LOGS_STORAGE_ENABLED
@@ -5453,7 +5468,8 @@ test_t call_tests[] = {
 	{ "Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier },
 	{ "Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier },
 	{ "Call with network switch", call_with_network_switch },
-	{ "Call with network switch and ICE", call_with_network_switch_and_ice }
+	{ "Call with network switch and ICE", call_with_network_switch_and_ice },
+	{ "Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh }
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
