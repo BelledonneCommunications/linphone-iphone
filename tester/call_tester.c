@@ -214,15 +214,18 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	LinphoneCallParams *callee_params = callee_test_params->base;
 	bool_t did_receive_call;
 	LinphoneCall *callee_call=NULL;
+	LinphoneCall *caller_call=NULL;
 
 	setup_sdp_handling(caller_test_params, caller_mgr);
 	setup_sdp_handling(callee_test_params, callee_mgr);
 
 	if (!caller_params){
-		BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity));
+		BC_ASSERT_PTR_NOT_NULL((caller_call=linphone_core_invite_address(caller_mgr->lc,callee_mgr->identity)));
 	}else{
-		BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(caller_mgr->lc,callee_mgr->identity,caller_params));
+		BC_ASSERT_PTR_NOT_NULL((caller_call=linphone_core_invite_address_with_params(caller_mgr->lc,callee_mgr->identity,caller_params)));
 	}
+	
+	BC_ASSERT_PTR_NULL(linphone_call_get_remote_params(caller_call)); /*assert that remote params are NULL when no response is received yet*/
 
 	did_receive_call = wait_for(callee_mgr->lc
 				,caller_mgr->lc

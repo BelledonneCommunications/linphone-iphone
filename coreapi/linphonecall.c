@@ -1783,8 +1783,8 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 	if (call->op){
 		LinphoneCallParams *cp;
 		SalMediaDescription *md;
+		const SalCustomHeader *ch;
 
-		md=sal_call_get_remote_media_description(call->op);
 		if (md) {
 			SalStreamDescription *sd;
 			unsigned int i;
@@ -1820,7 +1820,12 @@ const LinphoneCallParams * linphone_call_get_remote_params(LinphoneCall *call){
 			linphone_call_params_set_custom_sdp_media_attributes(call->remote_params, LinphoneStreamTypeVideo, md->streams[call->main_video_stream_index].custom_sdp_attributes);
 			linphone_call_params_set_custom_sdp_media_attributes(call->remote_params, LinphoneStreamTypeText, md->streams[call->main_text_stream_index].custom_sdp_attributes);
 		}
-		linphone_call_params_set_custom_headers(call->remote_params, sal_op_get_recv_custom_header(call->op));
+		ch = sal_op_get_recv_custom_header(call->op);
+		if (ch){
+			/*instanciate a remote_params only if a SIP message was received before (custom headers indicates this).*/
+			if (call->remote_params == NULL) call->remote_params = linphone_call_params_new();
+			linphone_call_params_set_custom_headers(call->remote_params, ch);
+		}
 		return call->remote_params;
 	}
 	return NULL;
