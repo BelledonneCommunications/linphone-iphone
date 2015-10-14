@@ -24,7 +24,9 @@
 #import "ContactDetailsLabelView.h"
 
 typedef enum _ContactSections {
-	ContactSections_None = 0,
+	ContactSections_None = -1,
+	ContactSections_First_Name,
+	ContactSections_Last_Name,
 	ContactSections_Number,
 	ContactSections_Sip,
 	ContactSections_Email,

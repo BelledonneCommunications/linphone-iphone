@@ -33,6 +33,7 @@
 		[tf setHidden:TRUE];
 		[tf setClearButtonMode:UITextFieldViewModeWhileEditing];
 		[tf setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
+		[tf setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
 		self.detailTextField = tf;
 
 		UIFont *font = [UIFont fontWithName:@"Helvetica-Bold" size:[UIFont systemFontSize]];

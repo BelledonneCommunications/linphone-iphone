@@ -49,8 +49,9 @@
 
 @implementation ContactDetailsTableView
 
-static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSections_None, ContactSections_Number,
-																	   ContactSections_Sip, ContactSections_Email};
+static const ContactSections_e contactSections[ContactSections_MAX] = {
+	ContactSections_First_Name, ContactSections_Last_Name, ContactSections_Number, ContactSections_Sip,
+	ContactSections_Email};
 
 @synthesize contactDetailsDelegate;
 @synthesize contact;
@@ -118,6 +119,10 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 
 - (ABPropertyID)propertyIDForSection:(ContactSections_e)section {
 	switch (section) {
+		case ContactSections_First_Name:
+			return kABPersonFirstNameProperty;
+		case ContactSections_Last_Name:
+			return kABPersonLastNameProperty;
 		case ContactSections_Sip:
 			return kABPersonInstantMessageProperty;
 		case ContactSections_Number:
@@ -479,7 +484,12 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [[self getSectionData:section] count];
+	if (contactSections[section] == ContactSections_First_Name ||
+		contactSections[section] == ContactSections_Last_Name) {
+		return 1;
+	} else {
+		return [[self getSectionData:section] count];
+	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -500,7 +510,15 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 	// default label is our app name
 	NSString *label = [FastAddressBook localizedLabel:[labelArray objectAtIndex:0]];
 
-	if (contactSections[[indexPath section]] == ContactSections_Number) {
+	if (contactSections[[indexPath section]] == ContactSections_First_Name) {
+		value =
+			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
+		label = nil;
+	} else if (contactSections[[indexPath section]] == ContactSections_Last_Name) {
+		value =
+			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
+		label = nil;
+	} else if (contactSections[[indexPath section]] == ContactSections_Number) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
 		NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
 		NSString *labelRef = CFBridgingRelease(ABMultiValueCopyLabelAtIndex(lMap, index));
@@ -693,6 +711,9 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView
 		   editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (indexPath.section == ContactSections_First_Name || indexPath.section == ContactSections_Last_Name) {
+		return UITableViewCellEditingStyleNone;
+	}
 	NSInteger last_index = [[self getSectionData:[indexPath section]] count] - 1;
 	if (indexPath.row == last_index) {
 		return UITableViewCellEditingStyleInsert;
@@ -701,6 +722,11 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {ContactSe
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+	if (contactSections[section] == ContactSections_First_Name) {
+		return NSLocalizedString(@"First name", nil);
+	} else if (contactSections[section] == ContactSections_Last_Name) {
+		return NSLocalizedString(@"Last name", nil);
+	}
 	if ([[self getSectionData:section] count] == 0)
 		return nil;
 
