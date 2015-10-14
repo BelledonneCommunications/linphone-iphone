@@ -170,8 +170,14 @@ static bool_t is_matching_regex(const char *entry, const char* regex) {
 	return TRUE;
 #else
 	regex_t regex_pattern;
+	char err_msg[256];
 	int res;
-	regcomp(&regex_pattern, regex, 0);
+	res = regcomp(&regex_pattern, regex, REG_EXTENDED | REG_NOSUB);
+	if(res != REG_NOERROR) {
+		regerror(res, &regex_pattern, err_msg, sizeof(err_msg));
+		ms_error("Could not compile regex '%s: %s", regex, err_msg);
+		return FALSE;
+	}
 	res = regexec(&regex_pattern, entry, 0, NULL, 0);
 	regfree(&regex_pattern);
 	return (res != REG_NOMATCH);
@@ -265,7 +271,7 @@ const char * linphone_account_creator_get_display_name(const LinphoneAccountCrea
 }
 
 LinphoneAccountCreatorStatus linphone_account_creator_set_email(LinphoneAccountCreator *creator, const char *email) {
-	if (!is_matching_regex(email, ".+@.+\\.[A-Za-z]{2}[A-Za-z]*")) {
+	if (!is_matching_regex(email, "^.+@.+\\.[A-Za-z]{2}[A-Za-z]*$")) {
 		return LinphoneAccountCreatorEmailInvalid;
 	}
 	set_string(&creator->email, email);
