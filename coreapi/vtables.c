@@ -55,13 +55,13 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	}
 }
 
-#define NOTIFY_IF_EXIST(function_name, args...) \
+#define NOTIFY_IF_EXIST(function_name, ...) \
 	MSList* iterator; \
 	VTableReference *ref; \
 	bool_t has_cb = FALSE; \
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
 		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name) {\
-			lc->current_vtable->function_name(args);\
+			lc->current_vtable->function_name(__VA_ARGS__);\
 			has_cb = TRUE;\
 		}\
 	if (has_cb) ms_message("Linphone core [%p] notifying [%s]",lc,#function_name)
