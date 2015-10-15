@@ -120,13 +120,11 @@ else()
 	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
 endif()
 
-set(GENERATED_SOURCE_FILES
-	${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
-)
-set_source_files_properties(${GENERATED_SOURCE_FILES} PROPERTIES GENERATED TRUE)
 find_package(Git)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
-	COMMAND ${CMAKE_COMMAND} -DGIT_EXECUTABLE=${GIT_EXECUTABLE} -DWORK_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/gitversion.cmake)
+add_custom_target(liblinphone-git-version
+	COMMAND ${CMAKE_COMMAND} -DGIT_EXECUTABLE=${GIT_EXECUTABLE} -DWORK_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/gitversion.cmake
+	BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h"
+)
 
 add_definitions(
 	-DUSE_BELLESIP
@@ -161,10 +159,10 @@ if(INTL_FOUND)
 endif()
 
 if(ENABLE_STATIC)
-	add_library(linphone STATIC ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
+	add_library(linphone STATIC ${SOURCE_FILES})
 	target_link_libraries(linphone ${LIBS})
 else()
-	add_library(linphone SHARED ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
+	add_library(linphone SHARED ${SOURCE_FILES})
 	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
 	target_link_libraries(linphone ${LIBS})
 	if(MSVC)
@@ -176,6 +174,7 @@ else()
 		endif()
 	endif()
 endif()
+add_dependencies(linphone liblinphone-git-version)
 if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone")
 	set_target_properties(linphone PROPERTIES PREFIX "lib")
 endif()
