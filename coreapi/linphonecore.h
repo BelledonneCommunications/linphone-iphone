@@ -3782,7 +3782,22 @@ LINPHONE_PUBLIC LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCor
 
 LINPHONE_PUBLIC	int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
 LINPHONE_PUBLIC	int linphone_core_add_all_to_conference(LinphoneCore *lc);
-LINPHONE_PUBLIC	int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
+/**
+ * Remove a call from the conference.
+ * @param lc the linphone core
+ * @param call a call that has been previously merged into the conference.
+ *
+ * After removing the remote participant belonging to the supplied call, the call becomes a normal call in paused state.
+ * If one single remote participant is left alone together with the local user in the conference after the removal, then the conference is
+ * automatically transformed into a simple call in StreamsRunning state.
+ * The conference's resources are then automatically destroyed.
+ *
+ * In other words, unless linphone_core_leave_conference() is explicitly called, the last remote participant of a conference is automatically
+ * put in a simple call in running state.
+ *
+ * @return 0 if successful, -1 otherwise.
+ **/
+ LINPHONE_PUBLIC	int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
 /**
  * Indicates whether the local participant is part of a conference.
  * @param lc the linphone core

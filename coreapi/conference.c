@@ -276,21 +276,6 @@ static int convert_conference_to_call(LinphoneCore *lc){
 	return err;
 }
 
-/**
- * Remove a call from the conference.
- * @param lc the linphone core
- * @param call a call that has been previously merged into the conference.
- *
- * After removing the remote participant belonging to the supplied call, the call becomes a normal call in paused state.
- * If one single remote participant is left alone together with the local user in the conference after the removal, then the conference is
- * automatically transformed into a simple call in StreamsRunning state.
- * The conference's resources are then automatically destroyed.
- *
- * In other words, unless linphone_core_leave_conference() is explicitely called, the last remote participant of a conference is automatically
- * put in a simple call in running state.
- *
- * @return 0 if successful, -1 otherwise.
- **/
 int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call){
 	int err;
 	char * str=linphone_call_get_remote_address_as_string(call);
