@@ -362,35 +362,30 @@ zipres:
 
 help-prepare-options:
 \t@echo "prepare.py was previously executed with the following options:"
-\t@echo "   {options}"
+\t@echo "\t{options}"
 
 help: help-prepare-options
 \t@echo ""
 \t@echo "(please read the README.md file first)"
 \t@echo ""
 \t@echo "Available architectures: {archs}"
-\t@echo "Available packages: {packages}"
 \t@echo ""
-\t@echo "Available targets:"
+\t@echo "=== Available targets ==="
 \t@echo ""
-\t@echo "   * all or build: builds all architectures and creates the liblinphone SDK"
-\t@echo "   * sdk: creates the liblinphone SDK. Use this only after a full build"
+\t@echo "   * all or build (default): builds all architectures and creates the liblinphone SDK."
+\t@echo "   * dev: rebuilds liblinphone for all architectures. You must invoke 'sdk' target after this."
+\t@echo "   * sdk: creates the liblinphone SDK. Use this only after a full build."
 \t@echo "   * zipsdk: generates a ZIP archive of liblinphone-sdk/apple-darwin containing the SDK. Use this only after SDK is built."
-\t@echo "   * zipres: creates a tar.gz file with all the resources (images)"
+\t@echo "   * zipres: creates a tar.gz file with all the resources (images)."
 \t@echo ""
 \t@echo "=== Advanced usage ==="
 \t@echo ""
-\t@echo "   * build-[package]: builds the package for all architectures"
-\t@echo "   * clean-[package]: cleans package compilation for all architectures"
-\t@echo "   * veryclean-[package]: cleans the package for all architectures"
-\t@echo ""
-\t@echo "   * [{arch_opts}]-build-[package]: builds a package for the selected architecture"
-\t@echo "   * [{arch_opts}]-clean-[package]: cleans package compilation for the selected architecture"
-\t@echo "   * [{arch_opts}]-veryclean-[package]: cleans the package for the selected architecture"
+\t@echo "   * [{arch_opts}]-build: rebuilds everything for a single architecture. You must invoke 'sdk' target after this."
+\t@echo "   * [{arch_opts}]-dev: rebuilds liblinphone for a single architecture. You must invoke 'sdk' target after this."
 \t@echo ""
 """.format(archs=' '.join(platforms), arch_opts='|'.join(platforms),
            first_arch=platforms[0], options=' '.join(sys.argv),
-           arch_targets=arch_targets, packages=' '.join(packages),
+           arch_targets=arch_targets,
            multiarch=multiarch, generator=generator)
     f = open('Makefile', 'w')
     f.write(makefile)
