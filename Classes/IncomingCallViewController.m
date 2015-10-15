@@ -91,6 +91,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (call == acall && (astate == LinphoneCallEnd || astate == LinphoneCallError)) {
 		[delegate incomingCallAborted:call];
 		[self dismiss];
+	} else if ([LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]) {
+		LinphoneCallState state = linphone_call_get_state(call);
+		if (state == LinphoneCallIncomingReceived || state == LinphoneCallIncomingEarlyMedia) {
+			[self onAcceptClick:nil];
+		}
 	}
 }
 
