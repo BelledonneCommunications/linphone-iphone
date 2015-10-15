@@ -3187,7 +3187,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 				video_stream_set_direction (call->videostream, dir);
 				ms_message("%s lc rotation:%d\n", __FUNCTION__, lc->device_rotation);
 				video_stream_set_device_rotation(call->videostream, lc->device_rotation);
-				video_stream_set_freeze_on_error(call->videostream, lp_config_get_int(lc->config, "video", "freeze_on_error", 0));
+				video_stream_set_freeze_on_error(call->videostream, lp_config_get_int(lc->config, "video", "freeze_on_error", 1));
 				if (is_multicast)
 					rtp_session_set_multicast_ttl(call->videostream->ms.sessions.rtp_session,vstream->ttl);
 
