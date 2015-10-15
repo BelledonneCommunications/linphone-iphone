@@ -660,6 +660,7 @@ const char *sal_op_get_remote_ua(const SalOp *op);
 void *sal_op_get_user_pointer(const SalOp *op);
 const char* sal_op_get_call_id(const SalOp *op);
 char* sal_op_get_dialog_id(const SalOp *op);
+bool_t sal_op_is_forked_of(const SalOp *op1, const SalOp *op2);
 
 const SalAddress* sal_op_get_service_route(const SalOp *op);
 void sal_op_set_service_route(SalOp *op,const SalAddress* service_route);

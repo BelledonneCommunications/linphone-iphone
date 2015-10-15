@@ -102,7 +102,7 @@ LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op){
 	LinphoneFriend *lf;
 	for (elem=l;elem!=NULL;elem=elem->next){
 		lf=(LinphoneFriend*)elem->data;
-		if (lf->outsub==op) return lf;
+		if (lf->outsub && (lf->outsub == op || sal_op_is_forked_of(lf->outsub, op))) return lf;
 	}
 	return NULL;
 }
@@ -273,7 +273,6 @@ static void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	linphone_friend_unsubscribe(lf);
 	ms_list_for_each(lf->insubs, (MSIterateFunc) sal_notify_presence_close);
-
 }
 
 static void _linphone_friend_destroy(LinphoneFriend *lf){

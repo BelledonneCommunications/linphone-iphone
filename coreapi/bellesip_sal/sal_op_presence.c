@@ -60,29 +60,25 @@ static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog
 
 static void presence_refresher_listener(belle_sip_refresher_t* refresher, void* user_pointer, unsigned int status_code, const char* reason_phrase){
 	SalOp* op = (SalOp*)user_pointer;
-	switch(status_code){
-		case 481: {
-
-			ms_message("The server or remote ua lost the SUBSCRIBE dialog context. Let's restart a new one.");
-			belle_sip_refresher_stop(op->refresher);
-			if (op->dialog) { /*delete previous dialog if any*/
-				belle_sip_dialog_set_application_data(op->dialog,NULL);
-				belle_sip_object_unref(op->dialog);
-				op->dialog=NULL;
-			}
-
-			if (sal_op_get_contact_address(op)) {
-				/*contact is also probably not good*/
-				SalAddress* contact=sal_address_clone(sal_op_get_contact_address(op));
-				sal_address_set_port(contact,-1);
-				sal_address_set_domain(contact,NULL);
-				sal_op_set_contact_address(op,contact);
-				sal_address_destroy(contact);
-			}
-
-			sal_subscribe_presence(op,NULL,NULL,-1);
-		break;
+	if (status_code >= 300) {
+		ms_message("The SUBSCRIBE dialog no longer works. Let's restart a new one.");
+		belle_sip_refresher_stop(op->refresher);
+		if (op->dialog) { /*delete previous dialog if any*/
+			belle_sip_dialog_set_application_data(op->dialog,NULL);
+			belle_sip_object_unref(op->dialog);
+			op->dialog=NULL;
 		}
+
+		if (sal_op_get_contact_address(op)) {
+			/*contact is also probably not good*/
+			SalAddress* contact=sal_address_clone(sal_op_get_contact_address(op));
+			sal_address_set_port(contact,-1);
+			sal_address_set_domain(contact,NULL);
+			sal_op_set_contact_address(op,contact);
+			sal_address_destroy(contact);
+		}
+		/*send a new SUBSCRIBE, that will attempt to establish a new dialog*/
+		sal_subscribe_presence(op,NULL,NULL,-1);
 	}
 }
 
@@ -177,15 +173,19 @@ static SalPresenceModel * process_presence_notification(SalOp *op, belle_sip_req
 	return result;
 }
 
-static void handle_notify(SalOp *op, belle_sip_request_t *req){
+static void handle_notify(SalOp *op, belle_sip_request_t *req, belle_sip_dialog_t *dialog){
 	belle_sip_response_t* resp=NULL;
 	belle_sip_server_transaction_t* server_transaction=op->pending_server_trans;
 	belle_sip_header_subscription_state_t* subscription_state_header=belle_sip_message_get_header_by_type(req,belle_sip_header_subscription_state_t);
 	SalSubscribeStatus sub_state;
-
+	
 	if (strcmp("NOTIFY",belle_sip_request_get_method(req))==0) {
 		SalPresenceModel *presence_model = NULL;
 		const char* body = belle_sip_message_get_body(BELLE_SIP_MESSAGE(req));
+		
+		if (op->dialog !=NULL && dialog != op->dialog){
+			ms_warning("Receiving a NOTIFY from a dialog we haven't stored (op->dialog=%p dialog=%p)", op->dialog, dialog);
+		}
 		if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
 			sub_state=SalSubscribeTerminated;
 			ms_message("Outgoing subscription terminated by remote [%s]",sal_op_get_to(op));
@@ -229,7 +229,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 			ms_message("new incoming subscription from [%s] to [%s]",sal_op_get_from(op),sal_op_get_to(op));
 		}else{ /* this is a NOTIFY */
 			ms_message("Receiving out of dialog notify");
-			handle_notify(op,req);
+			handle_notify(op, req, belle_sip_request_event_get_dialog(event));
 			return;
 		}
 	}
@@ -245,7 +245,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 
 		case BELLE_SIP_DIALOG_CONFIRMED:
 			if (strcmp("NOTIFY",method)==0) {
-				handle_notify(op,req);
+				handle_notify(op, req, belle_sip_request_event_get_dialog(event));
 			} else if (strcmp("SUBSCRIBE",method)==0) {
 				/*either a refresh or an unsubscribe*/
 				if (expires && belle_sip_header_expires_get_expires(expires)>0) {

@@ -6319,9 +6319,10 @@ void ui_config_uninit(LinphoneCore* lc)
 {
 	ms_message("Destroying friends.");
 	if (lc->friends){
-		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_unref);
-		ms_list_free(lc->friends);
-		lc->friends=NULL;
+		lc->friends = ms_list_free_with_data(lc->friends, (void (*)(void *))linphone_friend_unref);
+	}
+	if (lc->subscribers){
+		lc->subscribers = ms_list_free_with_data(lc->subscribers, (void (*)(void *))linphone_friend_unref);
 	}
 	if (lc->presence_model) {
 		linphone_presence_model_unref(lc->presence_model);

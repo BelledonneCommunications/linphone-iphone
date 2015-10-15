@@ -346,6 +346,38 @@ static void presence_information(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+
+static void subscribe_presence_forked(){
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneFriend *lf;
+	MSList *lcs = NULL;
+	
+	lcs = ms_list_append(lcs, marie->lc);
+	lcs = ms_list_append(lcs, pauline1->lc);
+	lcs = ms_list_append(lcs, pauline2->lc);
+	
+	lf = linphone_core_create_friend(marie->lc);
+	linphone_friend_set_address(lf, pauline1->identity);
+	linphone_friend_enable_subscribes(lf, TRUE);
+	
+	linphone_core_add_friend(marie->lc, lf);
+	linphone_friend_unref(lf);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_NewSubscriptionRequest,1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline2->stat.number_of_NewSubscriptionRequest,1, 2000));
+	/*we should get two notifies*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,2, 10000));
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline1);
+	linphone_core_manager_destroy(pauline2);
+	
+	ms_list_free(lcs);
+}
+
 #define USE_PRESENCE_SERVER 0
 
 #if USE_PRESENCE_SERVER
@@ -476,6 +508,7 @@ test_t presence_tests[] = {
 	{ "Unsubscribe while subscribing", unsubscribe_while_subscribing },
 	{ "Presence information", presence_information },
 	{ "App managed presence failure", subscribe_failure_handle_by_app },
+	{ "Presence SUBSCRIBE forked", subscribe_presence_forked },
 #if USE_PRESENCE_SERVER
 	{ "Subscribe with late publish", test_subscribe_notify_publish },
 	{ "Forked subscribe with late publish", test_forked_subscribe_notify_publish },

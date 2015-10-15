@@ -129,8 +129,7 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 	if (!op->dialog) {
 		if (strcmp(method,"SUBSCRIBE")==0){
 			op->dialog=belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
-			belle_sip_dialog_set_application_data(op->dialog,op);
-			sal_op_ref(op);
+			belle_sip_dialog_set_application_data(op->dialog, sal_op_ref(op));
 			ms_message("new incoming subscription from [%s] to [%s]",sal_op_get_from(op),sal_op_get_to(op));
 		}else{ /*this is a NOTIFY*/
 			handle_notify(op,req,eventname,&body);
@@ -227,6 +226,10 @@ int sal_unsubscribe(SalOp *op){
 		belle_sip_request_t *last_req=belle_sip_transaction_get_request(tr);
 		sal_op_add_body(op,(belle_sip_message_t*)last_req,NULL);
 		belle_sip_refresher_refresh(op->refresher,0);
+		if (op->dialog){
+			belle_sip_dialog_set_application_data(op->dialog, NULL);
+			sal_op_unref(op);
+		}
 		return 0;
 	}
 	return -1;
