@@ -38,7 +38,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	_editButton.enabled = [self tableView:self.tableView numberOfRowsInSection:0] != 0;
+	_editButton.enabled = (([self numberOfSectionsInTableView:self.tableView] > 0) &&
+						   ([self tableView:self.tableView numberOfRowsInSection:0] != 0));
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

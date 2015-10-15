@@ -836,6 +836,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	target.frame = frame;
 	frame.origin.y = original_y;
 	target.hidden = NO;
+
 	[UIView animateWithDuration:0.5
 		delay:0.0
 		options:UIViewAnimationOptionCurveEaseOut
@@ -843,6 +844,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		  target.frame = frame;
 		}
 		completion:^(BOOL finished) {
+		  target.frame = frame; // in case application did not finish
 		  completion(finished);
 		}];
 }
