@@ -50,7 +50,6 @@ class IOSTarget(prepare.Target):
         self.toolchain_file = 'toolchains/toolchain-ios-' + arch + '.cmake'
         self.output = 'liblinphone-sdk/' + arch + '-apple-darwin.ios'
         self.additional_args = [
-	    '-DLINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS=YES',
             '-DLINPHONE_BUILDER_EXTERNAL_SOURCE_PATH=' +
             current_path + '/submodules'
         ]
@@ -279,16 +278,56 @@ def generate_makefile(platforms, generator):
         arch_targets += """
 {arch}: {arch}-build
 
-{arch}-build:
-\t{generator} WORK/ios-{arch}/cmake
+{arch}-build: $(addprefix {arch}-build-, $(packages))
 \t@echo "Done"
 
-WORK/ios-{arch}/build.done:
-\t$(MAKE) {arch}-build && touch WORK/ios-{arch}/build.done
-
-{arch}-dev: WORK/ios-{arch}/build.done
-\t{generator} WORK/ios-{arch}/Build/linphone_builder
+{arch}-clean: $(addprefix {arch}-clean-, $(packages))
 \t@echo "Done"
+
+{arch}-veryclean: $(addprefix {arch}-veryclean-, $(packages))
+\t@echo "Done"
+
+{arch}-build-%: package-in-list-%
+\trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-update; \\
+\t{generator} WORK/ios-{arch}/cmake EP_$*
+
+{arch}-clean-%: package-in-list-%
+\t{generator} WORK/ios-{arch}/Build/$* clean; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-build; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-install;
+
+{arch}-veryclean-%: package-in-list-%
+\ttest -f WORK/ios-{arch}/Build/$*/install_manifest.txt && \\
+\tcat WORK/ios-{arch}/Build/$*/install_manifest.txt | xargs rm; \\
+\trm -rf WORK/ios-{arch}/Build/$*/*; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_$*/*; \\
+\techo "Run 'make {arch}-build-$*' to rebuild $* correctly.";
+
+{arch}-veryclean-ffmpeg:
+\t{generator} WORK/ios-{arch}/Build/ffmpeg uninstall; \\
+\trm -rf WORK/ios-{arch}/Build/ffmpeg/*; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_ffmpeg/*; \\
+\techo "Run 'make {arch}-build-ffmpeg' to rebuild ffmpeg correctly.";
+
+{arch}-clean-openh264:
+\tcd WORK/ios-{arch}/Build/openh264; \\
+\t$(MAKE) -f ../../../../submodules/externals/openh264/Makefile clean; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_openh264/EP_openh264-build; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_openh264/EP_openh264-install;
+
+{arch}-veryclean-openh264:
+\trm -rf liblinphone-sdk/{arch}-apple-darwin.ios/include/wels; \\
+\trm -f liblinphone-sdk/{arch}-apple-darwin.ios/lib/libopenh264.*; \\
+\trm -rf WORK/ios-{arch}/Build/openh264/*; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_openh264/*; \\
+\techo "Run 'make {arch}-build-openh264' to rebuild openh264 correctly.";
+
+{arch}-veryclean-vpx:
+\trm -rf liblinphone-sdk/{arch}-apple-darwin.ios/include/vpx; \\
+\trm -f liblinphone-sdk/{arch}-apple-darwin.ios/lib/libvpx.*; \\
+\trm -rf WORK/ios-{arch}/Build/vpx/*; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_vpx/*; \\
+\techo "Run 'make {arch}-build-vpx' to rebuild vpx correctly.";
 """.format(arch=arch, generator=generator)
     multiarch = ""
     for arch in platforms[1:]:
@@ -302,14 +341,33 @@ WORK/ios-{arch}/build.done:
 """.format(first_arch=platforms[0], arch=arch)
     makefile = """
 archs={archs}
+packages={packages}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
 .SILENT: sdk
+#turn off parallelism because it is not yet handled properly
+.NOTPARALLEL:
 all: build
 
-dev: $(addsuffix -dev, $(archs))
-\t$(MAKE) sdk
+package-in-list-%:
+\tif ! grep -q " $* " <<< " $(packages) "; then \\
+\t\techo "$* not in list of available packages: $(packages)"; \\
+\t\texit 3; \\
+\tfi
+
+build-%: package-in-list-% $(addsuffix -build-%, $(archs))
+\t@echo "Build of $* terminated"
+
+clean-%: package-in-list-% $(addsuffix -clean, $(archs))
+\t@echo "Clean of $* terminated"
+
+veryclean-%: package-in-list-% $(addsuffix -veryclean, $(archs))
+\t@echo "Veryclean of $* terminated"
+
+clean: $(addprefix clean-,$(packages))
+
+veryclean: $(addprefix veryclean-,$(packages))
 
 sdk:
 \tfor arch in $(archs); do {generator} WORK/ios-$$arch/cmake EP_dummy_libraries; done && \\
@@ -362,30 +420,35 @@ zipres:
 
 help-prepare-options:
 \t@echo "prepare.py was previously executed with the following options:"
-\t@echo "\t{options}"
+\t@echo "   {options}"
 
 help: help-prepare-options
 \t@echo ""
 \t@echo "(please read the README.md file first)"
 \t@echo ""
 \t@echo "Available architectures: {archs}"
+\t@echo "Available packages: {packages}"
 \t@echo ""
-\t@echo "=== Available targets ==="
+\t@echo "Available targets:"
 \t@echo ""
-\t@echo "   * all or build (default): builds all architectures and creates the liblinphone SDK."
-\t@echo "   * dev: rebuilds liblinphone for all architectures. You must invoke 'sdk' target after this."
-\t@echo "   * sdk: creates the liblinphone SDK. Use this only after a full build."
+\t@echo "   * all or build: builds all architectures and creates the liblinphone SDK"
+\t@echo "   * sdk: creates the liblinphone SDK. Use this only after a full build"
 \t@echo "   * zipsdk: generates a ZIP archive of liblinphone-sdk/apple-darwin containing the SDK. Use this only after SDK is built."
-\t@echo "   * zipres: creates a tar.gz file with all the resources (images)."
+\t@echo "   * zipres: creates a tar.gz file with all the resources (images)"
 \t@echo ""
 \t@echo "=== Advanced usage ==="
 \t@echo ""
-\t@echo "   * [{arch_opts}]-build: rebuilds everything for a single architecture. You must invoke 'sdk' target after this."
-\t@echo "   * [{arch_opts}]-dev: rebuilds liblinphone for a single architecture. You must invoke 'sdk' target after this."
+\t@echo "   * build-[package]: builds the package for all architectures"
+\t@echo "   * clean-[package]: cleans package compilation for all architectures"
+\t@echo "   * veryclean-[package]: cleans the package for all architectures"
+\t@echo ""
+\t@echo "   * [{arch_opts}]-build-[package]: builds a package for the selected architecture"
+\t@echo "   * [{arch_opts}]-clean-[package]: cleans package compilation for the selected architecture"
+\t@echo "   * [{arch_opts}]-veryclean-[package]: cleans the package for the selected architecture"
 \t@echo ""
 """.format(archs=' '.join(platforms), arch_opts='|'.join(platforms),
            first_arch=platforms[0], options=' '.join(sys.argv),
-           arch_targets=arch_targets,
+           arch_targets=arch_targets, packages=' '.join(packages),
            multiarch=multiarch, generator=generator)
     f = open('Makefile', 'w')
     f.write(makefile)
