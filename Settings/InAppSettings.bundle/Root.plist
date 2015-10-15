@@ -194,7 +194,7 @@
 			<key>Title</key>
 			<string>Auto answer call immediately</string>
 			<key>Key</key>
-			<string>enable_auto_answer</string>
+			<string>enable_auto_answer_preference</string>
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
