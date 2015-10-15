@@ -1371,15 +1371,28 @@ end:
 	ms_list_free(lcs);
 }
 
+static void call_paused_resumed_with_video_base_call_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
+	if (cstate == LinphoneCallUpdatedByRemote) {
+		LinphoneCallParams *params = linphone_core_create_default_call_parameters(lc);
+		linphone_call_params_enable_video(params, TRUE);
+		ms_message (" New state LinphoneCallUpdatedByRemote on call [%p], accepting with video on",call);
+		BC_ASSERT_NOT_EQUAL(linphone_core_accept_call_update(lc, call, params), 0, int, "%i");
+		linphone_call_params_destroy(params);
+	}
+}
 /*this test makes sure that pause/resume will not bring up video by accident*/
-static void call_paused_resumed_with_video_base(bool_t sdp_200_ack,bool_t use_video_policy_for_re_invite_sdp_200,bool_t resume_in_audio_send_only_video_inactive_first){
+static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
+												,bool_t use_video_policy_for_re_invite_sdp_200
+												,bool_t resume_in_audio_send_only_video_inactive_first
+												,bool_t with_call_accept){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_pauline, *call_marie;
 	MSList *lcs = NULL;
 	LinphoneVideoPolicy vpol;
 	bool_t call_ok;
-
+	LinphoneCoreVTable *vtable = linphone_core_v_table_new();
+	vtable->call_state_changed = call_paused_resumed_with_video_base_call_cb;
 	lcs = ms_list_append(lcs, pauline->lc);
 	lcs = ms_list_append(lcs, marie->lc);
 
@@ -1433,9 +1446,12 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack,bool_t use_vi
 		linphone_core_update_call(pauline->lc,call_pauline,params);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,2));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallUpdating,1));
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallResuming,2));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionSendRecv);
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendRecv);
+		if (with_call_accept) {
+			linphone_core_add_listener(marie->lc, vtable);
+		}
 		linphone_core_update_call(pauline->lc,call_pauline,params);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,3));
 		linphone_call_params_destroy(params);
@@ -1462,19 +1478,21 @@ end:
 	ms_list_free(lcs);
 }
 static void call_paused_resumed_with_video(void){
-	call_paused_resumed_with_video_base(FALSE, FALSE,FALSE);
+	call_paused_resumed_with_video_base(FALSE, FALSE,FALSE,FALSE);
 }
 
 static void call_paused_resumed_with_no_sdp_ack(void){
-	call_paused_resumed_with_video_base(TRUE, FALSE,FALSE);
+	call_paused_resumed_with_video_base(TRUE, FALSE,FALSE,FALSE);
 }
 static void call_paused_resumed_with_no_sdp_ack_using_video_policy(void){
-	call_paused_resumed_with_video_base(TRUE, TRUE,FALSE);
+	call_paused_resumed_with_video_base(TRUE, TRUE,FALSE,FALSE);
 }
 static void call_paused_updated_resumed_with_no_sdp_ack_using_video_policy(void){
-	call_paused_resumed_with_video_base(TRUE, TRUE,TRUE);
+	call_paused_resumed_with_video_base(TRUE, TRUE,TRUE,FALSE);
 }
-
+static void call_paused_updated_resumed_with_no_sdp_ack_using_video_policy_and_accept_call_update(void){
+	call_paused_resumed_with_video_base(TRUE, TRUE,TRUE,TRUE);
+}
 
 #define CHECK_CURRENT_LOSS_RATE() \
 	rtcp_count_current = pauline->stat.number_of_rtcp_sent; \
@@ -5369,6 +5387,7 @@ test_t call_tests[] = {
 	{ "Call paused resumed with video no sdp ack", call_paused_resumed_with_no_sdp_ack},
 	{ "Call paused resumed with video no sdk ack using video policy for resume offers",call_paused_resumed_with_no_sdp_ack_using_video_policy},
 	{ "Call paused, updated & resumed with video no sdk ack using video policy for resume offers", call_paused_updated_resumed_with_no_sdp_ack_using_video_policy},
+	{ "Call paused, updated & resumed with video no sdk ack using video policy for resume offers with accept call update", call_paused_updated_resumed_with_no_sdp_ack_using_video_policy_and_accept_call_update},
 	{ "Call paused by both parties", call_paused_by_both },
 	{ "Call paused resumed with loss", call_paused_resumed_with_loss },
 	{ "Call paused resumed from callee", call_paused_resumed_from_callee },
