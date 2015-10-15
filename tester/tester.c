@@ -283,6 +283,8 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 #if TARGET_OS_IPHONE
 	linphone_core_set_ringer_device( mgr->lc, "AQ: Audio Queue Device");
 	linphone_core_set_ringback(mgr->lc, NULL);
+#elif __QNX__
+	linphone_core_set_playback_device(mgr->lc, "QSA: voice");
 #endif
 
 #ifdef VIDEO_ENABLED
