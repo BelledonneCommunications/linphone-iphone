@@ -3561,9 +3561,13 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
  * @return 0 if successful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
-	if (call->state!=LinphoneCallUpdatedByRemote){
+	if (call->state != LinphoneCallUpdatedByRemote){
 		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
 				 linphone_call_state_to_string(call->state));
+		return -1;
+	}
+	if (call->expect_media_in_ack){
+		ms_error("linphone_core_accept_call_update() is not possible during a late offer incoming reINVITE (INVITE without SDP)");
 		return -1;
 	}
 	return _linphone_core_accept_call_update(lc, call, params, call->prevstate, linphone_call_state_to_string(call->prevstate));
