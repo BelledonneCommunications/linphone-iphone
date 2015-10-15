@@ -1009,6 +1009,7 @@ static void test_list_subscribe (void) {
 	
 	linphone_event_add_custom_header(lev,"Supported","eventlist");
 	linphone_event_add_custom_header(lev,"Accept","application/pidf+xml, application/rlmi+xml");
+	linphone_event_add_custom_header(lev,"Content-Disposition", "recipient-list");
 	
 	linphone_event_send_subscribe(lev,content);
 	
