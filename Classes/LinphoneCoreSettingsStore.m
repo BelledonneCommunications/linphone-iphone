@@ -116,9 +116,73 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	}
 }
 
+- (void)transformAccountToKeys:(NSString *)username {
+	LinphoneCore *lc = [LinphoneManager getLc];
+	const MSList *proxies = linphone_core_get_proxy_config_list(lc);
+	while (proxies &&
+		   strcmp(username.UTF8String,
+				  linphone_address_get_username(linphone_proxy_config_get_identity_address(proxies->data))) != 0) {
+		proxies = proxies->next;
+	}
+	if (!proxies) {
+		// we must always find associated proxy config.
+		LOGF(@"Proxy not found for account with username %@. Please fix application.", username);
+	}
+	LinphoneProxyConfig *proxy = proxies->data;
+
+	[self setInteger:ms_list_index(linphone_core_get_proxy_config_list(lc), proxy)
+			  forKey:@"current_proxy_config_preference"];
+
+	const LinphoneAddress *identity_addr = linphone_proxy_config_get_identity_address(proxy);
+	if (identity_addr) {
+		const char *server_addr = linphone_proxy_config_get_server_addr(proxy);
+		LinphoneAddress *proxy_addr = linphone_address_new(server_addr);
+		int port = linphone_address_get_port(proxy_addr);
+
+		[self setCString:linphone_address_get_username(identity_addr) forKey:@"username_preference"];
+		[self setCString:linphone_address_get_domain(identity_addr) forKey:@"domain_preference"];
+		if (strcmp(linphone_address_get_domain(identity_addr), linphone_address_get_domain(proxy_addr)) != 0 ||
+			port > 0) {
+			char tmp[256] = {0};
+			if (port > 0) {
+				snprintf(tmp, sizeof(tmp) - 1, "%s:%i", linphone_address_get_domain(proxy_addr), port);
+			} else
+				snprintf(tmp, sizeof(tmp) - 1, "%s", linphone_address_get_domain(proxy_addr));
+			[self setCString:tmp forKey:@"proxy_preference"];
+		}
+		const char *tname = "udp";
+		switch (linphone_address_get_transport(proxy_addr)) {
+			case LinphoneTransportTcp:
+				tname = "tcp";
+				break;
+			case LinphoneTransportTls:
+				tname = "tls";
+				break;
+			default:
+				break;
+		}
+		linphone_address_destroy(proxy_addr);
+
+		[self setCString:tname forKey:@"transport_preference"];
+		[self setBool:(linphone_proxy_config_get_route(proxy) != NULL) forKey:@"outbound_proxy_preference"];
+		[self setBool:linphone_proxy_config_avpf_enabled(proxy) forKey:@"avpf_preference"];
+
+		const LinphoneAuthInfo *ai =
+			linphone_core_find_auth_info(lc, NULL, [self stringForKey:@"username_preference"].UTF8String,
+										 [self stringForKey:@"domain_preference"].UTF8String);
+		if (ai) {
+			[self setCString:linphone_auth_info_get_userid(ai) forKey:@"userid_preference"];
+			[self setCString:linphone_auth_info_get_passwd(ai) forKey:@"password_preference"];
+			// hidden but useful if provisioned
+			[self setCString:linphone_auth_info_get_ha1(ai) forKey:@"ha1_preference"];
+		}
+	}
+}
+
 - (void)transformLinphoneCoreToKeys {
 	LinphoneManager *lm = [LinphoneManager instance];
 	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneProxyConfig *default_proxy = linphone_core_get_default_proxy_config(lc);
 
 	// root section
 	{
@@ -134,80 +198,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setBool:linphone_core_video_enabled(lc) forKey:@"enable_video_preference"];
 		[self setBool:[LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]
 			   forKey:@"enable_auto_answer_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"advanced_account_preference"] forKey:@"advanced_account_preference"];
 	}
 	// account section
 	{
-		// todo
-		/*
-		LinphoneProxyConfig *cfg = NULL;
-		linphone_core_get_default_proxy(lc, &cfg);
-		if (cfg) {
-			const char *identity = linphone_proxy_config_get_identity(cfg);
-			LinphoneAddress *addr = linphone_address_new(identity);
-			if (addr) {
-				const char *proxy = linphone_proxy_config_get_addr(cfg);
-				LinphoneAddress *proxy_addr = linphone_address_new(proxy);
-				int port = linphone_address_get_port(proxy_addr);
-
-				[self setCString:linphone_address_get_username(addr) forKey:@"username_preference"];
-				[self setCString:linphone_address_get_domain(addr) forKey:@"domain_preference"];
-				if (strcmp(linphone_address_get_domain(addr), linphone_address_get_domain(proxy_addr)) != 0 ||
-					port > 0) {
-					char tmp[256] = {0};
-					if (port > 0) {
-						snprintf(tmp, sizeof(tmp) - 1, "%s:%i", linphone_address_get_domain(proxy_addr), port);
-					} else
-						snprintf(tmp, sizeof(tmp) - 1, "%s", linphone_address_get_domain(proxy_addr));
-					[self setCString:tmp forKey:@"proxy_preference"];
-				}
-				const char *tname = "udp";
-				switch (linphone_address_get_transport(proxy_addr)) {
-				case LinphoneTransportTcp:
-					tname = "tcp";
-					break;
-				case LinphoneTransportTls:
-					tname = "tls";
-					break;
-				default:
-					break;
-				}
-				linphone_address_destroy(addr);
-				linphone_address_destroy(proxy_addr);
-
-				[self setCString:tname forKey:@"transport_preference"];
-				[self setBool:(linphone_proxy_config_get_route(cfg) != NULL)forKey:@"outbound_proxy_preference"];
-				[self setBool:linphone_proxy_config_avpf_enabled(cfg) forKey:@"avpf_preference"];
-
-				// actually in Advanced section but proxy config dependent
-				[self setInteger:linphone_proxy_config_get_expires(cfg) forKey:@"expire_preference"];
-				// actually in Call section but proxy config dependent
-				[self setCString:linphone_proxy_config_get_dial_prefix(cfg) forKey:@"prefix_preference"];
-				// actually in Call section but proxy config dependent
-				[self setBool:linphone_proxy_config_get_dial_escape_plus(cfg) forKey:@"substitute_+_by_00_preference"];
-			}
-		} else {
-			[self setObject:@"" forKey:@"username_preference"];
-			[self setObject:@"" forKey:@"password_preference"];
-			[self setObject:@"" forKey:@"domain_preference"];
-			[self setObject:@"" forKey:@"proxy_preference"];
-			[self setCString:"udp" forKey:@"transport_preference"];
-			[self setBool:FALSE forKey:@"outbound_proxy_preference"];
-			[self setBool:FALSE forKey:@"avpf_preference"];
-			// actually in Advanced section but proxy config dependent
-			[self setInteger:[lm lpConfigIntForKey:@"reg_expires" forSection:@"default_values" withDefault:600]
-					  forKey:@"expire_preference"];
-		}
-
-		LinphoneAuthInfo *ai;
-		const MSList *elem = linphone_core_get_auth_info_list(lc);
-		if (elem && (ai = (LinphoneAuthInfo *)elem->data)) {
-			[self setCString:linphone_auth_info_get_userid(ai) forKey:@"userid_preference"];
-			[self setCString:linphone_auth_info_get_passwd(ai) forKey:@"password_preference"];
-			// hidden but useful if provisioned
-			[self setCString:linphone_auth_info_get_ha1(ai) forKey:@"ha1_preference"];
-		}
-		[self setBool:[lm lpConfigBoolForKey:@"advanced_account_preference"] forKey:@"advanced_account_preference"];
-		 */
+		// this is filled by [self transformAccountToKeys] automatically
 	}
 
 	// audio section
@@ -261,6 +256,13 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		[self setBool:[lm lpConfigBoolForKey:@"repeat_call_notification"]
 			   forKey:@"repeat_call_notification_preference"];
+
+		// actually in Call section but proxy config dependent
+		const char *dial_prefix = default_proxy ? linphone_proxy_config_get_dial_prefix(default_proxy) : NULL;
+		[self setCString:dial_prefix forKey:@"prefix_preference"];
+		// actually in Call section but proxy config dependent
+		BOOL dial_escape_plus = default_proxy ? linphone_proxy_config_get_dial_escape_plus(default_proxy) : NO;
+		[self setBool:dial_escape_plus forKey:@"substitute_+_by_00_preference"];
 	}
 
 	// network section
@@ -350,6 +352,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 		linphone_address_destroy(parsed);
 		[self setCString:linphone_core_get_file_transfer_server(lc) forKey:@"file_transfer_server_url_preference"];
+
+		// actually in Advanced section but proxy config dependent
+		int expires = default_proxy ? linphone_proxy_config_get_expires(default_proxy) : -1;
+		[self setInteger:expires forKey:@"expire_preference"];
 	}
 
 	changedDict = [[NSMutableDictionary alloc] init];
@@ -368,7 +374,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	[alertview show];
 }
 
-- (void)synchronizeAccount {
+- (void)synchronizeAccounts {
+	LOGI(@"Account changed, synchronizing.");
 	LinphoneManager *lm = [LinphoneManager instance];
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneProxyConfig *proxyCfg = NULL;
@@ -590,7 +597,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[self valueChangedForKey:@"substitute_+_by_00_preference"] || [self valueChangedForKey:@"use_ipv6"] ||
 			[self valueChangedForKey:@"avpf_preference"] || [self valueChangedForKey:@"pushnotification_preference"];
 		if (account_changed)
-			[self synchronizeAccount];
+			[self synchronizeAccounts];
 
 		bool enableVideo = [self boolForKey:@"enable_video_preference"];
 		linphone_core_enable_video(lc, enableVideo, enableVideo);
@@ -823,4 +830,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	return YES;
 }
 
+- (void)removeAccount {
+	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneProxyConfig *config = ms_list_nth_data(linphone_core_get_proxy_config_list(lc),
+												   [self integerForKey:@"current_proxy_config_preference"]);
+	linphone_core_remove_proxy_config(lc, config);
+	linphone_core_clear_all_auth_info(lc); // TODO: only remove the right one
+	[self transformLinphoneCoreToKeys];
+}
 @end

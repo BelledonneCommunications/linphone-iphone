@@ -337,6 +337,7 @@
 	labelTitleView.text = viewController.title;
 	[labelTitleView sizeToFit];
 	viewController.navigationItem.titleView = labelTitleView;
+
 	[super pushViewController:viewController animated:animated];
 }
 
@@ -357,9 +358,6 @@
 @end
 
 @implementation SettingsView
-
-@synthesize settingsController;
-@synthesize navigationController;
 
 #pragma mark - UICompositeViewDelegate Functions
 
@@ -388,21 +386,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	settingsStore = [[LinphoneCoreSettingsStore alloc] init];
 
-	settingsController.showDoneButton = FALSE;
-	settingsController.delegate = self;
-	settingsController.showCreditsFooter = FALSE;
-	settingsController.settingsStore = settingsStore;
+	_settingsController.showDoneButton = FALSE;
+	_settingsController.delegate = self;
+	_settingsController.showCreditsFooter = FALSE;
+	_settingsController.settingsStore = settingsStore;
 
-	[navigationController.view setBackgroundColor:[UIColor clearColor]];
+	[_navigationController.view setBackgroundColor:[UIColor clearColor]];
 
-	navigationController.view.frame = self.view.frame;
-	[navigationController pushViewController:settingsController animated:FALSE];
-	[self.view addSubview:navigationController.view];
+	_navigationController.view.frame = self.view.frame;
+	[_navigationController pushViewController:_settingsController animated:FALSE];
+	[self.view addSubview:_navigationController.view];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[settingsController dismiss:self];
+	[_settingsController dismiss:self];
 	// Set observer
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kIASKAppSettingChanged object:nil];
 }
@@ -412,8 +410,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Sync settings with linphone core settings
 	[settingsStore transformLinphoneCoreToKeys];
-	settingsController.hiddenKeys = [self findHiddenKeys];
-	[settingsController.tableView reloadData];
+	_settingsController.hiddenKeys = [self findHiddenKeys];
+	[_settingsController.tableView reloadData];
 
 	// Set observer
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -425,7 +423,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Event Functions
 
 - (void)appSettingChanged:(NSNotification *)notif {
-	NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[settingsController hiddenKeys]];
+	NSMutableSet *hiddenKeys = [NSMutableSet setWithSet:[_settingsController hiddenKeys]];
 	NSMutableArray *keys = [NSMutableArray array];
 	BOOL removeFromHiddenKeys = TRUE;
 
@@ -468,7 +466,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[hiddenKeys addObject:key];
 	}
 
-	[settingsController setHiddenKeys:hiddenKeys animated:TRUE];
+	[_settingsController setHiddenKeys:hiddenKeys animated:TRUE];
 }
 
 #pragma mark -
@@ -658,10 +656,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
 }
 
+- (void)settingsViewControllerDidAppear:(IASKAppSettingsViewController *)sender {
+	// going to account: fill info
+	if ([sender.file isEqualToString:@"Account"]) {
+		LOGI(@"Going editting account %@", sender.title);
+		[settingsStore transformAccountToKeys:sender.title];
+		// coming back to default: if we were in account, we must synchronize account now
+	} else if ([sender.file isEqualToString:@"Root"]) {
+		[settingsStore synchronize];
+		// it's a bit violent... but IASK is not designed to dynamically change subviews' name
+		[_settingsController.settingsReader indexPathForKey:@"account_1_menu"]; // force refresh username'
+		[_settingsController.settingsReader indexPathForKey:@"account_2_menu"]; // force refresh username'
+		[_settingsController.settingsReader indexPathForKey:@"account_3_menu"]; // force refresh username'
+		[_settingsController.settingsReader indexPathForKey:@"account_4_menu"]; // force refresh username'
+		[_settingsController.settingsReader indexPathForKey:@"account_5_menu"]; // force refresh username'
+		[[_settingsController tableView] reloadData];
+	}
+}
+
 - (void)settingsViewController:(IASKAppSettingsViewController *)sender
 	  buttonTappedForSpecifier:(IASKSpecifier *)specifier {
 	NSString *key = [specifier.specifierDict objectForKey:kIASKKey];
-	LinphoneCore *lc = [LinphoneManager getLc];
 #ifdef DEBUG
 	if ([key isEqual:@"release_button"]) {
 		[UIApplication sharedApplication].keyWindow.rootViewController = nil;
@@ -682,10 +697,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
 		return;
 	} else if ([key isEqual:@"remove_proxy_button"]) {
-		if (linphone_core_get_default_proxy_config(lc) == NULL) {
-			return;
-		}
-
 		DTAlertView *alert = [[DTAlertView alloc]
 			initWithTitle:NSLocalizedString(@"Warning", nil)
 				  message:NSLocalizedString(@"Are you sure to want to remove your proxy setup?", nil)];
@@ -693,13 +704,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
 		[alert addButtonWithTitle:NSLocalizedString(@"Yes", nil)
 							block:^{
-							  linphone_core_clear_proxy_config(lc);
-							  linphone_core_clear_all_auth_info(lc);
-							  [settingsStore transformLinphoneCoreToKeys];
-							  [settingsController.tableView reloadData];
+							  [settingsStore removeAccount];
+							  _settingsController.hiddenKeys = [self findHiddenKeys];
+							  [_settingsController.settingsReader
+								  indexPathForKey:@"account_1_menu"]; // force refresh username'
+							  [_settingsController.settingsReader
+								  indexPathForKey:@"account_2_menu"]; // force refresh username'
+							  [_settingsController.settingsReader
+								  indexPathForKey:@"account_3_menu"]; // force refresh username'
+							  [_settingsController.settingsReader
+								  indexPathForKey:@"account_4_menu"]; // force refresh username'
+							  [_settingsController.settingsReader
+								  indexPathForKey:@"account_5_menu"]; // force refresh username'
+							  [_settingsController.navigationController popViewControllerAnimated:NO];
 							}];
 		[alert show];
-
 	} else if ([key isEqual:@"about_button"]) {
 		[PhoneMainView.instance changeCurrentView:AboutView.compositeViewDescription push:TRUE];
 	} else if ([key isEqualToString:@"reset_logs_button"]) {

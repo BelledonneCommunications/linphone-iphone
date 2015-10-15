@@ -36,7 +36,7 @@ This SDK can be generated in 2 flavors:
 * NO GPL third parties means that Linphone will only use non GPL code except for `liblinphone`, `mediastreamer2`, `oRTP` and `belle-sip`. If you choose this flavor, your final application is **still subject to GPL except if you have a [commercial license for the mentioned libraries](http://www.belledonne-communications.com/products.html)**.
  To generate the liblinphone multi arch SDK without GPL third parties, invoke:
 
-        ./prepare.py --disable-gpl-third-parties=no [other options] && make
+        ./prepare.py --disable-gpl-third-parties [other options] && make
 
 ## Customizing features
 

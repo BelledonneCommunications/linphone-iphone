@@ -29,5 +29,7 @@
 }
 
 - (void)transformLinphoneCoreToKeys;
+- (void)transformAccountToKeys:(NSString *)username;
+- (void)removeAccount;
 
 @end

@@ -2,7 +2,6 @@
 <config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
 
 	<section name="proxy_default_values">
-		<entry name="reg_proxy" overwrite="true">&lt;sip:sip.linphone.org;transport=tls&gt;</entry>
 		<entry name="reg_identity" overwrite="true">sip:?@sip.linphone.org</entry>
 		<entry name="reg_expires" overwrite="true">1314000</entry>
 		<entry name="reg_sendregister" overwrite="true">1</entry>
@@ -12,11 +11,10 @@
 		<entry name="quality_reporting_collector" overwrite="true">sip:voip-metrics@sip.linphone.org;transport=tls</entry>
 		<entry name="quality_reporting_enabled" overwrite="true">1</entry>
 		<entry name="quality_reporting_interval" overwrite="true">180</entry>
-		<entry name="realm" overwrite="true">sip.linphone.org</entry>
 	</section>
 
 	<section name="assistant">
-		<entry name="username_regex" overwrite="true">^[a-z0-9-_\\.]*$</entry>
+		<entry name="username_regex" overwrite="true">^[a-z0-9_.\-]*$</entry>
 		<entry name="domain" overwrite="true">sip.linphone.org</entry>
 		<entry name="xmlrpc_url" overwrite="true">https://www.linphone.org/assistant.php</entry>
 		<entry name="sharing_server" overwrite="true">https://www.linphone.org:444/lft.php</entry>

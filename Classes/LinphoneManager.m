@@ -876,6 +876,8 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			[alertView dismissWithClickedButtonIndex:0 animated:NO];
 		}
 
+		__weak UITextField *passwordField = [alertView textFieldAtIndex:0];
+
 		alertView = [[DTAlertView alloc]
 			initWithTitle:NSLocalizedString(@"Authentication needed.", nil)
 				  message:[NSString stringWithFormat:NSLocalizedString(@"Registration failed because authentication is "
@@ -885,8 +887,11 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 																	   nil),
 													 username, realm]];
 		alertView.alertViewStyle = UIAlertViewStyleSecureTextInput;
-		[alertView addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-		__weak UITextField *passwordField = [alertView textFieldAtIndex:0];
+		[alertView addCancelButtonWithTitle:NSLocalizedString(@"Go to settings", nil)
+									  block:^{
+										SettingsView *view = VIEW(SettingsView);
+										[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+									  }];
 
 		[alertView addButtonWithTitle:NSLocalizedString(@"Continue", nil)
 								block:^{
