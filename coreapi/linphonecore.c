@@ -584,17 +584,18 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 static int compress_file(FILE *input_file, COMPRESS_FILE_PTR output_file) {
 	char buffer[131072]; /* 128kB */
 	size_t bytes;
+	size_t total_bytes = 0;
 
 	while ((bytes = fread(buffer, 1, sizeof(buffer), input_file)) > 0) {
 #ifdef HAVE_ZLIB
 		int res = gzwrite(output_file, buffer, (unsigned int)bytes);
 		if (res < 0) return 0;
+		total_bytes += (size_t)res;
 #else
-		bytes = fwrite(buffer, 1, bytes, output_file);
-		if (bytes < 0) return (int)bytes;
+		total_bytes += fwrite(buffer, 1, bytes, output_file);
 #endif
 	}
-	return 0;
+	return total_bytes;
 }
 
 static int prepare_log_collection_file_to_upload(const char *filename) {
@@ -615,7 +616,7 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	input_file = fopen(input_filename, "r");
 	if (input_file == NULL) goto error;
 	ret = compress_file(input_file, output_file);
-	if (ret == 0) goto error;
+	if (ret <= 0) goto error;
 	fclose(input_file);
 	ms_free(input_filename);
 	input_filename = ms_strdup_printf("%s/%s2.log",
@@ -624,7 +625,7 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	input_file = fopen(input_filename, "r");
 	if (input_file != NULL) {
 		ret = compress_file(input_file, output_file);
-		if (ret == 0) goto error;
+		if (ret <= 0) goto error;
 	}
 
 error:
@@ -669,7 +670,11 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 			liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
 			COMPRESSED_LOG_COLLECTION_EXTENSION);
 		linphone_content_set_name(core->log_collection_upload_information, name);
-		if (prepare_log_collection_file_to_upload(name) <= 0) return;
+		if (prepare_log_collection_file_to_upload(name) <= 0) {
+		    ms_free(core->log_collection_upload_information);
+			core->log_collection_upload_information = NULL;
+		    return;
+		}
 		linphone_content_set_size(core->log_collection_upload_information, get_size_of_file_to_upload(name));
 		uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
 		req = belle_http_request_create("POST", uri, NULL, NULL, NULL);
