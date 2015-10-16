@@ -498,13 +498,13 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	STR_REASSIGN(report->info.local_addr.group, ms_strdup_printf("%s-%s-%s"
 		, dialog_id
 		, "local"
-		, report->local_metrics.user_agent
+		, report->local_metrics.user_agent ? report->local_metrics.user_agent : ""
 		)
 	);
 	STR_REASSIGN(report->info.remote_addr.group, ms_strdup_printf("%s-%s-%s"
 		, dialog_id
 		, "remote"
-		, report->remote_metrics.user_agent
+		, report->remote_metrics.user_agent ? report->remote_metrics.user_agent : ""
 		)
 	);
 
