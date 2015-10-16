@@ -24,7 +24,7 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
 	if(DOXYGEN_DOT_FOUND)
-		set(top_srcdir ${CMAKE_SOURCE_DIR})
+		set(top_srcdir "${CMAKE_CURRENT_LIST_DIR}/../../")
 		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 		file(GLOB DOC_INPUT_FILES
 			[^.]*.c
