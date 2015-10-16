@@ -688,7 +688,7 @@ char * linphone_core_compress_log_collection() {
 	filename = ms_strdup_printf("%s_log.%s",
 		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
 		COMPRESSED_LOG_COLLECTION_EXTENSION);
-	if (prepare_log_collection_file_to_upload(filename) < 0) {
+	if (prepare_log_collection_file_to_upload(filename) <= 0) {
 		ms_free(filename);
 		return NULL;
 	}
