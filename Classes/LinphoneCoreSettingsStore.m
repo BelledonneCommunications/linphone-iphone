@@ -418,7 +418,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			proxyAddress = [NSString stringWithFormat:@"sip:%@", proxyAddress];
 		}
 
-		char *proxy = ms_strdup([proxyAddress cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		char *proxy = ms_strdup(proxyAddress.UTF8String);
 		LinphoneAddress *proxy_addr = linphone_address_new(proxy);
 
 		if (proxy_addr) {
@@ -444,15 +444,14 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		char normalizedUserName[256];
 		LinphoneAddress *linphoneAddress = linphone_address_new("sip:user@domain.com");
-		linphone_proxy_config_normalize_number(proxyCfg,
-											   [username cStringUsingEncoding:[NSString defaultCStringEncoding]],
-											   normalizedUserName, sizeof(normalizedUserName));
+		linphone_proxy_config_normalize_number(proxyCfg, username.UTF8String, normalizedUserName,
+											   sizeof(normalizedUserName));
 		linphone_address_set_username(linphoneAddress, normalizedUserName);
-		linphone_address_set_domain(linphoneAddress, [domain cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
 
 		const char *identity = linphone_address_as_string_uri_only(linphoneAddress);
-		const char *password = [accountPassword cStringUsingEncoding:[NSString defaultCStringEncoding]];
-		const char *ha1 = [accountHa1 cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		const char *password = [accountPassword UTF8String];
+		const char *ha1 = [accountHa1 UTF8String];
 
 		if (linphone_proxy_config_set_identity(proxyCfg, identity) == -1) {
 			error = NSLocalizedString(@"Invalid username or domain", nil);
@@ -470,8 +469,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 
 		if ([prefix length] > 0) {
-			linphone_proxy_config_set_dial_prefix(proxyCfg,
-												  [prefix cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix UTF8String]);
 		}
 
 		if ([self objectForKey:@"substitute_+_by_00_preference"]) {
@@ -749,8 +747,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 				} else if ([lTunnelPrefMode isEqualToString:@"auto"]) {
 					mode = tunnel_auto;
 				} else {
-					LOGE(@"Unexpected tunnel mode [%s]",
-						 [lTunnelPrefMode cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+					LOGE(@"Unexpected tunnel mode [%s]", [lTunnelPrefMode UTF8String]);
 				}
 			}
 
@@ -784,9 +781,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		NSString *username = [self stringForKey:@"primary_username_preference"];
 		LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
 		if (parsed != NULL) {
-			linphone_address_set_display_name(parsed,
-											  [displayname cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-			linphone_address_set_username(parsed, [username cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			linphone_address_set_display_name(parsed, [displayname UTF8String]);
+			linphone_address_set_username(parsed, [username UTF8String]);
 			char *contact = linphone_address_as_string(parsed);
 			linphone_core_set_primary_contact(lc, contact);
 			ms_free(contact);

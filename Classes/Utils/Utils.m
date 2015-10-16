@@ -28,8 +28,7 @@
 	va_list args;
 	va_start(args, format);
 	NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
-	NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
-	const char *utf8str = [str cStringUsingEncoding:enc];
+	const char *utf8str = [str cStringUsingEncoding:NSString.defaultCStringEncoding];
 	int filesize = 20;
 	const char *filename = strchr(file, '/') ? strrchr(file, '/') + 1 : file;
 	if (severity <= ORTP_DEBUG) {

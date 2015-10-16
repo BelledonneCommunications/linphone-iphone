@@ -381,8 +381,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSString *server_address = domain;
 
 	char normalizedUserName[256];
-	linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]],
-										   normalizedUserName, sizeof(normalizedUserName));
+	linphone_proxy_config_normalize_number(proxyCfg, [username UTF8String], normalizedUserName,
+										   sizeof(normalizedUserName));
 
 	const char *identity = linphone_proxy_config_get_identity(proxyCfg);
 	if (!identity || !*identity)
@@ -450,8 +450,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	char normalizedUsername[256];
 	LinphoneAddress *linphoneAddress = linphone_address_new(addr);
 
-	linphone_proxy_config_normalize_number(proxyCfg, [username cStringUsingEncoding:[NSString defaultCStringEncoding]],
-										   normalizedUsername, sizeof(normalizedUsername));
+	linphone_proxy_config_normalize_number(proxyCfg, [username UTF8String], normalizedUsername,
+										   sizeof(normalizedUsername));
 
 	linphone_address_set_username(linphoneAddress, normalizedUsername);
 	linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
@@ -473,8 +473,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (NSString *)identityFromUsername:(NSString *)username {
 	char normalizedUserName[256];
 	LinphoneAddress *linphoneAddress = linphone_address_new("sip:user@domain.com");
-	linphone_proxy_config_normalize_number(NULL, [username cStringUsingEncoding:[NSString defaultCStringEncoding]],
-										   normalizedUserName, sizeof(normalizedUserName));
+	linphone_proxy_config_normalize_number(NULL, [username UTF8String], normalizedUserName, sizeof(normalizedUserName));
 	linphone_address_set_username(linphoneAddress, normalizedUserName);
 	linphone_address_set_domain(
 		linphoneAddress, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] UTF8String]);
@@ -567,8 +566,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)loadWizardConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
-	linphone_core_set_provisioning_uri([LinphoneManager getLc],
-									   [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	linphone_core_set_provisioning_uri([LinphoneManager getLc], [fullPath UTF8String]);
 	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
 	[[LinphoneManager instance] resetLinphoneCore];
 }

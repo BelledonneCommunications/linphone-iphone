@@ -495,8 +495,7 @@ exit_dbmigration:
 	NSString *chatDBFileName = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
 	if ([self migrateChatDBIfNeeded:theLinphoneCore]) {
 		// if a migration was performed, we should reinitialize the chat database
-		linphone_core_set_chat_database_path(theLinphoneCore,
-											 [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 	}
 
 	/* AVPF migration */
@@ -797,6 +796,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		@"state" : [NSNumber numberWithInt:state],
 		@"message" : [NSString stringWithUTF8String:message]
 	};
+	LOGI(@"Call %p changed to state %s: %s", call, linphone_call_state_to_string(state), message);
 	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallUpdate object:self userInfo:dict];
 }
 
@@ -960,8 +960,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			address = [FastAddressBook getContactDisplayName:contact];
 		} else {
 			if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
-				LinphoneAddress *linphoneAddress =
-					linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+				LinphoneAddress *linphoneAddress = linphone_address_new([address UTF8String]);
 				address = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
 				linphone_address_destroy(linphoneAddress);
 			}
@@ -1338,8 +1337,7 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 	// get default config from bundle
 	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
 	NSString *chatDBFileName = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
-	const char *lRootCa =
-		[[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char *lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] UTF8String];
 
 	NSString *device = [NSString
 		stringWithFormat:@"%@_%@_iOS%@", [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
@@ -1354,20 +1352,15 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 
 	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	// Set audio assets
-	const char *lRing =
-		[[LinphoneManager bundleFile:@"ring.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char *lRing = [[LinphoneManager bundleFile:@"ring.wav"] UTF8String];
 	linphone_core_set_ring(theLinphoneCore, lRing);
-	const char *lRingBack =
-		[[LinphoneManager bundleFile:@"ringback.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char *lRingBack = [[LinphoneManager bundleFile:@"ringback.wav"] UTF8String];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
-	const char *lPlay =
-		[[LinphoneManager bundleFile:@"hold.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char *lPlay = [[LinphoneManager bundleFile:@"hold.wav"] UTF8String];
 	linphone_core_set_play_file(theLinphoneCore, lPlay);
 
-	linphone_core_set_zrtp_secrets_file(theLinphoneCore,
-										[zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-	linphone_core_set_chat_database_path(theLinphoneCore,
-										 [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName UTF8String]);
+	linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 
 	[self migrationLinphoneSettings];
 
@@ -1375,7 +1368,7 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 
 	NSString *path = [LinphoneManager bundleFile:@"nowebcamCIF.jpg"];
 	if (path) {
-		const char *imagePath = [path cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		const char *imagePath = [path UTF8String];
 		LOGI(@"Using '%s' as source image for no webcam", imagePath);
 		linphone_core_set_static_picture(theLinphoneCore, imagePath);
 	}
@@ -1403,8 +1396,7 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
 	}
 
-	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(),
-		 [[UIDevice currentDevice].model cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
 
 	// Post event
 	NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];
@@ -1482,22 +1474,18 @@ static BOOL libStarted = FALSE;
 	libmswebrtc_init();
 
 	// Set audio assets
-	const char *lRing =
-		[[LinphoneManager bundleFile:@"ring.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char *lRing = [[LinphoneManager bundleFile:@"ring.wav"] UTF8String];
 	lp_config_set_string(configDb, "sound", "local_ring", lRing);
-	const char *lRingBack =
-		[[LinphoneManager bundleFile:@"ringback.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char *lRingBack = [[LinphoneManager bundleFile:@"ringback.wav"] UTF8String];
 	lp_config_set_string(configDb, "sound", "ringback_tone", lRingBack);
-	const char *lPlay =
-		[[LinphoneManager bundleFile:@"hold.wav"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char *lPlay = [[LinphoneManager bundleFile:@"hold.wav"] UTF8String];
 	lp_config_set_string(configDb, "sound", "hold_music", lPlay);
 
 	theLinphoneCore =
 		linphone_core_new_with_config(&linphonec_vtable, configDb, (__bridge void *)(self) /* user_data */);
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
-	const char *lRootCa =
-		[[LinphoneManager bundleFile:@"rootca.pem"] cStringUsingEncoding:[NSString defaultCStringEncoding]];
+	const char *lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] UTF8String];
 	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 	linphone_core_set_user_certificates_path(theLinphoneCore, [[LinphoneManager cacheDirectory] UTF8String]);
 
@@ -1810,8 +1798,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		factory = factoryIpad;
 	}
 	NSString *confiFileName = [LinphoneManager documentFile:@"linphonerc"];
-	configDb = lp_config_new_with_factory([confiFileName cStringUsingEncoding:[NSString defaultCStringEncoding]],
-										  [factory cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	configDb = lp_config_new_with_factory([confiFileName UTF8String], [factory UTF8String]);
 }
 #pragma mark - Audio route Functions
 
@@ -1845,7 +1832,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
 	if (!lStatus && lNewRouteSize > 0) {
 		NSString *route = (__bridge NSString *)lNewRoute;
-		LOGI(@"Current audio route is [%s]", [route cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+		LOGI(@"Current audio route is [%s]", [route UTF8String]);
 
 		speakerEnabled = [route isEqualToString:@"Speaker"] || [route isEqualToString:@"SpeakerAndMicrophone"];
 		if (![LinphoneManager runningOnIpad] && [route isEqualToString:@"HeadsetBT"] && !speakerEnabled) {
@@ -1949,18 +1936,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	// Continue by checking that the provided address is a valid SIP address, abort otherwise.
 	if ([address length] == 0) {
 		// no address provided... nothing to do
-	} else if (![address canBeConvertedToEncoding:[NSString defaultCStringEncoding]]) {
-		UIAlertView *error = [[UIAlertView alloc]
-				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
-					  message:NSLocalizedString(
-								  @"Some invalid characters where found in the given SIP address. Please correct it.",
-								  nil)
-					 delegate:nil
-			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-			otherButtonTitles:nil];
-		[error show];
-	} else if ((addr = linphone_core_interpret_url(
-					theLinphoneCore, [address cStringUsingEncoding:[NSString defaultCStringEncoding]])) == NULL) {
+	} else if ((addr = linphone_core_interpret_url(theLinphoneCore, address.UTF8String)) == NULL) {
 		UIAlertView *error = [[UIAlertView alloc]
 				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
 					  message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a "
@@ -1979,14 +1955,13 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 			LOGI(@"Enabling low bandwidth mode");
 			linphone_call_params_enable_low_bandwidth(lcallParams, YES);
 		}
+
 		if (displayName != nil) {
-			linphone_address_set_display_name(addr,
-											  [displayName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+			linphone_address_set_display_name(addr, displayName.UTF8String);
 		}
 		if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"]) {
 			linphone_address_set_domain(
-				addr, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"]
-						  cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+				addr, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"wizard"] UTF8String]);
 		}
 
 		if (transfer) {
