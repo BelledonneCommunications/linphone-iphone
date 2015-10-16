@@ -83,7 +83,6 @@
 @property(nonatomic, strong) IBOutlet UIDigitButton *starButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *zeroButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *sharpButton;
-@property(weak, nonatomic) IBOutlet UILabel *addressLabel;
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property(weak, nonatomic) IBOutlet UILabel *durationLabel;
@@ -91,7 +90,6 @@
 @property(weak, nonatomic) IBOutlet UIView *noActiveCallView;
 @property(weak, nonatomic) IBOutlet UIView *conferenceView;
 @property(strong, nonatomic) IBOutlet CallPausedTableView *conferenceCallsTable;
-@property(weak, nonatomic) IBOutlet UIPauseButton *conferencePauseButton;
 
 - (IBAction)onRoutesClick:(id)sender;
 - (IBAction)onRoutesBluetoothClick:(id)sender;

@@ -116,8 +116,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
-	linphone_core_set_provisioning_uri([LinphoneManager getLc],
-									   [fullPath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	linphone_core_set_provisioning_uri([LinphoneManager getLc], fullPath.UTF8String);
 	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
 
 	// For some reason, video preview hangs for 15seconds when resetting linphone core from here...

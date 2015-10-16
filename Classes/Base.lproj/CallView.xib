@@ -10,7 +10,6 @@
                 <outlet property="avatarImage" destination="fZy-K5-yQp" id="hOl-IQ-c9B"/>
                 <outlet property="callView" destination="9" id="TKY-dp-lKv"/>
                 <outlet property="conferenceCallsTable" destination="sif-q0-7oE" id="Fjr-dB-s4q"/>
-                <outlet property="conferencePauseButton" destination="sJD-Z5-eEX" id="iKj-A8-re0"/>
                 <outlet property="conferenceView" destination="0Ju-u5-N7A" id="H5K-Nv-IKI"/>
                 <outlet property="durationLabel" destination="Oy8-QO-Jwb" id="mUT-TX-gLp"/>
                 <outlet property="eightButton" destination="DRh-kc-UVM" id="BPp-sh-qBg"/>
@@ -88,17 +87,6 @@
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <button opaque="NO" tag="24" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="sJD-Z5-eEX" userLabel="pauseButton" customClass="UIPauseButton">
-                                    <rect key="frame" x="323" y="0.0" width="52" height="52"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Pause"/>
-                                    <state key="normal" image="pause_big_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="disabled" image="pause_big_disabled.png"/>
-                                    <state key="selected" image="pause_big_over_selected.png"/>
-                                    <state key="highlighted" image="pause_big_over_selected.png"/>
-                                </button>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" allowsSelection="NO" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" id="vgc-Mn-pga" userLabel="conferenceCallsTableView">
                                     <rect key="frame" x="0.0" y="52" width="375" height="451"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -156,7 +144,7 @@
                                             </accessibility>
                                         </view>
                                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254" y="354.99999934763446" width="113" height="140"/>
+                                            <rect key="frame" x="254.00000029960563" y="355" width="113" height="140"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>

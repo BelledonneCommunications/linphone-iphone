@@ -233,7 +233,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_speakerButton update];
 	[_microButton update];
 	[_pauseButton update];
-	[_conferencePauseButton update];
 	[_videoButton update];
 	[_hangupButton update];
 
@@ -464,7 +463,6 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 		char *uri = linphone_address_as_string_uri_only(addr);
-		_addressLabel.text = [NSString stringWithUTF8String:uri];
 		ms_free(uri);
 		_avatarImage.image =
 			[FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:NO];

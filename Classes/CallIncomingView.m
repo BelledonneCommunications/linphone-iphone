@@ -83,6 +83,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else if ([LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]) {
 		LinphoneCallState state = linphone_call_get_state(call);
 		if (state == LinphoneCallIncomingReceived) {
+			LOGI(@"Auto answering call");
 			[self onAcceptClick:nil];
 		}
 	}
