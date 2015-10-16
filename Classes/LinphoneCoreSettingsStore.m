@@ -508,13 +508,13 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
 		linphone_proxy_config_set_expires(proxyCfg, expire);
 
+		LinphoneAuthInfo *proxyAi = linphone_proxy_config_find_auth_info(proxyCfg);
 		// setup auth info
-		if (linphone_core_get_auth_info_list(lc)) {
-			info = linphone_auth_info_clone(linphone_core_get_auth_info_list(lc)->data);
-			linphone_auth_info_set_username(info, username.UTF8String);
+		if (proxyAi) {
+			linphone_auth_info_set_username(proxyAi, username.UTF8String);
 			if (password) {
-				linphone_auth_info_set_passwd(info, password);
-				linphone_auth_info_set_ha1(info, NULL);
+				linphone_auth_info_set_passwd(proxyAi, password);
+				linphone_auth_info_set_ha1(proxyAi, NULL);
 			}
 			linphone_auth_info_set_domain(info, linphone_proxy_config_get_domain(proxyCfg));
 		} else {
@@ -834,8 +834,12 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneProxyConfig *config = ms_list_nth_data(linphone_core_get_proxy_config_list(lc),
 												   [self integerForKey:@"current_proxy_config_preference"]);
+
+	const LinphoneAuthInfo *ai = linphone_proxy_config_find_auth_info(config);
+	if (ai) {
+		linphone_core_remove_auth_info(lc, ai);
+	}
 	linphone_core_remove_proxy_config(lc, config);
-	linphone_core_clear_all_auth_info(lc); // TODO: only remove the right one
 	[self transformLinphoneCoreToKeys];
 }
 @end
