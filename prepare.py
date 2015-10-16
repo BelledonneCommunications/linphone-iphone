@@ -50,7 +50,6 @@ class IOSTarget(prepare.Target):
         self.toolchain_file = 'toolchains/toolchain-ios-' + arch + '.cmake'
         self.output = 'liblinphone-sdk/' + arch + '-apple-darwin.ios'
         self.additional_args = [
-	    '-DLINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS=YES',
             '-DLINPHONE_BUILDER_EXTERNAL_SOURCE_PATH=' +
             current_path + '/submodules'
         ]
@@ -279,16 +278,56 @@ def generate_makefile(platforms, generator):
         arch_targets += """
 {arch}: {arch}-build
 
-{arch}-build:
-\t{generator} WORK/ios-{arch}/cmake
+{arch}-build: $(addprefix {arch}-build-, $(packages))
 \t@echo "Done"
 
-WORK/ios-{arch}/build.done:
-\t$(MAKE) {arch}-build && touch WORK/ios-{arch}/build.done
-
-{arch}-dev: WORK/ios-{arch}/build.done
-\t{generator} WORK/ios-{arch}/Build/linphone_builder
+{arch}-clean: $(addprefix {arch}-clean-, $(packages))
 \t@echo "Done"
+
+{arch}-veryclean: $(addprefix {arch}-veryclean-, $(packages))
+\t@echo "Done"
+
+{arch}-build-%: package-in-list-%
+\trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-update; \\
+\t{generator} WORK/ios-{arch}/cmake EP_$*
+
+{arch}-clean-%: package-in-list-%
+\t{generator} WORK/ios-{arch}/Build/$* clean; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-build; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_$*/EP_$*-install;
+
+{arch}-veryclean-%: package-in-list-%
+\ttest -f WORK/ios-{arch}/Build/$*/install_manifest.txt && \\
+\tcat WORK/ios-{arch}/Build/$*/install_manifest.txt | xargs rm; \\
+\trm -rf WORK/ios-{arch}/Build/$*/*; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_$*/*; \\
+\techo "Run 'make {arch}-build-$*' to rebuild $* correctly.";
+
+{arch}-veryclean-ffmpeg:
+\t{generator} WORK/ios-{arch}/Build/ffmpeg uninstall; \\
+\trm -rf WORK/ios-{arch}/Build/ffmpeg/*; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_ffmpeg/*; \\
+\techo "Run 'make {arch}-build-ffmpeg' to rebuild ffmpeg correctly.";
+
+{arch}-clean-openh264:
+\tcd WORK/ios-{arch}/Build/openh264; \\
+\t$(MAKE) -f ../../../../submodules/externals/openh264/Makefile clean; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_openh264/EP_openh264-build; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_openh264/EP_openh264-install;
+
+{arch}-veryclean-openh264:
+\trm -rf liblinphone-sdk/{arch}-apple-darwin.ios/include/wels; \\
+\trm -f liblinphone-sdk/{arch}-apple-darwin.ios/lib/libopenh264.*; \\
+\trm -rf WORK/ios-{arch}/Build/openh264/*; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_openh264/*; \\
+\techo "Run 'make {arch}-build-openh264' to rebuild openh264 correctly.";
+
+{arch}-veryclean-vpx:
+\trm -rf liblinphone-sdk/{arch}-apple-darwin.ios/include/vpx; \\
+\trm -f liblinphone-sdk/{arch}-apple-darwin.ios/lib/libvpx.*; \\
+\trm -rf WORK/ios-{arch}/Build/vpx/*; \\
+\trm -f WORK/ios-{arch}/Stamp/EP_vpx/*; \\
+\techo "Run 'make {arch}-build-vpx' to rebuild vpx correctly.";
 """.format(arch=arch, generator=generator)
     multiarch = ""
     for arch in platforms[1:]:
@@ -302,14 +341,33 @@ WORK/ios-{arch}/build.done:
 """.format(first_arch=platforms[0], arch=arch)
     makefile = """
 archs={archs}
+packages={packages}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 
 .PHONY: all
 .SILENT: sdk
+#turn off parallelism because it is not yet handled properly
+.NOTPARALLEL:
 all: build
 
-dev: $(addsuffix -dev, $(archs))
-\t$(MAKE) sdk
+package-in-list-%:
+\tif ! grep -q " $* " <<< " $(packages) "; then \\
+\t\techo "$* not in list of available packages: $(packages)"; \\
+\t\texit 3; \\
+\tfi
+
+build-%: package-in-list-% $(addsuffix -build-%, $(archs))
+\t@echo "Build of $* terminated"
+
+clean-%: package-in-list-% $(addsuffix -clean, $(archs))
+\t@echo "Clean of $* terminated"
+
+veryclean-%: package-in-list-% $(addsuffix -veryclean, $(archs))
+\t@echo "Veryclean of $* terminated"
+
+clean: $(addprefix clean-,$(packages))
+
+veryclean: $(addprefix veryclean-,$(packages))
 
 sdk:
 \tfor arch in $(archs); do {generator} WORK/ios-$$arch/cmake EP_dummy_libraries; done && \\

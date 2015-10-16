@@ -218,10 +218,9 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		[LinphoneManager setValueInMessageAppData:[internalUrl absoluteString] forKey:@"localimage" inMessage:msg];
 	}
 
+	linphone_chat_room_send_message2(chatRoom, msg, message_status, (__bridge void *)(self));
 	[_tableController addChatEntry:msg];
 	[_tableController scrollToBottom:true];
-
-	linphone_chat_room_send_message2(chatRoom, msg, message_status, (__bridge void *)(self));
 
 	return TRUE;
 }
