@@ -226,10 +226,6 @@ int sal_unsubscribe(SalOp *op){
 		belle_sip_request_t *last_req=belle_sip_transaction_get_request(tr);
 		sal_op_add_body(op,(belle_sip_message_t*)last_req,NULL);
 		belle_sip_refresher_refresh(op->refresher,0);
-		if (op->dialog){
-			belle_sip_dialog_set_application_data(op->dialog, NULL);
-			sal_op_unref(op);
-		}
 		return 0;
 	}
 	return -1;

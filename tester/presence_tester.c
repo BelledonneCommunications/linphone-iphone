@@ -162,6 +162,7 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 	linphone_friend_done(friend);
 
 	linphone_core_add_friend(caller_mgr->lc,friend);
+	linphone_friend_unref(friend);
 
 	result=wait_for(caller_mgr->lc,callee_mgr->lc,&caller_mgr->stat.number_of_LinphonePresenceActivityOnline,initial_caller.number_of_LinphonePresenceActivityOnline+1);
 	/*without proxy, callee cannot subscribe to caller
@@ -184,7 +185,8 @@ static void subscribe_failure_handle_by_app(void) {
 	LinphoneProxyConfig* config;
 	LinphoneFriend* lf;
 	char* lf_identity=linphone_address_as_string_uri_only(pauline->identity);
-	 linphone_core_get_default_proxy(marie->lc,&config);
+	
+	linphone_core_get_default_proxy(marie->lc,&config);
 
 	BC_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
 	wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,1); /*just to wait for unsubscription even if not notified*/
@@ -232,6 +234,7 @@ static void unsubscribe_while_subscribing(void) {
 	linphone_friend_enable_subscribes(friend,TRUE);
 	linphone_friend_done(friend);
 	linphone_core_add_friend(marie->lc,friend);
+	linphone_friend_unref(friend);
 	linphone_core_iterate(marie->lc);
 	linphone_core_manager_destroy(marie);
 }

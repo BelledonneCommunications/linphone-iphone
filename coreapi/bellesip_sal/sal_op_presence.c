@@ -53,8 +53,12 @@ static void presence_process_io_error(void *user_ctx, const belle_sip_io_error_e
 static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
 	SalOp* op= (SalOp*)ctx;
 	if (op->dialog) {
-		sal_op_unref(op);
-		op->dialog=NULL;
+		if (belle_sip_dialog_is_server(op->dialog)){
+			/*in an incoming SUBSCRIBE*/
+			ms_message("Presence unsubscribe received from [%s]",sal_op_get_from(op));
+			op->base.root->callbacks.subscribe_presence_closed(op, sal_op_get_from(op));
+		}
+		set_or_update_dialog(op, NULL);
 	}
 }
 
@@ -64,9 +68,7 @@ static void presence_refresher_listener(belle_sip_refresher_t* refresher, void* 
 		ms_message("The SUBSCRIBE dialog no longer works. Let's restart a new one.");
 		belle_sip_refresher_stop(op->refresher);
 		if (op->dialog) { /*delete previous dialog if any*/
-			belle_sip_dialog_set_application_data(op->dialog,NULL);
-			belle_sip_object_unref(op->dialog);
-			op->dialog=NULL;
+			set_or_update_dialog(op, NULL);
 		}
 
 		if (sal_op_get_contact_address(op)) {
@@ -223,9 +225,8 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 
 	if (!op->dialog) {
 		if (strcmp(method,"SUBSCRIBE")==0){
-			op->dialog=belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
-			belle_sip_dialog_set_application_data(op->dialog,op);
-			sal_op_ref(op);
+			belle_sip_dialog_t *dialog = belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
+			set_or_update_dialog(op, dialog);
 			ms_message("new incoming subscription from [%s] to [%s]",sal_op_get_from(op),sal_op_get_to(op));
 		}else{ /* this is a NOTIFY */
 			ms_message("Receiving out of dialog notify");
@@ -250,8 +251,7 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 				/*either a refresh or an unsubscribe*/
 				if (expires && belle_sip_header_expires_get_expires(expires)>0) {
 					op->base.root->callbacks.subscribe_presence_received(op,sal_op_get_from(op));
-				} else if(expires) {
-					ms_message("Unsubscribe received from [%s]",sal_op_get_from(op));
+				}else{
 					resp=sal_op_create_response_from_request(op,req,200);
 					belle_sip_server_transaction_send_response(server_transaction,resp);
 				}
@@ -330,8 +330,8 @@ static int sal_op_check_dialog_state(SalOp *op) {
 		return -1;
 	} else
 		return 0;
-
 }
+
 int sal_notify_presence(SalOp *op, SalPresenceModel *presence){
 	belle_sip_request_t* notify=NULL;
 	if (sal_op_check_dialog_state(op)) {

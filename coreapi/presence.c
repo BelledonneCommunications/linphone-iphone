@@ -1897,11 +1897,13 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 void linphone_subscription_closed(LinphoneCore *lc, SalOp *op){
 	LinphoneFriend *lf;
 	lf=linphone_find_friend_by_inc_subscribe(lc->friends,op);
-	sal_op_release(op);
+	
 	if (lf!=NULL){
+		/*this will release the op*/
 		linphone_friend_remove_incoming_subscription(lf, op);
 	}else{
-		ms_warning("Receiving unsuscribe for unknown in-subscribtion from %s", sal_op_get_from(op));
+		/*case of an op that we already released because the friend was destroyed*/
+		ms_message("Receiving unsuscribe for unknown in-subscribtion from %s", sal_op_get_from(op));
 	}
 }
 

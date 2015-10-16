@@ -240,10 +240,14 @@ void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence)
 }
 
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op){
+	/*ownership of the op is transfered from sal to the LinphoneFriend*/
 	lf->insubs = ms_list_append(lf->insubs, op);
 }
 
 void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op){
+	if (ms_list_find(lf->insubs, op)){
+		sal_op_release(op);
+	}
 	lf->insubs = ms_list_remove(lf->insubs, op);
 }
 
