@@ -47,6 +47,9 @@ extern "C" {
 
 struct _LinphoneCore;
 struct _LinphoneChatRoom;
+struct _LinphoneAuthInfo;
+struct _SipSetupContext;
+struct _LinphoneInfoMessage;
 
 /**
  * Linphone core main object created by function linphone_core_new() .
@@ -442,10 +445,6 @@ LINPHONE_PUBLIC	void linphone_address_destroy(LinphoneAddress *u);
  */
 LINPHONE_PUBLIC LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *address);
 
-struct _SipSetupContext;
-
-
-struct _LinphoneInfoMessage;
 /**
  * The LinphoneInfoMessage is an object representing an informational message sent or received by the core.
 **/
@@ -1021,8 +1020,6 @@ LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegist
  */
 
 #include "linphone_proxy_config.h"
-
-struct _LinphoneAuthInfo;
 
 /**
  * @addtogroup authentication
@@ -2900,6 +2897,15 @@ LINPHONE_PUBLIC void linphone_core_remove_auth_info(LinphoneCore *lc, const Linp
 
 LINPHONE_PUBLIC const MSList *linphone_core_get_auth_info_list(const LinphoneCore *lc);
 
+/**
+ * Find authentication info matching realm, username, domain criteria.
+ * First of all, (realm,username) pair are searched. If multiple results (which should not happen because realm are supposed to be unique), then domain is added to the search.
+ * @param lc the LinphoneCore
+ * @param realm the authentication 'realm' (optional)
+ * @param username the SIP username to be authenticated (mandatory)
+ * @param domain the SIP domain name (optional)
+ * @return a #LinphoneAuthInfo
+**/
 LINPHONE_PUBLIC const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *sip_domain);
 
 LINPHONE_PUBLIC void linphone_core_abort_authentication(LinphoneCore *lc,  LinphoneAuthInfo *info);
