@@ -275,7 +275,7 @@ const LinphoneAuthInfo *_linphone_core_find_auth_info(LinphoneCore *lc, const ch
 	if (ai==NULL){
 		ai=find_auth_info(lc,username,NULL,NULL, ignore_realm);
 	}
-	if (ai) ms_message("linphone_core_find_auth_info(): returning auth info username=%s, realm=%s", ai->username, ai->realm);
+	if (ai) ms_message("linphone_core_find_auth_info(): returning auth info username=%s, realm=%s", ai->username ? ai->username : "", ai->realm ? ai->realm : "");
 	return ai;
 }
 

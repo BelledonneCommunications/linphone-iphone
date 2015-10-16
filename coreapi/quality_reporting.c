@@ -496,13 +496,13 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	// RFC states: "LocalGroupID provides the identification for the purposes
 	// of aggregation for the local endpoint.".
 	STR_REASSIGN(report->info.local_addr.group, ms_strdup_printf("%s-%s-%s"
-		, dialog_id
+		, dialog_id ? dialog_id : ""
 		, "local"
 		, report->local_metrics.user_agent ? report->local_metrics.user_agent : ""
 		)
 	);
 	STR_REASSIGN(report->info.remote_addr.group, ms_strdup_printf("%s-%s-%s"
-		, dialog_id
+		, dialog_id ? dialog_id : ""
 		, "remote"
 		, report->remote_metrics.user_agent ? report->remote_metrics.user_agent : ""
 		)
@@ -553,7 +553,7 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		}
 	}
 
-	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialog_id, report->info.local_addr.ssrc));
+	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialog_id ? dialog_id : "", report->info.local_addr.ssrc));
 
 	if (local_payload != NULL) {
 		report->local_metrics.session_description.payload_type = local_payload->type;
