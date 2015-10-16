@@ -289,21 +289,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneCore *lc = [LinphoneManager getLc];
 	[self resetTextFields];
 
-	LinphoneProxyConfig *current_conf = NULL;
-	linphone_core_get_default_proxy([LinphoneManager getLc], &current_conf);
+	LinphoneProxyConfig *current_conf = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
 	if (current_conf != NULL) {
-		const char *proxy_addr = linphone_proxy_config_get_identity(current_conf);
-		if (proxy_addr) {
-			LinphoneAddress *addr = linphone_address_new(proxy_addr);
-			if (addr) {
-				const LinphoneAuthInfo *auth = linphone_core_find_auth_info(
-					lc, NULL, linphone_address_get_username(addr), linphone_proxy_config_get_domain(current_conf));
-				linphone_address_destroy(addr);
-				if (auth) {
-					LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
-					[self onDialerClick:nil];
-				}
-			}
+		if (linphone_proxy_config_find_auth_info(current_conf) != NULL) {
+			LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
+			[self onDialerClick:nil];
 		}
 	}
 

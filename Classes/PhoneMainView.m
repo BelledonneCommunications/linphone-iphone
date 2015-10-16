@@ -296,8 +296,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneGlobalState state = (LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue];
 	static BOOL already_shown = FALSE;
 	if (state == LinphoneGlobalOn && !already_shown && [LinphoneManager instance].wasRemoteProvisioned) {
-		LinphoneProxyConfig *conf = NULL;
-		linphone_core_get_default_proxy([LinphoneManager getLc], &conf);
+		LinphoneProxyConfig *conf = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
 		if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" forSection:@"app"] && conf == NULL) {
 			already_shown = TRUE;
 			AssistantView *view = VIEW(AssistantView);
@@ -627,8 +626,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	NSString *lTitle;
 
 	// get default proxy
-	LinphoneProxyConfig *proxyCfg;
-	linphone_core_get_default_proxy([LinphoneManager getLc], &proxyCfg);
+	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
 	if (proxyCfg == nil) {
 		lMessage = NSLocalizedString(@"Please make sure your device is connected to the internet and double check your "
 									 @"SIP account configuration in the settings.",

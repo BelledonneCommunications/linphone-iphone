@@ -456,7 +456,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		}
 
 		// possible valid config detected, try to modify current proxy or create new one if none existing
-		linphone_core_get_default_proxy(lc, &proxyCfg);
+		proxyCfg = linphone_core_get_default_proxy_config(lc);
 		if (proxyCfg == NULL) {
 			proxyCfg = linphone_core_create_proxy_config(lc);
 		} else {

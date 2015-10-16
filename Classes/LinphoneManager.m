@@ -332,12 +332,10 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 	NSString *newDbPath = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
 	BOOL shouldMigrate = [[NSFileManager defaultManager] fileExistsAtPath:oldDbPath];
 	BOOL shouldMigrateImages = FALSE;
-	LinphoneProxyConfig *default_proxy;
 	const char *identity = NULL;
 	BOOL migrated = FALSE;
 	char *attach_stmt = NULL;
-
-	linphone_core_get_default_proxy(lc, &default_proxy);
+	LinphoneProxyConfig *default_proxy = linphone_core_get_default_proxy_config(lc);
 
 	if (sqlite3_open([newDbPath UTF8String], &newDb) != SQLITE_OK) {
 		LOGE(@"Can't open \"%@\" sqlite3 database.", newDbPath);
@@ -1124,8 +1122,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 												  kSCNetworkReachabilityFlagsConnectionOnDemand;
 
 	if (theLinphoneCore != nil) {
-		LinphoneProxyConfig *proxy;
-		linphone_core_get_default_proxy(theLinphoneCore, &proxy);
+		LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(theLinphoneCore);
 
 		struct NetworkReachabilityContext *ctx = nilCtx ? ((struct NetworkReachabilityContext *)nilCtx) : 0;
 		if ((flags == 0) || (flags & networkDownFlags)) {
@@ -1612,8 +1609,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		 [[UIApplication sharedApplication] backgroundTimeRemaining]);
 }
 - (BOOL)enterBackgroundMode {
-	LinphoneProxyConfig *proxyCfg;
-	linphone_core_get_default_proxy(theLinphoneCore, &proxyCfg);
+	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
 	BOOL shouldEnterBgMode = FALSE;
 
 	// handle proxy config if any
@@ -1987,8 +1983,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	if (apushNotificationToken != nil) {
 		pushNotificationToken = apushNotificationToken;
 	}
-	LinphoneProxyConfig *cfg = nil;
-	linphone_core_get_default_proxy(theLinphoneCore, &cfg);
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(theLinphoneCore);
 	if (cfg) {
 		linphone_proxy_config_edit(cfg);
 		[self configurePushTokenForProxyConfig:cfg];
@@ -2279,8 +2274,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 - (NSString *)contactFilter {
 	NSString *filter = @"*";
 	if ([self lpConfigBoolForKey:@"contact_filter_on_default_domain"]) {
-		LinphoneProxyConfig *proxy_cfg;
-		linphone_core_get_default_proxy(theLinphoneCore, &proxy_cfg);
+		LinphoneProxyConfig *proxy_cfg = linphone_core_get_default_proxy_config(theLinphoneCore);
 		if (proxy_cfg && linphone_proxy_config_get_addr(proxy_cfg)) {
 			return [NSString stringWithCString:linphone_proxy_config_get_domain(proxy_cfg)
 									  encoding:[NSString defaultCStringEncoding]];
