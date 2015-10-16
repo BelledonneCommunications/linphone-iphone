@@ -149,8 +149,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (void)addCurrentContactContactField:(NSString *)address {
 
-	LinphoneAddress *linphoneAddress =
-		linphone_address_new([address cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	LinphoneAddress *linphoneAddress = linphone_address_new(address.UTF8String);
 	NSString *username = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
 
 	if (([username rangeOfString:@"@"].length > 0) &&
