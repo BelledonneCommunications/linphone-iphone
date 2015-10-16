@@ -669,7 +669,7 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 			liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
 			COMPRESSED_LOG_COLLECTION_EXTENSION);
 		linphone_content_set_name(core->log_collection_upload_information, name);
-		if (prepare_log_collection_file_to_upload(name) < 0) return;
+		if (prepare_log_collection_file_to_upload(name) <= 0) return;
 		linphone_content_set_size(core->log_collection_upload_information, get_size_of_file_to_upload(name));
 		uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
 		req = belle_http_request_create("POST", uri, NULL, NULL, NULL);
