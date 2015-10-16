@@ -286,7 +286,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)fillDefaultValues {
-	LinphoneCore *lc = [LinphoneManager getLc];
 	[self resetTextFields];
 
 	LinphoneProxyConfig *current_conf = linphone_core_get_default_proxy_config([LinphoneManager getLc]);

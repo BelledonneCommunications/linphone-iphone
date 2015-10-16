@@ -1326,7 +1326,8 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 										[zrtpSecretsFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	linphone_core_set_chat_database_path(theLinphoneCore,
 										 [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-
+	linphone_core_set_call_logs_database_path(theLinphoneCore,
+											  [chatDBFileName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	[self migrationLinphoneSettings];
 
 	[self setupNetworkReachabilityCallback];
