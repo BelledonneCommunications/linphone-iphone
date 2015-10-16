@@ -1444,17 +1444,19 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 
 void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalOp *op){
 	LinphoneFriend *fl=linphone_friend_new_with_address(subscriber);
+	char *tmp;
+	
 	if (fl==NULL) return ;
 	linphone_friend_add_incoming_subscription(fl, op);
 	linphone_friend_set_inc_subscribe_policy(fl,LinphoneSPAccept);
 	fl->inc_subscribe_pending=TRUE;
-	lc->subscribers=ms_list_append(lc->subscribers,(void *)linphone_friend_ref(fl));
-	{
-		char *tmp=linphone_address_as_string(fl->uri);
-		linphone_core_notify_new_subscription_requested(lc,fl,tmp);
-		linphone_friend_unref(fl);
-		ms_free(tmp);
-	}
+	/* the newly created "not yet" friend ownership is transfered to the lc->subscribers list*/
+	lc->subscribers=ms_list_append(lc->subscribers,fl);
+	
+	tmp = linphone_address_as_string(fl->uri);
+	linphone_core_notify_new_subscription_requested(lc,fl,tmp);
+	ms_free(tmp);
+	
 }
 
 void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf){

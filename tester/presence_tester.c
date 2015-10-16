@@ -28,12 +28,14 @@ static LinphoneCoreManager* presence_linphone_core_manager_new(char* username) {
 	linphone_address_set_username(mgr->identity,username);
 	identity_char=linphone_address_as_string(mgr->identity);
 	linphone_core_set_primary_contact(mgr->lc,identity_char);
+	ms_free(identity_char);
 	return mgr;
 }
+
 void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
 	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
 	stats* counters;
-	ms_message("New subscription request  from [%s]  url [%s]",from,url);
+	ms_message("New subscription request from [%s] url [%s]",from,url);
 	ms_free(from);
 	counters = get_stats(lc);
 	counters->number_of_NewSubscriptionRequest++;
@@ -373,6 +375,13 @@ static void subscribe_presence_forked(){
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline2->stat.number_of_NewSubscriptionRequest,1, 2000));
 	/*we should get two notifies*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,2, 10000));
+	
+	/*marie also shall receive two SUBSCRIBEs from the two paulines, but won't be notified to the app since 
+	 Marie set Pauline as a friend.*/
+	BC_ASSERT_EQUAL(marie->stat.number_of_NewSubscriptionRequest, 0, int, "%d");
+	/*and the two paulines shall be notified of marie's presence*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline1->stat.number_of_LinphonePresenceActivityOnline,1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline2->stat.number_of_LinphonePresenceActivityOnline,1, 2000));
 	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline1);

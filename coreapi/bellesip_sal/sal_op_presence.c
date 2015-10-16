@@ -47,7 +47,7 @@ void sal_add_presence_info(SalOp *op, belle_sip_message_t *notify, SalPresenceMo
 }
 
 static void presence_process_io_error(void *user_ctx, const belle_sip_io_error_event_t *event){
-	ms_error("presence_process_io_error not implemented yet");
+	/*ms_error("presence_process_io_error not implemented yet");*/
 }
 
 static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
