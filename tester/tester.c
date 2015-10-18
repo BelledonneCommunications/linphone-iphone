@@ -99,6 +99,7 @@ static void auth_info_requested(LinphoneCore *lc, const char *realm, const char 
 
 void reset_counters( stats* counters) {
 	if (counters->last_received_chat_message) linphone_chat_message_unref(counters->last_received_chat_message);
+	if (counters->last_received_info_message) linphone_info_message_destroy(counters->last_received_info_message);
 	memset(counters,0,sizeof(stats));
 }
 
@@ -373,6 +374,7 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	if (mgr->stat.last_received_chat_message) {
 		linphone_chat_message_unref(mgr->stat.last_received_chat_message);
 	}
+	if (mgr->stat.last_received_info_message) linphone_info_message_destroy(mgr->stat.last_received_info_message);
 	if (mgr->lc){
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
 		int unterminated_calls;

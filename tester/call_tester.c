@@ -3771,6 +3771,8 @@ static void video_call_snapshot(void) {
 		end_call(marie, pauline);
 	}
 	ms_free(filename);
+	linphone_call_params_unref(marieParams);
+	linphone_call_params_unref(paulineParams);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -5079,6 +5081,41 @@ static void call_record_with_custom_rtp_modifier(void) {
 	custom_rtp_modifier(FALSE, TRUE);
 }
 
+static void _call_with_network_switch_in_early_state(bool_t network_loosed_by_caller){
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1))) goto end;
+	if (network_loosed_by_caller){
+		linphone_core_set_network_reachable(marie->lc, FALSE);
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallError, 1));
+		linphone_core_set_network_reachable(marie->lc, TRUE);
+		linphone_core_terminate_call(pauline->lc, linphone_core_get_current_call(pauline->lc));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
+	}else{
+		linphone_core_set_network_reachable(pauline->lc, FALSE);
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallError, 1));
+		linphone_core_set_network_reachable(pauline->lc, TRUE);
+		linphone_core_terminate_call(marie->lc, linphone_core_get_current_call(marie->lc));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallEnd, 1));
+	}
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallReleased, 1));
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_with_network_switch_in_early_state_1(){
+	_call_with_network_switch_in_early_state(TRUE);
+}
+
+static void call_with_network_switch_in_early_state_2(){
+	_call_with_network_switch_in_early_state(FALSE);
+}
+
 static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -5507,6 +5544,8 @@ test_t call_tests[] = {
 	{ "Call paused resumed with custom RTP Modifier", call_paused_resumed_with_custom_rtp_modifier },
 	{ "Call record with custom RTP Modifier", call_record_with_custom_rtp_modifier },
 	{ "Call with network switch", call_with_network_switch },
+	{ "Call with network switch in early state 1", call_with_network_switch_in_early_state_1 },
+	{ "Call with network switch in early state 2", call_with_network_switch_in_early_state_2 },
 	{ "Call with network switch and ICE", call_with_network_switch_and_ice },
 	{ "Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh }
 };

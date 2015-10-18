@@ -357,6 +357,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 	belle_sip_server_transaction_t *server_transaction=belle_sip_transaction_terminated_event_get_server_transaction(event);
 	belle_sip_request_t* req;
 	belle_sip_response_t* resp;
+	int code = 0;
 	bool_t release_call=FALSE;
 
 	if (client_transaction) {
@@ -366,11 +367,18 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 		req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(server_transaction));
 		resp=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(server_transaction));
 	}
-	if (op->state ==SalOpStateTerminating
+	if (resp) code = belle_sip_response_get_status_code(resp);
+	
+	if (op->state == SalOpStateTerminating
 			&& strcmp("BYE",belle_sip_request_get_method(req))==0
-			&& (!resp || (belle_sip_response_get_status_code(resp) !=401
-			&& belle_sip_response_get_status_code(resp) !=407))
+			&& (!resp || (belle_sip_response_get_status_code(resp) != 401
+			&& belle_sip_response_get_status_code(resp) != 407))
 			&& op->dialog==NULL) {
+		release_call=TRUE;
+	}else if (op->state == SalOpStateEarly && code < 200){
+		/*call terminated early*/
+		sal_error_info_set(&op->error_info,SalReasonIOError,503,"I/O error",NULL);
+		op->base.root->callbacks.call_failure(op);
 		release_call=TRUE;
 	}
 	if (server_transaction){
@@ -546,10 +554,9 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 				drop_op = TRUE;
 			}
 			break;
-		} /* else same behavior as for EARLY state*/
+		} /* else same behavior as for EARLY state, thus NO BREAK*/
 	}
 	case BELLE_SIP_DIALOG_EARLY: {
-		//hmm probably a cancel
 		if (strcmp("CANCEL",method)==0) {
 			if(belle_sip_request_event_get_server_transaction(event)) {
 				/*first answer 200 ok to cancel*/

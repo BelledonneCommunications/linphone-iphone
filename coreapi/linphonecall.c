@@ -4096,6 +4096,7 @@ static void linphone_call_lost(LinphoneCall *call, LinphoneReason reason){
 	linphone_core_notify_display_warning(lc, temp);
 	linphone_core_terminate_call(lc,call);
 	linphone_core_play_named_tone(lc,LinphoneToneCallLost);
+	ms_free(temp);
 }
 
 static void change_ice_media_destinations(LinphoneCall *call) {
@@ -4721,11 +4722,14 @@ void linphone_call_set_broken(LinphoneCall *call){
 		case LinphoneCallOutgoingEarlyMedia:
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia:
-			linphone_call_lost(call, LinphoneReasonIOError);
+			/*during the early states, the SAL layer reports the failure from the dialog or transaction layer,
+			 * hence, there is nothing special to do*/
 		break;
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallPaused:
 		case LinphoneCallPausedByRemote:
+			/*during these states, the dialog is established. A failure of a transaction is not expected to close it.
+			 * Instead we have to repair the dialog by sending a reINVITE*/
 			call->broken = TRUE;
 		break;
 		default:
