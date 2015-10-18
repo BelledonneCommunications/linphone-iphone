@@ -871,6 +871,9 @@ int sal_call_accept(SalOp*h){
 		belle_sip_object_unref(h->pending_update_server_trans);
 		h->pending_update_server_trans=NULL;
 	}
+	if (h->state == SalOpStateEarly){
+		h->state = SalOpStateActive;
+	}
 	return 0;
 }
 
