@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # AlexL <loginov.alex.valer@gmail.com>, 2014
 # AlexL <loginov.alex.valer@gmail.com>, 2014-2015
@@ -12,51 +12,48 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-24 11:11+0200\n"
-"PO-Revision-Date: 2015-07-17 07:40+0000\n"
+"POT-Creation-Date: 2015-10-15 10:26+0200\n"
+"PO-Revision-Date: 2015-10-15 08:43+0000\n"
 "Last-Translator: AlexL <loginov.alex.valer@gmail.com>\n"
-"Language-Team: Russian (http://www.transifex.com/belledonne-communications/"
-"linphone-gtk/language/ru/)\n"
-"Language: ru\n"
+"Language-Team: Russian (http://www.transifex.com/belledonne-communications/linphone-gtk/language/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
-"%100>=11 && n%100<=14)? 2 : 3);\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 
-#: ../gtk/calllogs.c:149 ../gtk/friendlist.c:976
+#: ../gtk/calllogs.c:177 ../gtk/friendlist.c:821
 #, c-format
 msgid "Call %s"
 msgstr "Звонок %s"
 
-#: ../gtk/calllogs.c:150 ../gtk/friendlist.c:977
+#: ../gtk/calllogs.c:178 ../gtk/friendlist.c:822
 #, c-format
 msgid "Send text to %s"
 msgstr "Послать текст для %s"
 
-#: ../gtk/calllogs.c:233
+#: ../gtk/calllogs.c:261
 #, c-format
 msgid "<b>Recent calls (%i)</b>"
 msgstr "<b>Последние вызовы (%i)</b>"
 
-#: ../gtk/calllogs.c:315
+#: ../gtk/calllogs.c:340
 msgid "n/a"
 msgstr "—"
 
-#: ../gtk/calllogs.c:318
+#: ../gtk/calllogs.c:343
 msgid "Aborted"
 msgstr "Прервано"
 
-#: ../gtk/calllogs.c:321
+#: ../gtk/calllogs.c:346
 msgid "Missed"
 msgstr "Пропущено"
 
-#: ../gtk/calllogs.c:324
+#: ../gtk/calllogs.c:349
 msgid "Declined"
 msgstr "Отклонено"
 
-#: ../gtk/calllogs.c:330
+#: ../gtk/calllogs.c:355
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
@@ -65,7 +62,7 @@ msgstr[1] "%i минуты"
 msgstr[2] "%i минут"
 msgstr[3] "%i минут"
 
-#: ../gtk/calllogs.c:333
+#: ../gtk/calllogs.c:358
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
@@ -74,16 +71,14 @@ msgstr[1] "%i секунды"
 msgstr[2] "%i секунд"
 msgstr[3] "%i секунд"
 
-#: ../gtk/calllogs.c:338
+#: ../gtk/calllogs.c:363
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
-msgstr ""
-"<small><i>%s</i>\t<i>Качество: %s</i></small>\n"
-"%s\t%s\t"
+msgstr "<small><i>%s</i>\t<i>Качество: %s</i></small>\n%s\t%s\t"
 
-#: ../gtk/calllogs.c:342
+#: ../gtk/calllogs.c:367
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
 msgstr "<big><b>%s</b></big>\t%s"
@@ -101,15 +96,13 @@ msgstr "Мне"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Невозможно найти графический файл: %s"
 
-#: ../gtk/chat.c:493
+#: ../gtk/chat.c:508
 msgid "Copy"
-msgstr ""
+msgstr "Копировать"
 
 #: ../gtk/main.c:138
 msgid "log to stdout some debug information while running."
-msgstr ""
-"Вывод некоторой отладочной информации на устройство стандартного вывода во "
-"время работы."
+msgstr "Вывод некоторой отладочной информации на устройство стандартного вывода во время работы."
 
 #: ../gtk/main.c:139
 msgid "display version and exit."
@@ -133,11 +126,9 @@ msgstr "Адрес для звонка прямо сейчас."
 
 #: ../gtk/main.c:144
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: c:"
-"\\Program Files\\Linphone)"
-msgstr ""
-"Определить рабочий каталог (относительно каталога установки, например: c:"
-"\\Program Files\\Linphone)"
+"Specifiy a working directory (should be the base of the installation, eg: "
+"c:\\Program Files\\Linphone)"
+msgstr "Определить рабочий каталог (относительно каталога установки, например: c:\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:145
 msgid "Configuration file"
@@ -151,149 +142,128 @@ msgstr "Запустить помощника аудио"
 msgid "Run self test and exit 0 if succeed"
 msgstr "Запустить самотест и выйти при успехе со статусом 0"
 
-#: ../gtk/main.c:1058
+#: ../gtk/main.c:1040
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
-"Would you add him/her to your contact list and allow him/her to see your "
-"presence status?\n"
+"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr ""
-"%s хочет добавить Вас в его/её список контактов.\n"
-"Вы бы добавили его/её в свой список контактов и позволили ему/ей видеть ваш "
-"статус присутствия?\n"
-"Если вы ответите нет, то этот человек будет временно занесён в чёрный список."
+msgstr "%s хочет добавить Вас в его/её список контактов.\nВы бы добавили его/её в свой список контактов и позволили ему/ей видеть ваш статус присутствия?\nЕсли вы ответите нет, то этот человек будет временно занесён в чёрный список."
 
-#: ../gtk/main.c:1135
+#: ../gtk/main.c:1117
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
-msgstr ""
-"Пожалуйста, введите пароль для пользователя <i>%s</i>\n"
-" для реалм (рилм) <i>%s</i>:"
+msgstr "Пожалуйста, введите пароль для пользователя <i>%s</i>\n для реалм (рилм) <i>%s</i>:"
 
-#: ../gtk/main.c:1256
+#: ../gtk/main.c:1242
 msgid "Call error"
 msgstr "Ошибка звонка"
 
-#: ../gtk/main.c:1259 ../coreapi/linphonecore.c:3669
+#: ../gtk/main.c:1245 ../coreapi/linphonecore.c:3811
 msgid "Call ended"
 msgstr "Звонок окончен"
 
-#: ../gtk/main.c:1262 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1248 ../coreapi/call_log.c:235
 msgid "Incoming call"
 msgstr "Входящий звонок"
 
-#: ../gtk/main.c:1264 ../gtk/incall_view.c:531 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1250 ../gtk/incall_view.c:576 ../gtk/in_call_frame.ui.h:3
 msgid "Answer"
 msgstr "Ответ"
 
-#: ../gtk/main.c:1266 ../gtk/in_call_frame.ui.h:4
+#: ../gtk/main.c:1252 ../gtk/in_call_frame.ui.h:4
 msgid "Decline"
 msgstr "Отклонить"
 
-#: ../gtk/main.c:1272
+#: ../gtk/main.c:1258
 msgid "Call paused"
 msgstr "Звонок приостановлен"
 
-#: ../gtk/main.c:1272
+#: ../gtk/main.c:1258
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>%s</b>"
 
-#: ../gtk/main.c:1342
+#: ../gtk/main.c:1328
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%s предложил запустить видео. Вы принимаете?"
 
-#: ../gtk/main.c:1508
+#: ../gtk/main.c:1494
 msgid "Website link"
 msgstr "Домашняя страница"
 
-#: ../gtk/main.c:1567 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1553 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1568
+#: ../gtk/main.c:1554
 msgid "A video internet phone"
 msgstr "Видео интернет телефон"
 
-#: ../gtk/main.c:1627
+#: ../gtk/main.c:1613
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (по умолчанию)"
 
-#: ../gtk/main.c:1973 ../coreapi/callbacks.c:1078
+#: ../gtk/main.c:1918 ../coreapi/callbacks.c:1075
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Мы передали в %s"
 
-#: ../gtk/main.c:1983
+#: ../gtk/main.c:1928
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
-msgstr ""
-"Звуковые карты не были обнаружены на этом компьютере.\n"
-"Вы не сможете отправлять или получать аудио звонки."
+msgstr "Звуковые карты не были обнаружены на этом компьютере.\nВы не сможете отправлять или получать аудио звонки."
 
-#: ../gtk/main.c:2127
+#: ../gtk/main.c:2087
 msgid "A free SIP video-phone"
 msgstr "Свободный SIP видео-телефон"
 
-#: ../gtk/main.c:2236
+#: ../gtk/main.c:2200
 #, c-format
 msgid "Hello\n"
 msgstr "Привет\n"
 
-#: ../gtk/friendlist.c:506
+#: ../gtk/friendlist.c:442
 msgid "Add to addressbook"
 msgstr "Добавить в адресную книгу"
 
-#: ../gtk/friendlist.c:692
-msgid "Presence status"
-msgstr "Статус присутствия"
-
-#: ../gtk/friendlist.c:710 ../gtk/propertybox.c:591 ../gtk/contact.ui.h:1
-msgid "Name"
-msgstr "Имя"
-
-#: ../gtk/friendlist.c:722
-msgid "Call"
-msgstr "Звонок"
-
-#: ../gtk/friendlist.c:727
-msgid "Chat"
-msgstr "Чат"
-
-#: ../gtk/friendlist.c:757
+#: ../gtk/friendlist.c:626
 #, c-format
 msgid "Search in %s directory"
 msgstr "Поиск в директории %s"
 
-#: ../gtk/friendlist.c:926
+#: ../gtk/friendlist.c:771
 msgid "Invalid sip contact !"
 msgstr "Неверный sip контакт!"
 
-#: ../gtk/friendlist.c:978
+#: ../gtk/friendlist.c:823
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "Редактировать контакт '%s'"
 
-#: ../gtk/friendlist.c:979
+#: ../gtk/friendlist.c:824
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "Удалить контакт '%s'"
 
-#: ../gtk/friendlist.c:980
+#: ../gtk/friendlist.c:825
 #, c-format
 msgid "Delete chat history of '%s'"
 msgstr "Удалить историю чата для '%s'"
 
-#: ../gtk/friendlist.c:1031
+#: ../gtk/friendlist.c:876
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "Добавить новый контакт из директории '%s'"
+
+#: ../gtk/propertybox.c:591 ../gtk/contact.ui.h:1
+msgid "Name"
+msgstr "Имя"
 
 #: ../gtk/propertybox.c:597
 msgid "Rate (Hz)"
@@ -406,9 +376,7 @@ msgstr "Турецкий"
 #: ../gtk/propertybox.c:1245
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr ""
-"Вы должны перезагрузить linphone для того, чтобы языковые настройки вступили "
-"в силу."
+msgstr "Вы должны перезагрузить linphone для того, чтобы языковые настройки вступили в силу."
 
 #: ../gtk/propertybox.c:1325
 msgid "None"
@@ -431,9 +399,7 @@ msgstr "ZRTP"
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr ""
-"Доступна новая версия с %s.\n"
-"Открыть браузер для загрузки?"
+msgstr "Доступна новая версия с %s.\nОткрыть браузер для загрузки?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -468,170 +434,158 @@ msgstr[1] "Найдено %i контакта"
 msgstr[2] "Найдено %i контактов"
 msgstr[3] "Найдено %i контактов"
 
-#: ../gtk/setupwizard.c:160
+#: ../gtk/setupwizard.c:161
 msgid ""
 "Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
-msgstr ""
-"Добро пожаловать!\n"
-"Этот ассистент поможет вам использовать SIP аккаунт для ваших звонков."
+msgstr "Добро пожаловать!\nЭтот ассистент поможет вам использовать SIP аккаунт для ваших звонков."
 
-#: ../gtk/setupwizard.c:169
+#: ../gtk/setupwizard.c:170
 msgid "Create an account on linphone.org"
 msgstr "Создать учётную запись на linphone.org"
 
-#: ../gtk/setupwizard.c:170
-msgid "I have already a linphone.org account and I just want to use it"
-msgstr ""
-"Я уже имею учётную запись на linphone.org и только хочу использовать её"
-
 #: ../gtk/setupwizard.c:171
+msgid "I have already a linphone.org account and I just want to use it"
+msgstr "Я уже имею учётную запись на linphone.org и только хочу использовать её"
+
+#: ../gtk/setupwizard.c:172
 msgid "I have already a sip account and I just want to use it"
 msgstr "Я уже имею учётную запись sip и только хочу использовать её"
 
-#: ../gtk/setupwizard.c:172
+#: ../gtk/setupwizard.c:173
 msgid "I want to specify a remote configuration URI"
 msgstr "Я хочу указать удалённую конфигурацию URI"
 
-#: ../gtk/setupwizard.c:206
+#: ../gtk/setupwizard.c:207
 msgid "Enter your account information"
 msgstr "Введите вашу информацию об учётной записи"
 
-#: ../gtk/setupwizard.c:221
+#: ../gtk/setupwizard.c:222
 msgid "Username*"
 msgstr "Имя пользователя*"
 
-#: ../gtk/setupwizard.c:222
+#: ../gtk/setupwizard.c:223
 msgid "Password*"
 msgstr "Пароль*"
 
-#: ../gtk/setupwizard.c:225
+#: ../gtk/setupwizard.c:226
 msgid "Domain*"
 msgstr "Домен*"
 
-#: ../gtk/setupwizard.c:226
+#: ../gtk/setupwizard.c:227
 msgid "Proxy"
 msgstr "Прокси"
 
-#: ../gtk/setupwizard.c:263
+#: ../gtk/setupwizard.c:264
 msgid "Enter your linphone.org username"
 msgstr "Введите ваше имя пользователя для linphone.org"
 
-#: ../gtk/setupwizard.c:275 ../gtk/parameters.ui.h:91 ../gtk/ldap.ui.h:4
+#: ../gtk/setupwizard.c:276 ../gtk/parameters.ui.h:91 ../gtk/ldap.ui.h:4
 msgid "Username:"
 msgstr "Имя пользователя:"
 
-#: ../gtk/setupwizard.c:277 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
+#: ../gtk/setupwizard.c:278 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
 msgid "Password:"
 msgstr "Пароль:"
 
-#: ../gtk/setupwizard.c:419
+#: ../gtk/setupwizard.c:412
 msgid "(*) Required fields"
 msgstr "(*) Обязательные поля"
 
-#: ../gtk/setupwizard.c:420
+#: ../gtk/setupwizard.c:413
 msgid "Username: (*)"
 msgstr "Имя пользователя: (*)"
 
-#: ../gtk/setupwizard.c:422
+#: ../gtk/setupwizard.c:415
 msgid "Password: (*)"
 msgstr "Пароль: (*)"
 
-#: ../gtk/setupwizard.c:424
+#: ../gtk/setupwizard.c:417
 msgid "Email: (*)"
 msgstr "Электронная почта: (*)"
 
-#: ../gtk/setupwizard.c:426
+#: ../gtk/setupwizard.c:419
 msgid "Confirm your password: (*)"
 msgstr "Подтвердите ваш пароль: (*)"
 
-#: ../gtk/setupwizard.c:441
+#: ../gtk/setupwizard.c:434
 msgid "Keep me informed with linphone updates"
 msgstr "Информировать об обновлениях linphone"
 
-#: ../gtk/setupwizard.c:486
+#: ../gtk/setupwizard.c:479
 msgid "Your account is being created, please wait."
 msgstr "Ваша учётная запись создаётся, пожалуйста, подождите."
 
-#: ../gtk/setupwizard.c:494
+#: ../gtk/setupwizard.c:487
 msgid ""
-"Please validate your account by clicking on the link we just sent you by "
-"email.\n"
+"Please validate your account by clicking on the link we just sent you by email.\n"
 "Then come back here and press Next button."
-msgstr ""
-"Пожалуйста, подтвердите вашу учётную запись, щёлкнув на ссылку, которую вы "
-"только\n"
-"что получили по электронной почте. Затем вернитесь сюда и нажмите кнопку "
-"Далее."
+msgstr "Пожалуйста, подтвердите вашу учётную запись, щёлкнув на ссылку, которую вы только\nчто получили по электронной почте. Затем вернитесь сюда и нажмите кнопку Далее."
 
-#: ../gtk/setupwizard.c:504
+#: ../gtk/setupwizard.c:497
 msgid "Checking if your account is been validated, please wait."
-msgstr ""
-"Проверяется действительность вашей учётной записи, пожалуйста, подождите."
+msgstr "Проверяется действительность вашей учётной записи, пожалуйста, подождите."
 
-#: ../gtk/setupwizard.c:512
+#: ../gtk/setupwizard.c:505
 msgid ""
 "Error, account not validated, username already used or server unreachable.\n"
 "Please go back and try again."
-msgstr ""
-"Ошибка, учётная запись не подтверждена, имя пользователя уже используется "
-"или\n"
-"сервер недоступен. Пожалуйста, зайдите снова и попробуйте ещё раз."
+msgstr "Ошибка, учётная запись не подтверждена, имя пользователя уже используется или\nсервер недоступен. Пожалуйста, зайдите снова и попробуйте ещё раз."
 
-#: ../gtk/setupwizard.c:521
+#: ../gtk/setupwizard.c:514
 msgid "Thank you. Your account is now configured and ready for use."
 msgstr "Спасибо! Учётная запись успешно настроена и готова к использованию."
 
-#: ../gtk/setupwizard.c:557
+#: ../gtk/setupwizard.c:548
 msgid "SIP account configuration assistant"
 msgstr "Помощник настройки учётной записи SIP"
 
-#: ../gtk/setupwizard.c:578
+#: ../gtk/setupwizard.c:564
 msgid "Welcome to the account setup assistant"
 msgstr "Добро пожаловать в помощник настройки учётной записи"
 
-#: ../gtk/setupwizard.c:583
+#: ../gtk/setupwizard.c:569
 msgid "Account setup assistant"
 msgstr "Помощник настройки учётной записи"
 
-#: ../gtk/setupwizard.c:588
+#: ../gtk/setupwizard.c:574
 msgid "Configure your account (step 1/1)"
 msgstr "Настроить вашу учётную запись (шаг 1/1)"
 
-#: ../gtk/setupwizard.c:592
+#: ../gtk/setupwizard.c:578
 msgid "Enter your sip username (step 1/1)"
 msgstr "Введите ваше sip имя пользователя (шаг 1/1)"
 
-#: ../gtk/setupwizard.c:596
+#: ../gtk/setupwizard.c:582
 msgid "Enter account information (step 1/2)"
 msgstr "Введите информацию об учётной записи (шаг 1/2)"
 
-#: ../gtk/setupwizard.c:601
+#: ../gtk/setupwizard.c:587
 msgid "Account creation in progress"
 msgstr "Создание учётной записи в прогрессе"
 
-#: ../gtk/setupwizard.c:605
+#: ../gtk/setupwizard.c:591
 msgid "Validation (step 2/2)"
 msgstr "Подтверждение (шаг 2/2)"
 
-#: ../gtk/setupwizard.c:610
+#: ../gtk/setupwizard.c:596
 msgid "Account validation check in progress"
 msgstr "Проверка действительности учётной записи в прогрессе"
 
-#: ../gtk/setupwizard.c:614
+#: ../gtk/setupwizard.c:600
 msgid "Error"
 msgstr "Ошибка"
 
-#: ../gtk/setupwizard.c:618 ../gtk/audio_assistant.c:541
+#: ../gtk/setupwizard.c:604 ../gtk/audio_assistant.c:541
 msgid "Terminating"
 msgstr "Прерывание"
 
-#: ../gtk/incall_view.c:70 ../gtk/incall_view.c:94
+#: ../gtk/incall_view.c:69 ../gtk/incall_view.c:93
 #, c-format
 msgid "Call #%i"
 msgstr "Звонок #%i"
 
-#: ../gtk/incall_view.c:155
+#: ../gtk/incall_view.c:154
 #, c-format
 msgid "Transfer to call #%i with %s"
 msgstr "Передача позвонить #%i с %s"
@@ -693,9 +647,7 @@ msgstr "Напрямую или через сервер"
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
-msgstr ""
-"загрузка: %f\n"
-"отдача: %f (КБит/сек)"
+msgstr "загрузка: %f\nотдача: %f (КБит/сек)"
 
 #: ../gtk/incall_view.c:272 ../gtk/incall_view.c:274
 #, c-format
@@ -707,114 +659,112 @@ msgstr "%ix%i @ %f кадр/сек"
 msgid "%.3f seconds"
 msgstr "%.3f секунд"
 
-#: ../gtk/incall_view.c:406 ../gtk/in_call_frame.ui.h:10
-#: ../gtk/videowindow.c:235
+#: ../gtk/incall_view.c:448 ../gtk/in_call_frame.ui.h:10
+#: ../gtk/videowindow.c:236
 msgid "Hang up"
 msgstr "Повесить трубку"
 
-#: ../gtk/incall_view.c:510
+#: ../gtk/incall_view.c:555
 msgid "<b>Calling...</b>"
 msgstr "<b>Звоним...</b>"
 
-#: ../gtk/incall_view.c:513 ../gtk/incall_view.c:767
+#: ../gtk/incall_view.c:558 ../gtk/incall_view.c:772
 msgid "00:00:00"
 msgstr "00:00:00"
 
-#: ../gtk/incall_view.c:524
+#: ../gtk/incall_view.c:569
 msgid "<b>Incoming call</b>"
 msgstr "<b>Входящий звонок</b>"
 
-#: ../gtk/incall_view.c:561
+#: ../gtk/incall_view.c:606
 msgid "good"
 msgstr "хороший"
 
-#: ../gtk/incall_view.c:563
+#: ../gtk/incall_view.c:608
 msgid "average"
 msgstr "средний"
 
-#: ../gtk/incall_view.c:565
+#: ../gtk/incall_view.c:610
 msgid "poor"
 msgstr "плохой"
 
-#: ../gtk/incall_view.c:567
+#: ../gtk/incall_view.c:612
 msgid "very poor"
 msgstr "очень плохой"
 
-#: ../gtk/incall_view.c:569
+#: ../gtk/incall_view.c:614
 msgid "too bad"
 msgstr "совсем плохой"
 
-#: ../gtk/incall_view.c:570 ../gtk/incall_view.c:586
+#: ../gtk/incall_view.c:615 ../gtk/incall_view.c:631
 msgid "unavailable"
 msgstr "недоступен"
 
-#: ../gtk/incall_view.c:715
+#: ../gtk/incall_view.c:720
 msgid "Secured by SRTP"
 msgstr "Защищённые с помощью SRTP"
 
-#: ../gtk/incall_view.c:721
+#: ../gtk/incall_view.c:726
 msgid "Secured by DTLS"
 msgstr "Защищённые с помощью DTLS"
 
-#: ../gtk/incall_view.c:727
+#: ../gtk/incall_view.c:732
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr "Защищённые с помощью ZRTP - [знак аутентификации: %s]"
 
-#: ../gtk/incall_view.c:733
+#: ../gtk/incall_view.c:738
 msgid "Set unverified"
 msgstr "Установить непроверенный"
 
-#: ../gtk/incall_view.c:733 ../gtk/in_call_frame.ui.h:1
+#: ../gtk/incall_view.c:738 ../gtk/in_call_frame.ui.h:1
 msgid "Set verified"
 msgstr "Установить проверенный"
 
-#: ../gtk/incall_view.c:762
+#: ../gtk/incall_view.c:767
 msgid "In conference"
 msgstr "В конференции"
 
-#: ../gtk/incall_view.c:762
+#: ../gtk/incall_view.c:767
 msgid "<b>In call</b>"
 msgstr "<b>Звоним</b>"
 
-#: ../gtk/incall_view.c:798
+#: ../gtk/incall_view.c:804
 msgid "<b>Paused call</b>"
 msgstr "<b>Звонок приостановлен</b>"
 
-#: ../gtk/incall_view.c:834
+#: ../gtk/incall_view.c:841
 msgid "<b>Call ended.</b>"
 msgstr "<b>Звонок закончен.</b>"
 
-#: ../gtk/incall_view.c:865
+#: ../gtk/incall_view.c:872
 msgid "Transfer in progress"
 msgstr "Передача в прогрессе"
 
-#: ../gtk/incall_view.c:868
+#: ../gtk/incall_view.c:875
 msgid "Transfer done."
 msgstr "Передача завершена."
 
-#: ../gtk/incall_view.c:871
+#: ../gtk/incall_view.c:878
 msgid "Transfer failed."
 msgstr "Передача неудачна."
 
-#: ../gtk/incall_view.c:904
+#: ../gtk/incall_view.c:909
 msgid "Resume"
 msgstr "Продолжить"
 
-#: ../gtk/incall_view.c:911 ../gtk/in_call_frame.ui.h:7
+#: ../gtk/incall_view.c:909 ../gtk/in_call_frame.ui.h:7
 msgid "Pause"
 msgstr "Пауза"
 
-#: ../gtk/incall_view.c:977
+#: ../gtk/incall_view.c:975
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
-msgstr ""
-"<small><i>Записывается в\n"
-"%s %s</i></small>"
+msgstr "<small><i>Записывается в\n%s %s</i></small>"
 
-#: ../gtk/incall_view.c:977
+#: ../gtk/incall_view.c:975
 msgid "(Paused)"
 msgstr "(Пауза)"
 
@@ -865,9 +815,7 @@ msgstr "Не удаётся запустить системное управле
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
-msgstr ""
-"Добро пожаловать!\n"
-"Этот ассистент поможет вам настроить настройки аудио для Linphone."
+msgstr "Добро пожаловать!\nЭтот ассистент поможет вам настроить настройки аудио для Linphone."
 
 #: ../gtk/audio_assistant.c:335
 msgid "Capture device"
@@ -917,7 +865,7 @@ msgstr "Давайте сейчас запустим linphone"
 msgid "Audio Assistant"
 msgstr "Помощник аудио"
 
-#: ../gtk/audio_assistant.c:520 ../gtk/main.ui.h:16
+#: ../gtk/audio_assistant.c:520 ../gtk/main.ui.h:12
 msgid "Audio assistant"
 msgstr "Помощник аудио"
 
@@ -934,94 +882,78 @@ msgid "Record and Play"
 msgstr "Записать и проиграть"
 
 #: ../gtk/main.ui.h:1
-msgid "All users"
-msgstr "Все пользователи"
-
-#: ../gtk/main.ui.h:2
-msgid "Online users"
-msgstr "Пользователи в сети"
-
-#: ../gtk/main.ui.h:3 ../gtk/login_frame.ui.h:8
-msgid "ADSL"
-msgstr "ADSL"
-
-#: ../gtk/main.ui.h:4 ../gtk/login_frame.ui.h:9
-msgid "Fiber Channel"
-msgstr "Оптоволоконный канал"
-
-#: ../gtk/main.ui.h:5
 msgid "Default"
 msgstr "По умолчанию"
 
-#: ../gtk/main.ui.h:6
+#: ../gtk/main.ui.h:2
 msgid "Delete"
 msgstr "Удалить"
 
-#: ../gtk/main.ui.h:7
+#: ../gtk/main.ui.h:3
 msgid "_Options"
 msgstr "_Опции"
 
-#: ../gtk/main.ui.h:8
+#: ../gtk/main.ui.h:4
 msgid "Set configuration URI"
 msgstr "Установить конфигурацию URI"
 
-#: ../gtk/main.ui.h:9
+#: ../gtk/main.ui.h:5
 msgid "Always start video"
 msgstr "Всегда запускать видео"
 
-#: ../gtk/main.ui.h:10
+#: ../gtk/main.ui.h:6
 msgid "Enable self-view"
 msgstr "Показать окно видео"
 
-#: ../gtk/main.ui.h:11
+#: ../gtk/main.ui.h:7
 msgid "_Help"
 msgstr "_Помощь"
 
-#: ../gtk/main.ui.h:12
+#: ../gtk/main.ui.h:8
 msgid "Show debug window"
 msgstr "Показать окно отладки"
 
-#: ../gtk/main.ui.h:13
+#: ../gtk/main.ui.h:9
 msgid "_Homepage"
 msgstr "_Домашняя страница"
 
-#: ../gtk/main.ui.h:14
+#: ../gtk/main.ui.h:10
 msgid "Check _Updates"
 msgstr "Проверить _обновления"
 
-#: ../gtk/main.ui.h:15
+#: ../gtk/main.ui.h:11
 msgid "Account assistant"
 msgstr "Помощник учётной записи"
 
-#: ../gtk/main.ui.h:17
+#: ../gtk/main.ui.h:13
 msgid "SIP address or phone number:"
 msgstr "SIP-адрес или номер телефона:"
 
-#: ../gtk/main.ui.h:18
+#: ../gtk/main.ui.h:14
 msgid "Initiate a new call"
 msgstr "Начать новый звонок"
 
-#: ../gtk/main.ui.h:19
+#: ../gtk/main.ui.h:15
 msgid "Contacts"
 msgstr "Контакты"
 
-#: ../gtk/main.ui.h:20
+#: ../gtk/main.ui.h:16
 msgid "Search"
 msgstr "Поиск"
 
-#: ../gtk/main.ui.h:21
+#: ../gtk/main.ui.h:17
 msgid "<b>Add contacts from directory</b>"
 msgstr "<b>Добавить контакты из директории</b>"
 
-#: ../gtk/main.ui.h:22
+#: ../gtk/main.ui.h:18
 msgid "Add contact"
 msgstr "Добавить контакт"
 
-#: ../gtk/main.ui.h:23
+#: ../gtk/main.ui.h:19
 msgid "Recent calls"
 msgstr "Последние звонки"
 
-#: ../gtk/main.ui.h:24
+#: ../gtk/main.ui.h:20
 msgid "My current identity:"
 msgstr "Мой текущий идентификатор:"
 
@@ -1051,19 +983,7 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr ""
-"fr: Simon Morlat\n"
-"en: Simon Morlat and Delphine Perreau\n"
-"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
-"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
-"sv: Daniel Nylander <po@danielnylander.se>\n"
-"es: Jesus Benitez <gnelson at inMail dot sk>\n"
-"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
-"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
-"pl: Robert Nasiadek <darkone@darkone.pl>\n"
-"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
-"hu: anonymous\n"
-"he: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -1243,9 +1163,7 @@ msgstr "Настройки"
 
 #: ../gtk/parameters.ui.h:18
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr ""
-"Эта секция определяет ваш SIP адрес, когда вы не используете учётную запись "
-"SIP"
+msgstr "Эта секция определяет ваш SIP адрес, когда вы не используете учётную запись SIP"
 
 #: ../gtk/parameters.ui.h:19
 msgid "Your display name (eg: John Doe):"
@@ -1383,9 +1301,7 @@ msgstr "Разрешить адаптивное управление скоро�
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
-msgstr ""
-"<i>Адаптивное управление скоростью - это технология динамического угадывания "
-"доступной пропускной способности во время звонка.</i>"
+msgstr "<i>Адаптивное управление скоростью - это технология динамического угадывания доступной пропускной способности во время звонка.</i>"
 
 #: ../gtk/parameters.ui.h:53
 msgid "<b>Bandwidth control</b>"
@@ -1754,17 +1670,9 @@ msgstr "Указание удалённой конфигурации URI"
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to "
-"be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, "
-"Linphone will restart automatically in order to fetch and take into account "
-"the new configuration. "
-msgstr ""
-"Этот диалог позволяет установить HTTP или HTTPS адрес, когда конфигурация "
-"будет получена при запуске.\n"
-"Пожалуйста, введите или измените настройки URI ниже. После нажатия OK "
-"linphone автоматически перезагрузится чтобы получить и учесть новую "
-"конфигурацию в учётной записи."
+"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+msgstr "Этот диалог позволяет установить HTTP или HTTPS адрес, когда конфигурация будет получена при запуске.\nПожалуйста, введите или измените настройки URI ниже. После нажатия OK linphone автоматически перезагрузится чтобы получить и учесть новую конфигурацию в учётной записи."
 
 #: ../gtk/provisioning-fetch.ui.h:1
 msgid "Configuring..."
@@ -1788,7 +1696,7 @@ msgstr "Конец конференции"
 
 #: ../gtk/in_call_frame.ui.h:2
 msgid "Click here to set the speakers volume"
-msgstr ""
+msgstr "Щёлкните здесь чтобы установить громкость динамиков"
 
 #: ../gtk/in_call_frame.ui.h:5
 msgid "Record this call to an audio file"
@@ -1834,61 +1742,68 @@ msgstr "Информация для входа"
 msgid "<b>Welcome!</b>"
 msgstr "<b>Добро пожаловать!</b>"
 
-#: ../coreapi/linphonecore.c:1483
+#: ../gtk/login_frame.ui.h:8
+msgid "ADSL"
+msgstr "ADSL"
+
+#: ../gtk/login_frame.ui.h:9
+msgid "Fiber Channel"
+msgstr "Оптоволоконный канал"
+
+#: ../coreapi/linphonecore.c:1555
 msgid "Ready"
 msgstr "Готов"
 
-#: ../coreapi/linphonecore.c:2415
+#: ../coreapi/linphonecore.c:2551
 msgid "Configuring"
 msgstr "Конфигурирование"
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2800
+#: ../coreapi/linphonecore.c:2946
 msgid "Contacting"
 msgstr "Соединение"
 
-#: ../coreapi/linphonecore.c:2805
+#: ../coreapi/linphonecore.c:2951
 msgid "Could not call"
 msgstr "Невозможно позвонить"
 
-#: ../coreapi/linphonecore.c:2956
+#: ../coreapi/linphonecore.c:3087
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
-msgstr ""
-"К сожалению, мы достигли максимального количества одновременных звонков"
+msgstr "К сожалению, мы достигли максимального количества одновременных звонков"
 
-#: ../coreapi/linphonecore.c:3114
+#: ../coreapi/linphonecore.c:3245
 msgid "is contacting you"
 msgstr "контактирует с вами"
 
-#: ../coreapi/linphonecore.c:3115
+#: ../coreapi/linphonecore.c:3246
 msgid " and asked autoanswer."
 msgstr "и спросил автоматический ответ."
 
-#: ../coreapi/linphonecore.c:3241
+#: ../coreapi/linphonecore.c:3372
 msgid "Modifying call parameters..."
 msgstr "Изменение параметров звонка..."
 
-#: ../coreapi/linphonecore.c:3625
+#: ../coreapi/linphonecore.c:3767
 msgid "Connected."
 msgstr "Соединён."
 
-#: ../coreapi/linphonecore.c:3650
+#: ../coreapi/linphonecore.c:3792
 msgid "Call aborted"
 msgstr "Звонок отменён"
 
-#: ../coreapi/linphonecore.c:3847
+#: ../coreapi/linphonecore.c:3981
 msgid "Could not pause the call"
 msgstr "Невозможно приостановить звонок"
 
-#: ../coreapi/linphonecore.c:3850
+#: ../coreapi/linphonecore.c:3984
 msgid "Pausing the current call..."
 msgstr "Приостановка текущего звонка..."
 
-#: ../coreapi/misc.c:436
+#: ../coreapi/misc.c:440
 msgid "Stun lookup in progress..."
 msgstr "Идет поиск STUN..."
 
-#: ../coreapi/misc.c:617
+#: ../coreapi/misc.c:650
 msgid "ICE local candidates gathering in progress..."
 msgstr "Сбор локальных кандидатов ICE в прогрессе..."
 
@@ -1944,161 +1859,150 @@ msgstr "Отдых"
 msgid "Unknown status"
 msgstr "Неизвестный статус"
 
-#: ../coreapi/proxy.c:295
+#: ../coreapi/proxy.c:292
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr ""
-"Введённый SIP-адрес прокси является недействительным, он должен начинаться с "
-"\"sip:имя_хоста\""
+msgstr "Введённый SIP-адрес прокси является недействительным, он должен начинаться с \"sip:имя_хоста\""
 
-#: ../coreapi/proxy.c:301
+#: ../coreapi/proxy.c:298
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr ""
-"Неверные параметры для sip идентификации\n"
-"Должно выглядеть как sip:имя_пользователя@домен_прокси, как например, sip:"
-"alice@example.net"
+msgstr "Неверные параметры для sip идентификации\nДолжно выглядеть как sip:имя_пользователя@домен_прокси, как например, sip:alice@example.net"
 
-#: ../coreapi/proxy.c:1010
+#: ../coreapi/proxy.c:927
 msgid "Looking for telephone number destination..."
 msgstr "Поиск назначения для телефонного номера.."
 
-#: ../coreapi/proxy.c:1014
+#: ../coreapi/proxy.c:931
 msgid "Could not resolve this number."
 msgstr "Не получилось принять решение по этому номеру."
 
-#: ../coreapi/proxy.c:1407
+#: ../coreapi/proxy.c:1324
 #, c-format
 msgid "Could not login as %s"
 msgstr "Невозможно зайти как: %s"
 
-#: ../coreapi/proxy.c:1494
-#, fuzzy, c-format
+#: ../coreapi/proxy.c:1411
+#, c-format
 msgid "Refreshing on %s..."
-msgstr "получение от %s"
+msgstr "Обновление %s..."
 
-#: ../coreapi/callbacks.c:442
+#: ../coreapi/callbacks.c:423
 msgid "Remote ringing."
 msgstr "Дистанционный звонок."
 
-#: ../coreapi/callbacks.c:454
+#: ../coreapi/callbacks.c:435
 msgid "Remote ringing..."
 msgstr "Дистанционный звонок..."
 
-#: ../coreapi/callbacks.c:475
+#: ../coreapi/callbacks.c:458
 msgid "Early media."
 msgstr "Предответное проключение."
 
-#: ../coreapi/callbacks.c:548
+#: ../coreapi/callbacks.c:488
 #, c-format
-msgid "Call with %s is paused."
-msgstr "Звонок с %s приостановлен."
+msgid "Call answered by %s"
+msgstr "На звонок ответил %s"
 
-#: ../coreapi/callbacks.c:561
-#, c-format
-msgid "Call answered by %s - on hold."
-msgstr "На звонок ответил %s - на удержании."
-
-#: ../coreapi/callbacks.c:571
+#: ../coreapi/callbacks.c:527
 msgid "Call resumed."
 msgstr "Звонок возобновлён."
 
-#: ../coreapi/callbacks.c:575
-#, c-format
-msgid "Call answered by %s."
-msgstr "На звонок ответил %s."
-
-#: ../coreapi/callbacks.c:598
+#: ../coreapi/callbacks.c:582
 msgid "Incompatible, check codecs or security settings..."
 msgstr "Несовместимость, проверьте кодеки или параметры безопасности..."
 
-#: ../coreapi/callbacks.c:603 ../coreapi/callbacks.c:921
+#: ../coreapi/callbacks.c:587 ../coreapi/callbacks.c:923
 msgid "Incompatible media parameters."
 msgstr "Несовместимость медиа-параметров."
 
-#: ../coreapi/callbacks.c:633
+#: ../coreapi/callbacks.c:612
 msgid "We have been resumed."
 msgstr "Мы возобновили."
 
 #. we are being paused
-#: ../coreapi/callbacks.c:642
+#: ../coreapi/callbacks.c:620
 msgid "We are paused by other party."
 msgstr "Мы приостановлены другой стороной."
 
-#. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:680
+#: ../coreapi/callbacks.c:630
 msgid "Call is updated by remote."
 msgstr "Звонок был дистанционно обновлён."
 
-#: ../coreapi/callbacks.c:797
+#: ../coreapi/callbacks.c:799
 msgid "Call terminated."
 msgstr "Звонок прерван."
 
-#: ../coreapi/callbacks.c:825
+#: ../coreapi/callbacks.c:827
 msgid "User is busy."
 msgstr "Пользователь занят."
 
-#: ../coreapi/callbacks.c:826
+#: ../coreapi/callbacks.c:828
 msgid "User is temporarily unavailable."
 msgstr "Пользователь временно недоступен."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:828
+#: ../coreapi/callbacks.c:830
 msgid "User does not want to be disturbed."
 msgstr "Пользователь не хочет чтобы его беспокоили."
 
-#: ../coreapi/callbacks.c:829
+#: ../coreapi/callbacks.c:831
 msgid "Call declined."
 msgstr "Звонок отклонён."
 
-#: ../coreapi/callbacks.c:844
+#: ../coreapi/callbacks.c:846
 msgid "Request timeout."
 msgstr "Таймаут запроса."
 
-#: ../coreapi/callbacks.c:875
+#: ../coreapi/callbacks.c:877
 msgid "Redirected"
 msgstr "Переадресован"
 
-#: ../coreapi/callbacks.c:930
+#: ../coreapi/callbacks.c:927
 msgid "Call failed."
 msgstr "Звонок не удался."
 
-#: ../coreapi/callbacks.c:1008
+#: ../coreapi/callbacks.c:1005
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Регистрация на %s прошла успешно."
 
-#: ../coreapi/callbacks.c:1009
+#: ../coreapi/callbacks.c:1006
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Отмена регистрации на %s завершена."
 
-#: ../coreapi/callbacks.c:1027
+#: ../coreapi/callbacks.c:1024
 msgid "no response timeout"
 msgstr "время ожидания истекло"
 
-#: ../coreapi/callbacks.c:1030
+#: ../coreapi/callbacks.c:1027
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Регистрация на %s не удалась: %s"
 
-#: ../coreapi/callbacks.c:1037
+#: ../coreapi/callbacks.c:1034
 msgid "Service unavailable, retrying"
 msgstr "Сервис недоступен, повтор"
 
 #. if encryption is DTLS, no status to be displayed
-#: ../coreapi/linphonecall.c:181
+#: ../coreapi/linphonecall.c:197
 #, c-format
 msgid "Authentication token is %s"
 msgstr "Маркер проверки подлинности: %s"
 
-#: ../coreapi/linphonecall.c:1314
+#: ../coreapi/linphonecall.c:1561
+#, c-format
+msgid "Call parameters could not be modified: %s."
+msgstr "Параметры звонка не были изменены: %s."
+
+#: ../coreapi/linphonecall.c:1563
 msgid "Call parameters were successfully modified."
 msgstr "Параметры звонка были успешно изменены."
 
-#: ../coreapi/linphonecall.c:3904
+#: ../coreapi/linphonecall.c:4394
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
@@ -2107,23 +2011,23 @@ msgstr[1] "У вас %i пропущенных вызова."
 msgstr[2] "У вас %i пропущенных вызов."
 msgstr[3] "У вас %i пропущенных вызов."
 
-#: ../coreapi/call_log.c:209
+#: ../coreapi/call_log.c:223
 msgid "aborted"
 msgstr "прервано"
 
-#: ../coreapi/call_log.c:212
+#: ../coreapi/call_log.c:226
 msgid "completed"
 msgstr "завершено"
 
-#: ../coreapi/call_log.c:215
+#: ../coreapi/call_log.c:229
 msgid "missed"
 msgstr "пропущено"
 
-#: ../coreapi/call_log.c:218
+#: ../coreapi/call_log.c:232
 msgid "unknown"
 msgstr "неизвестно"
 
-#: ../coreapi/call_log.c:220
+#: ../coreapi/call_log.c:234
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -2131,14 +2035,9 @@ msgid ""
 "To: %s\n"
 "Status: %s\n"
 "Duration: %i mn %i sec\n"
-msgstr ""
-"%s в %s\n"
-"От: %s\n"
-"До: %s\n"
-"Статус: %s\n"
-"Продолжительность: %i мин %i сек\n"
+msgstr "%s в %s\nОт: %s\nДо: %s\nСтатус: %s\nПродолжительность: %i мин %i сек\n"
 
-#: ../coreapi/call_log.c:221
+#: ../coreapi/call_log.c:235
 msgid "Outgoing call"
 msgstr "Исходящий вызов"
 
