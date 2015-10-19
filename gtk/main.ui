@@ -95,6 +95,47 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-info</property>
   </object>
+  <object class="GtkListStore" id="model3">
+    <columns>
+      <!-- column-name gchararray -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Default</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkImage" id="properties_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="yalign">0.49000000953674316</property>
+    <property name="stock">gtk-properties</property>
+  </object>
+  <object class="GtkImage" id="remove_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="tooltip_text" translatable="yes">Delete</property>
+    <property name="stock">gtk-remove</property>
+  </object>
+  <object class="GtkImage" id="remove_image1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="tooltip_text" translatable="yes">Delete</property>
+    <property name="stock">gtk-remove</property>
+  </object>
+  <object class="GtkImage" id="start_call_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixel_size">32</property>
+    <property name="icon_name">linphone-start-call</property>
+  </object>
+  <object class="GtkImage" id="start_chat_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixel_size">32</property>
+    <property name="icon_name">linphone-start-chat</property>
+  </object>
   <object class="GtkWindow" id="main">
     <property name="width_request">640</property>
     <property name="height_request">480</property>
@@ -115,7 +156,6 @@
               <object class="GtkMenuItem" id="options_menu">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Options</property>
                 <property name="use_underline">True</property>
                 <signal name="activate" handler="linphone_gtk_options_activate" swapped="no"/>
@@ -128,7 +168,6 @@
                         <property name="label">gtk-preferences</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="linphone_gtk_show_parameters" swapped="no"/>
@@ -138,7 +177,6 @@
                       <object class="GtkMenuItem" id="provisionning_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Set configuration URI</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="linphone_gtk_set_configuration_uri" swapped="no"/>
@@ -148,7 +186,6 @@
                       <object class="GtkImageMenuItem" id="disconnect_item">
                         <property name="label">gtk-disconnect</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="linphone_gtk_logout_clicked" swapped="no"/>
@@ -164,7 +201,6 @@
                       <object class="GtkCheckMenuItem" id="enable_video_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Always start video</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="linphone_gtk_enable_video" swapped="no"/>
@@ -174,7 +210,6 @@
                       <object class="GtkCheckMenuItem" id="selfview_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Enable self-view</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
@@ -185,7 +220,6 @@
                       <object class="GtkCheckMenuItem" id="show_keypad_menu_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Show keypad</property>
                         <property name="use_underline">True</property>
                         <signal name="toggled" handler="linphone_gtk_show_keypad_checked" swapped="no"/>
@@ -201,7 +235,6 @@
                       <object class="GtkImageMenuItem" id="quit_item">
                         <property name="label">gtk-quit</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="gtk_main_quit" swapped="no"/>
@@ -215,7 +248,6 @@
               <object class="GtkMenuItem" id="menuitem4">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Help</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -227,7 +259,6 @@
                         <property name="label">gtk-about</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="linphone_gtk_show_about" swapped="no"/>
@@ -238,7 +269,6 @@
                         <property name="label" translatable="yes">Show debug window</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="image">info_image</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="linphone_gtk_log_show" swapped="no"/>
@@ -249,7 +279,6 @@
                         <property name="label" translatable="yes">_Homepage</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">home_image</property>
                         <property name="use_stock">False</property>
@@ -260,7 +289,6 @@
                       <object class="GtkImageMenuItem" id="versioncheck_item">
                         <property name="label" translatable="yes">Check _Updates</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">execute_image</property>
                         <property name="use_stock">False</property>
@@ -271,7 +299,6 @@
                       <object class="GtkImageMenuItem" id="assistant_item">
                         <property name="label" translatable="yes">Account assistant</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="image">connect_image</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="linphone_gtk_show_assistant" swapped="no"/>
@@ -282,7 +309,6 @@
                         <property name="label" translatable="yes">Audio assistant</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="image">properties_image</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="linphone_gtk_show_audio_assistant" swapped="no"/>
@@ -372,7 +398,6 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="tooltip_text" translatable="yes">Initiate a new call</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="image">add_call_image</property>
                     <signal name="clicked" handler="linphone_gtk_start_call" swapped="no"/>
                   </object>
@@ -387,7 +412,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="image">start_call_image</property>
                     <signal name="clicked" handler="linphone_gtk_start_call" swapped="no"/>
                   </object>
@@ -402,7 +426,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="image">start_chat_image</property>
                     <signal name="clicked" handler="linphone_gtk_start_chat" swapped="no"/>
                   </object>
@@ -538,7 +561,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="resize_mode">immediate</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="image">add_image1</property>
                             <property name="xalign">1</property>
                             <signal name="clicked" handler="linphone_gtk_add_button_clicked" swapped="no"/>
@@ -554,7 +576,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="image">edit_image1</property>
                             <signal name="clicked" handler="linphone_gtk_edit_button_clicked" swapped="no"/>
                           </object>
@@ -569,7 +590,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="image">remove_image1</property>
                             <signal name="clicked" handler="linphone_gtk_remove_button_clicked" swapped="no"/>
                           </object>
@@ -622,6 +642,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="headers_visible">False</property>
+                                    <property name="show_expanders">False</property>
                                     <signal name="cursor-changed" handler="linphone_gtk_history_row_selected" swapped="no"/>
                                     <signal name="row-activated" handler="linphone_gtk_history_row_activated" swapped="no"/>
                                   </object>
@@ -668,7 +689,6 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
-                                            <property name="use_action_appearance">False</property>
                                             <property name="relief">none</property>
                                             <signal name="clicked" handler="linphone_gtk_directory_search_button_clicked" swapped="no"/>
                                             <child>
@@ -735,7 +755,6 @@
                                         <property name="label" translatable="yes">Add contact</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
-                                        <property name="use_action_appearance">False</property>
                                         <signal name="clicked" handler="linphone_gtk_add_contact" swapped="no"/>
                                       </object>
                                       <packing>
@@ -769,7 +788,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <property name="use_action_appearance">False</property>
                                     <property name="use_stock">True</property>
                                     <signal name="clicked" handler="linphone_gtk_clear_call_logs" swapped="no"/>
                                   </object>
@@ -891,7 +909,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="relief">none</property>
                         <signal name="clicked" handler="linphone_gtk_my_presence_clicked" swapped="no"/>
                       </object>
@@ -928,7 +945,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="relief">none</property>
                         <signal name="clicked" handler="on_proxy_refresh_button_clicked" swapped="no"/>
                       </object>
@@ -969,46 +985,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkListStore" id="model3">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Default</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkImage" id="properties_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="yalign">0.49000000953674316</property>
-    <property name="stock">gtk-properties</property>
-  </object>
-  <object class="GtkImage" id="remove_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="tooltip_text" translatable="yes">Delete</property>
-    <property name="stock">gtk-remove</property>
-  </object>
-  <object class="GtkImage" id="remove_image1">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="tooltip_text" translatable="yes">Delete</property>
-    <property name="stock">gtk-remove</property>
-  </object>
-  <object class="GtkImage" id="start_call_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixel_size">32</property>
-    <property name="icon_name">linphone-start-call</property>
-  </object>
-  <object class="GtkImage" id="start_chat_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixel_size">32</property>
-    <property name="icon_name">linphone-start-chat</property>
   </object>
 </interface>
