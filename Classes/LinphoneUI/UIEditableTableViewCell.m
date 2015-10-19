@@ -30,15 +30,20 @@
 	self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
 	if (self) {
 		UITextField *tf = [[UITextField alloc] init];
-		[tf setHidden:TRUE];
-		[tf setClearButtonMode:UITextFieldViewModeWhileEditing];
-		[tf setContentVerticalAlignment:UIControlContentVerticalAlignmentCenter];
-		[tf setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
+		tf.hidden = TRUE;
+		tf.clearButtonMode = UITextFieldViewModeWhileEditing;
+		tf.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+		tf.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+
 		self.detailTextField = tf;
 
 		UIFont *font = [UIFont fontWithName:@"Helvetica-Bold" size:[UIFont systemFontSize]];
 		[self.detailTextLabel setFont:font];
 		[self.detailTextField setFont:font];
+
+		self.detailTextLabel.backgroundColor = self.detailTextField.backgroundColor =
+			[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A"]];
+
 		[self.contentView addSubview:detailTextField];
 
 		// a vertical separator that will come between the text and detailed text
@@ -58,10 +63,11 @@
 - (void)layoutSubviews {
 	[super layoutSubviews];
 
+	CGRect superframe = [[self.detailTextField superview] frame];
 	CGRect detailEditFrame;
 	detailEditFrame.origin.x = 15;
-	detailEditFrame.origin.y = 0;
-	detailEditFrame.size.height = 44;
+	detailEditFrame.origin.y = 5;
+	detailEditFrame.size.height = superframe.size.height - 10;
 
 	if ([[self.textLabel text] length] != 0) {
 		detailEditFrame.origin.x += [self.textLabel frame].size.width + 8;
@@ -79,9 +85,8 @@
 	}
 
 	// put the detailed text edit view at the correct position
-	CGRect superframe = [[self.detailTextField superview] frame];
-	detailEditFrame.size.width = superframe.size.width - detailEditFrame.origin.x;
-	[self.detailTextField setFrame:detailEditFrame];
+	detailEditFrame.size.width = superframe.size.width - 10 - detailEditFrame.origin.x;
+	self.detailTextField.frame = detailEditFrame;
 }
 
 #pragma mark - UITableViewCell Functions

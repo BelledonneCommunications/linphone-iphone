@@ -50,8 +50,8 @@
 @implementation ContactDetailsTableView
 
 static const ContactSections_e contactSections[ContactSections_MAX] = {
-	ContactSections_First_Name, ContactSections_Last_Name, ContactSections_Number, ContactSections_Sip,
-	ContactSections_Email};
+	ContactSections_None,   ContactSections_First_Name, ContactSections_Last_Name,
+	ContactSections_Number, ContactSections_Sip,		ContactSections_Email};
 
 @synthesize contactDetailsDelegate;
 @synthesize contact;
@@ -500,7 +500,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		[cell.detailTextField setDelegate:self];
 		[cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-		[cell setBackgroundColor:[UIColor whiteColor]];
 	}
 
 	NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];
@@ -510,11 +509,11 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	// default label is our app name
 	NSString *label = [FastAddressBook localizedLabel:[labelArray objectAtIndex:0]];
 
-	if (contactSections[[indexPath section]] == ContactSections_First_Name) {
+	if (contactSections[indexPath.section] == ContactSections_First_Name) {
 		value =
 			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
 		label = nil;
-	} else if (contactSections[[indexPath section]] == ContactSections_Last_Name) {
+	} else if (contactSections[indexPath.section] == ContactSections_Last_Name) {
 		value =
 			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
 		label = nil;
@@ -721,23 +720,38 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	return UITableViewCellEditingStyleDelete;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	NSString *text = nil;
 	if (contactSections[section] == ContactSections_First_Name) {
-		return NSLocalizedString(@"First name", nil);
+		text = NSLocalizedString(@"First name", nil);
 	} else if (contactSections[section] == ContactSections_Last_Name) {
-		return NSLocalizedString(@"Last name", nil);
+		text = NSLocalizedString(@"Last name", nil);
+	} else if ([self getSectionData:section].count > 0) {
+		if (contactSections[section] == ContactSections_Number) {
+			text = NSLocalizedString(@"Phone numbers", nil);
+		} else if (contactSections[section] == ContactSections_Sip) {
+			text = NSLocalizedString(@"SIP addresses", nil);
+		} else if (contactSections[section] == ContactSections_Email) {
+			text = NSLocalizedString(@"Email addresses", nil);
+		}
 	}
-	if ([[self getSectionData:section] count] == 0)
-		return nil;
 
-	if (contactSections[section] == ContactSections_Number) {
-		return NSLocalizedString(@"Phone numbers", nil);
-	} else if (contactSections[section] == ContactSections_Sip) {
-		return NSLocalizedString(@"SIP addresses", nil);
-	} else if (contactSections[section] == ContactSections_Email) {
-		return NSLocalizedString(@"Email addresses", nil);
+	if (!text) {
+		return nil;
 	}
-	return nil;
+
+	UIView *tempView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
+	tempView.backgroundColor = [UIColor clearColor];
+
+	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 300, 10)];
+	tempLabel.backgroundColor = [UIColor clearColor];
+	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_E"]];
+	tempLabel.text = text.uppercaseString;
+	tempLabel.textAlignment = NSTextAlignmentLeft;
+	tempLabel.font = [UIFont systemFontOfSize:12];
+	[tempView addSubview:tempLabel];
+
+	return tempView;
 }
 
 #pragma mark - ContactDetailsLabelDelegate Functions
@@ -821,6 +835,16 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 }
 - (BOOL)isValid {
 	return true;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+	return 1e-5;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	if (section == 0)
+		return 1e-5;
+	return [self tableView:tableView viewForHeaderInSection:section].frame.size.height;
 }
 
 @end

@@ -24,7 +24,7 @@
 #import "ContactDetailsLabelView.h"
 
 typedef enum _ContactSections {
-	ContactSections_None = -1,
+	ContactSections_None = 0, // first section is empty because we cannot set header for first section
 	ContactSections_First_Name,
 	ContactSections_Last_Name,
 	ContactSections_Number,
