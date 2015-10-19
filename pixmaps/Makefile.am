@@ -60,7 +60,7 @@ dist_actions48icons_DATA= \
 	linphone-hold-off.png
 
 actionssvgiconsdir=$(iconsdir)/scalable/actions
-dist_actionssvgiconsdir_DATA= \
+dist_actionssvgicons_DATA= \
 	svg/linphone-start-call.svg \
 	svg/linphone-add-call.svg \
 	svg/linphone-hold-off.svg \
