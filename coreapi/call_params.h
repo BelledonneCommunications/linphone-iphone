@@ -426,6 +426,21 @@ LINPHONE_PUBLIC const char * linphone_call_params_get_custom_sdp_attribute(const
 **/
 LINPHONE_PUBLIC const char * linphone_call_params_get_custom_sdp_media_attribute(const LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name);
 
+/**
+ * Clear the custom SDP attributes related to all the streams in the SDP exchanged within SIP messages during a call.
+ * @param[in] params The #LinphoneCallParams to clear the custom SDP attributes from.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_call_params_clear_custom_sdp_attributes(LinphoneCallParams *params);
+
+/**
+ * Clear the custom SDP attributes related to a specific stream in the SDP exchanged within SIP messages during a call.
+ * @param[in] params The #LinphoneCallParams to clear the custom SDP attributes from.
+ * @param[in] type The type of the stream to clear the custom SDP attributes from.
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC void linphone_call_params_clear_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type);
+
 
 /*******************************************************************************
  * DEPRECATED                                                                  *

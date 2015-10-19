@@ -1234,8 +1234,8 @@ static void call_with_custom_sdp_attributes_cb(LinphoneCore *lc, LinphoneCall *c
 		BC_ASSERT_PTR_NOT_NULL(value);
 		if (value) BC_ASSERT_STRING_EQUAL(value, "sunny");
 		params = linphone_core_create_call_params(lc, call);
-		linphone_call_params_set_custom_sdp_attributes(params, NULL);
-		linphone_call_params_set_custom_sdp_media_attributes(params, LinphoneStreamTypeAudio, NULL);
+		linphone_call_params_clear_custom_sdp_attributes(params);
+		linphone_call_params_clear_custom_sdp_media_attributes(params, LinphoneStreamTypeAudio);
 		linphone_call_params_add_custom_sdp_attribute(params, "working", "no");
 		BC_ASSERT_EQUAL(linphone_core_accept_call_update(lc, call, params), 0, int, "%i");
 		linphone_call_params_destroy(params);
@@ -1276,8 +1276,8 @@ static void call_with_custom_sdp_attributes(void) {
 	vtable->call_state_changed = call_with_custom_sdp_attributes_cb;
 	linphone_core_add_listener(marie->lc, vtable);
 	pauline_params = linphone_core_create_call_params(pauline->lc, call_pauline);
-	linphone_call_params_set_custom_sdp_attributes(pauline_params, NULL);
-	linphone_call_params_set_custom_sdp_media_attributes(pauline_params, LinphoneStreamTypeAudio, NULL);
+	linphone_call_params_clear_custom_sdp_attributes(pauline_params);
+	linphone_call_params_clear_custom_sdp_media_attributes(pauline_params, LinphoneStreamTypeAudio);
 	linphone_call_params_add_custom_sdp_attribute(pauline_params, "weather", "sunny");
 	linphone_core_update_call(pauline->lc, call_pauline, pauline_params);
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallUpdatedByRemote, 1));
