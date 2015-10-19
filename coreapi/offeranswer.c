@@ -566,6 +566,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 				strncpy(result->streams[i].proto_other,rs->proto_other,sizeof(rs->proto_other)-1);
 			}
 		}
+		result->streams[i].custom_sdp_attributes = sal_custom_sdp_attribute_clone(ls->custom_sdp_attributes);
 	}
 	result->nb_streams=i;
 	strcpy(result->username, local_capabilities->username);
@@ -577,6 +578,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	strcpy(result->ice_ufrag, local_capabilities->ice_ufrag);
 	result->ice_lite = local_capabilities->ice_lite;
 	result->ice_completed = local_capabilities->ice_completed;
+	result->custom_sdp_attributes = sal_custom_sdp_attribute_clone(local_capabilities->custom_sdp_attributes);
 
 	strcpy(result->name,local_capabilities->name);
 

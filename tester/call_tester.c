@@ -330,7 +330,7 @@ bool_t call_with_params(LinphoneCoreManager* caller_mgr
 						,const LinphoneCallParams *callee_params){
 	LinphoneCallTestParams caller_test_params = {0}, callee_test_params =  {0};
 	caller_test_params.base = (LinphoneCallParams*)caller_params;
-	callee_test_params.base = (LinphoneCallParams*)caller_params;
+	callee_test_params.base = (LinphoneCallParams*)callee_params;
 	return call_with_params2(caller_mgr,callee_mgr,&caller_test_params,&callee_test_params,FALSE);
 }
 
@@ -1226,20 +1226,38 @@ static void call_with_custom_headers(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void call_with_custom_sdp_attributes_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
+	if (cstate == LinphoneCallUpdatedByRemote) {
+		LinphoneCallParams *params;
+		const LinphoneCallParams *remote_params = linphone_call_get_remote_params(call);
+		const char *value = linphone_call_params_get_custom_sdp_attribute(remote_params, "weather");
+		BC_ASSERT_PTR_NOT_NULL(value);
+		if (value) BC_ASSERT_STRING_EQUAL(value, "sunny");
+		params = linphone_core_create_call_params(lc, call);
+		linphone_call_params_set_custom_sdp_attributes(params, NULL);
+		linphone_call_params_set_custom_sdp_media_attributes(params, LinphoneStreamTypeAudio, NULL);
+		linphone_call_params_add_custom_sdp_attribute(params, "working", "no");
+		BC_ASSERT_EQUAL(linphone_core_accept_call_update(lc, call, params), 0, int, "%i");
+		linphone_call_params_destroy(params);
+	}
+}
+
 static void call_with_custom_sdp_attributes(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall *call_marie, *call_pauline;
-	LinphoneCallParams *params;
+	LinphoneCallParams *pauline_params;
 	const LinphoneCallParams *marie_remote_params;
+	const LinphoneCallParams *pauline_remote_params;
 	const char *value;
+	LinphoneCoreVTable *vtable;
 
-	params = linphone_core_create_default_call_parameters(marie->lc);
-	linphone_call_params_add_custom_sdp_attribute(params, "weather", "bad");
-	linphone_call_params_add_custom_sdp_attribute(params, "working", "yes");
-	linphone_call_params_add_custom_sdp_media_attribute(params, LinphoneStreamTypeAudio, "sleeping", "almost");
-	BC_ASSERT_TRUE(call_with_caller_params(pauline, marie, params));
-	linphone_call_params_destroy(params);
+	pauline_params = linphone_core_create_default_call_parameters(pauline->lc);
+	linphone_call_params_add_custom_sdp_attribute(pauline_params, "weather", "bad");
+	linphone_call_params_add_custom_sdp_attribute(pauline_params, "working", "yes");
+	linphone_call_params_add_custom_sdp_media_attribute(pauline_params, LinphoneStreamTypeAudio, "sleeping", "almost");
+	BC_ASSERT_TRUE(call_with_caller_params(pauline, marie, pauline_params));
+	linphone_call_params_destroy(pauline_params);
 
 	call_marie = linphone_core_get_current_call(marie->lc);
 	call_pauline = linphone_core_get_current_call(pauline->lc);
@@ -1249,10 +1267,27 @@ static void call_with_custom_sdp_attributes(void) {
 	marie_remote_params = linphone_call_get_remote_params(call_marie);
 	value = linphone_call_params_get_custom_sdp_attribute(marie_remote_params, "weather");
 	BC_ASSERT_PTR_NOT_NULL(value);
-	BC_ASSERT_STRING_EQUAL(value, "bad");
+	if (value) BC_ASSERT_STRING_EQUAL(value, "bad");
 	value = linphone_call_params_get_custom_sdp_media_attribute(marie_remote_params, LinphoneStreamTypeAudio, "sleeping");
 	BC_ASSERT_PTR_NOT_NULL(value);
-	BC_ASSERT_STRING_EQUAL(value, "almost");
+	if (value) BC_ASSERT_STRING_EQUAL(value, "almost");
+
+	vtable = linphone_core_v_table_new();
+	vtable->call_state_changed = call_with_custom_sdp_attributes_cb;
+	linphone_core_add_listener(marie->lc, vtable);
+	pauline_params = linphone_core_create_call_params(pauline->lc, call_pauline);
+	linphone_call_params_set_custom_sdp_attributes(pauline_params, NULL);
+	linphone_call_params_set_custom_sdp_media_attributes(pauline_params, LinphoneStreamTypeAudio, NULL);
+	linphone_call_params_add_custom_sdp_attribute(pauline_params, "weather", "sunny");
+	linphone_core_update_call(pauline->lc, call_pauline, pauline_params);
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallUpdating, 1));
+	linphone_call_params_destroy(pauline_params);
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+	pauline_remote_params = linphone_call_get_remote_params(call_pauline);
+	value = linphone_call_params_get_custom_sdp_attribute(pauline_remote_params, "working");
+	BC_ASSERT_PTR_NOT_NULL(value);
+	if (value) BC_ASSERT_STRING_EQUAL(value, "no");
 
 	end_call(pauline, marie);
 
