@@ -68,6 +68,9 @@ if(MSVC)
 	list(APPEND CMAKE_REQUIRED_INCLUDES "${MSVC_INCLUDE_DIR}")
 endif()
 
+# find_package should be invoked here to check for libraries - however do NOT
+# call include_directories here (see below)
+
 if(LINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS)
 	include("${EP_bellesip_CONFIG_DIR}/BelleSIPConfig.cmake")
 	include("${EP_ms2_CONFIG_DIR}/Mediastreamer2Config.cmake")
@@ -131,7 +134,6 @@ endif()
 if(ENABLE_NLS)
 	find_package(Gettext REQUIRED)
 	find_package(Intl REQUIRED)
-	include_directories(${INTL_INCLUDE_DIRS})
 endif()
 if(ENABLE_CALL_LOGS_STORAGE)
 	find_package(Sqlite3 REQUIRED)
@@ -145,6 +147,8 @@ if(UNIX AND NOT APPLE)
 	check_include_files(libudev.h HAVE_LIBUDEV_H)
 endif()
 
+# include_directories must be called only UNDER THIS LINE in order to use our
+# projects submodules first (we do NOT want to have system headers in first position)
 include_directories(
 	include/
 	coreapi/
@@ -152,8 +156,13 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}/coreapi/
 	${BELLESIP_INCLUDE_DIRS}
 	${MEDIASTREAMER2_INCLUDE_DIRS}
-	${XML2_INCLUDE_DIRS}
 )
+if(ENABLE_TUNNEL)
+	include_directories(${TUNNEL_INCLUDE_DIRS})
+endif()
+
+include_directories(${XML2_INCLUDE_DIRS})
+
 if(ZLIB_FOUND)
 	include_directories(${ZLIB_INCLUDE_DIRS})
 	set(HAVE_ZLIB 1)
@@ -163,22 +172,18 @@ if(SQLITE3_FOUND)
 	add_definitions("-DMSG_STORAGE_ENABLED")
 	add_definitions("-DCALL_LOGS_STORAGE_ENABLED")
 endif()
-if(ENABLE_TUNNEL)
-	include_directories(${TUNNEL_INCLUDE_DIRS})
-endif()
-if(ENABLE_DEBUG_LOGS)
-	add_definitions("-DDEBUG")
+if(INTL_FOUND)
+	set(HAVE_INTL 1)
+	include_directories(${INTL_INCLUDE_DIRS})
 endif()
 if(MSVC)
 	include_directories(${MSVC_INCLUDE_DIR})
 endif()
-if(INTL_FOUND)
-	set(HAVE_INTL 1)
-	include_directories(${INTL_INCLUDE_DIRECTORIES})
-endif()
 
 add_definitions("-DIN_LINPHONE")
-
+if(ENABLE_DEBUG_LOGS)
+	add_definitions("-DDEBUG")
+endif()
 
 if(MSVC)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3")
