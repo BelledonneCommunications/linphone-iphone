@@ -60,12 +60,6 @@
       </row>
     </data>
   </object>
-  <object class="GtkImage" id="dialer_image">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixel_size">32</property>
-    <property name="icon_name">linphone-show-dialer</property>
-  </object>
   <object class="GtkImage" id="edit_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -210,6 +204,15 @@
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
                         <signal name="toggled" handler="linphone_gtk_enable_self_view" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="show_keypad_menu_item">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Show keypad</property>
+                        <property name="use_underline">True</property>
+                        <signal name="toggled" handler="linphone_gtk_show_keypad_checked" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -381,20 +384,6 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="keypad">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="image">dialer_image</property>
-                    <signal name="clicked" handler="linphone_gtk_create_keypad" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkButton" id="add_call">
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -405,8 +394,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="padding">6</property>
-                    <property name="position">2</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -420,7 +408,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -435,7 +423,7 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="pack_type">end</property>
-                    <property name="position">4</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>

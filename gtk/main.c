@@ -1811,7 +1811,7 @@ void linphone_gtk_keypad_key_released(GtkWidget *w, GdkEvent *event, gpointer us
 	}
 }
 
-void linphone_gtk_create_keypad(GtkWidget *button){
+static void linphone_gtk_show_keypad(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *k=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"keypad");
 	GtkWidget *keypad;
@@ -1821,7 +1821,7 @@ void linphone_gtk_create_keypad(GtkWidget *button){
 	keypad=linphone_gtk_create_window("keypad", NULL);
 	linphone_gtk_connect_digits(keypad);
 	linphone_gtk_init_dtmf_table(keypad);
-	g_object_set_data(G_OBJECT(mw),"keypad",(gpointer)keypad);
+	g_object_set_data(G_OBJECT(mw),"keypad", keypad);
 	if(!GPOINTER_TO_INT(g_object_get_data(G_OBJECT(mw),"show_abcd"))){
 		gtk_widget_hide(linphone_gtk_get_widget(keypad,"dtmf_A"));
 		gtk_widget_hide(linphone_gtk_get_widget(keypad,"dtmf_B"));
@@ -1830,6 +1830,30 @@ void linphone_gtk_create_keypad(GtkWidget *button){
 		gtk_table_resize(GTK_TABLE(linphone_gtk_get_widget(keypad,"dtmf_table")),4,3);
 	}
 	gtk_widget_show(keypad);
+}
+
+static void linphone_gtk_destroy_keypad(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *keypad = GTK_WIDGET(g_object_get_data(G_OBJECT(mw), "keypad"));
+	if(keypad) {
+		gtk_widget_destroy(keypad);
+		g_object_set_data(G_OBJECT(mw), "keypad", NULL);
+	}
+}
+
+void linphone_gtk_show_keypad_checked(GtkCheckMenuItem *check_menu_item) {
+	if(gtk_check_menu_item_get_active(check_menu_item)) {
+		linphone_gtk_show_keypad();
+	} else {
+		linphone_gtk_destroy_keypad();
+	}
+}
+
+gboolean linphone_gtk_keypad_destroyed_handler(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *show_keypad_item = linphone_gtk_get_widget(mw, "show_keypad_menu_item");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(show_keypad_item), FALSE);
+	return FALSE;
 }
 
 static void linphone_gtk_init_main_window(){
