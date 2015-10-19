@@ -4,12 +4,18 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkAssistant" id="setup_wizard">
     <property name="can_focus">False</property>
-    <property name="border_width">12</property>
+    <property name="border_width">8</property>
     <property name="title" translatable="yes">SIP account configuration assistant</property>
     <property name="resizable">False</property>
     <signal name="close" handler="linphone_gtk_assistant_closed" swapped="no"/>
     <signal name="cancel" handler="linphone_gtk_assistant_closed" swapped="no"/>
     <signal name="prepare" handler="linphone_gtk_assistant_prepare" swapped="no"/>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
     <child>
       <placeholder/>
     </child>
@@ -30,7 +36,9 @@ This assistant will help you to use a SIP account for your calls.</property>
       <object class="GtkVBox" id="page1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="border_width">8</property>
         <property name="spacing">2</property>
+        <property name="homogeneous">True</property>
         <child>
           <object class="GtkRadioButton" id="radio_create_account">
             <property name="label" translatable="yes">Create an account on linphone.org</property>
@@ -108,27 +116,35 @@ This assistant will help you to use a SIP account for your calls.</property>
       <object class="GtkTable" id="page2">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="border_width">8</property>
         <property name="n_rows">6</property>
         <property name="n_columns">2</property>
+        <property name="column_spacing">8</property>
+        <property name="row_spacing">4</property>
         <child>
           <object class="GtkLabel" id="p2_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="ypad">8</property>
             <property name="label" translatable="yes">Enter your account information</property>
           </object>
           <packing>
             <property name="right_attach">2</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="p2_label_username">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Username*</property>
           </object>
           <packing>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -147,17 +163,21 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="p2_label_password">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Password*</property>
           </object>
           <packing>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -177,17 +197,21 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="p2_label_domain">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Domain*</property>
           </object>
           <packing>
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -206,17 +230,21 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="p2_label_proxy">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Proxy</property>
           </object>
           <packing>
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -235,6 +263,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -249,6 +278,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">5</property>
             <property name="bottom_attach">6</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
       </object>
@@ -261,28 +291,35 @@ This assistant will help you to use a SIP account for your calls.</property>
       <object class="GtkTable" id="page3">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="border_width">8</property>
         <property name="n_rows">3</property>
         <property name="n_columns">2</property>
-        <property name="homogeneous">True</property>
+        <property name="column_spacing">8</property>
+        <property name="row_spacing">4</property>
         <child>
           <object class="GtkLabel" id="p3_label">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="ypad">8</property>
             <property name="label" translatable="yes">Enter your linphone.org username</property>
           </object>
           <packing>
             <property name="right_attach">2</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="p3_label_username">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Username:</property>
           </object>
           <packing>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -301,17 +338,21 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="p3_label_password">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Password:</property>
           </object>
           <packing>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -330,6 +371,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
       </object>
@@ -342,8 +384,11 @@ This assistant will help you to use a SIP account for your calls.</property>
       <object class="GtkTable" id="page4">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="border_width">8</property>
         <property name="n_rows">7</property>
         <property name="n_columns">3</property>
+        <property name="column_spacing">8</property>
+        <property name="row_spacing">4</property>
         <child>
           <object class="GtkLabel" id="p4_label">
             <property name="visible">True</property>
@@ -358,11 +403,14 @@ This assistant will help you to use a SIP account for your calls.</property>
           <object class="GtkLabel" id="p4_label_email">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Email: (*)</property>
           </object>
           <packing>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -381,6 +429,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -395,17 +444,22 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">3</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="p4_label_username">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Username: (*)</property>
           </object>
           <packing>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -424,6 +478,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -438,17 +493,22 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">3</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
+            <property name="x_options"/>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="p4_label_password1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Password: (*)</property>
           </object>
           <packing>
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -468,17 +528,21 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="p4_label_password2">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="xalign">1</property>
             <property name="label" translatable="yes">Confirm your password: (*)</property>
           </object>
           <packing>
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
+            <property name="x_options">GTK_FILL</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -498,6 +562,7 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">2</property>
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
+            <property name="y_options">GTK_FILL</property>
           </packing>
         </child>
         <child>
@@ -512,6 +577,8 @@ This assistant will help you to use a SIP account for your calls.</property>
             <property name="right_attach">3</property>
             <property name="top_attach">3</property>
             <property name="bottom_attach">5</property>
+            <property name="x_options"/>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
