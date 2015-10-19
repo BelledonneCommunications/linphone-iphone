@@ -411,7 +411,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			linphone_address_destroy(parsedAddress);
 		UIAlertView *errorView =
 			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Check error(s)", nil)
-									   message:NSLocalizedString(@"Please enter a valid username", nil)
+									   message:NSLocalizedString(@"Please enter a valid username.", nil)
 									  delegate:nil
 							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
 							 otherButtonTitles:nil, nil];
@@ -701,11 +701,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 				   withTransport:(NSString *)transport {
 	NSMutableString *errors = [NSMutableString string];
 	if ([username length] == 0) {
-		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.\n", nil)]];
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.", nil)]];
+		[errors appendString:@"\n"];
 	}
 
 	if (domain != nil && [domain length] == 0) {
-		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid domain.\n", nil)]];
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid domain.", nil)]];
+		[errors appendString:@"\n"];
 	}
 
 	if ([errors length]) {
@@ -779,26 +781,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSInteger password_length = [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"wizard"];
 
 	if ([username length] < username_length) {
-		[errors
-			appendString:[NSString stringWithFormat:NSLocalizedString(
-														@"The username is too short (minimum %d characters).\n", nil),
-													username_length]];
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(
+															@"The username is too short (minimum %d characters).", nil),
+														username_length]];
+		[errors appendString:@"\n"];
 	}
 
 	if ([password length] < password_length) {
-		[errors
-			appendString:[NSString stringWithFormat:NSLocalizedString(
-														@"The password is too short (minimum %d characters).\n", nil),
-													password_length]];
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(
+															@"The password is too short (minimum %d characters).", nil),
+														password_length]];
+		[errors appendString:@"\n"];
 	}
 
 	if (![password2 isEqualToString:password]) {
-		[errors appendString:NSLocalizedString(@"The passwords are different.\n", nil)];
+		[errors appendString:NSLocalizedString(@"The passwords are different.", nil)];
+		[errors appendString:@"\n"];
 	}
 
 	NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @".+@.+\\.[A-Za-z]{2}[A-Za-z]*"];
 	if (![emailTest evaluateWithObject:email]) {
-		[errors appendString:NSLocalizedString(@"The email is invalid.\n", nil)];
+		[errors appendString:NSLocalizedString(@"The email is invalid.", nil)];
+		[errors appendString:@"\n"];
 	}
 
 	if ([errors length]) {
@@ -837,7 +841,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSMutableString *errors = [NSMutableString string];
 	if ([username length] == 0) {
 
-		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.\n", nil)]];
+		[errors appendString:[NSString stringWithFormat:NSLocalizedString(@"Please enter a valid username.", nil)]];
+		[errors appendString:@"\n"];
 	}
 
 	if ([errors length]) {
