@@ -2041,7 +2041,7 @@ static void populate_xdg_data_dirs_envvar(void) {
 	paths = g_strsplit(value, ":", -1);
 	for(i=0; paths[i] && strcmp(paths[i], PACKAGE_DATA_DIR) != 0; i++);
 	if(paths[i] == NULL) {
-		gchar *new_value = g_strdup_printf("%s:%s", value, PACKAGE_DATA_DIR);
+		gchar *new_value = g_strdup_printf("%s:%s", PACKAGE_DATA_DIR, value);
 		g_setenv("XDG_DATA_DIRS", new_value, TRUE);
 		g_free(new_value);
 	}

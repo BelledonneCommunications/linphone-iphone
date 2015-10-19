@@ -8,25 +8,24 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="82"
-   height="82"
-   viewBox="0 0 82 82"
+   width="101px"
+   height="100px"
+   viewBox="0 0 101 100"
    version="1.1"
    id="svg2"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="linphone-status-away.svg"
-   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-status-away.png"
-   inkscape:export-xdpi="52.68"
-   inkscape:export-ydpi="52.68">
+   sodipodi:docname="linphone-hold-on.svg"
+   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-hold-on.png"
+   inkscape:export-xdpi="43.200001"
+   inkscape:export-ydpi="43.200001">
   <metadata
-     id="metadata17">
+     id="metadata18">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>statut_absent</dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -41,26 +40,26 @@
      inkscape:pageshadow="2"
      inkscape:window-width="1920"
      inkscape:window-height="1133"
-     id="namedview15"
+     id="namedview16"
      showgrid="false"
-     inkscape:zoom="2.8433735"
-     inkscape:cx="-6.1271186"
-     inkscape:cy="41.5"
+     inkscape:zoom="2.36"
+     inkscape:cx="-6.279661"
+     inkscape:cy="50"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
   <title
-     id="title4">statut_absent</title>
+     id="title4">pause_small_over_selected</title>
   <desc
      id="desc6">Created with Sketch.</desc>
   <defs
      id="defs8" />
   <path
-     style="fill:#ffa645;fill-rule:evenodd;stroke:none;stroke-width:1"
+     style="fill:none;fill-rule:evenodd;stroke:#ff5e00;stroke-width:7;stroke-linecap:round;stroke-linejoin:round"
      inkscape:connector-curvature="0"
      sketch:type="MSShapeGroup"
-     id="Fill-1"
-     d="m 75.871349,40.202859 c 0,19.29648 -15.453929,34.937612 -34.516795,34.937612 -19.062866,0 -34.512481,-15.641132 -34.512481,-34.937612 0,-19.294296 15.449615,-34.9376112 34.512481,-34.9376112 19.062866,0 34.516795,15.6433152 34.516795,34.9376112 l 0,0 z" />
+     id="Imported-Layers"
+     d="m 42.672311,30.833184 0,39.473684 m 15.451686,-39.473684 0,39.473684" />
 </svg>

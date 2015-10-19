@@ -36,12 +36,24 @@ install(FILES
 	svg/linphone-status-away.svg
 	svg/linphone-status-donotdisturb.svg
 	svg/linphone-status-offline.svg
+	svg/linphone-call-status-incoming.svg
+	svg/linphone-call-status-missed.svg
+	svg/linphone-call-status-outgoing.svg
+	svg/linphone-chat-new-message-and-writing.svg
+	svg/linphone-chat-new-message.svg
+	svg/linphone-chat-nothing.svg
+	svg/linphone-chat-writing.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
 
 install(FILES
 	svg/linphone-start-call.svg
+	svg/linphone-add-call.svg
+	svg/linphone-hold-off.svg
+	svg/linphone-hold-on.svg
+	svg/linphone-start-call2.svg
+	svg/linphone-start-chat.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
@@ -61,6 +73,7 @@ install(FILES
 	linphone-chat-new-message-and-writing.png
 	linphone-call-status-incoming.png
 	linphone-call-status-outgoing.png
+	linphone-call-status-missed.png
 	linphone-contact-bookmarked.png
 	linphone-contact-not-bookmarked.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
@@ -69,7 +82,6 @@ install(FILES
 
 install(FILES
 	linphone-start-call2.png
-	linphone-show-dialer.png
 	linphone-add-call.png
 	linphone-start-call.png
 	linphone-start-chat.png

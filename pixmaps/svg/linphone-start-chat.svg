@@ -8,25 +8,25 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="122"
-   height="122"
-   viewBox="0 0 122 122"
+   width="80px"
+   height="80px"
+   viewBox="0 0 80 80"
    version="1.1"
    id="svg2"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="linphone-stop-call.svg"
-   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-stop-call.png"
-   inkscape:export-xdpi="35.41"
-   inkscape:export-ydpi="35.41">
+   sodipodi:docname="linphone-start-chat.svg"
+   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-start-chat.png"
+   inkscape:export-xdpi="54"
+   inkscape:export-ydpi="54">
   <metadata
-     id="metadata16">
+     id="metadata18">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>call_hangup</dc:title>
+        <dc:title>footer_chat</dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -41,30 +41,37 @@
      inkscape:pageshadow="2"
      inkscape:window-width="1920"
      inkscape:window-height="1133"
-     id="namedview14"
+     id="namedview16"
      showgrid="false"
-     inkscape:zoom="2.2264151"
-     inkscape:cx="0.81355932"
-     inkscape:cy="53"
+     inkscape:zoom="2.95"
+     inkscape:cx="-5.4237288"
+     inkscape:cy="40"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
   <title
-     id="title4">call_hangup</title>
+     id="title4">footer_chat</title>
   <desc
      id="desc6">Created with Sketch.</desc>
   <defs
      id="defs8" />
   <g
-     id="g4152"
-     transform="translate(-0.44915254,7.952437)">
+     id="g4159">
     <path
-       d="M 119.2936,34.487 C 110.3456,15.761 83.7116,2.844 61.5266,2.844 l -0.462,0 c -22.188,0 -48.828,12.924 -57.771,31.645 l 3.263,24.246 28.585,0 2.023,-24.131 48.263,0 2.018,24.131 28.585,0 3.263,-24.248 0,0 z m -78.211,48.151 18.896,18.892 1.317,1.314 -20.213,-20.206 z m 40.425,0.019 -20.212,20.187 20.212,-20.187 z m -20.212,18.112 0,-40.01 0,40.01 z"
-       id="Page-1"
+       d="m 28.299535,68.274419 c -9.3e-4,0 -11.122791,11.769302 -25.299535,8.603721 0,0 13.88186,-4.053954 10.732093,-16.31814 L 13.630698,59.992558 C 7.054884,53.943256 3,45.663256 3,36.527442 3,18.011163 19.662326,3 40.210233,3 60.75907,3 77.419535,18.011163 77.419535,36.527442 c 0,18.516279 -16.660465,33.526512 -37.209302,33.526512 -4.167442,0 -8.172094,-0.614884 -11.912559,-1.753489 l 0.0019,-0.02605 0,0 z m -5.413954,-37.680931 34.552558,0 -34.552558,0 z m 0,11.867907 34.552558,0 -34.552558,0 z"
        sketch:type="MSShapeGroup"
+       id="path13"
        inkscape:connector-curvature="0"
-       style="fill:none;fill-rule:evenodd;stroke:#ff0000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+    <rect
+       id="Rectangle-250-Copy-11"
+       sketch:type="MSShapeGroup"
+       x="-6"
+       y="-5"
+       width="90"
+       height="90"
+       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:none;stroke-width:1" />
   </g>
 </svg>
