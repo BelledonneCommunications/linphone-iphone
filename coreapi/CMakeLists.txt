@@ -26,7 +26,7 @@ if(MSVC AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone")
 endif()
 
 if(NOT WIN32)
-	find_package(Iconv)
+	find_package(Iconv QUIET)
 endif()
 
 
