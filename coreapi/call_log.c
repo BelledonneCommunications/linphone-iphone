@@ -524,6 +524,25 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 	}
 }
 
+static void copy_user_data_from_existing_log(MSList *existing_logs, LinphoneCallLog *log) {
+	while (existing_logs) {
+		LinphoneCallLog *existing_log = (LinphoneCallLog *)existing_logs->data;
+		if (existing_log->storage_id == log->storage_id) {
+			log->user_data = existing_log->user_data;
+			break;
+		}
+		existing_logs = ms_list_next(existing_logs);
+	}
+}
+
+static void copy_user_data_from_existing_logs(MSList *existing_logs, MSList *new_logs) {
+	while (new_logs) {
+		LinphoneCallLog *new_log = (LinphoneCallLog *)new_logs->data;
+		copy_user_data_from_existing_log(existing_logs, new_log);
+		new_logs = ms_list_next(new_logs);
+	}
+}
+
 const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
 	char *buf;
 	uint64_t begin,end;
@@ -540,20 +559,7 @@ const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
 	sqlite3_free(buf);
 	
 	if (lc->call_logs) {
-		MSList *new_cls = result;
-		while (new_cls) {
-			LinphoneCallLog *new_cl = (LinphoneCallLog *)new_cls->data;
-			MSList *cls = lc->call_logs;
-			while (cls) {
-				LinphoneCallLog *cl = (LinphoneCallLog *)cls->data;
-				if (cl->storage_id == new_cl->storage_id) {
-					new_cl->user_data = cl->user_data;
-					break;
-				}
-				cls = ms_list_next(cls);
-			}
-			new_cls = ms_list_next(new_cls);
-		}
+		copy_user_data_from_existing_logs(lc->call_logs, result);
 	}
 	
 	lc->call_logs = ms_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
@@ -623,20 +629,7 @@ MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const Linp
 	ms_free(sipAddress);
 	
 	if (lc->call_logs) {
-		MSList *new_cls = result;
-		while (new_cls) {
-			LinphoneCallLog *new_cl = (LinphoneCallLog *)new_cls->data;
-			MSList *cls = lc->call_logs;
-			while (cls) {
-				LinphoneCallLog *cl = (LinphoneCallLog *)cls->data;
-				if (cl->storage_id == new_cl->storage_id) {
-					new_cl->user_data = cl->user_data;
-					break;
-				}
-				cls = ms_list_next(cls);
-			}
-			new_cls = ms_list_next(new_cls);
-		}
+		copy_user_data_from_existing_logs(lc->call_logs, result);
 	}
 	
 	return result;
@@ -664,15 +657,7 @@ LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc) {
 	}
 	
 	if (lc->call_logs && result) {
-		MSList *cls = lc->call_logs;
-		while (cls) {
-			LinphoneCallLog *cl = (LinphoneCallLog *)cls->data;
-			if (cl->storage_id == result->storage_id) {
-				result->user_data = cl->user_data;
-				break;
-			}
-			cls = ms_list_next(cls);
-		}
+		copy_user_data_from_existing_log(lc->call_logs, result);
 	}
 	
 	return result;
