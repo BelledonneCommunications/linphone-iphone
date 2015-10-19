@@ -29,6 +29,8 @@ enum{
 	FRIEND_CHATROOM,
 	FRIEND_SIP_ADDRESS,
 	FRIEND_CHAT,
+	FRIEND_CALL_BUTTON,
+	FRIEND_CHAT_BUTTON_VISIBLE,
 	FRIEND_LIST_NCOL
 };
 
@@ -181,29 +183,53 @@ static void linphone_gtk_call_selected(GtkTreeView *treeview){
 }
 
 void linphone_gtk_friend_list_update_chat_picture(){
-	GtkTreeIter iter;
+	GtkTreeIter iter, selected_iter;
 	GtkWidget *w = linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(w,"contact_list");
 	GtkTreeModel *model=gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
+	GtkTreeSelection *select=gtk_tree_view_get_selection(GTK_TREE_VIEW(friendlist));
 	LinphoneChatRoom *cr=NULL;
 	bool_t is_composing;
 	int nbmsg=0;
+	GtkTreePath *selected_path = NULL;
+	
+	if (gtk_tree_selection_get_selected(select, &model, &selected_iter)){
+		selected_path = gtk_tree_model_get_path(model, &selected_iter);
+	}
+	
 	if (gtk_tree_model_get_iter_first(model,&iter)) {
 		do{
 			const char *icon_name = NULL;
+			bool_t is_visible = FALSE;
 			gtk_tree_model_get (model, &iter,FRIEND_CHATROOM , &cr, -1);
+			
 			nbmsg=linphone_chat_room_get_unread_messages_count(cr);
 			is_composing=linphone_chat_room_is_remote_composing(cr);
 			if(nbmsg != 0){
 				if (is_composing == TRUE) icon_name = "linphone-chat-new-message-and-writing";
 				else icon_name = "linphone-chat-new-message";
+				is_visible = TRUE;
 			} else {
-				if (is_composing == TRUE) icon_name = "linphone-chat-writing";
-				else icon_name = "linphone-chat-nothing";
+				if (is_composing == TRUE) {
+					icon_name = "linphone-chat-writing";
+					is_visible = TRUE;
+				}
+				else {
+					icon_name = "linphone-chat-nothing";
+					if (selected_path){
+						GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
+						if (gtk_tree_path_compare(path, selected_path) == 0){
+							is_visible = TRUE;
+						}
+						gtk_tree_path_free(path);
+					}
+				}
 			}
-			gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,icon_name,-1);
+			gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,icon_name,
+						FRIEND_CHAT_BUTTON_VISIBLE, is_visible, -1);
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}
+	if (selected_path) gtk_tree_path_free(selected_path);
 }
 
 static gboolean grab_focus(GtkWidget *w){
@@ -333,16 +359,34 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 	}
 }
 
-void linphone_gtk_contact_activated(GtkTreeView     *treeview,
+
+void linphone_gtk_contact_activated(GtkTreeView     *friendlist,
                                     GtkTreePath     *path,
                                     GtkTreeViewColumn *column,
-                                        gpointer         user_data)
-{
-	//linphone_gtk_call_selected(treeview);
+                                        gpointer         user_data){
+}
+
+static void linphone_gtk_enable_buttons_for_selection(GtkTreeView     *friendlist){
+	GtkTreeSelection *select=gtk_tree_view_get_selection(GTK_TREE_VIEW(friendlist));
+	GtkListStore * store=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist)));
+	GtkTreeIter iter;
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));
+	
+	if (gtk_tree_model_get_iter_first(model, &iter)){
+		do{
+			gtk_list_store_set(store, &iter, FRIEND_CALL_BUTTON, FALSE, -1);
+		}while (gtk_tree_model_iter_next(model, &iter));
+	}
+
+	if (gtk_tree_selection_get_selected (select, &model, &iter)){
+		gtk_list_store_set(store, &iter, FRIEND_CALL_BUTTON, TRUE, -1);
+	}
+	linphone_gtk_friend_list_update_chat_picture();
 }
 
 void linphone_gtk_contact_clicked(GtkTreeView     *treeview){
 	linphone_gtk_set_selection_to_uri_bar(treeview);
+	linphone_gtk_enable_buttons_for_selection(treeview);
 	if(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(treeview),"numcol"))==1){
 		linphone_gtk_call_selected(treeview);
 	} else {
