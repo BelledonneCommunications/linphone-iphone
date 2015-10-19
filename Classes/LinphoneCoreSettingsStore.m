@@ -514,7 +514,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 				linphone_auth_info_set_passwd(proxyAi, password);
 				linphone_auth_info_set_ha1(proxyAi, NULL);
 			}
-			linphone_auth_info_set_domain(info, linphone_proxy_config_get_domain(proxyCfg));
+			linphone_auth_info_set_domain(proxyAi, linphone_proxy_config_get_domain(proxyCfg));
 		} else {
 			LinphoneAddress *from = linphone_address_new(identity);
 			if (from) {

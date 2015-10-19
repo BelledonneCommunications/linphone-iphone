@@ -258,25 +258,13 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Call"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="call_alt_start.png" backgroundImage="color_A.png">
+                                    <state key="normal" image="call_start_body_default.png" backgroundImage="color_A.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="highlighted" backgroundImage="color_L.png"/>
+                                    <state key="disabled" image="call_start_body_disabled.png"/>
+                                    <state key="highlighted" image="call_start_body_over.png" backgroundImage="color_L.png"/>
                                     <connections>
                                         <outlet property="addressField" destination="4" id="235"/>
-                                    </connections>
-                                </button>
-                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="184" userLabel="addCallButton" customClass="UICallButton">
-                                    <rect key="frame" x="125" y="0.0" width="250" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Add call"/>
-                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="call_add.png" backgroundImage="color_F.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="highlighted" backgroundImage="color_E.png"/>
-                                    <connections>
-                                        <outlet property="addressField" destination="4" id="234"/>
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="236" userLabel="transferButton" customClass="UITransferButton">
@@ -284,12 +272,25 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Transfer call"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="call_transfer.png" backgroundImage="color_F.png">
+                                    <state key="normal" image="call_transfer.png" backgroundImage="color_A.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <outlet property="addressField" destination="4" id="237"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="184" userLabel="addCallButton" customClass="UICallButton">
+                                    <rect key="frame" x="125" y="0.0" width="250" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Add call"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="call_add.png" backgroundImage="color_A.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <outlet property="addressField" destination="4" id="234"/>
                                     </connections>
                                 </button>
                             </subviews>
@@ -308,7 +309,9 @@
         <image name="backspace_default.png" width="36" height="19"/>
         <image name="backspace_over.png" width="36" height="19"/>
         <image name="call_add.png" width="39" height="35"/>
-        <image name="call_alt_start.png" width="29" height="29"/>
+        <image name="call_start_body_default.png" width="51" height="51"/>
+        <image name="call_start_body_disabled.png" width="51" height="51"/>
+        <image name="call_start_body_over.png" width="51" height="51"/>
         <image name="call_transfer.png" width="40" height="36"/>
         <image name="color_A.png" width="1" height="1"/>
         <image name="color_E.png" width="1" height="1"/>
