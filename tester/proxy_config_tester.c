@@ -88,9 +88,11 @@ static void phone_normalization_with_dial_escape_plus(void){
 
 #define SIP_URI_CHECK(actual, expected) { \
 		LinphoneProxyConfig *proxy = linphone_proxy_config_new(); \
+		LinphoneAddress* res;\
+		char* actual_str;\
 		linphone_proxy_config_set_identity(proxy, "sip:username@linphone.org"); \
-		LinphoneAddress* res = linphone_proxy_config_normalize_sip_uri(proxy, actual); \
-		char* actual_str = linphone_address_as_string_uri_only(res); \
+		res  = linphone_proxy_config_normalize_sip_uri(proxy, actual); \
+		actual_str = linphone_address_as_string_uri_only(res); \
 		BC_ASSERT_STRING_EQUAL(actual_str, expected); \
 		ms_free(actual_str); \
 		linphone_address_destroy(res); \

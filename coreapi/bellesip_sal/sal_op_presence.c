@@ -96,9 +96,11 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 	sal_op_set_error_info_from_response(op,response);
 
 	if (code>=300) {
-		ms_message("subscription to [%s] rejected",sal_op_get_to(op));
-		op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
-		return;
+		if (strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0){
+			ms_message("subscription to [%s] rejected",sal_op_get_to(op));
+			op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
+			return;
+		}
 	}
 	set_or_update_dialog(op_base,belle_sip_response_event_get_dialog(event));
 	if (!op->dialog) {
