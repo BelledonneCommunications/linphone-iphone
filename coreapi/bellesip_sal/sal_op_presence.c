@@ -54,8 +54,7 @@ static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog
 	SalOp* op= (SalOp*)ctx;
 	if (op->dialog) {
 		if (belle_sip_dialog_is_server(op->dialog)){
-			/*in an incoming SUBSCRIBE*/
-			ms_message("Presence unsubscribe received from [%s]",sal_op_get_from(op));
+			ms_message("Incoming subscribtion from [%s] terminated",sal_op_get_from(op));
 			op->base.root->callbacks.subscribe_presence_closed(op, sal_op_get_from(op));
 		}
 		set_or_update_dialog(op, NULL);
@@ -142,9 +141,8 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 		}
 		/* no break */
 	}
-
-
 }
+
 static void presence_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
 	ms_error("presence_process_timeout not implemented yet");
 }

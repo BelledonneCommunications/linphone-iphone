@@ -247,8 +247,9 @@ void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op){
 void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op){
 	if (ms_list_find(lf->insubs, op)){
 		sal_op_release(op);
+		lf->insubs = ms_list_remove(lf->insubs, op);
 	}
-	lf->insubs = ms_list_remove(lf->insubs, op);
+	
 }
 
 static void linphone_friend_unsubscribe(LinphoneFriend *lf){
