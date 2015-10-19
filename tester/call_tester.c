@@ -5303,10 +5303,8 @@ static void call_logs_sqlite_storage(void) {
 		if (ref_key) {
 			BC_ASSERT_STRING_EQUAL(ref_key, "ref_key");
 		}
-#if 0 // Sylvain fix me :'(
 		BC_ASSERT_PTR_EQUAL(linphone_call_log_get_user_data(call_log), &start_time);
 		BC_ASSERT_PTR_NOT_NULL(linphone_call_log_get_call_id(call_log));
-#endif
 		BC_ASSERT_TRUE(linphone_address_equal(
 			linphone_call_log_get_remote_address(call_log),
 			linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc))));

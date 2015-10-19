@@ -455,6 +455,7 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	log->status = (LinphoneCallStatus) atoi(argv[7]);
 	log->video_enabled = atoi(argv[8]) == 1;
 	log->quality = atof(argv[9]);
+	
 	if (argc > 10) {
 		if (argv[10] != NULL) {
 			log->call_id = ms_strdup(argv[10]);
@@ -514,7 +515,8 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 		sqlite3_free(buf);
 		ms_free(from);
 		ms_free(to);
-		sqlite3_last_insert_rowid(lc->logs_db);
+		
+		log->storage_id = sqlite3_last_insert_rowid(lc->logs_db);
 	}
 	
 	if (lc) {
@@ -525,18 +527,37 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
 	char *buf;
 	uint64_t begin,end;
+	MSList *result = NULL;
 
 	if (!lc || lc->logs_db == NULL) return NULL;
-	
-	lc->call_logs = ms_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
 
 	buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id DESC LIMIT %i", lc->max_call_logs);
 
 	begin = ortp_get_cur_time_ms();
-	linphone_sql_request_call_log(lc->logs_db, buf, &lc->call_logs);
+	linphone_sql_request_call_log(lc->logs_db, buf, &result);
 	end = ortp_get_cur_time_ms();
 	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
 	sqlite3_free(buf);
+	
+	if (lc->call_logs) {
+		MSList *new_cls = result;
+		while (new_cls) {
+			LinphoneCallLog *new_cl = (LinphoneCallLog *)new_cls->data;
+			MSList *cls = lc->call_logs;
+			while (cls) {
+				LinphoneCallLog *cl = (LinphoneCallLog *)cls->data;
+				if (cl->storage_id == new_cl->storage_id) {
+					new_cl->user_data = cl->user_data;
+					break;
+				}
+				cls = ms_list_next(cls);
+			}
+			new_cls = ms_list_next(new_cls);
+		}
+	}
+	
+	lc->call_logs = ms_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
+	lc->call_logs = result;
 	
 	return lc->call_logs;
 }
@@ -601,6 +622,23 @@ MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const Linp
 	sqlite3_free(buf);
 	ms_free(sipAddress);
 	
+	if (lc->call_logs) {
+		MSList *new_cls = result;
+		while (new_cls) {
+			LinphoneCallLog *new_cl = (LinphoneCallLog *)new_cls->data;
+			MSList *cls = lc->call_logs;
+			while (cls) {
+				LinphoneCallLog *cl = (LinphoneCallLog *)cls->data;
+				if (cl->storage_id == new_cl->storage_id) {
+					new_cl->user_data = cl->user_data;
+					break;
+				}
+				cls = ms_list_next(cls);
+			}
+			new_cls = ms_list_next(new_cls);
+		}
+	}
+	
 	return result;
 }
 
@@ -623,6 +661,18 @@ LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc) {
 	
 	if (list) {
 		result = (LinphoneCallLog*)list->data;
+	}
+	
+	if (lc->call_logs && result) {
+		MSList *cls = lc->call_logs;
+		while (cls) {
+			LinphoneCallLog *cl = (LinphoneCallLog *)cls->data;
+			if (cl->storage_id == result->storage_id) {
+				result->user_data = cl->user_data;
+				break;
+			}
+			cls = ms_list_next(cls);
+		}
 	}
 	
 	return result;
