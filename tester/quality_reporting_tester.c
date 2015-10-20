@@ -29,10 +29,12 @@ void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_typ
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
 	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
 	MediaStream * ms;
-	if (stream_type == SalAudio){
+	if (stream_type == SalAudio) {
 		ms = (MediaStream*)call->audiostream;
-	}else{
+	} else if (stream_type == SalVideo) {
 		ms = (MediaStream*)call->videostream;
+	} else {
+		ms = (MediaStream*)call->textstream;
 	}
 	BC_ASSERT_TRUE(
 			__strstr(body, "VQIntervalReport\r\n")			== body ||
