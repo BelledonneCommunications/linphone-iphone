@@ -106,7 +106,14 @@
 	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);
 	BOOL outgoing = linphone_chat_message_is_outgoing(_message);
 
+	if (outgoing) {
+		[LinphoneUtils setSelfAvatar:_avatarImage];
+	} else {
+		ABRecordRef contact = [FastAddressBook getContactWithAddress:linphone_chat_message_get_peer_address(_message)];
+		_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:YES];
+	}
 	_backgroundColorImage.image = _bottomBarColor.image = [UIImage imageNamed:(outgoing ? @"color_A" : @"color_D")];
+
 	if (!outgoing) {
 		_statusImage.accessibilityValue = @"incoming";
 		_statusImage.hidden = TRUE; // not useful for incoming chats..

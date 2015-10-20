@@ -6,8 +6,6 @@
 //
 //
 
-#import <AssetsLibrary/ALAsset.h>
-
 #import "SideMenuView.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
@@ -26,25 +24,7 @@
 		_nameLabel.text = @"No account";
 		_addressLabel.text = NSLocalizedString(@"No address", nil);
 	}
-
-	// set avatar if available
-	NSURL *url = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"avatar"]];
-	if (url) {
-		[LinphoneManager.instance.photoLibrary assetForURL:url
-			resultBlock:^(ALAsset *asset) {
-			  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
-				UIImage *decodedImage = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
-				dispatch_async(dispatch_get_main_queue(), ^{
-				  [_avatarImage setImage:decodedImage];
-				});
-			  });
-			}
-			failureBlock:^(NSError *error) {
-			  LOGE(@"Can't read avatar");
-			}];
-	} else {
-		[_avatarImage setImage:[UIImage imageNamed:@"avatar"]];
-	}
+	[LinphoneUtils setSelfAvatar:_avatarImage];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

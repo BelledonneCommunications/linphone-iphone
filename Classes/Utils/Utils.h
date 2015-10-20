@@ -27,9 +27,7 @@
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 @end
 
-@interface LinphoneUtils : NSObject {
-
-}
+@interface LinphoneUtils : NSObject
 
 + (BOOL)findAndResignFirstResponder:(UIView*)view;
 + (void)adjustFontSize:(UIView*)view mult:(float)mult;
@@ -39,6 +37,7 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 + (NSString *)deviceName;
 
 + (NSString *)timeToString:(time_t)time withStyle:(NSDateFormatterStyle)style;
++ (void)setSelfAvatar:(UIImageView *)avatar;
 
 @end
 

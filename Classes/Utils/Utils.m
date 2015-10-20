@@ -20,6 +20,7 @@
 #import <UIKit/UIView.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <sys/utsname.h>
+#import <AssetsLibrary/ALAsset.h>
 
 #import "Utils.h"
 #import "linphone/linphonecore.h"
@@ -81,6 +82,25 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 
 @implementation LinphoneUtils
 
++ (void)setSelfAvatar:(UIImageView *)avatar {
+	NSURL *url = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"avatar"]];
+	if (url) {
+		[LinphoneManager.instance.photoLibrary assetForURL:url
+			resultBlock:^(ALAsset *asset) {
+			  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
+				UIImage *decodedImage = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
+				dispatch_async(dispatch_get_main_queue(), ^{
+				  avatar.image = decodedImage;
+				});
+			  });
+			}
+			failureBlock:^(NSError *error) {
+			  LOGE(@"Can't read avatar");
+			}];
+	} else {
+		avatar.image = [UIImage imageNamed:@"avatar"];
+	}
+}
 + (NSString *)timeToString:(time_t)time withStyle:(NSDateFormatterStyle)style {
 	NSDate *todayDate = [[NSDate alloc] init];
 	NSDate *messageDate = (time == 0) ? todayDate : [NSDate dateWithTimeIntervalSince1970:time];
