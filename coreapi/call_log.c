@@ -281,6 +281,7 @@ static void _linphone_call_log_destroy(LinphoneCallLog *cl) {
 	if (cl->call_id) ms_free(cl->call_id);
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]);
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]);
+	if (cl->reporting.reports[LINPHONE_CALL_STATS_TEXT]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_TEXT]);
 }
 
 LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to) {
@@ -296,6 +297,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *fr
 
 	cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]=linphone_reporting_new();
 	cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]=linphone_reporting_new();
+	cl->reporting.reports[LINPHONE_CALL_STATS_TEXT]=linphone_reporting_new();
 	cl->connected_date_time=0;
 	return cl;
 }

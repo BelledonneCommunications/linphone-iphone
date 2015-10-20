@@ -153,7 +153,7 @@ BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
 
 
 struct _LinphoneQualityReporting{
-	reporting_session_report_t * reports[2]; /**Store information on audio and video media streams (RFC 6035) */
+	reporting_session_report_t * reports[3]; /**Store information on audio and video media streams (RFC 6035) */
 	bool_t was_video_running; /*Keep video state since last check in order to detect its (de)activation*/
 	LinphoneQualityReportingReportSendCb on_report_sent;
 };

@@ -4262,15 +4262,16 @@ void linphone_call_stats_uninit(LinphoneCallStats *stats){
 }
 
 void linphone_call_notify_stats_updated(LinphoneCall *call, int stream_index){
-	LinphoneCallStats *stats=&call->stats[stream_index];
-	LinphoneCore *lc=call->core;
+	LinphoneCallStats *stats = &call->stats[stream_index];
+	LinphoneCore *lc = call->core;
 	if (stats->updated){
 		switch(stats->updated) {
 			case LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE:
 			case LINPHONE_CALL_STATS_SENT_RTCP_UPDATE:
-				linphone_reporting_on_rtcp_update(call, stream_index);
+				linphone_reporting_on_rtcp_update(call, stream_index == call->main_audio_stream_index ? SalAudio : stream_index == call->main_video_stream_index ? SalVideo : SalText);
 				break;
-			default:break;
+			default:
+				break;
 		}
 		linphone_core_notify_call_stats_updated(lc, call, stats);
 		stats->updated = 0;
