@@ -371,7 +371,7 @@ static void volume_control_value_changed(GtkScaleButton *button, gdouble value, 
 static gboolean volume_control_button_update_value(GtkWidget *widget) {
 	LinphoneCall *call = (LinphoneCall *)g_object_get_data(G_OBJECT(widget), "call");
 	VolumeControlType type = (VolumeControlType)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), "type"));
-	float gain;
+	float gain = -1;
 
 	if(type == VOLUME_CTRL_PLAYBACK) {
 		gain = linphone_call_get_speaker_volume_gain(call);

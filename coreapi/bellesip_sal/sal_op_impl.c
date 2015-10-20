@@ -72,7 +72,7 @@ void sal_op_authenticate(SalOp *op, const SalAuthInfo *info){
 		/*Registration authenticate is just about registering again*/
 		sal_register_refresh(op,-1);
 	}else {
-		/*for sure auth info will be accesible from the provider*/
+		/*for sure auth info will be accessible from the provider*/
 		sal_process_authentication(op);
 	}
 	return ;
