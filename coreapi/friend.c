@@ -389,7 +389,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 					break;
 				case LinphonePresenceActivityOnline:
 					/* Should not happen! */
-					ms_warning("LinphonePresenceActivityOnline should not happen here!");
+					/*ms_warning("LinphonePresenceActivityOnline should not happen here!");*/
 					break;
 				case LinphonePresenceActivityOffline:
 					online_status = LinphoneStatusOffline;

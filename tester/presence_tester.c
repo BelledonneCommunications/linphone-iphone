@@ -419,7 +419,9 @@ static void subscribe_presence_expired(){
 	wait_for_list(lcs,NULL, 0, 11000);
 	
 	BC_ASSERT_PTR_NULL(lf->insubs);
-	
+	/*just make network reachable so that marie can unregister properly*/
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneRegistrationOk,2, 10000));
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline1);
 	
