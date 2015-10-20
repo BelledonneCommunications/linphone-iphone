@@ -232,11 +232,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[_speakerButton update];
 	[_microButton update];
+	[_pauseButton setType:UIPauseButtonType_CurrentCall call:call];
 	[_pauseButton update];
 	[_videoButton update];
 	[_hangupButton update];
 
-	_optionsButton.enabled = !linphone_call_media_in_progress(call);
+	_optionsButton.enabled = (call && !linphone_call_media_in_progress(call));
 
 	// Show Pause/Conference button following call count
 	if (linphone_core_get_calls_nb(lc) > 1) {
@@ -400,9 +401,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_videoGroup setAlpha:0.0];
 	[PhoneMainView.instance showTabBar:true];
 
-	//	UIEdgeInsets insets = {10, 0, 25, 0};
-	//	[_pausedCallsTableView.tableView setContentInset:insets];
-	//	[_pausedCallsTableView.tableView setScrollIndicatorInsets:insets];
 	[_pausedCallsTable.tableView setAlpha:1.0];
 
 	[_videoCameraSwitch setHidden:TRUE];

@@ -1317,6 +1317,7 @@ static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
 	const char *lRingBack = [[LinphoneManager bundleFile:@"ringback.wav"] UTF8String];
 	linphone_core_set_ringback(theLinphoneCore, lRingBack);
 	const char *lPlay = [[LinphoneManager bundleFile:@"hold.wav"] UTF8String];
+	lPlay = NULL;
 	linphone_core_set_play_file(theLinphoneCore, lPlay);
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName UTF8String]);

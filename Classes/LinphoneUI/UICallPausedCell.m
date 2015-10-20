@@ -33,6 +33,9 @@
 		return;
 	}
 
+	[_pauseButton setType:UIPauseButtonType_Call call:call];
+	[_pauseButton update];
+
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 
