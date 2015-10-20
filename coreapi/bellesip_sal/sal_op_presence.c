@@ -146,7 +146,18 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 }
 
 static void presence_process_timeout(void *user_ctx, const belle_sip_timeout_event_t *event) {
-	ms_error("presence_process_timeout not implemented yet");
+	SalOp* op = (SalOp*)user_ctx;
+	belle_sip_client_transaction_t* client_transaction = belle_sip_timeout_event_get_client_transaction(event);
+	belle_sip_request_t* request;
+	
+	if (!client_transaction) return;
+	
+	request = belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
+	
+	if (strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0){
+		ms_message("subscription to [%s] timeout",sal_op_get_to(op));
+		op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
+	}
 }
 
 static void presence_process_transaction_terminated(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {
