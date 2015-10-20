@@ -17,7 +17,9 @@
   <object class="GtkImage" id="add_image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-add</property>
+    <property name="xpad">2</property>
+    <property name="ypad">2</property>
+    <property name="icon_name">linphone-contact-add</property>
   </object>
   <object class="GtkImage" id="connect_image">
     <property name="visible">True</property>
@@ -78,7 +80,9 @@
   <object class="GtkImage" id="edit_image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-edit</property>
+    <property name="xpad">2</property>
+    <property name="ypad">2</property>
+    <property name="icon_name">linphone-edit</property>
   </object>
   <object class="GtkImage" id="execute_image">
     <property name="visible">True</property>
@@ -122,7 +126,9 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="tooltip_text" translatable="yes">Delete</property>
-    <property name="stock">gtk-remove</property>
+    <property name="xpad">2</property>
+    <property name="ypad">2</property>
+    <property name="icon_name">linphone-delete</property>
   </object>
   <object class="GtkImage" id="start_call_image">
     <property name="visible">True</property>
@@ -825,12 +831,13 @@
                           <object class="GtkImage" id="history_tab_icon">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="stock">gtk-refresh</property>
+                            <property name="icon_name">linphone-history</property>
                             <property name="icon-size">1</property>
                           </object>
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
+                            <property name="padding">4</property>
                             <property name="position">0</property>
                           </packing>
                         </child>

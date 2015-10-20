@@ -57,7 +57,11 @@ dist_actions48icons_DATA= \
 	linphone-start-chat.png \
 	linphone-stop-call.png \
 	linphone-hold-on.png \
-	linphone-hold-off.png
+	linphone-hold-off.png \
+	linphone-history.png \
+	linphone-edit.png \
+	linphone-delete.png \
+	linphone-contact-add.png
 
 actionssvgiconsdir=$(iconsdir)/scalable/actions
 dist_actionssvgicons_DATA= \
@@ -66,4 +70,8 @@ dist_actionssvgicons_DATA= \
 	svg/linphone-hold-off.svg \
 	svg/linphone-hold-on.svg \
 	svg/linphone-start-call2.svg \
-	svg/linphone-start-chat.svg
+	svg/linphone-start-chat.svg \
+	svg/linphone-history.svg \
+	svg/linphone-edit.svg \
+	svg/linphone-delete.svg \
+	svg/linphone-contact-add.svg

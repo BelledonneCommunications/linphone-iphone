@@ -54,6 +54,10 @@ install(FILES
 	svg/linphone-hold-on.svg
 	svg/linphone-start-call2.svg
 	svg/linphone-start-chat.svg
+	svg/linphone-history.svg
+	svg/linphone-edit.svg
+	svg/linphone-delete.svg
+	svg/linphone-contact-add.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
@@ -88,6 +92,10 @@ install(FILES
 	linphone-stop-call.png
 	linphone-hold-on.png
 	linphone-hold-off.png
+	linphone-history.png
+	linphone-edit.png
+	linphone-delete.png
+	linphone-contact-add.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
