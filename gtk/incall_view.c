@@ -359,7 +359,7 @@ typedef enum { VOLUME_CTRL_PLAYBACK, VOLUME_CTRL_RECORD } VolumeControlType;
 
 static void volume_control_value_changed(GtkScaleButton *button, gdouble value, gpointer user_data) {
 	LinphoneCall *call = (LinphoneCall *)g_object_get_data(G_OBJECT(button), "call");
-	VolumeControlType type = (VolumeControlType)g_object_get_data(G_OBJECT(button), "type");
+	VolumeControlType type = (VolumeControlType)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "type"));
 
 	if(type == VOLUME_CTRL_PLAYBACK) {
 		linphone_call_set_speaker_volume_gain(call, value);
@@ -368,14 +368,21 @@ static void volume_control_value_changed(GtkScaleButton *button, gdouble value, 
 	}
 }
 
-static void volume_control_button_update_value(GtkWidget *widget) {
+static gboolean volume_control_button_update_value(GtkWidget *widget) {
 	LinphoneCall *call = (LinphoneCall *)g_object_get_data(G_OBJECT(widget), "call");
-	VolumeControlType type = (VolumeControlType)g_object_get_data(G_OBJECT(widget), "type");
+	VolumeControlType type = (VolumeControlType)GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), "type"));
+	float gain;
 
 	if(type == VOLUME_CTRL_PLAYBACK) {
-		gtk_scale_button_set_value(GTK_SCALE_BUTTON(widget), linphone_call_get_speaker_volume_gain(call));
+		gain = linphone_call_get_speaker_volume_gain(call);
 	} else if(type == VOLUME_CTRL_RECORD) {
-		gtk_scale_button_set_value(GTK_SCALE_BUTTON(widget), linphone_call_get_microphone_volume_gain(call));
+		gain = linphone_call_get_microphone_volume_gain(call);
+	}
+	if(gain >= 0.0f) {
+		gtk_scale_button_set_value(GTK_SCALE_BUTTON(widget), gain);
+		return TRUE;
+	} else {
+		return FALSE;
 	}
 }
 
@@ -386,17 +393,21 @@ static gboolean volume_control_button_enter_event_handler(GtkWidget *widget) {
 
 static void volume_control_init(GtkWidget *vol_ctrl, VolumeControlType type, LinphoneCall *call) {
 	g_object_set_data(G_OBJECT(vol_ctrl), "call", call);
-	g_object_set_data(G_OBJECT(vol_ctrl), "type", (gpointer)type);
-	g_signal_connect(G_OBJECT(vol_ctrl), "enter-notify-event", G_CALLBACK(volume_control_button_enter_event_handler), NULL);
-	g_signal_connect(G_OBJECT(vol_ctrl), "value-changed", G_CALLBACK(volume_control_value_changed), NULL);
+	g_object_set_data(G_OBJECT(vol_ctrl), "type", GINT_TO_POINTER(type));
+	if(!volume_control_button_update_value(vol_ctrl)) {
+		gtk_widget_set_sensitive(vol_ctrl, FALSE);
+	} else {
+		gtk_widget_set_sensitive(vol_ctrl, TRUE);
+		g_signal_connect(G_OBJECT(vol_ctrl), "enter-notify-event", G_CALLBACK(volume_control_button_enter_event_handler), NULL);
+		g_signal_connect(G_OBJECT(vol_ctrl), "value-changed", G_CALLBACK(volume_control_value_changed), NULL);
+	}
 }
 
 void linphone_gtk_create_in_call_view(LinphoneCall *call){
 	GtkWidget *call_view=linphone_gtk_create_widget("in_call_frame");
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
 	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(main_window,"viewswitch");
-	GtkWidget *spk_vol_ctrl = linphone_gtk_get_widget(call_view, "incall_spk_vol_ctrl_button");
-	GtkWidget *mic_vol_ctrl = linphone_gtk_get_widget(call_view, "incall_mic_vol_ctrl_button");
+	GtkWidget *audio_bar = linphone_gtk_get_widget(call_view, "incall_audioview");
 	static int call_index=1;
 	int idx;
 	GtkWidget *transfer;
@@ -444,8 +455,7 @@ void linphone_gtk_create_in_call_view(LinphoneCall *call){
 	gtk_widget_show(image);
 	g_signal_connect_swapped(G_OBJECT(linphone_gtk_get_widget(call_view,"quality_indicator")),"button-press-event",(GCallback)linphone_gtk_show_call_stats,call);
 	
-	volume_control_init(spk_vol_ctrl, VOLUME_CTRL_PLAYBACK, call);
-	volume_control_init(mic_vol_ctrl, VOLUME_CTRL_RECORD, call);
+	gtk_widget_hide(audio_bar);
 }
 
 static void video_button_clicked(GtkWidget *button, LinphoneCall *call){
@@ -681,10 +691,14 @@ void linphone_gtk_in_call_view_enable_audio_view(LinphoneCall *call, gboolean va
 	GtkWidget *audio_view=linphone_gtk_get_widget(callview,"incall_audioview");
 	GtkWidget *mic_level=linphone_gtk_get_widget(callview,"mic_audiolevel");
 	GtkWidget *spk_level=linphone_gtk_get_widget(callview,"spk_audiolevel");
+	GtkWidget *mic_ctrl = linphone_gtk_get_widget(callview, "incall_mic_vol_ctrl_button");
+	GtkWidget *spk_ctrl = linphone_gtk_get_widget(callview, "incall_spk_vol_ctrl_button");
 
 	if (val){
 		linphone_gtk_init_audio_meter(mic_level,(get_volume_t)linphone_call_get_record_volume,call);
 		linphone_gtk_init_audio_meter(spk_level,(get_volume_t)linphone_call_get_play_volume,call);
+		volume_control_init(mic_ctrl, VOLUME_CTRL_RECORD, call);
+		volume_control_init(spk_ctrl, VOLUME_CTRL_PLAYBACK, call);
 		gtk_widget_show_all(audio_view);
 	}else{
 		linphone_gtk_uninit_audio_meter(mic_level);
