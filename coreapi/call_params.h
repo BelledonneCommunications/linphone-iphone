@@ -209,6 +209,13 @@ LINPHONE_PUBLIC const LinphonePayloadType* linphone_call_params_get_used_audio_c
 LINPHONE_PUBLIC const LinphonePayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp);
 
 /**
+ * Get the text codec used in the call, described as a LinphonePayloadType structure.
+ * @param[in] cp LinphoneCallParams object
+ * @return The LinphonePayloadType object corresponding to the text codec being used in the call.
+**/
+LINPHONE_PUBLIC const LinphonePayloadType* linphone_call_params_get_used_text_codec(const LinphoneCallParams *cp);
+
+/**
  * Tell whether the call has been configured in low bandwidth mode or not.
  * This mode can be automatically discovered thanks to a stun server when activate_edge_workarounds=1 in section [net] of configuration file.
  * An application that would have reliable way to know network capacity may not use activate_edge_workarounds=1 but instead manually configure

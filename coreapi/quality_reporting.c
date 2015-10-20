@@ -539,6 +539,10 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		stream = &call->videostream->ms;
 		local_payload = linphone_call_params_get_used_video_codec(current_params);
 		remote_payload = local_payload;
+	} else if (stats_type == LINPHONE_CALL_STATS_TEXT && call->textstream != NULL) {
+		stream = &call->textstream->ms;
+		local_payload = linphone_call_params_get_used_text_codec(current_params);
+		remote_payload = local_payload;
 	}
 
 	if (stream != NULL) {

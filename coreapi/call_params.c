@@ -234,6 +234,11 @@ const LinphonePayloadType* linphone_call_params_get_used_video_codec(const Linph
 	return cp->video_codec;
 }
 
+const LinphonePayloadType* linphone_call_params_get_used_text_codec(const LinphoneCallParams *cp) {
+	return cp->text_codec;
+}
+
+
 bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp) {
 	return cp->low_bandwidth;
 }
