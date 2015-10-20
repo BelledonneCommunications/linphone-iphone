@@ -101,11 +101,12 @@ static void phone_normalization_with_dial_escape_plus(void){
 
 
 static void sip_uri_normalization(void) {
+	char* expected ="sip:%d9%a1@linphone.org";
 	BC_ASSERT_PTR_NULL(linphone_proxy_config_normalize_sip_uri(NULL, "test"));
 	SIP_URI_CHECK("test@linphone.org", "sip:test@linphone.org");
 	SIP_URI_CHECK("test@linphone.org;transport=tls", "sip:test@linphone.org;transport=tls");
 
-	SIP_URI_CHECK("١", "sip:%%d9%%a1@linphone.org"); //test that no more invalid write are done (valgrind only)
+	SIP_URI_CHECK("١", expected); //test that no more invalid memory writes are made (valgrind only)
 }
 
 test_t proxy_config_tests[] = {
