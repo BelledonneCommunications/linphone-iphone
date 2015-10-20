@@ -52,4 +52,5 @@
 										   duration]];
 	return cell;
 }
+
 @end

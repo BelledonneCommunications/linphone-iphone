@@ -449,6 +449,9 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 #pragma mark - Property Functions
 
 - (void)setContact:(ABRecordRef)acontact {
+	if (acontact == contact)
+		return;
+
 	if (contact != nil && ABRecordGetRecordID(contact) == kABRecordInvalidID) {
 		CFRelease(contact);
 	}
@@ -486,8 +489,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	if (contactSections[section] == ContactSections_First_Name ||
 		contactSections[section] == ContactSections_Last_Name) {
-		return 0;
-		//		return (self.tableView.isEditing) ? 1 : 0 /*no first and last name when not editting */;
+		return (self.tableView.isEditing) ? 1 : 0 /*no first and last name when not editting */;
 	} else {
 		return [[self getSectionData:section] count];
 	}
@@ -663,42 +665,11 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 #pragma mark - UITableViewDelegate Functions
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
-	bool_t showEmails = [[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"];
-	// Resign keyboard
+	[super setEditing:editing animated:animated];
 	if (!editing) {
 		[LinphoneUtils findAndResignFirstResponder:[self tableView]];
 	}
-
-	if (animated) {
-		[self.tableView beginUpdates];
-	}
-	if (editing) {
-		// add phony entries so that the user can add new data
-		for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
-			if (contactSections[section] == ContactSections_Number || contactSections[section] == ContactSections_Sip ||
-				(showEmails && contactSections[section] == ContactSections_Email)) {
-				[self addEntry:self.tableView section:section animated:animated];
-			}
-		}
-	} else {
-		for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
-			// remove phony entries that were not filled by the user
-			if (contactSections[section] == ContactSections_Number || contactSections[section] == ContactSections_Sip ||
-				(showEmails && contactSections[section] == ContactSections_Email)) {
-
-				[self removeEmptyEntry:self.tableView section:section animated:animated];
-				if ([[self getSectionData:section] count] == 0 && animated) { // the section is empty -> remove titles
-					[self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section]
-								  withRowAnimation:UITableViewRowAnimationFade];
-				}
-			}
-		}
-	}
-	if (animated) {
-		[self.tableView endUpdates];
-	}
-
-	[super setEditing:editing animated:animated];
+	[self loadData];
 	if (contactDetailsDelegate != nil) {
 		[contactDetailsDelegate onModification:nil];
 	}

@@ -44,7 +44,9 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 #pragma mark -
 
 - (void)resetData {
-	[self disableEdit:FALSE];
+	if (self.isEditing) {
+		[self setEditing:FALSE];
+	}
 	if (_contact == NULL) {
 		ABAddressBookRevert(addressBook);
 		return;
@@ -117,7 +119,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	[_tableController setContact:_contact];
 
 	if (reload) {
-		[self enableEdit:FALSE];
+		[self setEditing:FALSE];
 		[[_tableController tableView] reloadData];
 	}
 }
@@ -137,7 +139,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	}
 	linphone_address_destroy(linphoneAddress);
 
-	[self enableEdit:FALSE];
+	[self setEditing:FALSE];
 	[[_tableController tableView] reloadData];
 }
 
@@ -197,28 +199,44 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark -
 
-- (void)enableEdit:(BOOL)animated {
-	if (!_tableController.isEditing) {
-		[_tableController setEditing:TRUE animated:animated];
-	}
-	[_editButton setOn];
-	[_cancelButton setHidden:FALSE];
-	[_backButton setHidden:TRUE];
+- (void)setEditing:(BOOL)editing {
+	[self setEditing:editing animated:NO];
 }
 
-- (void)disableEdit:(BOOL)animated {
-	if (_tableController.isEditing) {
-		[_tableController setEditing:FALSE animated:animated];
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+	[super setEditing:editing animated:animated];
+
+	if (animated) {
+		[UIView beginAnimations:nil context:nil];
+		[UIView setAnimationDuration:1.0];
 	}
-	[_editButton setOff];
-	[_cancelButton setHidden:TRUE];
-	[_backButton setHidden:FALSE];
+
+	[_tableController setEditing:editing animated:animated];
+	if (editing) {
+		[_editButton setOn];
+	} else {
+		[_editButton setOff];
+	}
+	_cancelButton.hidden = !editing;
+	_backButton.hidden = editing;
+	_nameLabel.hidden = editing;
+
+	CGRect frame = _tableController.tableView.frame;
+	frame.origin.y = _nameLabel.frame.origin.y;
+	if (editing) {
+		frame.origin.y += _nameLabel.frame.size.height;
+	}
+	_tableController.tableView.frame = frame;
+
+	if (animated) {
+		[UIView commitAnimations];
+	}
 }
 
 #pragma mark - Action Functions
 
 - (IBAction)onCancelClick:(id)event {
-	[self disableEdit:TRUE];
+	[self setEditing:FALSE];
 	[self resetData];
 }
 
@@ -232,11 +250,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onEditClick:(id)event {
 	if (_tableController.isEditing) {
 		if ([_tableController isValid]) {
-			[self disableEdit:TRUE];
+			[self setEditing:FALSE];
 			[self saveData];
 		}
 	} else {
-		[self enableEdit:TRUE];
+		[self setEditing:TRUE];
 	}
 }
 
@@ -245,7 +263,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[UIConfirmationDialog ShowWithMessage:msg
 							onCancelClick:nil
 					  onConfirmationClick:^() {
-						[self disableEdit:FALSE];
+						[self setEditing:FALSE];
 						[self removeContact];
 						[PhoneMainView.instance popCurrentView];
 					  }];
