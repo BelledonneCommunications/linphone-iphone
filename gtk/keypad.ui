@@ -4,6 +4,7 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="keypad">
     <property name="can_focus">False</property>
+    <signal name="delete-event" handler="linphone_gtk_keypad_destroyed_handler" swapped="no"/>
     <child>
       <object class="GtkFrame" id="frame3">
         <property name="visible">True</property>
