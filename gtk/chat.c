@@ -113,10 +113,16 @@ const char* get_display_name(const LinphoneAddress *from){
 	return display;
 }
 
-GtkWidget *create_tab_chat_header(LinphoneChatRoom *cr,const LinphoneAddress *uri){
+GtkWidget *create_tab_chat_header(LinphoneChatRoom *cr, const LinphoneAddress *uri){
 	GtkWidget *tab_header = linphone_gtk_make_tab_header(get_display_name(uri), "linphone-start-chat", TRUE, G_CALLBACK(linphone_gtk_quit_chatroom), cr);
 	gtk_widget_show_all(tab_header);
 	return tab_header;
+}
+
+void update_chat_header(GtkNotebook *notebook, GtkWidget *chat_view, LinphoneChatRoom *cr, const LinphoneAddress *uri) {
+	GtkWidget *header = linphone_gtk_make_tab_header(get_display_name(uri), "linphone-start-chat", TRUE, G_CALLBACK(linphone_gtk_quit_chatroom), cr);
+	gtk_widget_show_all(header);
+	gtk_notebook_set_tab_label(notebook, chat_view, header);
 }
 
 static gboolean scroll_to_end(GtkTextView *w){
@@ -542,6 +548,7 @@ LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAddress *with){
 
 void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,GtkWidget *chat_view){
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
+	GtkWidget *notebook = linphone_gtk_get_widget(main_window, "viewswitch");
 	LinphoneChatRoom *cr2=(LinphoneChatRoom *)g_object_get_data(G_OBJECT(chat_view),"cr");
 	const LinphoneAddress *from=linphone_chat_room_get_peer_address(cr2);
 	char *from_str=linphone_address_as_string_uri_only(from);
@@ -558,6 +565,7 @@ void linphone_gtk_load_chatroom(LinphoneChatRoom *cr,const LinphoneAddress *uri,
 		text_buffer=gtk_text_view_get_buffer(text_view);
 		gtk_text_buffer_get_bounds(text_buffer, &start, &end);
 		gtk_text_buffer_delete (text_buffer, &start, &end);
+		update_chat_header(GTK_NOTEBOOK(notebook), chat_view, cr, uri);
 		g_object_set_data(G_OBJECT(chat_view),"cr",cr);
 		g_object_set_data(G_OBJECT(linphone_gtk_get_widget(main_window,"contact_list")),"chatview",(gpointer)chat_view);
 		messages=linphone_chat_room_get_history(cr,NB_MSG_HIST);

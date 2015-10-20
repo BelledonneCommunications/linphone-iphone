@@ -2248,6 +2248,8 @@ GtkWidget *linphone_gtk_make_tab_header(const gchar *label, const gchar *icon_na
 		gtk_button_set_relief(GTK_BUTTON(button),GTK_RELIEF_NONE);
 		g_signal_connect_swapped(G_OBJECT(button),"clicked",cb,user_data);
 		gtk_box_pack_end(GTK_BOX(tab_header),button,FALSE,FALSE,4);
+		g_object_set_data(G_OBJECT(tab_header), "button", button);
 	}
+	g_object_set_data(G_OBJECT(tab_header), "label", label_widget);
 	return tab_header;
 }
