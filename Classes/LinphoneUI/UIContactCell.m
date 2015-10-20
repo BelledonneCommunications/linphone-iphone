@@ -88,6 +88,7 @@
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 	}
+	_linphoneImage.alpha = editing ? 0 : 1;
 	if (animated) {
 		[UIView commitAnimations];
 	}

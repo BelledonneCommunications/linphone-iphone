@@ -24,9 +24,9 @@
 @interface HistoryListTableView : UICheckBoxTVTableViewController {
 }
 
-- (void)loadData;
-
-@property(nonatomic, readonly) NSMutableArray *callLogs;
 @property(nonatomic, assign) BOOL missedFilter;
+
+@property(strong, nonatomic) NSMutableDictionary *sections;
+@property(strong, nonatomic) NSArray *sortedDays;
 
 @end

@@ -113,6 +113,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	[self resetData];
 	_contact = acontact;
 	_avatarImage.image = [FastAddressBook getContactImage:_contact thumbnail:NO];
+	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:acontact];
 	[_tableController setContact:_contact];
 
 	if (reload) {

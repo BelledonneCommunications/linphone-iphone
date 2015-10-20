@@ -31,7 +31,6 @@
 #pragma mark - Lifecycle Functions
 
 - (void)initHistoryTableViewController {
-	_callLogs = [[NSMutableArray alloc] init];
 	missedFilter = false;
 }
 
@@ -94,29 +93,75 @@
 
 #pragma mark - UITableViewDataSource Functions
 
+- (NSDate *)dateAtBeginningOfDayForDate:(NSDate *)inputDate {
+	NSCalendar *calendar = [NSCalendar currentCalendar];
+	NSTimeZone *timeZone = [NSTimeZone systemTimeZone];
+	[calendar setTimeZone:timeZone];
+	NSDateComponents *dateComps =
+		[calendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:inputDate];
+	dateComps.hour = dateComps.minute = dateComps.second = 0;
+	return [calendar dateFromComponents:dateComps];
+}
+
 - (void)loadData {
-	[_callLogs removeAllObjects];
 	const MSList *logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+	self.sections = [NSMutableDictionary dictionary];
 	while (logs != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
-		if (missedFilter) {
-			if (linphone_call_log_get_status(log) == LinphoneCallMissed) {
-				[_callLogs addObject:[NSValue valueWithPointer:log]];
+		if (!missedFilter || linphone_call_log_get_status(log) == LinphoneCallMissed) {
+			NSDate *startDate = [self
+				dateAtBeginningOfDayForDate:[NSDate
+												dateWithTimeIntervalSince1970:linphone_call_log_get_start_date(log)]];
+			NSMutableArray *eventsOnThisDay = [self.sections objectForKey:startDate];
+			if (eventsOnThisDay == nil) {
+				eventsOnThisDay = [NSMutableArray array];
+				[self.sections setObject:eventsOnThisDay forKey:startDate];
 			}
-		} else {
-			[_callLogs addObject:[NSValue valueWithPointer:log]];
+
+			[eventsOnThisDay addObject:[NSValue valueWithPointer:log]];
 		}
 		logs = ms_list_next(logs);
 	}
+
+	NSArray *unsortedDays = [self.sections allKeys];
+	self.sortedDays = [unsortedDays sortedArrayUsingComparator:^NSComparisonResult(NSDate *d1, NSDate *d2) {
+	  return ![d1 compare:d2]; // reverse order
+	}];
+
 	[super loadData];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return 1;
+	return _sortedDays.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [_callLogs count];
+	NSArray *logs = [_sections objectForKey:_sortedDays[section]];
+	return logs.count;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIView *tempView = [[UIView alloc] initWithFrame:CGRectMake(0, 200, 300, 244)];
+	tempView.backgroundColor = [UIColor clearColor];
+
+	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 300, 44)];
+	tempLabel.backgroundColor = [UIColor clearColor];
+	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A"]];
+	NSDate *eventDate = _sortedDays[section];
+	NSDate *currentDate = [self dateAtBeginningOfDayForDate:[NSDate date]];
+	if ([eventDate isEqualToDate:currentDate]) {
+		tempLabel.text = NSLocalizedString(@"TODAY", nil);
+	} else if ([eventDate isEqualToDate:[currentDate dateByAddingTimeInterval:-3600 * 24]]) {
+		tempLabel.text = NSLocalizedString(@"YESTERDAY", nil);
+	} else {
+		tempLabel.text =
+			[LinphoneUtils timeToString:eventDate.timeIntervalSince1970 withStyle:NSDateFormatterMediumStyle];
+	}
+	tempLabel.textAlignment = NSTextAlignmentCenter;
+	tempLabel.font = [UIFont boldSystemFontOfSize:17];
+	[tempView addSubview:tempLabel];
+
+	return tempView;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -126,7 +171,7 @@
 		cell = [[UIHistoryCell alloc] initWithIdentifier:kCellId];
 	}
 
-	id logId = [_callLogs objectAtIndex:indexPath.row];
+	id logId = [_sections objectForKey:_sortedDays[indexPath.section]][indexPath.row];
 	LinphoneCallLog *log = [logId pointerValue];
 	[cell setCallLog:log];
 	[super accessoryForCell:cell atPath:indexPath];
@@ -138,7 +183,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	if (![self isEditing]) {
-		LinphoneCallLog *callLog = [[_callLogs objectAtIndex:[indexPath row]] pointerValue];
+		id log = [_sections objectForKey:_sortedDays[indexPath.section]][indexPath.row];
+		LinphoneCallLog *callLog = [log pointerValue];
 		if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
 			LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 			char *uri = linphone_address_as_string(addr);
@@ -155,9 +201,14 @@
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		[tableView beginUpdates];
-		LinphoneCallLog *callLog = [[_callLogs objectAtIndex:[indexPath row]] pointerValue];
+		id log = [_sections objectForKey:_sortedDays[indexPath.section]][indexPath.row];
+		LinphoneCallLog *callLog = [log pointerValue];
 		linphone_core_remove_call_log([LinphoneManager getLc], callLog);
-		[_callLogs removeObjectAtIndex:[indexPath row]];
+		[[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
+		if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {
+			[_sections removeObjectForKey:_sortedDays[indexPath.section]];
+		}
+
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 						 withRowAnimation:UITableViewRowAnimationFade];
 		[tableView endUpdates];

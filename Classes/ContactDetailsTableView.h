@@ -21,7 +21,6 @@
 #import <AddressBook/AddressBook.h>
 
 #import "ContactDetailsDelegate.h"
-#import "ContactDetailsLabelView.h"
 
 typedef enum _ContactSections {
 	ContactSections_None = 0, // first section is empty because we cannot set header for first section
@@ -33,7 +32,7 @@ typedef enum _ContactSections {
 	ContactSections_MAX
 } ContactSections_e;
 
-@interface ContactDetailsTableView : UITableViewController <ContactDetailsLabelViewDelegate, UITextFieldDelegate> {
+@interface ContactDetailsTableView : UITableViewController <UITextFieldDelegate> {
   @private
 	NSMutableArray *dataCache;
 	NSMutableArray *labelArray;

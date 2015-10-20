@@ -486,7 +486,8 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	if (contactSections[section] == ContactSections_First_Name ||
 		contactSections[section] == ContactSections_Last_Name) {
-		return 1;
+		return 0;
+		//		return (self.tableView.isEditing) ? 1 : 0 /*no first and last name when not editting */;
 	} else {
 		return [[self getSectionData:section] count];
 	}
@@ -640,11 +641,6 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		}
 		if (key != nil) {
 			editingIndexPath = indexPath;
-			ContactDetailsLabelView *view = VIEW(ContactDetailsLabelView);
-			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
-			[view setDataList:[self getLocalizedLabels]];
-			[view setSelectedData:key];
-			[view setDelegate:self];
 		}
 	}
 }
@@ -722,9 +718,9 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	NSString *text = nil;
-	if (contactSections[section] == ContactSections_First_Name) {
+	if (contactSections[section] == ContactSections_First_Name && self.tableView.isEditing) {
 		text = NSLocalizedString(@"First name", nil);
-	} else if (contactSections[section] == ContactSections_Last_Name) {
+	} else if (contactSections[section] == ContactSections_Last_Name && self.tableView.isEditing) {
 		text = NSLocalizedString(@"Last name", nil);
 	} else if ([self getSectionData:section].count > 0) {
 		if (contactSections[section] == ContactSections_Number) {
@@ -842,8 +838,10 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	if (section == 0)
+	if (section == 0 || (!self.tableView.isEditing && (contactSections[section] == ContactSections_First_Name ||
+													   contactSections[section] == ContactSections_Last_Name))) {
 		return 1e-5;
+	}
 	return [self tableView:tableView viewForHeaderInSection:section].frame.size.height;
 }
 

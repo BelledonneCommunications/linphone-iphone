@@ -58,8 +58,8 @@
 	if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
 		// Go to History details view
 		HistoryDetailsView *view = VIEW(HistoryDetailsView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 		[view setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	}
 }
 

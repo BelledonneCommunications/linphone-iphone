@@ -12,13 +12,13 @@
 
 @implementation HistoryDetailsTableView
 
-- (void)loadData {
+- (void)loadDataForAddress:(const LinphoneAddress *)peer {
 	if (callLogs == nil) {
 		callLogs = [[NSMutableArray alloc] init];
 	} else {
 		[callLogs removeAllObjects];
 	}
-	const MSList *logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+	const MSList *logs = linphone_core_get_call_history_for_address([LinphoneManager getLc], peer);
 	while (logs != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
 		[callLogs addObject:[NSValue valueWithPointer:log]];

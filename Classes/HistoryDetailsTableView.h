@@ -8,9 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "linphone/linphonecore.h"
+
 @interface HistoryDetailsTableView : UITableViewController {
   @private
 	NSMutableArray *callLogs;
 }
-- (void)loadData;
+- (void)loadDataForAddress:(const LinphoneAddress *)peer;
+
 @end

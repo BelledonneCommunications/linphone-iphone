@@ -82,7 +82,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	[_tableView loadData];
+	[_tableView loadDataForAddress:(callLog ? linphone_call_log_get_remote_address(callLog) : NULL)];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(update)
