@@ -278,6 +278,7 @@ static void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	linphone_friend_unsubscribe(lf);
 	ms_list_for_each(lf->insubs, (MSIterateFunc) sal_notify_presence_close);
+	lf->insubs = ms_list_free_with_data(lf->insubs, (MSIterateFunc)sal_op_release);
 }
 
 static void _linphone_friend_destroy(LinphoneFriend *lf){

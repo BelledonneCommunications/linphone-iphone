@@ -225,7 +225,6 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 	belle_sip_server_transaction_t* server_transaction = belle_sip_provider_create_server_transaction(op->base.root->prov,belle_sip_request_event_get_request(event));
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_state_t dialog_state;
-	belle_sip_header_expires_t* expires = belle_sip_message_get_header_by_type(req,belle_sip_header_expires_t);
 	belle_sip_response_t* resp;
 	const char *method=belle_sip_request_get_method(req);
 
@@ -259,13 +258,11 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 			if (strcmp("NOTIFY",method)==0) {
 				handle_notify(op, req, belle_sip_request_event_get_dialog(event));
 			} else if (strcmp("SUBSCRIBE",method)==0) {
-				/*either a refresh or an unsubscribe*/
-				if (expires && belle_sip_header_expires_get_expires(expires)>0) {
-					op->base.root->callbacks.subscribe_presence_received(op,sal_op_get_from(op));
-				}else{
-					resp=sal_op_create_response_from_request(op,req,200);
-					belle_sip_server_transaction_send_response(server_transaction,resp);
-				}
+				/*either a refresh or an unsubscribe.
+				 If it is a refresh there is nothing to notify to the app. If it is an unSUBSCRIBE, then the dialog
+				 will be terminated shortly, and this will be notified to the app through the dialog_terminated callback.*/
+				resp=sal_op_create_response_from_request(op,req,200);
+				belle_sip_server_transaction_send_response(server_transaction,resp);
 			}
 			break;
 		default:
