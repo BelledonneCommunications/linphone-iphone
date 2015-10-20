@@ -63,15 +63,9 @@ LinphoneCall *linphone_gtk_get_currently_displayed_call(gboolean *is_conf){
 }
 
 static GtkWidget *make_tab_header(int number){
-	GtkWidget *w=gtk_hbox_new (FALSE,0);
-	GtkWidget *i=gtk_image_new_from_icon_name("linphone-start-call", GTK_ICON_SIZE_BUTTON);
-	GtkWidget *l;
-	gchar *text=g_strdup_printf(_("Call #%i"),number);
-	l=gtk_label_new (text);
-	gtk_box_pack_start (GTK_BOX(w),i,FALSE,FALSE,0);
-	gtk_box_pack_end(GTK_BOX(w),l,TRUE,TRUE,0);
-	gtk_widget_show_all(w);
-	return w;
+	gchar text[20];
+	g_snprintf(text, sizeof(text), _("Call #%i"), number);
+	return linphone_gtk_make_tab_header(text, "linphone-start-call", FALSE, NULL, NULL);
 }
 
 void linphone_gtk_call_update_tab_header(LinphoneCall *call,gboolean pause){

@@ -2231,3 +2231,23 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	return main(__argc, __argv);
 }
 #endif
+
+GtkWidget *linphone_gtk_make_tab_header(const gchar *label, const gchar *icon_name, gboolean show_quit_button, GCallback cb, gpointer user_data) {
+	GtkWidget *tab_header=gtk_hbox_new (FALSE,0);
+	GtkWidget *label_widget = gtk_label_new (label);
+	
+	if(icon_name) {
+		GtkWidget *icon=gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_MENU);
+		gtk_box_pack_start (GTK_BOX(tab_header),icon,FALSE,FALSE,4);
+	}
+	gtk_box_pack_start (GTK_BOX(tab_header),label_widget,FALSE,FALSE,0);
+	if(show_quit_button) {
+		GtkWidget *button = gtk_button_new();
+		GtkWidget *button_image=gtk_image_new_from_stock(GTK_STOCK_CLOSE,GTK_ICON_SIZE_MENU);
+		gtk_button_set_image(GTK_BUTTON(button),button_image);
+		gtk_button_set_relief(GTK_BUTTON(button),GTK_RELIEF_NONE);
+		g_signal_connect_swapped(G_OBJECT(button),"clicked",cb,user_data);
+		gtk_box_pack_end(GTK_BOX(tab_header),button,FALSE,FALSE,4);
+	}
+	return tab_header;
+}
