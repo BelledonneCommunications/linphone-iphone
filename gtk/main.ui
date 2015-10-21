@@ -6,7 +6,8 @@
   <object class="GtkImage" id="add_call_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixel_size">32</property>
+    <property name="xpad">2</property>
+    <property name="pixel_size">30</property>
     <property name="icon_name">linphone-add-call</property>
   </object>
   <object class="GtkImage" id="add_image">
@@ -17,8 +18,6 @@
   <object class="GtkImage" id="add_image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="xpad">2</property>
-    <property name="ypad">2</property>
     <property name="icon_name">linphone-contact-add</property>
   </object>
   <object class="GtkImage" id="connect_image">
@@ -80,8 +79,6 @@
   <object class="GtkImage" id="edit_image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="xpad">2</property>
-    <property name="ypad">2</property>
     <property name="icon_name">linphone-edit</property>
   </object>
   <object class="GtkImage" id="execute_image">
@@ -126,20 +123,20 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="tooltip_text" translatable="yes">Delete</property>
-    <property name="xpad">2</property>
-    <property name="ypad">2</property>
     <property name="icon_name">linphone-delete</property>
   </object>
   <object class="GtkImage" id="start_call_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixel_size">32</property>
+    <property name="xpad">2</property>
+    <property name="pixel_size">30</property>
     <property name="icon_name">linphone-start-call</property>
   </object>
   <object class="GtkImage" id="start_chat_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixel_size">32</property>
+    <property name="xpad">2</property>
+    <property name="pixel_size">30</property>
     <property name="icon_name">linphone-start-chat</property>
   </object>
   <object class="GtkWindow" id="main">
@@ -561,14 +558,16 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="spacing">2</property>
                         <child>
                           <object class="GtkButton" id="add_button">
+                            <property name="width_request">32</property>
+                            <property name="height_request">32</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="resize_mode">immediate</property>
                             <property name="image">add_image1</property>
-                            <property name="xalign">1</property>
                             <signal name="clicked" handler="linphone_gtk_add_button_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -579,6 +578,8 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="edit_button">
+                            <property name="width_request">32</property>
+                            <property name="height_request">32</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -593,6 +594,8 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="remove_button">
+                            <property name="width_request">32</property>
+                            <property name="height_request">32</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -609,6 +612,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
+                        <property name="padding">4</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
