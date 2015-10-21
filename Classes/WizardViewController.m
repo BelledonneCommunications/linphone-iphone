@@ -780,14 +780,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSInteger username_length = [[LinphoneManager instance] lpConfigIntForKey:@"username_length" forSection:@"wizard"];
 	NSInteger password_length = [[LinphoneManager instance] lpConfigIntForKey:@"password_length" forSection:@"wizard"];
 
-	if ([username length] < username_length) {
+	if (username_length > (int)username.length) {
 		[errors appendString:[NSString stringWithFormat:NSLocalizedString(
 															@"The username is too short (minimum %d characters).", nil),
 														username_length]];
 		[errors appendString:@"\n"];
 	}
 
-	if ([password length] < password_length) {
+	if (password_length > (int)password.length) {
 		[errors appendString:[NSString stringWithFormat:NSLocalizedString(
 															@"The password is too short (minimum %d characters).", nil),
 														password_length]];
