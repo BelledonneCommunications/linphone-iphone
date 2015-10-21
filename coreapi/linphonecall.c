@@ -1721,7 +1721,7 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 			if ((all_streams_encrypted = linphone_call_all_streams_encrypted(call)) && linphone_call_get_authentication_token(call)) {
 				call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
 			} else {
-				ms_message("Encryption was resquested to be %s, but isn't effective (all_streams_encrypted=%i, auth_token=%s)",
+				ms_message("Encryption was requested to be %s, but isn't effective (all_streams_encrypted=%i, auth_token=%s)",
 					linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted, call->auth_token == NULL ? "" : call->auth_token);
 				call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 			}
@@ -1733,7 +1733,7 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 			if (linphone_call_get_n_active_streams(call)==0 || (all_streams_encrypted = linphone_call_all_streams_encrypted(call))) {
 				call->current_params->media_encryption = call->params->media_encryption;
 			} else {
-				ms_message("Encryption was resquested to be %s, but isn't effective (all_streams_encrypted=%i)",
+				ms_message("Encryption was requested to be %s, but isn't effective (all_streams_encrypted=%i)",
 					linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted);
 				call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 			}
