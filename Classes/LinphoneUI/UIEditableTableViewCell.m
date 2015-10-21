@@ -69,6 +69,7 @@
 	detailEditFrame.origin.y = 5;
 	detailEditFrame.size.height = superframe.size.height - 10;
 
+#if 0
 	if ([[self.textLabel text] length] != 0) {
 		detailEditFrame.origin.x += [self.textLabel frame].size.width + 8;
 
@@ -83,7 +84,7 @@
 		[self.verticalSep setFrame:separatorFrame];
 		[self.verticalSep setHidden:FALSE];
 	}
-
+#endif
 	// put the detailed text edit view at the correct position
 	detailEditFrame.size.width = superframe.size.width - 10 - detailEditFrame.origin.x;
 	self.detailTextField.frame = detailEditFrame;

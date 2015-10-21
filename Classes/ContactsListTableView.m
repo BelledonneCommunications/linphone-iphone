@@ -211,7 +211,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIView *tempView = [[UIView alloc] initWithFrame:CGRectMake(0, 200, 300, 244)];
-	tempView.backgroundColor = [UIColor clearColor];
+	tempView.backgroundColor = [UIColor whiteColor];
 
 	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 300, 44)];
 	tempLabel.backgroundColor = [UIColor clearColor];

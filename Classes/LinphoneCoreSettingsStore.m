@@ -832,10 +832,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 												   [self integerForKey:@"current_proxy_config_preference"]);
 
 	const LinphoneAuthInfo *ai = linphone_proxy_config_find_auth_info(config);
+	linphone_core_remove_proxy_config(lc, config);
 	if (ai) {
 		linphone_core_remove_auth_info(lc, ai);
 	}
-	linphone_core_remove_proxy_config(lc, config);
 	[self transformLinphoneCoreToKeys];
 }
 @end

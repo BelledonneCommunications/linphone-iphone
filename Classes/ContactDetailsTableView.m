@@ -708,7 +708,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	}
 
 	UIView *tempView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
-	tempView.backgroundColor = [UIColor clearColor];
+	tempView.backgroundColor = [UIColor whiteColor];
 
 	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 300, 10)];
 	tempLabel.backgroundColor = [UIColor clearColor];
