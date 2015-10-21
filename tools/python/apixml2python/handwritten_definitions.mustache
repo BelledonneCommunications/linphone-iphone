@@ -970,3 +970,28 @@ static int pylinphone_Content_set_buffer(PyObject *self, PyObject *value, void *
 	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
 	return 0;
 }
+
+static PyObject * pylinphone_LpConfig_get_sections_names(PyObject *self, void *closure) {
+	PyObject *_list;
+	const char **_names;
+	LpConfig *native_ptr = pylinphone_LpConfig_get_native_ptr(self);
+
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.LpConfig instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	_names = lp_config_get_sections_names(native_ptr);
+	pylinphone_dispatch_messages();
+
+	_list = PyList_New(0);
+	while (*_names != NULL) {
+		PyObject *_item = PyString_FromString(*_names);
+		PyList_Append(_list, _item);
+		_names++;
+	}
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, _list);
+	return _list;
+}

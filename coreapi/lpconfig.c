@@ -878,15 +878,22 @@ err:
 	return -1;
 }
 
-static void get_sections_names_cb(const char *section, void *ctx) {
-	MSList **list = (MSList**)ctx;
-	*list = ms_list_append(*list, (void*)ms_strdup(section));
-}
-
-const MSList* lp_config_get_sections_names(LpConfig *lpconfig) {
-	MSList *result = NULL;
-	lp_config_for_each_section(lpconfig, get_sections_names_cb, &result);
-	return result;
+const char** lp_config_get_sections_names(LpConfig *lpconfig) {
+	const char **sections_names;
+	const MSList *sections = lpconfig->sections;
+	int ndev;
+	int i;
+	
+	ndev = ms_list_size(sections);
+	sections_names = ms_malloc((ndev + 1) * sizeof(const char *));
+	
+	for (i = 0; sections != NULL; sections = sections->next, i++) {
+		LpSection *section = (LpSection *)sections->data;
+		sections_names[i] = ms_strdup(section->name);
+	}
+	
+	sections_names[ndev] = NULL;
+	return sections_names;
 }
 
 char* lp_config_dump_as_xml(const LpConfig *lpconfig) {

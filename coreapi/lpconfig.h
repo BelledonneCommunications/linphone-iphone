@@ -201,15 +201,11 @@ LINPHONE_PUBLIC int lp_config_has_section(const LpConfig *lpconfig, const char *
 LINPHONE_PUBLIC void lp_config_clean_section(LpConfig *lpconfig, const char *section);
 
 /**
- * Returns the list of the sections' names in the config.
+ * Returns the list of sections' names in the LpConfig.
  * @param[in] lpconfig The LpConfig object
- * @return \mslist{const char*}
- *
- * This list is unmodifiable. The ->data field of the MSList points to a const char*.
- *
- * @ingroup misc
+ * @return a null terminated static array of strings
 **/
-LINPHONE_PUBLIC const MSList * lp_config_get_sections_names(LpConfig *lpconfig);
+LINPHONE_PUBLIC const char** lp_config_get_sections_names(LpConfig *lpconfig);
 
 /**
  * Call a function for each section present in the configuration.
