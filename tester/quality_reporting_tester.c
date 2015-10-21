@@ -27,20 +27,11 @@
 void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char * body = (char *)linphone_content_get_buffer(content);
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
-	MediaStream * ms;
-	if (stream_type == SalAudio) {
-		ms = (MediaStream*)call->audiostream;
-	} else if (stream_type == SalVideo) {
-		ms = (MediaStream*)call->videostream;
-	} else {
-		ms = (MediaStream*)call->textstream;
-	}
 	BC_ASSERT_TRUE(
 			__strstr(body, "VQIntervalReport\r\n")			== body ||
 			__strstr(body, "VQSessionReport\r\n")			== body ||
 			__strstr(body, "VQSessionReport: CallTerm\r\n") == body
 	);
-
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "CallID:"));
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalID:"));
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "RemoteID:"));
