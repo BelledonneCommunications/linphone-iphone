@@ -27,7 +27,6 @@
 void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char * body = (char *)linphone_content_get_buffer(content);
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
-	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
 	MediaStream * ms;
 	if (stream_type == SalAudio) {
 		ms = (MediaStream*)call->audiostream;
@@ -70,12 +69,6 @@ void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_typ
 	BC_ASSERT_TRUE(!remote_metrics_start || body < remote_metrics_start);
 
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "DialogID:"));
-
-	if (report->remote_metrics.rtcp_sr_count>0&&ms!=NULL&&ms->rc!=NULL){
-		/* Hack: reset rtcp_sr_count to 0 because in case of interval reports, we need one RTCP SR by interval. */
-		report->remote_metrics.rtcp_sr_count=0;
-		BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "AdaptiveAlg:"));
-	}
 }
 
 char * on_report_send_verify_metrics(const reporting_content_metrics_t *metrics, char * body){
@@ -161,7 +154,7 @@ static void quality_reporting_not_used_without_config(void) {
 		BC_ASSERT_PTR_NULL(call_marie->log->reporting.reports[0]->dialog_id);
 		end_call(marie, pauline);
 	}
-	
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -382,7 +375,7 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 	LinphoneCallParams* pauline_params;
 	LinphoneCallParams* marie_params;
  	LinphoneChatRoom *pauline_chat_room;
-	
+
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, FALSE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
@@ -408,7 +401,7 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 		// PUBLISH submission to the collector should be ok
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,60000));
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,1,60000));
-		
+
 		pauline_chat_room = linphone_call_get_chat_room(call_pauline);
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
 		if (pauline_chat_room) {
@@ -424,13 +417,13 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 			}
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 		}
-		
+
 		end_call(marie, pauline);
 	}
-	
+
 	linphone_call_params_destroy(marie_params);
 	linphone_call_params_destroy(pauline_params);
-	
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
