@@ -173,7 +173,7 @@ static bool_t is_matching_regex(const char *entry, const char* regex) {
 	char err_msg[256];
 	int res;
 	res = regcomp(&regex_pattern, regex, REG_EXTENDED | REG_NOSUB);
-	if(res != REG_NOERROR) {
+	if(res != 0) {
 		regerror(res, &regex_pattern, err_msg, sizeof(err_msg));
 		ms_error("Could not compile regex '%s: %s", regex, err_msg);
 		return FALSE;

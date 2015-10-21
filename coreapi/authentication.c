@@ -142,8 +142,8 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 {
 	char key[50];
 	bool_t store_ha1_passwd = lp_config_get_int(config, "sip", "store_ha1_passwd", 1);
-	
-	
+
+
 	sprintf(key,"auth_info_%i",pos);
 	lp_config_clean_section(config,key);
 
@@ -275,18 +275,10 @@ const LinphoneAuthInfo *_linphone_core_find_auth_info(LinphoneCore *lc, const ch
 	if (ai==NULL){
 		ai=find_auth_info(lc,username,NULL,NULL, ignore_realm);
 	}
-	/*if (ai) ms_message("linphone_core_find_auth_info(): returning auth info username=%s, realm=%s", ai->username, ai->realm);*/
+	if (ai) ms_message("linphone_core_find_auth_info(): returning auth info username=%s, realm=%s", ai->username ? ai->username : "", ai->realm ? ai->realm : "");
 	return ai;
 }
-/**
- * Find authentication info matching realm, username, domain criteria.
- * First of all, (realm,username) pair are searched. If multiple results (which should not happen because realm are supposed to be unique), then domain is added to the search.
- * @param lc the LinphoneCore
- * @param realm the authentication 'realm' (optional)
- * @param username the SIP username to be authenticated (mandatory)
- * @param domain the SIP domain name (optional)
- * @return a #LinphoneAuthInfo
-**/
+
 const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
 	return _linphone_core_find_auth_info(lc, realm, username, domain, TRUE);
 }
@@ -295,9 +287,9 @@ const LinphoneAuthInfo *linphone_core_find_auth_info(LinphoneCore *lc, const cha
 void linphone_core_write_auth_info(LinphoneCore *lc, LinphoneAuthInfo *ai){
 	int i;
 	MSList *elem = lc->auth_info;
-	
+
 	if (!lc->sip_conf.save_auth_info) return;
-	
+
 	for (i=0; elem != NULL; elem = elem->next, i++){
 		if (ai == elem->data){
 			linphone_auth_info_write_config(lc->config, ai, i);

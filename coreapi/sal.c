@@ -203,16 +203,51 @@ bool_t sal_stream_description_active(const SalStreamDescription *sd) {
 	return (sd->rtp_port > 0);
 }
 
+/*these are switch case, so that when a new proto is added we can't forget to modify this function*/
 bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoRtpAvpf) || (sd->proto == SalProtoRtpSavpf) || (sd->proto == SalProtoUdpTlsRtpSavpf));
+	switch (sd->proto){
+		case SalProtoRtpAvpf:
+		case SalProtoRtpSavpf:
+		case SalProtoUdpTlsRtpSavpf:
+			return TRUE;
+		case SalProtoRtpAvp:
+		case SalProtoRtpSavp:
+		case SalProtoUdpTlsRtpSavp:
+		case SalProtoOther:
+			return FALSE;
+	}
+	return FALSE;
 }
 
+/*these are switch case, so that when a new proto is added we can't forget to modify this function*/
 bool_t sal_stream_description_has_srtp(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoRtpSavp) || (sd->proto == SalProtoRtpSavpf));
+	switch (sd->proto){
+		case SalProtoRtpSavp:
+		case SalProtoRtpSavpf:
+			return TRUE;
+		case SalProtoRtpAvp:
+		case SalProtoRtpAvpf:
+		case SalProtoUdpTlsRtpSavpf:
+		case SalProtoUdpTlsRtpSavp:
+		case SalProtoOther:
+			return FALSE;
+	}
+	return FALSE;
 }
 
 bool_t sal_stream_description_has_dtls(const SalStreamDescription *sd) {
-	return ((sd->proto == SalProtoUdpTlsRtpSavp) || (sd->proto == SalProtoUdpTlsRtpSavpf));
+	switch (sd->proto){
+		case SalProtoUdpTlsRtpSavpf:
+		case SalProtoUdpTlsRtpSavp:
+			return TRUE;
+		case SalProtoRtpSavp:
+		case SalProtoRtpSavpf:
+		case SalProtoRtpAvp:
+		case SalProtoRtpAvpf:
+		case SalProtoOther:
+			return FALSE;
+	}
+	return FALSE;
 }
 
 bool_t sal_media_description_has_avpf(const SalMediaDescription *md) {

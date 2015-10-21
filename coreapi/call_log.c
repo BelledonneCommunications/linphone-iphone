@@ -281,6 +281,7 @@ static void _linphone_call_log_destroy(LinphoneCallLog *cl) {
 	if (cl->call_id) ms_free(cl->call_id);
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]);
 	if (cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]);
+	if (cl->reporting.reports[LINPHONE_CALL_STATS_TEXT]!=NULL) linphone_reporting_destroy(cl->reporting.reports[LINPHONE_CALL_STATS_TEXT]);
 }
 
 LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress *to) {
@@ -296,6 +297,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *fr
 
 	cl->reporting.reports[LINPHONE_CALL_STATS_AUDIO]=linphone_reporting_new();
 	cl->reporting.reports[LINPHONE_CALL_STATS_VIDEO]=linphone_reporting_new();
+	cl->reporting.reports[LINPHONE_CALL_STATS_TEXT]=linphone_reporting_new();
 	cl->connected_date_time=0;
 	return cl;
 }
@@ -343,6 +345,26 @@ static void linphone_create_table(sqlite3* db) {
 	}
 }
 
+void linphone_update_call_log_table(sqlite3* db) {
+	char* errmsg=NULL;
+	int ret;
+
+	// for image url storage
+	ret=sqlite3_exec(db,"ALTER TABLE call_history ADD COLUMN call_id TEXT;",NULL,NULL,&errmsg);
+	if(ret != SQLITE_OK) {
+		ms_message("Table already up to date: %s.", errmsg);
+		sqlite3_free(errmsg);
+	} else {
+		ret=sqlite3_exec(db,"ALTER TABLE call_history ADD COLUMN refkey TEXT;",NULL,NULL,&errmsg);
+		if(ret != SQLITE_OK) {
+			ms_message("Table already up to date: %s.", errmsg);
+			sqlite3_free(errmsg);
+		} else {
+			ms_debug("Table call_history updated successfully for call_id and refkey.");
+		}
+	}
+}
+
 static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 #if defined(ANDROID) || defined(__QNXNTO__)
 	return sqlite3_open(db_file, db);
@@ -387,6 +409,7 @@ void linphone_core_call_log_storage_init(LinphoneCore *lc) {
 	}
 
 	linphone_create_table(db);
+	linphone_update_call_log_table(db);
 	lc->logs_db = db;
 	
 	// Load the existing call logs
@@ -411,6 +434,8 @@ void linphone_core_call_log_storage_close(LinphoneCore *lc) {
  * | 7  | status
  * | 8  | video enabled (1 or 0)
  * | 9  | quality
+ * | 10 | call_id
+ * | 11 | refkey
  */
 static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	MSList **list = (MSList **)data;
@@ -432,6 +457,15 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	log->status = (LinphoneCallStatus) atoi(argv[7]);
 	log->video_enabled = atoi(argv[8]) == 1;
 	log->quality = atof(argv[9]);
+	
+	if (argc > 10) {
+		if (argv[10] != NULL) {
+			log->call_id = ms_strdup(argv[10]);
+		}
+		if (argv[10] != NULL) {
+			log->refkey = ms_strdup(argv[11]);
+		}
+	}
 	
 	*list = ms_list_append(*list, log);
 	
@@ -466,7 +500,7 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 		
 		from = linphone_address_as_string(log->from);
 		to = linphone_address_as_string(log->to);
-		buf = sqlite3_mprintf("INSERT INTO call_history VALUES(NULL,%Q,%Q,%i,%i,%lld,%lld,%i,%i,%f);",
+		buf = sqlite3_mprintf("INSERT INTO call_history VALUES(NULL,%Q,%Q,%i,%i,%lld,%lld,%i,%i,%f,%Q,%Q);",
 						from,
 						to,
 						log->dir,
@@ -475,13 +509,16 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 						(int64_t)log->connected_date_time,
 						log->status,
 						log->video_enabled ? 1 : 0,
-						log->quality
+						log->quality,
+						log->call_id,
+						log->refkey
 					);
 		linphone_sql_request_generic(lc->logs_db, buf);
 		sqlite3_free(buf);
 		ms_free(from);
 		ms_free(to);
-		sqlite3_last_insert_rowid(lc->logs_db);
+		
+		log->storage_id = sqlite3_last_insert_rowid(lc->logs_db);
 	}
 	
 	if (lc) {
@@ -489,21 +526,46 @@ void linphone_core_store_call_log(LinphoneCore *lc, LinphoneCallLog *log) {
 	}
 }
 
+static void copy_user_data_from_existing_log(MSList *existing_logs, LinphoneCallLog *log) {
+	while (existing_logs) {
+		LinphoneCallLog *existing_log = (LinphoneCallLog *)existing_logs->data;
+		if (existing_log->storage_id == log->storage_id) {
+			log->user_data = existing_log->user_data;
+			break;
+		}
+		existing_logs = ms_list_next(existing_logs);
+	}
+}
+
+static void copy_user_data_from_existing_logs(MSList *existing_logs, MSList *new_logs) {
+	while (new_logs) {
+		LinphoneCallLog *new_log = (LinphoneCallLog *)new_logs->data;
+		copy_user_data_from_existing_log(existing_logs, new_log);
+		new_logs = ms_list_next(new_logs);
+	}
+}
+
 const MSList *linphone_core_get_call_history(LinphoneCore *lc) {
 	char *buf;
 	uint64_t begin,end;
+	MSList *result = NULL;
 
 	if (!lc || lc->logs_db == NULL) return NULL;
-	
-	lc->call_logs = ms_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
 
 	buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id DESC LIMIT %i", lc->max_call_logs);
 
 	begin = ortp_get_cur_time_ms();
-	linphone_sql_request_call_log(lc->logs_db, buf, &lc->call_logs);
+	linphone_sql_request_call_log(lc->logs_db, buf, &result);
 	end = ortp_get_cur_time_ms();
 	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
 	sqlite3_free(buf);
+	
+	if (lc->call_logs) {
+		copy_user_data_from_existing_logs(lc->call_logs, result);
+	}
+	
+	lc->call_logs = ms_list_free_with_data(lc->call_logs, (void (*)(void*))linphone_call_log_unref);
+	lc->call_logs = result;
 	
 	return lc->call_logs;
 }
@@ -568,6 +630,10 @@ MSList * linphone_core_get_call_history_for_address(LinphoneCore *lc, const Linp
 	sqlite3_free(buf);
 	ms_free(sipAddress);
 	
+	if (lc->call_logs) {
+		copy_user_data_from_existing_logs(lc->call_logs, result);
+	}
+	
 	return result;
 }
 
@@ -590,6 +656,10 @@ LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc) {
 	
 	if (list) {
 		result = (LinphoneCallLog*)list->data;
+	}
+	
+	if (lc->call_logs && result) {
+		copy_user_data_from_existing_log(lc->call_logs, result);
 	}
 	
 	return result;

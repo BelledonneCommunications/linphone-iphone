@@ -74,10 +74,11 @@ void file_transfer_received(LinphoneChatMessage *msg, const LinphoneContent* con
 	}
 	ms_free(receive_file);
 	file = (FILE*)linphone_chat_message_get_user_data(msg);
-
+	BC_ASSERT_PTR_NOT_NULL(file);
 	if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
 		stats* counters = get_stats(lc);
 		counters->number_of_LinphoneFileTransferDownloadSuccessful++;
+		linphone_chat_message_set_user_data(msg, NULL);
 		fclose(file);
 	} else { /* store content on a file*/
 		if (fwrite(linphone_buffer_get_content(buffer),linphone_buffer_get_size(buffer),1,file)==-1){
@@ -95,6 +96,11 @@ LinphoneBuffer * tester_file_transfer_send(LinphoneChatMessage *msg, const Linph
 	size_t size_to_send;
 	uint8_t *buf;
 	FILE *file_to_send = linphone_chat_message_get_user_data(msg);
+	
+	BC_ASSERT_PTR_NOT_NULL(file_to_send);
+	if (file_to_send == NULL){
+		return NULL;
+	}
 	fseek(file_to_send, 0, SEEK_END);
 	file_size = ftell(file_to_send);
 	fseek(file_to_send, (long)offset, SEEK_SET);
@@ -103,6 +109,7 @@ LinphoneBuffer * tester_file_transfer_send(LinphoneChatMessage *msg, const Linph
 	if (fread(buf, size_to_send, 1, file_to_send)!=size_to_send){
 		// reaching end of file, close it
 		fclose(file_to_send);
+		linphone_chat_message_set_user_data(msg, NULL);
 	}
 	lb = linphone_buffer_new_from_data(buf, size_to_send);
 	ms_free(buf);

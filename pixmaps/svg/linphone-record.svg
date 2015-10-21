@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="130"
+   height="130"
+   viewBox="0 0 130 130"
+   version="1.1"
+   id="svg5402"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-record.svg"
+   inkscape:export-filename="/home/ghislain/code/linphone-desktop/submodules/linphone/pixmaps/linphone-record.png"
+   inkscape:export-xdpi="33.23"
+   inkscape:export-ydpi="33.23">
+  <metadata
+     id="metadata5417">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>status_busy</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1141"
+     id="namedview5415"
+     showgrid="false"
+     inkscape:zoom="2.8433735"
+     inkscape:cx="41"
+     inkscape:cy="41.324153"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5402" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title5404">status_busy</title>
+  <desc
+     id="desc5406">Created with Sketch.</desc>
+  <defs
+     id="defs5408" />
+  <path
+     style="fill:#ff0000;fill-rule:evenodd;stroke:none;stroke-width:1"
+     inkscape:connector-curvature="0"
+     sketch:type="MSShapeGroup"
+     id="Fill-1"
+     d="m 100.44184,64.938426 c 0,19.29648 -15.453925,34.937606 -34.516791,34.937606 -19.062866,0 -34.512481,-15.641126 -34.512481,-34.937606 0,-19.294296 15.449615,-34.937611 34.512481,-34.937611 19.062866,0 34.516791,15.643315 34.516791,34.937611 l 0,0 z" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:12"
+     inkscape:connector-curvature="0"
+     sketch:type="MSShapeGroup"
+     id="Stroke-2"
+     d="m 100.44184,64.938426 c 0,19.29648 -15.453925,34.937606 -34.516791,34.937606 -19.062866,0 -34.512481,-15.641126 -34.512481,-34.937606 0,-19.294296 15.449615,-34.937611 34.512481,-34.937611 19.062866,0 34.516791,15.643315 34.516791,34.937611 l 0,0 z" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:10;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+     inkscape:connector-curvature="0"
+     sketch:type="MSShapeGroup"
+     id="Stroke-2-6"
+     d="m 118.3276,64.883872 c 0,29.609205 -23.713064,53.609518 -52.963804,53.609518 -29.250742,0 -52.957182,-24.000313 -52.957182,-53.609518 0,-29.605856 23.70644,-53.609516 52.957182,-53.609516 29.25074,0 52.963804,24.00366 52.963804,53.609516 l 0,0 z" />
+</svg>

@@ -41,7 +41,7 @@ if(ZLIB_INCLUDE_DIRS)
 endif()
 
 if(ENABLE_STATIC)
-	if(IOS)
+	if(IOS OR QNX)
 		set(_ZLIB_STATIC_NAMES z)
 	else()
 		set(_ZLIB_STATIC_NAMES zstatic zlibstatic zlibstaticd)

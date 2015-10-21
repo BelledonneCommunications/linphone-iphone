@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="99px"
+   height="99px"
+   viewBox="0 0 99 99"
+   version="1.1"
+   id="svg4226"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-conference-start.svg"
+   inkscape:export-filename="/home/ghislain/code/linphone-desktop/submodules/linphone/pixmaps/linphone-conference-start.png"
+   inkscape:export-xdpi="43.639999"
+   inkscape:export-ydpi="43.639999">
+  <metadata
+     id="metadata4241">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>conference_start</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1141"
+     id="namedview4239"
+     showgrid="false"
+     inkscape:zoom="6.9353605"
+     inkscape:cx="49.5"
+     inkscape:cy="49.449022"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4226" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4228">conference_start</title>
+  <desc
+     id="desc4230">Created with Sketch.</desc>
+  <defs
+     id="defs4232" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:5;stroke-linecap:round;stroke-linejoin:round"
+     inkscape:connector-curvature="0"
+     sketch:type="MSShapeGroup"
+     id="start_conference_top"
+     d="m 23.446512,44.616279 c 4.548837,0 8.237209,3.695349 8.237209,8.248837 0,2.17907 -0.844186,4.162791 -2.223256,5.63721 -0.195349,0.206976 -0.118604,0.172093 -0.332558,0.358139 l 0.344186,0.232558 c 12.47907,5.441861 9.281395,14.590698 9.281395,14.590698 -8.039534,2.553488 -15.293023,2.158139 -15.293023,2.158139 l -0.183721,0 c 0,0 -7.253488,0.395349 -15.290698,-2.158139 0,0 -3.2,-9.148837 9.281396,-14.590698 l 0.34186,-0.232558 C 17.395349,58.674419 17.472093,58.709302 17.27907,58.502326 15.9,57.027907 15.055814,55.044186 15.055814,52.865116 c 0,-4.553488 3.686047,-8.248837 8.234884,-8.248837 l 0.155814,0 0,0 z m 48.202325,0 c 4.548837,0 8.234884,3.695349 8.234884,8.248837 0,2.17907 -0.846512,4.162791 -2.223256,5.63721 -0.193023,0.206976 -0.118605,0.172093 -0.332558,0.358139 l 0.344186,0.232558 c 12.481397,5.441861 9.281395,14.590698 9.281395,14.590698 -8.037209,2.553488 -15.293023,2.158139 -15.293023,2.158139 l -0.183721,0 c 0,0 -7.253488,0.395349 -15.288372,-2.158139 0,0 -3.202326,-9.148837 9.27907,-14.590698 l 0.34186,-0.232558 C 65.595349,58.674419 65.674419,58.709302 65.47907,58.502326 64.1,57.027907 63.255814,55.044186 63.255814,52.865116 c 0,-4.553488 3.688372,-8.248837 8.234884,-8.248837 l 0.158139,0 0,0 z M 47.546512,3 c 4.548837,0 8.234883,3.693023 8.234883,8.248837 0,2.17907 -0.844186,4.162791 -2.223255,5.637209 -0.193024,0.206977 -0.11628,0.174419 -0.330233,0.35814 l 0.344186,0.230233 c 12.47907,5.44186 9.27907,14.593023 9.27907,14.593023 -8.03721,2.553488 -15.290698,2.158139 -15.290698,2.158139 l -0.186046,0 c 0,0 -7.253489,0.395349 -15.288372,-2.158139 0,0 -3.202326,-9.151163 9.279069,-14.593023 l 0.344186,-0.230233 C 41.493023,17.060465 41.572093,17.093023 41.376744,16.886046 39.997674,15.411628 39.153488,13.427907 39.153488,11.248837 39.153488,6.693023 42.841861,3 47.388372,3 l 0.15814,0 0,0 z m 13.188372,84.706977 c -7.888372,7.865113 -20.67907,7.865113 -28.567442,0 m 1.744186,8.316283 -1.744186,-8.316283 8.339535,-1.739535 -6.595349,10.055818 z M 3,37.306977 C 3,26.181395 12.04186,17.165116 23.2,17.165116 M 16.067442,12.513953 23.2,17.165116 18.534884,24.274419 16.067442,12.513953 Z m 55.090698,4.651163 c 11.155813,0 20.2,9.018605 20.2,20.141861 m 4.66512,-7.111628 -4.66512,7.111628 -7.130233,-4.651163 11.795353,-2.460465 z" />
+</svg>

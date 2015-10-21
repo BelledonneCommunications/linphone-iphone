@@ -72,7 +72,7 @@ void sal_op_authenticate(SalOp *op, const SalAuthInfo *info){
 		/*Registration authenticate is just about registering again*/
 		sal_register_refresh(op,-1);
 	}else {
-		/*for sure auth info will be accesible from the provider*/
+		/*for sure auth info will be accessible from the provider*/
 		sal_process_authentication(op);
 	}
 	return ;
@@ -814,6 +814,11 @@ void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling)  {
 void sal_op_cnx_ip_to_0000_if_sendonly_enable(SalOp *op,bool_t yesno) {
 	op->cnx_ip_to_0000_if_sendonly_enabled = yesno;
 }
+
 bool_t sal_op_cnx_ip_to_0000_if_sendonly_enabled(SalOp *op) {
 	return op->cnx_ip_to_0000_if_sendonly_enabled;
+}
+
+bool_t sal_op_is_forked_of(const SalOp *op1, const SalOp *op2){
+	return op1->base.call_id && op2->base.call_id && strcmp(op1->base.call_id, op2->base.call_id) == 0;
 }

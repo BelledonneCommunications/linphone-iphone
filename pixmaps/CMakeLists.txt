@@ -36,12 +36,38 @@ install(FILES
 	svg/linphone-status-away.svg
 	svg/linphone-status-donotdisturb.svg
 	svg/linphone-status-offline.svg
+	svg/linphone-call-status-incoming.svg
+	svg/linphone-call-status-missed.svg
+	svg/linphone-call-status-outgoing.svg
+	svg/linphone-chat-new-message-and-writing.svg
+	svg/linphone-chat-new-message.svg
+	svg/linphone-chat-nothing.svg
+	svg/linphone-chat-writing.svg
+	svg/linphone-ok.svg
+	svg/linphone-inprogress.svg
+	svg/linphone-failed.svg
+	svg/linphone-camera-enabled.svg
+	svg/linphone-camera-disabled.svg
+	svg/linphone-security-ok.svg
+	svg/linphone-security-pending.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
 
 install(FILES
 	svg/linphone-start-call.svg
+	svg/linphone-add-call.svg
+	svg/linphone-hold-off.svg
+	svg/linphone-hold-on.svg
+	svg/linphone-start-call2.svg
+	svg/linphone-start-chat.svg
+	svg/linphone-history.svg
+	svg/linphone-edit.svg
+	svg/linphone-delete.svg
+	svg/linphone-contact-add.svg
+	svg/linphone-conference-start.svg
+	svg/linphone-call-transfer.svg
+	svg/linphone-record.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
@@ -61,21 +87,33 @@ install(FILES
 	linphone-chat-new-message-and-writing.png
 	linphone-call-status-incoming.png
 	linphone-call-status-outgoing.png
-	linphone-contact-bookmarked.png
-	linphone-contact-not-bookmarked.png
+	linphone-call-status-missed.png
+	linphone-ok.png
+	linphone-inprogress.png
+	linphone-failed.png
+	linphone-camera-enabled.png
+	linphone-camera-disabled.png
+	linphone-security-ok.png
+	linphone-security-pending.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
 
 install(FILES
 	linphone-start-call2.png
-	linphone-show-dialer.png
 	linphone-add-call.png
 	linphone-start-call.png
 	linphone-start-chat.png
 	linphone-stop-call.png
 	linphone-hold-on.png
 	linphone-hold-off.png
+	linphone-history.png
+	linphone-edit.png
+	linphone-delete.png
+	linphone-contact-add.png
+	linphone-conference-start.png
+	linphone-call-transfer.png
+	linphone-record.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )

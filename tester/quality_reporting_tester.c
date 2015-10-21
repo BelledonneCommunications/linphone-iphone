@@ -27,19 +27,11 @@
 void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char * body = (char *)linphone_content_get_buffer(content);
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
-	reporting_session_report_t * report = call->log->reporting.reports[stream_type];
-	MediaStream * ms;
-	if (stream_type == SalAudio){
-		ms = (MediaStream*)call->audiostream;
-	}else{
-		ms = (MediaStream*)call->videostream;
-	}
 	BC_ASSERT_TRUE(
 			__strstr(body, "VQIntervalReport\r\n")			== body ||
 			__strstr(body, "VQSessionReport\r\n")			== body ||
 			__strstr(body, "VQSessionReport: CallTerm\r\n") == body
 	);
-
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "CallID:"));
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalID:"));
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "RemoteID:"));
@@ -68,12 +60,6 @@ void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_typ
 	BC_ASSERT_TRUE(!remote_metrics_start || body < remote_metrics_start);
 
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "DialogID:"));
-
-	if (report->remote_metrics.rtcp_sr_count>0&&ms!=NULL&&ms->rc!=NULL){
-		/* Hack: reset rtcp_sr_count to 0 because in case of interval reports, we need one RTCP SR by interval. */
-		report->remote_metrics.rtcp_sr_count=0;
-		BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "AdaptiveAlg:"));
-	}
 }
 
 char * on_report_send_verify_metrics(const reporting_content_metrics_t *metrics, char * body){
@@ -159,7 +145,7 @@ static void quality_reporting_not_used_without_config(void) {
 		BC_ASSERT_PTR_NULL(call_marie->log->reporting.reports[0]->dialog_id);
 		end_call(marie, pauline);
 	}
-	
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -372,6 +358,67 @@ static void quality_reporting_sent_using_custom_route(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void quality_reporting_interval_report_video_and_rtt(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc_rtcp_xr");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc_rtcp_xr");
+	LinphoneCall* call_marie = NULL;
+	LinphoneCall* call_pauline = NULL;
+	LinphoneCallParams* pauline_params;
+	LinphoneCallParams* marie_params;
+ 	LinphoneChatRoom *pauline_chat_room;
+
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, FALSE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, FALSE);
+	marie_params=linphone_core_create_default_call_parameters(marie->lc);
+	linphone_call_params_enable_video(marie_params,TRUE);
+	linphone_call_params_enable_realtime_text(marie_params,TRUE);
+	pauline_params=linphone_core_create_default_call_parameters(pauline->lc);
+	linphone_call_params_enable_video(pauline_params,TRUE);
+	linphone_call_params_enable_realtime_text(pauline_params,TRUE);
+
+	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, marie_params, pauline_params))  {
+		linphone_reporting_set_on_report_send(call_marie, on_report_send_mandatory);
+		linphone_proxy_config_set_quality_reporting_interval(call_marie->dest_proxy, 1);
+
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,NULL,0,3000));
+		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(call_pauline)));
+		BC_ASSERT_TRUE(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call_pauline)));
+
+		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(marie->lc));
+		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(pauline->lc));
+
+		// PUBLISH submission to the collector should be ok
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishProgress,1,60000));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,1,60000));
+
+		pauline_chat_room = linphone_call_get_chat_room(call_pauline);
+		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
+		if (pauline_chat_room) {
+			const char* message = "Lorem Ipsum Belledonnum Communicatum";
+			int i;
+			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(call_marie);
+
+			for (i = 0; i < strlen(message); i++) {
+				linphone_chat_message_put_char(rtt_message, message[i]);
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
+			}
+			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
+		}
+
+		end_call(marie, pauline);
+	}
+
+	linphone_call_params_destroy(marie_params);
+	linphone_call_params_destroy(pauline_params);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t quality_reporting_tests[] = {
 	{ "Not used if no config", quality_reporting_not_used_without_config},
 	{ "Call term session report not sent if call did not start", quality_reporting_not_sent_if_call_not_started},
@@ -379,6 +426,7 @@ test_t quality_reporting_tests[] = {
 	{ "Call term session report invalid if missing mandatory fields", quality_reporting_invalid_report},
 	{ "Call term session report sent if call ended normally", quality_reporting_at_call_termination},
 	{ "Interval report if interval is configured", quality_reporting_interval_report},
+	{ "Interval report if interval is configured with video and realtime text", quality_reporting_interval_report_video_and_rtt},
 	{ "Session report sent if video stopped during call", quality_reporting_session_report_if_video_stopped},
 	{ "Sent using custom route", quality_reporting_sent_using_custom_route},
 };

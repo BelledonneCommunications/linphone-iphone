@@ -584,17 +584,18 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 static int compress_file(FILE *input_file, COMPRESS_FILE_PTR output_file) {
 	char buffer[131072]; /* 128kB */
 	size_t bytes;
+	size_t total_bytes = 0;
 
 	while ((bytes = fread(buffer, 1, sizeof(buffer), input_file)) > 0) {
 #ifdef HAVE_ZLIB
 		int res = gzwrite(output_file, buffer, (unsigned int)bytes);
 		if (res < 0) return 0;
+		total_bytes += (size_t)res;
 #else
-		bytes = fwrite(buffer, 1, bytes, output_file);
-		if (bytes < 0) return (int)bytes;
+		total_bytes += fwrite(buffer, 1, bytes, output_file);
 #endif
 	}
-	return 0;
+	return total_bytes;
 }
 
 static int prepare_log_collection_file_to_upload(const char *filename) {
@@ -615,7 +616,7 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	input_file = fopen(input_filename, "r");
 	if (input_file == NULL) goto error;
 	ret = compress_file(input_file, output_file);
-	if (ret == 0) goto error;
+	if (ret <= 0) goto error;
 	fclose(input_file);
 	ms_free(input_filename);
 	input_filename = ms_strdup_printf("%s/%s2.log",
@@ -624,7 +625,7 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	input_file = fopen(input_filename, "r");
 	if (input_file != NULL) {
 		ret = compress_file(input_file, output_file);
-		if (ret == 0) goto error;
+		if (ret <= 0) goto error;
 	}
 
 error:
@@ -669,7 +670,11 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 			liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
 			COMPRESSED_LOG_COLLECTION_EXTENSION);
 		linphone_content_set_name(core->log_collection_upload_information, name);
-		if (prepare_log_collection_file_to_upload(name) < 0) return;
+		if (prepare_log_collection_file_to_upload(name) <= 0) {
+		    ms_free(core->log_collection_upload_information);
+			core->log_collection_upload_information = NULL;
+		    return;
+		}
 		linphone_content_set_size(core->log_collection_upload_information, get_size_of_file_to_upload(name));
 		uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
 		req = belle_http_request_create("POST", uri, NULL, NULL, NULL);
@@ -688,7 +693,7 @@ char * linphone_core_compress_log_collection() {
 	filename = ms_strdup_printf("%s_log.%s",
 		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX,
 		COMPRESSED_LOG_COLLECTION_EXTENSION);
-	if (prepare_log_collection_file_to_upload(filename) < 0) {
+	if (prepare_log_collection_file_to_upload(filename) <= 0) {
 		ms_free(filename);
 		return NULL;
 	}
@@ -1679,7 +1684,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_register_default_codecs(lc);
 	/* Get the mediastreamer2 event queue */
 	/* This allows to run event's callback in linphone_core_iterate() */
-	lc->msevq=ms_factory_get_event_queue(ms_factory_get_fallback());
+	lc->msevq=ms_factory_create_event_queue(ms_factory_get_fallback());
 
 	lc->sal=sal_init();
 	sal_set_http_proxy_host(lc->sal, linphone_core_get_http_proxy_host(lc));
@@ -3561,9 +3566,13 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
  * @return 0 if successful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state).
 **/
 int linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
-	if (call->state!=LinphoneCallUpdatedByRemote){
+	if (call->state != LinphoneCallUpdatedByRemote){
 		ms_error("linphone_core_accept_update(): invalid state %s to call this function.",
 				 linphone_call_state_to_string(call->state));
+		return -1;
+	}
+	if (call->expect_media_in_ack){
+		ms_error("linphone_core_accept_call_update() is not possible during a late offer incoming reINVITE (INVITE without SDP)");
 		return -1;
 	}
 	return _linphone_core_accept_call_update(lc, call, params, call->prevstate, linphone_call_state_to_string(call->prevstate));
@@ -6319,9 +6328,10 @@ void ui_config_uninit(LinphoneCore* lc)
 {
 	ms_message("Destroying friends.");
 	if (lc->friends){
-		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_unref);
-		ms_list_free(lc->friends);
-		lc->friends=NULL;
+		lc->friends = ms_list_free_with_data(lc->friends, (void (*)(void *))linphone_friend_unref);
+	}
+	if (lc->subscribers){
+		lc->subscribers = ms_list_free_with_data(lc->subscribers, (void (*)(void *))linphone_friend_unref);
 	}
 	if (lc->presence_model) {
 		linphone_presence_model_unref(lc->presence_model);
@@ -6417,9 +6427,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->chat_db_file){
 		ms_free(lc->chat_db_file);
 	}
-	if(lc->presence_model){
-		linphone_presence_model_unref(lc->presence_model);
-	}
 	linphone_core_free_payload_types(lc);
 	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);
@@ -6458,6 +6465,9 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 		ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_set_broken);
 	}else{
 		linphone_core_resolve_stun_server(lc);
+		if (lp_config_get_int(lc->config, "net", "recreate_sockets_when_network_is_up", 0)){
+			ms_list_for_each(lc->calls, (MSIterateFunc)linphone_call_refresh_sockets);
+		}
 	}
 #ifdef BUILD_UPNP
 	if(lc->upnp == NULL) {

@@ -130,6 +130,17 @@ public interface LinphoneCallParams {
 	String getCustomSdpMediaAttribute(StreamType type, String name);
 
 	/**
+	 * Clear the custom SDP attributes related to all the streams in the SDP exchanged within SIP messages during a call.
+	**/
+	void clearCustomSdpAttributes();
+
+	/**
+	 * Clear the custom SDP attributes related to a specific stream in the SDP exchanged within SIP messages during a call.
+	 * @param type The type of the stream to clear custom SDP attributes from.
+	**/
+	void clearCustomSdpMediaAttributes(StreamType type);
+
+	/**
 	 * Set the privacy for the call.
 	 * @param privacy_mask a or'd int of values defined in interface {@link org.linphone.core.Privacy}
 	 */

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
-
 <svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -9,24 +8,28 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="86px"
+   height="86px"
+   viewBox="0 0 86 86"
    version="1.1"
-   id="Calque_1"
-   x="0px"
-   y="0px"
-   width="128"
-   height="128"
-   viewBox="0 0 127.99999 128"
-   enable-background="new 0 0 595.28 841.89"
-   xml:space="preserve"
+   id="svg2"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="linphone-status-online.svg"
-   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-status-online.png"
-   inkscape:export-xdpi="33.75"
-   inkscape:export-ydpi="33.75"><metadata
-     id="metadata26"><rdf:RDF><cc:Work
-         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
-     id="defs24" /><sodipodi:namedview
+   sodipodi:docname="linphone-start-call.svg"
+   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-start-call.png"
+   inkscape:export-xdpi="50.23"
+   inkscape:export-ydpi="50.23">
+  <metadata
+     id="metadata17">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1"
@@ -35,43 +38,36 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="709"
-     id="namedview22"
+     inkscape:window-width="1920"
+     inkscape:window-height="1133"
+     id="namedview15"
      showgrid="false"
-     inkscape:zoom="3.1714775"
-     inkscape:cx="73.326021"
-     inkscape:cy="51.06876"
-     inkscape:window-x="-4"
+     inkscape:zoom="2.744186"
+     inkscape:cx="-124.26271"
+     inkscape:cy="42.999998"
+     inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="Calque_1" /><g
-     id="g3"
-     transform="matrix(5.0401244,0,0,5.0235343,-745.02721,-2084.4323)"><g
-       id="g5"><g
-         id="g7"><g
-           id="g9"><linearGradient
-             id="SVGID_1_"
-             gradientUnits="userSpaceOnUse"
-             x1="148.6731"
-             y1="423.5444"
-             x2="172.78819"
-             y2="430.00601"
-             gradientTransform="translate(0.2803,-0.1104)"><stop
-               offset="0.15"
-               style="stop-color:#3BCB09"
-               id="stop12" /><stop
-               offset="0.35"
-               style="stop-color:#F4F7EE"
-               id="stop14" /><stop
-               offset="0.55"
-               style="stop-color:#3BCB09"
-               id="stop16" /></linearGradient><path
-             d="m 153.954,437.025 c 0.778,0.367 1.692,0.773 3.042,1.102 1.429,0.312 2.855,0.531 4.406,0.49 1.635,-0.082 2.449,-0.246 3.757,-0.572 1.184,-0.367 1.755,-0.572 2.692,-1.061 0.41,-0.205 0.735,-0.408 1.551,-0.98 0.533,-0.41 1.145,-0.898 1.729,-1.725 0.494,-0.574 0.986,-1.559 1.312,-2.379 0.369,-0.82 0.574,-1.723 0.574,-2.705 -0.042,-1.725 -0.452,-3.285 -1.312,-4.637 -0.74,-1.148 -1.686,-2.174 -2.791,-2.994 l 1.804,-4.839 -6.231,2.542 c -0.164,-0.041 -0.327,-0.082 -0.452,-0.124 -1.603,-0.491 -3.118,-0.696 -4.595,-0.737 -1.929,0.041 -3.69,0.328 -5.25,0.902 -1.478,0.616 -2.707,1.437 -3.69,2.502 -0.984,1.107 -2,2.816 -2.246,4.336 -0.365,1.896 -0.267,3.164 0.021,4.311 0.328,1.148 0.69,2.057 1.492,3.221 0.872,1 1.264,1.428 2,2 0.901,0.652 1.49,0.976 2.187,1.347 z m 3.317,-0.942 c -1.146,-0.326 -2.051,-0.656 -2.707,-1.027 -0.576,-0.328 -1.231,-0.777 -1.889,-1.312 -0.614,-0.531 -1.189,-1.146 -1.682,-1.926 -0.532,-0.738 -0.86,-1.602 -1.025,-2.584 -0.205,-1.438 -0.123,-2.666 0.286,-3.652 0.41,-0.984 0.981,-1.807 1.723,-2.381 0.78,-0.615 1.601,-1.064 2.462,-1.395 0.861,-0.287 1.683,-0.489 2.46,-0.614 0.738,-0.081 1.312,-0.164 1.683,-0.164 1.354,0 2.707,0.205 4.019,0.571 1.355,0.371 2.628,0.943 3.775,1.684 1.106,0.777 2.051,1.723 2.749,2.871 0.41,0.697 0.695,1.314 0.899,1.973 0.205,0.615 0.328,1.229 0.328,1.803 -0.042,1.148 -0.41,2.256 -1.146,3.24 -0.696,1.027 -1.765,1.807 -3.157,2.42 -1.354,0.658 -2.954,0.945 -4.799,0.945 -1.518,0.002 -2.83,-0.164 -3.979,-0.452 z"
-             id="path18"
-             inkscape:connector-curvature="0"
-             style="fill:url(#SVGID_1_)" /></g></g></g><path
-       d="m 158.761,433.871 c 1.771,0.467 3.646,0.637 5.186,0.26 2.91,-0.705 3.85,-1.676 3.697,-4.115 0,0 0.056,-1.176 -2.427,-1.133 -0.551,0.01 -1.954,0.309 -2.153,0.906 -0.198,0.605 0.103,1.217 0.119,1.512 0.018,0.299 -0.803,0.701 -1.146,0.732 -0.447,0.043 -1.575,-0.025 -2.713,-0.307 l -0.051,-0.014 c -1.128,-0.316 -2.144,-0.811 -2.511,-1.074 -0.281,-0.197 -0.796,-0.951 -0.635,-1.199 0.16,-0.252 0.726,-0.635 0.851,-1.258 0.125,-0.623 -0.954,-1.57 -1.425,-1.85 -2.137,-1.266 -2.672,-0.217 -2.672,-0.217 -1.333,2.049 -0.999,3.354 1.181,5.404 1.16,1.092 2.872,1.865 4.641,2.332 l 0.058,0.021 z"
-       id="path20"
-       inkscape:connector-curvature="0"
-       style="fill:#3bcb09" /></g></svg>
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">call_alt_start</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     inkscape:connector-curvature="0"
+     sketch:type="MSShapeGroup"
+     id="start_call_top"
+     d="m 4.582549,24.174568 c -4.828038,13.659309 1.937616,33.180264 12.887303,44.129951 l 0.229602,0.228002 C 28.646741,79.479808 48.172496,86.24546 61.827005,81.417423 L 72.184687,67.839716 58.076575,53.733203 45.170072,64.64769 33.374778,52.853996 33.148376,52.625995 21.354683,40.832301 32.26677,27.920998 18.164257,13.816086 4.582549,24.174568 l 0,0 z M 49.753309,3 C 68.115855,3 83.000773,17.884118 83.000773,36.249064 M 49.753309,13.738485 c 12.432898,0 22.510578,10.07928 22.510578,22.510579 M 49.753309,24.052967 c 6.734453,0 12.192097,5.462444 12.192097,12.196097" />
+  <rect
+     style="opacity:0;fill:#ffffff;fill-opacity:0.7;fill-rule:evenodd;stroke:none;stroke-width:1"
+     height="120"
+     width="120"
+     y="-17"
+     x="-16"
+     sketch:type="MSShapeGroup"
+     id="Rectangle-232-Copy-26" />
+</svg>

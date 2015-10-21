@@ -42,28 +42,30 @@ void cb_function(void *ctx, lpc2xml_log_level level, const char *msg, va_list li
 }
 
 void show_usage(int argc, char *argv[]) {
-	fprintf(stderr, "usage %s convert <lpc_file> <xml_file>\n",
-			argv[0]);
+	fprintf(stderr, "usage:\n%s convert <lpc_file> <xml_file>\n%s dump <lpc_file>\n", argv[0], argv[0]);
 }
 
 int main(int argc, char *argv[]) {
 	lpc2xml_context *ctx;
 	LpConfig *lpc;
-	if(argc != 4) {
+	if(argc > 4 || argc < 3) {
 		show_usage(argc, argv);
 		return -1;
 	}
 
-	ctx = lpc2xml_context_new(cb_function, NULL);
 	lpc = lp_config_new(argv[2]);
-	lpc2xml_set_lpc(ctx, lpc);
-	if(strcmp("convert", argv[1]) == 0) {
+	if(strcmp("convert", argv[1]) == 0 && argc == 4) {
+		ctx = lpc2xml_context_new(cb_function, NULL);
 		lpc2xml_convert_file(ctx, argv[3]);
+		lpc2xml_set_lpc(ctx, lpc);
+		lpc2xml_context_destroy(ctx);
+	} else if (strcmp("dump", argv[1]) == 0 && argc == 3) {
+		char *dump = lp_config_dump_as_xml(lpc);
+		fprintf(stdout, "%s", dump);
 	} else {
 		show_usage(argc, argv);
 	}
 	lp_config_destroy(lpc);
-	lpc2xml_context_destroy(ctx);
 	return 0;
 }
 

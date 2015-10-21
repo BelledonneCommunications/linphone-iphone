@@ -119,6 +119,14 @@ void linphone_call_params_add_custom_sdp_media_attribute(LinphoneCallParams *par
 	params->custom_sdp_media_attributes[type] = sal_custom_sdp_attribute_append(params->custom_sdp_media_attributes[type], attribute_name, attribute_value);
 }
 
+void linphone_call_params_clear_custom_sdp_attributes(LinphoneCallParams *params) {
+	linphone_call_params_set_custom_sdp_attributes(params, NULL);
+}
+
+void linphone_call_params_clear_custom_sdp_media_attributes(LinphoneCallParams *params, LinphoneStreamType type) {
+	linphone_call_params_set_custom_sdp_media_attributes(params, type, NULL);
+}
+
 LinphoneCallParams * linphone_call_params_copy(const LinphoneCallParams *cp){
 	unsigned int i;
 	LinphoneCallParams *ncp=linphone_call_params_new();
@@ -225,6 +233,11 @@ const LinphonePayloadType* linphone_call_params_get_used_audio_codec(const Linph
 const LinphonePayloadType* linphone_call_params_get_used_video_codec(const LinphoneCallParams *cp) {
 	return cp->video_codec;
 }
+
+const LinphonePayloadType* linphone_call_params_get_used_text_codec(const LinphoneCallParams *cp) {
+	return cp->text_codec;
+}
+
 
 bool_t linphone_call_params_low_bandwidth_enabled(const LinphoneCallParams *cp) {
 	return cp->low_bandwidth;

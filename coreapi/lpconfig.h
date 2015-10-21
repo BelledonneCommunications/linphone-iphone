@@ -201,6 +201,13 @@ LINPHONE_PUBLIC int lp_config_has_section(const LpConfig *lpconfig, const char *
 LINPHONE_PUBLIC void lp_config_clean_section(LpConfig *lpconfig, const char *section);
 
 /**
+ * Returns the list of sections' names in the LpConfig.
+ * @param[in] lpconfig The LpConfig object
+ * @return a null terminated static array of strings
+**/
+LINPHONE_PUBLIC const char** lp_config_get_sections_names(LpConfig *lpconfig);
+
+/**
  * Call a function for each section present in the configuration.
  *
  * @ingroup misc
@@ -294,6 +301,15 @@ LINPHONE_PUBLIC int lp_config_read_relative_file(const LpConfig *lpconfig, const
  * @return TRUE if file exists relative to the to the current location
 **/
 LINPHONE_PUBLIC bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *filename);
+
+/**
+ * Dumps the LpConfig as XML into a buffer
+ * @param[in] lpconfig The LpConfig object
+ * @return The buffer that contains the XML dump
+ * 
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC char* lp_config_dump_as_xml(const LpConfig *lpconfig);
 
 #ifdef __cplusplus
 }

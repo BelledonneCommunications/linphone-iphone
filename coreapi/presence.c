@@ -1444,16 +1444,19 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 
 void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalOp *op){
 	LinphoneFriend *fl=linphone_friend_new_with_address(subscriber);
+	char *tmp;
+	
 	if (fl==NULL) return ;
 	linphone_friend_add_incoming_subscription(fl, op);
 	linphone_friend_set_inc_subscribe_policy(fl,LinphoneSPAccept);
 	fl->inc_subscribe_pending=TRUE;
-	lc->subscribers=ms_list_append(lc->subscribers,(void *)fl);
-	{
-		char *tmp=linphone_address_as_string(fl->uri);
-		linphone_core_notify_new_subscription_requested(lc,fl,tmp);
-		ms_free(tmp);
-	}
+	/* the newly created "not yet" friend ownership is transfered to the lc->subscribers list*/
+	lc->subscribers=ms_list_append(lc->subscribers,fl);
+	
+	tmp = linphone_address_as_string(fl->uri);
+	linphone_core_notify_new_subscription_requested(lc,fl,tmp);
+	ms_free(tmp);
+	
 }
 
 void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneFriend *lf){
@@ -1497,7 +1500,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 			}
 			else {
 				/* else it is in wait for approval state, because otherwise it is in the friend list.*/
-				ms_message("New subscriber found in friend list, in %s state.",__policy_enum_to_str(lf->pol));
+				ms_message("New subscriber found in subscriber list, in %s state.",__policy_enum_to_str(lf->pol));
 			}
 		}else {
 			sal_subscribe_accept(op);
@@ -1873,9 +1876,16 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		lf->subscribe_active=TRUE;
 		linphone_core_notify_notify_presence_received(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);
+		if (op != lf->outsub){
+			/*case of a NOTIFY received out of any dialog*/
+			sal_op_release(op);
+			return;
+		}
 	}else{
 		ms_message("But this person is not part of our friend list, so we don't care.");
 		linphone_presence_model_unref(presence);
+		sal_op_release(op);
+		return ;
 	}
 	if (ss==SalSubscribeTerminated){
 		sal_op_release(op);
@@ -1889,11 +1899,13 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 void linphone_subscription_closed(LinphoneCore *lc, SalOp *op){
 	LinphoneFriend *lf;
 	lf=linphone_find_friend_by_inc_subscribe(lc->friends,op);
-	sal_op_release(op);
+	
 	if (lf!=NULL){
+		/*this will release the op*/
 		linphone_friend_remove_incoming_subscription(lf, op);
 	}else{
-		ms_warning("Receiving unsuscribe for unknown in-subscribtion from %s", sal_op_get_from(op));
+		/*case of an op that we already released because the friend was destroyed*/
+		ms_message("Receiving unsuscribe for unknown in-subscribtion from %s", sal_op_get_from(op));
 	}
 }
 

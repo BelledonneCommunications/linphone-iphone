@@ -87,18 +87,26 @@ static void phone_normalization_with_dial_escape_plus(void){
 }
 
 #define SIP_URI_CHECK(actual, expected) { \
-		LinphoneAddress* res = linphone_proxy_config_normalize_sip_uri(NULL, actual); \
-		char* actual_str = linphone_address_as_string_uri_only(res); \
+		LinphoneProxyConfig *proxy = linphone_proxy_config_new(); \
+		LinphoneAddress* res;\
+		char* actual_str;\
+		linphone_proxy_config_set_identity(proxy, "sip:username@linphone.org"); \
+		res  = linphone_proxy_config_normalize_sip_uri(proxy, actual); \
+		actual_str = linphone_address_as_string_uri_only(res); \
 		BC_ASSERT_STRING_EQUAL(actual_str, expected); \
 		ms_free(actual_str); \
 		linphone_address_destroy(res); \
+		linphone_proxy_config_destroy(proxy); \
 	}
 
 
 static void sip_uri_normalization(void) {
+	char* expected ="sip:%d9%a1@linphone.org";
 	BC_ASSERT_PTR_NULL(linphone_proxy_config_normalize_sip_uri(NULL, "test"));
 	SIP_URI_CHECK("test@linphone.org", "sip:test@linphone.org");
 	SIP_URI_CHECK("test@linphone.org;transport=tls", "sip:test@linphone.org;transport=tls");
+
+	SIP_URI_CHECK("١", expected); //test that no more invalid memory writes are made (valgrind only)
 }
 
 test_t proxy_config_tests[] = {

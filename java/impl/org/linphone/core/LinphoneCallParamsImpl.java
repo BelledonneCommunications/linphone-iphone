@@ -133,6 +133,18 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 		return getCustomSdpMediaAttribute(nativePtr, type.mValue, name);
 	}
 
+	private native void clearCustomSdpAttributes(long nativePtr);
+	@Override
+	public void clearCustomSdpAttributes() {
+		clearCustomSdpAttributes(nativePtr);
+	}
+
+	private native void clearCustomSdpMediaAttributes(long nativePtr, int type);
+	@Override
+	public void clearCustomSdpMediaAttributes(StreamType type) {
+		clearCustomSdpMediaAttributes(nativePtr, type.mValue);
+	}
+
 	private native void setPrivacy(long nativePtr, int mask);
 	@Override
 	public void setPrivacy(int privacy_mask) {

@@ -210,6 +210,7 @@ class CoreManagerStats:
         self.number_of_LinphoneMessageNotDelivered = 0
         self.number_of_LinphoneIsComposingActiveReceived = 0
         self.number_of_LinphoneIsComposingIdleReceived = 0
+        self.number_of_LinphoneFileTransferDownloadSuccessful = 0
         self.progress_of_LinphoneFileTransfer = 0
 
         self.number_of_IframeDecoded = 0

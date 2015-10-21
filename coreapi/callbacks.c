@@ -537,7 +537,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 					next_state = LinphoneCallPausedByRemote;
 					next_state_str = "Call paused by remote";
 				}else{
-					if (!call->current_params->in_conference)
+					if (!call->params->in_conference)
 						lc->current_call=call;
 					next_state = LinphoneCallStreamsRunning;
 					next_state_str = "Streams running";

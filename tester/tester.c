@@ -99,6 +99,7 @@ static void auth_info_requested(LinphoneCore *lc, const char *realm, const char 
 
 void reset_counters( stats* counters) {
 	if (counters->last_received_chat_message) linphone_chat_message_unref(counters->last_received_chat_message);
+	if (counters->last_received_info_message) linphone_info_message_destroy(counters->last_received_info_message);
 	memset(counters,0,sizeof(stats));
 }
 
@@ -283,6 +284,8 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 #if TARGET_OS_IPHONE
 	linphone_core_set_ringer_device( mgr->lc, "AQ: Audio Queue Device");
 	linphone_core_set_ringback(mgr->lc, NULL);
+#elif __QNX__
+	linphone_core_set_playback_device(mgr->lc, "QSA: voice");
 #endif
 
 #ifdef VIDEO_ENABLED
@@ -371,6 +374,7 @@ void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
 	if (mgr->stat.last_received_chat_message) {
 		linphone_chat_message_unref(mgr->stat.last_received_chat_message);
 	}
+	if (mgr->stat.last_received_info_message) linphone_info_message_destroy(mgr->stat.last_received_info_message);
 	if (mgr->lc){
 		const char *record_file=linphone_core_get_record_file(mgr->lc);
 		int unterminated_calls;

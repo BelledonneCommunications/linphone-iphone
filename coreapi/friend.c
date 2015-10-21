@@ -102,7 +102,7 @@ LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op){
 	LinphoneFriend *lf;
 	for (elem=l;elem!=NULL;elem=elem->next){
 		lf=(LinphoneFriend*)elem->data;
-		if (lf->outsub==op) return lf;
+		if (lf->outsub && (lf->outsub == op || sal_op_is_forked_of(lf->outsub, op))) return lf;
 	}
 	return NULL;
 }
@@ -240,11 +240,16 @@ void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence)
 }
 
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op){
+	/*ownership of the op is transfered from sal to the LinphoneFriend*/
 	lf->insubs = ms_list_append(lf->insubs, op);
 }
 
 void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op){
-	lf->insubs = ms_list_remove(lf->insubs, op);
+	if (ms_list_find(lf->insubs, op)){
+		sal_op_release(op);
+		lf->insubs = ms_list_remove(lf->insubs, op);
+	}
+	
 }
 
 static void linphone_friend_unsubscribe(LinphoneFriend *lf){
@@ -273,7 +278,7 @@ static void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	linphone_friend_unsubscribe(lf);
 	ms_list_for_each(lf->insubs, (MSIterateFunc) sal_notify_presence_close);
-
+	lf->insubs = ms_list_free_with_data(lf->insubs, (MSIterateFunc)sal_op_release);
 }
 
 static void _linphone_friend_destroy(LinphoneFriend *lf){
@@ -285,6 +290,17 @@ static void _linphone_friend_destroy(LinphoneFriend *lf){
 	if (lf->presence != NULL) linphone_presence_model_unref(lf->presence);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
+}
+
+static belle_sip_error_code _linphone_friend_marshall(belle_sip_object_t *obj, char* buff, size_t buff_size, size_t *offset) {
+	LinphoneFriend *lf = (LinphoneFriend*)obj;
+	belle_sip_error_code err = BELLE_SIP_OK;
+	if (lf->uri){
+		char *tmp = linphone_address_as_string(lf->uri);
+		err = belle_sip_snprintf(buff, buff_size, offset, "%s", tmp);
+		ms_free(tmp);
+	}
+	return err;
 }
 
 const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
@@ -373,7 +389,7 @@ LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFriend *lf){
 					break;
 				case LinphonePresenceActivityOnline:
 					/* Should not happen! */
-					ms_warning("LinphonePresenceActivityOnline should not happen here!");
+					/*ms_warning("LinphonePresenceActivityOnline should not happen here!");*/
 					break;
 				case LinphonePresenceActivityOffline:
 					online_status = LinphoneStatusOffline;
@@ -488,6 +504,11 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 		return ;
 	}
 	lc->friends=ms_list_append(lc->friends,linphone_friend_ref(lf));
+	if (ms_list_find(lc->subscribers, lf)){
+		/*if this friend was in the pending subscriber list, now remove it from this list*/
+		lc->subscribers = ms_list_remove(lc->subscribers, lf);
+		linphone_friend_unref(lf);
+	}
 	lf->lc=lc;
 	if ( linphone_core_ready(lc)) linphone_friend_apply(lf,lc);
 	else lf->commit=TRUE;
@@ -497,7 +518,7 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
 void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
 	MSList *el=ms_list_find(lc->friends,fl);
 	if (el!=NULL){
-		linphone_friend_destroy((LinphoneFriend*)el->data);
+		linphone_friend_unref((LinphoneFriend*)el->data);
 		lc->friends=ms_list_remove_link(lc->friends,el);
 		linphone_core_write_friends_config(lc);
 	}else{
@@ -710,6 +731,6 @@ BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriend);
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneFriend, belle_sip_object_t,
 	(belle_sip_object_destroy_t) _linphone_friend_destroy,
 	NULL, // clone
-	NULL, // marshal
+	_linphone_friend_marshall,
 	FALSE
 );

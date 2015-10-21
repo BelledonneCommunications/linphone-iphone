@@ -43,4 +43,5 @@
 #cmakedefine HAVE_CU_GET_SUITE 1
 #cmakedefine HAVE_CU_CURSES 1
 #cmakedefine HAVE_LIBUDEV_H 0
+#cmakedefine HAVE_LIME
 #cmakedefine ENABLE_NLS 1

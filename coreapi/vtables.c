@@ -55,111 +55,114 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	}
 }
 
-#define NOTIFY_IF_EXIST(function_name) \
+#define NOTIFY_IF_EXIST(function_name, ...) \
 	MSList* iterator; \
 	VTableReference *ref; \
-	ms_message("Linphone core [%p] notifying [%s]",lc,#function_name);\
-	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next) \
-		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name)\
-			lc->current_vtable->function_name
+	bool_t has_cb = FALSE; \
+	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
+		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name) {\
+			lc->current_vtable->function_name(__VA_ARGS__);\
+			has_cb = TRUE;\
+		}\
+	if (has_cb) ms_message("Linphone core [%p] notifying [%s]",lc,#function_name)
 
 void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
-	NOTIFY_IF_EXIST(global_state_changed)(lc,gstate,message);
+	NOTIFY_IF_EXIST(global_state_changed,lc,gstate,message);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message){
-	NOTIFY_IF_EXIST(call_state_changed)(lc,call,cstate,message);
+	NOTIFY_IF_EXIST(call_state_changed, lc,call,cstate,message);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on, const char *authentication_token) {
-	NOTIFY_IF_EXIST(call_encryption_changed)(lc,call,on,authentication_token);
+	NOTIFY_IF_EXIST(call_encryption_changed, lc,call,on,authentication_token);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
-	NOTIFY_IF_EXIST(registration_state_changed)(lc,cfg,cstate,message);
+	NOTIFY_IF_EXIST(registration_state_changed, lc,cfg,cstate,message);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_show_interface(LinphoneCore *lc){
-	NOTIFY_IF_EXIST(show)(lc);
+	NOTIFY_IF_EXIST(show, lc);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_display_status(LinphoneCore *lc, const char *message) {
-	NOTIFY_IF_EXIST(display_status)(lc,message);
+	NOTIFY_IF_EXIST(display_status, lc,message);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_display_message(LinphoneCore *lc, const char *message){
-	NOTIFY_IF_EXIST(display_message)(lc,message);
+	NOTIFY_IF_EXIST(display_message, lc,message);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_display_warning(LinphoneCore *lc, const char *message){
-	NOTIFY_IF_EXIST(display_warning)(lc,message);
+	NOTIFY_IF_EXIST(display_warning, lc,message);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, const char *url){
-	NOTIFY_IF_EXIST(display_url)(lc,message,url);
+	NOTIFY_IF_EXIST(display_url, lc,message,url);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf){
-	NOTIFY_IF_EXIST(notify_presence_received)(lc,lf);
+	NOTIFY_IF_EXIST(notify_presence_received, lc,lf);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
-	NOTIFY_IF_EXIST(new_subscription_requested)(lc,lf,url);
+	NOTIFY_IF_EXIST(new_subscription_requested, lc,lf,url);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain){
-	NOTIFY_IF_EXIST(auth_info_requested)(lc,realm,username,domain);
+	NOTIFY_IF_EXIST(auth_info_requested, lc,realm,username,domain);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *newcl){
-	NOTIFY_IF_EXIST(call_log_updated)(lc,newcl);
+	NOTIFY_IF_EXIST(call_log_updated, lc,newcl);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
-	NOTIFY_IF_EXIST(text_received)(lc,room,from,message);
+	NOTIFY_IF_EXIST(text_received, lc,room,from,message);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message){
-	NOTIFY_IF_EXIST(message_received)(lc,room,message);
+	NOTIFY_IF_EXIST(message_received, lc,room,message);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
-	NOTIFY_IF_EXIST(file_transfer_recv)(lc,message,content,buff,size);
+	NOTIFY_IF_EXIST(file_transfer_recv, lc,message,content,buff,size);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_file_transfer_send(LinphoneCore *lc, LinphoneChatMessage *message,  const LinphoneContent* content, char* buff, size_t* size) {
-	NOTIFY_IF_EXIST(file_transfer_send)(lc,message,content,buff,size);
+	NOTIFY_IF_EXIST(file_transfer_send, lc,message,content,buff,size);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total) {
-	NOTIFY_IF_EXIST(file_transfer_progress_indication)(lc,message,content,offset,total);
+	NOTIFY_IF_EXIST(file_transfer_progress_indication, lc,message,content,offset,total);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
-	NOTIFY_IF_EXIST(is_composing_received)(lc,room);
+	NOTIFY_IF_EXIST(is_composing_received, lc,room);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_dtmf_received(LinphoneCore* lc, LinphoneCall *call, int dtmf) {
-	NOTIFY_IF_EXIST(dtmf_received)(lc,call,dtmf);
+	NOTIFY_IF_EXIST(dtmf_received, lc,call,dtmf);
 	cleanup_dead_vtable_refs(lc);
 }
 
@@ -174,62 +177,62 @@ bool_t linphone_core_dtmf_received_has_listener(const LinphoneCore* lc) {
 }
 
 void linphone_core_notify_refer_received(LinphoneCore *lc, const char *refer_to) {
-	NOTIFY_IF_EXIST(refer_received)(lc,refer_to);
+	NOTIFY_IF_EXIST(refer_received, lc,refer_to);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf) {
-	NOTIFY_IF_EXIST(buddy_info_updated)(lc,lf);
+	NOTIFY_IF_EXIST(buddy_info_updated, lc,lf);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state) {
-	NOTIFY_IF_EXIST(transfer_state_changed)(lc,transfered,new_call_state);
+	NOTIFY_IF_EXIST(transfer_state_changed, lc,transfered,new_call_state);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats) {
-	NOTIFY_IF_EXIST(call_stats_updated)(lc,call,stats);
+	NOTIFY_IF_EXIST(call_stats_updated, lc,call,stats);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_info_received(LinphoneCore *lc, LinphoneCall *call, const LinphoneInfoMessage *msg) {
-	NOTIFY_IF_EXIST(info_received)(lc,call,msg);
+	NOTIFY_IF_EXIST(info_received, lc,call,msg);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
-	NOTIFY_IF_EXIST(configuring_status)(lc,status,message);
+	NOTIFY_IF_EXIST(configuring_status, lc,status,message);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_network_reachable(LinphoneCore *lc, bool_t reachable) {
-	NOTIFY_IF_EXIST(network_reachable)(lc,reachable);
+	NOTIFY_IF_EXIST(network_reachable, lc,reachable);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
-	NOTIFY_IF_EXIST(notify_received)(lc,lev,notified_event,body);
+	NOTIFY_IF_EXIST(notify_received, lc,lev,notified_event,body);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
-	NOTIFY_IF_EXIST(subscription_state_changed)(lc,lev,state);
+	NOTIFY_IF_EXIST(subscription_state_changed, lc,lev,state);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state) {
-	NOTIFY_IF_EXIST(publish_state_changed)(lc,lev,state);
+	NOTIFY_IF_EXIST(publish_state_changed, lc,lev,state);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info) {
-	NOTIFY_IF_EXIST(log_collection_upload_state_changed)(lc, state, info);
+	NOTIFY_IF_EXIST(log_collection_upload_state_changed, lc, state, info);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t offset, size_t total) {
-	NOTIFY_IF_EXIST(log_collection_upload_progress_indication)(lc, offset, total);
+	NOTIFY_IF_EXIST(log_collection_upload_progress_indication, lc, offset, total);
 	cleanup_dead_vtable_refs(lc);
 }
 

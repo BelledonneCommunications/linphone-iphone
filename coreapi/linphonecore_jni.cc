@@ -3718,6 +3718,14 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_getCusto
 	return value ? env->NewStringUTF(value) : NULL;
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_clearCustomSdpAttributes(JNIEnv *env, jobject thiz, jlong ptr) {
+	linphone_call_params_clear_custom_sdp_attributes((LinphoneCallParams *)ptr);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_clearCustomSdpMediaAttributes(JNIEnv *env, jobject thiz, jlong ptr, jint jtype) {
+	linphone_call_params_clear_custom_sdp_media_attributes((LinphoneCallParams *)ptr, (LinphoneStreamType)jtype);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_setRecordFile(JNIEnv *env, jobject thiz, jlong lcp, jstring jrecord_file){
 	if (jrecord_file){
 		const char* record_file=env->GetStringUTFChars(jrecord_file, NULL);

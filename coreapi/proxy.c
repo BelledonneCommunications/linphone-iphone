@@ -1548,3 +1548,9 @@ uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cf
 const LinphoneAddress* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg) {
 	return sal_op_get_contact_address(cfg->op);
 }
+
+const struct _LinphoneAuthInfo* linphone_proxy_config_find_auth_info(const LinphoneProxyConfig *cfg) {
+	const char* username = cfg->identity_address ? linphone_address_get_username(cfg->identity_address) : NULL;
+	const char* domain =  cfg->identity_address ? linphone_address_get_domain(cfg->identity_address) : NULL;
+	return _linphone_core_find_auth_info(cfg->lc, cfg->realm, username, domain, TRUE);
+}

@@ -1400,7 +1400,7 @@ static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistr
 	GtkTreeModel *model=gtk_combo_box_get_model(box);
 	GtkTreeIter iter;
 	gboolean found=FALSE;
-	const char *stock_id=NULL;
+	const char *icon_name=NULL;
 
 	if (gtk_tree_model_get_iter_first(model,&iter)){
 		gpointer p;
@@ -1418,21 +1418,21 @@ static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistr
 	}
 	switch (rs){
 		case LinphoneRegistrationOk:
-			stock_id=GTK_STOCK_YES;
+			icon_name="linphone-ok";
 		break;
 		case LinphoneRegistrationProgress:
-			stock_id=GTK_STOCK_REFRESH;
+			icon_name="linphone-inprogress";
 		break;
 		case LinphoneRegistrationCleared:
-			stock_id=NULL;
+			icon_name=NULL;
 		break;
 		case LinphoneRegistrationFailed:
-			stock_id=GTK_STOCK_DIALOG_WARNING;
+			icon_name="linphone-failed";
 		break;
 		default:
 		break;
 	}
-	gtk_list_store_set(GTK_LIST_STORE(model),&iter,1,stock_id,-1);
+	gtk_list_store_set(GTK_LIST_STORE(model),&iter,1,icon_name,-1);
 }
 
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg,
@@ -1588,7 +1588,7 @@ static void init_identity_combo(GtkComboBox *box){
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(box),(r1=gtk_cell_renderer_text_new()),TRUE);
 	gtk_cell_layout_pack_end(GTK_CELL_LAYOUT(box),(r2=gtk_cell_renderer_pixbuf_new()),FALSE);
 	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(box),r1,"text",0);
-	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(box),r2,"stock-id",1);
+	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(box),r2,"icon-name",1);
 	g_object_set(G_OBJECT(r1),"ellipsize",PANGO_ELLIPSIZE_END,NULL);
 	gtk_combo_box_set_model(box,GTK_TREE_MODEL(store));
 }
@@ -1620,7 +1620,7 @@ void linphone_gtk_load_identities(void){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,0,linphone_proxy_config_get_identity(cfg),1,
-						   linphone_proxy_config_is_registered(cfg) ? GTK_STOCK_YES : NULL,
+						   linphone_proxy_config_is_registered(cfg) ? "linphone-ok" : NULL,
 						   2,cfg,-1);
 		if (cfg==def) {
 			def_index=i;
@@ -1811,7 +1811,7 @@ void linphone_gtk_keypad_key_released(GtkWidget *w, GdkEvent *event, gpointer us
 	}
 }
 
-void linphone_gtk_create_keypad(GtkWidget *button){
+static void linphone_gtk_show_keypad(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *k=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"keypad");
 	GtkWidget *keypad;
@@ -1821,7 +1821,7 @@ void linphone_gtk_create_keypad(GtkWidget *button){
 	keypad=linphone_gtk_create_window("keypad", NULL);
 	linphone_gtk_connect_digits(keypad);
 	linphone_gtk_init_dtmf_table(keypad);
-	g_object_set_data(G_OBJECT(mw),"keypad",(gpointer)keypad);
+	g_object_set_data(G_OBJECT(mw),"keypad", keypad);
 	if(!GPOINTER_TO_INT(g_object_get_data(G_OBJECT(mw),"show_abcd"))){
 		gtk_widget_hide(linphone_gtk_get_widget(keypad,"dtmf_A"));
 		gtk_widget_hide(linphone_gtk_get_widget(keypad,"dtmf_B"));
@@ -1830,6 +1830,30 @@ void linphone_gtk_create_keypad(GtkWidget *button){
 		gtk_table_resize(GTK_TABLE(linphone_gtk_get_widget(keypad,"dtmf_table")),4,3);
 	}
 	gtk_widget_show(keypad);
+}
+
+static void linphone_gtk_destroy_keypad(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *keypad = GTK_WIDGET(g_object_get_data(G_OBJECT(mw), "keypad"));
+	if(keypad) {
+		gtk_widget_destroy(keypad);
+		g_object_set_data(G_OBJECT(mw), "keypad", NULL);
+	}
+}
+
+void linphone_gtk_show_keypad_checked(GtkCheckMenuItem *check_menu_item) {
+	if(gtk_check_menu_item_get_active(check_menu_item)) {
+		linphone_gtk_show_keypad();
+	} else {
+		linphone_gtk_destroy_keypad();
+	}
+}
+
+gboolean linphone_gtk_keypad_destroyed_handler(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *show_keypad_item = linphone_gtk_get_widget(mw, "show_keypad_menu_item");
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(show_keypad_item), FALSE);
+	return FALSE;
 }
 
 static void linphone_gtk_init_main_window(){
@@ -2017,7 +2041,7 @@ static void populate_xdg_data_dirs_envvar(void) {
 	paths = g_strsplit(value, ":", -1);
 	for(i=0; paths[i] && strcmp(paths[i], PACKAGE_DATA_DIR) != 0; i++);
 	if(paths[i] == NULL) {
-		gchar *new_value = g_strdup_printf("%s:%s", value, PACKAGE_DATA_DIR);
+		gchar *new_value = g_strdup_printf("%s:%s", PACKAGE_DATA_DIR, value);
 		g_setenv("XDG_DATA_DIRS", new_value, TRUE);
 		g_free(new_value);
 	}
@@ -2207,3 +2231,25 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	return main(__argc, __argv);
 }
 #endif
+
+GtkWidget *linphone_gtk_make_tab_header(const gchar *label, const gchar *icon_name, gboolean show_quit_button, GCallback cb, gpointer user_data) {
+	GtkWidget *tab_header=gtk_hbox_new (FALSE,0);
+	GtkWidget *label_widget = gtk_label_new (label);
+	
+	if(icon_name) {
+		GtkWidget *icon=gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_MENU);
+		gtk_box_pack_start (GTK_BOX(tab_header),icon,FALSE,FALSE,4);
+	}
+	gtk_box_pack_start (GTK_BOX(tab_header),label_widget,FALSE,FALSE,0);
+	if(show_quit_button) {
+		GtkWidget *button = gtk_button_new();
+		GtkWidget *button_image=gtk_image_new_from_stock(GTK_STOCK_CLOSE,GTK_ICON_SIZE_MENU);
+		gtk_button_set_image(GTK_BUTTON(button),button_image);
+		gtk_button_set_relief(GTK_BUTTON(button),GTK_RELIEF_NONE);
+		g_signal_connect_swapped(G_OBJECT(button),"clicked",cb,user_data);
+		gtk_box_pack_end(GTK_BOX(tab_header),button,FALSE,FALSE,4);
+		g_object_set_data(G_OBJECT(tab_header), "button", button);
+	}
+	g_object_set_data(G_OBJECT(tab_header), "label", label_widget);
+	return tab_header;
+}

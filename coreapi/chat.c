@@ -326,6 +326,8 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		return;
 	}
 
+	msg->dir = LinphoneChatMessageOutgoing;
+
 	// add to transient list
 	cr->transient_messages = ms_list_append(cr->transient_messages, linphone_chat_message_ref(msg));
 
@@ -392,7 +394,6 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			ms_free(peer_uri);
 		}
 
-		msg->dir = LinphoneChatMessageOutgoing;
 		if (msg->from){
 			/*
 			 * BUG

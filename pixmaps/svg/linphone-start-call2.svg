@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="150px"
+   height="150px"
+   viewBox="0 0 150 150"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-start-call2.svg"
+   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-start-call2.png"
+   inkscape:export-xdpi="28.799999"
+   inkscape:export-ydpi="28.799999">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1133"
+     id="namedview16"
+     showgrid="false"
+     inkscape:zoom="1.5733333"
+     inkscape:cx="-216.73729"
+     inkscape:cy="74.999996"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">call_start_body_over</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <circle
+     id="Oval-1"
+     cx="74.822746"
+     cy="74.829407"
+     r="74.503311"
+     style="fill:#a1a1a1;fill-rule:evenodd;stroke:none;stroke-width:1;fill-opacity:1" />
+  <path
+     d="m 23.053615,49.440661 c -6.507682,18.411294 2.6117,44.723466 17.370713,59.482479 l 0.309478,0.30732 c 14.75578,14.75577 41.07442,23.87516 59.479244,17.36748 L 114.1741,108.29663 95.157872,89.282556 77.761279,103.99412 61.862477,88.097479 61.557311,87.790157 45.660667,71.893513 60.368999,54.49045 41.360313,35.478528 23.053615,49.440661 l 0,0 z M 83.938993,20.899595 c 24.750757,0 44.814047,20.062208 44.814047,44.816202 M 83.938993,35.373931 c 16.758227,0 30.341867,13.585797 30.341867,30.341866 M 83.938993,49.276756 c 9.077328,0 16.433647,7.362793 16.433647,16.439041"
+     id="Imported-Layers-Copy-2"
+     inkscape:connector-curvature="0"
+     style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:7.236691;stroke-linecap:round;stroke-linejoin:round" />
+</svg>
