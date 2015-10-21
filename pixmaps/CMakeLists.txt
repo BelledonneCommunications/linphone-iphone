@@ -43,6 +43,13 @@ install(FILES
 	svg/linphone-chat-new-message.svg
 	svg/linphone-chat-nothing.svg
 	svg/linphone-chat-writing.svg
+	svg/linphone-ok.svg
+	svg/linphone-inprogress.svg
+	svg/linphone-failed.svg
+	svg/linphone-camera-enabled.svg
+	svg/linphone-camera-disabled.svg
+	svg/linphone-security-ok.svg
+	svg/linphone-security-pending.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
@@ -58,6 +65,9 @@ install(FILES
 	svg/linphone-edit.svg
 	svg/linphone-delete.svg
 	svg/linphone-contact-add.svg
+	svg/linphone-conference-start.svg
+	svg/linphone-call-transfer.svg
+	svg/linphone-record.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
@@ -78,8 +88,13 @@ install(FILES
 	linphone-call-status-incoming.png
 	linphone-call-status-outgoing.png
 	linphone-call-status-missed.png
-	linphone-contact-bookmarked.png
-	linphone-contact-not-bookmarked.png
+	linphone-ok.png
+	linphone-inprogress.png
+	linphone-failed.png
+	linphone-camera-enabled.png
+	linphone-camera-disabled.png
+	linphone-security-ok.png
+	linphone-security-pending.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
@@ -96,6 +111,9 @@ install(FILES
 	linphone-edit.png
 	linphone-delete.png
 	linphone-contact-add.png
+	linphone-conference-start.png
+	linphone-call-transfer.png
+	linphone-record.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )

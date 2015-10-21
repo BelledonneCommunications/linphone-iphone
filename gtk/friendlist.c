@@ -453,11 +453,12 @@ static void icon_press_handler(GtkEntry *entry){
 }
 
 static void update_star(GtkEntry *entry, gboolean is_known){
+	gtk_entry_set_icon_from_icon_name(entry,GTK_ENTRY_ICON_SECONDARY,"linphone-contact-add");
 	if (is_known){
-		gtk_entry_set_icon_from_icon_name(entry,GTK_ENTRY_ICON_SECONDARY,"linphone-contact-bookmarked");
+		gtk_entry_set_icon_sensitive(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,FALSE);
 		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,NULL);
 	}else{
-		gtk_entry_set_icon_from_icon_name(entry,GTK_ENTRY_ICON_SECONDARY,"linphone-contact-not-bookmarked");
+		gtk_entry_set_icon_sensitive(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,TRUE);
 		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,_("Add to addressbook"));
 	}
 }
@@ -606,15 +607,6 @@ void linphone_gtk_friend_list_on_presence_column_clicked(GtkTreeModel *model){
 	gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(model),FRIEND_ID,st);
 }
 #endif
-
-void create_button(){
-	GtkWidget *main_window = linphone_gtk_get_main_window ();
-	GtkWidget *button_add = linphone_gtk_get_widget(main_window,"add_button");
-	GtkWidget *image;
-
-	image=gtk_image_new_from_stock(GTK_STOCK_ADD,GTK_ICON_SIZE_MENU);
-	gtk_container_add (GTK_CONTAINER (button_add), image);
-}
 
 static void linphone_gtk_friend_list_init(GtkWidget *friendlist){
 	GtkTreeModel *store = gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist));

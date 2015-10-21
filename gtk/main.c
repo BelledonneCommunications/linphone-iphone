@@ -1400,7 +1400,7 @@ static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistr
 	GtkTreeModel *model=gtk_combo_box_get_model(box);
 	GtkTreeIter iter;
 	gboolean found=FALSE;
-	const char *stock_id=NULL;
+	const char *icon_name=NULL;
 
 	if (gtk_tree_model_get_iter_first(model,&iter)){
 		gpointer p;
@@ -1418,21 +1418,21 @@ static void update_registration_status(LinphoneProxyConfig *cfg, LinphoneRegistr
 	}
 	switch (rs){
 		case LinphoneRegistrationOk:
-			stock_id=GTK_STOCK_YES;
+			icon_name="linphone-ok";
 		break;
 		case LinphoneRegistrationProgress:
-			stock_id=GTK_STOCK_REFRESH;
+			icon_name="linphone-inprogress";
 		break;
 		case LinphoneRegistrationCleared:
-			stock_id=NULL;
+			icon_name=NULL;
 		break;
 		case LinphoneRegistrationFailed:
-			stock_id=GTK_STOCK_DIALOG_WARNING;
+			icon_name="linphone-failed";
 		break;
 		default:
 		break;
 	}
-	gtk_list_store_set(GTK_LIST_STORE(model),&iter,1,stock_id,-1);
+	gtk_list_store_set(GTK_LIST_STORE(model),&iter,1,icon_name,-1);
 }
 
 static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg,
@@ -1588,7 +1588,7 @@ static void init_identity_combo(GtkComboBox *box){
 	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(box),(r1=gtk_cell_renderer_text_new()),TRUE);
 	gtk_cell_layout_pack_end(GTK_CELL_LAYOUT(box),(r2=gtk_cell_renderer_pixbuf_new()),FALSE);
 	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(box),r1,"text",0);
-	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(box),r2,"stock-id",1);
+	gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(box),r2,"icon-name",1);
 	g_object_set(G_OBJECT(r1),"ellipsize",PANGO_ELLIPSIZE_END,NULL);
 	gtk_combo_box_set_model(box,GTK_TREE_MODEL(store));
 }
@@ -1620,7 +1620,7 @@ void linphone_gtk_load_identities(void){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		gtk_list_store_append(store,&iter);
 		gtk_list_store_set(store,&iter,0,linphone_proxy_config_get_identity(cfg),1,
-						   linphone_proxy_config_is_registered(cfg) ? GTK_STOCK_YES : NULL,
+						   linphone_proxy_config_is_registered(cfg) ? "linphone-ok" : NULL,
 						   2,cfg,-1);
 		if (cfg==def) {
 			def_index=i;

@@ -28,8 +28,13 @@ dist_status48icons_DATA= \
 	linphone-call-status-incoming.png \
 	linphone-call-status-outgoing.png \
 	linphone-call-status-missed.png \
-	linphone-contact-bookmarked.png \
-	linphone-contact-not-bookmarked.png
+	linphone-ok.png \
+	linphone-inprogress.png \
+	linphone-failed.png \
+	linphone-camera-enabled.png \
+	linphone-camera-disabled.png \
+	linphone-security-ok.png \
+	linphone-security-pending.png
 
 statussvgiconsdir=$(iconsdir)/scalable/status
 dist_statussvgicons_DATA= \
@@ -47,7 +52,14 @@ dist_statussvgicons_DATA= \
 	svg/linphone-chat-new-message-and-writing.svg \
 	svg/linphone-chat-new-message.svg \
 	svg/linphone-chat-nothing.svg \
-	svg/linphone-chat-writing.svg
+	svg/linphone-chat-writing.svg \
+	svg/linphone-ok.svg \
+	svg/linphone-inprogress.svg \
+	svg/linphone-failed.svg \
+	svg/linphone-camera-enabled.svg \
+	svg/linphone-camera-disabled.svg \
+	svg/linphone-security-ok.svg \
+	svg/linphone-security-pending.svg
 
 actions48iconsdir=$(iconsdir)/48x48/actions
 dist_actions48icons_DATA= \
@@ -61,7 +73,10 @@ dist_actions48icons_DATA= \
 	linphone-history.png \
 	linphone-edit.png \
 	linphone-delete.png \
-	linphone-contact-add.png
+	linphone-contact-add.png \
+	linphone-conference-start.png \
+	linphone-call-transfer.png \
+	linphone-record.png
 
 actionssvgiconsdir=$(iconsdir)/scalable/actions
 dist_actionssvgicons_DATA= \
@@ -74,4 +89,7 @@ dist_actionssvgicons_DATA= \
 	svg/linphone-history.svg \
 	svg/linphone-edit.svg \
 	svg/linphone-delete.svg \
-	svg/linphone-contact-add.svg
+	svg/linphone-contact-add.svg \
+	svg/linphone-conference-start.svg \
+	svg/linphone-call-transfer.svg \
+	svg/linphone-record.svg

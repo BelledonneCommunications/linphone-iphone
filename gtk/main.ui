@@ -362,11 +362,11 @@
                                 <property name="can_focus">True</property>
                                 <property name="invisible_char">●</property>
                                 <property name="invisible_char_set">True</property>
-                                <property name="secondary_icon_name">linphone-contact-not-bookmarked</property>
+                                <property name="secondary_icon_name">linphone-contact-add</property>
                                 <property name="primary_icon_activatable">False</property>
                                 <property name="secondary_icon_activatable">True</property>
                                 <property name="primary_icon_sensitive">True</property>
-                                <property name="secondary_icon_sensitive">True</property>
+                                <property name="secondary_icon_sensitive">False</property>
                                 <signal name="activate" handler="linphone_gtk_uri_bar_activate" swapped="no"/>
                               </object>
                               <packing>

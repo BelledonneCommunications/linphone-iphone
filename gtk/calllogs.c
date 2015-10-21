@@ -242,7 +242,7 @@ void linphone_gtk_call_log_clear_missed_call(){
 	GtkNotebook *notebook=GTK_NOTEBOOK(linphone_gtk_get_widget(mw,"viewswitch"));
 	GtkWidget *page=gtk_notebook_get_nth_page(notebook,0);
 	GtkWidget *box=gtk_hbox_new(FALSE,0);
-	GtkWidget *image=gtk_image_new_from_stock(GTK_STOCK_REFRESH,GTK_ICON_SIZE_MENU);
+	GtkWidget *image=gtk_image_new_from_icon_name("linphone-history",GTK_ICON_SIZE_MENU);
 	GtkWidget *l;
 	const gchar*text=gtk_label_get_text(GTK_LABEL(linphone_gtk_get_widget(mw,"label3")));
 
@@ -268,7 +268,7 @@ void linphone_gtk_call_log_display_missed_call(int nb){
 	GtkWidget *page=gtk_notebook_get_nth_page(notebook,0);
 	GtkWidget *ebox=gtk_event_box_new();
 	GtkWidget *box=gtk_hbox_new(FALSE,0);
-	GtkWidget *image=gtk_image_new_from_stock(GTK_STOCK_REFRESH,GTK_ICON_SIZE_MENU);
+	GtkWidget *image=gtk_image_new_from_icon_name("linphone-history",GTK_ICON_SIZE_MENU);
 	GtkWidget *l;
 	gchar *buf;
 
