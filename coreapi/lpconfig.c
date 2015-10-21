@@ -56,7 +56,7 @@
 #define lp_new0(type,n)	(type*)calloc(sizeof(type),n)
 
 #include "lpconfig.h"
-
+#include "lpc2xml.h"
 
 typedef struct _LpItem{
 	char *key;
@@ -876,4 +876,26 @@ err:
 	ms_free(filepath);
 	if(realfilepath) ms_free(realfilepath);
 	return -1;
+}
+
+static void get_sections_names_cb(const char *section, void *ctx) {
+	MSList **list = (MSList**)ctx;
+	*list = ms_list_append(*list, (void*)ms_strdup(section));
+}
+
+const MSList* lp_config_get_sections_names(LpConfig *lpconfig) {
+	MSList *result = NULL;
+	lp_config_for_each_section(lpconfig, get_sections_names_cb, &result);
+	return result;
+}
+
+char* lp_config_dump_as_xml(const LpConfig *lpconfig) {
+	char *buffer;
+	
+	lpc2xml_context *ctx = lpc2xml_context_new(NULL, NULL);
+	lpc2xml_set_lpc(ctx, lpconfig);
+	lpc2xml_convert_string(ctx, &buffer);
+	lpc2xml_context_destroy(ctx);
+	
+	return buffer;
 }
