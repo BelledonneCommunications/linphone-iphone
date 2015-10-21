@@ -92,7 +92,6 @@ void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 	g_return_if_fail(w!=NULL);
 	gtk_notebook_remove_page(GTK_NOTEBOOK(nb),gtk_notebook_page_num(GTK_NOTEBOOK(nb),w));
 	linphone_chat_room_mark_as_read(cr);
-	linphone_gtk_friend_list_update_chat_picture();
 	g_object_set_data(G_OBJECT(friendlist),"chatview",NULL);
 	from=g_object_get_data(G_OBJECT(w),"from_message");
 	if (from){
@@ -291,7 +290,7 @@ void linphone_gtk_compose_text(void) {
 	if (cr) {
 		linphone_chat_room_compose(cr);
 		linphone_chat_room_mark_as_read(cr);
-		linphone_gtk_friend_list_update_chat_picture();
+		linphone_gtk_friend_list_update_button_display(GTK_TREE_VIEW(friendlist));
 	}
 }
 
@@ -389,6 +388,8 @@ static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent 
 		GtkTextIter uri_end = *iter;
 		gchar *uri = NULL;
 		LinphoneChatRoom *chat_room = (LinphoneChatRoom *)g_object_get_data(G_OBJECT(chat_view), "cr");
+		GtkWidget *main_window = linphone_gtk_get_main_window();
+		GtkWidget *friendlist = linphone_gtk_get_widget(main_window, "contact_list");
 		
 		gtk_text_iter_backward_to_tag_toggle(&uri_begin, tag);
 		gtk_text_iter_forward_to_tag_toggle(&uri_end, tag);
@@ -403,7 +404,7 @@ static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent 
 		g_free(uri);
 		
 		linphone_chat_room_mark_as_read(chat_room);
-		linphone_gtk_friend_list_update_chat_picture();
+		linphone_gtk_friend_list_update_button_display(GTK_TREE_VIEW(friendlist));
 		
 		return TRUE;
 	}
@@ -645,5 +646,7 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 }
 
 void linphone_gtk_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
-	linphone_gtk_friend_list_update_chat_picture();
+	GtkWidget *main_window = linphone_gtk_get_main_window();
+	GtkWidget *friendlist = linphone_gtk_get_widget(main_window, "contact_list");
+	linphone_gtk_friend_list_update_button_display(GTK_TREE_VIEW(friendlist));
 }

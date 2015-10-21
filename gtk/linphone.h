@@ -154,12 +154,14 @@ LINPHONE_PUBLIC LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAd
 LINPHONE_PUBLIC void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
 LINPHONE_PUBLIC void linphone_gtk_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room);
 
-LINPHONE_PUBLIC void linphone_gtk_friend_list_update_chat_picture();
+LINPHONE_PUBLIC void linphone_gtk_friend_list_update_button_display(GtkTreeView *friendlist);
 LINPHONE_PUBLIC void linphone_gtk_friend_list_set_chat_conversation(const LinphoneAddress *la);
 LINPHONE_PUBLIC gboolean linphone_gtk_friend_list_is_contact(const LinphoneAddress *addr);
 LINPHONE_PUBLIC void linphone_gtk_friend_list_set_active_address(const LinphoneAddress *addr);
 LINPHONE_PUBLIC const LinphoneAddress *linphone_gtk_friend_list_get_active_address(void);
-// LINPHONE_PUBLIC void linphone_gtk_friend_list_on_presence_column_clicked(GtkTreeModel *model);
+LINPHONE_PUBLIC gboolean linphone_gtk_friend_list_enter_event_handler(GtkTreeView *friendlist, GdkEventCrossing *event);
+LINPHONE_PUBLIC gboolean linphone_gtk_friend_list_leave_event_handler(GtkTreeView *friendlist, GdkEventCrossing *event);
+LINPHONE_PUBLIC gboolean linphone_gtk_friend_list_motion_event_handler(GtkTreeView *friendlist, GdkEventMotion *event);
 LINPHONE_PUBLIC void linphone_gtk_friend_list_on_name_column_clicked(GtkTreeModel *model);
 LINPHONE_PUBLIC void linphone_gtk_notebook_tab_select(GtkNotebook *notebook, GtkWidget *page, guint page_num, gpointer data);
 LINPHONE_PUBLIC void linphone_gtk_show_friends(void);
@@ -224,7 +226,6 @@ LINPHONE_PUBLIC void linphone_gtk_history_row_activated(GtkWidget *treeview);
 LINPHONE_PUBLIC void linphone_gtk_history_row_selected(GtkWidget *treeview);
 LINPHONE_PUBLIC void linphone_gtk_clear_call_logs(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_add_contact(void);
-LINPHONE_PUBLIC void linphone_gtk_contact_activated(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data);
 LINPHONE_PUBLIC void linphone_gtk_contact_clicked(GtkTreeView *treeview);
 LINPHONE_PUBLIC void linphone_gtk_add_button_clicked(void);
 LINPHONE_PUBLIC void linphone_gtk_edit_button_clicked(GtkWidget *button);

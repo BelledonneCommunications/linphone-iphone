@@ -492,7 +492,9 @@
                             <property name="tooltip_column">4</property>
                             <signal name="button-press-event" handler="linphone_gtk_contact_list_button_pressed" swapped="no"/>
                             <signal name="cursor-changed" handler="linphone_gtk_contact_clicked" swapped="no"/>
-                            <signal name="row-activated" handler="linphone_gtk_contact_activated" swapped="no"/>
+                            <signal name="leave-notify-event" handler="linphone_gtk_friend_list_leave_event_handler" swapped="no"/>
+                            <signal name="enter-notify-event" handler="linphone_gtk_friend_list_enter_event_handler" swapped="no"/>
+                            <signal name="motion-notify-event" handler="linphone_gtk_friend_list_motion_event_handler" swapped="no"/>
                             <signal name="popup-menu" handler="linphone_gtk_popup_contact_menu" swapped="no"/>
                             <child>
                               <object class="GtkTreeViewColumn" id="presence_status_column">
