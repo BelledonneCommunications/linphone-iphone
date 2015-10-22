@@ -457,17 +457,19 @@ static void icon_press_handler(GtkEntry *entry){
 }
 
 static void update_star(GtkEntry *entry, gboolean is_known){
-	gtk_entry_set_icon_from_icon_name(entry,GTK_ENTRY_ICON_SECONDARY,"linphone-contact-add");
 	if (is_known){
+		gtk_entry_set_icon_from_icon_name(entry,GTK_ENTRY_ICON_SECONDARY,NULL);
 		gtk_entry_set_icon_sensitive(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,FALSE);
 		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,NULL);
 	}else{
+		gtk_entry_set_icon_from_icon_name(entry,GTK_ENTRY_ICON_SECONDARY,"linphone-contact-add");
 		gtk_entry_set_icon_sensitive(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,TRUE);
 		gtk_entry_set_icon_tooltip_text(GTK_ENTRY(entry),GTK_ENTRY_ICON_SECONDARY,_("Add to addressbook"));
 	}
 }
 
 static void check_contact(GtkEditable *editable, LinphoneCore *lc){
+	bool_t known = TRUE;
 	char *tmp=gtk_editable_get_chars(editable,0,-1);
 	if (tmp!=NULL){
 		if (strlen(tmp)>0){
@@ -483,10 +485,11 @@ static void check_contact(GtkEditable *editable, LinphoneCore *lc){
 					return;
 				}
 			}
+			known = FALSE;
 		}
 		g_free(tmp);
 	}
-	update_star(GTK_ENTRY(editable),FALSE);
+	update_star(GTK_ENTRY(editable), known);
 }
 
 static void linphone_gtk_init_bookmark_icon(void){

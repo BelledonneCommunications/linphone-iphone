@@ -1860,10 +1860,10 @@ static void linphone_gtk_init_main_window(){
 	GtkWidget *main_window;
 	linphone_gtk_configure_main_window();
 	linphone_gtk_manage_login();
-	load_uri_history();
 	linphone_gtk_load_identities();
 	linphone_gtk_set_my_presence(linphone_core_get_presence_info(linphone_gtk_get_core()));
 	linphone_gtk_show_friends();
+	load_uri_history();
 	linphone_core_reset_missed_calls_count(linphone_gtk_get_core());
 	main_window=linphone_gtk_get_main_window();
 #ifndef CALL_LOGS_STORAGE_ENABLED
