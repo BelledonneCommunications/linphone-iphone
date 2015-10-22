@@ -4644,7 +4644,9 @@ void linphone_call_set_native_video_window_id(LinphoneCall *call, void *id) {
 }
 
 MSWebCam *linphone_call_get_video_device(const LinphoneCall *call) {
-	if (call->all_muted || call->camera_enabled == FALSE)
+	LinphoneCallState state = linphone_call_get_state(call);
+	bool_t paused = (state == LinphoneCallPausing) || (state == LinphoneCallPaused);
+	if (paused || call->all_muted || (call->camera_enabled == FALSE))
 		return get_nowebcam_device();
 	else
 		return call->core->video_conf.device;
