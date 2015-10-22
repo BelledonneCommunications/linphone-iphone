@@ -114,7 +114,7 @@ char * bc_tester_res(const char *name);
 char * bc_tester_file(const char *name);
 
 
-/*Redefine the CU_... macros WITHOUT final ';' semicolon, to allow IF conditions and with smarter error message */
+/*Redefine the CU_... macros WITHOUT final ';' semicolon, to allow IF conditions and smarter error message */
 extern int CU_assertImplementation(int bValue,
                                       unsigned int uiLine,
                                       const char *strCondition,
@@ -122,7 +122,13 @@ extern int CU_assertImplementation(int bValue,
                                       const char *strFunction,
                                       int bFatal);
 
-static inline int _BC_ASSERT(const char* file, int line, int predicate, const char* format, int fatal) {
+#ifdef _WIN32
+#define BC_INLINE __inline
+#else
+#define BC_INLINE inline
+#endif
+
+static BC_INLINE int _BC_ASSERT(const char* file, int line, int predicate, const char* format, int fatal) {
 	if (!predicate) bc_tester_printf(bc_printf_verbosity_info, format, NULL);
 	return CU_assertImplementation(predicate, line, format, file, "", fatal);
 }
