@@ -25,6 +25,7 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-connect</property>
+    <property name="icon-size">1</property>
   </object>
   <object class="GtkListStore" id="contact_list_model">
     <columns>
@@ -81,16 +82,19 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-execute</property>
+    <property name="icon-size">1</property>
   </object>
   <object class="GtkImage" id="home_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-home</property>
+    <property name="icon-size">1</property>
   </object>
   <object class="GtkImage" id="info_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-info</property>
+    <property name="icon-size">1</property>
   </object>
   <object class="GtkListStore" id="model3">
     <columns>
@@ -108,6 +112,7 @@
     <property name="can_focus">False</property>
     <property name="yalign">0.49000000953674316</property>
     <property name="stock">gtk-properties</property>
+    <property name="icon-size">1</property>
   </object>
   <object class="GtkImage" id="remove_image1">
     <property name="visible">True</property>
