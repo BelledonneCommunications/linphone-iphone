@@ -752,6 +752,12 @@ void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call){
 	}
 }
 
+void linphone_gtk_in_call_view_hide_encryption(LinphoneCall *call) {
+	GtkWidget *callview = (GtkWidget*)linphone_call_get_user_pointer(call);
+	GtkWidget *encryption_box = linphone_gtk_get_widget(callview, "encryption_box");
+	gtk_widget_hide_all(encryption_box);
+}
+
 char *linphone_gtk_address(const LinphoneAddress *addr){
 	const char *displayname=linphone_address_get_display_name(addr);
 	if (!displayname) return linphone_address_as_string_uri_only(addr);
@@ -853,6 +859,7 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 		g_free(msg);
 	}
 	linphone_gtk_in_call_set_animation_image(callview, linphone_gtk_get_ui_config("stop_call_icon_name","linphone-stop-call"));
+	linphone_gtk_in_call_view_hide_encryption(call);
 
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"record_hbox"));
