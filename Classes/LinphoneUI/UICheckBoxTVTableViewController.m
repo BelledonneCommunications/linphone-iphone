@@ -75,6 +75,7 @@
 		cell.accessoryType = UITableViewCellAccessoryNone;
 	}
 	_deleteButton.enabled = (_selectedItems.count != 0);
+	_editButton.enabled = YES;
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
@@ -101,12 +102,14 @@
 	[_selectedItems sortUsingComparator:^(NSIndexPath *obj1, NSIndexPath *obj2) {
 	  return [obj2 compare:obj1];
 	}];
-	for (NSIndexPath *indexPath in _selectedItems) {
+	NSArray *copy = [[NSArray alloc] initWithArray:_selectedItems];
+	for (NSIndexPath *indexPath in copy) {
 		[self tableView:self.tableView
 			commitEditingStyle:UITableViewCellEditingStyleDelete
 			 forRowAtIndexPath:indexPath];
 	}
 	[_selectedItems removeAllObjects];
+	[self setEditing:NO animated:YES];
 }
 
 - (void)onSelectionToggle:(id)sender {

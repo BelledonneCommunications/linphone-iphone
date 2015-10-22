@@ -123,12 +123,16 @@
 		logs = ms_list_next(logs);
 	}
 
+	[self computeSections];
+
+	[super loadData];
+}
+
+- (void)computeSections {
 	NSArray *unsortedDays = [self.sections allKeys];
 	self.sortedDays = [unsortedDays sortedArrayUsingComparator:^NSComparisonResult(NSDate *d1, NSDate *d2) {
 	  return ![d1 compare:d2]; // reverse order
 	}];
-
-	[super loadData];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -207,6 +211,9 @@
 		[[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
 		if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {
 			[_sections removeObjectForKey:_sortedDays[indexPath.section]];
+			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
+					 withRowAnimation:UITableViewRowAnimationFade];
+			[self computeSections];
 		}
 
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
