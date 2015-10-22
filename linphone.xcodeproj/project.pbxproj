@@ -107,7 +107,7 @@
 		636BC9971B5F921B00C754CE /* UIIconButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 636BC9961B5F921B00C754CE /* UIIconButton.m */; };
 		63701DD61BA31DA1006A9AE3 /* UIConfirmationDialog.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63701DD51BA31DA1006A9AE3 /* UIConfirmationDialog.xib */; };
 		63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */; };
-		637144571BD531CE007E7C06 /* UIEditableTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637144561BD531CE007E7C06 /* UIEditableTableViewCell.xib */; };
+		637144571BD531CE007E7C06 /* UIContactDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637144561BD531CE007E7C06 /* UIContactDetailsCell.xib */; };
 		637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 637157A01B283FE200C91677 /* FileTransferDelegate.m */; };
 		637527C91BBA8EF700FDEA6F /* add_field_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 6375271A1BBA8EF700FDEA6F /* add_field_default.png */; };
 		637527CA1BBA8EF700FDEA6F /* add_field_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 6375271B1BBA8EF700FDEA6F /* add_field_over.png */; };
@@ -428,7 +428,7 @@
 		D381881915FE3FCA00C3EDCA /* CallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D381881C15FE3FCA00C3EDCA /* CallView.xib */; };
 		D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
 		D3A8BB7015A6C7D500F96BE5 /* UIChatBubbleTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleTextCell.m */; };
-		D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */; };
+		D3C6526715AC1A8F0092A874 /* UIContactDetailsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIContactDetailsCell.m */; };
 		D3D5126C160B3A8E00946DF8 /* AssistantSubviews.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D5126A160B3A8E00946DF8 /* AssistantSubviews.xib */; };
 		D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
 		D3EA540D1598528B0037DC6B /* ChatsListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA540C1598528B0037DC6B /* ChatsListTableView.m */; };
@@ -737,7 +737,7 @@
 		63701DD51BA31DA1006A9AE3 /* UIConfirmationDialog.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIConfirmationDialog.xib; sourceTree = "<group>"; };
 		63701DDD1BA32039006A9AE3 /* UIConfirmationDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIConfirmationDialog.h; sourceTree = "<group>"; };
 		63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIConfirmationDialog.m; sourceTree = "<group>"; };
-		637144561BD531CE007E7C06 /* UIEditableTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIEditableTableViewCell.xib; sourceTree = "<group>"; };
+		637144561BD531CE007E7C06 /* UIContactDetailsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIContactDetailsCell.xib; sourceTree = "<group>"; };
 		6371579F1B283FE200C91677 /* FileTransferDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileTransferDelegate.h; path = Utils/FileTransferDelegate.h; sourceTree = "<group>"; };
 		637157A01B283FE200C91677 /* FileTransferDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileTransferDelegate.m; path = Utils/FileTransferDelegate.m; sourceTree = "<group>"; };
 		6375271A1BBA8EF700FDEA6F /* add_field_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_field_default.png; sourceTree = "<group>"; };
@@ -1086,8 +1086,8 @@
 		D3A55FBB15877E5E003FD403 /* UIContactCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIContactCell.m; sourceTree = "<group>"; };
 		D3A8BB6E15A6C7D500F96BE5 /* UIChatBubbleTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChatBubbleTextCell.h; sourceTree = "<group>"; };
 		D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIChatBubbleTextCell.m; sourceTree = "<group>"; };
-		D3C6526515AC1A8F0092A874 /* UIEditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIEditableTableViewCell.h; sourceTree = "<group>"; };
-		D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIEditableTableViewCell.m; sourceTree = "<group>"; };
+		D3C6526515AC1A8F0092A874 /* UIContactDetailsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIContactDetailsCell.h; sourceTree = "<group>"; };
+		D3C6526615AC1A8F0092A874 /* UIContactDetailsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIContactDetailsCell.m; sourceTree = "<group>"; };
 		D3EA53FB159850E80037DC6B /* LinphoneManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinphoneManager.h; sourceTree = "<group>"; };
 		D3EA53FC159850E80037DC6B /* LinphoneManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinphoneManager.m; sourceTree = "<group>"; };
 		D3EA540B1598528B0037DC6B /* ChatsListTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsListTableView.h; sourceTree = "<group>"; };
@@ -1510,9 +1510,9 @@
 				F088488D19FF8C41007FFCF3 /* UIContactCell.xib */,
 				2248E90C12F7E4CF00220D9C /* UIDigitButton.h */,
 				2248E90D12F7E4CF00220D9C /* UIDigitButton.m */,
-				D3C6526515AC1A8F0092A874 /* UIEditableTableViewCell.h */,
-				D3C6526615AC1A8F0092A874 /* UIEditableTableViewCell.m */,
-				637144561BD531CE007E7C06 /* UIEditableTableViewCell.xib */,
+				D3C6526515AC1A8F0092A874 /* UIContactDetailsCell.h */,
+				D3C6526615AC1A8F0092A874 /* UIContactDetailsCell.m */,
+				637144561BD531CE007E7C06 /* UIContactDetailsCell.xib */,
 				2214EB8712F84EBB002A5394 /* UIHangUpButton.h */,
 				2214EB8812F84EBB002A5394 /* UIHangUpButton.m */,
 				D31C9C96158A1CDE00756B45 /* UIHistoryCell.h */,
@@ -2366,7 +2366,7 @@
 				639CEAFD1A1DF4D9004DE38F /* StatusBarView.xib in Resources */,
 				637527DD1BBA8EF700FDEA6F /* call_status_incoming.png in Resources */,
 				637528321BBA8EF700FDEA6F /* numpad_3_over.png in Resources */,
-				637144571BD531CE007E7C06 /* UIEditableTableViewCell.xib in Resources */,
+				637144571BD531CE007E7C06 /* UIContactDetailsCell.xib in Resources */,
 				F088488A19FF8C41007FFCF3 /* UIContactCell.xib in Resources */,
 				637527E51BBA8EF700FDEA6F /* camera_switch_disabled.png in Resources */,
 				6375280F1BBA8EF700FDEA6F /* delete_field_default.png in Resources */,
@@ -2719,7 +2719,7 @@
 				D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */,
 				D37C639B15AADEF6009D0BAC /* ContactDetailsTableView.m in Sources */,
 				63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */,
-				D3C6526715AC1A8F0092A874 /* UIEditableTableViewCell.m in Sources */,
+				D3C6526715AC1A8F0092A874 /* UIContactDetailsCell.m in Sources */,
 				631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */,
 				C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */,
 				63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */,

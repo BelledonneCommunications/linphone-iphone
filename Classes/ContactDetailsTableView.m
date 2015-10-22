@@ -19,7 +19,7 @@
 
 #import "ContactDetailsTableView.h"
 #import "PhoneMainView.h"
-#import "UIEditableTableViewCell.h"
+#import "UIContactDetailsCell.h"
 #import "UACellBackgroundView.h"
 #import "Utils.h"
 #import "OrderedDictionary.h"
@@ -496,13 +496,11 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *kCellId = @"ContactDetailsCell";
-	UIEditableTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+	static NSString *kCellId = @"UIContactDetailsCell";
+	UIContactDetailsCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
-		cell = [[UIEditableTableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:kCellId];
-		[cell.detailTextField setDelegate:self];
-		[cell.detailTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-		[cell.detailTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+		cell = [[UIContactDetailsCell alloc] initWithIdentifier:kCellId];
+		[cell.editTextfield setDelegate:self];
 	}
 
 	NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];
@@ -516,10 +514,12 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		value =
 			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
 		label = nil;
+		[cell hideDeleteButton];
 	} else if (contactSections[indexPath.section] == ContactSections_Last_Name) {
 		value =
 			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
 		label = nil;
+		[cell hideDeleteButton];
 	} else if (contactSections[[indexPath section]] == ContactSections_Number) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
 		NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
@@ -569,18 +569,17 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		}
 		CFRelease(lMap);
 	}
-	[cell.textLabel setText:label];
-	[cell.detailTextLabel setText:value];
-	[cell.detailTextField setText:value];
+	[cell.editTextfield setText:value];
+	cell.addressLabel.text = value;
 	if (contactSections[[indexPath section]] == ContactSections_Number) {
-		[cell.detailTextField setKeyboardType:UIKeyboardTypePhonePad];
-		[cell.detailTextField setPlaceholder:NSLocalizedString(@"Phone number", nil)];
+		[cell.editTextfield setKeyboardType:UIKeyboardTypePhonePad];
+		[cell.editTextfield setPlaceholder:NSLocalizedString(@"Phone number", nil)];
 	} else if (contactSections[[indexPath section]] == ContactSections_Sip) {
-		[cell.detailTextField setKeyboardType:UIKeyboardTypeASCIICapable];
-		[cell.detailTextField setPlaceholder:NSLocalizedString(@"SIP address", nil)];
+		[cell.editTextfield setKeyboardType:UIKeyboardTypeASCIICapable];
+		[cell.editTextfield setPlaceholder:NSLocalizedString(@"SIP address", nil)];
 	} else if (contactSections[[indexPath section]] == ContactSections_Email) {
-		[cell.detailTextField setKeyboardType:UIKeyboardTypeASCIICapable];
-		[cell.detailTextField setPlaceholder:NSLocalizedString(@"Email address", nil)];
+		[cell.editTextfield setKeyboardType:UIKeyboardTypeASCIICapable];
+		[cell.editTextfield setPlaceholder:NSLocalizedString(@"Email address", nil)];
 	}
 	return cell;
 }
@@ -589,46 +588,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 	NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];
 	Entry *entry = [sectionDict objectAtIndex:[indexPath row]];
-	if (![self isEditing]) {
-		NSString *dest = NULL;
-		;
-		if (contactSections[[indexPath section]] == ContactSections_Number) {
-			ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
-			NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-			NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
-			if (valueRef != NULL) {
-				char normalizedPhoneNumber[256];
-				linphone_proxy_config_normalize_number(linphone_core_get_default_proxy_config([LinphoneManager getLc]),
-													   [valueRef UTF8String], normalizedPhoneNumber,
-													   sizeof(normalizedPhoneNumber));
-				dest = [NSString stringWithUTF8String:normalizedPhoneNumber];
-			}
-			CFRelease(lMap);
-		} else if (contactSections[[indexPath section]] == ContactSections_Sip) {
-			ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
-			NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-			CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
-			NSString *valueRef = (__bridge NSString *)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
-			dest = [FastAddressBook normalizeSipURI:(NSString *)valueRef];
-			CFRelease(lDict);
-			CFRelease(lMap);
-		} else if (contactSections[[indexPath section]] == ContactSections_Email) {
-			ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
-			NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-			NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
-			if (valueRef != NULL) {
-				dest = [FastAddressBook normalizeSipURI:(NSString *)(valueRef)];
-			}
-			CFRelease(lMap);
-		}
-		if (dest != nil) {
-			NSString *displayName = [FastAddressBook getContactDisplayName:contact];
-			// Go to dialer view
-			DialerView *view = VIEW(DialerView);
-			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-			[view call:dest displayName:displayName];
-		}
-	} else {
+	if ([self isEditing]) {
 		NSString *key = nil;
 		ABPropertyID property = [self propertyIDForSection:contactSections[indexPath.section]];
 
@@ -677,22 +637,18 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView
 		   editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == ContactSections_First_Name || indexPath.section == ContactSections_Last_Name) {
-		return UITableViewCellEditingStyleNone;
-	}
-	NSInteger last_index = [[self getSectionData:[indexPath section]] count] - 1;
-	if (indexPath.row == last_index) {
-		return UITableViewCellEditingStyleInsert;
-	}
-	return UITableViewCellEditingStyleDelete;
+	return UITableViewCellEditingStyleNone;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	NSString *text = nil;
+	BOOL canAddEntry = self.tableView.isEditing;
 	if (contactSections[section] == ContactSections_First_Name && self.tableView.isEditing) {
 		text = NSLocalizedString(@"First name", nil);
+		canAddEntry = NO;
 	} else if (contactSections[section] == ContactSections_Last_Name && self.tableView.isEditing) {
 		text = NSLocalizedString(@"Last name", nil);
+		canAddEntry = NO;
 	} else if ([self getSectionData:section].count > 0) {
 		if (contactSections[section] == ContactSections_Number) {
 			text = NSLocalizedString(@"Phone numbers", nil);
@@ -707,10 +663,10 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		return nil;
 	}
 
-	UIView *tempView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 20)];
+	UIView *tempView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 35)];
 	tempView.backgroundColor = [UIColor whiteColor];
 
-	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 300, 10)];
+	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 300, 35)];
 	tempLabel.backgroundColor = [UIColor clearColor];
 	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_E"]];
 	tempLabel.text = text.uppercaseString;
@@ -718,7 +674,29 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	tempLabel.font = [UIFont systemFontOfSize:12];
 	[tempView addSubview:tempLabel];
 
+	if (canAddEntry) {
+		CGRect frame = CGRectMake(255, 5, 30, 30);
+		frame.origin.x = tableView.frame.size.width - 35;
+		UIIconButton *tempAddButton = [[UIIconButton alloc] initWithFrame:frame];
+		[tempAddButton setImage:[UIImage imageNamed:@"add_field_default"] forState:UIControlStateNormal];
+		[tempAddButton setImage:[UIImage imageNamed:@"add_field_over"] forState:UIControlStateHighlighted];
+		[tempAddButton setImage:[UIImage imageNamed:@"add_field_over"] forState:UIControlStateSelected];
+		[tempAddButton addTarget:self action:@selector(onAddClick:) forControlEvents:UIControlEventTouchUpInside];
+		tempAddButton.tag = section;
+		[tempView addSubview:tempAddButton];
+	}
+
 	return tempView;
+}
+
+- (void)onAddClick:(id)sender {
+	NSInteger section = ((UIButton *)sender).tag;
+	UITableView *tableView = VIEW(ContactDetailsView).tableController.tableView;
+	NSInteger count = [self.tableView numberOfRowsInSection:section];
+	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:count inSection:section];
+	[tableView.dataSource tableView:tableView
+				 commitEditingStyle:UITableViewCellEditingStyleInsert
+				  forRowAtIndexPath:indexPath];
 }
 
 #pragma mark - ContactDetailsLabelDelegate Functions
@@ -767,10 +745,10 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
 	UIView *view = [textField superview];
 	// Find TableViewCell
-	while (view != nil && ![view isKindOfClass:[UIEditableTableViewCell class]])
+	while (view != nil && ![view isKindOfClass:[UIContactDetailsCell class]])
 		view = [view superview];
 	if (view != nil) {
-		UIEditableTableViewCell *cell = (UIEditableTableViewCell *)view;
+		UIContactDetailsCell *cell = (UIContactDetailsCell *)view;
 		NSIndexPath *path = [self.tableView indexPathForCell:cell];
 		NSMutableArray *sectionDict = [self getSectionData:[path section]];
 		Entry *entry = [sectionDict objectAtIndex:[path row]];
@@ -791,7 +769,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 			CFRelease(lMap);
 		}
 
-		[cell.detailTextLabel setText:value];
+		cell.editTextfield.text = value;
 	} else {
 		LOGE(@"Not valid UIEditableTableViewCell");
 	}
@@ -804,6 +782,13 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	return true;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (tableView.isEditing) {
+		return 44;
+	} else {
+		return 88;
+	}
+}
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
 	return 1e-5;
 }

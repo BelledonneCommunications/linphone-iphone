@@ -223,7 +223,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	CGRect frame = _tableController.tableView.frame;
 	frame.origin.y = _nameLabel.frame.origin.y;
-	if (editing) {
+	if (!editing) {
 		frame.origin.y += _nameLabel.frame.size.height;
 	}
 	_tableController.tableView.frame = frame;
