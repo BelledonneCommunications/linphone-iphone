@@ -94,18 +94,15 @@ void linphone_gtk_call_update_tab_header(LinphoneCall *call,gboolean pause){
 	g_free(text);
 }
 
-static void linphone_gtk_in_call_set_animation_image(GtkWidget *callview, const char *image_name, gboolean is_stock){
+static void linphone_gtk_in_call_set_animation_image(GtkWidget *callview, const char *image_name){
 	GtkWidget *container=linphone_gtk_get_widget(callview,"in_call_animation");
 	GList *elem=gtk_container_get_children(GTK_CONTAINER(container));
 	GtkWidget *image;
 
-	if (!is_stock){
-		if (image_name==NULL){
-			gtk_widget_hide(container);
-		}
-		image=gtk_image_new_from_icon_name(image_name,GTK_ICON_SIZE_DIALOG);
-	}else
-		image=gtk_image_new_from_stock(image_name,GTK_ICON_SIZE_DIALOG);
+	if (image_name==NULL){
+		gtk_widget_hide(container);
+	}
+	image=gtk_image_new_from_icon_name(image_name,GTK_ICON_SIZE_DIALOG);
 	if (elem)
 		gtk_widget_destroy((GtkWidget*)elem->data);
 	gtk_widget_show(image);
@@ -588,7 +585,7 @@ void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call){
 	gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(callview,"decline_call")),image);
 	gtk_widget_show(image);
 
-	linphone_gtk_in_call_set_animation_image(callview,"linphone-call-status-incoming",FALSE);
+	linphone_gtk_in_call_set_animation_image(callview,"linphone-call-status-incoming");
 }
 
 static void rating_to_color(float rating, GdkColor *color){
@@ -781,7 +778,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	gtk_widget_set_sensitive(linphone_gtk_get_widget(callview,"transfer_button"),!in_conf);
 
 	gtk_label_set_text(GTK_LABEL(duration),_("00:00:00"));
-	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_MEDIA_PLAY,TRUE);
+	linphone_gtk_in_call_set_animation_image(callview,"linphone-media-play");
 	linphone_gtk_call_update_tab_header(call,FALSE);
 	linphone_gtk_enable_mute_button(
 					GTK_BUTTON(linphone_gtk_get_widget(callview,"incall_mute")),TRUE);
@@ -814,7 +811,7 @@ void linphone_gtk_in_call_view_set_paused(LinphoneCall *call){
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_label_set_markup(GTK_LABEL(status),_("<b>Paused call</b>"));
 	linphone_gtk_in_call_show_video(call);
-	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_MEDIA_PAUSE,TRUE);
+	linphone_gtk_in_call_set_animation_image(callview,"linphone-media-pause");
 	gtk_widget_show_all(record_bar);
 }
 
@@ -855,8 +852,7 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 		gtk_label_set_markup(GTK_LABEL(status),msg);
 		g_free(msg);
 	}
-	linphone_gtk_in_call_set_animation_image(callview,
-	           linphone_gtk_get_ui_config("stop_call_icon_name","linphone-stop-call"),FALSE);
+	linphone_gtk_in_call_set_animation_image(callview, linphone_gtk_get_ui_config("stop_call_icon_name","linphone-stop-call"));
 
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"answer_decline_panel"));
 	gtk_widget_hide(linphone_gtk_get_widget(callview,"record_hbox"));

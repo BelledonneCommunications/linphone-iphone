@@ -50,6 +50,8 @@ install(FILES
 	svg/linphone-camera-disabled.svg
 	svg/linphone-security-ok.svg
 	svg/linphone-security-pending.svg
+	svg/linphone-media-play.svg
+	svg/linphone-media-pause.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
@@ -96,6 +98,8 @@ install(FILES
 	linphone-camera-disabled.png
 	linphone-security-ok.png
 	linphone-security-pending.png
+	linphone-media-play.png
+	linphone-media-pause.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
