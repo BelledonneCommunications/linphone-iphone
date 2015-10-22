@@ -30,7 +30,28 @@ if(NOT WIN32)
 endif()
 
 
-set(SOURCE_FILES
+set(LINPHONE_HEADER_FILES
+	account_creator.h
+	buffer.h
+	call_log.h
+	call_params.h
+	content.h
+	event.h
+	linphonecore.h
+	linphonecore_utils.h
+	linphonefriend.h
+	linphonepresence.h
+	linphone_proxy_config.h
+	linphone_tunnel.h
+	lpc2xml.h
+	lpconfig.h
+	sipsetup.h
+	xml2lpc.h
+	xmlrpc.h
+)
+
+set(LINPHONE_SOURCE_FILES
+	${LINPHONE_HEADER_FILES}
 	account_creator.c
 	address.c
 	authentication.c
@@ -92,33 +113,14 @@ set(SOURCE_FILES
 	vtables.c
 )
 
-set(HEADER_FILES
-	account_creator.h
-	buffer.h
-	call_log.h
-	call_params.h
-	content.h
-	event.h
-	linphonecore.h
-	linphonecore_utils.h
-	linphonefriend.h
-	linphonepresence.h
-	linphone_proxy_config.h
-	linphone_tunnel.h
-	lpc2xml.h
-	lpconfig.h
-	sipsetup.h
-	xml2lpc.h
-	xmlrpc.h
-)
 if(ENABLE_TUNNEL)
-	list(APPEND SOURCE_FILES
+	list(APPEND LINPHONE_SOURCE_FILES
 		linphone_tunnel.cc
 		TunnelManager.cc
 	)
 	add_definitions(-DTUNNEL_ENABLED)
 else()
-	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
+	list(APPEND LINPHONE_SOURCE_FILES linphone_tunnel_stubs.c)
 endif()
 
 find_package(Git)
@@ -160,10 +162,10 @@ if(INTL_FOUND)
 endif()
 
 if(ENABLE_STATIC)
-	add_library(linphone STATIC ${SOURCE_FILES})
+	add_library(linphone STATIC ${LINPHONE_SOURCE_FILES})
 	target_link_libraries(linphone ${LIBS})
 else()
-	add_library(linphone SHARED ${SOURCE_FILES})
+	add_library(linphone SHARED ${LINPHONE_SOURCE_FILES})
 	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
 	target_link_libraries(linphone ${LIBS})
 	if(MSVC)
@@ -195,7 +197,7 @@ install(TARGETS linphone EXPORT ${EXPORT_TARGETS_NAME}Targets
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-install(FILES ${HEADER_FILES}
+install(FILES ${LINPHONE_HEADER_FILES}
 	DESTINATION include/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
