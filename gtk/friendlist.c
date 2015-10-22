@@ -814,8 +814,6 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 	GtkWidget *menu=gtk_menu_new();
 	GtkWidget *menu_item;
-	gchar *call_label=NULL;
-	gchar *text_label=NULL;
 	gchar *edit_label=NULL;
 	gchar *delete_label=NULL;
 	gchar *delete_hist_label=NULL;
@@ -840,31 +838,11 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 	add_contact_label=g_strdup_printf(_("Add a new contact"));
 	if (gtk_tree_selection_get_selected (select, &model, &iter)){
 		gtk_tree_model_get(model, &iter,FRIEND_NAME , &name, -1);
-		call_label=g_strdup_printf(_("Call %s"),name);
-		text_label=g_strdup_printf(_("Send text to %s"),name);
 		edit_label=g_strdup_printf(_("Edit contact '%s'"),name);
 		delete_label=g_strdup_printf(_("Delete contact '%s'"),name);
 		delete_hist_label=g_strdup_printf(_("Delete chat history of '%s'"),name);
 		g_free(name);
 		show_menu_separator=TRUE;
-	}
-	if (call_label){
-		menu_item=gtk_image_menu_item_new_with_label(call_label);
-		image=gtk_image_new_from_icon_name("linphone-start-call",GTK_ICON_SIZE_MENU);
-		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);
-		gtk_widget_show(image);
-		gtk_widget_show(menu_item);
-		gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
-		g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_call_selected,contact_list);
-	}
-	if (text_label){
-		menu_item=gtk_image_menu_item_new_with_label(text_label);
-		image=gtk_image_new_from_icon_name("linphone-start-chat",GTK_ICON_SIZE_MENU);
-		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);
-		gtk_widget_show(image);
-		gtk_widget_show(menu_item);
-		gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
-		g_signal_connect_swapped(G_OBJECT(menu_item),"activate",(GCallback)linphone_gtk_chat_selected,contact_list);
 	}
 	if (edit_label){
 		menu_item=gtk_image_menu_item_new_with_label(edit_label);
@@ -886,8 +864,11 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 	}
 
 	if (delete_hist_label){
+		GtkWidget *menu_item_separator=gtk_separator_menu_item_new();
+		gtk_widget_show(menu_item_separator);
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item_separator);
 		menu_item=gtk_image_menu_item_new_with_label(delete_hist_label);
-		image=gtk_image_new_from_stock(GTK_STOCK_CLEAR,GTK_ICON_SIZE_MENU);
+		image=gtk_image_new_from_icon_name("linphone-delete",GTK_ICON_SIZE_MENU);
 		gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item),image);
 		gtk_widget_show(image);
 		gtk_widget_show(menu_item);
@@ -924,8 +905,6 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 	gtk_menu_attach_to_widget (GTK_MENU (menu), contact_list, NULL);
 
 	g_free(add_contact_label);
-	if (call_label) g_free(call_label);
-	if (text_label) g_free(text_label);
 	if (edit_label) g_free(edit_label);
 	if (delete_label) g_free(delete_label);
 	return menu;

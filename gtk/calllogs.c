@@ -238,19 +238,9 @@ gboolean linphone_gtk_call_log_button_pressed(GtkWidget *widget, GdkEventButton 
 }
 
 void linphone_gtk_call_log_clear_missed_call(){
-	GtkWidget *mw=linphone_gtk_get_main_window();
-	GtkNotebook *notebook=GTK_NOTEBOOK(linphone_gtk_get_widget(mw,"viewswitch"));
-	GtkWidget *page=gtk_notebook_get_nth_page(notebook,0);
-	GtkWidget *box=gtk_hbox_new(FALSE,0);
-	GtkWidget *image=gtk_image_new_from_icon_name("linphone-history",GTK_ICON_SIZE_MENU);
-	GtkWidget *l;
-	const gchar*text=gtk_label_get_text(GTK_LABEL(linphone_gtk_get_widget(mw,"label3")));
-
-	l=gtk_label_new(text);
-	gtk_box_pack_start(GTK_BOX(box),image,FALSE,FALSE,0);
-	gtk_box_pack_start(GTK_BOX(box),l,FALSE,FALSE,0);
-	gtk_notebook_set_tab_label(notebook,page,box);
-	gtk_widget_show_all(box);
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *label = linphone_gtk_get_widget(mw, "history_tab_label");
+	gtk_label_set_text(GTK_LABEL(label), _("Recent calls"));
 }
 
 gboolean linphone_gtk_call_log_reset_missed_call(GtkWidget *w, GdkEvent *event,gpointer user_data){
@@ -263,25 +253,10 @@ gboolean linphone_gtk_call_log_reset_missed_call(GtkWidget *w, GdkEvent *event,g
 }
 
 void linphone_gtk_call_log_display_missed_call(int nb){
-	GtkWidget *mw=linphone_gtk_get_main_window();
-	GtkNotebook *notebook=GTK_NOTEBOOK(linphone_gtk_get_widget(mw,"viewswitch"));
-	GtkWidget *page=gtk_notebook_get_nth_page(notebook,0);
-	GtkWidget *ebox=gtk_event_box_new();
-	GtkWidget *box=gtk_hbox_new(FALSE,0);
-	GtkWidget *image=gtk_image_new_from_icon_name("linphone-history",GTK_ICON_SIZE_MENU);
-	GtkWidget *l;
-	gchar *buf;
-
-	buf=g_markup_printf_escaped(_("<b>Recent calls (%i)</b>"),nb);
-	l=gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(l),buf);
-	gtk_box_pack_start(GTK_BOX(box),image,FALSE,FALSE,0);
-	gtk_box_pack_start(GTK_BOX(box),l,FALSE,FALSE,0);
-	gtk_container_add(GTK_CONTAINER(ebox),box);
-	gtk_notebook_set_tab_label(notebook,page,ebox);
-	gtk_widget_add_events(ebox,GDK_BUTTON_PRESS_MASK);
-	g_signal_connect(G_OBJECT(ebox),"button_press_event",(GCallback)linphone_gtk_call_log_reset_missed_call,NULL);
-	gtk_widget_show_all(ebox);
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *label = linphone_gtk_get_widget(mw, "history_tab_label");
+	gchar *buf = g_markup_printf_escaped(_("<b>Recent calls (%i)</b>"), nb);
+	gtk_label_set_markup(GTK_LABEL(label), buf);
 }
 
 void linphone_gtk_call_log_update(GtkWidget *w){

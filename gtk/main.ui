@@ -15,6 +15,12 @@
     <property name="can_focus">False</property>
     <property name="icon_name">linphone-contact-add</property>
   </object>
+  <object class="GtkImage" id="clear_call_history_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="xpad">4</property>
+    <property name="icon_name">linphone-delete</property>
+  </object>
   <object class="GtkImage" id="connect_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -781,11 +787,11 @@
                                 <property name="layout_style">end</property>
                                 <child>
                                   <object class="GtkButton" id="erase_call_logs_button">
-                                    <property name="label">gtk-clear</property>
+                                    <property name="label" translatable="yes">Clear call history</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <property name="use_stock">True</property>
+                                    <property name="image">clear_call_history_image</property>
                                     <signal name="clicked" handler="linphone_gtk_clear_call_logs" swapped="no"/>
                                   </object>
                                   <packing>
@@ -814,36 +820,43 @@
                       </packing>
                     </child>
                     <child type="tab">
-                      <object class="GtkHBox" id="hbox6">
+                      <object class="GtkEventBox" id="history_tab_eventbox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
                         <signal name="button-press-event" handler="linphone_gtk_call_log_reset_missed_call" swapped="no"/>
                         <child>
-                          <object class="GtkImage" id="history_tab_icon">
+                          <object class="GtkHBox" id="history_tab_hbox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="icon_name">linphone-history</property>
-                            <property name="icon-size">1</property>
+                            <child>
+                              <object class="GtkImage" id="history_tab_icon">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="icon_name">linphone-history</property>
+                                <property name="icon-size">1</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">4</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="history_tab_label">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="yalign">0.49000000953674316</property>
+                                <property name="label" translatable="yes">Recent calls</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="padding">4</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="label3">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="yalign">0.49000000953674316</property>
-                            <property name="label" translatable="yes">Recent calls</property>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
                         </child>
                       </object>
                       <packing>
