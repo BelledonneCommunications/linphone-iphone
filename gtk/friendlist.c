@@ -361,8 +361,19 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 
 void linphone_gtk_contact_clicked(GtkTreeSelection *selection){
 	GtkTreeView *friendlist = gtk_tree_selection_get_tree_view(selection);
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *edit_button = linphone_gtk_get_widget(mw, "edit_button");
+	GtkWidget *remove_button = linphone_gtk_get_widget(mw, "remove_button");
+	
 	linphone_gtk_set_selection_to_uri_bar(friendlist);
 	linphone_gtk_friend_list_update_button_display(friendlist);
+	if(gtk_tree_selection_get_selected(selection, NULL, NULL)) {
+		gtk_widget_set_sensitive(edit_button, TRUE);
+		gtk_widget_set_sensitive(remove_button, TRUE);
+	} else {
+		gtk_widget_set_sensitive(edit_button, FALSE);
+		gtk_widget_set_sensitive(remove_button, FALSE);
+	}
 }
 
 

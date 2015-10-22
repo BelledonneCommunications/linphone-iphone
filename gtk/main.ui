@@ -566,6 +566,7 @@
                             <property name="width_request">32</property>
                             <property name="height_request">32</property>
                             <property name="visible">True</property>
+                            <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">edit_image1</property>
@@ -582,6 +583,7 @@
                             <property name="width_request">32</property>
                             <property name="height_request">32</property>
                             <property name="visible">True</property>
+                            <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="image">remove_image1</property>
