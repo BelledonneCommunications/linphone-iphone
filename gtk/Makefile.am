@@ -65,7 +65,7 @@ linphone_SOURCES=	\
 
 if BUILD_WIZARD
 linphone_SOURCES+= \
-	setupwizard.c
+	setupwizard.c setupwizard.h
 endif
 
 if BUILD_STATUS_NOTIFIER
