@@ -177,7 +177,9 @@ static GtkWidget *linphone_gtk_create_call_log_menu(GtkWidget *call_log){
 			name=linphone_address_as_string(la);
 			call_label=g_strdup_printf(_("Call %s"),name);
 			text_label=g_strdup_printf(_("Send text to %s"),name);
-			add_contact_label=g_strdup_printf(_("Add %s to your contact list"),name);
+			if (!linphone_gtk_is_friend(linphone_gtk_get_core(), name)) {
+				add_contact_label=g_strdup_printf(_("Add %s to your contact list"),name);
+			}
 			ms_free(name);
 			menu=gtk_menu_new();
 		}

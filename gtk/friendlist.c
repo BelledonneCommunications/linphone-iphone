@@ -464,22 +464,10 @@ static void update_star(GtkEntry *entry, gboolean is_known){
 
 static void check_contact(GtkEditable *editable, LinphoneCore *lc){
 	bool_t known = TRUE;
-	char *tmp=gtk_editable_get_chars(editable,0,-1);
-	if (tmp!=NULL){
-		if (strlen(tmp)>0){
-			LinphoneAddress *addr=linphone_core_interpret_url(lc,tmp);
-			if (addr){
-				char *uri=linphone_address_as_string_uri_only(addr);
-				LinphoneFriend *lf=linphone_core_get_friend_by_address(lc,uri);
-				ms_free(uri);
-				linphone_address_destroy(addr);
-				if (lf) {
-					update_star(GTK_ENTRY(editable),TRUE);
-					g_free(tmp);
-					return;
-				}
-			}
-			known = FALSE;
+	char *tmp = gtk_editable_get_chars(editable, 0, -1);
+	if (tmp != NULL) {
+		if (strlen(tmp) > 0) {
+			known = linphone_gtk_is_friend(lc, tmp);
 		}
 		g_free(tmp);
 	}

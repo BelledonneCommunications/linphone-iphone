@@ -112,6 +112,17 @@ void linphone_gtk_reload_video_devices(void){
 	if (pb) linphone_gtk_fill_webcams(pb);
 }
 
+bool_t linphone_gtk_is_friend(LinphoneCore *lc, const char *contact) {
+	LinphoneAddress *addr = linphone_core_interpret_url(lc, contact);
+	if (addr) {
+		char *uri = linphone_address_as_string_uri_only(addr);
+		LinphoneFriend *lf = linphone_core_get_friend_by_address(lc, uri);
+		linphone_address_destroy(addr);
+		if (lf) return TRUE;
+	}
+	return FALSE;
+}
+
 #ifdef HAVE_LIBUDEV_H
 
 static struct udev *udevroot=NULL;
