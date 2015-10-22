@@ -64,7 +64,7 @@
 @property(nonatomic, strong) IBOutlet UIView *numpadView;
 @property(nonatomic, strong) IBOutlet UIView *routesView;
 @property(nonatomic, strong) IBOutlet UIView *optionsView;
-@property(nonatomic, strong) IBOutlet UIButton *routesReceiverButton;
+@property(nonatomic, strong) IBOutlet UIButton *routesEarpieceButton;
 @property(nonatomic, strong) IBOutlet UIButton *routesSpeakerButton;
 @property(nonatomic, strong) IBOutlet UIButton *routesBluetoothButton;
 @property(nonatomic, strong) IBOutlet UIButton *optionsAddButton;
@@ -82,7 +82,7 @@
 @property(nonatomic, strong) IBOutlet UIDigitButton *nineButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *starButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *zeroButton;
-@property(nonatomic, strong) IBOutlet UIDigitButton *sharpButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *hashButton;
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property(weak, nonatomic) IBOutlet UILabel *durationLabel;
@@ -93,7 +93,7 @@
 
 - (IBAction)onRoutesClick:(id)sender;
 - (IBAction)onRoutesBluetoothClick:(id)sender;
-- (IBAction)onRoutesReceiverClick:(id)sender;
+- (IBAction)onRoutesEarpieceClick:(id)sender;
 - (IBAction)onRoutesSpeakerClick:(id)sender;
 - (IBAction)onOptionsClick:(id)sender;
 - (IBAction)onOptionsTransferClick:(id)sender;

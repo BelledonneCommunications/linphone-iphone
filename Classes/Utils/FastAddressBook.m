@@ -35,7 +35,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		retImage = [UIImage imageWithData:imgData];
 	}
 	if (retImage == nil) {
-		retImage = [UIImage imageNamed:@"avatar"];
+		retImage = [UIImage imageNamed:@"avatar.png"];
 	}
 	if (retImage.size.width != retImage.size.height) {
 		retImage = [retImage squareCrop];

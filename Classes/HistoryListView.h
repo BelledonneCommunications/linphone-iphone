@@ -30,6 +30,7 @@
 
 @property(nonatomic, strong) IBOutlet UIButton *allButton;
 @property(nonatomic, strong) IBOutlet UIButton *missedButton;
+@property(weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
 
 - (IBAction)onAllClick:(id)event;
 - (IBAction)onMissedClick:(id)event;

@@ -30,7 +30,7 @@
                             <textInputTraits key="textInputTraits"/>
                         </textField>
                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="C2f-aP-xjR" userLabel="deleteButton" customClass="UIIconButton">
-                            <rect key="frame" x="340" y="6.9999999443689944" width="30" height="30"/>
+                            <rect key="frame" x="340" y="6.9999998782131989" width="30" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <state key="normal" title="Button" image="delete_field_default.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -49,7 +49,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ZbV-2Z-b4y" userLabel="callButton" customClass="UIIconButton">
-                            <rect key="frame" x="135" y="40" width="44" height="44"/>
+                            <rect key="frame" x="135" y="40.000000216744155" width="44" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <state key="normal" title="Button" image="call_start_body_default.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -59,7 +59,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="FDT-HY-OQZ" userLabel="chatButton" customClass="UIIconButton">
-                            <rect key="frame" x="195" y="40.000000216744141" width="44" height="44"/>
+                            <rect key="frame" x="195" y="40.000000216744155" width="44" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <state key="normal" title="Button" image="chat_start_body_default.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>

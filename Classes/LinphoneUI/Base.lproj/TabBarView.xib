@@ -33,7 +33,8 @@
                     <rect key="frame" x="0.0" y="0.0" width="90" height="63"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="History"/>
-                    <state key="normal" image="footer_history.png"/>
+                    <state key="normal" image="footer_history_default.png"/>
+                    <state key="disabled" image="footer_history_disabled.png"/>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onHistoryClick:" destination="-1" eventType="touchUpInside" id="22"/>
@@ -44,7 +45,8 @@
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Contacts"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
-                    <state key="normal" image="footer_contacts.png"/>
+                    <state key="normal" image="footer_contacts_default.png"/>
+                    <state key="disabled" image="footer_contacts_disabled.png"/>
                     <state key="selected">
                         <color key="titleColor" red="0.81176471709999998" green="0.29803922770000002" blue="0.16078431900000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
@@ -57,7 +59,8 @@
                     <rect key="frame" x="180" y="0.0" width="90" height="63"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Dialer"/>
-                    <state key="normal" image="footer_dialer.png"/>
+                    <state key="normal" image="footer_dialer_default.png"/>
+                    <state key="disabled" image="footer_dialer_disabled.png"/>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onDialerClick:" destination="-1" eventType="touchUpInside" id="24"/>
@@ -68,7 +71,8 @@
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Chat"/>
                     <inset key="titleEdgeInsets" minX="0.0" minY="40" maxX="0.0" maxY="0.0"/>
-                    <state key="normal" image="footer_chat.png" backgroundImage="color_C.png"/>
+                    <state key="normal" image="footer_chat_default.png" backgroundImage="color_C.png"/>
+                    <state key="disabled" image="footer_chat_disabled.png"/>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="26"/>
@@ -76,7 +80,7 @@
                 </button>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="eC3-Hw-cqQ" userLabel="selectedButtonImage">
                     <rect key="frame" x="180" y="60" width="90" height="3"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </imageView>
                 <view autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleToFill" id="37" userLabel="chatNotificationView">
                     <rect key="frame" x="338" y="0.0" width="21" height="21"/>
@@ -130,10 +134,14 @@
         <image name="chat_list_indicator.png" width="20" height="20"/>
         <image name="color_A.png" width="1" height="1"/>
         <image name="color_C.png" width="1" height="1"/>
-        <image name="footer_chat.png" width="27" height="27"/>
-        <image name="footer_contacts.png" width="29" height="29"/>
-        <image name="footer_dialer.png" width="27" height="27"/>
-        <image name="footer_history.png" width="29" height="29"/>
+        <image name="footer_chat_default.png" width="27" height="27"/>
+        <image name="footer_chat_disabled.png" width="27" height="27"/>
+        <image name="footer_contacts_default.png" width="29" height="29"/>
+        <image name="footer_contacts_disabled.png" width="29" height="29"/>
+        <image name="footer_dialer_default.png" width="27" height="27"/>
+        <image name="footer_dialer_disabled.png" width="27" height="27"/>
+        <image name="footer_history_default.png" width="29" height="29"/>
+        <image name="footer_history_disabled.png" width="29" height="29"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

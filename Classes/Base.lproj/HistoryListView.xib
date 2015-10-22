@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="allButton" destination="4" id="27"/>
                 <outlet property="missedButton" destination="5" id="28"/>
+                <outlet property="selectedButtonImage" destination="o8E-gw-vhI" id="hNf-FA-7aQ"/>
                 <outlet property="tableController" destination="18" id="26"/>
                 <outlet property="view" destination="2" id="16"/>
             </connections>
@@ -42,12 +43,13 @@
                                             <state key="normal" image="history_all_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
-                                            <state key="selected" image="history_all_selected.png" backgroundImage="color_E.png"/>
+                                            <state key="disabled" image="history_all_disabled.png"/>
+                                            <state key="highlighted" backgroundImage="color_E.png"/>
                                             <connections>
                                                 <action selector="onAllClick:" destination="-1" eventType="touchUpInside" id="29"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="missedButton" customClass="UIIconButton">
+                                        <button opaque="NO" contentMode="bottom" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="missedButton" customClass="UIIconButton">
                                             <rect key="frame" x="75" y="0.0" width="75" height="40"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Missed contacts filter"/>
@@ -55,11 +57,17 @@
                                             <state key="normal" image="history_missed_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
-                                            <state key="selected" image="history_missed_selected.png" backgroundImage="color_E.png"/>
+                                            <state key="disabled" image="history_missed_disabled.png"/>
+                                            <state key="selected" image="history_missed_selected.png"/>
+                                            <state key="highlighted" backgroundImage="color_E.png"/>
                                             <connections>
                                                 <action selector="onMissedClick:" destination="-1" eventType="touchUpInside" id="30"/>
                                             </connections>
                                         </button>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="o8E-gw-vhI" userLabel="selectedButtonImage">
+                                            <rect key="frame" x="0.0" y="37" width="75" height="3"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        </imageView>
                                     </subviews>
                                 </view>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="00K-MU-NUc" userLabel="cancelButton" customClass="UIIconButton">
@@ -67,10 +75,11 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="cancel_edit.png">
+                                    <state key="normal" image="cancel_edit_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" backgroundImage="color_E.png"/>
+                                    <state key="disabled" image="cancel_edit_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onCancelClick:" destination="18" eventType="touchUpInside" id="DAX-W6-l0H"/>
                                         <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="WQf-rB-DUt"/>
@@ -82,10 +91,12 @@
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="select_all.png">
+                                    <state key="normal" image="select_all_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" image="deselect_all.png"/>
+                                    <state key="disabled" image="select_all_disabled.png"/>
+                                    <state key="selected" image="deselect_all_default.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onSelectionToggle:" destination="18" eventType="touchUpInside" id="ADr-KR-SmA"/>
                                     </connections>
@@ -95,10 +106,11 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="delete.png">
+                                    <state key="normal" image="delete_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" backgroundImage="color_E.png"/>
+                                    <state key="disabled" image="delete_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="37"/>
                                     </connections>
@@ -108,10 +120,11 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="edit_list.png">
+                                    <state key="normal" image="edit_list_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" backgroundImage="color_E.png"/>
+                                    <state key="disabled" image="edit_list_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onEditClick:" destination="18" eventType="touchUpInside" id="5Ft-HW-cVh"/>
                                         <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="9gC-6R-w0j"/>
@@ -152,17 +165,23 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="cancel_edit.png" width="29" height="29"/>
+        <image name="cancel_edit_default.png" width="29" height="29"/>
+        <image name="cancel_edit_disabled.png" width="29" height="29"/>
+        <image name="color_A.png" width="1" height="1"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
-        <image name="delete.png" width="21" height="27"/>
-        <image name="deselect_all.png" width="26" height="26"/>
-        <image name="edit_list.png" width="29" height="28"/>
+        <image name="delete_default.png" width="21" height="27"/>
+        <image name="delete_disabled.png" width="21" height="27"/>
+        <image name="deselect_all_default.png" width="26" height="26"/>
+        <image name="edit_list_default.png" width="29" height="28"/>
+        <image name="edit_list_disabled.png" width="29" height="28"/>
         <image name="history_all_default.png" width="32" height="31"/>
-        <image name="history_all_selected.png" width="32" height="31"/>
+        <image name="history_all_disabled.png" width="32" height="31"/>
         <image name="history_missed_default.png" width="32" height="32"/>
+        <image name="history_missed_disabled.png" width="32" height="32"/>
         <image name="history_missed_selected.png" width="32" height="32"/>
-        <image name="select_all.png" width="26" height="26"/>
+        <image name="select_all_default.png" width="26" height="26"/>
+        <image name="select_all_disabled.png" width="26" height="26"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

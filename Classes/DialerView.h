@@ -55,7 +55,7 @@
 @property(nonatomic, strong) IBOutlet UIDigitButton *nineButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *starButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *zeroButton;
-@property(nonatomic, strong) IBOutlet UIDigitButton *sharpButton;
+@property(nonatomic, strong) IBOutlet UIDigitButton *hashButton;
 @property(nonatomic, strong) IBOutlet UIView *backgroundView;
 @property(nonatomic, strong) IBOutlet UIView *videoPreview;
 @property(nonatomic, strong) IBOutlet UICamSwitch *videoCameraSwitch;

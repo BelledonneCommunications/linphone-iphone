@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -37,7 +38,8 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="back.png"/>
+                                    <state key="normal" image="back_default.png"/>
+                                    <state key="disabled" image="back_disabled.png"/>
                                     <connections>
                                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="11"/>
                                     </connections>
@@ -47,7 +49,8 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add to contact"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="contact_add.png"/>
+                                    <state key="normal" image="contact_add_default.png"/>
+                                    <state key="disabled" image="contact_add_disabled.png"/>
                                     <connections>
                                         <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="53"/>
                                     </connections>
@@ -152,13 +155,15 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="avatar.png" width="261" height="261"/>
-        <image name="back.png" width="25" height="22"/>
-        <image name="call_start_body_default.png" width="52" height="52"/>
-        <image name="chat_start_body_default.png" width="52" height="52"/>
+        <image name="avatar.png" width="255" height="255"/>
+        <image name="back_default.png" width="24" height="21"/>
+        <image name="back_disabled.png" width="24" height="21"/>
+        <image name="call_start_body_default.png" width="51" height="51"/>
+        <image name="chat_start_body_default.png" width="51" height="51"/>
         <image name="color_F.png" width="1" height="1"/>
-        <image name="contact_add.png" width="35" height="30"/>
-        <image name="linphone_user.png" width="27" height="23"/>
+        <image name="contact_add_default.png" width="34" height="29"/>
+        <image name="contact_add_disabled.png" width="34" height="29"/>
+        <image name="linphone_user.png" width="26" height="22"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

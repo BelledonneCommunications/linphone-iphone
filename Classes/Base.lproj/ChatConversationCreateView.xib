@@ -34,9 +34,10 @@
                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="back.png">
+                                    <state key="normal" image="back_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="back_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="463-Qr-hJG"/>
@@ -79,7 +80,8 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="back.png" width="24" height="21"/>
+        <image name="back_default.png" width="24" height="21"/>
+        <image name="back_disabled.png" width="24" height="21"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
     </resources>

@@ -11,6 +11,7 @@
                 <outlet property="allButton" destination="4" id="27"/>
                 <outlet property="linphoneButton" destination="5" id="31"/>
                 <outlet property="searchBar" destination="5jE-oF-d45" id="xfS-xo-2Bm"/>
+                <outlet property="selectedButtonImage" destination="A9k-KU-Dlm" id="4dX-pd-Y2D"/>
                 <outlet property="tableController" destination="TJG-JZ-YRR" id="0lt-gC-EOm"/>
                 <outlet property="topBar" destination="3" id="w1O-2o-b18"/>
                 <outlet property="view" destination="2" id="16"/>
@@ -27,14 +28,14 @@
                     <subviews>
                         <view contentMode="scaleToFill" id="3" userLabel="topBar">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="42"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="Ehd-EB-dCJ" userLabel="backgroundColor">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="42"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
                                 <view contentMode="scaleToFill" id="93" userLabel="switchView">
-                                    <rect key="frame" x="0.0" y="0.0" width="150" height="46"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="150" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
@@ -48,7 +49,8 @@
                                                 <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
-                                            <state key="selected" image="contacts_all_selected.png">
+                                            <state key="disabled" image="contacts_all_disabled.png"/>
+                                            <state key="selected">
                                                 <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_E.png"/>
@@ -67,7 +69,8 @@
                                                 <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
-                                            <state key="selected" image="contacts_sip_selected.png">
+                                            <state key="disabled" image="contacts_sip_disabled.png"/>
+                                            <state key="selected">
                                                 <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_E.png"/>
@@ -75,6 +78,10 @@
                                                 <action selector="onLinphoneClick:" destination="-1" eventType="touchUpInside" id="47"/>
                                             </connections>
                                         </button>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="A9k-KU-Dlm" userLabel="selectedButtonImage">
+                                            <rect key="frame" x="0.0" y="39" width="75" height="3"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        </imageView>
                                     </subviews>
                                 </view>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="MZP-cb-ntf" userLabel="cancelButton" customClass="UIIconButton">
@@ -82,9 +89,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="cancel_edit.png">
+                                    <state key="normal" image="cancel_edit_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="cancel_edit_disabled.png"/>
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onCancelClick:" destination="TJG-JZ-YRR" eventType="touchUpInside" id="1nW-5f-kbI"/>
@@ -96,9 +104,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="delete.png">
+                                    <state key="normal" image="delete_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="delete_disabled.png"/>
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="VJS-p2-Jsp"/>
@@ -109,9 +118,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="edit_list.png">
+                                    <state key="normal" image="edit_list_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="edit_list_disabled.png"/>
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onEditClick:" destination="TJG-JZ-YRR" eventType="touchUpInside" id="CKU-6b-3F2"/>
@@ -124,10 +134,11 @@
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="select_all.png">
+                                    <state key="normal" image="select_all_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" image="deselect_all.png"/>
+                                    <state key="disabled" image="select_all_disabled.png"/>
+                                    <state key="selected" image="deselect_all_default.png"/>
                                     <connections>
                                         <action selector="onSelectionToggle:" destination="TJG-JZ-YRR" eventType="touchUpInside" id="YcH-HT-zyi"/>
                                     </connections>
@@ -137,9 +148,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add contact"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="contact_add.png">
+                                    <state key="normal" image="contact_add_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="contact_add_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="86"/>
@@ -186,18 +198,24 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="cancel_edit.png" width="29" height="29"/>
+        <image name="cancel_edit_default.png" width="29" height="29"/>
+        <image name="cancel_edit_disabled.png" width="29" height="29"/>
+        <image name="color_A.png" width="1" height="1"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
-        <image name="contact_add.png" width="34" height="29"/>
+        <image name="contact_add_default.png" width="34" height="29"/>
+        <image name="contact_add_disabled.png" width="34" height="29"/>
         <image name="contacts_all_default.png" width="32" height="27"/>
-        <image name="contacts_all_selected.png" width="32" height="27"/>
+        <image name="contacts_all_disabled.png" width="32" height="27"/>
         <image name="contacts_sip_default.png" width="38" height="29"/>
-        <image name="contacts_sip_selected.png" width="38" height="29"/>
-        <image name="delete.png" width="21" height="27"/>
-        <image name="deselect_all.png" width="26" height="26"/>
-        <image name="edit_list.png" width="29" height="28"/>
-        <image name="select_all.png" width="26" height="26"/>
+        <image name="contacts_sip_disabled.png" width="38" height="29"/>
+        <image name="delete_default.png" width="21" height="27"/>
+        <image name="delete_disabled.png" width="21" height="27"/>
+        <image name="deselect_all_default.png" width="26" height="26"/>
+        <image name="edit_list_default.png" width="29" height="28"/>
+        <image name="edit_list_disabled.png" width="29" height="28"/>
+        <image name="select_all_default.png" width="26" height="26"/>
+        <image name="select_all_disabled.png" width="26" height="26"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

@@ -150,35 +150,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)changeView:(HistoryView)view {
+	CGRect frame = _selectedButtonImage.frame;
 	if (view == History_All) {
+		frame.origin.x = allButton.frame.origin.x;
 		[ContactSelection setSipFilter:nil];
 		[ContactSelection enableEmailFilter:FALSE];
 		[tableController loadData];
 		allButton.selected = TRUE;
+		linphoneButton.selected = FALSE;
 	} else {
-		allButton.selected = FALSE;
-	}
-
-	if (view == History_Linphone) {
+		frame.origin.x = linphoneButton.frame.origin.x;
 		[ContactSelection setSipFilter:LinphoneManager.instance.contactFilter];
 		[ContactSelection enableEmailFilter:FALSE];
 		[tableController loadData];
 		linphoneButton.selected = TRUE;
-	} else {
-		linphoneButton.selected = FALSE;
+		allButton.selected = FALSE;
 	}
+	_selectedButtonImage.frame = frame;
 }
 
 - (void)refreshButtons {
 	[addButton setHidden:FALSE];
-
-	if ([ContactSelection getSipFilter]) {
-		allButton.selected = FALSE;
-		linphoneButton.selected = TRUE;
-	} else {
-		allButton.selected = TRUE;
-		linphoneButton.selected = FALSE;
-	}
+	[self changeView:[ContactSelection getSipFilter] ? History_Linphone : History_All];
 }
 
 - (void)update {
@@ -222,7 +215,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
-	allButton.hidden = linphoneButton.hidden = addButton.hidden = self.tableController.isEditing;
+	allButton.hidden = linphoneButton.hidden = _selectedButtonImage.hidden = addButton.hidden =
+		self.tableController.isEditing;
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {

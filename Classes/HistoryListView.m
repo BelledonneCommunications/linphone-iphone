@@ -64,19 +64,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)changeView:(HistoryView)view {
+	CGRect frame = _selectedButtonImage.frame;
 	if (view == History_All) {
+		frame.origin.x = _allButton.frame.origin.x;
 		_allButton.selected = TRUE;
 		[_tableController setMissedFilter:FALSE];
+		_missedButton.selected = FALSE;
 	} else {
-		_allButton.selected = FALSE;
-	}
-
-	if (view == History_Missed) {
+		frame.origin.x = _missedButton.frame.origin.x;
 		_missedButton.selected = TRUE;
 		[_tableController setMissedFilter:TRUE];
-	} else {
-		_missedButton.selected = FALSE;
+		_allButton.selected = FALSE;
 	}
+	_selectedButtonImage.frame = frame;
 }
 
 #pragma mark - Action Functions
@@ -105,7 +105,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
-	_allButton.hidden = _missedButton.hidden = self.tableController.isEditing;
+	_allButton.hidden = _missedButton.hidden = _selectedButtonImage.hidden = self.tableController.isEditing;
 }
 
 @end

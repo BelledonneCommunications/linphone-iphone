@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -43,9 +44,10 @@
                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="back.png">
+                                    <state key="normal" image="back_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="back_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="12"/>
@@ -64,11 +66,10 @@
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wzg-i0-spp" userLabel="callButton" customClass="UIIconButton">
                                     <rect key="frame" x="225" y="0.0" width="75" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <state key="normal" image="call_alt_start.png">
+                                    <state key="normal" image="call_alt_start_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="disabled" image="call_start_body_disabled.png"/>
-                                    <state key="highlighted" image="call_start_body_over.png"/>
+                                    <state key="disabled" image="call_alt_start_disabled.png"/>
                                     <connections>
                                         <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="Dsf-nS-K3V"/>
                                     </connections>
@@ -78,9 +79,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="delete.png">
+                                    <state key="normal" image="delete_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="delete_disabled.png"/>
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="JoY-wC-JQy"/>
@@ -91,9 +93,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="edit_list.png">
+                                    <state key="normal" image="edit_list_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="edit_list_disabled.png"/>
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onEditClick:" destination="29" eventType="touchUpInside" id="2Q7-xM-Shx"/>
@@ -106,10 +109,11 @@
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="select_all.png">
+                                    <state key="normal" image="select_all_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" image="deselect_all.png"/>
+                                    <state key="disabled" image="select_all_disabled.png"/>
+                                    <state key="selected" image="deselect_all_default.png"/>
                                     <connections>
                                         <action selector="onSelectionToggle:" destination="29" eventType="touchUpInside" id="eP5-bU-LEA"/>
                                     </connections>
@@ -119,9 +123,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="cancel_edit.png">
+                                    <state key="normal" image="cancel_edit_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="cancel_edit_disabled.png"/>
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onCancelClick:" destination="29" eventType="touchUpInside" id="tdO-wP-Ttr"/>
@@ -176,10 +181,11 @@
                                             <rect key="frame" x="0.0" y="2" width="72" height="63"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Send picture"/>
-                                            <state key="normal" image="chat_picture_default.png">
+                                            <state key="normal" image="chat_attachment_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
-                                            <state key="highlighted" image="chat_picture_over.png"/>
+                                            <state key="disabled" image="chat_attachment_disabled.png"/>
+                                            <state key="highlighted" image="chat_attachment_over.png"/>
                                             <connections>
                                                 <action selector="onPictureClick:" destination="-1" eventType="touchUpInside" id="87"/>
                                             </connections>
@@ -235,21 +241,26 @@
         </tableViewController>
     </objects>
     <resources>
-        <image name="back.png" width="24" height="21"/>
-        <image name="call_alt_start.png" width="29" height="29"/>
-        <image name="call_start_body_disabled.png" width="51" height="51"/>
-        <image name="call_start_body_over.png" width="51" height="51"/>
-        <image name="cancel_edit.png" width="29" height="29"/>
-        <image name="chat_picture_default.png" width="25" height="19"/>
-        <image name="chat_picture_over.png" width="42" height="42"/>
+        <image name="back_default.png" width="24" height="21"/>
+        <image name="back_disabled.png" width="24" height="21"/>
+        <image name="call_alt_start_default.png" width="29" height="29"/>
+        <image name="call_alt_start_disabled.png" width="29" height="29"/>
+        <image name="cancel_edit_default.png" width="29" height="29"/>
+        <image name="cancel_edit_disabled.png" width="29" height="29"/>
+        <image name="chat_attachment_default.png" width="40" height="40"/>
+        <image name="chat_attachment_disabled.png" width="40" height="40"/>
+        <image name="chat_attachment_over.png" width="40" height="40"/>
         <image name="chat_send_default.png" width="40" height="40"/>
         <image name="chat_send_over.png" width="40" height="40"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
-        <image name="delete.png" width="21" height="27"/>
-        <image name="deselect_all.png" width="26" height="26"/>
-        <image name="edit_list.png" width="29" height="28"/>
-        <image name="select_all.png" width="26" height="26"/>
+        <image name="delete_default.png" width="21" height="27"/>
+        <image name="delete_disabled.png" width="21" height="27"/>
+        <image name="deselect_all_default.png" width="26" height="26"/>
+        <image name="edit_list_default.png" width="29" height="28"/>
+        <image name="edit_list_disabled.png" width="29" height="28"/>
+        <image name="select_all_default.png" width="26" height="26"/>
+        <image name="select_all_disabled.png" width="26" height="26"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

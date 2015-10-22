@@ -38,9 +38,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="cancel_edit.png">
+                                    <state key="normal" image="cancel_edit_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="cancel_edit_disabled.png"/>
                                     <state key="selected" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="yyu-9r-MIh"/>
@@ -52,10 +53,11 @@
                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="back.png">
+                                    <state key="normal" image="back_default.png">
                                         <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="back_disabled.png"/>
                                     <connections>
                                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="10"/>
                                     </connections>
@@ -66,10 +68,11 @@
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="delete.png">
+                                    <state key="normal" image="delete_default.png">
                                         <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="delete_disabled.png"/>
                                     <connections>
                                         <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="vxj-6p-8lE"/>
                                     </connections>
@@ -80,11 +83,12 @@
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="edit.png">
+                                    <state key="normal" image="edit_default.png">
                                         <color key="titleColor" red="0.35686274509999999" green="0.39607843139999999" blue="0.43529411759999997" alpha="1" colorSpace="deviceRGB"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="selected" image="valid.png"/>
+                                    <state key="disabled" image="edit_disabled.png"/>
+                                    <state key="selected" image="valid_default.png"/>
                                     <connections>
                                         <action selector="onEditClick:" destination="-1" eventType="touchUpInside" id="30"/>
                                     </connections>
@@ -159,13 +163,17 @@
     </objects>
     <resources>
         <image name="avatar.png" width="255" height="255"/>
-        <image name="back.png" width="24" height="21"/>
-        <image name="cancel_edit.png" width="29" height="29"/>
+        <image name="back_default.png" width="24" height="21"/>
+        <image name="back_disabled.png" width="24" height="21"/>
+        <image name="cancel_edit_default.png" width="29" height="29"/>
+        <image name="cancel_edit_disabled.png" width="29" height="29"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
-        <image name="delete.png" width="21" height="27"/>
-        <image name="edit.png" width="28" height="28"/>
-        <image name="valid.png" width="27" height="19"/>
+        <image name="delete_default.png" width="21" height="27"/>
+        <image name="delete_disabled.png" width="21" height="27"/>
+        <image name="edit_default.png" width="28" height="28"/>
+        <image name="edit_disabled.png" width="28" height="28"/>
+        <image name="valid_default.png" width="27" height="19"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

@@ -669,7 +669,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 
 	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 300, 35)];
 	tempLabel.backgroundColor = [UIColor clearColor];
-	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_E"]];
+	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_E.png"]];
 	tempLabel.text = text.uppercaseString;
 	tempLabel.textAlignment = NSTextAlignmentLeft;
 	tempLabel.font = [UIFont systemFontOfSize:12];
@@ -679,9 +679,9 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		CGRect frame = CGRectMake(255, 5, 30, 30);
 		frame.origin.x = tableView.frame.size.width - 35;
 		UIIconButton *tempAddButton = [[UIIconButton alloc] initWithFrame:frame];
-		[tempAddButton setImage:[UIImage imageNamed:@"add_field_default"] forState:UIControlStateNormal];
-		[tempAddButton setImage:[UIImage imageNamed:@"add_field_over"] forState:UIControlStateHighlighted];
-		[tempAddButton setImage:[UIImage imageNamed:@"add_field_over"] forState:UIControlStateSelected];
+		[tempAddButton setImage:[UIImage imageNamed:@"add_field_default.png"] forState:UIControlStateNormal];
+		[tempAddButton setImage:[UIImage imageNamed:@"add_field_over.png"] forState:UIControlStateHighlighted];
+		[tempAddButton setImage:[UIImage imageNamed:@"add_field_over.png"] forState:UIControlStateSelected];
 		[tempAddButton addTarget:self action:@selector(onAddClick:) forControlEvents:UIControlEventTouchUpInside];
 		tempAddButton.tag = section;
 		[tempView addSubview:tempAddButton];

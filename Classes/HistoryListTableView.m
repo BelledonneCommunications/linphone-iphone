@@ -150,7 +150,7 @@
 
 	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 300, 44)];
 	tempLabel.backgroundColor = [UIColor clearColor];
-	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A"]];
+	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]];
 	NSDate *eventDate = _sortedDays[section];
 	NSDate *currentDate = [self dateAtBeginningOfDayForDate:[NSDate date]];
 	if ([eventDate isEqualToDate:currentDate]) {

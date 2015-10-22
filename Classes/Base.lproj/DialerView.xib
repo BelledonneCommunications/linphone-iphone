@@ -16,10 +16,10 @@
                 <outlet property="eightButton" destination="35" id="204"/>
                 <outlet property="fiveButton" destination="31" id="195"/>
                 <outlet property="fourButton" destination="30" id="194"/>
+                <outlet property="hashButton" destination="41" id="4Vx-Tl-ywI"/>
                 <outlet property="nineButton" destination="36" id="200"/>
                 <outlet property="oneButton" destination="38" id="191"/>
                 <outlet property="sevenButton" destination="34" id="197"/>
-                <outlet property="sharpButton" destination="41" id="232"/>
                 <outlet property="sixButton" destination="33" id="196"/>
                 <outlet property="starButton" destination="39" id="199"/>
                 <outlet property="threeButton" destination="29" id="193"/>
@@ -64,6 +64,7 @@
                                     <state key="normal" image="backspace_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="backspace_disabled.png"/>
                                     <state key="highlighted" image="backspace_over.png"/>
                                     <connections>
                                         <action selector="onBackspaceClick:" destination="-1" eventType="touchUpInside" id="sWE-Ch-kAr"/>
@@ -211,9 +212,9 @@
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="41" userLabel="#" customClass="UIDigitButton">
                                     <rect key="frame" x="255" y="323" width="120" height="102"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Sharp"/>
+                                    <accessibility key="accessibilityConfiguration" label="Hash"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <state key="normal" image="numpad_sharp.png">
+                                    <state key="normal" image="numpad_hash.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <connections>
@@ -232,9 +233,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Back"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="back.png" backgroundImage="color_F.png">
+                                    <state key="normal" image="call_alt_back_default.png" backgroundImage="color_F.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="call_alt_back_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="233"/>
@@ -245,9 +247,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add to contact"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="contact_add.png" backgroundImage="color_F.png">
+                                    <state key="normal" image="contact_add_default.png" backgroundImage="color_F.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="contact_add_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="230"/>
@@ -272,9 +275,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Transfer call"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="call_transfer.png" backgroundImage="color_A.png">
+                                    <state key="normal" image="call_transfer_default.png" backgroundImage="color_A.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="call_transfer_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <outlet property="addressField" destination="4" id="237"/>
@@ -285,9 +289,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add call"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="call_add.png" backgroundImage="color_A.png">
+                                    <state key="normal" image="call_add_default.png" backgroundImage="color_A.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="call_add_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <outlet property="addressField" destination="4" id="234"/>
@@ -305,19 +310,24 @@
         </view>
     </objects>
     <resources>
-        <image name="back.png" width="24" height="21"/>
         <image name="backspace_default.png" width="36" height="19"/>
+        <image name="backspace_disabled.png" width="36" height="19"/>
         <image name="backspace_over.png" width="36" height="19"/>
-        <image name="call_add.png" width="39" height="35"/>
+        <image name="call_add_default.png" width="39" height="35"/>
+        <image name="call_add_disabled.png" width="39" height="35"/>
+        <image name="call_alt_back_default.png" width="50" height="36"/>
+        <image name="call_alt_back_disabled.png" width="50" height="36"/>
         <image name="call_start_body_default.png" width="51" height="51"/>
         <image name="call_start_body_disabled.png" width="51" height="51"/>
         <image name="call_start_body_over.png" width="51" height="51"/>
-        <image name="call_transfer.png" width="40" height="36"/>
+        <image name="call_transfer_default.png" width="40" height="36"/>
+        <image name="call_transfer_disabled.png" width="40" height="36"/>
         <image name="color_A.png" width="1" height="1"/>
         <image name="color_E.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="color_L.png" width="1" height="1"/>
-        <image name="contact_add.png" width="34" height="29"/>
+        <image name="contact_add_default.png" width="34" height="29"/>
+        <image name="contact_add_disabled.png" width="34" height="29"/>
         <image name="numpad_0.png" width="52" height="48"/>
         <image name="numpad_1.png" width="52" height="48"/>
         <image name="numpad_2.png" width="52" height="48"/>
@@ -328,7 +338,7 @@
         <image name="numpad_7.png" width="52" height="48"/>
         <image name="numpad_8.png" width="52" height="48"/>
         <image name="numpad_9.png" width="52" height="48"/>
-        <image name="numpad_sharp.png" width="53" height="50"/>
+        <image name="numpad_hash.png" width="52" height="48"/>
         <image name="numpad_star.png" width="52" height="50"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

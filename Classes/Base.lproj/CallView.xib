@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -16,6 +15,7 @@
                 <outlet property="fiveButton" destination="8Da-zK-V7e" id="URc-Ct-fu0"/>
                 <outlet property="fourButton" destination="653-Vb-YzA" id="x6R-Cq-7iJ"/>
                 <outlet property="hangupButton" destination="Xpw-A4-BZO" id="3hc-8p-CLb"/>
+                <outlet property="hashButton" destination="DqJ-35-h1Y" id="bVr-gn-5yW"/>
                 <outlet property="microButton" destination="pRH-Ao-h65" id="F5a-sf-J7B"/>
                 <outlet property="nameLabel" destination="KPa-Rm-Qni" id="KiX-oL-MUd"/>
                 <outlet property="nineButton" destination="b8R-7P-jHK" id="LNS-eb-9bc"/>
@@ -33,11 +33,10 @@
                 <outlet property="pausedCallsTable" destination="162" id="ffv-xP-AXk"/>
                 <outlet property="routesBluetoothButton" destination="6uv-FV-mUL" id="c0F-7q-0m5"/>
                 <outlet property="routesButton" destination="nQp-5y-kTy" id="2u8-g5-6T1"/>
-                <outlet property="routesReceiverButton" destination="jSA-bD-bCs" id="v17-cH-SBj"/>
+                <outlet property="routesEarpieceButton" destination="jSA-bD-bCs" id="eeO-dk-84D"/>
                 <outlet property="routesSpeakerButton" destination="go9-SC-yzb" id="nyj-se-LKs"/>
                 <outlet property="routesView" destination="qcR-Qb-Bst" id="v5z-JE-9do"/>
                 <outlet property="sevenButton" destination="alZ-Kz-AVL" id="8F0-KQ-qon"/>
-                <outlet property="sharpButton" destination="DqJ-35-h1Y" id="012-Qs-2DN"/>
                 <outlet property="sixButton" destination="0fB-uk-rXS" id="L9Y-dc-TBo"/>
                 <outlet property="speakerButton" destination="F5S-kV-7Kv" id="dqI-kU-8xY"/>
                 <outlet property="starButton" destination="prH-qj-h0v" id="2cm-sA-fTV"/>
@@ -328,9 +327,9 @@
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="DqJ-35-h1Y" userLabel="#" customClass="UIDigitButton">
                                     <rect key="frame" x="254" y="323" width="121" height="102"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Sharp"/>
+                                    <accessibility key="accessibilityConfiguration" label="Hash"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <state key="normal" image="numpad_sharp.png">
+                                    <state key="normal" image="numpad_hash.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                 </button>
@@ -360,13 +359,14 @@
                                     <accessibility key="accessibilityConfiguration" label="Bluetooth"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="speaker_default.png">
+                                    <state key="normal" image="route_bluetooth_default.png">
                                         <color key="titleColor" red="0.25490196079999999" green="0.28235294119999998" blue="0.30980392159999998" alpha="1" colorSpace="deviceRGB"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="disabled">
+                                    <state key="disabled" image="route_bluetooth_disabled.png">
                                         <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
+                                    <state key="selected" image="route_bluetooth_selected.png"/>
                                     <state key="highlighted">
                                         <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
@@ -374,24 +374,25 @@
                                         <action selector="onRoutesBluetoothClick:" destination="-1" eventType="touchUpInside" id="jQt-8b-aEw"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="31" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="jSA-bD-bCs" userLabel="routesReceiverButton">
+                                <button opaque="NO" tag="31" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="jSA-bD-bCs" userLabel="routesEarpieceButton">
                                     <rect key="frame" x="0.0" y="66" width="94" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Receiver"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="speaker_default.png">
+                                    <state key="normal" image="route_earpiece_default.png">
                                         <color key="titleColor" red="0.25490196079999999" green="0.28235294119999998" blue="0.30980392159999998" alpha="1" colorSpace="deviceRGB"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="disabled">
+                                    <state key="disabled" image="route_earpiece_disabled.png">
                                         <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
+                                    <state key="selected" image="route_earpiece_selected.png"/>
                                     <state key="highlighted">
                                         <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
                                     <connections>
-                                        <action selector="onRoutesReceiverClick:" destination="-1" eventType="touchUpInside" id="f6c-TJ-p5t"/>
+                                        <action selector="onRoutesEarpieceClick:" destination="-1" eventType="touchUpInside" id="RqY-KM-K7M"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" tag="32" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="go9-SC-yzb" userLabel="routesSpeakerButton">
@@ -400,13 +401,14 @@
                                     <accessibility key="accessibilityConfiguration" label="Speaker"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="speaker_default.png">
+                                    <state key="normal" image="route_speaker_default.png">
                                         <color key="titleColor" red="0.25490196079999999" green="0.28235294119999998" blue="0.30980392159999998" alpha="1" colorSpace="deviceRGB"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="disabled">
+                                    <state key="disabled" image="route_speaker_disabled.png">
                                         <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
+                                    <state key="selected" image="route_speaker_selected.png"/>
                                     <state key="highlighted">
                                         <color key="titleColor" red="0.81176470590000005" green="0.29803921570000003" blue="0.16078431369999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
@@ -428,9 +430,10 @@
                                     <rect key="frame" x="0.0" y="0.0" width="94" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Start conference"/>
-                                    <state key="normal" image="conference_start.png">
+                                    <state key="normal" image="conference_start_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="conference_start_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_L.png"/>
                                     <connections>
                                         <action selector="onOptionsConferenceClick:" destination="-1" eventType="touchUpInside" id="bQP-ga-R2R"/>
@@ -442,10 +445,10 @@
                                     <accessibility key="accessibilityConfiguration" label="Add call"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="options_add_call.png">
+                                    <state key="normal" image="options_add_call_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="disabled">
+                                    <state key="disabled" image="options_add_call_disabled.png">
                                         <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
                                     <connections>
@@ -458,10 +461,10 @@
                                     <accessibility key="accessibilityConfiguration" label="Transfer call"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="options_transfer_call.png">
+                                    <state key="normal" image="options_transfer_call_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
-                                    <state key="disabled">
+                                    <state key="disabled" image="options_transfer_call_disabled.png">
                                         <color key="titleColor" red="0.65098039220000004" green="0.70196078429999997" blue="0.74901960779999999" alpha="1" colorSpace="deviceRGB"/>
                                     </state>
                                     <connections>
@@ -490,6 +493,7 @@
                                             <state key="normal" image="camera_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
+                                            <state key="disabled" image="camera_disabled.png"/>
                                             <state key="selected" image="camera_selected.png"/>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
                                             <connections>
@@ -508,6 +512,7 @@
                                             <state key="normal" image="micro_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
+                                            <state key="disabled" image="micro_disabled.png"/>
                                             <state key="selected" image="micro_selected.png"/>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
                                         </button>
@@ -519,6 +524,7 @@
                                             <state key="normal" image="speaker_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
+                                            <state key="disabled" image="speaker_disabled.png"/>
                                             <state key="selected" image="speaker_selected.png"/>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
                                         </button>
@@ -527,9 +533,10 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Route"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="38" maxX="0.0" maxY="0.0"/>
-                                            <state key="normal" image="speaker_default.png">
+                                            <state key="normal" image="routes_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
+                                            <state key="disabled" image="routes_disabled.png"/>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
                                             <connections>
                                                 <action selector="onRoutesClick:" destination="-1" eventType="touchUpInside" id="h2V-qf-kgC"/>
@@ -543,6 +550,7 @@
                                             <state key="normal" image="options_default.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
+                                            <state key="disabled" image="options_disabled.png"/>
                                             <state key="selected" image="options_selected.png"/>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
                                             <connections>
@@ -559,9 +567,10 @@
                                             <rect key="frame" x="0.0" y="0.0" width="94" height="66"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Back"/>
-                                            <state key="normal" image="footer_dialer.png" backgroundImage="color_C.png">
+                                            <state key="normal" image="footer_dialer_default.png" backgroundImage="color_C.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
+                                            <state key="disabled" image="footer_dialer_disabled.png"/>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
                                             <connections>
                                                 <action selector="onNumpadClick:" destination="-1" eventType="touchUpInside" id="pFD-jh-GhK"/>
@@ -571,7 +580,7 @@
                                             <rect key="frame" x="94" y="0.0" width="188" height="66"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Hangup"/>
-                                            <state key="normal" image="call_hangup.png" backgroundImage="color_D.png">
+                                            <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
@@ -580,7 +589,7 @@
                                             <rect key="frame" x="282" y="0.0" width="94" height="66"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Hangup"/>
-                                            <state key="normal" image="footer_chat.png" backgroundImage="color_C.png">
+                                            <state key="normal" image="footer_chat_default.png" backgroundImage="color_C.png">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
@@ -600,8 +609,9 @@
     </objects>
     <resources>
         <image name="avatar.png" width="255" height="255"/>
-        <image name="call_hangup.png" width="41" height="36"/>
+        <image name="call_hangup_default.png" width="41" height="36"/>
         <image name="camera_default.png" width="32" height="19"/>
+        <image name="camera_disabled.png" width="32" height="19"/>
         <image name="camera_selected.png" width="32" height="19"/>
         <image name="camera_switch_default.png" width="51" height="50"/>
         <image name="camera_switch_disabled.png" width="51" height="50"/>
@@ -610,10 +620,13 @@
         <image name="color_D.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>
         <image name="color_L.png" width="1" height="1"/>
-        <image name="conference_start.png" width="33" height="33"/>
-        <image name="footer_chat.png" width="27" height="27"/>
-        <image name="footer_dialer.png" width="27" height="27"/>
+        <image name="conference_start_default.png" width="33" height="33"/>
+        <image name="conference_start_disabled.png" width="33" height="33"/>
+        <image name="footer_chat_default.png" width="27" height="27"/>
+        <image name="footer_dialer_default.png" width="27" height="27"/>
+        <image name="footer_dialer_disabled.png" width="27" height="27"/>
         <image name="micro_default.png" width="29" height="37"/>
+        <image name="micro_disabled.png" width="29" height="37"/>
         <image name="micro_selected.png" width="29" height="37"/>
         <image name="numpad_0.png" width="52" height="48"/>
         <image name="numpad_1.png" width="52" height="48"/>
@@ -625,16 +638,31 @@
         <image name="numpad_7.png" width="52" height="48"/>
         <image name="numpad_8.png" width="52" height="48"/>
         <image name="numpad_9.png" width="52" height="48"/>
-        <image name="numpad_sharp.png" width="53" height="50"/>
+        <image name="numpad_hash.png" width="52" height="48"/>
         <image name="numpad_star.png" width="52" height="50"/>
-        <image name="options_add_call.png" width="29" height="30"/>
+        <image name="options_add_call_default.png" width="29" height="30"/>
+        <image name="options_add_call_disabled.png" width="29" height="30"/>
         <image name="options_default.png" width="25" height="25"/>
+        <image name="options_disabled.png" width="25" height="25"/>
         <image name="options_selected.png" width="25" height="25"/>
-        <image name="options_transfer_call.png" width="29" height="30"/>
+        <image name="options_transfer_call_default.png" width="29" height="30"/>
+        <image name="options_transfer_call_disabled.png" width="29" height="30"/>
         <image name="pause_big_default.png" width="51" height="50"/>
         <image name="pause_big_disabled.png" width="51" height="50"/>
         <image name="pause_big_over_selected.png" width="51" height="50"/>
+        <image name="route_bluetooth_default.png" width="16" height="25"/>
+        <image name="route_bluetooth_disabled.png" width="16" height="25"/>
+        <image name="route_bluetooth_selected.png" width="16" height="25"/>
+        <image name="route_earpiece_default.png" width="23" height="24"/>
+        <image name="route_earpiece_disabled.png" width="23" height="24"/>
+        <image name="route_earpiece_selected.png" width="23" height="24"/>
+        <image name="route_speaker_default.png" width="27" height="25"/>
+        <image name="route_speaker_disabled.png" width="27" height="25"/>
+        <image name="route_speaker_selected.png" width="27" height="25"/>
+        <image name="routes_default.png" width="37" height="25"/>
+        <image name="routes_disabled.png" width="37" height="25"/>
         <image name="speaker_default.png" width="27" height="25"/>
+        <image name="speaker_disabled.png" width="27" height="25"/>
         <image name="speaker_selected.png" width="27" height="25"/>
         <image name="waiting_time.png" width="59" height="71"/>
     </resources>

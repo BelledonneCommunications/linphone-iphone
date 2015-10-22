@@ -205,8 +205,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_nineButton setDtmf:true];
 	[_starButton setDigit:'*'];
 	[_starButton setDtmf:true];
-	[_sharpButton setDigit:'#'];
-	[_sharpButton setDtmf:true];
+	[_hashButton setDigit:'#'];
+	[_hashButton setDtmf:true];
 }
 
 - (void)viewDidUnload {
@@ -494,7 +494,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[_routesButton setOn];
 		[_routesBluetoothButton setSelected:[[LinphoneManager instance] bluetoothEnabled]];
 		[_routesSpeakerButton setSelected:[[LinphoneManager instance] speakerEnabled]];
-		[_routesReceiverButton setSelected:!([[LinphoneManager instance] bluetoothEnabled] ||
+		[_routesEarpieceButton setSelected:!([[LinphoneManager instance] bluetoothEnabled] ||
 											 [[LinphoneManager instance] speakerEnabled])];
 		if ([_routesView isHidden]) {
 			if (animated) {
@@ -768,7 +768,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[[LinphoneManager instance] setBluetoothEnabled:TRUE];
 }
 
-- (IBAction)onRoutesReceiverClick:(id)sender {
+- (IBAction)onRoutesEarpieceClick:(id)sender {
 	[self hideRoutes:TRUE];
 	[[LinphoneManager instance] setSpeakerEnabled:FALSE];
 	[[LinphoneManager instance] setBluetoothEnabled:FALSE];

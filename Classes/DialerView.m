@@ -46,7 +46,7 @@
 @synthesize nineButton;
 @synthesize starButton;
 @synthesize zeroButton;
-@synthesize sharpButton;
+@synthesize hashButton;
 
 @synthesize backgroundView;
 @synthesize videoPreview;
@@ -63,7 +63,6 @@
 }
 
 - (void)dealloc {
-
 	// Remove all observers
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -160,7 +159,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[eightButton setDigit:'8'];
 	[nineButton setDigit:'9'];
 	[starButton setDigit:'*'];
-	[sharpButton setDigit:'#'];
+	[hashButton setDigit:'#'];
 
 	[addressField setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
 

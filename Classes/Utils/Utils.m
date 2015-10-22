@@ -98,7 +98,7 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 			  LOGE(@"Can't read avatar");
 			}];
 	} else {
-		avatar.image = [UIImage imageNamed:@"avatar"];
+		avatar.image = [UIImage imageNamed:@"avatar.png"];
 	}
 }
 + (NSString *)timeToString:(time_t)time withStyle:(NSDateFormatterStyle)style {

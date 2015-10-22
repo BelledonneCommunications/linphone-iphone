@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -62,9 +63,10 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Decline"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="call_hangup.png" backgroundImage="color_D.png">
+                                    <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="call_hangup_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_I.png"/>
                                     <connections>
                                         <action selector="onDeclineClick:" destination="-1" eventType="touchUpInside" id="16"/>
@@ -75,9 +77,10 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Accept"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="call_audio_start.png" backgroundImage="color_A.png">
+                                    <state key="normal" image="call_audio_start_default.png" backgroundImage="color_A.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="call_audio_start_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_L.png"/>
                                     <connections>
                                         <action selector="onAcceptClick:" destination="-1" eventType="touchUpInside" id="15"/>
@@ -96,9 +99,11 @@
         </view>
     </objects>
     <resources>
-        <image name="avatar.png" width="261" height="261"/>
-        <image name="call_audio_start.png" width="37" height="37"/>
-        <image name="call_hangup.png" width="42" height="37"/>
+        <image name="avatar.png" width="255" height="255"/>
+        <image name="call_audio_start_default.png" width="36" height="36"/>
+        <image name="call_audio_start_disabled.png" width="36" height="36"/>
+        <image name="call_hangup_default.png" width="41" height="36"/>
+        <image name="call_hangup_disabled.png" width="41" height="36"/>
         <image name="color_A.png" width="1" height="1"/>
         <image name="color_D.png" width="1" height="1"/>
         <image name="color_F.png" width="1" height="1"/>

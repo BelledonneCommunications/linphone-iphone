@@ -215,7 +215,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 300, 44)];
 	tempLabel.backgroundColor = [UIColor clearColor];
-	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A"]];
+	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]];
 	tempLabel.text = [addressBookMap keyAtIndex:section];
 	tempLabel.textAlignment = NSTextAlignmentCenter;
 	tempLabel.font = [UIFont boldSystemFontOfSize:17];

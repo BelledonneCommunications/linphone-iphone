@@ -112,7 +112,8 @@
 		ABRecordRef contact = [FastAddressBook getContactWithAddress:linphone_chat_message_get_peer_address(_message)];
 		_avatarImage.image = [FastAddressBook imageForContact:contact thumbnail:YES];
 	}
-	_backgroundColorImage.image = _bottomBarColor.image = [UIImage imageNamed:(outgoing ? @"color_A" : @"color_D")];
+	_backgroundColorImage.image = _bottomBarColor.image =
+		[UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
 
 	if (!outgoing) {
 		_statusImage.accessibilityValue = @"incoming";

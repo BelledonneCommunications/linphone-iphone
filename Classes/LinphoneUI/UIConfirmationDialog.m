@@ -25,8 +25,9 @@
 
 	[dialog.titleLabel setText:message];
 	dialog.confirmationButton.layer.borderColor =
-		[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A"]] CGColor];
-	dialog.cancelButton.layer.borderColor = [[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_F"]] CGColor];
+		[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]] CGColor];
+	dialog.cancelButton.layer.borderColor =
+		[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_F.png"]] CGColor];
 }
 
 - (IBAction)onCancelClick:(id)sender {
