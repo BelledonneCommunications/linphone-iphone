@@ -260,20 +260,12 @@ void linphone_gtk_friend_list_set_chat_conversation(const LinphoneAddress *la){
 	LinphoneFriend *lf=NULL;
 	LinphoneChatRoom *cr=NULL;
 	GtkNotebook *notebook=(GtkNotebook *)linphone_gtk_get_widget(w,"viewswitch");
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(friendlist));
 
 	lf=linphone_core_find_friend(linphone_gtk_get_core(),la);
 	if(lf==NULL){
 		cr=linphone_gtk_create_chatroom(la);
 		linphone_gtk_friend_list_set_active_address(la);
-		if(chat_view==NULL){
-			chat_view=linphone_gtk_init_chatroom(cr,la);
-			g_object_set_data(G_OBJECT(friendlist),"chatview",(gpointer)chat_view);
-		} else {
-			linphone_gtk_load_chatroom(cr,la,chat_view);
-		}
-		gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,chat_view));
-		linphone_gtk_friend_list_update_button_display(GTK_TREE_VIEW(chat_view));
-		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(chat_view,"text_entry"));
 	} else {
 		store=GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(friendlist)));
 		if (gtk_tree_model_get_iter_first(model,&iter)) {
@@ -288,19 +280,21 @@ void linphone_gtk_friend_list_set_chat_conversation(const LinphoneAddress *la){
 						gtk_list_store_set(store,&iter,FRIEND_CHATROOM,cr,-1);
 					}
 					linphone_gtk_friend_list_set_active_address(uri);
-					if(chat_view==NULL){
-						chat_view=linphone_gtk_init_chatroom(cr,uri);
-						g_object_set_data(G_OBJECT(friendlist),"chatview",(gpointer)chat_view);
-					} else {
-						linphone_gtk_load_chatroom(cr,uri,chat_view);
-					}
-					gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,chat_view));
-					linphone_gtk_friend_list_update_button_display(GTK_TREE_VIEW(chat_view));
-					g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(chat_view,"text_entry"));
+					gtk_tree_selection_select_iter(selection, &iter);
 					break;
 				}
 			}while(gtk_tree_model_iter_next(model,&iter));
 		}
+	}
+	if(cr) {
+		if(chat_view == NULL){
+			chat_view=linphone_gtk_init_chatroom(cr,la);
+			g_object_set_data(G_OBJECT(friendlist),"chatview",(gpointer)chat_view);
+		} else {
+			linphone_gtk_load_chatroom(cr,la,chat_view);
+		}
+		gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,chat_view));
+		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(chat_view,"text_entry"));
 	}
 }
 
