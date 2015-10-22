@@ -620,7 +620,7 @@ static void eject_from_4_participants_conference(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	LinphoneCoreManager* michelle = linphone_core_manager_new( "michelle_rc");
-
+	int timeout_ms = 5000;
 	stats initial_marie_stat;
 	stats initial_pauline_stat;
 	stats initial_laure_stat;
@@ -657,19 +657,13 @@ static void eject_from_4_participants_conference(void) {
 	BC_ASSERT_PTR_NOT_NULL_FATAL(marie_call_laure);
 
 	linphone_core_add_to_conference(marie->lc,marie_call_laure);
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallUpdating,initial_marie_stat.number_of_LinphoneCallUpdating+1,5000));
-
 	linphone_core_add_to_conference(marie->lc,marie_call_michelle);
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallUpdating,initial_marie_stat.number_of_LinphoneCallUpdating+1,5000));
-
 	linphone_core_add_to_conference(marie->lc,marie_call_pauline);
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallResuming,initial_marie_stat.number_of_LinphoneCallResuming+1,2000));
 
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,initial_pauline_stat.number_of_LinphoneCallStreamsRunning+1,5000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallStreamsRunning,initial_laure_stat.number_of_LinphoneCallStreamsRunning+1,2000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&michelle->stat.number_of_LinphoneCallStreamsRunning,initial_michelle_stat.number_of_LinphoneCallStreamsRunning+1,3000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,initial_marie_stat.number_of_LinphoneCallStreamsRunning+2,3000));
-
+	while (linphone_core_get_conference_size(marie->lc)!=4&&timeout_ms) {
+		wait_for_list(lcs, NULL, 0, 100);
+		timeout_ms -= 100;
+	}
 	BC_ASSERT_TRUE(linphone_core_is_in_conference(marie->lc));
 	BC_ASSERT_EQUAL(linphone_core_get_conference_size(marie->lc),4, int, "%d");
 
