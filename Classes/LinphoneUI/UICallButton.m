@@ -87,8 +87,9 @@
 	}
 
 	if ([address length] > 0) {
-		NSString *displayName = [FastAddressBook getContactDisplayName:[FastAddressBook getContact:address]];
-		[[LinphoneManager instance] call:address displayName:displayName transfer:FALSE];
+		ABRecordRef contact = [FastAddressBook getContact:address];
+		NSString *displayName = contact ? [FastAddressBook displayNameForContact:contact] : nil;
+		[LinphoneManager.instance call:address displayName:displayName transfer:FALSE];
 	}
 }
 

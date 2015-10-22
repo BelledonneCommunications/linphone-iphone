@@ -199,7 +199,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	// Cached avatar
 	UIImage *image = [avatarMap objectForKey:[NSNumber numberWithInt:ABRecordGetRecordID(contact)]];
 	if (image == nil) {
-		image = [FastAddressBook getContactImage:contact thumbnail:true];
+		image = [FastAddressBook imageForContact:contact thumbnail:true];
 		[avatarMap setObject:image forKey:[NSNumber numberWithInt:ABRecordGetRecordID(contact)]];
 	}
 	[cell.avatarImage setImage:image];

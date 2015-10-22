@@ -189,8 +189,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:linphoneAddress];
 	_addressLabel.accessibilityValue = _addressLabel.text;
-	_avatarImage.image =
-		[FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:linphoneAddress] thumbnail:YES];
+	_avatarImage.image = [FastAddressBook imageForAddress:linphoneAddress thumbnail:YES];
 }
 
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {
@@ -439,7 +438,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 }
 
 - (IBAction)onCallClick:(id)sender {
-	NSString *displayName = [FastAddressBook getContactDisplayName:linphone_chat_room_get_peer_address(chatRoom)];
+	NSString *displayName = [FastAddressBook displayNameForAddress:linphone_chat_room_get_peer_address(chatRoom)];
 	// Go to dialer view
 	DialerView *view = VIEW(DialerView);
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];

@@ -96,7 +96,7 @@
 
 	[ContactDisplay setDisplayNameLabel:displayNameLabel forAddress:addr];
 	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
-	_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:TRUE];
+	_avatarImage.image = [FastAddressBook imageForContact:contact thumbnail:TRUE];
 }
 
 - (void)setEditing:(BOOL)editing {

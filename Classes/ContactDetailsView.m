@@ -60,7 +60,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		[PhoneMainView.instance popCurrentView];
 		return;
 	}
-	_avatarImage.image = [FastAddressBook getContactImage:_contact thumbnail:NO];
+	_avatarImage.image = [FastAddressBook imageForContact:_contact thumbnail:NO];
 	[_tableController setContact:_contact];
 }
 
@@ -114,7 +114,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	_contact = NULL;
 	[self resetData];
 	_contact = acontact;
-	_avatarImage.image = [FastAddressBook getContactImage:_contact thumbnail:NO];
+	_avatarImage.image = [FastAddressBook imageForContact:_contact thumbnail:NO];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:acontact];
 	[_tableController setContact:_contact];
 
@@ -304,6 +304,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	CFRelease(cfdata);
 
-	_avatarImage.image = [FastAddressBook getContactImage:_contact thumbnail:NO];
+	_avatarImage.image = [FastAddressBook imageForContact:_contact thumbnail:NO];
 }
 @end

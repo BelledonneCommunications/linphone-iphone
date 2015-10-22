@@ -447,23 +447,19 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)onCurrentCallChange {
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-	if (!call) {
-		_noActiveCallView.hidden = NO;
-		return;
-	}
+	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCall *call = linphone_core_get_current_call(lc);
 
-	_callView.hidden = linphone_call_is_in_conference(call);
-	_conferenceView.hidden = !_callView.hidden;
-	_noActiveCallView.hidden = YES;
+	_noActiveCallView.hidden = (call || linphone_core_is_in_conference(lc));
+	_callView.hidden = !call;
+	_conferenceView.hidden = !linphone_core_is_in_conference(lc);
 
-	if (call && !linphone_call_is_in_conference(call)) {
+	if (!_callView.hidden) {
 		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 		char *uri = linphone_address_as_string_uri_only(addr);
 		ms_free(uri);
-		_avatarImage.image =
-			[FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:NO];
+		_avatarImage.image = [FastAddressBook imageForAddress:addr thumbnail:NO];
 	}
 }
 

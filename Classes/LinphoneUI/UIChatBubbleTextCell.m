@@ -110,7 +110,7 @@
 		[LinphoneUtils setSelfAvatar:_avatarImage];
 	} else {
 		ABRecordRef contact = [FastAddressBook getContactWithAddress:linphone_chat_message_get_peer_address(_message)];
-		_avatarImage.image = [FastAddressBook getContactImage:contact thumbnail:YES];
+		_avatarImage.image = [FastAddressBook imageForContact:contact thumbnail:YES];
 	}
 	_backgroundColorImage.image = _bottomBarColor.image = [UIImage imageNamed:(outgoing ? @"color_A" : @"color_D")];
 

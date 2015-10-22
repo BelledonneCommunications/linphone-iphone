@@ -39,8 +39,9 @@
 + (ABRecordRef)getContact:(NSString *)address;
 + (ABRecordRef)getContactWithAddress:(const LinphoneAddress *)address;
 
-+ (NSString *)getContactDisplayName:(ABRecordRef)contact;
-+ (UIImage *)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
++ (UIImage *)imageForContact:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
++ (UIImage *)imageForAddress:(const LinphoneAddress *)addr thumbnail:(BOOL)thumbnail;
+
 + (BOOL)contactHasValidSipDomain:(ABRecordRef)person;
 
 + (NSString *)displayNameForContact:(ABRecordRef)person;

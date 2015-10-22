@@ -37,7 +37,7 @@
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 
-	_avatarImage.image = [FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:YES];
+	_avatarImage.image = [FastAddressBook imageForAddress:addr thumbnail:YES];
 
 	int duration = linphone_call_get_duration(call);
 	[_durationLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60), nil]];

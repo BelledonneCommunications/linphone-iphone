@@ -26,15 +26,7 @@
 
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context);
 
-+ (NSString *)getContactDisplayName:(ABRecordRef)contact {
-	NSString *retString = nil;
-	if (contact) {
-		retString = CFBridgingRelease(ABRecordCopyCompositeName(contact));
-	}
-	return retString;
-}
-
-+ (UIImage *)getContactImage:(ABRecordRef)contact thumbnail:(BOOL)thumbnail {
++ (UIImage *)imageForContact:(ABRecordRef)contact thumbnail:(BOOL)thumbnail {
 	UIImage *retImage = nil;
 	if (contact && ABPersonHasImageData(contact)) {
 		NSData *imgData = CFBridgingRelease(ABPersonCopyImageDataWithFormat(
@@ -49,6 +41,10 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		retImage = [retImage squareCrop];
 	}
 	return retImage;
+}
+
++ (UIImage *)imageForAddress:(const LinphoneAddress *)addr thumbnail:(BOOL)thumbnail {
+	return [FastAddressBook imageForContact:[FastAddressBook getContactWithAddress:addr] thumbnail:thumbnail];
 }
 
 + (ABRecordRef)getContact:(NSString *)address {
@@ -306,6 +302,9 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 	if (contact != nil) {
 		NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonFirstNameProperty));
 		NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
+
+		//		TODO: we may use the following so that first name / last name is properly displayed?
+		//		retString = CFBridgingRelease(ABRecordCopyCompositeName(contact));
 
 		NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
 		NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];

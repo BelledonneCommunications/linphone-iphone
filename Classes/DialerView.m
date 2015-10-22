@@ -359,7 +359,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)call:(NSString *)address {
-	NSString *displayName = [FastAddressBook getContactDisplayName:[FastAddressBook getContact:address]];
+	ABRecordRef contact = [FastAddressBook getContact:address];
+	NSString *displayName = contact ? [FastAddressBook displayNameForContact:contact] : nil;
 	[self call:address displayName:displayName];
 }
 

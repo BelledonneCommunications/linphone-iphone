@@ -98,14 +98,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)update {
-	//	[self view]; // Force view load
-
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 	char *uri = linphone_address_as_string_uri_only(addr);
 	addressLabel.text = [NSString stringWithUTF8String:uri];
 	ms_free(uri);
-	avatarImage.image = [FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:NO];
+	avatarImage.image = [FastAddressBook imageForAddress:addr thumbnail:NO];
 }
 
 #pragma mark - Property Functions

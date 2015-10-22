@@ -55,8 +55,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		char *uri = linphone_address_as_string_uri_only(addr);
 		_addressLabel.text = [NSString stringWithUTF8String:uri];
 		ms_free(uri);
-		_avatarImage.image =
-			[FastAddressBook getContactImage:[FastAddressBook getContactWithAddress:addr] thumbnail:NO];
+		_avatarImage.image = [FastAddressBook imageForAddress:addr thumbnail:NO];
 	}
 }
 

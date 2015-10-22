@@ -649,12 +649,13 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	} else if (contactSections[section] == ContactSections_Last_Name && self.tableView.isEditing) {
 		text = NSLocalizedString(@"Last name", nil);
 		canAddEntry = NO;
-	} else if ([self getSectionData:section].count > 0) {
+	} else if ([self getSectionData:section].count > 0 || self.tableView.isEditing) {
 		if (contactSections[section] == ContactSections_Number) {
 			text = NSLocalizedString(@"Phone numbers", nil);
 		} else if (contactSections[section] == ContactSections_Sip) {
 			text = NSLocalizedString(@"SIP addresses", nil);
-		} else if (contactSections[section] == ContactSections_Email) {
+		} else if (contactSections[section] == ContactSections_Email &&
+				   [LinphoneManager.instance lpConfigBoolForKey:@"show_contacts_emails_preference"]) {
 			text = NSLocalizedString(@"Email addresses", nil);
 		}
 	}
