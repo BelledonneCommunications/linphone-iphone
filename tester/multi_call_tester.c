@@ -621,8 +621,6 @@ static void eject_from_4_participants_conference(void) {
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	LinphoneCoreManager* michelle = linphone_core_manager_new( "michelle_rc");
 	int timeout_ms = 5000;
-	stats initial_marie_stat;
-	stats initial_pauline_stat;
 	stats initial_laure_stat;
 	stats initial_michelle_stat;
 
@@ -647,8 +645,6 @@ static void eject_from_4_participants_conference(void) {
 	BC_ASSERT_TRUE(pause_call_1(marie,marie_call_michelle,michelle,michelle_called_by_marie));
 
 	BC_ASSERT_TRUE(call(marie,laure));
-	initial_marie_stat=marie->stat;
-	initial_pauline_stat=pauline->stat;
 	initial_laure_stat=laure->stat;
 	initial_michelle_stat=michelle->stat;
 

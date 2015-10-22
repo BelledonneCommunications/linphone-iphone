@@ -981,29 +981,39 @@ void linphone_gtk_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf){
 	linphone_gtk_show_friends();
 }
 
-static void update_hovered_row_path(GtkTreeView *friendlist, int x_window, int y_window) {
+static gboolean update_hovered_row_path(GtkTreeView *friendlist, int x_window, int y_window) {
 	int x_bin, y_bin;
-	GtkTreePath *path;
+	GtkTreePath *new_path;
+	GtkTreePath *old_path = (GtkTreePath *)g_object_get_data(G_OBJECT(friendlist), "hovered_row");
 	gtk_tree_view_convert_widget_to_bin_window_coords(friendlist, x_window, y_window, &x_bin, &y_bin);
-	gtk_tree_view_get_path_at_pos(friendlist, x_bin, y_bin, &path, NULL, NULL, NULL);
-	g_object_set_data_full(G_OBJECT(friendlist), "hovered_row", path, (GDestroyNotify)gtk_tree_path_free);
+	gtk_tree_view_get_path_at_pos(friendlist, x_bin, y_bin, &new_path, NULL, NULL, NULL);
+	if((new_path == NULL && old_path == NULL) || (new_path && old_path && gtk_tree_path_compare(new_path, old_path) == 0)) {
+		if(new_path) gtk_tree_path_free(new_path);
+		return FALSE;
+	} else {
+		g_object_set_data_full(G_OBJECT(friendlist), "hovered_row", new_path, (GDestroyNotify)gtk_tree_path_free);
+		return TRUE;
+	}
 }
 
 gboolean linphone_gtk_friend_list_enter_event_handler(GtkTreeView *friendlist, GdkEventCrossing *event) {
-	update_hovered_row_path(friendlist, event->x, event->y);
-	linphone_gtk_friend_list_update_button_display(friendlist);
+	gboolean path_has_changed = update_hovered_row_path(friendlist, event->x, event->y);
+	if(path_has_changed) linphone_gtk_friend_list_update_button_display(friendlist);
 	return FALSE;
 }
 
 gboolean linphone_gtk_friend_list_leave_event_handler(GtkTreeView *friendlist, GdkEventCrossing *event) {
-	g_object_set_data(G_OBJECT(friendlist), "hovered_row", NULL);
-	linphone_gtk_friend_list_update_button_display(friendlist);
+	GtkTreePath *hovered_row = (GtkTreePath *)g_object_get_data(G_OBJECT(friendlist), "hovered_row");
+	if(hovered_row) {
+		g_object_set_data(G_OBJECT(friendlist), "hovered_row", NULL);
+		linphone_gtk_friend_list_update_button_display(friendlist);
+	}
 	return FALSE;
 }
 
 gboolean linphone_gtk_friend_list_motion_event_handler(GtkTreeView *friendlist, GdkEventMotion *event) {
-	update_hovered_row_path(friendlist, event->x, event->y);
-	linphone_gtk_friend_list_update_button_display(friendlist);
+	gboolean path_has_changed = update_hovered_row_path(friendlist, event->x, event->y);
+	if(path_has_changed) linphone_gtk_friend_list_update_button_display(friendlist);
 	return FALSE;
 }
 
