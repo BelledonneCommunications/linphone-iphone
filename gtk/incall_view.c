@@ -588,7 +588,7 @@ void linphone_gtk_in_call_view_set_incoming(LinphoneCall *call){
 	gtk_button_set_image(GTK_BUTTON(linphone_gtk_get_widget(callview,"decline_call")),image);
 	gtk_widget_show(image);
 
-	linphone_gtk_in_call_set_animation_image(callview,GTK_STOCK_DIALOG_INFO,TRUE);
+	linphone_gtk_in_call_set_animation_image(callview,"linphone-call-status-incoming",FALSE);
 }
 
 static void rating_to_color(float rating, GdkColor *color){
