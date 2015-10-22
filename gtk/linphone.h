@@ -234,7 +234,7 @@ LINPHONE_PUBLIC void linphone_gtk_remove_button_clicked(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_my_presence_clicked(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_directory_search_button_clicked(GtkWidget *button);
 LINPHONE_PUBLIC gboolean linphone_gtk_popup_contact_menu(GtkWidget *list, GdkEventButton *event);
-gboolean linphone_gtk_contact_list_button_pressed(GtkWidget* firendlist, GdkEventButton* event);
+LINPHONE_PUBLIC gboolean linphone_gtk_contact_list_button_pressed(GtkTreeView* firendlist, GdkEventButton* event);
 LINPHONE_PUBLIC void linphone_gtk_auth_token_verified_clicked(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_hold_clicked(GtkButton *button);
 LINPHONE_PUBLIC void linphone_gtk_record_call_toggled(GtkWidget *button);

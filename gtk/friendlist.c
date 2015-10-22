@@ -911,32 +911,35 @@ static void select_row(GtkTreeView *treeview, GtkTreePath *path) {
 	gtk_tree_selection_select_path(selection, path);
 }
 
-gboolean linphone_gtk_contact_list_button_pressed(GtkWidget *widget, GdkEventButton *event){
+gboolean linphone_gtk_contact_list_button_pressed(GtkTreeView *friendlist, GdkEventButton *event){
 	/* Ignore double-clicks and triple-clicks */
-	GtkTreeView *friendlist = GTK_TREE_VIEW(widget);
 	gboolean ret = FALSE;
+	int x_bin, y_bin;
+	GtkTreePath *path;
+	GtkTreeViewColumn *column;
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(friendlist);
+	
+	gtk_tree_view_convert_widget_to_bin_window_coords(friendlist, event->x, event->y, &x_bin, &y_bin);
+	gtk_tree_view_get_path_at_pos(friendlist, x_bin, y_bin, &path, &column, NULL, NULL);
+	
 	if (event->button == 3 && event->type == GDK_BUTTON_PRESS) {
-		return linphone_gtk_popup_contact_menu(widget, event);
+		if(path) gtk_tree_selection_select_path(selection, path);
+		ret = linphone_gtk_popup_contact_menu(GTK_WIDGET(friendlist), event);
 	} else if(event->button == 1 && event->type == GDK_BUTTON_PRESS){
-		int x_bin, y_bin;
-		GtkTreePath *path;
-		GtkTreeViewColumn *column;
-		gtk_tree_view_convert_widget_to_bin_window_coords(friendlist, event->x, event->y, &x_bin, &y_bin);
-		gtk_tree_view_get_path_at_pos(friendlist, x_bin, y_bin, &path, &column, NULL, NULL);
 		if(path && column) {
 			int numcol = get_column_index(friendlist, column);
 			if(numcol == 2) {
 				select_row(friendlist, path);
-				linphone_gtk_call_selected(GTK_TREE_VIEW(widget));
+				linphone_gtk_call_selected(friendlist);
 				ret = TRUE;
 			} else if(numcol == 3) {
 				select_row(friendlist, path);
-				linphone_gtk_chat_selected(widget);
+				linphone_gtk_chat_selected(GTK_WIDGET(friendlist));
 				ret = TRUE;
 			}
 		}
-		if(path) gtk_tree_path_free(path);
 	}
+	if(path) gtk_tree_path_free(path);
 	return ret;
 }
 
