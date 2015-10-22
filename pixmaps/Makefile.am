@@ -76,7 +76,8 @@ dist_actions48icons_DATA= \
 	linphone-contact-add.png \
 	linphone-conference-start.png \
 	linphone-call-transfer.png \
-	linphone-record.png
+	linphone-record.png \
+	linphone-chat-send.png
 
 actionssvgiconsdir=$(iconsdir)/scalable/actions
 dist_actionssvgicons_DATA= \
@@ -92,4 +93,5 @@ dist_actionssvgicons_DATA= \
 	svg/linphone-contact-add.svg \
 	svg/linphone-conference-start.svg \
 	svg/linphone-call-transfer.svg \
-	svg/linphone-record.svg
+	svg/linphone-record.svg \
+	svg/linphone-chat-send.svg

@@ -68,6 +68,7 @@ install(FILES
 	svg/linphone-conference-start.svg
 	svg/linphone-call-transfer.svg
 	svg/linphone-record.svg
+	svg/linphone-chat-send.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
@@ -114,6 +115,7 @@ install(FILES
 	linphone-conference-start.png
 	linphone-call-transfer.png
 	linphone-record.png
+	linphone-chat-send.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/actions
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
