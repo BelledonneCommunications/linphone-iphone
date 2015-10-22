@@ -223,8 +223,10 @@ static NSString *const kDisappearAnimation = @"disappear";
 			 ? historyButton.frame.origin.x
 			 : (contactsButton.selected
 					? contactsButton.frame.origin.x
-					: (dialerButton.selected ? dialerButton.frame.origin.x
-											 : (chatButton.selected ? chatButton.frame.origin.x : 0))));
+					: (dialerButton.selected
+						   ? dialerButton.frame.origin.x
+						   : (chatButton.selected ? chatButton.frame.origin.x
+												  : -selectedNewFrame.size.width /*hide it if none is selected*/))));
 	_selectedButtonImage.frame = selectedNewFrame;
 }
 
