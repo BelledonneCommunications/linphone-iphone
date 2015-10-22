@@ -3595,7 +3595,6 @@ int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, cons
 		return 0;
 	}
 	if (params==NULL){
-		linphone_call_params_enable_video(call->params, lc->video_policy.automatically_accept || call->current_params->has_video);
 		if (!sal_call_is_offerer(call->op)) {
 			/*reset call param for multicast because this param is only relevant when offering*/
 			linphone_call_params_enable_audio_multicast(call->params,FALSE);
@@ -3744,13 +3743,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	/*try to be best-effort in giving real local or routable contact address */
 	linphone_call_set_contact_op(call);
 	if (params){
-		SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
 		linphone_call_set_new_params(call,params);
-		// There might not be a md if the INVITE was lacking an SDP
-		// In this case we use the parameters as is.
-		if (md) {
-			linphone_call_set_compatible_incoming_call_parameters(call, md);
-		}
 		linphone_call_prepare_ice(call,TRUE);
 		linphone_call_make_local_media_description(call);
 		sal_call_set_local_media_description(call->op,call->localdesc);

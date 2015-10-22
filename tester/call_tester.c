@@ -4406,6 +4406,47 @@ static void video_call_ice_params(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void audio_call_with_video_policy_enabled(void){
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneVideoPolicy vpol;
+	
+	
+	linphone_core_enable_video(marie->lc, TRUE, TRUE);
+	linphone_core_enable_video(pauline->lc, TRUE, TRUE);
+	vpol.automatically_accept = vpol.automatically_initiate = TRUE;
+	linphone_core_set_video_policy(marie->lc, &vpol);
+	vpol.automatically_accept = vpol.automatically_initiate = FALSE;
+	linphone_core_set_video_policy(pauline->lc, &vpol);
+	
+	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
+	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+	
+	linphone_core_invite_address(pauline->lc, marie->identity);
+	if (!BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallIncomingReceived, 1))) goto end;
+	linphone_core_accept_call(marie->lc, linphone_core_get_current_call(marie->lc));
+	/*
+	LinphoneCallParams *params;
+	params = linphone_core_create_call_params(marie->lc, linphone_core_get_current_call(marie->lc));
+	linphone_call_params_enable_video(params, TRUE);
+	linphone_core_accept_call_with_params(marie->lc, linphone_core_get_current_call(marie->lc), params);
+	linphone_call_params_destroy(params);*/
+	
+	/*wait for call to be established and ICE reINVITEs to be done */
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	
+	linphone_core_pause_call(marie->lc, linphone_core_get_current_call(marie->lc));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPausedByRemote, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 1));
+	
+	end_call(marie, pauline);
+end:
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+
 static void classic_video_entry_phone_setup(void) {
 	LinphoneCoreManager *callee_mgr = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -5502,6 +5543,7 @@ test_t call_tests[] = {
 	{ "Call with ICE, video and realtime text", call_with_ice_video_and_rtt },
 #endif
 	{ "Video call with ICE accepted using call params",video_call_ice_params},
+	{ "Audio call paused with caller video policy enabled",audio_call_with_video_policy_enabled},
 	{ "Video call recording (H264)", video_call_recording_h264_test },
 	{ "Video call recording (VP8)", video_call_recording_vp8_test },
 	{ "Snapshot", video_call_snapshot },
