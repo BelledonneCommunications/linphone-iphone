@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -99,7 +99,7 @@
                                     <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
+                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="226" y="23" width="21" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Contact avatar">
@@ -160,7 +160,7 @@
         <image name="back_disabled.png" width="24" height="21"/>
         <image name="call_start_body_default.png" width="51" height="51"/>
         <image name="chat_start_body_default.png" width="51" height="51"/>
-        <image name="color_F.png" width="1" height="1"/>
+        <image name="color_F.png" width="2" height="2"/>
         <image name="contact_add_default.png" width="34" height="29"/>
         <image name="contact_add_disabled.png" width="34" height="29"/>
         <image name="linphone_user.png" width="26" height="22"/>

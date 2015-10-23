@@ -48,7 +48,7 @@
 	cell.accessoryType = (cell.accessoryType == UITableViewCellAccessoryCheckmark) ? UITableViewCellAccessoryNone
 																				   : UITableViewCellAccessoryCheckmark;
 	[self accessoryForCell:cell atPath:indexPath];
-	_toggleSelectionButton.selected = (_selectedItems.count == 0);
+	_toggleSelectionButton.selected = (_selectedItems.count == [self totalNumberOfItems]);
 }
 
 #pragma mark -
@@ -114,14 +114,15 @@
 
 - (void)onSelectionToggle:(id)sender {
 	[_selectedItems removeAllObjects];
-	UIButton *button = (UIButton *)sender;
-	button.selected = !button.selected; // TODO: why do we need that?
+
+	_toggleSelectionButton.selected = !_toggleSelectionButton.selected; // TODO: why do we need that?
 	for (int i = 0; i < [self numberOfSectionsInTableView:self.tableView]; i++) {
 		for (int j = 0; j < [self tableView:self.tableView numberOfRowsInSection:i]; j++) {
 			NSIndexPath *idx = [NSIndexPath indexPathForRow:j inSection:i];
 
 			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:idx];
-			cell.accessoryType = button.selected ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+			cell.accessoryType =
+				_toggleSelectionButton.selected ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
 			[self accessoryForCell:cell atPath:idx];
 		}
 	}
@@ -135,4 +136,11 @@
 	[self setEditing:NO animated:YES];
 }
 
+- (NSInteger)totalNumberOfItems {
+	NSInteger total = 0;
+	for (int i = 0; i < [self numberOfSectionsInTableView:self.tableView]; i++) {
+		total += [self tableView:self.tableView numberOfRowsInSection:i];
+	}
+	return total;
+}
 @end
