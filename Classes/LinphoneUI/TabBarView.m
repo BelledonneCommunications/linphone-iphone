@@ -214,9 +214,11 @@ static NSString *const kDisappearAnimation = @"disappear";
 
 - (void)updateSelectedButton:(UICompositeViewDescription *)view {
 	historyButton.selected = [view equal:HistoryListView.compositeViewDescription];
-	contactsButton.selected = [view equal:ContactsListView.compositeViewDescription];
+	contactsButton.selected = [view equal:ContactsListView.compositeViewDescription] ||
+							  [view equal:ContactDetailsView.compositeViewDescription];
 	dialerButton.selected = [view equal:DialerView.compositeViewDescription];
-	chatButton.selected = [view equal:ChatsListView.compositeViewDescription];
+	chatButton.selected = [view equal:ChatsListView.compositeViewDescription] ||
+						  [view equal:ChatConversationView.compositeViewDescription];
 	CGRect selectedNewFrame = _selectedButtonImage.frame;
 	selectedNewFrame.origin.x =
 		(historyButton.selected

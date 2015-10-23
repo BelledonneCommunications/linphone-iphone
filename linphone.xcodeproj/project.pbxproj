@@ -262,7 +262,6 @@
 		637DA0681BD9104100A81059 /* numpad_9_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9F8D1BD9104000A81059 /* numpad_9_over.png */; };
 		637DA0691BD9104100A81059 /* numpad_hash.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9F8E1BD9104000A81059 /* numpad_hash.png */; };
 		637DA06A1BD9104100A81059 /* numpad_hash_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9F8F1BD9104000A81059 /* numpad_hash_over.png */; };
-		637DA06B1BD9104100A81059 /* numpad_sharp.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9F901BD9104000A81059 /* numpad_sharp.png */; };
 		637DA06C1BD9104100A81059 /* numpad_star.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9F911BD9104000A81059 /* numpad_star.png */; };
 		637DA06D1BD9104100A81059 /* numpad_star_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9F921BD9104000A81059 /* numpad_star_over.png */; };
 		637DA06E1BD9104100A81059 /* options_add_call_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9F931BD9104000A81059 /* options_add_call_default.png */; };
@@ -280,14 +279,6 @@
 		637DA07A1BD9104100A81059 /* pause_small_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9F9F1BD9104000A81059 /* pause_small_default.png */; };
 		637DA07B1BD9104100A81059 /* pause_small_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA01BD9104000A81059 /* pause_small_disabled.png */; };
 		637DA07C1BD9104100A81059 /* pause_small_over_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA11BD9104000A81059 /* pause_small_over_selected.png */; };
-		637DA07D1BD9104100A81059 /* quit.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA21BD9104000A81059 /* quit.png */; };
-		637DA07E1BD9104100A81059 /* quit_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA31BD9104000A81059 /* quit_over.png */; };
-		637DA07F1BD9104100A81059 /* resizable_assistant_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA41BD9104000A81059 /* resizable_assistant_button.png */; };
-		637DA0801BD9104100A81059 /* resizable_cancel_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA51BD9104000A81059 /* resizable_cancel_button.png */; };
-		637DA0811BD9104100A81059 /* resizable_chat_bubble_incoming.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA61BD9104000A81059 /* resizable_chat_bubble_incoming.png */; };
-		637DA0821BD9104100A81059 /* resizable_chat_bubble_outgoing.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA71BD9104000A81059 /* resizable_chat_bubble_outgoing.png */; };
-		637DA0831BD9104100A81059 /* resizable_confirm_delete_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA81BD9104000A81059 /* resizable_confirm_delete_button.png */; };
-		637DA0841BD9104100A81059 /* resizable_textfield.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FA91BD9104000A81059 /* resizable_textfield.png */; };
 		637DA0851BD9104100A81059 /* route_bluetooth_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FAA1BD9104000A81059 /* route_bluetooth_default.png */; };
 		637DA0861BD9104100A81059 /* route_bluetooth_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FAB1BD9104000A81059 /* route_bluetooth_disabled.png */; };
 		637DA0871BD9104100A81059 /* route_bluetooth_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9FAC1BD9104000A81059 /* route_bluetooth_selected.png */; };
@@ -937,7 +928,6 @@
 		637D9F8D1BD9104000A81059 /* numpad_9_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = numpad_9_over.png; sourceTree = "<group>"; };
 		637D9F8E1BD9104000A81059 /* numpad_hash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = numpad_hash.png; sourceTree = "<group>"; };
 		637D9F8F1BD9104000A81059 /* numpad_hash_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = numpad_hash_over.png; sourceTree = "<group>"; };
-		637D9F901BD9104000A81059 /* numpad_sharp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = numpad_sharp.png; sourceTree = "<group>"; };
 		637D9F911BD9104000A81059 /* numpad_star.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = numpad_star.png; sourceTree = "<group>"; };
 		637D9F921BD9104000A81059 /* numpad_star_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = numpad_star_over.png; sourceTree = "<group>"; };
 		637D9F931BD9104000A81059 /* options_add_call_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = options_add_call_default.png; sourceTree = "<group>"; };
@@ -955,14 +945,6 @@
 		637D9F9F1BD9104000A81059 /* pause_small_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause_small_default.png; sourceTree = "<group>"; };
 		637D9FA01BD9104000A81059 /* pause_small_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause_small_disabled.png; sourceTree = "<group>"; };
 		637D9FA11BD9104000A81059 /* pause_small_over_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pause_small_over_selected.png; sourceTree = "<group>"; };
-		637D9FA21BD9104000A81059 /* quit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = quit.png; sourceTree = "<group>"; };
-		637D9FA31BD9104000A81059 /* quit_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = quit_over.png; sourceTree = "<group>"; };
-		637D9FA41BD9104000A81059 /* resizable_assistant_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizable_assistant_button.png; sourceTree = "<group>"; };
-		637D9FA51BD9104000A81059 /* resizable_cancel_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizable_cancel_button.png; sourceTree = "<group>"; };
-		637D9FA61BD9104000A81059 /* resizable_chat_bubble_incoming.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizable_chat_bubble_incoming.png; sourceTree = "<group>"; };
-		637D9FA71BD9104000A81059 /* resizable_chat_bubble_outgoing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizable_chat_bubble_outgoing.png; sourceTree = "<group>"; };
-		637D9FA81BD9104000A81059 /* resizable_confirm_delete_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizable_confirm_delete_button.png; sourceTree = "<group>"; };
-		637D9FA91BD9104000A81059 /* resizable_textfield.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizable_textfield.png; sourceTree = "<group>"; };
 		637D9FAA1BD9104000A81059 /* route_bluetooth_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = route_bluetooth_default.png; sourceTree = "<group>"; };
 		637D9FAB1BD9104000A81059 /* route_bluetooth_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = route_bluetooth_disabled.png; sourceTree = "<group>"; };
 		637D9FAC1BD9104000A81059 /* route_bluetooth_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = route_bluetooth_selected.png; sourceTree = "<group>"; };
@@ -1979,7 +1961,6 @@
 				637D9F8D1BD9104000A81059 /* numpad_9_over.png */,
 				637D9F8E1BD9104000A81059 /* numpad_hash.png */,
 				637D9F8F1BD9104000A81059 /* numpad_hash_over.png */,
-				637D9F901BD9104000A81059 /* numpad_sharp.png */,
 				637D9F911BD9104000A81059 /* numpad_star.png */,
 				637D9F921BD9104000A81059 /* numpad_star_over.png */,
 				637D9F931BD9104000A81059 /* options_add_call_default.png */,
@@ -1997,14 +1978,6 @@
 				637D9F9F1BD9104000A81059 /* pause_small_default.png */,
 				637D9FA01BD9104000A81059 /* pause_small_disabled.png */,
 				637D9FA11BD9104000A81059 /* pause_small_over_selected.png */,
-				637D9FA21BD9104000A81059 /* quit.png */,
-				637D9FA31BD9104000A81059 /* quit_over.png */,
-				637D9FA41BD9104000A81059 /* resizable_assistant_button.png */,
-				637D9FA51BD9104000A81059 /* resizable_cancel_button.png */,
-				637D9FA61BD9104000A81059 /* resizable_chat_bubble_incoming.png */,
-				637D9FA71BD9104000A81059 /* resizable_chat_bubble_outgoing.png */,
-				637D9FA81BD9104000A81059 /* resizable_confirm_delete_button.png */,
-				637D9FA91BD9104000A81059 /* resizable_textfield.png */,
 				637D9FAA1BD9104000A81059 /* route_bluetooth_default.png */,
 				637D9FAB1BD9104000A81059 /* route_bluetooth_disabled.png */,
 				637D9FAC1BD9104000A81059 /* route_bluetooth_selected.png */,
@@ -2489,7 +2462,6 @@
 				637DA05E1BD9104100A81059 /* numpad_4_over.png in Resources */,
 				637DA04F1BD9104100A81059 /* list_details_default.png in Resources */,
 				637DA0491BD9104100A81059 /* incoming_call_unlock.png in Resources */,
-				637DA0821BD9104100A81059 /* resizable_chat_bubble_outgoing.png in Resources */,
 				637DA04C1BD9104100A81059 /* led_error.png in Resources */,
 				D38187D115FE346B00C3EDCA /* HistoryListView.xib in Resources */,
 				637D9FE11BD9104100A81059 /* call_audio_start_disabled.png in Resources */,
@@ -2517,14 +2489,12 @@
 				637DA01E1BD9104100A81059 /* color_L.png in Resources */,
 				637DA0A21BD9104100A81059 /* status_busy_phone.png in Resources */,
 				637D9FF81BD9104100A81059 /* camera_default.png in Resources */,
-				637DA0831BD9104100A81059 /* resizable_confirm_delete_button.png in Resources */,
 				637DA0411BD9104100A81059 /* history_all_default.png in Resources */,
 				637DA00B1BD9104100A81059 /* chat_send_over.png in Resources */,
 				637DA0A61BD9104100A81059 /* topbar_call_notification.png in Resources */,
 				637D9FFA1BD9104100A81059 /* camera_selected.png in Resources */,
 				637D9FF61BD9104100A81059 /* call_video_start_default.png in Resources */,
 				637DA0511BD9104100A81059 /* menu.png in Resources */,
-				637DA0811BD9104100A81059 /* resizable_chat_bubble_incoming.png in Resources */,
 				637DA0381BD9104100A81059 /* edit_list_disabled.png in Resources */,
 				639CEAFD1A1DF4D9004DE38F /* StatusBarView.xib in Resources */,
 				637DA0341BD9104100A81059 /* dialer_back_disabled.png in Resources */,
@@ -2595,7 +2565,6 @@
 				637D9FF91BD9104100A81059 /* camera_disabled.png in Resources */,
 				637D9FF31BD9104100A81059 /* call_status_outgoing.png in Resources */,
 				637DA01C1BD9104100A81059 /* color_J.png in Resources */,
-				637DA07E1BD9104100A81059 /* quit_over.png in Resources */,
 				637DA0281BD9104100A81059 /* contacts_sip_default.png in Resources */,
 				637DA0141BD9104100A81059 /* color_B.png in Resources */,
 				637D9FFF1BD9104100A81059 /* cancel_edit_disabled.png in Resources */,
@@ -2679,7 +2648,6 @@
 				637DA0631BD9104100A81059 /* numpad_7.png in Resources */,
 				637D9FE31BD9104100A81059 /* call_back_disabled.png in Resources */,
 				63AADBE81B6A0FF200AA16FD /* Localizable.strings in Resources */,
-				637DA0841BD9104100A81059 /* resizable_textfield.png in Resources */,
 				637D9FF21BD9104100A81059 /* call_status_missed.png in Resources */,
 				637DA0A51BD9104100A81059 /* status_disconnected_phone.png in Resources */,
 				637DA04E1BD9104100A81059 /* linphone_user.png in Resources */,
@@ -2691,13 +2659,11 @@
 				637DA0431BD9104100A81059 /* history_all_selected.png in Resources */,
 				637DA0741BD9104100A81059 /* options_start_conference_disabled.png in Resources */,
 				631348321B6FA53300C6BDCB /* rootca.pem in Resources */,
-				637DA07D1BD9104100A81059 /* quit.png in Resources */,
 				D381881915FE3FCA00C3EDCA /* CallView.xib in Resources */,
 				D3D5126C160B3A8E00946DF8 /* AssistantSubviews.xib in Resources */,
 				63AADBEA1B6A0FF200AA16FD /* Images.xcassets in Resources */,
 				637D9FF51BD9104100A81059 /* call_transfer_disabled.png in Resources */,
 				637DA0861BD9104100A81059 /* route_bluetooth_disabled.png in Resources */,
-				637DA0801BD9104100A81059 /* resizable_cancel_button.png in Resources */,
 				637DA0691BD9104100A81059 /* numpad_hash.png in Resources */,
 				63701DD61BA31DA1006A9AE3 /* UIConfirmationDialog.xib in Resources */,
 				637D9FFB1BD9104100A81059 /* camera_switch_default.png in Resources */,
@@ -2705,7 +2671,6 @@
 				637DA0A71BD9104100A81059 /* topbar_chat_notification.png in Resources */,
 				637DA02E1BD9104100A81059 /* delete_field_over.png in Resources */,
 				637DA01B1BD9104100A81059 /* color_I.png in Resources */,
-				637DA07F1BD9104100A81059 /* resizable_assistant_button.png in Resources */,
 				F0C1F8EB1A277ADA009402C9 /* LaunchScreen.xib in Resources */,
 				63AADBFD1B6A0FF200AA16FD /* ringback.wav in Resources */,
 				637DA0621BD9104100A81059 /* numpad_6_over.png in Resources */,
@@ -2720,7 +2685,6 @@
 				637DA05C1BD9104100A81059 /* numpad_3_over.png in Resources */,
 				637DA09D1BD9104100A81059 /* status_away.png in Resources */,
 				637DA0521BD9104100A81059 /* micro_default.png in Resources */,
-				637DA06B1BD9104100A81059 /* numpad_sharp.png in Resources */,
 				637DA03C1BD9104100A81059 /* footer_contacts_disabled.png in Resources */,
 				F0938159188E629800A55DFA /* iTunesArtwork in Resources */,
 				637DA0991BD9104100A81059 /* splashscreen.png in Resources */,

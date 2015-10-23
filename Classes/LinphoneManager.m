@@ -863,8 +863,8 @@ static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyCo
 
 #pragma mark - Auth info Function
 
-static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char *realm, const char *username,
-												   const char *domain) {
+static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char *realmC, const char *usernameC,
+												   const char *domainC) {
 	// let the wizard handle its own errors
 	if ([PhoneMainView.instance currentView] != AssistantView.compositeViewDescription) {
 		static DTAlertView *alertView = nil;
@@ -874,12 +874,13 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			[alertView dismissWithClickedButtonIndex:0 animated:NO];
 		}
 
-		__weak UITextField *passwordField = [alertView textFieldAtIndex:0];
-
+		NSString *realm = [NSString stringWithUTF8String:realmC];
+		NSString *username = [NSString stringWithUTF8String:usernameC];
+		NSString *domain = [NSString stringWithUTF8String:domainC];
 		alertView = [[DTAlertView alloc]
 			initWithTitle:NSLocalizedString(@"Authentication needed.", nil)
 				  message:[NSString stringWithFormat:NSLocalizedString(@"Registration failed because authentication is "
-																	   @"missing or invalid for %s@%s.\nYou can "
+																	   @"missing or invalid for %@@%@.\nYou can "
 																	   @"provide password again, or check your "
 																	   @"account configuration in the settings.",
 																	   nil),
@@ -891,22 +892,24 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 										[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 									  }];
 
-		[alertView addButtonWithTitle:NSLocalizedString(@"Continue", nil)
-								block:^{
-								  LinphoneAuthInfo *info = (LinphoneAuthInfo *)linphone_core_find_auth_info(
-									  [LinphoneManager getLc], realm, username, domain);
-								  if (info) {
-									  linphone_auth_info_set_passwd(info, passwordField.text.UTF8String);
-									  linphone_auth_info_set_ha1(info, NULL);
-									  linphone_proxy_config_refresh_register(
-										  linphone_core_get_default_proxy_config([LinphoneManager getLc]));
-								  } else {
-									  LOGE(@"Could not find auth info associated with %s@%s, going to settings!",
-										   username, domain);
-									  [[PhoneMainView instance]
-										  changeCurrentView:SettingsView.compositeViewDescription];
-								  }
-								}];
+		[alertView
+			addButtonWithTitle:NSLocalizedString(@"Continue", nil)
+						 block:^{
+						   NSString *password = [alertView textFieldAtIndex:0].text;
+						   LinphoneAuthInfo *info = (LinphoneAuthInfo *)linphone_core_find_auth_info(
+							   [LinphoneManager getLc], realm.UTF8String, username.UTF8String, domain.UTF8String);
+						   if (info) {
+							   linphone_auth_info_set_passwd(info, password.UTF8String);
+							   linphone_auth_info_set_ha1(info, NULL);
+						   } else {
+							   LOGW(@"Could not find auth info associated with %@@%@, creating it", username, domain);
+							   info = linphone_auth_info_new(username.UTF8String, NULL, password.UTF8String, NULL,
+															 realm.UTF8String, domain.UTF8String);
+							   linphone_core_add_auth_info([LinphoneManager getLc], info);
+						   }
+						   linphone_proxy_config_refresh_register(
+							   linphone_core_get_default_proxy_config([LinphoneManager getLc]));
+						 }];
 		[alertView show];
 	}
 }

@@ -50,6 +50,15 @@
 		setText:[NSString stringWithFormat:@"%@ - %d sec",
 										   [LinphoneUtils timeToString:callTime withStyle:NSDateFormatterMediumStyle],
 										   duration]];
+	BOOL outgoing = (linphone_call_log_get_dir(log) == LinphoneCallOutgoing);
+
+	if (linphone_call_log_get_status(log) == LinphoneCallMissed) {
+		cell.imageView.image = [UIImage imageNamed:@"call_missed.png"];
+	} else if (outgoing) {
+		cell.imageView.image = [UIImage imageNamed:@"call_outgoing.png"];
+	} else {
+		cell.imageView.image = [UIImage imageNamed:@"call_incoming.png"];
+	}
 	return cell;
 }
 
