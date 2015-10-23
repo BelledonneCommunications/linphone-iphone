@@ -55,6 +55,9 @@ static char *bc_tester_resource_dir_prefix = NULL;
 // by default writable will always write near the executable
 static char *bc_tester_writable_dir_prefix = NULL;
 
+static char *bc_current_suite_name = NULL;
+static char *bc_current_test_name = NULL;
+
 int bc_printf_verbosity_info;
 int bc_printf_verbosity_error;
 
@@ -165,6 +168,7 @@ static time_t suite_start_time = 0;
 static void suite_start_message_handler(const CU_pSuite pSuite) {
 	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] started\n", pSuite->pName);
 	suite_start_time = time(NULL);
+	bc_current_suite_name = pSuite->pName;
 }
 static void suite_complete_message_handler(const CU_pSuite pSuite, const CU_pFailureRecord pFailure) {
 	bc_tester_printf(bc_printf_verbosity_info, "Suite [%s] ended in %lu sec\n", pSuite->pName,
@@ -179,6 +183,7 @@ static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSu
 	}
 	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] Test [%s] started", pSuite->pName,pTest->pName);
 	test_start_time = time(NULL);
+	bc_current_test_name = pTest->pName;
 }
 
 /*derivated from cunit*/
@@ -640,4 +645,12 @@ char* bc_sprintf(const char* format, ...) {
 	res = bc_sprintfva(format, args);
 	va_end (args);
 	return res;
+}
+
+const char * bc_tester_current_suite_name() {
+	return bc_current_suite_name;
+}
+
+const char * bc_tester_current_test_name() {
+	return bc_current_test_name;
 }

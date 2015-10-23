@@ -156,10 +156,6 @@ void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, v
 	liblinphone_tester_add_suites();
 }
 
-void liblinphone_tester_uninit(void) {
-	bc_tester_uninit();
-}
-
 int liblinphone_tester_set_log_file(const char *filename) {
 	if (log_file) {
 		fclose(log_file);

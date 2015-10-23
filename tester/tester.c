@@ -505,15 +505,21 @@ void liblinphone_tester_before_each(void) {
 	}
 }
 
+static char* all_leaks_buffer = NULL;
+
 void liblinphone_tester_after_each(void) {
 	if (!liblinphone_tester_leak_detector_disabled){
 		int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
-		// this will NOT be counted in tests fail but at least it will be shown
-		BC_ASSERT_EQUAL(leaked_objects, 0, int, "%d");
 		if (leaked_objects > 0) {
+			char* format = ms_strdup_printf("%d object%s leaked in suite [%s] test [%s], please fix that!",
+											leaked_objects, leaked_objects>1?"s were":"was",
+											bc_tester_current_suite_name(), bc_tester_current_test_name());
 			belle_sip_object_dump_active_objects();
 			belle_sip_object_flush_active_objects();
-			ms_error("%d object%s leaked in latest test, please fix that!", leaked_objects, leaked_objects>1?"s were":"was");
+			bc_tester_printf(bc_printf_verbosity_info, format);
+			ms_error("%s", format);
+
+			all_leaks_buffer = ms_strcat_printf(all_leaks_buffer, "\n%s", format);
 		}
 	}
 
@@ -522,3 +528,11 @@ void liblinphone_tester_after_each(void) {
 	}
 }
 
+void liblinphone_tester_uninit(void) {
+	// show all leaks that happened during the test
+	if (all_leaks_buffer) {
+		bc_tester_printf(bc_printf_verbosity_info, all_leaks_buffer);
+		ms_free(all_leaks_buffer);
+	}
+	bc_tester_uninit();
+}
