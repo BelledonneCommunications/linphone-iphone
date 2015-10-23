@@ -51,7 +51,6 @@ set(LINPHONE_HEADER_FILES
 )
 
 set(LINPHONE_SOURCE_FILES
-	${LINPHONE_HEADER_FILES}
 	account_creator.c
 	address.c
 	authentication.c
@@ -162,10 +161,10 @@ if(INTL_FOUND)
 endif()
 
 if(ENABLE_STATIC)
-	add_library(linphone STATIC ${LINPHONE_SOURCE_FILES})
+	add_library(linphone STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES})
 	target_link_libraries(linphone ${LIBS})
 else()
-	add_library(linphone SHARED ${LINPHONE_SOURCE_FILES})
+	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES})
 	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
 	target_link_libraries(linphone ${LIBS})
 	if(MSVC)
