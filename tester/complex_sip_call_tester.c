@@ -71,6 +71,7 @@ static FILE *sip_start(const char *senario, const char* dest_username, LinphoneA
 #endif
 }
 
+#if 0
 static FILE *sip_start_recv(const char *senario) {
 #if HAVE_SIPP
 	char *command;
@@ -87,6 +88,7 @@ static FILE *sip_start_recv(const char *senario) {
 	return NULL;
 #endif
 }
+#endif
 
 /*static void dest_server_server_resolved(void *data, const char *name, struct addrinfo *ai_list) {
 	*(struct addrinfo **)data =ai_list;
@@ -304,6 +306,7 @@ static void call_with_multiple_video_mline_in_sdp() {
 	linphone_core_manager_destroy(mgr);
 }
 
+#if 0
 static void call_invite_200ok_without_contact_header() {
 	LinphoneCoreManager *mgr;
 	char *identity_char;
@@ -339,6 +342,7 @@ static void call_invite_200ok_without_contact_header() {
 	}
 	linphone_core_manager_destroy(mgr);
 }
+#endif
 
 static test_t tests[] = {
 	{ "SIP UPDATE within incoming reinvite without sdp", sip_update_within_icoming_reinvite_with_no_sdp },
@@ -346,7 +350,9 @@ static test_t tests[] = {
 	{ "Call with video mline before audio in sdp", call_with_video_mline_before_audio_in_sdp },
 	{ "Call with multiple audio mline in sdp", call_with_multiple_audio_mline_in_sdp },
 	{ "Call with multiple video mline in sdp", call_with_multiple_video_mline_in_sdp },
+#if 0
 	{ "Call invite 200ok without contact header", call_invite_200ok_without_contact_header },
+#endif
 };
 
 test_suite_t complex_sip_call_test_suite = {
