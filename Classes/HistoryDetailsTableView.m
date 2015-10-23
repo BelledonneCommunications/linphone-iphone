@@ -35,6 +35,24 @@
 	return [callLogs count];
 }
 
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIView *tempView = [[UIView alloc] initWithFrame:tableView.frame];
+	tempView.backgroundColor = [UIColor whiteColor];
+
+	CGRect frame = tempView.frame;
+	frame.origin.y = 0;
+	frame.size.height = 44;
+	UILabel *tempLabel = [[UILabel alloc] initWithFrame:frame];
+	tempLabel.backgroundColor = [UIColor clearColor];
+	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_E.png"]];
+	tempLabel.text = NSLocalizedString(@"Calls", nil);
+	tempLabel.textAlignment = NSTextAlignmentCenter;
+	tempLabel.font = [UIFont boldSystemFontOfSize:17];
+	[tempView addSubview:tempLabel];
+
+	return tempView;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	static NSString *kCellId = @"UITableViewCell";
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
