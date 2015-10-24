@@ -37,6 +37,7 @@ gtk/audio_assistant.c
 [type: gettext/glade]gtk/conf_frame.ui
 [type: gettext/glade]gtk/in_call_frame.ui
 [type: gettext/glade]gtk/login_frame.ui
+[type: gettext/glade]gtk/setup_wizard.ui
 coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/presence.c
