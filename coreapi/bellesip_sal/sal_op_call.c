@@ -32,8 +32,9 @@ static void call_set_released(SalOp* op){
 	}
 }
 
-static void call_set_error(SalOp* op,belle_sip_response_t* response){
+static void call_set_error(SalOp* op,belle_sip_response_t* response, bool_t fatal){
 	sal_op_set_error_info_from_response(op,response);
+	if (fatal) op->state = SalOpStateTerminating;
 	op->base.root->callbacks.call_failure(op);
 }
 static void set_addr_to_0000(char value[]) {
@@ -149,6 +150,7 @@ static void call_process_io_error(void *user_ctx, const belle_sip_io_error_event
 		/*call terminated very early*/
 		sal_error_info_set(&op->error_info,SalReasonIOError,503,"IO error",NULL);
 		op->base.root->callbacks.call_failure(op);
+		op->state = SalOpStateTerminating;
 		call_set_released(op);
 	} else {
 		/*dialog will terminated shortly, nothing to do*/
@@ -162,6 +164,14 @@ static void process_dialog_terminated(void *ctx, const belle_sip_dialog_terminat
 		ms_message("Dialog [%p] terminated for op [%p]",belle_sip_dialog_terminated_event_get_dialog(event),op);
 
 		switch(belle_sip_dialog_get_previous_state(op->dialog)) {
+			case BELLE_SIP_DIALOG_EARLY:
+			case BELLE_SIP_DIALOG_NULL:
+				if (op->state!=SalOpStateTerminated && op->state!=SalOpStateTerminating) {
+					/*this is an early termination due to incorrect response received*/
+					op->base.root->callbacks.call_failure(op);
+					op->state=SalOpStateTerminating;
+				}
+			break;
 			case BELLE_SIP_DIALOG_CONFIRMED:
 				if (op->state!=SalOpStateTerminated && op->state!=SalOpStateTerminating) {
 					/*this is probably a normal termination from a BYE*/
@@ -201,7 +211,23 @@ static void cancelling_invite(SalOp* op ){
 	belle_sip_request_t* cancel;
 	ms_message("Cancelling INVITE request from [%s] to [%s] ",sal_op_get_from(op), sal_op_get_to(op));
 	cancel = belle_sip_client_transaction_create_cancel(op->pending_client_trans);
-	sal_op_send_request(op,cancel);
+	if (cancel){
+		sal_op_send_request(op,cancel);
+	}else if (op->dialog){
+		belle_sip_dialog_state_t state = belle_sip_dialog_get_state(op->dialog);;
+		/*case where the response received is invalid (could not establish a dialog), but the transaction is not cancellable 
+		 * because already terminated*/
+		switch(state){
+			case BELLE_SIP_DIALOG_EARLY:
+			case BELLE_SIP_DIALOG_NULL:
+				/*force kill the dialog*/
+				ms_warning("op [%p]: force kill of dialog [%p]", op, op->dialog);
+				belle_sip_dialog_delete(op->dialog);
+			break;
+			default:
+			break;
+		}
+	}
 	op->state=SalOpStateTerminating;
 }
 
@@ -263,7 +289,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 					}
 					belle_sip_object_data_set(BELLE_SIP_OBJECT(dialog),"early_response",belle_sip_object_ref(response),belle_sip_object_unref);
 				} else if (code>=300){
-					call_set_error(op,response);
+					call_set_error(op, response, TRUE);
 					if (op->dialog==NULL) call_set_released(op);
 				}
 			} else if (code >=200
@@ -295,7 +321,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 							op->base.root->callbacks.call_accepted(op); /*INVITE*/
 							op->state=SalOpStateActive;
 						}else if (code >= 300){
-							call_set_error(op,response);
+							call_set_error(op,response, FALSE);
 						}
 					}else if (strcmp("INFO",method)==0){
 						if (code == 491
@@ -324,7 +350,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 		break;
 		case BELLE_SIP_DIALOG_TERMINATED: {
 			if (strcmp("INVITE",method)==0 && code >= 300){
-				call_set_error(op,response);
+				call_set_error(op,response, TRUE);
 			}
 		}
 		break;
@@ -345,6 +371,7 @@ static void call_process_timeout(void *user_ctx, const belle_sip_timeout_event_t
 		/*call terminated very early*/
 		sal_error_info_set(&op->error_info,SalReasonRequestTimeout,408,"Request timeout",NULL);
 		op->base.root->callbacks.call_failure(op);
+		op->state = SalOpStateTerminating;
 		call_set_released(op);
 	} else {
 		/*dialog will terminated shortly, nothing to do*/
@@ -378,6 +405,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 	}else if (op->state == SalOpStateEarly && code < 200){
 		/*call terminated early*/
 		sal_error_info_set(&op->error_info,SalReasonIOError,503,"I/O error",NULL);
+		op->state = SalOpStateTerminating;
 		op->base.root->callbacks.call_failure(op);
 		release_call=TRUE;
 	}
@@ -396,6 +424,7 @@ static void call_process_transaction_terminated(void *user_ctx, const belle_sip_
 
 static void call_terminated(SalOp* op,belle_sip_server_transaction_t* server_transaction, belle_sip_request_t* request,int status_code) {
 	belle_sip_response_t* resp;
+	op->state = SalOpStateTerminating;
 	op->base.root->callbacks.call_terminated(op,op->dir==SalOpDirIncoming?sal_op_get_from(op):sal_op_get_to(op));
 	resp=sal_op_create_response_from_request(op,request,status_code);
 	belle_sip_server_transaction_send_response(server_transaction,resp);
