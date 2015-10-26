@@ -130,8 +130,8 @@
 
 - (void)computeSections {
 	NSArray *unsortedDays = [self.sections allKeys];
-	self.sortedDays = [unsortedDays sortedArrayUsingComparator:^NSComparisonResult(NSDate *d1, NSDate *d2) {
-	  return ![d1 compare:d2]; // reverse order
+	_sortedDays = [unsortedDays sortedArrayUsingComparator:^NSComparisonResult(NSDate *d1, NSDate *d2) {
+	  return [d2 compare:d1]; // reverse order
 	}];
 }
 

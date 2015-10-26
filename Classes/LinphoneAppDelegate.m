@@ -344,11 +344,13 @@
 		[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 		LinphoneChatRoom *room = [self findChatRoomForContact:remoteContact];
 		ChatConversationView *view = VIEW(ChatConversationView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE], [view setChatRoom:room];
+		[view setChatRoom:room];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	} else if ([notification.userInfo objectForKey:@"callLog"] != nil) {
 		NSString *callLog = (NSString *)[notification.userInfo objectForKey:@"callLog"];
 		HistoryDetailsView *view = VIEW(HistoryDetailsView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE], [view setCallLogId:callLog];
+		[view setCallLogId:callLog];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	}
 }
 

@@ -243,7 +243,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([ContactSelection getSelectionMode] == ContactSelectionModeEdit) {
 		[ContactSelection setSelectionMode:ContactSelectionModeNone];
 	}
-	[PhoneMainView.instance popCurrentView];
+
+	ContactsListView *view = VIEW(ContactsListView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (IBAction)onEditClick:(id)event {

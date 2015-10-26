@@ -426,7 +426,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 - (IBAction)onBackClick:(id)event {
 	[_tableController setChatRoom:NULL];
-	[PhoneMainView.instance popCurrentView];
+	ChatsListView *view = VIEW(ChatsListView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (IBAction)onEditClick:(id)event {

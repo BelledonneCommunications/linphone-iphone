@@ -9,8 +9,6 @@ dtmf_player_amp=0.007
 eq_location=mic
 eq_gains=50:2:50 100:2:50
 
-
-
 [video]
 display_filter_auto_rotate=0
 

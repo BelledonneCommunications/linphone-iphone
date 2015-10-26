@@ -149,7 +149,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onBackClick:(id)event {
-	[PhoneMainView.instance popCurrentView];
+	HistoryListView *view = VIEW(HistoryListView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (IBAction)onContactClick:(id)event {
