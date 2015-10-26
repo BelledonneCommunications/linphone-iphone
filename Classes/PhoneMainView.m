@@ -351,11 +351,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 				if ((currentView == CallView.compositeViewDescription) ||
 					(currentView == CallIncomingView.compositeViewDescription) ||
 					(currentView == CallOutgoingView.compositeViewDescription)) {
-					// Go to dialer view
 					DialerView *view = VIEW(DialerView);
-					[self changeCurrentView:view.compositeViewDescription];
 					[view setAddress:@""];
 					[view setTransferMode:FALSE];
+					[self popCurrentView];
 				}
 			} else {
 				linphone_core_resume_call([LinphoneManager getLc], (LinphoneCall *)calls->data);

@@ -418,6 +418,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 				  return s != LinphoneAccountCreatorOk;
 				}];
 
+	UIAssistantTextField *domain = [self findTextField:ViewElement_Domain];
+	[domain showError:[self errorForStatus:LinphoneAccountCreatorDomainInvalid]
+				 when:^BOOL(NSString *inputEntry) {
+				   LinphoneAccountCreatorStatus s =
+					   linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
+				   domain.errorLabel.text = [self errorForStatus:s];
+				   return s != LinphoneAccountCreatorOk;
+				 }];
+
 	[self shouldEnableNextButton];
 }
 
@@ -545,7 +554,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 					  NSLocalizedString(
 						  @"Your account could not be checked yet. You can skip this validation or try again later.",
 						  nil)];
-		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+		[alert addCancelButtonWithTitle:NSLocalizedString(@"Back", nil) block:nil];
 		[alert addButtonWithTitle:NSLocalizedString(@"Skip verification", nil)
 							block:^{
 							  [thiz addProxyConfig:linphone_account_creator_configure(creator)];
@@ -605,13 +614,13 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
-	linphone_account_creator_test_existence(account_creator);
 	_waitView.hidden = NO;
+	linphone_account_creator_test_existence(account_creator);
 }
 
 - (IBAction)onCreateAccountActivationClick:(id)sender {
-	linphone_account_creator_create_account(account_creator);
 	_waitView.hidden = NO;
+	linphone_account_creator_create_account(account_creator);
 }
 
 - (IBAction)onLinphoneLoginClick:(id)sender {
@@ -621,7 +630,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (IBAction)onLoginClick:(id)sender {
 	_waitView.hidden = NO;
-	linphone_account_creator_test_validation(account_creator);
+	[self addProxyConfig:linphone_account_creator_configure(account_creator)];
 }
 
 - (IBAction)onRemoteProvisionningLoginClick:(id)sender {

@@ -24,19 +24,19 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <view contentMode="scaleToFill" id="3" userLabel="topBar">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="40"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="42"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="upG-IP-6mg" userLabel="backgroundColor">
-                                    <rect key="frame" x="0.0" y="-1" width="375" height="42"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="42"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
                                 <view contentMode="scaleToFill" id="38" userLabel="switchView">
-                                    <rect key="frame" x="0.0" y="0.0" width="150" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="150" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
-                                            <rect key="frame" x="0.0" y="0.0" width="75" height="40"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="75" height="42"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="All contacts filter"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="16" maxX="0.0" maxY="0.0"/>
@@ -50,7 +50,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="bottom" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="missedButton" customClass="UIIconButton">
-                                            <rect key="frame" x="75" y="0.0" width="75" height="40"/>
+                                            <rect key="frame" x="75" y="0.0" width="75" height="42"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Missed contacts filter"/>
                                             <inset key="titleEdgeInsets" minX="0.0" minY="16" maxX="0.0" maxY="0.0"/>
@@ -65,13 +65,13 @@
                                             </connections>
                                         </button>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="o8E-gw-vhI" userLabel="selectedButtonImage">
-                                            <rect key="frame" x="0.0" y="37" width="75" height="3"/>
+                                            <rect key="frame" x="0.0" y="39" width="75" height="3"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </imageView>
                                     </subviews>
                                 </view>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="00K-MU-NUc" userLabel="cancelButton" customClass="UIIconButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="75" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
@@ -102,7 +102,7 @@
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="35" userLabel="deleteButton" customClass="UIIconButton">
-                                    <rect key="frame" x="300" y="0.0" width="75" height="40"/>
+                                    <rect key="frame" x="300" y="0.0" width="75" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Delete all"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
@@ -116,7 +116,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="editButton" customClass="UIIconButton">
-                                    <rect key="frame" x="300" y="0.0" width="75" height="40"/>
+                                    <rect key="frame" x="300" y="0.0" width="75" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Edit"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
@@ -133,7 +133,7 @@
                             </subviews>
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="35" sectionFooterHeight="1" id="17" userLabel="tableView">
-                            <rect key="frame" x="0.0" y="40" width="375" height="519"/>
+                            <rect key="frame" x="0.0" y="42" width="375" height="517"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <inset key="contentInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
@@ -145,7 +145,7 @@
                             </connections>
                         </tableView>
                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No history." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xtr-Fp-60Z" userLabel="emptyTableLabel">
-                            <rect key="frame" x="0.0" y="40" width="375" height="519"/>
+                            <rect key="frame" x="0.0" y="42" width="375" height="517"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
