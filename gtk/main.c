@@ -898,7 +898,7 @@ static gboolean linphone_gtk_start_call_do(GtkWidget *uri_bar){
 
 static void accept_incoming_call(LinphoneCall *call){
 	LinphoneCore *lc=linphone_gtk_get_core();
-	LinphoneCallParams *params=linphone_core_create_default_call_parameters(lc);
+	LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 	gchar *record_file=linphone_gtk_get_record_path(linphone_call_get_remote_address(call),FALSE);
 	linphone_call_params_set_record_file(params,record_file);
 	linphone_core_accept_call_with_params(lc,call,params);
