@@ -145,6 +145,8 @@
 		<dict>
 			<key>Title</key>
 			<string>Development debug actions</string>
+			<key>Key</key>
+			<string>debug_actions_group</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

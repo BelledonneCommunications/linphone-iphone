@@ -13,6 +13,12 @@
 @implementation UIIconButton
 
 - (id)fixBackgroundImageForState {
+
+	[super setImage:[self imageForState:UIControlStateSelected]
+		   forState:(UIControlStateHighlighted | UIControlStateSelected)];
+	[super setImage:[self imageForState:UIControlStateDisabled]
+		   forState:(UIControlStateDisabled | UIControlStateSelected)];
+
 	[self setBackgroundImage:[self backgroundImageForState:UIControlStateHighlighted]
 					forState:(UIControlStateHighlighted | UIControlStateSelected)];
 	[self setBackgroundImage:[self backgroundImageForState:UIControlStateDisabled]

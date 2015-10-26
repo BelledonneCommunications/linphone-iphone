@@ -545,9 +545,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 #ifndef DEBUG
+	[hiddenKeys addObject:@"debug_actions_group"];
 	[hiddenKeys addObject:@"release_button"];
 	[hiddenKeys addObject:@"clear_cache_button"];
 	[hiddenKeys addObject:@"battery_alert_button"];
+	[hiddenKeys addObject:@"enable_auto_answer_preference"];
 #endif
 
 	if (![[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"]) {

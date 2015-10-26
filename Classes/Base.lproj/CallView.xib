@@ -230,7 +230,7 @@
                                 <outlet property="delegate" destination="162" id="169"/>
                             </connections>
                         </tableView>
-                        <view hidden="YES" contentMode="scaleToFill" id="ukG-i4-YMY" userLabel="numpadView">
+                        <view hidden="YES" alpha="0.79999999999999982" contentMode="scaleToFill" id="ukG-i4-YMY" userLabel="numpadView">
                             <rect key="frame" x="0.0" y="75" width="375" height="428"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -572,6 +572,7 @@
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <state key="disabled" image="footer_dialer_disabled.png"/>
+                                            <state key="selected" image="dialer_alt_back_default.png"/>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
                                             <connections>
                                                 <action selector="onNumpadClick:" destination="-1" eventType="touchUpInside" id="pFD-jh-GhK"/>
@@ -626,6 +627,7 @@
         <image name="color_L.png" width="2" height="2"/>
         <image name="conference_start_default.png" width="33" height="33"/>
         <image name="conference_start_disabled.png" width="33" height="33"/>
+        <image name="dialer_alt_back_default.png" width="26" height="26"/>
         <image name="footer_chat_default.png" width="27" height="27"/>
         <image name="footer_dialer_default.png" width="27" height="27"/>
         <image name="footer_dialer_disabled.png" width="27" height="27"/>
