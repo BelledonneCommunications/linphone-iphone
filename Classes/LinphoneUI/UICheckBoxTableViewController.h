@@ -10,13 +10,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UICheckBoxTVTableViewController : UITableViewController
+@interface UICheckBoxTableViewController : UITableViewController
 
 @property(nonatomic, readonly) NSMutableArray *selectedItems;
 @property(weak, nonatomic) IBOutlet UIButton *deleteButton;
 @property(weak, nonatomic) IBOutlet UIButton *editButton;
 @property(weak, nonatomic) IBOutlet UIButton *cancelButton;
 @property(weak, nonatomic) IBOutlet UIButton *toggleSelectionButton;
+@property(weak, nonatomic) IBOutlet UIView *emptyView;
 
 - (void)loadData;
 - (void)accessoryForCell:(UITableViewCell *)cell atPath:(NSIndexPath *)indexPath;

@@ -20,11 +20,11 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 
-#import "UICheckBoxTVTableViewController.h"
+#import "UICheckBoxTableViewController.h"
 
 #import "OrderedDictionary.h"
 
-@interface ContactsListTableView : UICheckBoxTVTableViewController {
+@interface ContactsListTableView : UICheckBoxTableViewController {
   @private
 	OrderedDictionary *addressBookMap;
 	NSMutableDictionary *avatarMap;

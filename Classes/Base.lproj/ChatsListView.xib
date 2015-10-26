@@ -128,6 +128,14 @@
                                 <outlet property="delegate" destination="4" id="12"/>
                             </connections>
                         </tableView>
+                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No conversation." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="MSn-PY-yf1" userLabel="emptyTableLabel">
+                            <rect key="frame" x="0.0" y="42" width="375" height="517"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
                     </subviews>
                 </view>
             </subviews>
@@ -141,6 +149,7 @@
                 <outlet property="cancelButton" destination="KhE-c3-2Zj" id="0BM-Q1-ZaR"/>
                 <outlet property="deleteButton" destination="Rxo-0W-iqY" id="vsb-dD-1zl"/>
                 <outlet property="editButton" destination="qem-Y1-v78" id="Ba4-I1-fI5"/>
+                <outlet property="emptyView" destination="MSn-PY-yf1" id="C72-01-4pD"/>
                 <outlet property="toggleSelectionButton" destination="uqG-2T-VOa" id="ytx-bj-7Qr"/>
                 <outlet property="view" destination="6" id="13"/>
             </connections>

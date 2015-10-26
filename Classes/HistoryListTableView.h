@@ -19,9 +19,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UICheckBoxTVTableViewController.h"
+#import "UICheckBoxTableViewController.h"
 
-@interface HistoryListTableView : UICheckBoxTVTableViewController {
+@interface HistoryListTableView : UICheckBoxTableViewController {
 }
 
 @property(nonatomic, assign) BOOL missedFilter;

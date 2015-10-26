@@ -19,9 +19,9 @@
 
 #import <UIKit/UIKit.h>
 #include "linphone/linphonecore.h"
-#include "UICheckBoxTVTableViewController.h"
+#include "UICheckBoxTableViewController.h"
 
-@interface ChatsListTableView : UICheckBoxTVTableViewController
+@interface ChatsListTableView : UICheckBoxTableViewController
 
 - (void)loadData;
 @end

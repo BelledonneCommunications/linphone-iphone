@@ -17,10 +17,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "UICheckBoxTVTableViewController.h"
+#import "UICheckBoxTableViewController.h"
 #import "Utils.h"
 
-@implementation UICheckBoxTVTableViewController
+@implementation UICheckBoxTableViewController
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
 	self = [super initWithCoder:aDecoder];
@@ -38,15 +38,17 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	_editButton.enabled = (([self numberOfSectionsInTableView:self.tableView] > 0) &&
-						   ([self tableView:self.tableView numberOfRowsInSection:0] != 0));
+	_emptyView.hidden = _editButton.enabled = ([self totalNumberOfItems] != 0);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	cell.accessoryType = (cell.accessoryType == UITableViewCellAccessoryCheckmark) ? UITableViewCellAccessoryNone
-																				   : UITableViewCellAccessoryCheckmark;
+	if ([_selectedItems containsObject:indexPath]) {
+		[_selectedItems removeObject:indexPath];
+	} else {
+		[_selectedItems addObject:indexPath];
+	}
 	[self accessoryForCell:cell atPath:indexPath];
 	_toggleSelectionButton.selected = (_selectedItems.count == [self totalNumberOfItems]);
 }
@@ -57,11 +59,9 @@
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	if ([self isEditing]) {
 		UIImage *image = nil;
-		if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
-			[_selectedItems addObject:indexPath];
+		if ([_selectedItems containsObject:indexPath]) {
 			image = [UIImage imageNamed:@"checkbox_checked.png"];
-		} else if (cell.accessoryType == UITableViewCellAccessoryNone) {
-			[_selectedItems removeObject:indexPath];
+		} else {
 			image = [UIImage imageNamed:@"checkbox_unchecked.png"];
 		}
 		UIButton *checkBoxButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -93,8 +93,7 @@
 	[_selectedItems removeAllObjects];
 	[self.tableView reloadData];
 
-	_editButton.enabled = ([self numberOfSectionsInTableView:self.tableView] > 0 &&
-						   [self tableView:self.tableView numberOfRowsInSection:0] != 0);
+	_editButton.enabled = _emptyView.hidden = ([self totalNumberOfItems] > 0);
 }
 
 - (void)removeSelection {
@@ -118,12 +117,12 @@
 	_toggleSelectionButton.selected = !_toggleSelectionButton.selected; // TODO: why do we need that?
 	for (int i = 0; i < [self numberOfSectionsInTableView:self.tableView]; i++) {
 		for (int j = 0; j < [self tableView:self.tableView numberOfRowsInSection:i]; j++) {
-			NSIndexPath *idx = [NSIndexPath indexPathForRow:j inSection:i];
-
-			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:idx];
-			cell.accessoryType =
-				_toggleSelectionButton.selected ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-			[self accessoryForCell:cell atPath:idx];
+			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:j inSection:i];
+			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+			if (_toggleSelectionButton.selected) {
+				[_selectedItems addObject:indexPath];
+			}
+			[self accessoryForCell:cell atPath:indexPath];
 		}
 	}
 }
