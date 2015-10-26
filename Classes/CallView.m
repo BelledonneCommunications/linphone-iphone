@@ -107,11 +107,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	// Set observer
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdateEvent:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
 
 	// Update on show
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
@@ -669,47 +664,37 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	if (linphone_core_get_video_policy([LinphoneManager getLc])->automatically_accept)
 		return;
 
-	const char *lUserNameChars = linphone_address_get_username(linphone_call_get_remote_address(call));
-	NSString *lUserName =
-		lUserNameChars ? [[NSString alloc] initWithUTF8String:lUserNameChars] : NSLocalizedString(@"Unknown", nil);
-	const char *lDisplayNameChars = linphone_address_get_display_name(linphone_call_get_remote_address(call));
-	NSString *lDisplayName = lDisplayNameChars ? [[NSString alloc] initWithUTF8String:lDisplayNameChars] : @"";
-
-	NSString *title = [NSString stringWithFormat:NSLocalizedString(@"'%@' would like to enable video", nil),
-												 ([lDisplayName length] > 0) ? lDisplayName : lUserName];
-	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:title];
-	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:30
-													  target:self
-													selector:@selector(dismissVideoActionSheet:)
-													userInfo:sheet
-													 repeats:NO];
-	[sheet addButtonWithTitle:NSLocalizedString(@"Accept", nil)
-						block:^() {
-						  LOGI(@"User accept video proposal");
-						  LinphoneCallParams *paramsCopy =
-							  linphone_call_params_copy(linphone_call_get_current_params(call));
-						  linphone_call_params_enable_video(paramsCopy, TRUE);
-						  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
-						  linphone_call_params_destroy(paramsCopy);
-						  [timer invalidate];
-						}];
-	DTActionSheetBlock cancelBlock = ^() {
-	  LOGI(@"User declined video proposal");
-	  LinphoneCallParams *paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
-	  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
-	  linphone_call_params_destroy(paramsCopy);
-	  [timer invalidate];
-	};
-	[sheet addDestructiveButtonWithTitle:NSLocalizedString(@"Decline", nil) block:cancelBlock];
-	if (LinphoneManager.runningOnIpad) {
-		[sheet addCancelButtonWithTitle:NSLocalizedString(@"Decline", nil) block:cancelBlock];
-	}
-	[sheet showInView:PhoneMainView.instance.view];
+	NSString *username = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
+	NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%@ would like to enable video", nil), username];
+	NSTimer *timer;
+	UIConfirmationDialog *sheet = [UIConfirmationDialog ShowWithMessage:title
+		cancelMessage:nil
+		confirmMessage:NSLocalizedString(@"ACCEPT", nil)
+		onCancelClick:^() {
+		  LOGI(@"User declined video proposal");
+		  LinphoneCallParams *paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
+		  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
+		  linphone_call_params_destroy(paramsCopy);
+		  [timer invalidate];
+		}
+		onConfirmationClick:^() {
+		  LOGI(@"User accept video proposal");
+		  LinphoneCallParams *paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
+		  linphone_call_params_enable_video(paramsCopy, TRUE);
+		  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
+		  linphone_call_params_destroy(paramsCopy);
+		  [timer invalidate];
+		}];
+	timer = [NSTimer scheduledTimerWithTimeInterval:30
+											 target:self
+										   selector:@selector(dismissVideoActionSheet:)
+										   userInfo:sheet
+											repeats:NO];
 }
 
 - (void)dismissVideoActionSheet:(NSTimer *)timer {
-	DTActionSheet *sheet = (DTActionSheet *)timer.userInfo;
-	[sheet dismissWithClickedButtonIndex:sheet.destructiveButtonIndex animated:TRUE];
+	UIConfirmationDialog *sheet = (UIConfirmationDialog *)timer.userInfo;
+	[sheet dismiss];
 }
 
 #pragma mark VideoPreviewMoving

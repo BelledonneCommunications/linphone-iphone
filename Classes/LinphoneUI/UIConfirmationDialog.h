@@ -15,11 +15,11 @@ typedef void (^UIConfirmationBlock)(void);
 	UIConfirmationBlock onConfirmCb;
 }
 
-+ (void)ShowWithMessage:(NSString *)message
-		  cancelMessage:(NSString *)cancel
-		 confirmMessage:(NSString *)confirm
-		  onCancelClick:(UIConfirmationBlock)onCancel
-	onConfirmationClick:(UIConfirmationBlock)onConfirm;
++ (UIConfirmationDialog *)ShowWithMessage:(NSString *)message
+							cancelMessage:(NSString *)cancel
+						   confirmMessage:(NSString *)confirm
+							onCancelClick:(UIConfirmationBlock)onCancel
+					  onConfirmationClick:(UIConfirmationBlock)onConfirm;
 
 @property(weak, nonatomic) IBOutlet UIRoundBorderedButton *cancelButton;
 @property(weak, nonatomic) IBOutlet UIRoundBorderedButton *confirmationButton;

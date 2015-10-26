@@ -11,11 +11,11 @@
 
 @implementation UIConfirmationDialog
 
-+ (void)ShowWithMessage:(NSString *)message
-		  cancelMessage:(NSString *)cancel
-		 confirmMessage:(NSString *)confirm
-		  onCancelClick:(UIConfirmationBlock)onCancel
-	onConfirmationClick:(UIConfirmationBlock)onConfirm {
++ (UIConfirmationDialog *)ShowWithMessage:(NSString *)message
+							cancelMessage:(NSString *)cancel
+						   confirmMessage:(NSString *)confirm
+							onCancelClick:(UIConfirmationBlock)onCancel
+					  onConfirmationClick:(UIConfirmationBlock)onConfirm {
 	UIConfirmationDialog *dialog =
 		[[UIConfirmationDialog alloc] initWithNibName:NSStringFromClass(self.class) bundle:NSBundle.mainBundle];
 
@@ -37,6 +37,7 @@
 		[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]] CGColor];
 	dialog.cancelButton.layer.borderColor =
 		[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_F.png"]] CGColor];
+	return dialog;
 }
 
 - (IBAction)onCancelClick:(id)sender {

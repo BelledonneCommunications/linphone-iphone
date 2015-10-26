@@ -570,8 +570,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[hiddenKeys addObject:@"quit_button"];  // Hide for the moment
 	[hiddenKeys addObject:@"about_button"]; // Hide for the moment
 
-	if (!linphone_core_video_supported([LinphoneManager getLc]))
+	if (!linphone_core_video_supported([LinphoneManager getLc])) {
 		[hiddenKeys addObject:@"video_menu"];
+	}
 
 	if (![LinphoneManager isCodecSupported:"h264"]) {
 		[hiddenKeys addObject:@"h264_preference"];

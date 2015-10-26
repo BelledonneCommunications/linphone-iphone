@@ -302,7 +302,7 @@
 											   linphone_call_get_authentication_token(call)];
 				if (securityDialog == nil) {
 					__block __strong StatusBarView *weakSelf = self;
-					[UIConfirmationDialog ShowWithMessage:message
+					securityDialog = [UIConfirmationDialog ShowWithMessage:message
 						cancelMessage:NSLocalizedString(@"DENY", nil)
 						confirmMessage:NSLocalizedString(@"ACCEPT", nil)
 						onCancelClick:^() {
