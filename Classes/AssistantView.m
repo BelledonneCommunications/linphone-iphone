@@ -37,6 +37,7 @@ typedef enum _ViewElement {
 	ViewElement_Domain = 104,
 	ViewElement_Transport = 105,
 	ViewElement_Username_Label = 106,
+	ViewElement_URL = 107,
 	ViewElement_NextButton = 130,
 } ViewElement;
 
@@ -104,7 +105,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[LinphoneUtils adjustFontSize:_linphoneLoginView mult:2.22f];
 		[LinphoneUtils adjustFontSize:_loginView mult:2.22f];
 		[LinphoneUtils adjustFontSize:_createAccountActivationView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_remoteProvisionningView mult:2.22f];
+		[LinphoneUtils adjustFontSize:_remoteProvisionningLoginView mult:2.22f];
 	}
 }
 
@@ -311,7 +312,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 
-	[self changeView:_remoteProvisionningView back:FALSE animation:TRUE];
+	[self changeView:_remoteProvisionningLoginView back:FALSE animation:TRUE];
 
 	linphone_proxy_config_destroy(default_conf);
 }
@@ -322,7 +323,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[AssistantView cleanTextField:_linphoneLoginView];
 	[AssistantView cleanTextField:_loginView];
 	[AssistantView cleanTextField:_createAccountActivationView];
-	[AssistantView cleanTextField:_remoteProvisionningView];
+	[AssistantView cleanTextField:_remoteProvisionningLoginView];
 }
 
 - (void)displayUsernameAsPhoneOrUsername {
@@ -597,19 +598,10 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 }
 
 - (IBAction)onGotoRemoteProvisionningClick:(id)sender {
-	UIAlertView *remoteInput = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Enter provisioning URL", @"")
-														  message:@""
-														 delegate:self
-												cancelButtonTitle:NSLocalizedString(@"Cancel", @"")
-												otherButtonTitles:NSLocalizedString(@"Fetch", @""), nil];
-	remoteInput.alertViewStyle = UIAlertViewStylePlainTextInput;
-
-	UITextField *prov_url = [remoteInput textFieldAtIndex:0];
-	prov_url.keyboardType = UIKeyboardTypeURL;
-	prov_url.text = [[LinphoneManager instance] lpConfigStringForKey:@"config-uri" forSection:@"misc"];
-	prov_url.placeholder = @"URL";
-
-	[remoteInput show];
+	nextView = _remoteProvisionningView;
+	[self loadAssistantConfig:@"assistant_remote.rc"];
+	[self findTextField:ViewElement_URL].text =
+		[[LinphoneManager instance] lpConfigStringForKey:@"config-uri" forSection:@"misc"];
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
@@ -632,9 +624,25 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	linphone_account_creator_test_validation(account_creator);
 }
 
-- (IBAction)onRemoteProvisionningClick:(id)sender {
+- (IBAction)onRemoteProvisionningLoginClick:(id)sender {
 	_waitView.hidden = NO;
 	[self addProxyConfig:linphone_account_creator_configure(account_creator)];
+}
+
+- (IBAction)onRemoteProvisionningDownloadClick:(id)sender {
+	NSString *url = [self findTextField:ViewElement_URL].text;
+	if ([url length] > 0) {
+		// missing prefix will result in http:// being used
+		if ([url rangeOfString:@"://"].location == NSNotFound) {
+			url = [NSString stringWithFormat:@"http://%@", url];
+		}
+
+		LOGI(@"Should use remote provisioning URL %@", url);
+		linphone_core_set_provisioning_uri([LinphoneManager getLc], [url UTF8String]);
+
+		[_waitView setHidden:false];
+		[[LinphoneManager instance] resetLinphoneCore];
+	}
 }
 
 - (IBAction)onTransportChange:(id)sender {

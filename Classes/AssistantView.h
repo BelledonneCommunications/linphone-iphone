@@ -39,7 +39,8 @@
 @property(nonatomic, strong) IBOutlet UIView *createAccountActivationView;
 @property(nonatomic, strong) IBOutlet UIView *linphoneLoginView;
 @property(nonatomic, strong) IBOutlet UIView *loginView;
-@property(nonatomic, strong) IBOutlet UIView *remoteProvisionningView;
+@property(nonatomic, strong) IBOutlet UIView *remoteProvisionningLoginView;
+@property(strong, nonatomic) IBOutlet UIView *remoteProvisionningView;
 
 @property(nonatomic, strong) IBOutlet UIImageView *welcomeLogoImage;
 @property(nonatomic, strong) IBOutlet UIButton *gotoCreateAccountButton;
@@ -62,7 +63,8 @@
 - (IBAction)onCreateAccountActivationClick:(id)sender;
 - (IBAction)onLinphoneLoginClick:(id)sender;
 - (IBAction)onLoginClick:(id)sender;
-- (IBAction)onRemoteProvisionningClick:(id)sender;
+- (IBAction)onRemoteProvisionningLoginClick:(id)sender;
+- (IBAction)onRemoteProvisionningDownloadClick:(id)sender;
 
 - (IBAction)onTransportChange:(id)sender;
 
