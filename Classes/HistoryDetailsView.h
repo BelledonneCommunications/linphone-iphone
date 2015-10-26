@@ -28,7 +28,6 @@
 @interface HistoryDetailsView : UIViewController <UICompositeViewDelegate> {
   @private
 	LinphoneCallLog *callLog;
-	NSDateFormatter *dateFormatter;
 }
 @property(weak, nonatomic) IBOutlet UILabel *contactLabel;
 @property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;

@@ -39,7 +39,7 @@
 
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:YES] bordered:NO withRoundedRadius:YES];
 
-	_durationLabel.text = [LinphoneUtils durationForCall:linphone_core_get_current_call([LinphoneManager getLc])];
+	_durationLabel.text = [LinphoneUtils durationToString:linphone_call_get_duration(call)];
 }
 
 - (IBAction)onKickClick:(id)sender {

@@ -65,9 +65,10 @@
 	time_t callTime = linphone_call_log_get_start_date(log);
 	cell.textLabel.textAlignment = NSTextAlignmentCenter;
 	[cell.textLabel
-		setText:[NSString stringWithFormat:@"%@ - %d sec",
-										   [LinphoneUtils timeToString:callTime withStyle:NSDateFormatterMediumStyle],
-										   duration]];
+		setText:[NSString stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:callTime
+																		withFormat:NSLocalizedString(
+																					   @"yyyy/MM/dd '-' HH'h'mm", nil)],
+										   [LinphoneUtils durationToString:duration]]];
 	BOOL outgoing = (linphone_call_log_get_dir(log) == LinphoneCallOutgoing);
 
 	if (linphone_call_log_get_status(log) == LinphoneCallMissed) {

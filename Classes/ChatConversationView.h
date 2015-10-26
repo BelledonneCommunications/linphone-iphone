@@ -42,7 +42,6 @@
 @property(weak, nonatomic) IBOutlet UITextView *messageField;
 @property(nonatomic, strong) IBOutlet UIButton *sendButton;
 @property(nonatomic, strong) IBOutlet UILabel *addressLabel;
-@property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, strong) IBOutlet UIView *headerView;
 @property(nonatomic, strong) IBOutlet UIView *chatView;
 @property(nonatomic, strong) IBOutlet UIView *messageView;

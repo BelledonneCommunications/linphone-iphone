@@ -21,26 +21,7 @@
 #import "PhoneMainView.h"
 #import "FastAddressBook.h"
 
-@implementation HistoryDetailsView {
-}
-
-#pragma mark - LifeCycle Functions
-
-- (id)init {
-	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-	if (self != nil) {
-		dateFormatter = [[NSDateFormatter alloc] init];
-		[dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
-		[dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-		NSLocale *locale = [NSLocale currentLocale];
-		[dateFormatter setLocale:locale];
-	}
-	return self;
-}
-
-- (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
+@implementation HistoryDetailsView
 
 #pragma mark - UICompositeViewDelegate Functions
 
@@ -97,10 +78,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneAddressBookUpdate object:nil];
-
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCoreUpdate object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Event Functions
@@ -162,7 +140,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
 	_addContactButton.hidden = (contact != nil);
 	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr];
-	[_avatarImage setImage:[FastAddressBook imageForContact:contact thumbnail:NO] bordered:YES withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 	char *addrURI = linphone_address_as_string_uri_only(addr);
 	_addressLabel.text = [NSString stringWithUTF8String:addrURI];
 	ms_free(addrURI);

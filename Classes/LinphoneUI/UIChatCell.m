@@ -87,7 +87,7 @@
 		}
 
 		_chatLatestTimeLabel.text = [LinphoneUtils timeToString:linphone_chat_message_get_time(last_message)
-													  withStyle:NSDateFormatterShortStyle];
+													 withFormat:NSLocalizedString(@"MM/dd", nil)];
 		_chatLatestTimeLabel.hidden = NO;
 	} else {
 		_chatContentLabel.text = nil;

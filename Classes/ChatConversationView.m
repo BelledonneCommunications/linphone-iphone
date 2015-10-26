@@ -200,7 +200,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
 	_addressLabel.accessibilityValue = _addressLabel.text;
-	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:YES] bordered:NO withRoundedRadius:YES];
 }
 
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {

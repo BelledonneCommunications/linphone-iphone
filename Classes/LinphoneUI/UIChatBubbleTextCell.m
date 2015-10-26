@@ -100,7 +100,7 @@
 	// Date
 	_contactDateLabel.text = [NSString
 		stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(_message)
-													   withStyle:NSDateFormatterShortStyle],
+													  withFormat:NSLocalizedString(@"yyyy/MM/dd '-' HH'h'mm", nil)],
 						 [FastAddressBook displayNameForAddress:linphone_chat_message_get_peer_address(_message)]];
 
 	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);

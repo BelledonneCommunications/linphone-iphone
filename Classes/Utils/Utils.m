@@ -105,8 +105,7 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 	}
 }
 
-+ (NSString *)durationForCall:(LinphoneCall *)call {
-	int duration = call ? linphone_call_get_duration(call) : 0;
++ (NSString *)durationToString:(int)duration {
 	NSMutableString *result = [[NSMutableString alloc] init];
 	if (duration / 3600 > 0) {
 		[result appendString:[NSString stringWithFormat:@"%02i:", duration / 3600]];
@@ -115,28 +114,11 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 	return [result stringByAppendingString:[NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60)]];
 }
 
-+ (NSString *)timeToString:(time_t)time withStyle:(NSDateFormatterStyle)style {
++ (NSString *)timeToString:(time_t)time withFormat:(NSString *)format {
 	NSDate *todayDate = [[NSDate alloc] init];
 	NSDate *messageDate = (time == 0) ? todayDate : [NSDate dateWithTimeIntervalSince1970:time];
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-
-	[dateFormatter setDateStyle:style];
-
-	if (style == NSDateFormatterShortStyle) {
-		// UGLY but single line code!
-		BOOL sameDay =
-			[[dateFormatter stringFromDate:todayDate] isEqualToString:[dateFormatter stringFromDate:messageDate]];
-		if (sameDay) {
-			[dateFormatter setDateStyle:NSDateFormatterNoStyle];
-			[dateFormatter setTimeStyle:style];
-		} else {
-			[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-		}
-	} else {
-		[dateFormatter setTimeStyle:style];
-	}
-	NSLocale *locale = [NSLocale currentLocale];
-	[dateFormatter setLocale:locale];
+	[dateFormatter setDateFormat:format];
 	return [dateFormatter stringFromDate:messageDate];
 }
 

@@ -39,6 +39,7 @@
 @property(nonatomic, strong) IBOutlet UIButton *cancelButton;
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property(weak, nonatomic) IBOutlet UIToggleButton *deleteButton;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onCancelClick:(id)event;

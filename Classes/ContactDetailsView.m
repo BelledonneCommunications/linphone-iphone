@@ -210,7 +210,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:1.0];
 	}
-
 	[_tableController setEditing:editing animated:animated];
 	if (editing) {
 		[_editButton setOn];

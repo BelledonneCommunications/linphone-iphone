@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="addressLabel" destination="frB-ep-LWi" id="g8q-qs-S9y"/>
                 <outlet property="defaultView" destination="SR2-3m-6t5" id="ZvK-H1-inh"/>
+                <outlet property="deleteButton" destination="C2f-aP-xjR" id="sxr-th-6rq"/>
                 <outlet property="editTextfield" destination="dTn-Hc-bGM" id="bkN-xg-S9D"/>
                 <outlet property="editView" destination="rAa-qu-PDc" id="cGz-D2-GiI"/>
             </connections>
