@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <objects>
@@ -86,6 +87,9 @@
                     <state key="normal" title="Registered" image="led_disconnected.png">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
+                    <connections>
+                        <action selector="onRegistrationStateClick:" destination="-1" eventType="touchUpInside" id="erb-GT-Zef"/>
+                    </connections>
                 </button>
             </subviews>
             <nil key="simulatedStatusBarMetrics"/>
@@ -94,12 +98,12 @@
         </view>
     </objects>
     <resources>
-        <image name="call_quality_indicator_4.png" width="20" height="20"/>
-        <image name="color_A.png" width="1" height="1"/>
-        <image name="led_disconnected.png" width="12" height="12"/>
-        <image name="menu.png" width="19" height="19"/>
-        <image name="security_ok.png" width="13" height="17"/>
-        <image name="voicemail.png" width="26" height="12"/>
+        <image name="call_quality_indicator_4.png" width="19" height="19"/>
+        <image name="color_A.png" width="2" height="2"/>
+        <image name="led_disconnected.png" width="11" height="11"/>
+        <image name="menu.png" width="19" height="18"/>
+        <image name="security_ok.png" width="13" height="18"/>
+        <image name="voicemail.png" width="25" height="12"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

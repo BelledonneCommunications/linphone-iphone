@@ -205,6 +205,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d contacts?", nil),
 								   tableController.selectedItems.count];
 	[UIConfirmationDialog ShowWithMessage:msg
+		cancelMessage:nil
+		confirmMessage:nil
 		onCancelClick:^() {
 		  [self onEditionChangeClick:nil];
 		}

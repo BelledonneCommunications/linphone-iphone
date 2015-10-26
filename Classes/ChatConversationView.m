@@ -452,6 +452,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d messages?", nil),
 								   _tableController.selectedItems.count];
 	[UIConfirmationDialog ShowWithMessage:msg
+		cancelMessage:nil
+		confirmMessage:nil
 		onCancelClick:^() {
 		  [self onEditionChangeClick:nil];
 		}

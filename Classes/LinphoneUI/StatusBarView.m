@@ -139,6 +139,12 @@
 	// show voice mail only when there is no call
 	[self updateUI:linphone_core_get_calls([LinphoneManager getLc]) != NULL];
 	[self updateVoicemail];
+
+	LinphoneCall *currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
+	if (currentCall && !linphone_call_get_authentication_token_verified(currentCall) &&
+		linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
+		[self onSecurityClick:nil];
+	}
 }
 
 #pragma mark -
@@ -242,8 +248,8 @@
 
 	const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
 	if (list == NULL) {
-		if (securitySheet) {
-			[securitySheet dismissWithClickedButtonIndex:securitySheet.destructiveButtonIndex animated:TRUE];
+		if (securityDialog) {
+			[securityDialog dismiss];
 		}
 	} else {
 		callSecurityButton.hidden = NO;
@@ -291,29 +297,22 @@
 				linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
 			if (enc == LinphoneMediaEncryptionZRTP) {
 				bool valid = linphone_call_get_authentication_token_verified(call);
-				NSString *message = nil;
-				if (valid) {
-					message = NSLocalizedString(@"Remove trust in the peer?", nil);
-				} else {
-					message = [NSString
-						stringWithFormat:NSLocalizedString(@"Confirm the following SAS with the peer:\n%s", nil),
-										 linphone_call_get_authentication_token(call)];
-				}
-				if (securitySheet == nil) {
+				NSString *message =
+					[NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n%s", nil),
+											   linphone_call_get_authentication_token(call)];
+				if (securityDialog == nil) {
 					__block __strong StatusBarView *weakSelf = self;
-					securitySheet = [[DTActionSheet alloc] initWithTitle:message];
-					[securitySheet setDelegate:self];
-					[securitySheet addButtonWithTitle:NSLocalizedString(@"Ok", nil)
-												block:^() {
-												  linphone_call_set_authentication_token_verified(call, !valid);
-												  weakSelf->securitySheet = nil;
-												}];
-
-					[securitySheet addDestructiveButtonWithTitle:NSLocalizedString(@"Cancel", nil)
-														   block:^() {
-															 weakSelf->securitySheet = nil;
-														   }];
-					[securitySheet showInView:PhoneMainView.instance.view];
+					[UIConfirmationDialog ShowWithMessage:message
+						cancelMessage:NSLocalizedString(@"DENY", nil)
+						confirmMessage:NSLocalizedString(@"ACCEPT", nil)
+						onCancelClick:^() {
+						  linphone_call_set_authentication_token_verified(call, NO);
+						  weakSelf->securityDialog = nil;
+						}
+						onConfirmationClick:^() {
+						  linphone_call_set_authentication_token_verified(call, !valid);
+						  weakSelf->securityDialog = nil;
+						}];
 				}
 			}
 		}
@@ -329,8 +328,8 @@
 	}
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	securitySheet = nil;
+- (IBAction)onRegistrationStateClick:(id)sender {
+	linphone_core_refresh_registers([LinphoneManager getLc]);
 }
 
 #pragma mark - TPMultiLayoutViewController Functions

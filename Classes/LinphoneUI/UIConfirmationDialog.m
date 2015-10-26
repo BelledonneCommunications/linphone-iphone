@@ -12,6 +12,8 @@
 @implementation UIConfirmationDialog
 
 + (void)ShowWithMessage:(NSString *)message
+		  cancelMessage:(NSString *)cancel
+		 confirmMessage:(NSString *)confirm
 		  onCancelClick:(UIConfirmationBlock)onCancel
 	onConfirmationClick:(UIConfirmationBlock)onConfirm {
 	UIConfirmationDialog *dialog =
@@ -24,6 +26,13 @@
 	dialog->onConfirmCb = onConfirm;
 
 	[dialog.titleLabel setText:message];
+	if (cancel) {
+		[dialog.cancelButton setTitle:cancel forState:UIControlStateNormal];
+	}
+	if (confirm) {
+		[dialog.confirmationButton setTitle:confirm forState:UIControlStateNormal];
+	}
+
 	dialog.confirmationButton.layer.borderColor =
 		[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]] CGColor];
 	dialog.cancelButton.layer.borderColor =
@@ -44,5 +53,9 @@
 	if (onConfirmCb) {
 		onConfirmCb();
 	}
+}
+
+- (void)dismiss {
+	[self onCancelClick:nil];
 }
 @end

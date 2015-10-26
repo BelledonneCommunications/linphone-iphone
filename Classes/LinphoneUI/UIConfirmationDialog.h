@@ -11,12 +11,13 @@
 typedef void (^UIConfirmationBlock)(void);
 
 @interface UIConfirmationDialog : UIViewController {
-
 	UIConfirmationBlock onCancelCb;
 	UIConfirmationBlock onConfirmCb;
 }
 
 + (void)ShowWithMessage:(NSString *)message
+		  cancelMessage:(NSString *)cancel
+		 confirmMessage:(NSString *)confirm
 		  onCancelClick:(UIConfirmationBlock)onCancel
 	onConfirmationClick:(UIConfirmationBlock)onConfirm;
 
@@ -25,5 +26,5 @@ typedef void (^UIConfirmationBlock)(void);
 @property(weak, nonatomic) IBOutlet UILabel *titleLabel;
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onConfirmationClick:(id)sender;
-
+- (void)dismiss;
 @end

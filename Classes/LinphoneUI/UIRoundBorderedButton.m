@@ -24,7 +24,10 @@
 							   UIControlStateSelected | UIControlStateHighlighted,
 							   UIControlStateSelected | UIControlStateDisabled};
 	for (int i = 0; i < sizeof(states) / sizeof(UIControlState); i++) {
-		[self setTitle:[[self titleForState:states[i]] uppercaseString] forState:states[i]];
+		if (![[self titleForState:UIControlStateNormal]
+					.uppercaseString isEqualToString:[self titleForState:states[i]]]) {
+			[self setTitle:[[self titleForState:states[i]] uppercaseString] forState:states[i]];
+		}
 	}
 	return self;
 }

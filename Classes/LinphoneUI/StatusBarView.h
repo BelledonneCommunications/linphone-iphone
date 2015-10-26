@@ -19,10 +19,10 @@
 
 #import <UIKit/UIKit.h>
 #import "TPMultiLayoutViewController.h"
-#import "DTActionSheet.h"
+#import "UIConfirmationDialog.h"
 
-@interface StatusBarView : TPMultiLayoutViewController <UIActionSheetDelegate> {
-	DTActionSheet *securitySheet;
+@interface StatusBarView : TPMultiLayoutViewController {
+	UIConfirmationDialog *securityDialog;
 }
 
 @property(weak, nonatomic) IBOutlet UIButton *registrationState;
@@ -35,5 +35,6 @@
 
 - (IBAction)onSecurityClick:(id)sender;
 - (IBAction)onSideMenuClick:(id)sender;
+- (IBAction)onRegistrationStateClick:(id)sender;
 
 @end
