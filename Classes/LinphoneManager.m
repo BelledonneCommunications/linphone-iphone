@@ -1549,7 +1549,7 @@ static int comp_call_id(const LinphoneCall *call, const char *callid) {
 	MSList *calls = (MSList *)linphone_core_get_calls(theLinphoneCore);
 	MSList *call = ms_list_find_custom(calls, (MSCompareFunc)comp_call_id, [callid UTF8String]);
 	if (call != NULL) {
-		[self acceptCall:(LinphoneCall *)call->data];
+		[self acceptCall:(LinphoneCall *)call->data evenWithVideo:YES];
 		return;
 	};
 }
@@ -1853,7 +1853,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 
 #pragma mark - Call Functions
 
-- (void)acceptCall:(LinphoneCall *)call {
+- (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video {
 	LinphoneCallParams *lcallParams = linphone_core_create_call_params(theLinphoneCore, call);
 	if ([self lpConfigBoolForKey:@"edge_opt_preference"]) {
 		bool low_bandwidth = self.network == network_2g;
@@ -1861,6 +1861,9 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 			LOGI(@"Low bandwidth mode");
 		}
 		linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
+	}
+	if (!video) {
+		linphone_call_params_enable_video(lcallParams, NO);
 	}
 
 	linphone_core_accept_call_with_params(theLinphoneCore, call, lcallParams);

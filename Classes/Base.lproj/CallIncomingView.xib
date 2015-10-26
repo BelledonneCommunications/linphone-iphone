@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -11,6 +11,8 @@
                 <outlet property="avatarImage" destination="19" id="20"/>
                 <outlet property="nameLabel" destination="hjQ-4P-bKP" id="Elh-o8-zM9"/>
                 <outlet property="portraitView" destination="25" id="32"/>
+                <outlet property="tabBar" destination="4" id="9gd-FT-jaI"/>
+                <outlet property="tabVideoBar" destination="vIQ-QP-ooa" id="JZq-9l-pOy"/>
                 <outlet property="view" destination="25" id="26"/>
             </connections>
         </placeholder>
@@ -33,7 +35,7 @@
                             </state>
                         </button>
                         <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" image="avatar.png" id="19" userLabel="avatarImage" customClass="UIRoundedImageView">
-                            <rect key="frame" x="46" y="58" width="283" height="283"/>
+                            <rect key="frame" x="46" y="130" width="283" height="283"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                 <accessibilityTraits key="traits" none="YES" image="YES" notEnabled="YES"/>
@@ -41,14 +43,14 @@
                             </accessibility>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="hjQ-4P-bKP" userLabel="nameLabel">
-                            <rect key="frame" x="46" y="359" width="283" height="32"/>
+                            <rect key="frame" x="46" y="50" width="283" height="32"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="37"/>
                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="78f-eb-xdx" userLabel="addressLabel">
-                            <rect key="frame" x="90" y="399" width="194" height="22"/>
+                            <rect key="frame" x="90" y="82" width="194" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -89,6 +91,56 @@
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
+                        <view hidden="YES" tag="10" contentMode="scaleToFill" id="vIQ-QP-ooa" userLabel="tabVideoBar">
+                            <rect key="frame" x="0.0" y="562" width="375" height="63"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                            <subviews>
+                                <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="KnH-hj-g47" userLabel="declineButton">
+                                    <rect key="frame" x="1" y="0.0" width="124" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Decline"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_hangup_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_I.png"/>
+                                    <connections>
+                                        <action selector="onDeclineClick:" destination="-1" eventType="touchUpInside" id="Nrs-UR-Hb9"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tX0-eE-di5" userLabel="acceptButton">
+                                    <rect key="frame" x="250" y="0.0" width="125" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="call_video_start_default.png" backgroundImage="color_A.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_video_start_disabled.png"/>
+                                    <state key="selected" image="call_video_start_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_L.png"/>
+                                    <connections>
+                                        <action selector="onAcceptClick:" destination="-1" eventType="touchUpInside" id="XvK-9T-J2j"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="wYo-ty-Rwk" userLabel="acceptAudioOnlyButton">
+                                    <rect key="frame" x="125" y="0.0" width="125" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="call_audio_start_default.png" backgroundImage="color_A.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_audio_start_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_L.png"/>
+                                    <connections>
+                                        <action selector="onAcceptAudioOnlyClick:" destination="-1" eventType="touchUpInside" id="N9h-i1-ejZ"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
@@ -104,11 +156,13 @@
         <image name="call_audio_start_disabled.png" width="36" height="36"/>
         <image name="call_hangup_default.png" width="41" height="36"/>
         <image name="call_hangup_disabled.png" width="41" height="36"/>
-        <image name="color_A.png" width="1" height="1"/>
-        <image name="color_D.png" width="1" height="1"/>
-        <image name="color_F.png" width="1" height="1"/>
-        <image name="color_I.png" width="1" height="1"/>
-        <image name="color_L.png" width="1" height="1"/>
+        <image name="call_video_start_default.png" width="39" height="36"/>
+        <image name="call_video_start_disabled.png" width="39" height="36"/>
+        <image name="color_A.png" width="2" height="2"/>
+        <image name="color_D.png" width="2" height="2"/>
+        <image name="color_F.png" width="2" height="2"/>
+        <image name="color_I.png" width="2" height="2"/>
+        <image name="color_L.png" width="2" height="2"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

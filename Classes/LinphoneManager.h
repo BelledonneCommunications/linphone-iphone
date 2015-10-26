@@ -160,7 +160,7 @@ typedef struct _LinphoneManagerSounds {
 + (NSString*)documentFile:(NSString*)file;
 + (NSString*)cacheDirectory;
 
-- (void)acceptCall:(LinphoneCall *)call;
+- (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video;
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
 

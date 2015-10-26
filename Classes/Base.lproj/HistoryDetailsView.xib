@@ -113,6 +113,8 @@
                                     <state key="normal" title="Button" image="call_start_body_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <state key="disabled" image="call_start_body_disabled.png"/>
+                                    <state key="highlighted" image="call_start_body_over.png"/>
                                     <connections>
                                         <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="Vlx-14-3CH"/>
                                     </connections>
@@ -159,6 +161,8 @@
         <image name="back_default.png" width="24" height="21"/>
         <image name="back_disabled.png" width="24" height="21"/>
         <image name="call_start_body_default.png" width="51" height="51"/>
+        <image name="call_start_body_disabled.png" width="51" height="51"/>
+        <image name="call_start_body_over.png" width="51" height="51"/>
         <image name="chat_start_body_default.png" width="51" height="51"/>
         <image name="color_F.png" width="2" height="2"/>
         <image name="contact_add_default.png" width="34" height="29"/>

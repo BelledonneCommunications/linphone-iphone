@@ -694,7 +694,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 		if (callIDFromPush && autoAnswer) {
 			// accept call automatically
-			[lm acceptCall:call];
+			[lm acceptCall:call evenWithVideo:YES];
 		} else {
 			AudioServicesPlaySystemSound(lm.sounds.vibrate);
 			CallIncomingView *view = VIEW(CallIncomingView);
@@ -745,8 +745,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)incomingCallAborted:(LinphoneCall *)call {
 }
 
-- (void)incomingCallAccepted:(LinphoneCall *)call {
-	[[LinphoneManager instance] acceptCall:call];
+- (void)incomingCallAccepted:(LinphoneCall *)call evenWithVideo:(BOOL)video {
+	[[LinphoneManager instance] acceptCall:call evenWithVideo:video];
 }
 
 - (void)incomingCallDeclined:(LinphoneCall *)call {

@@ -26,7 +26,7 @@
 
 @protocol IncomingCallViewDelegate <NSObject>
 
-- (void)incomingCallAccepted:(LinphoneCall *)call;
+- (void)incomingCallAccepted:(LinphoneCall *)call evenWithVideo:(BOOL)video;
 - (void)incomingCallDeclined:(LinphoneCall *)call;
 - (void)incomingCallAborted:(LinphoneCall *)call;
 
@@ -39,8 +39,11 @@
 @property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, assign) LinphoneCall *call;
 @property(nonatomic, strong) id<IncomingCallViewDelegate> delegate;
+@property(weak, nonatomic) IBOutlet UIView *tabVideoBar;
+@property(weak, nonatomic) IBOutlet UIView *tabBar;
 
 - (IBAction)onAcceptClick:(id)event;
 - (IBAction)onDeclineClick:(id)event;
+- (IBAction)onAcceptAudioOnlyClick:(id)sender;
 
 @end

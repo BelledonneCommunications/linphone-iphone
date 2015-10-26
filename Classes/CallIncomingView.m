@@ -99,6 +99,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_addressLabel.text = [NSString stringWithUTF8String:uri];
 	ms_free(uri);
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:NO] bordered:YES withRoundedRadius:YES];
+
+	_tabBar.hidden = linphone_call_params_video_enabled(linphone_call_get_remote_params(_call));
+	_tabVideoBar.hidden = !_tabBar.hidden;
 }
 
 #pragma mark - Property Functions
@@ -113,12 +116,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAcceptClick:(id)event {
 	[self dismiss];
-	[_delegate incomingCallAccepted:_call];
+	[_delegate incomingCallAccepted:_call evenWithVideo:YES];
 }
 
 - (IBAction)onDeclineClick:(id)event {
 	[self dismiss];
 	[_delegate incomingCallDeclined:_call];
+}
+
+- (IBAction)onAcceptAudioOnlyClick:(id)sender {
+	[self dismiss];
+	[_delegate incomingCallAccepted:_call evenWithVideo:NO];
 }
 
 #pragma mark - TPMultiLayoutViewController Functions

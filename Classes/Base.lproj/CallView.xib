@@ -76,7 +76,7 @@
                     <rect key="frame" x="0.0" y="42" width="375" height="625"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <view contentMode="scaleToFill" id="0Ju-u5-N7A" userLabel="conferenceView">
+                        <view hidden="YES" contentMode="scaleToFill" id="0Ju-u5-N7A" userLabel="conferenceView">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="503"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -100,8 +100,8 @@
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
-                        <view hidden="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="9" userLabel="callView">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="503.00000045117241"/>
+                        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="9" userLabel="callView">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="503.00000045117235"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="KPa-Rm-Qni" userLabel="nameLabel">
@@ -112,7 +112,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="01:34" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Oy8-QO-Jwb" userLabel="durationLabel">
-                                    <rect key="frame" x="0.0" y="70" width="375" height="40"/>
+                                    <rect key="frame" x="0.0" y="82" width="375" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -127,16 +127,16 @@
                                     </accessibility>
                                 </imageView>
                                 <view hidden="YES" contentMode="scaleToFill" id="126" userLabel="video">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="503.00000045117241"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="503.00000045117235"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" id="173" userLabel="background">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="503.00000045117241"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="503.00000045117235"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                         </view>
                                         <view contentMode="scaleToFill" id="132" userLabel="display">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="503.00000045117241"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="503.00000045117235"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             <accessibility key="accessibilityConfiguration">
@@ -144,7 +144,7 @@
                                             </accessibility>
                                         </view>
                                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254.00000029960563" y="355" width="113" height="140.00000012760432"/>
+                                            <rect key="frame" x="254.00000029960563" y="355" width="113" height="140.0000001276043"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -189,7 +189,7 @@
                                     <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
                                 <button opaque="NO" tag="24" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7f5-7T-fV3" userLabel="pauseButton" customClass="UIPauseButton">
-                                    <rect key="frame" x="310" y="370.00000045117241" width="52" height="52"/>
+                                    <rect key="frame" x="310" y="370.00000045117235" width="52" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Pause"/>
                                     <state key="normal" image="pause_big_default.png">

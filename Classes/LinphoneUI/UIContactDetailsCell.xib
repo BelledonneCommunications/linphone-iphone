@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -30,7 +30,7 @@
                             <textInputTraits key="textInputTraits"/>
                         </textField>
                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="C2f-aP-xjR" userLabel="deleteButton" customClass="UIIconButton">
-                            <rect key="frame" x="340" y="6.9999998782131989" width="30" height="30"/>
+                            <rect key="frame" x="340" y="6.9999997995414533" width="30" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <state key="normal" title="Button" image="delete_field_default.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -49,17 +49,19 @@
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ZbV-2Z-b4y" userLabel="callButton" customClass="UIIconButton">
-                            <rect key="frame" x="135" y="40.000000216744155" width="44" height="44"/>
+                            <rect key="frame" x="135" y="40" width="44" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <state key="normal" title="Button" image="call_start_body_default.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
+                            <state key="disabled" image="call_start_body_disabled.png"/>
+                            <state key="highlighted" image="call_start_body_over.png"/>
                             <connections>
                                 <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="nVk-zG-i8I"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="FDT-HY-OQZ" userLabel="chatButton" customClass="UIIconButton">
-                            <rect key="frame" x="195" y="40.000000216744155" width="44" height="44"/>
+                            <rect key="frame" x="195" y="40" width="44" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <state key="normal" title="Button" image="chat_start_body_default.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -72,7 +74,7 @@
                             <rect key="frame" x="8" y="0.0" width="359" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
@@ -86,6 +88,8 @@
     </objects>
     <resources>
         <image name="call_start_body_default.png" width="51" height="51"/>
+        <image name="call_start_body_disabled.png" width="51" height="51"/>
+        <image name="call_start_body_over.png" width="51" height="51"/>
         <image name="chat_start_body_default.png" width="51" height="51"/>
         <image name="delete_field_default.png" width="27" height="27"/>
         <image name="delete_field_over.png" width="27" height="27"/>
