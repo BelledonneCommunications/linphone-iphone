@@ -93,4 +93,15 @@
 	}
 }
 
+- (void)updateVideoPolicy {
+	if (linphone_core_get_video_policy([LinphoneManager getLc])->automatically_initiate) {
+		[self setImage:[UIImage imageNamed:@"call_video_start_default.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"call_video_start_over.png"] forState:UIControlStateHighlighted];
+		[self setImage:[UIImage imageNamed:@"call_video_start_disabled.png"] forState:UIControlStateDisabled];
+	} else {
+		[self setImage:[UIImage imageNamed:@"call_start_body_default.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"call_start_body_over.png"] forState:UIControlStateHighlighted];
+		[self setImage:[UIImage imageNamed:@"call_start_body_disabled.png"] forState:UIControlStateDisabled];
+	}
+}
 @end

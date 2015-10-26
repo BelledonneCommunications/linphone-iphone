@@ -26,4 +26,6 @@
 
 @property (nonatomic, strong) IBOutlet UITextField* addressField;
 
+- (void)updateVideoPolicy;
+
 @end

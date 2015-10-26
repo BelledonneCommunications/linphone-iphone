@@ -326,24 +326,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state {
 	LinphoneCore *lc = [LinphoneManager getLc];
-	if (linphone_core_get_calls_nb(lc) > 0) {
-		if (transferMode) {
-			[addCallButton setHidden:true];
-			[transferButton setHidden:false];
-		} else {
-			[addCallButton setHidden:false];
-			[transferButton setHidden:true];
-		}
-		[callButton setHidden:true];
-		[backButton setHidden:false];
-		[addContactButton setHidden:true];
-	} else {
-		[addCallButton setHidden:true];
-		[callButton setHidden:false];
-		[backButton setHidden:true];
-		[addContactButton setHidden:false];
-		[transferButton setHidden:true];
-	}
+	BOOL callInProgress = (linphone_core_get_calls_nb(lc) > 0);
+	addCallButton.hidden = (!callInProgress || transferMode);
+	transferButton.hidden = (!callInProgress || !transferMode);
+	addContactButton.hidden = callButton.hidden = callInProgress;
+	backButton.hidden = !callInProgress;
+	[callButton updateVideoPolicy];
 }
 
 - (void)setAddress:(NSString *)address {
