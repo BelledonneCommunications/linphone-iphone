@@ -23,12 +23,14 @@
 
 #import "ChatsListTableView.h"
 #import "UICompositeView.h"
+#import "UIBackToCallButton.h"
 
 @interface ChatsListView : UIViewController <UICompositeViewDelegate> {
 }
 
 @property(nonatomic, strong) IBOutlet ChatsListTableView *tableController;
 @property(weak, nonatomic) IBOutlet UIButton *addButton;
+@property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
 
 - (IBAction)onAddClick:(id)event;
 - (IBAction)onEditionChangeClick:(id)sender;

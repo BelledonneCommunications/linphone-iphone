@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -8,6 +8,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatsListView">
             <connections>
                 <outlet property="addButton" destination="Z5G-IF-PBY" id="Tzw-rz-Bwe"/>
+                <outlet property="backToCallButton" destination="Fac-hy-za4" id="8I3-TM-oJ7"/>
                 <outlet property="tableController" destination="4" id="18"/>
                 <outlet property="view" destination="5" id="14"/>
             </connections>
@@ -88,6 +89,17 @@
                                         <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="e2C-A0-kjU"/>
                                     </connections>
                                 </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Fac-hy-za4" userLabel="backToCallButton" customClass="UIBackToCallButton">
+                                    <rect key="frame" x="225" y="1" width="75" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <state key="normal" image="call_alt_back_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_alt_back_disabled.png"/>
+                                    <connections>
+                                        <action selector="onBackToCallClick:" destination="-2" eventType="touchUpInside" id="eUD-Gk-qji"/>
+                                    </connections>
+                                </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Z5G-IF-PBY" userLabel="addButton">
                                     <rect key="frame" x="0.0" y="0.0" width="75" height="42"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -135,12 +147,14 @@
         </tableViewController>
     </objects>
     <resources>
+        <image name="call_alt_back_default.png" width="50" height="36"/>
+        <image name="call_alt_back_disabled.png" width="50" height="36"/>
         <image name="cancel_edit_default.png" width="29" height="29"/>
         <image name="cancel_edit_disabled.png" width="29" height="29"/>
         <image name="chat_add_default.png" width="32" height="29"/>
         <image name="chat_add_disabled.png" width="32" height="29"/>
-        <image name="color_E.png" width="1" height="1"/>
-        <image name="color_F.png" width="1" height="1"/>
+        <image name="color_E.png" width="2" height="2"/>
+        <image name="color_F.png" width="2" height="2"/>
         <image name="delete_default.png" width="21" height="27"/>
         <image name="delete_disabled.png" width="21" height="27"/>
         <image name="deselect_all_default.png" width="26" height="26"/>

@@ -25,6 +25,7 @@
 #import "ImagePickerView.h"
 #import "OrderedDictionary.h"
 #import "UIRoundedImageView.h"
+#import "UIBackToCallButton.h"
 
 #include "linphone/linphonecore.h"
 
@@ -52,6 +53,7 @@
 @property(nonatomic, strong) IBOutlet UIButton *pictureButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *backButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *callButton;
+@property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;

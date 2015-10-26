@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="addressLabel" destination="40" id="43"/>
                 <outlet property="backButton" destination="9" id="9Pw-ZA-KcF"/>
+                <outlet property="backToCallButton" destination="Hc0-GX-fC5" id="pYe-gN-Z64"/>
                 <outlet property="callButton" destination="Wzg-i0-spp" id="w9L-aT-1AD"/>
                 <outlet property="chatView" destination="bJF-qS-vBP" id="AF2-NN-muZ"/>
                 <outlet property="composeIndicatorView" destination="fx4-ao-53M" id="xk5-nK-lur"/>
@@ -72,6 +73,17 @@
                                     <state key="disabled" image="call_alt_start_disabled.png"/>
                                     <connections>
                                         <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="Dsf-nS-K3V"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Hc0-GX-fC5" userLabel="backToCallButton" customClass="UIBackToCallButton">
+                                    <rect key="frame" x="225" y="0.0" width="75" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <state key="normal" image="call_alt_back_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_alt_back_disabled.png"/>
+                                    <connections>
+                                        <action selector="onBackToCallClick:" destination="-2" eventType="touchUpInside" id="bOG-ra-UpM"/>
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wag-Nx-kd6" userLabel="deleteButton" customClass="UIIconButton">
@@ -225,7 +237,7 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="235.5" y="366.5"/>
+            <point key="canvasLocation" x="228.5" y="-40.5"/>
         </view>
         <tableViewController autoresizesArchivedViewToFullSize="NO" id="29" userLabel="messagesTableView" customClass="ChatConversationTableView">
             <extendedEdge key="edgesForExtendedLayout"/>
@@ -243,6 +255,8 @@
     <resources>
         <image name="back_default.png" width="24" height="21"/>
         <image name="back_disabled.png" width="24" height="21"/>
+        <image name="call_alt_back_default.png" width="50" height="36"/>
+        <image name="call_alt_back_disabled.png" width="50" height="36"/>
         <image name="call_alt_start_default.png" width="29" height="29"/>
         <image name="call_alt_start_disabled.png" width="29" height="29"/>
         <image name="cancel_edit_default.png" width="29" height="29"/>

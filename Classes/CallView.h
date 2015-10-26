@@ -100,5 +100,6 @@
 - (IBAction)onOptionsAddClick:(id)sender;
 - (IBAction)onOptionsConferenceClick:(id)sender;
 - (IBAction)onNumpadClick:(id)sender;
+- (IBAction)onChatClick:(id)sender;
 
 @end

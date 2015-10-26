@@ -759,6 +759,11 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	}
 }
 
+- (IBAction)onChatClick:(id)sender {
+	ChatsListView *view = VIEW(ChatsListView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE];
 	[[LinphoneManager instance] setBluetoothEnabled:TRUE];

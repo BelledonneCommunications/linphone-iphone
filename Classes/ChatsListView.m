@@ -32,6 +32,7 @@
 												 name:kLinphoneMessageReceived
 											   object:nil];
 	[self setEditing:NO];
+	[_backToCallButton update];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -91,6 +92,5 @@ static UICompositeViewDescription *compositeDescription = nil;
 		  [self onEditionChangeClick:nil];
 		}];
 }
-
 
 @end

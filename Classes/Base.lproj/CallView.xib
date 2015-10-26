@@ -594,6 +594,9 @@
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <state key="highlighted" backgroundImage="color_L.png"/>
+                                            <connections>
+                                                <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="Jdk-1s-UnN"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                 </view>

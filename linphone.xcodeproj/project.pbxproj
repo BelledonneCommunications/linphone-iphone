@@ -109,6 +109,7 @@
 		63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */; };
 		637144571BD531CE007E7C06 /* UIContactDetailsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 637144561BD531CE007E7C06 /* UIContactDetailsCell.xib */; };
 		637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 637157A01B283FE200C91677 /* FileTransferDelegate.m */; };
+		6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6377AC7F1BDE4069007F7625 /* UIBackToCallButton.m */; };
 		637D9FD21BD9104100A81059 /* add_field_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9EF71BD9104000A81059 /* add_field_default.png */; };
 		637D9FD31BD9104100A81059 /* add_field_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9EF81BD9104000A81059 /* add_field_over.png */; };
 		637D9FD41BD9104100A81059 /* avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 637D9EF91BD9104000A81059 /* avatar.png */; };
@@ -775,6 +776,8 @@
 		637144561BD531CE007E7C06 /* UIContactDetailsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIContactDetailsCell.xib; sourceTree = "<group>"; };
 		6371579F1B283FE200C91677 /* FileTransferDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileTransferDelegate.h; path = Utils/FileTransferDelegate.h; sourceTree = "<group>"; };
 		637157A01B283FE200C91677 /* FileTransferDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileTransferDelegate.m; path = Utils/FileTransferDelegate.m; sourceTree = "<group>"; };
+		6377AC7E1BDE4068007F7625 /* UIBackToCallButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBackToCallButton.h; sourceTree = "<group>"; };
+		6377AC7F1BDE4069007F7625 /* UIBackToCallButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBackToCallButton.m; sourceTree = "<group>"; };
 		637D9EF71BD9104000A81059 /* add_field_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_field_default.png; sourceTree = "<group>"; };
 		637D9EF81BD9104000A81059 /* add_field_over.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_field_over.png; sourceTree = "<group>"; };
 		637D9EF91BD9104000A81059 /* avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = avatar.png; sourceTree = "<group>"; };
@@ -1614,6 +1617,8 @@
 				D3196D3D15A32BD8007FEEBA /* UITransferButton.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
+				6377AC7E1BDE4068007F7625 /* UIBackToCallButton.h */,
+				6377AC7F1BDE4069007F7625 /* UIBackToCallButton.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -2820,6 +2825,7 @@
 				D3F83EEC1582021700336684 /* CallView.m in Sources */,
 				63F1DF4B1BCE983200EDED90 /* CallConferenceTableView.m in Sources */,
 				D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */,
+				6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */,
 				D3ED3E871586291E006C0DE4 /* TabBarView.m in Sources */,
 				D3ED3EA71587334E006C0DE4 /* HistoryListTableView.m in Sources */,
 				D3ED3EB81587392C006C0DE4 /* HistoryListView.m in Sources */,

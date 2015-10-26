@@ -108,6 +108,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector:@selector(textComposeEvent:)
 												 name:kLinphoneTextComposeEvent
 											   object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(callUpdateEvent:)
+												 name:kLinphoneCallUpdate
+											   object:nil];
 
 	if ([_tableController isEditing])
 		[_tableController setEditing:FALSE animated:FALSE];
@@ -116,6 +120,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server([LinphoneManager getLc]) != NULL;
 	[_pictureButton setEnabled:fileSharingEnabled];
+
+	[self callUpdateEvent:nil];
+	[_backToCallButton update];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -165,6 +172,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_chat_room_mark_as_read(chatRoom);
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 	}
+}
+
+- (void)callUpdateEvent:(NSNotification *)notif {
+	_callButton.hidden = linphone_core_get_current_call([LinphoneManager getLc]);
 }
 
 - (void)update {
@@ -437,16 +448,6 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	[_messageField resignFirstResponder];
 }
 
-- (IBAction)onCallClick:(id)sender {
-	NSString *displayName = [FastAddressBook displayNameForAddress:linphone_chat_room_get_peer_address(chatRoom)];
-	// Go to dialer view
-	DialerView *view = VIEW(DialerView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	char *uri = linphone_address_as_string(linphone_chat_room_get_peer_address(chatRoom));
-	[view call:[NSString stringWithUTF8String:uri] displayName:displayName];
-	ms_free(uri);
-}
-
 - (IBAction)onDeleteClick:(id)sender {
 	NSString *msg =
 		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d messages?", nil),
@@ -464,6 +465,16 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 - (IBAction)onEditionChangeClick:(id)sender {
 	_backButton.hidden = _callButton.hidden = _tableController.isEditing;
+}
+
+- (IBAction)onCallClick:(id)sender {
+	NSString *displayName = [FastAddressBook displayNameForAddress:linphone_chat_room_get_peer_address(chatRoom)];
+	// Go to dialer view
+	DialerView *view = VIEW(DialerView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	char *uri = linphone_address_as_string(linphone_chat_room_get_peer_address(chatRoom));
+	[view call:[NSString stringWithUTF8String:uri] displayName:displayName];
+	ms_free(uri);
 }
 
 - (IBAction)onListSwipe:(id)sender {
