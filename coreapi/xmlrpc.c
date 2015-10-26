@@ -405,12 +405,12 @@ void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, Linph
 	uri = belle_generic_uri_parse(session->url);
 	if (!uri) {
 		ms_error("Could not send request, URL %s is invalid", session->url);
-		belle_sip_object_unref(uri);
 		process_io_error_from_post_xml_rpc_request(request, NULL);
 		return;
 	}
 	req = belle_http_request_create("POST", uri, belle_sip_header_content_type_create("text", "xml"), NULL);
 	if (!req) {
+		belle_sip_object_unref(uri);
 		process_io_error_from_post_xml_rpc_request(request, NULL);
 	}
 	content = linphone_content_new();
