@@ -82,6 +82,9 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 
 @implementation LinphoneUtils
 
++ (BOOL)hasAvatar {
+	return [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"avatar"]] != nil;
+}
 + (void)setSelfAvatar:(UIImageView *)avatar {
 	NSURL *url = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"avatar"]];
 	if (url) {
@@ -101,6 +104,17 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 		avatar.image = [UIImage imageNamed:@"avatar.png"];
 	}
 }
+
++ (NSString *)durationForCall:(LinphoneCall *)call {
+	int duration = call ? linphone_call_get_duration(call) : 0;
+	NSMutableString *result = [[NSMutableString alloc] init];
+	if (duration / 3600 > 0) {
+		[result appendString:[NSString stringWithFormat:@"%02i:", duration / 3600]];
+		duration = duration % 3600;
+	}
+	return [result stringByAppendingString:[NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60)]];
+}
+
 + (NSString *)timeToString:(time_t)time withStyle:(NSDateFormatterStyle)style {
 	NSDate *todayDate = [[NSDate alloc] init];
 	NSDate *messageDate = (time == 0) ? todayDate : [NSDate dateWithTimeIntervalSince1970:time];

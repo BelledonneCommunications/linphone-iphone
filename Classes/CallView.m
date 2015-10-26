@@ -439,11 +439,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 #pragma mark - UI modification
 
 - (void)callDurationUpdate {
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-	if (call) {
-		int duration = linphone_call_get_duration(call);
-		_durationLabel.text = [NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60)];
-	}
+	_durationLabel.text = [LinphoneUtils durationForCall:linphone_core_get_current_call([LinphoneManager getLc])];
 }
 
 - (void)onCurrentCallChange {

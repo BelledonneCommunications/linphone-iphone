@@ -39,8 +39,7 @@
 
 	_avatarImage.image = [FastAddressBook imageForAddress:addr thumbnail:YES];
 
-	int duration = linphone_call_get_duration(call);
-	[_durationLabel setText:[NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60), nil]];
+	_durationLabel.text = [LinphoneUtils durationForCall:linphone_core_get_current_call([LinphoneManager getLc])];
 }
 
 - (IBAction)onKickClick:(id)sender {

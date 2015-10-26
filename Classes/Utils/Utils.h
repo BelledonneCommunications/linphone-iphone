@@ -37,7 +37,11 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 + (NSString *)deviceName;
 
 + (NSString *)timeToString:(time_t)time withStyle:(NSDateFormatterStyle)style;
+
++ (BOOL)hasAvatar;
 + (void)setSelfAvatar:(UIImageView *)avatar;
+
++ (NSString *)durationForCall:(LinphoneCall *)call;
 
 @end
 
