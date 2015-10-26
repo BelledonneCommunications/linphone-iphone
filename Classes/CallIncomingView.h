@@ -21,6 +21,7 @@
 
 #import "UICompositeView.h"
 #import "TPMultiLayoutViewController.h"
+#import "UIRoundedImageView.h"
 #include "LinphoneManager.h"
 
 @protocol IncomingCallViewDelegate <NSObject>
@@ -35,7 +36,7 @@
 }
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property(nonatomic, strong) IBOutlet UILabel *addressLabel;
-@property(nonatomic, strong) IBOutlet UIImageView *avatarImage;
+@property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, assign) LinphoneCall *call;
 @property(nonatomic, strong) id<IncomingCallViewDelegate> delegate;
 

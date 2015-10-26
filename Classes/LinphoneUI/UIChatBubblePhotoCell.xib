@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -72,11 +72,11 @@
                             <rect key="frame" x="24" y="59" width="274" height="12"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" id="GmN-7v-uuO" userLabel="imageSubView">
-                            <rect key="frame" x="48" y="91" width="274" height="32"/>
+                            <rect key="frame" x="48" y="91" width="274" height="32.000000029802322"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" id="USm-wC-GvG" userLabel="transferProgress">
@@ -84,7 +84,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 </progressView>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="N75-gL-R6t" userLabel="transferButton" customClass="UIRoundBorderedButton">
-                                    <rect key="frame" x="75" y="4" width="124" height="27"/>
+                                    <rect key="frame" x="75" y="4.0000000298023224" width="124" height="27"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <state key="normal" title="DOWNLOAD">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -94,7 +94,7 @@
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="6dl-Nz-rdv" userLabel="cancelButton" customClass="UIRoundBorderedButton">
-                                    <rect key="frame" x="75" y="4" width="124" height="27"/>
+                                    <rect key="frame" x="75" y="4.0000000298023224" width="124" height="27"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <state key="normal" title="CANCEL">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -135,7 +135,7 @@
     <resources>
         <image name="avatar.png" width="255" height="255"/>
         <image name="chat_message_inprogress.png" width="11" height="12"/>
-        <image name="color_A.png" width="1" height="1"/>
+        <image name="color_A.png" width="2" height="2"/>
         <image name="splashscreen.png" width="181" height="165"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

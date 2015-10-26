@@ -455,7 +455,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 		char *uri = linphone_address_as_string_uri_only(addr);
 		ms_free(uri);
-		_avatarImage.image = [FastAddressBook imageForAddress:addr thumbnail:NO];
+		[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:NO] bordered:YES withRoundedRadius:YES];
 	}
 }
 

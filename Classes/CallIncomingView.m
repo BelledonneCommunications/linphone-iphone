@@ -25,11 +25,6 @@
 
 @implementation CallIncomingView
 
-@synthesize addressLabel;
-@synthesize avatarImage;
-@synthesize call;
-@synthesize delegate;
-
 #pragma mark - ViewController Functions
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -77,11 +72,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)callUpdate:(LinphoneCall *)acall state:(LinphoneCallState)astate {
-	if (call == acall && (astate == LinphoneCallEnd || astate == LinphoneCallError)) {
-		[delegate incomingCallAborted:call];
+	if (_call == acall && (astate == LinphoneCallEnd || astate == LinphoneCallError)) {
+		[_delegate incomingCallAborted:_call];
 		[self dismiss];
 	} else if ([LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]) {
-		LinphoneCallState state = linphone_call_get_state(call);
+		LinphoneCallState state = linphone_call_get_state(_call);
 		if (state == LinphoneCallIncomingReceived) {
 			LOGI(@"Auto answering call");
 			[self onAcceptClick:nil];
@@ -98,32 +93,32 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)update {
-	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+	const LinphoneAddress *addr = linphone_call_get_remote_address(_call);
 	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 	char *uri = linphone_address_as_string_uri_only(addr);
-	addressLabel.text = [NSString stringWithUTF8String:uri];
+	_addressLabel.text = [NSString stringWithUTF8String:uri];
 	ms_free(uri);
-	avatarImage.image = [FastAddressBook imageForAddress:addr thumbnail:NO];
+	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:NO] bordered:YES withRoundedRadius:YES];
 }
 
 #pragma mark - Property Functions
 
-- (void)setCall:(LinphoneCall *)acall {
-	call = acall;
+- (void)setCall:(LinphoneCall *)call {
+	_call = call;
 	[self update];
-	[self callUpdate:call state:linphone_call_get_state(call)];
+	[self callUpdate:_call state:linphone_call_get_state(call)];
 }
 
 #pragma mark - Action Functions
 
 - (IBAction)onAcceptClick:(id)event {
 	[self dismiss];
-	[delegate incomingCallAccepted:call];
+	[_delegate incomingCallAccepted:_call];
 }
 
 - (IBAction)onDeclineClick:(id)event {
 	[self dismiss];
-	[delegate incomingCallDeclined:call];
+	[_delegate incomingCallDeclined:_call];
 }
 
 #pragma mark - TPMultiLayoutViewController Functions

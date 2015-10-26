@@ -173,8 +173,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		return;
 	}
 
-	const LinphoneAddress *linphoneAddress = linphone_chat_room_get_peer_address(chatRoom);
-	if (linphoneAddress == NULL) {
+	const LinphoneAddress *addr = linphone_chat_room_get_peer_address(chatRoom);
+	if (addr == NULL) {
 		[PhoneMainView.instance popCurrentView];
 		UIAlertView *error = [[UIAlertView alloc]
 				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
@@ -187,9 +187,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[error show];
 		return;
 	}
-	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:linphoneAddress];
+	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
 	_addressLabel.accessibilityValue = _addressLabel.text;
-	_avatarImage.image = [FastAddressBook imageForAddress:linphoneAddress thumbnail:YES];
+	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:YES] bordered:NO withRoundedRadius:YES];
 }
 
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {

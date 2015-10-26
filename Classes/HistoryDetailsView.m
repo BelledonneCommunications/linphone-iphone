@@ -162,7 +162,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
 	_addContactButton.hidden = (contact != nil);
 	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr];
-	_avatarImage.image = [FastAddressBook imageForContact:contact thumbnail:NO];
+	[_avatarImage setImage:[FastAddressBook imageForContact:contact thumbnail:NO] bordered:YES withRoundedRadius:YES];
 	char *addrURI = linphone_address_as_string_uri_only(addr);
 	_addressLabel.text = [NSString stringWithUTF8String:addrURI];
 	ms_free(addrURI);

@@ -39,7 +39,7 @@
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 
-	_avatarImage.image = [FastAddressBook imageForAddress:addr thumbnail:NO];
+	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:NO] bordered:YES withRoundedRadius:YES];
 
 	_durationLabel.text = [LinphoneUtils durationForCall:linphone_core_get_current_call([LinphoneManager getLc])];
 }

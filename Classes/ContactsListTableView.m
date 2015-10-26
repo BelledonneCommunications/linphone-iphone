@@ -202,7 +202,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		image = [FastAddressBook imageForContact:contact thumbnail:true];
 		[avatarMap setObject:image forKey:[NSNumber numberWithInt:ABRecordGetRecordID(contact)]];
 	}
-	[cell.avatarImage setImage:image];
+	[cell.avatarImage setImage:image bordered:NO withRoundedRadius:YES];
 	[cell setContact:contact];
 	[super accessoryForCell:cell atPath:indexPath];
 

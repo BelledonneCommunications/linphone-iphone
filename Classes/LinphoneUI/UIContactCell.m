@@ -24,10 +24,6 @@
 
 @implementation UIContactCell
 
-@synthesize nameLabel;
-@synthesize avatarImage;
-@synthesize contact;
-
 #pragma mark - Lifecycle Functions
 
 - (id)initWithIdentifier:(NSString *)identifier {
@@ -47,9 +43,9 @@
 #pragma mark - Property Functions
 
 - (void)setContact:(ABRecordRef)acontact {
-	contact = acontact;
-	[ContactDisplay setDisplayNameLabel:nameLabel forContact:contact];
-	_linphoneImage.hidden = !([FastAddressBook contactHasValidSipDomain:contact]);
+	_contact = acontact;
+	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
+	_linphoneImage.hidden = !([FastAddressBook contactHasValidSipDomain:_contact]);
 }
 
 #pragma mark -
@@ -63,7 +59,7 @@
 }
 
 - (NSString *)accessibilityLabel {
-	return nameLabel.text;
+	return _nameLabel.text;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -73,9 +69,9 @@
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
 	[super setHighlighted:highlighted animated:animated];
 	if (highlighted) {
-		[nameLabel setTextColor:[UIColor whiteColor]];
+		[_nameLabel setTextColor:[UIColor whiteColor]];
 	} else {
-		[nameLabel setTextColor:[UIColor blackColor]];
+		[_nameLabel setTextColor:[UIColor blackColor]];
 	}
 }
 

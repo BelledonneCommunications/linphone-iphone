@@ -23,13 +23,15 @@
 #import <AddressBook/AddressBook.h>
 #import "UICompositeView.h"
 #import "HistoryDetailsTableView.h"
+#import "UIRoundedImageView.h"
+
 @interface HistoryDetailsView : UIViewController <UICompositeViewDelegate> {
   @private
 	LinphoneCallLog *callLog;
 	NSDateFormatter *dateFormatter;
 }
 @property(weak, nonatomic) IBOutlet UILabel *contactLabel;
-@property(nonatomic, strong) IBOutlet UIImageView *avatarImage;
+@property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, strong) IBOutlet UILabel *addressLabel;
 @property(nonatomic, strong) IBOutlet UIButton *addContactButton;
 @property(nonatomic, copy, setter=setCallLogId:) NSString *callLogId;

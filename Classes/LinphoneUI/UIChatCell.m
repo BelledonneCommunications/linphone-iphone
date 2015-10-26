@@ -24,11 +24,6 @@
 
 @implementation UIChatCell
 
-@synthesize avatarImage;
-@synthesize addressLabel;
-@synthesize chatContentLabel;
-@synthesize unreadCountButton;
-
 #pragma mark - Lifecycle Functions
 
 - (id)initWithIdentifier:(NSString *)identifier {
@@ -55,12 +50,12 @@
 #pragma mark -
 
 - (NSString *)accessibilityValue {
-	if (chatContentLabel.text) {
-		return [NSString stringWithFormat:@"%@ - %@ (%li)", addressLabel.text, chatContentLabel.text,
-										  (long)[unreadCountButton.titleLabel.text integerValue]];
+	if (_chatContentLabel.text) {
+		return [NSString stringWithFormat:@"%@ - %@ (%li)", _addressLabel.text, _chatContentLabel.text,
+										  (long)[_unreadCountButton.titleLabel.text integerValue]];
 	} else {
 		return [NSString
-			stringWithFormat:@"%@ (%li)", addressLabel.text, (long)[unreadCountButton.titleLabel.text integerValue]];
+			stringWithFormat:@"%@ (%li)", _addressLabel.text, (long)[_unreadCountButton.titleLabel.text integerValue]];
 	}
 }
 
@@ -70,8 +65,8 @@
 		return;
 	}
 	const LinphoneAddress *addr = linphone_chat_room_get_peer_address(chatRoom);
-	[ContactDisplay setDisplayNameLabel:addressLabel forAddress:addr];
-	avatarImage.image = [FastAddressBook imageForAddress:addr thumbnail:NO];
+	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
+	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:NO] bordered:YES withRoundedRadius:YES];
 
 	LinphoneChatMessage *last_message = linphone_chat_room_get_user_data(chatRoom);
 	if (last_message) {
@@ -80,7 +75,7 @@
 		const LinphoneContent *last_content = linphone_chat_message_get_file_transfer_information(last_message);
 		// Last message was a file transfer (image) so display a picture...
 		if (url || last_content) {
-			chatContentLabel.text = @"🗻";
+			_chatContentLabel.text = @"🗻";
 			// otherwise show beginning of the text message
 		} else if (text) {
 			NSString *message = [NSString stringWithUTF8String:text];
@@ -88,23 +83,23 @@
 			if ([message length] > 50)
 				message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
 
-			chatContentLabel.text = message;
+			_chatContentLabel.text = message;
 		}
 
 		_chatLatestTimeLabel.text = [LinphoneUtils timeToString:linphone_chat_message_get_time(last_message)
 													  withStyle:NSDateFormatterShortStyle];
 		_chatLatestTimeLabel.hidden = NO;
 	} else {
-		chatContentLabel.text = nil;
+		_chatContentLabel.text = nil;
 		_chatLatestTimeLabel.text = NSLocalizedString(@"Now", nil);
 	}
 
 	int count = linphone_chat_room_get_unread_messages_count(chatRoom);
-	[unreadCountButton setTitle:[NSString stringWithFormat:@"%i", count] forState:UIControlStateNormal];
-	unreadCountButton.hidden = (count <= 0);
+	[_unreadCountButton setTitle:[NSString stringWithFormat:@"%i", count] forState:UIControlStateNormal];
+	_unreadCountButton.hidden = (count <= 0);
 
 	UIFont *addressFont = (count <= 0) ? [UIFont systemFontOfSize:25] : [UIFont boldSystemFontOfSize:25];
-	addressLabel.font = addressFont;
+	_addressLabel.font = addressFont;
 }
 
 - (void)setEditing:(BOOL)editing {
@@ -117,9 +112,9 @@
 		[UIView setAnimationDuration:0.3];
 	}
 	if (editing) {
-		[unreadCountButton setAlpha:0.0f];
+		[_unreadCountButton setAlpha:0.0f];
 	} else {
-		[unreadCountButton setAlpha:1.0f];
+		[_unreadCountButton setAlpha:1.0f];
 	}
 	if (animated) {
 		[UIView commitAnimations];
