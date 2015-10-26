@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-15 10:26+0200\n"
-"PO-Revision-Date: 2015-10-15 08:30+0000\n"
+"POT-Creation-Date: 2015-10-23 11:10+0200\n"
+"PO-Revision-Date: 2015-10-23 09:09+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/belledonne-communications/linphone-gtk/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -17,62 +17,71 @@ msgstr ""
 "Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../gtk/calllogs.c:177 ../gtk/friendlist.c:821
+#: ../gtk/calllogs.c:178
 #, c-format
 msgid "Call %s"
 msgstr "呼叫 %s"
 
-#: ../gtk/calllogs.c:178 ../gtk/friendlist.c:822
+#: ../gtk/calllogs.c:179
 #, c-format
 msgid "Send text to %s"
 msgstr "发送消息给 %s"
 
-#: ../gtk/calllogs.c:261
+#: ../gtk/calllogs.c:181
+#, c-format
+msgid "Add %s to your contact list"
+msgstr ""
+
+#: ../gtk/calllogs.c:245 ../gtk/main.ui.h:21
+msgid "Recent calls"
+msgstr ""
+
+#: ../gtk/calllogs.c:260
 #, c-format
 msgid "<b>Recent calls (%i)</b>"
 msgstr ""
 
-#: ../gtk/calllogs.c:340
+#: ../gtk/calllogs.c:331
 msgid "n/a"
 msgstr ""
 
-#: ../gtk/calllogs.c:343
+#: ../gtk/calllogs.c:334
 msgid "Aborted"
 msgstr ""
 
-#: ../gtk/calllogs.c:346
+#: ../gtk/calllogs.c:337
 msgid "Missed"
 msgstr ""
 
-#: ../gtk/calllogs.c:349
+#: ../gtk/calllogs.c:340
 msgid "Declined"
 msgstr ""
 
-#: ../gtk/calllogs.c:355
+#: ../gtk/calllogs.c:346
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
 msgstr[0] ""
 
-#: ../gtk/calllogs.c:358
+#: ../gtk/calllogs.c:349
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
 msgstr[0] ""
 
-#: ../gtk/calllogs.c:363
+#: ../gtk/calllogs.c:354
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
 msgstr ""
 
-#: ../gtk/calllogs.c:367
+#: ../gtk/calllogs.c:358
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
 msgstr ""
 
-#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:11
+#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:12
 msgid "Conference"
 msgstr ""
 
@@ -85,7 +94,7 @@ msgstr ""
 msgid "Couldn't find pixmap file: %s"
 msgstr "无法打开位图文件：%s"
 
-#: ../gtk/chat.c:508
+#: ../gtk/chat.c:481
 msgid "Copy"
 msgstr ""
 
@@ -150,7 +159,7 @@ msgstr ""
 msgid "Call error"
 msgstr ""
 
-#: ../gtk/main.c:1245 ../coreapi/linphonecore.c:3811
+#: ../gtk/main.c:1245 ../coreapi/linphonecore.c:3813
 msgid "Call ended"
 msgstr "呼叫结束"
 
@@ -158,7 +167,7 @@ msgstr "呼叫结束"
 msgid "Incoming call"
 msgstr "呼入"
 
-#: ../gtk/main.c:1250 ../gtk/incall_view.c:576 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1250 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
 msgid "Answer"
 msgstr ""
 
@@ -197,38 +206,43 @@ msgstr ""
 msgid "%s (Default)"
 msgstr "%s (默认)"
 
-#: ../gtk/main.c:1918 ../coreapi/callbacks.c:1075
+#: ../gtk/main.c:1942 ../coreapi/callbacks.c:1075
 #, c-format
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../gtk/main.c:1928
+#: ../gtk/main.c:1952
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr "未在此计算机上检测到声卡。\n您无法发送或接收音频呼叫。"
 
-#: ../gtk/main.c:2087
+#: ../gtk/main.c:2111
 msgid "A free SIP video-phone"
 msgstr "免费的 SIP 视频电话"
 
-#: ../gtk/main.c:2200
+#: ../gtk/main.c:2224
 #, c-format
 msgid "Hello\n"
 msgstr ""
 
-#: ../gtk/friendlist.c:442
+#: ../gtk/friendlist.c:461
 msgid "Add to addressbook"
 msgstr ""
 
-#: ../gtk/friendlist.c:626
+#: ../gtk/friendlist.c:627
 #, c-format
 msgid "Search in %s directory"
 msgstr "在 %s 目录中查找 "
 
-#: ../gtk/friendlist.c:771
+#: ../gtk/friendlist.c:772
 msgid "Invalid sip contact !"
 msgstr "无效的 SIP 联系人！"
+
+#: ../gtk/friendlist.c:820
+#, c-format
+msgid "Add a new contact"
+msgstr ""
 
 #: ../gtk/friendlist.c:823
 #, c-format
@@ -245,7 +259,7 @@ msgstr "删除联系人 %s"
 msgid "Delete chat history of '%s'"
 msgstr ""
 
-#: ../gtk/friendlist.c:876
+#: ../gtk/friendlist.c:862
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "从 %s 目录增加联系人 "
@@ -420,337 +434,191 @@ msgid "Found %i contact"
 msgid_plural "Found %i contacts"
 msgstr[0] "找到 %i 联系方式"
 
-#: ../gtk/setupwizard.c:161
-msgid ""
-"Welcome!\n"
-"This assistant will help you to use a SIP account for your calls."
-msgstr ""
-
-#: ../gtk/setupwizard.c:170
-msgid "Create an account on linphone.org"
-msgstr ""
-
-#: ../gtk/setupwizard.c:171
-msgid "I have already a linphone.org account and I just want to use it"
-msgstr ""
-
-#: ../gtk/setupwizard.c:172
-msgid "I have already a sip account and I just want to use it"
-msgstr ""
-
-#: ../gtk/setupwizard.c:173
-msgid "I want to specify a remote configuration URI"
-msgstr ""
-
-#: ../gtk/setupwizard.c:207
-msgid "Enter your account information"
-msgstr ""
-
-#: ../gtk/setupwizard.c:222
-msgid "Username*"
-msgstr ""
-
-#: ../gtk/setupwizard.c:223
-msgid "Password*"
-msgstr ""
-
-#: ../gtk/setupwizard.c:226
-msgid "Domain*"
-msgstr ""
-
-#: ../gtk/setupwizard.c:227
-msgid "Proxy"
-msgstr ""
-
-#: ../gtk/setupwizard.c:264
-msgid "Enter your linphone.org username"
-msgstr ""
-
-#: ../gtk/setupwizard.c:276 ../gtk/parameters.ui.h:91 ../gtk/ldap.ui.h:4
-msgid "Username:"
-msgstr "用户名:"
-
-#: ../gtk/setupwizard.c:278 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
-msgid "Password:"
-msgstr "密码："
-
-#: ../gtk/setupwizard.c:412
-msgid "(*) Required fields"
-msgstr ""
-
-#: ../gtk/setupwizard.c:413
-msgid "Username: (*)"
-msgstr ""
-
-#: ../gtk/setupwizard.c:415
-msgid "Password: (*)"
-msgstr ""
-
-#: ../gtk/setupwizard.c:417
-msgid "Email: (*)"
-msgstr ""
-
-#: ../gtk/setupwizard.c:419
-msgid "Confirm your password: (*)"
-msgstr ""
-
-#: ../gtk/setupwizard.c:434
-msgid "Keep me informed with linphone updates"
-msgstr ""
-
-#: ../gtk/setupwizard.c:479
-msgid "Your account is being created, please wait."
-msgstr ""
-
-#: ../gtk/setupwizard.c:487
-msgid ""
-"Please validate your account by clicking on the link we just sent you by email.\n"
-"Then come back here and press Next button."
-msgstr ""
-
-#: ../gtk/setupwizard.c:497
-msgid "Checking if your account is been validated, please wait."
-msgstr ""
-
-#: ../gtk/setupwizard.c:505
-msgid ""
-"Error, account not validated, username already used or server unreachable.\n"
-"Please go back and try again."
-msgstr ""
-
-#: ../gtk/setupwizard.c:514
-msgid "Thank you. Your account is now configured and ready for use."
-msgstr "谢谢，您的帐户已经配置完毕，可以使用。"
-
-#: ../gtk/setupwizard.c:548
-msgid "SIP account configuration assistant"
-msgstr ""
-
-#: ../gtk/setupwizard.c:564
-msgid "Welcome to the account setup assistant"
-msgstr "欢迎使用帐户设置向导"
-
-#: ../gtk/setupwizard.c:569
-msgid "Account setup assistant"
-msgstr "帐户设置向导"
-
-#: ../gtk/setupwizard.c:574
-msgid "Configure your account (step 1/1)"
-msgstr ""
-
-#: ../gtk/setupwizard.c:578
-msgid "Enter your sip username (step 1/1)"
-msgstr ""
-
-#: ../gtk/setupwizard.c:582
-msgid "Enter account information (step 1/2)"
-msgstr ""
-
-#: ../gtk/setupwizard.c:587
-msgid "Account creation in progress"
-msgstr ""
-
-#: ../gtk/setupwizard.c:591
-msgid "Validation (step 2/2)"
-msgstr ""
-
-#: ../gtk/setupwizard.c:596
-msgid "Account validation check in progress"
-msgstr ""
-
-#: ../gtk/setupwizard.c:600
-msgid "Error"
-msgstr ""
-
-#: ../gtk/setupwizard.c:604 ../gtk/audio_assistant.c:541
-msgid "Terminating"
-msgstr ""
-
-#: ../gtk/incall_view.c:69 ../gtk/incall_view.c:93
+#: ../gtk/incall_view.c:67 ../gtk/incall_view.c:87
 #, c-format
 msgid "Call #%i"
 msgstr ""
 
-#: ../gtk/incall_view.c:154
+#: ../gtk/incall_view.c:145
 #, c-format
 msgid "Transfer to call #%i with %s"
 msgstr ""
 
-#: ../gtk/incall_view.c:211 ../gtk/incall_view.c:214
+#: ../gtk/incall_view.c:202 ../gtk/incall_view.c:205
 msgid "Not used"
 msgstr ""
 
-#: ../gtk/incall_view.c:221
+#: ../gtk/incall_view.c:212
 msgid "ICE not activated"
 msgstr ""
 
-#: ../gtk/incall_view.c:223
+#: ../gtk/incall_view.c:214
 msgid "ICE failed"
 msgstr ""
 
-#: ../gtk/incall_view.c:225
+#: ../gtk/incall_view.c:216
 msgid "ICE in progress"
 msgstr ""
 
-#: ../gtk/incall_view.c:227
+#: ../gtk/incall_view.c:218
 msgid "Going through one or more NATs"
 msgstr ""
 
-#: ../gtk/incall_view.c:229
+#: ../gtk/incall_view.c:220
 msgid "Direct"
 msgstr ""
 
-#: ../gtk/incall_view.c:231
+#: ../gtk/incall_view.c:222
 msgid "Through a relay server"
 msgstr ""
 
-#: ../gtk/incall_view.c:239
+#: ../gtk/incall_view.c:230
 msgid "uPnP not activated"
 msgstr ""
 
-#: ../gtk/incall_view.c:241
+#: ../gtk/incall_view.c:232
 msgid "uPnP in progress"
 msgstr ""
 
-#: ../gtk/incall_view.c:243
+#: ../gtk/incall_view.c:234
 msgid "uPnp not available"
 msgstr ""
 
-#: ../gtk/incall_view.c:245
+#: ../gtk/incall_view.c:236
 msgid "uPnP is running"
 msgstr ""
 
-#: ../gtk/incall_view.c:247
+#: ../gtk/incall_view.c:238
 msgid "uPnP failed"
 msgstr ""
 
-#: ../gtk/incall_view.c:257 ../gtk/incall_view.c:258
+#: ../gtk/incall_view.c:248 ../gtk/incall_view.c:249
 msgid "Direct or through server"
 msgstr ""
 
-#: ../gtk/incall_view.c:267 ../gtk/incall_view.c:279
+#: ../gtk/incall_view.c:258 ../gtk/incall_view.c:270
 #, c-format
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
 msgstr ""
 
-#: ../gtk/incall_view.c:272 ../gtk/incall_view.c:274
+#: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
 #, c-format
 msgid "%ix%i @ %f fps"
 msgstr ""
 
-#: ../gtk/incall_view.c:304
+#: ../gtk/incall_view.c:295
 #, c-format
 msgid "%.3f seconds"
 msgstr ""
 
-#: ../gtk/incall_view.c:448 ../gtk/in_call_frame.ui.h:10
+#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:11
 #: ../gtk/videowindow.c:236
 msgid "Hang up"
 msgstr ""
 
-#: ../gtk/incall_view.c:555
+#: ../gtk/incall_view.c:559
 msgid "<b>Calling...</b>"
 msgstr "<b>正在呼叫...</b>"
 
-#: ../gtk/incall_view.c:558 ../gtk/incall_view.c:772
+#: ../gtk/incall_view.c:562 ../gtk/incall_view.c:786
 msgid "00:00:00"
 msgstr ""
 
-#: ../gtk/incall_view.c:569
+#: ../gtk/incall_view.c:573
 msgid "<b>Incoming call</b>"
 msgstr ""
 
-#: ../gtk/incall_view.c:606
+#: ../gtk/incall_view.c:610
 msgid "good"
 msgstr ""
 
-#: ../gtk/incall_view.c:608
+#: ../gtk/incall_view.c:612
 msgid "average"
 msgstr ""
 
-#: ../gtk/incall_view.c:610
+#: ../gtk/incall_view.c:614
 msgid "poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:612
+#: ../gtk/incall_view.c:616
 msgid "very poor"
 msgstr ""
 
-#: ../gtk/incall_view.c:614
+#: ../gtk/incall_view.c:618
 msgid "too bad"
 msgstr ""
 
-#: ../gtk/incall_view.c:615 ../gtk/incall_view.c:631
+#: ../gtk/incall_view.c:619 ../gtk/incall_view.c:635
 msgid "unavailable"
 msgstr ""
 
-#: ../gtk/incall_view.c:720
+#: ../gtk/incall_view.c:728
 msgid "Secured by SRTP"
 msgstr ""
 
-#: ../gtk/incall_view.c:726
+#: ../gtk/incall_view.c:734
 msgid "Secured by DTLS"
 msgstr ""
 
-#: ../gtk/incall_view.c:732
+#: ../gtk/incall_view.c:740
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr ""
 
-#: ../gtk/incall_view.c:738
+#: ../gtk/incall_view.c:746
 msgid "Set unverified"
 msgstr ""
 
-#: ../gtk/incall_view.c:738 ../gtk/in_call_frame.ui.h:1
+#: ../gtk/incall_view.c:746 ../gtk/in_call_frame.ui.h:1
 msgid "Set verified"
 msgstr ""
 
-#: ../gtk/incall_view.c:767
+#: ../gtk/incall_view.c:781
 msgid "In conference"
 msgstr ""
 
-#: ../gtk/incall_view.c:767
+#: ../gtk/incall_view.c:781
 msgid "<b>In call</b>"
 msgstr ""
 
-#: ../gtk/incall_view.c:804
+#: ../gtk/incall_view.c:818
 msgid "<b>Paused call</b>"
 msgstr ""
 
-#: ../gtk/incall_view.c:841
+#: ../gtk/incall_view.c:855
 msgid "<b>Call ended.</b>"
 msgstr "<b>通话结束。</b>"
 
-#: ../gtk/incall_view.c:872
+#: ../gtk/incall_view.c:886
 msgid "Transfer in progress"
 msgstr ""
 
-#: ../gtk/incall_view.c:875
+#: ../gtk/incall_view.c:889
 msgid "Transfer done."
 msgstr ""
 
-#: ../gtk/incall_view.c:878
+#: ../gtk/incall_view.c:892
 msgid "Transfer failed."
 msgstr ""
 
-#: ../gtk/incall_view.c:909
+#: ../gtk/incall_view.c:923
 msgid "Resume"
 msgstr ""
 
-#: ../gtk/incall_view.c:909 ../gtk/in_call_frame.ui.h:7
+#: ../gtk/incall_view.c:923 ../gtk/in_call_frame.ui.h:8
 msgid "Pause"
 msgstr ""
 
-#: ../gtk/incall_view.c:975
+#: ../gtk/incall_view.c:989
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr ""
 
-#: ../gtk/incall_view.c:975
+#: ../gtk/incall_view.c:989
 msgid "(Paused)"
 msgstr ""
 
@@ -835,7 +703,8 @@ msgstr ""
 msgid "Listen to your record voice"
 msgstr ""
 
-#: ../gtk/audio_assistant.c:412
+#: ../gtk/audio_assistant.c:412 ../gtk/conf_frame.ui.h:2
+#: ../gtk/in_call_frame.ui.h:5
 msgid "Record"
 msgstr ""
 
@@ -851,7 +720,7 @@ msgstr ""
 msgid "Audio Assistant"
 msgstr ""
 
-#: ../gtk/audio_assistant.c:520 ../gtk/main.ui.h:12
+#: ../gtk/audio_assistant.c:520 ../gtk/main.ui.h:13
 msgid "Audio assistant"
 msgstr ""
 
@@ -865,6 +734,10 @@ msgstr ""
 
 #: ../gtk/audio_assistant.c:536
 msgid "Record and Play"
+msgstr ""
+
+#: ../gtk/audio_assistant.c:541
+msgid "Terminating"
 msgstr ""
 
 #: ../gtk/main.ui.h:1
@@ -892,54 +765,58 @@ msgid "Enable self-view"
 msgstr "启用自视"
 
 #: ../gtk/main.ui.h:7
-msgid "_Help"
+msgid "Show keypad"
 msgstr ""
 
 #: ../gtk/main.ui.h:8
-msgid "Show debug window"
+msgid "_Help"
 msgstr ""
 
 #: ../gtk/main.ui.h:9
-msgid "_Homepage"
+msgid "Show debug window"
 msgstr ""
 
 #: ../gtk/main.ui.h:10
-msgid "Check _Updates"
+msgid "_Homepage"
 msgstr ""
 
 #: ../gtk/main.ui.h:11
+msgid "Check _Updates"
+msgstr ""
+
+#: ../gtk/main.ui.h:12
 msgid "Account assistant"
 msgstr ""
 
-#: ../gtk/main.ui.h:13
+#: ../gtk/main.ui.h:14
 msgid "SIP address or phone number:"
 msgstr "SIP 地址或电话号码："
 
-#: ../gtk/main.ui.h:14
+#: ../gtk/main.ui.h:15
 msgid "Initiate a new call"
 msgstr ""
 
-#: ../gtk/main.ui.h:15
+#: ../gtk/main.ui.h:16
 msgid "Contacts"
 msgstr "联系人"
 
-#: ../gtk/main.ui.h:16
+#: ../gtk/main.ui.h:17
 msgid "Search"
 msgstr "搜索"
 
-#: ../gtk/main.ui.h:17
+#: ../gtk/main.ui.h:18
 msgid "<b>Add contacts from directory</b>"
 msgstr "<b>从目录增加联系人</b>"
 
-#: ../gtk/main.ui.h:18
+#: ../gtk/main.ui.h:19
 msgid "Add contact"
 msgstr ""
 
-#: ../gtk/main.ui.h:19
-msgid "Recent calls"
+#: ../gtk/main.ui.h:20
+msgid "Clear call history"
 msgstr ""
 
-#: ../gtk/main.ui.h:20
+#: ../gtk/main.ui.h:22
 msgid "My current identity:"
 msgstr "当前地址："
 
@@ -1006,6 +883,10 @@ msgstr "请输入密码"
 #: ../gtk/password.ui.h:3 ../gtk/login_frame.ui.h:5
 msgid "UserID"
 msgstr "用户 ID"
+
+#: ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
+msgid "Password:"
+msgstr "密码："
 
 #: ../gtk/call_logs.ui.h:1
 msgid "Call history"
@@ -1437,6 +1318,10 @@ msgstr ""
 msgid "Authentication method:"
 msgstr ""
 
+#: ../gtk/parameters.ui.h:91 ../gtk/ldap.ui.h:4
+msgid "Username:"
+msgstr "用户名:"
+
 #: ../gtk/parameters.ui.h:92
 msgid "<b>LDAP Account setup</b>"
 msgstr ""
@@ -1684,31 +1569,31 @@ msgstr ""
 msgid "Click here to set the speakers volume"
 msgstr ""
 
-#: ../gtk/in_call_frame.ui.h:5
+#: ../gtk/in_call_frame.ui.h:6
 msgid "Record this call to an audio file"
 msgstr ""
 
-#: ../gtk/in_call_frame.ui.h:6
+#: ../gtk/in_call_frame.ui.h:7
 msgid "Video"
 msgstr ""
 
-#: ../gtk/in_call_frame.ui.h:8
+#: ../gtk/in_call_frame.ui.h:9
 msgid "Mute"
 msgstr ""
 
-#: ../gtk/in_call_frame.ui.h:9
+#: ../gtk/in_call_frame.ui.h:10
 msgid "Transfer"
 msgstr ""
 
-#: ../gtk/in_call_frame.ui.h:12
+#: ../gtk/in_call_frame.ui.h:13
 msgid "In call"
 msgstr "呼入"
 
-#: ../gtk/in_call_frame.ui.h:13
+#: ../gtk/in_call_frame.ui.h:14
 msgid "Duration"
 msgstr "通话时间"
 
-#: ../gtk/in_call_frame.ui.h:14
+#: ../gtk/in_call_frame.ui.h:15
 msgid "Call quality rating"
 msgstr ""
 
@@ -1736,52 +1621,52 @@ msgstr ""
 msgid "Fiber Channel"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:1555
+#: ../coreapi/linphonecore.c:1560
 msgid "Ready"
 msgstr "就绪"
 
-#: ../coreapi/linphonecore.c:2551
+#: ../coreapi/linphonecore.c:2556
 msgid "Configuring"
 msgstr ""
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2946
+#: ../coreapi/linphonecore.c:2951
 msgid "Contacting"
 msgstr "联系中"
 
-#: ../coreapi/linphonecore.c:2951
+#: ../coreapi/linphonecore.c:2956
 msgid "Could not call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3087
+#: ../coreapi/linphonecore.c:3092
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3245
+#: ../coreapi/linphonecore.c:3250
 msgid "is contacting you"
 msgstr "正在联系您"
 
-#: ../coreapi/linphonecore.c:3246
+#: ../coreapi/linphonecore.c:3251
 msgid " and asked autoanswer."
 msgstr " 并询问了自动回答。"
 
-#: ../coreapi/linphonecore.c:3372
+#: ../coreapi/linphonecore.c:3377
 msgid "Modifying call parameters..."
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3767
+#: ../coreapi/linphonecore.c:3769
 msgid "Connected."
 msgstr "已连接。"
 
-#: ../coreapi/linphonecore.c:3792
+#: ../coreapi/linphonecore.c:3794
 msgid "Call aborted"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3981
+#: ../coreapi/linphonecore.c:3983
 msgid "Could not pause the call"
 msgstr ""
 
-#: ../coreapi/linphonecore.c:3984
+#: ../coreapi/linphonecore.c:3986
 msgid "Pausing the current call..."
 msgstr ""
 
@@ -1988,7 +1873,7 @@ msgstr ""
 msgid "Call parameters were successfully modified."
 msgstr ""
 
-#: ../coreapi/linphonecall.c:4394
+#: ../coreapi/linphonecall.c:4396
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."

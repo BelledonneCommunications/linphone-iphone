@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-15 10:26+0200\n"
-"PO-Revision-Date: 2015-10-17 21:05+0000\n"
+"POT-Creation-Date: 2015-10-23 11:10+0200\n"
+"PO-Revision-Date: 2015-10-23 19:32+0000\n"
 "Last-Translator: محيي الدين <tx99h4@hotmail.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/belledonne-communications/linphone-gtk/language/ar/)\n"
 "MIME-Version: 1.0\n"
@@ -19,38 +19,47 @@ msgstr ""
 "Language: ar\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
-#: ../gtk/calllogs.c:177 ../gtk/friendlist.c:821
+#: ../gtk/calllogs.c:178
 #, c-format
 msgid "Call %s"
 msgstr "اتصل بـ %s"
 
-#: ../gtk/calllogs.c:178 ../gtk/friendlist.c:822
+#: ../gtk/calllogs.c:179
 #, c-format
 msgid "Send text to %s"
 msgstr "أرسل رسالة إلى %s"
 
-#: ../gtk/calllogs.c:261
+#: ../gtk/calllogs.c:181
+#, c-format
+msgid "Add %s to your contact list"
+msgstr "إضافة %s إلى قائمة جهات اتصالك"
+
+#: ../gtk/calllogs.c:245 ../gtk/main.ui.h:21
+msgid "Recent calls"
+msgstr "المكالمات السابقة"
+
+#: ../gtk/calllogs.c:260
 #, c-format
 msgid "<b>Recent calls (%i)</b>"
 msgstr "<b>المكالمات الفائتة (%i)</b>"
 
-#: ../gtk/calllogs.c:340
+#: ../gtk/calllogs.c:331
 msgid "n/a"
 msgstr "—"
 
-#: ../gtk/calllogs.c:343
+#: ../gtk/calllogs.c:334
 msgid "Aborted"
 msgstr "أُلغيت"
 
-#: ../gtk/calllogs.c:346
+#: ../gtk/calllogs.c:337
 msgid "Missed"
 msgstr "فائتة"
 
-#: ../gtk/calllogs.c:349
+#: ../gtk/calllogs.c:340
 msgid "Declined"
 msgstr "مرفوضة"
 
-#: ../gtk/calllogs.c:355
+#: ../gtk/calllogs.c:346
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
@@ -61,7 +70,7 @@ msgstr[3] "%i دقائق"
 msgstr[4] "%i دقيقة"
 msgstr[5] "%i دقيقة"
 
-#: ../gtk/calllogs.c:358
+#: ../gtk/calllogs.c:349
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
@@ -72,19 +81,19 @@ msgstr[3] "%i ثوان"
 msgstr[4] "%i ثانية"
 msgstr[5] "%i ثانية"
 
-#: ../gtk/calllogs.c:363
+#: ../gtk/calllogs.c:354
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
 msgstr "<small><i>%s</i>\t<i>الجودة : %s</i></small>\n%s\t%s\t"
 
-#: ../gtk/calllogs.c:367
+#: ../gtk/calllogs.c:358
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
 msgstr "<big><b>%s</b></big>\t%s"
 
-#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:11
+#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:12
 msgid "Conference"
 msgstr "اجتماع"
 
@@ -97,7 +106,7 @@ msgstr "أنا"
 msgid "Couldn't find pixmap file: %s"
 msgstr "أيقونة غير موجودة : %s"
 
-#: ../gtk/chat.c:508
+#: ../gtk/chat.c:481
 msgid "Copy"
 msgstr "نسخ"
 
@@ -162,7 +171,7 @@ msgstr "ادخل كلمة السر لـ  <i>%s</i>\n في نطاق <i>%s</i>:"
 msgid "Call error"
 msgstr "خطأ في المكالمة"
 
-#: ../gtk/main.c:1245 ../coreapi/linphonecore.c:3811
+#: ../gtk/main.c:1245 ../coreapi/linphonecore.c:3813
 msgid "Call ended"
 msgstr "إنتهت المكالمة"
 
@@ -170,7 +179,7 @@ msgstr "إنتهت المكالمة"
 msgid "Incoming call"
 msgstr "مكالمة واردة"
 
-#: ../gtk/main.c:1250 ../gtk/incall_view.c:576 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1250 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
 msgid "Answer"
 msgstr "أجِبْ"
 
@@ -209,38 +218,43 @@ msgstr "الهاتف المرئي عبر الإنترنت"
 msgid "%s (Default)"
 msgstr "%s (افتراضي)"
 
-#: ../gtk/main.c:1918 ../coreapi/callbacks.c:1075
+#: ../gtk/main.c:1942 ../coreapi/callbacks.c:1075
 #, c-format
 msgid "We are transferred to %s"
 msgstr "التحويل إلى %s"
 
-#: ../gtk/main.c:1928
+#: ../gtk/main.c:1952
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr "لا وجود للوحة الصوت على هذا الحاسوب.\nلن تتمكن من تلقي أو إجراء أي مكالمة."
 
-#: ../gtk/main.c:2087
+#: ../gtk/main.c:2111
 msgid "A free SIP video-phone"
 msgstr "هاتف SIP المرئي الحر"
 
-#: ../gtk/main.c:2200
+#: ../gtk/main.c:2224
 #, c-format
 msgid "Hello\n"
 msgstr "أهلا\n"
 
-#: ../gtk/friendlist.c:442
+#: ../gtk/friendlist.c:461
 msgid "Add to addressbook"
 msgstr "أضف إلى دفتر العناوين"
 
-#: ../gtk/friendlist.c:626
+#: ../gtk/friendlist.c:627
 #, c-format
 msgid "Search in %s directory"
 msgstr "ابحث في دليل %s"
 
-#: ../gtk/friendlist.c:771
+#: ../gtk/friendlist.c:772
 msgid "Invalid sip contact !"
 msgstr "جهة اتصال sip غير صالحة !"
+
+#: ../gtk/friendlist.c:820
+#, c-format
+msgid "Add a new contact"
+msgstr "إضافة جهة الاتصال جديدة"
 
 #: ../gtk/friendlist.c:823
 #, c-format
@@ -257,7 +271,7 @@ msgstr "احذف جهة الاتصال '%s'"
 msgid "Delete chat history of '%s'"
 msgstr "احذف تاريخ دردشات '%s'"
 
-#: ../gtk/friendlist.c:876
+#: ../gtk/friendlist.c:862
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "اضف جهة اتصال انطلاقا من الدليل %s"
@@ -437,337 +451,191 @@ msgstr[3] "عُثِر على %i جهات اتصال"
 msgstr[4] "عُثِر على %i جهة اتصال"
 msgstr[5] "عُثِر على %i جهة اتصال"
 
-#: ../gtk/setupwizard.c:161
-msgid ""
-"Welcome!\n"
-"This assistant will help you to use a SIP account for your calls."
-msgstr "مرحبا !\nسيمكنك هذا المرشد من إعداد حسابك SIP لإجراء المكالمات."
-
-#: ../gtk/setupwizard.c:170
-msgid "Create an account on linphone.org"
-msgstr "إنشاء حساب في linphone.org"
-
-#: ../gtk/setupwizard.c:171
-msgid "I have already a linphone.org account and I just want to use it"
-msgstr "أتوفر مسبقا على حساب في linphone.org وأريد فقط استخدامه"
-
-#: ../gtk/setupwizard.c:172
-msgid "I have already a sip account and I just want to use it"
-msgstr "أتوفر مسبقا على حساب sip وأريد فقط استخدامه"
-
-#: ../gtk/setupwizard.c:173
-msgid "I want to specify a remote configuration URI"
-msgstr "أريد تحديد عنوان التهيئة عن بعد"
-
-#: ../gtk/setupwizard.c:207
-msgid "Enter your account information"
-msgstr "ادخل معلومات حسابك"
-
-#: ../gtk/setupwizard.c:222
-msgid "Username*"
-msgstr "اسم المستخدم*"
-
-#: ../gtk/setupwizard.c:223
-msgid "Password*"
-msgstr "كلمة السر*"
-
-#: ../gtk/setupwizard.c:226
-msgid "Domain*"
-msgstr "النطاق*"
-
-#: ../gtk/setupwizard.c:227
-msgid "Proxy"
-msgstr "الوكيل"
-
-#: ../gtk/setupwizard.c:264
-msgid "Enter your linphone.org username"
-msgstr "أدخِل اسم المستخدم في linphone.org"
-
-#: ../gtk/setupwizard.c:276 ../gtk/parameters.ui.h:91 ../gtk/ldap.ui.h:4
-msgid "Username:"
-msgstr "اسم المستخدم :"
-
-#: ../gtk/setupwizard.c:278 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
-msgid "Password:"
-msgstr "كلمة السر :"
-
-#: ../gtk/setupwizard.c:412
-msgid "(*) Required fields"
-msgstr "(*) حقول ضرورية"
-
-#: ../gtk/setupwizard.c:413
-msgid "Username: (*)"
-msgstr "اسم المستخدم* : (*)"
-
-#: ../gtk/setupwizard.c:415
-msgid "Password: (*)"
-msgstr "كلمة السر* : (*)"
-
-#: ../gtk/setupwizard.c:417
-msgid "Email: (*)"
-msgstr "البريد الالكتروني : (*)"
-
-#: ../gtk/setupwizard.c:419
-msgid "Confirm your password: (*)"
-msgstr "أكِّد كلمة السر : (*)"
-
-#: ../gtk/setupwizard.c:434
-msgid "Keep me informed with linphone updates"
-msgstr "أحطني علما بتحديثات لِنْفُونْ"
-
-#: ../gtk/setupwizard.c:479
-msgid "Your account is being created, please wait."
-msgstr "يُرجى الانتظار، يجري الآن إنشاء حسابك."
-
-#: ../gtk/setupwizard.c:487
-msgid ""
-"Please validate your account by clicking on the link we just sent you by email.\n"
-"Then come back here and press Next button."
-msgstr "يُرجى تأكيد حسابك وذلك بالضغط على الوصلة التي أرسلناها لك بالبريد الإلكتروني.\nثم ارجع إلى هنا واضغط على زر التالي."
-
-#: ../gtk/setupwizard.c:497
-msgid "Checking if your account is been validated, please wait."
-msgstr "يُرجى الانتظار، يجري الآن فحص التحقق من صحة حسابك."
-
-#: ../gtk/setupwizard.c:505
-msgid ""
-"Error, account not validated, username already used or server unreachable.\n"
-"Please go back and try again."
-msgstr "خطأ، لم يتم تأكيد الحساب، سبق استخدام اسم المستخدم أو تعذر الوصول للخادم.\nيُرجى إعادة المحاولة لاحقا."
-
-#: ../gtk/setupwizard.c:514
-msgid "Thank you. Your account is now configured and ready for use."
-msgstr "شكرا لك، لقد جرت تهيئة حسابك وهو الآن قابل للاستخدام."
-
-#: ../gtk/setupwizard.c:548
-msgid "SIP account configuration assistant"
-msgstr "مرشد تهيئة حساب SIP"
-
-#: ../gtk/setupwizard.c:564
-msgid "Welcome to the account setup assistant"
-msgstr "مرحبا بك في مرشد إعداد الحساب"
-
-#: ../gtk/setupwizard.c:569
-msgid "Account setup assistant"
-msgstr "مرشد تهيئة الحساب"
-
-#: ../gtk/setupwizard.c:574
-msgid "Configure your account (step 1/1)"
-msgstr "تهيئة حسابك (المرحلة 1/1)"
-
-#: ../gtk/setupwizard.c:578
-msgid "Enter your sip username (step 1/1)"
-msgstr "أدخل اسم المستخدم SIP (المرحلة 1/1)"
-
-#: ../gtk/setupwizard.c:582
-msgid "Enter account information (step 1/2)"
-msgstr "أدخل معلومات حسابك (المرحلة 1/2)"
-
-#: ../gtk/setupwizard.c:587
-msgid "Account creation in progress"
-msgstr "إنشاء الحساب في تقدم"
-
-#: ../gtk/setupwizard.c:591
-msgid "Validation (step 2/2)"
-msgstr "تأكيد (المرحلة 2/2)"
-
-#: ../gtk/setupwizard.c:596
-msgid "Account validation check in progress"
-msgstr "التحقق من الحساب في تقدم"
-
-#: ../gtk/setupwizard.c:600
-msgid "Error"
-msgstr "خطأ"
-
-#: ../gtk/setupwizard.c:604 ../gtk/audio_assistant.c:541
-msgid "Terminating"
-msgstr "في طور الإنهاء"
-
-#: ../gtk/incall_view.c:69 ../gtk/incall_view.c:93
+#: ../gtk/incall_view.c:67 ../gtk/incall_view.c:87
 #, c-format
 msgid "Call #%i"
 msgstr "مكالمة #%i"
 
-#: ../gtk/incall_view.c:154
+#: ../gtk/incall_view.c:145
 #, c-format
 msgid "Transfer to call #%i with %s"
 msgstr "حوِّل إلى المكالمة  #%i مع %s"
 
-#: ../gtk/incall_view.c:211 ../gtk/incall_view.c:214
+#: ../gtk/incall_view.c:202 ../gtk/incall_view.c:205
 msgid "Not used"
 msgstr "غير مستخدَم"
 
-#: ../gtk/incall_view.c:221
+#: ../gtk/incall_view.c:212
 msgid "ICE not activated"
 msgstr "ICE غير مفعَّل"
 
-#: ../gtk/incall_view.c:223
+#: ../gtk/incall_view.c:214
 msgid "ICE failed"
 msgstr "فَشِل ICE"
 
-#: ../gtk/incall_view.c:225
+#: ../gtk/incall_view.c:216
 msgid "ICE in progress"
 msgstr "تجري مساومة ICE"
 
-#: ../gtk/incall_view.c:227
+#: ../gtk/incall_view.c:218
 msgid "Going through one or more NATs"
 msgstr "المرور عبد واحد أو عدة NAT"
 
-#: ../gtk/incall_view.c:229
+#: ../gtk/incall_view.c:220
 msgid "Direct"
 msgstr "مباشر"
 
-#: ../gtk/incall_view.c:231
+#: ../gtk/incall_view.c:222
 msgid "Through a relay server"
 msgstr "عبر خادم بديل"
 
-#: ../gtk/incall_view.c:239
+#: ../gtk/incall_view.c:230
 msgid "uPnP not activated"
 msgstr "uPnP غير مفعَّل"
 
-#: ../gtk/incall_view.c:241
+#: ../gtk/incall_view.c:232
 msgid "uPnP in progress"
 msgstr "يجري uPnP"
 
-#: ../gtk/incall_view.c:243
+#: ../gtk/incall_view.c:234
 msgid "uPnp not available"
 msgstr "uPnP غير متوفر"
 
-#: ../gtk/incall_view.c:245
+#: ../gtk/incall_view.c:236
 msgid "uPnP is running"
 msgstr "uPnP مشغَّل"
 
-#: ../gtk/incall_view.c:247
+#: ../gtk/incall_view.c:238
 msgid "uPnP failed"
 msgstr "فَشِل uPnP"
 
-#: ../gtk/incall_view.c:257 ../gtk/incall_view.c:258
+#: ../gtk/incall_view.c:248 ../gtk/incall_view.c:249
 msgid "Direct or through server"
 msgstr "مباشرة أو عبر خادم"
 
-#: ../gtk/incall_view.c:267 ../gtk/incall_view.c:279
+#: ../gtk/incall_view.c:258 ../gtk/incall_view.c:270
 #, c-format
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
 msgstr "التنزيل % f\nالرفع : %f (ك.بِتْ/الثانية)"
 
-#: ../gtk/incall_view.c:272 ../gtk/incall_view.c:274
+#: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
 #, c-format
 msgid "%ix%i @ %f fps"
 msgstr "%ix%i @ %f fps"
 
-#: ../gtk/incall_view.c:304
+#: ../gtk/incall_view.c:295
 #, c-format
 msgid "%.3f seconds"
 msgstr "%.3f ثانية"
 
-#: ../gtk/incall_view.c:448 ../gtk/in_call_frame.ui.h:10
+#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:11
 #: ../gtk/videowindow.c:236
 msgid "Hang up"
 msgstr "ضع السماعة"
 
-#: ../gtk/incall_view.c:555
+#: ../gtk/incall_view.c:559
 msgid "<b>Calling...</b>"
 msgstr "<b>يجري الاتصال...</b>"
 
-#: ../gtk/incall_view.c:558 ../gtk/incall_view.c:772
+#: ../gtk/incall_view.c:562 ../gtk/incall_view.c:786
 msgid "00:00:00"
 msgstr "00:00:00"
 
-#: ../gtk/incall_view.c:569
+#: ../gtk/incall_view.c:573
 msgid "<b>Incoming call</b>"
 msgstr "<b>المكالمة الواردة</b>"
 
-#: ../gtk/incall_view.c:606
+#: ../gtk/incall_view.c:610
 msgid "good"
 msgstr "جيدة"
 
-#: ../gtk/incall_view.c:608
+#: ../gtk/incall_view.c:612
 msgid "average"
 msgstr "متوسطة"
 
-#: ../gtk/incall_view.c:610
+#: ../gtk/incall_view.c:614
 msgid "poor"
 msgstr "ضعيفة"
 
-#: ../gtk/incall_view.c:612
+#: ../gtk/incall_view.c:616
 msgid "very poor"
 msgstr "ضعيفة جدا"
 
-#: ../gtk/incall_view.c:614
+#: ../gtk/incall_view.c:618
 msgid "too bad"
 msgstr "سيِّئة جيدا"
 
-#: ../gtk/incall_view.c:615 ../gtk/incall_view.c:631
+#: ../gtk/incall_view.c:619 ../gtk/incall_view.c:635
 msgid "unavailable"
 msgstr "غير متاحة"
 
-#: ../gtk/incall_view.c:720
+#: ../gtk/incall_view.c:728
 msgid "Secured by SRTP"
 msgstr "آمن بواسطة SRTP"
 
-#: ../gtk/incall_view.c:726
+#: ../gtk/incall_view.c:734
 msgid "Secured by DTLS"
 msgstr "مُؤمَّن بواسطة DTLS"
 
-#: ../gtk/incall_view.c:732
+#: ../gtk/incall_view.c:740
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr "آمن بواسطة ZRTP - [شارة الهوية : %s]"
 
-#: ../gtk/incall_view.c:738
+#: ../gtk/incall_view.c:746
 msgid "Set unverified"
 msgstr "أكِّدْ عدم تحقُّقك"
 
-#: ../gtk/incall_view.c:738 ../gtk/in_call_frame.ui.h:1
+#: ../gtk/incall_view.c:746 ../gtk/in_call_frame.ui.h:1
 msgid "Set verified"
 msgstr "أكِّدْ تحقُّقَك"
 
-#: ../gtk/incall_view.c:767
+#: ../gtk/incall_view.c:781
 msgid "In conference"
 msgstr "في اجتماع"
 
-#: ../gtk/incall_view.c:767
+#: ../gtk/incall_view.c:781
 msgid "<b>In call</b>"
 msgstr "<b>المكالمة جارية</b>"
 
-#: ../gtk/incall_view.c:804
+#: ../gtk/incall_view.c:818
 msgid "<b>Paused call</b>"
 msgstr "<b>المكالمة متوقفة مؤقتا</b>"
 
-#: ../gtk/incall_view.c:841
+#: ../gtk/incall_view.c:855
 msgid "<b>Call ended.</b>"
 msgstr "<b>إنتهت المكالمة.</b>"
 
-#: ../gtk/incall_view.c:872
+#: ../gtk/incall_view.c:886
 msgid "Transfer in progress"
 msgstr "يجري الإرسال"
 
-#: ../gtk/incall_view.c:875
+#: ../gtk/incall_view.c:889
 msgid "Transfer done."
 msgstr "انتهى الإرسال."
 
-#: ../gtk/incall_view.c:878
+#: ../gtk/incall_view.c:892
 msgid "Transfer failed."
 msgstr "فَشِل الإرسال."
 
-#: ../gtk/incall_view.c:909
+#: ../gtk/incall_view.c:923
 msgid "Resume"
 msgstr "استأنِفْ"
 
-#: ../gtk/incall_view.c:909 ../gtk/in_call_frame.ui.h:7
+#: ../gtk/incall_view.c:923 ../gtk/in_call_frame.ui.h:8
 msgid "Pause"
 msgstr "إيقاف مؤقت"
 
-#: ../gtk/incall_view.c:975
+#: ../gtk/incall_view.c:989
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr "<small><i>يسجل في\n%s %s</i></small>"
 
-#: ../gtk/incall_view.c:975
+#: ../gtk/incall_view.c:989
 msgid "(Paused)"
 msgstr "(متوقف)"
 
@@ -852,7 +720,8 @@ msgstr "اضغط على زر التسجيل وانطق ببعض الكلمات"
 msgid "Listen to your record voice"
 msgstr "استمع لصوتك المسجَّل"
 
-#: ../gtk/audio_assistant.c:412
+#: ../gtk/audio_assistant.c:412 ../gtk/conf_frame.ui.h:2
+#: ../gtk/in_call_frame.ui.h:5
 msgid "Record"
 msgstr "تسجيل"
 
@@ -868,7 +737,7 @@ msgstr "لنُشغِّل لِنْفُونْ الآن"
 msgid "Audio Assistant"
 msgstr "مرشد الصوت"
 
-#: ../gtk/audio_assistant.c:520 ../gtk/main.ui.h:12
+#: ../gtk/audio_assistant.c:520 ../gtk/main.ui.h:13
 msgid "Audio assistant"
 msgstr "مرشد الصوت"
 
@@ -883,6 +752,10 @@ msgstr "معايرة شدة مكبر الصوت"
 #: ../gtk/audio_assistant.c:536
 msgid "Record and Play"
 msgstr "سَجِّل واقرأ "
+
+#: ../gtk/audio_assistant.c:541
+msgid "Terminating"
+msgstr "في طور الإنهاء"
 
 #: ../gtk/main.ui.h:1
 msgid "Default"
@@ -909,54 +782,58 @@ msgid "Enable self-view"
 msgstr "فعِّل رؤية نفسي"
 
 #: ../gtk/main.ui.h:7
+msgid "Show keypad"
+msgstr "إظهار لوحة الأرقام"
+
+#: ../gtk/main.ui.h:8
 msgid "_Help"
 msgstr "ال_مساعدة"
 
-#: ../gtk/main.ui.h:8
+#: ../gtk/main.ui.h:9
 msgid "Show debug window"
 msgstr "أظهِر نافذة التنقيح"
 
-#: ../gtk/main.ui.h:9
+#: ../gtk/main.ui.h:10
 msgid "_Homepage"
 msgstr "موق_ع الوِبْ"
 
-#: ../gtk/main.ui.h:10
+#: ../gtk/main.ui.h:11
 msgid "Check _Updates"
 msgstr "تحقق من التح_ديثات"
 
-#: ../gtk/main.ui.h:11
+#: ../gtk/main.ui.h:12
 msgid "Account assistant"
 msgstr "مرشد الحساب"
 
-#: ../gtk/main.ui.h:13
+#: ../gtk/main.ui.h:14
 msgid "SIP address or phone number:"
 msgstr "عنوان SIP أو رقم الهاتف :"
 
-#: ../gtk/main.ui.h:14
+#: ../gtk/main.ui.h:15
 msgid "Initiate a new call"
 msgstr "ابدأ مكالمة جديدة"
 
-#: ../gtk/main.ui.h:15
+#: ../gtk/main.ui.h:16
 msgid "Contacts"
 msgstr "جهات الاتصال"
 
-#: ../gtk/main.ui.h:16
+#: ../gtk/main.ui.h:17
 msgid "Search"
 msgstr "بحث"
 
-#: ../gtk/main.ui.h:17
+#: ../gtk/main.ui.h:18
 msgid "<b>Add contacts from directory</b>"
 msgstr "<b>إضافة جهات الاتصال من الدليل</b>"
 
-#: ../gtk/main.ui.h:18
+#: ../gtk/main.ui.h:19
 msgid "Add contact"
 msgstr "إضافة جهة الاتصال"
 
-#: ../gtk/main.ui.h:19
-msgid "Recent calls"
-msgstr "المكالمات السابقة"
-
 #: ../gtk/main.ui.h:20
+msgid "Clear call history"
+msgstr "محو تاريخ المكالمات"
+
+#: ../gtk/main.ui.h:22
 msgid "My current identity:"
 msgstr "هويتي الحالية :"
 
@@ -1023,6 +900,10 @@ msgstr "أدخل كلمة سر النطاق"
 #: ../gtk/password.ui.h:3 ../gtk/login_frame.ui.h:5
 msgid "UserID"
 msgstr "مُعرِّف المستخدم"
+
+#: ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
+msgid "Password:"
+msgstr "كلمة السر :"
 
 #: ../gtk/call_logs.ui.h:1
 msgid "Call history"
@@ -1454,6 +1335,10 @@ msgstr "عنوان الخادم :"
 msgid "Authentication method:"
 msgstr "طريقة التحقق من الهوية :"
 
+#: ../gtk/parameters.ui.h:91 ../gtk/ldap.ui.h:4
+msgid "Username:"
+msgstr "اسم المستخدم :"
+
 #: ../gtk/parameters.ui.h:92
 msgid "<b>LDAP Account setup</b>"
 msgstr "<b>تهيئة LDAP</b>"
@@ -1701,31 +1586,31 @@ msgstr "أنْهِ الاجتماع"
 msgid "Click here to set the speakers volume"
 msgstr "اضغط هنا لتحديد شدة مكبر الصوت"
 
-#: ../gtk/in_call_frame.ui.h:5
+#: ../gtk/in_call_frame.ui.h:6
 msgid "Record this call to an audio file"
 msgstr "سَجِّل هذه المكالمة في ملف صوتي"
 
-#: ../gtk/in_call_frame.ui.h:6
+#: ../gtk/in_call_frame.ui.h:7
 msgid "Video"
 msgstr "مرئي"
 
-#: ../gtk/in_call_frame.ui.h:8
+#: ../gtk/in_call_frame.ui.h:9
 msgid "Mute"
 msgstr "اصمُتْ"
 
-#: ../gtk/in_call_frame.ui.h:9
+#: ../gtk/in_call_frame.ui.h:10
 msgid "Transfer"
 msgstr "إرسال"
 
-#: ../gtk/in_call_frame.ui.h:12
+#: ../gtk/in_call_frame.ui.h:13
 msgid "In call"
 msgstr "المكالمة جارية"
 
-#: ../gtk/in_call_frame.ui.h:13
+#: ../gtk/in_call_frame.ui.h:14
 msgid "Duration"
 msgstr "المدة"
 
-#: ../gtk/in_call_frame.ui.h:14
+#: ../gtk/in_call_frame.ui.h:15
 msgid "Call quality rating"
 msgstr "تقييم جودة المكالمة"
 
@@ -1753,52 +1638,52 @@ msgstr "ADSL"
 msgid "Fiber Channel"
 msgstr "قناة الألياف الضوئية"
 
-#: ../coreapi/linphonecore.c:1555
+#: ../coreapi/linphonecore.c:1560
 msgid "Ready"
 msgstr "جاهز"
 
-#: ../coreapi/linphonecore.c:2551
+#: ../coreapi/linphonecore.c:2556
 msgid "Configuring"
 msgstr "تجري التهيئة"
 
 #. must be known at that time
-#: ../coreapi/linphonecore.c:2946
+#: ../coreapi/linphonecore.c:2951
 msgid "Contacting"
 msgstr "يتصل ب"
 
-#: ../coreapi/linphonecore.c:2951
+#: ../coreapi/linphonecore.c:2956
 msgid "Could not call"
 msgstr "لم يتمكن من الاتصال"
 
-#: ../coreapi/linphonecore.c:3087
+#: ../coreapi/linphonecore.c:3092
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "آسف، وصل عدد المكالمات الآنية إلى حده الأقصى"
 
-#: ../coreapi/linphonecore.c:3245
+#: ../coreapi/linphonecore.c:3250
 msgid "is contacting you"
 msgstr "يتصل بك"
 
-#: ../coreapi/linphonecore.c:3246
+#: ../coreapi/linphonecore.c:3251
 msgid " and asked autoanswer."
 msgstr "ويطلب ردا تلقائيا."
 
-#: ../coreapi/linphonecore.c:3372
+#: ../coreapi/linphonecore.c:3377
 msgid "Modifying call parameters..."
 msgstr "يجري تعديل إعدادات المكالمة..."
 
-#: ../coreapi/linphonecore.c:3767
+#: ../coreapi/linphonecore.c:3769
 msgid "Connected."
 msgstr "متصل."
 
-#: ../coreapi/linphonecore.c:3792
+#: ../coreapi/linphonecore.c:3794
 msgid "Call aborted"
 msgstr "أُلغيت المكالمة"
 
-#: ../coreapi/linphonecore.c:3981
+#: ../coreapi/linphonecore.c:3983
 msgid "Could not pause the call"
 msgstr "لم يتمكن من توقيف المكالمة مؤقتا"
 
-#: ../coreapi/linphonecore.c:3984
+#: ../coreapi/linphonecore.c:3986
 msgid "Pausing the current call..."
 msgstr "وضع المكالمة قيد الانتظار..."
 
@@ -2005,7 +1890,7 @@ msgstr "‫لم تُعدَّل معاملات المكالمات : %s.‬"
 msgid "Call parameters were successfully modified."
 msgstr "عُدِّلت معاملات المكالمات بنجاج."
 
-#: ../coreapi/linphonecall.c:4394
+#: ../coreapi/linphonecall.c:4396
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
