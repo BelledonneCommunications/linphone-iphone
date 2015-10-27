@@ -228,8 +228,8 @@ int linphone_proxy_config_set_server_addr(LinphoneProxyConfig *cfg, const char *
 
 int linphone_proxy_config_set_identity_address(LinphoneProxyConfig *cfg, const LinphoneAddress *addr){
 	if (!addr || linphone_address_get_username(addr)==NULL){
-		char* as_string = linphone_address_as_string(addr);
-		ms_warning("Invalid sip identity: %s", addr?as_string:"NULL");
+		char* as_string = addr ? linphone_address_as_string(addr) : ms_strdup("NULL");
+		ms_warning("Invalid sip identity: %s", as_string);
 		ms_free(as_string);
 		return -1;
 	}
