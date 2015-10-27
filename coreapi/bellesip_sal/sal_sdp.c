@@ -250,7 +250,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 	if ( stream->bandwidth>0 )
 		belle_sdp_media_description_set_bandwidth ( media_desc,"AS",stream->bandwidth );
 
-	if ((stream->proto == SalProtoRtpSavpf) || (stream->proto == SalProtoRtpSavp)) {
+	if (sal_stream_description_has_srtp(stream)) {
 		/* add crypto lines */
 		for ( j=0; j<SAL_CRYPTO_ALGO_MAX; j++ ) {
 			MSCryptoSuiteNameParams desc;
@@ -818,7 +818,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	}
 
 	/* Read crypto lines if any */
-	if ((stream->proto == SalProtoRtpSavpf) || (stream->proto == SalProtoRtpSavp)) {
+	if (sal_stream_description_has_srtp(stream)) {
 		sdp_parse_media_crypto_parameters(media_desc, stream);
 	}
 
@@ -826,7 +826,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	sdp_parse_media_ice_parameters(media_desc, stream);
 
 	/* Get RTCP-FB attributes if any */
-	if ((stream->proto == SalProtoRtpAvpf) || (stream->proto == SalProtoRtpSavpf)) {
+	if (sal_stream_description_has_avpf(stream)) {
 		enable_avpf_for_stream(stream);
 		sdp_parse_rtcp_fb_parameters(media_desc, stream);
 	}

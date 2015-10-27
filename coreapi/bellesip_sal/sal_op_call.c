@@ -89,7 +89,7 @@ static void sdp_process(SalOp *h){
 				strcpy(h->result->streams[i].rtcp_addr,h->base.remote_media->streams[i].rtcp_addr);
 				h->result->streams[i].rtcp_port=h->base.remote_media->streams[i].rtcp_port;
 
-				if ((h->result->streams[i].proto == SalProtoRtpSavpf) || (h->result->streams[i].proto == SalProtoRtpSavp)) {
+				if (sal_stream_description_has_srtp(&h->result->streams[i])) {
 					h->result->streams[i].crypto[0] = h->base.remote_media->streams[i].crypto[0];
 				}
 			}
