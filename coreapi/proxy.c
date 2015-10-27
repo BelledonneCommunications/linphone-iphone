@@ -249,7 +249,7 @@ int linphone_proxy_config_set_identity(LinphoneProxyConfig *cfg, const char *ide
 	if (identity!=NULL && strlen(identity)>0){
 		LinphoneAddress *addr=linphone_address_new(identity);
 		int ret=linphone_proxy_config_set_identity_address(cfg, addr);
-		linphone_address_destroy(addr);
+		if (addr) linphone_address_destroy(addr);
 		return ret;
 	}
 	return -1;
