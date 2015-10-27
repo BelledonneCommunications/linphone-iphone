@@ -1517,4 +1517,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public String getVideoPreset() {
 		return getVideoPreset(nativePtr);
 	}
+	private native long createCallParams(long nativePtr, long callPtr);
+	@Override
+	public LinphoneCallParams createCallParams(LinphoneCall call) {
+		long callptr = 0;
+		if (call!=null) callptr = ((LinphoneCallImpl)call).nativePtr;
+		long ptr = createCallParams(nativePtr, callptr);
+		return new LinphoneCallParamsImpl(ptr);
+	}
 }

@@ -90,6 +90,7 @@ static jobject handler_obj=NULL;
 static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *content);
 static jobject create_java_linphone_buffer(JNIEnv *env, const LinphoneBuffer *buffer);
 static LinphoneBuffer* create_c_linphone_buffer_from_java_linphone_buffer(JNIEnv *env, jobject jbuffer);
+static jobject getTunnelConfig(JNIEnv *env, LinphoneTunnelConfig *cfg);
 
 #ifdef ANDROID
 void linphone_android_log_handler(int prio, char *str) {
@@ -169,6 +170,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setDebugMode(JNIE
 	} else {
 		linphone_core_disable_logs();
 	}
+}
+
+extern "C" jobject Java_org_linphone_core_LinphoneCoreFactoryImpl__1createTunnelConfig(JNIEnv*  env, jobject  thiz){
+	jobject jobj;
+	LinphoneTunnelConfig *cfg =  linphone_tunnel_config_new();
+	jobj = getTunnelConfig(env, cfg); //this will take a ref.
+	linphone_tunnel_config_unref(cfg);
+	return jobj;
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_enableLogCollection(JNIEnv* env
@@ -3776,6 +3785,15 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createDefaultCallParams
 	return (jlong) linphone_core_create_default_call_parameters((LinphoneCore*)lc);
 }
 
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    createCallParams
+ * Signature: (JJ)J
+ */
+JNIEXPORT jlong JNICALL Java_org_linphone_core_LinphoneCoreImpl_createCallParams(JNIEnv *env, jobject jcore, jlong coreptr, jlong callptr){
+	return (jlong)linphone_core_create_call_params((LinphoneCore*)coreptr, (LinphoneCall*)callptr);
+}
+
 extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getRemoteParams(JNIEnv *env, jobject thiz, jlong lc){
 	if (linphone_call_get_remote_params((LinphoneCall*)lc) == NULL) {
 			return (jlong) 0;
@@ -4244,24 +4262,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServerAndMirror
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServer(JNIEnv *env, jobject thiz, jlong pCore, jobject config) {
 	LinphoneTunnel *tunnel = linphone_core_get_tunnel((LinphoneCore *)pCore);
 	if(tunnel != NULL) {
-		jclass TunnelConfigClass = env->FindClass("org/linphone/core/TunnelConfig");
-		jmethodID getHostMethod = env->GetMethodID(TunnelConfigClass, "getHost", "()Ljava/lang/String;");
-		jmethodID getPortMethod = env->GetMethodID(TunnelConfigClass, "getPort", "()I");
-		jmethodID getRemoteUdpMirrorPortMethod = env->GetMethodID(TunnelConfigClass, "getRemoteUdpMirrorPort", "()I");
-		jmethodID getDelayMethod = env->GetMethodID(TunnelConfigClass, "getDelay", "()I");
-		jstring hostString = (jstring)env->CallObjectMethod(config, getHostMethod);
-		const char *host = env->GetStringUTFChars(hostString, NULL);
-		if(host == NULL || strlen(host)==0) {
-			ms_error("LinphoneCore.tunnelAddServer(): no tunnel host defined");
-		}
-		LinphoneTunnelConfig *tunnelConfig = linphone_tunnel_config_new();
-		linphone_tunnel_config_set_host(tunnelConfig, host);
-		linphone_tunnel_config_set_port(tunnelConfig, env->CallIntMethod(config, getPortMethod));
-		linphone_tunnel_config_set_remote_udp_mirror_port(tunnelConfig, env->CallIntMethod(config, getRemoteUdpMirrorPortMethod));
-		linphone_tunnel_config_set_delay(tunnelConfig, env->CallIntMethod(config, getDelayMethod));
-		linphone_tunnel_add_server(tunnel, tunnelConfig);
-		env->ReleaseStringUTFChars(hostString, host);
-		env->DeleteLocalRef(TunnelConfigClass);
+		
 	} else {
 		ms_error("LinphoneCore.tunnelAddServer(): tunnel feature is not enabled");
 	}
@@ -4269,31 +4270,21 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServer(JNIEnv *
 
 extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_tunnelGetServers(JNIEnv *env, jobject thiz, jlong pCore) {
 	LinphoneTunnel *tunnel = linphone_core_get_tunnel((LinphoneCore *)pCore);
-	jclass TunnelConfigClass = env->FindClass("org/linphone/core/TunnelConfig");
-	jmethodID setHostMethod = env->GetMethodID(TunnelConfigClass, "setHost", "(Ljava/lang/String;)V");
-	jmethodID setPortMethod = env->GetMethodID(TunnelConfigClass, "setPort", "(I)V");
-	jmethodID setRemoteUdpMirrorPortMethod = env->GetMethodID(TunnelConfigClass, "setRemoteUdpMirrorPort", "(I)V");
-	jmethodID setDelayMethod = env->GetMethodID(TunnelConfigClass, "setDelay", "(I)V");
+	jclass tunnelConfigClass = env->FindClass("org/linphone/core/TunnelConfigImpl");
 	jobjectArray tunnelConfigArray = NULL;
 
 	if(tunnel != NULL) {
 		const MSList *servers = linphone_tunnel_get_servers(tunnel);
 		const MSList *it;
 		int i;
-		ms_message("servers=%p", (void *)servers);
-		ms_message("taille=%i", ms_list_size(servers));
-		tunnelConfigArray = env->NewObjectArray(ms_list_size(servers), TunnelConfigClass, NULL);
+		tunnelConfigArray = env->NewObjectArray(ms_list_size(servers), tunnelConfigClass, NULL);
 		for(it = servers, i=0; it != NULL; it = it->next, i++) {
-			const LinphoneTunnelConfig *conf = (const LinphoneTunnelConfig *)it->data;
-			jobject elt = env->AllocObject(TunnelConfigClass);
-			env->CallVoidMethod(elt, setHostMethod, env->NewStringUTF(linphone_tunnel_config_get_host(conf)));
-			env->CallVoidMethod(elt, setPortMethod, linphone_tunnel_config_get_port(conf));
-			env->CallVoidMethod(elt, setRemoteUdpMirrorPortMethod, linphone_tunnel_config_get_remote_udp_mirror_port(conf));
-			env->CallVoidMethod(elt, setDelayMethod, linphone_tunnel_config_get_delay(conf));
+			LinphoneTunnelConfig *conf =  (LinphoneTunnelConfig *)it->data;
+			jobject elt = getTunnelConfig(env, conf);
 			env->SetObjectArrayElement(tunnelConfigArray, i, elt);
-			env->DeleteLocalRef(TunnelConfigClass);
 		}
 	}
+	env->DeleteLocalRef(tunnelConfigClass);
 	return tunnelConfigArray;
 }
 
@@ -6321,3 +6312,134 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallImpl_setListener(JNIEn
 	LinphoneCall *call = (LinphoneCall *)ptr;
 	linphone_call_set_next_video_frame_decoded_callback(call, _next_video_frame_decoded_callback, listener);
 }
+
+
+/*
+ * returns the java TunnelConfig associated with a C LinphoneTunnelConfig.
+**/
+static jobject getTunnelConfig(JNIEnv *env, LinphoneTunnelConfig *cfg){
+	jobject jobj=0;
+
+	if (cfg != NULL){
+		jclass tunnelConfigClass = env->FindClass("org/linphone/core/TunnelConfigImpl");
+		jmethodID ctor = env->GetMethodID(tunnelConfigClass,"<init>", "(j)V");
+
+		void *up=linphone_tunnel_config_get_user_data(cfg);
+
+		if (up==NULL){
+			jobj=env->NewObject(tunnelConfigClass,ctor,(jlong)cfg);
+			linphone_tunnel_config_set_user_data(cfg,(void*)env->NewWeakGlobalRef(jobj));
+			linphone_tunnel_config_ref(cfg);
+		}else{
+			//promote the weak ref to local ref
+			jobj=env->NewLocalRef((jobject)up);
+			if (jobj == NULL){
+				//the weak ref was dead
+				jobj=env->NewObject(tunnelConfigClass,ctor,(jlong)cfg);
+				linphone_tunnel_config_set_user_data(cfg,(void*)env->NewWeakGlobalRef(jobj));
+			}
+		}
+		env->DeleteLocalRef(tunnelConfigClass);
+	}
+	return jobj;
+}
+
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    getHost
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_TunnelConfigImpl_getHost(JNIEnv *env, jobject obj, jlong ptr){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	const char *host = linphone_tunnel_config_get_host(cfg);
+	if (host){
+		return env->NewStringUTF(host);
+	}
+	return NULL;
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    setHost
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_setHost(JNIEnv *env, jobject obj, jlong ptr, jstring jstr){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	const char* host = jstr ? env->GetStringUTFChars(jstr, NULL) : NULL;
+	linphone_tunnel_config_set_host(cfg, host);
+	if (jstr) env->ReleaseStringUTFChars(jstr, host);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    getPort
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_TunnelConfigImpl_getPort(JNIEnv *env, jobject jobj, jlong ptr){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	return linphone_tunnel_config_get_port(cfg);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    setPort
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_setPort(JNIEnv *env, jobject jobj, jlong ptr, jint port){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	linphone_tunnel_config_set_port(cfg, port);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    getRemoteUdpMirrorPort
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_TunnelConfigImpl_getRemoteUdpMirrorPort(JNIEnv *env, jobject jobj, jlong ptr){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	return linphone_tunnel_config_get_remote_udp_mirror_port(cfg);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    setRemoteUdpMirrorPort
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_setRemoteUdpMirrorPort(JNIEnv *env, jobject jobj, jlong ptr, jint port){
+	 LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	 linphone_tunnel_config_set_remote_udp_mirror_port(cfg, port);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    getDelay
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_TunnelConfigImpl_getDelay(JNIEnv *env, jobject jobj, jlong ptr){
+	 LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	 return linphone_tunnel_config_get_delay(cfg);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    setDelay
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_setDelay(JNIEnv *env, jobject jobj, jlong ptr, jint delay){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	linphone_tunnel_config_set_delay(cfg, delay);
+}
+
+/*
+ * Class:     org_linphone_core_TunnelConfigImpl
+ * Method:    destroy
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_destroy(JNIEnv *env, jobject jobj, jlong ptr){
+	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
+	linphone_tunnel_config_set_user_data(cfg, NULL);
+	linphone_tunnel_config_unref(cfg);
+}
+
+

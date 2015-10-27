@@ -197,6 +197,20 @@ LINPHONE_PUBLIC void linphone_tunnel_config_unref(LinphoneTunnelConfig *cfg);
 LINPHONE_PUBLIC void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel);
 
 /**
+ * Store a user data in the tunnel config object
+ * @param cfg the tunnel config
+ * @param ud the user data
+**/
+LINPHONE_PUBLIC void linphone_tunnel_config_set_user_data(LinphoneTunnelConfig *cfg, void *ud);
+
+/**
+ * Retrieve user data from the tunnel config
+ * @param cfg the tunnel config
+ * @return the user data
+**/
+LINPHONE_PUBLIC void *linphone_tunnel_config_get_user_data(LinphoneTunnelConfig *cfg);
+
+/**
  * Add a tunnel server configuration.
  * @param tunnel LinphoneTunnel object
  * @param tunnel_config LinphoneTunnelConfig object

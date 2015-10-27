@@ -167,4 +167,9 @@ abstract public class LinphoneCoreFactory {
 	abstract public PresenceModel createPresenceModel();
 	abstract public PresenceModel createPresenceModel(PresenceActivityType type, String description);
 	abstract public PresenceModel createPresenceModel(PresenceActivityType type, String description, String note, String lang);
+
+	/*
+	 * Create TunnelConfig object, used to configure voip anti blocking extension.
+	 */
+	abstract public TunnelConfig createTunnelConfig();
 }

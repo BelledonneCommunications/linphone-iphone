@@ -37,6 +37,7 @@ LinphoneTunnelConfig *linphone_tunnel_config_new() {
 	LinphoneTunnelConfig *ltc = belle_sip_object_new(LinphoneTunnelConfig);
 	ltc->remote_udp_mirror_port = 12345;
 	ltc->delay = 1000;
+	ltc->port = 443;
 	return ltc;
 }
 

@@ -1127,9 +1127,20 @@ public interface LinphoneCore {
 	/**
 	 * Get default call parameters reflecting current linphone core configuration
 	 * @return  LinphoneCallParams
+	 * @deprecated use LinphoneCore.createCallParams().
 	 */
 	LinphoneCallParams createDefaultCallParameters();
 
+	/**
+	 * Create a LinphoneCallParams suitable to be used for a new incoming call or an established call, in
+	 * methods LinphoneCore.inviteAddressWithParams(), LinphoneCore.updateCall(), LinphoneCore.acceptCallWithParams(), LinphoneCore.acceptCallUpdate().
+	 * The call parameter is optional: when creating a LinphoneCallParams for an outgoing call that is about to be created, 
+	 * it shall be set to null.
+	 * @param call (optional)
+	 * @return a LinphoneCallParams object, representing the call settings guessed from the current LinphoneCore and compatible with the call object if any.
+	 */
+	LinphoneCallParams createCallParams(LinphoneCall call);
+	
 	/**
 	 * Sets the path to a wav file used for ringing.
 	 *
