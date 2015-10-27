@@ -715,47 +715,53 @@ void linphone_gtk_auth_token_verified_clicked(GtkButton *button){
 }
 
 void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call){
-	GtkWidget *callview=(GtkWidget*)linphone_call_get_user_pointer(call);
-	GtkWidget *encryption_box=linphone_gtk_get_widget(callview,"encryption_box");
-	GtkWidget *label=linphone_gtk_get_widget(callview,"encryption_label");
-	GtkWidget *status_icon=linphone_gtk_get_widget(callview,"encryption_status_icon");
-	GtkWidget *verify_button=linphone_gtk_get_widget(callview,"encryption_verify_button");
-	LinphoneMediaEncryption me=linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
-	bool_t verified=linphone_call_get_authentication_token_verified(call);
-	switch(me){
+	GtkWidget *callview = (GtkWidget*)linphone_call_get_user_pointer(call);
+	GtkWidget *encryption_status_box = linphone_gtk_get_widget(callview, "encryption_status_box");
+	GtkWidget *encryption_status_label = linphone_gtk_get_widget(callview, "encryption_status_label");
+	GtkWidget *encryption_status_icon = linphone_gtk_get_widget(callview, "encryption_status_icon");
+	GtkWidget *zrtp_box = linphone_gtk_get_widget(callview, "zrtp_box");
+	GtkWidget *zrtp_button = linphone_gtk_get_widget(callview, "zrtp_button");
+	GtkWidget *zrtp_status_icon = gtk_button_get_image(GTK_BUTTON(zrtp_button));
+	LinphoneMediaEncryption me = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
+
+	switch (me) {
 		case LinphoneMediaEncryptionSRTP:
-			gtk_widget_show_all(encryption_box);
-			gtk_label_set_markup(GTK_LABEL(label),_("Secured by SRTP"));
-			gtk_image_set_from_icon_name(GTK_IMAGE(status_icon), "linphone-security-ok", GTK_ICON_SIZE_MENU);
-			gtk_widget_hide(verify_button);
-		break;
+			gtk_widget_hide_all(zrtp_box);
+			gtk_widget_show_all(encryption_status_box);
+			gtk_label_set_markup(GTK_LABEL(encryption_status_label), _("Secured by SRTP"));
+			gtk_image_set_from_icon_name(GTK_IMAGE(encryption_status_icon), "linphone-security-ok", GTK_ICON_SIZE_MENU);
+			break;
 		case LinphoneMediaEncryptionDTLS:
-			gtk_widget_show_all(encryption_box);
-			gtk_label_set_markup(GTK_LABEL(label),_("Secured by DTLS"));
-			gtk_image_set_from_icon_name(GTK_IMAGE(status_icon), "linphone-security-ok", GTK_ICON_SIZE_MENU);
-			gtk_widget_hide(verify_button);
-		break;
+			gtk_widget_hide_all(zrtp_box);
+			gtk_widget_show_all(encryption_status_box);
+			gtk_label_set_markup(GTK_LABEL(encryption_status_label), _("Secured by DTLS"));
+			gtk_image_set_from_icon_name(GTK_IMAGE(encryption_status_icon), "linphone-security-ok", GTK_ICON_SIZE_MENU);
+			break;
 		case LinphoneMediaEncryptionZRTP:
 		{
-			gchar *text=g_strdup_printf(_("Secured by ZRTP - [auth token: %s]"),linphone_call_get_authentication_token(call));
-			gtk_label_set_markup(GTK_LABEL(label),text);
+			bool_t verified = linphone_call_get_authentication_token_verified(call);
+			gchar *text = g_strdup_printf(_("Secured by ZRTP - [auth token: %s]"), linphone_call_get_authentication_token(call));
+			gtk_button_set_label(GTK_BUTTON(zrtp_button), text);
 			g_free(text);
-			gtk_image_set_from_icon_name(GTK_IMAGE(status_icon),
-			                          verified ? "linphone-security-ok" : "linphone-security-pending", GTK_ICON_SIZE_MENU);
-			gtk_button_set_label(GTK_BUTTON(verify_button),
-			                     verified ? _("Set unverified") : _("Set verified"));
-			gtk_widget_show_all(encryption_box);
+			gtk_image_set_from_icon_name(GTK_IMAGE(zrtp_status_icon), verified ? "linphone-security-ok" : "linphone-security-pending", GTK_ICON_SIZE_MENU);
+			gtk_widget_set_tooltip_text(zrtp_button, verified ? _("Set unverified") : _("Set verified"));
+			gtk_widget_hide_all(encryption_status_box);
+			gtk_widget_show_all(zrtp_box);
 		}
 		break;
 		default:
-			gtk_widget_hide_all(encryption_box);
+			gtk_widget_hide_all(encryption_status_box);
+			gtk_widget_hide_all(zrtp_box);
+			break;
 	}
 }
 
 void linphone_gtk_in_call_view_hide_encryption(LinphoneCall *call) {
 	GtkWidget *callview = (GtkWidget*)linphone_call_get_user_pointer(call);
-	GtkWidget *encryption_box = linphone_gtk_get_widget(callview, "encryption_box");
-	gtk_widget_hide_all(encryption_box);
+	GtkWidget *encryption_status_box = linphone_gtk_get_widget(callview, "encryption_status_box");
+	GtkWidget *zrtp_box = linphone_gtk_get_widget(callview, "zrtp_box");
+	gtk_widget_hide_all(encryption_status_box);
+	gtk_widget_hide_all(zrtp_box);
 }
 
 char *linphone_gtk_address(const LinphoneAddress *addr){
