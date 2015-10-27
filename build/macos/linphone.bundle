@@ -91,12 +91,9 @@
 
 <!-- Starting with 2.24, gdk-pixbuf installs into its own directory. -->
   <binary>
-    ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/*.so
+    ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/*.so
   </binary>
 
-  <data>
-    ${prefix}/etc/gtk-2.0/gdk-pixbuf.loaders
-  </data>
 
    <!--binary>
     ${prefix}/lib/pango/${pkg:pango:pango_module_version}/modules/
