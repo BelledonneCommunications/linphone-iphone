@@ -426,7 +426,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		NSString *prefix = [self stringForKey:@"prefix_preference"];
 		NSString *proxyAddress = [self stringForKey:@"proxy_preference"];
 
-		LinphoneAuthInfo *info = NULL;
 		const char *route = NULL;
 
 		if (isWifiOnly && [LinphoneManager instance].connectivity == wwan)
@@ -519,19 +518,13 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			LinphoneAddress *from = linphone_address_new(identity);
 			if (from) {
 				const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
-				info = linphone_auth_info_new(
+				LinphoneAuthInfo *info = linphone_auth_info_new(
 					linphone_address_get_username(from), userid_str, password ? password : NULL, password ? NULL : ha1,
 					linphone_proxy_config_get_realm(proxyCfg), linphone_proxy_config_get_domain(proxyCfg));
 				linphone_address_destroy(from);
+				linphone_core_add_auth_info(lc, info);
+				linphone_auth_info_destroy(info);
 			}
-		}
-
-		// We reached here without hitting the goto: the new settings are correct, so replace the previous ones.
-
-		// add auth info
-		linphone_core_clear_all_auth_info(lc);
-		if (info) {
-			linphone_core_add_auth_info(lc, info);
 		}
 
 		// setup new proxycfg
@@ -548,8 +541,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			linphone_address_destroy(linphoneAddress);
 		if (proxy)
 			ms_free(proxy);
-		if (info)
-			linphone_auth_info_destroy(info);
 
 		// in case of error, show an alert to the user
 		if (error != nil) {

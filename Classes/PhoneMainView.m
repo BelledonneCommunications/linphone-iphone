@@ -330,7 +330,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning: {
-			[self changeCurrentView:CallView.compositeViewDescription];
+			[self changeCurrentView:CallView.compositeViewDescription push:NO];
 			break;
 		}
 		case LinphoneCallUpdatedByRemote: {
@@ -543,7 +543,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view {
-	[self changeCurrentView:view push:FALSE];
+	[self changeCurrentView:view push:TRUE];
 }
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push {
@@ -553,14 +553,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated {
-	BOOL force = push;
 	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-	if (!push) {
-		force = [viewStack count] > 1;
-		[viewStack removeAllObjects];
+	if (push) {
+		[viewStack addObject:view];
 	}
-	[viewStack addObject:view];
-	[self _changeCurrentView:view transition:nil force:force animated:animated];
+	[self _changeCurrentView:view transition:nil force:push animated:animated];
 }
 
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view
@@ -608,9 +605,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (UIViewController *)popCurrentView {
-	LOGI(@"PhoneMainView: Pop view");
 	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
 	if ([viewStack count] > 1) {
+		LOGI(@"PhoneMainView: Pop view");
 		[viewStack removeLastObject];
 		[self _changeCurrentView:[viewStack lastObject]
 					  transition:[PhoneMainView getBackwardTransition]
@@ -618,6 +615,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 						animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
 		return [mainViewController getCurrentViewController];
 	}
+	LOGW(@"PhoneMainView: Trying to pop view but none stacked!");
 	return nil;
 }
 

@@ -31,7 +31,7 @@
                     <subviews>
                         <view contentMode="scaleToFill" id="i1P-cG-q8h" userLabel="headerView">
                             <rect key="frame" x="0.0" y="0.0" width="300" height="100"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="90B-Re-hmt" userLabel="backgroundColor">
                                     <rect key="frame" x="0.0" y="0.0" width="300" height="100"/>
@@ -66,7 +66,7 @@
                         </view>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Ttt-1k-jAm">
                             <rect key="frame" x="0.0" y="100" width="300" height="532"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <outlet property="dataSource" destination="Yyh-z6-IGO" id="ytx-b8-NGX"/>
