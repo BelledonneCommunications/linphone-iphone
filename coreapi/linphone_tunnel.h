@@ -177,8 +177,22 @@ LINPHONE_PUBLIC void linphone_tunnel_config_set_delay(LinphoneTunnelConfig *tunn
 LINPHONE_PUBLIC int linphone_tunnel_config_get_delay(const LinphoneTunnelConfig *tunnel);
 
 /**
+ * Increment the refcount of LinphoneTunnelConfig object.
+ * @param cfg the LinphoneTunnelConfig object.
+ * @return the same cfg object.
+**/
+LINPHONE_PUBLIC LinphoneTunnelConfig * linphone_tunnel_config_ref(LinphoneTunnelConfig *cfg);
+
+
+/**
+ * Decrement the refcount of LinphoneTunnelConfig object.
+ * @param cfg the LinphoneTunnelConfig object.
+**/
+LINPHONE_PUBLIC void linphone_tunnel_config_unref(LinphoneTunnelConfig *cfg);
+/**
  * Destroy a tunnel configuration
  * @param tunnel LinphoneTunnelConfig object
+ * @deprecated use linphone_tunnel_config_unref().
  */
 LINPHONE_PUBLIC void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel);
 

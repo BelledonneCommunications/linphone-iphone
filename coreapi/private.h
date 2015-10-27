@@ -1262,7 +1262,8 @@ BELLE_SIP_TYPE_ID(LinphoneProxyConfig),
 BELLE_SIP_TYPE_ID(LinphoneFriend),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
-BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession)
+BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
+BELLE_SIP_TYPE_ID(LinphoneTunnelConfig)
 BELLE_SIP_DECLARE_TYPES_END
 
 
@@ -1364,6 +1365,8 @@ LINPHONE_PUBLIC MSWebCam *linphone_call_get_video_device(const LinphoneCall *cal
 MSWebCam *get_nowebcam_device();
 #endif
 bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
+
+BELLE_SIP_DECLARE_VPTR(LinphoneTunnelConfig);
 
 #ifdef __cplusplus
 }
