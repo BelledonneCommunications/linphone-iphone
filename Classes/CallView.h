@@ -50,6 +50,7 @@
 @property(nonatomic, strong) IBOutlet UIView *videoPreview;
 @property(nonatomic, strong) IBOutlet UICamSwitch *videoCameraSwitch;
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView *videoWaitingForFirstImage;
+@property(weak, nonatomic) IBOutlet UIView *tabBarView;
 
 @property(weak, nonatomic) IBOutlet UIView *callView;
 
@@ -71,6 +72,7 @@
 @property(nonatomic, strong) IBOutlet UIButton *optionsTransferButton;
 @property(nonatomic, strong) IBOutlet UIToggleButton *numpadButton;
 
+@property(weak, nonatomic) IBOutlet UIView *bottomBar;
 @property(nonatomic, strong) IBOutlet UIDigitButton *oneButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *twoButton;
 @property(nonatomic, strong) IBOutlet UIDigitButton *threeButton;

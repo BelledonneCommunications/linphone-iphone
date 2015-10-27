@@ -29,7 +29,9 @@
 
 @property(strong) NSString *content;
 @property(strong) NSString *statusBar;
+@property(assign) BOOL statusBarEnabled;
 @property(strong) NSString *tabBar;
+@property(assign) BOOL tabBarEnabled;
 @property(assign) BOOL fullscreen;
 @property(assign) BOOL landscapeMode;
 @property(assign) BOOL portraitMode;
@@ -68,9 +70,9 @@
 @property(strong, nonatomic) IBOutlet UIView *sideMenuView;
 
 - (void)changeView:(UICompositeViewDescription *)description;
-- (void)setFullScreen:(BOOL)enabled;
+- (void)setFullscreen:(BOOL)enabled;
 - (void)hideStatusBar:(BOOL)hidden;
-- (void)hideTopBar:(BOOL)hidden;
+- (void)hideTabBar:(BOOL)hidden;
 - (void)hideSideMenu:(BOOL)hidden;
 - (BOOL)currentViewSupportsLandscape;
 - (UIViewController *)getCachedController:(NSString *)name;

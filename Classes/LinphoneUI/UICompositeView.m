@@ -25,18 +25,13 @@
 
 @implementation UICompositeViewDescription
 
-@synthesize content;
-@synthesize statusBar;
-@synthesize tabBar;
-@synthesize fullscreen;
-@synthesize landscapeMode;
-@synthesize portraitMode;
-
 - (id)copy {
 	UICompositeViewDescription *copy = [UICompositeViewDescription alloc];
 	copy.content = self.content;
 	copy.statusBar = self.statusBar;
+	copy.statusBarEnabled = self.statusBarEnabled;
 	copy.tabBar = self.tabBar;
+	copy.tabBarEnabled = self.tabBarEnabled;
 	copy.fullscreen = self.fullscreen;
 	copy.landscapeMode = self.landscapeMode;
 	copy.portraitMode = self.portraitMode;
@@ -48,18 +43,20 @@
 	return [self.content compare:description.content] == NSOrderedSame;
 }
 
-- (id)init:(Class)acontent
-		statusBar:(Class)astatusBar
-		   tabBar:(Class)atabBar
-	   fullscreen:(BOOL)afullscreen
-	landscapeMode:(BOOL)alandscapeMode
-	 portraitMode:(BOOL)aportraitMode {
-	self.content = NSStringFromClass(acontent);
-	self.statusBar = NSStringFromClass(astatusBar);
-	self.tabBar = NSStringFromClass(atabBar);
-	self.fullscreen = afullscreen;
-	self.landscapeMode = alandscapeMode;
-	self.portraitMode = aportraitMode;
+- (id)init:(Class)content
+		statusBar:(Class)statusBar
+		   tabBar:(Class)tabBar
+	   fullscreen:(BOOL)fullscreen
+	landscapeMode:(BOOL)landscapeMode
+	 portraitMode:(BOOL)portraitMode {
+	self.content = NSStringFromClass(content);
+	self.statusBar = NSStringFromClass(statusBar);
+	self.statusBarEnabled = YES;
+	self.tabBar = NSStringFromClass(tabBar);
+	self.tabBarEnabled = YES;
+	self.fullscreen = fullscreen;
+	self.landscapeMode = landscapeMode;
+	self.portraitMode = portraitMode;
 	self.darkBackground = false;
 
 	return self;
@@ -76,16 +73,6 @@
 @end
 
 @implementation UICompositeView
-
-@synthesize statusBarView;
-@synthesize contentView;
-@synthesize tabBarView;
-@synthesize tabBarViewController = _tabBarViewController;
-@synthesize statusBarViewController = _statusBarViewController;
-@synthesize contentViewController = _contentViewController;
-@synthesize sideMenuViewController = _sideMenuViewController;
-
-@synthesize viewTransition;
 
 #pragma mark - Lifecycle Functions
 
@@ -122,20 +109,6 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Property Functions
-
-- (UIViewController *)statusBarViewController {
-	return _statusBarViewController;
-}
-
-- (UIViewController *)contentViewController {
-	return _contentViewController;
-}
-
-- (UIViewController *)tabBarViewController {
-	return _tabBarViewController;
-}
-
 #pragma mark - ViewController Functions
 
 - (void)updateViewsFramesAccordingToLaunchOrientation {
@@ -163,12 +136,12 @@
 
 - (void)viewDidLoad {
 	/* Force landscape view to match portrait view, because portrait view inherits
-	   the device screen size at load */
+	 the device screen size at load */
 	[self updateViewsFramesAccordingToLaunchOrientation];
 	[super viewDidLoad];
 
 	_sideMenuViewController = [self getCachedController:NSStringFromClass(SideMenuView.class)];
-	[UICompositeView addSubView:_sideMenuViewController view:_sideMenuView];
+	[UICompositeView addSubView:_sideMenuViewController view:self.sideMenuView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -176,7 +149,7 @@
 	[self.contentViewController viewWillAppear:animated];
 	[self.tabBarViewController viewWillAppear:animated];
 	[self.statusBarViewController viewWillAppear:animated];
-
+	[self.sideMenuViewController viewWillAppear:animated];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(orientationDidChange:)
 												 name:UIDeviceOrientationDidChangeNotification
@@ -293,46 +266,47 @@
 		[firstResponder resignFirstResponder];
 		[firstResponder becomeFirstResponder];
 	}
-}
-
-+ (UIView *)findFirstResponder:(UIView *)view {
-	if (view.isFirstResponder) {
-		return view;
 	}
-	for (UIView *subView in view.subviews) {
-		UIView *ret = [UICompositeView findFirstResponder:subView];
-		if (ret != nil)
-			return ret;
-	}
-	return nil;
-}
 
-- (void)clearCache:(NSArray *)exclude {
-	for (NSString *key in [viewControllerCache allKeys]) {
-		bool remove = true;
-		if (exclude != nil) {
-			for (UICompositeViewDescription *description in exclude) {
-				if ([key isEqualToString:description.content] || [key isEqualToString:description.statusBar] ||
-					[key isEqualToString:description.tabBar]) {
-					remove = false;
-					break;
+	+ (UIView *)findFirstResponder:(UIView *)view {
+		if (view.isFirstResponder) {
+			return view;
+		}
+		for (UIView *subView in view.subviews) {
+			UIView *ret = [UICompositeView findFirstResponder:subView];
+			if (ret != nil)
+				return ret;
+		}
+		return nil;
+	}
+
+	- (void)clearCache:(NSArray *)exclude {
+		for (NSString *key in [viewControllerCache allKeys]) {
+			bool remove = true;
+			if (exclude != nil) {
+				for (UICompositeViewDescription *description in exclude) {
+					if ([key isEqualToString:description.content] || [key isEqualToString:description.statusBar] ||
+						[key isEqualToString:description.tabBar]) {
+						remove = false;
+						break;
+					}
 				}
 			}
+			if (remove) {
+				LOGI(@"Free cached view: %@", key);
+				[viewControllerCache removeObjectForKey:key];
+			}
 		}
-		if (remove) {
-			LOGI(@"Free cached view: %@", key);
-			[viewControllerCache removeObjectForKey:key];
-		}
-	}
+}
+
+- (UIInterfaceOrientation)currentOrientation {
+	return currentOrientation;
 }
 
 - (IBAction)onRightSwipe:(id)sender {
 	[self hideSideMenu:NO];
 }
 
-- (UIInterfaceOrientation)currentOrientation {
-	return currentOrientation;
-}
 
 + (void)addSubView:(UIViewController *)controller view:(UIView *)view {
 	if (controller != nil) {
@@ -409,18 +383,20 @@
 		currentViewDescription = [description copy];
 
 		// Animate only with a previous screen
-		if (oldViewDescription != nil && viewTransition != nil) {
-			[contentView.layer removeAnimationForKey:@"transition"];
-			[contentView.layer addAnimation:viewTransition forKey:@"transition"];
+		if (oldViewDescription != nil && self.viewTransition != nil) {
+			[self.contentView.layer removeAnimationForKey:@"transition"];
+			[self.contentView.layer addAnimation:self.viewTransition forKey:@"transition"];
 			if (oldViewDescription.statusBar != currentViewDescription.statusBar ||
-				[statusBarView.layer animationForKey:@"transition"] != nil) {
-				[statusBarView.layer removeAnimationForKey:@"transition"];
-				[statusBarView.layer addAnimation:viewTransition forKey:@"transition"];
+				oldViewDescription.statusBarEnabled != currentViewDescription.statusBarEnabled ||
+				[self.statusBarView.layer animationForKey:@"transition"] != nil) {
+				[self.statusBarView.layer removeAnimationForKey:@"transition"];
+				[self.statusBarView.layer addAnimation:self.viewTransition forKey:@"transition"];
 			}
 			if (oldViewDescription.tabBar != currentViewDescription.tabBar ||
-				[tabBarView.layer animationForKey:@"transition"] != nil) {
-				[tabBarView.layer removeAnimationForKey:@"transition"];
-				[tabBarView.layer addAnimation:viewTransition forKey:@"transition"];
+				oldViewDescription.tabBarEnabled != currentViewDescription.tabBarEnabled ||
+				[self.tabBarView.layer animationForKey:@"transition"] != nil) {
+				[self.tabBarView.layer removeAnimationForKey:@"transition"];
+				[self.tabBarView.layer addAnimation:self.viewTransition forKey:@"transition"];
 			}
 		}
 
@@ -468,11 +444,8 @@
 			if (oldStatusBarViewController != newStatusBarViewController) {
 				UIInterfaceOrientation oldOrientation = self.statusBarViewController.interfaceOrientation;
 				[self.statusBarViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
-				[self.sideMenuViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
 				[self.statusBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
-				[self.sideMenuViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
 				[self.statusBarViewController didRotateFromInterfaceOrientation:oldOrientation];
-				[self.sideMenuViewController didRotateFromInterfaceOrientation:oldOrientation];
 			}
 		}
 	} else {
@@ -483,8 +456,21 @@
 		return;
 	}
 
-	tabBar = nil;   // No change = No Update
-	statusBar = nil; // No change = No Update
+	if (tabBar != nil) {
+		if (currentViewDescription.tabBarEnabled != [tabBar boolValue]) {
+			currentViewDescription.tabBarEnabled = [tabBar boolValue];
+		} else {
+			tabBar = nil; // No change = No Update
+		}
+	}
+
+	if (statusBar != nil) {
+		if (currentViewDescription.statusBarEnabled != [statusBar boolValue]) {
+			currentViewDescription.statusBarEnabled = [statusBar boolValue];
+		} else {
+			statusBar = nil; // No change = No Update
+		}
+	}
 
 	if (fullscreen != nil) {
 		if (currentViewDescription.fullscreen != [fullscreen boolValue]) {
@@ -503,39 +489,49 @@
 	if (tabBar != nil || statusBar != nil || fullscreen != nil) {
 		[UIView beginAnimations:@"resize" context:nil];
 		[UIView setAnimationDuration:0.35];
-		[UIView setAnimationBeginsFromCurrentState:TRUE];
 	}
 
-	CGRect contentFrame = contentView.frame;
+	CGRect contentFrame = self.contentView.frame;
 	CGRect viewFrame = [self.view frame];
 
 	// Resize StatusBar
-	CGRect statusBarFrame = statusBarView.frame;
+	CGRect statusBarFrame = self.statusBarView.frame;
 	int origin = IPHONE_STATUSBAR_HEIGHT;
 	if (currentViewDescription.fullscreen)
 		origin = 0;
 
-	contentFrame.origin.y = origin + statusBarFrame.size.height;
-	statusBarFrame.origin.y = origin;
+	if (self.statusBarViewController != nil && currentViewDescription.statusBarEnabled) {
+		contentFrame.origin.y = origin + statusBarFrame.size.height;
+		statusBarFrame.origin.y = origin;
+		origin = statusBarFrame.size.height;
+	} else {
+		contentFrame.origin.y = origin;
+		statusBarFrame.origin.y = origin - statusBarFrame.size.height;
+	}
 
 	// Resize TabBar
-	CGRect tabFrame = tabBarView.frame;
-	tabFrame.origin.y = viewFrame.size.height;
-	tabFrame.origin.x = viewFrame.size.width;
-	tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
-	// tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
-	tabFrame.origin.y -= tabFrame.size.height;
-	tabFrame.origin.x -= tabFrame.size.width;
-	contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
+	CGRect tabFrame = self.tabBarView.frame;
+	if (self.tabBarViewController != nil && currentViewDescription.tabBarEnabled) {
+		tabFrame.origin.y = viewFrame.size.height;
+		tabFrame.origin.x = viewFrame.size.width;
+		tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
+		// tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
+		tabFrame.origin.y -= tabFrame.size.height;
+		tabFrame.origin.x -= tabFrame.size.width;
+		contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
 
-	// for some views, we need the content to overlap, in which case
-	// we insert in the tab XIB a mask with tag -1 and with y = the amount of
-	// points that the content should overlap.
-	for (UIView *view in self.tabBarViewController.view.subviews) {
-		if (view.tag == -1) {
-			contentFrame.size.height += view.frame.origin.y;
-			break;
+		// for some views, we need the content to overlap, in which case
+		// we insert in the tab XIB a mask with tag -1 and with y = the amount of
+		// points that the content should overlap.
+		for (UIView *view in self.tabBarViewController.view.subviews) {
+			if (view.tag == -1) {
+				contentFrame.size.height += view.frame.origin.y;
+				break;
+			}
 		}
+	} else {
+		contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
+		tabFrame.origin.y = viewFrame.size.height;
 	}
 
 	if (currentViewDescription.fullscreen) {
@@ -544,22 +540,22 @@
 	}
 
 	// Set frames
-	[contentView setFrame:contentFrame];
-	[self.contentViewController.view setFrame:[contentView bounds]];
-	[tabBarView setFrame:tabFrame];
+	[self.contentView setFrame:contentFrame];
+	[self.contentViewController.view setFrame:[self.contentView bounds]];
+	[self.tabBarView setFrame:tabFrame];
 	CGRect frame = [self.tabBarViewController.view frame];
-	frame.size.width = [tabBarView bounds].size.width;
+	frame.size.width = [self.tabBarView bounds].size.width;
 	[self.tabBarViewController.view setFrame:frame];
-	[statusBarView setFrame:statusBarFrame];
+	[self.statusBarView setFrame:statusBarFrame];
 	frame = [self.statusBarViewController.view frame];
-	frame.size.width = [statusBarView bounds].size.width;
+	frame.size.width = [self.statusBarView bounds].size.width;
 	[self.statusBarViewController.view setFrame:frame];
 
 	CGRect sideMenuFrame = contentFrame;
-	contentFrame.origin.x = (_sideMenuView.hidden ? -contentFrame.size.width : 0);
+	contentFrame.origin.x = (self.sideMenuView.hidden ? -contentFrame.size.width : 0);
 	sideMenuFrame.size.height += tabFrame.size.height;
-	_sideMenuView.frame = sideMenuFrame;
-	_sideMenuViewController.view.frame = [_sideMenuView bounds];
+	self.sideMenuView.frame = sideMenuFrame;
+	_sideMenuViewController.view.frame = [self.sideMenuView bounds];
 
 	// Commit animation
 	if (tabBar != nil || statusBar != nil || fullscreen != nil) {
@@ -568,12 +564,12 @@
 
 	// Change view
 	if (description != nil) {
-		[UICompositeView addSubView:self.contentViewController view:contentView];
+		[UICompositeView addSubView:self.contentViewController view:self.contentView];
 		if (oldTabBarViewController == nil || oldTabBarViewController != self.tabBarViewController) {
-			[UICompositeView addSubView:self.tabBarViewController view:tabBarView];
+			[UICompositeView addSubView:self.tabBarViewController view:self.tabBarView];
 		}
 		if (oldStatusBarViewController == nil || oldStatusBarViewController != self.statusBarViewController) {
-			[UICompositeView addSubView:self.statusBarViewController view:statusBarView];
+			[UICompositeView addSubView:self.statusBarViewController view:self.statusBarView];
 		}
 	}
 
@@ -585,11 +581,11 @@
 	[self update:description tabBar:nil statusBar:nil fullscreen:nil];
 }
 
-- (void)setFullScreen:(BOOL)enabled {
+- (void)setFullscreen:(BOOL)enabled {
 	[self update:nil tabBar:nil statusBar:nil fullscreen:[NSNumber numberWithBool:enabled]];
 }
 
-- (void)hideTopBar:(BOOL)hidden {
+- (void)hideTabBar:(BOOL)hidden {
 	[self update:nil tabBar:[NSNumber numberWithBool:!hidden] statusBar:nil fullscreen:nil];
 }
 
@@ -608,19 +604,19 @@
 	// resign keyboard, if any
 	[LinphoneUtils findAndResignFirstResponder:self.view];
 
-	CGRect d = _sideMenuView.frame;
+	CGRect d = self.sideMenuView.frame;
 	d.origin.x = hidden ? 0 : -d.size.width;
-	_sideMenuView.frame = d;
+	self.sideMenuView.frame = d;
 	d.origin.x = hidden ? -d.size.width : 0;
 
 	if (animated) {
-		_sideMenuView.hidden = NO;
+		self.sideMenuView.hidden = NO;
 		[UIView animateWithDuration:0.3
 			animations:^{
-			  _sideMenuView.frame = d;
+			  self.sideMenuView.frame = d;
 			}
 			completion:^(BOOL finished) {
-			  _sideMenuView.hidden = hidden;
+			  self.sideMenuView.hidden = hidden;
 			  if (hidden) {
 				  [self.sideMenuViewController viewWillDisappear:animated];
 			  } else {
@@ -628,8 +624,8 @@
 			  }
 			}];
 	} else {
-		_sideMenuView.frame = d;
-		_sideMenuView.hidden = hidden;
+		self.sideMenuView.frame = d;
+		self.sideMenuView.hidden = hidden;
 		if (hidden) {
 			[self.sideMenuViewController viewWillDisappear:animated];
 		} else {

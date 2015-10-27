@@ -505,7 +505,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)showTabBar:(BOOL)show {
-	[mainViewController hideTopBar:!show];
+	[mainViewController hideTabBar:!show];
 }
 
 - (void)showStatusBar:(BOOL)show {
@@ -539,7 +539,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)fullScreen:(BOOL)enabled {
 	[statusBarBG setHidden:enabled];
-	[mainViewController setFullScreen:enabled];
+	[mainViewController setFullscreen:enabled];
 }
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view {

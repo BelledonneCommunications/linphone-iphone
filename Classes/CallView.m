@@ -48,13 +48,6 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 	return self;
 }
 
-- (void)dealloc {
-	[PhoneMainView.instance.view removeGestureRecognizer:singleFingerTap];
-
-	// Remove all observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;
@@ -205,8 +198,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)viewDidUnload {
-	[super viewDidUnload];
 	[PhoneMainView.instance.view removeGestureRecognizer:singleFingerTap];
+	// Remove all observer
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[super viewDidUnload];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -289,13 +284,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription] && videoShown) {
 		// show controls
+
 		[UIView beginAnimations:nil context:nil];
-		[UIView setAnimationDuration:0.3];
+		[UIView setAnimationDuration:0.35];
+		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _tabBarView.alpha = _pauseButton.alpha = 1.0;
+		_nameLabel.alpha = _durationLabel.alpha = .3;
+
+		CGRect newFrame = self.view.frame;
+		newFrame.size.height -= _bottomBar.frame.size.height;
+		_callView.frame = newFrame;
+
+		[UIView commitAnimations];
+
 		[PhoneMainView.instance showTabBar:true];
 		[PhoneMainView.instance showStatusBar:true];
-		[_pausedCallsTable.tableView setAlpha:1.0];
-		[_videoCameraSwitch setAlpha:1.0];
-		[UIView commitAnimations];
 
 		// hide controls in 5 sec
 		hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
@@ -313,14 +315,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription] && videoShown) {
-		[UIView beginAnimations:nil context:nil];
-		[UIView setAnimationDuration:0.3];
-		[_videoCameraSwitch setAlpha:0.0];
-		[_pausedCallsTable.tableView setAlpha:0.0];
-		[UIView commitAnimations];
-
 		[PhoneMainView.instance showTabBar:false];
 		[PhoneMainView.instance showStatusBar:false];
+
+		[UIView beginAnimations:nil context:nil];
+		[UIView setAnimationDuration:0.3];
+		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _tabBarView.alpha = _nameLabel.alpha =
+			_durationLabel.alpha = _pauseButton.alpha = 0.0;
+		CGRect newFrame = self.view.frame;
+		_callView.frame = newFrame;
+
+		[UIView commitAnimations];
 	}
 }
 
@@ -338,27 +343,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	[_videoGroup setAlpha:1.0];
-	[_pausedCallsTable.tableView setAlpha:0.0];
 
-	//	UIEdgeInsets insets = {33, 0, 25, 0};
-	//	[_pausedCallsTableView.tableView setContentInset:insets];
-	//	[_pausedCallsTableView.tableView setScrollIndicatorInsets:insets];
+	[self hideControls:nil];
 
 	if (animation) {
 		[UIView commitAnimations];
 	}
 
-	if (linphone_core_self_view_enabled([LinphoneManager getLc])) {
-		[_videoPreview setHidden:FALSE];
-	} else {
-		[_videoPreview setHidden:TRUE];
-	}
+	_videoPreview.hidden = (!linphone_core_self_view_enabled([LinphoneManager getLc]));
 
 	if ([LinphoneManager instance].frontCamId != nil) {
 		// only show camera switch button if we have more than 1 camera
 		[_videoCameraSwitch setHidden:FALSE];
 	}
-	[_videoCameraSwitch setAlpha:0.0];
 
 	[PhoneMainView.instance fullScreen:true];
 	[PhoneMainView.instance showTabBar:false];
@@ -396,7 +393,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_videoGroup setAlpha:0.0];
 	[PhoneMainView.instance showTabBar:true];
 
-	[_pausedCallsTable.tableView setAlpha:1.0];
+	[self showControls:nil];
 
 	[_videoCameraSwitch setHidden:TRUE];
 
