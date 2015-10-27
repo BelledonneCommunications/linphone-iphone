@@ -28,6 +28,7 @@
 	UIView *currentView;
 	UIView *nextView;
 	NSMutableArray *historyViews;
+	LinphoneProxyConfig *new_config;
 }
 
 @property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;

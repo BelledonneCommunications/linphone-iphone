@@ -67,6 +67,9 @@
                             <rect key="frame" x="48" y="24" width="274" height="67"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <gestureRecognizers/>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="7kE-0j-s1g"/>
+                            </connections>
                         </imageView>
                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="128 Ko / 172 Ko" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Aaa-MV-yvm" userLabel="fileSizeLabel">
                             <rect key="frame" x="24" y="59" width="274" height="12"/>
@@ -76,7 +79,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" id="GmN-7v-uuO" userLabel="imageSubView">
-                            <rect key="frame" x="48" y="91" width="274" height="32.000000029802322"/>
+                            <rect key="frame" x="48" y="91" width="274" height="32"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" id="USm-wC-GvG" userLabel="transferProgress">
@@ -84,7 +87,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 </progressView>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="N75-gL-R6t" userLabel="transferButton" customClass="UIRoundBorderedButton">
-                                    <rect key="frame" x="75" y="4.0000000298023224" width="124" height="27"/>
+                                    <rect key="frame" x="75" y="4" width="124" height="27"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <state key="normal" title="DOWNLOAD">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -94,7 +97,7 @@
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="6dl-Nz-rdv" userLabel="cancelButton" customClass="UIRoundBorderedButton">
-                                    <rect key="frame" x="75" y="4.0000000298023224" width="124" height="27"/>
+                                    <rect key="frame" x="75" y="4" width="124" height="27"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <state key="normal" title="CANCEL">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -129,6 +132,7 @@
         <tapGestureRecognizer id="5ZI-Ip-lGl" userLabel="resendClick">
             <connections>
                 <action selector="onResendClick:" destination="-2" id="0Vh-VO-NZU"/>
+                <outlet property="delegate" destination="Y7i-Gm-AdY" id="Idp-Op-un2"/>
             </connections>
         </tapGestureRecognizer>
     </objects>

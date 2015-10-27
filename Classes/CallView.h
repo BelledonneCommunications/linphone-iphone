@@ -50,8 +50,6 @@
 @property(nonatomic, strong) IBOutlet UIView *videoPreview;
 @property(nonatomic, strong) IBOutlet UICamSwitch *videoCameraSwitch;
 @property(nonatomic, strong) IBOutlet UIActivityIndicatorView *videoWaitingForFirstImage;
-@property(weak, nonatomic) IBOutlet UIView *tabBarView;
-
 @property(weak, nonatomic) IBOutlet UIView *callView;
 
 @property(nonatomic, strong) IBOutlet UIPauseButton *pauseButton;

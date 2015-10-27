@@ -287,8 +287,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.35];
-		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _tabBarView.alpha = _pauseButton.alpha = 1.0;
-		_nameLabel.alpha = _durationLabel.alpha = .3;
+		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _pauseButton.alpha = 1.0;
+		_routesView.alpha = _optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = 1.0;
+		_nameLabel.alpha = _durationLabel.alpha = .8;
 
 		CGRect newFrame = self.view.frame;
 		newFrame.size.height -= _bottomBar.frame.size.height;
@@ -320,8 +321,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
-		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _tabBarView.alpha = _nameLabel.alpha =
-			_durationLabel.alpha = _pauseButton.alpha = 0.0;
+		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _nameLabel.alpha = _durationLabel.alpha =
+			_pauseButton.alpha = 0.0;
+		_routesView.alpha = _optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = 0.0;
 		CGRect newFrame = self.view.frame;
 		_callView.frame = newFrame;
 
@@ -442,7 +444,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 
 	_noActiveCallView.hidden = (call || linphone_core_is_in_conference(lc));
-	_callView.hidden = !call;
+	_callView.hidden = _pauseButton.hidden = !call;
 	_conferenceView.hidden = !linphone_core_is_in_conference(lc);
 
 	if (!_callView.hidden) {

@@ -80,11 +80,11 @@
 }
 
 - (void)update {
-	[super update];
 	if (self.message == nil) {
 		LOGW(@"Cannot update message room cell: NULL message");
 		return;
 	}
+	[super update];
 
 	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
 	if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {

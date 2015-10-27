@@ -79,7 +79,7 @@
 
 - (void)update {
 	if (_message == nil) {
-		LOGW(@"Cannot update _message room cell: null _message");
+		LOGW(@"Cannot update message room cell: null message");
 		return;
 	}
 
@@ -140,9 +140,9 @@
 	}
 
 	if (outgoing) {
-		[_messageText setAccessibilityLabel:@"Outgoing _message"];
+		[_messageText setAccessibilityLabel:@"Outgoing message"];
 	} else {
-		[_messageText setAccessibilityLabel:@"Incoming _message"];
+		[_messageText setAccessibilityLabel:@"Incoming message"];
 	}
 }
 

@@ -32,7 +32,7 @@
 }
 
 - (bool)onUpdate {
-	return linphone_core_is_mic_muted([LinphoneManager getLc]) == false;
+	return linphone_core_is_mic_muted([LinphoneManager getLc]);
 }
 
 @end

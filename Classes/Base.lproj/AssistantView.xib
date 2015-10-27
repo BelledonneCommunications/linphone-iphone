@@ -77,8 +77,8 @@
                             <rect key="frame" x="0.0" y="0.0" width="375" height="625"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <activityIndicatorView opaque="NO" tag="7" contentMode="scaleToFill" animating="YES" style="whiteLarge" id="90" userLabel="activityIndicatorView">
-                                    <rect key="frame" x="170" y="294" width="37" height="37"/>
+                                <activityIndicatorView opaque="NO" tag="7" contentMode="scaleToFill" animating="YES" style="gray" id="90" userLabel="activityIndicatorView">
+                                    <rect key="frame" x="179" y="302" width="20" height="20"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 </activityIndicatorView>
                             </subviews>

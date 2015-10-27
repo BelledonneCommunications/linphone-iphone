@@ -88,7 +88,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector:@selector(configuringUpdate:)
 												 name:kLinphoneConfiguringStateUpdate
 											   object:nil];
-
+	new_config = NULL;
 	[self changeView:_welcomeView back:FALSE animation:FALSE];
 }
 
@@ -207,6 +207,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (BOOL)addProxyConfig:(LinphoneProxyConfig *)proxy {
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneManager *lm = [LinphoneManager instance];
+
+	if (new_config != NULL && proxy != new_config) {
+		linphone_core_remove_proxy_config(lc, new_config);
+	}
+	new_config = proxy;
+
 	[lm configurePushTokenForProxyConfig:proxy];
 	linphone_core_set_default_proxy_config(lc, proxy);
 	// reload address book to prepend proxy config domain to contacts' phone number
@@ -469,6 +475,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:nil];
 			[alert show];
+			linphone_core_remove_proxy_config([LinphoneManager getLc], new_config);
 			break;
 		}
 		case LinphoneRegistrationProgress: {
