@@ -229,16 +229,6 @@
 	[scrollView setScrollIndicatorInsets:inset];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-
-	UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"About", nil)
-																   style:UIBarButtonItemStyleBordered
-																  target:self
-																  action:@selector(onAboutClick:)];
-	self.navigationItem.rightBarButtonItem = buttonItem;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
 
@@ -254,11 +244,6 @@
 	}
 	return cell;
 }
-
-- (IBAction)onAboutClick:(id)sender {
-	[PhoneMainView.instance changeCurrentView:AboutView.compositeViewDescription push:TRUE];
-}
-
 @end
 
 #pragma mark - UINavigationBarEx Class
@@ -393,7 +378,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[_navigationController.view setBackgroundColor:[UIColor clearColor]];
 
-	_navigationController.view.frame = self.view.frame;
+	_navigationController.view.frame = self.subView.frame;
 	[_navigationController pushViewController:_settingsController animated:FALSE];
 	[self.view addSubview:_navigationController.view];
 }
@@ -846,4 +831,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self dismissViewControllerAnimated:true completion:nil];
 }
 
+- (IBAction)onDialerBackClick:(id)sender {
+	DialerView *view = VIEW(DialerView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
 @end

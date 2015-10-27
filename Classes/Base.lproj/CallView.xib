@@ -102,7 +102,7 @@
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
                         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="9" userLabel="callView">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000044381892"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000044381898"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" image="avatar.png" id="fZy-K5-yQp" userLabel="avatarImage" customClass="UIRoundedImageView">
@@ -114,16 +114,16 @@
                                     </accessibility>
                                 </imageView>
                                 <view alpha="0.0" contentMode="scaleToFill" id="126" userLabel="video">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000044381892"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000044381898"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" id="173" userLabel="background">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000044381892"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000044381898"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                         </view>
                                         <view contentMode="scaleToFill" id="132" userLabel="display">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000044381892"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000044381898"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             <accessibility key="accessibilityConfiguration">
@@ -131,7 +131,7 @@
                                             </accessibility>
                                         </view>
                                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254" y="352" width="113" height="139.00000012564323"/>
+                                            <rect key="frame" x="254" y="352" width="113" height="139.00000012564325"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>

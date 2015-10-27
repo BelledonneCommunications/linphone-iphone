@@ -31,5 +31,7 @@
 
 @property(nonatomic, strong) IBOutlet UINavigationController *navigationController;
 @property(nonatomic, strong) IBOutlet IASKAppSettingsViewController *settingsController;
+@property(weak, nonatomic) IBOutlet UIView *subView;
+- (IBAction)onDialerBackClick:(id)sender;
 
 @end

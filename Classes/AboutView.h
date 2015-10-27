@@ -27,7 +27,6 @@
 @property(nonatomic, strong) IBOutlet UILabel *linphoneLabel;
 @property(nonatomic, strong) IBOutlet UILabel *linphoneIphoneVersionLabel;
 @property(nonatomic, strong) IBOutlet UILabel *linphoneCoreVersionLabel;
-@property(nonatomic, strong) IBOutlet UIView *contentView;
 @property(nonatomic, strong) IBOutlet UILabel *linkLabel;
 @property(nonatomic, strong) IBOutlet UILabel *copyrightLabel;
 @property(nonatomic, strong) IBOutlet UILabel *licenseLabel;
@@ -35,5 +34,6 @@
 @property(nonatomic, strong) IBOutlet UITapGestureRecognizer *linkTapGestureRecognizer;
 
 - (IBAction)onLinkTap:(id)sender;
+- (IBAction)onDialerBackClick:(id)sender;
 
 @end

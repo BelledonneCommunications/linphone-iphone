@@ -24,22 +24,12 @@
 
 @implementation AboutView
 
-@synthesize linphoneCoreVersionLabel;
-@synthesize linphoneLabel;
-@synthesize linphoneIphoneVersionLabel;
-@synthesize contentView;
-@synthesize linkTapGestureRecognizer;
-@synthesize linkLabel;
-@synthesize licensesView;
-@synthesize licenseLabel;
-@synthesize copyrightLabel;
-
 #pragma mark - Lifecycle Functions
 
 - (id)init {
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self != nil) {
-		linkTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLinkTap:)];
+		_linkTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLinkTap:)];
 	}
 	return self;
 }
@@ -49,20 +39,16 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
-	[linkLabel addGestureRecognizer:linkTapGestureRecognizer];
+	[_linkLabel addGestureRecognizer:_linkTapGestureRecognizer];
 
-	UIScrollView *scrollView = (UIScrollView *)self.view;
-	[scrollView addSubview:contentView];
-	[scrollView setContentSize:[contentView bounds].size];
+	[_linphoneLabel setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
 
-	[linphoneLabel setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
-
-	[linphoneIphoneVersionLabel
+	[_linphoneIphoneVersionLabel
 		setText:[NSString stringWithFormat:@"%@ iPhone %@",
 										   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"],
 										   [NSString stringWithUTF8String:LINPHONE_IOS_VERSION]]];
 
-	[linphoneCoreVersionLabel
+	[_linphoneCoreVersionLabel
 		setText:[NSString stringWithFormat:@"%@ Core %s",
 										   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"],
 										   linphone_core_get_version()]];
@@ -71,15 +57,15 @@
 		[LinphoneUtils adjustFontSize:self.view mult:2.22f];
 	}
 
-	[AboutView removeBackground:licensesView];
+	[AboutView removeBackground:_licensesView];
 
 	// Create a request to the resource
 	NSURLRequest *request =
 		[NSURLRequest requestWithURL:[NSURL fileURLWithPath:[LinphoneManager bundleFile:@"licenses.html"]]];
 	// Load the resource using the request
-	[licensesView setDelegate:self];
-	[licensesView loadRequest:request];
-	[[AboutView defaultScrollView:licensesView] setScrollEnabled:FALSE];
+	[_licensesView setDelegate:self];
+	[_licensesView loadRequest:request];
+	[[AboutView defaultScrollView:_licensesView] setScrollEnabled:FALSE];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -120,7 +106,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onLinkTap:(id)sender {
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:linkLabel.text]];
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_linkLabel.text]];
 }
 
 #pragma mark - UIWebViewDelegate Functions
@@ -128,17 +114,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 	CGSize size = [webView sizeThatFits:CGSizeMake(self.view.bounds.size.width, 10000.0f)];
 	float diff = size.height - webView.bounds.size.height;
+	//	_contentFrame.size.height += diff;
 
-	UIScrollView *scrollView = (UIScrollView *)self.view;
-	CGRect contentFrame = [contentView bounds];
-	contentFrame.size.height += diff;
-	[contentView setAutoresizesSubviews:FALSE];
-	[contentView setFrame:contentFrame];
-	[contentView setAutoresizesSubviews:TRUE];
-	[scrollView setContentSize:contentFrame.size];
-	CGRect licensesViewFrame = [licensesView frame];
+	//	[scrollView setContentSize:contentFrame.size];
+	CGRect licensesViewFrame = [_licensesView frame];
 	licensesViewFrame.size.height += diff;
-	[licensesView setFrame:licensesViewFrame];
+	[_licensesView setFrame:licensesViewFrame];
 }
 
 - (BOOL)webView:(UIWebView *)inWeb
@@ -152,4 +133,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return YES;
 }
 
+- (IBAction)onDialerBackClick:(id)sender {
+	[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+}
 @end
