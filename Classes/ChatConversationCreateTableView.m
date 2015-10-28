@@ -40,10 +40,14 @@
 			}
 		}
 		// also add current entry, if not listed
-		const LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], filter.UTF8String);
-		char *uri = linphone_address_as_string(addr);
-		NSString *nsuri = [NSString stringWithUTF8String:uri];
-		ms_free(uri);
+		LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], filter.UTF8String);
+		NSString *nsuri = filter;
+		if (addr) {
+			char *uri = linphone_address_as_string(addr);
+			nsuri = [NSString stringWithUTF8String:uri];
+			ms_free(uri);
+			linphone_address_destroy(addr);
+		}
 		if (![_contacts containsObject:nsuri]) {
 			[_contacts insertObject:nsuri atIndex:0];
 		}

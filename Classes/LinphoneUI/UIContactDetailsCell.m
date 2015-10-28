@@ -61,9 +61,9 @@
 
 - (IBAction)onCallClick:(id)event {
 	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], _addressLabel.text.UTF8String);
-	char *lAddress = linphone_address_as_string_uri_only(addr);
-	if (lAddress == NULL)
+	if (addr == NULL)
 		return;
+	char *lAddress = linphone_address_as_string_uri_only(addr);
 	NSString *displayName = [FastAddressBook displayNameForAddress:addr];
 
 	DialerView *view = VIEW(DialerView);
