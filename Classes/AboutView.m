@@ -24,22 +24,10 @@
 
 @implementation AboutView
 
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-	if (self != nil) {
-		_linkTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLinkTap:)];
-	}
-	return self;
-}
-
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
-	[_linkLabel addGestureRecognizer:_linkTapGestureRecognizer];
 
 	[_linphoneLabel setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
 
@@ -114,9 +102,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 	CGSize size = [webView sizeThatFits:CGSizeMake(self.view.bounds.size.width, 10000.0f)];
 	float diff = size.height - webView.bounds.size.height;
-	//	_contentFrame.size.height += diff;
 
-	//	[scrollView setContentSize:contentFrame.size];
+	UIScrollView *scrollView = (UIScrollView *)self.view;
+	CGRect contentFrame = [scrollView bounds];
+	contentFrame.size.height += diff;
+	[scrollView setAutoresizesSubviews:FALSE];
+	[scrollView setFrame:contentFrame];
+	[scrollView setAutoresizesSubviews:TRUE];
+	[_scrollView setContentSize:contentFrame.size];
 	CGRect licensesViewFrame = [_licensesView frame];
 	licensesViewFrame.size.height += diff;
 	[_licensesView setFrame:licensesViewFrame];

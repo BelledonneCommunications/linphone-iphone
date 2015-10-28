@@ -31,7 +31,7 @@
 @property(nonatomic, strong) IBOutlet UILabel *copyrightLabel;
 @property(nonatomic, strong) IBOutlet UILabel *licenseLabel;
 @property(nonatomic, strong) IBOutlet UIWebView *licensesView;
-@property(nonatomic, strong) IBOutlet UITapGestureRecognizer *linkTapGestureRecognizer;
+@property(weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
 - (IBAction)onLinkTap:(id)sender;
 - (IBAction)onDialerBackClick:(id)sender;

@@ -8,11 +8,13 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AboutView">
             <connections>
                 <outlet property="copyrightLabel" destination="58" id="72"/>
+                <outlet property="licenseLabel" destination="61" id="wfl-pd-xb6"/>
                 <outlet property="licensesView" destination="69" id="70"/>
                 <outlet property="linkLabel" destination="57" id="60"/>
                 <outlet property="linphoneCoreVersionLabel" destination="66" id="67"/>
                 <outlet property="linphoneIphoneVersionLabel" destination="65" id="68"/>
                 <outlet property="linphoneLabel" destination="56" id="71"/>
+                <outlet property="scrollView" destination="62" id="N9t-Th-sGO"/>
                 <outlet property="view" destination="HJH-1o-RXN" id="IOA-1R-a1O"/>
             </connections>
         </placeholder>
@@ -77,6 +79,9 @@
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="0.81176471709999998" green="0.29803922770000002" blue="0.16078431900000001" alpha="1" colorSpace="deviceRGB"/>
                                     <nil key="highlightedColor"/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="l7c-wq-pii" appends="YES" id="KgK-0M-UKA"/>
+                                    </connections>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Linphone iPhone 1.0 (placeholder)" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="65" userLabel="linphoneIphoneVersionLabel">
                                     <rect key="frame" x="10" y="123" width="355" height="18"/>
@@ -122,6 +127,11 @@
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
             <point key="canvasLocation" x="235.5" y="362.5"/>
         </view>
+        <tapGestureRecognizer id="l7c-wq-pii" userLabel="onLinkTap">
+            <connections>
+                <action selector="onLinkTap:" destination="-1" id="Ay5-Uz-RDo"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="color_E.png" width="2" height="2"/>
