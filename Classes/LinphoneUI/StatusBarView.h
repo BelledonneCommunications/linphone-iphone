@@ -20,6 +20,7 @@
 #import <UIKit/UIKit.h>
 #import "TPMultiLayoutViewController.h"
 #import "UIConfirmationDialog.h"
+#import "LinphoneManager.h"
 
 @interface StatusBarView : TPMultiLayoutViewController {
 	UIConfirmationDialog *securityDialog;
@@ -36,5 +37,5 @@
 - (IBAction)onSecurityClick:(id)sender;
 - (IBAction)onSideMenuClick:(id)sender;
 - (IBAction)onRegistrationStateClick:(id)sender;
-
++ (UIImage *)imageForState:(LinphoneRegistrationState)state;
 @end

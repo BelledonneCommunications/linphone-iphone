@@ -154,10 +154,22 @@
 
 #pragma mark -
 
++ (UIImage *)imageForState:(LinphoneRegistrationState)state {
+	switch (state) {
+		case LinphoneRegistrationFailed:
+			return [UIImage imageNamed:@"led_error.png"];
+		case LinphoneRegistrationCleared:
+		case LinphoneRegistrationNone:
+			return [UIImage imageNamed:@"led_disconnected.png"];
+		case LinphoneRegistrationProgress:
+			return [UIImage imageNamed:@"led_inprogress.png"];
+		case LinphoneRegistrationOk:
+			return [UIImage imageNamed:@"led_connected.png"];
+	}
+}
 - (void)proxyConfigUpdate:(LinphoneProxyConfig *)config {
 	LinphoneRegistrationState state = LinphoneRegistrationNone;
 	NSString *message = nil;
-	UIImage *image = nil;
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneGlobalState gstate = linphone_core_get_global_state(lc);
 
@@ -190,25 +202,9 @@
 				break;
 		}
 	}
-
-	switch (state) {
-		case LinphoneRegistrationFailed:
-			image = [UIImage imageNamed:@"led_error.png"];
-			break;
-		case LinphoneRegistrationCleared:
-		case LinphoneRegistrationNone:
-			image = [UIImage imageNamed:@"led_disconnected.png"];
-			break;
-		case LinphoneRegistrationProgress:
-			image = [UIImage imageNamed:@"led_inprogress.png"];
-			break;
-		case LinphoneRegistrationOk:
-			image = [UIImage imageNamed:@"led_connected.png"];
-			break;
-	}
 	[_registrationState setTitle:message forState:UIControlStateNormal];
 	_registrationState.accessibilityValue = message;
-	[_registrationState setImage:image forState:UIControlStateNormal];
+	[_registrationState setImage:[self.class imageForState:state] forState:UIControlStateNormal];
 }
 
 #pragma mark -

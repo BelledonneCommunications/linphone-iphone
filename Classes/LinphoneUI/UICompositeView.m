@@ -631,46 +631,7 @@
 
 - (void)hideSideMenu:(BOOL)hidden {
 	[self update:nil tabBar:nil statusBar:nil sideMenu:[NSNumber numberWithBool:!hidden] fullscreen:nil];
-	//	[self hideSideMenu:hidden
-	//			  animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference" withDefault:YES]];
 }
-
-//- (void)hideSideMenu:(BOOL)hidden animated:(BOOL)animated {
-//	LOGI(@"%s side menu %s animation", hidden ? "Closing" : "Opening", animated ? "with" : "without");
-//
-//	// resign keyboard, if any
-//	[LinphoneUtils findAndResignFirstResponder:self.view];
-//
-//	CGRect d = self.sideMenuView.frame;
-//	d.origin.x = hidden ? 0 : -d.size.width;
-//	self.sideMenuView.frame = d;
-//	d.origin.x = hidden ? -d.size.width : 0;
-//
-//	if (animated) {
-//		self.sideMenuView.hidden = NO;
-//		[UIView animateWithDuration:0.3
-//			animations:^{
-//			  self.sideMenuView.frame = d;
-//			}
-//			completion:^(BOOL finished) {
-//			  self.sideMenuView.hidden = hidden;
-//			  if (hidden) {
-//				  [self.sideMenuViewController viewWillDisappear:animated];
-//			  } else {
-//				  [self.sideMenuViewController viewWillAppear:animated];
-//			  }
-//			}];
-//	} else {
-//		self.sideMenuView.frame = d;
-//		self.sideMenuView.hidden = hidden;
-//		if (hidden) {
-//			[self.sideMenuViewController viewWillDisappear:animated];
-//		} else {
-//			[self.sideMenuViewController viewWillAppear:animated];
-//		}
-//	}
-//}
-
 - (UIViewController *)getCurrentViewController {
 	return self.contentViewController;
 }

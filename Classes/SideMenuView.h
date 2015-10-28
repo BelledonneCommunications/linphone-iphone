@@ -15,7 +15,7 @@
 
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property(weak, nonatomic) IBOutlet UILabel *addressLabel;
+@property(weak, nonatomic) IBOutlet UIButton *addressButton;
 @property(strong, nonatomic) IBOutlet SideMenuTableView *sideMenuTableViewController;
 - (IBAction)onLateralSwipe:(id)sender;
 - (IBAction)onHeaderClick:(id)sender;

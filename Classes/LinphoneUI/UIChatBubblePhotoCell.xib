@@ -112,7 +112,7 @@
                             <rect key="frame" x="307" y="0.0" width="15" height="15"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="6dA-3U-OPW" userLabel="bottomBarColor">
+                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="6dA-3U-OPW" userLabel="bottomBarColor">
                             <rect key="frame" x="0.0" y="129" width="322" height="1"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                         </imageView>

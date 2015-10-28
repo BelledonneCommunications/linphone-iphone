@@ -18,11 +18,14 @@
 		const LinphoneAddress *addr = linphone_proxy_config_get_identity_address(default_proxy);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
 		char *as_string = linphone_address_as_string(addr);
-		_addressLabel.text = [NSString stringWithUTF8String:as_string];
+		[_addressButton setTitle:[NSString stringWithUTF8String:as_string] forState:UIControlStateNormal];
 		ms_free(as_string);
+		[_addressButton setImage:[StatusBarView imageForState:linphone_proxy_config_get_state(default_proxy)]
+						forState:UIControlStateNormal];
 	} else {
 		_nameLabel.text = @"No account";
-		_addressLabel.text = NSLocalizedString(@"No address", nil);
+		[_addressButton setTitle:NSLocalizedString(@"No address", nil) forState:UIControlStateNormal];
+		[_addressButton setImage:nil forState:UIControlStateNormal];
 	}
 	[LinphoneUtils setSelfAvatar:_avatarImage];
 }
