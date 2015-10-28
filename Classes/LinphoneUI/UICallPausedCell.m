@@ -28,20 +28,21 @@
 }
 
 - (void)setCall:(LinphoneCall *)call {
+	// if no call is provided, we assume that this is a conference
 	if (!call) {
-		LOGW(@"Cannot update call cell: null call or data");
-		return;
+		[_pauseButton setType:UIPauseButtonType_Conference call:call];
+		_nameLabel.text = NSLocalizedString(@"Conference", nil);
+		[_avatarImage setImage:[UIImage imageNamed:@"conference_start_default.png"] bordered:NO withRoundedRadius:YES];
+		_durationLabel.text = @"";
+	} else {
+		[_pauseButton setType:UIPauseButtonType_Call call:call];
+		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
+		[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:YES] bordered:NO withRoundedRadius:YES];
+		_durationLabel.text = [LinphoneUtils durationToString:linphone_call_get_duration(call)];
 	}
-
-	[_pauseButton setType:UIPauseButtonType_Call call:call];
 	[_pauseButton update];
 
-	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
-	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
-
-	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:YES] bordered:NO withRoundedRadius:YES];
-
-	_durationLabel.text = [LinphoneUtils durationToString:linphone_call_get_duration(call)];
 }
 
 @end

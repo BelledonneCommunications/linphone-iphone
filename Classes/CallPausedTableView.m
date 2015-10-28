@@ -65,6 +65,7 @@
 		}
 		calls = calls->next;
 	}
+	// we should reach this only when we are querying for conference
 	return (calls ? calls->data : NULL);
 }
 
@@ -83,13 +84,18 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
 	int count = 0;
+	int conference_in_pause = 0;
 	while (calls) {
-		if (linphone_call_get_state(calls->data) == LinphoneCallPaused) {
+		LinphoneCall *call = calls->data;
+		if (linphone_call_get_state(call) == LinphoneCallPaused) {
 			count++;
+		}
+		if (linphone_call_is_in_conference(call) && !linphone_core_is_in_conference([LinphoneManager getLc])) {
+			conference_in_pause = 1;
 		}
 		calls = calls->next;
 	}
-	return count;
+	return count + conference_in_pause;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

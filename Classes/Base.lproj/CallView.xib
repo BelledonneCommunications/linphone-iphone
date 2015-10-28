@@ -9,8 +9,10 @@
             <connections>
                 <outlet property="avatarImage" destination="fZy-K5-yQp" id="hOl-IQ-c9B"/>
                 <outlet property="bottomBar" destination="mga-O5-mUn" id="ObF-wX-nBD"/>
+                <outlet property="callPauseButton" destination="7f5-7T-fV3" id="A5d-op-0Iq"/>
                 <outlet property="callView" destination="9" id="TKY-dp-lKv"/>
                 <outlet property="conferenceCallsTable" destination="sif-q0-7oE" id="Fjr-dB-s4q"/>
+                <outlet property="conferencePauseButton" destination="HAk-mv-6sG" id="SJg-ew-UIZ"/>
                 <outlet property="conferenceView" destination="0Ju-u5-N7A" id="H5K-Nv-IKI"/>
                 <outlet property="durationLabel" destination="Oy8-QO-Jwb" id="mUT-TX-gLp"/>
                 <outlet property="eightButton" destination="DRh-kc-UVM" id="BPp-sh-qBg"/>
@@ -30,7 +32,6 @@
                 <outlet property="optionsConferenceButton" destination="06a-kv-hpZ" id="C57-v7-1C5"/>
                 <outlet property="optionsTransferButton" destination="S0k-bn-1bs" id="2fo-RR-nKy"/>
                 <outlet property="optionsView" destination="sHZ-53-Hta" id="HjK-Gc-HB2"/>
-                <outlet property="pauseButton" destination="7f5-7T-fV3" id="c3P-vq-8ux"/>
                 <outlet property="pausedByRemoteView" destination="0MR-ml-8RY" id="fzQ-lE-Tny"/>
                 <outlet property="pausedCallsTable" destination="162" id="ffv-xP-AXk"/>
                 <outlet property="routesBluetoothButton" destination="6uv-FV-mUL" id="c0F-7q-0m5"/>
@@ -82,7 +83,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Conference" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="8ep-1F-Gkg" userLabel="nameLabel">
-                                    <rect key="frame" x="10" y="0.0" width="313" height="52"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="323" height="52"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="37"/>
                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -98,11 +99,22 @@
                                         <outlet property="delegate" destination="sif-q0-7oE" id="1oo-Xs-pb0"/>
                                     </connections>
                                 </tableView>
+                                <button opaque="NO" tag="24" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="HAk-mv-6sG" userLabel="conferencePauseButton" customClass="UIPauseButton">
+                                    <rect key="frame" x="323" y="0.0" width="52" height="52"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Pause"/>
+                                    <state key="normal" image="pause_big_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="pause_big_disabled.png"/>
+                                    <state key="selected" image="pause_big_over_selected.png"/>
+                                    <state key="highlighted" image="pause_big_over_selected.png"/>
+                                </button>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
                         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="9" userLabel="callView">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.0000006711665"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000287939685"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" image="avatar.png" id="fZy-K5-yQp" userLabel="avatarImage" customClass="UIRoundedImageView">
@@ -114,16 +126,16 @@
                                     </accessibility>
                                 </imageView>
                                 <view alpha="0.0" contentMode="scaleToFill" id="126" userLabel="video">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="499.0000006711665"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000287939685"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" id="173" userLabel="background">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.0000006711665"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000287939685"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                         </view>
                                         <view contentMode="scaleToFill" id="132" userLabel="display">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.0000006711665"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="499.00000287939685"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             <accessibility key="accessibilityConfiguration">
@@ -131,7 +143,7 @@
                                             </accessibility>
                                         </view>
                                         <view contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254.00000029960563" y="352" width="113" height="139.00000019000436"/>
+                                            <rect key="frame" x="254.00000029960563" y="352.00000206425193" width="113" height="139"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -174,7 +186,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <view hidden="YES" alpha="0.80000000000000004" contentMode="scaleToFill" id="0MR-ml-8RY" userLabel="pausedByRemoteView">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="503.0000006711665"/>
+                                    <rect key="frame" x="0.0" y="1" width="375" height="503.00000287939685"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="waiting_time.png" id="DH6-pH-W9j" userLabel="pausedImage">
@@ -191,6 +203,17 @@
                                     </subviews>
                                     <color key="backgroundColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </view>
+                                <button opaque="NO" tag="24" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7f5-7T-fV3" userLabel="callPauseButton" customClass="UIPauseButton">
+                                    <rect key="frame" x="258" y="80" width="52" height="52"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Pause"/>
+                                    <state key="normal" image="pause_big_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="pause_big_disabled.png"/>
+                                    <state key="selected" image="pause_big_over_selected.png"/>
+                                    <state key="highlighted" image="pause_big_over_selected.png"/>
+                                </button>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
@@ -222,17 +245,6 @@
                                 <outlet property="delegate" destination="162" id="169"/>
                             </connections>
                         </tableView>
-                        <button opaque="NO" tag="24" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7f5-7T-fV3" userLabel="pauseButton" customClass="UIPauseButton">
-                            <rect key="frame" x="258" y="80" width="52" height="52"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Pause"/>
-                            <state key="normal" image="pause_big_default.png">
-                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                            </state>
-                            <state key="disabled" image="pause_big_disabled.png"/>
-                            <state key="selected" image="pause_big_over_selected.png"/>
-                            <state key="highlighted" image="pause_big_over_selected.png"/>
-                        </button>
                         <view hidden="YES" alpha="0.79999999999999982" contentMode="scaleToFill" id="ukG-i4-YMY" userLabel="numpadView">
                             <rect key="frame" x="0.0" y="71" width="375" height="539"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -359,7 +371,7 @@
                                 </imageView>
                                 <button opaque="NO" tag="30" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="6uv-FV-mUL" userLabel="routesBluetoothButton">
                                     <rect key="frame" x="0.0" y="0.0" width="94" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Bluetooth"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
@@ -380,7 +392,7 @@
                                 </button>
                                 <button opaque="NO" tag="31" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="jSA-bD-bCs" userLabel="routesEarpieceButton">
                                     <rect key="frame" x="0.0" y="66" width="94" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Receiver"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
@@ -401,7 +413,7 @@
                                 </button>
                                 <button opaque="NO" tag="32" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="go9-SC-yzb" userLabel="routesSpeakerButton">
                                     <rect key="frame" x="0.0" y="132" width="94" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Speaker"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
@@ -432,7 +444,7 @@
                                 </imageView>
                                 <button opaque="NO" tag="25" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="06a-kv-hpZ" userLabel="optionConferenceButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="0.0" width="94" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Start conference"/>
                                     <state key="normal" image="conference_start_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -445,7 +457,7 @@
                                 </button>
                                 <button opaque="NO" tag="17" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="reb-7F-UDV" userLabel="optionsAddButton">
                                     <rect key="frame" x="0.0" y="66" width="94" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add call"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>
@@ -461,7 +473,7 @@
                                 </button>
                                 <button opaque="NO" tag="16" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="S0k-bn-1bs" userLabel="optionsTransferButton">
                                     <rect key="frame" x="0.0" y="132" width="94" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Transfer call"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="28" maxX="0.0" maxY="0.0"/>

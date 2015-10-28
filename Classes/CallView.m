@@ -224,16 +224,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[_speakerButton update];
 	[_microButton update];
-	[_pauseButton setType:UIPauseButtonType_CurrentCall call:call];
-	[_pauseButton update];
+	[_callPauseButton update];
+	[_conferencePauseButton update];
 	[_videoButton update];
 	[_hangupButton update];
 
-	_optionsButton.enabled = (call && !linphone_call_media_in_progress(call));
-
+	_optionsButton.enabled = (!call || !linphone_call_media_in_progress(call));
+	_optionsTransferButton.enabled = call && !linphone_call_media_in_progress(call);
 	// Show Pause/Conference button following call count
 	if (linphone_core_get_calls_nb(lc) > 1) {
-		bool enabled = true;
+		bool enabled = ((linphone_core_get_current_call(lc) != NULL) || linphone_core_is_in_conference(lc));
 		const MSList *list = linphone_core_get_calls(lc);
 		while (list != NULL) {
 			LinphoneCall *call = (LinphoneCall *)list->data;
@@ -289,7 +289,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.35];
-		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _pauseButton.alpha = 1.0;
+		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _callPauseButton.alpha = 1.0;
 		_routesView.alpha = _optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = 1.0;
 		_nameLabel.alpha = _durationLabel.alpha = .8;
 
@@ -324,7 +324,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _nameLabel.alpha = _durationLabel.alpha =
-			_pauseButton.alpha = 0.0;
+			_callPauseButton.alpha = 0.0;
 		_routesView.alpha = _optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = 0.0;
 		CGRect newFrame = self.view.frame;
 		_callView.frame = newFrame;
@@ -449,8 +449,12 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 
 	_noActiveCallView.hidden = (call || linphone_core_is_in_conference(lc));
-	_callView.hidden = _pauseButton.hidden = !call;
+	_callView.hidden = !call;
 	_conferenceView.hidden = !linphone_core_is_in_conference(lc);
+	_callPauseButton.hidden = !call && !linphone_core_is_in_conference(lc);
+
+	[_callPauseButton setType:UIPauseButtonType_CurrentCall call:call];
+	[_conferencePauseButton setType:UIPauseButtonType_Conference call:call];
 
 	if (!_callView.hidden) {
 		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
