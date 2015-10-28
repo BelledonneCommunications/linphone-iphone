@@ -961,8 +961,10 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 		} else {
 			if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
 				LinphoneAddress *linphoneAddress = linphone_address_new([address UTF8String]);
-				address = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
-				linphone_address_destroy(linphoneAddress);
+				if (linphoneAddress) {
+					address = [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)];
+					linphone_address_destroy(linphoneAddress);
+				}
 			}
 		}
 		if (address == nil) {
