@@ -5,6 +5,7 @@
   <object class="GtkImage" id="zrtp_button_icon">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="pixel_size">16</property>
     <property name="icon_name">linphone-security-pending</property>
   </object>
   <object class="GtkFrame" id="in_call_frame">
