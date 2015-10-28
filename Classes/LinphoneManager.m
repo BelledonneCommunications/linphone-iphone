@@ -71,6 +71,7 @@ NSString *const kLinphoneBluetoothAvailabilityUpdate = @"LinphoneBluetoothAvaila
 NSString *const kLinphoneConfiguringStateUpdate = @"LinphoneConfiguringStateUpdate";
 NSString *const kLinphoneGlobalStateUpdate = @"LinphoneGlobalStateUpdate";
 NSString *const kLinphoneNotifyReceived = @"LinphoneNotifyReceived";
+NSString *const kLinphoneCallEncryptionChanged = @"LinphoneCallEncryptionChanged";
 NSString *const kLinphoneFileTransferSendUpdate = @"LinphoneFileTransferSendUpdate";
 NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpdate";
 
@@ -986,6 +987,28 @@ static void linphone_iphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev
 																		  content:body];
 }
 
+static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on,
+													const char *authentication_token) {
+	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onCallEncryptionChanged:lc
+																					call:call
+																					  on:on
+																				   token:authentication_token];
+}
+
+- (void)onCallEncryptionChanged:(LinphoneCore *)lc
+						   call:(LinphoneCall *)call
+							 on:(BOOL)on
+						  token:(const char *)authentication_token {
+	// Post event
+	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+	[dict setObject:[NSValue valueWithPointer:call] forKey:@"call"];
+	[dict setObject:[NSNumber numberWithBool:on] forKey:@"on"];
+	[dict setObject:[NSString stringWithUTF8String:authentication_token] forKey:@"token"];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallEncryptionChanged
+														object:self
+													  userInfo:dict];
+}
+
 #pragma mark - Message composition start
 
 - (void)onMessageComposeReceived:(LinphoneCore *)core forRoom:(LinphoneChatRoom *)room {
@@ -1258,25 +1281,27 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 #pragma mark - VTable
 
-static LinphoneCoreVTable linphonec_vtable = {.show = NULL,
-											  .call_state_changed =
-												  (LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
-											  .registration_state_changed = linphone_iphone_registration_state,
-											  .notify_presence_received = NULL,
-											  .new_subscription_requested = NULL,
-											  .auth_info_requested = linphone_iphone_popup_password_request,
-											  .display_status = linphone_iphone_display_status,
-											  .display_message = linphone_iphone_log_user_info,
-											  .display_warning = linphone_iphone_log_user_warning,
-											  .display_url = NULL,
-											  .text_received = NULL,
-											  .message_received = linphone_iphone_message_received,
-											  .dtmf_received = NULL,
-											  .transfer_state_changed = linphone_iphone_transfer_state_changed,
-											  .is_composing_received = linphone_iphone_is_composing_received,
-											  .configuring_status = linphone_iphone_configuring_status_changed,
-											  .global_state_changed = linphone_iphone_global_state_changed,
-											  .notify_received = linphone_iphone_notify_received};
+static LinphoneCoreVTable linphonec_vtable = {
+	.show = NULL,
+	.call_state_changed = (LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
+	.registration_state_changed = linphone_iphone_registration_state,
+	.notify_presence_received = NULL,
+	.new_subscription_requested = NULL,
+	.auth_info_requested = linphone_iphone_popup_password_request,
+	.display_status = linphone_iphone_display_status,
+	.display_message = linphone_iphone_log_user_info,
+	.display_warning = linphone_iphone_log_user_warning,
+	.display_url = NULL,
+	.text_received = NULL,
+	.message_received = linphone_iphone_message_received,
+	.dtmf_received = NULL,
+	.transfer_state_changed = linphone_iphone_transfer_state_changed,
+	.is_composing_received = linphone_iphone_is_composing_received,
+	.configuring_status = linphone_iphone_configuring_status_changed,
+	.global_state_changed = linphone_iphone_global_state_changed,
+	.notify_received = linphone_iphone_notify_received,
+	.call_encryption_changed = linphone_iphone_call_encryption_changed,
+};
 
 #pragma mark -
 

@@ -60,6 +60,10 @@
 											 selector:@selector(callUpdate:)
 												 name:kLinphoneCallUpdate
 											   object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(onCallEncryptionChanged:)
+												 name:kLinphoneCallEncryptionChanged
+											   object:nil];
 
 	// Update to default state
 	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
@@ -101,6 +105,17 @@
 	[self registrationUpdate:notif];
 }
 
+- (void)onCallEncryptionChanged:(NSNotification *)notif {
+	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	;
+
+	if (call && (linphone_call_params_get_media_encryption(linphone_call_get_current_params(call)) ==
+				 LinphoneMediaEncryptionZRTP) &&
+		(!linphone_call_get_authentication_token_verified(call))) {
+		[self onSecurityClick:nil];
+	}
+}
+
 - (void)notifyReceived:(NSNotification *)notif {
 	const LinphoneContent *content = [[notif.userInfo objectForKey:@"content"] pointerValue];
 
@@ -135,12 +150,6 @@
 	// show voice mail only when there is no call
 	[self updateUI:linphone_core_get_calls([LinphoneManager getLc]) != NULL];
 	[self updateVoicemail];
-
-	LinphoneCall *currentCall = linphone_core_get_current_call([LinphoneManager getLc]);
-	if (currentCall && !linphone_call_get_authentication_token_verified(currentCall) &&
-		linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
-		[self onSecurityClick:nil];
-	}
 }
 
 #pragma mark -

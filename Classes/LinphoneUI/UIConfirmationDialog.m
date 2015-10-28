@@ -19,6 +19,7 @@
 	UIConfirmationDialog *dialog =
 		[[UIConfirmationDialog alloc] initWithNibName:NSStringFromClass(self.class) bundle:NSBundle.mainBundle];
 
+	dialog.view.frame = PhoneMainView.instance.mainViewController.view.frame;
 	[PhoneMainView.instance.mainViewController.view addSubview:dialog.view];
 	[PhoneMainView.instance.mainViewController addChildViewController:dialog];
 
