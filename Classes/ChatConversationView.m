@@ -32,9 +32,6 @@
 	if (self != nil) {
 		scrollOnGrowingEnabled = TRUE;
 		chatRoom = NULL;
-		_listTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onListTap:)];
-		_listSwipeGestureRecognizer =
-			[[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onListSwipe:)];
 		imageQualities = [[OrderedDictionary alloc]
 			initWithObjectsAndKeys:[NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
@@ -74,13 +71,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[_tableController setChatRoomDelegate:self];
-
-	[_tableController.tableView addGestureRecognizer:_listTapGestureRecognizer];
-	[_listTapGestureRecognizer setEnabled:FALSE];
-
-	_listSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
-	[_tableController.tableView addGestureRecognizer:_listSwipeGestureRecognizer];
-	_listSwipeGestureRecognizer.enabled = TRUE;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -114,9 +104,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 												 name:kLinphoneCallUpdate
 											   object:nil];
 
-	if ([_tableController isEditing])
-		[_tableController setEditing:FALSE animated:FALSE];
-	[_editButton setOff];
+	if (_tableController.isEditing) {
+		[_tableController setEditing:NO];
+	}
 	[[_tableController tableView] reloadData];
 
 	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server([LinphoneManager getLc]) != NULL;
@@ -356,9 +346,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 #pragma mark - UITextFieldDelegate Functions
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
-	if (_editButton.selected) {
-		[_tableController setEditing:FALSE animated:TRUE];
-		[_editButton setOff];
+	if (_tableController.isEditing) {
+		[_tableController setEditing:NO];
 	}
 	[_listTapGestureRecognizer setEnabled:TRUE];
 	return TRUE;
@@ -534,25 +523,22 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		animations:^{
 		  CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
 
+		  // Show TabBar and status bar and also top bar
+		  [PhoneMainView.instance showTabBar:YES];
+		  [PhoneMainView.instance showStatusBar:YES];
+		  _topBar.alpha = 1.0;
+
 		  // Resize chat view
 		  {
 			  CGRect chatFrame = [_chatView frame];
+			  chatFrame.origin.y = _topBar.frame.origin.y + _topBar.frame.size.height;
 			  chatFrame.size.height = [[self view] frame].size.height - chatFrame.origin.y;
 			  [_chatView setFrame:chatFrame];
-		  }
-
-		  // Move header view back into place (was hidden before)
-		  {
-			  CGRect headerFrame = [_headerView frame];
-			  headerFrame.origin.y = 0;
-			  [_headerView setFrame:headerFrame];
-			  [_headerView setAlpha:1.0];
 		  }
 
 		  // Resize & Move table view
 		  {
 			  CGRect tableFrame = [_tableController.view frame];
-			  tableFrame.origin.y = [_headerView frame].origin.y + [_headerView frame].size.height;
 			  tableFrame.size.height =
 				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
 			  [_tableController.view setFrame:tableFrame];
@@ -593,6 +579,11 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 			  endFrame.size.width = width;
 		  }
 
+		  // Hide TabBar and status bar and also top bar
+		  [PhoneMainView.instance showTabBar:NO];
+		  [PhoneMainView.instance showStatusBar:NO];
+		  _topBar.alpha = 0.0;
+
 		  // Resize chat view
 		  {
 			  CGRect viewFrame = [[self view] frame];
@@ -606,22 +597,14 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 			  if (diff > 0)
 				  diff = 0;
 			  CGRect chatFrame = [_chatView frame];
+			  chatFrame.origin.y = 0;
 			  chatFrame.size.height = viewFrame.size.height - chatFrame.origin.y + diff;
 			  [_chatView setFrame:chatFrame];
 		  }
 
-		  // Move header view
-		  {
-			  CGRect headerFrame = [_headerView frame];
-			  headerFrame.origin.y = -headerFrame.size.height;
-			  [_headerView setFrame:headerFrame];
-			  [_headerView setAlpha:0.0];
-		  }
-
 		  // Resize & Move table view
 		  {
-			  CGRect tableFrame = [_tableController.view frame];
-			  tableFrame.origin.y = [_headerView frame].origin.y + [_headerView frame].size.height;
+			  CGRect tableFrame = _tableController.view.frame;
 			  tableFrame.size.height =
 				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
 			  [_tableController.view setFrame:tableFrame];

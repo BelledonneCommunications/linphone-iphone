@@ -312,11 +312,15 @@
 						cancelMessage:NSLocalizedString(@"DENY", nil)
 						confirmMessage:NSLocalizedString(@"ACCEPT", nil)
 						onCancelClick:^() {
-						  linphone_call_set_authentication_token_verified(call, NO);
+						  if (linphone_core_get_current_call([LinphoneManager getLc]) == call) {
+							  linphone_call_set_authentication_token_verified(call, NO);
+						  }
 						  weakSelf->securityDialog = nil;
 						}
 						onConfirmationClick:^() {
-						  linphone_call_set_authentication_token_verified(call, !valid);
+						  if (linphone_core_get_current_call([LinphoneManager getLc]) == call) {
+							  linphone_call_set_authentication_token_verified(call, !valid);
+						  }
 						  weakSelf->securityDialog = nil;
 						}];
 				}

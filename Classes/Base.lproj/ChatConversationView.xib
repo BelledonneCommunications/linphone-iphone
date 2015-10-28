@@ -11,14 +11,17 @@
                 <outlet property="backButton" destination="9" id="9Pw-ZA-KcF"/>
                 <outlet property="backToCallButton" destination="Hc0-GX-fC5" id="pYe-gN-Z64"/>
                 <outlet property="callButton" destination="Wzg-i0-spp" id="w9L-aT-1AD"/>
-                <outlet property="chatView" destination="bJF-qS-vBP" id="AF2-NN-muZ"/>
+                <outlet property="chatView" destination="49" id="Rxt-Zy-19x"/>
                 <outlet property="composeIndicatorView" destination="fx4-ao-53M" id="xk5-nK-lur"/>
                 <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
+                <outlet property="listSwipeGestureRecognizer" destination="dzw-n4-l9i" id="JVP-Vl-lIa"/>
+                <outlet property="listTapGestureRecognizer" destination="tkk-Tm-A7C" id="gqU-iJ-RGm"/>
                 <outlet property="messageField" destination="CPp-ts-xy0" id="wPX-Uo-vZQ"/>
                 <outlet property="messageView" destination="14" id="89"/>
                 <outlet property="pictureButton" destination="73" id="84"/>
                 <outlet property="sendButton" destination="15" id="27"/>
                 <outlet property="tableController" destination="29" id="32"/>
+                <outlet property="topBar" destination="7" id="JH8-F4-Bdq"/>
                 <outlet property="view" destination="6" id="11"/>
             </connections>
         </placeholder>
@@ -151,38 +154,34 @@
                             <rect key="frame" x="0.0" y="40" width="375" height="519"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <view contentMode="scaleToFill" id="bJF-qS-vBP" userLabel="chatView">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="453"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="messagesTableView">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="425"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outlet property="dataSource" destination="29" id="6U9-NJ-Z7W"/>
+                                        <outlet property="delegate" destination="29" id="8Lv-aI-a0V"/>
+                                        <outletCollection property="gestureRecognizers" destination="dzw-n4-l9i" appends="YES" id="ba4-aY-7EA"/>
+                                        <outletCollection property="gestureRecognizers" destination="tkk-Tm-A7C" appends="YES" id="rxU-cr-Kav"/>
+                                    </connections>
+                                </tableView>
+                                <view contentMode="scaleToFill" id="fx4-ao-53M" userLabel="composeIndicatorView">
+                                    <rect key="frame" x="0.0" y="430" width="375" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     <subviews>
-                                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="messagesTableView">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="425"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
+                                            <rect key="frame" x="0.0" y="1" width="375" height="22"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <gestureRecognizers/>
-                                            <connections>
-                                                <outlet property="dataSource" destination="29" id="6U9-NJ-Z7W"/>
-                                                <outlet property="delegate" destination="29" id="8Lv-aI-a0V"/>
-                                            </connections>
-                                        </tableView>
-                                        <view contentMode="scaleToFill" id="fx4-ao-53M" userLabel="composeIndicatorView">
-                                            <rect key="frame" x="0.0" y="430" width="375" height="22"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                            <subviews>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
-                                                    <rect key="frame" x="0.0" y="1" width="375" height="22"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <accessibility key="accessibilityConfiguration" label=""/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </view>
+                                            <accessibility key="accessibilityConfiguration" label=""/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                     </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No conversation." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="p7C-WH-uR1" userLabel="emptyTableLabel">
-                                    <rect key="frame" x="0.0" y="33" width="375" height="453"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="453"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -259,6 +258,16 @@
             </connections>
             <point key="canvasLocation" x="639" y="328"/>
         </tableViewController>
+        <swipeGestureRecognizer direction="right" id="dzw-n4-l9i">
+            <connections>
+                <action selector="onListSwipe:" destination="-1" id="bd8-v2-u8H"/>
+            </connections>
+        </swipeGestureRecognizer>
+        <tapGestureRecognizer enabled="NO" id="tkk-Tm-A7C">
+            <connections>
+                <action selector="onListTap:" destination="-1" id="ejK-2Q-qkC"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="back_default.png" width="24" height="21"/>

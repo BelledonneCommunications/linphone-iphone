@@ -38,11 +38,10 @@
 }
 
 @property(nonatomic, strong) IBOutlet ChatConversationTableView *tableController;
-@property(nonatomic, strong) IBOutlet UIToggleButton *editButton;
 @property(weak, nonatomic) IBOutlet UITextView *messageField;
+@property(weak, nonatomic) IBOutlet UIView *topBar;
 @property(nonatomic, strong) IBOutlet UIButton *sendButton;
 @property(nonatomic, strong) IBOutlet UILabel *addressLabel;
-@property(nonatomic, strong) IBOutlet UIView *headerView;
 @property(nonatomic, strong) IBOutlet UIView *chatView;
 @property(nonatomic, strong) IBOutlet UIView *messageView;
 @property(nonatomic, strong) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
