@@ -100,7 +100,7 @@ if(HAVE_LIBUDEV_H)
 	target_link_libraries(linphone-gtk udev)
 endif()
 if(GTKMACINTEGRATION_FOUND)
-	target_include_directories(linphone-gtk ${GTKMACINTEGRATION_INCLUDE_DIRS})
+	target_include_directories(linphone-gtk PUBLIC ${GTKMACINTEGRATION_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${GTKMACINTEGRATION_LIBRARIES})
 endif()
 
