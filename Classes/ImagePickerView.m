@@ -52,6 +52,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		compositeDescription = [[UICompositeViewDescription alloc] init:self.class
 															  statusBar:StatusBarView.class
 																 tabBar:nil
+															   sideMenu:SideMenuView.class
 															 fullscreen:false
 														  landscapeMode:LinphoneManager.runningOnIpad
 														   portraitMode:true];

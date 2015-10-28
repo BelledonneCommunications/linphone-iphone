@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
+        <deployment identifier="iOS"/>
         <development version="6000" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
@@ -40,15 +41,15 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
-                <view hidden="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="26" userLabel="sideMenuView">
+                <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="26" userLabel="sideMenuView">
                     <rect key="frame" x="-375" y="42" width="375" height="625"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="0.42048451599999997" green="1" blue="0.24647464969999999" alpha="1" colorSpace="calibratedRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="-110.5" y="22.5"/>
+            <point key="canvasLocation" x="-96.5" y="-25.5"/>
         </view>
         <view contentMode="scaleToFill" id="20" userLabel="Landscape View">
             <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>

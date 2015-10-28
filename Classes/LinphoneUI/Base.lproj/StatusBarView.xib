@@ -7,7 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StatusBarView">
             <connections>
-                <outlet property="callQualityImage" destination="13" id="16"/>
+                <outlet property="callQualityButton" destination="SKk-s0-5HE" id="22M-FN-kRs"/>
                 <outlet property="callSecurityButton" destination="27" id="29"/>
                 <outlet property="incallView" destination="0Vp-VF-wmX" id="mLI-RY-bfW"/>
                 <outlet property="outcallView" destination="lfO-I4-PXi" id="04e-SG-ViY"/>
@@ -30,11 +30,6 @@
                     <rect key="frame" x="0.0" y="0.0" width="360" height="42"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <imageView hidden="YES" userInteractionEnabled="NO" tag="4" contentMode="center" image="call_quality_indicator_4.png" id="13" userLabel="callQualityImage">
-                            <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Call quality"/>
-                        </imageView>
                         <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="27" userLabel="callSecurityButton">
                             <rect key="frame" x="332" y="7" width="24" height="25"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
@@ -51,6 +46,16 @@
                             </state>
                             <connections>
                                 <action selector="onSecurityClick:" destination="-1" eventType="touchUpInside" id="bdh-tU-zPP"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="SKk-s0-5HE" userLabel="callQualityButton">
+                            <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" image="menu.png">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="onSideMenuClick:" destination="-1" eventType="touchUpInside" id="iOC-wy-MPP"/>
                             </connections>
                         </button>
                     </subviews>
@@ -98,7 +103,6 @@
         </view>
     </objects>
     <resources>
-        <image name="call_quality_indicator_4.png" width="19" height="19"/>
         <image name="color_A.png" width="2" height="2"/>
         <image name="led_disconnected.png" width="11" height="11"/>
         <image name="menu.png" width="19" height="18"/>

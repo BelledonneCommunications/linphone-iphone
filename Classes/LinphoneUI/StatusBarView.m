@@ -28,10 +28,6 @@
 	int messagesUnreadCount;
 }
 
-@synthesize registrationState;
-@synthesize callQualityImage;
-@synthesize callSecurityButton;
-
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
@@ -201,9 +197,9 @@
 			image = [UIImage imageNamed:@"led_connected.png"];
 			break;
 	}
-	[registrationState setTitle:message forState:UIControlStateNormal];
-	registrationState.accessibilityValue = message;
-	[registrationState setImage:image forState:UIControlStateNormal];
+	[_registrationState setTitle:message forState:UIControlStateNormal];
+	_registrationState.accessibilityValue = message;
+	[_registrationState setImage:image forState:UIControlStateNormal];
 }
 
 #pragma mark -
@@ -216,7 +212,7 @@
 	_outcallView.hidden = inCall;
 	_incallView.hidden = !inCall;
 	// always hide icons at start since they are not ready yet
-	callQualityImage.hidden = callSecurityButton.hidden = YES;
+	_callQualityButton.hidden = _callSecurityButton.hidden = YES;
 
 	if (callQualityTimer) {
 		[callQualityTimer invalidate];
@@ -252,7 +248,7 @@
 			[securityDialog dismiss];
 		}
 	} else {
-		callSecurityButton.hidden = NO;
+		_callSecurityButton.hidden = NO;
 		while (list != NULL) {
 			LinphoneCall *call = (LinphoneCall *)list->data;
 			LinphoneMediaEncryption enc =
@@ -267,7 +263,7 @@
 			list = list->next;
 		}
 		NSString *imageName = security ? (pending ? @"security_pending.png" : @"security_ok.png") : @"security_ko.png";
-		[callSecurityButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+		[_callSecurityButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
 	}
 }
 
@@ -276,13 +272,14 @@
 	if (call != NULL) {
 		int quality = MIN(4, floor(linphone_call_get_average_quality(call)));
 		NSString *accessibilityValue = [NSString stringWithFormat:NSLocalizedString(@"Call quality: %d", nil), quality];
-		if (![accessibilityValue isEqualToString:callQualityImage.accessibilityValue]) {
-			callQualityImage.accessibilityValue = accessibilityValue;
-			callQualityImage.hidden = (quality == -1.f);
-			callQualityImage.image =
+		if (![accessibilityValue isEqualToString:_callQualityButton.accessibilityValue]) {
+			_callQualityButton.accessibilityValue = accessibilityValue;
+			_callQualityButton.hidden = (quality == -1.f);
+			UIImage *image =
 				(quality == -1.f)
 					? nil
 					: [UIImage imageNamed:[NSString stringWithFormat:@"call_quality_indicator_%d.png", quality]];
+			[_callQualityButton setImage:image forState:UIControlStateNormal];
 		}
 	}
 }
@@ -321,11 +318,7 @@
 
 - (IBAction)onSideMenuClick:(id)sender {
 	UICompositeView *cvc = PhoneMainView.instance.mainViewController;
-	if (cvc.sideMenuView.hidden) {
-		[cvc hideSideMenu:NO];
-	} else {
-		[cvc hideSideMenu:cvc.sideMenuView.frame.origin.x == 0];
-	}
+	[cvc hideSideMenu:(cvc.sideMenuView.frame.origin.x == 0)];
 }
 
 - (IBAction)onRegistrationStateClick:(id)sender {

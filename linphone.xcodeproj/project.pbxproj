@@ -312,6 +312,8 @@
 		6352A5581BDFCF2C00594C1C /* valid_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 6352A4841BDFCF2C00594C1C /* valid_disabled.png */; };
 		6352A5591BDFCF2C00594C1C /* voicemail.png in Resources */ = {isa = PBXBuildFile; fileRef = 6352A4851BDFCF2C00594C1C /* voicemail.png */; };
 		6352A55A1BDFCF2C00594C1C /* waiting_time.png in Resources */ = {isa = PBXBuildFile; fileRef = 6352A4861BDFCF2C00594C1C /* waiting_time.png */; };
+		6352A5751BE0D4B800594C1C /* CallSideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6352A5731BE0D4B800594C1C /* CallSideMenuView.m */; };
+		6352A5761BE0D4B800594C1C /* CallSideMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6352A5741BE0D4B800594C1C /* CallSideMenuView.xib */; };
 		635775251B6673EC00C8B704 /* HistoryDetailsTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */; };
 		636316D11A1DEBCB0009B839 /* AboutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D31A1DEBCB0009B839 /* AboutView.xib */; };
 		636316D41A1DEC650009B839 /* SettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 636316D61A1DEC650009B839 /* SettingsView.xib */; };
@@ -975,6 +977,9 @@
 		6352A4841BDFCF2C00594C1C /* valid_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = valid_disabled.png; sourceTree = "<group>"; };
 		6352A4851BDFCF2C00594C1C /* voicemail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = voicemail.png; sourceTree = "<group>"; };
 		6352A4861BDFCF2C00594C1C /* waiting_time.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = waiting_time.png; sourceTree = "<group>"; };
+		6352A5721BE0D4B800594C1C /* CallSideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallSideMenuView.h; sourceTree = "<group>"; };
+		6352A5731BE0D4B800594C1C /* CallSideMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallSideMenuView.m; sourceTree = "<group>"; };
+		6352A5741BE0D4B800594C1C /* CallSideMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallSideMenuView.xib; sourceTree = "<group>"; };
 		635775231B6673EC00C8B704 /* HistoryDetailsTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsTableView.h; sourceTree = "<group>"; };
 		635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsTableView.m; sourceTree = "<group>"; };
 		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutView.xib; sourceTree = "<group>"; };
@@ -1447,6 +1452,9 @@
 				634610101B6140A500548952 /* CallOutgoingView.xib */,
 				D31AAF5C159B3919002C6B02 /* CallPausedTableView.h */,
 				D31AAF5D159B3919002C6B02 /* CallPausedTableView.m */,
+				6352A5721BE0D4B800594C1C /* CallSideMenuView.h */,
+				6352A5731BE0D4B800594C1C /* CallSideMenuView.m */,
+				6352A5741BE0D4B800594C1C /* CallSideMenuView.xib */,
 				D3F83EE91582021700336684 /* CallView.h */,
 				D3F83EEA1582021700336684 /* CallView.m */,
 				D381881C15FE3FCA00C3EDCA /* CallView.xib */,
@@ -2494,6 +2502,7 @@
 				6352A4C01BDFCF2C00594C1C /* chat_send_over.png in Resources */,
 				6352A4E41BDFCF2C00594C1C /* delete_field_over.png in Resources */,
 				6352A5481BDFCF2C00594C1C /* status_available.png in Resources */,
+				6352A5761BE0D4B800594C1C /* CallSideMenuView.xib in Resources */,
 				6352A51D1BDFCF2C00594C1C /* numpad_8_over.png in Resources */,
 				6352A52A1BDFCF2C00594C1C /* options_start_conference_disabled.png in Resources */,
 				6352A5251BDFCF2C00594C1C /* options_add_call_disabled.png in Resources */,
@@ -2819,6 +2828,7 @@
 				2248E90E12F7E4CF00220D9C /* UIDigitButton.m in Sources */,
 				633756391B67BAF400E21BAD /* SideMenuTableView.m in Sources */,
 				2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */,
+				6352A5751BE0D4B800594C1C /* CallSideMenuView.m in Sources */,
 				2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */,
 				630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */,
 				2214EBF312F86360002A5394 /* UIMicroButton.m in Sources */,

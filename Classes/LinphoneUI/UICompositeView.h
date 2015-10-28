@@ -29,9 +29,11 @@
 
 @property(strong) NSString *content;
 @property(strong) NSString *statusBar;
-@property(assign) BOOL statusBarEnabled;
 @property(strong) NSString *tabBar;
+@property(strong) NSString *sideMenu;
+@property(assign) BOOL statusBarEnabled;
 @property(assign) BOOL tabBarEnabled;
+@property(assign) BOOL sideMenuEnabled;
 @property(assign) BOOL fullscreen;
 @property(assign) BOOL landscapeMode;
 @property(assign) BOOL portraitMode;
@@ -42,6 +44,7 @@
 - (id)init:(Class)content
 		statusBar:(Class)statusBar
 		   tabBar:(Class)tabBar
+		 sideMenu:(Class)sideMenu
 	   fullscreen:(BOOL)fullscreen
 	landscapeMode:(BOOL)landscapeMode
 	 portraitMode:(BOOL)portraitMode;

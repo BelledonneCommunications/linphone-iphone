@@ -38,6 +38,7 @@
 #import "SettingsView.h"
 #import "SideMenuView.h"
 #import "AssistantView.h"
+#import "CallSideMenuView.h"
 //#import "ChatConversationCreateView.h"
 #import "UIConfirmationDialog.h"
 #import "DTAlertView.h"
