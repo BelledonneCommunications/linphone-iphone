@@ -1227,12 +1227,12 @@ void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 	,NULL
 #endif
 ),NULL))
-
-				ms_error("Failed to send notification.");
+			ms_error("Failed to send notification.");
 #else
 		linphone_gtk_show_main_window();
 #endif
 	} else if (!gtk_window_is_active((GtkWindow*)linphone_gtk_get_main_window())) {
+		gboolean show_main_window = FALSE;
 #ifdef HAVE_NOTIFY
 		char *body=NULL;
 		char *remote=call!=NULL ? linphone_call_get_remote_address_as_string(call) : NULL;
@@ -1246,13 +1246,15 @@ void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 			break;
 			case LinphoneCallIncomingReceived:
 				n=build_notification(_("Incoming call"),body=g_markup_printf_escaped("<b>%s</b>",remote));
-				if (notify_actions_supported()) {
-					notify_notification_add_action (n,"answer", _("Answer"),
-						NOTIFY_ACTION_CALLBACK(linphone_gtk_answer_clicked),NULL,NULL);
-					notify_notification_add_action (n,"decline",_("Decline"),
-						NOTIFY_ACTION_CALLBACK(linphone_gtk_decline_clicked),NULL,NULL);
-				}
-				show_notification(n);
+				if (n){
+					if (notify_actions_supported()) {
+						notify_notification_add_action (n,"answer", _("Answer"),
+							NOTIFY_ACTION_CALLBACK(linphone_gtk_answer_clicked),NULL,NULL);
+						notify_notification_add_action (n,"decline",_("Decline"),
+							NOTIFY_ACTION_CALLBACK(linphone_gtk_decline_clicked),NULL,NULL);
+					}
+					show_notification(n);
+				}else show_main_window = TRUE;
 			break;
 			case LinphoneCallPausedByRemote:
 				make_notification(_("Call paused"),body=g_markup_printf_escaped(_("<b>by %s</b>"),remote));
@@ -1262,7 +1264,11 @@ void linphone_gtk_notify(LinphoneCall *call, const char *msg){
 		}
 		if (body) g_free(body);
 		if (remote) g_free(remote);
+#else
+		if (linphone_call_get_state(call) == LinphoneCallIncomingReceived)
+			show_main_window = TRUE;
 #endif
+		if (show_main_window) linphone_gtk_show_main_window();
 	}
 }
 
