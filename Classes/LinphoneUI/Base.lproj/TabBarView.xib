@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
@@ -86,7 +86,7 @@
                     <rect key="frame" x="338" y="0.0" width="21" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="chat_list_indicator.png" id="39" userLabel="chatNotificationImage">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="39" userLabel="chatNotificationImage">
                             <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
@@ -107,7 +107,7 @@
                     <rect key="frame" x="68" y="0.0" width="21" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="chat_list_indicator.png" id="33" userLabel="historyNotificationImage">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="33" userLabel="historyNotificationImage">
                             <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
@@ -131,9 +131,8 @@
         </view>
     </objects>
     <resources>
-        <image name="chat_list_indicator.png" width="20" height="20"/>
-        <image name="color_A.png" width="1" height="1"/>
-        <image name="color_C.png" width="1" height="1"/>
+        <image name="color_A.png" width="2" height="2"/>
+        <image name="color_C.png" width="2" height="2"/>
         <image name="footer_chat_default.png" width="27" height="27"/>
         <image name="footer_chat_disabled.png" width="27" height="27"/>
         <image name="footer_contacts_default.png" width="29" height="29"/>
@@ -142,6 +141,7 @@
         <image name="footer_dialer_disabled.png" width="27" height="27"/>
         <image name="footer_history_default.png" width="29" height="29"/>
         <image name="footer_history_disabled.png" width="29" height="29"/>
+        <image name="history_chat_indicator.png" width="13" height="13"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
