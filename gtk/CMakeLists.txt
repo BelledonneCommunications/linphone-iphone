@@ -89,7 +89,6 @@ target_link_libraries(linphone-gtk linphone ${GTK2_LIBRARIES})
 if(INTL_FOUND)
 	target_link_libraries(linphone-gtk ${INTL_LIBRARIES})
 endif()
-
 if(WIN32)
 	target_link_libraries(linphone-gtk Wininet)
 endif()
@@ -97,9 +96,12 @@ if(ENABLE_NOTIFY)
 	target_include_directories(linphone-gtk PUBLIC ${NOTIFY_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${NOTIFY_LIBRARIES})
 endif()
-
-if (HAVE_LIBUDEV_H)
+if(HAVE_LIBUDEV_H)
 	target_link_libraries(linphone-gtk udev)
+endif()
+if(GTKMACINTEGRATION_FOUND)
+	target_include_directories(linphone-gtk ${GTKMACINTEGRATION_INCLUDE_DIRS})
+	target_link_libraries(linphone-gtk ${GTKMACINTEGRATION_LIBRARIES})
 endif()
 
 install(TARGETS linphone-gtk
