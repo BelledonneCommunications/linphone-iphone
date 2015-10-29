@@ -4259,10 +4259,15 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServerAndMirror
 	env->ReleaseStringUTFChars(jHost, cHost);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServer(JNIEnv *env, jobject thiz, jlong pCore, jobject config) {
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_tunnelAddServer(JNIEnv *env, jobject thiz, jlong pCore, jlong tunnelconfigptr) {
 	LinphoneTunnel *tunnel = linphone_core_get_tunnel((LinphoneCore *)pCore);
 	if(tunnel != NULL) {
-		
+		LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig*) tunnelconfigptr;
+		if (cfg) {
+			linphone_tunnel_add_server(tunnel, cfg);
+		}else{
+			ms_error("Java TunnelConfig object has no associated C object");
+		}
 	} else {
 		ms_error("LinphoneCore.tunnelAddServer(): tunnel feature is not enabled");
 	}
@@ -6322,7 +6327,7 @@ static jobject getTunnelConfig(JNIEnv *env, LinphoneTunnelConfig *cfg){
 
 	if (cfg != NULL){
 		jclass tunnelConfigClass = env->FindClass("org/linphone/core/TunnelConfigImpl");
-		jmethodID ctor = env->GetMethodID(tunnelConfigClass,"<init>", "(j)V");
+		jmethodID ctor = env->GetMethodID(tunnelConfigClass,"<init>", "(J)V");
 
 		void *up=linphone_tunnel_config_get_user_data(cfg);
 

@@ -820,10 +820,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 		tunnelAddServerAndMirror(nativePtr, host, port, mirror, ms);
 	}
 
-	private native void tunnelAddServer(long nativePtr, TunnelConfig config);
+	private native void tunnelAddServer(long nativePtr, long configPtr);
 	@Override
 	public synchronized void tunnelAddServer(TunnelConfig config) {
-		tunnelAddServer(nativePtr, config);
+		tunnelAddServer(nativePtr, ((TunnelConfigImpl)config).mNativePtr);
 	}
 
 	private native final TunnelConfig[] tunnelGetServers(long nativePtr);
