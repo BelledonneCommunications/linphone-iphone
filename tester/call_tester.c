@@ -4871,6 +4871,8 @@ end:
 typedef struct _RtpTransportModifierData {
 	uint64_t packetSentCount;
 	uint64_t packetReceivedCount;
+	mblk_t *msg_to_send;
+	mblk_t *msg_to_recv;
 } RtpTransportModifierData;
 
 const char *XOR_KEY = "BELLEDONNECOMMUNICATIONS";
@@ -4880,31 +4882,15 @@ const char *XOR_KEY = "BELLEDONNECOMMUNICATIONS";
 static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 	RtpTransportModifierData *data = rtptm->data;
 	rtp_header_t *rtp = (rtp_header_t*)msg->b_rptr;
-	int i = 0;
-	unsigned char *src;
-	int size = 0;
 
 	if (rtp->version == 0) {
 		// This is probably a STUN packet, so don't count it (oRTP won't) and don't encrypt it either
 		return (int)msgdsize(msg);
 	}
 
-	// Mediastream can create a mblk_t with only the RTP header and setting the b_cont pointer to the actual RTP content buffer
-	// In this scenario, the result of rtp_get_payload will be 0, and we won't be able to do our XOR encryption on the payload
-	// The call to msgpullup will trigger a memcpy of the header and the payload in the same buffer in the msg mblk_t
-	msgpullup(msg, -1);
-	// Now that the mblk_t buffer directly contains the header and the payload, we can get the size of the payload and a pointer to it's start (we don't encrypt the RTP header)
-	size = rtp_get_payload(msg, &src);
-
-	// Just for fun, let's do a XOR encryption
-	for (i = 0; i < size; i++) {
-		src[i] ^= (unsigned char) XOR_KEY[i % strlen(XOR_KEY)];
-	}
-
 	data->packetSentCount += 1;
-
-	/* /!\ DO NOT RETURN 0 or the packet will never leave /!\ */
-	return (int)msgdsize(msg);
+	data->msg_to_send = dupmsg(msg);
+	return 0; // Return 0 to drop the packet, it will be injected later
 }
 
 // Callback called when a packet is on it's way to be received
@@ -4912,28 +4898,60 @@ static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 static int rtptm_on_receive(RtpTransportModifier *rtptm, mblk_t *msg) {
 	RtpTransportModifierData *data = rtptm->data;
 	rtp_header_t *rtp = (rtp_header_t*)msg->b_rptr;
-	int i = 0;
-	unsigned char *src;
-	int size = 0;
 
 	if (rtp->version == 0) {
 		// This is probably a STUN packet, so don't count it (oRTP won't) and don't decrypt it either
 		return (int)msgdsize(msg);
 	}
 
-	// On the receiving side, there is no need for a msgpullup, the mblk_t contains the header and the payload in the same buffer
-	// We just ask for the size and a pointer to the payload buffer
-	size = rtp_get_payload(msg, &src);
-
-	// Since we did a XOR encryption on the send side, we have to do it again to decrypt the payload
-	for (i = 0; i < size; i++) {
-		src[i] ^= (unsigned char) XOR_KEY[i % strlen(XOR_KEY)];
-	}
-
 	data->packetReceivedCount += 1;
+	data->msg_to_recv = dupmsg(msg);
+	return 0; // Return 0 to drop the packet, it will be injected later
+}
 
-	/* /!\ DO NOT RETURN 0 or the packet will be dropped /!\ */
-	return (int)msgdsize(msg);
+static void rtptm_on_schedule(RtpTransportModifier *rtptm) {
+	RtpTransportModifierData *data = rtptm->data;
+	
+	if (data->msg_to_send != NULL) {
+		mblk_t *msg = data->msg_to_send;
+		int size = 0;
+		unsigned char *src;	
+		int i = 0;
+
+		// Mediastream can create a mblk_t with only the RTP header and setting the b_cont pointer to the actual RTP content buffer
+		// In this scenario, the result of rtp_get_payload will be 0, and we won't be able to do our XOR encryption on the payload
+		// The call to msgpullup will trigger a memcpy of the header and the payload in the same buffer in the msg mblk_t
+		msgpullup(msg, -1);
+		// Now that the mblk_t buffer directly contains the header and the payload, we can get the size of the payload and a pointer to it's start (we don't encrypt the RTP header)
+		size = rtp_get_payload(msg, &src);
+
+		// Just for fun, let's do a XOR encryption
+		for (i = 0; i < size; i++) {
+			src[i] ^= (unsigned char) XOR_KEY[i % strlen(XOR_KEY)];
+		}
+		
+		meta_rtp_transport_modifier_inject_packet_to_send(rtptm->transport, rtptm, msg, 0);
+		data->msg_to_send = NULL;
+	}
+	
+	if (data->msg_to_recv != NULL) {
+		mblk_t *msg = data->msg_to_recv;
+		int size = 0;
+		unsigned char *src;
+		int i = 0;
+
+		// On the receiving side, there is no need for a msgpullup, the mblk_t contains the header and the payload in the same buffer
+		// We just ask for the size and a pointer to the payload buffer
+		size = rtp_get_payload(msg, &src);
+
+		// Since we did a XOR encryption on the send side, we have to do it again to decrypt the payload
+		for (i = 0; i < size; i++) {
+			src[i] ^= (unsigned char) XOR_KEY[i % strlen(XOR_KEY)];
+		}
+	
+		meta_rtp_transport_modifier_inject_packet_to_recv(rtptm->transport, rtptm, msg, 0);
+		data->msg_to_recv = NULL;
+	}
 }
 
 // This callback is called when the transport modifier is being destroyed
@@ -4954,6 +4972,7 @@ void static call_state_changed_4(LinphoneCore *lc, LinphoneCall *call, LinphoneC
 		rtptm->data = data;
 		rtptm->t_process_on_send = rtptm_on_send;
 		rtptm->t_process_on_receive = rtptm_on_receive;
+		rtptm->t_process_on_schedule = rtptm_on_schedule;
 		rtptm->t_destroy = rtptm_destroy;
 
 		// Here we iterate on each meta rtp transport available
