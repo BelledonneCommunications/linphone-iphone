@@ -191,10 +191,14 @@
       ${prefix:linphone}/share/sounds/linphone/rings/oldphone.wav
   </data>
 
+  <data dest="${bundle}/Contents/Resources/share/sounds/linphone/rings/toy-mono.wav">
+      ${prefix:linphone}/share/sounds/linphone/rings/toy-mono.wav
+  </data>
+
   <data dest="${bundle}/Contents/Resources/share/sounds/linphone/ringback.wav">
       ${prefix:linphone}/share/sounds/linphone/ringback.wav
   </data>
-  
+
   <data dest="${bundle}/Contents/Resources/share/sounds/linphone/incoming_chat.wav">
       ${prefix:linphone}/share/sounds/linphone/incoming_chat.wav
   </data>
