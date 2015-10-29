@@ -781,6 +781,12 @@ bool_t linphone_gtk_video_enabled(void){
 
 void linphone_gtk_show_main_window(){
 	GtkWidget *w=linphone_gtk_get_main_window();
+#ifdef HAVE_GTK_OSX
+	GtkWidget *icon = linphone_gtk_get_widget(w, "history_tab_icon");
+	GtkWidget *label = linphone_gtk_get_widget(w, "history_tab_label");
+	gtk_misc_set_alignment(GTK_MISC(icon), 0.5f, 0.25f);
+	gtk_misc_set_alignment(GTK_MISC(label), 0.5f, 0.f);
+#endif
 	gtk_widget_show(w);
 	gtk_window_present(GTK_WINDOW(w));
 }
@@ -2238,14 +2244,23 @@ GtkWidget *linphone_gtk_make_tab_header(const gchar *label, const gchar *icon_na
 	
 	if(icon_name) {
 		GtkWidget *icon=gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_MENU);
+#ifdef HAVE_GTK_OSX
+		gtk_misc_set_alignment(GTK_MISC(icon), 0.5f, 0.25f);
+#endif
 		gtk_box_pack_start (GTK_BOX(tab_header),icon,FALSE,FALSE,4);
 	}
+#ifdef HAVE_GTK_OSX
+	gtk_misc_set_alignment(GTK_MISC(label_widget), 0.5f, 0.f);
+#endif
 	gtk_box_pack_start (GTK_BOX(tab_header),label_widget,FALSE,FALSE,0);
 	if(show_quit_button) {
 		GtkWidget *button = gtk_button_new();
 		GtkWidget *button_image=gtk_image_new_from_stock(GTK_STOCK_CLOSE,GTK_ICON_SIZE_MENU);
 		gtk_button_set_image(GTK_BUTTON(button),button_image);
 		gtk_button_set_relief(GTK_BUTTON(button),GTK_RELIEF_NONE);
+#ifdef HAVE_GTK_OSX
+		gtk_misc_set_alignment(GTK_MISC(button_image), 0.5f, 0.25f);
+#endif
 		g_signal_connect_swapped(G_OBJECT(button),"clicked",cb,user_data);
 		gtk_box_pack_end(GTK_BOX(tab_header),button,FALSE,FALSE,4);
 		g_object_set_data(G_OBJECT(tab_header), "button", button);
