@@ -7,6 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AboutView">
             <connections>
+                <outlet property="contentView" destination="HJH-1o-RXN" id="cpg-X4-yj1"/>
                 <outlet property="copyrightLabel" destination="58" id="72"/>
                 <outlet property="licenseLabel" destination="61" id="wfl-pd-xb6"/>
                 <outlet property="licensesView" destination="69" id="70"/>
@@ -14,8 +15,7 @@
                 <outlet property="linphoneCoreVersionLabel" destination="66" id="67"/>
                 <outlet property="linphoneIphoneVersionLabel" destination="65" id="68"/>
                 <outlet property="linphoneLabel" destination="56" id="71"/>
-                <outlet property="scrollView" destination="62" id="N9t-Th-sGO"/>
-                <outlet property="view" destination="HJH-1o-RXN" id="IOA-1R-a1O"/>
+                <outlet property="view" destination="62" id="fyD-fm-fE1"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -25,18 +25,18 @@
             <subviews>
                 <view contentMode="scaleToFill" id="HJH-1o-RXN">
                     <rect key="frame" x="0.0" y="42" width="375" height="625"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <view contentMode="scaleToFill" id="Whz-oo-Pwx" userLabel="topBar">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="63"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <rect key="frame" x="0.0" y="0.0" width="374" height="63"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="h54-RV-eE6" userLabel="backgroundColor">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="63"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="374" height="63"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ETk-tB-ZNl" userLabel="dialerBackButton" customClass="UIIconButton">
-                                    <rect key="frame" x="300" y="0.0" width="75" height="63"/>
+                                    <rect key="frame" x="299" y="0.0" width="75" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Add contact"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
@@ -50,7 +50,7 @@
                                     </connections>
                                 </button>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ABOUT" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="iNt-9d-7si" userLabel="titleLabel">
-                                    <rect key="frame" x="83" y="0.0" width="209" height="63"/>
+                                    <rect key="frame" x="83" y="0.0" width="208" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
                                     <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -58,7 +58,7 @@
                                 </label>
                             </subviews>
                         </view>
-                        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" id="62">
+                        <view contentMode="scaleToFill" id="ZIC-nr-lzF">
                             <rect key="frame" x="0.0" y="63" width="375" height="562"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -116,9 +116,8 @@
                                     <dataDetectorType key="dataDetectorTypes" link="YES"/>
                                 </webView>
                             </subviews>
-                            <inset key="contentInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
-                            <inset key="scrollIndicatorInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
-                        </scrollView>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
@@ -132,6 +131,14 @@
                 <action selector="onLinkTap:" destination="-1" id="Ay5-Uz-RDo"/>
             </connections>
         </tapGestureRecognizer>
+        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" id="62">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <inset key="contentInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
+            <inset key="scrollIndicatorInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
+        </scrollView>
     </objects>
     <resources>
         <image name="color_E.png" width="2" height="2"/>

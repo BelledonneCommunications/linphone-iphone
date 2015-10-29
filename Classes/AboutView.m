@@ -29,6 +29,10 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
+	UIScrollView *scrollView = (UIScrollView *)self.view;
+	[scrollView addSubview:_contentView];
+	[scrollView setContentSize:[_contentView bounds].size];
+
 	[_linphoneLabel setText:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]];
 
 	[_linphoneIphoneVersionLabel
@@ -104,13 +108,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	CGSize size = [webView sizeThatFits:CGSizeMake(self.view.bounds.size.width, 10000.0f)];
 	float diff = size.height - webView.bounds.size.height;
 
-	UIScrollView *scrollView = (UIScrollView *)self.view;
-	CGRect contentFrame = [scrollView bounds];
+	CGRect contentFrame = [self.view bounds];
 	contentFrame.size.height += diff;
-	[scrollView setAutoresizesSubviews:FALSE];
-	[scrollView setFrame:contentFrame];
-	[scrollView setAutoresizesSubviews:TRUE];
-	[_scrollView setContentSize:contentFrame.size];
+	[_contentView setAutoresizesSubviews:FALSE];
+	[_contentView setFrame:contentFrame];
+	[_contentView setAutoresizesSubviews:TRUE];
+	[(UIScrollView *)self.view setContentSize:contentFrame.size];
+
 	CGRect licensesViewFrame = [_licensesView frame];
 	licensesViewFrame.size.height += diff;
 	[_licensesView setFrame:licensesViewFrame];

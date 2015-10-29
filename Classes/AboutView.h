@@ -30,8 +30,8 @@
 @property(nonatomic, strong) IBOutlet UILabel *linkLabel;
 @property(nonatomic, strong) IBOutlet UILabel *copyrightLabel;
 @property(nonatomic, strong) IBOutlet UILabel *licenseLabel;
+@property(weak, nonatomic) IBOutlet UIView *contentView;
 @property(nonatomic, strong) IBOutlet UIWebView *licensesView;
-@property(weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
 - (IBAction)onLinkTap:(id)sender;
 - (IBAction)onDialerBackClick:(id)sender;
