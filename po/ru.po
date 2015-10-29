@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 17:06+0100\n"
+"POT-Creation-Date: 2015-10-29 17:24+0100\n"
 "PO-Revision-Date: 2015-10-23 09:14+0000\n"
 "Last-Translator: AlexL <loginov.alex.valer@gmail.com>\n"
 "Language-Team: Russian (http://www.transifex.com/belledonne-communications/"
@@ -97,7 +97,7 @@ msgstr ""
 msgid "<big><b>%s</b></big>\t%s"
 msgstr "<big><b>%s</b></big>\t%s"
 
-#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:12
+#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:11
 msgid "Conference"
 msgstr "Конференция"
 
@@ -203,11 +203,11 @@ msgstr "Звонок окончен"
 msgid "Incoming call"
 msgstr "Входящий звонок"
 
-#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
 msgstr "Ответ"
 
-#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:4
+#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
 msgstr "Отклонить"
 
@@ -560,7 +560,7 @@ msgstr "%ix%i @ %f кадр/сек"
 msgid "%.3f seconds"
 msgstr "%.3f секунд"
 
-#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:11
+#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:10
 #: ../gtk/videowindow.c:236
 msgid "Hang up"
 msgstr "Повесить трубку"
@@ -654,7 +654,7 @@ msgstr "Передача неудачна."
 msgid "Resume"
 msgstr "Продолжить"
 
-#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:8
+#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:7
 msgid "Pause"
 msgstr "Пауза"
 
@@ -755,7 +755,7 @@ msgid "Listen to your record voice"
 msgstr "Прослушайте ваш записанный голос"
 
 #: ../gtk/audio_assistant.c:412 ../gtk/conf_frame.ui.h:2
-#: ../gtk/in_call_frame.ui.h:5
+#: ../gtk/in_call_frame.ui.h:4
 msgid "Record"
 msgstr "Запись"
 
@@ -1645,39 +1645,34 @@ msgid "End conference"
 msgstr "Конец конференции"
 
 #: ../gtk/in_call_frame.ui.h:1
-#, fuzzy
-msgid "Encryption status"
-msgstr "Неизвестный статус"
-
-#: ../gtk/in_call_frame.ui.h:2
 msgid "Click here to set the speakers volume"
 msgstr "Щёлкните здесь чтобы установить громкость динамиков"
 
-#: ../gtk/in_call_frame.ui.h:6
+#: ../gtk/in_call_frame.ui.h:5
 msgid "Record this call to an audio file"
 msgstr "Записать этот вызов в аудио файл"
 
-#: ../gtk/in_call_frame.ui.h:7
+#: ../gtk/in_call_frame.ui.h:6
 msgid "Video"
 msgstr "Видео"
 
-#: ../gtk/in_call_frame.ui.h:9
+#: ../gtk/in_call_frame.ui.h:8
 msgid "Mute"
 msgstr "Без звука"
 
-#: ../gtk/in_call_frame.ui.h:10
+#: ../gtk/in_call_frame.ui.h:9
 msgid "Transfer"
 msgstr "Передача"
 
-#: ../gtk/in_call_frame.ui.h:13
+#: ../gtk/in_call_frame.ui.h:12
 msgid "In call"
 msgstr "Входящий звонок"
 
-#: ../gtk/in_call_frame.ui.h:14
+#: ../gtk/in_call_frame.ui.h:13
 msgid "Duration"
 msgstr "Продолжительность"
 
-#: ../gtk/in_call_frame.ui.h:15
+#: ../gtk/in_call_frame.ui.h:14
 msgid "Call quality rating"
 msgstr "Вызвать рейтинг качества"
 
@@ -2011,3 +2006,7 @@ msgstr "Исходящий вызов"
 #, c-format
 msgid "Cannot play %s."
 msgstr "Невозможно воспроизвести %s."
+
+#, fuzzy
+#~ msgid "Encryption status"
+#~ msgstr "Неизвестный статус"

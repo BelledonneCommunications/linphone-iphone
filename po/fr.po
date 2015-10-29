@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 17:06+0100\n"
+"POT-Creation-Date: 2015-10-29 17:24+0100\n"
 "PO-Revision-Date: 2015-10-23 09:32+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
@@ -92,7 +92,7 @@ msgstr ""
 msgid "<big><b>%s</b></big>\t%s"
 msgstr "<big><b>%s</b></big>\t%s"
 
-#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:12
+#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:11
 msgid "Conference"
 msgstr "Conférence"
 
@@ -197,11 +197,11 @@ msgstr "Appel terminé."
 msgid "Incoming call"
 msgstr "Appel entrant"
 
-#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
 msgstr "Répondre"
 
-#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:4
+#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
 msgstr "Refuser"
 
@@ -553,7 +553,7 @@ msgstr "%ix%i @ %f fps"
 msgid "%.3f seconds"
 msgstr "%.3f secondes"
 
-#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:11
+#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:10
 #: ../gtk/videowindow.c:236
 msgid "Hang up"
 msgstr "Raccrocher"
@@ -647,7 +647,7 @@ msgstr "Transfert échoué"
 msgid "Resume"
 msgstr "Reprendre"
 
-#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:8
+#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:7
 msgid "Pause"
 msgstr "Pause"
 
@@ -749,7 +749,7 @@ msgid "Listen to your record voice"
 msgstr "Ecoutez votre voix enregistrée"
 
 #: ../gtk/audio_assistant.c:412 ../gtk/conf_frame.ui.h:2
-#: ../gtk/in_call_frame.ui.h:5
+#: ../gtk/in_call_frame.ui.h:4
 msgid "Record"
 msgstr "Enregistrer"
 
@@ -1642,39 +1642,34 @@ msgid "End conference"
 msgstr "Fin de conférence"
 
 #: ../gtk/in_call_frame.ui.h:1
-#, fuzzy
-msgid "Encryption status"
-msgstr "Status inconnu"
-
-#: ../gtk/in_call_frame.ui.h:2
 msgid "Click here to set the speakers volume"
 msgstr "Cliquer ici pour modifier le volume des haut-parleurs"
 
-#: ../gtk/in_call_frame.ui.h:6
+#: ../gtk/in_call_frame.ui.h:5
 msgid "Record this call to an audio file"
 msgstr "Enregistrement de l'appel dans un fichier audio."
 
-#: ../gtk/in_call_frame.ui.h:7
+#: ../gtk/in_call_frame.ui.h:6
 msgid "Video"
 msgstr "Vidéo"
 
-#: ../gtk/in_call_frame.ui.h:9
+#: ../gtk/in_call_frame.ui.h:8
 msgid "Mute"
 msgstr "Couper le micro"
 
-#: ../gtk/in_call_frame.ui.h:10
+#: ../gtk/in_call_frame.ui.h:9
 msgid "Transfer"
 msgstr "Transférer"
 
-#: ../gtk/in_call_frame.ui.h:13
+#: ../gtk/in_call_frame.ui.h:12
 msgid "In call"
 msgstr "Appel en cours"
 
-#: ../gtk/in_call_frame.ui.h:14
+#: ../gtk/in_call_frame.ui.h:13
 msgid "Duration"
 msgstr "Durée"
 
-#: ../gtk/in_call_frame.ui.h:15
+#: ../gtk/in_call_frame.ui.h:14
 msgid "Call quality rating"
 msgstr "Qualité de l'appel"
 
@@ -2005,3 +2000,7 @@ msgstr "Appel sortant"
 #, c-format
 msgid "Cannot play %s."
 msgstr "Impossibde de jouer %s."
+
+#, fuzzy
+#~ msgid "Encryption status"
+#~ msgstr "Status inconnu"

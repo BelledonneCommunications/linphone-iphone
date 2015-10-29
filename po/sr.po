@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 17:06+0100\n"
+"POT-Creation-Date: 2015-10-29 17:24+0100\n"
 "PO-Revision-Date: 2015-10-23 09:09+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-"
 "communications.com>\n"
@@ -91,7 +91,7 @@ msgstr ""
 msgid "<big><b>%s</b></big>\t%s"
 msgstr "<big><b>%s</b></big>\t%s"
 
-#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:12
+#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:11
 msgid "Conference"
 msgstr "Конференција"
 
@@ -196,11 +196,11 @@ msgstr "Позив је завршен"
 msgid "Incoming call"
 msgstr "Долазни позив"
 
-#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
 msgstr "Јави се"
 
-#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:4
+#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
 msgstr "Одбиј"
 
@@ -551,7 +551,7 @@ msgstr "%ix%i @ %f к/с"
 msgid "%.3f seconds"
 msgstr "%.3f секунде"
 
-#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:11
+#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:10
 #: ../gtk/videowindow.c:236
 msgid "Hang up"
 msgstr "Прекини"
@@ -645,7 +645,7 @@ msgstr "Пренос није успео."
 msgid "Resume"
 msgstr "Настави"
 
-#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:8
+#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:7
 msgid "Pause"
 msgstr "Застани"
 
@@ -746,7 +746,7 @@ msgid "Listen to your record voice"
 msgstr "Слушајте ваш снимљени глас"
 
 #: ../gtk/audio_assistant.c:412 ../gtk/conf_frame.ui.h:2
-#: ../gtk/in_call_frame.ui.h:5
+#: ../gtk/in_call_frame.ui.h:4
 msgid "Record"
 msgstr "Сними"
 
@@ -1636,39 +1636,34 @@ msgid "End conference"
 msgstr "Заврши конференцију"
 
 #: ../gtk/in_call_frame.ui.h:1
-#, fuzzy
-msgid "Encryption status"
-msgstr "Непознато стање"
-
-#: ../gtk/in_call_frame.ui.h:2
 msgid "Click here to set the speakers volume"
 msgstr "Притисните овде да подесите јачину звучника"
 
-#: ../gtk/in_call_frame.ui.h:6
+#: ../gtk/in_call_frame.ui.h:5
 msgid "Record this call to an audio file"
 msgstr "Сними овај позив у звучну датотеку"
 
-#: ../gtk/in_call_frame.ui.h:7
+#: ../gtk/in_call_frame.ui.h:6
 msgid "Video"
 msgstr "Видео"
 
-#: ../gtk/in_call_frame.ui.h:9
+#: ../gtk/in_call_frame.ui.h:8
 msgid "Mute"
 msgstr "Утишај"
 
-#: ../gtk/in_call_frame.ui.h:10
+#: ../gtk/in_call_frame.ui.h:9
 msgid "Transfer"
 msgstr "Пренос"
 
-#: ../gtk/in_call_frame.ui.h:13
+#: ../gtk/in_call_frame.ui.h:12
 msgid "In call"
 msgstr "Долазни позив"
 
-#: ../gtk/in_call_frame.ui.h:14
+#: ../gtk/in_call_frame.ui.h:13
 msgid "Duration"
 msgstr "Трајање"
 
-#: ../gtk/in_call_frame.ui.h:15
+#: ../gtk/in_call_frame.ui.h:14
 msgid "Call quality rating"
 msgstr "Оцена квалитета позива"
 
@@ -2000,3 +1995,7 @@ msgstr "Одлазни позив"
 #, c-format
 msgid "Cannot play %s."
 msgstr "Не могу да пустим „%s“."
+
+#, fuzzy
+#~ msgid "Encryption status"
+#~ msgstr "Непознато стање"

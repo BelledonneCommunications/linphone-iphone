@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 17:06+0100\n"
+"POT-Creation-Date: 2015-10-29 17:24+0100\n"
 "PO-Revision-Date: 2015-10-23 19:32+0000\n"
 "Last-Translator: محيي الدين <tx99h4@hotmail.com>\n"
 "Language-Team: Arabic (http://www.transifex.com/belledonne-communications/"
@@ -97,7 +97,7 @@ msgstr ""
 msgid "<big><b>%s</b></big>\t%s"
 msgstr "<big><b>%s</b></big>\t%s"
 
-#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:12
+#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:11
 msgid "Conference"
 msgstr "اجتماع"
 
@@ -199,11 +199,11 @@ msgstr "إنتهت المكالمة"
 msgid "Incoming call"
 msgstr "مكالمة واردة"
 
-#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
 msgstr "أجِبْ"
 
-#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:4
+#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
 msgstr "ارفضْ"
 
@@ -556,7 +556,7 @@ msgstr "%ix%i @ %f fps"
 msgid "%.3f seconds"
 msgstr "%.3f ثانية"
 
-#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:11
+#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:10
 #: ../gtk/videowindow.c:236
 msgid "Hang up"
 msgstr "ضع السماعة"
@@ -650,7 +650,7 @@ msgstr "فَشِل الإرسال."
 msgid "Resume"
 msgstr "استأنِفْ"
 
-#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:8
+#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:7
 msgid "Pause"
 msgstr "إيقاف مؤقت"
 
@@ -751,7 +751,7 @@ msgid "Listen to your record voice"
 msgstr "استمع لصوتك المسجَّل"
 
 #: ../gtk/audio_assistant.c:412 ../gtk/conf_frame.ui.h:2
-#: ../gtk/in_call_frame.ui.h:5
+#: ../gtk/in_call_frame.ui.h:4
 msgid "Record"
 msgstr "تسجيل"
 
@@ -1639,39 +1639,34 @@ msgid "End conference"
 msgstr "أنْهِ الاجتماع"
 
 #: ../gtk/in_call_frame.ui.h:1
-#, fuzzy
-msgid "Encryption status"
-msgstr "حالة مجهولة"
-
-#: ../gtk/in_call_frame.ui.h:2
 msgid "Click here to set the speakers volume"
 msgstr "اضغط هنا لتحديد شدة مكبر الصوت"
 
-#: ../gtk/in_call_frame.ui.h:6
+#: ../gtk/in_call_frame.ui.h:5
 msgid "Record this call to an audio file"
 msgstr "سَجِّل هذه المكالمة في ملف صوتي"
 
-#: ../gtk/in_call_frame.ui.h:7
+#: ../gtk/in_call_frame.ui.h:6
 msgid "Video"
 msgstr "مرئي"
 
-#: ../gtk/in_call_frame.ui.h:9
+#: ../gtk/in_call_frame.ui.h:8
 msgid "Mute"
 msgstr "اصمُتْ"
 
-#: ../gtk/in_call_frame.ui.h:10
+#: ../gtk/in_call_frame.ui.h:9
 msgid "Transfer"
 msgstr "إرسال"
 
-#: ../gtk/in_call_frame.ui.h:13
+#: ../gtk/in_call_frame.ui.h:12
 msgid "In call"
 msgstr "المكالمة جارية"
 
-#: ../gtk/in_call_frame.ui.h:14
+#: ../gtk/in_call_frame.ui.h:13
 msgid "Duration"
 msgstr "المدة"
 
-#: ../gtk/in_call_frame.ui.h:15
+#: ../gtk/in_call_frame.ui.h:14
 msgid "Call quality rating"
 msgstr "تقييم جودة المكالمة"
 
@@ -2004,3 +1999,7 @@ msgstr "المكالمة الصادرة"
 #, c-format
 msgid "Cannot play %s."
 msgstr "لم يتمكن من تشغيل %s"
+
+#, fuzzy
+#~ msgid "Encryption status"
+#~ msgstr "حالة مجهولة"
