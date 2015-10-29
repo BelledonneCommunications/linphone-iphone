@@ -1,4 +1,20 @@
-85c85
-<         buttontype = "textured"
----
->         buttontype = "aqua"
+--- /opt/local/share/themes/Quartz/gtk-2.0/gtkrc	2015-03-25 15:29:53.000000000 +0100
++++ gtkrc	2015-10-29 13:43:15.000000000 +0100
+@@ -12,7 +12,7 @@
+ gtk-menu-images       = 0
+ gtk-toolbar-style     = 0
+ gtk-enable-mnemonics  = 0
+-gtk-icon-sizes        = "gtk-small-toolbar=16,16:gtk-large-toolbar=22,22"
++gtk-icon-sizes        = "gtk-menu=12,12:gtk-button=16,16:gtk-small-toolbar=16,16:gtk-large-toolbar=22,22"
+ gtk-toolbar-icon-size = large-toolbar
+ gtk-error-bell        = 0
+ gtk-show-input-method-menu = 0
+@@ -82,7 +82,7 @@
+ 
+     engine "quartz"
+     {
+-        buttontype = "aqua"
++        buttontype = "textured"
+     }
+ }
+ 
