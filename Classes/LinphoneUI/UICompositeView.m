@@ -490,6 +490,11 @@
 	if (sideMenu != nil) {
 		if (currentViewDescription.sideMenuEnabled != [sideMenu boolValue]) {
 			currentViewDescription.sideMenuEnabled = [sideMenu boolValue];
+			if (currentViewDescription.sideMenuEnabled) {
+				[_sideMenuViewController viewWillAppear:YES];
+			} else {
+				[_sideMenuViewController viewWillDisappear:YES];
+			}
 		} else {
 			sideMenu = nil; // No change = No Update
 		}

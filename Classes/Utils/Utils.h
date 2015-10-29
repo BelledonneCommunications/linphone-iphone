@@ -38,8 +38,8 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 + (NSString *)timeToString:(time_t)time withFormat:(NSString *)format;
 
-+ (BOOL)hasAvatar;
-+ (void)setSelfAvatar:(UIImageView *)avatar;
++ (BOOL)hasSelfAvatar;
++ (UIImage *)selfAvatar;
 
 + (NSString *)durationToString:(int)duration;
 

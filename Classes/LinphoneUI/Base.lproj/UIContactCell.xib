@@ -2,7 +2,7 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1536</int>
-		<string key="IBDocument.SystemVersion">14F27</string>
+		<string key="IBDocument.SystemVersion">14F1021</string>
 		<string key="IBDocument.InterfaceBuilderVersion">7706</string>
 		<string key="IBDocument.AppKitVersion">1348.17</string>
 		<string key="IBDocument.HIToolboxVersion">758.70</string>
@@ -238,14 +238,14 @@
 					<string key="className">UIContactCell</string>
 					<string key="superclassName">UITableViewCell</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="avatarImage">UIImageView</string>
+						<string key="avatarImage">UIRoundedImageView</string>
 						<string key="linphoneImage">UIImageView</string>
 						<string key="nameLabel">UILabel</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="avatarImage">
 							<string key="name">avatarImage</string>
-							<string key="candidateClassName">UIImageView</string>
+							<string key="candidateClassName">UIRoundedImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="linphoneImage">
 							<string key="name">linphoneImage</string>

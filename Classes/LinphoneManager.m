@@ -894,7 +894,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 									  }];
 
 		[alertView
-			addButtonWithTitle:NSLocalizedString(@"Continue", nil)
+			addButtonWithTitle:NSLocalizedString(@"Confirm password", nil)
 						 block:^{
 						   NSString *password = [alertView textFieldAtIndex:0].text;
 						   LinphoneAuthInfo *info = (LinphoneAuthInfo *)linphone_core_find_auth_info(
@@ -2323,9 +2323,25 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	[_iapManager retrievePurchases];
 }
 
+#pragma mark -
+
 - (void)removeAllAccounts {
 	linphone_core_clear_proxy_config([LinphoneManager getLc]);
 	linphone_core_clear_all_auth_info([LinphoneManager getLc]);
+}
+
++ (BOOL)isMyself:(const LinphoneAddress *)addr {
+	if (!addr)
+		return NO;
+
+	const MSList *it = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+	while (it) {
+		if (linphone_address_equal(addr, linphone_proxy_config_get_identity_address(it->data))) {
+			return YES;
+		}
+		it = it->next;
+	}
+	return NO;
 }
 
 @end

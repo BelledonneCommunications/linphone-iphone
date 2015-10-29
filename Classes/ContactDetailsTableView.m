@@ -20,7 +20,6 @@
 #import "ContactDetailsTableView.h"
 #import "PhoneMainView.h"
 #import "UIContactDetailsCell.h"
-#import "UACellBackgroundView.h"
 #import "Utils.h"
 #import "OrderedDictionary.h"
 #import "FastAddressBook.h"
@@ -510,16 +509,17 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	// default label is our app name
 	NSString *label = [FastAddressBook localizedLabel:[labelArray objectAtIndex:0]];
 
+	[cell hideDeleteButton:NO];
 	if (contactSections[indexPath.section] == ContactSections_First_Name) {
 		value =
 			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
 		label = nil;
-		[cell hideDeleteButton];
+		[cell hideDeleteButton:YES];
 	} else if (contactSections[indexPath.section] == ContactSections_Last_Name) {
 		value =
 			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
 		label = nil;
-		[cell hideDeleteButton];
+		[cell hideDeleteButton:YES];
 	} else if (contactSections[[indexPath section]] == ContactSections_Number) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
 		NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
@@ -569,8 +569,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		}
 		CFRelease(lMap);
 	}
-	[cell.editTextfield setText:value];
-	cell.addressLabel.text = value;
+	[cell setAddress:value];
 	if (contactSections[[indexPath section]] == ContactSections_Number) {
 		[cell.editTextfield setKeyboardType:UIKeyboardTypePhonePad];
 		[cell.editTextfield setPlaceholder:NSLocalizedString(@"Phone number", nil)];
@@ -664,20 +663,20 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		return nil;
 	}
 
-	UIView *tempView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 35)];
+	CGRect frame = CGRectMake(0, 0, tableView.frame.size.width, 30);
+	UIView *tempView = [[UIView alloc] initWithFrame:frame];
 	tempView.backgroundColor = [UIColor whiteColor];
 
-	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 300, 35)];
+	UILabel *tempLabel = [[UILabel alloc] initWithFrame:frame];
 	tempLabel.backgroundColor = [UIColor clearColor];
 	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_E.png"]];
 	tempLabel.text = text.uppercaseString;
-	tempLabel.textAlignment = NSTextAlignmentLeft;
-	tempLabel.font = [UIFont systemFontOfSize:12];
+	tempLabel.textAlignment = NSTextAlignmentCenter;
+	tempLabel.font = [UIFont systemFontOfSize:15];
 	[tempView addSubview:tempLabel];
 
 	if (canAddEntry) {
-		CGRect frame = CGRectMake(255, 5, 30, 30);
-		frame.origin.x = tableView.frame.size.width - 35;
+		frame.origin.x = tableView.frame.size.width / 2 - 24;
 		UIIconButton *tempAddButton = [[UIIconButton alloc] initWithFrame:frame];
 		[tempAddButton setImage:[UIImage imageNamed:@"add_field_default.png"] forState:UIControlStateNormal];
 		[tempAddButton setImage:[UIImage imageNamed:@"add_field_over.png"] forState:UIControlStateHighlighted];

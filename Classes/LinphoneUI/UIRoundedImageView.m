@@ -36,7 +36,7 @@
 
 - (void)setBordered:(BOOL)bordered {
 	if (bordered) {
-		self.layer.borderWidth = 3;
+		self.layer.borderWidth = 10;
 		self.layer.borderColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]].CGColor;
 	} else {
 		self.layer.borderWidth = 0;

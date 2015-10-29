@@ -27,11 +27,17 @@
 		[_addressButton setTitle:NSLocalizedString(@"No address", nil) forState:UIControlStateNormal];
 		[_addressButton setImage:nil forState:UIControlStateNormal];
 	}
-	[LinphoneUtils setSelfAvatar:_avatarImage];
+	_avatarImage.image = [LinphoneUtils selfAvatar];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(registrationUpdateEvent:)
+												 name:kLinphoneRegistrationUpdate
+											   object:nil];
+
 	[self updateHeader];
 	[_sideMenuTableViewController.tableView reloadData];
 }
@@ -49,6 +55,11 @@
 	// hide ourself because we are on top of image picker
 	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
 	[ImagePickerView SelectImageFromDevice:self atPosition:CGRectNull inView:nil];
+}
+
+- (void)registrationUpdateEvent:(NSNotification *)notif {
+	[self updateHeader];
+	[_sideMenuTableViewController.tableView reloadData];
 }
 
 #pragma mark - Image picker delegate

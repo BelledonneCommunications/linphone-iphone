@@ -40,12 +40,23 @@
 
 #pragma mark - UITableViewCell Functions
 
-- (void)hideDeleteButton {
-	CGRect newFrame = _editTextfield.frame;
-	newFrame.size.width += _deleteButton.frame.size.width;
-	_editTextfield.frame = newFrame;
+- (void)setAddress:(NSString *)address {
+	_addressLabel.text = _editTextfield.text = address;
 
-	_deleteButton.hidden = YES;
+	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], _addressLabel.text.UTF8String);
+	_chatButton.enabled = _callButton.enabled = (addr != NULL);
+	if (addr) {
+		linphone_address_destroy(addr);
+	}
+}
+
+- (void)hideDeleteButton:(BOOL)hidden {
+	CGRect newFrame = CGRectMake(8, 7, self.editView.frame.size.width - 16, self.editView.frame.size.height - 14);
+	if (!hidden) {
+		newFrame.size.width -= _deleteButton.frame.size.width;
+	}
+	_editTextfield.frame = newFrame;
+	_deleteButton.hidden = hidden;
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {

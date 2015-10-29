@@ -60,7 +60,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		[PhoneMainView.instance popCurrentView];
 		return;
 	}
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:YES withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 	[_tableController setContact:_contact];
 }
 
@@ -114,7 +114,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	_contact = NULL;
 	[self resetData];
 	_contact = acontact;
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:YES withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:acontact];
 	[_tableController setContact:_contact];
 
@@ -171,6 +171,10 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+
+	[_editButton setBackgroundImage:[UIImage imageNamed:@"valid_disabled.png"]
+						   forState:(UIControlStateDisabled | UIControlStateSelected)];
+
 	if ([ContactSelection getSelectionMode] == ContactSelectionModeEdit ||
 		[ContactSelection getSelectionMode] == ContactSelectionModeNone) {
 		[_editButton setHidden:FALSE];
@@ -223,11 +227,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_backButton.hidden = editing;
 	_nameLabel.hidden = editing;
 
-	CGRect frame = _tableController.tableView.frame;
+	CGRect frame = self.contentView.frame;
+	frame.size.height -= _avatarImage.frame.origin.y + _avatarImage.frame.size.height;
 	frame.origin.y = _nameLabel.frame.origin.y;
 	if (!editing) {
 		frame.origin.y += _nameLabel.frame.size.height;
+		frame.size.height -= _nameLabel.frame.size.height;
 	}
+
 	_tableController.tableView.frame = frame;
 
 	if (animated) {
@@ -310,6 +317,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	CFRelease(cfdata);
 
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:YES withRoundedRadius:YES];
+	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 }
 @end

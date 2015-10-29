@@ -21,7 +21,6 @@
 #import "UIContactCell.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
-#import "UACellBackgroundView.h"
 #import "Utils.h"
 
 @implementation ContactsListTableView
@@ -210,10 +209,11 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *tempView = [[UIView alloc] initWithFrame:CGRectMake(0, 200, 300, 244)];
+	CGRect frame = CGRectMake(0, 0, tableView.frame.size.width, 44);
+	UIView *tempView = [[UIView alloc] initWithFrame:frame];
 	tempView.backgroundColor = [UIColor whiteColor];
 
-	UILabel *tempLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 300, 44)];
+	UILabel *tempLabel = [[UILabel alloc] initWithFrame:frame];
 	tempLabel.backgroundColor = [UIColor clearColor];
 	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]];
 	tempLabel.text = [addressBookMap keyAtIndex:section];

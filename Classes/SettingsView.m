@@ -21,7 +21,6 @@
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
-#import "UACellBackgroundView.h"
 
 #import "DCRoundSwitch.h"
 

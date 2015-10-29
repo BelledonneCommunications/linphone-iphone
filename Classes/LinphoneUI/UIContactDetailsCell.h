@@ -28,11 +28,14 @@
 @property(weak, nonatomic) IBOutlet UITextField *editTextfield;
 @property(weak, nonatomic) IBOutlet UIView *editView;
 @property(weak, nonatomic) IBOutlet UIIconButton *deleteButton;
+@property(weak, nonatomic) IBOutlet UIIconButton *callButton;
+@property(weak, nonatomic) IBOutlet UIIconButton *chatButton;
 
 - (id)initWithIdentifier:(NSString *)identifier;
-- (void)hideDeleteButton;
+- (void)setAddress:(NSString *)address;
+- (void)hideDeleteButton:(BOOL)hidden;
+
 - (IBAction)onCallClick:(id)sender;
 - (IBAction)onChatClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;
-
 @end

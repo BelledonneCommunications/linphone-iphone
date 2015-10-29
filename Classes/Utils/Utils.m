@@ -82,27 +82,37 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 
 @implementation LinphoneUtils
 
-+ (BOOL)hasAvatar {
++ (BOOL)hasSelfAvatar {
 	return [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"avatar"]] != nil;
 }
-+ (void)setSelfAvatar:(UIImageView *)avatar {
++ (UIImage *)selfAvatar {
 	NSURL *url = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"avatar"]];
+	__block UIImage *ret = nil;
 	if (url) {
-		[LinphoneManager.instance.photoLibrary assetForURL:url
-			resultBlock:^(ALAsset *asset) {
-			  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
-				UIImage *decodedImage = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
-				dispatch_async(dispatch_get_main_queue(), ^{
-				  avatar.image = decodedImage;
-				});
-			  });
-			}
-			failureBlock:^(NSError *error) {
-			  LOGE(@"Can't read avatar");
-			}];
-	} else {
-		avatar.image = [UIImage imageNamed:@"avatar.png"];
+		__block NSConditionLock *photoLock = [[NSConditionLock alloc] initWithCondition:1];
+		// load avatar synchronously so that we can return UIIMage* directly - since we are
+		// only using thumbnail, it must be pretty fast to fetch even without cache.
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		  [LinphoneManager.instance.photoLibrary assetForURL:url
+			  resultBlock:^(ALAsset *asset) {
+				ret = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
+				[photoLock lock];
+				[photoLock unlockWithCondition:0];
+			  }
+			  failureBlock:^(NSError *error) {
+				LOGE(@"Can't read avatar");
+				[photoLock lock];
+				[photoLock unlockWithCondition:0];
+			  }];
+		});
+		[photoLock lockWhenCondition:0];
+		[photoLock unlock];
 	}
+
+	if (!ret) {
+		ret = [UIImage imageNamed:@"avatar.png"];
+	}
+	return ret;
 }
 
 + (NSString *)durationToString:(int)duration {

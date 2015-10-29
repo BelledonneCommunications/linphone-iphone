@@ -32,7 +32,9 @@
 	if (!call) {
 		[_pauseButton setType:UIPauseButtonType_Conference call:call];
 		_nameLabel.text = NSLocalizedString(@"Conference", nil);
-		[_avatarImage setImage:[UIImage imageNamed:@"conference_start_default.png"] bordered:NO withRoundedRadius:YES];
+		[_avatarImage setImage:[UIImage imageNamed:@"options_start_conference_default.png"]
+					  bordered:NO
+			 withRoundedRadius:YES];
 		_durationLabel.text = @"";
 	} else {
 		[_pauseButton setType:UIPauseButtonType_Call call:call];

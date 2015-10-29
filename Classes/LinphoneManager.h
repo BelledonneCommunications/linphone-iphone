@@ -193,6 +193,8 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)removeAllAccounts;
 
++ (BOOL)isMyself:(const LinphoneAddress *)addr;
+
 @property (readonly) BOOL isTesting;
 @property (readonly, strong) FastAddressBook* fastAddressBook;
 @property Connectivity connectivity;

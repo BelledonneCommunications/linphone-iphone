@@ -107,7 +107,7 @@
 	BOOL outgoing = linphone_chat_message_is_outgoing(_message);
 
 	if (outgoing) {
-		[LinphoneUtils setSelfAvatar:_avatarImage];
+		_avatarImage.image = [LinphoneUtils selfAvatar];
 	} else {
 		ABRecordRef contact = [FastAddressBook getContactWithAddress:linphone_chat_message_get_peer_address(_message)];
 		[_avatarImage setImage:[FastAddressBook imageForContact:contact thumbnail:YES]

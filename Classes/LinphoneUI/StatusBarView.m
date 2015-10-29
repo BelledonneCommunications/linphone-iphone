@@ -92,6 +92,11 @@
 		[callSecurityTimer invalidate];
 		callSecurityTimer = nil;
 	}
+
+	if (securityDialog != nil) {
+		[securityDialog dismiss];
+		securityDialog = nil;
+	}
 }
 
 #pragma mark - Event Functions
@@ -107,7 +112,6 @@
 
 - (void)onCallEncryptionChanged:(NSNotification *)notif {
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
-	;
 
 	if (call && (linphone_call_params_get_media_encryption(linphone_call_get_current_params(call)) ==
 				 LinphoneMediaEncryptionZRTP) &&
@@ -267,7 +271,8 @@
 			}
 			list = list->next;
 		}
-		NSString *imageName = security ? (pending ? @"security_pending.png" : @"security_ok.png") : @"security_ko.png";
+		NSString *imageName =
+			(security ? (pending ? @"security_pending.png" : @"security_ok.png") : @"security_ko.png");
 		[_callSecurityButton setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
 	}
 }
@@ -298,7 +303,6 @@
 			LinphoneMediaEncryption enc =
 				linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
 			if (enc == LinphoneMediaEncryptionZRTP) {
-				bool valid = linphone_call_get_authentication_token_verified(call);
 				NSString *message =
 					[NSString stringWithFormat:NSLocalizedString(@"Confirm the following SAS with peer:\n%s", nil),
 											   linphone_call_get_authentication_token(call)];
@@ -315,7 +319,7 @@
 						}
 						onConfirmationClick:^() {
 						  if (linphone_core_get_current_call([LinphoneManager getLc]) == call) {
-							  linphone_call_set_authentication_token_verified(call, !valid);
+							  linphone_call_set_authentication_token_verified(call, YES);
 						  }
 						  weakSelf->securityDialog = nil;
 						}];

@@ -36,12 +36,10 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *tempView = [[UIView alloc] initWithFrame:tableView.frame];
+	CGRect frame = CGRectMake(0, 0, tableView.frame.size.width, 44);
+	UIView *tempView = [[UIView alloc] initWithFrame:frame];
 	tempView.backgroundColor = [UIColor whiteColor];
 
-	CGRect frame = tempView.frame;
-	frame.origin.y = 0;
-	frame.size.height = 44;
 	UILabel *tempLabel = [[UILabel alloc] initWithFrame:frame];
 	tempLabel.backgroundColor = [UIColor clearColor];
 	tempLabel.textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_E.png"]];
@@ -78,6 +76,7 @@
 	} else {
 		cell.imageView.image = [UIImage imageNamed:@"call_incoming.png"];
 	}
+
 	return cell;
 }
 

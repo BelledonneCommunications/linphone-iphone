@@ -348,14 +348,15 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallEnd: {
 			const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
 			if (calls == NULL) {
-				if ((currentView == CallView.compositeViewDescription) ||
-					(currentView == CallIncomingView.compositeViewDescription) ||
-					(currentView == CallOutgoingView.compositeViewDescription)) {
-					DialerView *view = VIEW(DialerView);
-					[view setAddress:@""];
-					[view setTransferMode:FALSE];
-					[self popCurrentView];
-				}
+				//				if ((currentView == CallView.compositeViewDescription) ||
+				//					(currentView == CallIncomingView.compositeViewDescription) ||
+				//					(currentView == CallOutgoingView.compositeViewDescription)) {
+				DialerView *view = VIEW(DialerView);
+				[view setAddress:@""];
+				[view setTransferMode:FALSE];
+				[self changeCurrentView:view.compositeViewDescription push:NO];
+				//					[self popCurrentView];
+				//				}
 			} else {
 				linphone_core_resume_call([LinphoneManager getLc], (LinphoneCall *)calls->data);
 				[self changeCurrentView:CallView.compositeViewDescription];

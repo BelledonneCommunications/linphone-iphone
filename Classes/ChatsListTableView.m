@@ -24,7 +24,6 @@
 
 #import "linphone/linphonecore.h"
 #import "PhoneMainView.h"
-#import "UACellBackgroundView.h"
 #import "Utils.h"
 
 @implementation ChatsListTableView {

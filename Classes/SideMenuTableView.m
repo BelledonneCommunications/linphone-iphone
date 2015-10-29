@@ -74,9 +74,12 @@
 	if (indexPath.section == 0) {
 		LinphoneProxyConfig *proxy =
 			ms_list_nth_data(linphone_core_get_proxy_config_list([LinphoneManager getLc]), (int)indexPath.row);
-		cell.textLabel.text = [NSString
-			stringWithUTF8String:linphone_address_get_username(linphone_proxy_config_get_identity_address(proxy))];
-		cell.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_F.png"]];
+		cell.textLabel.text = [NSString stringWithUTF8String:linphone_proxy_config_get_identity(proxy)];
+		cell.imageView.image = [StatusBarView imageForState:linphone_proxy_config_get_state(proxy)];
+		cell.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+		cell.textLabel.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+		cell.imageView.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+		cell.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_G.png"]];
 	} else {
 		SideMenuEntry *entry = [_sideMenuEntries objectAtIndex:indexPath.row];
 		cell.textLabel.text = entry->title;

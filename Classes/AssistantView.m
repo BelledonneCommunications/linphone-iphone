@@ -35,9 +35,10 @@ typedef enum _ViewElement {
 	ViewElement_Password2 = 102,
 	ViewElement_Email = 103,
 	ViewElement_Domain = 104,
-	ViewElement_Transport = 105,
-	ViewElement_Username_Label = 106,
-	ViewElement_URL = 107,
+	ViewElement_URL = 105,
+	ViewElement_TextFieldCount = 6,
+	ViewElement_Transport = 110,
+	ViewElement_Username_Label = 120,
 	ViewElement_NextButton = 130,
 } ViewElement;
 
@@ -360,10 +361,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)shouldEnableNextButton {
-	[self findButton:ViewElement_NextButton].enabled =
-		(![self findTextField:ViewElement_Username].isInvalid && ![self findTextField:ViewElement_Password].isInvalid &&
-		 ![self findTextField:ViewElement_Password2].isInvalid && ![self findTextField:ViewElement_Domain].isInvalid &&
-		 ![self findTextField:ViewElement_Email].isInvalid);
+	BOOL invalidInputs = NO;
+	for (int i = 0; i < ViewElement_TextFieldCount; i++) {
+		UIAssistantTextField *field = [self findTextField:100 + i];
+		if (field) {
+			invalidInputs |= (field.isInvalid || field.lastText.length == 0);
+		}
+	}
+	[self findButton:ViewElement_NextButton].enabled = !invalidInputs;
 }
 
 - (UIView *)findView:(ViewElement)tag inView:view ofType:(Class)type {
@@ -589,11 +594,11 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 				replacementString:(NSString *)string {
 	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
 	[atf textField:atf shouldChangeCharactersInRange:range replacementString:string];
-	[self shouldEnableNextButton];
 	if (atf.tag == ViewElement_Username && currentView == _createAccountView) {
 		textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string.lowercaseString];
 		return NO;
 	}
+	[self shouldEnableNextButton];
 	return YES;
 }
 

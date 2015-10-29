@@ -19,7 +19,6 @@
 
 #import "CallPausedTableView.h"
 #import "UICallPausedCell.h"
-#import "UIConferenceHeader.h"
 #import "LinphoneManager.h"
 #import "Utils.h"
 
