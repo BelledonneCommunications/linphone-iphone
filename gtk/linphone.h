@@ -347,3 +347,5 @@ LINPHONE_PUBLIC void linphone_gtk_notebook_current_page_changed(GtkNotebook *not
 LINPHONE_PUBLIC void linphone_gtk_reload_sound_devices(void);
 LINPHONE_PUBLIC void linphone_gtk_reload_video_devices(void);
 LINPHONE_PUBLIC bool_t linphone_gtk_is_friend(LinphoneCore *lc, const char *contact);
+LINPHONE_PUBLIC gboolean linphone_gtk_auto_answer_enabled(void);
+LINPHONE_PUBLIC void linphone_gtk_update_status_bar_icons(void);
