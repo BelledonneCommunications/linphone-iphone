@@ -1,21 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Øyvind Sæther <oyvinds@everdot.org>, 2011
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-23 11:10+0200\n"
+"POT-Creation-Date: 2015-10-29 17:06+0100\n"
 "PO-Revision-Date: 2015-10-23 09:09+0000\n"
-"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
-"Language-Team: Norwegian Bokmål (Norway) (http://www.transifex.com/belledonne-communications/linphone-gtk/language/nb_NO/)\n"
+"Last-Translator: Belledonne Communications <support@belledonne-"
+"communications.com>\n"
+"Language-Team: Norwegian Bokmål (Norway) (http://www.transifex.com/"
+"belledonne-communications/linphone-gtk/language/nb_NO/)\n"
+"Language: nb_NO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: nb_NO\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../gtk/calllogs.c:178
@@ -97,7 +99,16 @@ msgstr ""
 msgid "Couldn't find pixmap file: %s"
 msgstr "Fant ikke pixmap fli: %s"
 
-#: ../gtk/chat.c:481
+#: ../gtk/chat.c:196 ../gtk/chat.c:254
+#, fuzzy
+msgid "Sending..."
+msgstr "Pågående"
+
+#: ../gtk/chat.c:213 ../gtk/chat.c:263
+msgid "Message not sent"
+msgstr ""
+
+#: ../gtk/chat.c:472
 msgid "Copy"
 msgstr ""
 
@@ -127,9 +138,11 @@ msgstr "address som skal ringes nå"
 
 #: ../gtk/main.c:144
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: "
-"c:\\Program Files\\Linphone)"
-msgstr "Spesifiser arbeidsmappe (bør være base for installasjonen, f.eks: c:\\Programfiler\\Linphone)"
+"Specifiy a working directory (should be the base of the installation, eg: c:"
+"\\Program Files\\Linphone)"
+msgstr ""
+"Spesifiser arbeidsmappe (bør være base for installasjonen, f.eks: c:"
+"\\Programfiler\\Linphone)"
 
 #: ../gtk/main.c:145
 msgid "Configuration file"
@@ -143,88 +156,91 @@ msgstr ""
 msgid "Run self test and exit 0 if succeed"
 msgstr ""
 
-#: ../gtk/main.c:1040
+#: ../gtk/main.c:1046
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
-"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
+"Would you add him/her to your contact list and allow him/her to see your "
+"presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: ../gtk/main.c:1117
+#: ../gtk/main.c:1123
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1242
+#: ../gtk/main.c:1248
 msgid "Call error"
 msgstr ""
 
-#: ../gtk/main.c:1245 ../coreapi/linphonecore.c:3813
+#: ../gtk/main.c:1251 ../coreapi/linphonecore.c:3813
 msgid "Call ended"
 msgstr "Samtale avsluttet"
 
-#: ../gtk/main.c:1248 ../coreapi/call_log.c:235
+#: ../gtk/main.c:1254 ../coreapi/call_log.c:235
 msgid "Incoming call"
 msgstr "Innkommende samtale"
 
-#: ../gtk/main.c:1250 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
 msgid "Answer"
 msgstr "Svarer"
 
-#: ../gtk/main.c:1252 ../gtk/in_call_frame.ui.h:4
+#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:4
 msgid "Decline"
 msgstr "Avvis"
 
-#: ../gtk/main.c:1258
+#: ../gtk/main.c:1264
 msgid "Call paused"
 msgstr ""
 
-#: ../gtk/main.c:1258
+#: ../gtk/main.c:1264
 #, c-format
 msgid "<b>by %s</b>"
 msgstr ""
 
-#: ../gtk/main.c:1328
+#: ../gtk/main.c:1334
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr ""
 
-#: ../gtk/main.c:1494
+#: ../gtk/main.c:1500
 msgid "Website link"
 msgstr "Peker til nettsted"
 
-#: ../gtk/main.c:1553 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1559 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1554
+#: ../gtk/main.c:1560
 msgid "A video internet phone"
 msgstr ""
 
-#: ../gtk/main.c:1613
+#: ../gtk/main.c:1619
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Standard)"
 
-#: ../gtk/main.c:1942 ../coreapi/callbacks.c:1075
+#: ../gtk/main.c:1955 ../coreapi/callbacks.c:1075
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Vi er overført til %s"
 
-#: ../gtk/main.c:1952
+#: ../gtk/main.c:1965
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
-msgstr "Klarte ikke å finne noe lydkort på denne datamaskinen.\nDu vil ikke kunne sende eller motta lydsamtaler."
+msgstr ""
+"Klarte ikke å finne noe lydkort på denne datamaskinen.\n"
+"Du vil ikke kunne sende eller motta lydsamtaler."
 
-#: ../gtk/main.c:2111
+#: ../gtk/main.c:2124
 msgid "A free SIP video-phone"
 msgstr "En gratis SIP video-telefon"
 
-#: ../gtk/main.c:2224
+#: ../gtk/main.c:2237
 #, c-format
 msgid "Hello\n"
 msgstr ""
@@ -267,136 +283,136 @@ msgstr ""
 msgid "Add new contact from %s directory"
 msgstr "Legg til kontakt fra %s katalogen"
 
-#: ../gtk/propertybox.c:591 ../gtk/contact.ui.h:1
+#: ../gtk/propertybox.c:592 ../gtk/contact.ui.h:1
 msgid "Name"
 msgstr "Navn"
 
-#: ../gtk/propertybox.c:597
+#: ../gtk/propertybox.c:598
 msgid "Rate (Hz)"
 msgstr "Frekvens (Hz)"
 
-#: ../gtk/propertybox.c:603
+#: ../gtk/propertybox.c:604
 msgid "Status"
 msgstr "Status"
 
-#: ../gtk/propertybox.c:616
+#: ../gtk/propertybox.c:617
 msgid "IP Bitrate (kbit/s)"
 msgstr ""
 
-#: ../gtk/propertybox.c:627
+#: ../gtk/propertybox.c:628
 msgid "Parameters"
 msgstr "Parametere"
 
-#: ../gtk/propertybox.c:669 ../gtk/propertybox.c:823
+#: ../gtk/propertybox.c:670 ../gtk/propertybox.c:824
 msgid "Enabled"
 msgstr "På"
 
-#: ../gtk/propertybox.c:671 ../gtk/propertybox.c:823 ../gtk/parameters.ui.h:60
+#: ../gtk/propertybox.c:672 ../gtk/propertybox.c:824 ../gtk/parameters.ui.h:60
 msgid "Disabled"
 msgstr "Av"
 
-#: ../gtk/propertybox.c:901
+#: ../gtk/propertybox.c:902
 msgid "Account"
 msgstr "Konto"
 
-#: ../gtk/propertybox.c:1169
+#: ../gtk/propertybox.c:1170
 msgid "English"
 msgstr "Engelsk"
 
-#: ../gtk/propertybox.c:1170
+#: ../gtk/propertybox.c:1171
 msgid "French"
 msgstr "Fransk"
 
-#: ../gtk/propertybox.c:1171
+#: ../gtk/propertybox.c:1172
 msgid "Swedish"
 msgstr "Svensk"
 
-#: ../gtk/propertybox.c:1172
+#: ../gtk/propertybox.c:1173
 msgid "Italian"
 msgstr "Italisensk"
 
-#: ../gtk/propertybox.c:1173
+#: ../gtk/propertybox.c:1174
 msgid "Spanish"
 msgstr "Spansk"
 
-#: ../gtk/propertybox.c:1174
+#: ../gtk/propertybox.c:1175
 msgid "Brazilian Portugese"
 msgstr "Portugisisk"
 
-#: ../gtk/propertybox.c:1175
+#: ../gtk/propertybox.c:1176
 msgid "Polish"
 msgstr "Polsk"
 
-#: ../gtk/propertybox.c:1176
+#: ../gtk/propertybox.c:1177
 msgid "German"
 msgstr "Tysk"
 
-#: ../gtk/propertybox.c:1177
+#: ../gtk/propertybox.c:1178
 msgid "Russian"
 msgstr "Russisk"
 
-#: ../gtk/propertybox.c:1178
+#: ../gtk/propertybox.c:1179
 msgid "Japanese"
 msgstr "Japansk"
 
-#: ../gtk/propertybox.c:1179
+#: ../gtk/propertybox.c:1180
 msgid "Dutch"
 msgstr "Nederlandsk"
 
-#: ../gtk/propertybox.c:1180
+#: ../gtk/propertybox.c:1181
 msgid "Hungarian"
 msgstr "Ungarsk"
 
-#: ../gtk/propertybox.c:1181
+#: ../gtk/propertybox.c:1182
 msgid "Czech"
 msgstr "Tjekkisk"
 
-#: ../gtk/propertybox.c:1182
+#: ../gtk/propertybox.c:1183
 msgid "Chinese"
 msgstr "Kinesisk"
 
-#: ../gtk/propertybox.c:1183
+#: ../gtk/propertybox.c:1184
 msgid "Traditional Chinese"
 msgstr ""
 
-#: ../gtk/propertybox.c:1184
+#: ../gtk/propertybox.c:1185
 msgid "Norwegian"
 msgstr ""
 
-#: ../gtk/propertybox.c:1185
+#: ../gtk/propertybox.c:1186
 msgid "Hebrew"
 msgstr ""
 
-#: ../gtk/propertybox.c:1186
+#: ../gtk/propertybox.c:1187
 msgid "Serbian"
 msgstr ""
 
-#: ../gtk/propertybox.c:1187
+#: ../gtk/propertybox.c:1188
 msgid "Arabic"
 msgstr ""
 
-#: ../gtk/propertybox.c:1188
+#: ../gtk/propertybox.c:1189
 msgid "Turkish"
 msgstr ""
 
-#: ../gtk/propertybox.c:1245
+#: ../gtk/propertybox.c:1246
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "Du må restarte linphone for at det nye språkvalget skal iverksettes."
 
-#: ../gtk/propertybox.c:1325
+#: ../gtk/propertybox.c:1326
 msgid "None"
 msgstr ""
 
-#: ../gtk/propertybox.c:1329
+#: ../gtk/propertybox.c:1330
 msgid "SRTP"
 msgstr ""
 
-#: ../gtk/propertybox.c:1335
+#: ../gtk/propertybox.c:1336
 msgid "DTLS"
 msgstr ""
 
-#: ../gtk/propertybox.c:1342
+#: ../gtk/propertybox.c:1343
 msgid "ZRTP"
 msgstr ""
 
@@ -405,7 +421,9 @@ msgstr ""
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr "En nyere utgave er tilgjengelig fra %s.\nVil du åpne en nettleser og laste den ned ?"
+msgstr ""
+"En nyere utgave er tilgjengelig fra %s.\n"
+"Vil du åpne en nettleser og laste den ned ?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -526,7 +544,7 @@ msgstr ""
 msgid "<b>Calling...</b>"
 msgstr "<b>Ringer...</b>"
 
-#: ../gtk/incall_view.c:562 ../gtk/incall_view.c:786
+#: ../gtk/incall_view.c:562 ../gtk/incall_view.c:792
 msgid "00:00:00"
 msgstr ""
 
@@ -558,71 +576,71 @@ msgstr ""
 msgid "unavailable"
 msgstr ""
 
-#: ../gtk/incall_view.c:728
+#: ../gtk/incall_view.c:731
 msgid "Secured by SRTP"
 msgstr ""
 
-#: ../gtk/incall_view.c:734
+#: ../gtk/incall_view.c:737
 msgid "Secured by DTLS"
 msgstr ""
 
-#: ../gtk/incall_view.c:740
+#: ../gtk/incall_view.c:743
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr ""
 
-#: ../gtk/incall_view.c:746
+#: ../gtk/incall_view.c:747
 msgid "Set unverified"
 msgstr ""
 
-#: ../gtk/incall_view.c:746 ../gtk/in_call_frame.ui.h:1
+#: ../gtk/incall_view.c:747
 msgid "Set verified"
 msgstr ""
 
-#: ../gtk/incall_view.c:781
+#: ../gtk/incall_view.c:787
 msgid "In conference"
 msgstr ""
 
-#: ../gtk/incall_view.c:781
+#: ../gtk/incall_view.c:787
 msgid "<b>In call</b>"
 msgstr "<b>I samtale med</b>"
 
-#: ../gtk/incall_view.c:818
+#: ../gtk/incall_view.c:824
 msgid "<b>Paused call</b>"
 msgstr "<b>Pauset samtale</b>"
 
-#: ../gtk/incall_view.c:855
+#: ../gtk/incall_view.c:861
 msgid "<b>Call ended.</b>"
 msgstr "<b>Samtale avsluttet.</b>"
 
-#: ../gtk/incall_view.c:886
+#: ../gtk/incall_view.c:892
 msgid "Transfer in progress"
 msgstr ""
 
-#: ../gtk/incall_view.c:889
+#: ../gtk/incall_view.c:895
 msgid "Transfer done."
 msgstr ""
 
-#: ../gtk/incall_view.c:892
+#: ../gtk/incall_view.c:898
 msgid "Transfer failed."
 msgstr ""
 
-#: ../gtk/incall_view.c:923
+#: ../gtk/incall_view.c:929
 msgid "Resume"
 msgstr "Fortsett"
 
-#: ../gtk/incall_view.c:923 ../gtk/in_call_frame.ui.h:8
+#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:8
 msgid "Pause"
 msgstr "Pause"
 
-#: ../gtk/incall_view.c:989
+#: ../gtk/incall_view.c:995
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr ""
 
-#: ../gtk/incall_view.c:989
+#: ../gtk/incall_view.c:995
 msgid "(Paused)"
 msgstr ""
 
@@ -824,6 +842,10 @@ msgstr ""
 msgid "My current identity:"
 msgstr "Min nåværende identitet:"
 
+#: ../gtk/main.ui.h:23
+msgid "Autoanswer is enabled"
+msgstr ""
+
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
 msgstr ""
@@ -834,7 +856,9 @@ msgstr ""
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr "En Internet Videotelefon som bruker den standardiserte SIP-protokollen (rfc3261)."
+msgstr ""
+"En Internet Videotelefon som bruker den standardiserte SIP-protokollen "
+"(rfc3261)."
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -1545,8 +1569,11 @@ msgstr ""
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+"This dialog allows to set an http or https address when configuration is to "
+"be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, "
+"Linphone will restart automatically in order to fetch and take into account "
+"the new configuration. "
 msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:1
@@ -1567,6 +1594,10 @@ msgstr ""
 
 #: ../gtk/conf_frame.ui.h:1
 msgid "End conference"
+msgstr ""
+
+#: ../gtk/in_call_frame.ui.h:1
+msgid "Encryption status"
 msgstr ""
 
 #: ../gtk/in_call_frame.ui.h:2
@@ -1738,13 +1769,17 @@ msgstr ""
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr "SIP proxy adressen du har angitt er ugyldig, den må begynne med \"sip:\" etterfult av vertsnavn."
+msgstr ""
+"SIP proxy adressen du har angitt er ugyldig, den må begynne med \"sip:\" "
+"etterfult av vertsnavn."
 
 #: ../coreapi/proxy.c:298
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr "SIP adressen du har angitt er feil. Adressen bør se ut som sip: brukernavn@domenenavn, f.eks sip:ola@eksempel.no"
+msgstr ""
+"SIP adressen du har angitt er feil. Adressen bør se ut som sip: "
+"brukernavn@domenenavn, f.eks sip:ola@eksempel.no"
 
 #: ../coreapi/proxy.c:927
 msgid "Looking for telephone number destination..."

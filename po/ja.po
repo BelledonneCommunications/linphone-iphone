@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Alexander, 2014
 # Alexander, 2014-2015
@@ -9,14 +9,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-23 11:10+0200\n"
+"POT-Creation-Date: 2015-10-29 17:06+0100\n"
 "PO-Revision-Date: 2015-10-24 19:40+0000\n"
 "Last-Translator: Alexander\n"
-"Language-Team: Japanese (http://www.transifex.com/belledonne-communications/linphone-gtk/language/ja/)\n"
+"Language-Team: Japanese (http://www.transifex.com/belledonne-communications/"
+"linphone-gtk/language/ja/)\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../gtk/calllogs.c:178
@@ -76,7 +77,9 @@ msgstr[0] "%i 秒"
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
-msgstr "<small><i>%s</i>⇥<i>品質: %s</i></small>\n%s⇥%s⇥"
+msgstr ""
+"<small><i>%s</i>⇥<i>品質: %s</i></small>\n"
+"%s⇥%s⇥"
 
 #: ../gtk/calllogs.c:358
 #, c-format
@@ -96,7 +99,16 @@ msgstr "自分"
 msgid "Couldn't find pixmap file: %s"
 msgstr "pixmapファイルが見つかりません %s"
 
-#: ../gtk/chat.c:481
+#: ../gtk/chat.c:196 ../gtk/chat.c:254
+#, fuzzy
+msgid "Sending..."
+msgstr "保留"
+
+#: ../gtk/chat.c:213 ../gtk/chat.c:263
+msgid "Message not sent"
+msgstr ""
+
+#: ../gtk/chat.c:472
 msgid "Copy"
 msgstr "コピー"
 
@@ -126,9 +138,11 @@ msgstr "今すぐに呼び出す"
 
 #: ../gtk/main.c:144
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: "
-"c:\\Program Files\\Linphone)"
-msgstr "作業ディレクトリをSpecifiy (インストールした時のベースである必要があります。例:c:\\Program Files\\Linphone)"
+"Specifiy a working directory (should be the base of the installation, eg: c:"
+"\\Program Files\\Linphone)"
+msgstr ""
+"作業ディレクトリをSpecifiy (インストールした時のベースである必要があります。"
+"例:c:\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:145
 msgid "Configuration file"
@@ -142,88 +156,97 @@ msgstr "オーディオアシスタントを実行"
 msgid "Run self test and exit 0 if succeed"
 msgstr "セルフテストは0で終了したら成功です"
 
-#: ../gtk/main.c:1040
+#: ../gtk/main.c:1046
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
-"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
+"Would you add him/her to your contact list and allow him/her to see your "
+"presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr "相手が自分の連絡先に%sを追加したいそうです。\nあなたが自分の連絡先に相手を追加したらできるようになり相手のステータスも表示されるようになります。\n拒否した場合その相手は一時的にブラックリストに登録されます。"
+msgstr ""
+"相手が自分の連絡先に%sを追加したいそうです。\n"
+"あなたが自分の連絡先に相手を追加したらできるようになり相手のステータスも表示"
+"されるようになります。\n"
+"拒否した場合その相手は一時的にブラックリストに登録されます。"
 
-#: ../gtk/main.c:1117
+#: ../gtk/main.c:1123
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
-msgstr "パスワードを入力してください <i>%s</i>\nrealm <i>%s</i>:"
+msgstr ""
+"パスワードを入力してください <i>%s</i>\n"
+"realm <i>%s</i>:"
 
-#: ../gtk/main.c:1242
+#: ../gtk/main.c:1248
 msgid "Call error"
 msgstr "呼出エラー"
 
-#: ../gtk/main.c:1245 ../coreapi/linphonecore.c:3813
+#: ../gtk/main.c:1251 ../coreapi/linphonecore.c:3813
 msgid "Call ended"
 msgstr "呼出終了"
 
-#: ../gtk/main.c:1248 ../coreapi/call_log.c:235
+#: ../gtk/main.c:1254 ../coreapi/call_log.c:235
 msgid "Incoming call"
 msgstr "着信"
 
-#: ../gtk/main.c:1250 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
 msgid "Answer"
 msgstr "応答"
 
-#: ../gtk/main.c:1252 ../gtk/in_call_frame.ui.h:4
+#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:4
 msgid "Decline"
 msgstr "拒否"
 
-#: ../gtk/main.c:1258
+#: ../gtk/main.c:1264
 msgid "Call paused"
 msgstr "呼び出しの一時停止"
 
-#: ../gtk/main.c:1258
+#: ../gtk/main.c:1264
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>%s</b>"
 
-#: ../gtk/main.c:1328
+#: ../gtk/main.c:1334
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%sがテレビ電話をしたいそうですが受け入れますか？"
 
-#: ../gtk/main.c:1494
+#: ../gtk/main.c:1500
 msgid "Website link"
 msgstr "ウェブサイトリンク"
 
-#: ../gtk/main.c:1553 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1559 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1554
+#: ../gtk/main.c:1560
 msgid "A video internet phone"
 msgstr "テレビ電話"
 
-#: ../gtk/main.c:1613
+#: ../gtk/main.c:1619
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (デフォルト)"
 
-#: ../gtk/main.c:1942 ../coreapi/callbacks.c:1075
+#: ../gtk/main.c:1955 ../coreapi/callbacks.c:1075
 #, c-format
 msgid "We are transferred to %s"
 msgstr "%s に転送しました"
 
-#: ../gtk/main.c:1952
+#: ../gtk/main.c:1965
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
-msgstr "サウンドカードが検出されていません。\n音声通話の送受信はできません。"
+msgstr ""
+"サウンドカードが検出されていません。\n"
+"音声通話の送受信はできません。"
 
-#: ../gtk/main.c:2111
+#: ../gtk/main.c:2124
 msgid "A free SIP video-phone"
 msgstr "無料 SIP ビデオ-電話"
 
-#: ../gtk/main.c:2224
+#: ../gtk/main.c:2237
 #, c-format
 msgid "Hello\n"
 msgstr "こんにちは\n"
@@ -266,136 +289,136 @@ msgstr "'%s' のチャット履歴を削除"
 msgid "Add new contact from %s directory"
 msgstr "フォルダ %s から連絡先を追加する"
 
-#: ../gtk/propertybox.c:591 ../gtk/contact.ui.h:1
+#: ../gtk/propertybox.c:592 ../gtk/contact.ui.h:1
 msgid "Name"
 msgstr "名前"
 
-#: ../gtk/propertybox.c:597
+#: ../gtk/propertybox.c:598
 msgid "Rate (Hz)"
 msgstr "レート (Hz)"
 
-#: ../gtk/propertybox.c:603
+#: ../gtk/propertybox.c:604
 msgid "Status"
 msgstr "状態"
 
-#: ../gtk/propertybox.c:616
+#: ../gtk/propertybox.c:617
 msgid "IP Bitrate (kbit/s)"
 msgstr "IP ビットレート (kbit/s)"
 
-#: ../gtk/propertybox.c:627
+#: ../gtk/propertybox.c:628
 msgid "Parameters"
 msgstr "パラメーター"
 
-#: ../gtk/propertybox.c:669 ../gtk/propertybox.c:823
+#: ../gtk/propertybox.c:670 ../gtk/propertybox.c:824
 msgid "Enabled"
 msgstr "使用する"
 
-#: ../gtk/propertybox.c:671 ../gtk/propertybox.c:823 ../gtk/parameters.ui.h:60
+#: ../gtk/propertybox.c:672 ../gtk/propertybox.c:824 ../gtk/parameters.ui.h:60
 msgid "Disabled"
 msgstr "使用しない"
 
-#: ../gtk/propertybox.c:901
+#: ../gtk/propertybox.c:902
 msgid "Account"
 msgstr "アカウント"
 
-#: ../gtk/propertybox.c:1169
+#: ../gtk/propertybox.c:1170
 msgid "English"
 msgstr "English"
 
-#: ../gtk/propertybox.c:1170
+#: ../gtk/propertybox.c:1171
 msgid "French"
 msgstr "Français"
 
-#: ../gtk/propertybox.c:1171
+#: ../gtk/propertybox.c:1172
 msgid "Swedish"
 msgstr "Svenska"
 
-#: ../gtk/propertybox.c:1172
+#: ../gtk/propertybox.c:1173
 msgid "Italian"
 msgstr "Italiano"
 
-#: ../gtk/propertybox.c:1173
+#: ../gtk/propertybox.c:1174
 msgid "Spanish"
 msgstr "Español"
 
-#: ../gtk/propertybox.c:1174
+#: ../gtk/propertybox.c:1175
 msgid "Brazilian Portugese"
 msgstr "Português do Brasil"
 
-#: ../gtk/propertybox.c:1175
+#: ../gtk/propertybox.c:1176
 msgid "Polish"
 msgstr "Polski"
 
-#: ../gtk/propertybox.c:1176
+#: ../gtk/propertybox.c:1177
 msgid "German"
 msgstr "Deutsch"
 
-#: ../gtk/propertybox.c:1177
+#: ../gtk/propertybox.c:1178
 msgid "Russian"
 msgstr "Pусский"
 
-#: ../gtk/propertybox.c:1178
+#: ../gtk/propertybox.c:1179
 msgid "Japanese"
 msgstr "日本語"
 
-#: ../gtk/propertybox.c:1179
+#: ../gtk/propertybox.c:1180
 msgid "Dutch"
 msgstr "Nederlands"
 
-#: ../gtk/propertybox.c:1180
+#: ../gtk/propertybox.c:1181
 msgid "Hungarian"
 msgstr "Magyar"
 
-#: ../gtk/propertybox.c:1181
+#: ../gtk/propertybox.c:1182
 msgid "Czech"
 msgstr "čeština"
 
-#: ../gtk/propertybox.c:1182
+#: ../gtk/propertybox.c:1183
 msgid "Chinese"
 msgstr "简体中文"
 
-#: ../gtk/propertybox.c:1183
+#: ../gtk/propertybox.c:1184
 msgid "Traditional Chinese"
 msgstr "繁体中文"
 
-#: ../gtk/propertybox.c:1184
+#: ../gtk/propertybox.c:1185
 msgid "Norwegian"
 msgstr "Norsk"
 
-#: ../gtk/propertybox.c:1185
+#: ../gtk/propertybox.c:1186
 msgid "Hebrew"
 msgstr "עברית"
 
-#: ../gtk/propertybox.c:1186
+#: ../gtk/propertybox.c:1187
 msgid "Serbian"
 msgstr "Cрпски"
 
-#: ../gtk/propertybox.c:1187
+#: ../gtk/propertybox.c:1188
 msgid "Arabic"
 msgstr "アラビア語"
 
-#: ../gtk/propertybox.c:1188
+#: ../gtk/propertybox.c:1189
 msgid "Turkish"
 msgstr "トルコ語"
 
-#: ../gtk/propertybox.c:1245
+#: ../gtk/propertybox.c:1246
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "言語の選択を有効にするには、 Linphoneを再起動する必要があります。"
 
-#: ../gtk/propertybox.c:1325
+#: ../gtk/propertybox.c:1326
 msgid "None"
 msgstr "なし"
 
-#: ../gtk/propertybox.c:1329
+#: ../gtk/propertybox.c:1330
 msgid "SRTP"
 msgstr "SRTP"
 
-#: ../gtk/propertybox.c:1335
+#: ../gtk/propertybox.c:1336
 msgid "DTLS"
 msgstr "DTLS"
 
-#: ../gtk/propertybox.c:1342
+#: ../gtk/propertybox.c:1343
 msgid "ZRTP"
 msgstr "ZRTP"
 
@@ -404,7 +427,9 @@ msgstr "ZRTP"
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr "%s よりも新しいバージョンが利用可能です。\nダウンロードするために、ブラウザを開きますか？"
+msgstr ""
+"%s よりも新しいバージョンが利用可能です。\n"
+"ダウンロードするために、ブラウザを開きますか？"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -503,7 +528,9 @@ msgstr "直接またはサーバー経由"
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
-msgstr "ダウンロード： %f\nアップロード： %f (kbit/s)"
+msgstr ""
+"ダウンロード： %f\n"
+"アップロード： %f (kbit/s)"
 
 #: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
 #, c-format
@@ -524,7 +551,7 @@ msgstr "電話を切る"
 msgid "<b>Calling...</b>"
 msgstr "<b>かけています…</b>"
 
-#: ../gtk/incall_view.c:562 ../gtk/incall_view.c:786
+#: ../gtk/incall_view.c:562 ../gtk/incall_view.c:792
 msgid "00:00:00"
 msgstr "00:00:00"
 
@@ -556,71 +583,73 @@ msgstr "非常にバッドな"
 msgid "unavailable"
 msgstr "利用できません"
 
-#: ../gtk/incall_view.c:728
+#: ../gtk/incall_view.c:731
 msgid "Secured by SRTP"
 msgstr "SRTPのセキュリティ"
 
-#: ../gtk/incall_view.c:734
+#: ../gtk/incall_view.c:737
 msgid "Secured by DTLS"
 msgstr "DTLSセキュリティ"
 
-#: ../gtk/incall_view.c:740
+#: ../gtk/incall_view.c:743
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr "ZRTP によるセキュリティ - [auth token: %s]"
 
-#: ../gtk/incall_view.c:746
+#: ../gtk/incall_view.c:747
 msgid "Set unverified"
 msgstr "セット未検証"
 
-#: ../gtk/incall_view.c:746 ../gtk/in_call_frame.ui.h:1
+#: ../gtk/incall_view.c:747
 msgid "Set verified"
 msgstr "セット検証済"
 
-#: ../gtk/incall_view.c:781
+#: ../gtk/incall_view.c:787
 msgid "In conference"
 msgstr "会議で"
 
-#: ../gtk/incall_view.c:781
+#: ../gtk/incall_view.c:787
 msgid "<b>In call</b>"
 msgstr "<b>呼び出し中</b>"
 
-#: ../gtk/incall_view.c:818
+#: ../gtk/incall_view.c:824
 msgid "<b>Paused call</b>"
 msgstr "<b>呼び出し停止</b>"
 
-#: ../gtk/incall_view.c:855
+#: ../gtk/incall_view.c:861
 msgid "<b>Call ended.</b>"
 msgstr "<b>呼び出し終了</b>"
 
-#: ../gtk/incall_view.c:886
+#: ../gtk/incall_view.c:892
 msgid "Transfer in progress"
 msgstr "進行中の転送"
 
-#: ../gtk/incall_view.c:889
+#: ../gtk/incall_view.c:895
 msgid "Transfer done."
 msgstr "転送完了。"
 
-#: ../gtk/incall_view.c:892
+#: ../gtk/incall_view.c:898
 msgid "Transfer failed."
 msgstr "転送失敗。"
 
-#: ../gtk/incall_view.c:923
+#: ../gtk/incall_view.c:929
 msgid "Resume"
 msgstr "レジューム"
 
-#: ../gtk/incall_view.c:923 ../gtk/in_call_frame.ui.h:8
+#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:8
 msgid "Pause"
 msgstr "一時停止"
 
-#: ../gtk/incall_view.c:989
+#: ../gtk/incall_view.c:995
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
-msgstr "<small><i>記録\n%s %s</i></small>"
+msgstr ""
+"<small><i>記録\n"
+"%s %s</i></small>"
 
-#: ../gtk/incall_view.c:989
+#: ../gtk/incall_view.c:995
 msgid "(Paused)"
 msgstr "(停止中)"
 
@@ -822,6 +851,10 @@ msgstr "通話履歴を削除する"
 msgid "My current identity:"
 msgstr ""
 
+#: ../gtk/main.ui.h:23
+msgid "Autoanswer is enabled"
+msgstr ""
+
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
 msgstr "Linphoneについて"
@@ -832,7 +865,9 @@ msgstr "(C) Belledonne Communications, 2010\n"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr "インターネットによる動画送信には標準的なSIPプロトコル (rfc3261) を使用しています。"
+msgstr ""
+"インターネットによる動画送信には標準的なSIPプロトコル (rfc3261) を使用してい"
+"ます。"
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -848,7 +883,19 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+"he: Eli Zaretskii <eliz@gnu.org>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -1543,8 +1590,11 @@ msgstr ""
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+"This dialog allows to set an http or https address when configuration is to "
+"be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, "
+"Linphone will restart automatically in order to fetch and take into account "
+"the new configuration. "
 msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:1
@@ -1566,6 +1616,11 @@ msgstr ""
 #: ../gtk/conf_frame.ui.h:1
 msgid "End conference"
 msgstr "会議を終了する"
+
+#: ../gtk/in_call_frame.ui.h:1
+#, fuzzy
+msgid "Encryption status"
+msgstr "不明なステータス"
 
 #: ../gtk/in_call_frame.ui.h:2
 msgid "Click here to set the speakers volume"

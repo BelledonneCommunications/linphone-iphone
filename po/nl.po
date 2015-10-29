@@ -1,21 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Heimen Stoffels <vistausss@outlook.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-23 11:10+0200\n"
+"POT-Creation-Date: 2015-10-29 17:06+0100\n"
 "PO-Revision-Date: 2015-10-23 09:09+0000\n"
-"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
-"Language-Team: Dutch (http://www.transifex.com/belledonne-communications/linphone-gtk/language/nl/)\n"
+"Last-Translator: Belledonne Communications <support@belledonne-"
+"communications.com>\n"
+"Language-Team: Dutch (http://www.transifex.com/belledonne-communications/"
+"linphone-gtk/language/nl/)\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../gtk/calllogs.c:178
@@ -77,7 +79,9 @@ msgstr[1] "%i seconden"
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
-msgstr "<small><i>%s</i>\t<i>Kwaliteit: %s</i></small>\n%s\t%s\t"
+msgstr ""
+"<small><i>%s</i>\t<i>Kwaliteit: %s</i></small>\n"
+"%s\t%s\t"
 
 #: ../gtk/calllogs.c:358
 #, c-format
@@ -97,13 +101,24 @@ msgstr "Ik"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Het pixmap-bestand %s kon niet worden gevonden"
 
-#: ../gtk/chat.c:481
+#: ../gtk/chat.c:196 ../gtk/chat.c:254
+#, fuzzy
+msgid "Sending..."
+msgstr "Bezig met verbinden..."
+
+#: ../gtk/chat.c:213 ../gtk/chat.c:263
+msgid "Message not sent"
+msgstr ""
+
+#: ../gtk/chat.c:472
 msgid "Copy"
 msgstr ""
 
 #: ../gtk/main.c:138
 msgid "log to stdout some debug information while running."
-msgstr "loggen naar stdout om wat foutopsporingsinformatie te verkrijgen tijdens uitvoeren."
+msgstr ""
+"loggen naar stdout om wat foutopsporingsinformatie te verkrijgen tijdens "
+"uitvoeren."
 
 #: ../gtk/main.c:139
 msgid "display version and exit."
@@ -127,9 +142,11 @@ msgstr "adres om nu naar toe te bellen"
 
 #: ../gtk/main.c:144
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: "
-"c:\\Program Files\\Linphone)"
-msgstr "Specificeer een werkmap (dit moet de basis van uw installatie zijn, bijv.: C:\\Program Files\\Linphone)"
+"Specifiy a working directory (should be the base of the installation, eg: c:"
+"\\Program Files\\Linphone)"
+msgstr ""
+"Specificeer een werkmap (dit moet de basis van uw installatie zijn, bijv.: C:"
+"\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:145
 msgid "Configuration file"
@@ -143,88 +160,93 @@ msgstr "Doorloop de audio-instelwizard"
 msgid "Run self test and exit 0 if succeed"
 msgstr "Draai een zelftest en exit 0 wanneer succesvol"
 
-#: ../gtk/main.c:1040
+#: ../gtk/main.c:1046
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
-"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
+"Would you add him/her to your contact list and allow him/her to see your "
+"presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
-#: ../gtk/main.c:1117
+#: ../gtk/main.c:1123
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
-msgstr "Vul uw wachtwoord in voor gebruikersnaam <i>%s</i>\nop realm <i>%s</i>"
+msgstr ""
+"Vul uw wachtwoord in voor gebruikersnaam <i>%s</i>\n"
+"op realm <i>%s</i>"
 
-#: ../gtk/main.c:1242
+#: ../gtk/main.c:1248
 msgid "Call error"
 msgstr "Oproepfout"
 
-#: ../gtk/main.c:1245 ../coreapi/linphonecore.c:3813
+#: ../gtk/main.c:1251 ../coreapi/linphonecore.c:3813
 msgid "Call ended"
 msgstr "Oproep beëindigd"
 
-#: ../gtk/main.c:1248 ../coreapi/call_log.c:235
+#: ../gtk/main.c:1254 ../coreapi/call_log.c:235
 msgid "Incoming call"
 msgstr "Inkomende oproep"
 
-#: ../gtk/main.c:1250 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:3
 msgid "Answer"
 msgstr "Opnemen"
 
-#: ../gtk/main.c:1252 ../gtk/in_call_frame.ui.h:4
+#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:4
 msgid "Decline"
 msgstr "Weigeren"
 
-#: ../gtk/main.c:1258
+#: ../gtk/main.c:1264
 msgid "Call paused"
 msgstr "Oproep gepauzeerd"
 
-#: ../gtk/main.c:1258
+#: ../gtk/main.c:1264
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>door %s</b>"
 
-#: ../gtk/main.c:1328
+#: ../gtk/main.c:1334
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%s stelt u voor om video in te schakelen. Wilt u dit accepteren?"
 
-#: ../gtk/main.c:1494
+#: ../gtk/main.c:1500
 msgid "Website link"
 msgstr "Websitelink"
 
-#: ../gtk/main.c:1553 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1559 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1554
+#: ../gtk/main.c:1560
 msgid "A video internet phone"
 msgstr ""
 
-#: ../gtk/main.c:1613
+#: ../gtk/main.c:1619
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (Standaard)"
 
-#: ../gtk/main.c:1942 ../coreapi/callbacks.c:1075
+#: ../gtk/main.c:1955 ../coreapi/callbacks.c:1075
 #, c-format
 msgid "We are transferred to %s"
 msgstr "We zijn overgeschakeld naar %s"
 
-#: ../gtk/main.c:1952
+#: ../gtk/main.c:1965
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
-msgstr "Er zijn geluidskaarten aangetroffen op deze computer.\nU zult niet in staat zijn om audio-oproepen te ontvangen of versturen."
+msgstr ""
+"Er zijn geluidskaarten aangetroffen op deze computer.\n"
+"U zult niet in staat zijn om audio-oproepen te ontvangen of versturen."
 
-#: ../gtk/main.c:2111
+#: ../gtk/main.c:2124
 msgid "A free SIP video-phone"
 msgstr "Een gratis SIP-videotelefoon"
 
-#: ../gtk/main.c:2224
+#: ../gtk/main.c:2237
 #, c-format
 msgid "Hello\n"
 msgstr ""
@@ -267,136 +289,137 @@ msgstr "Chatgeschiedenis van '%s' verwijderen"
 msgid "Add new contact from %s directory"
 msgstr "Nieuw contactpersoon toevoegen vanuit de map %s"
 
-#: ../gtk/propertybox.c:591 ../gtk/contact.ui.h:1
+#: ../gtk/propertybox.c:592 ../gtk/contact.ui.h:1
 msgid "Name"
 msgstr "Naam"
 
-#: ../gtk/propertybox.c:597
+#: ../gtk/propertybox.c:598
 msgid "Rate (Hz)"
 msgstr "Frequentie (Hz)"
 
-#: ../gtk/propertybox.c:603
+#: ../gtk/propertybox.c:604
 msgid "Status"
 msgstr "Status"
 
-#: ../gtk/propertybox.c:616
+#: ../gtk/propertybox.c:617
 msgid "IP Bitrate (kbit/s)"
 msgstr "IP-bitrate (kbit/s)"
 
-#: ../gtk/propertybox.c:627
+#: ../gtk/propertybox.c:628
 msgid "Parameters"
 msgstr "Argumenten"
 
-#: ../gtk/propertybox.c:669 ../gtk/propertybox.c:823
+#: ../gtk/propertybox.c:670 ../gtk/propertybox.c:824
 msgid "Enabled"
 msgstr "Ingeschakeld"
 
-#: ../gtk/propertybox.c:671 ../gtk/propertybox.c:823 ../gtk/parameters.ui.h:60
+#: ../gtk/propertybox.c:672 ../gtk/propertybox.c:824 ../gtk/parameters.ui.h:60
 msgid "Disabled"
 msgstr "Uitgeschakeld"
 
-#: ../gtk/propertybox.c:901
+#: ../gtk/propertybox.c:902
 msgid "Account"
 msgstr "Account"
 
-#: ../gtk/propertybox.c:1169
+#: ../gtk/propertybox.c:1170
 msgid "English"
 msgstr "Engels"
 
-#: ../gtk/propertybox.c:1170
+#: ../gtk/propertybox.c:1171
 msgid "French"
 msgstr "Frans"
 
-#: ../gtk/propertybox.c:1171
+#: ../gtk/propertybox.c:1172
 msgid "Swedish"
 msgstr "Zweeds"
 
-#: ../gtk/propertybox.c:1172
+#: ../gtk/propertybox.c:1173
 msgid "Italian"
 msgstr "Italiaans"
 
-#: ../gtk/propertybox.c:1173
+#: ../gtk/propertybox.c:1174
 msgid "Spanish"
 msgstr "Spaans"
 
-#: ../gtk/propertybox.c:1174
+#: ../gtk/propertybox.c:1175
 msgid "Brazilian Portugese"
 msgstr "Braziliaans Portugees"
 
-#: ../gtk/propertybox.c:1175
+#: ../gtk/propertybox.c:1176
 msgid "Polish"
 msgstr "Pools"
 
-#: ../gtk/propertybox.c:1176
+#: ../gtk/propertybox.c:1177
 msgid "German"
 msgstr "Duits"
 
-#: ../gtk/propertybox.c:1177
+#: ../gtk/propertybox.c:1178
 msgid "Russian"
 msgstr "Russisch"
 
-#: ../gtk/propertybox.c:1178
+#: ../gtk/propertybox.c:1179
 msgid "Japanese"
 msgstr "Japans"
 
-#: ../gtk/propertybox.c:1179
+#: ../gtk/propertybox.c:1180
 msgid "Dutch"
 msgstr "Nederlands"
 
-#: ../gtk/propertybox.c:1180
+#: ../gtk/propertybox.c:1181
 msgid "Hungarian"
 msgstr "Hongaars"
 
-#: ../gtk/propertybox.c:1181
+#: ../gtk/propertybox.c:1182
 msgid "Czech"
 msgstr "Tjechisch"
 
-#: ../gtk/propertybox.c:1182
+#: ../gtk/propertybox.c:1183
 msgid "Chinese"
 msgstr "Chinees"
 
-#: ../gtk/propertybox.c:1183
+#: ../gtk/propertybox.c:1184
 msgid "Traditional Chinese"
 msgstr "Traditioneel Chinees"
 
-#: ../gtk/propertybox.c:1184
+#: ../gtk/propertybox.c:1185
 msgid "Norwegian"
 msgstr "Noors"
 
-#: ../gtk/propertybox.c:1185
+#: ../gtk/propertybox.c:1186
 msgid "Hebrew"
 msgstr "Hebreeuws"
 
-#: ../gtk/propertybox.c:1186
+#: ../gtk/propertybox.c:1187
 msgid "Serbian"
 msgstr "Servisch"
 
-#: ../gtk/propertybox.c:1187
+#: ../gtk/propertybox.c:1188
 msgid "Arabic"
 msgstr ""
 
-#: ../gtk/propertybox.c:1188
+#: ../gtk/propertybox.c:1189
 msgid "Turkish"
 msgstr ""
 
-#: ../gtk/propertybox.c:1245
+#: ../gtk/propertybox.c:1246
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr "U moet linphone herstarten om de nieuw geselecteerde taal toe te passen."
+msgstr ""
+"U moet linphone herstarten om de nieuw geselecteerde taal toe te passen."
 
-#: ../gtk/propertybox.c:1325
+#: ../gtk/propertybox.c:1326
 msgid "None"
 msgstr "Geen"
 
-#: ../gtk/propertybox.c:1329
+#: ../gtk/propertybox.c:1330
 msgid "SRTP"
 msgstr "SRTP"
 
-#: ../gtk/propertybox.c:1335
+#: ../gtk/propertybox.c:1336
 msgid "DTLS"
 msgstr "DTLS"
 
-#: ../gtk/propertybox.c:1342
+#: ../gtk/propertybox.c:1343
 msgid "ZRTP"
 msgstr "ZRTP"
 
@@ -405,7 +428,9 @@ msgstr "ZRTP"
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr "Er is een nieuwere versie beschikbaar op %s.\nWilt een webbrowser openen en deze downloaden?"
+msgstr ""
+"Er is een nieuwere versie beschikbaar op %s.\n"
+"Wilt een webbrowser openen en deze downloaden?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -505,7 +530,9 @@ msgstr "Direct of via een server"
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
-msgstr "download: %f\nupload: %f (kbit/s)"
+msgstr ""
+"download: %f\n"
+"upload: %f (kbit/s)"
 
 #: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
 #, c-format
@@ -526,7 +553,7 @@ msgstr "Ophangen"
 msgid "<b>Calling...</b>"
 msgstr "<b>Bezig met bellen...</b>"
 
-#: ../gtk/incall_view.c:562 ../gtk/incall_view.c:786
+#: ../gtk/incall_view.c:562 ../gtk/incall_view.c:792
 msgid "00:00:00"
 msgstr ""
 
@@ -558,71 +585,71 @@ msgstr "verschrikkelijk"
 msgid "unavailable"
 msgstr "niet beschikbaar"
 
-#: ../gtk/incall_view.c:728
+#: ../gtk/incall_view.c:731
 msgid "Secured by SRTP"
 msgstr "Beveiligd door SRTP"
 
-#: ../gtk/incall_view.c:734
+#: ../gtk/incall_view.c:737
 msgid "Secured by DTLS"
 msgstr "Beveiligd door DTLS"
 
-#: ../gtk/incall_view.c:740
+#: ../gtk/incall_view.c:743
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr "Beveiligd door ZRTP - [authenticatiesleutel: %s]"
 
-#: ../gtk/incall_view.c:746
+#: ../gtk/incall_view.c:747
 msgid "Set unverified"
 msgstr "Instellen als niet-geverifieerd"
 
-#: ../gtk/incall_view.c:746 ../gtk/in_call_frame.ui.h:1
+#: ../gtk/incall_view.c:747
 msgid "Set verified"
 msgstr "Instellen als geverifieerd"
 
-#: ../gtk/incall_view.c:781
+#: ../gtk/incall_view.c:787
 msgid "In conference"
 msgstr "In een vergadering"
 
-#: ../gtk/incall_view.c:781
+#: ../gtk/incall_view.c:787
 msgid "<b>In call</b>"
 msgstr "<b>In gesprek</b>"
 
-#: ../gtk/incall_view.c:818
+#: ../gtk/incall_view.c:824
 msgid "<b>Paused call</b>"
 msgstr "<b>Gepauzeerde oproep</b>"
 
-#: ../gtk/incall_view.c:855
+#: ../gtk/incall_view.c:861
 msgid "<b>Call ended.</b>"
 msgstr "<b>Oproep is beëindigd.</b>"
 
-#: ../gtk/incall_view.c:886
+#: ../gtk/incall_view.c:892
 msgid "Transfer in progress"
 msgstr "De overdracht is bezig"
 
-#: ../gtk/incall_view.c:889
+#: ../gtk/incall_view.c:895
 msgid "Transfer done."
 msgstr "De overdracht is voltooid."
 
-#: ../gtk/incall_view.c:892
+#: ../gtk/incall_view.c:898
 msgid "Transfer failed."
 msgstr "De overdracht is mislukt."
 
-#: ../gtk/incall_view.c:923
+#: ../gtk/incall_view.c:929
 msgid "Resume"
 msgstr "Hervatten"
 
-#: ../gtk/incall_view.c:923 ../gtk/in_call_frame.ui.h:8
+#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:8
 msgid "Pause"
 msgstr "Pauzeren"
 
-#: ../gtk/incall_view.c:989
+#: ../gtk/incall_view.c:995
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr "<small><i>Bezig met opnemen naar%s %s</i></small>"
 
-#: ../gtk/incall_view.c:989
+#: ../gtk/incall_view.c:995
 msgid "(Paused)"
 msgstr "(Gepauzeerd)"
 
@@ -673,7 +700,10 @@ msgstr "Het systeemgeluidspaneel kon niet worden gestart"
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
-msgstr "Welkom!\nDeze instelwizard zal u begeleiden bij het instellen van de audio-instellingen van Linphone"
+msgstr ""
+"Welkom!\n"
+"Deze instelwizard zal u begeleiden bij het instellen van de audio-"
+"instellingen van Linphone"
 
 #: ../gtk/audio_assistant.c:335
 msgid "Capture device"
@@ -824,6 +854,10 @@ msgstr ""
 msgid "My current identity:"
 msgstr "Mijn huidige identiteit:"
 
+#: ../gtk/main.ui.h:23
+msgid "Autoanswer is enabled"
+msgstr ""
+
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
 msgstr "Over Linphone"
@@ -834,7 +868,9 @@ msgstr "(C) Belledonne Communications, 2010\n"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr "Een internetvideotelefoon gebruikmakende van het standaard SIP (rfc3261) protocol."
+msgstr ""
+"Een internetvideotelefoon gebruikmakende van het standaard SIP (rfc3261) "
+"protocol."
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -850,7 +886,19 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+"he: Eli Zaretskii <eliz@gnu.org>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -862,7 +910,8 @@ msgstr "De aanwezigheidsstatus van dit contactpersoon weergeven"
 
 #: ../gtk/contact.ui.h:4
 msgid "Allow this contact to see my presence status"
-msgstr "Toestaan dat deze contactpersoon mijn aanwezigheidsstatus kan weergeven"
+msgstr ""
+"Toestaan dat deze contactpersoon mijn aanwezigheidsstatus kan weergeven"
 
 #: ../gtk/contact.ui.h:5
 msgid "<b>Contact information</b>"
@@ -1545,8 +1594,11 @@ msgstr ""
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+"This dialog allows to set an http or https address when configuration is to "
+"be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, "
+"Linphone will restart automatically in order to fetch and take into account "
+"the new configuration. "
 msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:1
@@ -1568,6 +1620,10 @@ msgstr "<b>Bellernaam</b>"
 #: ../gtk/conf_frame.ui.h:1
 msgid "End conference"
 msgstr "Vergadering beëindigen"
+
+#: ../gtk/in_call_frame.ui.h:1
+msgid "Encryption status"
+msgstr ""
 
 #: ../gtk/in_call_frame.ui.h:2
 msgid "Click here to set the speakers volume"
