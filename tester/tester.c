@@ -533,6 +533,7 @@ void liblinphone_tester_uninit(void) {
 	if (all_leaks_buffer) {
 		bc_tester_printf(bc_printf_verbosity_info, all_leaks_buffer);
 		ms_free(all_leaks_buffer);
+		all_leaks_buffer = NULL;
 	}
 	bc_tester_uninit();
 }
