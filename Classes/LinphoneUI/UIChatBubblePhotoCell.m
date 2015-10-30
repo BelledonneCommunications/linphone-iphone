@@ -61,6 +61,8 @@
 	_messageImageView.image = nil;
 	_fileTransferProgress.progress = 0;
 
+	[super setChatMessage:amessage];
+
 	if (amessage) {
 		const LinphoneContent *c = linphone_chat_message_get_file_transfer_information(amessage);
 		if (c) {
@@ -76,7 +78,7 @@
 			}
 		}
 	}
-	[super setChatMessage:amessage];
+	[self update];
 }
 
 - (void)update {
@@ -186,6 +188,7 @@
 
 - (void)connectToFileDelegate:(FileTransferDelegate *)aftd {
 	ftd = aftd;
+	//	assert(ftd.message == self.message);
 	_fileTransferProgress.progress = 0;
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[[NSNotificationCenter defaultCenter] addObserver:self

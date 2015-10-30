@@ -97,23 +97,22 @@
 		_messageText.attributedText = attr_text;
 	}
 
-	// Date
-	_contactDateLabel.text = [NSString
-		stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(_message)
-													  withFormat:NSLocalizedString(@"yyyy/MM/dd '-' HH'h'mm", nil)],
-						 [FastAddressBook displayNameForAddress:linphone_chat_message_get_peer_address(_message)]];
-
 	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);
 	BOOL outgoing = linphone_chat_message_is_outgoing(_message);
 
 	if (outgoing) {
 		_avatarImage.image = [LinphoneUtils selfAvatar];
 	} else {
-		ABRecordRef contact = [FastAddressBook getContactWithAddress:linphone_chat_message_get_peer_address(_message)];
-		[_avatarImage setImage:[FastAddressBook imageForContact:contact thumbnail:YES]
+		[_avatarImage setImage:[FastAddressBook imageForAddress:linphone_chat_message_get_peer_address(_message)
+													  thumbnail:YES]
 					  bordered:NO
 			 withRoundedRadius:YES];
 	}
+	_contactDateLabel.text = [NSString
+		stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(_message)
+													  withFormat:NSLocalizedString(@"yyyy/MM/dd '-' HH'h'mm", nil)],
+						 [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(_message)]];
+
 	_backgroundColorImage.image = _bottomBarColor.image =
 		[UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
 
@@ -206,6 +205,9 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	UIChatBubbleTextCell *thiz = (__bridge UIChatBubbleTextCell *)linphone_chat_message_get_user_data(msg);
 	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
 	[thiz update];
+
+	ChatConversationView *view = VIEW(ChatConversationView);
+	[view.tableController updateChatEntry:msg];
 }
 
 #pragma mark - Bubble size computing

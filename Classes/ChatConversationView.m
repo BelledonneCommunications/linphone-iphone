@@ -193,15 +193,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_addressLabel.accessibilityValue = _addressLabel.text;
 }
 
-static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state, void *ud) {
-	const char *text = (linphone_chat_message_get_file_transfer_information(msg) != NULL)
-						   ? "photo transfer"
-						   : linphone_chat_message_get_text(msg);
-	LOGI(@"Delivery status for [%s] is [%s]", text, linphone_chat_message_state_to_string(state));
-	ChatConversationView *thiz = (__bridge ChatConversationView *)ud;
-	[thiz.tableController updateChatEntry:msg];
-}
-
 - (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL *)externalUrl withInternalURL:(NSURL *)internalUrl {
 	if (chatRoom == NULL) {
 		LOGW(@"Cannot send message: No chatroom");
@@ -218,7 +209,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		[LinphoneManager setValueInMessageAppData:[internalUrl absoluteString] forKey:@"localimage" inMessage:msg];
 	}
 
-	linphone_chat_room_send_message2(chatRoom, msg, message_status, (__bridge void *)(self));
+	linphone_chat_room_send_chat_message(chatRoom, msg);
 	[_tableController addChatEntry:msg];
 	[_tableController scrollToBottom:true];
 
