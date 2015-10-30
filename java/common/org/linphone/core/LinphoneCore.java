@@ -568,6 +568,11 @@ public interface LinphoneCore {
 	public void setContext(Object context);
 
 	/**
+	 * Get the LinphoneCore's global state.
+	**/
+	public GlobalState getGlobalState();
+
+	/**
 	 * clear all added proxy configs
 	 */
 	public void clearProxyConfigs();
@@ -2170,4 +2175,14 @@ public interface LinphoneCore {
 	 * @return The name of the video preset used for video calls (can be null if the default video preset is used).
 	 */
 	public String getVideoPreset();
+
+	/**
+	 * Set a provisioning URI to fetch an xml linphonerc config file from, at next LinphoneCore instantiation.
+	**/
+	public void setProvisioningUri(String uri);
+
+	/**
+	 * Get the provisioning URI previously set.
+    **/
+	public String getProvisioningUri();
 }

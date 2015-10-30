@@ -1987,6 +1987,22 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setRingback(JNIEnv*  env
 
 }
 
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setProvisioningUri(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jstring jpath) {
+	const char* path = jpath?env->GetStringUTFChars(jpath, NULL):NULL;
+	linphone_core_set_provisioning_uri((LinphoneCore*)lc,path);
+	if (path) env->ReleaseStringUTFChars(jpath, path);
+}
+
+extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getProvisioningUri(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	const char* path = linphone_core_get_provisioning_uri((LinphoneCore*)lc);
+	return path ? env->NewStringUTF(path) : NULL;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableKeepAlive(JNIEnv*  env
 																,jobject  thiz
 																,jlong lc
@@ -4003,6 +4019,10 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setSipDscp(JNIEnv* env,j
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getSipDscp(JNIEnv* env,jobject thiz,jlong ptr){
 	return linphone_core_get_sip_dscp((LinphoneCore*)ptr);
+}
+
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getGlobalState(JNIEnv* env,jobject thiz,jlong ptr){
+	return linphone_core_get_global_state((LinphoneCore*)ptr);
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getSignalingTransportPort(JNIEnv* env,jobject thiz,jlong ptr, jint code) {

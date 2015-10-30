@@ -1525,4 +1525,19 @@ class LinphoneCoreImpl implements LinphoneCore {
 		long ptr = createCallParams(nativePtr, callptr);
 		return new LinphoneCallParamsImpl(ptr);
 	}
+	private native void setProvisioningUri(long nativePtr, String uri);
+	@Override
+	public void setProvisioningUri(String uri){
+		setProvisioningUri(nativePtr, uri);
+	}
+
+	private native String getProvisioningUri(long nativePtr);
+	@Override
+	public String getProvisioningUri(){
+		return getProvisioningUri(nativePtr);
+	}
+	private native int getGlobalState(long nativePtr);
+	public GlobalState getGlobalState(){
+		return GlobalState.fromInt(getGlobalState(nativePtr));
+	}
 }
