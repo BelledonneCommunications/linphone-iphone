@@ -39,6 +39,8 @@ extern "C" {
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
 
+#include <ctype.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -407,13 +409,18 @@ static MS2_INLINE int get_remaining_bandwidth_for_video(int total, int audio){
 	return ret;
 }
 
-static MS2_INLINE void set_string(char **dest, const char *src){
+static MS2_INLINE void set_string(char **dest, const char *src, bool_t lowercase){
 	if (*dest){
 		ms_free(*dest);
 		*dest=NULL;
 	}
-	if (src)
+	if (src) {
 		*dest=ms_strdup(src);
+		if (lowercase) {
+			char *cur = *dest;
+			for (; *cur; cur++) *cur = tolower(*cur);
+		}
+	}
 }
 
 #define PAYLOAD_TYPE_ENABLED	PAYLOAD_TYPE_USER_FLAG_0
