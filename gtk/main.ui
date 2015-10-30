@@ -234,6 +234,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="gtk_main_quit" swapped="no"/>
                       </object>
                     </child>
@@ -268,6 +269,7 @@
                         <property name="can_focus">False</property>
                         <property name="image">info_image</property>
                         <property name="use_stock">False</property>
+                        <accelerator key="d" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="linphone_gtk_log_show" swapped="no"/>
                       </object>
                     </child>
