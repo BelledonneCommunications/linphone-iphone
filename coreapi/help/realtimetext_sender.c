@@ -77,7 +77,7 @@ int main(int argc, char *argv[]){
 		/*
 		 Place an outgoing call with rtt enabled
 		*/
-		LinphoneCallParams *cp = linphone_core_create_default_call_parameters(lc);
+		LinphoneCallParams *cp = linphone_core_create_call_params(lc, NULL);
 		linphone_call_params_enable_realtime_text(cp,TRUE); /*enable real time text*/
 		call=linphone_core_invite_with_params(lc,dest,cp);
 		linphone_call_params_destroy(cp);

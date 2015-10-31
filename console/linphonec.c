@@ -359,7 +359,7 @@ static void linphonec_call_state_changed(LinphoneCore *lc, LinphoneCall *call, L
 			if ( auto_answer)  {
 				answer_call=TRUE;
 			} else if (real_early_media_sending) {
-				LinphoneCallParams* callparams = linphone_core_create_default_call_parameters(lc);
+				LinphoneCallParams* callparams = linphone_core_create_call_params(lc, call);
 				linphonec_out("Sending early media using real hardware\n");
 				linphone_call_params_enable_early_media_sending(callparams, TRUE);
 				if (vcap_enabled) linphone_call_params_enable_video(callparams, TRUE);

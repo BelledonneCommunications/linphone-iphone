@@ -509,7 +509,7 @@ static void early_media_call_forking(void) {
 	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	MSList *lcs=NULL;
-	LinphoneCallParams *params=linphone_core_create_default_call_parameters(pauline->lc);
+	LinphoneCallParams *params=linphone_core_create_call_params(pauline->lc, NULL);
 	LinphoneVideoPolicy pol;
 	int dummy=0;
 

@@ -1304,7 +1304,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled) {
 		linphone_core_set_media_encryption_mandatory(pauline->lc, TRUE);
 	}
 
-	marie_params = linphone_core_create_default_call_parameters(marie->lc);
+	marie_params = linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
 	if (!audio_stream_enabled) {
 		linphone_call_params_enable_audio(marie_params,FALSE);
@@ -1359,7 +1359,7 @@ static void real_time_text_conversation(void) {
 	LinphoneChatRoom *pauline_chat_room, *marie_chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	LinphoneCallParams *marie_params = linphone_core_create_default_call_parameters(marie->lc);
+	LinphoneCallParams *marie_params = linphone_core_create_call_params(marie->lc, NULL);
 	LinphoneCall *pauline_call, *marie_call;
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
 

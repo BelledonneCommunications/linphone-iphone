@@ -188,7 +188,7 @@ static void quality_reporting_not_sent_if_low_bandwidth(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallParams* marie_params;
 
-	marie_params=linphone_core_create_default_call_parameters(marie->lc);
+	marie_params=linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_enable_low_bandwidth(marie_params,TRUE);
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, NULL, NULL, marie_params, NULL)) {
@@ -291,9 +291,9 @@ static void quality_reporting_session_report_if_video_stopped(void) {
 	linphone_core_enable_video_display(marie->lc, FALSE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, FALSE);
-	marie_params=linphone_core_create_default_call_parameters(marie->lc);
+	marie_params=linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_enable_video(marie_params,TRUE);
-	pauline_params=linphone_core_create_default_call_parameters(pauline->lc);
+	pauline_params=linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_enable_video(pauline_params,TRUE);
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, marie_params, pauline_params)) {
@@ -371,10 +371,10 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 	linphone_core_enable_video_display(marie->lc, FALSE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, FALSE);
-	marie_params=linphone_core_create_default_call_parameters(marie->lc);
+	marie_params=linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_enable_video(marie_params,TRUE);
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
-	pauline_params=linphone_core_create_default_call_parameters(pauline->lc);
+	pauline_params=linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_enable_video(pauline_params,TRUE);
 	linphone_call_params_enable_realtime_text(pauline_params,TRUE);
 

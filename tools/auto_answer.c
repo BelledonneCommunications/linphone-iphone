@@ -57,7 +57,7 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 		case LinphoneCallIncomingReceived:
 			ms_message("Incoming call arrive  !\n");
 			/* accept the incoming call*/
-			call_params = linphone_core_create_default_call_parameters(lc);
+			call_params = linphone_core_create_call_params(lc, call);
 			linphone_call_params_enable_video(call_params,TRUE);
 			linphone_call_params_set_audio_direction(call_params,LinphoneMediaDirectionSendOnly);
 			linphone_call_params_set_video_direction(call_params,LinphoneMediaDirectionSendOnly);
@@ -70,11 +70,11 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 	}
 }
 extern MSWebCamDesc mire_desc;
-static void helper() {
-	printf("auto_answer --help\n"
+static void helper(const char *progname) {
+	printf("%s --help\n"
 			"\t\t\t--listening-uri <uri> uri to listen on, default [sip:localhost:5060]\n"
 			"\t\t\t--max-call-duration max duration of a call in seconds, default [3600]\n"
-			"\t\t\t--verbose\n");
+			"\t\t\t--verbose\n", progname);
 	exit(0);
 }
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]){
 			addr = linphone_address_new(argv[++i]);
 			if (!addr) {
 				printf("Error, bad sip uri");
-				helper();
+				helper(argv[0]);
 			}
 /*			switch(linphone_address_get_transport(addr)) {
 			case LinphoneTransportUdp:
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]){
 				break;
 			}*/
 		} else {
-			helper();
+			helper(argv[0]);
 		}
 	}
 

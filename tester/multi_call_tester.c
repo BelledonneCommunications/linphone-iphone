@@ -39,8 +39,8 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	MSList* lcs;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* pauline_called_by_laure=NULL;
-	LinphoneCallParams *laure_params=linphone_core_create_default_call_parameters(laure->lc);
-	LinphoneCallParams *marie_params=linphone_core_create_default_call_parameters(marie->lc);
+	LinphoneCallParams *laure_params=linphone_core_create_call_params(laure->lc, NULL);
+	LinphoneCallParams *marie_params=linphone_core_create_call_params(marie->lc, NULL);
 
 	if (enable_caller_privacy)
 		linphone_call_params_set_privacy(marie_params,LinphonePrivacyId);
@@ -118,8 +118,8 @@ static void incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallState
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
 	MSList* lcs;
-	LinphoneCallParams *laure_params=linphone_core_create_default_call_parameters(laure->lc);
-	LinphoneCallParams *marie_params=linphone_core_create_default_call_parameters(marie->lc);
+	LinphoneCallParams *laure_params=linphone_core_create_call_params(laure->lc, NULL);
+	LinphoneCallParams *marie_params=linphone_core_create_call_params(marie->lc, NULL);
 
 	lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);

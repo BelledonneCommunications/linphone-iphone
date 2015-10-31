@@ -118,7 +118,7 @@ static void early_media_video_call_state_changed(LinphoneCore *lc, LinphoneCall 
 	video_call_state_changed(lc, call, cstate, msg);
 	switch (cstate) {
 		case LinphoneCallIncomingReceived:
-			params = linphone_core_create_default_call_parameters(lc);
+			params = linphone_core_create_call_params(lc, call);
 			linphone_call_params_enable_video(params, TRUE);
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendOnly);
 			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionRecvOnly);
@@ -136,7 +136,7 @@ static void early_media_video_call_state_changed_with_inactive_audio(LinphoneCor
 	video_call_state_changed(lc, call, cstate, msg);
 	switch (cstate) {
 		case LinphoneCallIncomingReceived:
-			params = linphone_core_create_default_call_parameters(lc);
+			params = linphone_core_create_call_params(lc, call);
 			linphone_call_params_enable_video(params, TRUE);
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionInactive);
 			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionRecvOnly);
@@ -208,7 +208,7 @@ static LinphoneCallParams * _configure_for_video(LinphoneCoreManager *manager, L
 	linphone_core_set_video_device(manager->lc, "StaticImage: Static picture");
 	linphone_core_enable_video_capture(manager->lc, TRUE);
 	linphone_core_enable_video_display(manager->lc, TRUE);
-	params = linphone_core_create_default_call_parameters(manager->lc);
+	params = linphone_core_create_call_params(manager->lc, NULL);
 	linphone_call_params_enable_video(params, TRUE);
 	if (linphone_core_find_payload_type(manager->lc,"VP8", 90000, -1)!=NULL){
 		disable_all_video_codecs_except_one(manager->lc, "VP8");
@@ -422,7 +422,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	lcs = ms_list_append(lcs,marie2->lc);
 	lcs = ms_list_append(lcs,pauline->lc);
 
-	pauline_params = linphone_core_create_default_call_parameters(pauline->lc);
+	pauline_params = linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_enable_early_media_sending(pauline_params, TRUE);
 	linphone_call_params_enable_video(pauline_params, TRUE);
 	marie1_params = configure_for_early_media_video_receiving_with_inactive_audio(marie1);

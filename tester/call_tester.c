@@ -1179,7 +1179,7 @@ static void call_with_custom_headers(void) {
 	linphone_address_destroy(marie->identity);
 	marie->identity=marie_identity;
 
-	params=linphone_core_create_default_call_parameters(marie->lc);
+	params=linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_add_custom_header(params,"Weather","bad");
 	linphone_call_params_add_custom_header(params,"Working","yes");
 
@@ -1252,7 +1252,7 @@ static void call_with_custom_sdp_attributes(void) {
 	const char *value;
 	LinphoneCoreVTable *vtable;
 
-	pauline_params = linphone_core_create_default_call_parameters(pauline->lc);
+	pauline_params = linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_add_custom_sdp_attribute(pauline_params, "weather", "bad");
 	linphone_call_params_add_custom_sdp_attribute(pauline_params, "working", "yes");
 	linphone_call_params_add_custom_sdp_media_attribute(pauline_params, LinphoneStreamTypeAudio, "sleeping", "almost");
@@ -1408,7 +1408,7 @@ end:
 
 static void call_paused_resumed_with_video_base_call_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
 	if (cstate == LinphoneCallUpdatedByRemote) {
-		LinphoneCallParams *params = linphone_core_create_default_call_parameters(lc);
+		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
 		linphone_call_params_enable_video(params, TRUE);
 		ms_message (" New state LinphoneCallUpdatedByRemote on call [%p], accepting with video on",call);
 		BC_ASSERT_NOT_EQUAL(linphone_core_accept_call_update(lc, call, params), 0, int, "%i");
@@ -1475,7 +1475,7 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
 	}
 	/*now pauline wants to resume*/
 	if (resume_in_audio_send_only_video_inactive_first) {
-		LinphoneCallParams *params = linphone_core_create_default_call_parameters(pauline->lc);
+		LinphoneCallParams *params = linphone_core_create_call_params(pauline->lc, call_pauline);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionInactive);
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendOnly);
 		linphone_core_update_call(pauline->lc,call_pauline,params);
@@ -1963,12 +1963,12 @@ static void call_with_declined_video_base(bool_t using_policy) {
 		linphone_core_set_video_policy(pauline->lc,&pauline_policy);
 	}
 
-	caller_test_params.base=linphone_core_create_default_call_parameters(pauline->lc);
+	caller_test_params.base=linphone_core_create_call_params(pauline->lc, NULL);
 	if (!using_policy)
 		linphone_call_params_enable_video(caller_test_params.base,TRUE);
 
 	if (!using_policy){
-		callee_test_params.base=linphone_core_create_default_call_parameters(marie->lc);
+		callee_test_params.base=linphone_core_create_call_params(marie->lc, NULL);
 		linphone_call_params_enable_video(callee_test_params.base,FALSE);
 	}
 
@@ -2015,9 +2015,9 @@ static void call_with_declined_video_despite_policy(void) {
 	linphone_core_set_video_policy(marie->lc,&marie_policy);
 	linphone_core_set_video_policy(pauline->lc,&pauline_policy);
 
-	caller_test_params.base=linphone_core_create_default_call_parameters(pauline->lc);
+	caller_test_params.base=linphone_core_create_call_params(pauline->lc, NULL);
 
-	callee_test_params.base=linphone_core_create_default_call_parameters(marie->lc);
+	callee_test_params.base=linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_enable_video(callee_test_params.base,FALSE);
 
 	BC_ASSERT_TRUE((call_ok=call_with_params2(pauline,marie,&caller_test_params,&callee_test_params,FALSE)));
@@ -2074,12 +2074,12 @@ void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
 	linphone_core_set_media_encryption(marie->lc,mode);
 	linphone_core_set_media_encryption(pauline->lc,mode);
 
-	caller_test_params.base=linphone_core_create_default_call_parameters(pauline->lc);
+	caller_test_params.base=linphone_core_create_call_params(pauline->lc, NULL);
 	if (!using_policy)
 		linphone_call_params_enable_video(caller_test_params.base,TRUE);
 
 	if (!using_policy){
-		callee_test_params.base=linphone_core_create_default_call_parameters(marie->lc);
+		callee_test_params.base=linphone_core_create_call_params(marie->lc, NULL);
 		linphone_call_params_enable_video(callee_test_params.base,TRUE);
 	}
 
@@ -2428,7 +2428,7 @@ static void call_with_privacy(void) {
 	LinphoneCall *c1,*c2;
 	LinphoneCallParams *params;
 	LinphoneProxyConfig* pauline_proxy;
-	params=linphone_core_create_default_call_parameters(pauline->lc);
+	params=linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_set_privacy(params,LinphonePrivacyId);
 
 	BC_ASSERT_TRUE(call_with_caller_params(pauline,marie,params));
@@ -2483,7 +2483,7 @@ static void call_with_privacy2(void) {
 	LinphoneCall *c1,*c2;
 	LinphoneCallParams *params;
 	LinphoneProxyConfig* pauline_proxy;
-	params=linphone_core_create_default_call_parameters(pauline->lc);
+	params=linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_set_privacy(params,LinphonePrivacyId);
 
 	linphone_core_get_default_proxy(pauline->lc,&pauline_proxy);
@@ -3446,7 +3446,7 @@ static void multiple_early_media(void) {
 	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager* marie2 = linphone_core_manager_new("marie_early_rc");
 	MSList *lcs=NULL;
-	LinphoneCallParams *params=linphone_core_create_default_call_parameters(pauline->lc);
+	LinphoneCallParams *params=linphone_core_create_call_params(pauline->lc, NULL);
 	LinphoneVideoPolicy pol;
 	LinphoneCall *marie1_call;
 	LinphoneCall *marie2_call;
@@ -3616,7 +3616,7 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 	}
 
 	if  (call) {
-		params=linphone_core_create_default_call_parameters(marie->lc);
+		params=linphone_core_create_call_params(marie->lc, NULL);
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionSendOnly);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionSendOnly);
 		linphone_core_accept_call_with_params(marie->lc,call,params);
@@ -3716,8 +3716,8 @@ static void record_call(const char *filename, bool_t enableVideo, const char *vi
 
 	marie = linphone_core_manager_new("marie_h264_rc");
 	pauline = linphone_core_manager_new("pauline_h264_rc");
-	marieParams = linphone_core_create_default_call_parameters(marie->lc);
-	paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
+	marieParams = linphone_core_create_call_params(marie->lc, NULL);
+	paulineParams = linphone_core_create_call_params(pauline->lc, NULL);
 
 #ifdef VIDEO_ENABLED
 	linphone_core_set_video_device(pauline->lc, liblinphone_tester_mire_id);
@@ -3778,8 +3778,8 @@ static void video_call_recording_vp8_test(void) {
 static void video_call_snapshot(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCallParams *marieParams = linphone_core_create_default_call_parameters(marie->lc);
-	LinphoneCallParams *paulineParams = linphone_core_create_default_call_parameters(pauline->lc);
+	LinphoneCallParams *marieParams = linphone_core_create_call_params(marie->lc, NULL);
+	LinphoneCallParams *paulineParams = linphone_core_create_call_params(pauline->lc, NULL);
 	LinphoneCall *callInst = NULL;
 	char *filename = create_filepath(bc_tester_get_writable_dir_prefix(), "snapshot", "jpeg");
 	int dummy = 0;
@@ -3920,7 +3920,7 @@ static void call_log_from_taken_from_p_asserted_id(void) {
 	LpConfig *marie_lp;
 	bool_t call_ok;
 
-	params=linphone_core_create_default_call_parameters(pauline->lc);
+	params=linphone_core_create_call_params(pauline->lc, NULL);
 
 	linphone_call_params_add_custom_header(params,"P-Asserted-Identity",pauline_asserted_id);
 	/*fixme, should be able to add several time the same header linphone_call_params_add_custom_header(params,"P-Asserted-Identity","\"Paupauche\" <tel:+12345>");*/
@@ -4132,7 +4132,7 @@ static void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ic
 	/*
 		Marie calls Pauline, and after the call has rung, transitions to an early_media session
 	*/
-	params = linphone_core_create_default_call_parameters(marie->lc);
+	params = linphone_core_create_call_params(marie->lc, NULL);
 
 	if( use_video){
 

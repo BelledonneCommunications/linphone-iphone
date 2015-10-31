@@ -2746,7 +2746,7 @@ const char * linphone_core_get_route(LinphoneCore *lc){
  * @return a LinphoneCall corresponding to the new call that is attempted to the transfer destination.
 **/
 LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
-	LinphoneCallParams *cp=params ? linphone_call_params_copy(params) : linphone_core_create_default_call_parameters(lc);
+	LinphoneCallParams *cp=params ? linphone_call_params_copy(params) : linphone_core_create_call_params(lc, NULL);
 	LinphoneCall *newcall;
 
 	if (call->state!=LinphoneCallPaused){
@@ -2978,7 +2978,7 @@ int linphone_core_start_invite(LinphoneCore *lc, LinphoneCall *call, const Linph
 **/
 LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url){
 	LinphoneCall *call;
-	LinphoneCallParams *p=linphone_core_create_default_call_parameters (lc);
+	LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
 	p->has_video &= !!lc->video_policy.automatically_initiate;
 	call=linphone_core_invite_with_params(lc,url,p);
 	linphone_call_params_destroy(p);
@@ -3026,7 +3026,7 @@ LinphoneCall * linphone_core_invite_with_params(LinphoneCore *lc, const char *ur
 **/
 LinphoneCall * linphone_core_invite_address(LinphoneCore *lc, const LinphoneAddress *addr){
 	LinphoneCall *call;
-	LinphoneCallParams *p=linphone_core_create_default_call_parameters(lc);
+	LinphoneCallParams *p=linphone_core_create_call_params(lc, NULL);
 	p->has_video &= !!lc->video_policy.automatically_initiate;
 	call=linphone_core_invite_address_with_params (lc,addr,p);
 	linphone_call_params_destroy(p);
@@ -6682,11 +6682,13 @@ LinphoneGlobalState linphone_core_get_global_state(const LinphoneCore *lc){
 	return lc->state;
 }
 
-LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc){
+
+static LinphoneCallParams *_create_call_params(LinphoneCore *lc){
 	LinphoneCallParams *p=linphone_call_params_new();
 	linphone_core_init_default_params(lc, p);
 	return p;
 }
+
 
 /**
  * Create a LinphoneCallParams suitable for linphone_core_invite_with_params(), linphone_core_accept_call_with_params(), linphone_core_accept_early_media_with_params(),
@@ -6698,7 +6700,7 @@ LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *l
  * @ingroup call_control
  */
 LinphoneCallParams *linphone_core_create_call_params(LinphoneCore *lc, LinphoneCall *call){
-	if (!call) return linphone_core_create_default_call_parameters(lc);
+	if (!call) return _create_call_params(lc);
 	return linphone_call_params_copy(call->params);
 }
 

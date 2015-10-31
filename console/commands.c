@@ -564,7 +564,7 @@ lpc_cmd_call(LinphoneCore *lc, char *args)
 	}
 	{
 		LinphoneCall *call;
-		LinphoneCallParams *cp=linphone_core_create_default_call_parameters (lc);
+		LinphoneCallParams *cp=linphone_core_create_call_params (lc, NULL);
 		char *opt1,*opt2;
 		if ( linphone_core_in_call(lc) )
 		{
