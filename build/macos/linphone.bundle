@@ -89,9 +89,25 @@
     ${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/printbackends/*.so
   </binary>
 
-<!-- Starting with 2.24, gdk-pixbuf installs into its own directory. -->
+<!-- Starting with 2.24, gdk-pixbuf installs into its own directory. Do
+     not install the svg pixbuf loader as it does not work. -->
   <binary>
-    ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/*.so
+    ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/libpixbufloader-bmp.so
+  </binary>
+  <binary>
+    ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/libpixbufloader-gif.so
+  </binary>
+  <binary>
+    ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/libpixbufloader-icns.so
+  </binary>
+  <binary>
+    ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/libpixbufloader-ico.so
+  </binary>
+  <binary>
+    ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/libpixbufloader-jpeg.so
+  </binary>
+  <binary>
+    ${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/libpixbufloader-png.so
   </binary>
 
 
@@ -175,10 +191,14 @@
       ${prefix:linphone}/share/sounds/linphone/rings/oldphone.wav
   </data>
 
+  <data dest="${bundle}/Contents/Resources/share/sounds/linphone/rings/toy-mono.wav">
+      ${prefix:linphone}/share/sounds/linphone/rings/toy-mono.wav
+  </data>
+
   <data dest="${bundle}/Contents/Resources/share/sounds/linphone/ringback.wav">
       ${prefix:linphone}/share/sounds/linphone/ringback.wav
   </data>
-  
+
   <data dest="${bundle}/Contents/Resources/share/sounds/linphone/incoming_chat.wav">
       ${prefix:linphone}/share/sounds/linphone/incoming_chat.wav
   </data>

@@ -1,3 +1,12 @@
+linphone-3.9.0 -- November 2nd, 2015
+	* Video recording of calls in MKV format
+	* Clickable URLs in chat view
+	* Add buttons to change the record and playback volumes during a call
+	* Add button to start chatting without having to create a contact first
+	* Some icon changes
+	* Call logs now stored in database
+	* Bug fixes
+
 linphone-3.8.5 -- June 30th, 2015
 	* Fix bug about status icon on MacOSX. Attention request worked only once
 	* Fix crash at the end of the audio assistant

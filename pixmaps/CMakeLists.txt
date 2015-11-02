@@ -52,6 +52,7 @@ install(FILES
 	svg/linphone-security-pending.svg
 	svg/linphone-media-play.svg
 	svg/linphone-media-pause.svg
+	svg/linphone-warning.svg
 	DESTINATION ${ICONS_INSTALL_DIR}/scalable/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )
@@ -100,6 +101,7 @@ install(FILES
 	linphone-security-pending.png
 	linphone-media-play.png
 	linphone-media-pause.png
+	linphone-warning.png
 	DESTINATION ${ICONS_INSTALL_DIR}/48x48/status
 	PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
 )

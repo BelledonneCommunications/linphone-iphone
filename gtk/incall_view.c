@@ -835,7 +835,7 @@ void linphone_gtk_in_call_view_update_duration(LinphoneCall *call){
 	int seconds=duration%60;
 	int minutes=(duration/60)%60;
 	int hours=duration/3600;
-	snprintf(tmp,sizeof(tmp)-1,"%02i::%02i::%02i",hours,minutes,seconds);
+	snprintf(tmp,sizeof(tmp)-1,"%02i:%02i:%02i",hours,minutes,seconds);
 	gtk_label_set_text(GTK_LABEL(duration_label),tmp);
 }
 

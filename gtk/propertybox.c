@@ -267,6 +267,7 @@ void linphone_gtk_fill_video_sizes(GtkWidget *combo){
 void linphone_gtk_parameters_closed(GtkWidget *button){
 	GtkWidget *pb=gtk_widget_get_toplevel(button);
 	gtk_widget_destroy(pb);
+	linphone_gtk_update_status_bar_icons();
 }
 
 void linphone_gtk_update_my_contact(GtkWidget *w){
@@ -1701,7 +1702,7 @@ void linphone_gtk_show_parameters(void){
 				linphone_core_get_upload_bandwidth(lc));
 
 	/* CALL PARAMS CONFIG */
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "auto_answer_checkbox")), linphone_gtk_get_ui_config_int("auto_answer", 0));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb, "auto_answer_checkbox")), linphone_gtk_auto_answer_enabled());
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(linphone_gtk_get_widget(pb, "auto_answer_delay_spinbutton")), linphone_gtk_get_ui_config_int("auto_answer_delay", 2000));
 
 	/* UI CONFIG */
@@ -1895,6 +1896,10 @@ void linphone_gtk_dscp_edit_response(GtkWidget *dialog, guint response_id){
 void linphone_gtk_enable_auto_answer(GtkToggleButton *checkbox, gpointer user_data) {
 	gboolean auto_answer_enabled = gtk_toggle_button_get_active(checkbox);
 	linphone_gtk_set_ui_config_int("auto_answer", auto_answer_enabled ? 1 : 0);
+}
+
+gboolean linphone_gtk_auto_answer_enabled(void) {
+	return (gboolean)linphone_gtk_get_ui_config_int("auto_answer", 0);
 }
 
 void linphone_gtk_auto_answer_delay_changed(GtkSpinButton *spinbutton, gpointer user_data) {

@@ -110,7 +110,6 @@
   <object class="GtkImage" id="properties_image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="yalign">0.49000000953674316</property>
     <property name="stock">gtk-properties</property>
     <property name="icon-size">1</property>
   </object>
@@ -235,6 +234,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <accelerator key="q" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="gtk_main_quit" swapped="no"/>
                       </object>
                     </child>
@@ -269,6 +269,7 @@
                         <property name="can_focus">False</property>
                         <property name="image">info_image</property>
                         <property name="use_stock">False</property>
+                        <accelerator key="d" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="linphone_gtk_log_show" swapped="no"/>
                       </object>
                     </child>
@@ -853,7 +854,6 @@
                               <object class="GtkLabel" id="history_tab_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="yalign">0.49000000953674316</property>
                                 <property name="label" translatable="yes">Recent calls</property>
                               </object>
                               <packing>
@@ -988,15 +988,39 @@
           </packing>
         </child>
         <child>
-          <object class="GtkStatusbar" id="status_bar">
+          <object class="GtkHBox" id="status_bar_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+            <child>
+              <object class="GtkStatusbar" id="status_bar">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="has_resize_grip">False</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkImage" id="autoanswer_icon">
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Autoanswer is enabled</property>
+                <property name="pixel_size">16</property>
+                <property name="icon_name">linphone-warning</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="pack_type">end</property>
             <property name="position">2</property>
           </packing>
         </child>

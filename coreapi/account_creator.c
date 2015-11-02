@@ -201,7 +201,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_username(LinphoneAccou
 	} else if ((status = validate_uri(username, NULL, NULL, NULL)) != LinphoneAccountCreatorOk) {
 		return status;
 	}
-	set_string(&creator->username, username);
+	set_string(&creator->username, username, TRUE);
 	return LinphoneAccountCreatorOk;
 }
 
@@ -214,7 +214,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_password(LinphoneAccou
 	if (min_length > 0 && strlen(password) < min_length) {
 		return LinphoneAccountCreatorPasswordTooShort;
 	}
-	set_string(&creator->password, password);
+	set_string(&creator->password, password, FALSE);
 	return LinphoneAccountCreatorOk;
 }
 
@@ -238,7 +238,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_domain(LinphoneAccount
 	if (validate_uri(NULL, domain, NULL, NULL) != 0) {
 		return LinphoneAccountCreatorDomainInvalid;
 	}
-	set_string(&creator->domain, domain);
+	set_string(&creator->domain, domain, TRUE);
 	return LinphoneAccountCreatorOk;
 }
 
@@ -250,7 +250,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_route(LinphoneAccountC
 	if (validate_uri(NULL, NULL, route, NULL) != 0) {
 		return LinphoneAccountCreatorRouteInvalid;
 	}
-	set_string(&creator->route, route);
+	set_string(&creator->route, route, TRUE);
 	return LinphoneAccountCreatorOk;
 }
 
@@ -262,7 +262,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_display_name(LinphoneA
 	if (validate_uri(NULL, NULL, NULL, display_name) != 0) {
 		return LinphoneAccountCreatorDisplayNameInvalid;
 	}
-	set_string(&creator->display_name, display_name);
+	set_string(&creator->display_name, display_name, FALSE);
 	return LinphoneAccountCreatorOk;
 }
 
@@ -274,7 +274,7 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_email(LinphoneAccountC
 	if (!is_matching_regex(email, "^.+@.+\\.[A-Za-z]{2}[A-Za-z]*$")) {
 		return LinphoneAccountCreatorEmailInvalid;
 	}
-	set_string(&creator->email, email);
+	set_string(&creator->email, email, TRUE);
 	return LinphoneAccountCreatorOk;
 }
 

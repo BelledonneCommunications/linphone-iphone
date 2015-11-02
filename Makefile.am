@@ -226,7 +226,7 @@ Linphone.app:
 	MS2_PLUGINS_INSTALL_PREFIX=$(prefix) \
 	LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX=$(LINPHONE_ADDITIONAL_DEPENDENCIES_PREFIX) \
 	gtk-mac-bundler $(PACKAGE_BUNDLE_FILE)
-	patch -R ${BUNDLEDIR}/Contents/Resources/share/themes/Quartz/gtk-2.0/gtkrc ${srcdir}/build/macos/quartz-theme-gtkrc.patch
+	patch ${BUNDLEDIR}/Contents/Resources/share/themes/Quartz/gtk-2.0/gtkrc ${srcdir}/build/macos/quartz-theme-gtkrc.patch
 	rm -f ${BUNDLEDIR}/Contents/Resources/lib/libopenh264*
 
 bundle: $(MACAPPNAME)

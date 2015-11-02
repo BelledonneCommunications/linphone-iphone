@@ -36,7 +36,8 @@ dist_status48icons_DATA= \
 	linphone-security-ok.png \
 	linphone-security-pending.png \
 	linphone-media-play.png \
-	linphone-media-pause.png
+	linphone-media-pause.png \
+	linphone-warning.png
 
 statussvgiconsdir=$(iconsdir)/scalable/status
 dist_statussvgicons_DATA= \
@@ -63,7 +64,8 @@ dist_statussvgicons_DATA= \
 	svg/linphone-security-ok.svg \
 	svg/linphone-security-pending.svg \
 	svg/linphone-media-play.svg \
-	svg/linphone-media-pause.svg
+	svg/linphone-media-pause.svg \
+	svg/linphone-warning.svg
 
 actions48iconsdir=$(iconsdir)/48x48/actions
 dist_actions48icons_DATA= \
