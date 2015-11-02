@@ -28,7 +28,7 @@
 
 	if (!_errorLabel) {
 		_errorLabel = [[UILabel alloc] initWithFrame:self.frame];
-		_errorLabel.font = [UIFont fontWithName:@"Helvetica" size:11.];
+		_errorLabel.font = [UIFont systemFontOfSize:11];
 		_errorLabel.textColor = [UIColor redColor];
 	}
 	_errorLabel.text = msg;

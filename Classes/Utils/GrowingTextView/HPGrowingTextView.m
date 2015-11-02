@@ -76,24 +76,24 @@
     internalTextView = [[HPTextViewInternal alloc] initWithFrame:r];
     internalTextView.delegate = self;
     internalTextView.scrollEnabled = NO;
-    internalTextView.font = [UIFont fontWithName:@"Helvetica" size:13]; 
-    internalTextView.contentInset = UIEdgeInsetsZero;		
-    internalTextView.showsHorizontalScrollIndicator = NO;
-    internalTextView.text = @"-";
-    [self addSubview:internalTextView];
-    
-    minHeight = internalTextView.frame.size.height;
-    minNumberOfLines = 1;
-    
-    animateHeightChange = YES;
-    animationDuration = 0.1f;
-    
-    internalTextView.text = @"";
-    
-    [self setMaxNumberOfLines:3];
+	internalTextView.font = [UIFont systemFontOfSize:13];
+	internalTextView.contentInset = UIEdgeInsetsZero;
+	internalTextView.showsHorizontalScrollIndicator = NO;
+	internalTextView.text = @"-";
+	[self addSubview:internalTextView];
 
-    [self setPlaceholderColor:[UIColor lightGrayColor]];
-    internalTextView.displayPlaceHolder = YES;
+	minHeight = internalTextView.frame.size.height;
+	minNumberOfLines = 1;
+
+	animateHeightChange = YES;
+	animationDuration = 0.1f;
+
+	internalTextView.text = @"";
+
+	[self setMaxNumberOfLines:3];
+
+	[self setPlaceholderColor:[UIColor lightGrayColor]];
+	internalTextView.displayPlaceHolder = YES;
 }
 
 -(CGSize)sizeThatFits:(CGSize)size

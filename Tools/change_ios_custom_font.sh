@@ -88,10 +88,10 @@ for font in "${fonts[@]}"; do
 	new_font=${font#*:}
 	echo "$system_font -> $new_font"
 
-    find . -name '*.xib' -exec \
-    	sed -E -i.font_backup \
-    		-e "s|<fontDescription key=\"fontDescription\" type=\"$system_font\"|<fontDescription key=\"fontDescription\" name=\"$new_font\" family=\"$newfont_family>\"|g"  \
-    		-e "s|<color key=\"(.*)Color\".*$oldred.*$oldgreen.*$oldblue.*|<color key=\"\\1Color\" red=\"$newred\" green=\"$newgreen\" blue=\"$newblue\" alpha=\"1\" colorSpace=\"deviceRGB\"/>|g" {} \;
+	find . -name '*.xib' -exec \
+		sed -E -i.font_backup \
+			-e "s|<fontDescription key=\"fontDescription\" type=\"$system_font\"|<fontDescription key=\"fontDescription\" name=\"$new_font\" family=\"$newfont_family>\"|g"  \
+			-e "s|<color key=\"(.*)Color\".*$oldred.*$oldgreen.*$oldblue.*|<color key=\"\\1Color\" red=\"$newred\" green=\"$newgreen\" blue=\"$newblue\" alpha=\"1\" colorSpace=\"deviceRGB\"/>|g" {} \;
 done
 
 echo "**********************

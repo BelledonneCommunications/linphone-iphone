@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1536</int>
-		<string key="IBDocument.SystemVersion">14F1021</string>
+		<string key="IBDocument.SystemVersion">15B42</string>
 		<string key="IBDocument.InterfaceBuilderVersion">7706</string>
-		<string key="IBDocument.AppKitVersion">1348.17</string>
-		<string key="IBDocument.HIToolboxVersion">758.70</string>
+		<string key="IBDocument.AppKitVersion">1404.13</string>
+		<string key="IBDocument.HIToolboxVersion">806.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			<string key="NS.object.0">7703</string>
@@ -72,42 +72,15 @@
 							<string key="IBUIAccessibilityLabel">Firstname</string>
 						</object>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<bool key="IBUIUsesAttributedText">YES</bool>
-						<object class="NSAttributedString" key="IBUIAttributedText">
-							<string key="NSString">John Doe</string>
-							<array class="NSMutableArray" key="NSAttributes">
-								<dictionary>
-									<object class="NSColor" key="NSColor" id="281940989">
-										<int key="NSColorSpace">3</int>
-										<bytes key="NSWhite">MAA</bytes>
-									</object>
-									<object class="NSFont" key="NSFont">
-										<string key="NSName">HelveticaNeue</string>
-										<double key="NSSize">25</double>
-										<int key="NSfFlags">16</int>
-									</object>
-									<object class="NSMutableParagraphStyle" key="NSParagraphStyle" id="148133502">
-										<int key="NSLineBreakMode">4</int>
-										<nil key="NSTabStops"/>
-									</object>
-								</dictionary>
-								<dictionary>
-									<reference key="NSColor" ref="281940989"/>
-									<object class="NSFont" key="NSFont">
-										<string key="NSName">HelveticaNeue-Bold</string>
-										<double key="NSSize">25</double>
-										<int key="NSfFlags">16</int>
-									</object>
-									<reference key="NSParagraphStyle" ref="148133502"/>
-								</dictionary>
-							</array>
-							<object class="NSMutableData" key="NSAttributeInfo">
-								<bytes key="NS.bytes">BQADAQ</bytes>
-							</object>
-						</object>
+						<string key="IBUIText">John Doe</string>
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">1</int>
 						<float key="IBUIMinimumFontSize">10</float>
+						<object class="IBUIFontDescription" key="IBUIFontDescription">
+							<int key="type">1</int>
+							<int key="weightCategory">0</int>
+							<double key="pointSize">25</double>
+						</object>
 						<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 					</object>
 					<object class="IBUIImageView" id="647977481">
