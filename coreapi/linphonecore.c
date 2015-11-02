@@ -1609,8 +1609,10 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_speex_nb,"vbr=on",TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcmu8000,NULL,TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcma8000,NULL,TRUE);
-	linphone_core_register_payload_type(lc,&payload_type_t140,NULL,TRUE);
-	linphone_core_register_payload_type(lc,&payload_type_t140_red,NULL,TRUE);
+	
+	/* Text codecs in order or preference (RED first (more robust), then T140) */
+	linphone_core_register_payload_type(lc, &payload_type_t140_red, NULL, TRUE);
+	linphone_core_register_payload_type(lc, &payload_type_t140, NULL, TRUE);
 
 	/*other audio codecs, not enabled by default, in order of preference*/
 	linphone_core_register_payload_type(lc,&payload_type_gsm,NULL,FALSE);

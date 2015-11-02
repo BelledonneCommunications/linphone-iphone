@@ -297,6 +297,8 @@ bool_t is_payload_type_number_available(const MSList *l, int number, const Paylo
 static void linphone_core_assign_payload_type_numbers(LinphoneCore *lc, MSList *codecs){
 	MSList *elem;
 	int dyn_number=lc->codecs_conf.dyn_pt;
+	int t140_payload_type_number = 0;
+	
 	for (elem=codecs; elem!=NULL; elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		int number=payload_type_get_number(pt);
@@ -321,6 +323,18 @@ static void linphone_core_assign_payload_type_numbers(LinphoneCore *lc, MSList *
 			if (dyn_number==127){
 				ms_error("Too many payload types configured ! codec %s/%i is disabled.", pt->mime_type, pt->clock_rate);
 				payload_type_set_enable(pt, FALSE);
+			}
+		}
+		if (strcmp(pt->mime_type, payload_type_t140_red.mime_type) == 0) {
+			if (number == -1) {
+				t140_payload_type_number = dyn_number;
+			} else {
+				t140_payload_type_number = number;
+			}
+			
+			if (t140_payload_type_number > 0) {
+				const char *red_fmtp = ms_strdup_printf("%i/%i/%i", t140_payload_type_number, t140_payload_type_number, t140_payload_type_number);
+				payload_type_set_recv_fmtp(pt, red_fmtp);
 			}
 		}
 	}
