@@ -812,23 +812,43 @@ static void linphone_chat_room_send_is_composing_notification(LinphoneChatRoom *
 	}
 }
 
+static char* utf8_to_char(uint32_t ic) {
+	char *result = ms_malloc(sizeof(char) * 5);
+	int size = 0;
+	if (ic < 0x80) {
+		result[0] = ic;
+		size = 1;
+	} else if (ic < 0x800) {
+		result[1] = 0x80 + ((ic & 0x3F));
+		result[0] = 0xC0 + ((ic >> 6) & 0x1F);
+		size = 2;
+	} else if (ic < 0x100000) {
+		result[2] = 0x80 + (ic & 0x3F);
+		result[1] = 0x80 + ((ic >> 6) & 0x3F);
+		result[0] = 0xE0 + ((ic >> 12) & 0xF);
+		size = 3;
+	} else if (ic < 0x110000) {
+		result[3] = 0x80 + (ic & 0x3F);
+		result[2] = 0x80 + ((ic >> 6) & 0x3F);
+		result[1] = 0x80 + ((ic >> 12) & 0x3F);
+		result[0] = 0xF0 + ((ic >> 18) & 0x7);
+		size = 4;
+	}
+	result[size] = '\0';
+	return result;
+}
+
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call) {
 	uint32_t new_line = 0x2028;
 	uint32_t crlf = 0x0D0A;
 	uint32_t lf = 0x0A;
 	
 	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
-		char *value = NULL;
 		LinphoneChatMessageCharacter *cmc = ms_new0(LinphoneChatMessageCharacter, 1);
 		
 		if (cr->pending_message == NULL) {
 			cr->pending_message = linphone_chat_room_create_message(cr, "");
 		}
-
-		value = ms_strdup_printf("%c%c%c%c",((char*)&character)[0],((char*)&character)[1],((char*)&character)[2],((char*)&character)[3]);
-		cr->pending_message->message = ms_strcat_printf(cr->pending_message->message, value);
-		ms_message("Received RTT character: %s (%lu), pending text is %s", value, (unsigned long)character, cr->pending_message->message);
-		ms_free(value);
 
 		cmc->value = character;
 		cmc->has_been_read = FALSE;
@@ -860,6 +880,11 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 			linphone_chat_message_unref(msg);
 			cr->pending_message = NULL;
 			cr->received_rtt_characters = ms_list_free(cr->received_rtt_characters);
+		} else {
+			char *value = utf8_to_char(character);
+			cr->pending_message->message = ms_strcat_printf(cr->pending_message->message, value);
+			ms_message("Received RTT character: %s (%lu), pending text is %s", value, (unsigned long)character, cr->pending_message->message);
+			ms_free(value);
 		}
 	}
 }
