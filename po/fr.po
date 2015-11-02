@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Belledonne Communications <support@belledonne-communications.com>, 2015
 # Gautier Pelloux-Prayer <gautier.pelloux@gmail.com>, 2014
@@ -13,15 +13,13 @@ msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-29 17:24+0100\n"
-"PO-Revision-Date: 2015-10-23 09:32+0000\n"
-"Last-Translator: Belledonne Communications <support@belledonne-"
-"communications.com>\n"
-"Language-Team: French (http://www.transifex.com/belledonne-communications/"
-"linphone-gtk/language/fr/)\n"
-"Language: fr\n"
+"PO-Revision-Date: 2015-10-29 16:23+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
+"Language-Team: French (http://www.transifex.com/belledonne-communications/linphone-gtk/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../gtk/calllogs.c:178
@@ -83,9 +81,7 @@ msgstr[1] "%i secondes"
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
-msgstr ""
-"<small><i>%s</i>\t<i>Qualité: %s</i></small>\n"
-"%s\t%s\t"
+msgstr "<small><i>%s</i>\t<i>Qualité: %s</i></small>\n%s\t%s\t"
 
 #: ../gtk/calllogs.c:358
 #, c-format
@@ -106,13 +102,12 @@ msgid "Couldn't find pixmap file: %s"
 msgstr "Icone non trouvée: %s"
 
 #: ../gtk/chat.c:196 ../gtk/chat.c:254
-#, fuzzy
 msgid "Sending..."
-msgstr "En attente"
+msgstr "Envoi en cours..."
 
 #: ../gtk/chat.c:213 ../gtk/chat.c:263
 msgid "Message not sent"
-msgstr ""
+msgstr "Message non envoyé"
 
 #: ../gtk/chat.c:472
 msgid "Copy"
@@ -144,11 +139,9 @@ msgstr "adresse à appeler maintenant"
 
 #: ../gtk/main.c:144
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: c:"
-"\\Program Files\\Linphone)"
-msgstr ""
-"Spécifie un répertoire de travail (qui devrait être le répertoire "
-"d'installation, par exemple c:\\Program Files\\Linphone)"
+"Specifiy a working directory (should be the base of the installation, eg: "
+"c:\\Program Files\\Linphone)"
+msgstr "Spécifie un répertoire de travail (qui devrait être le répertoire d'installation, par exemple c:\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:145
 msgid "Configuration file"
@@ -166,24 +159,16 @@ msgstr "Exécuter le test local et retourner 0 en cas de succès"
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
-"Would you add him/her to your contact list and allow him/her to see your "
-"presence status?\n"
+"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr ""
-"%s souhaite vous ajouter à sa liste de contact.\n"
-"Souhaitez vous l'ajouter à votre liste également et l'autoriser à voir votre "
-"information de présence  ?\n"
-"Si vous répondez non, cette personne sera mise temporairement sur liste "
-"noire."
+msgstr "%s souhaite vous ajouter à sa liste de contact.\nSouhaitez vous l'ajouter à votre liste également et l'autoriser à voir votre information de présence  ?\nSi vous répondez non, cette personne sera mise temporairement sur liste noire."
 
 #: ../gtk/main.c:1123
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
-msgstr ""
-"Entrez le mot de passe pour <i>%s</i>\n"
-" sur le domaine <i>%s</i>:"
+msgstr "Entrez le mot de passe pour <i>%s</i>\n sur le domaine <i>%s</i>:"
 
 #: ../gtk/main.c:1248
 msgid "Call error"
@@ -245,9 +230,7 @@ msgstr "Transfert vers %s"
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
-msgstr ""
-"Aucune carte son n'a été détectée sur cet ordinateur.\n"
-"Vous ne pourrez pas effectuer d'appels audio."
+msgstr "Aucune carte son n'a été détectée sur cet ordinateur.\nVous ne pourrez pas effectuer d'appels audio."
 
 #: ../gtk/main.c:2124
 msgid "A free SIP video-phone"
@@ -411,9 +394,7 @@ msgstr "Turc"
 #: ../gtk/propertybox.c:1246
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr ""
-"La nouvelle selection de langue prendra effet au prochain démarrage de "
-"linphone."
+msgstr "La nouvelle selection de langue prendra effet au prochain démarrage de linphone."
 
 #: ../gtk/propertybox.c:1326
 msgid "None"
@@ -436,10 +417,7 @@ msgstr "ZRTP"
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr ""
-"Une version plus récente est disponible sur %s.\n"
-"Voulez vous ouvrir le navigateur afin de pouvoir télécharger la dernière "
-"version ?"
+msgstr "Une version plus récente est disponible sur %s.\nVoulez vous ouvrir le navigateur afin de pouvoir télécharger la dernière version ?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -539,9 +517,7 @@ msgstr "Directe ou via un serveur"
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
-msgstr ""
-"débit descendant : %f\n"
-"débit ascendant : %f (kbits/s)"
+msgstr "débit descendant : %f\ndébit ascendant : %f (kbits/s)"
 
 #: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
 #, c-format
@@ -656,9 +632,7 @@ msgstr "Pause"
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
-msgstr ""
-"<small><i>Enregistrement dans\n"
-"%s %s</i></small>"
+msgstr "<small><i>Enregistrement dans\n%s %s</i></small>"
 
 #: ../gtk/incall_view.c:995
 msgid "(Paused)"
@@ -711,10 +685,7 @@ msgstr "Impossible de démarrer le contrôleur système du son"
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
-msgstr ""
-"Bienvenue !\n"
-"Cet assistant va vous aider à régler les paramètres audio de votre "
-"ordinateur pour une utilisation optimale avec Linphone."
+msgstr "Bienvenue !\nCet assistant va vous aider à régler les paramètres audio de votre ordinateur pour une utilisation optimale avec Linphone."
 
 #: ../gtk/audio_assistant.c:335
 msgid "Capture device"
@@ -867,7 +838,7 @@ msgstr "Mon identité SIP :"
 
 #: ../gtk/main.ui.h:23
 msgid "Autoanswer is enabled"
-msgstr ""
+msgstr "Décrochage automatique activé"
 
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
@@ -895,19 +866,7 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr ""
-"fr: Simon Morlat\n"
-"en: Simon Morlat and Delphine Perreau\n"
-"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
-"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
-"sv: Daniel Nylander <po@danielnylander.se>\n"
-"es: Jesus Benitez <gnelson at inMail dot sk>\n"
-"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
-"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
-"pl: Robert Nasiadek <darkone@darkone.pl>\n"
-"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
-"hu: anonymous\n"
-"he: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -1091,9 +1050,7 @@ msgstr "Réglages"
 
 #: ../gtk/parameters.ui.h:18
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr ""
-"Cette rubrique permet de définir son adresse SIP lorsqu'on ne possède pas de "
-"compte SIP"
+msgstr "Cette rubrique permet de définir son adresse SIP lorsqu'on ne possède pas de compte SIP"
 
 #: ../gtk/parameters.ui.h:19
 msgid "Your display name (eg: John Doe):"
@@ -1231,10 +1188,7 @@ msgstr "Activer le control de débit adaptatif."
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
-msgstr ""
-"<i>Le control de débit adaptatif est une technique pour adapter la qualité "
-"de l'audio et de la video en fonction de la bande passante disponible, "
-"durant l'appel.</i>"
+msgstr "<i>Le control de débit adaptatif est une technique pour adapter la qualité de l'audio et de la video en fonction de la bande passante disponible, durant l'appel.</i>"
 
 #: ../gtk/parameters.ui.h:53
 msgid "<b>Bandwidth control</b>"
@@ -1607,17 +1561,9 @@ msgstr "Spécifier une URI de configuration"
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to "
-"be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, "
-"Linphone will restart automatically in order to fetch and take into account "
-"the new configuration. "
-msgstr ""
-"Cette boite de dialogue vous permet de spécifier une addresse http ou https "
-"où la configuration doit être téléchargée au démarrage.\n"
-"Veuillez entrer l'URI http(s) ci dessous. Après avoir validé, Linphone va "
-"redémarrer automatiquement pour charger et prendre en compte la nouvelle "
-"configuration."
+"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+msgstr "Cette boite de dialogue vous permet de spécifier une addresse http ou https où la configuration doit être téléchargée au démarrage.\nVeuillez entrer l'URI http(s) ci dessous. Après avoir validé, Linphone va redémarrer automatiquement pour charger et prendre en compte la nouvelle configuration."
 
 #: ../gtk/provisioning-fetch.ui.h:1
 msgid "Configuring..."
@@ -1625,9 +1571,7 @@ msgstr "Configuration en cours"
 
 #: ../gtk/provisioning-fetch.ui.h:2
 msgid "Please wait while fetching configuration from server..."
-msgstr ""
-"Veuillez patenter un instant pendant le chargement de la configuration "
-"distante..."
+msgstr "Veuillez patenter un instant pendant le chargement de la configuration distante..."
 
 #: ../gtk/chatroom_frame.ui.h:1
 msgid "Send"
@@ -1810,18 +1754,13 @@ msgstr "Status inconnu"
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr ""
-"L'adresse SIP du proxy est invalide. Elle doit commencer par \"sip:\" suivie "
-"par un nom de domaine."
+msgstr "L'adresse SIP du proxy est invalide. Elle doit commencer par \"sip:\" suivie par un nom de domaine."
 
 #: ../coreapi/proxy.c:298
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr ""
-"L'identité SIP que vous avez fourni est invalide.\n"
-"Elle doit être de la forme sip:utilisateur@domaine, comme par exemple sip:"
-"alice@example.net"
+msgstr "L'identité SIP que vous avez fourni est invalide.\nElle doit être de la forme sip:utilisateur@domaine, comme par exemple sip:alice@example.net"
 
 #: ../coreapi/proxy.c:927
 msgid "Looking for telephone number destination..."
@@ -1985,12 +1924,7 @@ msgid ""
 "To: %s\n"
 "Status: %s\n"
 "Duration: %i mn %i sec\n"
-msgstr ""
-"%s à %s\n"
-"De : %s\n"
-"Vers : %s\n"
-"Status : %s\n"
-"Durée : %i min %i sec\n"
+msgstr "%s à %s\nDe : %s\nVers : %s\nStatus : %s\nDurée : %i min %i sec\n"
 
 #: ../coreapi/call_log.c:235
 msgid "Outgoing call"
@@ -2000,7 +1934,3 @@ msgstr "Appel sortant"
 #, c-format
 msgid "Cannot play %s."
 msgstr "Impossibde de jouer %s."
-
-#, fuzzy
-#~ msgid "Encryption status"
-#~ msgstr "Status inconnu"

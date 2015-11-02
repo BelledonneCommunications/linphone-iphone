@@ -1,22 +1,20 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-29 17:24+0100\n"
-"PO-Revision-Date: 2015-10-23 09:09+0000\n"
-"Last-Translator: Belledonne Communications <support@belledonne-"
-"communications.com>\n"
-"Language-Team: Swedish (http://www.transifex.com/belledonne-communications/"
-"linphone-gtk/language/sv/)\n"
-"Language: sv\n"
+"PO-Revision-Date: 2015-10-29 16:23+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
+"Language-Team: Swedish (http://www.transifex.com/belledonne-communications/linphone-gtk/language/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../gtk/calllogs.c:178
@@ -99,9 +97,8 @@ msgid "Couldn't find pixmap file: %s"
 msgstr "Kunde inte hitta pixmap filen: %s"
 
 #: ../gtk/chat.c:196 ../gtk/chat.c:254
-#, fuzzy
 msgid "Sending..."
-msgstr "Pågående"
+msgstr ""
 
 #: ../gtk/chat.c:213 ../gtk/chat.c:263
 msgid "Message not sent"
@@ -137,11 +134,9 @@ msgstr "Samtalsmottagare"
 
 #: ../gtk/main.c:144
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: c:"
-"\\Program Files\\Linphone)"
-msgstr ""
-"Välj en arbetskatalog som ska vara basen för installationen, såsom C:"
-"\\Program\\Linphone"
+"Specifiy a working directory (should be the base of the installation, eg: "
+"c:\\Program Files\\Linphone)"
+msgstr "Välj en arbetskatalog som ska vara basen för installationen, såsom C:\\Program\\Linphone"
 
 #: ../gtk/main.c:145
 msgid "Configuration file"
@@ -159,8 +154,7 @@ msgstr ""
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
-"Would you add him/her to your contact list and allow him/her to see your "
-"presence status?\n"
+"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
@@ -418,9 +412,7 @@ msgstr ""
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr ""
-"En nyare version är tillgänglig på %s.\n"
-"Vill du öppna en browser för att ladda ner den?"
+msgstr "En nyare version är tillgänglig på %s.\nVill du öppna en browser för att ladda ner den?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -1053,8 +1045,7 @@ msgstr "Inställningar"
 
 #: ../gtk/parameters.ui.h:18
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr ""
-"Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
+msgstr "Denna sektion specificerar din SIP adress när du inte använder ett SIP konto"
 
 #: ../gtk/parameters.ui.h:19
 msgid "Your display name (eg: John Doe):"
@@ -1565,11 +1556,8 @@ msgstr ""
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to "
-"be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, "
-"Linphone will restart automatically in order to fetch and take into account "
-"the new configuration. "
+"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
 msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:1
@@ -1761,17 +1749,13 @@ msgstr ""
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr ""
-"SIP proxy adressen som du matade in är inte rätt, adressen måste starta med "
-"\"sip:\", följd av ett hostnamn"
+msgstr "SIP proxy adressen som du matade in är inte rätt, adressen måste starta med \"sip:\", följd av ett hostnamn"
 
 #: ../coreapi/proxy.c:298
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr ""
-"SIP adressen som du matade in är inte rätt. Adressen borde se ut som sip:"
-"namn@domän, såsom sip:peter@exempel.se"
+msgstr "SIP adressen som du matade in är inte rätt. Adressen borde se ut som sip:namn@domän, såsom sip:peter@exempel.se"
 
 #: ../coreapi/proxy.c:927
 msgid "Looking for telephone number destination..."

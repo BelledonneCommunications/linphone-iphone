@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Heimen Stoffels <vistausss@outlook.com>, 2015
 msgid ""
@@ -9,15 +9,13 @@ msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-29 17:24+0100\n"
-"PO-Revision-Date: 2015-10-23 09:09+0000\n"
-"Last-Translator: Belledonne Communications <support@belledonne-"
-"communications.com>\n"
-"Language-Team: Dutch (http://www.transifex.com/belledonne-communications/"
-"linphone-gtk/language/nl/)\n"
-"Language: nl\n"
+"PO-Revision-Date: 2015-10-29 16:23+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
+"Language-Team: Dutch (http://www.transifex.com/belledonne-communications/linphone-gtk/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../gtk/calllogs.c:178
@@ -79,9 +77,7 @@ msgstr[1] "%i seconden"
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
-msgstr ""
-"<small><i>%s</i>\t<i>Kwaliteit: %s</i></small>\n"
-"%s\t%s\t"
+msgstr "<small><i>%s</i>\t<i>Kwaliteit: %s</i></small>\n%s\t%s\t"
 
 #: ../gtk/calllogs.c:358
 #, c-format
@@ -102,9 +98,8 @@ msgid "Couldn't find pixmap file: %s"
 msgstr "Het pixmap-bestand %s kon niet worden gevonden"
 
 #: ../gtk/chat.c:196 ../gtk/chat.c:254
-#, fuzzy
 msgid "Sending..."
-msgstr "Bezig met verbinden..."
+msgstr ""
 
 #: ../gtk/chat.c:213 ../gtk/chat.c:263
 msgid "Message not sent"
@@ -116,9 +111,7 @@ msgstr ""
 
 #: ../gtk/main.c:138
 msgid "log to stdout some debug information while running."
-msgstr ""
-"loggen naar stdout om wat foutopsporingsinformatie te verkrijgen tijdens "
-"uitvoeren."
+msgstr "loggen naar stdout om wat foutopsporingsinformatie te verkrijgen tijdens uitvoeren."
 
 #: ../gtk/main.c:139
 msgid "display version and exit."
@@ -142,11 +135,9 @@ msgstr "adres om nu naar toe te bellen"
 
 #: ../gtk/main.c:144
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: c:"
-"\\Program Files\\Linphone)"
-msgstr ""
-"Specificeer een werkmap (dit moet de basis van uw installatie zijn, bijv.: C:"
-"\\Program Files\\Linphone)"
+"Specifiy a working directory (should be the base of the installation, eg: "
+"c:\\Program Files\\Linphone)"
+msgstr "Specificeer een werkmap (dit moet de basis van uw installatie zijn, bijv.: C:\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:145
 msgid "Configuration file"
@@ -164,8 +155,7 @@ msgstr "Draai een zelftest en exit 0 wanneer succesvol"
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
-"Would you add him/her to your contact list and allow him/her to see your "
-"presence status?\n"
+"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
 msgstr ""
 
@@ -174,9 +164,7 @@ msgstr ""
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
-msgstr ""
-"Vul uw wachtwoord in voor gebruikersnaam <i>%s</i>\n"
-"op realm <i>%s</i>"
+msgstr "Vul uw wachtwoord in voor gebruikersnaam <i>%s</i>\nop realm <i>%s</i>"
 
 #: ../gtk/main.c:1248
 msgid "Call error"
@@ -238,9 +226,7 @@ msgstr "We zijn overgeschakeld naar %s"
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
-msgstr ""
-"Er zijn geluidskaarten aangetroffen op deze computer.\n"
-"U zult niet in staat zijn om audio-oproepen te ontvangen of versturen."
+msgstr "Er zijn geluidskaarten aangetroffen op deze computer.\nU zult niet in staat zijn om audio-oproepen te ontvangen of versturen."
 
 #: ../gtk/main.c:2124
 msgid "A free SIP video-phone"
@@ -404,8 +390,7 @@ msgstr ""
 #: ../gtk/propertybox.c:1246
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr ""
-"U moet linphone herstarten om de nieuw geselecteerde taal toe te passen."
+msgstr "U moet linphone herstarten om de nieuw geselecteerde taal toe te passen."
 
 #: ../gtk/propertybox.c:1326
 msgid "None"
@@ -428,9 +413,7 @@ msgstr "ZRTP"
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr ""
-"Er is een nieuwere versie beschikbaar op %s.\n"
-"Wilt een webbrowser openen en deze downloaden?"
+msgstr "Er is een nieuwere versie beschikbaar op %s.\nWilt een webbrowser openen en deze downloaden?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -530,9 +513,7 @@ msgstr "Direct of via een server"
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
-msgstr ""
-"download: %f\n"
-"upload: %f (kbit/s)"
+msgstr "download: %f\nupload: %f (kbit/s)"
 
 #: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
 #, c-format
@@ -700,10 +681,7 @@ msgstr "Het systeemgeluidspaneel kon niet worden gestart"
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
-msgstr ""
-"Welkom!\n"
-"Deze instelwizard zal u begeleiden bij het instellen van de audio-"
-"instellingen van Linphone"
+msgstr "Welkom!\nDeze instelwizard zal u begeleiden bij het instellen van de audio-instellingen van Linphone"
 
 #: ../gtk/audio_assistant.c:335
 msgid "Capture device"
@@ -868,9 +846,7 @@ msgstr "(C) Belledonne Communications, 2010\n"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr ""
-"Een internetvideotelefoon gebruikmakende van het standaard SIP (rfc3261) "
-"protocol."
+msgstr "Een internetvideotelefoon gebruikmakende van het standaard SIP (rfc3261) protocol."
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -886,19 +862,7 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr ""
-"fr: Simon Morlat\n"
-"en: Simon Morlat and Delphine Perreau\n"
-"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
-"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
-"sv: Daniel Nylander <po@danielnylander.se>\n"
-"es: Jesus Benitez <gnelson at inMail dot sk>\n"
-"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
-"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
-"pl: Robert Nasiadek <darkone@darkone.pl>\n"
-"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
-"hu: anonymous\n"
-"he: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -910,8 +874,7 @@ msgstr "De aanwezigheidsstatus van dit contactpersoon weergeven"
 
 #: ../gtk/contact.ui.h:4
 msgid "Allow this contact to see my presence status"
-msgstr ""
-"Toestaan dat deze contactpersoon mijn aanwezigheidsstatus kan weergeven"
+msgstr "Toestaan dat deze contactpersoon mijn aanwezigheidsstatus kan weergeven"
 
 #: ../gtk/contact.ui.h:5
 msgid "<b>Contact information</b>"
@@ -1594,11 +1557,8 @@ msgstr ""
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to "
-"be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, "
-"Linphone will restart automatically in order to fetch and take into account "
-"the new configuration. "
+"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
 msgstr ""
 
 #: ../gtk/provisioning-fetch.ui.h:1

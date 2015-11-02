@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Мирослав Николић <miroslavnikolic@rocketmail.com>, 2014
 msgid ""
@@ -9,17 +9,14 @@ msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-29 17:24+0100\n"
-"PO-Revision-Date: 2015-10-23 09:09+0000\n"
-"Last-Translator: Belledonne Communications <support@belledonne-"
-"communications.com>\n"
-"Language-Team: Serbian (http://www.transifex.com/belledonne-communications/"
-"linphone-gtk/language/sr/)\n"
-"Language: sr\n"
+"PO-Revision-Date: 2015-10-29 16:23+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
+"Language-Team: Serbian (http://www.transifex.com/belledonne-communications/linphone-gtk/language/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: sr\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: ../gtk/calllogs.c:178
 #, c-format
@@ -82,9 +79,7 @@ msgstr[2] "%i секунди"
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
-msgstr ""
-"<small><i>%s</i>\t<i>Квалитет: %s</i></small>\n"
-"%s\t%s\t"
+msgstr "<small><i>%s</i>\t<i>Квалитет: %s</i></small>\n%s\t%s\t"
 
 #: ../gtk/calllogs.c:358
 #, c-format
@@ -105,9 +100,8 @@ msgid "Couldn't find pixmap file: %s"
 msgstr "Не могу да пронађем датотеку сличице: %s"
 
 #: ../gtk/chat.c:196 ../gtk/chat.c:254
-#, fuzzy
 msgid "Sending..."
-msgstr "На чекању"
+msgstr ""
 
 #: ../gtk/chat.c:213 ../gtk/chat.c:263
 msgid "Message not sent"
@@ -143,11 +137,9 @@ msgstr "адреса за позивање управо сада"
 
 #: ../gtk/main.c:144
 msgid ""
-"Specifiy a working directory (should be the base of the installation, eg: c:"
-"\\Program Files\\Linphone)"
-msgstr ""
-"Наводи радни директоријум (треба да буде основа инсталације, нпр: „c:"
-"\\Program Files\\Linphone“)"
+"Specifiy a working directory (should be the base of the installation, eg: "
+"c:\\Program Files\\Linphone)"
+msgstr "Наводи радни директоријум (треба да буде основа инсталације, нпр: „c:\\Program Files\\Linphone“)"
 
 #: ../gtk/main.c:145
 msgid "Configuration file"
@@ -165,24 +157,16 @@ msgstr "Покреће самоиспробавање и излази 0 ако �
 #, c-format
 msgid ""
 "%s would like to add you to his/her contact list.\n"
-"Would you add him/her to your contact list and allow him/her to see your "
-"presence status?\n"
+"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr ""
-"%s жели да вас дода на свој списак контакта.\n"
-"Да ли желите да га/је додате на ваш списак контакта и да му/јој омогућите да "
-"види ваше стање присуства?\n"
-"Ако одговорите негативно, ова особа ће тренутно бити стављена на списак "
-"забрањених."
+msgstr "%s жели да вас дода на свој списак контакта.\nДа ли желите да га/је додате на ваш списак контакта и да му/јој омогућите да види ваше стање присуства?\nАко одговорите негативно, ова особа ће тренутно бити стављена на списак забрањених."
 
 #: ../gtk/main.c:1123
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
-msgstr ""
-"Унесите вашу лозинку за корисничко име <i>%s</i>\n"
-" на подручју <i>%s</i>:"
+msgstr "Унесите вашу лозинку за корисничко име <i>%s</i>\n на подручју <i>%s</i>:"
 
 #: ../gtk/main.c:1248
 msgid "Call error"
@@ -244,9 +228,7 @@ msgstr "Преселили смо се на %s"
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
-msgstr ""
-"Ниједна звучна картица није откривена на овом рачунару.\n"
-"Нећете бити у могућности да шаљете или да примате звучне позиве."
+msgstr "Ниједна звучна картица није откривена на овом рачунару.\nНећете бити у могућности да шаљете или да примате звучне позиве."
 
 #: ../gtk/main.c:2124
 msgid "A free SIP video-phone"
@@ -410,8 +392,7 @@ msgstr "Турски"
 #: ../gtk/propertybox.c:1246
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr ""
-"Треба поново да покренете линфон да би нови изабрани језик ступио у дејство."
+msgstr "Треба поново да покренете линфон да би нови изабрани језик ступио у дејство."
 
 #: ../gtk/propertybox.c:1326
 msgid "None"
@@ -434,9 +415,7 @@ msgstr "ЗРТП"
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr ""
-"Новије издање је доступно са „%s“.\n"
-"Да ли желите да отворите прегледник и да га преузмете ?"
+msgstr "Новије издање је доступно са „%s“.\nДа ли желите да отворите прегледник и да га преузмете ?"
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
@@ -537,9 +516,7 @@ msgstr "Непосредно или кроз сервер"
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
-msgstr ""
-"преузимање: %f\n"
-"отпремање: %f (kbit/s)"
+msgstr "преузимање: %f\nотпремање: %f (kbit/s)"
 
 #: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
 #, c-format
@@ -654,9 +631,7 @@ msgstr "Застани"
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
-msgstr ""
-"<small><i>Снимам у\n"
-"%s %s</i></small>"
+msgstr "<small><i>Снимам у\n%s %s</i></small>"
 
 #: ../gtk/incall_view.c:995
 msgid "(Paused)"
@@ -709,9 +684,7 @@ msgstr "Не могу да покренем управљање звуком си
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
-msgstr ""
-"Добро дошли!\n"
-"Овај помоћник ће вам помоћи да подесите поставке звука за Линфон"
+msgstr "Добро дошли!\nОвај помоћник ће вам помоћи да подесите поставке звука за Линфон"
 
 #: ../gtk/audio_assistant.c:335
 msgid "Capture device"
@@ -876,8 +849,7 @@ msgstr "(C) Беледоне комуникације, 2010\n"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr ""
-"Интернет телефон са снимком који користи уобичајени СИП протокол (rfc3261)."
+msgstr "Интернет телефон са снимком који користи уобичајени СИП протокол (rfc3261)."
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -893,20 +865,7 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr ""
-"fr: Simon Morlat\n"
-"en: Simon Morlat and Delphine Perreau\n"
-"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
-"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
-"sv: Daniel Nylander <po@danielnylander.se>\n"
-"es: Jesus Benitez <gnelson at inMail dot sk>\n"
-"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
-"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
-"pl: Robert Nasiadek <darkone@darkone.pl>\n"
-"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
-"hu: anonymous\n"
-"he: Eli Zaretskii <eliz@gnu.org>\n"
-"sr: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\nsr: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
@@ -1228,9 +1187,7 @@ msgstr "Укључи прилагодљиво управљање протоко�
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
-msgstr ""
-"<i>Прилагодљиво управљање протоком је техника за променљиво погађање "
-"доступног пропусног опсега за време позива.</i>"
+msgstr "<i>Прилагодљиво управљање протоком је техника за променљиво погађање доступног пропусног опсега за време позива.</i>"
 
 #: ../gtk/parameters.ui.h:53
 msgid "<b>Bandwidth control</b>"
@@ -1603,17 +1560,9 @@ msgstr "Наводим удаљену путању подешавања"
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
-"This dialog allows to set an http or https address when configuration is to "
-"be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, "
-"Linphone will restart automatically in order to fetch and take into account "
-"the new configuration. "
-msgstr ""
-"Ово прозорче омогућава подешавање хттп или хттпс адресе када се подешавање "
-"добавља на покретању.\n"
-"Унесите или измените путању подешавања. Након што притиснете „У реду“, "
-"Линфон ће се сам поново покренути како би довукао и унео у налог нова "
-"подешавања. "
+"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+msgstr "Ово прозорче омогућава подешавање хттп или хттпс адресе када се подешавање добавља на покретању.\nУнесите или измените путању подешавања. Након што притиснете „У реду“, Линфон ће се сам поново покренути како би довукао и унео у налог нова подешавања. "
 
 #: ../gtk/provisioning-fetch.ui.h:1
 msgid "Configuring..."
@@ -1804,18 +1753,13 @@ msgstr "Непознато стање"
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr ""
-"Адреса сип посредника коју сте унели је неисправна, мора почети на „sip:“ за "
-"којим следи назив домаћина."
+msgstr "Адреса сип посредника коју сте унели је неисправна, мора почети на „sip:“ за којим следи назив домаћина."
 
 #: ../coreapi/proxy.c:298
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr ""
-"Сип идентитет који сте унели није исправан.\n"
-"Треба да буде у облику „sip:корисник@домен-посредника“, као што је „sip:"
-"alice@example.net“"
+msgstr "Сип идентитет који сте унели није исправан.\nТреба да буде у облику „sip:корисник@домен-посредника“, као што је „sip:alice@example.net“"
 
 #: ../coreapi/proxy.c:927
 msgid "Looking for telephone number destination..."
@@ -1980,12 +1924,7 @@ msgid ""
 "To: %s\n"
 "Status: %s\n"
 "Duration: %i mn %i sec\n"
-msgstr ""
-"%s на %s\n"
-"Позивач: %s\n"
-"Позивник: %s\n"
-"Стање: %s\n"
-"Трајање: %i мин. %i сек.\n"
+msgstr "%s на %s\nПозивач: %s\nПозивник: %s\nСтање: %s\nТрајање: %i мин. %i сек.\n"
 
 #: ../coreapi/call_log.c:235
 msgid "Outgoing call"
@@ -1995,7 +1934,3 @@ msgstr "Одлазни позив"
 #, c-format
 msgid "Cannot play %s."
 msgstr "Не могу да пустим „%s“."
-
-#, fuzzy
-#~ msgid "Encryption status"
-#~ msgstr "Непознато стање"
