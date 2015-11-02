@@ -915,7 +915,10 @@
                                 <property name="model">model1</property>
                                 <signal name="changed" handler="linphone_gtk_capture_device_changed" swapped="no"/>
                                 <child>
-                                  <object class="GtkCellRendererText" id="renderer2"/>
+                                  <object class="GtkCellRendererText" id="renderer2">
+                                    <property name="ellipsize">end</property>
+                                    <property name="width_chars">80</property>
+                                  </object>
                                   <attributes>
                                     <attribute name="text">0</attribute>
                                   </attributes>
@@ -937,7 +940,10 @@
                                 <property name="model">model2</property>
                                 <signal name="changed" handler="linphone_gtk_ring_device_changed" swapped="no"/>
                                 <child>
-                                  <object class="GtkCellRendererText" id="renderer3"/>
+                                  <object class="GtkCellRendererText" id="renderer3">
+                                    <property name="ellipsize">end</property>
+                                    <property name="width_chars">80</property>
+                                  </object>
                                   <attributes>
                                     <attribute name="text">0</attribute>
                                   </attributes>
@@ -1013,7 +1019,10 @@
                                 <property name="model">model3</property>
                                 <signal name="changed" handler="linphone_gtk_playback_device_changed" swapped="no"/>
                                 <child>
-                                  <object class="GtkCellRendererText" id="renderer4"/>
+                                  <object class="GtkCellRendererText" id="renderer4">
+                                    <property name="ellipsize">end</property>
+                                    <property name="width_chars">80</property>
+                                  </object>
                                   <attributes>
                                     <attribute name="text">0</attribute>
                                   </attributes>
