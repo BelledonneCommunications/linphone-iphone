@@ -608,7 +608,13 @@ struct _LinphoneChatRoom{
 	belle_sip_source_t *composing_refresh_timer;
 	LinphoneCall *call;
 	LinphoneChatMessage *pending_message;
+	MSList *received_rtt_characters;
 };
+
+typedef struct _LinphoneChatMessageCharacter {
+	uint32_t value;
+	bool_t has_been_read;
+} LinphoneChatMessageCharacter;
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatRoom);
 

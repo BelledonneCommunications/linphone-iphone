@@ -1335,6 +1335,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled) {
 				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
 			}
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
 		}
 
 		if (!audio_stream_enabled) {
@@ -1462,6 +1463,61 @@ static void real_time_text_srtp(void) {
 	real_time_text(TRUE, TRUE);
 }
 
+static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_lf) {
+	LinphoneChatRoom *pauline_chat_room;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCallParams *marie_params = NULL;
+	LinphoneCall *pauline_call, *marie_call;
+
+	marie_params = linphone_core_create_call_params(marie->lc, NULL);
+	linphone_call_params_enable_realtime_text(marie_params,TRUE);
+	
+	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
+	pauline_call=linphone_core_get_current_call(pauline->lc);
+	marie_call=linphone_core_get_current_call(marie->lc);
+	if (pauline_call) {
+		BC_ASSERT_TRUE(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(pauline_call)));
+
+		pauline_chat_room = linphone_call_get_chat_room(pauline_call);
+		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
+		if (pauline_chat_room) {
+			const char* message = "Lorem Ipsum Belledonnum Communicatum";
+			int i;
+			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
+			uint32_t crlf = 0x0D0A;
+			uint32_t lf = 0x0A;
+
+			for (i = 0; i < strlen(message); i++) {
+				linphone_chat_message_put_char(rtt_message, message[i]);
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
+				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
+			}
+			
+			if (end_with_crlf) {
+				linphone_chat_message_put_char(rtt_message, crlf);
+			} else if (end_with_lf) {
+				linphone_chat_message_put_char(rtt_message, lf);
+			}
+			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, strlen(message), 1000));
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+		}
+		end_call(marie, pauline);
+	}
+	linphone_call_params_destroy(marie_params);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void real_time_text_message_compat_crlf() {
+	real_time_text_message_compat(TRUE, FALSE);
+}
+
+static void real_time_text_message_compat_lf() {
+	real_time_text_message_compat(FALSE, TRUE);
+}
+
 void file_transfer_with_http_proxy(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -1514,6 +1570,8 @@ test_t message_tests[] = {
 	{"Real Time Text conversation", real_time_text_conversation},
 	{"Real Time Text without audio", real_time_text_without_audio},
 	{"Real Time Text with srtp", real_time_text_srtp},
+	{"Real Time Text message compatibility crlf", real_time_text_message_compat_crlf},
+	{"Real Time Text message compatibility lf", real_time_text_message_compat_lf},
 };
 
 test_suite_t message_test_suite = {
