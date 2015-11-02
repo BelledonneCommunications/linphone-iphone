@@ -10,18 +10,18 @@
 #import "PhoneMainView.h"
 
 @implementation UIConfirmationDialog
-
 + (UIConfirmationDialog *)ShowWithMessage:(NSString *)message
 							cancelMessage:(NSString *)cancel
 						   confirmMessage:(NSString *)confirm
 							onCancelClick:(UIConfirmationBlock)onCancel
-					  onConfirmationClick:(UIConfirmationBlock)onConfirm {
+					  onConfirmationClick:(UIConfirmationBlock)onConfirm
+							 inController:(UIViewController *)controller {
 	UIConfirmationDialog *dialog =
 		[[UIConfirmationDialog alloc] initWithNibName:NSStringFromClass(self.class) bundle:NSBundle.mainBundle];
 
 	dialog.view.frame = PhoneMainView.instance.mainViewController.view.frame;
-	[PhoneMainView.instance.mainViewController.view addSubview:dialog.view];
-	[PhoneMainView.instance.mainViewController addChildViewController:dialog];
+	[controller.view addSubview:dialog.view];
+	[controller addChildViewController:dialog];
 
 	dialog->onCancelCb = onCancel;
 	dialog->onConfirmCb = onConfirm;
@@ -39,6 +39,19 @@
 	dialog.cancelButton.layer.borderColor =
 		[[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_F.png"]] CGColor];
 	return dialog;
+}
+
++ (UIConfirmationDialog *)ShowWithMessage:(NSString *)message
+							cancelMessage:(NSString *)cancel
+						   confirmMessage:(NSString *)confirm
+							onCancelClick:(UIConfirmationBlock)onCancel
+					  onConfirmationClick:(UIConfirmationBlock)onConfirm {
+	return [self ShowWithMessage:message
+				   cancelMessage:cancel
+				  confirmMessage:confirm
+				   onCancelClick:onCancel
+			 onConfirmationClick:onConfirm
+					inController:PhoneMainView.instance.mainViewController];
 }
 
 - (IBAction)onCancelClick:(id)sender {

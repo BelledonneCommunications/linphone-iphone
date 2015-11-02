@@ -96,6 +96,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		hiddenVolume = FALSE;
 	}
 
+	if (videoDismissTimer) {
+		[self dismissVideoActionSheet:videoDismissTimer];
+		[videoDismissTimer invalidate];
+		videoDismissTimer = nil;
+	}
+
 	// Remove observer
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
 }
@@ -284,7 +290,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		hideControlsTimer = nil;
 	}
 
-	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription] && videoShown) {
+	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription]) {
 		// show controls
 
 		[UIView beginAnimations:nil context:nil];
@@ -317,7 +323,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		hideControlsTimer = nil;
 	}
 
-	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription] && videoShown) {
+	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription]) {
 		[PhoneMainView.instance showTabBar:false];
 		[PhoneMainView.instance showStatusBar:false];
 
@@ -674,30 +680,36 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 	NSString *username = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
 	NSString *title = [NSString stringWithFormat:NSLocalizedString(@"%@ would like to enable video", nil), username];
-	NSTimer *timer;
 	UIConfirmationDialog *sheet = [UIConfirmationDialog ShowWithMessage:title
 		cancelMessage:nil
 		confirmMessage:NSLocalizedString(@"ACCEPT", nil)
 		onCancelClick:^() {
 		  LOGI(@"User declined video proposal");
-		  LinphoneCallParams *paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
-		  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
-		  linphone_call_params_destroy(paramsCopy);
-		  [timer invalidate];
+		  if (call == linphone_core_get_current_call([LinphoneManager getLc])) {
+			  LinphoneCallParams *paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
+			  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
+			  linphone_call_params_destroy(paramsCopy);
+			  [videoDismissTimer invalidate];
+			  videoDismissTimer = nil;
+		  }
 		}
 		onConfirmationClick:^() {
 		  LOGI(@"User accept video proposal");
-		  LinphoneCallParams *paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
-		  linphone_call_params_enable_video(paramsCopy, TRUE);
-		  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
-		  linphone_call_params_destroy(paramsCopy);
-		  [timer invalidate];
-		}];
-	timer = [NSTimer scheduledTimerWithTimeInterval:30
-											 target:self
-										   selector:@selector(dismissVideoActionSheet:)
-										   userInfo:sheet
-											repeats:NO];
+		  if (call == linphone_core_get_current_call([LinphoneManager getLc])) {
+			  LinphoneCallParams *paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
+			  linphone_call_params_enable_video(paramsCopy, TRUE);
+			  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
+			  linphone_call_params_destroy(paramsCopy);
+			  [videoDismissTimer invalidate];
+			  videoDismissTimer = nil;
+		  }
+		}
+		inController:self];
+	videoDismissTimer = [NSTimer scheduledTimerWithTimeInterval:30
+														 target:self
+													   selector:@selector(dismissVideoActionSheet:)
+													   userInfo:sheet
+														repeats:NO];
 }
 
 - (void)dismissVideoActionSheet:(NSTimer *)timer {

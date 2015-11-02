@@ -39,6 +39,7 @@
   @private
 	UITapGestureRecognizer *singleFingerTap;
 	NSTimer *hideControlsTimer;
+	NSTimer *videoDismissTimer;
 	BOOL videoShown;
 	VideoZoomHandler *videoZoomHandler;
 }

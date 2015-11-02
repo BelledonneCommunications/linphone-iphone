@@ -347,8 +347,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)call:(NSString *)address {
-	ABRecordRef contact = [FastAddressBook getContact:address];
-	NSString *displayName = contact ? [FastAddressBook displayNameForContact:contact] : nil;
+	LinphoneAddress *addr = linphone_address_new(address.UTF8String);
+	NSString *displayName = addr ? [FastAddressBook displayNameForAddress:addr] : nil;
+	if (addr)
+		linphone_address_destroy(addr);
 	[self call:address displayName:displayName];
 }
 

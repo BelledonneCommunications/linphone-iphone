@@ -231,6 +231,9 @@
 		[callSecurityTimer invalidate];
 		callSecurityTimer = nil;
 	}
+	if (securityDialog) {
+		[securityDialog dismiss];
+	}
 
 	// if we are in call, we have to update quality and security icons every sec
 	if (inCall) {

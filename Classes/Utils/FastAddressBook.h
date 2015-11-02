@@ -36,7 +36,6 @@
 
 // TOOLS
 
-+ (ABRecordRef)getContact:(NSString *)address;
 + (ABRecordRef)getContactWithAddress:(const LinphoneAddress *)address;
 
 + (UIImage *)imageForContact:(ABRecordRef)contact thumbnail:(BOOL)thumbnail;
