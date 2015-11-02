@@ -75,12 +75,14 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 							   postNotificationName:kLinphoneFileTransferRecvUpdate
 											 object:thiz
 										   userInfo:@{
-											   @"state" : @(linphone_chat_message_get_state(message)),
+											   @"state" : @(LinphoneChatMessageStateDelivered), // we dont want to
+																								// trigger
+																								// FileTransferDone here
 											   @"image" : image,
-											   @"progress" :
-												   @([thiz.data length] * 1.f / linphone_content_get_size(content)),
+											   @"progress" : @(1.f),
 										   }];
 
+						   [thiz stopAndDestroy];
 						   CFRelease((__bridge CFTypeRef)thiz);
 						 }];
 	} else {

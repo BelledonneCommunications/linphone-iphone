@@ -32,6 +32,7 @@
 @property(weak, nonatomic) IBOutlet UIProgressView *fileTransferProgress;
 @property(weak, nonatomic) IBOutlet UIButton *cancelButton;
 @property(weak, nonatomic) IBOutlet UIView *imageSubView;
+@property(weak, nonatomic) IBOutlet UIView *totalView;
 
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 - (void)connectToFileDelegate:(FileTransferDelegate *)ftd;

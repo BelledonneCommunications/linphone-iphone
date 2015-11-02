@@ -57,11 +57,9 @@
 		return;
 	}
 
-	[self disconnectFromFileDelegate];
 	_messageImageView.image = nil;
 	_fileTransferProgress.progress = 0;
-
-	[super setChatMessage:amessage];
+	[self disconnectFromFileDelegate];
 
 	if (amessage) {
 		const LinphoneContent *c = linphone_chat_message_get_file_transfer_information(amessage);
@@ -70,15 +68,18 @@
 			for (FileTransferDelegate *aftd in [[LinphoneManager instance] fileTransferDelegates]) {
 				if (linphone_chat_message_get_file_transfer_information(aftd.message) &&
 					strcmp(name, linphone_content_get_name(
-									 linphone_chat_message_get_file_transfer_information(amessage))) == 0) {
-					LOGI(@"Chat message [%p] with file transfer delegate [%p], connecting to it!", amessage, aftd);
-					[self connectToFileDelegate:aftd];
+									 linphone_chat_message_get_file_transfer_information(aftd.message))) == 0) {
+					if (ftd != aftd) {
+						LOGI(@"Chat message [%p] with file transfer delegate [%p], connecting to it!", amessage, aftd);
+						[self connectToFileDelegate:aftd];
+					}
 					break;
 				}
 			}
 		}
 	}
-	[self update];
+
+	[super setChatMessage:amessage];
 }
 
 - (void)update {
@@ -88,19 +89,11 @@
 	}
 	[super update];
 
-	LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
-	if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
-		if (ftd) {
-			[ftd stopAndDestroy];
-			ftd = nil;
-		}
-	}
-
 	const char *url = linphone_chat_message_get_external_body_url(self.message);
 	BOOL is_external =
 		(url && (strstr(url, "http") == url)) || linphone_chat_message_get_file_transfer_information(self.message);
 	NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
-
+	BOOL fullScreenImage = NO;
 	assert(is_external || localImage);
 	if (localImage) {
 		// we did not load the image yet, so start doing so
@@ -134,18 +127,23 @@
 			_downloadButton.hidden = YES;
 		} else {
 			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
+			fullScreenImage = YES;
 		}
 		// we must download the image: either it has already started (show cancel button) or not yet (show download
 		// button)
 	} else {
-		//		CGRect newFrame = _imageSubView.frame;
-		//		newFrame.origin.y = _messageImageView.frame.origin.y + ((ftd.message == nil) ? 0 :
-		//_messageImageView.frame.size.height);
-		//		_imageSubView.frame = newFrame;
 		_messageImageView.hidden = _cancelButton.hidden = (ftd.message == nil);
 		_downloadButton.hidden = !_cancelButton.hidden;
 		_fileTransferProgress.hidden = NO;
 	}
+
+	// resize image so that it take the full bubble space available
+	CGRect newFrame = _totalView.frame;
+	newFrame.origin.x = newFrame.origin.y = 0;
+	if (!fullScreenImage) {
+		newFrame.size.height -= _imageSubView.frame.size.height;
+	}
+	_messageImageView.frame = newFrame;
 }
 
 - (IBAction)onDownloadClick:(id)event {
@@ -188,7 +186,6 @@
 
 - (void)connectToFileDelegate:(FileTransferDelegate *)aftd {
 	ftd = aftd;
-	//	assert(ftd.message == self.message);
 	_fileTransferProgress.progress = 0;
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -219,7 +216,8 @@
 		_fileTransferProgress.progress = MAX(_fileTransferProgress.progress, progress);
 		_fileTransferProgress.hidden = _cancelButton.hidden = (_fileTransferProgress.progress == 1.f);
 	} else {
-		[self update];
+		ChatConversationView *view = VIEW(ChatConversationView);
+		[view.tableController updateChatEntry:self.message];
 	}
 }
 - (void)onFileTransferRecvUpdate:(NSNotification *)notif {
@@ -229,7 +227,8 @@
 		_fileTransferProgress.progress = MAX(_fileTransferProgress.progress, progress);
 		_fileTransferProgress.hidden = _cancelButton.hidden = (_fileTransferProgress.progress == 1.f);
 	} else {
-		[self update];
+		ChatConversationView *view = VIEW(ChatConversationView);
+		[view.tableController updateChatEntry:self.message];
 	}
 }
 

@@ -202,10 +202,7 @@
 }
 #pragma mark - State changed handling
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
-	UIChatBubbleTextCell *thiz = (__bridge UIChatBubbleTextCell *)linphone_chat_message_get_user_data(msg);
 	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
-	[thiz update];
-
 	ChatConversationView *view = VIEW(ChatConversationView);
 	[view.tableController updateChatEntry:msg];
 }
