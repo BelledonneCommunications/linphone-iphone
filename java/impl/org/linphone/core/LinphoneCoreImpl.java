@@ -106,7 +106,6 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native int getFirewallPolicy(long nativePtr);
 	private native void setStunServer(long nativePtr, String stun_server);
 	private native String getStunServer(long nativePtr);
-	private native long createDefaultCallParams(long nativePtr);
 	private native int updateCall(long ptrLc, long ptrCall, long ptrParams);
 	private native int getUploadBandwidth(long nativePtr);
 	private native void setUploadBandwidth(long nativePtr, int bw);
@@ -496,10 +495,6 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public synchronized void setStunServer(String stunServer) {
 		setStunServer(nativePtr,stunServer);
-	}
-
-	public synchronized LinphoneCallParams createDefaultCallParameters() {
-		return new LinphoneCallParamsImpl(createDefaultCallParams(nativePtr));
 	}
 
 	public synchronized LinphoneCall inviteAddressWithParams(LinphoneAddress to, LinphoneCallParams params) throws LinphoneCoreException {

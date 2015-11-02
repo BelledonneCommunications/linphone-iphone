@@ -1129,12 +1129,6 @@ public interface LinphoneCore {
 	 * @return 0 if successful, -1 otherwise.
 	**/
 	int updateCall(LinphoneCall call, LinphoneCallParams params);
-	/**
-	 * Get default call parameters reflecting current linphone core configuration
-	 * @return  LinphoneCallParams
-	 * @deprecated use LinphoneCore.createCallParams().
-	 */
-	LinphoneCallParams createDefaultCallParameters();
 
 	/**
 	 * Create a LinphoneCallParams suitable to be used for a new incoming call or an established call, in

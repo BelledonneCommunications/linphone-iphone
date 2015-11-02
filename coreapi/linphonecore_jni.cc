@@ -3797,9 +3797,6 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallParamsImpl_setVideoDir
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_destroy(JNIEnv *env, jobject thiz, jlong lc){
 	return linphone_call_params_destroy((LinphoneCallParams*)lc);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createDefaultCallParams(JNIEnv *env, jobject thiz, jlong lc){
-	return (jlong) linphone_core_create_default_call_parameters((LinphoneCore*)lc);
-}
 
 /*
  * Class:     org_linphone_core_LinphoneCoreImpl
