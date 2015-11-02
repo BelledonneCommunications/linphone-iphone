@@ -47,7 +47,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                 </imageView>
-                                <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter SIP address or phone number" adjustsFontSizeToFit="NO" minimumFontSize="5" id="4" userLabel="addressField" customClass="UIAddressTextField">
+                                <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter a number or an address" adjustsFontSizeToFit="NO" minimumFontSize="5" id="4" userLabel="addressField" customClass="UIAddressTextField">
                                     <rect key="frame" x="31" y="0.0" width="288" height="63"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>

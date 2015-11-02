@@ -430,9 +430,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
-	NSString *msg =
-		[NSString stringWithFormat:NSLocalizedString(@"Are you sure that you want to delete %d messages?", nil),
-								   _tableController.selectedItems.count];
+	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected message?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil
 		confirmMessage:nil

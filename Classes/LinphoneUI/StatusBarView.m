@@ -182,7 +182,7 @@
 	} else if (config == NULL) {
 		state = LinphoneRegistrationNone;
 		if (linphone_core_is_network_reachable([LinphoneManager getLc]))
-			message = NSLocalizedString(@"No SIP account configured", nil);
+			message = NSLocalizedString(@"No account configured", nil);
 		else
 			message = NSLocalizedString(@"Network down", nil);
 	} else {
