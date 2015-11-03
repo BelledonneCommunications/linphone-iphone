@@ -29,6 +29,9 @@
       <placeholder/>
     </child>
     <child>
+      <placeholder/>
+    </child>
+    <child>
       <object class="GtkLabel" id="page0">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -715,7 +718,6 @@ Please go back and try again.</property>
       </object>
       <packing>
         <property name="title" translatable="yes">Error</property>
-        <property name="complete">True</property>
       </packing>
     </child>
     <child>
