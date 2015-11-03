@@ -34,6 +34,7 @@
 @property(weak, nonatomic) IBOutlet UIImageView *bottomBarColor;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 @property(strong, nonatomic) IBOutlet UIView *bubbleView;
+@property(strong, nonatomic) IBOutlet UITapGestureRecognizer *resendRecognizer;
 
 - (CGSize)viewSizeWithWidth:(int)width;
 

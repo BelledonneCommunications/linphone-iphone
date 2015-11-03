@@ -42,13 +42,13 @@
 #pragma mark - tools
 
 - (void)removeAllRooms {
+	if (![tester tryFindingTappableViewWithAccessibilityLabel:@"Edit" error:nil])
+		return;
+
 	[tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
-	while (
-		[tester tryFindingTappableViewWithAccessibilityLabel:@"Delete" traits:UIAccessibilityTraitButton error:nil]) {
-		[tester tapViewWithAccessibilityLabel:@"Delete" traits:UIAccessibilityTraitButton];
-	}
-	[tester tapViewWithAccessibilityLabel:@"Edit"
-								   traits:UIAccessibilityTraitButton]; // same as the first but it is "OK" on screen
+	[tester tapViewWithAccessibilityLabel:@"Select all" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"Delete all" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
 }
 
 - (void)goBackFromChat {
@@ -56,8 +56,11 @@
 }
 
 - (void)startChatWith:(NSString *)user {
-	[tester enterText:user intoViewWithAccessibilityLabel:@"Enter a address"];
-	[tester tapViewWithAccessibilityLabel:@"New Discussion"];
+	[tester tapViewWithAccessibilityLabel:@"New discussion"];
+	[tester clearTextFromFirstResponder];
+	[tester enterTextIntoCurrentFirstResponder:user];
+	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+		inTableViewWithAccessibilityIdentifier:@"Suggested addresses"];
 }
 
 - (void)sendMessage:(NSString *)message {
@@ -72,15 +75,14 @@
 	[tester tapViewWithAccessibilityLabel:@"Send picture"];
 	[tester tapViewWithAccessibilityLabel:@"Photo library"];
 	// if popup "Linphone would access your photo" pops up, click OK.
-	if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusNotDetermined) {
 #if TARGET_IPHONE_SIMULATOR
-		[tester acknowledgeSystemAlert];
+	if ([tester acknowledgeSystemAlert]) {
 		[tester waitForTimeInterval:1];
-#endif
 	}
+#endif
 
 	// select random photo to avoid having the same multiple times
-	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 column:1 + messagesCount % 4];
+	[tester choosePhotoInAlbum:@"Camera Roll" atRow:2 column:2 + (messagesCount % 2)];
 
 	// wait for the quality popup to show up
 	[tester waitForTimeInterval:1];
@@ -110,9 +112,9 @@
 #pragma mark - tests
 
 - (void)testChatFromContactPhoneNumber {
-	[tester tapViewWithAccessibilityLabel:@"New Discussion"];
+	[tester tapViewWithAccessibilityLabel:@"Contacts"];
 	[tester tapViewWithAccessibilityLabel:@"Anna Haro"];
-	[tester tapViewWithAccessibilityLabel:@"home, 555-522-8243"];
+	[tester tapViewWithAccessibilityLabel:@"Chat with 555-522-8243"];
 	[self goBackFromChat];
 	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
@@ -122,7 +124,6 @@
 }
 
 - (void)testInvalidSIPAddress {
-
 	[self startChatWith:@"sip://toto"];
 
 	[tester waitForViewWithAccessibilityLabel:@"Invalid address" traits:UIAccessibilityTraitStaticText];
@@ -139,13 +140,16 @@
 									   traits:UIAccessibilityTraitImage];
 
 	[tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
-	[tester tapViewWithAccessibilityLabel:@"Checkbox"];
+	[tester waitForViewWithAccessibilityLabel:@"Checkbox" value:@"Deselected" traits:UIAccessibilityTraitButton];
+	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+		inTableViewWithAccessibilityIdentifier:@"ChatRoom list"];
+	[tester waitForViewWithAccessibilityLabel:@"Checkbox" value:@"Selected" traits:UIAccessibilityTraitButton];
 	[tester tapViewWithAccessibilityLabel:@"Delete all"];
 	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
 
 	// check that the tableview is empty
-	UITableView *tv =
-		[self findTableView:@"ChatRoom list"] ASSERT_EQ([tv numberOfRowsInSection:0], 0); // no more messages
+	UITableView *tv = [self findTableView:@"ChatRoom list"];
+	ASSERT_EQ([tv numberOfRowsInSection:0], 0); // no more messages
 
 	[self goBackFromChat];
 }
@@ -184,8 +188,8 @@
 		}
 	}
 
-	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message, Unread message number"
-										value:[NSString stringWithFormat:@"%@ - Message %d (%d)", self.me, count, count]
+	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message"
+										value:[NSString stringWithFormat:@"%@, Message %d (%d)", self.me, count, count]
 									   traits:UIAccessibilityTraitStaticText];
 
 	NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
@@ -197,7 +201,7 @@
 }
 
 - (void)testRemoveAllChats {
-	NSArray *uuids = [self getUUIDArrayOfSize:5];
+	NSArray *uuids = [self getUUIDArrayOfSize:3];
 
 	for (NSString *uuid in uuids) {
 		[self startChatWith:uuid];
@@ -205,18 +209,13 @@
 		[self goBackFromChat];
 	}
 
-	[tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
+	UITableView *tv = [self findTableView:@"Chat list"];
 
-	// we expect to be able to delete at least the amount of chatrooms we created
-	for (int i = 0; i < uuids.count; i++) {
-		[tester tapViewWithAccessibilityLabel:@"Delete" traits:UIAccessibilityTraitButton];
-	}
+	ASSERT_EQ([tv numberOfRowsInSection:0], uuids.count);
 
-	[tester tapViewWithAccessibilityLabel:@"Edit"
-								   traits:UIAccessibilityTraitButton]; // same as the first but it is "OK" on screen
+	[self removeAllRooms];
 
 	// check that the tableview is empty
-	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 0);
 
 	// test that there's no more chatrooms in the core
@@ -227,11 +226,9 @@
 	[self startChatWith:[self me]];
 
 	[self sendMessage:@"Hello"];
-
 	[tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
 	[tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
-
-	[tester waitForViewWithAccessibilityLabel:@"Message status" value:@"delivered" traits:UIAccessibilityTraitImage];
+	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Message status"];
 
 	[self goBackFromChat];
 }
@@ -246,7 +243,33 @@
 	[self goBackFromChat];
 }
 
-- (void)testTransfer2TransfersSimultanously {
+- (void)testTransferCancelDownloadImage {
+	[self downloadImage];
+	[tester tapViewWithAccessibilityLabel:@"Cancel"];
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+}
+
+- (void)testTransferCancelUploadImage {
+	[self startChatWith:[self me]];
+	[self uploadImageWithQuality:@"Minimum"];
+	[tester tapViewWithAccessibilityLabel:@"Cancel"];
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+}
+
+- (void)testTransferDestroyRoomWhileUploading {
+	[self startChatWith:[self me]];
+	[self uploadImageWithQuality:@"Maximum"];
+	[self goBackFromChat];
+	[self removeAllRooms];
+}
+
+- (void)testTransferDownloadImage {
+	[self downloadImage];
+	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Cancel"];
+	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
+}
+
+- (void)testTransferSimultanouslyDownload {
 	[self startChatWith:[self me]];
 	[self uploadImageWithQuality:@"Minimum"];
 	[self uploadImageWithQuality:@"Minimum"];
@@ -275,32 +298,6 @@
 		[tester waitForTimeInterval:.5];
 	}
 	[self goBackFromChat];
-}
-
-- (void)testTransferCancelDownloadImage {
-	[self downloadImage];
-	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
-}
-
-- (void)testTransferCancelUploadImage {
-	[self startChatWith:[self me]];
-	[self uploadImageWithQuality:@"Minimum"];
-	[tester tapViewWithAccessibilityLabel:@"Cancel transfer"];
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
-}
-
-- (void)testTransferDestroyRoomWhileUploading {
-	[self startChatWith:[self me]];
-	[self uploadImageWithQuality:@"Maximum"];
-	[self goBackFromChat];
-	[self removeAllRooms];
-}
-
-- (void)testTransferDownloadImage {
-	[self downloadImage];
-	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Cancel transfer"];
-	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
 
 @end

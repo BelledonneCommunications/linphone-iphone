@@ -27,6 +27,8 @@
 		[self.allContacts addObject:ref];
 	}
 	[_searchBar becomeFirstResponder];
+
+	self.tableView.accessibilityIdentifier = @"Suggested addresses";
 }
 
 - (void)reloadDataWithFilter:(NSString *)filter {
@@ -81,7 +83,7 @@
 		[ContactDisplay setDisplayNameLabel:cell.displayNameLabel forAddress:addr];
 	} else {
 		cell.displayNameLabel.text = _contacts[indexPath.row];
-		cell.addressLabel.text = NSLocalizedString(@"Invalid address", nil);
+		cell.addressLabel.text = NSLocalizedString(@"Invalid SIP address", nil);
 	}
 	return cell;
 }
@@ -90,10 +92,20 @@
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri([LinphoneManager getLc],
 																  ((NSString *)_contacts[indexPath.row]).UTF8String);
-	ChatConversationView *view = VIEW(ChatConversationView);
-	[view setChatRoom:room];
-	[PhoneMainView.instance popCurrentView];
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+	if (!room) {
+		[PhoneMainView.instance popCurrentView];
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid address", nil)
+														message:@"Please specify the entire SIP address for the chat"
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+											  otherButtonTitles:nil];
+		[alert show];
+	} else {
+		ChatConversationView *view = VIEW(ChatConversationView);
+		[view setChatRoom:room];
+		[PhoneMainView.instance popCurrentView];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+	}
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {

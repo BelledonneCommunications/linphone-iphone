@@ -217,8 +217,6 @@
 		639111BF1BE2532100E6C772 /* chat_attachment_over@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 639110521BE2531F00E6C772 /* chat_attachment_over@2x.png */; };
 		639111C01BE2532100E6C772 /* chat_list_indicator.png in Resources */ = {isa = PBXBuildFile; fileRef = 639110531BE2531F00E6C772 /* chat_list_indicator.png */; };
 		639111C11BE2532100E6C772 /* chat_list_indicator@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 639110541BE2531F00E6C772 /* chat_list_indicator@2x.png */; };
-		639111C21BE2532100E6C772 /* chat_message_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 639110551BE2531F00E6C772 /* chat_message_delivered.png */; };
-		639111C31BE2532100E6C772 /* chat_message_delivered@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 639110561BE2531F00E6C772 /* chat_message_delivered@2x.png */; };
 		639111C41BE2532100E6C772 /* chat_message_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 639110571BE2531F00E6C772 /* chat_message_inprogress.png */; };
 		639111C51BE2532100E6C772 /* chat_message_inprogress@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 639110581BE2531F00E6C772 /* chat_message_inprogress@2x.png */; };
 		639111C61BE2532100E6C772 /* chat_message_not_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 639110591BE2531F00E6C772 /* chat_message_not_delivered.png */; };
@@ -487,7 +485,6 @@
 		63AADBF31B6A0FF200AA16FD /* licenses.html in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD51B6A0FF200AA16FD /* licenses.html */; };
 		63AADBF51B6A0FF200AA16FD /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD71B6A0FF200AA16FD /* linphonerc */; };
 		63AADBF61B6A0FF200AA16FD /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD81B6A0FF200AA16FD /* linphonerc-factory */; };
-		63AADBF71B6A0FF200AA16FD /* linphonerc-factory~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD91B6A0FF200AA16FD /* linphonerc-factory~ipad */; };
 		63AADBF81B6A0FF200AA16FD /* linphonerc~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBDA1B6A0FF200AA16FD /* linphonerc~ipad */; };
 		63AADBF91B6A0FF200AA16FD /* msg.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBDB1B6A0FF200AA16FD /* msg.caf */; };
 		63AADBFA1B6A0FF200AA16FD /* msg.wav in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBDC1B6A0FF200AA16FD /* msg.wav */; };
@@ -620,7 +617,7 @@
 		D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A55FBB15877E5E003FD403 /* UIContactCell.m */; };
 		D3A8BB7015A6C7D500F96BE5 /* UIChatBubbleTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleTextCell.m */; };
 		D3C6526715AC1A8F0092A874 /* UIContactDetailsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C6526615AC1A8F0092A874 /* UIContactDetailsCell.m */; };
-		D3D5126C160B3A8E00946DF8 /* AssistantSubviews.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D5126A160B3A8E00946DF8 /* AssistantSubviews.xib */; };
+		D3D5126C160B3A8E00946DF8 /* AssistantViewScreens.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D5126A160B3A8E00946DF8 /* AssistantViewScreens.xib */; };
 		D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA53FC159850E80037DC6B /* LinphoneManager.m */; };
 		D3EA540D1598528B0037DC6B /* ChatsListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA540C1598528B0037DC6B /* ChatsListTableView.m */; };
 		D3EA5411159853750037DC6B /* UIChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D3EA5410159853750037DC6B /* UIChatCell.m */; };
@@ -1041,8 +1038,6 @@
 		639110521BE2531F00E6C772 /* chat_attachment_over@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_attachment_over@2x.png"; sourceTree = "<group>"; };
 		639110531BE2531F00E6C772 /* chat_list_indicator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_list_indicator.png; sourceTree = "<group>"; };
 		639110541BE2531F00E6C772 /* chat_list_indicator@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_list_indicator@2x.png"; sourceTree = "<group>"; };
-		639110551BE2531F00E6C772 /* chat_message_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_message_delivered.png; sourceTree = "<group>"; };
-		639110561BE2531F00E6C772 /* chat_message_delivered@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_message_delivered@2x.png"; sourceTree = "<group>"; };
 		639110571BE2531F00E6C772 /* chat_message_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_message_inprogress.png; sourceTree = "<group>"; };
 		639110581BE2531F00E6C772 /* chat_message_inprogress@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_message_inprogress@2x.png"; sourceTree = "<group>"; };
 		639110591BE2531F00E6C772 /* chat_message_not_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_message_not_delivered.png; sourceTree = "<group>"; };
@@ -1315,7 +1310,6 @@
 		63AADBD51B6A0FF200AA16FD /* licenses.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = licenses.html; sourceTree = "<group>"; };
 		63AADBD71B6A0FF200AA16FD /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = linphonerc; sourceTree = "<group>"; };
 		63AADBD81B6A0FF200AA16FD /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-factory"; sourceTree = "<group>"; };
-		63AADBD91B6A0FF200AA16FD /* linphonerc-factory~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-factory~ipad"; sourceTree = "<group>"; };
 		63AADBDA1B6A0FF200AA16FD /* linphonerc~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc~ipad"; sourceTree = "<group>"; };
 		63AADBDB1B6A0FF200AA16FD /* msg.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = msg.caf; sourceTree = "<group>"; };
 		63AADBDC1B6A0FF200AA16FD /* msg.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = msg.wav; sourceTree = "<group>"; };
@@ -1523,7 +1517,7 @@
 		F09548241883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/CallIncomingView.xib; sourceTree = "<group>"; };
 		F095482C1883F15400E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/TabBarView.xib; sourceTree = "<group>"; };
 		F095482E1883F15500E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AssistantView.xib; sourceTree = "<group>"; };
-		F09548301883F15500E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AssistantSubviews.xib; sourceTree = "<group>"; };
+		F09548301883F15500E8A69B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AssistantViewScreens.xib; sourceTree = "<group>"; };
 		F09548311883F1EB00E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatConversationView.strings; sourceTree = "<group>"; };
 		F09548321883F20A00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/ChatConversationView.strings; sourceTree = "<group>"; };
 		F09548331883F25C00E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ChatsListView.strings; sourceTree = "<group>"; };
@@ -1546,8 +1540,8 @@
 		F09548561883F61600E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/TabBarView.strings; sourceTree = "<group>"; };
 		F09548591883F67800E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantView.strings; sourceTree = "<group>"; };
 		F095485A1883F67B00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AssistantView.strings; sourceTree = "<group>"; };
-		F095485D1883F6E700E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantSubviews.strings; sourceTree = "<group>"; };
-		F095485E1883F6EA00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AssistantSubviews.strings; sourceTree = "<group>"; };
+		F095485D1883F6E700E8A69B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
+		F095485E1883F6EA00E8A69B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
 		F0AF06F01A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AboutView.strings; sourceTree = "<group>"; };
 		F0AF06F11A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ChatConversationView.strings; sourceTree = "<group>"; };
 		F0AF06F21A24BA760086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/ChatsListView.strings; sourceTree = "<group>"; };
@@ -1568,7 +1562,7 @@
 		F0AF070D1A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/PhoneMainView.strings; sourceTree = "<group>"; };
 		F0AF070E1A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/SettingsView.strings; sourceTree = "<group>"; };
 		F0AF070F1A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AssistantView.strings; sourceTree = "<group>"; };
-		F0AF07111A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AssistantSubviews.strings; sourceTree = "<group>"; };
+		F0AF07111A24BA770086C9C1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/AssistantViewScreens.strings; sourceTree = "<group>"; };
 		F0B026F21AA710AF00FF49F7 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		F0B89C2118DC89E30050B60E /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		F0BB8BD51936208100974404 /* liblinphoneTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = liblinphoneTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1734,10 +1728,10 @@
 				22E0A81D111C44E100B04932 /* AboutView.h */,
 				22E0A81C111C44E100B04932 /* AboutView.m */,
 				636316D31A1DEBCB0009B839 /* AboutView.xib */,
-				D3D5126A160B3A8E00946DF8 /* AssistantSubviews.xib */,
 				D350F20B15A43BB100149E54 /* AssistantView.h */,
 				D350F20C15A43BB100149E54 /* AssistantView.m */,
 				D38187E015FE348A00C3EDCA /* AssistantView.xib */,
+				D3D5126A160B3A8E00946DF8 /* AssistantViewScreens.xib */,
 				63F1DF491BCE983100EDED90 /* CallConferenceTableView.h */,
 				63F1DF4A1BCE983200EDED90 /* CallConferenceTableView.m */,
 				D3F26BEE15986B71005F9CAB /* CallIncomingView.h */,
@@ -2224,8 +2218,6 @@
 				639110521BE2531F00E6C772 /* chat_attachment_over@2x.png */,
 				639110531BE2531F00E6C772 /* chat_list_indicator.png */,
 				639110541BE2531F00E6C772 /* chat_list_indicator@2x.png */,
-				639110551BE2531F00E6C772 /* chat_message_delivered.png */,
-				639110561BE2531F00E6C772 /* chat_message_delivered@2x.png */,
 				639110571BE2531F00E6C772 /* chat_message_inprogress.png */,
 				639110581BE2531F00E6C772 /* chat_message_inprogress@2x.png */,
 				639110591BE2531F00E6C772 /* chat_message_not_delivered.png */,
@@ -2501,7 +2493,6 @@
 				63AADBD71B6A0FF200AA16FD /* linphonerc */,
 				63910FEC1BE2531F00E6C772 /* images */,
 				63AADBD81B6A0FF200AA16FD /* linphonerc-factory */,
-				63AADBD91B6A0FF200AA16FD /* linphonerc-factory~ipad */,
 				63AADBDA1B6A0FF200AA16FD /* linphonerc~ipad */,
 				63AADBC41B6A0FF200AA16FD /* Localizable.strings */,
 				63AADBDB1B6A0FF200AA16FD /* msg.caf */,
@@ -3052,7 +3043,6 @@
 				6391123B1BE2532100E6C772 /* list_details_default.png in Resources */,
 				6391128C1BE2532100E6C772 /* pause_big_disabled@2x.png in Resources */,
 				639112841BE2532100E6C772 /* options_start_conference_disabled@2x.png in Resources */,
-				639111C21BE2532100E6C772 /* chat_message_delivered.png in Resources */,
 				639112301BE2532100E6C772 /* led_connected@2x.png in Resources */,
 				63AADC011B6A0FF200AA16FD /* assistant_linphone_existing.rc in Resources */,
 				6391128F1BE2532100E6C772 /* pause_small_default.png in Resources */,
@@ -3095,7 +3085,6 @@
 				639111EE1BE2532100E6C772 /* contacts_all_default@2x.png in Resources */,
 				63AADBF61B6A0FF200AA16FD /* linphonerc-factory in Resources */,
 				63B8D68C1BCBE65600C12B09 /* ChatConversationCreateView.xib in Resources */,
-				639111C31BE2532100E6C772 /* chat_message_delivered@2x.png in Resources */,
 				D38187D915FE347700C3EDCA /* CallIncomingView.xib in Resources */,
 				6391129E1BE2532100E6C772 /* route_earpiece_disabled@2x.png in Resources */,
 				6391124A1BE2532100E6C772 /* numpad_0_over@2x.png in Resources */,
@@ -3130,7 +3119,6 @@
 				6391121B1BE2532100E6C772 /* footer_dialer_disabled.png in Resources */,
 				639112591BE2532100E6C772 /* numpad_4_over.png in Resources */,
 				D38187AD15FE340100C3EDCA /* ChatConversationView.xib in Resources */,
-				63AADBF71B6A0FF200AA16FD /* linphonerc-factory~ipad in Resources */,
 				639111A81BE2532100E6C772 /* camera_disabled.png in Resources */,
 				639112311BE2532100E6C772 /* led_disconnected.png in Resources */,
 				D38187B915FE342200C3EDCA /* ContactDetailsView.xib in Resources */,
@@ -3261,7 +3249,7 @@
 				6391123D1BE2532100E6C772 /* list_details_over.png in Resources */,
 				639112B01BE2532100E6C772 /* security_ok@2x.png in Resources */,
 				639112721BE2532100E6C772 /* numpad_hash_over@2x.png in Resources */,
-				D3D5126C160B3A8E00946DF8 /* AssistantSubviews.xib in Resources */,
+				D3D5126C160B3A8E00946DF8 /* AssistantViewScreens.xib in Resources */,
 				639112001BE2532100E6C772 /* delete_field_over@2x.png in Resources */,
 				63AADBEA1B6A0FF200AA16FD /* Images.xcassets in Resources */,
 				639111671BE2532100E6C772 /* backspace_disabled@2x.png in Resources */,
@@ -3860,7 +3848,7 @@
 			name = CallView.xib;
 			sourceTree = "<group>";
 		};
-		D3D5126A160B3A8E00946DF8 /* AssistantSubviews.xib */ = {
+		D3D5126A160B3A8E00946DF8 /* AssistantViewScreens.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				F09548301883F15500E8A69B /* Base */,
@@ -3868,7 +3856,7 @@
 				F095485E1883F6EA00E8A69B /* ru */,
 				F0AF07111A24BA770086C9C1 /* ar */,
 			);
-			name = AssistantSubviews.xib;
+			name = AssistantViewScreens.xib;
 			sourceTree = "<group>";
 		};
 		F088488D19FF8C41007FFCF3 /* UIContactCell.xib */ = {

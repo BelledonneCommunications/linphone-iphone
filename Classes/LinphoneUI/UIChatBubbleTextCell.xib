@@ -13,25 +13,26 @@
                 <outlet property="bubbleView" destination="ucH-2r-rar" id="XWU-yi-1z8"/>
                 <outlet property="contactDateLabel" destination="GRe-ur-aSb" id="DQA-v4-IjX"/>
                 <outlet property="messageText" destination="CYa-If-oB4" id="7xm-UF-1qB"/>
+                <outlet property="resendRecognizer" destination="OA2-9R-81Z" id="zVJ-IY-3yO"/>
                 <outlet property="statusImage" destination="nLy-JO-TyL" id="9uf-2G-m8d"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <tapGestureRecognizer id="OA2-9R-81Z" userLabel="resendClick">
             <connections>
-                <action selector="onResendClick:" destination="-2" id="Xsy-zb-b7x"/>
+                <action selector="onResendClick:" destination="-1" id="l6k-1D-O4U"/>
             </connections>
         </tapGestureRecognizer>
         <view contentMode="scaleToFill" id="ucH-2r-rar">
-            <rect key="frame" x="0.0" y="0.0" width="334" height="171"/>
+            <rect key="frame" x="0.0" y="0.0" width="334" height="60"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view clipsSubviews="YES" contentMode="scaleToFill" id="vdk-RV-QRU" userLabel="innerView">
-                    <rect key="frame" x="6" y="5" width="322" height="161"/>
+                    <rect key="frame" x="6" y="5" width="322" height="50"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" alpha="0.20000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="ZIO-Cb-28G" userLabel="backgroundColorImage">
-                            <rect key="frame" x="0.0" y="0.0" width="322" height="161"/>
+                            <rect key="frame" x="0.0" y="0.0" width="322" height="50"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
                         </imageView>
@@ -44,20 +45,19 @@
                                 <bool key="isElement" value="YES"/>
                             </accessibility>
                         </imageView>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="11:35 John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="GRe-ur-aSb" userLabel="contactDateLabel">
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="11:35 John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="GRe-ur-aSb" userLabel="contactDateLabel">
                             <rect key="frame" x="48" y="0.0" width="246" height="20"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <animations/>
                             <accessibility key="accessibilityConfiguration" label="Contact name"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                             <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
-                            <rect key="frame" x="48" y="9" width="268" height="152"/>
+                        <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Lore ipsum..." id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
+                            <rect key="frame" x="48" y="8" width="268" height="42"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
-                            <string key="text">https://beta.itunes.apple.com/v1/invite/deb3eac7cecf43c7a33cfd2300e480f0a1a5f645a88240e8b0fe9951b7f1eae215762a66?ct=Z2V957B3D6&amp;pt=2003</string>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             <dataDetectorType key="dataDetectorTypes" link="YES"/>
@@ -66,9 +66,10 @@
                             <rect key="frame" x="307" y="0.0" width="15" height="15"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                             <animations/>
+                            <accessibility key="accessibilityConfiguration" label="Message status"/>
                         </imageView>
                         <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="mlr-pl-B6T" userLabel="bottomBarColor">
-                            <rect key="frame" x="0.0" y="160" width="322" height="1"/>
+                            <rect key="frame" x="0.0" y="49" width="322" height="1"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <animations/>
                         </imageView>

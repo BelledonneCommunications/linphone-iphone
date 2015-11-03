@@ -110,7 +110,7 @@
 	}
 	_contactDateLabel.text = [NSString
 		stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(_message)
-													  withFormat:NSLocalizedString(@"yyyy/MM/dd '-' HH'h'mm", nil)],
+													  withFormat:LinphoneDateChatBubble],
 						 [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(_message)]];
 
 	_backgroundColorImage.image = _bottomBarColor.image =
@@ -124,9 +124,9 @@
 		_statusImage.accessibilityValue = @"in progress";
 		_statusImage.hidden = FALSE;
 	} else if (state == LinphoneChatMessageStateDelivered) {
-		_statusImage.image = [UIImage imageNamed:@"chat_message_delivered.png"];
+		_statusImage.image = nil;
 		_statusImage.accessibilityValue = @"delivered";
-		_statusImage.hidden = FALSE;
+		_statusImage.hidden = TRUE;
 	} else {
 		_statusImage.image = [UIImage imageNamed:@"chat_message_not_delivered.png"];
 		_statusImage.accessibilityValue = @"not delivered";
@@ -151,6 +151,7 @@
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
 	_messageText.userInteractionEnabled = !editing;
+	_resendRecognizer.enabled = !editing;
 }
 
 #pragma mark - Action Functions

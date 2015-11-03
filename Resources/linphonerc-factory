@@ -1,6 +1,6 @@
-
 [sip]
 sip_random_port=0
+store_ha1_passwd=0
 
 [sound]
 ringer_dev_id=AQ: Audio Queue Device

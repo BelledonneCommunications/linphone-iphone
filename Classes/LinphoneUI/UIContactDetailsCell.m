@@ -45,6 +45,10 @@
 
 	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], _addressLabel.text.UTF8String);
 	_chatButton.enabled = _callButton.enabled = (addr != NULL);
+
+	_chatButton.accessibilityLabel =
+		[NSString stringWithFormat:NSLocalizedString(@"Chat with %@", nil), _addressLabel.text];
+	_callButton.accessibilityLabel = [NSString stringWithFormat:NSLocalizedString(@"Call %@", nil), _addressLabel.text];
 	if (addr) {
 		linphone_address_destroy(addr);
 	}

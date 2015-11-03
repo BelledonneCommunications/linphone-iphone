@@ -94,14 +94,14 @@
                                     <rect key="frame" x="225" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
-                                    <accessibility key="accessibilityConfiguration" label="Edit"/>
+                                    <accessibility key="accessibilityConfiguration" label="Select all"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
-                                    <state key="normal" image="select_all_default.png">
+                                    <state key="normal" image="deselect_all.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <state key="disabled" image="select_all_disabled.png"/>
-                                    <state key="selected" image="deselect_all.png"/>
+                                    <state key="selected" image="select_all_default.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onSelectionToggle:" destination="18" eventType="touchUpInside" id="ADr-KR-SmA"/>

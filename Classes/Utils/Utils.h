@@ -36,7 +36,14 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 + (void)buttonMultiViewApplyAttributes:(NSDictionary*)attributes button:(UIButton*)button;
 + (NSString *)deviceName;
 
-+ (NSString *)timeToString:(time_t)time withFormat:(NSString *)format;
+typedef enum {
+	LinphoneDateHistoryList,
+	LinphoneDateHistoryDetails,
+	LinphoneDateChatList,
+	LinphoneDateChatBubble,
+} LinphoneDateFormat;
+
++ (NSString *)timeToString:(time_t)time withFormat:(LinphoneDateFormat)format;
 
 + (BOOL)hasSelfAvatar;
 + (UIImage *)selfAvatar;

@@ -124,11 +124,48 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 	return [result stringByAppendingString:[NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60)]];
 }
 
-+ (NSString *)timeToString:(time_t)time withFormat:(NSString *)format {
++ (NSString *)timeToString:(time_t)time withFormat:(LinphoneDateFormat)format {
+	NSString *formatstr;
 	NSDate *todayDate = [[NSDate alloc] init];
 	NSDate *messageDate = (time == 0) ? todayDate : [NSDate dateWithTimeIntervalSince1970:time];
+	NSDateComponents *todayComponents =
+		[[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear
+										fromDate:todayDate];
+	NSDateComponents *dateComponents =
+		[[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear
+										fromDate:messageDate];
+	BOOL sameYear = (todayComponents.year == dateComponents.year);
+	BOOL sameMonth = (sameYear && (todayComponents.month == dateComponents.month));
+	BOOL sameDay = (sameMonth && (todayComponents.day == dateComponents.day));
+
+	switch (format) {
+		case LinphoneDateHistoryList:
+			if (sameYear) {
+				formatstr = NSLocalizedString(@"EEE dd MMMM", nil);
+			} else {
+				formatstr = NSLocalizedString(@"EEE dd MMMM yyyy", nil);
+			}
+			break;
+		case LinphoneDateHistoryDetails:
+			formatstr = NSLocalizedString(@"MM/dd '-' HH'h'mm", nil);
+			break;
+		case LinphoneDateChatList:
+			if (sameDay) {
+				formatstr = NSLocalizedString(@"HH:mm", nil);
+			} else {
+				formatstr = NSLocalizedString(@"MM/dd", nil);
+			}
+			break;
+		case LinphoneDateChatBubble:
+			if (sameDay) {
+				formatstr = NSLocalizedString(@"HH:mm", nil);
+			} else {
+				formatstr = NSLocalizedString(@"MM/dd - HH:mm", nil);
+			}
+			break;
+	}
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setDateFormat:format];
+	[dateFormatter setDateFormat:formatstr];
 	return [dateFormatter stringFromDate:messageDate];
 }
 

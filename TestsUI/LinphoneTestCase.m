@@ -34,6 +34,9 @@
 		[tester waitForTimeInterval:.5f];
 	};
 #endif
+	// remove any account
+	[LinphoneManager.instance removeAllAccounts];
+
 	// go to dialer
 	for (NSString *button in @[ @"Cancel", @"Back", @"Hangup", @"Dialer" ]) {
 		if ([tester tryFindingTappableViewWithAccessibilityLabel:button error:nil]) {
@@ -47,8 +50,9 @@
 }
 
 - (NSString *)me {
-	return [NSString
-		stringWithFormat:@"testios-%@", [[UIDevice currentDevice].identifierForVendor.UUIDString substringToIndex:6]];
+	return [NSString stringWithFormat:@"testios-%@",
+									  [[UIDevice currentDevice].identifierForVendor.UUIDString substringToIndex:6]]
+		.lowercaseString;
 }
 
 - (NSString *)accountDomain {
@@ -56,7 +60,7 @@
 }
 
 - (NSString *)getUUID {
-	return [[[NSUUID UUID] UUIDString] substringToIndex:8];
+	return [[[NSUUID UUID] UUIDString] substringToIndex:8].lowercaseString;
 }
 
 - (NSArray *)getUUIDArrayOfSize:(size_t)size {
@@ -159,14 +163,14 @@
 	while (timeout &&
 		   ![tester tryFindingViewWithAccessibilityLabel:@"Registration state"
 												   value:@"Registered"
-												  traits:UIAccessibilityTraitStaticText
+												  traits:UIAccessibilityTraitButton
 												   error:nil]) {
 		[tester waitForTimeInterval:1];
 		timeout--;
 	}
 	[tester waitForViewWithAccessibilityLabel:@"Registration state"
 										value:@"Registered"
-									   traits:UIAccessibilityTraitStaticText];
+									   traits:UIAccessibilityTraitButton];
 }
 
 @end

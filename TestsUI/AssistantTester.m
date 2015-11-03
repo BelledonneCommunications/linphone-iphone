@@ -8,6 +8,7 @@
 
 #import "AssistantTester.h"
 #import <KIF/KIF.h>
+#import "LinphoneManager.h"
 
 @implementation AssistantTester
 
@@ -15,61 +16,53 @@
 	[super beforeEach];
 	[UIView setAnimationsEnabled:false];
 
-	[tester tapViewWithAccessibilityLabel:@"Settings"];
-	[tester tapViewWithAccessibilityLabel:@"Run assistant"];
-	[tester waitForTimeInterval:0.5];
-	if ([tester tryFindingViewWithAccessibilityLabel:@"Launch Assistant" error:nil]) {
-		[tester tapViewWithAccessibilityLabel:@"Launch Assistant"];
-		[tester waitForTimeInterval:0.5];
-	}
+	[tester tapViewWithAccessibilityLabel:@"Side menu button"];
+	[tester tapViewWithAccessibilityLabel:@"Assistant"];
 }
 
 - (void)afterEach {
 	[super afterEach];
+	[LinphoneManager.instance removeAllAccounts];
 	[tester tapViewWithAccessibilityLabel:@"Dialer"];
 }
 
 #pragma mark - Utilities
 
 - (void)_linphoneLogin:(NSString *)username withPW:(NSString *)pw {
-	[tester tapViewWithAccessibilityLabel:@"Start"];
-	[tester tapViewWithAccessibilityLabel:@"Sign in linphone.org account"];
+	[tester tapViewWithAccessibilityLabel:@"Use Linphone account"];
 
 	[tester enterText:username intoViewWithAccessibilityLabel:@"Username"];
 	[tester enterText:pw intoViewWithAccessibilityLabel:@"Password"];
 
-	[tester tapViewWithAccessibilityLabel:@"Sign in"];
+	[tester tapViewWithAccessibilityLabel:@"Login"];
 }
 
 - (void)_externalLoginWithProtocol:(NSString *)protocol {
-	[tester tapViewWithAccessibilityLabel:@"Start"];
-	[tester tapViewWithAccessibilityLabel:@"Sign in SIP account"];
+	[tester tapViewWithAccessibilityLabel:@"Use SIP account"];
 
 	[tester enterText:[self me] intoViewWithAccessibilityLabel:@"Username"];
 	[tester enterText:[self me] intoViewWithAccessibilityLabel:@"Password"];
 	[tester enterText:[self accountDomain] intoViewWithAccessibilityLabel:@"Domain"];
 	[tester tapViewWithAccessibilityLabel:protocol];
 
-	[tester tapViewWithAccessibilityLabel:@"Sign in"];
-	[self waitForRegistration];
+	[tester tapViewWithAccessibilityLabel:@"Login"];
 }
 
 #pragma mark - Tests
 
 - (void)testAccountCreation {
 	NSString *username = [NSString stringWithFormat:@"%@-%.2f", [self getUUID], [[NSDate date] timeIntervalSince1970]];
-	[tester tapViewWithAccessibilityLabel:@"Start"];
-	[tester tapViewWithAccessibilityLabel:@"Create linphone.org account" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"Create account" traits:UIAccessibilityTraitButton];
 
 	[tester enterText:username intoViewWithAccessibilityLabel:@"Username"];
 	[tester enterText:username intoViewWithAccessibilityLabel:@"Password "];
-	[tester enterText:username intoViewWithAccessibilityLabel:@"Password again"];
+	[tester enterText:username intoViewWithAccessibilityLabel:@"Password confirmation"];
 	[tester enterText:@"testios@.dev.null" intoViewWithAccessibilityLabel:@"Email"];
 
-	[tester tapViewWithAccessibilityLabel:@"Register" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"Create account" traits:UIAccessibilityTraitButton];
 
-	[tester waitForViewWithAccessibilityLabel:@"Check validation" traits:UIAccessibilityTraitButton];
-	[tester tapViewWithAccessibilityLabel:@"Check validation"];
+	[tester waitForViewWithAccessibilityLabel:@"Finish configuration" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"Finish configuration"];
 
 	[tester waitForViewWithAccessibilityLabel:@"Account validation issue"];
 	[tester tapViewWithAccessibilityLabel:@"Continue"];
@@ -78,20 +71,21 @@
 
 - (void)testExternalLoginWithTCP {
 	[self _externalLoginWithProtocol:@"TCP"];
+	[self waitForRegistration];
 }
 
 - (void)testExternalLoginWithTLS {
 	[self _externalLoginWithProtocol:@"TLS"];
+	[self waitForRegistration];
 }
 
 - (void)testExternalLoginWithUDP {
 	[self _externalLoginWithProtocol:@"UDP"];
+	[self waitForRegistration];
 }
 
 - (void)testLinphoneLogin {
 	[self _linphoneLogin:@"testios" withPW:@"testtest"];
-
-	// check the registration state
 	[self waitForRegistration];
 }
 
@@ -117,10 +111,9 @@
 }
 
 - (void)testRemoteProvisioning {
-	[tester tapViewWithAccessibilityLabel:@"Start"];
-	[tester tapViewWithAccessibilityLabel:@"Remote provisioning"];
-	[tester enterTextIntoCurrentFirstResponder:@"smtp.linphone.org/testios_xml"];
-	[tester tapViewWithAccessibilityLabel:@"Fetch"];
+	[tester tapViewWithAccessibilityLabel:@"Fetch remote configuration"];
+	[tester enterText:@"smtp.linphone.org/testios_xml" intoViewWithAccessibilityLabel:@"Username"];
+	[tester tapViewWithAccessibilityLabel:@"Fetch and apply"];
 	[self waitForRegistration];
 }
 @end

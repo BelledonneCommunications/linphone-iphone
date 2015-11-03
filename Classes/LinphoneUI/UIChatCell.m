@@ -51,7 +51,7 @@
 
 - (NSString *)accessibilityValue {
 	if (_chatContentLabel.text) {
-		return [NSString stringWithFormat:@"%@ - %@ (%li)", _addressLabel.text, _chatContentLabel.text,
+		return [NSString stringWithFormat:@"%@, %@ (%li)", _addressLabel.text, _chatContentLabel.text,
 										  (long)[_unreadCountButton.titleLabel.text integerValue]];
 	} else {
 		return [NSString
@@ -86,8 +86,8 @@
 			_chatContentLabel.text = message;
 		}
 
-		_chatLatestTimeLabel.text = [LinphoneUtils timeToString:linphone_chat_message_get_time(last_message)
-													 withFormat:NSLocalizedString(@"MM/dd", nil)];
+		_chatLatestTimeLabel.text =
+			[LinphoneUtils timeToString:linphone_chat_message_get_time(last_message) withFormat:LinphoneDateChatBubble];
 		_chatLatestTimeLabel.hidden = NO;
 	} else {
 		_chatContentLabel.text = nil;

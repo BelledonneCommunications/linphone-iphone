@@ -62,8 +62,10 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	if (section == 0) {
+		BOOL hasDefault = (linphone_core_get_default_proxy_config([LinphoneManager getLc]) != NULL);
 		// default account is shown in the header already
-		return ms_list_size(linphone_core_get_proxy_config_list([LinphoneManager getLc])) - 1;
+		return MAX(0,
+				   ms_list_size(linphone_core_get_proxy_config_list([LinphoneManager getLc])) - (hasDefault ? 1 : 0));
 	} else {
 		return [_sideMenuEntries count];
 	}
@@ -74,8 +76,12 @@
 	if (indexPath.section == 0) {
 		LinphoneProxyConfig *proxy =
 			ms_list_nth_data(linphone_core_get_proxy_config_list([LinphoneManager getLc]), (int)indexPath.row);
-		cell.textLabel.text = [NSString stringWithUTF8String:linphone_proxy_config_get_identity(proxy)];
-		cell.imageView.image = [StatusBarView imageForState:linphone_proxy_config_get_state(proxy)];
+		if (proxy) {
+			cell.textLabel.text = [NSString stringWithUTF8String:linphone_proxy_config_get_identity(proxy)];
+			cell.imageView.image = [StatusBarView imageForState:linphone_proxy_config_get_state(proxy)];
+		} else {
+			LOGE(@"Invalid index requested, no proxy for row %d", indexPath.row);
+		}
 		cell.transform = CGAffineTransformMakeScale(-1.0, 1.0);
 		cell.textLabel.transform = CGAffineTransformMakeScale(-1.0, 1.0);
 		cell.imageView.transform = CGAffineTransformMakeScale(-1.0, 1.0);
@@ -90,12 +96,16 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 
-	SideMenuEntry *entry = [_sideMenuEntries objectAtIndex:indexPath.row];
-	LOGI(@"Entry %@ has been tapped", entry->title);
-	if (entry->onTapBlock == nil) {
-		LOGF(@"Entry %@ has no onTapBlock!", entry->title);
+	if (indexPath.section == 0) {
+		[PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
+	} else {
+		SideMenuEntry *entry = [_sideMenuEntries objectAtIndex:indexPath.row];
+		LOGI(@"Entry %@ has been tapped", entry->title);
+		if (entry->onTapBlock == nil) {
+			LOGF(@"Entry %@ has no onTapBlock!", entry->title);
+		}
+		entry->onTapBlock();
 	}
-	entry->onTapBlock();
 	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
 }
 

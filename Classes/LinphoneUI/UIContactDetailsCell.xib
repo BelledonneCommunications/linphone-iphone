@@ -59,6 +59,7 @@
                             <rect key="frame" x="135" y="40" width="44" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <animations/>
+                            <accessibility key="accessibilityConfiguration" label="Call"/>
                             <state key="normal" title="Button" image="call_start_body_default.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
@@ -72,6 +73,7 @@
                             <rect key="frame" x="195" y="40" width="44" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <animations/>
+                            <accessibility key="accessibilityConfiguration" label="Chat"/>
                             <state key="normal" title="Button" image="chat_start_body_default.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>

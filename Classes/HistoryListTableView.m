@@ -158,8 +158,8 @@
 	} else if ([eventDate isEqualToDate:[currentDate dateByAddingTimeInterval:-3600 * 24]]) {
 		tempLabel.text = NSLocalizedString(@"YESTERDAY", nil);
 	} else {
-		tempLabel.text = [LinphoneUtils timeToString:eventDate.timeIntervalSince1970
-										  withFormat:NSLocalizedString(@"yyyy/MM/dd", nil)];
+		tempLabel.text =
+			[LinphoneUtils timeToString:eventDate.timeIntervalSince1970 withFormat:LinphoneDateHistoryList];
 	}
 	tempLabel.textAlignment = NSTextAlignmentCenter;
 	tempLabel.font = [UIFont boldSystemFontOfSize:17];

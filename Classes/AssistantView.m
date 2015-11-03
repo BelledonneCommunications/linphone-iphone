@@ -49,7 +49,7 @@ typedef enum _ViewElement {
 - (id)init {
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self != nil) {
-		[[NSBundle mainBundle] loadNibNamed:@"AssistantSubviews" owner:self options:nil];
+		[[NSBundle mainBundle] loadNibNamed:@"AssistantViewScreens" owner:self options:nil];
 		historyViews = [[NSMutableArray alloc] init];
 		currentView = nil;
 	}
@@ -91,6 +91,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 												 name:kLinphoneConfiguringStateUpdate
 											   object:nil];
 	new_config = NULL;
+	[self resetTextFields];
 	[self changeView:_welcomeView back:FALSE animation:FALSE];
 }
 
@@ -211,7 +212,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneManager *lm = [LinphoneManager instance];
 
 	if (new_config != NULL && proxy != new_config) {
+		const LinphoneAuthInfo *auth = linphone_proxy_config_find_auth_info(new_config);
 		linphone_core_remove_proxy_config(lc, new_config);
+		if (auth) {
+			linphone_core_remove_auth_info(lc, auth);
+		}
 	}
 	new_config = proxy;
 
@@ -455,7 +460,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				  forProxy:(LinphoneProxyConfig *)proxy
 				   message:(NSString *)message {
 	// in assistant we only care about ourself
-	if (proxy != linphone_core_get_default_proxy_config([LinphoneManager getLc])) {
+	if (proxy != new_config) {
 		return;
 	}
 
@@ -529,9 +534,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 void assistant_existence_tested(LinphoneAccountCreator *creator, LinphoneAccountCreatorStatus status) {
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
-	if (status == LinphoneAccountCreatorOk) {
+	if (status == LinphoneAccountCreatorFailed) {
 		[[thiz findTextField:ViewElement_Username] showError:NSLocalizedString(@"This name is already taken.", nil)];
 		[thiz findButton:ViewElement_NextButton].enabled = NO;
+	} else {
+		[thiz changeView:thiz.createAccountActivationView back:FALSE animation:TRUE];
 	}
 }
 
@@ -539,18 +546,15 @@ void assistant_create_account(LinphoneAccountCreator *creator, LinphoneAccountCr
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorOk) {
-		NSString *username = [thiz findTextField:ViewElement_Username].text;
-		NSString *password = [thiz findTextField:ViewElement_Password].text;
-		[thiz changeView:thiz.createAccountActivationView back:FALSE animation:TRUE];
-		[thiz findTextField:ViewElement_Username].text = username;
-		[thiz findTextField:ViewElement_Password].text = password;
+		thiz.waitView.hidden = NO;
+		linphone_account_creator_test_validation(thiz->account_creator);
 	} else {
-		UIAlertView *errorView =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Account creation issue", nil)
-									   message:NSLocalizedString(@"Can't create the account. Please try again.", nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-							 otherButtonTitles:nil, nil];
+		UIAlertView *errorView = [[UIAlertView alloc]
+				initWithTitle:NSLocalizedString(@"Account validation issue", nil)
+					  message:NSLocalizedString(@"Your account could not be created, please try again later.", nil)
+					 delegate:nil
+			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+			otherButtonTitles:nil, nil];
 		[errorView show];
 	}
 }
@@ -596,6 +600,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	[atf textField:atf shouldChangeCharactersInRange:range replacementString:string];
 	if (atf.tag == ViewElement_Username && currentView == _createAccountView) {
 		textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string.lowercaseString];
+		[self shouldEnableNextButton];
 		return NO;
 	}
 	[self shouldEnableNextButton];

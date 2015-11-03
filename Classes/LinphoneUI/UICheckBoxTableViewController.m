@@ -50,24 +50,35 @@
 		[_selectedItems addObject:indexPath];
 	}
 	[self accessoryForCell:cell atPath:indexPath];
-	_toggleSelectionButton.selected = (_selectedItems.count == [self totalNumberOfItems]);
+	[self selectToggleButton:(_selectedItems.count != [self totalNumberOfItems])];
 }
 
+- (void)selectToggleButton:(BOOL)select {
+	_toggleSelectionButton.selected = select;
+	if (select) {
+		_toggleSelectionButton.accessibilityLabel = NSLocalizedString(@"Select all", nil);
+	} else {
+		_toggleSelectionButton.accessibilityLabel = NSLocalizedString(@"Deselect all", nil);
+	}
+}
 #pragma mark -
 
 - (void)accessoryForCell:(UITableViewCell *)cell atPath:(NSIndexPath *)indexPath {
 	cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	if ([self isEditing]) {
+		UIButton *checkBoxButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		UIImage *image = nil;
 		if ([_selectedItems containsObject:indexPath]) {
 			image = [UIImage imageNamed:@"checkbox_checked.png"];
+			checkBoxButton.accessibilityValue = NSLocalizedString(@"Selected", nil);
 		} else {
 			image = [UIImage imageNamed:@"checkbox_unchecked.png"];
+			checkBoxButton.accessibilityValue = NSLocalizedString(@"Deselected", nil);
 		}
-		UIButton *checkBoxButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		[checkBoxButton setImage:image forState:UIControlStateNormal];
 		[checkBoxButton setFrame:CGRectMake(0, 0, 19, 19)];
 		[checkBoxButton setBackgroundColor:[UIColor clearColor]];
+		checkBoxButton.accessibilityLabel = NSLocalizedString(@"Checkbox", nil);
 		checkBoxButton.userInteractionEnabled = NO;
 		cell.accessoryView = checkBoxButton;
 	} else {
@@ -83,7 +94,7 @@
 
 	_editButton.hidden = editing;
 	_deleteButton.hidden = _cancelButton.hidden = _toggleSelectionButton.hidden = !editing;
-	_toggleSelectionButton.selected = NO;
+	[self selectToggleButton:YES];
 
 	// when switching editing mode, we must reload all cells to remove/add checkboxes
 	[self loadData];
@@ -114,12 +125,12 @@
 - (void)onSelectionToggle:(id)sender {
 	[_selectedItems removeAllObjects];
 
-	_toggleSelectionButton.selected = !_toggleSelectionButton.selected; // TODO: why do we need that?
+	[self selectToggleButton:!_toggleSelectionButton.selected]; // TODO: why do we need that?
 	for (int i = 0; i < [self numberOfSectionsInTableView:self.tableView]; i++) {
 		for (int j = 0; j < [self tableView:self.tableView numberOfRowsInSection:i]; j++) {
 			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:j inSection:i];
 			UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-			if (_toggleSelectionButton.selected) {
+			if (!_toggleSelectionButton.selected) {
 				[_selectedItems addObject:indexPath];
 			}
 			[self accessoryForCell:cell atPath:indexPath];
