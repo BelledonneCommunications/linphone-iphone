@@ -43,6 +43,7 @@ set(LP_GEN_WRAPPERS_LIBS
 	${XML2_LIBRARIES}
 )
 
+apply_compile_flags(LP_GEN_WRAPPERS_SOURCE_FILES "CPP" "CXX")
 add_executable(lp-gen-wrappers ${LP_GEN_WRAPPERS_SOURCE_FILES})
 target_link_libraries(lp-gen-wrappers ${LP_GEN_WRAPPERS_LIBS})
 
