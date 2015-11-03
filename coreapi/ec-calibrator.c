@@ -161,21 +161,21 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	/* configure the tones to be scanned */
 	
 	strncpy(expected_tone.tone_name,"freq1",sizeof(expected_tone.tone_name));
-	expected_tone.frequency=2349.32;
+	expected_tone.frequency=(int)2349.32;
 	expected_tone.min_duration=40;
 	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
 	
 	strncpy(expected_tone.tone_name,"freq2",sizeof(expected_tone.tone_name));
-	expected_tone.frequency=2637.02;
+	expected_tone.frequency=(int)2637.02;
 	expected_tone.min_duration=40;
 	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
 	
 	strncpy(expected_tone.tone_name,"freq3",sizeof(expected_tone.tone_name));
-	expected_tone.frequency=2093;
+	expected_tone.frequency=(int)2093;
 	expected_tone.min_duration=40;
 	expected_tone.min_amplitude=0.1f;
 
@@ -194,19 +194,19 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	
 	/* play the three tones*/
 	strncpy(tone.tone_name, "D", sizeof(tone.tone_name));
-	tone.frequencies[0]=2349.32;
+	tone.frequencies[0]=(int)2349.32;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
 	
 	strncpy(tone.tone_name, "E", sizeof(tone.tone_name));
-	tone.frequencies[0]=2637.02;
+	tone.frequencies[0]=(int)2637.02;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
 	
 	strncpy(tone.tone_name, "C", sizeof(tone.tone_name));
-	tone.frequencies[0]=2093;
+	tone.frequencies[0]=(int)2093;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
@@ -214,13 +214,13 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	/*these two next ones are for lyrism*/
 	
 	tone.tone_name[0]='\0';
-	tone.frequencies[0]=1046.5;
+	tone.frequencies[0]=(int)1046.5;
 	tone.duration=400;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
 	
 	tone.tone_name[0]='\0';
-	tone.frequencies[0]=1567.98;
+	tone.frequencies[0]=(int)1567.98;
 	tone.duration=400;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(1);
