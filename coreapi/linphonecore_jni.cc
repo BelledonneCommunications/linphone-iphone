@@ -6465,3 +6465,13 @@ JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_destroy(JNIEnv *e
 }
 
 
+/*
+ * Class:     org_linphone_core_LinphoneCallLogImpl
+ * Method:    getCallId
+ * Signature: (J)I
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneCallLogImpl_getCallId(JNIEnv *env, jobject jobj, jlong pcl){
+	const char *str = linphone_call_log_get_call_id((LinphoneCallLog*)pcl);
+	return str ? env->NewStringUTF(str) : NULL;
+}
+
