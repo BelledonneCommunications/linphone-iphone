@@ -868,15 +868,15 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 	if (linphone_proxy_config_is_phone_number(tmpproxy, username)){
 		dial_plan_t dialplan = {0};
 		char * flatten=flatten_number(username);
-		ms_error("Flattened number is '%s' for '%s'",flatten, username);
+		ms_debug("Flattened number is '%s' for '%s'",flatten, username);
 
 		/*if proxy has a dial prefix, modify phonenumber accordingly*/
 		if (tmpproxy->dial_prefix!=NULL && tmpproxy->dial_prefix[0]!='\0'){
 			lookup_dial_plan_by_ccc(tmpproxy->dial_prefix,&dialplan);
-			ms_error("Using dial plan '%s'",dialplan.country);
+			ms_debug("Using dial plan '%s'",dialplan.country);
 			/* the number already starts with + or international prefix*/
 			if (flatten[0]=='+'||strstr(flatten,dialplan.icp)==flatten){
-				ms_error("Prefix already present.");
+				ms_debug("Prefix already present.");
 				if (tmpproxy->dial_escape_plus) {
 					result = replace_plus_with_icp(flatten,dialplan.icp);
 				} else {
@@ -885,7 +885,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 			}else{
 				/*0. keep at most national number significant digits */
 				char* flatten_start = flatten + MAX(0, (int)strlen(flatten) - (int)dialplan.nnl);
-				ms_error("Prefix not present. Keeping at most %d digits: %s", dialplan.nnl, flatten_start);
+				ms_debug("Prefix not present. Keeping at most %d digits: %s", dialplan.nnl, flatten_start);
 
 				/*1. First prepend international calling prefix or +*/
 				/*2. Second add prefix*/
@@ -894,7 +894,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 											, tmpproxy->dial_escape_plus ? dialplan.icp : "+"
 											, dialplan.ccc
 											, flatten_start);
-				ms_error("Prepended prefix resulted in %s", result);
+				ms_debug("Prepended prefix resulted in %s", result);
 			}
 		}
 		if (result==NULL) {
