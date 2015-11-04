@@ -126,7 +126,7 @@
 	[self startChatWith:@"sip://toto"];
 
 	[tester waitForViewWithAccessibilityLabel:@"Invalid address" traits:UIAccessibilityTraitStaticText];
-	[tester tapViewWithAccessibilityLabel:@"Cancel"];
+	[tester tapViewWithAccessibilityLabel:@"OK"];
 }
 
 - (void)testMessageRemoval {
@@ -139,24 +139,13 @@
 									   traits:UIAccessibilityTraitImage];
 
 	[tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
-
-	[tester tapViewWithAccessibilityLabel:@"Delete message"];
-
-	[tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"Checkbox"];
+	[tester tapViewWithAccessibilityLabel:@"Delete all"];
+	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
 
 	// check that the tableview is empty
-	UITableView *tv = nil;
-	NSError *err = nil;
-	if ([tester tryFindingAccessibilityElement:nil
-										  view:&tv
-								withIdentifier:@"ChatRoom list"
-									  tappable:false
-										 error:&err]) {
-		XCTAssertNotNil(tv);
-		ASSERT_EQ([tv numberOfRowsInSection:0], 0); // no more messages
-	} else {
-		NSLog(@"Error: %@", err);
-	}
+	UITableView *tv =
+		[self findTableView:@"ChatRoom list"] ASSERT_EQ([tv numberOfRowsInSection:0], 0); // no more messages
 
 	[self goBackFromChat];
 }
