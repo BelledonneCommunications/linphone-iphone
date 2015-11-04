@@ -960,6 +960,18 @@ public interface LinphoneCore {
 	void setSipDscp(int dscp);
 
 	/**
+	 * Set the timeout in milliseconds for SIP transport (TCP or TLS connection establishment maximum time).
+	 * @param timeout_ms
+	**/
+	void setSipTransportTimeout(int timeout_ms);
+
+	/**
+	 * Get the current SIP transport timeout.
+	 * @param timeout_ms
+	**/
+	int getSipTransportTimeout();
+
+	/**
 	 * Get DSCP used for SIP socket.
 	 * @return the DSCP value used for the SIP socket.
 	 */

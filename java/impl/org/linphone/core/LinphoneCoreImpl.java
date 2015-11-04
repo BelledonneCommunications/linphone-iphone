@@ -1558,4 +1558,16 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public int getHttpProxyPort(){
 		return getHttpProxyPort(nativePtr);
 	}
+	private native void setSipTransportTimeout(long nativePtr, int timeout_ms);
+	@Override
+	public void setSipTransportTimeout(int timeout_ms){
+		setSipTransportTimeout(nativePtr, timeout_ms);
+	}
+
+	private native int getSipTransportTimeout(long nativePtr);
+	@Override
+	public int getSipTransportTimeout(){
+		return getSipTransportTimeout(nativePtr);
+	}
+
 }

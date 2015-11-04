@@ -6529,4 +6529,22 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getHttpProxyPort(
 }
 
 
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setSipTransportTimeout
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setSipTransportTimeout(JNIEnv *env, jobject jobj, jlong pcore, jint timeout){
+	linphone_core_set_sip_transport_timeout((LinphoneCore*)pcore, timeout);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    getSipTransportTimeout
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getSipTransportTimeout(JNIEnv *env, jobject jobj, jlong pcore){
+	return linphone_core_get_sip_transport_timeout((LinphoneCore*)pcore);
+}
+
 
