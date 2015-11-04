@@ -507,47 +507,48 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)keyboardWillHide:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
 	[UIView animateWithDuration:duration
-		delay:0
-		options:UIViewAnimationOptionBeginFromCurrentState
-		animations:^{
-		  CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
+						  delay:0
+						options:UIViewAnimationOptionBeginFromCurrentState
+					 animations:^{
+						 CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
 
-		  // Show TabBar and status bar and also top bar
-		  [PhoneMainView.instance showTabBar:YES];
-		  [PhoneMainView.instance showStatusBar:YES];
-		  _topBar.alpha = 1.0;
+						 // Show TabBar and status bar and also top bar
+						 [PhoneMainView.instance fullScreen:NO];
+						 [PhoneMainView.instance showTabBar:YES];
+						 [PhoneMainView.instance showStatusBar:YES];
+						 _topBar.alpha = 1.0;
 
-		  // Resize chat view
-		  {
-			  CGRect chatFrame = [_chatView frame];
-			  chatFrame.origin.y = _topBar.frame.origin.y + _topBar.frame.size.height;
-			  chatFrame.size.height = [[self view] frame].size.height - chatFrame.origin.y;
-			  [_chatView setFrame:chatFrame];
-		  }
+						 // Resize chat view
+						 {
+							 CGRect chatFrame = [_chatView frame];
+							 chatFrame.origin.y = _topBar.frame.origin.y + _topBar.frame.size.height;
+							 chatFrame.size.height = [[self view] frame].size.height - chatFrame.origin.y;
+							 [_chatView setFrame:chatFrame];
+						 }
 
-		  // Resize & Move table view
-		  {
-			  CGRect tableFrame = [_tableController.view frame];
-			  tableFrame.size.height =
-				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
-			  [_tableController.view setFrame:tableFrame];
+						 // Resize & Move table view
+						 {
+							 CGRect tableFrame = [_tableController.view frame];
+							 tableFrame.size.height =
+							 [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
+							 [_tableController.view setFrame:tableFrame];
 
-			  // Scroll to bottom
-			  NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
-			  if (lastSection >= 0) {
-				  NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
-				  if (lastRow >= 0) {
-					  [_tableController.tableView
-						  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
-								atScrollPosition:UITableViewScrollPositionBottom
-										animated:FALSE];
-				  }
-			  }
-		  }
+							 // Scroll to bottom
+							 NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
+							 if (lastSection >= 0) {
+								 NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
+								 if (lastRow >= 0) {
+									 [_tableController.tableView
+									  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
+									  atScrollPosition:UITableViewScrollPositionBottom
+									  animated:FALSE];
+								 }
+							 }
+						 }
 
-		}
-		completion:^(BOOL finished){
-		}];
+					 }
+					 completion:^(BOOL finished){
+					 }];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notif {
@@ -555,65 +556,66 @@ static UICompositeViewDescription *compositeDescription = nil;
 	CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
 
 	[UIView animateWithDuration:duration
-		delay:0
-		options:UIViewAnimationOptionBeginFromCurrentState
-		animations:^{
+						  delay:0
+						options:UIViewAnimationOptionBeginFromCurrentState
+					 animations:^{
 
-		  CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+						 CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
 
-		  if (([[UIDevice currentDevice].systemVersion floatValue] < 8) &&
-			  UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-			  int width = endFrame.size.height;
-			  endFrame.size.height = endFrame.size.width;
-			  endFrame.size.width = width;
-		  }
+						 if (([[UIDevice currentDevice].systemVersion floatValue] < 8) &&
+							 UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+							 int width = endFrame.size.height;
+							 endFrame.size.height = endFrame.size.width;
+							 endFrame.size.width = width;
+						 }
 
-		  // Hide TabBar and status bar and also top bar
-		  [PhoneMainView.instance showTabBar:NO];
-		  [PhoneMainView.instance showStatusBar:NO];
-		  _topBar.alpha = 0.0;
+						 // Hide TabBar and status bar and also top bar
+						 [PhoneMainView.instance fullScreen:YES];
+						 [PhoneMainView.instance showTabBar:NO];
+						 [PhoneMainView.instance showStatusBar:NO];
+						 _topBar.alpha = 0.0;
 
-		  // Resize chat view
-		  {
-			  CGRect viewFrame = [[self view] frame];
-			  CGRect rect = PhoneMainView.instance.view.bounds;
-			  CGPoint pos = {viewFrame.size.width, viewFrame.size.height};
-			  CGPoint gPos =
-				  [self.view convertPoint:pos
-								   toView:[UIApplication sharedApplication]
-											  .keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
-			  float diff = (rect.size.height - gPos.y - endFrame.size.height);
-			  if (diff > 0)
-				  diff = 0;
-			  CGRect chatFrame = [_chatView frame];
-			  chatFrame.origin.y = 0;
-			  chatFrame.size.height = viewFrame.size.height - chatFrame.origin.y + diff;
-			  [_chatView setFrame:chatFrame];
-		  }
+						 // Resize chat view
+						 {
+							 CGRect viewFrame = [[self view] frame];
+							 CGRect rect = PhoneMainView.instance.view.bounds;
+							 CGPoint pos = {viewFrame.size.width, viewFrame.size.height};
+							 CGPoint gPos =
+							 [self.view convertPoint:pos
+											  toView:[UIApplication sharedApplication]
+							  .keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
+							 float diff = (rect.size.height - gPos.y - endFrame.size.height);
+							 if (diff > 0)
+								 diff = 0;
+							 CGRect chatFrame = [_chatView frame];
+							 chatFrame.origin.y = 0;
+							 chatFrame.size.height = viewFrame.size.height - chatFrame.origin.y + diff;
+							 [_chatView setFrame:chatFrame];
+						 }
 
-		  // Resize & Move table view
-		  {
-			  CGRect tableFrame = _tableController.view.frame;
-			  tableFrame.size.height =
-				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
-			  [_tableController.view setFrame:tableFrame];
-		  }
+						 // Resize & Move table view
+						 {
+							 CGRect tableFrame = _tableController.view.frame;
+							 tableFrame.size.height =
+							 [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
+							 [_tableController.view setFrame:tableFrame];
+						 }
 
-		  // Scroll
-		  NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
-		  if (lastSection >= 0) {
-			  NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
-			  if (lastRow >= 0) {
-				  [_tableController.tableView
-					  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
-							atScrollPosition:UITableViewScrollPositionBottom
-									animated:FALSE];
-			  }
-		  }
-
-		}
-		completion:^(BOOL finished){
-		}];
+						 // Scroll
+						 NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
+						 if (lastSection >= 0) {
+							 NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
+							 if (lastRow >= 0) {
+								 [_tableController.tableView
+								  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
+								  atScrollPosition:UITableViewScrollPositionBottom
+								  animated:FALSE];
+							 }
+						 }
+						 
+					 }
+					 completion:^(BOOL finished){
+					 }];
 }
 
 @end
