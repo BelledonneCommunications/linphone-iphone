@@ -572,13 +572,12 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	[cell setAddress:value];
 	if (contactSections[[indexPath section]] == ContactSections_Number) {
 		[cell.editTextfield setKeyboardType:UIKeyboardTypePhonePad];
-		[cell.editTextfield setPlaceholder:NSLocalizedString(@"Phone number", nil)];
 	} else if (contactSections[[indexPath section]] == ContactSections_Sip) {
 		[cell.editTextfield setKeyboardType:UIKeyboardTypeASCIICapable];
-		[cell.editTextfield setPlaceholder:NSLocalizedString(@"SIP address", nil)];
 	} else if (contactSections[[indexPath section]] == ContactSections_Email) {
 		[cell.editTextfield setKeyboardType:UIKeyboardTypeASCIICapable];
-		[cell.editTextfield setPlaceholder:NSLocalizedString(@"Email address", nil)];
+	} else {
+		[cell.editTextfield setKeyboardType:UIKeyboardTypeDefault];
 	}
 	return cell;
 }
@@ -591,7 +590,8 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		NSString *key = nil;
 		ABPropertyID property = [self propertyIDForSection:contactSections[indexPath.section]];
 
-		if (property != kABInvalidPropertyType) {
+		if (property != kABInvalidPropertyType && property != kABPersonFirstNameProperty &&
+			property != kABPersonLastNameProperty) {
 			ABMultiValueRef lMap = ABRecordCopyValue(contact, property);
 			NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
 			NSString *labelRef = CFBridgingRelease(ABMultiValueCopyLabelAtIndex(lMap, index));
@@ -625,8 +625,30 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
 	[super setEditing:editing animated:animated];
-	if (!editing) {
+	BOOL showEmails = [[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"];
+	if (editing) {
+		// add phone/SIP/email entries so that the user can add new data
+		for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
+			if (contactSections[section] == ContactSections_Number || contactSections[section] == ContactSections_Sip ||
+				(showEmails && contactSections[section] == ContactSections_Email)) {
+				[self addEntry:self.tableView section:section animated:animated];
+			}
+		}
+	} else {
 		[LinphoneUtils findAndResignFirstResponder:[self tableView]];
+		// remove empty phone numbers
+		for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {
+			// remove phony entries that were not filled by the user
+			if (contactSections[section] == ContactSections_Number || contactSections[section] == ContactSections_Sip ||
+				(showEmails && contactSections[section] == ContactSections_Email)) {
+
+				[self removeEmptyEntry:self.tableView section:section animated:animated];
+				if ([[self getSectionData:section] count] == 0 && animated) { // the section is empty -> remove titles
+					[self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section]
+								  withRowAnimation:UITableViewRowAnimationFade];
+				}
+			}
+		}
 	}
 	[self loadData];
 	if (contactDetailsDelegate != nil) {
@@ -642,6 +664,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	NSString *text = nil;
 	BOOL canAddEntry = self.tableView.isEditing;
+	NSString *addEntryName = nil;
 	if (contactSections[section] == ContactSections_First_Name && self.tableView.isEditing) {
 		text = NSLocalizedString(@"First name", nil);
 		canAddEntry = NO;
@@ -651,11 +674,14 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	} else if ([self getSectionData:section].count > 0 || self.tableView.isEditing) {
 		if (contactSections[section] == ContactSections_Number) {
 			text = NSLocalizedString(@"Phone numbers", nil);
+			addEntryName = NSLocalizedString(@"Add new phone number", nil);
 		} else if (contactSections[section] == ContactSections_Sip) {
 			text = NSLocalizedString(@"SIP addresses", nil);
+			addEntryName = NSLocalizedString(@"Add new SIP address", nil);
 		} else if (contactSections[section] == ContactSections_Email &&
 				   [LinphoneManager.instance lpConfigBoolForKey:@"show_contacts_emails_preference"]) {
 			text = NSLocalizedString(@"Email addresses", nil);
+			addEntryName = NSLocalizedString(@"Add new email", nil);
 		}
 	}
 
@@ -683,6 +709,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		[tempAddButton setImage:[UIImage imageNamed:@"add_field_over.png"] forState:UIControlStateSelected];
 		[tempAddButton addTarget:self action:@selector(onAddClick:) forControlEvents:UIControlEventTouchUpInside];
 		tempAddButton.tag = section;
+		tempAddButton.accessibilityLabel = addEntryName;
 		[tempView addSubview:tempAddButton];
 	}
 
@@ -744,6 +771,7 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
 	UIView *view = [textField superview];
+
 	// Find TableViewCell
 	while (view != nil && ![view isKindOfClass:[UIContactDetailsCell class]])
 		view = [view superview];
@@ -757,18 +785,36 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 		ABPropertyID property = [self propertyIDForSection:sect];
 		NSString *value = [textField text];
 
-		if (sect == ContactSections_Sip) {
-			[self setSipContactEntry:entry withValue:value];
-		} else if (property != kABInvalidPropertyType) {
-			ABMultiValueRef lcMap = ABRecordCopyValue(contact, property);
-			ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
-			CFRelease(lcMap);
-			NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-			ABMultiValueReplaceValueAtIndex(lMap, (__bridge CFStringRef)value, index);
-			ABRecordSetValue(contact, property, lMap, nil);
-			CFRelease(lMap);
+		switch (sect) {
+			case ContactSections_First_Name:
+			case ContactSections_Last_Name: {
+				//				[cell.detailTextLabel setText:[textField text]];
+				CFErrorRef error = NULL;
+				ABRecordSetValue(contact, property, (__bridge CFTypeRef)([textField text]), (CFErrorRef *)&error);
+				if (error != NULL) {
+					LOGE(@"Error when saving property %i in contact %p: Fail(%@)", property, contact,
+						 [(__bridge NSError *)error localizedDescription]);
+				}
+				break;
+			}
+			case ContactSections_Sip:
+				[self setSipContactEntry:entry withValue:value];
+				break;
+			case ContactSections_Email:
+			case ContactSections_Number: {
+				ABMultiValueRef lcMap = ABRecordCopyValue(contact, property);
+				ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
+				CFRelease(lcMap);
+				NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
+				ABMultiValueReplaceValueAtIndex(lMap, (__bridge CFStringRef)value, index);
+				ABRecordSetValue(contact, property, lMap, nil);
+				CFRelease(lMap);
+				break;
+			}
+			case ContactSections_MAX:
+			case ContactSections_None:
+				break;
 		}
-
 		cell.editTextfield.text = value;
 	} else {
 		LOGE(@"Not valid UIEditableTableViewCell");
@@ -779,7 +825,11 @@ static const ContactSections_e contactSections[ContactSections_MAX] = {
 	return TRUE;
 }
 - (BOOL)isValid {
-	return true;
+	NSString *firstName =
+		(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
+	NSString *lastName =
+		(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
+	return firstName.length > 0 || lastName.length > 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {

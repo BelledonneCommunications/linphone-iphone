@@ -119,7 +119,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	[_tableController setContact:_contact];
 
 	if (reload) {
-		[self setEditing:FALSE];
+		[self setEditing:TRUE animated:FALSE];
 		[[_tableController tableView] reloadData];
 	}
 }
@@ -141,7 +141,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	if (linphoneAddress) {
 		linphone_address_destroy(linphoneAddress);
 	}
-	[self setEditing:FALSE];
+	[self setEditing:TRUE];
 	[[_tableController tableView] reloadData];
 }
 
@@ -172,8 +172,10 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	[_editButton setBackgroundImage:[UIImage imageNamed:@"valid_disabled.png"]
-						   forState:(UIControlStateDisabled | UIControlStateSelected)];
+	_tableController.tableView.accessibilityIdentifier = @"Contact table";
+
+	[_editButton setImage:[UIImage imageNamed:@"valid_disabled.png"]
+				 forState:(UIControlStateDisabled | UIControlStateSelected)];
 
 	if ([ContactSelection getSelectionMode] == ContactSelectionModeEdit ||
 		[ContactSelection getSelectionMode] == ContactSelectionModeNone) {
@@ -226,6 +228,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_cancelButton.hidden = !editing;
 	_backButton.hidden = editing;
 	_nameLabel.hidden = editing;
+	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
 
 	CGRect frame = self.contentView.frame;
 	frame.size.height -= _avatarImage.frame.origin.y + _avatarImage.frame.size.height;

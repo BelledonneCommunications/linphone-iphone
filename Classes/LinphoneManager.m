@@ -2336,7 +2336,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 
 	const MSList *it = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
 	while (it) {
-		if (linphone_address_equal(addr, linphone_proxy_config_get_identity_address(it->data))) {
+		if (linphone_address_weak_equal(addr, linphone_proxy_config_get_identity_address(it->data))) {
 			return YES;
 		}
 		it = it->next;

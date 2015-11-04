@@ -108,22 +108,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
-//- (void)relayoutTableView {
-//	CGRect subViewFrame = self.view.frame;
-//	// let the top bar be visible
-//	subViewFrame.origin.y += self.topBar.frame.size.height + self.searchBar.frame.size.height;
-//	subViewFrame.size.height -= self.topBar.frame.size.height + self.searchBar.frame.size.height;
-//	[UIView animateWithDuration:0.2
-//					 animations:^{
-//					   self.tableController.tableView.frame = subViewFrame;
-//					 }];
-//}
-
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
 	_searchBar.showsCancelButton = (_searchBar.text.length > 0);
 
+	if (tableController.isEditing) {
+		tableController.editing = NO;
+	}
 	[self update];
 }
 
