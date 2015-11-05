@@ -40,14 +40,13 @@ This SDK can be generated in 2 flavors:
 
 ## Customizing features
 
-You can enable all non-free codecs using `--enable-non-free-codecs`.
-You can also choose to enable/disable features one by one (custom audio/video codecs, media encryption, etc.). To get a list of all features, the simplest way is to invoke `prepare.py` with `--list-features`:
+You can enable non-free codecs by using `--enable-non-free-codecs` and `-DENABLE_<codec>=ON`. To get a list of all features, the simplest way is to invoke `prepare.py` with `--list-features`:
 
         ./prepare.py --list-features
 
 You can for instance enable X264 by using:
 
-        ./prepare.py -DENABLE_X264=ON [other options]
+        ./prepare.py --enable-non-free-codecs -DENABLE_X264=ON [other options]
 
 ## Built architectures
 
