@@ -64,9 +64,8 @@
 	[tester waitForViewWithAccessibilityLabel:@"Finish configuration" traits:UIAccessibilityTraitButton];
 	[tester tapViewWithAccessibilityLabel:@"Finish configuration"];
 
-	[tester waitForViewWithAccessibilityLabel:@"Account validation issue"];
-	[tester tapViewWithAccessibilityLabel:@"Continue"];
-	[tester tapViewWithAccessibilityLabel:@"Cancel"];
+	[tester waitForViewWithAccessibilityLabel:@"Account validation failed"];
+	[tester tapViewWithAccessibilityLabel:@"Skip verification"];
 }
 
 - (void)testExternalLoginWithTCP {

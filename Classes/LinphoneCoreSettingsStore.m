@@ -454,17 +454,16 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			proxy = linphone_address_as_string_uri_only(proxy_addr);
 		}
 
-		// possible valid config detected, try to modify current proxy or create new one if none existing
-		proxyCfg = linphone_core_get_default_proxy_config(lc);
-		if (proxyCfg == NULL) {
-			proxyCfg = linphone_core_create_proxy_config(lc);
-		} else {
-			isEditing = TRUE;
-			linphone_proxy_config_edit(proxyCfg);
-		}
-
 		char normalizedUserName[256];
 		LinphoneAddress *linphoneAddress = linphone_address_new("sip:user@domain.com");
+
+		proxyCfg = ms_list_nth_data(linphone_core_get_proxy_config_list(lc),
+													   [self integerForKey:@"current_proxy_config_preference"]);
+		//if account was deleted, it is not present anymore
+		if (proxyCfg == NULL) {
+			goto bad_proxy;
+		}
+
 		linphone_proxy_config_normalize_number(proxyCfg, username.UTF8String, normalizedUserName,
 											   sizeof(normalizedUserName));
 		linphone_address_set_username(linphoneAddress, normalizedUserName);
@@ -827,6 +826,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	if (ai) {
 		linphone_core_remove_auth_info(lc, ai);
 	}
+	[self setInteger:-1 forKey:@"current_proxy_config_preference"];
 	[self transformLinphoneCoreToKeys];
 }
 @end

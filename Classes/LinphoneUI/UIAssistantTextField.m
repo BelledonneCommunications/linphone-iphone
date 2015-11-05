@@ -11,45 +11,24 @@
 @implementation UIAssistantTextField
 
 - (void)showError:(NSString *)msg {
-	if (!_errorLabel) {
-		[self showError:msg when:nil];
-	}
 	_errorLabel.text = msg;
+	_lastText = self.text;
+
 	_errorLabel.hidden = NO;
+	self.layer.borderWidth = .8;
+	self.layer.cornerRadius = 4.f;
+	self.autoresizingMask = YES;
 	self.layer.borderColor = _errorLabel.hidden ? [[UIColor clearColor] CGColor] : [[UIColor redColor] CGColor];
 }
 
 - (void)showError:(NSString *)msg when:(UIDisplayError)apred {
 	_showErrorPredicate = apred;
-
-	self.layer.borderWidth = .8;
-	self.layer.cornerRadius = 4.f;
-	self.autoresizingMask = YES;
-
-	if (!_errorLabel) {
-		_errorLabel = [[UILabel alloc] initWithFrame:self.frame];
-		_errorLabel.font = [UIFont systemFontOfSize:11];
-		_errorLabel.textColor = [UIColor redColor];
-	}
-	_errorLabel.text = msg;
-
-	CGSize maximumLabelSize = CGSizeMake(self.frame.size.width, 9999);
-	CGSize expectedLabelSize =
-		[msg sizeWithFont:_errorLabel.font constrainedToSize:maximumLabelSize lineBreakMode:_errorLabel.lineBreakMode];
-
-	CGRect newFrame = _errorLabel.frame;
-	newFrame.size.height = expectedLabelSize.height;
-	newFrame.origin.y = self.frame.origin.y + self.frame.size.height;
-	_errorLabel.frame = newFrame;
-
-	_lastText = self.text;
-
+	[self showError:msg];
 	[self checkDisplayError];
-	[self.superview addSubview:_errorLabel];
 }
 
 - (void)checkDisplayError {
-	_errorLabel.hidden = ![self isInvalid];
+	_errorLabel.hidden = !(_canShowError && [self isInvalid]);
 	self.layer.borderColor = _errorLabel.hidden ? [[UIColor clearColor] CGColor] : [[UIColor redColor] CGColor];
 }
 
@@ -67,7 +46,7 @@
 }
 
 - (BOOL)isInvalid {
-	return _canShowError && _showErrorPredicate && _showErrorPredicate(_lastText);
+	return _showErrorPredicate && _showErrorPredicate(_lastText);
 }
 
 @end

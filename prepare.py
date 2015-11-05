@@ -427,7 +427,7 @@ def main(argv=None):
             info("Tunnel wanted but not found yet, trying to clone it...")
             p = Popen("git clone gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" "))
             p.wait()
-            if p.retcode != 0:
+            if p.returncode != 0:
                 error("Could not clone tunnel. Please see http://www.belledonne-communications.com/voiptunnel.html")
                 return 1
         warning("Tunnel enabled, disabling GPL third parties.")

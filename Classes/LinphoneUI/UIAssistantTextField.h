@@ -12,7 +12,7 @@ typedef BOOL (^UIDisplayError)(NSString *inputEntry);
 
 @interface UIAssistantTextField : UITextField <UITextFieldDelegate>
 
-@property(nonatomic) UILabel *errorLabel;
+@property(nonatomic, strong) IBOutlet UILabel *errorLabel;
 @property(nonatomic, readonly) UIDisplayError showErrorPredicate;
 @property(nonatomic, readonly) NSString *lastText;
 // we should show error only when user finished editted the field at least once

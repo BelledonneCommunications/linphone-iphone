@@ -1940,7 +1940,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 		[error show];
 	} else {
 		// Finally we can make the call
-		LinphoneCallParams *lcallParams = linphone_core_create_default_call_parameters(theLinphoneCore);
+		LinphoneCallParams *lcallParams = linphone_core_create_call_params(theLinphoneCore, NULL);
 		if ([self lpConfigBoolForKey:@"edge_opt_preference"] && (self.network == network_2g)) {
 			LOGI(@"Enabling low bandwidth mode");
 			linphone_call_params_enable_low_bandwidth(lcallParams, YES);
