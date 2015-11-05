@@ -67,6 +67,7 @@
 			const char *name = linphone_content_get_name(c);
 			for (FileTransferDelegate *aftd in [[LinphoneManager instance] fileTransferDelegates]) {
 				if (linphone_chat_message_get_file_transfer_information(aftd.message) &&
+					(linphone_chat_message_is_outgoing(aftd.message) == linphone_chat_message_is_outgoing(amessage)) &&
 					strcmp(name, linphone_content_get_name(
 									 linphone_chat_message_get_file_transfer_information(aftd.message))) == 0) {
 					if (ftd != aftd) {
