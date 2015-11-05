@@ -108,8 +108,10 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 	if( scheme && (strcmp(scheme,"file") == 0) ){
 		// We allow for 'local remote-provisioning' in case the file is to be opened from the hard drive.
 		const char* file_path = remote_provisioning_uri + strlen("file://"); // skip scheme
+		if (uri) {
+			belle_sip_object_unref(uri);
+		}
 		return linphone_remote_provisioning_load_file(lc, file_path);
-
 	} else if( scheme && strncmp(scheme, "http", 4) == 0 && host && strlen(host) > 0) {
 		belle_http_request_listener_callbacks_t belle_request_listener={0};
 		belle_http_request_t *request;
@@ -122,9 +124,13 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 		lc->provisioning_http_listener = belle_http_request_listener_create_from_callbacks(&belle_request_listener, lc);
 
 		request=belle_http_request_create("GET",uri, NULL);
+
 		return belle_http_provider_send_request(lc->http_provider, request, lc->provisioning_http_listener);
 	} else {
 		ms_error("Invalid provisioning URI [%s] (missing scheme or host ?)",remote_provisioning_uri);
+		if (uri) {
+			belle_sip_object_unref(uri);
+		}
 		return -1;
 	}
 }
@@ -133,6 +139,9 @@ int linphone_core_set_provisioning_uri(LinphoneCore *lc, const char *remote_prov
 	belle_generic_uri_t *uri=remote_provisioning_uri?belle_generic_uri_parse(remote_provisioning_uri):NULL;
 	if (!remote_provisioning_uri||uri) {
 		lp_config_set_string(lc->config,"misc","config-uri",remote_provisioning_uri);
+		if (uri) {
+			belle_sip_object_unref(uri);
+		}
 		return 0;
 	}
 	ms_error("Invalid provisioning URI [%s] (could not be parsed)",remote_provisioning_uri);
