@@ -166,7 +166,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
-	_callButton.hidden = linphone_core_get_current_call([LinphoneManager getLc]);
+	_callButton.hidden = (linphone_core_get_current_call([LinphoneManager getLc]) != NULL);
 }
 
 - (void)update {
