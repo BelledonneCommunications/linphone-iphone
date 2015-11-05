@@ -36,18 +36,27 @@ extern "C" {
 * Enum describing the status of a LinphoneAccountCreator operation.
 **/
 typedef enum _LinphoneAccountCreatorStatus {
-	LinphoneAccountCreatorOk = 0,
-	LinphoneAccountCreatorFailed = 1 << 0,
+	LinphoneAccountCreatorOK,
+	LinphoneAccountCreatorReqFailed,
 
-	LinphoneAccountCreatorEmailInvalid = 1 << 1,
-	LinphoneAccountCreatorUsernameInvalid = 1 << 2,
-	LinphoneAccountCreatorUsernameTooShort = 1 << 3,
-	LinphoneAccountCreatorUsernameInvalidSize = 1 << 4,
-	LinphoneAccountCreatorPasswordTooShort = 1 << 5,
-	LinphoneAccountCreatorDomainInvalid = 1 << 6,
-	LinphoneAccountCreatorRouteInvalid = 1 << 7,
-	LinphoneAccountCreatorDisplayNameInvalid = 1 << 8,
-	LinphoneAccountCreatorTransportNotSupported = 1 << 9,
+	LinphoneAccountCreatorAccountCreated,
+	LinphoneAccountCreatorAccountNotCreated,
+
+	LinphoneAccountCreatorAccountExist,
+	LinphoneAccountCreatorAccountNotExist,
+
+	LinphoneAccountCreatorAccountValidated,
+	LinphoneAccountCreatorAccountNotValidated,
+
+	LinphoneAccountCreatorEmailInvalid,
+	LinphoneAccountCreatorUsernameInvalid,
+	LinphoneAccountCreatorUsernameTooShort,
+	LinphoneAccountCreatorUsernameInvalidSize,
+	LinphoneAccountCreatorPasswordTooShort,
+	LinphoneAccountCreatorDomainInvalid,
+	LinphoneAccountCreatorRouteInvalid,
+	LinphoneAccountCreatorDisplayNameInvalid,
+	LinphoneAccountCreatorTransportNotSupported,
 } LinphoneAccountCreatorStatus;
 
 /**
@@ -245,21 +254,21 @@ LINPHONE_PUBLIC LinphoneAccountCreatorCbs * linphone_account_creator_get_callbac
 /**
  * Send an XML-RPC request to test the existence of a Linphone account.
  * @param[in] creator LinphoneAccountCreator object
- * @return LinphoneAccountCreatorOk if the request has been sent, LinphoneAccountCreatorFailed otherwise
+ * @return LinphoneAccountCreatorOk if the request has been sent, LinphoneAccountCreatorReqFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_test_existence(LinphoneAccountCreator *creator);
 
 /**
  * Send an XML-RPC request to test the validation of a Linphone account.
  * @param[in] creator LinphoneAccountCreator object
- * @return LinphoneAccountCreatorOk if the request has been sent, LinphoneAccountCreatorFailed otherwise
+ * @return LinphoneAccountCreatorOk if the request has been sent, LinphoneAccountCreatorReqFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_test_validation(LinphoneAccountCreator *creator);
 
 /**
  * Send an XML-RPC request to create a Linphone account.
  * @param[in] creator LinphoneAccountCreator object
- * @return LinphoneAccountCreatorOk if the request has been sent, LinphoneAccountCreatorFailed otherwise
+ * @return LinphoneAccountCreatorOk if the request has been sent, LinphoneAccountCreatorReqFailed otherwise
 **/
 LINPHONE_PUBLIC LinphoneAccountCreatorStatus linphone_account_creator_create_account(LinphoneAccountCreator *creator);
 
