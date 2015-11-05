@@ -3926,10 +3926,11 @@ typedef void (*ContactSearchCallback)( LinphoneContactSearch* id, MSList* friend
  * Calling this function does not load the configuration. It will write the value into configuration so that configuration
  * from remote URI will take place at next LinphoneCore start.
  * @param lc the linphone core
- * @param uri the http or https uri to use in order to download the configuration.
+ * @param uri the http or https uri to use in order to download the configuration. Passing NULL will disable remote provisionning.
+ * @return -1 if uri could not be parsed, 0 otherwise. Note that this does not check validity of URI endpoint nor scheme and download may still fail.
  * @ingroup initializing
 **/
-LINPHONE_PUBLIC void linphone_core_set_provisioning_uri(LinphoneCore *lc, const char*uri);
+LINPHONE_PUBLIC int linphone_core_set_provisioning_uri(LinphoneCore *lc, const char*uri);
 
 /**
  * Get provisioning URI.

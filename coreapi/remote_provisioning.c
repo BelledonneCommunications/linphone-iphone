@@ -129,8 +129,15 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 	}
 }
 
-void linphone_core_set_provisioning_uri(LinphoneCore *lc, const char *uri) {
-	lp_config_set_string(lc->config,"misc","config-uri",uri);
+int linphone_core_set_provisioning_uri(LinphoneCore *lc, const char *remote_provisioning_uri) {
+	belle_generic_uri_t *uri=remote_provisioning_uri?belle_generic_uri_parse(remote_provisioning_uri):NULL;
+	if (!remote_provisioning_uri||uri) {
+		lp_config_set_string(lc->config,"misc","config-uri",remote_provisioning_uri);
+		return 0;
+	}
+	ms_error("Invalid provisioning URI [%s] (could not be parsed)",remote_provisioning_uri);
+	return -1;
+
 }
 
 const char*linphone_core_get_provisioning_uri(const LinphoneCore *lc){
