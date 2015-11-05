@@ -102,7 +102,7 @@
 			[tester fail];
 		} else {
 			[tester tapViewWithAccessibilityLabel:@"OK"];	 // alertview
-			[tester tapViewWithAccessibilityLabel:@"Cancel"]; // cancel assistant
+			[tester tapViewWithAccessibilityLabel:@"Dialer"];
 		}
 	} else {
 		[tester fail];
@@ -111,7 +111,7 @@
 
 - (void)testRemoteProvisioning {
 	[tester tapViewWithAccessibilityLabel:@"Fetch remote configuration"];
-	[tester enterText:@"smtp.linphone.org/testios_xml" intoViewWithAccessibilityLabel:@"Username"];
+	[tester enterText:@"smtp.linphone.org/testios_xml" intoViewWithAccessibilityLabel:@"URL"];
 	[tester tapViewWithAccessibilityLabel:@"Fetch and apply"];
 	[self waitForRegistration];
 }

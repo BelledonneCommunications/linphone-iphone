@@ -17,7 +17,7 @@
 	[super beforeAll];
 	[self switchToValidAccountIfNeeded];
 	// turn off logs for chat tests because there are way to much logs in liblinphone in filetransfer and sqlite
-	//	linphone_core_set_log_level(ORTP_WARNING);
+	linphone_core_set_log_level(ORTP_WARNING);
 }
 
 - (void)beforeEach {

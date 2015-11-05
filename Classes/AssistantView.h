@@ -40,14 +40,14 @@
 @property(nonatomic, strong) IBOutlet UIView *createAccountActivationView;
 @property(nonatomic, strong) IBOutlet UIView *linphoneLoginView;
 @property(nonatomic, strong) IBOutlet UIView *loginView;
-@property(nonatomic, strong) IBOutlet UIView *remoteProvisionningLoginView;
-@property(strong, nonatomic) IBOutlet UIView *remoteProvisionningView;
+@property(nonatomic, strong) IBOutlet UIView *remoteProvisioningLoginView;
+@property(strong, nonatomic) IBOutlet UIView *remoteProvisioningView;
 
 @property(nonatomic, strong) IBOutlet UIImageView *welcomeLogoImage;
 @property(nonatomic, strong) IBOutlet UIButton *gotoCreateAccountButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoLinphoneLoginButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoLoginButton;
-@property(nonatomic, strong) IBOutlet UIButton *gotoRemoteProvisionningButton;
+@property(nonatomic, strong) IBOutlet UIButton *gotoRemoteProvisioningButton;
 
 - (void)reset;
 - (void)fillDefaultValues;
@@ -58,14 +58,14 @@
 - (IBAction)onGotoCreateAccountClick:(id)sender;
 - (IBAction)onGotoLinphoneLoginClick:(id)sender;
 - (IBAction)onGotoLoginClick:(id)sender;
-- (IBAction)onGotoRemoteProvisionningClick:(id)sender;
+- (IBAction)onGotoRemoteProvisioningClick:(id)sender;
 
 - (IBAction)onCreateAccountClick:(id)sender;
 - (IBAction)onCreateAccountActivationClick:(id)sender;
 - (IBAction)onLinphoneLoginClick:(id)sender;
 - (IBAction)onLoginClick:(id)sender;
-- (IBAction)onRemoteProvisionningLoginClick:(id)sender;
-- (IBAction)onRemoteProvisionningDownloadClick:(id)sender;
+- (IBAction)onRemoteProvisioningLoginClick:(id)sender;
+- (IBAction)onRemoteProvisioningDownloadClick:(id)sender;
 
 - (IBAction)onTransportChange:(id)sender;
 

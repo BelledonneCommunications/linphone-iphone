@@ -12,11 +12,11 @@
                 <outlet property="gotoCreateAccountButton" destination="36" id="bZf-lI-yJp"/>
                 <outlet property="gotoLinphoneLoginButton" destination="38" id="K1E-r5-WiL"/>
                 <outlet property="gotoLoginButton" destination="39" id="uSY-cr-j4w"/>
-                <outlet property="gotoRemoteProvisionningButton" destination="Kbn-dL-C5h" id="pgT-y6-qKj"/>
+                <outlet property="gotoRemoteProvisioningButton" destination="Kbn-dL-C5h" id="zLh-uO-x8P"/>
                 <outlet property="linphoneLoginView" destination="52" id="9NX-6W-50g"/>
                 <outlet property="loginView" destination="56" id="bJH-N8-uPi"/>
-                <outlet property="remoteProvisionningLoginView" destination="xVK-hL-6pe" id="P3u-Oo-Hzd"/>
-                <outlet property="remoteProvisionningView" destination="Zuh-Sd-pcd" id="qQP-F4-FMX"/>
+                <outlet property="remoteProvisioningLoginView" destination="xVK-hL-6pe" id="pKL-9M-Vsa"/>
+                <outlet property="remoteProvisioningView" destination="Zuh-Sd-pcd" id="3pa-2M-5Xq"/>
                 <outlet property="welcomeView" destination="33" id="46a-AR-5mN"/>
             </connections>
         </placeholder>
@@ -78,7 +78,7 @@
                         <action selector="onGotoLinphoneLoginClick:" destination="-1" eventType="touchUpInside" id="4AG-ng-fIB"/>
                     </connections>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="wordWrap" id="Kbn-dL-C5h" userLabel="remoteProvisionningButton" customClass="UIRoundBorderedButton">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="wordWrap" id="Kbn-dL-C5h" userLabel="remoteProvisioningButton" customClass="UIRoundBorderedButton">
                     <rect key="frame" x="40" y="466" width="299" height="71"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <animations/>
@@ -93,7 +93,7 @@
                         <color key="titleColor" red="0.72549019609999998" green="0.76862745099999996" blue="0.79607843140000001" alpha="1" colorSpace="deviceRGB"/>
                     </state>
                     <connections>
-                        <action selector="onGotoRemoteProvisionningClick:" destination="-1" eventType="touchUpInside" id="amN-4O-i2X"/>
+                        <action selector="onGotoRemoteProvisioningClick:" destination="-1" eventType="touchUpInside" id="cAo-3u-yUT"/>
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="wordWrap" id="39" userLabel="loginButton" customClass="UIRoundBorderedButton">
@@ -629,7 +629,7 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="626.5" y="862"/>
         </view>
-        <view contentMode="scaleToFill" id="Zuh-Sd-pcd" userLabel="remoteProvisionningView">
+        <view contentMode="scaleToFill" id="Zuh-Sd-pcd" userLabel="remoteProvisioningView">
             <rect key="frame" x="0.0" y="0.0" width="375" height="562"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -643,7 +643,7 @@
                     <nil key="highlightedColor"/>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Please enter your provisionning URL" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" id="hEy-Xe-afq" userLabel="subtitleLabel">
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Please enter your provisioning URL" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" id="hEy-Xe-afq" userLabel="subtitleLabel">
                     <rect key="frame" x="36" y="100" width="302" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <animations/>
@@ -666,7 +666,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <animations/>
                     <color key="backgroundColor" red="0.88235294119999996" green="0.88235294119999996" blue="0.88235294119999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    <accessibility key="accessibilityConfiguration" label="Username"/>
+                    <accessibility key="accessibilityConfiguration" label="URL"/>
                     <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="URL"/>
@@ -675,7 +675,7 @@
                         <outlet property="errorLabel" destination="uEq-Gk-9iy" id="OLx-QW-CcR"/>
                     </connections>
                 </textField>
-                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid username" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="uEq-Gk-9iy" userLabel="urlErrorLabel">
+                <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid URL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="uEq-Gk-9iy" userLabel="urlErrorLabel">
                     <rect key="frame" x="38" y="217" width="299" height="10"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <animations/>
@@ -698,7 +698,7 @@
                         <color key="titleColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
-                        <action selector="onRemoteProvisionningDownloadClick:" destination="-1" eventType="touchUpInside" id="P1f-AL-8Xt"/>
+                        <action selector="onRemoteProvisioningDownloadClick:" destination="-1" eventType="touchUpInside" id="6yF-1w-Hpa"/>
                     </connections>
                 </button>
             </subviews>
@@ -708,7 +708,7 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="209.5" y="1470"/>
         </view>
-        <view contentMode="scaleToFill" id="xVK-hL-6pe" userLabel="remoteProvisionningLoginView">
+        <view contentMode="scaleToFill" id="xVK-hL-6pe" userLabel="remoteProvisioningLoginView">
             <rect key="frame" x="0.0" y="0.0" width="375" height="562"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -795,7 +795,7 @@
                         <outlet property="delegate" destination="-1" id="6Mx-mR-LQx"/>
                     </connections>
                 </textField>
-                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="eKs-or-rqw" userLabel="remoteProvisionningLoginButton" customClass="UIRoundBorderedButton">
+                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="eKs-or-rqw" userLabel="remoteProvisioningLoginButton" customClass="UIRoundBorderedButton">
                     <rect key="frame" x="38" y="448" width="299" height="71"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <animations/>
@@ -810,7 +810,7 @@
                         <color key="titleColor" red="0.76862745099999996" green="0.76862745099999996" blue="0.76862745099999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
-                        <action selector="onRemoteProvisionningLoginClick:" destination="-1" eventType="touchUpInside" id="11g-KH-emH"/>
+                        <action selector="onRemoteProvisioningLoginClick:" destination="-1" eventType="touchUpInside" id="smy-BN-mwN"/>
                     </connections>
                 </button>
             </subviews>

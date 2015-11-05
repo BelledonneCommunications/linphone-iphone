@@ -108,7 +108,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[LinphoneUtils adjustFontSize:_linphoneLoginView mult:2.22f];
 		[LinphoneUtils adjustFontSize:_loginView mult:2.22f];
 		[LinphoneUtils adjustFontSize:_createAccountActivationView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_remoteProvisionningLoginView mult:2.22f];
+		[LinphoneUtils adjustFontSize:_remoteProvisioningLoginView mult:2.22f];
 	}
 }
 
@@ -335,7 +335,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 
-	[self changeView:_remoteProvisionningLoginView back:FALSE animation:TRUE];
+	[self changeView:_remoteProvisioningLoginView back:FALSE animation:TRUE];
 
 	linphone_proxy_config_destroy(default_conf);
 }
@@ -346,7 +346,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[AssistantView cleanTextField:_linphoneLoginView];
 	[AssistantView cleanTextField:_loginView];
 	[AssistantView cleanTextField:_createAccountActivationView];
-	[AssistantView cleanTextField:_remoteProvisionningLoginView];
+	[AssistantView cleanTextField:_remoteProvisioningLoginView];
 }
 
 - (void)displayUsernameAsPhoneOrUsername {
@@ -455,18 +455,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 				 }];
 
 	UIAssistantTextField *url = [self findTextField:ViewElement_URL];
-	[url showError:NSLocalizedString(@"Invalid remote provisionning URL", nil)
-				 when:^BOOL(NSString *inputEntry) {
-					 NSString *url = [self findTextField:ViewElement_URL].text;
-					 if (url.length > 0) {
-						 // missing prefix will result in http:// being used
-						 if ([url rangeOfString:@"://"].location == NSNotFound) {
-							 url = [NSString stringWithFormat:@"http://%@", url];
-						 }
-						 return (linphone_core_set_provisioning_uri([LinphoneManager getLc], [url UTF8String]) != 0);
-					 }
-					 return TRUE;
-				 }];
+	[url showError:NSLocalizedString(@"Invalid remote provisioning URL", nil)
+			  when:^BOOL(NSString *inputEntry) {
+				if (inputEntry.length > 0) {
+					// missing prefix will result in http:// being used
+					if ([inputEntry rangeOfString:@"://"].location == NSNotFound) {
+						inputEntry = [NSString stringWithFormat:@"http://%@", inputEntry];
+					}
+					return (linphone_core_set_provisioning_uri([LinphoneManager getLc], inputEntry.UTF8String) != 0);
+				}
+				return TRUE;
+			  }];
 
 	[self shouldEnableNextButton];
 }
@@ -647,8 +646,8 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	[self loadAssistantConfig:@"assistant_external_sip.rc"];
 }
 
-- (IBAction)onGotoRemoteProvisionningClick:(id)sender {
-	nextView = _remoteProvisionningView;
+- (IBAction)onGotoRemoteProvisioningClick:(id)sender {
+	nextView = _remoteProvisioningView;
 	[self loadAssistantConfig:@"assistant_remote.rc"];
 	[self findTextField:ViewElement_URL].text =
 		[[LinphoneManager instance] lpConfigStringForKey:@"config-uri" forSection:@"misc"];
@@ -674,13 +673,13 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	[self addProxyConfig:linphone_account_creator_configure(account_creator)];
 }
 
-- (IBAction)onRemoteProvisionningLoginClick:(id)sender {
+- (IBAction)onRemoteProvisioningLoginClick:(id)sender {
 	_waitView.hidden = NO;
 	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
 	[self addProxyConfig:linphone_account_creator_configure(account_creator)];
 }
 
-- (IBAction)onRemoteProvisionningDownloadClick:(id)sender {
+- (IBAction)onRemoteProvisioningDownloadClick:(id)sender {
 	[_waitView setHidden:false];
 	[self resetLiblinphone];
 }
