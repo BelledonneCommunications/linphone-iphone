@@ -28,7 +28,7 @@ import re
 import shutil
 import tempfile
 import sys
-from logging import *
+from logging import error, warning, info, INFO, basicConfig
 from distutils.spawn import find_executable
 from subprocess import Popen, PIPE
 sys.dont_write_bytecode = True
@@ -212,7 +212,7 @@ def check_tools():
 
     if check_is_installed("libtoolize", warn=False):
         if not check_is_installed("glibtoolize", "libtool"):
-            glibtoolize_path = find_executable(glibtoolize)
+            glibtoolize_path = find_executable("glibtoolize")
             reterr = 1
             msg = "Please do a symbolic link from glibtoolize to libtoolize:\n\tln -s {} ${}"
             error(msg.format(glibtoolize_path, glibtoolize_path.replace("glibtoolize", "libtoolize")))
