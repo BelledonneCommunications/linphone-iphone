@@ -82,7 +82,6 @@
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
 		631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */; };
 		631348321B6FA53300C6BDCB /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 631348311B6FA53300C6BDCB /* rootca.pem */; };
-		63158FAD1B468E0E00969917 /* ImageOptim.sh in Resources */ = {isa = PBXBuildFile; fileRef = 63158FAC1B468E0E00969917 /* ImageOptim.sh */; };
 		6316FA6D1BE12A3E0050E441 /* UIRightImageButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6316FA6C1BE12A3E0050E441 /* UIRightImageButton.m */; };
 		632DA24D1B43EE9400EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
 		632DA24E1B43EEEF00EB356A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D35860D515B549B500513429 /* Utils.m */; };
@@ -891,7 +890,6 @@
 		6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundBorderedButton.h; sourceTree = "<group>"; };
 		6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedButton.m; sourceTree = "<group>"; };
 		631348311B6FA53300C6BDCB /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = "liblinphone-sdk/apple-darwin/share/linphone/rootca.pem"; sourceTree = SOURCE_ROOT; };
-		63158FAC1B468E0E00969917 /* ImageOptim.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ImageOptim.sh; path = Tools/ImageOptim.sh; sourceTree = "<group>"; };
 		6316FA6B1BE12A3E0050E441 /* UIRightImageButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRightImageButton.h; sourceTree = "<group>"; };
 		6316FA6C1BE12A3E0050E441 /* UIRightImageButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRightImageButton.m; sourceTree = "<group>"; };
 		6334DDFE1BBAD5AA00631900 /* UICheckBoxTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBoxTableViewController.h; sourceTree = "<group>"; };
@@ -1969,7 +1967,6 @@
 				22276E8613C73D8A00210156 /* CoreVideo.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				F0BB8C4A193631B300974404 /* ImageIO.framework */,
-				63158FAC1B468E0E00969917 /* ImageOptim.sh */,
 				F0FF66AA1ACAEEB0008A4486 /* IOKit.framework */,
 				223CA7E416D9255800EF1BEC /* libantlr3c.a */,
 				22276E8013C73D3100210156 /* libavcodec.a */,
@@ -2694,7 +2691,6 @@
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				63DCC71D1A07B08E00916627 /* Run Script */,
-				D33CF34715D3985000CD4B85 /* ShellScript */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 				2247673A129C3B9C002B94B4 /* CopyFiles */,
@@ -3163,7 +3159,6 @@
 				639111FA1BE2532100E6C772 /* delete_default@2x.png in Resources */,
 				639112BE1BE2532100E6C772 /* splashscreen@2x.png in Resources */,
 				639111A21BE2532100E6C772 /* call_video_start_default.png in Resources */,
-				63158FAD1B468E0E00969917 /* ImageOptim.sh in Resources */,
 				639112C31BE2532100E6C772 /* voicemail.png in Resources */,
 				639112671BE2532100E6C772 /* numpad_8_default.png in Resources */,
 				639111B41BE2532100E6C772 /* cancel_edit_disabled.png in Resources */,
@@ -3359,19 +3354,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = $SRCROOT/Tools/git_version.sh;
-		};
-		D33CF34715D3985000CD4B85 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = $SRCROOT/Tools/ImageOptim.sh;
 		};
 		F08F11A219C0AC2F007D70C2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

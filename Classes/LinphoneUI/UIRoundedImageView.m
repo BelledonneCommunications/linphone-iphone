@@ -15,7 +15,7 @@
 - (id)init {
 	self = [super init];
 	if (self) {
-		[self setRoundRadius:TRUE];
+		[self setRoundRadius];
 		[self setBordered:NO];
 	}
 	return self;
@@ -31,7 +31,7 @@
 		LOGI(@"Image is not squared (%fx%f) - cropping it", image.size.width, image.size.height);
 	}
 	[self setBordered:bordered];
-	[self setRoundRadius:rounded];
+	[self setRoundRadius];
 }
 
 - (void)setBordered:(BOOL)bordered {
@@ -43,7 +43,7 @@
 	}
 }
 // warning: for non-squared image, this function will generate an ellipsoidal image, not a round image!
-- (void)setRoundRadius:(BOOL)radius {
+- (void)setRoundRadius {
 	CALayer *imageLayer = self.layer;
 	CGFloat height = imageLayer.frame.size.height;
 	CGFloat width = imageLayer.frame.size.width;
