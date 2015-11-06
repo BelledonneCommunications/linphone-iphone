@@ -141,12 +141,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_set_provisioning_uri([LinphoneManager getLc], fullPath.UTF8String);
 	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
 
-	// For some reason, video preview hangs for 15seconds when resetting linphone core from here...
-	// to avoid it, we disable it before and reenable it after core restart.
-	BOOL hasPreview = linphone_core_video_preview_enabled([LinphoneManager getLc]);
-	linphone_core_enable_video_preview([LinphoneManager getLc], FALSE);
 	[self resetLiblinphone];
-	linphone_core_enable_video_preview([LinphoneManager getLc], hasPreview);
 	// we will set the new default proxy config in the assistant
 	linphone_core_set_default_proxy_config([LinphoneManager getLc], NULL);
 }
