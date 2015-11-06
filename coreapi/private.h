@@ -30,6 +30,7 @@ extern "C" {
 #endif
 #include "linphonecore.h"
 #include "linphonefriend.h"
+#include "friendlist.h"
 #include "linphone_tunnel.h"
 #include "linphonecore_utils.h"
 #include "sal/sal.h"
@@ -646,6 +647,17 @@ struct _LinphoneFriend{
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
+
+
+struct _LinphoneFriendList {
+	belle_sip_object_t base;
+	void *user_data;
+	char *display_name;
+	char *rls_uri;
+	MSList *friends;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneFriendList);
 
 
 typedef struct sip_config
@@ -1278,6 +1290,7 @@ BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig),
 BELLE_SIP_TYPE_ID(LinphoneFriend),
+BELLE_SIP_TYPE_ID(LinphoneFriendList),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
