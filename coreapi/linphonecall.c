@@ -659,6 +659,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	CodecConstraints codec_hints={0};
 	LinphoneCallParams *params = call->params;
 	LinphoneCore *lc = call->core;
+	bool_t rtcp_mux = lp_config_get_int(lc->config, "rtp", "rtcp_mux", 0);
 
 	/*multicast is only set in case of outgoing call*/
 	if (call->dir == LinphoneCallOutgoing && linphone_call_params_audio_multicast_enabled(params)) {
@@ -709,6 +710,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 		md->streams[call->main_audio_stream_index].proto=get_proto_from_call_params(params);
 		md->streams[call->main_audio_stream_index].dir=get_audio_dir_from_call_params(params);
 		md->streams[call->main_audio_stream_index].type=SalAudio;
+		md->streams[call->main_audio_stream_index].rtcp_mux = rtcp_mux;
 		if (params->down_ptime)
 			md->streams[call->main_audio_stream_index].ptime=params->down_ptime;
 		else
@@ -739,6 +741,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	md->streams[call->main_video_stream_index].proto=md->streams[call->main_audio_stream_index].proto;
 	md->streams[call->main_video_stream_index].dir=get_video_dir_from_call_params(params);
 	md->streams[call->main_video_stream_index].type=SalVideo;
+	md->streams[call->main_video_stream_index].rtcp_mux = rtcp_mux;
 	strncpy(md->streams[call->main_video_stream_index].name,"Video",sizeof(md->streams[call->main_video_stream_index].name)-1);
 
 	if (params->has_video){
@@ -771,6 +774,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	md->streams[call->main_text_stream_index].proto=md->streams[call->main_audio_stream_index].proto;
 	md->streams[call->main_text_stream_index].dir=SalStreamSendRecv;
 	md->streams[call->main_text_stream_index].type=SalText;
+	md->streams[call->main_text_stream_index].rtcp_mux = rtcp_mux;
 	strncpy(md->streams[call->main_text_stream_index].name,"Text",sizeof(md->streams[call->main_text_stream_index].name)-1);
 	if (params->realtimetext_enabled) {
 		strncpy(md->streams[call->main_text_stream_index].rtp_addr,linphone_call_get_public_ip_for_stream(call,call->main_text_stream_index),sizeof(md->streams[call->main_text_stream_index].rtp_addr));
@@ -3002,6 +3006,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 								ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
 			audio_stream_enable_adaptive_jittcomp(call->audiostream, linphone_core_audio_adaptive_jittcomp_enabled(lc));
 			rtp_session_set_jitter_compensation(call->audiostream->ms.sessions.rtp_session,linphone_core_get_audio_jittcomp(lc));
+			rtp_session_enable_rtcp_mux(call->audiostream->ms.sessions.rtp_session, stream->rtcp_mux);
 			if (!call->params->in_conference && call->params->record_file){
 				audio_stream_mixed_record_open(call->audiostream,call->params->record_file);
 				call->current_params->record_file=ms_strdup(call->params->record_file);
@@ -3149,6 +3154,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 													  ms_qos_analyzer_algorithm_from_string(linphone_core_get_adaptive_rate_algorithm(lc)));
 			video_stream_enable_adaptive_jittcomp(call->videostream, linphone_core_video_adaptive_jittcomp_enabled(lc));
 			rtp_session_set_jitter_compensation(call->videostream->ms.sessions.rtp_session, linphone_core_get_video_jittcomp(lc));
+			rtp_session_enable_rtcp_mux(call->videostream->ms.sessions.rtp_session, vstream->rtcp_mux);
 			if (lc->video_conf.preview_vsize.width!=0)
 				video_stream_set_preview_size(call->videostream,lc->video_conf.preview_vsize);
 			video_stream_set_fps(call->videostream,linphone_core_get_preferred_framerate(lc));
@@ -3275,8 +3281,10 @@ static void linphone_call_start_text_stream(LinphoneCall *call) {
 					ms_media_stream_sessions_set_srtp_send_key_b64(&call->textstream->ms.sessions, tstream->crypto[0].algo, local_st_desc->crypto[crypto_idx].master_key);
 				}
 			}
+			
 			configure_rtp_session_for_rtcp_fb(call, tstream);
 			configure_rtp_session_for_rtcp_xr(lc, call, SalText);
+			rtp_session_enable_rtcp_mux(call->textstream->ms.sessions.rtp_session, tstream->rtcp_mux);
 
 			if (is_multicast) rtp_session_set_multicast_ttl(call->textstream->ms.sessions.rtp_session,tstream->ttl);
 

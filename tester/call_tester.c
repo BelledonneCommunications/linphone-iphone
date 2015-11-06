@@ -5483,6 +5483,64 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void _call_with_rtcp_mux(bool_t caller_rtcp_mux, bool_t callee_rtcp_mux, bool_t with_ice){
+	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	const LinphoneCallParams *params;
+	MSList *lcs = NULL;
+	
+	lcs = ms_list_append(lcs, marie->lc);
+	lcs = ms_list_append(lcs, pauline->lc);
+	
+	if (caller_rtcp_mux){
+		lp_config_set_int(linphone_core_get_config(marie->lc), "rtp", "rtcp_mux", 1);
+	}
+	if (callee_rtcp_mux){
+		lp_config_set_int(linphone_core_get_config(pauline->lc), "rtp", "rtcp_mux", 1);
+	}
+	if (with_ice){
+		linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
+		linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+	}
+	
+	if (!BC_ASSERT_TRUE(call(marie,pauline))) goto end;
+	
+	params = linphone_call_get_remote_params(linphone_core_get_current_call(pauline->lc));
+	BC_ASSERT_TRUE(caller_rtcp_mux == (linphone_call_params_get_custom_sdp_media_attribute(params, LinphoneStreamTypeAudio, "rtcp-mux") != NULL));
+	if (caller_rtcp_mux){
+		params = linphone_call_get_remote_params(linphone_core_get_current_call(marie->lc));
+		BC_ASSERT_TRUE(callee_rtcp_mux == (linphone_call_params_get_custom_sdp_media_attribute(params, LinphoneStreamTypeAudio, "rtcp-mux") != NULL));
+	}
+	
+	if (with_ice){
+		check_ice(marie, pauline, LinphoneIceStateHostConnection);
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+	}
+	liblinphone_tester_check_rtcp(marie,pauline);
+	check_media_direction(pauline, linphone_core_get_current_call(pauline->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInvalid);
+	end_call(marie,pauline);
+	
+end:
+	ms_list_free(lcs);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
+static void call_with_rtcp_mux(void){
+	_call_with_rtcp_mux(TRUE, TRUE, FALSE);
+}
+
+static void call_with_rtcp_mux_not_accepted(void){
+	_call_with_rtcp_mux(TRUE, FALSE, FALSE);
+}
+
+static void call_with_ice_and_rtcp_mux(void){
+	_call_with_rtcp_mux(TRUE, TRUE, TRUE);
+}
+
+
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -5641,7 +5699,10 @@ test_t call_tests[] = {
 	{ "Call with network switch in early state 1", call_with_network_switch_in_early_state_1 },
 	{ "Call with network switch in early state 2", call_with_network_switch_in_early_state_2 },
 	{ "Call with network switch and ICE", call_with_network_switch_and_ice },
-	{ "Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh }
+	{ "Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh },
+	{ "Call with rtcp-mux", call_with_rtcp_mux},
+	{ "Call with rtcp-mux not accepted", call_with_rtcp_mux_not_accepted},
+	{ "Call with ICE and rtcp-mux", call_with_ice_and_rtcp_mux}
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

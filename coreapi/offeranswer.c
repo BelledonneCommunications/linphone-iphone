@@ -310,67 +310,66 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 	result->type=local_offer->type;
 
 	if (local_offer->rtp_addr[0]!='\0' && ms_is_multicast(local_offer->rtp_addr)) {
-		/*6.2 Multicast Streams
-		...
-	   If a multicast stream is accepted, the address and port information
-	   in the answer MUST match that of the offer.  Similarly, the
-	   directionality information in the answer (sendonly, recvonly, or
-	   sendrecv) MUST equal that of the offer.  This is because all
-	   participants in a multicast session need to have equivalent views of
-	   the parameters of the session, an underlying assumption of the
-	   multicast bias of RFC 2327.*/
-	  if (strcmp(local_offer->rtp_addr,remote_answer->rtp_addr) !=0 ) {
-		  ms_message("Remote answered IP [%s] does not match offered [%s] for local stream description [%p]"
-				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->rtp_addr
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->rtp_addr
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-		  result->rtp_port=0;
-		  return;
-	  }
-	  if (local_offer->rtp_port!=remote_answer->rtp_port) {
-		  ms_message("Remote answered rtp port [%i] does not match offered [%i] for local stream description [%p]"
-				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->rtp_port
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->rtp_port
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-		  result->rtp_port=0;
-		  return;
-	  }
-	  if (local_offer->dir!=remote_answer->dir) {
-		  ms_message("Remote answered dir [%s] does not match offered [%s] for local stream description [%p]"
-				  	  	  	  	  	  	  	  	  	  	  	  ,sal_stream_dir_to_string(remote_answer->dir)
-				  	  	  	  	  	  	  	  	  	  	  	  ,sal_stream_dir_to_string(local_offer->dir)
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-		  result->rtp_port=0;
-		  return;
-	  }
-	  if (local_offer->bandwidth!=remote_answer->bandwidth) {
-		  ms_message("Remote answered bandwidth [%i] does not match offered [%i] for local stream description [%p]"
-				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->bandwidth
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->bandwidth
-				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-		  result->rtp_port=0;
-		  return;
-	  }
-	  if (local_offer->ptime > 0 && local_offer->ptime!=remote_answer->ptime) {
-	  		  ms_message("Remote answered ptime [%i] does not match offered [%i] for local stream description [%p]"
-	  				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->ptime
-	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->ptime
-	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-	  	  result->rtp_port=0;
-	  	  return;
-	  }
-	  if (local_offer->ttl > 0 && local_offer->ttl!=remote_answer->ttl) {
-	  	  ms_message("Remote answered ttl [%i] does not match offered [%i] for local stream description [%p]"
-	  	  				  	  	  	  	  	  	  	  	  	  	  	  ,remote_answer->ttl
-	  	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer->ttl
-	  	  				  	  	  	  	  	  	  	  	  	  	  	  ,local_offer);
-	   	  result->rtp_port=0;
-	   	  return;
-	   }
-	  result->ttl=local_offer->ttl;
-	  result->dir=local_offer->dir;
-	  result->multicast_role = SalMulticastSender;
-
+			/*6.2 Multicast Streams
+			...
+		If a multicast stream is accepted, the address and port information
+		in the answer MUST match that of the offer.  Similarly, the
+		directionality information in the answer (sendonly, recvonly, or
+		sendrecv) MUST equal that of the offer.  This is because all
+		participants in a multicast session need to have equivalent views of
+		the parameters of the session, an underlying assumption of the
+		multicast bias of RFC 2327.*/
+		if (strcmp(local_offer->rtp_addr,remote_answer->rtp_addr) !=0 ) {
+			ms_message("Remote answered IP [%s] does not match offered [%s] for local stream description [%p]"
+																,remote_answer->rtp_addr
+																,local_offer->rtp_addr
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->rtp_port!=remote_answer->rtp_port) {
+			ms_message("Remote answered rtp port [%i] does not match offered [%i] for local stream description [%p]"
+																,remote_answer->rtp_port
+																,local_offer->rtp_port
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->dir!=remote_answer->dir) {
+			ms_message("Remote answered dir [%s] does not match offered [%s] for local stream description [%p]"
+																,sal_stream_dir_to_string(remote_answer->dir)
+																,sal_stream_dir_to_string(local_offer->dir)
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->bandwidth!=remote_answer->bandwidth) {
+			ms_message("Remote answered bandwidth [%i] does not match offered [%i] for local stream description [%p]"
+																,remote_answer->bandwidth
+																,local_offer->bandwidth
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->ptime > 0 && local_offer->ptime!=remote_answer->ptime) {
+			ms_message("Remote answered ptime [%i] does not match offered [%i] for local stream description [%p]"
+																,remote_answer->ptime
+																,local_offer->ptime
+																,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		if (local_offer->ttl > 0 && local_offer->ttl!=remote_answer->ttl) {
+			ms_message("Remote answered ttl [%i] does not match offered [%i] for local stream description [%p]"
+																		,remote_answer->ttl
+																		,local_offer->ttl
+																		,local_offer);
+			result->rtp_port=0;
+			return;
+		}
+		result->ttl=local_offer->ttl;
+		result->dir=local_offer->dir;
+		result->multicast_role = SalMulticastSender;
 	} else {
 		result->dir=compute_dir_outgoing(local_offer->dir,remote_answer->dir);
 	}
@@ -409,8 +408,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 		result->dtls_fingerprint[0] = '\0';
 		result->dtls_role = SalDtlsRoleInvalid;
 	}
-
-
+	result->rtcp_mux = remote_answer->rtcp_mux && local_offer->rtcp_mux;
 }
 
 
@@ -478,8 +476,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 		result->dtls_fingerprint[0] = '\0';
 		result->dtls_role = SalDtlsRoleInvalid;
 	}
-
-
+	result->rtcp_mux = remote_offer->rtcp_mux && local_cap->rtcp_mux;
 }
 
 

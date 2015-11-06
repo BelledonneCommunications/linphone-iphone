@@ -245,7 +245,8 @@ typedef struct SalStreamDescription{
 	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
 	bool_t ice_mismatch;
 	bool_t ice_completed;
-	bool_t pad[2];
+	bool_t rtcp_mux;
+	bool_t pad[1];
 	char dtls_fingerprint[256];
 	SalDtlsRole dtls_role;
 	int ttl; /*for multicast -1 to disable*/
