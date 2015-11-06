@@ -33,8 +33,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static char *create_enum_domain(const char *number){
 	size_t len=strlen(number);
 	char *domain=ms_malloc((len*2)+10);
-	size_t i,j;
-	
+	long i,j;
+
 	for (i=0,j=len-1;j>=0;j--){
 		domain[i]=number[j];
 		i++;
@@ -105,11 +105,11 @@ int enum_lookup(const char *enum_domain, enum_lookup_res_t **res){
 	/*
 	ns_msg handle;
 	int count;
-	
+
 	memset(&handle,0,sizeof(handle));
 	*res=NULL;
 	ms_message("Resolving %s...",enum_domain);
-	
+
 	err=res_search(enum_domain,ns_c_in,ns_t_naptr,dns_answer,DNS_ANSWER_MAX_SIZE);
 	if (err<0){
 		ms_warning("Error resolving enum:",herror(h_errno));
@@ -117,7 +117,7 @@ int enum_lookup(const char *enum_domain, enum_lookup_res_t **res){
 	}
 	ns_initparse(dns_answer,DNS_ANSWER_MAX_SIZE,&handle);
 	count=ns_msg_count(handle,ns_s_an);
-	
+
 	for(i=0;i<count;i++){
 		ns_rr rr;
 		memset(&rr,0,sizeof(rr));
@@ -136,9 +136,9 @@ int enum_lookup(const char *enum_domain, enum_lookup_res_t **res){
 	}else{
 		ms_warning("Could not spawn the \'host\' command.");
 		return -1;
-	}		
+	}
 	ms_message("Answer received from dns (err=%i): %s",err,host_result);
-	
+
 	begin=strstr(host_result,"sip:");
 	if (begin==0) {
 		ms_warning("No sip address found in dns naptr answer.");
