@@ -2797,8 +2797,8 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 	if (enable_tunnel) {
 		int i;
 		LinphoneTunnelConfig * tunnel_config = linphone_tunnel_config_new();
-		linphone_tunnel_config_set_host(tunnel_config,"tunnel.linphone.org");
-		linphone_tunnel_config_set_port(tunnel_config,443);
+		linphone_tunnel_config_set_host(tunnel_config, "tunnel.linphone.org");
+		linphone_tunnel_config_set_port(tunnel_config, 443);
 		linphone_tunnel_add_server(linphone_core_get_tunnel(marie->lc),tunnel_config);
 		linphone_tunnel_enable_sip(linphone_core_get_tunnel(marie->lc),FALSE);
 		linphone_tunnel_set_mode(linphone_core_get_tunnel(marie->lc),LinphoneTunnelModeEnable);
@@ -2832,9 +2832,19 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 			/*wait for SAS*/
 			int i;
 			for (i=0;i<100;i++) {
-				if (linphone_call_get_authentication_token(linphone_core_get_current_call(pauline->lc))
+				LinphoneCall *pauline_call = linphone_core_get_current_call(pauline->lc);
+				LinphoneCall *marie_call = linphone_core_get_current_call(marie->lc);
+				
+				if (!pauline_call || !marie_call){
+					/*if one of the two calls was disapeering, don't crash, but report it*/
+					BC_ASSERT_PTR_NOT_NULL(pauline_call);
+					BC_ASSERT_PTR_NOT_NULL(marie_call);
+					break;
+				}
+				
+				if (linphone_call_get_authentication_token(pauline_call)
 					&&
-					linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc))) {
+					linphone_call_get_authentication_token(marie_call)) {
 					/*check SAS*/
 					BC_ASSERT_STRING_EQUAL(linphone_call_get_authentication_token(linphone_core_get_current_call(pauline->lc))
 								,linphone_call_get_authentication_token(linphone_core_get_current_call(marie->lc)));

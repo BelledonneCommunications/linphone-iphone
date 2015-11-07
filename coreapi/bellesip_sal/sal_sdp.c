@@ -785,7 +785,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 		stream->dir=md->dir; /*takes default value if not present*/
 	}
 
-	stream->rtcp_mux = belle_sdp_media_description_get_attribute(media_desc, "rtcp_mux") != NULL;
+	stream->rtcp_mux = belle_sdp_media_description_get_attribute(media_desc, "rtcp-mux") != NULL;
 	
 	/* Get media payload types */
 	sdp_parse_payload_types(media_desc, stream);
