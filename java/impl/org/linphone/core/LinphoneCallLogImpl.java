@@ -29,7 +29,7 @@ class LinphoneCallLogImpl implements LinphoneCallLog {
 	private native int getStatus(long nativePtr);
 	private native String getStartDate(long nativePtr);
 	private native int getCallDuration(long nativePtr);
-	private native int getCallId(long nativePtr);
+	private native String getCallId(long nativePtr);
 	private native long getTimestamp(long nativePtr);
 	
 	LinphoneCallLogImpl(long aNativePtr)  {
@@ -62,7 +62,7 @@ class LinphoneCallLogImpl implements LinphoneCallLog {
 	public int getCallDuration() {
 		return getCallDuration(nativePtr);
 	}
-	public int getCallId() {
+	public String getCallId() {
 		return getCallId(nativePtr);
 	}
 	

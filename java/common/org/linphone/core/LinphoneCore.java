@@ -960,6 +960,18 @@ public interface LinphoneCore {
 	void setSipDscp(int dscp);
 
 	/**
+	 * Set the timeout in milliseconds for SIP transport (TCP or TLS connection establishment maximum time).
+	 * @param timeout_ms
+	**/
+	void setSipTransportTimeout(int timeout_ms);
+
+	/**
+	 * Get the current SIP transport timeout.
+	 * @param timeout_ms
+	**/
+	int getSipTransportTimeout();
+
+	/**
 	 * Get DSCP used for SIP socket.
 	 * @return the DSCP value used for the SIP socket.
 	 */
@@ -2179,4 +2191,22 @@ public interface LinphoneCore {
 	 * Get the provisioning URI previously set.
     **/
 	public String getProvisioningUri();
+
+	/**
+	 * Set an http proxy hostname or IP address to use for SIP connection.
+	 */
+	public void setHttpProxyHost(String host);
+	/**
+	 * Set an http proxy port to use for SIP connection.
+	 */
+	public void setHttpProxyPort(int port);
+	/**
+	 * Get the http proxy host previously set.
+	**/
+	public String getHttpProxyHost();
+	/**
+	 * Get the http proxy port previously set.
+	**/
+	public int getHttpProxyPort();
+
 }

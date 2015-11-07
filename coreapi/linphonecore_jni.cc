@@ -659,6 +659,15 @@ public:
 			env->DeleteLocalRef(d);
 		}
 	}
+	static void setCoreIfNotDone(JNIEnv *env, jobject jcore, LinphoneCore *lc){
+		jclass objClass = env->GetObjectClass(jcore);
+		jfieldID myFieldID = env->GetFieldID(objClass, "nativePtr", "J");
+		jlong fieldVal = env->GetLongField(jcore, myFieldID);
+		if (fieldVal == 0){
+			env->SetLongField(jcore, myFieldID, (jlong)lc);
+		}
+	}
+	
 	static void globalStateChange(LinphoneCore *lc, LinphoneGlobalState gstate,const char* message) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
@@ -668,6 +677,11 @@ public:
 		}
 		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
 		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+		
+		jobject jcore = lcData->core;
+		/*at this stage, the java object may not be aware of its C object, because linphone_core_new() hasn't returned yet.*/
+		setCoreIfNotDone(env,jcore, lc);
+		
 		jstring msg = message ? env->NewStringUTF(message) : NULL;
 		env->CallVoidMethod(lcData->listener
 							,lcData->globalStateId
@@ -6462,6 +6476,75 @@ JNIEXPORT void JNICALL Java_org_linphone_core_TunnelConfigImpl_destroy(JNIEnv *e
 	LinphoneTunnelConfig *cfg = (LinphoneTunnelConfig *)ptr;
 	linphone_tunnel_config_set_user_data(cfg, NULL);
 	linphone_tunnel_config_unref(cfg);
+}
+
+
+/*
+ * Class:     org_linphone_core_LinphoneCallLogImpl
+ * Method:    getCallId
+ * Signature: (J)I
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneCallLogImpl_getCallId(JNIEnv *env, jobject jobj, jlong pcl){
+	const char *str = linphone_call_log_get_call_id((LinphoneCallLog*)pcl);
+	return str ? env->NewStringUTF(str) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setHttpProxyHost
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setHttpProxyHost(JNIEnv *env, jobject jobj, jlong core, jstring jhost){
+	const char *host = jhost ? env->GetStringUTFChars(jhost, NULL) : NULL;
+	linphone_core_set_http_proxy_host((LinphoneCore*)core, host);
+	if (host) env->ReleaseStringUTFChars(jhost, host);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setHttpProxyPort
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setHttpProxyPort(JNIEnv *env, jobject jobj, jlong core, jint port){
+	linphone_core_set_http_proxy_port((LinphoneCore*)core, port);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    getHttpProxyHost
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneCoreImpl_getHttpProxyHost(JNIEnv *env , jobject jobj, jlong core){
+	const char * host = linphone_core_get_http_proxy_host((LinphoneCore *)core);
+	return host ? env->NewStringUTF(host) : NULL;
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    getHttpProxyPort
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getHttpProxyPort(JNIEnv *env, jobject jobj, jlong core){
+	return linphone_core_get_http_proxy_port((LinphoneCore *)core);
+}
+
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setSipTransportTimeout
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setSipTransportTimeout(JNIEnv *env, jobject jobj, jlong pcore, jint timeout){
+	linphone_core_set_sip_transport_timeout((LinphoneCore*)pcore, timeout);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    getSipTransportTimeout
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getSipTransportTimeout(JNIEnv *env, jobject jobj, jlong pcore){
+	return linphone_core_get_sip_transport_timeout((LinphoneCore*)pcore);
 }
 
 

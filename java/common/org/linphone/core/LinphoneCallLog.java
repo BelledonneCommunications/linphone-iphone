@@ -118,7 +118,7 @@ public interface LinphoneCallLog {
 	public int getCallDuration();
 	/**
 	 *  Call id from signaling
-	 * @return int
+	 * @return the SIP call-id.
 	 */
-	public int getCallId();
+	public String getCallId();
 }

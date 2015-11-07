@@ -50,7 +50,7 @@ set(LINPHONE_HEADER_FILES
 	xmlrpc.h
 )
 
-set(LINPHONE_SOURCE_FILES
+set(LINPHONE_SOURCE_FILES_C
 	account_creator.c
 	address.c
 	authentication.c
@@ -111,15 +111,16 @@ set(LINPHONE_SOURCE_FILES
 	xmlrpc.c
 	vtables.c
 )
+set(LINPHONE_SOURCE_FILES_CXX )
 
 if(ENABLE_TUNNEL)
-	list(APPEND LINPHONE_SOURCE_FILES
+	list(APPEND LINPHONE_SOURCE_FILES_CXX
 		linphone_tunnel.cc
 		TunnelManager.cc
 	)
 	add_definitions(-DTUNNEL_ENABLED)
 else()
-	list(APPEND LINPHONE_SOURCE_FILES linphone_tunnel_stubs.c)
+	list(APPEND LINPHONE_SOURCE_FILES_C linphone_tunnel_stubs.c)
 endif()
 
 find_package(Git)
@@ -132,6 +133,9 @@ add_definitions(
 	-DUSE_BELLESIP
 	-DLIBLINPHONE_EXPORTS
 )
+
+apply_compile_flags(LINPHONE_SOURCE_FILES_C "CPP" "C")
+apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
 
 set(LIBS
 	${BELLESIP_LIBRARIES}
@@ -161,10 +165,10 @@ if(INTL_FOUND)
 endif()
 
 if(ENABLE_STATIC)
-	add_library(linphone STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES})
+	add_library(linphone STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX})
 	target_link_libraries(linphone ${LIBS})
 else()
-	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES})
+	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX})
 	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
 	target_link_libraries(linphone ${LIBS})
 	if(MSVC)

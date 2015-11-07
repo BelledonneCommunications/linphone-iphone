@@ -868,7 +868,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 	if (linphone_proxy_config_is_phone_number(tmpproxy, username)){
 		dial_plan_t dialplan = {0};
 		char * flatten=flatten_number(username);
-		ms_debug("Flattened number is '%s'",flatten);
+		ms_debug("Flattened number is '%s' for '%s'",flatten, username);
 
 		/*if proxy has a dial prefix, modify phonenumber accordingly*/
 		if (tmpproxy->dial_prefix!=NULL && tmpproxy->dial_prefix[0]!='\0'){
@@ -884,15 +884,17 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 				}
 			}else{
 				/*0. keep at most national number significant digits */
-				char* flatten_start = flatten + MAX(0, strlen(flatten) - dialplan.nnl);
+				char* flatten_start = flatten + MAX(0, (int)strlen(flatten) - (int)dialplan.nnl);
+				ms_debug("Prefix not present. Keeping at most %d digits: %s", dialplan.nnl, flatten_start);
+
 				/*1. First prepend international calling prefix or +*/
 				/*2. Second add prefix*/
 				/*3. Finally add user digits */
-
 				result = ms_strdup_printf("%s%s%s"
 											, tmpproxy->dial_escape_plus ? dialplan.icp : "+"
 											, dialplan.ccc
 											, flatten_start);
+				ms_debug("Prepended prefix resulted in %s", result);
 			}
 		}
 		if (result==NULL) {
@@ -1149,6 +1151,8 @@ void linphone_core_remove_proxy_config(LinphoneCore *lc, LinphoneProxyConfig *cf
 		linphone_proxy_config_enable_register(cfg,FALSE);
 		linphone_proxy_config_done(cfg);
 		linphone_proxy_config_update(cfg);
+	} else if (cfg->state != LinphoneRegistrationNone) {
+		linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone,"Registration disabled");
 	}
 	linphone_proxy_config_write_all_to_config_file(lc);
 }

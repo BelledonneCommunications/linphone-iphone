@@ -78,6 +78,7 @@ if(WIN32)
 	list(APPEND SOURCE_FILES linphone.rc)
 endif()
 
+apply_compile_flags(SOURCE_FILES "CPP" "C")
 if(WIN32)
 	add_executable(linphone-gtk WIN32 ${SOURCE_FILES})
 else()

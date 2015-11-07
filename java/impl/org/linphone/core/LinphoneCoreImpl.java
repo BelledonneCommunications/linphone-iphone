@@ -1535,4 +1535,39 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public GlobalState getGlobalState(){
 		return GlobalState.fromInt(getGlobalState(nativePtr));
 	}
+	private native void setHttpProxyHost(long nativePtr, String host);
+	@Override
+	public void setHttpProxyHost(String host){
+		setHttpProxyHost(nativePtr, host);
+	}
+
+	private native void setHttpProxyPort(long nativePtr, int port);
+	@Override
+	public void setHttpProxyPort(int port){
+		setHttpProxyPort(nativePtr, port);
+	}
+
+	private native String getHttpProxyHost(long nativePtr);
+	@Override
+	public String getHttpProxyHost(){
+		return getHttpProxyHost(nativePtr);
+	}
+
+	private native int getHttpProxyPort(long nativePtr);
+	@Override
+	public int getHttpProxyPort(){
+		return getHttpProxyPort(nativePtr);
+	}
+	private native void setSipTransportTimeout(long nativePtr, int timeout_ms);
+	@Override
+	public void setSipTransportTimeout(int timeout_ms){
+		setSipTransportTimeout(nativePtr, timeout_ms);
+	}
+
+	private native int getSipTransportTimeout(long nativePtr);
+	@Override
+	public int getSipTransportTimeout(){
+		return getSipTransportTimeout(nativePtr);
+	}
+
 }

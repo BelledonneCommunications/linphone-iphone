@@ -46,7 +46,9 @@ set(SOURCE_FILES
 	tunnel_tester.c
 	upnp_tester.c
 	video_tester.c
-	)
+)
+
+apply_compile_flags(SOURCE_FILES "CPP" "C")
 
 #executable must be available on root path, not host one
 find_program(SIPP_PROGRAM NAMES sipp sipp.exe ONLY_CMAKE_FIND_ROOT_PATH)

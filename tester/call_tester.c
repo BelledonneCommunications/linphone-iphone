@@ -4871,8 +4871,8 @@ end:
 typedef struct _RtpTransportModifierData {
 	uint64_t packetSentCount;
 	uint64_t packetReceivedCount;
-	mblk_t *msg_to_send;
-	mblk_t *msg_to_recv;
+	MSQueue to_send;
+	MSQueue to_recv;
 } RtpTransportModifierData;
 
 const char *XOR_KEY = "BELLEDONNECOMMUNICATIONS";
@@ -4889,7 +4889,7 @@ static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 	}
 
 	data->packetSentCount += 1;
-	data->msg_to_send = dupmsg(msg);
+	ms_queue_put(&data->to_send, dupmsg(msg));
 	return 0; // Return 0 to drop the packet, it will be injected later
 }
 
@@ -4905,15 +4905,15 @@ static int rtptm_on_receive(RtpTransportModifier *rtptm, mblk_t *msg) {
 	}
 
 	data->packetReceivedCount += 1;
-	data->msg_to_recv = dupmsg(msg);
+	ms_queue_put(&data->to_recv, dupmsg(msg));
 	return 0; // Return 0 to drop the packet, it will be injected later
 }
 
 static void rtptm_on_schedule(RtpTransportModifier *rtptm) {
 	RtpTransportModifierData *data = rtptm->data;
+	mblk_t *msg = NULL;
 	
-	if (data->msg_to_send != NULL) {
-		mblk_t *msg = data->msg_to_send;
+	while ((msg = ms_queue_get(&data->to_send)) != NULL) {
 		int size = 0;
 		unsigned char *src;	
 		int i = 0;
@@ -4931,11 +4931,10 @@ static void rtptm_on_schedule(RtpTransportModifier *rtptm) {
 		}
 		
 		meta_rtp_transport_modifier_inject_packet_to_send(rtptm->transport, rtptm, msg, 0);
-		data->msg_to_send = NULL;
 	}
 	
-	if (data->msg_to_recv != NULL) {
-		mblk_t *msg = data->msg_to_recv;
+	msg = NULL;
+	while ((msg = ms_queue_get(&data->to_recv)) != NULL) {
 		int size = 0;
 		unsigned char *src;
 		int i = 0;
@@ -4950,7 +4949,6 @@ static void rtptm_on_schedule(RtpTransportModifier *rtptm) {
 		}
 	
 		meta_rtp_transport_modifier_inject_packet_to_recv(rtptm->transport, rtptm, msg, 0);
-		data->msg_to_recv = NULL;
 	}
 }
 
@@ -4969,6 +4967,8 @@ void static call_state_changed_4(LinphoneCore *lc, LinphoneCall *call, LinphoneC
 		RtpTransport *rtpt = NULL;
 		RtpTransportModifierData *data = ms_new0(RtpTransportModifierData, 1);
 		RtpTransportModifier *rtptm = ms_new0(RtpTransportModifier, 1);
+		ms_queue_init(&data->to_send);
+		ms_queue_init(&data->to_recv);
 		rtptm->data = data;
 		rtptm->t_process_on_send = rtptm_on_send;
 		rtptm->t_process_on_receive = rtptm_on_receive;
@@ -5133,7 +5133,8 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		ms_message("Pauline sent %i RTP packets and received %i (for real)", (int)pauline_rtp_stats.packet_sent, (int)pauline_rtp_stats.packet_recv);
 		BC_ASSERT_TRUE(data_marie->packetReceivedCount == marie_rtp_stats.packet_recv);
 		BC_ASSERT_TRUE(data_marie->packetSentCount == marie_rtp_stats.packet_sent);
-		BC_ASSERT_TRUE(data_pauline->packetReceivedCount == pauline_rtp_stats.packet_recv);
+		// There can be a small difference between the number of packets received in the modifier and the number processed in reception because the processing is asynchronous
+		BC_ASSERT_TRUE(data_pauline->packetReceivedCount - pauline_rtp_stats.packet_recv < 20);
 		BC_ASSERT_TRUE(data_pauline->packetSentCount == pauline_rtp_stats.packet_sent);
 	}
 
