@@ -1889,12 +1889,14 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	}
 	if (ss==SalSubscribeTerminated){
 		if (lf){
-			sal_op_release(lf->outsub);
-			lf->outsub=NULL;
-			lf->subscribe_active=FALSE;
 			if (lf->outsub != op){
 				sal_op_release(op);
 			}
+			if (lf->outsub){
+				sal_op_release(lf->outsub);
+				lf->outsub=NULL;
+			}
+			lf->subscribe_active=FALSE;
 		}else{
 			sal_op_release(op);
 		}
