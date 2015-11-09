@@ -376,13 +376,14 @@ void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
 
+void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
 void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op);
-LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
-LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
+LinphoneFriend *linphone_friend_list_find_friend_by_inc_subscribe(const LinphoneFriendList *list, SalOp *op);
+LinphoneFriend *linphone_friend_list_find_friend_by_out_subscribe(const LinphoneFriendList *list, SalOp *op);
 MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf);
 bool_t linphone_core_should_subscribe_friends_only_when_registered(const LinphoneCore *lc);
 void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyConfig *cfg, bool_t only_when_registered);
@@ -850,7 +851,7 @@ struct _LinphoneCore
 	ui_config_t ui_conf;
 	autoreplier_config_t autoreplier_conf;
 	LinphoneProxyConfig *default_proxy;
-	MSList *friends;
+	LinphoneFriendList *friendlist;
 	MSList *auth_info;
 	struct _RingStream *ringstream;
 	time_t dmfs_playing_start_time;

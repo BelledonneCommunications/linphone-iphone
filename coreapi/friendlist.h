@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "linphonefriend.h"
+#include "linphonepresence.h"
 
 
 #ifdef __cplusplus
@@ -124,6 +125,20 @@ LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_friend(Linphon
  * @return LinphoneFriendListOK if removed successfully, LinphoneFriendListNonExistentFriend if the friend is not in the list.
 **/
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *list, LinphoneFriend *friend);
+
+LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFriendList *list, const LinphoneAddress *address);
+
+LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendList *list, const char *uri);
+
+LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key);
+
+LINPHONE_PUBLIC void linphone_friend_list_close_subscriptions(LinphoneFriendList *list);
+
+LINPHONE_PUBLIC void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered);
+
+LINPHONE_PUBLIC void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list);
+
+LINPHONE_PUBLIC void linphone_friend_list_notify_presence(LinphoneFriendList *list, LinphonePresenceModel *presence);
 
 /**
  * @}

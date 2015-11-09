@@ -88,25 +88,6 @@ MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr,
 	return res;
 }
 
-LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op){
-	MSList *elem;
-	for (elem=l;elem!=NULL;elem=elem->next){
-		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
-		if (ms_list_find(lf->insubs, op)) return lf;
-	}
-	return NULL;
-}
-
-LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op){
-	MSList *elem;
-	LinphoneFriend *lf;
-	for (elem=l;elem!=NULL;elem=elem->next){
-		lf=(LinphoneFriend*)elem->data;
-		if (lf->outsub && (lf->outsub == op || sal_op_is_forked_of(lf->outsub, op))) return lf;
-	}
-	return NULL;
-}
-
 void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	LinphoneCore *lc=fr->lc;
 
@@ -259,7 +240,7 @@ static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 	}
 }
 
-static void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
+void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 	if (lf->outsub!=NULL) {
 		LinphoneCore *lc=lf->lc;
 		sal_op_release(lf->outsub);
@@ -491,47 +472,27 @@ LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, cons
 	return linphone_friend_new_with_address(address);
 }
 
-void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
-{
-	ms_return_if_fail(lf->lc==NULL);
-	ms_return_if_fail(lf->uri!=NULL);
-	if (ms_list_find(lc->friends,lf)!=NULL){
-		char *tmp=NULL;
-		const LinphoneAddress *addr=linphone_friend_get_address(lf);
-		if (addr) tmp=linphone_address_as_string(addr);
-		ms_warning("Friend %s already in list, ignored.", tmp ? tmp : "unknown");
-		if (tmp) ms_free(tmp);
-		return ;
-	}
-	lc->friends=ms_list_append(lc->friends,linphone_friend_ref(lf));
-	if (ms_list_find(lc->subscribers, lf)){
+void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
+	if (linphone_friend_list_add_friend(lc->friendlist, lf) != LinphoneFriendListOK) return;
+	if (ms_list_find(lc->subscribers, lf)) {
 		/*if this friend was in the pending subscriber list, now remove it from this list*/
 		lc->subscribers = ms_list_remove(lc->subscribers, lf);
 		linphone_friend_unref(lf);
 	}
-	lf->lc=lc;
-	if ( linphone_core_ready(lc)) linphone_friend_apply(lf,lc);
-	else lf->commit=TRUE;
-	return ;
+	lf->lc = lc;
+	if (linphone_core_ready(lc)) linphone_friend_apply(lf, lc);
+	else lf->commit = TRUE;
 }
 
-void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){
-	MSList *el=ms_list_find(lc->friends,fl);
-	if (el!=NULL){
-		linphone_friend_unref((LinphoneFriend*)el->data);
-		lc->friends=ms_list_remove_link(lc->friends,el);
-		linphone_core_write_friends_config(lc);
-	}else{
-		ms_error("linphone_core_remove_friend(): friend [%p] is not part of core's list.",fl);
+void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *lf) {
+	if (linphone_friend_list_remove_friend(lc->friendlist, lf) == LinphoneFriendListNonExistentFriend) {
+		ms_error("linphone_core_remove_friend(): friend [%p] is not part of core's list.", lf);
 	}
 }
 
 void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyConfig *cfg, bool_t only_when_registered){
-	const MSList *elem;
-	for(elem=lc->friends;elem!=NULL;elem=elem->next){
-		LinphoneFriend *f=(LinphoneFriend*)elem->data;
-		linphone_friend_update_subscribes(f,cfg,only_when_registered);
-	}
+	if (lc->friendlist != NULL)
+		linphone_friend_list_update_subscriptions(lc->friendlist, cfg, only_when_registered);
 }
 
 bool_t linphone_core_should_subscribe_friends_only_when_registered(const LinphoneCore *lc){
@@ -545,11 +506,8 @@ void linphone_core_send_initial_subscribes(LinphoneCore *lc){
 }
 
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc){
-	const MSList *elem;
-	for(elem=lc->friends;elem!=NULL;elem=elem->next){
-		LinphoneFriend *f=(LinphoneFriend*)elem->data;
-		linphone_friend_invalidate_subscription(f);
-	}
+	if (lc->friendlist != NULL)
+		linphone_friend_list_invalidate_subscriptions(lc->friendlist);
 	lc->initial_subscribes_sent=FALSE;
 }
 
@@ -569,34 +527,15 @@ const char *linphone_friend_get_ref_key(const LinphoneFriend *lf){
 }
 
 LinphoneFriend *linphone_core_find_friend(const LinphoneCore *lc, const LinphoneAddress *addr){
-	LinphoneFriend *lf=NULL;
-	MSList *elem;
-	for(elem=lc->friends;elem!=NULL;elem=ms_list_next(elem)){
-		lf=(LinphoneFriend*)elem->data;
-		if (linphone_address_weak_equal(lf->uri,addr))
-			break;
-		lf=NULL;
-	}
-	return lf;
+	return linphone_friend_list_find_friend_by_address(lc->friendlist, addr);
 }
 
 LinphoneFriend *linphone_core_get_friend_by_address(const LinphoneCore *lc, const char *uri){
-	LinphoneAddress *puri=linphone_address_new(uri);
-	LinphoneFriend *lf=puri ? linphone_core_find_friend(lc,puri) : NULL;
-	if (puri) linphone_address_unref(puri);
-	return lf;
+	return linphone_friend_list_find_friend_by_uri(lc->friendlist, uri);
 }
 
 LinphoneFriend *linphone_core_get_friend_by_ref_key(const LinphoneCore *lc, const char *key){
-	const MSList *elem;
-	if (key==NULL) return NULL;
-	for(elem=linphone_core_get_friend_list(lc);elem!=NULL;elem=elem->next){
-		LinphoneFriend *lf=(LinphoneFriend*)elem->data;
-		if (lf->refkey!=NULL && strcmp(lf->refkey,key)==0){
-			return lf;
-		}
-	}
-	return NULL;
+	return linphone_friend_list_find_friend_by_ref_key(lc->friendlist, key);
 }
 
 #define key_compare(s1,s2)	strcmp(s1,s2)
@@ -702,7 +641,7 @@ void linphone_core_write_friends_config(LinphoneCore* lc)
 	MSList *elem;
 	int i;
 	if (! linphone_core_ready(lc)) return; /*dont write config when reading it !*/
-	for (elem=lc->friends,i=0; elem!=NULL; elem=ms_list_next(elem),i++){
+	for (elem=lc->friendlist->friends,i=0; elem!=NULL; elem=ms_list_next(elem),i++){
 		linphone_friend_write_to_config_file(lc->config,(LinphoneFriend*)elem->data,i);
 	}
 	linphone_friend_write_to_config_file(lc->config,NULL,i);	/* set the end */
