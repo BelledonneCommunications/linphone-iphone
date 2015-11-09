@@ -19,6 +19,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIAddressTextField : UITextField
+@interface UIAddressTextField : UITextField <UITextFieldDelegate>
 
 @end

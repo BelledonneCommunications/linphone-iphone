@@ -418,7 +418,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		if (linphone_core_get_global_state(core) != LinphoneGlobalOn) {
 			[self changeCurrentView:DialerView.compositeViewDescription];
 		} else if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"] == true) {
-			// TODO: Change to fist login view
+			[PhoneMainView.instance changeCurrentView:FirstLoginView.compositeViewDescription];
 		} else {
 			// always start to dialer when testing
 			// Change to default view

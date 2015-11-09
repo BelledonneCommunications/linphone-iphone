@@ -49,6 +49,8 @@
 @property(nonatomic, strong) IBOutlet UIButton *gotoLoginButton;
 @property(nonatomic, strong) IBOutlet UIButton *gotoRemoteProvisioningButton;
 
++ (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status;
+
 - (void)reset;
 - (void)fillDefaultValues;
 

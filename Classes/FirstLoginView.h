@@ -20,8 +20,10 @@
 #import <UIKit/UIKit.h>
 
 #import "UICompositeView.h"
+#import "UIAssistantTextField.h"
 
 @interface FirstLoginView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
+	LinphoneAccountCreator *account_creator;
 }
 
 - (IBAction)onLoginClick:(id)sender;
@@ -29,8 +31,9 @@
 
 @property(nonatomic, strong) IBOutlet UIButton *loginButton;
 @property(nonatomic, strong) IBOutlet UIButton *siteButton;
-@property(nonatomic, strong) IBOutlet UITextField *usernameField;
-@property(nonatomic, strong) IBOutlet UITextField *passwordField;
+@property(nonatomic, strong) IBOutlet UIAssistantTextField *usernameField;
+@property(nonatomic, strong) IBOutlet UIAssistantTextField *passwordField;
 @property(nonatomic, strong) IBOutlet UIView *waitView;
+@property(weak, nonatomic) IBOutlet UIAssistantTextField *domainField;
 
 @end

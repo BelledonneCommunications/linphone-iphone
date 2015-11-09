@@ -171,7 +171,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[historyViews removeAllObjects];
 }
 
-- (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status {
++ (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status {
 	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number" forSection:@"assistant"];
 	switch (status) {
 		case LinphoneAccountCreatorEmailInvalid:
@@ -408,21 +408,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)prepareErrorLabels {
 	UIAssistantTextField *createUsername = [self findTextField:ViewElement_Username];
-	[createUsername showError:[self errorForStatus:LinphoneAccountCreatorUsernameInvalid]
+	[createUsername showError:[AssistantView errorForStatus:LinphoneAccountCreatorUsernameInvalid]
 						 when:^BOOL(NSString *inputEntry) {
-							 LinphoneAccountCreatorStatus s =
-							 linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
-							 createUsername.errorLabel.text = [self errorForStatus:s];
-							 return s != LinphoneAccountCreatorOK;
+						   LinphoneAccountCreatorStatus s =
+							   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
+						   createUsername.errorLabel.text = [AssistantView errorForStatus:s];
+						   return s != LinphoneAccountCreatorOK;
 						 }];
 
 	UIAssistantTextField *password = [self findTextField:ViewElement_Password];
-	[password showError:[self errorForStatus:LinphoneAccountCreatorPasswordTooShort]
+	[password showError:[AssistantView errorForStatus:LinphoneAccountCreatorPasswordTooShort]
 				   when:^BOOL(NSString *inputEntry) {
-					   LinphoneAccountCreatorStatus s =
-					   linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
-					   password.errorLabel.text = [self errorForStatus:s];
-					   return s != LinphoneAccountCreatorOK;
+					 LinphoneAccountCreatorStatus s =
+						 linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
+					 password.errorLabel.text = [AssistantView errorForStatus:s];
+					 return s != LinphoneAccountCreatorOK;
 				   }];
 
 	UIAssistantTextField *password2 = [self findTextField:ViewElement_Password2];
@@ -432,21 +432,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 					}];
 
 	UIAssistantTextField *email = [self findTextField:ViewElement_Email];
-	[email showError:[self errorForStatus:LinphoneAccountCreatorEmailInvalid]
+	[email showError:[AssistantView errorForStatus:LinphoneAccountCreatorEmailInvalid]
 				when:^BOOL(NSString *inputEntry) {
-					LinphoneAccountCreatorStatus s =
-					linphone_account_creator_set_email(account_creator, inputEntry.UTF8String);
-					email.errorLabel.text = [self errorForStatus:s];
-					return s != LinphoneAccountCreatorOK;
+				  LinphoneAccountCreatorStatus s =
+					  linphone_account_creator_set_email(account_creator, inputEntry.UTF8String);
+				  email.errorLabel.text = [AssistantView errorForStatus:s];
+				  return s != LinphoneAccountCreatorOK;
 				}];
 
 	UIAssistantTextField *domain = [self findTextField:ViewElement_Domain];
-	[domain showError:[self errorForStatus:LinphoneAccountCreatorDomainInvalid]
+	[domain showError:[AssistantView errorForStatus:LinphoneAccountCreatorDomainInvalid]
 				 when:^BOOL(NSString *inputEntry) {
-					 LinphoneAccountCreatorStatus s =
-					 linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
-					 domain.errorLabel.text = [self errorForStatus:s];
-					 return s != LinphoneAccountCreatorOK;
+				   LinphoneAccountCreatorStatus s =
+					   linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
+				   domain.errorLabel.text = [AssistantView errorForStatus:s];
+				   return s != LinphoneAccountCreatorOK;
 				 }];
 
 	UIAssistantTextField *url = [self findTextField:ViewElement_URL];
@@ -616,7 +616,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
 	[atf textField:atf shouldChangeCharactersInRange:range replacementString:string];
 	if (atf.tag == ViewElement_Username && currentView == _createAccountView) {
-		textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string.lowercaseString];
+		atf.text = [atf.text stringByReplacingCharactersInRange:range withString:string.lowercaseString];
 		[self shouldEnableNextButton];
 		return NO;
 	}

@@ -66,6 +66,30 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[self registrationUpdate:linphone_proxy_config_get_state(config)];
 		}
 	}
+
+	[_usernameField showError:[AssistantView errorForStatus:LinphoneAccountCreatorUsernameInvalid]
+						 when:^BOOL(NSString *inputEntry) {
+						   LinphoneAccountCreatorStatus s =
+							   linphone_account_creator_set_username(account_creator, inputEntry.UTF8String);
+						   _usernameField.errorLabel.text = [AssistantView errorForStatus:s];
+						   return s != LinphoneAccountCreatorOK;
+						 }];
+
+	[_passwordField showError:[AssistantView errorForStatus:LinphoneAccountCreatorPasswordTooShort]
+						 when:^BOOL(NSString *inputEntry) {
+						   LinphoneAccountCreatorStatus s =
+							   linphone_account_creator_set_password(account_creator, inputEntry.UTF8String);
+						   _passwordField.errorLabel.text = [AssistantView errorForStatus:s];
+						   return s != LinphoneAccountCreatorOK;
+						 }];
+
+	[_domainField showError:[AssistantView errorForStatus:LinphoneAccountCreatorDomainInvalid]
+					   when:^BOOL(NSString *inputEntry) {
+						 LinphoneAccountCreatorStatus s =
+							 linphone_account_creator_set_domain(account_creator, inputEntry.UTF8String);
+						 _domainField.errorLabel.text = [AssistantView errorForStatus:s];
+						 return s != LinphoneAccountCreatorOK;
+					   }];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -83,6 +107,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 		siteUrl = @"http://www.linphone.org";
 	}
 	[_siteButton setTitle:siteUrl forState:UIControlStateNormal];
+	account_creator = linphone_account_creator_new([LinphoneManager getLc], siteUrl.UTF8String);
+}
+
+- (void)shouldEnableNextButton {
+	BOOL invalidInputs = NO;
+	for (UIAssistantTextField *field in @[ _usernameField, _passwordField, _domainField ]) {
+		invalidInputs |= (field.isInvalid || field.lastText.length == 0);
+	}
+	_loginButton.enabled = !invalidInputs;
 }
 
 #pragma mark - Event Functions
@@ -90,8 +123,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)registrationUpdateEvent:(NSNotification *)notif {
 	[self registrationUpdate:[[notif.userInfo objectForKey:@"state"] intValue]];
 }
-
-#pragma mark -
 
 - (void)registrationUpdate:(LinphoneRegistrationState)state {
 	switch (state) {
@@ -172,6 +203,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
 	// When the user presses return, take focus away from the text field so that the keyboard is dismissed.
 	[theTextField resignFirstResponder];
+	return YES;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
+	[atf textFieldDidEndEditing:atf];
+}
+
+- (BOOL)textField:(UITextField *)textField
+	shouldChangeCharactersInRange:(NSRange)range
+				replacementString:(NSString *)string {
+	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
+	[atf textField:atf shouldChangeCharactersInRange:range replacementString:string];
+	[self shouldEnableNextButton];
 	return YES;
 }
 

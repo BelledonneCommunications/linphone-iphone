@@ -7,8 +7,13 @@
 //
 
 #import "UIAssistantTextField.h"
+#import "Utils.h"
 
 @implementation UIAssistantTextField
+
+INIT_WITH_COMMON {
+	self.delegate = self;
+}
 
 - (void)showError:(NSString *)msg {
 	_errorLabel.text = msg;
@@ -32,6 +37,12 @@
 	self.layer.borderColor = _errorLabel.hidden ? [[UIColor clearColor] CGColor] : [[UIColor redColor] CGColor];
 }
 
+- (BOOL)isInvalid {
+	return _showErrorPredicate && _showErrorPredicate(_lastText);
+}
+
+#pragma mark - UITextFieldDelegate Functions
+
 - (BOOL)textField:(UITextField *)textField
 	shouldChangeCharactersInRange:(NSRange)range
 				replacementString:(NSString *)string {
@@ -43,10 +54,6 @@
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 	_canShowError = YES;
 	[self checkDisplayError];
-}
-
-- (BOOL)isInvalid {
-	return _showErrorPredicate && _showErrorPredicate(_lastText);
 }
 
 @end
