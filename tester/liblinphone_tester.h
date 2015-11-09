@@ -217,7 +217,8 @@ typedef struct _stats {
 
 	int number_of_LinphoneCallStatsUpdated;
 	int number_of_rtcp_sent;
-	int number_of_rtcp_received;
+	int number_of_rtcp_received; /*total number of rtcp packet received */
+	int number_of_rtcp_received_via_mux;/*number of rtcp packet received in rtcp-mux mode*/
 
 	int number_of_video_windows_created;
 

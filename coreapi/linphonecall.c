@@ -4258,6 +4258,7 @@ void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEve
 		if(stats->received_rtcp != NULL)
 			freemsg(stats->received_rtcp);
 		stats->received_rtcp = evd->packet;
+		stats->rtcp_received_via_mux = evd->info.socket_type == OrtpRTPSocket;
 		evd->packet = NULL;
 		stats->updated = LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE;
 		update_local_stats(stats,ms);
