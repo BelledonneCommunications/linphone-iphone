@@ -283,6 +283,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 LOCAL_CPPFLAGS=$(LOCAL_CFLAGS)
 LOCAL_CFLAGS += -Wdeclaration-after-statement
+LOCAL_LDFLAGS := -Wl,-soname,$(LOCAL_MODULE_FILENAME).so
 
 $(call import-module,android/cpufeatures)
 
