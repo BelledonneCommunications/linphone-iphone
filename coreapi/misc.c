@@ -928,6 +928,22 @@ static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed){
 		call->textstream->ms.ice_check_list=NULL;
 }
 
+void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMediaDescription *md){
+	int i;
+	
+	if (!call->localdesc) return;
+	for (i = 0; i < md->nb_streams; i++) {
+		const SalStreamDescription *local_stream = &call->localdesc->streams[i];
+		const SalStreamDescription *stream = &md->streams[i];
+		IceCheckList *cl = ice_session_check_list(call->ice_session, i);
+		if (!cl || !local_stream) continue;
+		
+		if (stream->rtcp_mux && local_stream->rtcp_mux){
+			ice_check_list_remove_rtcp_candidates(cl);
+		}
+	}
+}
+
 void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
 {
 	const SalStreamDescription *stream;
@@ -1047,12 +1063,16 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			}
 		}
 		for (i = 0; i < md->nb_streams; i++) {
+			stream = &md->streams[i];
 			cl = ice_session_check_list(call->ice_session, i);
-			if (!sal_stream_description_active(&md->streams[i]) && (cl != NULL)) {
+			if (!cl) continue;
+				
+			if (!sal_stream_description_active(stream)) {
 				ice_session_remove_check_list_from_idx(call->ice_session, i);
 				clear_ice_check_list(call, cl);
 			}
 		}
+		linphone_call_clear_unused_ice_candidates(call, md);
 		ice_session_check_mismatch(call->ice_session);
 	} else {
 		/* Response from remote does not contain mandatory ICE attributes, delete the session. */

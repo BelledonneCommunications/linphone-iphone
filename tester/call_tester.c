@@ -5529,8 +5529,6 @@ static void _call_with_rtcp_mux(bool_t caller_rtcp_mux, bool_t callee_rtcp_mux, 
 	
 	if (with_ice){
 		check_ice(marie, pauline, LinphoneIceStateHostConnection);
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
-		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
 	}
 	liblinphone_tester_check_rtcp(marie,pauline);
 	
@@ -5562,8 +5560,8 @@ static void call_with_rtcp_mux_not_accepted(void){
 }
 
 static void call_with_ice_and_rtcp_mux(void){
-	/*skipped until ICE is modified to support rtcp-mux*/
-	/*_call_with_rtcp_mux(TRUE, TRUE, TRUE);*/
+	
+	_call_with_rtcp_mux(TRUE, TRUE, TRUE);
 }
 
 

@@ -4156,10 +4156,24 @@ static void change_ice_media_destinations(LinphoneCall *call) {
     }
 }
 
+static void linphone_call_on_ice_gathering_finished(LinphoneCall *call){
+	int ping_time;
+	const SalMediaDescription *rmd = sal_call_get_remote_media_description(call->op);
+	if (rmd){
+		linphone_call_clear_unused_ice_candidates(call, rmd);
+	}
+	ice_session_compute_candidates_foundations(call->ice_session);
+	ice_session_eliminate_redundant_candidates(call->ice_session);
+	ice_session_choose_default_candidates(call->ice_session);
+	ping_time = ice_session_average_gathering_round_trip_time(call->ice_session);
+	if (ping_time >=0) {
+		call->ping_time=ping_time;
+	}
+}
+
 static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	OrtpEventType evt=ortp_event_get_type(ev);
 	OrtpEventData *evd=ortp_event_get_data(ev);
-	int ping_time;
 
 	if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
 		LinphoneCallParams *params = linphone_call_params_copy(call->current_params);
@@ -4204,13 +4218,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
 
 		if (evd->info.ice_processing_successful==TRUE) {
-			ice_session_compute_candidates_foundations(call->ice_session);
-			ice_session_eliminate_redundant_candidates(call->ice_session);
-			ice_session_choose_default_candidates(call->ice_session);
-			ping_time = ice_session_average_gathering_round_trip_time(call->ice_session);
-			if (ping_time >=0) {
-				call->ping_time=ping_time;
-			}
+			linphone_call_on_ice_gathering_finished(call);
 		} else {
 			ms_warning("No STUN answer from [%s], disabling ICE",linphone_core_get_stun_server(call->core));
 			linphone_call_delete_ice_session(call);
