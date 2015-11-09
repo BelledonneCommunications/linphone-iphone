@@ -78,24 +78,24 @@ The next pieces need to be compiled manually.
 
 * Install libvpx (Must be manualy build because the macport recipe does not support 'macosx_deployment_target')
 
-	git clone https://chromium.googlesource.com/webm/libvpx -b v1.4.0
-	cd libvpx
-	./configure --prefix=/opt/local \
-		--target=x86_64-darwin10-gcc \
-	        --enable-error-concealment \
-	        --enable-multithread \
-	        --enable-realtime-only \
-	        --enable-spatial-resampling \
-	        --enable-vp8 \
-	        --disable-vp9 \
-	        --enable-libs \
-	        --disable-install-docs \
-	        --disable-debug-libs \
-	        --disable-examples \
-	        --disable-unit-tests \
-	        --as=yasm
-	make
-	sudo make install
+        git clone https://chromium.googlesource.com/webm/libvpx -b v1.4.0
+        cd libvpx
+        ./configure --prefix=/opt/local \
+                --target=x86_64-darwin10-gcc \
+                --enable-error-concealment \
+                --enable-multithread \
+                --enable-realtime-only \
+                --enable-spatial-resampling \
+                --enable-vp8 \
+                --disable-vp9 \
+                --enable-libs \
+                --disable-install-docs \
+                --disable-debug-libs \
+                --disable-examples \
+                --disable-unit-tests \
+                --as=yasm
+        make
+        sudo make install
 
 * Install belle-sip (sip stack)
 
