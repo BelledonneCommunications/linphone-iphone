@@ -22,6 +22,81 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 
+static char * create_resource_list_xml(const LinphoneFriendList *list) {
+	char *xml_content = NULL;
+	MSList *elem;
+	xmlBufferPtr buf;
+	xmlTextWriterPtr writer;
+	int err;
+
+	if (ms_list_size(list->friends) <= 0) return NULL;
+
+	buf = xmlBufferCreate();
+	if (buf == NULL) {
+		ms_error("%s: Error creating the XML buffer", __FUNCTION__);
+		return NULL;
+	}
+	writer = xmlNewTextWriterMemory(buf, 0);
+	if (writer == NULL) {
+		ms_error("%s: Error creating the XML writer", __FUNCTION__);
+		return NULL;
+	}
+
+	xmlTextWriterSetIndent(writer,1);
+	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", NULL);
+	if (err >= 0) {
+		err = xmlTextWriterStartElementNS(writer, NULL, (const xmlChar *)"resource-lists", (const xmlChar *)"urn:ietf:params:xml:ns:resource-lists");
+	}
+	if (err >= 0) {
+		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"xsi",
+						    NULL, (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance");
+	}
+
+	if (err>= 0) {
+		err = xmlTextWriterStartElement(writer, (const xmlChar *)"list");
+	}
+	for (elem = list->friends; elem != NULL; elem = elem->next) {
+		LinphoneFriend *friend = (LinphoneFriend *)elem->data;
+		char *uri = linphone_address_as_string_uri_only(friend->uri);
+		if (err >= 0) {
+			err = xmlTextWriterStartElement(writer, (const xmlChar *)"entry");
+		}
+		if (err >= 0) {
+			err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"uri", (const xmlChar *)uri);
+		}
+		if (err >= 0) {
+			/* Close the "entry" element. */
+			err = xmlTextWriterEndElement(writer);
+		}
+	}
+	if (err >= 0) {
+		/* Close the "list" element. */
+		err = xmlTextWriterEndElement(writer);
+	}
+
+	if (err >= 0) {
+		/* Close the "resource-lists" element. */
+		err = xmlTextWriterEndElement(writer);
+	}
+	if (err >= 0) {
+		err = xmlTextWriterEndDocument(writer);
+	}
+	if (err > 0) {
+		/* xmlTextWriterEndDocument returns the size of the content. */
+		xml_content = ms_strdup((char *)buf->content);
+	}
+	xmlFreeTextWriter(writer);
+	xmlBufferFree(buf);
+
+	return xml_content;
+}
+
+static LinphoneFriendList * linphone_friend_list_new(void) {
+	LinphoneFriendList *list = belle_sip_object_new(LinphoneFriendList);
+	belle_sip_object_ref(list);
+	return list;
+}
+
 static void linphone_friend_list_destroy(LinphoneFriendList *list) {
 	if (list->display_name != NULL) ms_free(list->display_name);
 	if (list->rls_uri != NULL) ms_free(list->rls_uri);
@@ -38,9 +113,9 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneFriendList, belle_sip_object_t,
 );
 
 
-LinphoneFriendList * linphone_friend_list_new(void) {
-	LinphoneFriendList *list = belle_sip_object_new(LinphoneFriendList);
-	belle_sip_object_ref(list);
+LinphoneFriendList * linphone_core_create_friend_list(LinphoneCore *lc) {
+	LinphoneFriendList *list = linphone_friend_list_new();
+	list->lc = lc;
 	return list;
 }
 
@@ -165,9 +240,30 @@ void linphone_friend_list_close_subscriptions(LinphoneFriendList *list) {
 
 void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered) {
 	const MSList *elem;
-	for (elem = list->friends; elem != NULL; elem = elem->next) {
-		LinphoneFriend *friend = (LinphoneFriend *)elem->data;
-		linphone_friend_update_subscribes(friend, cfg, only_when_registered);
+	if (list->rls_uri != NULL) {
+		LinphoneAddress *address = linphone_address_new(list->rls_uri);
+		char *xml_content = create_resource_list_xml(list);
+		if ((address != NULL) && (xml_content != NULL)) {
+			LinphoneEvent *event;
+			LinphoneContent *content;
+			int expires = lp_config_get_int(list->lc->config, "sip", "rls_presence_expires", 3600);
+			event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
+			linphone_event_add_custom_header(event, "Require", "recipient-list-subscribe");
+			linphone_event_add_custom_header(event, "Accept", "multipart/related, application/pidf+xml, application/rlmi+xml");
+			linphone_event_add_custom_header(event, "Content-Disposition", "recipient-list");
+			content = linphone_core_create_content(list->lc);
+			linphone_content_set_type(content, "application");
+			linphone_content_set_subtype(content, "resource-lists+xml");
+			linphone_content_set_string_buffer(content, xml_content);
+			linphone_event_send_subscribe(event, content);
+		}
+		if (address != NULL) linphone_address_unref(address);
+		if (xml_content != NULL) ms_free(xml_content);
+	} else {
+		for (elem = list->friends; elem != NULL; elem = elem->next) {
+			LinphoneFriend *friend = (LinphoneFriend *)elem->data;
+			linphone_friend_update_subscribes(friend, cfg, only_when_registered);
+		}
 	}
 }
 

@@ -51,9 +51,10 @@ typedef struct _LinphoneFriendList LinphoneFriendList;
 
 /**
  * Create a new empty LinphoneFriendList object.
+ * @param[in] lc LinphoneCore object.
  * @return A new LinphoneFriendList object.
- */
-LINPHONE_PUBLIC LinphoneFriendList * linphone_friend_list_new(void);
+**/
+LINPHONE_PUBLIC LinphoneFriendList * linphone_core_create_friend_list(LinphoneCore *lc);
 
 /**
  * Acquire a reference to the friend list.
@@ -126,18 +127,39 @@ LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_friend(Linphon
 **/
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *list, LinphoneFriend *friend);
 
+/**
+ * Find a friend in the friend list using a LinphoneAddress.
+ * @param[in] list LinphoneFriendList object.
+ * @param[in] address LinphoneAddress object of the friend we want to search for.
+ * @return A LinphoneFriend if found, NULL otherwise.
+**/
 LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFriendList *list, const LinphoneAddress *address);
 
+/**
+ * Find a friend in the friend list using an URI string.
+ * @param[in] list LinphoneFriendList object.
+ * @param[in] uri A string containing the URI of the friend we want to search for.
+ * @return A LinphoneFriend if found, NULL otherwise.
+**/
 LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendList *list, const char *uri);
 
+/**
+ * Find a frient in the friend list using a ref key.
+ * @param[in] list LinphoneFriendList object.
+ * @param[in] ref_key The ref key string of the friend we want to search for.
+ * @return A LinphoneFriend if found, NULL otherwise.
+**/
 LINPHONE_PUBLIC LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key);
 
 LINPHONE_PUBLIC void linphone_friend_list_close_subscriptions(LinphoneFriendList *list);
 
 LINPHONE_PUBLIC void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered);
 
-LINPHONE_PUBLIC void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list);
-
+/**
+ * Notify our presence to all the friends in the friend list that have subscribed to our presence directly (not using a RLS).
+ * @param[in] list LinphoneFriendList object.
+ * @param[in] presence LinphonePresenceModel object.
+**/
 LINPHONE_PUBLIC void linphone_friend_list_notify_presence(LinphoneFriendList *list, LinphonePresenceModel *presence);
 
 /**

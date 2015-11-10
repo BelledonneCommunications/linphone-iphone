@@ -1665,6 +1665,7 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 }
 
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata){
+	const char *rls_uri = NULL;
 	const char *remote_provisioning_uri = NULL;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
@@ -1672,7 +1673,10 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-	lc->friendlist = linphone_friend_list_new();
+	lc->friendlist = linphone_core_create_friend_list(lc);
+	rls_uri = lp_config_get_string(lc->config, "sip", "rls_uri", NULL);
+	if (rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0))
+		linphone_friend_list_set_rls_uri(lc->friendlist, rls_uri);
 	linphone_task_list_init(&lc->hooks);
 
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));

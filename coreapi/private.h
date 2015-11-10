@@ -376,6 +376,7 @@ void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
 
+void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list);
 void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
@@ -653,6 +654,7 @@ BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
 struct _LinphoneFriendList {
 	belle_sip_object_t base;
 	void *user_data;
+	LinphoneCore *lc;
 	char *display_name;
 	char *rls_uri;
 	MSList *friends;

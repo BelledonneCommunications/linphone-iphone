@@ -241,18 +241,21 @@ static void linphone_friend_unsubscribe(LinphoneFriend *lf){
 }
 
 void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
+	LinphoneCore *lc=lf->lc;
+
 	if (lf->outsub!=NULL) {
-		LinphoneCore *lc=lf->lc;
 		sal_op_release(lf->outsub);
 		lf->outsub=NULL;
 		lf->subscribe_active=FALSE;
-		/*notify application that we no longer know the presence activity */
-		if (lf->presence != NULL) {
-			linphone_presence_model_unref(lf->presence);
-		}
-		lf->presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline,"unknown activity");
-		linphone_core_notify_notify_presence_received(lc,lf);
 	}
+
+	/* Notify application that we no longer know the presence activity */
+	if (lf->presence != NULL) {
+		linphone_presence_model_unref(lf->presence);
+	}
+	lf->presence = linphone_presence_model_new_with_activity(LinphonePresenceActivityOffline,"unknown activity");
+	linphone_core_notify_notify_presence_received(lc,lf);
+
 	lf->initial_subscribes_sent=FALSE;
 }
 
