@@ -146,7 +146,7 @@ LINPHONE_PUBLIC void linphone_gtk_terminate_call(GtkWidget *button);
 LINPHONE_PUBLIC void linphone_gtk_call_update_tab_header(LinphoneCall *call, gboolean pause);
 LINPHONE_PUBLIC void linphone_gtk_show_directory_search(void);
 LINPHONE_PUBLIC void linphone_gtk_status_icon_set_blinking(gboolean val);
-LINPHONE_PUBLIC void linphone_gtk_notify(LinphoneCall *call, const char *msg);
+LINPHONE_PUBLIC void linphone_gtk_notify(LinphoneCall *call, LinphoneChatMessage *chat_message, const char *msg);
 
 LINPHONE_PUBLIC void linphone_gtk_load_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *uri, GtkWidget *chat_view);
 LINPHONE_PUBLIC void linphone_gtk_send_text();
