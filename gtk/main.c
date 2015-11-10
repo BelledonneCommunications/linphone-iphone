@@ -1226,12 +1226,12 @@ void linphone_gtk_notify(LinphoneCall *call, LinphoneChatMessage *chat_message, 
 		if (!notify_init ("Linphone")) ms_error("Libnotify failed to init.");
 #endif
 	if (!call) {
+#ifdef HAVE_NOTIFY
 		if (chat_message) {
 			const LinphoneAddress *address = linphone_chat_message_get_peer_address(chat_message);
 			char *remote = linphone_address_as_string(address);
 			make_notification(remote, linphone_chat_message_get_text(chat_message));
 		} else {
-#ifdef HAVE_NOTIFY
 			if (!notify_notification_show(notify_notification_new("Linphone",msg,NULL
 #ifdef HAVE_NOTIFY1
 				,NULL
