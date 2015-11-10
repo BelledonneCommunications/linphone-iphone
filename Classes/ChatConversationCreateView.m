@@ -32,6 +32,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return self.class.compositeViewDescription;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+	[_tableController.tableView reloadData];
+}
+
 #pragma mark - searchBar delegate
 
 - (IBAction)onBackClick:(id)sender {

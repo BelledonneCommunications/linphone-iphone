@@ -37,7 +37,7 @@
 		_contacts = [[NSMutableArray alloc] initWithArray:_allContacts];
 	} else {
 		for (NSString *contact in _allContacts) {
-			if ([contact containsString:filter]) {
+			if ([contact.lowercaseString containsString:filter.lowercaseString]) {
 				[_contacts addObject:contact];
 			}
 		}

@@ -558,16 +558,15 @@ static RootViewManager *rootViewManagerInstance = nil;
 	if (push) {
 		[viewStack addObject:view];
 	}
-	[self _changeCurrentView:view transition:nil force:push animated:animated];
+	[self _changeCurrentView:view transition:nil animated:animated];
 }
 
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view
 							  transition:(CATransition *)transition
-								   force:(BOOL)force
 								animated:(BOOL)animated {
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
 
-	if (force || ![view equal:vc.currentView] || vc != self) {
+	if (![view equal:vc.currentView] || vc != self) {
 		LOGI(@"PhoneMainView: Change current view to %@", [view content]);
 		if (animated && transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
@@ -592,7 +591,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 	[self _changeCurrentView:[viewStack lastObject]
 				  transition:[PhoneMainView getBackwardTransition]
-					   force:TRUE
 					animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
 }
 
@@ -612,7 +610,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 		[viewStack removeLastObject];
 		[self _changeCurrentView:[viewStack lastObject]
 					  transition:[PhoneMainView getBackwardTransition]
-						   force:TRUE
 						animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
 		return [mainViewController getCurrentViewController];
 	}
