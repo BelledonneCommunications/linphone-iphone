@@ -1892,9 +1892,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 		}
 		linphone_call_params_enable_low_bandwidth(lcallParams, low_bandwidth);
 	}
-	if (!video) {
-		linphone_call_params_enable_video(lcallParams, NO);
-	}
+	linphone_call_params_enable_video(lcallParams, video);
 
 	linphone_core_accept_call_with_params(theLinphoneCore, call, lcallParams);
 }
