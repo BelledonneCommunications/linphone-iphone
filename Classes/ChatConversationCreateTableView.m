@@ -13,54 +13,52 @@
 
 @interface ChatConversationCreateTableView ()
 
-@property(nonatomic, strong) NSMutableArray *contacts;
-@property(nonatomic, strong) NSMutableArray *allContacts;
+@property(nonatomic, strong) NSMutableDictionary *contacts;
+@property(nonatomic, strong) NSDictionary *allContacts;
 @end
 
 @implementation ChatConversationCreateTableView
 
 - (void)viewWillAppear:(BOOL)animated {
-	self.contacts = [[NSMutableArray alloc] init];
-	self.allContacts = [[NSMutableArray alloc] init];
-	for (NSString *ref in LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys) {
-		[self.contacts addObject:ref];
-		[self.allContacts addObject:ref];
-	}
-	_searchBar.text = @"";
+	self.allContacts =
+		[[NSDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
+	self.contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
 	[_searchBar becomeFirstResponder];
-
+	[_searchBar setText:@""];
+	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
 }
 
 - (void)reloadDataWithFilter:(NSString *)filter {
 	[_contacts removeAllObjects];
-	if (filter.length == 0) {
-		_contacts = [[NSMutableArray alloc] initWithArray:_allContacts];
-	} else {
-		for (NSString *contact in _allContacts) {
-			if ([contact.lowercaseString containsString:filter.lowercaseString]) {
-				[_contacts addObject:contact];
-			}
-		}
-		// also add current entry, if not listed
-		LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], filter.UTF8String);
-		NSString *nsuri = filter;
-		if (addr) {
-			char *uri = linphone_address_as_string(addr);
-			nsuri = [NSString stringWithUTF8String:uri];
-			ms_free(uri);
-			linphone_address_destroy(addr);
-		}
-		if (![_contacts containsObject:nsuri]) {
-			[_contacts insertObject:nsuri atIndex:0];
-		}
+
+	[_allContacts enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+	  NSString *address = (NSString *)key;
+	  ABRecordRef person = (__bridge ABRecordRef)(value);
+	  NSString *name = [FastAddressBook displayNameForContact:person];
+	  if ((filter.length == 0) || ([name.lowercaseString containsString:filter.lowercaseString]) ||
+		  ([address.lowercaseString containsString:filter.lowercaseString])) {
+		  _contacts[address] = name;
+	  }
+
+	}];
+	// also add current entry, if not listed
+	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], filter.UTF8String);
+	NSString *nsuri = filter;
+	if (addr) {
+		char *uri = linphone_address_as_string(addr);
+		nsuri = [NSString stringWithUTF8String:uri];
+		ms_free(uri);
+		linphone_address_destroy(addr);
+	}
+	if ([_contacts valueForKey:nsuri] == nil) {
+		_contacts[nsuri] = filter;
 	}
 
 	[self.tableView reloadData];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
 	return 1;
 }
 
@@ -74,25 +72,15 @@
 	if (cell == nil) {
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
 	}
-
-	const LinphoneAddress *addr =
-		linphone_core_interpret_url([LinphoneManager getLc], ((NSString *)_contacts[indexPath.row]).UTF8String);
-	if (addr) {
-		char *uri = linphone_address_as_string(addr);
-		cell.addressLabel.text = [NSString stringWithUTF8String:uri];
-		ms_free(uri);
-		[ContactDisplay setDisplayNameLabel:cell.displayNameLabel forAddress:addr];
-	} else {
-		cell.displayNameLabel.text = _contacts[indexPath.row];
-		cell.addressLabel.text = NSLocalizedString(@"Invalid SIP address", nil);
-	}
+	cell.displayNameLabel.text = [_contacts.allValues objectAtIndex:indexPath.row];
+	cell.addressLabel.text = [_contacts.allKeys objectAtIndex:indexPath.row];
 	return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri([LinphoneManager getLc],
-																  ((NSString *)_contacts[indexPath.row]).UTF8String);
+	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(
+		[LinphoneManager getLc], ((NSString *)[_contacts.allKeys objectAtIndex:indexPath.row]).UTF8String);
 	if (!room) {
 		[PhoneMainView.instance popCurrentView];
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid address", nil)
@@ -110,7 +98,6 @@
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-	// display searchtext in UPPERCASE
 	searchBar.showsCancelButton = (searchText.length > 0);
 	[self reloadDataWithFilter:searchText];
 }
@@ -120,11 +107,14 @@
 }
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-	[searchBar setShowsCancelButton:TRUE animated:TRUE];
+	[searchBar setShowsCancelButton:(searchBar.text.length > 0) animated:TRUE];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
 	[searchBar resignFirstResponder];
 }
 
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+	[searchBar resignFirstResponder];
+}
 @end
