@@ -18,7 +18,8 @@
                 <outlet property="imageSubView" destination="GmN-7v-uuO" id="k9r-Xc-csv"/>
                 <outlet property="messageImageView" destination="yMW-cT-bpU" id="MNr-F2-abQ"/>
                 <outlet property="resendRecognizer" destination="5ZI-Ip-lGl" id="G2r-On-6mV"/>
-                <outlet property="statusImage" destination="hSL-MF-B9b" id="cwm-bV-O3a"/>
+                <outlet property="statusErrorImage" destination="ASM-vr-ei3" id="MK9-hl-6UF"/>
+                <outlet property="statusInProgressSpinner" destination="Eab-ND-ix3" id="UuC-eY-MSf"/>
                 <outlet property="totalView" destination="8I3-n2-0kS" id="aa8-j9-saW"/>
             </connections>
         </placeholder>
@@ -109,17 +110,22 @@
                             </subviews>
                             <animations/>
                         </view>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat_message_inprogress.png" id="hSL-MF-B9b" userLabel="statusImage">
-                            <rect key="frame" x="307" y="0.0" width="15" height="15"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                            <animations/>
-                            <accessibility key="accessibilityConfiguration" label="Message status"/>
-                        </imageView>
                         <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="6dA-3U-OPW" userLabel="bottomBarColor">
                             <rect key="frame" x="0.0" y="129" width="322" height="1"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <animations/>
                         </imageView>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat_message_not_delivered.png" id="ASM-vr-ei3" userLabel="statusErrorImage">
+                            <rect key="frame" x="302" y="0.0" width="20" height="20"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <accessibility key="accessibilityConfiguration" label="Message status"/>
+                        </imageView>
+                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" id="Eab-ND-ix3" userLabel="statusInprogressSpinner">
+                            <rect key="frame" x="302" y="0.0" width="20" height="20"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                        </activityIndicatorView>
                     </subviews>
                     <animations/>
                     <connections>
@@ -146,7 +152,7 @@
     </objects>
     <resources>
         <image name="avatar.png" width="255" height="255"/>
-        <image name="chat_message_inprogress.png" width="11" height="12"/>
+        <image name="chat_message_not_delivered.png" width="11" height="9"/>
         <image name="color_A.png" width="2" height="2"/>
         <image name="color_G.png" width="2" height="2"/>
         <image name="color_I.png" width="2" height="2"/>

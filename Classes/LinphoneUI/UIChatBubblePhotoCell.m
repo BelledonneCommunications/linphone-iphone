@@ -247,7 +247,8 @@
 										  font:self.contactDateLabel.font];
 
 	CGSize bubbleSize;
-	bubbleSize.width = MAX(messageSize.width, dateSize.width + self.statusImage.frame.size.width + 5) + MARGIN_WIDTH;
+	bubbleSize.width =
+		MAX(messageSize.width, dateSize.width + self.statusErrorImage.frame.size.width + 5) + MARGIN_WIDTH;
 	bubbleSize.height = messageSize.height + MARGIN_HEIGHT;
 
 	return bubbleSize;

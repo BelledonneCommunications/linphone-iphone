@@ -116,26 +116,20 @@
 	_backgroundColorImage.image = _bottomBarColor.image =
 		[UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
 
-	if (!outgoing) {
-		_statusImage.accessibilityValue = @"incoming";
-		_statusImage.hidden = TRUE; // not useful for incoming chats..
-	} else if (state == LinphoneChatMessageStateInProgress) {
-		_statusImage.image = [UIImage imageNamed:@"chat_message_inprogress.png"];
-		_statusImage.accessibilityValue = @"in progress";
-		_statusImage.hidden = FALSE;
-	} else if (state == LinphoneChatMessageStateDelivered) {
-		_statusImage.image = nil;
-		_statusImage.accessibilityValue = @"delivered";
-		_statusImage.hidden = TRUE;
-	} else {
-		_statusImage.image = [UIImage imageNamed:@"chat_message_not_delivered.png"];
-		_statusImage.accessibilityValue = @"not delivered";
-		_statusImage.hidden = FALSE;
+	if (outgoing && state == LinphoneChatMessageStateInProgress) {
+		_statusErrorImage.hidden = YES;
+		[_statusInProgressSpinner startAnimating];
+	} else if (outgoing && state != LinphoneChatMessageStateDelivered) {
+		_statusErrorImage.hidden = NO;
+		[_statusInProgressSpinner stopAnimating];
 
 		NSAttributedString *resend_text =
 			[[NSAttributedString alloc] initWithString:NSLocalizedString(@"Resend", @"Resend")
 											attributes:@{NSForegroundColorAttributeName : [UIColor redColor]}];
 		[_contactDateLabel setAttributedText:resend_text];
+	} else {
+		_statusErrorImage.hidden = YES;
+		[_statusInProgressSpinner stopAnimating];
 	}
 
 	if (outgoing) {
@@ -252,7 +246,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		[self computeBoundingBox:_contactDateLabel.text size:_contactDateLabel.frame.size font:_contactDateLabel.font];
 
 	CGSize bubbleSize;
-	bubbleSize.width = MAX(messageSize.width, dateSize.width + _statusImage.frame.size.width + 5) + MARGIN_WIDTH;
+	bubbleSize.width = MAX(messageSize.width, dateSize.width + _statusErrorImage.frame.size.width + 5) + MARGIN_WIDTH;
 	bubbleSize.height = messageSize.height + MARGIN_HEIGHT;
 
 	return bubbleSize;
