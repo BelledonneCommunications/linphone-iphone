@@ -14,14 +14,28 @@
 #import "Utils.h"
 
 /* This subclass allows use to store the block to execute on success */
-@interface UrmetXMLRPCRequest : XMLRPCRequest
+@interface BlockXMLRPCRequest : XMLRPCRequest
 @property(copy, nonatomic) BOOL (^successBlock)(XMLRPCResponse *response);
 @property(copy, nonatomic) BOOL (^xmlErrorBlock)(XMLRPCRequest *request);
+@end
+
+@implementation BlockXMLRPCRequest
 @end
 
 @implementation XMLRPCHelper
 
 #pragma mark - API
+
+static XMLRPCHelper *xmlManager = nil;
+
++ (XMLRPCHelper *)xml {
+	@synchronized(self) {
+		if (xmlManager == nil) {
+			xmlManager = [[XMLRPCHelper alloc] init];
+		}
+	}
+	return xmlManager;
+}
 
 - (void)sendXMLRequestMethod:(NSString *)method withParams:(NSArray *)params {
 	[self sendXMLRequestMethod:method withParams:params onSuccess:nil onError:nil];
@@ -40,7 +54,7 @@
 	LOGI(@"XMLRPC %@ - %@", method, params);
 	NSURL *URL =
 		[NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" forSection:@"assistant"]];
-	UrmetXMLRPCRequest *request = [[UrmetXMLRPCRequest alloc] initWithURL:URL];
+	BlockXMLRPCRequest *request = [[BlockXMLRPCRequest alloc] initWithURL:URL];
 	[request setMethod:method withParameters:params];
 	if (successBlock) {
 		request.successBlock = successBlock;
@@ -57,7 +71,7 @@
 
 - (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
 
-	UrmetXMLRPCRequest *req = (UrmetXMLRPCRequest *)request;
+	BlockXMLRPCRequest *req = (BlockXMLRPCRequest *)request;
 	NSString *error = nil;
 	BOOL handleHere = YES;
 
@@ -86,7 +100,7 @@
 }
 
 - (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
-	UrmetXMLRPCRequest *req = (UrmetXMLRPCRequest *)request;
+	BlockXMLRPCRequest *req = (BlockXMLRPCRequest *)request;
 	BOOL handleHere = YES;
 	if (req.xmlErrorBlock) {
 		handleHere = req.xmlErrorBlock(request);
@@ -118,4 +132,34 @@
 	[av show];
 }
 
++ (void)GetProvisioningURL:(NSString *)username
+				  password:(NSString *)password
+					domain:(NSString *)domain
+				 OnSuccess:(void (^)(NSString *response))onSuccess {
+	if (!username || !password || !domain) {
+		onSuccess(nil);
+		return;
+	}
+
+	[self.class.xml sendXMLRequestMethod:@"get_remote_provisioning_filename"
+		withParams:@[ username, password, domain ]
+		onSuccess:^BOOL(XMLRPCResponse *response) {
+		  if (!response.isFault && response.object) {
+			  NSString *url =
+				  [NSString stringWithFormat:@"%@/%@.xml",
+											 [LinphoneManager.instance lpConfigStringForKey:@"remote_prosivioning_root"
+																				 forSection:@"assistant"],
+											 response.object];
+			  onSuccess(url);
+		  } else {
+			  onSuccess(nil);
+		  }
+		  return FALSE;
+
+		}
+		onError:^BOOL(XMLRPCRequest *request) {
+		  onSuccess(nil);
+		  return FALSE;
+		}];
+}
 @end

@@ -34,6 +34,13 @@
 - (void)sendXMLRequestMethod:(NSString *)method
 				  withParams:(NSArray *)params
 				   onSuccess:(BOOL (^)(XMLRPCResponse *response))successBlock
-					 onError:(BOOL (^)(XMLRPCRequest *request))errorBlock;
+					 onError:(BOOL (^)(XMLRPCRequest *response))errorBlock;
+
+// CUSTOM API
+
++ (void)GetProvisioningURL:(NSString *)username
+				  password:(NSString *)password
+					domain:(NSString *)domain
+				 OnSuccess:(void (^)(NSString *url))onSucess;
 
 @end
