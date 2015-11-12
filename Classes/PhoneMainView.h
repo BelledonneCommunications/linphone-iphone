@@ -25,6 +25,7 @@
 
 #import "AboutView.h"
 #import "ChatConversationView.h"
+#import "ChatConversationCreateView.h"
 #import "ChatsListView.h"
 #import "ContactDetailsView.h"
 #import "ContactsListView.h"

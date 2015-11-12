@@ -26,6 +26,7 @@
 		[self.contacts addObject:ref];
 		[self.allContacts addObject:ref];
 	}
+	_searchBar.text = @"";
 	[_searchBar becomeFirstResponder];
 
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
