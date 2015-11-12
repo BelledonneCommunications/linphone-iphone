@@ -640,6 +640,13 @@ static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 		ms_error("Cannot set sqlite3 temporary store to memory: %s.", errmsg);
 		sqlite3_free(errmsg);
 	}
+#if TARGET_OS_IPHONE
+	ret = sqlite3_exec(*db, "PRAGMA journal_mode = OFF", NULL, NULL, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_error("Cannot set sqlite3 journal_mode to off: %s.", errmsg);
+		sqlite3_free(errmsg);
+	}
+#endif
 	return ret;
 }
 

@@ -6703,7 +6703,11 @@ static LinphoneCallParams *_create_call_params(LinphoneCore *lc){
  */
 LinphoneCallParams *linphone_core_create_call_params(LinphoneCore *lc, LinphoneCall *call){
 	if (!call) return _create_call_params(lc);
-	return linphone_call_params_copy(call->params);
+	if (call->params){
+		return linphone_call_params_copy(call->params);
+	}
+	ms_error("linphone_core_create_call_params(): call [%p] is not in a state where call params can be created or used.", call);
+	return NULL;
 }
 
 const char *linphone_reason_to_string(LinphoneReason err){
