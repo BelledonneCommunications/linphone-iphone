@@ -1880,6 +1880,11 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 
 - (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video {
 	LinphoneCallParams *lcallParams = linphone_core_create_call_params(theLinphoneCore, call);
+	if (!lcallParams) {
+		LOGW(@"Could not create call parameters for %p, call has probably already ended.", call);
+		return;
+	}
+
 	if ([self lpConfigBoolForKey:@"edge_opt_preference"]) {
 		bool low_bandwidth = self.network == network_2g;
 		if (low_bandwidth) {
