@@ -49,8 +49,8 @@
 @implementation ContactDetailsTableView
 
 static const ContactSections_e contactSections[ContactSections_MAX] = {
-	ContactSections_None,   ContactSections_First_Name, ContactSections_Last_Name,
-	ContactSections_Number, ContactSections_Sip,		ContactSections_Email};
+	ContactSections_None, ContactSections_First_Name, ContactSections_Last_Name,
+	ContactSections_Sip,  ContactSections_Number,	 ContactSections_Email};
 
 @synthesize contactDetailsDelegate;
 @synthesize contact;

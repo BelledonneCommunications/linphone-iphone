@@ -11,16 +11,16 @@
                 <outlet property="loginButton" destination="8H9-Gf-7ZL" id="e1g-x6-PCO"/>
                 <outlet property="passwordField" destination="BBC-uD-FIM" id="JEo-he-9QU"/>
                 <outlet property="usernameField" destination="vaw-qL-SCR" id="KTu-qn-3am"/>
-                <outlet property="view" destination="55" id="56"/>
+                <outlet property="view" destination="a69-69-lDX" id="8iL-eI-bnx"/>
                 <outlet property="waitView" destination="31" id="57"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="55">
+        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="a69-69-lDX">
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_secure_phone.png" id="JsZ-cm-gih" userLabel="logoImage">
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="linphone_logo.png" id="JsZ-cm-gih" userLabel="logoImage">
                     <rect key="frame" x="20" y="46" width="93" height="93"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <animations/>
@@ -143,11 +143,6 @@
                         <action selector="onLoginClick:" destination="-1" eventType="touchUpInside" id="BX7-xj-kmf"/>
                     </connections>
                 </button>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_orange.png" id="7X6-fU-bDd" userLabel="orangeImage">
-                    <rect key="frame" x="271" y="574" width="63" height="63"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid domain" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="sng-3P-5z8" userLabel="domainErrorLabel">
                     <rect key="frame" x="20" y="459" width="335" height="15"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -174,11 +169,10 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <nil key="simulatedStatusBarMetrics"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="556.5" y="484.5"/>
-        </view>
+            <point key="canvasLocation" x="509.5" y="325.5"/>
+        </scrollView>
     </objects>
     <resources>
-        <image name="logo_orange.png" width="63" height="63"/>
-        <image name="logo_secure_phone.png" width="186" height="186"/>
+        <image name="linphone_logo.png" width="26" height="22"/>
     </resources>
 </document>
