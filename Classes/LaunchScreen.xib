@@ -33,7 +33,7 @@
                     <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="splashscreen.png" id="pz0-nR-x0f" userLabel="logoImage">
+                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="launchscreen.png" id="pz0-nR-x0f" userLabel="logoImage">
                     <rect key="frame" x="0.0" y="187" width="375" height="169"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <animations/>
@@ -48,6 +48,6 @@
     </objects>
     <resources>
         <image name="color_B.png" width="2" height="2"/>
-        <image name="splashscreen.png" width="181" height="165"/>
+        <image name="launchscreen.png" width="181" height="165"/>
     </resources>
 </document>

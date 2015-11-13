@@ -43,7 +43,6 @@
 		07452BE20E469C9000A57686 /* XMLRPCConnectionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLRPCConnectionDelegate.h; sourceTree = "<group>"; };
 		075137F90E429E560019E4F6 /* XMLRPCConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLRPCConnectionManager.h; sourceTree = "<group>"; };
 		075137FA0E429E560019E4F6 /* XMLRPCConnectionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLRPCConnectionManager.m; sourceTree = "<group>"; };
-		0759A6F21143495E000DFE98 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = Languages/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0799AF040F6721FF00B71B22 /* XMLRPCUnitTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "XMLRPCUnitTests-Info.plist"; path = "Resources/Property Lists/XMLRPCUnitTests-Info.plist"; sourceTree = "<group>"; };
 		0799AF0A0F67227F00B71B22 /* XMLRPCUnitTests.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = XMLRPCUnitTests.xcconfig; path = Configurations/XMLRPCUnitTests.xcconfig; sourceTree = "<group>"; };
 		0799AF0B0F67227F00B71B22 /* XMLRPCUnitTestsDevelopment.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = XMLRPCUnitTestsDevelopment.xcconfig; path = Configurations/XMLRPCUnitTestsDevelopment.xcconfig; sourceTree = "<group>"; };
@@ -132,7 +131,6 @@
 		074E8A200F6D8D6E00BE0B22 /* Localized Strings */ = {
 			isa = PBXGroup;
 			children = (
-				0759A6F11143495E000DFE98 /* InfoPlist.strings */,
 			);
 			name = "Localized Strings";
 			sourceTree = "<group>";
@@ -357,17 +355,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		0759A6F11143495E000DFE98 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				0759A6F21143495E000DFE98 /* English */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1DEB91B308733DA50010E9CD /* Release */ = {
