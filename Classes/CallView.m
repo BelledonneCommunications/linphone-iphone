@@ -299,9 +299,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_routesView.alpha = _optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = 1.0;
 		_nameLabel.alpha = _durationLabel.alpha = .8;
 
-		//		CGRect newFrame = self.view.frame;
-		//		newFrame.size.height -= _bottomBar.frame.size.height;
-		//		_callView.frame = newFrame;
+		CGRect newFrame = self.view.frame;
+		newFrame.size.height -= _bottomBar.frame.size.height;
+		_callView.frame = newFrame;
 
 		[UIView commitAnimations];
 
@@ -332,10 +332,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _nameLabel.alpha = _durationLabel.alpha =
 			_callPauseButton.alpha = 0.0;
 		_routesView.alpha = _optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = 0.0;
-		//		CGRect newFrame = self.view.frame;
-		//		_callView.frame = newFrame;
+		CGRect newFrame = self.view.frame;
+		_callView.frame = newFrame;
 
 		[UIView commitAnimations];
+
+		//		UICompositeView *cvc = PhoneMainView.instance.mainViewController;
+		//		[cvc hideSideMenu:YES];
 	}
 }
 
