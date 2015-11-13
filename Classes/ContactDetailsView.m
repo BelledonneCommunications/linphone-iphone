@@ -77,7 +77,6 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		[[[LinphoneManager instance] fastAddressBook] removeContact:_contact];
 		inhibUpdate = FALSE;
 	}
-	[PhoneMainView.instance popCurrentView];
 }
 
 - (void)saveData {
