@@ -42,6 +42,7 @@
 	NSTimer *videoDismissTimer;
 	BOOL videoShown;
 	VideoZoomHandler *videoZoomHandler;
+	UIView *blackVideoStatusBar;
 }
 
 @property(nonatomic, strong) IBOutlet CallPausedTableView *pausedCallsTable;

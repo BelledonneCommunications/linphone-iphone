@@ -45,6 +45,8 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 	if (self != nil) {
 		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
 		videoZoomHandler = [[VideoZoomHandler alloc] init];
+		blackVideoStatusBar = [[UIView alloc] init];
+		blackVideoStatusBar.backgroundColor = [UIColor blackColor];
 	}
 	return self;
 }
@@ -86,6 +88,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
+
+	[self showStatusBar:true];
+
 	if (hideControlsTimer != nil) {
 		[hideControlsTimer invalidate];
 		hideControlsTimer = nil;
@@ -299,14 +304,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_routesView.alpha = _optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = 1.0;
 		_nameLabel.alpha = _durationLabel.alpha = .8;
 
-		CGRect newFrame = self.view.frame;
-		newFrame.size.height -= _bottomBar.frame.size.height;
-		_callView.frame = newFrame;
-
 		[UIView commitAnimations];
 
 		[PhoneMainView.instance showTabBar:true];
-		[PhoneMainView.instance showStatusBar:true];
+		[self showStatusBar:true];
 
 		// hide controls in 5 sec
 		hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
@@ -324,21 +325,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription]) {
+
 		[PhoneMainView.instance showTabBar:false];
-		[PhoneMainView.instance showStatusBar:false];
+		[self showStatusBar:false];
 
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.3];
 		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _nameLabel.alpha = _durationLabel.alpha =
 			_callPauseButton.alpha = 0.0;
 		_routesView.alpha = _optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = 0.0;
-		CGRect newFrame = self.view.frame;
-		_callView.frame = newFrame;
-
 		[UIView commitAnimations];
-
-		//		UICompositeView *cvc = PhoneMainView.instance.mainViewController;
-		//		[cvc hideSideMenu:YES];
 	}
 }
 
@@ -372,7 +368,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[PhoneMainView.instance fullScreen:true];
 	[PhoneMainView.instance showTabBar:false];
-	[PhoneMainView.instance showStatusBar:false];
+	[self showStatusBar:false];
 
 #ifdef TEST_VIDEO_VIEW_CHANGE
 	[NSTimer scheduledTimerWithTimeInterval:5.0
@@ -430,6 +426,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self disableVideoDisplay:animated];
 }
 
+- (void)showStatusBar:(BOOL)show {
+	/* we cannot use showStatusBar because it will resize current view and we do not want
+	 video to be resized, so hacking status bar instead*/
+	if (!show) {
+		UIView *statusView = PhoneMainView.instance.mainViewController.statusBarView;
+		blackVideoStatusBar.frame = statusView.frame;
+		[statusView addSubview:blackVideoStatusBar];
+	} else {
+		[blackVideoStatusBar removeFromSuperview];
+	}
+}
 #pragma mark - Spinner Functions
 
 - (void)hideSpinnerIndicator:(LinphoneCall *)call {
