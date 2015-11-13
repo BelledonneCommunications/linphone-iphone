@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		045B5CB318D72E9A0088350C /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 045B5CB218D72E9A0088350C /* libbzrtp.a */; };
 		0FA159CD1BF0AB0D00997345 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FA159CC1BF0AB0D00997345 /* VideoToolbox.framework */; };
-		152F22341B15E83B008C0621 /* libilbcrfc3951.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22331B15E83B008C0621 /* libilbcrfc3951.a */; };
 		152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
 		1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1560821E18EEF26100765332 /* libmsopenh264.a */; settings = {ATTRIBUTES = (Weak, ); }; };
 		1599105316F746B2007BF52B /* route_bluetooth_off_default_landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */; };
@@ -44,7 +43,6 @@
 		15AF3C9A16F37A5D00FC52EC /* routes_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9516F37A5D00FC52EC /* routes_disabled.png */; };
 		15AF3C9C16F37A5D00FC52EC /* routes_over.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9616F37A5D00FC52EC /* routes_over.png */; };
 		15AF3C9E16F37A5D00FC52EC /* routes_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 15AF3C9716F37A5D00FC52EC /* routes_selected.png */; };
-		15F728731B16FF8B00A1C901 /* libilbcrfc3951.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22331B15E83B008C0621 /* libilbcrfc3951.a */; };
 		15F728741B16FF9A00A1C901 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
 		1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -63,7 +61,6 @@
 		22276E8513C73D3100210156 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8213C73D3100210156 /* libswscale.a */; };
 		22276E8713C73D8A00210156 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8613C73D8A00210156 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		22276E8913C73DC000210156 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8813C73DC000210156 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		223148E61178A09900637D6A /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; };
 		2234C8E915EE2F7F00E18E83 /* chat_message_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8E715EE2F7F00E18E83 /* chat_message_delivered.png */; };
 		2234C8EB15EE2F7F00E18E83 /* chat_message_not_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */; };
 		2234C8EE15EE744200E18E83 /* chat_message_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */; };
@@ -778,7 +775,6 @@
 		F0BB8C1B1936245300974404 /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FAD2910765B400068D98F /* libgsm.a */; };
 		F0BB8C1D1936245300974404 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED51344B0EF00F6EF27 /* libmsamr.a */; };
 		F0BB8C1E1936245300974404 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226CDADE14E2D0B800513B67 /* libmsbcg729.a */; };
-		F0BB8C1F1936245300974404 /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223148E51178A09900637D6A /* libmsilbc.a */; };
 		F0BB8C201936245300974404 /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226183AF147259670037138E /* libmssilk.a */; };
 		F0BB8C221936245300974404 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED41344B0EF00F6EF27 /* libopencore-amrnb.a */; };
 		F0BB8C231936245300974404 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 226F2ED31344B0EF00F6EF27 /* libopencore-amrwb.a */; };
@@ -907,7 +903,6 @@
 /* Begin PBXFileReference section */
 		045B5CB218D72E9A0088350C /* libbzrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbzrtp.a; path = "liblinphone-sdk/apple-darwin/lib/libbzrtp.a"; sourceTree = "<group>"; };
 		0FA159CC1BF0AB0D00997345 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
-		152F22331B15E83B008C0621 /* libilbcrfc3951.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbcrfc3951.a; path = "liblinphone-sdk/apple-darwin/lib/libilbcrfc3951.a"; sourceTree = "<group>"; };
 		152F22351B15E889008C0621 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		1560821E18EEF26100765332 /* libmsopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsopenh264.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsopenh264.a"; sourceTree = "<group>"; };
 		1599104316F746B2007BF52B /* route_bluetooth_off_default_landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = route_bluetooth_off_default_landscape.png; path = Resources/route_bluetooth_off_default_landscape.png; sourceTree = "<group>"; };
@@ -966,7 +961,6 @@
 		22276E8213C73D3100210156 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "liblinphone-sdk/apple-darwin/lib/libswscale.a"; sourceTree = "<group>"; };
 		22276E8613C73D8A00210156 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		22276E8813C73DC000210156 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		223148E51178A09900637D6A /* libmsilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsilbc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsilbc.a"; sourceTree = "<group>"; };
 		2234C8E715EE2F7F00E18E83 /* chat_message_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_delivered.png; path = Resources/chat_message_delivered.png; sourceTree = "<group>"; };
 		2234C8E815EE2F7F00E18E83 /* chat_message_not_delivered.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_not_delivered.png; path = Resources/chat_message_not_delivered.png; sourceTree = "<group>"; };
 		2234C8ED15EE744200E18E83 /* chat_message_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chat_message_inprogress.png; path = Resources/chat_message_inprogress.png; sourceTree = "<group>"; };
@@ -1895,7 +1889,6 @@
 				223CA7E716D9255800EF1BEC /* libbellesip.a in Frameworks */,
 				045B5CB318D72E9A0088350C /* libbzrtp.a in Frameworks */,
 				220FAD3210765B400068D98F /* libgsm.a in Frameworks */,
-				152F22341B15E83B008C0621 /* libilbcrfc3951.a in Frameworks */,
 				F476004B147AAF2800FFF19B /* liblinphone.a in Frameworks */,
 				D37EE10916032DA4003608A6 /* libmediastreamer_base.a in Frameworks */,
 				D37EE10A16032DA4003608A6 /* libmediastreamer_voip.a in Frameworks */,
@@ -1913,7 +1906,6 @@
 				7066FC0C13E830E400EFC6DC /* libvpx.a in Frameworks */,
 				63D7216C1B73973D00D70E65 /* libx264.a in Frameworks */,
 				226F2ED81344B0EF00F6EF27 /* libmsamr.a in Frameworks */,
-				223148E61178A09900637D6A /* libmsilbc.a in Frameworks */,
 				226183B0147259670037138E /* libmssilk.a in Frameworks */,
 				1560821F18EEF26100765332 /* libmsopenh264.a in Frameworks */,
 				63D7216D1B73975900D70E65 /* libmsx264.a in Frameworks */,
@@ -1966,7 +1958,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				15F728741B16FF9A00A1C901 /* libxml2.dylib in Frameworks */,
-				15F728731B16FF8B00A1C901 /* libilbcrfc3951.a in Frameworks */,
 				F0A54B0C1AD56F4600C22733 /* libc++.dylib in Frameworks */,
 				F0A54B0D1AD56F4600C22733 /* libstdc++.dylib in Frameworks */,
 				F08D468D1AA86849001E8CB5 /* libiconv.dylib in Frameworks */,
@@ -1990,7 +1981,6 @@
 				F0BB8C151936242400974404 /* libmediastreamer_voip.a in Frameworks */,
 				F0BB8C1D1936245300974404 /* libmsamr.a in Frameworks */,
 				F0BB8C1E1936245300974404 /* libmsbcg729.a in Frameworks */,
-				F0BB8C1F1936245300974404 /* libmsilbc.a in Frameworks */,
 				F0BB8C201936245300974404 /* libmssilk.a in Frameworks */,
 				F0BB8C221936245300974404 /* libopencore-amrnb.a in Frameworks */,
 				F0BB8C231936245300974404 /* libopencore-amrwb.a in Frameworks */,
@@ -2292,7 +2282,6 @@
 				63EA4C941B50189D00922857 /* libmswebrtc.a */,
 				63158FAC1B468E0E00969917 /* ImageOptim.sh */,
 				152F22351B15E889008C0621 /* libxml2.dylib */,
-				152F22331B15E83B008C0621 /* libilbcrfc3951.a */,
 				F0FF66AA1ACAEEB0008A4486 /* IOKit.framework */,
 				F0B026F21AA710AF00FF49F7 /* libiconv.dylib */,
 				F05BAA611A5D594E00411815 /* libz.dylib */,
@@ -2326,7 +2315,6 @@
 				22405EEA16006F0700B92522 /* libmediastreamer_voip.a */,
 				226F2ED51344B0EF00F6EF27 /* libmsamr.a */,
 				226CDADE14E2D0B800513B67 /* libmsbcg729.a */,
-				223148E51178A09900637D6A /* libmsilbc.a */,
 				1560821E18EEF26100765332 /* libmsopenh264.a */,
 				226183AF147259670037138E /* libmssilk.a */,
 				22AA8AFC13D7125500B30535 /* libmsx264.a */,
@@ -5331,6 +5319,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -5383,6 +5372,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -5429,6 +5419,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -5475,6 +5466,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;

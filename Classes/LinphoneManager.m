@@ -75,7 +75,7 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
-extern void libmsilbc_init(void);
+//extern void libmsilbc_init(void);
 extern void libmsamr_init(void);
 extern void libmsx264_init(void);
 extern void libmsopenh264_init(void);
@@ -1475,7 +1475,7 @@ static BOOL libStarted = FALSE;
 
 	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
 	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
-	libmsilbc_init();
+	//libmsilbc_init();
 	libmssilk_init();
 	libmsamr_init();
 	libmsx264_init();
