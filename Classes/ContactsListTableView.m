@@ -82,25 +82,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 }
 
 - (NSString *)displayNameForContact:(ABRecordRef)person {
-	NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty));
-	NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
-	NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(person, kABPersonLastNameProperty));
-	NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
-	NSString *lOrganization = CFBridgingRelease(ABRecordCopyValue(person, kABPersonOrganizationProperty));
-	NSString *lLocalizedlOrganization = [FastAddressBook localizedLabel:lOrganization];
-
-	NSString *name = nil;
-	if (lLocalizedFirstName.length && lLocalizedLastName.length) {
-		name = [NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
-	} else if (lLocalizedLastName.length) {
-		name = [NSString stringWithFormat:@"%@", lLocalizedLastName];
-	} else if (lLocalizedFirstName.length) {
-		name = [NSString stringWithFormat:@"%@", lLocalizedFirstName];
-	} else if (lLocalizedlOrganization.length) {
-		name = [NSString stringWithFormat:@"%@", lLocalizedlOrganization];
-	}
-
-	if (name != nil && [name length] > 0) {
+	NSString *name = [FastAddressBook displayNameForContact:person];
+	if (name != nil && [name length] > 0 && ![name isEqualToString:NSLocalizedString(@"Unkonwn", nil)]) {
 		// Add the contact only if it fuzzy match filter too (if any)
 		if ([ContactSelection getNameOrEmailFilter] == nil ||
 			(ms_strcmpfuz([[[ContactSelection getNameOrEmailFilter] lowercaseString] UTF8String],

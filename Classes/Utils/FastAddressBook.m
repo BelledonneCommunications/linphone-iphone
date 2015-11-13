@@ -305,9 +305,7 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 	if (contact != nil) {
 		NSString *lFirstName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonFirstNameProperty));
 		NSString *lLocalizedFirstName = [FastAddressBook localizedLabel:lFirstName];
-
-		//		TODO: we may use the following so that first name / last name is properly displayed?
-		//		retString = CFBridgingRelease(ABRecordCopyCompositeName(contact));
+		NSString *compositeName = CFBridgingRelease(ABRecordCopyCompositeName(contact));
 
 		NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
 		NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
@@ -315,10 +313,12 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 		NSString *lOrganization = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonOrganizationProperty));
 		NSString *lLocalizedOrganization = [FastAddressBook localizedLabel:lOrganization];
 
-		if (lLocalizedFirstName == nil && lLocalizedLastName == nil) {
-			ret = (NSString *)lLocalizedOrganization;
-		} else {
+		if (compositeName) {
+			ret = compositeName;
+		} else if (lLocalizedFirstName || lLocalizedLastName) {
 			ret = [NSString stringWithFormat:@"%@ %@", lLocalizedFirstName, lLocalizedLastName];
+		} else {
+			ret = (NSString *)lLocalizedOrganization;
 		}
 	}
 	return ret;
