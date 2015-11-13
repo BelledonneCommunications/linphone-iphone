@@ -33,15 +33,15 @@ static bool_t only_telephone_event(const MSList *l){
 
 typedef struct _PayloadTypeMatcher{
 	const char *mime_type;
-	PayloadType *(*match_func)(const MSList *l, const PayloadType *refpt);
+	PayloadType *(*match_func)(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads);
 }PayloadTypeMatcher;
 
-static PayloadType * opus_match(const MSList *l, const PayloadType *refpt){
+static PayloadType * opus_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
 	PayloadType *pt;
 	const MSList *elem;
 	PayloadType *candidate=NULL;
 
-	for (elem=l;elem!=NULL;elem=elem->next){
+	for (elem=local_payloads;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		
 		/*workaround a bug in earlier versions of linphone where opus/48000/1 is offered, which is uncompliant with opus rtp draft*/
@@ -58,12 +58,12 @@ static PayloadType * opus_match(const MSList *l, const PayloadType *refpt){
 }
 
 /* the reason for this matcher is for some stupid uncompliant phone that offer G729a mime type !*/
-static PayloadType * g729A_match(const MSList *l, const PayloadType *refpt){
+static PayloadType * g729A_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
 	PayloadType *pt;
 	const MSList *elem;
 	PayloadType *candidate=NULL;
 
-	for (elem=l;elem!=NULL;elem=elem->next){
+	for (elem=local_payloads;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		
 		if (strcasecmp(pt->mime_type,"G729")==0 && refpt->channels==pt->channels){
@@ -73,13 +73,13 @@ static PayloadType * g729A_match(const MSList *l, const PayloadType *refpt){
 	return candidate;
 }
 
-static PayloadType * amr_match(const MSList *l, const PayloadType *refpt){
+static PayloadType * amr_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
 	PayloadType *pt;
 	char value[10];
 	const MSList *elem;
 	PayloadType *candidate=NULL;
 
-	for (elem=l;elem!=NULL;elem=elem->next){
+	for (elem=local_payloads;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		
 		if ( pt->mime_type && refpt->mime_type 
@@ -102,11 +102,11 @@ static PayloadType * amr_match(const MSList *l, const PayloadType *refpt){
 	return candidate;
 }
 
-static PayloadType * generic_match(const MSList *l, const PayloadType *refpt){
+static PayloadType * generic_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
 	PayloadType *pt;
 	const MSList *elem;
 
-	for (elem=l;elem!=NULL;elem=elem->next){
+	for (elem=local_payloads;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
 		
 		if ( pt->mime_type && refpt->mime_type 
@@ -118,11 +118,37 @@ static PayloadType * generic_match(const MSList *l, const PayloadType *refpt){
 	return NULL;
 }
 
+static PayloadType * red_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads) {
+	const MSList *elem_local, *elem_remote;
+	PayloadType *red = NULL;
+
+	for (elem_local = local_payloads; elem_local != NULL; elem_local = elem_local->next) {
+		PayloadType *pt = (PayloadType*)elem_local->data;
+		
+		if (strcasecmp(pt->mime_type, payload_type_t140_red.mime_type) == 0) {
+			red = pt;
+			
+			for (elem_remote = remote_payloads; elem_remote != NULL; elem_remote = elem_remote->next) {
+				PayloadType *pt2 = (PayloadType*)elem_remote->data;
+				if (strcasecmp(pt2->mime_type, payload_type_t140.mime_type) == 0) {
+					int t140_payload_number = payload_type_get_number(pt2);
+					const char *red_fmtp = ms_strdup_printf("%i/%i/%i", t140_payload_number, t140_payload_number, t140_payload_number);
+					payload_type_set_recv_fmtp(red, red_fmtp);
+					break;
+				}
+			}
+			break;
+		}
+	}
+	return red;
+}
+
 static PayloadTypeMatcher matchers[]={
 	{"opus", opus_match},
 	{"G729A", g729A_match},
 	{"AMR", amr_match},
 	{"AMR-WB", amr_match},
+	{"red", red_match},
 	{NULL, NULL}
 };
 
@@ -130,14 +156,14 @@ static PayloadTypeMatcher matchers[]={
 /*
  * Returns a PayloadType from the local list that matches a PayloadType offered or answered in the remote list
 */
-static PayloadType * find_payload_type_best_match(const MSList *l, const PayloadType *refpt){
+static PayloadType * find_payload_type_best_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
 	PayloadTypeMatcher *m;
 	for(m=matchers;m->mime_type!=NULL;++m){
 		if (refpt->mime_type && strcasecmp(m->mime_type,refpt->mime_type)==0){
-			return m->match_func(l,refpt);
+			return m->match_func(local_payloads, refpt, remote_payloads);
 		}
 	}
-	return generic_match(l,refpt);
+	return generic_match(local_payloads, refpt, remote_payloads);
 }
 
 
@@ -149,7 +175,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 
 	for(e2=remote;e2!=NULL;e2=e2->next){
 		PayloadType *p2=(PayloadType*)e2->data;
-		matched=find_payload_type_best_match(local,p2);
+		matched=find_payload_type_best_match(local,p2,remote);
 		if (matched){
 			PayloadType *newp;
 			int local_number=payload_type_get_number(matched);

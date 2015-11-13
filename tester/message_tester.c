@@ -1289,12 +1289,32 @@ static void file_transfer_io_error_after_destroying_chatroom(void) {
 	file_transfer_io_error_base("https://www.linphone.org:444/lft.php", TRUE);
 }
 
-static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled) {
+static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, bool_t mess_with_marie_payload_number, bool_t mess_with_pauline_payload_number) {
 	LinphoneChatRoom *pauline_chat_room;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallParams *marie_params = NULL;
 	LinphoneCall *pauline_call, *marie_call;
+	
+	if (mess_with_marie_payload_number) {
+		MSList *elem;
+		for (elem = marie->lc->codecs_conf.text_codecs; elem != NULL; elem = elem->next) {
+			PayloadType *pt = (PayloadType*)elem->data;
+			if (strcasecmp(pt->mime_type, payload_type_t140.mime_type) == 0) {
+				payload_type_set_number(pt, 99);
+				break;
+			}
+		}
+	} else if (mess_with_pauline_payload_number) {
+		MSList *elem;
+		for (elem = pauline->lc->codecs_conf.text_codecs; elem != NULL; elem = elem->next) {
+			PayloadType *pt = (PayloadType*)elem->data;
+			if (strcasecmp(pt->mime_type, payload_type_t140.mime_type) == 0) {
+				payload_type_set_number(pt, 99);
+				break;
+			}
+		}
+	}
 	
 	if (srtp_enabled) {
 		BC_ASSERT_TRUE(linphone_core_media_encryption_supported(marie->lc, LinphoneMediaEncryptionSRTP));
@@ -1353,7 +1373,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled) {
 }
 
 static void real_time_text_message(void) {
-	real_time_text(TRUE, FALSE);
+	real_time_text(TRUE, FALSE, FALSE, FALSE);
 }
 
 static void real_time_text_conversation(void) {
@@ -1456,11 +1476,11 @@ static void real_time_text_conversation(void) {
 }
 
 static void real_time_text_without_audio(void) {
-	real_time_text(FALSE, FALSE);
+	real_time_text(FALSE, FALSE, FALSE, FALSE);
 }
 
 static void real_time_text_srtp(void) {
-	real_time_text(TRUE, TRUE);
+	real_time_text(TRUE, TRUE, FALSE, FALSE);
 }
 
 static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_lf) {
@@ -1568,6 +1588,14 @@ static void real_time_text_message_accented_chars() {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void real_time_text_message_different_text_codecs_payload_numbers_sender_side() {
+	real_time_text(FALSE, FALSE, TRUE, FALSE);
+}
+
+static void real_time_text_message_different_text_codecs_payload_numbers_receiver_side() {
+	real_time_text(FALSE, FALSE, FALSE, TRUE);
+}
+
 void file_transfer_with_http_proxy(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -1622,7 +1650,9 @@ test_t message_tests[] = {
 	{"Real Time Text with srtp", real_time_text_srtp},
 	{"Real Time Text message compatibility crlf", real_time_text_message_compat_crlf},
 	{"Real Time Text message compatibility lf", real_time_text_message_compat_lf},
-	{"Real Time text message with accented characters", real_time_text_message_accented_chars},
+	{"Real Time Text message with accented characters", real_time_text_message_accented_chars},
+	{"Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side},
+	{"Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side},
 };
 
 test_suite_t message_test_suite = {
