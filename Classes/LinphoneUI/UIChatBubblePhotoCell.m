@@ -136,6 +136,14 @@
 		_messageImageView.hidden = _cancelButton.hidden = (ftd.message == nil);
 		_downloadButton.hidden = !_cancelButton.hidden;
 		_fileTransferProgress.hidden = NO;
+
+#if DEBUG
+		const LinphoneContent *c = linphone_chat_message_get_file_transfer_information(self.message);
+		if (c) {
+			const char *name = linphone_content_get_name(c);
+			[_downloadButton setTitle:[NSString stringWithUTF8String:name ?: "NULL"] forState:UIControlStateNormal];
+		}
+#endif
 	}
 
 	// resize image so that it take the full bubble space available
@@ -234,14 +242,12 @@
 }
 
 - (CGSize)viewSizeWithWidth:(int)width {
-	static const CGFloat MARGIN_WIDTH = 60;
-	static const CGFloat MARGIN_HEIGHT = 19 + 16 /*this 16 is because textview add some top&bottom padding*/;
 	static const CGFloat IMAGE_HEIGHT = 100.0f;
 	static const CGFloat IMAGE_WIDTH = 100.0f;
 
 	NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
-
 	CGSize messageSize = (localImage != nil) ? CGSizeMake(IMAGE_WIDTH, IMAGE_HEIGHT) : CGSizeMake(50, 50);
+
 	CGSize dateSize = [self computeBoundingBox:self.contactDateLabel.text
 										  size:self.contactDateLabel.frame.size
 										  font:self.contactDateLabel.font];

@@ -205,6 +205,9 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 #pragma mark - Bubble size computing
 
 - (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font {
+	if (!text || text.length == 0)
+		return CGSizeMake(0, 0);
+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 	if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
 		return [text boundingRectWithSize:size
@@ -220,28 +223,15 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 }
 
 - (CGSize)viewSizeWithWidth:(int)width {
-	static const CGFloat TEXT_MIN_HEIGHT = 0.;
-	static const CGFloat TEXT_MIN_WIDTH = 150.0f;
-	static const CGFloat MARGIN_WIDTH = 60;
-	static const CGFloat MARGIN_HEIGHT = 19 + 16 /*this 16 is because textview add some top&bottom padding*/;
-	static const CGFloat IMAGE_HEIGHT = 100.0f;
-	static const CGFloat IMAGE_WIDTH = 100.0f;
-	static const CGFloat CHECK_BOX_WIDTH = 40;
-
 	int messageAvailableWidth = width - MARGIN_WIDTH - CHECK_BOX_WIDTH;
 
-	const char *url = linphone_chat_message_get_external_body_url(_message);
 	NSString *text = [UIChatBubbleTextCell TextMessageForChat:_message];
 
-	CGSize messageSize;
-	if (url != nil || linphone_chat_message_get_file_transfer_information(_message) != NULL) {
-		messageSize = CGSizeMake(IMAGE_WIDTH, IMAGE_HEIGHT);
-	} else {
-		messageSize =
-			[self computeBoundingBox:text size:CGSizeMake(messageAvailableWidth, CGFLOAT_MAX) font:_messageText.font];
-		messageSize.width = MAX(TEXT_MIN_WIDTH, ceil(messageSize.width));
-		messageSize.height = MAX(TEXT_MIN_HEIGHT, ceil(messageSize.height));
-	}
+	CGSize messageSize =
+		[self computeBoundingBox:text size:CGSizeMake(messageAvailableWidth, CGFLOAT_MAX) font:_messageText.font];
+	messageSize.width = MAX(TEXT_MIN_WIDTH, ceil(messageSize.width));
+	messageSize.height = MAX(TEXT_MIN_HEIGHT, ceil(messageSize.height));
+
 	CGSize dateSize =
 		[self computeBoundingBox:_contactDateLabel.text size:_contactDateLabel.frame.size font:_contactDateLabel.font];
 

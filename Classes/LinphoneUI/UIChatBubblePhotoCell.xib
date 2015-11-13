@@ -59,7 +59,7 @@
                             <rect key="frame" x="48" y="24" width="266" height="100"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splashscreen.png" id="yMW-cT-bpU" userLabel="image" customClass="UILoadingImageView">
+                                <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="linphone_logo.png" id="yMW-cT-bpU" userLabel="image" customClass="UILoadingImageView">
                                     <rect key="frame" x="0.0" y="0.0" width="266" height="68"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -157,6 +157,6 @@
         <image name="color_G.png" width="2" height="2"/>
         <image name="color_I.png" width="2" height="2"/>
         <image name="color_M.png" width="2" height="2"/>
-        <image name="splashscreen.png" width="181" height="165"/>
+        <image name="linphone_logo.png" width="26" height="22"/>
     </resources>
 </document>
