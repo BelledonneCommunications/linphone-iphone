@@ -55,7 +55,9 @@ static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog
 	if (op->dialog) {
 		if (belle_sip_dialog_is_server(op->dialog)){
 			ms_message("Incoming subscribtion from [%s] terminated",sal_op_get_from(op));
-			op->base.root->callbacks.subscribe_presence_closed(op, sal_op_get_from(op));
+			if (!op->op_released){
+				op->base.root->callbacks.subscribe_presence_closed(op, sal_op_get_from(op));
+			}
 		}
 		set_or_update_dialog(op, NULL);
 	}
@@ -98,7 +100,9 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 	if (code>=300) {
 		if (strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0){
 			ms_message("subscription to [%s] rejected",sal_op_get_to(op));
-			op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
+			if (!op->op_released){
+				op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
+			}
 			return;
 		}
 	}
@@ -156,7 +160,9 @@ static void presence_process_timeout(void *user_ctx, const belle_sip_timeout_eve
 	
 	if (strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0){
 		ms_message("subscription to [%s] timeout",sal_op_get_to(op));
-		op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
+		if (!op->op_released){
+			op->base.root->callbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
+		}
 	}
 }
 
@@ -176,12 +182,13 @@ static SalPresenceModel * process_presence_notification(SalOp *op, belle_sip_req
 		return NULL;
 
 	if (body==NULL) return NULL;
-
-	op->base.root->callbacks.parse_presence_requested(op,
+	if (!op->op_released){
+		op->base.root->callbacks.parse_presence_requested(op,
 							  belle_sip_header_content_type_get_type(content_type),
 							  belle_sip_header_content_type_get_subtype(content_type),
 							  body,
 							  &result);
+	}
 
 	return result;
 }
@@ -210,7 +217,9 @@ static void handle_notify(SalOp *op, belle_sip_request_t *req, belle_sip_dialog_
 			/* Presence notification body parsed successfully. */
 
 			resp = sal_op_create_response_from_request(op, req, 200); /*create first because the op may be destroyed by notify_presence */
-			op->base.root->callbacks.notify_presence(op, sub_state, presence_model, NULL);
+			if (!op->op_released){
+				op->base.root->callbacks.notify_presence(op, sub_state, presence_model, NULL);
+			}
 		} else if (body){
 			/* Formatting error in presence notification body. */
 			ms_warning("Wrongly formatted presence document.");

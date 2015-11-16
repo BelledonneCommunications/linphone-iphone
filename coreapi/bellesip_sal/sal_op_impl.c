@@ -38,6 +38,7 @@ void sal_op_release(SalOp *op){
 	if (op->refresher) {
 		belle_sip_refresher_stop(op->refresher);
 	}
+	op->op_released = TRUE;
 	sal_op_unref(op);
 }
 

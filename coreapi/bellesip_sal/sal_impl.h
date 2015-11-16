@@ -109,6 +109,7 @@ struct SalOp{
 	bool_t manual_refresher;
 	bool_t has_auth_pending;
 	bool_t supports_session_timers;
+	bool_t op_released;
 };
 
 

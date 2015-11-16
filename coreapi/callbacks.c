@@ -1058,6 +1058,7 @@ static void vfu_request(SalOp *op){
 static void dtmf_received(SalOp *op, char dtmf){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
+	if (!call) return;
 	linphone_core_notify_dtmf_received(lc, call, dtmf);
 }
 
