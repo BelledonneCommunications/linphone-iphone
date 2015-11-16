@@ -166,10 +166,7 @@ char *linphone_gtk_get_config_file(const char *filename){
 	const int path_max=1024;
 	char *config_file=g_malloc0(path_max);
 	if (filename==NULL) filename=CONFIG_FILE;
-	/*try accessing a local file first if exists*/
-	if (access(CONFIG_FILE,F_OK)==0){
-		snprintf(config_file,path_max,"%s",filename);
-	} else if (g_path_is_absolute(filename)) {
+	if (g_path_is_absolute(filename)) {
 		snprintf(config_file,path_max,"%s",filename);
 	} else{
 #ifdef WIN32
