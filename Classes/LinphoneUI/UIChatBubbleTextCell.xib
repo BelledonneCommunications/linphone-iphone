@@ -67,7 +67,7 @@
                             <rect key="frame" x="302" y="0.0" width="20" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                             <animations/>
-                            <accessibility key="accessibilityConfiguration" label="Message status"/>
+                            <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" id="4Z8-PE-uPe" userLabel="statusInprogressSpinner">
                             <rect key="frame" x="302" y="0.0" width="20" height="20"/>

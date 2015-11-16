@@ -148,7 +148,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
-                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <accessibility key="accessibilityConfiguration" label="Cancel"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="cancel_edit_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>

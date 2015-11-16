@@ -685,7 +685,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		while (rooms) {
 			const MSList *messages = linphone_chat_room_get_history(rooms->data, 0);
 			while (messages) {
-				[LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:messages->data];
+				LinphoneChatMessage *msg = messages->data;
+				if (!linphone_chat_message_is_outgoing(msg)) {
+					[LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:messages->data];
+				}
 				messages = messages->next;
 			}
 			rooms = rooms->next;

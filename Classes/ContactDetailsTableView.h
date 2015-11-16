@@ -26,11 +26,11 @@ typedef enum _ContactSections {
 	ContactSections_None = 0, // first section is empty because we cannot set header for first section
 	ContactSections_First_Name,
 	ContactSections_Last_Name,
-	ContactSections_Number,
 	ContactSections_Sip,
+	ContactSections_Number,
 	ContactSections_Email,
 	ContactSections_MAX
-} ContactSections_e;
+} ContactSections;
 
 @interface ContactDetailsTableView : UITableViewController <UITextFieldDelegate> {
   @private

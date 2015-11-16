@@ -22,9 +22,7 @@
 
 - (void)beforeEach {
 	[super beforeEach];
-	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Back" error:nil]) {
-		[self goBackFromChat];
-	}
+	[self goBackFromChat];
 	[tester tapViewWithAccessibilityLabel:@"Chat"];
 	[self removeAllRooms];
 }
@@ -33,9 +31,7 @@
 	[super afterAll];
 	linphone_core_set_log_level(ORTP_MESSAGE);
 	// at the end of tests, go back to chat rooms to display main bar
-	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Back" error:nil]) {
-		[self goBackFromChat];
-	}
+	[self goBackFromChat];
 	ASSERT_EQ([LinphoneManager instance].fileTransferDelegates.count, 0)
 }
 
@@ -51,8 +47,14 @@
 	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
 }
 
+- (void)dismissKeyboard {
+	[tester tapScreenAtPoint:CGPointMake(0, 0)]; // dismiss keyboard, if any
+}
 - (void)goBackFromChat {
-	[tester tapViewWithAccessibilityLabel:@"Back"];
+	[self dismissKeyboard];
+	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Back" error:nil]) {
+		[tester tapViewWithAccessibilityLabel:@"Back"];
+	}
 }
 
 - (void)startChatWith:(NSString *)user {
@@ -135,9 +137,8 @@
 
 	[self startChatWith:user];
 	[self sendMessage:user];
-	[tester waitForViewWithAccessibilityLabel:@"Message status"
-										value:@"not delivered"
-									   traits:UIAccessibilityTraitImage];
+	[tester waitForViewWithAccessibilityLabel:@"Delivery failed" traits:UIAccessibilityTraitImage];
+	[self dismissKeyboard];
 
 	[tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
 	[tester waitForViewWithAccessibilityLabel:@"Checkbox" value:@"Deselected" traits:UIAccessibilityTraitButton];

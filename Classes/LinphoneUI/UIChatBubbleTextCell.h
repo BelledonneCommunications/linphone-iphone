@@ -28,6 +28,8 @@ static const CGFloat TEXT_MIN_WIDTH = 150.0f;
 static const CGFloat MARGIN_WIDTH = 60;
 static const CGFloat MARGIN_HEIGHT = 19 + 16 /*this 16 is because textview add some top&bottom padding*/;
 static const CGFloat CHECK_BOX_WIDTH = 40;
+static const CGFloat IMAGE_HEIGHT = 100.0f;
+static const CGFloat IMAGE_WIDTH = 100.0f;
 
 @interface UIChatBubbleTextCell : UITableViewCell
 
@@ -43,7 +45,7 @@ static const CGFloat CHECK_BOX_WIDTH = 40;
 @property(strong, nonatomic) IBOutlet UIView *bubbleView;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *resendRecognizer;
 
-- (CGSize)viewSizeWithWidth:(int)width;
++ (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 
@@ -52,6 +54,6 @@ static const CGFloat CHECK_BOX_WIDTH = 40;
 - (void)update;
 
 + (NSString *)TextMessageForChat:(LinphoneChatMessage *)message;
-- (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font;
++ (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font;
 
 @end

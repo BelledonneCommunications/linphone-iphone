@@ -179,6 +179,9 @@
 		cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
 	}
 	[cell setChatMessage:chat];
+	if (chat) {
+		[cell update];
+	}
 	[cell setChatRoomDelegate:_chatRoomDelegate];
 	[super accessoryForCell:cell atPath:indexPath];
 	return cell;
@@ -204,8 +207,8 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	UIChatBubbleTextCell *cell = (UIChatBubbleTextCell *)[self tableView:tableView cellForRowAtIndexPath:indexPath];
-	return [cell viewSizeWithWidth:self.view.frame.size.width].height;
+	LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
+	return [UIChatBubbleTextCell ViewSizeForMessage:chat withWidth:self.view.frame.size.width].height;
 }
 
 

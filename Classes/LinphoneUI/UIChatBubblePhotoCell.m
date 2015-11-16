@@ -25,7 +25,7 @@
 #import <AssetsLibrary/ALAssetRepresentation.h>
 
 @implementation UIChatBubblePhotoCell {
-	FileTransferDelegate *ftd;
+	FileTransferDelegate *_ftd;
 }
 
 #pragma mark - Lifecycle Functions
@@ -53,10 +53,7 @@
 #pragma mark -
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
-	if (amessage == self.message) {
-		return;
-	}
-
+	_imageGestureRecognizer.enabled = NO;
 	_messageImageView.image = nil;
 	_fileTransferProgress.progress = 0;
 	[self disconnectFromFileDelegate];
@@ -70,10 +67,8 @@
 					(linphone_chat_message_is_outgoing(aftd.message) == linphone_chat_message_is_outgoing(amessage)) &&
 					strcmp(name, linphone_content_get_name(
 									 linphone_chat_message_get_file_transfer_information(aftd.message))) == 0) {
-					if (ftd != aftd) {
-						LOGI(@"Chat message [%p] with file transfer delegate [%p], connecting to it!", amessage, aftd);
-						[self connectToFileDelegate:aftd];
-					}
+					LOGI(@"Chat message [%p] with file transfer delegate [%p], connecting to it!", amessage, aftd);
+					[self connectToFileDelegate:aftd];
 					break;
 				}
 			}
@@ -113,6 +108,7 @@
 										 [_messageImageView setFullImageUrl:asset];
 										 [_messageImageView stopLoading];
 										 _messageImageView.hidden = NO;
+										 _imageGestureRecognizer.enabled = YES;
 									   });
 								   }
 								 });
@@ -122,7 +118,7 @@
 				}];
 		}
 		// we are uploading the image
-		if (ftd.message != nil) {
+		if (_ftd.message != nil) {
 			_cancelButton.hidden = NO;
 			_fileTransferProgress.hidden = NO;
 			_downloadButton.hidden = YES;
@@ -133,7 +129,7 @@
 		// we must download the image: either it has already started (show cancel button) or not yet (show download
 		// button)
 	} else {
-		_messageImageView.hidden = _cancelButton.hidden = (ftd.message == nil);
+		_messageImageView.hidden = _cancelButton.hidden = (_ftd.message == nil);
 		_downloadButton.hidden = !_cancelButton.hidden;
 		_fileTransferProgress.hidden = NO;
 
@@ -156,20 +152,27 @@
 }
 
 - (IBAction)onDownloadClick:(id)event {
-	[ftd cancel];
-	ftd = [[FileTransferDelegate alloc] init];
-	[self connectToFileDelegate:ftd];
-	[ftd download:self.message];
+	[_ftd cancel];
+	_ftd = [[FileTransferDelegate alloc] init];
+	[self connectToFileDelegate:_ftd];
+	[_ftd download:self.message];
 	_cancelButton.hidden = NO;
 	_downloadButton.hidden = YES;
+
+	// we must tell the tableview to refresh the cell to reflect its internal state
+	ChatConversationView *view = VIEW(ChatConversationView);
+	[view.tableController updateChatEntry:self.message];
 }
 
 - (IBAction)onCancelClick:(id)sender {
-	FileTransferDelegate *tmp = ftd;
+	FileTransferDelegate *tmp = _ftd;
 	[self disconnectFromFileDelegate];
 	[tmp cancel];
 	_fileTransferProgress.progress = 0;
 	[self update];
+	// we must tell the tableview to refresh the cell to reflect its internal state
+	ChatConversationView *view = VIEW(ChatConversationView);
+	[view.tableController updateChatEntry:self.message];
 }
 
 - (void)onResendClick:(id)event {
@@ -194,22 +197,28 @@
 #pragma mark - LinphoneFileTransfer Notifications Handling
 
 - (void)connectToFileDelegate:(FileTransferDelegate *)aftd {
-	ftd = aftd;
+	if (aftd.message && linphone_chat_message_get_state(aftd.message) == LinphoneChatMessageStateFileTransferError) {
+		LOGW(@"This file transfer failed unexpectedly, cleaning it");
+		[aftd stopAndDestroy];
+		return;
+	}
+
+	_ftd = aftd;
 	_fileTransferProgress.progress = 0;
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(onFileTransferSendUpdate:)
 												 name:kLinphoneFileTransferSendUpdate
-											   object:ftd];
+											   object:_ftd];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(onFileTransferRecvUpdate:)
 												 name:kLinphoneFileTransferRecvUpdate
-											   object:ftd];
+											   object:_ftd];
 }
 
 - (void)disconnectFromFileDelegate {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	ftd = nil;
+	_ftd = nil;
 }
 
 - (void)onFileTransferSendUpdate:(NSNotification *)notif {
@@ -239,25 +248,6 @@
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view.tableController updateChatEntry:self.message];
 	}
-}
-
-- (CGSize)viewSizeWithWidth:(int)width {
-	static const CGFloat IMAGE_HEIGHT = 100.0f;
-	static const CGFloat IMAGE_WIDTH = 100.0f;
-
-	NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
-	CGSize messageSize = (localImage != nil) ? CGSizeMake(IMAGE_WIDTH, IMAGE_HEIGHT) : CGSizeMake(50, 50);
-
-	CGSize dateSize = [self computeBoundingBox:self.contactDateLabel.text
-										  size:self.contactDateLabel.frame.size
-										  font:self.contactDateLabel.font];
-
-	CGSize bubbleSize;
-	bubbleSize.width =
-		MAX(messageSize.width, dateSize.width + self.statusErrorImage.frame.size.width + 5) + MARGIN_WIDTH;
-	bubbleSize.height = messageSize.height + MARGIN_HEIGHT;
-
-	return bubbleSize;
 }
 
 @end

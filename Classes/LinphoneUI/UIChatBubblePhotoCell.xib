@@ -15,6 +15,7 @@
                 <outlet property="contactDateLabel" destination="JyR-RQ-uwF" id="Tc4-9t-i5V"/>
                 <outlet property="downloadButton" destination="N75-gL-R6t" id="EgN-Ab-Ded"/>
                 <outlet property="fileTransferProgress" destination="USm-wC-GvG" id="POt-YD-NCG"/>
+                <outlet property="imageGestureRecognizer" destination="aDF-hC-ddO" id="2jh-Rr-eKk"/>
                 <outlet property="imageSubView" destination="GmN-7v-uuO" id="k9r-Xc-csv"/>
                 <outlet property="messageImageView" destination="yMW-cT-bpU" id="MNr-F2-abQ"/>
                 <outlet property="resendRecognizer" destination="5ZI-Ip-lGl" id="G2r-On-6mV"/>
@@ -119,7 +120,7 @@
                             <rect key="frame" x="302" y="0.0" width="20" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                             <animations/>
-                            <accessibility key="accessibilityConfiguration" label="Message status"/>
+                            <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
                         <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" id="Eab-ND-ix3" userLabel="statusInprogressSpinner">
                             <rect key="frame" x="302" y="0.0" width="20" height="20"/>

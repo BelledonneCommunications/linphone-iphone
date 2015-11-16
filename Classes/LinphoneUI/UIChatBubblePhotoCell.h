@@ -33,6 +33,7 @@
 @property(weak, nonatomic) IBOutlet UIButton *cancelButton;
 @property(weak, nonatomic) IBOutlet UIView *imageSubView;
 @property(weak, nonatomic) IBOutlet UIView *totalView;
+@property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
 
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 - (void)connectToFileDelegate:(FileTransferDelegate *)ftd;
