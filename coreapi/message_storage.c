@@ -20,7 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "linphonecore.h"
 
-#ifdef MSG_STORAGE_ENABLED
+
+#if defined(MSG_STORAGE_ENABLED) || defined(CALL_LOGS_STORAGE_ENABLED)
+
 #ifndef PRIu64
 #define PRIu64 "I64u"
 #endif
@@ -39,6 +41,62 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "sqlite3.h"
 #include <assert.h>
+
+int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
+	char* errmsg = NULL;
+	int ret;
+#if defined(ANDROID) || defined(__QNXNTO__)
+	ret = sqlite3_open(db_file, db);
+#elif TARGET_OS_IPHONE
+	/* the secured filesystem of the iPHone doesn't allow writing while the app is in background mode, which is problematic.
+	 * We workaround by asking that the open is made with no protection*/
+	ret = sqlite3_open_v2(db_file, db, SQLITE_OPEN_FILEPROTECTION_NONE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, NULL);
+#elif defined(_WIN32)
+	wchar_t db_file_utf16[MAX_PATH_SIZE];
+	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, -1, db_file_utf16, MAX_PATH_SIZE);
+	if(ret == 0) db_file_utf16[0] = '\0';
+	ret = sqlite3_open16(db_file_utf16, db);
+#else
+	char db_file_locale[MAX_PATH_SIZE] = {'\0'};
+	char db_file_utf8[MAX_PATH_SIZE] = "";
+	char *inbuf=db_file_locale, *outbuf=db_file_utf8;
+	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
+	iconv_t cb;
+
+	strncpy(db_file_locale, db_file, MAX_PATH_SIZE-1);
+	cb = iconv_open("UTF-8", nl_langinfo(CODESET));
+	if(cb != (iconv_t)-1) {
+		int ret;
+		ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
+		if(ret == -1) db_file_utf8[0] = '\0';
+		iconv_close(cb);
+	}
+	ret = sqlite3_open(db_file_utf8, db);
+#endif
+	if (ret != SQLITE_OK) return ret;
+	// Some platforms do not provide a way to create temporary files which are needed
+	// for transactions... so we work in memory only
+	// see http ://www.sqlite.org/compile.html#temp_store
+	ret = sqlite3_exec(*db, "PRAGMA temp_store=MEMORY", NULL, NULL, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_error("Cannot set sqlite3 temporary store to memory: %s.", errmsg);
+		sqlite3_free(errmsg);
+	}
+#if TARGET_OS_IPHONE
+	ret = sqlite3_exec(*db, "PRAGMA journal_mode = OFF", NULL, NULL, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_error("Cannot set sqlite3 journal_mode to off: %s.", errmsg);
+		sqlite3_free(errmsg);
+	}
+#endif
+	return ret;
+}
+#endif
+
+
+
+#ifdef MSG_STORAGE_ENABLED
+
 
 static ORTP_INLINE LinphoneChatMessage* get_transient_message(LinphoneChatRoom* cr, unsigned int storage_id){
 	MSList* transients = cr->transient_messages;
@@ -602,52 +660,6 @@ void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug){
 	if( lc->db ){
 		linphone_message_storage_activate_debug(lc->db, debug);
 	}
-}
-
-static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
-	char* errmsg = NULL;
-	int ret;
-#if defined(ANDROID) || defined(__QNXNTO__)
-	ret = sqlite3_open(db_file, db);
-#elif defined(_WIN32)
-	wchar_t db_file_utf16[MAX_PATH_SIZE];
-	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, -1, db_file_utf16, MAX_PATH_SIZE);
-	if(ret == 0) db_file_utf16[0] = '\0';
-	ret = sqlite3_open16(db_file_utf16, db);
-#else
-	char db_file_locale[MAX_PATH_SIZE] = {'\0'};
-	char db_file_utf8[MAX_PATH_SIZE] = "";
-	char *inbuf=db_file_locale, *outbuf=db_file_utf8;
-	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
-	iconv_t cb;
-
-	strncpy(db_file_locale, db_file, MAX_PATH_SIZE-1);
-	cb = iconv_open("UTF-8", nl_langinfo(CODESET));
-	if(cb != (iconv_t)-1) {
-		int ret;
-		ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
-		if(ret == -1) db_file_utf8[0] = '\0';
-		iconv_close(cb);
-	}
-	ret = sqlite3_open(db_file_utf8, db);
-#endif
-	if (ret != SQLITE_OK) return ret;
-	// Some platforms do not provide a way to create temporary files which are needed
-	// for transactions... so we work in memory only
-	// see http ://www.sqlite.org/compile.html#temp_store
-	ret = sqlite3_exec(*db, "PRAGMA temp_store=MEMORY", NULL, NULL, &errmsg);
-	if (ret != SQLITE_OK) {
-		ms_error("Cannot set sqlite3 temporary store to memory: %s.", errmsg);
-		sqlite3_free(errmsg);
-	}
-#if TARGET_OS_IPHONE
-	ret = sqlite3_exec(*db, "PRAGMA journal_mode = OFF", NULL, NULL, &errmsg);
-	if (ret != SQLITE_OK) {
-		ms_error("Cannot set sqlite3 journal_mode to off: %s.", errmsg);
-		sqlite3_free(errmsg);
-	}
-#endif
-	return ret;
 }
 
 void linphone_core_message_storage_init(LinphoneCore *lc){

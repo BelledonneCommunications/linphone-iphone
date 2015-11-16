@@ -365,34 +365,6 @@ void linphone_update_call_log_table(sqlite3* db) {
 	}
 }
 
-static int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
-#if defined(ANDROID) || defined(__QNXNTO__)
-	return sqlite3_open(db_file, db);
-#elif defined(_WIN32)
-	int ret;
-	wchar_t db_file_utf16[MAX_PATH_SIZE];
-	ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, db_file, -1, db_file_utf16, MAX_PATH_SIZE);
-	if(ret == 0) db_file_utf16[0] = '\0';
-	return sqlite3_open16(db_file_utf16, db);
-#else
-	char db_file_locale[MAX_PATH_SIZE] = {'\0'};
-	char db_file_utf8[MAX_PATH_SIZE] = "";
-	char *inbuf=db_file_locale, *outbuf=db_file_utf8;
-	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
-	iconv_t cb;
-
-	strncpy(db_file_locale, db_file, MAX_PATH_SIZE-1);
-	cb = iconv_open("UTF-8", nl_langinfo(CODESET));
-	if(cb != (iconv_t)-1) {
-		int ret;
-		ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
-		if(ret == -1) db_file_utf8[0] = '\0';
-		iconv_close(cb);
-	}
-	return sqlite3_open(db_file_utf8, db);
-#endif
-}
-
 void linphone_core_call_log_storage_init(LinphoneCore *lc) {
 	int ret;
 	const char *errmsg;

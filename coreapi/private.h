@@ -1036,6 +1036,10 @@ int linphone_core_get_edge_ptime(LinphoneCore *lc);
 int linphone_upnp_init(LinphoneCore *lc);
 void linphone_upnp_destroy(LinphoneCore *lc);
 
+#if defined(MSG_STORAGE_ENABLED) || defined(CALL_LOGS_STORAGE_ENABLED)
+int _linphone_sqlite3_open(const char *db_file, sqlite3 **db);
+#endif
+
 #ifdef MSG_STORAGE_ENABLED
 sqlite3 * linphone_message_storage_init();
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
