@@ -51,7 +51,7 @@
 		ms_free(uri);
 		linphone_address_destroy(addr);
 	}
-	if ([_contacts valueForKey:nsuri] == nil) {
+	if (nsuri.length > 0 && [_contacts valueForKey:nsuri] == nil) {
 		_contacts[nsuri] = filter;
 	}
 

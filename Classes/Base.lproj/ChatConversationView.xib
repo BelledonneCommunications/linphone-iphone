@@ -284,7 +284,7 @@
             </connections>
             <point key="canvasLocation" x="639" y="328"/>
         </tableViewController>
-        <swipeGestureRecognizer direction="right" id="dzw-n4-l9i">
+        <swipeGestureRecognizer direction="left" id="dzw-n4-l9i">
             <connections>
                 <action selector="onListSwipe:" destination="-1" id="bd8-v2-u8H"/>
             </connections>

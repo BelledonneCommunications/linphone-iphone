@@ -431,7 +431,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	 video to be resized, so hacking status bar instead*/
 	if (!show) {
 		UIView *statusView = PhoneMainView.instance.mainViewController.statusBarView;
-		blackVideoStatusBar.frame = statusView.frame;
+		CGRect frame = statusView.frame;
+		frame.origin.y = 0;
+		blackVideoStatusBar.frame = frame;
 		[statusView addSubview:blackVideoStatusBar];
 	} else {
 		[blackVideoStatusBar removeFromSuperview];
