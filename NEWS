@@ -1,3 +1,9 @@
+linphone-3.9.1 -- November 16th, 2015
+	* Fix crash when recording video calls with the VP8 codec
+	* Fix H.264 codec support in Mac OS X package
+	* Fix translation of account assistant
+	* Bug fixes
+
 linphone-3.9.0 -- November 2nd, 2015
 	* Video recording of calls in MKV format
 	* Clickable URLs in chat view
