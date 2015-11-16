@@ -3856,6 +3856,7 @@ int linphone_core_terminate_call(LinphoneCore *lc, LinphoneCall *the_call)
 	switch (call->state) {
 		case LinphoneCallReleased:
 		case LinphoneCallEnd:
+		case LinphoneCallError:
 			ms_warning("No need to terminate a call [%p] in state [%s]",call,linphone_call_state_to_string(call->state));
 			return -1;
 		case LinphoneCallIncomingReceived:
