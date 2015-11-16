@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 17:24+0100\n"
-"PO-Revision-Date: 2015-11-01 03:04+0000\n"
-"Last-Translator: faradundamarti <faradundamarti@yandex.com>\n"
+"POT-Creation-Date: 2015-11-10 15:16+0100\n"
+"PO-Revision-Date: 2015-11-10 14:16+0000\n"
+"Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: Turkish (http://www.transifex.com/belledonne-communications/linphone-gtk/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -166,73 +166,73 @@ msgid ""
 " at realm <i>%s</i>:"
 msgstr ""
 
-#: ../gtk/main.c:1248
+#: ../gtk/main.c:1253
 msgid "Call error"
 msgstr "Çağrı yanlış"
 
-#: ../gtk/main.c:1251 ../coreapi/linphonecore.c:3813
+#: ../gtk/main.c:1256 ../coreapi/linphonecore.c:3813
 msgid "Call ended"
 msgstr "Çağrı sonlandırıldı"
 
-#: ../gtk/main.c:1254 ../coreapi/call_log.c:235
+#: ../gtk/main.c:1259 ../coreapi/call_log.c:235
 msgid "Incoming call"
 msgstr "Gelen çağrı"
 
-#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:2
+#: ../gtk/main.c:1261 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
 msgstr "Yanıt"
 
-#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1263 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
 msgstr "Reddet"
 
-#: ../gtk/main.c:1264
+#: ../gtk/main.c:1269
 msgid "Call paused"
 msgstr "Çağrı duraklatıldı"
 
-#: ../gtk/main.c:1264
+#: ../gtk/main.c:1269
 #, c-format
 msgid "<b>by %s</b>"
 msgstr ""
 
-#: ../gtk/main.c:1334
+#: ../gtk/main.c:1339
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr ""
 
-#: ../gtk/main.c:1500
+#: ../gtk/main.c:1505
 msgid "Website link"
 msgstr "İnternet "
 
-#: ../gtk/main.c:1559 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1564 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1560
+#: ../gtk/main.c:1565
 msgid "A video internet phone"
 msgstr "Görüntülü internet telefonu"
 
-#: ../gtk/main.c:1619
+#: ../gtk/main.c:1624
 #, c-format
 msgid "%s (Default)"
 msgstr ""
 
-#: ../gtk/main.c:1955 ../coreapi/callbacks.c:1075
+#: ../gtk/main.c:1960 ../coreapi/callbacks.c:1075
 #, c-format
 msgid "We are transferred to %s"
 msgstr ""
 
-#: ../gtk/main.c:1965
+#: ../gtk/main.c:1970
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr ""
 
-#: ../gtk/main.c:2124
+#: ../gtk/main.c:2129
 msgid "A free SIP video-phone"
 msgstr "Özgür bir SİP görüntülü-telefon"
 
-#: ../gtk/main.c:2237
+#: ../gtk/main.c:2242
 #, c-format
 msgid "Hello\n"
 msgstr "Merhaba\n"
@@ -748,9 +748,348 @@ msgstr ""
 msgid "Record and Play"
 msgstr "Kaydet ve Oynat"
 
-#: ../gtk/audio_assistant.c:541
+#: ../gtk/audio_assistant.c:541 ../gtk/setup_wizard.ui.h:38
 msgid "Terminating"
 msgstr "Sonlandırma"
+
+#: ../gtk/about.ui.h:1
+msgid "About Linphone"
+msgstr "Linphone Hakkında"
+
+#: ../gtk/about.ui.h:2
+msgid "(C) Belledonne Communications, 2010\n"
+msgstr "(C) Belledonne Communications, 2010\n\n"
+
+#: ../gtk/about.ui.h:4
+msgid "An internet video phone using the standard SIP (rfc3261) protocol."
+msgstr "Standart SİP (rfc3261) protokolü kullanan görüntülü internet telefonu."
+
+#: ../gtk/about.ui.h:5
+msgid ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+"he: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
+
+#: ../gtk/buddylookup.ui.h:1
+msgid "Search contacts in directory"
+msgstr "Dizinde bağlantılar ara"
+
+#: ../gtk/buddylookup.ui.h:2
+msgid "Add to my list"
+msgstr "Listeme ekle"
+
+#: ../gtk/buddylookup.ui.h:3
+msgid "<b>Search somebody</b>"
+msgstr ""
+
+#: ../gtk/callee_frame.ui.h:1
+msgid "<b>Callee name</b>"
+msgstr ""
+
+#: ../gtk/call_logs.ui.h:1
+msgid "Call history"
+msgstr "Çağrı geçmişi"
+
+#: ../gtk/call_logs.ui.h:2
+msgid "Clear all"
+msgstr "Hepsini temizle"
+
+#: ../gtk/call_logs.ui.h:3
+msgid "Call back"
+msgstr "Geri arama"
+
+#: ../gtk/call_statistics.ui.h:1
+msgid "Call statistics"
+msgstr "Çağrı istatistikleri"
+
+#: ../gtk/call_statistics.ui.h:2
+msgid "Audio codec"
+msgstr "Ses çözücü"
+
+#: ../gtk/call_statistics.ui.h:3
+msgid "Video codec"
+msgstr "Görüntü çözücü"
+
+#: ../gtk/call_statistics.ui.h:4
+msgid "Audio IP bandwidth usage"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:5
+msgid "Audio Media connectivity"
+msgstr "Ses Ortamı bağlanırlığı"
+
+#: ../gtk/call_statistics.ui.h:6
+msgid "Video IP bandwidth usage"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:7
+msgid "Video Media connectivity"
+msgstr "Görüntü Ortamı bağlanırlığı"
+
+#: ../gtk/call_statistics.ui.h:8
+msgid "Round trip time"
+msgstr "Sinyal gidiş-dönüş süresi"
+
+#: ../gtk/call_statistics.ui.h:9
+msgid "Video resolution received"
+msgstr "Alınan görüntü çözünürlüğü"
+
+#: ../gtk/call_statistics.ui.h:10
+msgid "Video resolution sent"
+msgstr "Giden görüntü çözünürlüğü"
+
+#: ../gtk/call_statistics.ui.h:11
+msgid "RTP profile"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:12
+msgid "<b>Call statistics and information</b>"
+msgstr ""
+
+#: ../gtk/chatroom_frame.ui.h:1
+msgid "Send"
+msgstr "Gönder"
+
+#: ../gtk/conf_frame.ui.h:1
+msgid "End conference"
+msgstr "Grup görüşme son"
+
+#: ../gtk/config-uri.ui.h:1
+msgid "Specifying a remote configuration URI"
+msgstr ""
+
+#: ../gtk/config-uri.ui.h:2
+msgid ""
+"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+msgstr ""
+
+#: ../gtk/contact.ui.h:2
+msgid "SIP Address"
+msgstr "SİP Adresi"
+
+#: ../gtk/contact.ui.h:3
+msgid "Show this contact presence status"
+msgstr ""
+
+#: ../gtk/contact.ui.h:4
+msgid "Allow this contact to see my presence status"
+msgstr ""
+
+#: ../gtk/contact.ui.h:5
+msgid "<b>Contact information</b>"
+msgstr "<b>Bağlantı bilgisi</b>"
+
+#: ../gtk/dscp_settings.ui.h:1
+msgid "DSCP settings"
+msgstr "DSCP ayarları"
+
+#: ../gtk/dscp_settings.ui.h:2
+msgid "SIP"
+msgstr "SİP"
+
+#: ../gtk/dscp_settings.ui.h:3
+msgid "Audio RTP stream"
+msgstr ""
+
+#: ../gtk/dscp_settings.ui.h:4
+msgid "Video RTP stream"
+msgstr ""
+
+#: ../gtk/dscp_settings.ui.h:5
+msgid "<b>Set DSCP values (in hexadecimal)</b>"
+msgstr ""
+
+#: ../gtk/in_call_frame.ui.h:1
+msgid "Click here to set the speakers volume"
+msgstr "Hoparlör ses miktarı ayarı için buraya tıkla"
+
+#: ../gtk/in_call_frame.ui.h:5
+msgid "Record this call to an audio file"
+msgstr "Bu aramayı bir ses dosyasına kaydet"
+
+#: ../gtk/in_call_frame.ui.h:6
+msgid "Video"
+msgstr "Görüntü"
+
+#: ../gtk/in_call_frame.ui.h:8
+msgid "Mute"
+msgstr "Sessiz"
+
+#: ../gtk/in_call_frame.ui.h:9
+msgid "Transfer"
+msgstr "Aktarım"
+
+#: ../gtk/in_call_frame.ui.h:12
+msgid "In call"
+msgstr "arıyor"
+
+#: ../gtk/in_call_frame.ui.h:13
+msgid "Duration"
+msgstr "Süre"
+
+#: ../gtk/in_call_frame.ui.h:14
+msgid "Call quality rating"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:1
+msgid "LDAP Settings"
+msgstr "LDAP Ayarları"
+
+#: ../gtk/ldap.ui.h:2 ../gtk/parameters.ui.h:89
+msgid "Server address:"
+msgstr "Sunucu adresi:"
+
+#: ../gtk/ldap.ui.h:3 ../gtk/parameters.ui.h:90
+msgid "Authentication method:"
+msgstr "Kimlik doğrulama yöntemi:"
+
+#: ../gtk/ldap.ui.h:4 ../gtk/parameters.ui.h:91 ../gtk/setup_wizard.ui.h:17
+msgid "Username:"
+msgstr "Kullanıcı adı:"
+
+#: ../gtk/ldap.ui.h:5 ../gtk/password.ui.h:4 ../gtk/setup_wizard.ui.h:18
+msgid "Password:"
+msgstr "Parola:"
+
+#: ../gtk/ldap.ui.h:6
+msgid "Use TLS Connection"
+msgstr "TLS Bağlantısı Kullan"
+
+#: ../gtk/ldap.ui.h:7
+msgid "Not yet available"
+msgstr "Henüz kullanılabilir değil"
+
+#: ../gtk/ldap.ui.h:8
+msgid "<b>Connection</b>"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:9
+msgid "Bind DN"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:10
+msgid "Authname"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:11
+msgid "Realm"
+msgstr "Ülke"
+
+#: ../gtk/ldap.ui.h:12
+msgid "<b>SASL</b>"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:13
+msgid "Base object:"
+msgstr "Temel nesne:"
+
+#: ../gtk/ldap.ui.h:15
+#, no-c-format
+msgid "Filter (%s for name):"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:16
+msgid "Name Attribute:"
+msgstr "Öznitelik Adı:"
+
+#: ../gtk/ldap.ui.h:17
+msgid "SIP address attribute:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:18
+msgid "Attributes to query:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:19
+msgid "<b>Search</b>"
+msgstr "<b>Ara</b>"
+
+#: ../gtk/ldap.ui.h:20
+msgid "Timeout for search:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:21
+msgid "Max results:"
+msgstr "En çok sonuç:"
+
+#: ../gtk/ldap.ui.h:22
+msgid "Follow Aliases"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:23
+msgid "<b>Miscellaneous</b>"
+msgstr "<b>Çeşitli</b>"
+
+#: ../gtk/ldap.ui.h:24
+msgid "ANONYMOUS"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:25
+msgid "SIMPLE"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:26
+msgid "DIGEST-MD5"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:27
+msgid "NTLM"
+msgstr ""
+
+#: ../gtk/login_frame.ui.h:1 ../gtk/tunnel_config.ui.h:7
+msgid "Username"
+msgstr "Kallanıcı adı"
+
+#: ../gtk/login_frame.ui.h:2 ../gtk/tunnel_config.ui.h:8
+msgid "Password"
+msgstr "Parola"
+
+#: ../gtk/login_frame.ui.h:3
+msgid "Internet connection:"
+msgstr "İnternet bağlantısı:"
+
+#: ../gtk/login_frame.ui.h:4
+msgid "Automatically log me in"
+msgstr ""
+
+#: ../gtk/login_frame.ui.h:5 ../gtk/password.ui.h:3
+msgid "UserID"
+msgstr "Kullanıcı kimliği"
+
+#: ../gtk/login_frame.ui.h:6
+msgid "Login information"
+msgstr "Giriş bilgisi"
+
+#: ../gtk/login_frame.ui.h:7
+msgid "<b>Welcome!</b>"
+msgstr "<b>Hoşgeldiniz!</b>"
+
+#: ../gtk/login_frame.ui.h:8
+msgid "ADSL"
+msgstr "ADSL"
+
+#: ../gtk/login_frame.ui.h:9
+msgid "Fiber Channel"
+msgstr ""
+
+#: ../gtk/log.ui.h:1
+msgid "Linphone debug window"
+msgstr "Linphone hata giderme penceresi"
+
+#: ../gtk/log.ui.h:2
+msgid "Scroll to end"
+msgstr "Sonuna kadar ilerleyin"
 
 #: ../gtk/main.ui.h:1
 msgid "Default"
@@ -835,146 +1174,6 @@ msgstr ""
 #: ../gtk/main.ui.h:23
 msgid "Autoanswer is enabled"
 msgstr ""
-
-#: ../gtk/about.ui.h:1
-msgid "About Linphone"
-msgstr "Linphone Hakkında"
-
-#: ../gtk/about.ui.h:2
-msgid "(C) Belledonne Communications, 2010\n"
-msgstr "(C) Belledonne Communications, 2010\n\n"
-
-#: ../gtk/about.ui.h:4
-msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr "Standart SİP (rfc3261) protokolü kullanan görüntülü internet telefonu."
-
-#: ../gtk/about.ui.h:5
-msgid ""
-"fr: Simon Morlat\n"
-"en: Simon Morlat and Delphine Perreau\n"
-"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
-"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
-"sv: Daniel Nylander <po@danielnylander.se>\n"
-"es: Jesus Benitez <gnelson at inMail dot sk>\n"
-"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
-"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
-"pl: Robert Nasiadek <darkone@darkone.pl>\n"
-"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
-"hu: anonymous\n"
-"he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
-
-#: ../gtk/contact.ui.h:2
-msgid "SIP Address"
-msgstr "SİP Adresi"
-
-#: ../gtk/contact.ui.h:3
-msgid "Show this contact presence status"
-msgstr ""
-
-#: ../gtk/contact.ui.h:4
-msgid "Allow this contact to see my presence status"
-msgstr ""
-
-#: ../gtk/contact.ui.h:5
-msgid "<b>Contact information</b>"
-msgstr "<b>Bağlantı bilgisi</b>"
-
-#: ../gtk/log.ui.h:1
-msgid "Linphone debug window"
-msgstr "Linphone hata giderme penceresi"
-
-#: ../gtk/log.ui.h:2
-msgid "Scroll to end"
-msgstr "Sonuna kadar ilerleyin"
-
-#: ../gtk/password.ui.h:1
-msgid "Linphone - Authentication required"
-msgstr "Linphone - Kimlik doğrulaması gerekli"
-
-#: ../gtk/password.ui.h:2
-msgid "Please enter the domain password"
-msgstr "Lütfen alan adı parolası girin"
-
-#: ../gtk/password.ui.h:3 ../gtk/login_frame.ui.h:5
-msgid "UserID"
-msgstr "Kullanıcı kimliği"
-
-#: ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
-msgid "Password:"
-msgstr "Parola:"
-
-#: ../gtk/call_logs.ui.h:1
-msgid "Call history"
-msgstr "Çağrı geçmişi"
-
-#: ../gtk/call_logs.ui.h:2
-msgid "Clear all"
-msgstr "Hepsini temizle"
-
-#: ../gtk/call_logs.ui.h:3
-msgid "Call back"
-msgstr "Geri arama"
-
-#: ../gtk/sip_account.ui.h:1
-msgid "Linphone - Configure a SIP account"
-msgstr "Linphone - Bir SİP hesabı yapılandır"
-
-#: ../gtk/sip_account.ui.h:2
-msgid "Your SIP identity:"
-msgstr "SİP kimliğiniz:"
-
-#: ../gtk/sip_account.ui.h:3
-msgid "Looks like sip:<username>@<domain>"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:4
-msgid "sip:"
-msgstr "sip:"
-
-#: ../gtk/sip_account.ui.h:5
-msgid "SIP Proxy address:"
-msgstr "SİP Vekil sunucu adresi:"
-
-#: ../gtk/sip_account.ui.h:6
-msgid "Looks like sip:<proxy hostname>"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:7
-msgid "Registration duration (sec):"
-msgstr "Kayıt süresi (saniye)"
-
-#: ../gtk/sip_account.ui.h:8
-msgid "Contact params (optional):"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:9
-msgid "AVPF regular RTCP interval (sec):"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:10
-msgid "Route (optional):"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:11
-msgid "Transport"
-msgstr "Taşıma"
-
-#: ../gtk/sip_account.ui.h:12
-msgid "Register"
-msgstr "Kayıt"
-
-#: ../gtk/sip_account.ui.h:13
-msgid "Publish presence information"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:14
-msgid "Enable AVPF"
-msgstr "AVPF'yi etkinleştir"
-
-#: ../gtk/sip_account.ui.h:15
-msgid "Configure a SIP account"
-msgstr "Bir SİP hesabı yapılandır"
 
 #: ../gtk/parameters.ui.h:1
 msgid "anonymous"
@@ -1326,18 +1525,6 @@ msgstr "<b>Aşama</b>"
 msgid "User interface"
 msgstr "Kullanıcı arayüzü"
 
-#: ../gtk/parameters.ui.h:89 ../gtk/ldap.ui.h:2
-msgid "Server address:"
-msgstr "Sunucu adresi:"
-
-#: ../gtk/parameters.ui.h:90 ../gtk/ldap.ui.h:3
-msgid "Authentication method:"
-msgstr "Kimlik doğrulama yöntemi:"
-
-#: ../gtk/parameters.ui.h:91 ../gtk/ldap.ui.h:4
-msgid "Username:"
-msgstr "Kullanıcı adı:"
-
 #: ../gtk/parameters.ui.h:92
 msgid "<b>LDAP Account setup</b>"
 msgstr "<b>LDAP Hesap ayarı</b>"
@@ -1350,89 +1537,215 @@ msgstr "LDAP"
 msgid "Done"
 msgstr "Tamam"
 
-#: ../gtk/buddylookup.ui.h:1
-msgid "Search contacts in directory"
-msgstr "Dizinde bağlantılar ara"
+#: ../gtk/password.ui.h:1
+msgid "Linphone - Authentication required"
+msgstr "Linphone - Kimlik doğrulaması gerekli"
 
-#: ../gtk/buddylookup.ui.h:2
-msgid "Add to my list"
-msgstr "Listeme ekle"
+#: ../gtk/password.ui.h:2
+msgid "Please enter the domain password"
+msgstr "Lütfen alan adı parolası girin"
 
-#: ../gtk/buddylookup.ui.h:3
-msgid "<b>Search somebody</b>"
+#: ../gtk/provisioning-fetch.ui.h:1
+msgid "Configuring..."
+msgstr "Yapılandırılıyor..."
+
+#: ../gtk/provisioning-fetch.ui.h:2
+msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../gtk/waiting.ui.h:2
-msgid "Please wait"
-msgstr "Lütfen bekleyin"
+#: ../gtk/setup_wizard.ui.h:1
+msgid "SIP account configuration assistant"
+msgstr "SİP hesabı yapılandırma yardımcısı"
 
-#: ../gtk/dscp_settings.ui.h:1
-msgid "DSCP settings"
-msgstr "DSCP ayarları"
+#: ../gtk/setup_wizard.ui.h:2
+msgid ""
+"Welcome!\n"
+"This assistant will help you to use a SIP account for your calls."
+msgstr "Hoşgeldiniz!\nBu yardımcı,çağrılarınız için bir SIP hesabı kullanmanıza yardım edecek."
 
-#: ../gtk/dscp_settings.ui.h:2
-msgid "SIP"
-msgstr "SİP"
+#: ../gtk/setup_wizard.ui.h:4
+msgid "Welcome to the account setup assistant"
+msgstr "Hesap açma yardımcısına hoşgeldiniz"
 
-#: ../gtk/dscp_settings.ui.h:3
-msgid "Audio RTP stream"
+#: ../gtk/setup_wizard.ui.h:5
+msgid "Create an account on linphone.org"
+msgstr "linphone.org'da bir hesap oluştur"
+
+#: ../gtk/setup_wizard.ui.h:6
+msgid "I have already a linphone.org account and I just want to use it"
 msgstr ""
 
-#: ../gtk/dscp_settings.ui.h:4
-msgid "Video RTP stream"
+#: ../gtk/setup_wizard.ui.h:7
+msgid "I have already a sip account and I just want to use it"
 msgstr ""
 
-#: ../gtk/dscp_settings.ui.h:5
-msgid "<b>Set DSCP values (in hexadecimal)</b>"
+#: ../gtk/setup_wizard.ui.h:8
+msgid "I want to specify a remote configuration URI"
 msgstr ""
 
-#: ../gtk/call_statistics.ui.h:1
-msgid "Call statistics"
-msgstr "Çağrı istatistikleri"
+#: ../gtk/setup_wizard.ui.h:9
+msgid "Account setup assistant"
+msgstr "Hesap açma yardımcısı"
 
-#: ../gtk/call_statistics.ui.h:2
-msgid "Audio codec"
-msgstr "Ses çözücü"
+#: ../gtk/setup_wizard.ui.h:10
+msgid "Enter your account information"
+msgstr "Hesap bilgilerinizi girin"
 
-#: ../gtk/call_statistics.ui.h:3
-msgid "Video codec"
-msgstr "Görüntü çözücü"
+#: ../gtk/setup_wizard.ui.h:11
+msgid "Username*"
+msgstr "Kallanıcı adı*"
 
-#: ../gtk/call_statistics.ui.h:4
-msgid "Audio IP bandwidth usage"
+#: ../gtk/setup_wizard.ui.h:12
+msgid "Password*"
+msgstr "Parola*"
+
+#: ../gtk/setup_wizard.ui.h:13
+msgid "Domain*"
+msgstr "Alan adı*"
+
+#: ../gtk/setup_wizard.ui.h:14
+msgid "Proxy"
+msgstr "Vekil sunucu"
+
+#: ../gtk/setup_wizard.ui.h:15
+msgid "Configure your account (step 1/1)"
+msgstr "Hesabınızı yapılandırın (adım 1/1)"
+
+#: ../gtk/setup_wizard.ui.h:16
+msgid "Enter your linphone.org username"
+msgstr "linphone.org kullanıcı adınızı girin"
+
+#: ../gtk/setup_wizard.ui.h:19
+msgid "Enter your sip username (step 1/1)"
+msgstr "sip kullanıcı adınızı girin (adım 1/1)"
+
+#: ../gtk/setup_wizard.ui.h:20
+msgid "(*) Required fields"
+msgstr "(*) Zorunlu alanlar"
+
+#: ../gtk/setup_wizard.ui.h:21
+msgid "Email: (*)"
+msgstr "E-posta: (*)"
+
+#: ../gtk/setup_wizard.ui.h:22
+msgid "Username: (*)"
+msgstr "Kullanıcı adı: (*)"
+
+#: ../gtk/setup_wizard.ui.h:23
+msgid "Password: (*)"
+msgstr "Parola: (*)"
+
+#: ../gtk/setup_wizard.ui.h:24
+msgid "Confirm your password: (*)"
+msgstr "Parolanızı onaylayın: (*)"
+
+#: ../gtk/setup_wizard.ui.h:25
+msgid "Keep me informed with linphone updates"
+msgstr "linphone güncellemeleri hakkında beni bilgilendir"
+
+#: ../gtk/setup_wizard.ui.h:26
+msgid "Enter account information (step 1/2)"
+msgstr "Hesap bilgilerini girin (adım 1/2)"
+
+#: ../gtk/setup_wizard.ui.h:27
+msgid "Your account is being created, please wait."
+msgstr "Hebabınız oluşturulmaya başlandı,lütfen bekleyin."
+
+#: ../gtk/setup_wizard.ui.h:28
+msgid "Account creation in progress"
+msgstr "Hesap oluşturma sürüyor"
+
+#: ../gtk/setup_wizard.ui.h:29
+msgid ""
+"Please validate your account by clicking on the link we just sent you by email.\n"
+"Then come back here and press Next button."
+msgstr "Lütfen size e-posta yoluyla gönderdiğimiz bağlantıyı tıklayarak hesabınızı doğrulayın.\nSonra buraya geri dönün ve İleri düğmesine basın."
+
+#: ../gtk/setup_wizard.ui.h:31
+msgid "Validation (step 2/2)"
+msgstr "Doğrulama (adım 2/2)"
+
+#: ../gtk/setup_wizard.ui.h:32
+msgid "Checking if your account is been validated, please wait."
 msgstr ""
 
-#: ../gtk/call_statistics.ui.h:5
-msgid "Audio Media connectivity"
-msgstr "Ses Ortamı bağlanırlığı"
+#: ../gtk/setup_wizard.ui.h:33
+msgid "Account validation check in progress"
+msgstr "Hesap geçerlilik sınaması sürüyor"
 
-#: ../gtk/call_statistics.ui.h:6
-msgid "Video IP bandwidth usage"
+#: ../gtk/setup_wizard.ui.h:34
+msgid ""
+"Error, account not validated, username already used or server unreachable.\n"
+"Please go back and try again."
+msgstr "Hata,hesap geçersiz,kullanıcı adı kullanılıyor veya sunucuya erişilemiyor.\nLütfen geri dönün ve tekrar deneyin."
+
+#: ../gtk/setup_wizard.ui.h:36
+msgid "Error"
+msgstr "Hata"
+
+#: ../gtk/setup_wizard.ui.h:37
+msgid "Thank you. Your account is now configured and ready for use."
+msgstr "Teşekkürler. Hesabınız yapılandırıldı ve kullanıma hazır."
+
+#: ../gtk/sip_account.ui.h:1
+msgid "Linphone - Configure a SIP account"
+msgstr "Linphone - Bir SİP hesabı yapılandır"
+
+#: ../gtk/sip_account.ui.h:2
+msgid "Your SIP identity:"
+msgstr "SİP kimliğiniz:"
+
+#: ../gtk/sip_account.ui.h:3
+msgid "Looks like sip:<username>@<domain>"
 msgstr ""
 
-#: ../gtk/call_statistics.ui.h:7
-msgid "Video Media connectivity"
-msgstr "Görüntü Ortamı bağlanırlığı"
+#: ../gtk/sip_account.ui.h:4
+msgid "sip:"
+msgstr "sip:"
 
-#: ../gtk/call_statistics.ui.h:8
-msgid "Round trip time"
-msgstr "Sinyal gidiş-dönüş süresi"
+#: ../gtk/sip_account.ui.h:5
+msgid "SIP Proxy address:"
+msgstr "SİP Vekil sunucu adresi:"
 
-#: ../gtk/call_statistics.ui.h:9
-msgid "Video resolution received"
-msgstr "Alınan görüntü çözünürlüğü"
-
-#: ../gtk/call_statistics.ui.h:10
-msgid "Video resolution sent"
-msgstr "Giden görüntü çözünürlüğü"
-
-#: ../gtk/call_statistics.ui.h:11
-msgid "RTP profile"
+#: ../gtk/sip_account.ui.h:6
+msgid "Looks like sip:<proxy hostname>"
 msgstr ""
 
-#: ../gtk/call_statistics.ui.h:12
-msgid "<b>Call statistics and information</b>"
+#: ../gtk/sip_account.ui.h:7
+msgid "Registration duration (sec):"
+msgstr "Kayıt süresi (saniye)"
+
+#: ../gtk/sip_account.ui.h:8
+msgid "Contact params (optional):"
 msgstr ""
+
+#: ../gtk/sip_account.ui.h:9
+msgid "AVPF regular RTCP interval (sec):"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:10
+msgid "Route (optional):"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:11
+msgid "Transport"
+msgstr "Taşıma"
+
+#: ../gtk/sip_account.ui.h:12
+msgid "Register"
+msgstr "Kayıt"
+
+#: ../gtk/sip_account.ui.h:13
+msgid "Publish presence information"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:14
+msgid "Enable AVPF"
+msgstr "AVPF'yi etkinleştir"
+
+#: ../gtk/sip_account.ui.h:15
+msgid "Configure a SIP account"
+msgstr "Bir SİP hesabı yapılandır"
 
 #: ../gtk/tunnel_config.ui.h:1
 msgid "Configure VoIP tunnel"
@@ -1450,192 +1763,13 @@ msgstr "Bağlantı noktası"
 msgid "<b>Configure tunnel</b>"
 msgstr ""
 
-#: ../gtk/tunnel_config.ui.h:7 ../gtk/login_frame.ui.h:1
-msgid "Username"
-msgstr "Kallanıcı adı"
-
-#: ../gtk/tunnel_config.ui.h:8 ../gtk/login_frame.ui.h:2
-msgid "Password"
-msgstr "Parola"
-
 #: ../gtk/tunnel_config.ui.h:9
 msgid "<b>Configure http proxy (optional)</b>"
 msgstr ""
 
-#: ../gtk/ldap.ui.h:1
-msgid "LDAP Settings"
-msgstr "LDAP Ayarları"
-
-#: ../gtk/ldap.ui.h:6
-msgid "Use TLS Connection"
-msgstr "TLS Bağlantısı Kullan"
-
-#: ../gtk/ldap.ui.h:7
-msgid "Not yet available"
-msgstr "Henüz kullanılabilir değil"
-
-#: ../gtk/ldap.ui.h:8
-msgid "<b>Connection</b>"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:9
-msgid "Bind DN"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:10
-msgid "Authname"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:11
-msgid "Realm"
-msgstr "Ülke"
-
-#: ../gtk/ldap.ui.h:12
-msgid "<b>SASL</b>"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:13
-msgid "Base object:"
-msgstr "Temel nesne:"
-
-#: ../gtk/ldap.ui.h:15
-#, no-c-format
-msgid "Filter (%s for name):"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:16
-msgid "Name Attribute:"
-msgstr "Öznitelik Adı:"
-
-#: ../gtk/ldap.ui.h:17
-msgid "SIP address attribute:"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:18
-msgid "Attributes to query:"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:19
-msgid "<b>Search</b>"
-msgstr "<b>Ara</b>"
-
-#: ../gtk/ldap.ui.h:20
-msgid "Timeout for search:"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:21
-msgid "Max results:"
-msgstr "En çok sonuç:"
-
-#: ../gtk/ldap.ui.h:22
-msgid "Follow Aliases"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:23
-msgid "<b>Miscellaneous</b>"
-msgstr "<b>Çeşitli</b>"
-
-#: ../gtk/ldap.ui.h:24
-msgid "ANONYMOUS"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:25
-msgid "SIMPLE"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:26
-msgid "DIGEST-MD5"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:27
-msgid "NTLM"
-msgstr ""
-
-#: ../gtk/config-uri.ui.h:1
-msgid "Specifying a remote configuration URI"
-msgstr ""
-
-#: ../gtk/config-uri.ui.h:2
-msgid ""
-"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
-msgstr ""
-
-#: ../gtk/provisioning-fetch.ui.h:1
-msgid "Configuring..."
-msgstr "Yapılandırılıyor..."
-
-#: ../gtk/provisioning-fetch.ui.h:2
-msgid "Please wait while fetching configuration from server..."
-msgstr ""
-
-#: ../gtk/chatroom_frame.ui.h:1
-msgid "Send"
-msgstr "Gönder"
-
-#: ../gtk/callee_frame.ui.h:1
-msgid "<b>Callee name</b>"
-msgstr ""
-
-#: ../gtk/conf_frame.ui.h:1
-msgid "End conference"
-msgstr "Grup görüşme son"
-
-#: ../gtk/in_call_frame.ui.h:1
-msgid "Click here to set the speakers volume"
-msgstr "Hoparlör ses miktarı ayarı için buraya tıkla"
-
-#: ../gtk/in_call_frame.ui.h:5
-msgid "Record this call to an audio file"
-msgstr "Bu aramayı bir ses dosyasına kaydet"
-
-#: ../gtk/in_call_frame.ui.h:6
-msgid "Video"
-msgstr "Görüntü"
-
-#: ../gtk/in_call_frame.ui.h:8
-msgid "Mute"
-msgstr "Sessiz"
-
-#: ../gtk/in_call_frame.ui.h:9
-msgid "Transfer"
-msgstr "Aktarım"
-
-#: ../gtk/in_call_frame.ui.h:12
-msgid "In call"
-msgstr "arıyor"
-
-#: ../gtk/in_call_frame.ui.h:13
-msgid "Duration"
-msgstr "Süre"
-
-#: ../gtk/in_call_frame.ui.h:14
-msgid "Call quality rating"
-msgstr ""
-
-#: ../gtk/login_frame.ui.h:3
-msgid "Internet connection:"
-msgstr "İnternet bağlantısı:"
-
-#: ../gtk/login_frame.ui.h:4
-msgid "Automatically log me in"
-msgstr ""
-
-#: ../gtk/login_frame.ui.h:6
-msgid "Login information"
-msgstr "Giriş bilgisi"
-
-#: ../gtk/login_frame.ui.h:7
-msgid "<b>Welcome!</b>"
-msgstr "<b>Hoşgeldiniz!</b>"
-
-#: ../gtk/login_frame.ui.h:8
-msgid "ADSL"
-msgstr "ADSL"
-
-#: ../gtk/login_frame.ui.h:9
-msgid "Fiber Channel"
-msgstr ""
+#: ../gtk/waiting.ui.h:2
+msgid "Please wait"
+msgstr "Lütfen bekleyin"
 
 #: ../coreapi/linphonecore.c:1560
 msgid "Ready"

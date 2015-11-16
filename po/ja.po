@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-29 17:24+0100\n"
-"PO-Revision-Date: 2015-10-29 16:23+0000\n"
+"POT-Creation-Date: 2015-11-10 15:16+0100\n"
+"PO-Revision-Date: 2015-11-10 14:16+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/belledonne-communications/linphone-gtk/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -165,73 +165,73 @@ msgid ""
 " at realm <i>%s</i>:"
 msgstr "パスワードを入力してください <i>%s</i>\nrealm <i>%s</i>:"
 
-#: ../gtk/main.c:1248
+#: ../gtk/main.c:1253
 msgid "Call error"
 msgstr "呼出エラー"
 
-#: ../gtk/main.c:1251 ../coreapi/linphonecore.c:3813
+#: ../gtk/main.c:1256 ../coreapi/linphonecore.c:3813
 msgid "Call ended"
 msgstr "呼出終了"
 
-#: ../gtk/main.c:1254 ../coreapi/call_log.c:235
+#: ../gtk/main.c:1259 ../coreapi/call_log.c:235
 msgid "Incoming call"
 msgstr "着信"
 
-#: ../gtk/main.c:1256 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:2
+#: ../gtk/main.c:1261 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
 msgstr "応答"
 
-#: ../gtk/main.c:1258 ../gtk/in_call_frame.ui.h:3
+#: ../gtk/main.c:1263 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
 msgstr "拒否"
 
-#: ../gtk/main.c:1264
+#: ../gtk/main.c:1269
 msgid "Call paused"
 msgstr "呼び出しの一時停止"
 
-#: ../gtk/main.c:1264
+#: ../gtk/main.c:1269
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "<b>%s</b>"
 
-#: ../gtk/main.c:1334
+#: ../gtk/main.c:1339
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%sがテレビ電話をしたいそうですが受け入れますか？"
 
-#: ../gtk/main.c:1500
+#: ../gtk/main.c:1505
 msgid "Website link"
 msgstr "ウェブサイトリンク"
 
-#: ../gtk/main.c:1559 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1564 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1560
+#: ../gtk/main.c:1565
 msgid "A video internet phone"
 msgstr "テレビ電話"
 
-#: ../gtk/main.c:1619
+#: ../gtk/main.c:1624
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (デフォルト)"
 
-#: ../gtk/main.c:1955 ../coreapi/callbacks.c:1075
+#: ../gtk/main.c:1960 ../coreapi/callbacks.c:1075
 #, c-format
 msgid "We are transferred to %s"
 msgstr "%s に転送しました"
 
-#: ../gtk/main.c:1965
+#: ../gtk/main.c:1970
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr "サウンドカードが検出されていません。\n音声通話の送受信はできません。"
 
-#: ../gtk/main.c:2124
+#: ../gtk/main.c:2129
 msgid "A free SIP video-phone"
 msgstr "無料 SIP ビデオ-電話"
 
-#: ../gtk/main.c:2237
+#: ../gtk/main.c:2242
 #, c-format
 msgid "Hello\n"
 msgstr "こんにちは\n"
@@ -746,9 +746,348 @@ msgstr "スピーカーの音量測定"
 msgid "Record and Play"
 msgstr "録音して再生"
 
-#: ../gtk/audio_assistant.c:541
+#: ../gtk/audio_assistant.c:541 ../gtk/setup_wizard.ui.h:38
 msgid "Terminating"
 msgstr "終了"
+
+#: ../gtk/about.ui.h:1
+msgid "About Linphone"
+msgstr "Linphoneについて"
+
+#: ../gtk/about.ui.h:2
+msgid "(C) Belledonne Communications, 2010\n"
+msgstr "(C) Belledonne Communications, 2010\n"
+
+#: ../gtk/about.ui.h:4
+msgid "An internet video phone using the standard SIP (rfc3261) protocol."
+msgstr "インターネットによる動画送信には標準的なSIPプロトコル (rfc3261) を使用しています。"
+
+#: ../gtk/about.ui.h:5
+msgid ""
+"fr: Simon Morlat\n"
+"en: Simon Morlat and Delphine Perreau\n"
+"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
+"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
+"sv: Daniel Nylander <po@danielnylander.se>\n"
+"es: Jesus Benitez <gnelson at inMail dot sk>\n"
+"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
+"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
+"pl: Robert Nasiadek <darkone@darkone.pl>\n"
+"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
+"hu: anonymous\n"
+"he: Eli Zaretskii <eliz@gnu.org>\n"
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
+
+#: ../gtk/buddylookup.ui.h:1
+msgid "Search contacts in directory"
+msgstr ""
+
+#: ../gtk/buddylookup.ui.h:2
+msgid "Add to my list"
+msgstr ""
+
+#: ../gtk/buddylookup.ui.h:3
+msgid "<b>Search somebody</b>"
+msgstr ""
+
+#: ../gtk/callee_frame.ui.h:1
+msgid "<b>Callee name</b>"
+msgstr ""
+
+#: ../gtk/call_logs.ui.h:1
+msgid "Call history"
+msgstr "呼出履歴"
+
+#: ../gtk/call_logs.ui.h:2
+msgid "Clear all"
+msgstr "すべて消去する"
+
+#: ../gtk/call_logs.ui.h:3
+msgid "Call back"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:1
+msgid "Call statistics"
+msgstr "通信統計"
+
+#: ../gtk/call_statistics.ui.h:2
+msgid "Audio codec"
+msgstr "オーディオのコーデック"
+
+#: ../gtk/call_statistics.ui.h:3
+msgid "Video codec"
+msgstr "ビデオのコーデック"
+
+#: ../gtk/call_statistics.ui.h:4
+msgid "Audio IP bandwidth usage"
+msgstr "音声で使用しているIP通信帯域"
+
+#: ../gtk/call_statistics.ui.h:5
+msgid "Audio Media connectivity"
+msgstr "接続している音声用メディア"
+
+#: ../gtk/call_statistics.ui.h:6
+msgid "Video IP bandwidth usage"
+msgstr "ビデオで使用しているIP通信帯域"
+
+#: ../gtk/call_statistics.ui.h:7
+msgid "Video Media connectivity"
+msgstr "接続しているビデオ用メディア"
+
+#: ../gtk/call_statistics.ui.h:8
+msgid "Round trip time"
+msgstr "RTT"
+
+#: ../gtk/call_statistics.ui.h:9
+msgid "Video resolution received"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:10
+msgid "Video resolution sent"
+msgstr ""
+
+#: ../gtk/call_statistics.ui.h:11
+msgid "RTP profile"
+msgstr "RTPプロファイル"
+
+#: ../gtk/call_statistics.ui.h:12
+msgid "<b>Call statistics and information</b>"
+msgstr ""
+
+#: ../gtk/chatroom_frame.ui.h:1
+msgid "Send"
+msgstr "送信"
+
+#: ../gtk/conf_frame.ui.h:1
+msgid "End conference"
+msgstr "会議を終了する"
+
+#: ../gtk/config-uri.ui.h:1
+msgid "Specifying a remote configuration URI"
+msgstr ""
+
+#: ../gtk/config-uri.ui.h:2
+msgid ""
+"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+msgstr ""
+
+#: ../gtk/contact.ui.h:2
+msgid "SIP Address"
+msgstr "SIPアドレス"
+
+#: ../gtk/contact.ui.h:3
+msgid "Show this contact presence status"
+msgstr ""
+
+#: ../gtk/contact.ui.h:4
+msgid "Allow this contact to see my presence status"
+msgstr ""
+
+#: ../gtk/contact.ui.h:5
+msgid "<b>Contact information</b>"
+msgstr ""
+
+#: ../gtk/dscp_settings.ui.h:1
+msgid "DSCP settings"
+msgstr "DSCP設定"
+
+#: ../gtk/dscp_settings.ui.h:2
+msgid "SIP"
+msgstr "SIP"
+
+#: ../gtk/dscp_settings.ui.h:3
+msgid "Audio RTP stream"
+msgstr "オーディオのRTP"
+
+#: ../gtk/dscp_settings.ui.h:4
+msgid "Video RTP stream"
+msgstr "ビデオのRTP"
+
+#: ../gtk/dscp_settings.ui.h:5
+msgid "<b>Set DSCP values (in hexadecimal)</b>"
+msgstr ""
+
+#: ../gtk/in_call_frame.ui.h:1
+msgid "Click here to set the speakers volume"
+msgstr ""
+
+#: ../gtk/in_call_frame.ui.h:5
+msgid "Record this call to an audio file"
+msgstr "この通話をファイルに録音する"
+
+#: ../gtk/in_call_frame.ui.h:6
+msgid "Video"
+msgstr "ビデオ"
+
+#: ../gtk/in_call_frame.ui.h:8
+msgid "Mute"
+msgstr "消音"
+
+#: ../gtk/in_call_frame.ui.h:9
+msgid "Transfer"
+msgstr "転送"
+
+#: ../gtk/in_call_frame.ui.h:12
+msgid "In call"
+msgstr "着信"
+
+#: ../gtk/in_call_frame.ui.h:13
+msgid "Duration"
+msgstr "期限"
+
+#: ../gtk/in_call_frame.ui.h:14
+msgid "Call quality rating"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:1
+msgid "LDAP Settings"
+msgstr "LDAP設定"
+
+#: ../gtk/ldap.ui.h:2 ../gtk/parameters.ui.h:89
+msgid "Server address:"
+msgstr "サーバーアドレス:"
+
+#: ../gtk/ldap.ui.h:3 ../gtk/parameters.ui.h:90
+msgid "Authentication method:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:4 ../gtk/parameters.ui.h:91 ../gtk/setup_wizard.ui.h:17
+msgid "Username:"
+msgstr "ユーザー名:"
+
+#: ../gtk/ldap.ui.h:5 ../gtk/password.ui.h:4 ../gtk/setup_wizard.ui.h:18
+msgid "Password:"
+msgstr "パスワード:"
+
+#: ../gtk/ldap.ui.h:6
+msgid "Use TLS Connection"
+msgstr "TLS接続を使用する"
+
+#: ../gtk/ldap.ui.h:7
+msgid "Not yet available"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:8
+msgid "<b>Connection</b>"
+msgstr "<b>接続</b>"
+
+#: ../gtk/ldap.ui.h:9
+msgid "Bind DN"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:10
+msgid "Authname"
+msgstr "Authname"
+
+#: ../gtk/ldap.ui.h:11
+msgid "Realm"
+msgstr "Realm"
+
+#: ../gtk/ldap.ui.h:12
+msgid "<b>SASL</b>"
+msgstr "<b>SASL</b>"
+
+#: ../gtk/ldap.ui.h:13
+msgid "Base object:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:15
+#, no-c-format
+msgid "Filter (%s for name):"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:16
+msgid "Name Attribute:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:17
+msgid "SIP address attribute:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:18
+msgid "Attributes to query:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:19
+msgid "<b>Search</b>"
+msgstr "<b>検索</b>"
+
+#: ../gtk/ldap.ui.h:20
+msgid "Timeout for search:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:21
+msgid "Max results:"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:22
+msgid "Follow Aliases"
+msgstr ""
+
+#: ../gtk/ldap.ui.h:23
+msgid "<b>Miscellaneous</b>"
+msgstr "<b>種々</b>"
+
+#: ../gtk/ldap.ui.h:24
+msgid "ANONYMOUS"
+msgstr "匿名"
+
+#: ../gtk/ldap.ui.h:25
+msgid "SIMPLE"
+msgstr "シンプル"
+
+#: ../gtk/ldap.ui.h:26
+msgid "DIGEST-MD5"
+msgstr "ダイジェスト-MD5"
+
+#: ../gtk/ldap.ui.h:27
+msgid "NTLM"
+msgstr "NTLM"
+
+#: ../gtk/login_frame.ui.h:1 ../gtk/tunnel_config.ui.h:7
+msgid "Username"
+msgstr "ユーザー名"
+
+#: ../gtk/login_frame.ui.h:2 ../gtk/tunnel_config.ui.h:8
+msgid "Password"
+msgstr "パスワード"
+
+#: ../gtk/login_frame.ui.h:3
+msgid "Internet connection:"
+msgstr "インターネット接続:"
+
+#: ../gtk/login_frame.ui.h:4
+msgid "Automatically log me in"
+msgstr "自動的にログインする"
+
+#: ../gtk/login_frame.ui.h:5 ../gtk/password.ui.h:3
+msgid "UserID"
+msgstr "ユーザーID"
+
+#: ../gtk/login_frame.ui.h:6
+msgid "Login information"
+msgstr "ログイン情報"
+
+#: ../gtk/login_frame.ui.h:7
+msgid "<b>Welcome!</b>"
+msgstr "<b>ようこそ!</b>"
+
+#: ../gtk/login_frame.ui.h:8
+msgid "ADSL"
+msgstr "ADSL"
+
+#: ../gtk/login_frame.ui.h:9
+msgid "Fiber Channel"
+msgstr ""
+
+#: ../gtk/log.ui.h:1
+msgid "Linphone debug window"
+msgstr "Linphoneデバッグウインドウ"
+
+#: ../gtk/log.ui.h:2
+msgid "Scroll to end"
+msgstr "最下部までスクロールする"
 
 #: ../gtk/main.ui.h:1
 msgid "Default"
@@ -832,146 +1171,6 @@ msgstr ""
 
 #: ../gtk/main.ui.h:23
 msgid "Autoanswer is enabled"
-msgstr ""
-
-#: ../gtk/about.ui.h:1
-msgid "About Linphone"
-msgstr "Linphoneについて"
-
-#: ../gtk/about.ui.h:2
-msgid "(C) Belledonne Communications, 2010\n"
-msgstr "(C) Belledonne Communications, 2010\n"
-
-#: ../gtk/about.ui.h:4
-msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr "インターネットによる動画送信には標準的なSIPプロトコル (rfc3261) を使用しています。"
-
-#: ../gtk/about.ui.h:5
-msgid ""
-"fr: Simon Morlat\n"
-"en: Simon Morlat and Delphine Perreau\n"
-"it: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\n"
-"de: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\n"
-"sv: Daniel Nylander <po@danielnylander.se>\n"
-"es: Jesus Benitez <gnelson at inMail dot sk>\n"
-"ja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\n"
-"pt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\n"
-"pl: Robert Nasiadek <darkone@darkone.pl>\n"
-"cs: Petr Pisar <petr.pisar@atlas.cz>\n"
-"hu: anonymous\n"
-"he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
-
-#: ../gtk/contact.ui.h:2
-msgid "SIP Address"
-msgstr "SIPアドレス"
-
-#: ../gtk/contact.ui.h:3
-msgid "Show this contact presence status"
-msgstr ""
-
-#: ../gtk/contact.ui.h:4
-msgid "Allow this contact to see my presence status"
-msgstr ""
-
-#: ../gtk/contact.ui.h:5
-msgid "<b>Contact information</b>"
-msgstr ""
-
-#: ../gtk/log.ui.h:1
-msgid "Linphone debug window"
-msgstr "Linphoneデバッグウインドウ"
-
-#: ../gtk/log.ui.h:2
-msgid "Scroll to end"
-msgstr "最下部までスクロールする"
-
-#: ../gtk/password.ui.h:1
-msgid "Linphone - Authentication required"
-msgstr ""
-
-#: ../gtk/password.ui.h:2
-msgid "Please enter the domain password"
-msgstr ""
-
-#: ../gtk/password.ui.h:3 ../gtk/login_frame.ui.h:5
-msgid "UserID"
-msgstr "ユーザーID"
-
-#: ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
-msgid "Password:"
-msgstr "パスワード:"
-
-#: ../gtk/call_logs.ui.h:1
-msgid "Call history"
-msgstr "呼出履歴"
-
-#: ../gtk/call_logs.ui.h:2
-msgid "Clear all"
-msgstr "すべて消去する"
-
-#: ../gtk/call_logs.ui.h:3
-msgid "Call back"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:1
-msgid "Linphone - Configure a SIP account"
-msgstr "Linphone - SIPアカウントを設定します"
-
-#: ../gtk/sip_account.ui.h:2
-msgid "Your SIP identity:"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:3
-msgid "Looks like sip:<username>@<domain>"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:4
-msgid "sip:"
-msgstr "sip:"
-
-#: ../gtk/sip_account.ui.h:5
-msgid "SIP Proxy address:"
-msgstr "SIP プロキシ:"
-
-#: ../gtk/sip_account.ui.h:6
-msgid "Looks like sip:<proxy hostname>"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:7
-msgid "Registration duration (sec):"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:8
-msgid "Contact params (optional):"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:9
-msgid "AVPF regular RTCP interval (sec):"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:10
-msgid "Route (optional):"
-msgstr ""
-
-#: ../gtk/sip_account.ui.h:11
-msgid "Transport"
-msgstr "転送"
-
-#: ../gtk/sip_account.ui.h:12
-msgid "Register"
-msgstr "登録"
-
-#: ../gtk/sip_account.ui.h:13
-msgid "Publish presence information"
-msgstr "パブリッシュ情報"
-
-#: ../gtk/sip_account.ui.h:14
-msgid "Enable AVPF"
-msgstr "AVPFを有効にする"
-
-#: ../gtk/sip_account.ui.h:15
-msgid "Configure a SIP account"
 msgstr ""
 
 #: ../gtk/parameters.ui.h:1
@@ -1324,18 +1523,6 @@ msgstr "<b>レベル</b>"
 msgid "User interface"
 msgstr "ユーザーインターフェイス"
 
-#: ../gtk/parameters.ui.h:89 ../gtk/ldap.ui.h:2
-msgid "Server address:"
-msgstr "サーバーアドレス:"
-
-#: ../gtk/parameters.ui.h:90 ../gtk/ldap.ui.h:3
-msgid "Authentication method:"
-msgstr ""
-
-#: ../gtk/parameters.ui.h:91 ../gtk/ldap.ui.h:4
-msgid "Username:"
-msgstr "ユーザー名:"
-
 #: ../gtk/parameters.ui.h:92
 msgid "<b>LDAP Account setup</b>"
 msgstr ""
@@ -1348,88 +1535,214 @@ msgstr "LDAP"
 msgid "Done"
 msgstr "完了"
 
-#: ../gtk/buddylookup.ui.h:1
-msgid "Search contacts in directory"
+#: ../gtk/password.ui.h:1
+msgid "Linphone - Authentication required"
 msgstr ""
 
-#: ../gtk/buddylookup.ui.h:2
-msgid "Add to my list"
+#: ../gtk/password.ui.h:2
+msgid "Please enter the domain password"
 msgstr ""
 
-#: ../gtk/buddylookup.ui.h:3
-msgid "<b>Search somebody</b>"
+#: ../gtk/provisioning-fetch.ui.h:1
+msgid "Configuring..."
 msgstr ""
 
-#: ../gtk/waiting.ui.h:2
-msgid "Please wait"
-msgstr "お待ちください"
-
-#: ../gtk/dscp_settings.ui.h:1
-msgid "DSCP settings"
-msgstr "DSCP設定"
-
-#: ../gtk/dscp_settings.ui.h:2
-msgid "SIP"
-msgstr "SIP"
-
-#: ../gtk/dscp_settings.ui.h:3
-msgid "Audio RTP stream"
-msgstr "オーディオのRTP"
-
-#: ../gtk/dscp_settings.ui.h:4
-msgid "Video RTP stream"
-msgstr "ビデオのRTP"
-
-#: ../gtk/dscp_settings.ui.h:5
-msgid "<b>Set DSCP values (in hexadecimal)</b>"
+#: ../gtk/provisioning-fetch.ui.h:2
+msgid "Please wait while fetching configuration from server..."
 msgstr ""
 
-#: ../gtk/call_statistics.ui.h:1
-msgid "Call statistics"
-msgstr "通信統計"
+#: ../gtk/setup_wizard.ui.h:1
+msgid "SIP account configuration assistant"
+msgstr "SIPアカウント設定アシスタント"
 
-#: ../gtk/call_statistics.ui.h:2
-msgid "Audio codec"
-msgstr "オーディオのコーデック"
+#: ../gtk/setup_wizard.ui.h:2
+msgid ""
+"Welcome!\n"
+"This assistant will help you to use a SIP account for your calls."
+msgstr "ようこそ！\nあなたの通話のためのSIPアカウント設定をお手伝いします。"
 
-#: ../gtk/call_statistics.ui.h:3
-msgid "Video codec"
-msgstr "ビデオのコーデック"
+#: ../gtk/setup_wizard.ui.h:4
+msgid "Welcome to the account setup assistant"
+msgstr "アカウント設定アシスタントへようこそ"
 
-#: ../gtk/call_statistics.ui.h:4
-msgid "Audio IP bandwidth usage"
-msgstr "音声で使用しているIP通信帯域"
+#: ../gtk/setup_wizard.ui.h:5
+msgid "Create an account on linphone.org"
+msgstr "linphone.orgのアカウントを作成"
 
-#: ../gtk/call_statistics.ui.h:5
-msgid "Audio Media connectivity"
-msgstr "接続している音声用メディア"
+#: ../gtk/setup_wizard.ui.h:6
+msgid "I have already a linphone.org account and I just want to use it"
+msgstr "linphone.orgのアカウントを持っているのでそれを使います"
 
-#: ../gtk/call_statistics.ui.h:6
-msgid "Video IP bandwidth usage"
-msgstr "ビデオで使用しているIP通信帯域"
+#: ../gtk/setup_wizard.ui.h:7
+msgid "I have already a sip account and I just want to use it"
+msgstr "SIPアカウントを持っているのでそれを使います"
 
-#: ../gtk/call_statistics.ui.h:7
-msgid "Video Media connectivity"
-msgstr "接続しているビデオ用メディア"
-
-#: ../gtk/call_statistics.ui.h:8
-msgid "Round trip time"
-msgstr "RTT"
-
-#: ../gtk/call_statistics.ui.h:9
-msgid "Video resolution received"
+#: ../gtk/setup_wizard.ui.h:8
+msgid "I want to specify a remote configuration URI"
 msgstr ""
 
-#: ../gtk/call_statistics.ui.h:10
-msgid "Video resolution sent"
+#: ../gtk/setup_wizard.ui.h:9
+msgid "Account setup assistant"
+msgstr "アカウント設定アシスタント"
+
+#: ../gtk/setup_wizard.ui.h:10
+msgid "Enter your account information"
 msgstr ""
 
-#: ../gtk/call_statistics.ui.h:11
-msgid "RTP profile"
-msgstr "RTPプロファイル"
+#: ../gtk/setup_wizard.ui.h:11
+msgid "Username*"
+msgstr "ユーザー名*"
 
-#: ../gtk/call_statistics.ui.h:12
-msgid "<b>Call statistics and information</b>"
+#: ../gtk/setup_wizard.ui.h:12
+msgid "Password*"
+msgstr "パスワード*"
+
+#: ../gtk/setup_wizard.ui.h:13
+msgid "Domain*"
+msgstr "ドメイン*"
+
+#: ../gtk/setup_wizard.ui.h:14
+msgid "Proxy"
+msgstr "プロキシ*"
+
+#: ../gtk/setup_wizard.ui.h:15
+msgid "Configure your account (step 1/1)"
+msgstr "アカウントを設定します (1/1)"
+
+#: ../gtk/setup_wizard.ui.h:16
+msgid "Enter your linphone.org username"
+msgstr "linphone.orgで取得したユーザー名を入力"
+
+#: ../gtk/setup_wizard.ui.h:19
+msgid "Enter your sip username (step 1/1)"
+msgstr "SIPのユーザー名を入力してください (1/1)"
+
+#: ../gtk/setup_wizard.ui.h:20
+msgid "(*) Required fields"
+msgstr "(*) 必須"
+
+#: ../gtk/setup_wizard.ui.h:21
+msgid "Email: (*)"
+msgstr "メールアドレス: (*)"
+
+#: ../gtk/setup_wizard.ui.h:22
+msgid "Username: (*)"
+msgstr "ユーザー名: (*)"
+
+#: ../gtk/setup_wizard.ui.h:23
+msgid "Password: (*)"
+msgstr "パスワード: (*)"
+
+#: ../gtk/setup_wizard.ui.h:24
+msgid "Confirm your password: (*)"
+msgstr "パスワードを再入力: (*)"
+
+#: ../gtk/setup_wizard.ui.h:25
+msgid "Keep me informed with linphone updates"
+msgstr "アップデートでLinphoneを常に最新にする"
+
+#: ../gtk/setup_wizard.ui.h:26
+msgid "Enter account information (step 1/2)"
+msgstr "アカウント情報を入力してください (1/2)"
+
+#: ../gtk/setup_wizard.ui.h:27
+msgid "Your account is being created, please wait."
+msgstr ""
+
+#: ../gtk/setup_wizard.ui.h:28
+msgid "Account creation in progress"
+msgstr ""
+
+#: ../gtk/setup_wizard.ui.h:29
+msgid ""
+"Please validate your account by clicking on the link we just sent you by email.\n"
+"Then come back here and press Next button."
+msgstr "送信されたメールの本文内にあるリンクをクリックしてアカウントを有効にしてください。\nその後こちらへ戻って「次へ」を押してください。"
+
+#: ../gtk/setup_wizard.ui.h:31
+msgid "Validation (step 2/2)"
+msgstr "検証します (2/2)"
+
+#: ../gtk/setup_wizard.ui.h:32
+msgid "Checking if your account is been validated, please wait."
+msgstr ""
+
+#: ../gtk/setup_wizard.ui.h:33
+msgid "Account validation check in progress"
+msgstr ""
+
+#: ../gtk/setup_wizard.ui.h:34
+msgid ""
+"Error, account not validated, username already used or server unreachable.\n"
+"Please go back and try again."
+msgstr ""
+
+#: ../gtk/setup_wizard.ui.h:36
+msgid "Error"
+msgstr "エラー"
+
+#: ../gtk/setup_wizard.ui.h:37
+msgid "Thank you. Your account is now configured and ready for use."
+msgstr "ありがとう。あなたのアカウントは無事に設定され、使用する準備ができました。"
+
+#: ../gtk/sip_account.ui.h:1
+msgid "Linphone - Configure a SIP account"
+msgstr "Linphone - SIPアカウントを設定します"
+
+#: ../gtk/sip_account.ui.h:2
+msgid "Your SIP identity:"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:3
+msgid "Looks like sip:<username>@<domain>"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:4
+msgid "sip:"
+msgstr "sip:"
+
+#: ../gtk/sip_account.ui.h:5
+msgid "SIP Proxy address:"
+msgstr "SIP プロキシ:"
+
+#: ../gtk/sip_account.ui.h:6
+msgid "Looks like sip:<proxy hostname>"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:7
+msgid "Registration duration (sec):"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:8
+msgid "Contact params (optional):"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:9
+msgid "AVPF regular RTCP interval (sec):"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:10
+msgid "Route (optional):"
+msgstr ""
+
+#: ../gtk/sip_account.ui.h:11
+msgid "Transport"
+msgstr "転送"
+
+#: ../gtk/sip_account.ui.h:12
+msgid "Register"
+msgstr "登録"
+
+#: ../gtk/sip_account.ui.h:13
+msgid "Publish presence information"
+msgstr "パブリッシュ情報"
+
+#: ../gtk/sip_account.ui.h:14
+msgid "Enable AVPF"
+msgstr "AVPFを有効にする"
+
+#: ../gtk/sip_account.ui.h:15
+msgid "Configure a SIP account"
 msgstr ""
 
 #: ../gtk/tunnel_config.ui.h:1
@@ -1448,192 +1761,13 @@ msgstr "ポート"
 msgid "<b>Configure tunnel</b>"
 msgstr ""
 
-#: ../gtk/tunnel_config.ui.h:7 ../gtk/login_frame.ui.h:1
-msgid "Username"
-msgstr "ユーザー名"
-
-#: ../gtk/tunnel_config.ui.h:8 ../gtk/login_frame.ui.h:2
-msgid "Password"
-msgstr "パスワード"
-
 #: ../gtk/tunnel_config.ui.h:9
 msgid "<b>Configure http proxy (optional)</b>"
 msgstr ""
 
-#: ../gtk/ldap.ui.h:1
-msgid "LDAP Settings"
-msgstr "LDAP設定"
-
-#: ../gtk/ldap.ui.h:6
-msgid "Use TLS Connection"
-msgstr "TLS接続を使用する"
-
-#: ../gtk/ldap.ui.h:7
-msgid "Not yet available"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:8
-msgid "<b>Connection</b>"
-msgstr "<b>接続</b>"
-
-#: ../gtk/ldap.ui.h:9
-msgid "Bind DN"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:10
-msgid "Authname"
-msgstr "Authname"
-
-#: ../gtk/ldap.ui.h:11
-msgid "Realm"
-msgstr "Realm"
-
-#: ../gtk/ldap.ui.h:12
-msgid "<b>SASL</b>"
-msgstr "<b>SASL</b>"
-
-#: ../gtk/ldap.ui.h:13
-msgid "Base object:"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:15
-#, no-c-format
-msgid "Filter (%s for name):"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:16
-msgid "Name Attribute:"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:17
-msgid "SIP address attribute:"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:18
-msgid "Attributes to query:"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:19
-msgid "<b>Search</b>"
-msgstr "<b>検索</b>"
-
-#: ../gtk/ldap.ui.h:20
-msgid "Timeout for search:"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:21
-msgid "Max results:"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:22
-msgid "Follow Aliases"
-msgstr ""
-
-#: ../gtk/ldap.ui.h:23
-msgid "<b>Miscellaneous</b>"
-msgstr "<b>種々</b>"
-
-#: ../gtk/ldap.ui.h:24
-msgid "ANONYMOUS"
-msgstr "匿名"
-
-#: ../gtk/ldap.ui.h:25
-msgid "SIMPLE"
-msgstr "シンプル"
-
-#: ../gtk/ldap.ui.h:26
-msgid "DIGEST-MD5"
-msgstr "ダイジェスト-MD5"
-
-#: ../gtk/ldap.ui.h:27
-msgid "NTLM"
-msgstr "NTLM"
-
-#: ../gtk/config-uri.ui.h:1
-msgid "Specifying a remote configuration URI"
-msgstr ""
-
-#: ../gtk/config-uri.ui.h:2
-msgid ""
-"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
-msgstr ""
-
-#: ../gtk/provisioning-fetch.ui.h:1
-msgid "Configuring..."
-msgstr ""
-
-#: ../gtk/provisioning-fetch.ui.h:2
-msgid "Please wait while fetching configuration from server..."
-msgstr ""
-
-#: ../gtk/chatroom_frame.ui.h:1
-msgid "Send"
-msgstr "送信"
-
-#: ../gtk/callee_frame.ui.h:1
-msgid "<b>Callee name</b>"
-msgstr ""
-
-#: ../gtk/conf_frame.ui.h:1
-msgid "End conference"
-msgstr "会議を終了する"
-
-#: ../gtk/in_call_frame.ui.h:1
-msgid "Click here to set the speakers volume"
-msgstr ""
-
-#: ../gtk/in_call_frame.ui.h:5
-msgid "Record this call to an audio file"
-msgstr "この通話をファイルに録音する"
-
-#: ../gtk/in_call_frame.ui.h:6
-msgid "Video"
-msgstr "ビデオ"
-
-#: ../gtk/in_call_frame.ui.h:8
-msgid "Mute"
-msgstr "消音"
-
-#: ../gtk/in_call_frame.ui.h:9
-msgid "Transfer"
-msgstr "転送"
-
-#: ../gtk/in_call_frame.ui.h:12
-msgid "In call"
-msgstr "着信"
-
-#: ../gtk/in_call_frame.ui.h:13
-msgid "Duration"
-msgstr "期限"
-
-#: ../gtk/in_call_frame.ui.h:14
-msgid "Call quality rating"
-msgstr ""
-
-#: ../gtk/login_frame.ui.h:3
-msgid "Internet connection:"
-msgstr "インターネット接続:"
-
-#: ../gtk/login_frame.ui.h:4
-msgid "Automatically log me in"
-msgstr "自動的にログインする"
-
-#: ../gtk/login_frame.ui.h:6
-msgid "Login information"
-msgstr "ログイン情報"
-
-#: ../gtk/login_frame.ui.h:7
-msgid "<b>Welcome!</b>"
-msgstr "<b>ようこそ!</b>"
-
-#: ../gtk/login_frame.ui.h:8
-msgid "ADSL"
-msgstr "ADSL"
-
-#: ../gtk/login_frame.ui.h:9
-msgid "Fiber Channel"
-msgstr ""
+#: ../gtk/waiting.ui.h:2
+msgid "Please wait"
+msgstr "お待ちください"
 
 #: ../coreapi/linphonecore.c:1560
 msgid "Ready"
