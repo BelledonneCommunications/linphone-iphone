@@ -535,6 +535,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[hiddenKeys addObject:@"clear_cache_button"];
 	[hiddenKeys addObject:@"battery_alert_button"];
 	[hiddenKeys addObject:@"enable_auto_answer_preference"];
+	[hiddenKeys addObject:@"flush_images_button"];
 #endif
 
 	if (![[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"]) {
@@ -679,6 +680,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[UIDevice currentDevice] _setBatteryLevel:0.01f];
 		[[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceBatteryLevelDidChangeNotification
 															object:self];
+	} else if ([key isEqual:@"flush_images_button"]) {
+		const MSList *rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+		while (rooms) {
+			const MSList *messages = linphone_chat_room_get_history(rooms->data, 0);
+			while (messages) {
+				[LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:messages->data];
+				messages = messages->next;
+			}
+			rooms = rooms->next;
+		}
 	}
 #endif
 	if ([key isEqual:@"assistant_button"]) {
