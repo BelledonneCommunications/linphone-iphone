@@ -39,15 +39,20 @@ SIPP_FILES = sipp/call_invite_200ok_without_contact_header.xml       \
 sippdir = $(datadir)/liblinphone_tester/sipp
 sipp_DATA = $(SIPP_FILES)
 
-CERTIFICATE_FILES = certificates/altname/agent.pem           \
+CERTIFICATE_ALT_FILES = certificates/altname/agent.pem           \
 					certificates/altname/cafile.pem          \
-					certificates/altname/openssl-altname.cnf\
-					certificates/cn/agent.pem      \
-					certificates/cn/cafile.pem     \
-					certificates/cn/openssl-cn.cnf
+					certificates/altname/openssl-altname.cnf
 
-certificatesdir=$(datadir)/liblinphone_tester/certificates
-certificates_DATA = $(CERTIFICATE_FILES)
+certificatesaltdir=$(datadir)/liblinphone_tester/certificates/altname
+certificatesalt_DATA = $(CERTIFICATE_ALT_FILES)
+
+CERTIFICATE_CN_FILES = certificates/cn/agent.pem      \
+					 certificates/cn/cafile.pem     \
+					 certificates/cn/openssl-cn.cnf
+
+certificatescndir=$(datadir)/liblinphone_tester/certificates/cn
+certificatescn_DATA = $(CERTIFICATE_CN_FILES)
+
 
 RCFILES = \
 					rcfiles/empty_rc\
