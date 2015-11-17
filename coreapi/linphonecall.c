@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mediastreamer2/msjpegwriter.h"
 #include "mediastreamer2/mseventqueue.h"
 #include "mediastreamer2/mssndcard.h"
+#include "mediastreamer2/msrtt4103.h"
 
 static const char *EC_STATE_STORE = ".linphone.ecstate";
 #define EC_STATE_MAX_LEN 1048576 // 1Mo
@@ -3257,6 +3258,15 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 #endif
 }
 
+static void real_time_text_character_received(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
+	if (id == MS_RTT_4103_RECEIVED_CHAR) {
+		LinphoneCall *call = (LinphoneCall *)userdata;
+		RealtimeTextReceivedCharacter *data = (RealtimeTextReceivedCharacter *)arg;
+		LinphoneChatRoom * chat_room = linphone_call_get_chat_room(call);
+		linphone_core_real_time_text_received(call->core, chat_room, data->character, call);
+	}
+}
+
 static void linphone_call_start_text_stream(LinphoneCall *call) {
 	LinphoneCore *lc = call->core;
 	int used_pt = -1;
@@ -3289,6 +3299,7 @@ static void linphone_call_start_text_stream(LinphoneCall *call) {
 			if (is_multicast) rtp_session_set_multicast_ttl(call->textstream->ms.sessions.rtp_session,tstream->ttl);
 
 			text_stream_start(call->textstream, call->text_profile, rtp_addr, tstream->rtp_port, rtcp_addr, (linphone_core_rtcp_enabled(lc) && !is_multicast)  ? (tstream->rtcp_port ? tstream->rtcp_port : tstream->rtp_port + 1) : 0, used_pt);
+			ms_filter_add_notify_callback(call->textstream->rttsink, real_time_text_character_received, call, TRUE);
 
 			ms_media_stream_sessions_set_encryption_mandatory(&call->textstream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
 		} else ms_warning("No text stream accepted.");
@@ -4363,9 +4374,6 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			if (ms) handle_ice_events(call, ev);
 		} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
 			linphone_core_dtmf_received(call,evd->info.telephone_event);
-		} else if (evt == ORTP_EVENT_RTT_CHARACTER_RECEIVED) {
-			LinphoneChatRoom * chat_room = linphone_call_get_chat_room(call);
-			linphone_core_real_time_text_received(call->core, chat_room, evd->info.received_rtt_character, call);
 		}
 		ortp_event_destroy(ev);
 	}
