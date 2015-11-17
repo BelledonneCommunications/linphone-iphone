@@ -97,6 +97,8 @@
 		633756391B67BAF400E21BAD /* SideMenuTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756381B67BAF400E21BAD /* SideMenuTableView.m */; };
 		633756451B67D2B200E21BAD /* SideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756431B67D2B100E21BAD /* SideMenuView.m */; };
 		633756461B67D2B200E21BAD /* SideMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 633756441B67D2B100E21BAD /* SideMenuView.xib */; };
+		633888451BFB2C49001D5E7B /* HPGrowingTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633888421BFB2C49001D5E7B /* HPGrowingTextView.m */; };
+		633888461BFB2C49001D5E7B /* HPTextViewInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 633888441BFB2C49001D5E7B /* HPTextViewInternal.m */; };
 		6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6341807B1BBC103100F71761 /* ChatConversationCreateTableView.m */; };
 		634610061B61330300548952 /* UILabel+Boldify.m in Sources */ = {isa = PBXBuildFile; fileRef = 634610051B61330300548952 /* UILabel+Boldify.m */; };
 		6346100F1B61409800548952 /* CallOutgoingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6346100E1B61409800548952 /* CallOutgoingView.m */; };
@@ -624,8 +626,6 @@
 		D3ED3E871586291E006C0DE4 /* TabBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3ED3E851586291B006C0DE4 /* TabBarView.m */; };
 		D3ED3EA71587334E006C0DE4 /* HistoryListTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3ED3EA51587334C006C0DE4 /* HistoryListTableView.m */; };
 		D3ED3EB81587392C006C0DE4 /* HistoryListView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3ED3EB615873929006C0DE4 /* HistoryListView.m */; };
-		D3ED40191602172200BF332B /* HPGrowingTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3ED40161602172200BF332B /* HPGrowingTextView.m */; };
-		D3ED401B1602172200BF332B /* HPTextViewInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = D3ED40181602172200BF332B /* HPTextViewInternal.m */; };
 		D3F26BF115986B73005F9CAB /* CallIncomingView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F26BEF15986B71005F9CAB /* CallIncomingView.m */; };
 		D3F795D615A582810077328B /* ChatConversationView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F795D415A582800077328B /* ChatConversationView.m */; };
 		D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
@@ -907,6 +907,10 @@
 		633756421B67D2B100E21BAD /* SideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuView.h; sourceTree = "<group>"; };
 		633756431B67D2B100E21BAD /* SideMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideMenuView.m; sourceTree = "<group>"; };
 		633756441B67D2B100E21BAD /* SideMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SideMenuView.xib; sourceTree = "<group>"; };
+		633888411BFB2C49001D5E7B /* HPGrowingTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPGrowingTextView.h; sourceTree = "<group>"; };
+		633888421BFB2C49001D5E7B /* HPGrowingTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPGrowingTextView.m; sourceTree = "<group>"; };
+		633888431BFB2C49001D5E7B /* HPTextViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPTextViewInternal.h; sourceTree = "<group>"; };
+		633888441BFB2C49001D5E7B /* HPTextViewInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPTextViewInternal.m; sourceTree = "<group>"; };
 		633E388219FFB0F400936D1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		6341807A1BBC103100F71761 /* ChatConversationCreateTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateTableView.h; sourceTree = "<group>"; };
 		6341807B1BBC103100F71761 /* ChatConversationCreateTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateTableView.m; sourceTree = "<group>"; };
@@ -1480,10 +1484,6 @@
 		D3ED3EA51587334C006C0DE4 /* HistoryListTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HistoryListTableView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		D3ED3EB515873928006C0DE4 /* HistoryListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryListView.h; sourceTree = "<group>"; };
 		D3ED3EB615873929006C0DE4 /* HistoryListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HistoryListView.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		D3ED40151602172200BF332B /* HPGrowingTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPGrowingTextView.h; sourceTree = "<group>"; };
-		D3ED40161602172200BF332B /* HPGrowingTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPGrowingTextView.m; sourceTree = "<group>"; };
-		D3ED40171602172200BF332B /* HPTextViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HPTextViewInternal.h; sourceTree = "<group>"; };
-		D3ED40181602172200BF332B /* HPTextViewInternal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HPTextViewInternal.m; sourceTree = "<group>"; };
 		D3F26BEE15986B71005F9CAB /* CallIncomingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallIncomingView.h; sourceTree = "<group>"; };
 		D3F26BEF15986B71005F9CAB /* CallIncomingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallIncomingView.m; sourceTree = "<group>"; };
 		D3F795D315A582800077328B /* ChatConversationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationView.h; sourceTree = "<group>"; };
@@ -2115,6 +2115,18 @@
 			path = TestsLiblinphone;
 			sourceTree = "<group>";
 		};
+		633888401BFB2C49001D5E7B /* HPGrowingTextView */ = {
+			isa = PBXGroup;
+			children = (
+				633888411BFB2C49001D5E7B /* HPGrowingTextView.h */,
+				633888421BFB2C49001D5E7B /* HPGrowingTextView.m */,
+				633888431BFB2C49001D5E7B /* HPTextViewInternal.h */,
+				633888441BFB2C49001D5E7B /* HPTextViewInternal.m */,
+			);
+			name = HPGrowingTextView;
+			path = Utils/HPGrowingTextView;
+			sourceTree = "<group>";
+		};
 		6354BFB41BF5EF3F00B78FFC /* images */ = {
 			isa = PBXGroup;
 			children = (
@@ -2537,7 +2549,7 @@
 				D32B9DFB15A2F131000B6DEC /* FastAddressBook.m */,
 				6371579F1B283FE200C91677 /* FileTransferDelegate.h */,
 				637157A01B283FE200C91677 /* FileTransferDelegate.m */,
-				D3ED40141602172200BF332B /* GrowingTextView */,
+				633888401BFB2C49001D5E7B /* HPGrowingTextView */,
 				D3807FC715C2894A005BE9BC /* InAppSettingsKit */,
 				D326483615887D5200930C67 /* OrderedDictionary.h */,
 				D326483715887D5200930C67 /* OrderedDictionary.m */,
@@ -2666,18 +2678,6 @@
 				D34F6F9D1594D3FB0095705B /* InAppSettings.bundle */,
 			);
 			path = Settings;
-			sourceTree = "<group>";
-		};
-		D3ED40141602172200BF332B /* GrowingTextView */ = {
-			isa = PBXGroup;
-			children = (
-				D3ED40151602172200BF332B /* HPGrowingTextView.h */,
-				D3ED40161602172200BF332B /* HPGrowingTextView.m */,
-				D3ED40171602172200BF332B /* HPTextViewInternal.h */,
-				D3ED40181602172200BF332B /* HPTextViewInternal.m */,
-			);
-			name = GrowingTextView;
-			path = Utils/GrowingTextView;
 			sourceTree = "<group>";
 		};
 		D3F7997E15BD31EC0018C273 /* TPMultiLayoutViewController */ = {
@@ -3415,6 +3415,7 @@
 				D35497FE15875372000081D8 /* ContactsListView.m in Sources */,
 				635173F91BA082A40095EB0A /* UIChatBubblePhotoCell.m in Sources */,
 				D3549816158761D0000081D8 /* ContactsListTableView.m in Sources */,
+				633888461BFB2C49001D5E7B /* HPTextViewInternal.m in Sources */,
 				D35498211587716B000081D8 /* StatusBarView.m in Sources */,
 				D3A55FBC15877E5E003FD403 /* UIContactCell.m in Sources */,
 				6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */,
@@ -3432,6 +3433,7 @@
 				63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */,
 				D3EA53FD159850E80037DC6B /* LinphoneManager.m in Sources */,
 				63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */,
+				633888451BFB2C49001D5E7B /* HPGrowingTextView.m in Sources */,
 				6316FA6D1BE12A3E0050E441 /* UIRightImageButton.m in Sources */,
 				63F1DF441BCE618E00EDED90 /* UIAddressTextField.m in Sources */,
 				D3EA540D1598528B0037DC6B /* ChatsListTableView.m in Sources */,
@@ -3481,9 +3483,7 @@
 				637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */,
 				D378AB2A15DCDB4A0098505D /* ImagePickerView.m in Sources */,
 				22405F001601C19200B92522 /* ImageView.m in Sources */,
-				D3ED40191602172200BF332B /* HPGrowingTextView.m in Sources */,
 				63BC49E21BA2CDFC004EC273 /* UICallPausedCell.m in Sources */,
-				D3ED401B1602172200BF332B /* HPTextViewInternal.m in Sources */,
 				D37EE162160377D7003608A6 /* DTActionSheet.m in Sources */,
 				D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */,
 				D37E3ECD1619C27A0087659A /* CAAnimation+Blocks.m in Sources */,

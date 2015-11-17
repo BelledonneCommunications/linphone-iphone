@@ -70,6 +70,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+
+	_messageField.minNumberOfLines = 1;
+	_messageField.maxNumberOfLines = ([LinphoneManager runningOnIpad]) ? 10 : 3;
+	_messageField.delegate = self;
+	_messageField.font = [UIFont systemFontOfSize:18.0f];
+	_messageField.contentInset = UIEdgeInsetsMake(0, -5, -2, -5);
+	_messageField.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 10);
+
 	[_tableController setChatRoomDelegate:self];
 }
 
@@ -336,6 +344,58 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - UITextFieldDelegate Functions
 
+- (BOOL)growingTextViewShouldBeginEditing:(HPGrowingTextView *)growingTextView {
+	if (_tableController.isEditing) {
+		[_tableController setEditing:NO];
+	}
+	[_listTapGestureRecognizer setEnabled:TRUE];
+	return TRUE;
+}
+
+- (BOOL)growingTextViewShouldEndEditing:(HPGrowingTextView *)growingTextView {
+	[_listTapGestureRecognizer setEnabled:FALSE];
+	return TRUE;
+}
+
+- (void)growingTextChanged:(HPGrowingTextView *)growingTextView text:(NSString *)text {
+	if ([text length] > 0 && chatRoom)
+		linphone_chat_room_compose(chatRoom);
+}
+
+- (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
+	int diff = height - growingTextView.bounds.size.height;
+
+	if (diff != 0) {
+		CGRect messageRect = [_messageView frame];
+		messageRect.origin.y -= diff;
+		messageRect.size.height += diff;
+		[_messageView setFrame:messageRect];
+
+		// Always stay at bottom
+		if (scrollOnGrowingEnabled) {
+			CGRect tableFrame = [_tableController.view frame];
+			CGPoint contentPt = [_tableController.tableView contentOffset];
+			contentPt.y += diff;
+			if (contentPt.y + tableFrame.size.height > _tableController.tableView.contentSize.height)
+				contentPt.y += diff;
+			[_tableController.tableView setContentOffset:contentPt animated:FALSE];
+		}
+
+		CGRect tableRect = [_tableController.view frame];
+		tableRect.size.height -= diff;
+		[_tableController.view setFrame:tableRect];
+
+		// if we're showing the compose message, update it position
+		if (![_composeLabel isHidden]) {
+			CGRect frame = [_composeLabel frame];
+			frame.origin.y -= diff;
+			[_composeLabel setFrame:frame];
+		}
+	}
+}
+/*
+#pragma mark - UITextFieldDelegate Functions
+
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
 	if (_tableController.isEditing) {
 		[_tableController setEditing:NO];
@@ -369,7 +429,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_listTapGestureRecognizer setEnabled:FALSE];
 	[textView resignFirstResponder];
 }
-
+*/
 /*
  - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
 	int diff = height - growingTextView.bounds.size.height;
@@ -612,7 +672,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 								  animated:FALSE];
 							 }
 						 }
-						 
+
 					 }
 					 completion:^(BOOL finished){
 					 }];

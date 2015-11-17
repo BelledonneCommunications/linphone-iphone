@@ -47,7 +47,7 @@
                             </accessibility>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="11:35 John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="GRe-ur-aSb" userLabel="contactDateLabel">
-                            <rect key="frame" x="48" y="0.0" width="246" height="20"/>
+                            <rect key="frame" x="48" y="0.0" width="246" height="14"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <animations/>
                             <accessibility key="accessibilityConfiguration" label="Contact name"/>
@@ -56,7 +56,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Lore ipsum..." id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
-                            <rect key="frame" x="48" y="8" width="268" height="42"/>
+                            <rect key="frame" x="48" y="7" width="280" height="54"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>

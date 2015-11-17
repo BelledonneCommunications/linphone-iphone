@@ -26,11 +26,13 @@
 #import "OrderedDictionary.h"
 #import "UIRoundedImageView.h"
 #import "UIBackToCallButton.h"
+#import "Utils/HPGrowingTextView/HPGrowingTextView.h"
 
 #include "linphone/linphonecore.h"
 
-@interface ChatConversationView : UIViewController <UITextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate,
-													ChatConversationDelegate, UISearchBarDelegate> {
+@interface ChatConversationView
+	: UIViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate,
+						ChatConversationDelegate, UISearchBarDelegate> {
 	LinphoneChatRoom *chatRoom;
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
@@ -38,7 +40,7 @@
 }
 
 @property(nonatomic, strong) IBOutlet ChatConversationTableView *tableController;
-@property(weak, nonatomic) IBOutlet UITextView *messageField;
+@property(weak, nonatomic) IBOutlet HPGrowingTextView *messageField;
 @property(weak, nonatomic) IBOutlet UIView *topBar;
 @property(nonatomic, strong) IBOutlet UIButton *sendButton;
 @property(nonatomic, strong) IBOutlet UILabel *addressLabel;

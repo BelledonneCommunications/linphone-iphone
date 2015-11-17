@@ -23,14 +23,6 @@
 #import "ChatConversationTableView.h"
 #import "UIRoundedImageView.h"
 
-static const CGFloat TEXT_MIN_HEIGHT = 0.;
-static const CGFloat TEXT_MIN_WIDTH = 150.0f;
-static const CGFloat MARGIN_WIDTH = 60;
-static const CGFloat MARGIN_HEIGHT = 19 + 16 /*this 16 is because textview add some top&bottom padding*/;
-static const CGFloat CHECK_BOX_WIDTH = 40;
-static const CGFloat IMAGE_HEIGHT = 100.0f;
-static const CGFloat IMAGE_WIDTH = 100.0f;
-
 @interface UIChatBubbleTextCell : UITableViewCell
 
 @property(readonly, nonatomic) LinphoneChatMessage *message;

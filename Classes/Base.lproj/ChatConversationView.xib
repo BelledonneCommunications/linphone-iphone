@@ -16,7 +16,7 @@
                 <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
                 <outlet property="listSwipeGestureRecognizer" destination="dzw-n4-l9i" id="JVP-Vl-lIa"/>
                 <outlet property="listTapGestureRecognizer" destination="tkk-Tm-A7C" id="gqU-iJ-RGm"/>
-                <outlet property="messageField" destination="CPp-ts-xy0" id="wPX-Uo-vZQ"/>
+                <outlet property="messageField" destination="pqa-tg-5ml" id="emj-yI-K60"/>
                 <outlet property="messageView" destination="14" id="89"/>
                 <outlet property="pictureButton" destination="73" id="84"/>
                 <outlet property="sendButton" destination="15" id="27"/>
@@ -146,7 +146,7 @@
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="bci-3K-AcG" userLabel="cancelButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Cancel"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
@@ -228,18 +228,13 @@
                                                 <action selector="onPictureClick:" destination="-1" eventType="touchUpInside" id="87"/>
                                             </connections>
                                         </button>
-                                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="CPp-ts-xy0" userLabel="messageField">
+                                        <view contentMode="scaleToFill" id="pqa-tg-5ml" userLabel="messageField" customClass="HPGrowingTextView">
                                             <rect key="frame" x="88" y="14" width="200" height="40"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <animations/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <accessibility key="accessibilityConfiguration" hint="" label="Message field"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="26"/>
-                                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" spellCheckingType="yes" keyboardAppearance="alert" returnKeyType="send"/>
-                                            <connections>
-                                                <outlet property="delegate" destination="-1" id="RVG-F4-M9q"/>
-                                            </connections>
-                                        </textView>
+                                            <accessibility key="accessibilityConfiguration" label="Message field"/>
+                                        </view>
                                         <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="15" userLabel="sendButton">
                                             <rect key="frame" x="303" y="2" width="72" height="63"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
