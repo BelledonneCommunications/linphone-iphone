@@ -449,6 +449,9 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 				linphone_core_notify_file_transfer_recv(lc, msg, msg->file_transfer_information, NULL, 0);
 			}
 			linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferDone);
+		} else if (code >= 400 && code < 500) {
+			ms_warning("File transfer failed with code %d", code);
+			linphone_chat_message_set_state(msg, LinphoneChatMessageStateFileTransferError);
 		} else {
 			ms_warning("Unhandled HTTP code response %d for file transfer", code);
 		}
@@ -539,7 +542,9 @@ void linphone_chat_message_start_file_download(LinphoneChatMessage *msg,
 
 void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 	if (msg->http_request) {
-		linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+		if (msg->state == LinphoneChatMessageStateInProgress) {
+			linphone_chat_message_set_state(msg, LinphoneChatMessageStateNotDelivered);
+		}
 		if (!belle_http_request_is_cancelled(msg->http_request)) {
 			if (msg->chat_room) {
 				ms_message("Canceling file transfer %s - msg [%p] chat room[%p]"
