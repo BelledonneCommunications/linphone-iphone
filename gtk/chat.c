@@ -620,7 +620,7 @@ void linphone_gtk_text_received ( LinphoneCore *lc, LinphoneChatRoom *room,
 #else
 	if ( !gtk_window_is_active ( GTK_WINDOW ( main_window ) ) ) {
 		if ( !GPOINTER_TO_INT ( g_object_get_data ( G_OBJECT ( w ),"is_notified" ) ) ) {
-			linphone_gtk_notify ( NULL,linphone_chat_message_get_text ( msg ) );
+			linphone_gtk_notify ( NULL, msg, NULL );
 			g_object_set_data ( G_OBJECT ( w ),"is_notified",GINT_TO_POINTER ( TRUE ) );
 		} else {
 			g_object_set_data ( G_OBJECT ( w ),"is_notified",GINT_TO_POINTER ( FALSE ) );

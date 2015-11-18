@@ -24,27 +24,27 @@ set(UI_FILES
 	about.ui
 	audio_assistant.ui
 	buddylookup.ui
+	callee_frame.ui
 	call_logs.ui
 	call_statistics.ui
+	chatroom_frame.ui
+	conf_frame.ui
 	config-uri.ui
 	contact.ui
 	dscp_settings.ui
+	in_call_frame.ui
 	keypad.ui
 	ldap.ui
+	login_frame.ui
 	log.ui
 	main.ui
 	parameters.ui
 	password.ui
 	provisioning-fetch.ui
+	setup_wizard.ui
 	sip_account.ui
 	tunnel_config.ui
 	waiting.ui
-	chatroom_frame.ui
-	in_call_frame.ui
-	conf_frame.ui
-	callee_frame.ui
-	login_frame.ui
-	setup_wizard.ui
 )
 
 set(PIXMAPS stock_people.png)

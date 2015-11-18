@@ -1217,20 +1217,26 @@ static void make_notification(const char *title, const char *body){
 
 #endif
 
-void linphone_gtk_notify(LinphoneCall *call, const char *msg){
+void linphone_gtk_notify(LinphoneCall *call, LinphoneChatMessage *chat_message, const char *msg){
 #ifdef HAVE_NOTIFY
 	if (!notify_is_initted())
 		if (!notify_init ("Linphone")) ms_error("Libnotify failed to init.");
 #endif
 	if (!call) {
-
 #ifdef HAVE_NOTIFY
-		if (!notify_notification_show(notify_notification_new("Linphone",msg,NULL
+		if (chat_message) {
+			const LinphoneAddress *address = linphone_chat_message_get_peer_address(chat_message);
+			char *remote = linphone_address_as_string(address);
+			make_notification(remote, linphone_chat_message_get_text(chat_message));
+		} else {
+			if (!notify_notification_show(notify_notification_new("Linphone",msg,NULL
 #ifdef HAVE_NOTIFY1
-	,NULL
+				,NULL
 #endif
-),NULL))
-			ms_error("Failed to send notification.");
+				),NULL)) {
+				ms_error("Failed to send notification.");
+			}
+		}
 #else
 		linphone_gtk_show_main_window();
 #endif
@@ -1392,7 +1398,7 @@ static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call
 		default:
 		break;
 	}
-	linphone_gtk_notify(call, msg);
+	linphone_gtk_notify(call, NULL, msg);
 	linphone_gtk_update_call_buttons (call);
 }
 
@@ -1955,7 +1961,7 @@ void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
 	GtkEntry * uri_bar =GTK_ENTRY(linphone_gtk_get_widget(
 		linphone_gtk_get_main_window(), "uribar"));
 	char *text;
-	linphone_gtk_notify(NULL,(text=ms_strdup_printf(_("We are transferred to %s"),refer_to)));
+	linphone_gtk_notify(NULL,NULL,(text=ms_strdup_printf(_("We are transferred to %s"),refer_to)));
 	g_free(text);
 	gtk_entry_set_text(uri_bar, refer_to);
 	linphone_gtk_start_call(linphone_gtk_get_main_window());

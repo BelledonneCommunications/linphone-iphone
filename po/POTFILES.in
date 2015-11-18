@@ -14,30 +14,30 @@ gtk/incall_view.c
 gtk/loginframe.c
 gtk/config-fetching.c
 gtk/audio_assistant.c
-[type: gettext/glade]gtk/main.ui
 [type: gettext/glade]gtk/about.ui
-[type: gettext/glade]gtk/contact.ui
-[type: gettext/glade]gtk/log.ui
-[type: gettext/glade]gtk/password.ui
-[type: gettext/glade]gtk/call_logs.ui
-[type: gettext/glade]gtk/main.ui
-[type: gettext/glade]gtk/sip_account.ui
-[type: gettext/glade]gtk/parameters.ui
+[type: gettext/glade]gtk/audio_assistant.ui
 [type: gettext/glade]gtk/buddylookup.ui
-[type: gettext/glade]gtk/waiting.ui
-[type: gettext/glade]gtk/dscp_settings.ui
+[type: gettext/glade]gtk/callee_frame.ui
+[type: gettext/glade]gtk/call_logs.ui
 [type: gettext/glade]gtk/call_statistics.ui
-[type: gettext/glade]gtk/tunnel_config.ui
+[type: gettext/glade]gtk/chatroom_frame.ui
+[type: gettext/glade]gtk/conf_frame.ui
+[type: gettext/glade]gtk/config-uri.ui
+[type: gettext/glade]gtk/contact.ui
+[type: gettext/glade]gtk/dscp_settings.ui
+[type: gettext/glade]gtk/in_call_frame.ui
 [type: gettext/glade]gtk/keypad.ui
 [type: gettext/glade]gtk/ldap.ui
-[type: gettext/glade]gtk/config-uri.ui
-[type: gettext/glade]gtk/provisioning-fetch.ui
-[type: gettext/glade]gtk/chatroom_frame.ui
-[type: gettext/glade]gtk/callee_frame.ui
-[type: gettext/glade]gtk/conf_frame.ui
-[type: gettext/glade]gtk/in_call_frame.ui
 [type: gettext/glade]gtk/login_frame.ui
+[type: gettext/glade]gtk/log.ui
+[type: gettext/glade]gtk/main.ui
+[type: gettext/glade]gtk/parameters.ui
+[type: gettext/glade]gtk/password.ui
+[type: gettext/glade]gtk/provisioning-fetch.ui
 [type: gettext/glade]gtk/setup_wizard.ui
+[type: gettext/glade]gtk/sip_account.ui
+[type: gettext/glade]gtk/tunnel_config.ui
+[type: gettext/glade]gtk/waiting.ui
 coreapi/linphonecore.c
 coreapi/misc.c
 coreapi/presence.c
