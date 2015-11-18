@@ -417,10 +417,9 @@ void linphone_chat_room_delete_message(LinphoneChatRoom *cr, LinphoneChatMessage
 	linphone_sql_request(lc->db,buf);
 	sqlite3_free(buf);
 
-	if(cr->unread_count >= 0 && !msg->is_read) {
-		assert(cr->unread_count > 0);
-		cr->unread_count--;
-	}
+	/* Invalidate unread_count when we modify the database, so that next
+	 time we need it it will be recomputed from latest database state */
+	cr->unread_count = -1;
 }
 
 void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
