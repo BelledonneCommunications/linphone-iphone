@@ -170,72 +170,6 @@ int liblinphone_tester_set_log_file(const char *filename) {
 	return 0;
 }
 
-
-#if !__ios && !(defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL))
-
-static const char* liblinphone_helper =
-		"\t\t\t--verbose\n"
-		"\t\t\t--silent\n"
-		"\t\t\t--log-file <output log file path>\n"
-		"\t\t\t--domain <test sip domain>\n"
-		"\t\t\t--auth-domain <test auth domain>\n"
-		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
-		"\t\t\t--keep-recorded-files\n"
-		"\t\t\t--disable-leak-detector\n";
-
-int main (int argc, char *argv[])
-{
-	int i;
-	int ret;
-
-#ifdef HAVE_GTK
-	gtk_init(&argc, &argv);
-#if !GLIB_CHECK_VERSION(2,32,0) // backward compatibility with Debian 6 and CentOS 6
-	g_thread_init(NULL);
-#endif
-	gdk_threads_init();
-#endif
-
-	liblinphone_tester_init(NULL);
-
-	for(i = 1; i < argc; ++i) {
-		if (strcmp(argv[i], "--verbose") == 0) {
-			linphone_core_set_log_level(ORTP_MESSAGE);
-		} else if (strcmp(argv[i], "--silent") == 0) {
-			linphone_core_set_log_level(ORTP_FATAL);
-		} else if (strcmp(argv[i],"--log-file")==0){
-			CHECK_ARG("--log-file", ++i, argc);
-			if (liblinphone_tester_set_log_file(argv[i]) < 0) return -2;
-		} else if (strcmp(argv[i],"--domain")==0){
-			CHECK_ARG("--domain", ++i, argc);
-			test_domain=argv[i];
-		} else if (strcmp(argv[i],"--auth-domain")==0){
-			CHECK_ARG("--auth-domain", ++i, argc);
-			auth_domain=argv[i];
-		}else if (strcmp(argv[i],"--dns-hosts")==0){
-			CHECK_ARG("--dns-hosts", ++i, argc);
-			userhostsfile=argv[i];
-		} else if (strcmp(argv[i],"--keep-recorded-files")==0){
-			liblinphone_tester_keep_recorded_files(TRUE);
-		} else if (strcmp(argv[i],"--disable-leak-detector")==0){
-			liblinphone_tester_disable_leak_detector(TRUE);
-		} else {
-			int bret = bc_tester_parse_args(argc, argv, i);
-			if (bret>0) {
-				i += bret - 1;
-				continue;
-			} else if (bret<0) {
-				bc_tester_helper(argv[0], liblinphone_helper);
-			}
-			return bret;
-		}
-	}
-
-	ret = bc_tester_start(argv[0]);
-	liblinphone_tester_uninit();
-	return ret;
-}
-
 bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state) {
 	LinphoneCall *c1,*c2;
 	bool_t audio_success=FALSE;
@@ -316,4 +250,72 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 	linphone_call_unref(c2);
 	return video_enabled ? (realtime_text_enabled ? text_success && audio_success && video_success : audio_success && video_success) : realtime_text_enabled ? text_success && audio_success : audio_success;
 }
+
+
+#if !TARGET_OS_IPHONE && !(defined(LINPHONE_WINDOWS_PHONE) || defined(LINPHONE_WINDOWS_UNIVERSAL))
+
+static const char* liblinphone_helper =
+		"\t\t\t--verbose\n"
+		"\t\t\t--silent\n"
+		"\t\t\t--log-file <output log file path>\n"
+		"\t\t\t--domain <test sip domain>\n"
+		"\t\t\t--auth-domain <test auth domain>\n"
+		"\t\t\t--dns-hosts </etc/hosts -like file to used to override DNS names (default: tester_hosts)>\n"
+		"\t\t\t--keep-recorded-files\n"
+		"\t\t\t--disable-leak-detector\n";
+
+int main (int argc, char *argv[])
+{
+	int i;
+	int ret;
+
+#ifdef HAVE_GTK
+	gtk_init(&argc, &argv);
+#if !GLIB_CHECK_VERSION(2,32,0) // backward compatibility with Debian 6 and CentOS 6
+	g_thread_init(NULL);
+#endif
+	gdk_threads_init();
+#endif
+
+	liblinphone_tester_init(NULL);
+
+	for(i = 1; i < argc; ++i) {
+		if (strcmp(argv[i], "--verbose") == 0) {
+			linphone_core_set_log_level(ORTP_MESSAGE);
+		} else if (strcmp(argv[i], "--silent") == 0) {
+			linphone_core_set_log_level(ORTP_FATAL);
+		} else if (strcmp(argv[i],"--log-file")==0){
+			CHECK_ARG("--log-file", ++i, argc);
+			if (liblinphone_tester_set_log_file(argv[i]) < 0) return -2;
+		} else if (strcmp(argv[i],"--domain")==0){
+			CHECK_ARG("--domain", ++i, argc);
+			test_domain=argv[i];
+		} else if (strcmp(argv[i],"--auth-domain")==0){
+			CHECK_ARG("--auth-domain", ++i, argc);
+			auth_domain=argv[i];
+		}else if (strcmp(argv[i],"--dns-hosts")==0){
+			CHECK_ARG("--dns-hosts", ++i, argc);
+			userhostsfile=argv[i];
+		} else if (strcmp(argv[i],"--keep-recorded-files")==0){
+			liblinphone_tester_keep_recorded_files(TRUE);
+		} else if (strcmp(argv[i],"--disable-leak-detector")==0){
+			liblinphone_tester_disable_leak_detector(TRUE);
+		} else {
+			int bret = bc_tester_parse_args(argc, argv, i);
+			if (bret>0) {
+				i += bret - 1;
+				continue;
+			} else if (bret<0) {
+				bc_tester_helper(argv[0], liblinphone_helper);
+			}
+			return bret;
+		}
+	}
+
+	ret = bc_tester_start(argv[0]);
+	liblinphone_tester_uninit();
+	return ret;
+}
+
+
 #endif
