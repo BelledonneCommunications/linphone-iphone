@@ -26,7 +26,7 @@
 
 @protocol IASKSettingsDelegate
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
-- (void)settingsViewControllerDidAppear:(IASKAppSettingsViewController *)sender;
+- (void)settingsViewControllerWillAppear:(IASKAppSettingsViewController *)sender;
 
 @optional
 #pragma mark - UITableView header customization

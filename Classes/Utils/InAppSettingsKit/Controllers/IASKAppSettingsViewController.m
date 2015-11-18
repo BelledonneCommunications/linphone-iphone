@@ -206,7 +206,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 	// hack gautier: be notified when changing page
 	if (self.delegate && [self.delegate conformsToProtocol:@protocol(IASKSettingsDelegate)]) {
-		[self.delegate settingsViewControllerDidAppear:self];
+		[self.delegate settingsViewControllerWillAppear:self];
 	}
 
 	[super viewWillAppear:animated];

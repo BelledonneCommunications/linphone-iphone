@@ -645,7 +645,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
 }
 
-- (void)settingsViewControllerDidAppear:(IASKAppSettingsViewController *)sender {
+- (void)settingsViewControllerWillAppear:(IASKAppSettingsViewController *)sender {
 	// going to account: fill info
 	if ([sender.file isEqualToString:@"Account"]) {
 		LOGI(@"Going editting account %@", sender.title);
@@ -846,6 +846,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDialerBackClick:(id)sender {
+	[settingsStore synchronize];
+
 	DialerView *view = VIEW(DialerView);
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
