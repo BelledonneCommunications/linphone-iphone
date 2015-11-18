@@ -347,6 +347,7 @@ void liblinphone_tester_after_each(void);
 void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, va_list args));
 void liblinphone_tester_uninit(void);
 int liblinphone_tester_set_log_file(const char *filename);
+bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state);
 
 extern const char *liblinphone_tester_mire_id;
 
