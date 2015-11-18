@@ -995,6 +995,9 @@ static void test_list_subscribe (void) {
 	char * subscribe_content = ms_strdup_printf(list,pauline_uri,laure_uri);
 	LinphoneContent* content = linphone_core_create_content(marie->lc);
 	LinphoneAddress *list_name = linphone_address_new("sip:mescops@sip.example.org");
+	LinphoneProxyConfig* proxy_config;
+	int dummy=0;
+	
 	ms_free(pauline_uri);
 	ms_free(laure_uri);
 	
@@ -1014,18 +1017,27 @@ static void test_list_subscribe (void) {
 	linphone_event_send_subscribe(lev,content);
 	
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
-	//BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
-
-//	if (pauline->stat.number_of_LinphoneSubscriptionIncomingReceived == 1) {
-//		/*check good receipt of custom headers*/
-//		BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header"),"pouet");
-//		BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header2"),"pimpon");
-//	}
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
-//	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
 	
 	/*make sure marie receives first notification before terminating*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
+	/*dummy wait to avoid derred notify*/
+	wait_for_list(lcs,&dummy,1,2000);
+	linphone_core_get_default_proxy(pauline->lc,&proxy_config);
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_enable_publish(proxy_config,TRUE);
+	linphone_proxy_config_done(proxy_config);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
+	
+	linphone_core_get_default_proxy(laure->lc,&proxy_config);
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_enable_publish(proxy_config,TRUE);
+	linphone_proxy_config_done(proxy_config);
+	/*make sure notify is not sent "imadiatly but defered*/
+	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,3,1000));
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,3,5000));
 	
 	linphone_event_terminate(lev);
 	
