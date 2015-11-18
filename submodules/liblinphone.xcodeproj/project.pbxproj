@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F3BFC991BFCC7A10025B8DF /* libmswebrtc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F3BFC981BFCC7A00025B8DF /* libmswebrtc.a */; };
 		1561A554178D9C68006B4B2F /* ioshardware.h in Headers */ = {isa = PBXBuildFile; fileRef = 1561A553178D9C68006B4B2F /* ioshardware.h */; };
 		1561A555178D9C71006B4B2F /* ioshardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 1561A551178D98E2006B4B2F /* ioshardware.m */; };
 		2206D2D3177AC70900C40726 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2C6177AC70900C40726 /* InfoPlist.strings */; };
@@ -320,9 +321,9 @@
 		22DD19C113A8D7FA0018ECD4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22DD19C013A8D7FA0018ECD4 /* UIKit.framework */; };
 		22DD19C213A8D7FA0018ECD4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		22DD19C413A8D7FA0018ECD4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22DD19C313A8D7FA0018ECD4 /* CoreGraphics.framework */; };
-		630DCF691BBAC06400A0DDC8 /* msvideopresets.c in Sources */ = {isa = PBXBuildFile; fileRef = 630DCF661BBAC05100A0DDC8 /* msvideopresets.c */; settings = {ASSET_TAGS = (); }; };
-		630DCF6C1BBAC08200A0DDC8 /* rfc4103_textstream.c in Sources */ = {isa = PBXBuildFile; fileRef = 630DCF6A1BBAC08200A0DDC8 /* rfc4103_textstream.c */; settings = {ASSET_TAGS = (); }; };
-		630DCF6D1BBAC08200A0DDC8 /* video_preset_high_fps.c in Sources */ = {isa = PBXBuildFile; fileRef = 630DCF6B1BBAC08200A0DDC8 /* video_preset_high_fps.c */; settings = {ASSET_TAGS = (); }; };
+		630DCF691BBAC06400A0DDC8 /* msvideopresets.c in Sources */ = {isa = PBXBuildFile; fileRef = 630DCF661BBAC05100A0DDC8 /* msvideopresets.c */; };
+		630DCF6C1BBAC08200A0DDC8 /* rfc4103_textstream.c in Sources */ = {isa = PBXBuildFile; fileRef = 630DCF6A1BBAC08200A0DDC8 /* rfc4103_textstream.c */; };
+		630DCF6D1BBAC08200A0DDC8 /* video_preset_high_fps.c in Sources */ = {isa = PBXBuildFile; fileRef = 630DCF6B1BBAC08200A0DDC8 /* video_preset_high_fps.c */; };
 		7066FC0A13E830B800EFC6DC /* libvpx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7066FC0913E830B800EFC6DC /* libvpx.a */; };
 		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
 		70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F013E147CE002BA2C0 /* QuartzCore.framework */; };
@@ -513,6 +514,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0F3BFC961BFCC7420025B8DF /* liblinphone-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "liblinphone-sdk"; path = "../liblinphone-sdk"; sourceTree = "<group>"; };
+		0F3BFC981BFCC7A00025B8DF /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
 		1561A551178D98E2006B4B2F /* ioshardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ioshardware.m; sourceTree = "<group>"; };
 		1561A553178D9C68006B4B2F /* ioshardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioshardware.h; sourceTree = "<group>"; };
 		2203127413A249F70049A2ED /* filter-template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "filter-template.c"; sourceTree = "<group>"; };
@@ -835,6 +838,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F3BFC991BFCC7A10025B8DF /* libmswebrtc.a in Frameworks */,
 				2206D2DE177ACD3800C40726 /* libmediastreamer_voip.a in Frameworks */,
 				22AF73C01753F3E100BE8398 /* libopus.a in Frameworks */,
 				225D65CD1521C19A008B2E81 /* libortp.a in Frameworks */,
@@ -1379,6 +1383,8 @@
 		F0ED99521A1645CD00A788CE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0F3BFC981BFCC7A00025B8DF /* libmswebrtc.a */,
+				0F3BFC961BFCC7420025B8DF /* liblinphone-sdk */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
 				22DD19C013A8D7FA0018ECD4 /* UIKit.framework */,
 				22DD19C313A8D7FA0018ECD4 /* CoreGraphics.framework */,
@@ -2596,6 +2602,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tools/ios/mediastream-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_WEBRTC,
 					HAVE_SILK,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
@@ -2822,6 +2829,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tools/ios/mediastream-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_WEBRTC,
 					HAVE_SILK,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
@@ -2868,6 +2876,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "linphone/mediastreamer2/tools/ios/mediastream-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					HAVE_WEBRTC,
 					HAVE_SILK,
 					"_BYTE_ORDER=_LITTLE_ENDIAN",
 					ORTP_INET6,
