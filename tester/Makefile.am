@@ -54,6 +54,8 @@ certificatescndir=$(datadir)/liblinphone_tester/certificates/cn
 certificatescn_DATA = $(CERTIFICATE_CN_FILES)
 
 
+CERTIFICATE_FILES = $(CERTIFICATE_ALT_FILES) $(CERTIFICATE_CN_FILES)
+
 RCFILES = \
 					rcfiles/empty_rc\
 					rcfiles/laure_call_logs_rc\
