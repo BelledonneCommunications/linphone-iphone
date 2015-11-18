@@ -215,7 +215,7 @@
                                             <animations/>
                                         </imageView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="73" userLabel="pictureButton">
-                                            <rect key="frame" x="0.0" y="2" width="72" height="63"/>
+                                            <rect key="frame" x="0.0" y="2" width="63" height="63"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <animations/>
                                             <accessibility key="accessibilityConfiguration" label="Send picture"/>
@@ -229,14 +229,14 @@
                                             </connections>
                                         </button>
                                         <view contentMode="scaleToFill" id="pqa-tg-5ml" userLabel="messageField" customClass="HPGrowingTextView">
-                                            <rect key="frame" x="88" y="14" width="200" height="40"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <rect key="frame" x="71" y="14" width="233" height="40"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <animations/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <accessibility key="accessibilityConfiguration" label="Message field"/>
                                         </view>
                                         <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="15" userLabel="sendButton">
-                                            <rect key="frame" x="303" y="2" width="72" height="63"/>
+                                            <rect key="frame" x="312" y="2" width="63" height="63"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                             <animations/>
                                             <accessibility key="accessibilityConfiguration" label="Send"/>

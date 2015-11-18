@@ -56,7 +56,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Lore ipsum..." id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
-                            <rect key="frame" x="48" y="7" width="280" height="54"/>
+                            <rect key="frame" x="48" y="7" width="274" height="54"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>

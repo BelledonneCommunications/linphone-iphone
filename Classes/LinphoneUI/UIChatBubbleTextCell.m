@@ -127,7 +127,8 @@
 	if (outgoing && state == LinphoneChatMessageStateInProgress) {
 		_statusErrorImage.hidden = YES;
 		[_statusInProgressSpinner startAnimating];
-	} else if (outgoing && state != LinphoneChatMessageStateDelivered) {
+	} else if (outgoing &&
+			   (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError)) {
 		_statusErrorImage.hidden = NO;
 		[_statusInProgressSpinner stopAnimating];
 
@@ -135,6 +136,9 @@
 			[[NSAttributedString alloc] initWithString:NSLocalizedString(@"Resend", @"Resend")
 											attributes:@{NSForegroundColorAttributeName : [UIColor redColor]}];
 		[_contactDateLabel setAttributedText:resend_text];
+	} else if (!outgoing && state == LinphoneChatMessageStateFileTransferError) {
+		_statusErrorImage.hidden = NO;
+		[_statusInProgressSpinner stopAnimating];
 	} else {
 		_statusErrorImage.hidden = YES;
 		[_statusInProgressSpinner stopAnimating];
@@ -169,7 +173,7 @@
 }
 
 - (IBAction)onResendClick:(id)event {
-	if (_message == nil)
+	if (_message == nil || !linphone_chat_message_is_outgoing(_message))
 		return;
 
 	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);
@@ -232,7 +236,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 
 static const CGFloat CELL_MIN_HEIGHT = 60.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
-static const CGFloat CELL_MESSAGE_X_MARGIN = 72 + 10.0f;
+static const CGFloat CELL_MESSAGE_X_MARGIN = 78 + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 32;
 static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
 static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
@@ -298,13 +302,14 @@ static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
 		int available_width = self.frame.size.width;
 		int origin_x;
 
+		bubbleFrame.size = [self.class ViewSizeForMessage:_message withWidth:available_width];
+
 		if (tableView.isEditing) {
 			origin_x = 0;
 		} else {
 			origin_x = (is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0);
 		}
 
-		bubbleFrame.size = [self.class ViewSizeForMessage:_message withWidth:available_width];
 		bubbleFrame.origin.x = origin_x;
 		_bubbleView.frame = bubbleFrame;
 	}

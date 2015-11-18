@@ -36,7 +36,8 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	self.tableView.accessibilityIdentifier = @"ChatRoom list";
-	[self reloadData];
+	// this should not be needed, we should only load messages when setting the chat room
+	// [self reloadData];
 }
 
 #pragma mark -
