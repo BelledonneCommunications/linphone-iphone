@@ -74,6 +74,7 @@ typedef struct _LpSection{
 	char *name;
 	MSList *items;
 	MSList *params;
+	bool_t overwrite; // If set to true, will add overwrite=true to all items of this section when converted to xml
 } LpSection;
 
 struct _LpConfig{
@@ -578,6 +579,15 @@ bool_t lp_config_get_overwrite_flag_for_entry(const LpConfig *lpconfig, const ch
 	return 0;
 }
 
+bool_t lp_config_get_overwrite_flag_for_section(const LpConfig *lpconfig, const char *section) {
+	LpSection *sec;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL){
+		return sec->overwrite;
+	}
+	return 0;
+}
+
 void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value){
 	LpItem *item;
 	LpSection *sec=lp_config_find_section(lpconfig,section);
@@ -634,9 +644,17 @@ void lp_config_set_overwrite_flag_for_entry(LpConfig *lpconfig, const char *sect
 	LpSection *sec;
 	LpItem *item;
 	sec = lp_config_find_section(lpconfig, section);
-	if (sec != NULL){
+	if (sec != NULL) {
 		item = lp_section_find_item(sec, key);
 		if (item != NULL) item->overwrite = value;
+	}
+}
+
+void lp_config_set_overwrite_flag_for_section(LpConfig *lpconfig, const char *section, bool_t value) {
+	LpSection *sec;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL) {
+		sec->overwrite = value;
 	}
 }
 
