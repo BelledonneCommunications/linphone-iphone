@@ -52,6 +52,7 @@ INIT_WITH_COMMON {
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
+	_lastText = textField.text;
 	_canShowError = YES;
 	[self checkDisplayError];
 }

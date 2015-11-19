@@ -63,6 +63,7 @@
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                     <connections>
+                        <outlet property="delegate" destination="-1" id="Fml-De-aww"/>
                         <outlet property="errorLabel" destination="Ym3-AJ-VDD" id="YzJ-Uo-FtX"/>
                     </connections>
                 </textField>
@@ -92,6 +93,7 @@
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                     <textInputTraits key="textInputTraits" autocorrectionType="no" secureTextEntry="YES"/>
                     <connections>
+                        <outlet property="delegate" destination="-1" id="e4F-kt-Udb"/>
                         <outlet property="errorLabel" destination="zTY-fc-a6l" id="uAR-NP-WXe"/>
                     </connections>
                 </textField>

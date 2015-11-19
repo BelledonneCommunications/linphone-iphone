@@ -163,39 +163,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)onLoginClick:(id)sender {
-	NSString *errorMessage = nil;
-	if ([_usernameField.text length] == 0) {
-		errorMessage = NSLocalizedString(@"Enter your username", nil);
-	} else if ([_passwordField.text length] == 0) {
-		errorMessage = NSLocalizedString(@"Enter your password", nil);
-	}
-
-	if (errorMessage != nil) {
-		UIAlertView *error = nil;
-		error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Alert", nil)
-										   message:errorMessage
-										  delegate:nil
-								 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-								 otherButtonTitles:nil];
-		[error show];
-	} else {
-		linphone_core_clear_all_auth_info([LinphoneManager getLc]);
-		linphone_core_clear_proxy_config([LinphoneManager getLc]);
-		LinphoneProxyConfig *proxyCfg = linphone_core_create_proxy_config([LinphoneManager getLc]);
-		/*default domain is supposed to be preset from linphonerc*/
-		NSString *identity =
-			[NSString stringWithFormat:@"sip:%@@%s", _usernameField.text, linphone_proxy_config_get_addr(proxyCfg)];
-		linphone_proxy_config_set_identity(proxyCfg, [identity UTF8String]);
-		LinphoneAuthInfo *auth_info = linphone_auth_info_new(
-			[_usernameField.text UTF8String], [_usernameField.text UTF8String], [_passwordField.text UTF8String], NULL,
-			NULL, linphone_proxy_config_get_domain(proxyCfg));
-		linphone_core_add_auth_info([LinphoneManager getLc], auth_info);
-		linphone_core_add_proxy_config([LinphoneManager getLc], proxyCfg);
-		linphone_core_set_default_proxy_config([LinphoneManager getLc], proxyCfg);
-		// reload address book to prepend proxy config domain to contacts' phone number
-		[[[LinphoneManager instance] fastAddressBook] reload];
-		[_waitView setHidden:false];
-	};
+	_waitView.hidden = NO;
+	[XMLRPCHelper GetProvisioningURL:_usernameField.text
+							password:_passwordField.text
+							  domain:_domainField.text
+						   OnSuccess:^(NSString *url) {
+							 if (url) {
+								 linphone_core_set_provisioning_uri([LinphoneManager getLc], url.UTF8String);
+								 [[LinphoneManager instance] resetLinphoneCore];
+							 } else {
+								 _waitView.hidden = YES;
+							 }
+						   }];
 }
 
 #pragma mark - UITextFieldDelegate Functions
