@@ -85,7 +85,8 @@ void linphone_core_notify_registration_state_changed(LinphoneCore *lc, LinphoneP
 	NOTIFY_IF_EXIST(registration_state_changed, lc,cfg,cstate,message);
 	cleanup_dead_vtable_refs(lc);
 }
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 void linphone_core_notify_show_interface(LinphoneCore *lc){
 	NOTIFY_IF_EXIST(show, lc);
 	cleanup_dead_vtable_refs(lc);
@@ -110,6 +111,7 @@ void linphone_core_notify_display_url(LinphoneCore *lc, const char *message, con
 	NOTIFY_IF_EXIST(display_url, lc,message,url);
 	cleanup_dead_vtable_refs(lc);
 }
+#pragma GCC diagnostic pop
 
 void linphone_core_notify_notify_presence_received(LinphoneCore *lc, LinphoneFriend * lf){
 	NOTIFY_IF_EXIST(notify_presence_received, lc,lf);
@@ -130,17 +132,21 @@ void linphone_core_notify_call_log_updated(LinphoneCore *lc, LinphoneCallLog *ne
 	NOTIFY_IF_EXIST(call_log_updated, lc,newcl);
 	cleanup_dead_vtable_refs(lc);
 }
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 void linphone_core_notify_text_message_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message){
 	NOTIFY_IF_EXIST(text_received, lc,room,from,message);
 	cleanup_dead_vtable_refs(lc);
 }
+#pragma GCC diagnostic pop
 
 void linphone_core_notify_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message){
 	NOTIFY_IF_EXIST(message_received, lc,room,message);
 	cleanup_dead_vtable_refs(lc);
 }
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 void linphone_core_notify_file_transfer_recv(LinphoneCore *lc, LinphoneChatMessage *message, const LinphoneContent* content, const char* buff, size_t size) {
 	NOTIFY_IF_EXIST(file_transfer_recv, lc,message,content,buff,size);
 	cleanup_dead_vtable_refs(lc);
@@ -155,7 +161,7 @@ void linphone_core_notify_file_transfer_progress_indication(LinphoneCore *lc, Li
 	NOTIFY_IF_EXIST(file_transfer_progress_indication, lc,message,content,offset,total);
 	cleanup_dead_vtable_refs(lc);
 }
-
+#pragma GCC diagnostic pop
 void linphone_core_notify_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
 	NOTIFY_IF_EXIST(is_composing_received, lc,room);
 	cleanup_dead_vtable_refs(lc);
