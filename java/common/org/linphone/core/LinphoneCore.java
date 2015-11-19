@@ -747,6 +747,11 @@ public interface LinphoneCore {
 	public LinphoneCallLog[] getCallLogs();
 
 	/**
+	 * @return the latest outgoing call log.
+	 */
+	public LinphoneCallLog getLastOutgoingCallLog();
+
+	/**
 	 * This method is called by the application to notify the Linphone core library when network is reachable.
 	 * Calling this method with true trigger Linphone to initiate a registration process for all proxy
 	 * configuration with parameter register set to enable.
@@ -1884,6 +1889,12 @@ public interface LinphoneCore {
 	 * @param path the database where the chat messages will be stored.
 	 */
 	public void setChatDatabasePath(String path);
+
+	/**
+	 * Sets the path to the database where the logs will be stored (if enabled)
+	 * @param path the database where the logs will be stored.
+	 */
+	public void setCallLogsDatabasePath(String path);
 
 	/**
 	 * Gets the chat rooms

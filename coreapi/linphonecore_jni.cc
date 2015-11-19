@@ -1526,6 +1526,11 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getNumberOfCallLogs(	JNI
 		,jlong lc) {
 		return (jint)ms_list_size(linphone_core_get_call_logs((LinphoneCore*)lc));
 }
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getLastOutgoingCallLog(	JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+	return (jlong)linphone_core_get_last_outgoing_call_log((LinphoneCore*)lc);
+}
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_migrateCallLogs(JNIEnv*  env
 		,jobject  thiz
@@ -2775,6 +2780,24 @@ extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getCallLog(	JNIEnv*  en
 																		,jobject  thiz
 																		,jlong ptr) {
 	return (jlong)linphone_call_get_call_log((LinphoneCall*)ptr);
+}
+
+extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getCallLogs(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc) {
+	const MSList *logs = linphone_core_get_call_logs((LinphoneCore *) lc);
+	int logsCount = ms_list_size(logs);
+	jlongArray jLogs = env->NewLongArray(logsCount);
+	jlong *jInternalArray = env->GetLongArrayElements(jLogs, NULL);
+
+	for (int i = 0; i < logsCount; i++) {
+		jInternalArray[i] = (unsigned long) (logs->data);
+		logs = logs->next;
+	}
+
+	env->ReleaseLongArrayElements(jLogs, jInternalArray, 0);
+
+	return jLogs;
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_takeSnapshot(	JNIEnv*  env

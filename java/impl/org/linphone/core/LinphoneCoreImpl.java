@@ -62,7 +62,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native boolean isInComingInvitePending(long nativePtr);
 	private native void acceptCall(long nativePtr, long call);
 	private native long getCallLog(long nativePtr,int position);
+	native private long[] getCallLogs(long nativePtr);
 	private native int getNumberOfCallLogs(long nativePtr);
+	private native long getLastOutgoingCallLog(long nativePtr);
 	private native void delete(long nativePtr);
 	private native void setNetworkStateReachable(long nativePtr,boolean isReachable);
 	private native boolean isNetworkStateReachable(long nativePtr);
@@ -209,7 +211,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 			WifiManager wifiManager=(WifiManager) mContext.getSystemService(Context.WIFI_SERVICE); 
 			MulticastLock lock = wifiManager.createMulticastLock("linphonecore ["+ nativePtr+"] multicast-lock");
 			lock.setReferenceCounted(true);
-			setAndroidMulticastLock(nativePtr,lock);
+			setAndroidMulticastLock(nativePtr, lock);
 		}
 	}
 
@@ -220,7 +222,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized void removeAuthInfo(LinphoneAuthInfo info) {
 		isValid();
-		removeAuthInfo(nativePtr,((LinphoneAuthInfoImpl)info).nativePtr);
+		removeAuthInfo(nativePtr, ((LinphoneAuthInfoImpl) info).nativePtr);
 	}
 
 	public synchronized LinphoneProxyConfig getDefaultProxyConfig() {
@@ -285,15 +287,22 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public synchronized void acceptCall(LinphoneCall aCall) {
 		isValid();
-		acceptCall(nativePtr,((LinphoneCallImpl)aCall).nativePtr);
+		acceptCall(nativePtr, ((LinphoneCallImpl) aCall).nativePtr);
 	}
 	public synchronized LinphoneCallLog[] getCallLogs() {
-		isValid();
-		LinphoneCallLog[] logs = new LinphoneCallLog[getNumberOfCallLogs(nativePtr)];
-		for (int i=0;i < getNumberOfCallLogs(nativePtr);i++) {
-			logs[i] = new LinphoneCallLogImpl(getCallLog(nativePtr, i));
+		long[] typesPtr = getCallLogs(nativePtr);
+		if (typesPtr == null) return null;
+ 		isValid();
+		LinphoneCallLog[] logs = new LinphoneCallLog[typesPtr.length];
+		for (int i=0;i < logs.length; i++) {
+			logs[i] = new LinphoneCallLogImpl(typesPtr[i]);
 		}
 		return logs;
+	}
+	public synchronized LinphoneCallLog getLastOutgoingCallLog(){
+		isValid();
+		long callLog = getLastOutgoingCallLog(nativePtr);
+		return new LinphoneCallLogImpl(callLog);
 	}
 	public synchronized void destroy() {
 		setAndroidPowerManager(null);
