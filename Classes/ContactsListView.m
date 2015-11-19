@@ -83,7 +83,7 @@ static NSString *sNameOrEmailFilter;
 @synthesize addButton;
 @synthesize topBar;
 
-typedef enum _HistoryView { History_All, History_Linphone, History_Search, History_MAX } HistoryView;
+typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
 
 #pragma mark - UICompositeViewDelegate Functions
 
@@ -137,14 +137,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[self changeView:History_All];
+	[self changeView:ContactsAll];
 }
 
 #pragma mark -
 
-- (void)changeView:(HistoryView)view {
+- (void)changeView:(ContactsCategory)view {
 	CGRect frame = _selectedButtonImage.frame;
-	if (view == History_All) {
+	if (view == ContactsAll) {
 		frame.origin.x = allButton.frame.origin.x;
 		[ContactSelection setSipFilter:nil];
 		[ContactSelection enableEmailFilter:FALSE];
@@ -164,7 +164,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)refreshButtons {
 	[addButton setHidden:FALSE];
-	[self changeView:[ContactSelection getSipFilter] ? History_Linphone : History_All];
+	[self changeView:[ContactSelection getSipFilter] ? ContactsLinphone : ContactsAll];
 }
 
 - (void)update {
@@ -175,11 +175,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAllClick:(id)event {
-	[self changeView:History_All];
+	[self changeView:ContactsAll];
 }
 
 - (IBAction)onLinphoneClick:(id)event {
-	[self changeView:History_Linphone];
+	[self changeView:ContactsLinphone];
 }
 
 - (IBAction)onAddContactClick:(id)event {
