@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="addressLabel" destination="78f-eb-xdx" id="Qjw-7G-oqG"/>
                 <outlet property="avatarImage" destination="19" id="20"/>
+                <outlet property="landscapeView" destination="25" id="Uik-db-6kN"/>
                 <outlet property="nameLabel" destination="hjQ-4P-bKP" id="Elh-o8-zM9"/>
                 <outlet property="portraitView" destination="25" id="32"/>
                 <outlet property="tabBar" destination="4" id="9gd-FT-jaI"/>

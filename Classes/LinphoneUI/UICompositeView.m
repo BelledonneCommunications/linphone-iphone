@@ -60,8 +60,8 @@
 	self.tabBarEnabled = YES;
 	self.sideMenuEnabled = NO;
 	self.fullscreen = fullscreen;
-	self.landscapeMode = landscapeMode;
-	self.portraitMode = portraitMode;
+	self.landscapeMode = YES; // landscapeMode;
+	self.portraitMode = YES;  // portraitMode;
 	self.darkBackground = false;
 
 	return self;

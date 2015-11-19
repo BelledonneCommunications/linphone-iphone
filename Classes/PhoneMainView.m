@@ -63,7 +63,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (PhoneMainView *)setViewControllerForDescription:(UICompositeViewDescription *)description {
 	PhoneMainView *newMainView = description.landscapeMode ? self.rotatingViewController : self.portraitViewController;
 
-	if (LinphoneManager.runningOnIpad)
+	if (true || LinphoneManager.runningOnIpad)
 		return currentViewController;
 
 	if (newMainView != currentViewController) {
@@ -224,18 +224,18 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 }
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-#else
-- (NSUInteger)supportedInterfaceOrientations
-#endif
-{
-	if ([LinphoneManager runningOnIpad] || [mainViewController currentViewSupportsLandscape]) {
-		return UIInterfaceOrientationMaskAll;
-	} else {
-		return UIInterfaceOrientationMaskPortrait;
-	}
-}
+//#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
+//- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+//#else
+//- (NSUInteger)supportedInterfaceOrientations
+//#endif
+//{
+//	if ([LinphoneManager runningOnIpad] || [mainViewController currentViewSupportsLandscape]) {
+//		return UIInterfaceOrientationMaskAll;
+//	} else {
+//		return UIInterfaceOrientationMaskPortrait;
+//	}
+//}
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 								duration:(NSTimeInterval)duration {

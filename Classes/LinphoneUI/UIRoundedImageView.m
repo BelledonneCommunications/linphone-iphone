@@ -27,9 +27,6 @@
 
 - (void)setImage:(UIImage *)image bordered:(BOOL)bordered withRoundedRadius:(BOOL)rounded {
 	[super setImage:image];
-	if (image.size.width != image.size.height) {
-		LOGI(@"Image is not squared (%fx%f) - cropping it", image.size.width, image.size.height);
-	}
 	[self setBordered:bordered];
 	[self setRoundRadius];
 }
@@ -47,7 +44,7 @@
 	CALayer *imageLayer = self.layer;
 	CGFloat height = imageLayer.frame.size.height;
 	CGFloat width = imageLayer.frame.size.width;
-	CGFloat roundRadius = height > width ? width / 2 : height / 2;
+	CGFloat roundRadius = MIN(width, height) / 2;
 
 	[imageLayer setCornerRadius:roundRadius];
 	[imageLayer setMasksToBounds:YES];

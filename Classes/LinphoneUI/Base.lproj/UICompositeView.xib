@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <development version="6000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UICompositeView">
@@ -44,7 +44,7 @@
                     <animations/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
-                <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="26" userLabel="sideMenuView">
+                <view clearsContextBeforeDrawing="NO" tag="4" contentMode="scaleToFill" id="26" userLabel="sideMenuView">
                     <rect key="frame" x="-375" y="42" width="375" height="625"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <animations/>
@@ -60,22 +60,27 @@
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view autoresizesSubviews="NO" tag="1" contentMode="scaleToFill" id="23" userLabel="content">
-                    <rect key="frame" x="0.0" y="27" width="667" height="296"/>
+                    <rect key="frame" x="0.0" y="42" width="667" height="267"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view autoresizesSubviews="NO" tag="2" contentMode="scaleToFill" id="22" userLabel="statusBar">
-                    <rect key="frame" x="0.0" y="0.0" width="667" height="26"/>
+                    <rect key="frame" x="0.0" y="0.0" width="667" height="42"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                     <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view autoresizesSubviews="NO" tag="3" contentMode="scaleToFill" id="21" userLabel="tabBar">
-                    <rect key="frame" x="0.0" y="325" width="667" height="50"/>
+                    <rect key="frame" x="0.0" y="309" width="667" height="66"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+                <view clearsContextBeforeDrawing="NO" tag="4" contentMode="scaleToFill" id="JXU-o0-1po" userLabel="sideMenuView">
+                    <rect key="frame" x="0.0" y="42" width="375" height="333"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                    <animations/>
                 </view>
             </subviews>
             <animations/>
@@ -92,9 +97,4 @@
             </connections>
         </swipeGestureRecognizer>
     </objects>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4"/>
-    </simulatedMetricsContainer>
 </document>
