@@ -43,7 +43,7 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 - (id)init {
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self != nil) {
-		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showControls:)];
+		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleControls:)];
 		videoZoomHandler = [[VideoZoomHandler alloc] init];
 		blackVideoStatusBar = [[UIView alloc] init];
 		blackVideoStatusBar.backgroundColor = [UIColor blackColor];
@@ -172,7 +172,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[singleFingerTap setNumberOfTapsRequired:1];
 	[singleFingerTap setCancelsTouchesInView:FALSE];
-	[PhoneMainView.instance.view addGestureRecognizer:singleFingerTap];
+	[self.videoView addGestureRecognizer:singleFingerTap];
 
 	[videoZoomHandler setup:_videoGroup];
 	_videoGroup.alpha = 0;
@@ -289,6 +289,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+- (void)toggleControls:(id)sender {
+	bool controlsHidden = (_bottomBar.alpha == 0.0);
+	if (controlsHidden) {
+		[self showControls:sender];
+	} else {
+		[self hideControls:sender];
+	}
+}
+
 - (void)showControls:(id)sender {
 	if (hideControlsTimer) {
 		[hideControlsTimer invalidate];
@@ -297,7 +306,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if ([[PhoneMainView.instance currentView] equal:CallView.compositeViewDescription]) {
 		// show controls
-
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.35];
 		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _callPauseButton.alpha = 1.0;
@@ -319,6 +327,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)hideControls:(id)sender {
+	if (!videoShown)
+		return;
+
 	if (hideControlsTimer) {
 		[hideControlsTimer invalidate];
 		hideControlsTimer = nil;
