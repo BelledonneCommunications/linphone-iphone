@@ -791,7 +791,7 @@ case "$target_os" in
 	;;
 esac
 if test "$strictness" = "yes" ; then
-	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
+	STRICT_OPTIONS="$STRICT_OPTIONS -Werror -Wno-error=deprecated-declarations"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
 

@@ -41,6 +41,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
 
+#ifndef LINPHONE_DEPRECATED 
+#if defined(_MSC_VER)
+	#define LINPHONE_DEPRECATED __declspec(deprecated)
+#else
+	#define LINPHONE_DEPRECATED __attribute__ ((deprecated))
+#endif
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -877,7 +884,7 @@ LINPHONE_PUBLIC void linphone_call_set_native_video_window_id(LinphoneCall *call
  * @deprecated
  * @ingroup call_control
  */
-LINPHONE_PUBLIC	bool_t linphone_call_is_in_conference(const LinphoneCall *call);
+LINPHONE_PUBLIC	bool_t linphone_call_is_in_conference(const LinphoneCall *call) LINPHONE_DEPRECATED;
 /**
  * Enables or disable echo cancellation for this call
  * @param call
@@ -1222,7 +1229,7 @@ typedef enum _LinphoneChatMessageState {
  * @param ud application user data
  * @deprecated
  */
-typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
+typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud) LINPHONE_DEPRECATED;
 
 /**
  * Call back used to notify message delivery status
@@ -1306,7 +1313,7 @@ LINPHONE_PUBLIC bool_t linphone_core_chat_enabled(const LinphoneCore *lc);
  * @param cr #LinphoneChatRoom object
  * @deprecated Use linphone_chat_room_unref() instead.
  */
-LINPHONE_PUBLIC void linphone_chat_room_destroy(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC void linphone_chat_room_destroy(LinphoneChatRoom *cr) LINPHONE_DEPRECATED;
 /**
  * Create a message attached to a dedicated chat room;
  * @param cr the chat room.
@@ -1370,7 +1377,7 @@ LINPHONE_PUBLIC	const LinphoneAddress* linphone_chat_room_get_peer_address(Linph
  * @param cr #LinphoneChatRoom object
  * @param msg message to be sent
  */
-LINPHONE_PUBLIC	void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg);
+LINPHONE_PUBLIC	void linphone_chat_room_send_message(LinphoneChatRoom *cr, const char *msg) LINPHONE_DEPRECATED;
 /**
  * Send a message to peer member of this chat room.
  * @param cr #LinphoneChatRoom object
@@ -1381,7 +1388,7 @@ LINPHONE_PUBLIC	void linphone_chat_room_send_message(LinphoneChatRoom *cr, const
  * @note The LinphoneChatMessage must not be destroyed until the the callback is called.
  * The LinphoneChatMessage reference is transfered to the function and thus doesn't need to be unref'd by the application.
  */
-LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb,void* ud);
+LINPHONE_PUBLIC	void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb,void* ud) LINPHONE_DEPRECATED;
 /**
  * Send a message to peer member of this chat room.
  * @param[in] cr LinphoneChatRoom object
@@ -1456,7 +1463,7 @@ LINPHONE_PUBLIC int linphone_chat_room_get_unread_messages_count(LinphoneChatRoo
  * Returns back pointer to LinphoneCore object.
  * @deprecated use linphone_chat_room_get_core()
 **/
-LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC LinphoneCore* linphone_chat_room_get_lc(LinphoneChatRoom *cr) LINPHONE_DEPRECATED;
 /**
  * Returns back pointer to LinphoneCore object.
 **/
@@ -1565,7 +1572,7 @@ LINPHONE_PUBLIC	const LinphoneContent* linphone_chat_message_get_file_transfer_i
  * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when file is downloaded or could not be downloaded
  * @deprecated Use linphone_chat_message_download_file() instead.
  */
-LINPHONE_PUBLIC void linphone_chat_message_start_file_download(LinphoneChatMessage* message, LinphoneChatMessageStateChangedCb status_cb, void* ud);
+LINPHONE_PUBLIC void linphone_chat_message_start_file_download(LinphoneChatMessage* message, LinphoneChatMessageStateChangedCb status_cb, void* ud) LINPHONE_DEPRECATED;
 /**
  * Start the download of the file referenced in a LinphoneChatMessage from remote server.
  * @param[in] message LinphoneChatMessage object.
@@ -1838,23 +1845,23 @@ typedef void (*LinphoneCoreCallEncryptionChangedCb)(LinphoneCore *lc, LinphoneCa
 /** @ingroup Proxies
  * Registration state notification callback prototype
  * */
-typedef void (*LinphoneCoreRegistrationStateChangedCb)(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message);
+typedef void (*LinphoneCoreRegistrationStateChangedCb)(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message) ;
 /** Callback prototype
  * @deprecated
  */
-typedef void (*ShowInterfaceCb)(LinphoneCore *lc);
+typedef void (*ShowInterfaceCb)(LinphoneCore *lc) LINPHONE_DEPRECATED;
 /** Callback prototype
  * @deprecated
  */
-typedef void (*DisplayStatusCb)(LinphoneCore *lc, const char *message);
+typedef void (*DisplayStatusCb)(LinphoneCore *lc, const char *message) LINPHONE_DEPRECATED;
 /** Callback prototype
  * @deprecated
  */
-typedef void (*DisplayMessageCb)(LinphoneCore *lc, const char *message);
+typedef void (*DisplayMessageCb)(LinphoneCore *lc, const char *message) LINPHONE_DEPRECATED;
 /** Callback prototype
  * @deprecated
  */
-typedef void (*DisplayUrlCb)(LinphoneCore *lc, const char *message, const char *url);
+typedef void (*DisplayUrlCb)(LinphoneCore *lc, const char *message, const char *url) LINPHONE_DEPRECATED;
 /** Callback prototype
  */
 typedef void (*LinphoneCoreCbFunc)(LinphoneCore *lc,void * user_data);
@@ -1899,7 +1906,7 @@ typedef void (*LinphoneCoreCallLogUpdatedCb)(LinphoneCore *lc, LinphoneCallLog *
  * @param from #LinphoneAddress from
  * @param message incoming message
  */
-typedef void (*LinphoneCoreTextMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
+typedef void (*LinphoneCoreTextMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) LINPHONE_DEPRECATED;
 
 /**
  * Chat message callback prototype
@@ -2061,15 +2068,15 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreNotifyReceivedCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
 	LinphoneCorePublishStateChangedCb publish_state_changed;/**Notifies publish state change (only from #LinphoneEvent api)*/
 	LinphoneCoreConfiguringStatusCb configuring_status; /** Notifies configuring status changes */
-	DisplayStatusCb display_status; /**< @deprecated Callback that notifies various events with human readable text.*/
-	DisplayMessageCb display_message;/**< @deprecated Callback to display a message to the user */
-	DisplayMessageCb display_warning;/**< @deprecated Callback to display a warning to the user */
-	DisplayUrlCb display_url; /**< @deprecated */
-	ShowInterfaceCb show; /**< @deprecated Notifies the application that it should show up*/
-	LinphoneCoreTextMessageReceivedCb text_received; /**< @deprecated, use #message_received instead <br> A text message has been received */
-	LinphoneCoreFileTransferRecvCb file_transfer_recv; /**< @deprecated Callback to store file received attached to a #LinphoneChatMessage */
-	LinphoneCoreFileTransferSendCb file_transfer_send; /**< @deprecated Callback to collect file chunk to be sent for a #LinphoneChatMessage */
-	LinphoneCoreFileTransferProgressIndicationCb file_transfer_progress_indication; /**< @deprecated Callback to indicate file transfer progress */
+	DisplayStatusCb display_status LINPHONE_DEPRECATED; /**< @deprecated Callback that notifies various events with human readable text.*/
+	DisplayMessageCb display_message LINPHONE_DEPRECATED;/**< @deprecated Callback to display a message to the user */
+	DisplayMessageCb display_warning LINPHONE_DEPRECATED;/**< @deprecated Callback to display a warning to the user */
+	DisplayUrlCb display_url LINPHONE_DEPRECATED; /**< @deprecated */
+	ShowInterfaceCb show LINPHONE_DEPRECATED; /**< @deprecated Notifies the application that it should show up*/
+	LinphoneCoreTextMessageReceivedCb text_received LINPHONE_DEPRECATED; /**< @deprecated, use #message_received instead <br> A text message has been received */
+	LinphoneCoreFileTransferRecvCb file_transfer_recv LINPHONE_DEPRECATED; /**< @deprecated Callback to store file received attached to a #LinphoneChatMessage */
+	LinphoneCoreFileTransferSendCb file_transfer_send LINPHONE_DEPRECATED; /**< @deprecated Callback to collect file chunk to be sent for a #LinphoneChatMessage */
+	LinphoneCoreFileTransferProgressIndicationCb file_transfer_progress_indication LINPHONE_DEPRECATED; /**< @deprecated Callback to indicate file transfer progress */
 	LinphoneCoreNetworkReachableCb network_reachable; /**< Callback to report IP network status (I.E up/down )*/
 	LinphoneCoreLogCollectionUploadStateChangedCb log_collection_upload_state_changed; /**< Callback to upload collected logs */
 	LinphoneCoreLogCollectionUploadProgressIndicationCb log_collection_upload_progress_indication; /**< Callback to indicate log collection upload progress */
@@ -2261,7 +2268,7 @@ LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
  *
  * @param loglevel Minimum level for logging messages.
 **/
-LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
+LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel) LINPHONE_DEPRECATED;
 /**
  * Define the log level using mask.
  *
@@ -2295,11 +2302,11 @@ LINPHONE_PUBLIC	const char *linphone_core_get_user_agent(LinphoneCore *lc);
 /**
  * @deprecated Use #linphone_core_get_user_agent instead.
 **/
-LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_name(void);
+LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_name(void) LINPHONE_DEPRECATED;
 /**
  * @deprecated Use #linphone_core_get_user_agent instead.
 **/
-LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_version(void);
+LINPHONE_PUBLIC	const char *linphone_core_get_user_agent_version(void) LINPHONE_DEPRECATED;
 
 /**
  * Instanciates a LinphoneCore object.
@@ -2365,7 +2372,7 @@ LINPHONE_PUBLIC void linphone_core_remove_listener(LinphoneCore *lc, const Linph
 LINPHONE_PUBLIC	void linphone_core_set_user_agent(LinphoneCore *lc, const char *ua_name, const char *version);
 
 /** @deprecated Use linphone_proxy_config_normalize_sip_uri instead. */
-LINPHONE_PUBLIC	LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
+LINPHONE_PUBLIC	LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url) LINPHONE_DEPRECATED;
 
 LINPHONE_PUBLIC	LinphoneCall * linphone_core_invite(LinphoneCore *lc, const char *url);
 
@@ -2472,7 +2479,7 @@ LINPHONE_PUBLIC	LinphoneCall *linphone_core_get_call_by_remote_address2(Linphone
  * @param dtmf The dtmf name specified as a char, such as '0', '#' etc...
  *
 **/
-LINPHONE_PUBLIC	void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf);
+LINPHONE_PUBLIC	void linphone_core_send_dtmf(LinphoneCore *lc,char dtmf) LINPHONE_DEPRECATED;
 
 /**
  * Sets the local "from" identity.
@@ -2845,7 +2852,7 @@ LINPHONE_PUBLIC void linphone_core_set_default_proxy_index(LinphoneCore *lc, int
  * @return the default proxy configuration, that is the one used to determine the current identity.
  * @deprecated Use linphone_core_get_default_proxy_config() instead.
 **/
-LINPHONE_PUBLIC int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config);
+LINPHONE_PUBLIC int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **config) LINPHONE_DEPRECATED;
 
 /**
  * @return the default proxy configuration, that is the one used to determine the current identity.
@@ -3206,13 +3213,13 @@ bool_t linphone_core_agc_enabled(const LinphoneCore *lc);
 /**
  * @deprecated Use #linphone_core_enable_mic instead.
 **/
-LINPHONE_PUBLIC	void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted);
+LINPHONE_PUBLIC	void linphone_core_mute_mic(LinphoneCore *lc, bool_t muted) LINPHONE_DEPRECATED;
 
 /**
  * Get mic state.
  * @deprecated Use #linphone_core_mic_enabled instead
 **/
-LINPHONE_PUBLIC	bool_t linphone_core_is_mic_muted(LinphoneCore *lc);
+LINPHONE_PUBLIC	bool_t linphone_core_is_mic_muted(LinphoneCore *lc) LINPHONE_DEPRECATED;
 
 /**
  * Enable or disable the microphone.
@@ -3332,14 +3339,14 @@ LINPHONE_PUBLIC bool_t linphone_core_video_supported(LinphoneCore *lc);
  * @ingroup media_parameters
  * @deprecated Use #linphone_core_enable_video_capture and #linphone_core_enable_video_display instead.
 **/
-LINPHONE_PUBLIC	void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled);
+LINPHONE_PUBLIC	void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled) LINPHONE_DEPRECATED;
 
 /**
  * Returns TRUE if video is enabled, FALSE otherwise.
  * @ingroup media_parameters
  * @deprecated Use #linphone_core_video_capture_enabled and #linphone_core_video_display_enabled instead.
 **/
-LINPHONE_PUBLIC bool_t linphone_core_video_enabled(LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_video_enabled(LinphoneCore *lc) LINPHONE_DEPRECATED;
 
 /**
  * Enable or disable video capture.
@@ -4207,6 +4214,17 @@ LINPHONE_PUBLIC const char* linphone_transport_to_string(LinphoneTransportType t
 **/
 LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* transport);
 
+	
+/**
+ * @ingroup media_parameters
+ * Get default call parameters reflecting current linphone core configuration
+ * @param lc LinphoneCore object
+ * @return  LinphoneCallParams
+ * @deprecated use linphone_core_create_call_params()
+ */
+LINPHONE_PUBLIC  LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc) LINPHONE_DEPRECATED;
+	
+	
 #ifdef __cplusplus
 }
 #endif
