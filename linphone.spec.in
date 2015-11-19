@@ -80,7 +80,9 @@ rm -rf $RPM_BUILD_ROOT
 %files -f %{name}.lang
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING NEWS README TODO
-%{_bindir}/*
+%{_bindir}/linphone
+%{_bindir}/linphonec
+%{_bindir}/linphonecsh
 %{_libdir}/*.so.*
 %{_mandir}/*
 %{_datadir}/applications/%{name}.desktop
@@ -93,12 +95,14 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(-,root,root)
+%{_bindir}/liblinphone_tester
 %{_includedir}/linphone
 %{_libdir}/*.a
 %{_libdir}/*.la
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/linphone.pc
 %{_datadir}/tutorials/linphone/*.c
+%{_datadir}/liblinphone_tester
 %{_docdir}
 
 %changelog
