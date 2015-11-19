@@ -62,6 +62,7 @@ typedef struct _LpItem{
 	char *key;
 	char *value;
 	int is_comment;
+	bool_t overwrite; // If set to true, will add overwrite=true when converted to xml
 } LpItem;
 
 typedef struct _LpSectionParam{
@@ -566,6 +567,17 @@ float lp_config_get_float(const LpConfig *lpconfig,const char *section, const ch
 	return ret;
 }
 
+bool_t lp_config_get_overwrite_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key) {
+	LpSection *sec;
+	LpItem *item;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL){
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) return item->overwrite;
+	}
+	return 0;
+}
+
 void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value){
 	LpItem *item;
 	LpSection *sec=lp_config_find_section(lpconfig,section);
@@ -616,6 +628,16 @@ void lp_config_set_float(LpConfig *lpconfig,const char *section, const char *key
 	char tmp[30];
 	snprintf(tmp,sizeof(tmp),"%f",value);
 	lp_config_set_string(lpconfig,section,key,tmp);
+}
+
+void lp_config_set_overwrite_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value) {
+	LpSection *sec;
+	LpItem *item;
+	sec = lp_config_find_section(lpconfig, section);
+	if (sec != NULL){
+		item = lp_section_find_item(sec, key);
+		if (item != NULL) item->overwrite = value;
+	}
 }
 
 void lp_item_write(LpItem *item, FILE *file){

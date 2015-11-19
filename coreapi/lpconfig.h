@@ -311,6 +311,20 @@ LINPHONE_PUBLIC bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, 
 **/
 LINPHONE_PUBLIC char* lp_config_dump_as_xml(const LpConfig *lpconfig);
 
+/**
+ * Retrieves the overwrite flag for a config item
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t lp_config_get_overwrite_flag_for_entry(const LpConfig *lpconfig, const char *section, const char *key);
+
+/**
+ * Sets the overwrite flag for a config item (used when dumping config as xml)
+ *
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC void lp_config_set_overwrite_flag_for_entry(LpConfig *lpconfig, const char *section, const char *key, bool_t value);
+
 #ifdef __cplusplus
 }
 #endif
