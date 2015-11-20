@@ -124,7 +124,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (void)addCurrentContactContactField:(NSString *)address {
-	LinphoneAddress *linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], address.UTF8String);
+	LinphoneAddress *linphoneAddress = linphone_proxy_config_normalize_sip_uri(NULL, address.UTF8String);
 	NSString *username =
 		linphoneAddress ? [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)] : address;
 

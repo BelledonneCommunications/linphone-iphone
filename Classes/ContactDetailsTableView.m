@@ -271,7 +271,7 @@
 		if ([lDict objectForKey:(__bridge NSString *)kABPersonInstantMessageServiceKey] == nil) {
 			/*too bad probably a gtalk number, storing uri*/
 			NSString *username = [lDict objectForKey:(NSString *)kABPersonInstantMessageUsernameKey];
-			LinphoneAddress *address = linphone_core_interpret_url([LinphoneManager getLc], [username UTF8String]);
+			LinphoneAddress *address = linphone_proxy_config_normalize_sip_uri(NULL, [username UTF8String]);
 			if (address) {
 				char *uri = linphone_address_as_string_uri_only(address);
 				NSDictionary *dict2 = @{

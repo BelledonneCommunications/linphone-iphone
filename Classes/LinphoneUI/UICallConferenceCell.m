@@ -29,7 +29,7 @@
 
 - (void)setCall:(LinphoneCall *)call {
 	_call = call;
-	if (!call || !linphone_call_is_in_conference(call)) {
+	if (!call || !linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call))) {
 		LOGF(@"Invalid call: either NULL or not in conference.");
 		return;
 	}

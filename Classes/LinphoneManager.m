@@ -1282,17 +1282,11 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 #pragma mark - VTable
 
 static LinphoneCoreVTable linphonec_vtable = {
-	.show = NULL,
 	.call_state_changed = (LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
 	.registration_state_changed = linphone_iphone_registration_state,
 	.notify_presence_received = NULL,
 	.new_subscription_requested = NULL,
 	.auth_info_requested = linphone_iphone_popup_password_request,
-	.display_status = linphone_iphone_display_status,
-	.display_message = linphone_iphone_log_user_info,
-	.display_warning = linphone_iphone_log_user_warning,
-	.display_url = NULL,
-	.text_received = NULL,
 	.message_received = linphone_iphone_message_received,
 	.dtmf_received = NULL,
 	.transfer_state_changed = linphone_iphone_transfer_state_changed,
@@ -1383,7 +1377,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 			linphone_core_enable_payload_type(theLinphoneCore, pt, FALSE);
 			LOGW(@"SILK/24000 and video disabled on old iPhone 3G");
 		}
-		linphone_core_enable_video(theLinphoneCore, FALSE, FALSE);
+		linphone_core_enable_video_display(theLinphoneCore, FALSE);
+		linphone_core_enable_video_capture(theLinphoneCore, FALSE);
 	}
 
 	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
@@ -1715,7 +1710,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_core_start_dtmf_stream(theLinphoneCore);
 
 	/*start the video preview in case we are in the main view*/
-	if (LinphoneManager.runningOnIpad && linphone_core_video_enabled(theLinphoneCore) &&
+	if (LinphoneManager.runningOnIpad && linphone_core_video_display_enabled(theLinphoneCore) &&
 		[self lpConfigBoolForKey:@"preview_preference"]) {
 		linphone_core_enable_video_preview(theLinphoneCore, TRUE);
 	}
@@ -1931,7 +1926,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	// Continue by checking that the provided address is a valid SIP address, abort otherwise.
 	if ([address length] == 0) {
 		// no address provided... nothing to do
-	} else if ((addr = linphone_core_interpret_url(theLinphoneCore, address.UTF8String)) == NULL) {
+	} else if ((addr = linphone_proxy_config_normalize_sip_uri(NULL, address.UTF8String)) == NULL) {
 		UIAlertView *error = [[UIAlertView alloc]
 				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
 					  message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a "

@@ -179,7 +179,9 @@
 	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [[self me] UTF8String]);
 	// generate lots of messages...
 	for (; count < 50; count++) {
-		linphone_chat_room_send_message(room, [[NSString stringWithFormat:@"Message %d", count + 1] UTF8String]);
+		LinphoneChatMessage *msg =
+			linphone_chat_room_create_message(room, [[NSString stringWithFormat:@"Message %d", count + 1] UTF8String]);
+		linphone_chat_room_send_chat_message(room, msg);
 	}
 
 	for (int i = 0; i < 25; i++) {

@@ -45,6 +45,7 @@
 - (IBAction)onResendClick:(id)event;
 - (void)update;
 
++ (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 + (NSString *)TextMessageForChat:(LinphoneChatMessage *)message;
 + (CGSize)computeBoundingBox:(NSString *)text size:(CGSize)size font:(UIFont *)font;
 

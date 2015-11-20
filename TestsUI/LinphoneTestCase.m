@@ -79,7 +79,7 @@
 		LinphoneProxyConfig *cfg = (LinphoneProxyConfig *)proxies->data;
 		const char *domain = linphone_proxy_config_get_domain(cfg);
 		const char *identity = linphone_proxy_config_get_identity(cfg);
-		LinphoneAddress *addr = linphone_core_interpret_url(lc, identity);
+		LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(NULL, identity);
 		const char *username = linphone_address_get_username(addr);
 
 		if (addr && (username && strcmp(username, [[self me] UTF8String]) == 0) &&

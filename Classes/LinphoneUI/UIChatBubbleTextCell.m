@@ -223,7 +223,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 	if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
 		return [text boundingRectWithSize:size
-								  options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+								  options:(NSStringDrawingUsesLineFragmentOrigin |
+										   NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading)
 							   attributes:@{
 								   NSFontAttributeName : font
 							   }
@@ -241,54 +242,45 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 32;
 static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
 static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
 
-+ (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
-	static UIFont *messageFont = nil;
-	static UIFont *dateFont = nil;
-	static CGSize dateViewSize;
-	CGSize messageSize;
-	const char *url = linphone_chat_message_get_external_body_url(chat);
++ (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
 	NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
-
 	UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
-	if (tableView.isEditing)
-		width -= 40; /*checkbox */
-
+	static UIFont *messageFont = nil;
 	if (!messageFont) {
 		UIChatBubbleTextCell *cell =
 			[[UIChatBubbleTextCell alloc] initWithIdentifier:NSStringFromClass(UIChatBubbleTextCell.class)];
 		messageFont = cell.messageText.font;
+	}
+	if (tableView.isEditing)
+		width -= 40; /*checkbox */
+	CGSize size;
+	const char *url = linphone_chat_message_get_external_body_url(chat);
+	if (url == nil && linphone_chat_message_get_file_transfer_information(chat) == NULL) {
+		size = [self computeBoundingBox:messageText
+								   size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN, CGFLOAT_MAX)
+								   font:messageFont];
+	} else {
+		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
+		size = (localImage != nil) ? CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT) : CGSizeMake(50, 50);
+	}
+	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
+	size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
+	return size;
+}
++ (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
+	static UIFont *dateFont = nil;
+	static CGSize dateViewSize;
+
+	if (!dateFont) {
+		UIChatBubbleTextCell *cell =
+			[[UIChatBubbleTextCell alloc] initWithIdentifier:NSStringFromClass(UIChatBubbleTextCell.class)];
 		dateFont = cell.contactDateLabel.font;
 		dateViewSize = cell.contactDateLabel.frame.size;
 	}
-	if (url == nil && linphone_chat_message_get_file_transfer_information(chat) == NULL) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-		if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
-			messageSize = [messageText boundingRectWithSize:CGSizeMake(width - CELL_MESSAGE_X_MARGIN, CGFLOAT_MAX)
-													options:(NSStringDrawingUsesLineFragmentOrigin |
-															 NSStringDrawingTruncatesLastVisibleLine |
-															 NSStringDrawingUsesFontLeading)
-												 attributes:@{
-													 NSFontAttributeName : messageFont
-												 }
-													context:nil]
-							  .size;
-		} else
-#endif
-		{
-			messageSize = [messageText sizeWithFont:messageFont
-								  constrainedToSize:CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 10000.0f)
-									  lineBreakMode:NSLineBreakByTruncatingTail];
-		}
-	} else {
-		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
-		messageSize = (localImage != nil) ? CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT) : CGSizeMake(50, 50);
-	}
 
+	CGSize messageSize = [self ViewHeightForMessage:chat withWidth:width];
 	CGSize dateSize = [self computeBoundingBox:[self ContactDateForChat:chat] size:dateViewSize font:dateFont];
-	messageSize.width = MAX(messageSize.width, dateSize.width);
-
-	messageSize.width = MAX(messageSize.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
-	messageSize.height = MAX(messageSize.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
+	messageSize.width = MAX(MAX(messageSize.width, dateSize.width), CELL_MIN_WIDTH);
 
 	return messageSize;
 }

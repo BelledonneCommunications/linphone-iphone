@@ -586,7 +586,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"enable_video_preference"];
 	}
 
-	if (!linphone_core_video_enabled([LinphoneManager getLc])) {
+	if (!linphone_core_video_display_enabled([LinphoneManager getLc])) {
 		[hiddenKeys addObject:@"video_menu"];
 	}
 

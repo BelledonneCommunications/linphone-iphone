@@ -164,7 +164,7 @@ static void chatTable_free_chatrooms(void *data) {
 		}
 		[ftdToDelete cancel];
 
-		linphone_core_delete_chat_room(linphone_chat_room_get_lc(chatRoom), chatRoom);
+		linphone_core_delete_chat_room(linphone_chat_room_get_core(chatRoom), chatRoom);
 		data = ms_list_remove(data, chatRoom);
 
 		// will force a call to [self loadData]

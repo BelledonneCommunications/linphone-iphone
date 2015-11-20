@@ -209,7 +209,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
-	return [UIChatBubbleTextCell ViewSizeForMessage:chat withWidth:self.view.frame.size.width].height;
+	return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height;
 }
 
 

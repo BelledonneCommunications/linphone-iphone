@@ -89,7 +89,8 @@
 		if (linphone_call_get_state(call) == LinphoneCallPaused) {
 			count++;
 		}
-		if (linphone_call_is_in_conference(call) && !linphone_core_is_in_conference([LinphoneManager getLc])) {
+		if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call)) &&
+			!linphone_core_is_in_conference([LinphoneManager getLc])) {
 			conference_in_pause = 1;
 		}
 		calls = calls->next;

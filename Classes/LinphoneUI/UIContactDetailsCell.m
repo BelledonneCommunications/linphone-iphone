@@ -43,7 +43,7 @@
 - (void)setAddress:(NSString *)address {
 	_addressLabel.text = _editTextfield.text = address;
 
-	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], _addressLabel.text.UTF8String);
+	LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(NULL, _addressLabel.text.UTF8String);
 	_chatButton.enabled = _callButton.enabled = (addr != NULL);
 
 	_chatButton.accessibilityLabel =
@@ -75,7 +75,7 @@
 }
 
 - (IBAction)onCallClick:(id)event {
-	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], _addressLabel.text.UTF8String);
+	LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(NULL, _addressLabel.text.UTF8String);
 	if (addr == NULL)
 		return;
 	char *lAddress = linphone_address_as_string_uri_only(addr);
@@ -89,7 +89,7 @@
 }
 
 - (IBAction)onChatClick:(id)event {
-	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], _addressLabel.text.UTF8String);
+	LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(NULL, _addressLabel.text.UTF8String);
 	if (addr == NULL)
 		return;
 	[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];

@@ -58,7 +58,7 @@
 - (void)onOn {
 	LinphoneCore *lc = [LinphoneManager getLc];
 
-	if (!linphone_core_video_enabled(lc))
+	if (!linphone_core_video_display_enabled(lc))
 		return;
 
 	[self setEnabled:FALSE];
@@ -81,7 +81,7 @@
 - (void)onOff {
 	LinphoneCore *lc = [LinphoneManager getLc];
 
-	if (!linphone_core_video_enabled(lc))
+	if (!linphone_core_video_display_enabled(lc))
 		return;
 
 	[self setEnabled:FALSE];
@@ -103,7 +103,7 @@
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneCall *currentCall = linphone_core_get_current_call(lc);
 	if (linphone_core_video_supported(lc)) {
-		if (linphone_core_video_enabled(lc) && currentCall && !linphone_call_media_in_progress(currentCall) &&
+		if (linphone_core_video_display_enabled(lc) && currentCall && !linphone_call_media_in_progress(currentCall) &&
 			linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
 			video_enabled = TRUE;
 		}

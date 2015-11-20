@@ -142,7 +142,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 - (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom {
 	[LinphoneManager.instance.fileTransferDelegates addObject:self];
 
-	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_lc(chatRoom));
+	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
 	_data = [NSMutableData dataWithData:UIImageJPEGRepresentation(image, 1.0)];
 	linphone_content_set_type(content, "image");
 	linphone_content_set_subtype(content, "jpeg");

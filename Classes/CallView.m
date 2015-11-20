@@ -666,7 +666,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			const LinphoneCallParams *remote = linphone_call_get_remote_params(call);
 
 			/* remote wants to add video */
-			if (linphone_core_video_enabled(lc) && !linphone_call_params_video_enabled(current) &&
+			if (linphone_core_video_display_enabled(lc) && !linphone_call_params_video_enabled(current) &&
 				linphone_call_params_video_enabled(remote) &&
 				!linphone_core_get_video_policy(lc)->automatically_accept) {
 				linphone_core_defer_call_update(lc, call);

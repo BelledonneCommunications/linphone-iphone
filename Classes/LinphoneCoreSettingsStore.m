@@ -195,7 +195,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 					  forKey:key];
 		}
 
-		[self setBool:linphone_core_video_enabled(lc) forKey:@"enable_video_preference"];
+		[self setBool:linphone_core_video_display_enabled(lc) forKey:@"enable_video_preference"];
 		[self setBool:[LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]
 			   forKey:@"enable_auto_answer_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"advanced_account_preference"] forKey:@"advanced_account_preference"];
@@ -588,7 +588,8 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			[self synchronizeAccounts];
 
 		bool enableVideo = [self boolForKey:@"enable_video_preference"];
-		linphone_core_enable_video(lc, enableVideo, enableVideo);
+		linphone_core_enable_video_capture(lc, enableVideo);
+		linphone_core_enable_video_display(lc, enableVideo);
 
 		bool enableAutoAnswer = [self boolForKey:@"enable_auto_answer_preference"];
 		[LinphoneManager.instance lpConfigSetBool:enableAutoAnswer forKey:@"auto_answer"];

@@ -69,7 +69,7 @@
 		[addressField setText:newAddress];
 		linphone_core_play_dtmf([LinphoneManager getLc], digit, -1);
 	} else {
-		linphone_core_send_dtmf([LinphoneManager getLc], digit);
+		linphone_call_send_dtmf(linphone_core_get_current_call([LinphoneManager getLc]), digit);
 		linphone_core_play_dtmf([LinphoneManager getLc], digit, 100);
 	}
 }

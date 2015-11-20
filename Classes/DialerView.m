@@ -119,7 +119,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self callUpdate:call state:state];
 
 	if (LinphoneManager.runningOnIpad) {
-		BOOL videoEnabled = linphone_core_video_enabled(lc);
+		BOOL videoEnabled = linphone_core_video_display_enabled(lc);
 		BOOL previewPref = [mgr lpConfigBoolForKey:@"preview_preference"];
 
 		if (videoEnabled && previewPref) {
@@ -222,7 +222,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)coreUpdateEvent:(NSNotification *)notif {
 	if (LinphoneManager.runningOnIpad) {
 		LinphoneCore *lc = [LinphoneManager getLc];
-		if (linphone_core_video_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
+		if (linphone_core_video_display_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
 			linphone_core_set_native_preview_window_id(lc, (__bridge void *)(videoPreview));
 			[backgroundView setHidden:FALSE];
 			[videoCameraSwitch setHidden:FALSE];
