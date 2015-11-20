@@ -182,37 +182,31 @@ static int callback_all(void *data, int argc, char **argv, char **colName){
  */
 static int create_chat_message(void *data, int argc, char **argv, char **colName){
 	LinphoneChatRoom *cr = (LinphoneChatRoom *)data;
-	LinphoneAddress *from;
-	LinphoneAddress *to;
 	unsigned int storage_id = atoi(argv[0]);
 
 	// check if the message exists in the transient list, in which case we should return that one.
 	LinphoneChatMessage* new_message = get_transient_message(cr, storage_id);
 	if( new_message == NULL ){
+		LinphoneAddress *local_addr=linphone_address_new(argv[1]);
 		new_message = linphone_chat_room_create_message(cr, argv[4]);
 
 		if(atoi(argv[3])==LinphoneChatMessageIncoming){
 			new_message->dir=LinphoneChatMessageIncoming;
-			from=linphone_address_new(argv[2]);
-			to=linphone_address_new(argv[1]);
+			linphone_chat_message_set_from(new_message,linphone_chat_room_get_peer_address(cr));
+			linphone_chat_message_set_to(new_message,local_addr);
 		} else {
 			new_message->dir=LinphoneChatMessageOutgoing;
-			from=linphone_address_new(argv[1]);
-			to=linphone_address_new(argv[2]);
+			linphone_chat_message_set_from(new_message,local_addr);
+			linphone_chat_message_set_to(new_message,linphone_chat_room_get_peer_address(cr));
 		}
-		linphone_chat_message_set_from(new_message,from);
-		linphone_address_destroy(from);
-		if (to){
-			linphone_chat_message_set_to(new_message,to);
-			linphone_address_destroy(to);
-		}
+		linphone_address_destroy(local_addr);
 
 		new_message->time = (time_t)atol(argv[9]);
 		new_message->is_read=atoi(argv[6]);
 		new_message->state=atoi(argv[7]);
 		new_message->storage_id=storage_id;
 		new_message->external_body_url= ms_strdup(argv[8]);
-		new_message->appdata          = ms_strdup(argv[10]);
+		new_message->appdata = ms_strdup(argv[10]);
 
 		if (argv[11] != NULL) {
 			int id = atoi(argv[11]);
