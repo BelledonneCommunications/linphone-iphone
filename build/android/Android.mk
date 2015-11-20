@@ -83,6 +83,7 @@ LIBLINPHONE_VERSION = "Devel"
 endif
 
 LOCAL_CFLAGS += \
+	-Wno-error=deprecated-declarations \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \
 	-DORTP_INET6 \
 	-DINET6 \
