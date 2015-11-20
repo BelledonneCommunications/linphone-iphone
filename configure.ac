@@ -768,7 +768,7 @@ AC_ARG_ENABLE(strict,
 )
 
 STRICT_OPTIONS="-Wall -Wuninitialized"
-STRICT_OPTIONS_CC="-Wdeclaration-after-statement "
+STRICT_OPTIONS_CC="-Wdeclaration-after-statement -Wstrict-prototypes"
 STRICT_OPTIONS_CXX=""
 
 #for clang
@@ -791,7 +791,7 @@ case "$target_os" in
 	;;
 esac
 if test "$strictness" = "yes" ; then
-	STRICT_OPTIONS="$STRICT_OPTIONS -Werror -Wno-error=deprecated-declarations"
+	STRICT_OPTIONS="$STRICT_OPTIONS -Werror -Wno-error=deprecated-declarations -Wno-error=strict-prototypes"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
 
