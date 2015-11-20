@@ -254,7 +254,8 @@ def check_tools():
             Popen("xcodebuild -version".split(" "), stdout=PIPE).stdout.read().split("\n")[0].split(" ")[1].split(".")[0])
         if xcode_version < 7:
             sdk_platform_path = Popen(
-                "xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "), stdout=PIPE, stderr=devnull).stdout.read()[:-1]
+                "xcrun --sdk iphonesimulator --show-sdk-platform-path".split(" "),
+                stdout=PIPE, stderr=devnull).stdout.read()[:-1]
             sdk_strings_path = "{}/{}".format(sdk_platform_path, "Developer/usr/bin/strings")
             if not os.path.isfile(sdk_strings_path):
                 strings_path = find_executable("strings")
@@ -396,6 +397,8 @@ def main(argv=None):
     argparser.add_argument(
         '--enable-non-free-codecs', help="Enable non-free codecs such as OpenH264, MPEG4, etc.. Final application must comply with their respective license (see README.md).", action='store_true')
     argparser.add_argument(
+        '--build-all-codecs', help="Build all codecs including non-free. Final application must comply with their respective license (see README.md).", action='store_true')
+    argparser.add_argument(
         '-G', '--generator', help="CMake build system generator (default: Unix Makefiles, use cmake -h to get the complete list).", default='Unix Makefiles', dest='generator')
     argparser.add_argument(
         '-L', '--list-cmake-variables', help="List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
@@ -419,6 +422,24 @@ def main(argv=None):
         additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
     if args.enable_non_free_codecs is True:
         additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
+    if args.build_all_codecs is True:
+        additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
+        additional_args += ["-DENABLE_AMRNB=YES"]
+        additional_args += ["-DENABLE_AMRWB=YES"]
+        additional_args += ["-DENABLE_G729=YES"]
+        additional_args += ["-DENABLE_GSM=YES"]
+        additional_args += ["-DENABLE_ILBC=YES"]
+        additional_args += ["-DENABLE_ISAC=YES"]
+        additional_args += ["-DENABLE_OPUS=YES"]
+        additional_args += ["-DENABLE_SILK=YES"]
+        additional_args += ["-DENABLE_SPEEX=YES"]
+        additional_args += ["-DENABLE_FFMPEG=YES"]
+        additional_args += ["-DENABLE_H263=YES"]
+        additional_args += ["-DENABLE_H263P=YES"]
+        additional_args += ["-DENABLE_MPEG4=YES"]
+        additional_args += ["-DENABLE_OPENH264=YES"]
+        additional_args += ["-DENABLE_VPX=YES"]
+        additional_args += ["-DENABLE_X264=YES"]
     if args.disable_gpl_third_parties is True:
         additional_args += ["-DENABLE_GPL_THIRD_PARTIES=NO"]
 
