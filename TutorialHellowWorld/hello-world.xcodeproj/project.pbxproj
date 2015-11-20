@@ -54,7 +54,6 @@
 		63D5C1301BA6E504002D1ABF /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10C1BA6E4F0002D1ABF /* libbzrtp.a */; };
 		63D5C1311BA6E504002D1ABF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10D1BA6E4F0002D1ABF /* libcunit.a */; };
 		63D5C1321BA6E504002D1ABF /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10E1BA6E4F0002D1ABF /* libgsm.a */; };
-		63D5C1331BA6E504002D1ABF /* libilbcrfc3951.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10F1BA6E4F0002D1ABF /* libilbcrfc3951.a */; };
 		63D5C1341BA6E504002D1ABF /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1101BA6E4F0002D1ABF /* liblinphone.a */; };
 		63D5C1351BA6E504002D1ABF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1111BA6E4F0002D1ABF /* liblinphonetester.a */; };
 		63D5C1361BA6E504002D1ABF /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1121BA6E4F0002D1ABF /* libmediastreamer_base.a */; };
@@ -75,7 +74,6 @@
 		63D5C1461BA6E504002D1ABF /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1221BA6E4F0002D1ABF /* libx264.a */; };
 		63D5C1471BA6E516002D1ABF /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1251BA6E4F0002D1ABF /* libmsamr.a */; };
 		63D5C1481BA6E516002D1ABF /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1261BA6E4F0002D1ABF /* libmsbcg729.a */; };
-		63D5C1491BA6E516002D1ABF /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1271BA6E4F0002D1ABF /* libmsilbc.a */; };
 		63D5C14A1BA6E516002D1ABF /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1281BA6E4F0002D1ABF /* libmsopenh264.a */; };
 		63D5C14B1BA6E516002D1ABF /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1291BA6E4F0002D1ABF /* libmssilk.a */; };
 		63D5C14C1BA6E516002D1ABF /* libmswebrtc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C12A1BA6E4F0002D1ABF /* libmswebrtc.a */; };
@@ -90,7 +88,6 @@
 		63D5C15B1BA6E765002D1ABF /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10C1BA6E4F0002D1ABF /* libbzrtp.a */; };
 		63D5C15C1BA6E765002D1ABF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10D1BA6E4F0002D1ABF /* libcunit.a */; };
 		63D5C15D1BA6E765002D1ABF /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10E1BA6E4F0002D1ABF /* libgsm.a */; };
-		63D5C15E1BA6E765002D1ABF /* libilbcrfc3951.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10F1BA6E4F0002D1ABF /* libilbcrfc3951.a */; };
 		63D5C15F1BA6E765002D1ABF /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1101BA6E4F0002D1ABF /* liblinphone.a */; };
 		63D5C1601BA6E765002D1ABF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1111BA6E4F0002D1ABF /* liblinphonetester.a */; };
 		63D5C1611BA6E765002D1ABF /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1121BA6E4F0002D1ABF /* libmediastreamer_base.a */; };
@@ -111,7 +108,6 @@
 		63D5C1711BA6E765002D1ABF /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1221BA6E4F0002D1ABF /* libx264.a */; };
 		63D5C1721BA6E778002D1ABF /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1251BA6E4F0002D1ABF /* libmsamr.a */; };
 		63D5C1731BA6E778002D1ABF /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1261BA6E4F0002D1ABF /* libmsbcg729.a */; };
-		63D5C1741BA6E778002D1ABF /* libmsilbc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1271BA6E4F0002D1ABF /* libmsilbc.a */; };
 		63D5C1751BA6E778002D1ABF /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1281BA6E4F0002D1ABF /* libmsopenh264.a */; };
 		63D5C1761BA6E778002D1ABF /* libmssilk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1291BA6E4F0002D1ABF /* libmssilk.a */; };
 		63D5C1771BA6E778002D1ABF /* libmswebrtc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C12A1BA6E4F0002D1ABF /* libmswebrtc.a */; };
@@ -139,7 +135,6 @@
 		63D5C18E1BA6E92A002D1ABF /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10C1BA6E4F0002D1ABF /* libbzrtp.a */; };
 		63D5C18F1BA6E92A002D1ABF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10D1BA6E4F0002D1ABF /* libcunit.a */; };
 		63D5C1901BA6E92A002D1ABF /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10E1BA6E4F0002D1ABF /* libgsm.a */; };
-		63D5C1911BA6E92A002D1ABF /* libilbcrfc3951.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10F1BA6E4F0002D1ABF /* libilbcrfc3951.a */; };
 		63D5C1921BA6E92A002D1ABF /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1101BA6E4F0002D1ABF /* liblinphone.a */; };
 		63D5C1931BA6E92A002D1ABF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1111BA6E4F0002D1ABF /* liblinphonetester.a */; };
 		63D5C1941BA6E92A002D1ABF /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1121BA6E4F0002D1ABF /* libmediastreamer_base.a */; };
@@ -168,7 +163,6 @@
 		63D5C1AC1BA6E95C002D1ABF /* libbzrtp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10C1BA6E4F0002D1ABF /* libbzrtp.a */; };
 		63D5C1AD1BA6E95C002D1ABF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10D1BA6E4F0002D1ABF /* libcunit.a */; };
 		63D5C1AE1BA6E95C002D1ABF /* libgsm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10E1BA6E4F0002D1ABF /* libgsm.a */; };
-		63D5C1AF1BA6E95C002D1ABF /* libilbcrfc3951.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C10F1BA6E4F0002D1ABF /* libilbcrfc3951.a */; };
 		63D5C1B01BA6E95C002D1ABF /* liblinphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1101BA6E4F0002D1ABF /* liblinphone.a */; };
 		63D5C1B11BA6E95C002D1ABF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1111BA6E4F0002D1ABF /* liblinphonetester.a */; };
 		63D5C1B21BA6E95C002D1ABF /* libmediastreamer_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1121BA6E4F0002D1ABF /* libmediastreamer_base.a */; };
@@ -225,7 +219,6 @@
 		63D5C10C1BA6E4F0002D1ABF /* libbzrtp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbzrtp.a; path = "../liblinphone-sdk/apple-darwin/lib/libbzrtp.a"; sourceTree = "<group>"; };
 		63D5C10D1BA6E4F0002D1ABF /* libcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcunit.a; path = "../liblinphone-sdk/apple-darwin/lib/libcunit.a"; sourceTree = "<group>"; };
 		63D5C10E1BA6E4F0002D1ABF /* libgsm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgsm.a; path = "../liblinphone-sdk/apple-darwin/lib/libgsm.a"; sourceTree = "<group>"; };
-		63D5C10F1BA6E4F0002D1ABF /* libilbcrfc3951.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libilbcrfc3951.a; path = "../liblinphone-sdk/apple-darwin/lib/libilbcrfc3951.a"; sourceTree = "<group>"; };
 		63D5C1101BA6E4F0002D1ABF /* liblinphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphone.a; path = "../liblinphone-sdk/apple-darwin/lib/liblinphone.a"; sourceTree = "<group>"; };
 		63D5C1111BA6E4F0002D1ABF /* liblinphonetester.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblinphonetester.a; path = "../liblinphone-sdk/apple-darwin/lib/liblinphonetester.a"; sourceTree = "<group>"; };
 		63D5C1121BA6E4F0002D1ABF /* libmediastreamer_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmediastreamer_base.a; path = "../liblinphone-sdk/apple-darwin/lib/libmediastreamer_base.a"; sourceTree = "<group>"; };
@@ -247,7 +240,6 @@
 		63D5C1221BA6E4F0002D1ABF /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libx264.a; path = "../liblinphone-sdk/apple-darwin/lib/libx264.a"; sourceTree = "<group>"; };
 		63D5C1251BA6E4F0002D1ABF /* libmsamr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmsamr.a; sourceTree = "<group>"; };
 		63D5C1261BA6E4F0002D1ABF /* libmsbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmsbcg729.a; sourceTree = "<group>"; };
-		63D5C1271BA6E4F0002D1ABF /* libmsilbc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmsilbc.a; sourceTree = "<group>"; };
 		63D5C1281BA6E4F0002D1ABF /* libmsopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmsopenh264.a; sourceTree = "<group>"; };
 		63D5C1291BA6E4F0002D1ABF /* libmssilk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmssilk.a; sourceTree = "<group>"; };
 		63D5C12A1BA6E4F0002D1ABF /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmswebrtc.a; sourceTree = "<group>"; };
@@ -267,7 +259,6 @@
 			files = (
 				63D5C1471BA6E516002D1ABF /* libmsamr.a in Frameworks */,
 				63D5C1481BA6E516002D1ABF /* libmsbcg729.a in Frameworks */,
-				63D5C1491BA6E516002D1ABF /* libmsilbc.a in Frameworks */,
 				63D5C14A1BA6E516002D1ABF /* libmsopenh264.a in Frameworks */,
 				63D5C14B1BA6E516002D1ABF /* libmssilk.a in Frameworks */,
 				63D5C14C1BA6E516002D1ABF /* libmswebrtc.a in Frameworks */,
@@ -279,7 +270,6 @@
 				63D5C1301BA6E504002D1ABF /* libbzrtp.a in Frameworks */,
 				63D5C1311BA6E504002D1ABF /* libcunit.a in Frameworks */,
 				63D5C1321BA6E504002D1ABF /* libgsm.a in Frameworks */,
-				63D5C1331BA6E504002D1ABF /* libilbcrfc3951.a in Frameworks */,
 				63D5C1341BA6E504002D1ABF /* liblinphone.a in Frameworks */,
 				63D5C1351BA6E504002D1ABF /* liblinphonetester.a in Frameworks */,
 				63D5C1361BA6E504002D1ABF /* libmediastreamer_base.a in Frameworks */,
@@ -339,7 +329,6 @@
 				63D5C17A1BA6E8BD002D1ABF /* libsqlite3.dylib in Frameworks */,
 				63D5C1721BA6E778002D1ABF /* libmsamr.a in Frameworks */,
 				63D5C1731BA6E778002D1ABF /* libmsbcg729.a in Frameworks */,
-				63D5C1741BA6E778002D1ABF /* libmsilbc.a in Frameworks */,
 				63D5C1751BA6E778002D1ABF /* libmsopenh264.a in Frameworks */,
 				63D5C1761BA6E778002D1ABF /* libmssilk.a in Frameworks */,
 				63D5C1771BA6E778002D1ABF /* libmswebrtc.a in Frameworks */,
@@ -351,7 +340,6 @@
 				63D5C15B1BA6E765002D1ABF /* libbzrtp.a in Frameworks */,
 				63D5C15C1BA6E765002D1ABF /* libcunit.a in Frameworks */,
 				63D5C15D1BA6E765002D1ABF /* libgsm.a in Frameworks */,
-				63D5C15E1BA6E765002D1ABF /* libilbcrfc3951.a in Frameworks */,
 				63D5C15F1BA6E765002D1ABF /* liblinphone.a in Frameworks */,
 				63D5C1601BA6E765002D1ABF /* liblinphonetester.a in Frameworks */,
 				63D5C1611BA6E765002D1ABF /* libmediastreamer_base.a in Frameworks */,
@@ -387,7 +375,6 @@
 				63D5C18E1BA6E92A002D1ABF /* libbzrtp.a in Frameworks */,
 				63D5C18F1BA6E92A002D1ABF /* libcunit.a in Frameworks */,
 				63D5C1901BA6E92A002D1ABF /* libgsm.a in Frameworks */,
-				63D5C1911BA6E92A002D1ABF /* libilbcrfc3951.a in Frameworks */,
 				63D5C1921BA6E92A002D1ABF /* liblinphone.a in Frameworks */,
 				63D5C1931BA6E92A002D1ABF /* liblinphonetester.a in Frameworks */,
 				63D5C1941BA6E92A002D1ABF /* libmediastreamer_base.a in Frameworks */,
@@ -436,7 +423,6 @@
 				63D5C1AC1BA6E95C002D1ABF /* libbzrtp.a in Frameworks */,
 				63D5C1AD1BA6E95C002D1ABF /* libcunit.a in Frameworks */,
 				63D5C1AE1BA6E95C002D1ABF /* libgsm.a in Frameworks */,
-				63D5C1AF1BA6E95C002D1ABF /* libilbcrfc3951.a in Frameworks */,
 				63D5C1B01BA6E95C002D1ABF /* liblinphone.a in Frameworks */,
 				63D5C1B11BA6E95C002D1ABF /* liblinphonetester.a in Frameworks */,
 				63D5C1B21BA6E95C002D1ABF /* libmediastreamer_base.a in Frameworks */,
@@ -539,7 +525,6 @@
 				63D5C10C1BA6E4F0002D1ABF /* libbzrtp.a */,
 				63D5C10D1BA6E4F0002D1ABF /* libcunit.a */,
 				63D5C10E1BA6E4F0002D1ABF /* libgsm.a */,
-				63D5C10F1BA6E4F0002D1ABF /* libilbcrfc3951.a */,
 				63D5C1101BA6E4F0002D1ABF /* liblinphone.a */,
 				63D5C1111BA6E4F0002D1ABF /* liblinphonetester.a */,
 				63D5C1121BA6E4F0002D1ABF /* libmediastreamer_base.a */,
@@ -591,7 +576,6 @@
 			children = (
 				63D5C1251BA6E4F0002D1ABF /* libmsamr.a */,
 				63D5C1261BA6E4F0002D1ABF /* libmsbcg729.a */,
-				63D5C1271BA6E4F0002D1ABF /* libmsilbc.a */,
 				63D5C1281BA6E4F0002D1ABF /* libmsopenh264.a */,
 				63D5C1291BA6E4F0002D1ABF /* libmssilk.a */,
 				63D5C12A1BA6E4F0002D1ABF /* libmswebrtc.a */,
