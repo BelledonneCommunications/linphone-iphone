@@ -48,6 +48,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#define LINPHONE_DEPRECATED __attribute__ ((deprecated))
 #endif
 #endif
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
