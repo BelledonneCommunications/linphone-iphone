@@ -1,20 +1,4 @@
-#EXTRA_DIST= tester_hosts \
-#sounds\ahbahouaismaisbon.wav		\
-#sounds\hello8000.wav			\
-#sounds\oldphone.wav			\
-#sounds\sintel_trailer_opus_h264.mkv	\
-#sounds\sintel_trailer_pcmu_h264.mkv\
-#sounds\hello8000.mkv			\
-#sounds\hello8000_mkv_ref.wav		\
-#sounds\ringback.wav			\
-#sounds\sintel_trailer_opus_vp8.mkv		\
-#sounds\vrroom.wav \
-#images\nowebcamCIF.jpg\
-#certificates rcfiles sipp 
 
-
-
-#DIST_SUBDIRS = sounds  certificates rcfiles images sipp   
 TESTER_SOUNDS = sounds/ahbahouaismaisbon.wav \
 				sounds/hello8000.wav  \
 				sounds/oldphone.wav \
@@ -25,8 +9,7 @@ TESTER_SOUNDS = sounds/ahbahouaismaisbon.wav \
 				sounds/ringback.wav  \
 				sounds/sintel_trailer_opus_vp8.mkv \
 				sounds/vrroom.wav
-sounddir = $(datadir)/liblinphone_tester/sounds
-sound_DATA = $(TESTER_SOUNDS)	
+
 
 SIPP_FILES = sipp/call_invite_200ok_without_contact_header.xml       \
 			sipp/call_with_multiple_audio_mline_in_sdp.xml          \
@@ -36,23 +19,13 @@ SIPP_FILES = sipp/call_invite_200ok_without_contact_header.xml       \
 			sipp/sip_update_within_icoming_reinvite_with_no_sdp.xml
 
 
-sippdir = $(datadir)/liblinphone_tester/sipp
-sipp_DATA = $(SIPP_FILES)
-
 CERTIFICATE_ALT_FILES = certificates/altname/agent.pem           \
 					certificates/altname/cafile.pem          \
 					certificates/altname/openssl-altname.cnf
 
-certificatesaltdir=$(datadir)/liblinphone_tester/certificates/altname
-certificatesalt_DATA = $(CERTIFICATE_ALT_FILES)
-
 CERTIFICATE_CN_FILES = certificates/cn/agent.pem      \
 					 certificates/cn/cafile.pem     \
 					 certificates/cn/openssl-cn.cnf
-
-certificatescndir=$(datadir)/liblinphone_tester/certificates/cn
-certificatescn_DATA = $(CERTIFICATE_CN_FILES)
-
 
 CERTIFICATE_FILES = $(CERTIFICATE_ALT_FILES) $(CERTIFICATE_CN_FILES)
 
@@ -97,18 +70,9 @@ RCFILES = \
 					rcfiles/upnp_rc\
 					rcfiles/zero_length_params_rc
 
-rcfilesdir = $(datadir)/liblinphone_tester/rcfiles
-rcfiles_DATA = $(RCFILES)
-
 IMAGE_FILES = images/nowebcamCIF.jpg
 
-imagesdir = $(datadir)/liblinphone_tester/images
-images_DATA = $(IMAGE_FILES)
-
 COMMON_FILE = common/bc_completion
-commondir = $(datadir)/liblinphone_tester/common
-common_DATA = $(COMMON_FILE)
-#EXTRA_DIST=tester_hosts sounds  certificates rcfiles images sipp   
 
 EXTRA_DIST = tester_hosts\
 			messages.db\
@@ -123,6 +87,21 @@ EXTRA_DIST = tester_hosts\
 
 
 if BUILD_CUNIT_TESTS
+
+sounddir = $(datadir)/liblinphone_tester/sounds
+sound_DATA = $(TESTER_SOUNDS)
+sippdir = $(datadir)/liblinphone_tester/sipp
+sipp_DATA = $(SIPP_FILES)
+certificatesaltdir=$(datadir)/liblinphone_tester/certificates/altname
+certificatesalt_DATA = $(CERTIFICATE_ALT_FILES)
+certificatescndir=$(datadir)/liblinphone_tester/certificates/cn
+certificatescn_DATA = $(CERTIFICATE_CN_FILES)
+rcfilesdir = $(datadir)/liblinphone_tester/rcfiles
+rcfiles_DATA = $(RCFILES)
+imagesdir = $(datadir)/liblinphone_tester/images
+images_DATA = $(IMAGE_FILES)
+commondir = $(datadir)/liblinphone_tester/common
+common_DATA = $(COMMON_FILE)
 
 # there are 2 targets: liblinphonetester.la and the executable liblinphone_tester
 
