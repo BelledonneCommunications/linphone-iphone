@@ -41,7 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
 
-#ifndef LINPHONE_DEPRECATED 
+#ifndef LINPHONE_DEPRECATED
 #if defined(_MSC_VER)
 	#define LINPHONE_DEPRECATED __declspec(deprecated)
 #else
@@ -883,7 +883,7 @@ LINPHONE_PUBLIC void linphone_call_set_native_video_window_id(LinphoneCall *call
  * @param call #LinphoneCall
  * @return TRUE if part of a conference.
  *
- * @deprecated
+ * @deprecated Use linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call)) instead.
  * @ingroup call_control
  */
 LINPHONE_PUBLIC	bool_t linphone_call_is_in_conference(const LinphoneCall *call) LINPHONE_DEPRECATED;
@@ -2266,11 +2266,11 @@ LINPHONE_PUBLIC void linphone_core_set_log_handler(OrtpLogFunc logfunc);
 LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
 
 /**
- * @deprecated Define the log level.
+ * Define the minimum level for logging.
  *
  * @param loglevel Minimum level for logging messages.
 **/
-LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel) LINPHONE_DEPRECATED;
+LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
 /**
  * Define the log level using mask.
  *
@@ -4224,7 +4224,7 @@ LINPHONE_PUBLIC const char* linphone_transport_to_string(LinphoneTransportType t
 **/
 LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* transport);
 
-	
+
 /**
  * @ingroup media_parameters
  * Get default call parameters reflecting current linphone core configuration
@@ -4233,8 +4233,8 @@ LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* trans
  * @deprecated use linphone_core_create_call_params()
  */
 LINPHONE_PUBLIC  LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc) LINPHONE_DEPRECATED;
-	
-	
+
+
 #ifdef __cplusplus
 }
 #endif
