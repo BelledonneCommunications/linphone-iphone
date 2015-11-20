@@ -5135,11 +5135,11 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void call_with_network_switch_in_early_state_1(){
+static void call_with_network_switch_in_early_state_1(void){
 	_call_with_network_switch_in_early_state(TRUE);
 }
 
-static void call_with_network_switch_in_early_state_2(){
+static void call_with_network_switch_in_early_state_2(void){
 	_call_with_network_switch_in_early_state(FALSE);
 }
 

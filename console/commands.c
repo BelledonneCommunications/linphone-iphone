@@ -638,11 +638,11 @@ lpc_cmd_chat(LinphoneCore *lc, char *args)
 	return 1;
 }
 
-const char *linphonec_get_callee(){
+const char *linphonec_get_callee(void){
 	return callee_name;
 }
 
-const char *linphonec_get_caller(){
+const char *linphonec_get_caller(void){
 	return caller_name;
 }
 

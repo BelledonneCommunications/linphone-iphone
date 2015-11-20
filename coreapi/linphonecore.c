@@ -687,7 +687,7 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 	}
 }
 
-char * linphone_core_compress_log_collection() {
+char * linphone_core_compress_log_collection(void) {
 	char *filename = NULL;
 	if (liblinphone_log_collection_state == LinphoneLogCollectionDisabled) return NULL;
 	filename = ms_strdup_printf("%s_log.%s",
@@ -704,7 +704,7 @@ char * linphone_core_compress_log_collection() {
 		COMPRESSED_LOG_COLLECTION_EXTENSION);
 }
 
-void linphone_core_reset_log_collection() {
+void linphone_core_reset_log_collection(void) {
 	char *filename;
 	ortp_mutex_lock(&liblinphone_log_collection_mutex);
 	clean_log_collection_upload_context(NULL);

@@ -87,7 +87,7 @@ static gboolean popup_new_version(const char *download_site){
 	return FALSE;
 }
 
-static gboolean popup_version_ok(){
+static gboolean popup_version_ok(void){
 	linphone_gtk_display_something(GTK_MESSAGE_INFO,_("You are running the lastest version."));
 	return FALSE;
 }

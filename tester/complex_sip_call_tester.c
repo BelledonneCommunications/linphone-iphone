@@ -142,7 +142,7 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 	linphone_core_manager_destroy(mgr);
 }
 
-static void call_with_audio_mline_before_video_in_sdp() {
+static void call_with_audio_mline_before_video_in_sdp(void) {
 	LinphoneCoreManager *mgr;
 	char *identity_char;
 	char *scen;
@@ -183,7 +183,7 @@ static void call_with_audio_mline_before_video_in_sdp() {
 	linphone_core_manager_destroy(mgr);
 }
 
-static void call_with_video_mline_before_audio_in_sdp() {
+static void call_with_video_mline_before_audio_in_sdp(void) {
 	LinphoneCoreManager *mgr;
 	char *identity_char;
 	char *scen;
@@ -224,7 +224,7 @@ static void call_with_video_mline_before_audio_in_sdp() {
 	linphone_core_manager_destroy(mgr);
 }
 
-static void call_with_multiple_audio_mline_in_sdp() {
+static void call_with_multiple_audio_mline_in_sdp(void) {
 	LinphoneCoreManager *mgr;
 	char *identity_char;
 	char *scen;
@@ -265,7 +265,7 @@ static void call_with_multiple_audio_mline_in_sdp() {
 	linphone_core_manager_destroy(mgr);
 }
 
-static void call_with_multiple_video_mline_in_sdp() {
+static void call_with_multiple_video_mline_in_sdp(void) {
 	LinphoneCoreManager *mgr;
 	char *identity_char;
 	char *scen;
@@ -307,7 +307,7 @@ static void call_with_multiple_video_mline_in_sdp() {
 }
 
 
-static void call_invite_200ok_without_contact_header() {
+static void call_invite_200ok_without_contact_header(void) {
 	LinphoneCoreManager *mgr;
 	char *identity_char;
 	char *scen;

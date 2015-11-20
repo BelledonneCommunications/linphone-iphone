@@ -187,7 +187,7 @@ char *linphone_gtk_get_config_file(const char *filename){
 
 #define FACTORY_CONFIG_FILE "linphonerc.factory"
 static char _factory_config_file[1024];
-static const char *linphone_gtk_get_factory_config_file(){
+static const char *linphone_gtk_get_factory_config_file(void){
 	char* path = NULL;
 	/*try accessing a local file first if exists*/
 	if (access(FACTORY_CONFIG_FILE,F_OK)==0){
@@ -314,11 +314,11 @@ LinphoneCore *linphone_gtk_get_core(void){
 	return the_core;
 }
 
-GtkWidget *linphone_gtk_get_main_window(){
+GtkWidget *linphone_gtk_get_main_window(void){
 	return the_ui;
 }
 
-void linphone_gtk_destroy_main_window() {
+void linphone_gtk_destroy_main_window(void) {
 	linphone_gtk_destroy_window(the_ui);
 	the_ui = NULL;
 }
@@ -576,7 +576,7 @@ static gboolean uribar_completion_matchfunc(GtkEntryCompletion *completion, cons
 	return ret;
 }
 
-static void load_uri_history(){
+static void load_uri_history(void){
 	GtkEntry *uribar=GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar"));
 	char key[20];
 	int i;
@@ -603,7 +603,7 @@ static void load_uri_history(){
 	g_signal_connect (G_OBJECT (uribar), "changed", G_CALLBACK(linphone_gtk_on_uribar_changed), NULL);
 }
 
-static void save_uri_history(){
+static void save_uri_history(void){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	LpConfig *cfg=linphone_core_get_config(lc);
 	GtkEntry *uribar=GTK_ENTRY(linphone_gtk_get_widget(linphone_gtk_get_main_window(),"uribar"));
@@ -1168,7 +1168,7 @@ static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl)
 }
 
 #ifdef HAVE_NOTIFY
-static bool_t notify_actions_supported() {
+static bool_t notify_actions_supported(void) {
 	bool_t accepts_actions = FALSE;
 	GList *capabilities = notify_get_server_caps();
 	GList *c;
@@ -1498,7 +1498,7 @@ void linphone_gtk_link_to_website(GtkWidget *item){
 	linphone_gtk_open_browser(home);
 }
 
-static GtkWidget *create_icon_menu(){
+static GtkWidget *create_icon_menu(void){
 	GtkWidget *menu=gtk_menu_new();
 	GtkWidget *menu_item;
 	GtkWidget *image;
@@ -1681,7 +1681,7 @@ static void linphone_gtk_check_menu_items(void){
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(selfview_item),selfview);
 }
 
-static gboolean linphone_gtk_can_manage_accounts(){
+static gboolean linphone_gtk_can_manage_accounts(void){
 	LinphoneCore *lc=linphone_gtk_get_core();
 	const MSList *elem;
 	for(elem=linphone_core_get_sip_setups(lc);elem!=NULL;elem=elem->next){
@@ -1693,7 +1693,7 @@ static gboolean linphone_gtk_can_manage_accounts(){
 	return FALSE;
 }
 
-static void linphone_gtk_configure_main_window(){
+static void linphone_gtk_configure_main_window(void){
 	static gboolean config_loaded=FALSE;
 	static const char *title;
 	static const char *home;
@@ -1967,7 +1967,7 @@ void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
 	linphone_gtk_start_call(linphone_gtk_get_main_window());
 }
 
-static void linphone_gtk_check_soundcards(){
+static void linphone_gtk_check_soundcards(void){
 	const char **devices=linphone_core_get_sound_devices(linphone_gtk_get_core());
 	if (devices==NULL || devices[0]==NULL){
 		linphone_gtk_display_something(GTK_MESSAGE_WARNING,

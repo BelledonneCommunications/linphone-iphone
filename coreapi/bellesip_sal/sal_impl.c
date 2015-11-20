@@ -510,7 +510,7 @@ void *sal_get_user_pointer(const Sal *sal){
 	return sal->up;
 }
 
-static void unimplemented_stub(){
+static void unimplemented_stub(void){
 	ms_warning("Unimplemented SAL callback");
 }
 

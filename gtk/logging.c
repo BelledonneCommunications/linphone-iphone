@@ -57,7 +57,7 @@ static FILE *_logfile = NULL;
 
 /* Called on exit, print out the marker, close the file and avoid to
    continue logging. */
-void linphone_gtk_log_uninit()
+void linphone_gtk_log_uninit(void)
 {
 	if (_logfile != NULL) {
 		fprintf(_logfile, "%s\n", LOGFILE_MARKER_STOP);
@@ -70,7 +70,7 @@ void linphone_gtk_log_uninit()
    perform rotation, insert the start marker and return the pointer to
    the file that should be used for logging, or NULL on errors or if
    disabled. */
-static FILE *linphone_gtk_log_init()
+static FILE *linphone_gtk_log_init(void)
 {
 	static char _logdir[1024];
 	static char _logfname[1024];
@@ -302,7 +302,7 @@ void linphone_gtk_log_scroll_to_end(GtkToggleButton *button){
 /*
  * called from Gtk main loop.
 **/
-gboolean linphone_gtk_check_logs(){
+gboolean linphone_gtk_check_logs(void){
 	GList *elem;
 	GtkTextView *v=NULL;
 	if (log_window) v=GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview"));

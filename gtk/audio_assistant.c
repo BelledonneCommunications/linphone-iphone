@@ -62,7 +62,7 @@ static gboolean deactivate_play_button(void){
 	return FALSE;
 }
 
-static gchar *get_record_file(){
+static gchar *get_record_file(void){
 	char filename[256]={0};
 	char date[64]={0};
 	time_t curtime=time(NULL);
@@ -291,7 +291,7 @@ void display_popup(GtkMessageType type,const gchar *message){
 	gtk_widget_show(dialog);
 }
 
-static void open_mixer(){
+static void open_mixer(void){
 	GError *error = NULL;
 
 #ifdef WIN32
@@ -320,7 +320,7 @@ static void open_mixer(){
 #endif
 }
 
-static GtkWidget *create_intro(){
+static GtkWidget *create_intro(void){
 	GtkWidget *vbox=gtk_vbox_new(FALSE,2);
 	GtkWidget *label=gtk_label_new(_("Welcome!\nThis assistant will help you to configure audio settings for Linphone"));
 	gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, TRUE, 2);
@@ -328,7 +328,7 @@ static GtkWidget *create_intro(){
 	return vbox;
 }
 
-static GtkWidget *create_mic_page(){
+static GtkWidget *create_mic_page(void){
 	GtkWidget *vbox=gtk_table_new(3,2,FALSE);
 	LinphoneCore *lc=linphone_gtk_get_core();
 	const char **sound_devices;
@@ -369,7 +369,7 @@ static GtkWidget *create_mic_page(){
 	return vbox;
 }
 
-static GtkWidget *create_speaker_page(){
+static GtkWidget *create_speaker_page(void){
 	GtkWidget *vbox=gtk_table_new(3,2,FALSE);
 	LinphoneCore *lc=linphone_gtk_get_core();
 
@@ -405,7 +405,7 @@ static GtkWidget *create_speaker_page(){
 	return vbox;
 }
 
-static GtkWidget *create_play_record_page(){
+static GtkWidget *create_play_record_page(void){
 	GtkWidget *vbox=gtk_table_new(2,2,FALSE);
 	GtkWidget *labelRecord=gtk_label_new(_("Press the record button and say some words"));
 	GtkWidget *labelPlay=gtk_label_new(_("Listen to your record voice"));
@@ -435,7 +435,7 @@ static GtkWidget *create_play_record_page(){
 	return vbox;
 }
 
-static GtkWidget *create_end_page(){
+static GtkWidget *create_end_page(void){
 	GtkWidget *vbox=gtk_vbox_new(FALSE,2);
 	GtkWidget *label=gtk_label_new(_("Let's start Linphone now"));
 	gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, TRUE, 2);

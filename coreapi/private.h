@@ -388,7 +388,7 @@ void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyC
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 
-bool_t host_has_ipv6_network();
+bool_t host_has_ipv6_network(void);
 bool_t lp_spawn_command_line_sync(const char *command, char **result,int *command_ret);
 
 static MS2_INLINE int get_min_bandwidth(int dbw, int ubw){
@@ -966,7 +966,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, const PayloadType *pt,  int bandwidth_limit);
 
 #define linphone_core_ready(lc) ((lc)->state==LinphoneGlobalOn || (lc)->state==LinphoneGlobalShutdown)
-void _linphone_core_configure_resolver();
+void _linphone_core_configure_resolver(void);
 
 struct _EcCalibrator{
 	ms_thread_t thread;
@@ -1041,7 +1041,7 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db);
 #endif
 
 #ifdef MSG_STORAGE_ENABLED
-sqlite3 * linphone_message_storage_init();
+sqlite3 * linphone_message_storage_init(void);
 void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 #endif
 void linphone_chat_message_store_state(LinphoneChatMessage *msg);
@@ -1380,7 +1380,7 @@ void v_table_reference_destroy(VTableReference *ref);
 void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease);
 #ifdef VIDEO_ENABLED
 LINPHONE_PUBLIC MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);
-MSWebCam *get_nowebcam_device();
+MSWebCam *get_nowebcam_device(void);
 #endif
 bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 

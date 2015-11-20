@@ -285,7 +285,7 @@ void linphone_gtk_compose_text(void) {
 	}
 }
 
-void linphone_gtk_send_text(){
+void linphone_gtk_send_text(void){
 	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(main_window,"contact_list");
 	GtkWidget *w=(GtkWidget*)g_object_get_data(G_OBJECT(friendlist),"chatview");

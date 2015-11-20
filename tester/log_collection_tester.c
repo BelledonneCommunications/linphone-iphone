@@ -89,7 +89,7 @@ static size_t getline(char **lineptr, size_t *n, FILE *stream) {
 #endif
 
 static LinphoneLogCollectionState old_collection_state;
-static void collect_init()  {
+static void collect_init(void)  {
 	old_collection_state = linphone_core_log_collection_enabled();
 	linphone_core_set_log_collection_path(bc_tester_get_writable_dir_prefix());
 }
@@ -140,7 +140,7 @@ static FILE* gzuncompress(const char* filepath) {
 }
 #endif
 
-static time_t get_current_time() {
+static time_t get_current_time(void) {
 	struct timeval tp;
 	struct tm *lt;
 #ifndef _WIN32
@@ -161,7 +161,7 @@ static time_t get_current_time() {
 static time_t check_file(LinphoneCoreManager* mgr)  {
 
 	time_t cur_time = get_current_time();
-	char*    filepath = linphone_core_compress_log_collection(mgr->lc);
+	char*    filepath = linphone_core_compress_log_collection();
 	time_t  log_time = -1;
 	uint32_t timediff = 0;
 	FILE *file = NULL;
@@ -239,7 +239,7 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 
 static void collect_files_disabled(void)  {
 	LinphoneCoreManager* marie = setup(FALSE);
-	BC_ASSERT_PTR_NULL(linphone_core_compress_log_collection(marie->lc));
+	BC_ASSERT_PTR_NULL(linphone_core_compress_log_collection());
 	collect_cleanup(marie);
 }
 
@@ -301,15 +301,15 @@ static void upload_collected_traces(void)  {
 		linphone_core_set_log_collection_upload_server_url(marie->lc,"https://www.linphone.org:444/lft.php");
 		// Generate some logs
 		while (--waiting) ms_error("(test error)Waiting %d...", waiting);
-		linphone_core_compress_log_collection(marie->lc);
+		linphone_core_compress_log_collection();
 		linphone_core_upload_log_collection(marie->lc);
 		BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,1));
 
 		/*try 2 times*/
 		waiting=100;
-		linphone_core_reset_log_collection(marie->lc);
+		linphone_core_reset_log_collection();
 		while (--waiting) ms_error("(test error)Waiting %d...", waiting);
-		linphone_core_compress_log_collection(marie->lc);
+		linphone_core_compress_log_collection();
 		linphone_core_upload_log_collection(marie->lc);
 		BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2));
 		collect_cleanup(marie);

@@ -1496,7 +1496,7 @@ static gboolean apply_transports(PortConfigCtx *ctx){
 	return FALSE;
 }
 
-static PortConfigCtx* get_port_config() {
+static PortConfigCtx* get_port_config(void) {
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	PortConfigCtx *cfg=(PortConfigCtx*)g_object_get_data(G_OBJECT(mw),"port_config");
 	if (cfg==NULL){

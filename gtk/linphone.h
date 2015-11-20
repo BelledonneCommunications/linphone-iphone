@@ -21,7 +21,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "config.h"
 #endif
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+
 #include <gtk/gtk.h>
+
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
+
 #ifdef WIN32
 // alloca is already defined by gtk
 #undef alloca
@@ -109,9 +119,9 @@ char *linphone_gtk_call_logs_storage_get_db_file(const char *filename);
 LINPHONE_PUBLIC void linphone_gtk_close_assistant(void);
 
 LINPHONE_PUBLIC LinphoneCore *linphone_gtk_get_core(void);
-LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_main_window();
+LINPHONE_PUBLIC GtkWidget *linphone_gtk_get_main_window(void);
 LINPHONE_PUBLIC void linphone_gtk_display_something(GtkMessageType type, const gchar *message);
-LINPHONE_PUBLIC void linphone_gtk_call_terminated();
+LINPHONE_PUBLIC void linphone_gtk_call_terminated(LinphoneCall *call, const char *error);
 LINPHONE_PUBLIC void linphone_gtk_set_my_presence(LinphoneOnlineStatus ss);
 LINPHONE_PUBLIC void linphone_gtk_show_parameters(void);
 LINPHONE_PUBLIC void linphone_gtk_fill_soundcards(GtkWidget *pb);
@@ -124,7 +134,7 @@ LINPHONE_PUBLIC void linphone_gtk_show_main_window(void);
 LINPHONE_PUBLIC void linphone_gtk_log_push(OrtpLogLevel lev, const char *fmt, va_list args);
 LINPHONE_PUBLIC void linphone_gtk_destroy_log_window(void);
 LINPHONE_PUBLIC void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to);
-LINPHONE_PUBLIC gboolean linphone_gtk_check_logs();
+LINPHONE_PUBLIC gboolean linphone_gtk_check_logs(void);
 LINPHONE_PUBLIC const gchar *linphone_gtk_get_ui_config(const char *key, const char *def);
 LINPHONE_PUBLIC int linphone_gtk_get_ui_config_int(const char *key, int def);
 LINPHONE_PUBLIC void linphone_gtk_set_ui_config_int(const char *key, int val);
@@ -149,7 +159,7 @@ LINPHONE_PUBLIC void linphone_gtk_status_icon_set_blinking(gboolean val);
 LINPHONE_PUBLIC void linphone_gtk_notify(LinphoneCall *call, LinphoneChatMessage *chat_message, const char *msg);
 
 LINPHONE_PUBLIC void linphone_gtk_load_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *uri, GtkWidget *chat_view);
-LINPHONE_PUBLIC void linphone_gtk_send_text();
+LINPHONE_PUBLIC void linphone_gtk_send_text(void);
 LINPHONE_PUBLIC GtkWidget * linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with);
 LINPHONE_PUBLIC LinphoneChatRoom * linphone_gtk_create_chatroom(const LinphoneAddress *with);
 LINPHONE_PUBLIC void linphone_gtk_text_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg);
@@ -170,7 +180,7 @@ LINPHONE_PUBLIC void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *pa
 LINPHONE_PUBLIC void linphone_gtk_buddy_info_updated(LinphoneCore *lc, LinphoneFriend *lf);
 
 /*functions controlling the different views*/
-LINPHONE_PUBLIC gboolean linphone_gtk_use_in_call_view();
+LINPHONE_PUBLIC gboolean linphone_gtk_use_in_call_view(void);
 LINPHONE_PUBLIC LinphoneCall *linphone_gtk_get_currently_displayed_call(gboolean *is_conf);
 LINPHONE_PUBLIC void linphone_gtk_create_in_call_view(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_gtk_in_call_view_set_calling(LinphoneCall *call);
@@ -199,7 +209,7 @@ LINPHONE_PUBLIC void linphone_gtk_show_login_frame(LinphoneProxyConfig *cfg, gbo
 LINPHONE_PUBLIC void linphone_gtk_exit_login_frame(void);
 LINPHONE_PUBLIC void linphone_gtk_set_ui_config(const char *key, const char *value);
 
-LINPHONE_PUBLIC void linphone_gtk_log_uninit();
+LINPHONE_PUBLIC void linphone_gtk_log_uninit(void);
 
 LINPHONE_PUBLIC bool_t linphone_gtk_init_instance(const char *app_name, int option, const char *addr_to_call);
 LINPHONE_PUBLIC void linphone_gtk_uninit_instance(void);

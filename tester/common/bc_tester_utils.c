@@ -26,9 +26,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <time.h>
 #include <stdio.h>
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+
 #include "CUnit/Basic.h"
 #include "CUnit/Automated.h"
 #include "CUnit/MyMem.h"
+
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 
 #ifdef _WIN32
 #if defined(__MINGW32__) || !defined(WINAPI_FAMILY_PARTITION) || !defined(WINAPI_PARTITION_DESKTOP)
@@ -647,10 +656,10 @@ char* bc_sprintf(const char* format, ...) {
 	return res;
 }
 
-const char * bc_tester_current_suite_name() {
+const char * bc_tester_current_suite_name(void) {
 	return bc_current_suite_name;
 }
 
-const char * bc_tester_current_test_name() {
+const char * bc_tester_current_test_name(void) {
 	return bc_current_test_name;
 }

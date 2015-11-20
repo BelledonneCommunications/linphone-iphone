@@ -45,7 +45,7 @@ static LinphoneCoreManager* create_lcm_with_auth(unsigned int with_auth) {
 	return lcm;
 }
 
-static LinphoneCoreManager* create_lcm() {
+static LinphoneCoreManager* create_lcm(void) {
 	return create_lcm_with_auth(0);
 }
 

@@ -24,6 +24,11 @@
 #include "liblinphone_tester.h"
 #include "lpconfig.h"
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+
 #if HAVE_GTK
 #include <gtk/gtk.h>
 #ifdef GDK_WINDOWING_X11
@@ -36,6 +41,10 @@ extern void *gdk_quartz_window_get_nsview(GdkWindow      *window);
 #endif
 
 #include <gdk/gdkkeysyms.h>
+
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 
 
 static void *get_native_handle(GdkWindow *gdkw) {

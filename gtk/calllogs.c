@@ -239,7 +239,7 @@ gboolean linphone_gtk_call_log_button_pressed(GtkWidget *widget, GdkEventButton 
 	return FALSE;
 }
 
-void linphone_gtk_call_log_clear_missed_call(){
+void linphone_gtk_call_log_clear_missed_call(void){
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *label = linphone_gtk_get_widget(mw, "history_tab_label");
 	gtk_label_set_text(GTK_LABEL(label), _("Recent calls"));

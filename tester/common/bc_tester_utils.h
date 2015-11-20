@@ -92,8 +92,8 @@ const char * bc_tester_test_name(const char *suite_name, int test_index);
 int bc_tester_run_suite(test_suite_t *suite);
 int bc_tester_run_tests(const char *suite_name, const char *test_name);
 int bc_tester_suite_index(const char *suite_name);
-const char * bc_tester_current_suite_name();
-const char * bc_tester_current_test_name();
+const char * bc_tester_current_suite_name(void);
+const char * bc_tester_current_test_name(void);
 
 char* bc_sprintfva(const char* format, va_list args);
 char* bc_sprintf(const char* format, ...);

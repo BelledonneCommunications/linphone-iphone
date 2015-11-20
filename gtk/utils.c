@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
-static void run_gtk(){
+static void run_gtk(void){
 	while (gtk_events_pending ())
 		gtk_main_iteration ();
 

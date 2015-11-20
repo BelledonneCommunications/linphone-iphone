@@ -353,7 +353,7 @@ static void presence_information(void) {
 }
 
 
-static void subscribe_presence_forked(){
+static void subscribe_presence_forked(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* pauline2 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -390,7 +390,7 @@ static void subscribe_presence_forked(){
 	ms_list_free(lcs);
 }
 
-static void subscribe_presence_expired(){
+static void subscribe_presence_expired(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneFriend *lf;

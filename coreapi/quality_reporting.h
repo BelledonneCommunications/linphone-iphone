@@ -144,7 +144,7 @@ typedef struct reporting_session_report {
 
 typedef void (*LinphoneQualityReportingReportSendCb)(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content);
 
-reporting_session_report_t * linphone_reporting_new();
+reporting_session_report_t * linphone_reporting_new(void);
 void linphone_reporting_destroy(reporting_session_report_t * report);
 
 /**

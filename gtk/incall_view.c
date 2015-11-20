@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
-gboolean linphone_gtk_use_in_call_view(){
+gboolean linphone_gtk_use_in_call_view(void){
 	static int val=-1;
 	if (val==-1) val=linphone_gtk_get_ui_config_int("use_incall_view",1);
 	return val;

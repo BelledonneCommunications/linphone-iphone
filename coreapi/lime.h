@@ -182,5 +182,5 @@ LINPHONE_PUBLIC char *lime_error_code_to_string(int errorCode);
  *
  * @return TRUE if Lime is available, FALSE if not
  */
-LINPHONE_PUBLIC bool_t lime_is_available();
+LINPHONE_PUBLIC bool_t lime_is_available(void);
 #endif /* LIME_H */

@@ -122,7 +122,7 @@ void sal_address_set_password(SalAddress *addr, const char *passwd);
 const char *sal_address_get_password(const SalAddress *addr);
 void sal_address_set_header(SalAddress *addr, const char *header_name, const char *header_value);
 
-LINPHONE_PUBLIC Sal * sal_init();
+LINPHONE_PUBLIC Sal * sal_init(void);
 LINPHONE_PUBLIC void sal_uninit(Sal* sal);
 void sal_set_user_pointer(Sal *sal, void *user_data);
 void *sal_get_user_pointer(const Sal *sal);
@@ -294,7 +294,7 @@ typedef struct SalIsComposing {
 
 #define SAL_MEDIA_DESCRIPTION_MAX_MESSAGE_ATTRIBUTES 5
 
-SalMediaDescription *sal_media_description_new();
+SalMediaDescription *sal_media_description_new(void);
 SalMediaDescription * sal_media_description_ref(SalMediaDescription *md);
 void sal_media_description_unref(SalMediaDescription *md);
 bool_t sal_media_description_empty(const SalMediaDescription *md);
@@ -535,7 +535,7 @@ typedef struct SalCallbacks{
 
 
 
-SalAuthInfo* sal_auth_info_new();
+SalAuthInfo* sal_auth_info_new(void);
 SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
 void sal_auth_info_delete(SalAuthInfo* auth_info);
 LINPHONE_PUBLIC int sal_auth_compute_ha1(const char* userid,const char* realm,const char* password, char ha1[33]);
@@ -797,9 +797,9 @@ void sal_custom_sdp_attribute_free(SalCustomSdpAttribute *csa);
 SalCustomSdpAttribute * sal_custom_sdp_attribute_clone(const SalCustomSdpAttribute *csa);
 
 /** deprecated. use sal_set_log_level instead **/
-void sal_enable_log();
+void sal_enable_log(void);
 /** deprecated. use sal_set_log_level instead **/
-void sal_disable_log();
+void sal_disable_log(void);
 void sal_set_log_level(OrtpLogLevel level);
 
 /*internal API */

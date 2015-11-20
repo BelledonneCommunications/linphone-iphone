@@ -2089,7 +2089,7 @@ typedef struct _LinphoneCoreVTable{
  * Instantiate a vtable with all arguments set to NULL
  * @return newly allocated vtable
  */
-LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_v_table_new();
+LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_v_table_new(void);
 
 /**
  * Sets a user data pointer in the vtable.
@@ -2238,13 +2238,13 @@ LINPHONE_PUBLIC void linphone_core_upload_log_collection(LinphoneCore *core);
  * @ingroup misc
  * @return The path of the compressed log collection file (to be freed calling ms_free()).
  */
-LINPHONE_PUBLIC char * linphone_core_compress_log_collection();
+LINPHONE_PUBLIC char * linphone_core_compress_log_collection(void);
 
 /**
  * Reset the log collection by removing the log files.
  * @ingroup misc
  */
-LINPHONE_PUBLIC void linphone_core_reset_log_collection();
+LINPHONE_PUBLIC void linphone_core_reset_log_collection(void);
 
 /**
  * Define a log handler.

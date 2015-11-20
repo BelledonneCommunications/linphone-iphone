@@ -593,7 +593,7 @@ void linphonec_set_autoanswer(bool_t enabled){
 	auto_answer=enabled;
 }
 
-bool_t linphonec_get_autoanswer(){
+bool_t linphonec_get_autoanswer(void){
 	return auto_answer;
 }
 
@@ -965,7 +965,7 @@ static void x11_apply_video_params(VideoParams *params, Window window){
 #endif
 
 
-static void lpc_apply_video_params(){
+static void lpc_apply_video_params(void){
 	static void *old_wid=NULL;
 	static void *old_pwid=NULL;
 	void *wid=linphone_core_get_native_video_window_id(linphonec);

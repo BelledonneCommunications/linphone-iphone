@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include <gtk/gtk.h>
 #include "linphone.h"
 
 static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list);
@@ -383,7 +382,7 @@ void linphone_gtk_remove_button_clicked(GtkWidget *button){
 	linphone_gtk_remove_contact(button);
 }
 
-static GtkWidget * create_presence_menu(){
+static GtkWidget * create_presence_menu(void){
 	GtkWidget *menu=gtk_menu_new();
 	GtkWidget *menu_item;
 	status_picture_tab_t *t;

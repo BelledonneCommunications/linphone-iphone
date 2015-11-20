@@ -256,7 +256,7 @@ typedef struct _LinphoneCallTestParams {
 } LinphoneCallTestParams;
 
 
-void liblinphone_tester_add_suites();
+void liblinphone_tester_add_suites(void);
 
 LinphoneCoreManager* linphone_core_manager_init(const char* rc_file);
 void linphone_core_manager_start(LinphoneCoreManager *mgr, const char* rc_file, int check_for_proxies);

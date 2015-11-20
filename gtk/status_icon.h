@@ -22,8 +22,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * technology used to manage the status icon.
  */
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+
 #include <glib.h>
 #include <gtk/gtk.h>
+
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
+
 
 struct _LinphoneStatusIcon;
 typedef void (*LinphoneStatusIconOnClickCallback)(struct _LinphoneStatusIcon *si, void *user_data);
