@@ -1851,19 +1851,19 @@ typedef void (*LinphoneCoreRegistrationStateChangedCb)(LinphoneCore *lc, Linphon
 /** Callback prototype
  * @deprecated
  */
-typedef void (*ShowInterfaceCb)(LinphoneCore *lc) LINPHONE_DEPRECATED;
+typedef void (*ShowInterfaceCb)(LinphoneCore *lc) ;
 /** Callback prototype
  * @deprecated
  */
-typedef void (*DisplayStatusCb)(LinphoneCore *lc, const char *message) LINPHONE_DEPRECATED;
+typedef void (*DisplayStatusCb)(LinphoneCore *lc, const char *message) ;
 /** Callback prototype
  * @deprecated
  */
-typedef void (*DisplayMessageCb)(LinphoneCore *lc, const char *message) LINPHONE_DEPRECATED;
+typedef void (*DisplayMessageCb)(LinphoneCore *lc, const char *message) ;
 /** Callback prototype
  * @deprecated
  */
-typedef void (*DisplayUrlCb)(LinphoneCore *lc, const char *message, const char *url) LINPHONE_DEPRECATED;
+typedef void (*DisplayUrlCb)(LinphoneCore *lc, const char *message, const char *url) ;
 /** Callback prototype
  */
 typedef void (*LinphoneCoreCbFunc)(LinphoneCore *lc,void * user_data);
@@ -1908,7 +1908,7 @@ typedef void (*LinphoneCoreCallLogUpdatedCb)(LinphoneCore *lc, LinphoneCallLog *
  * @param from #LinphoneAddress from
  * @param message incoming message
  */
-typedef void (*LinphoneCoreTextMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message) LINPHONE_DEPRECATED;
+typedef void (*LinphoneCoreTextMessageReceivedCb)(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddress *from, const char *message);
 
 /**
  * Chat message callback prototype
