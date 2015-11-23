@@ -166,6 +166,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setCString:tname forKey:@"transport_preference"];
 		[self setBool:(linphone_proxy_config_get_route(proxy) != NULL) forKey:@"outbound_proxy_preference"];
 		[self setBool:linphone_proxy_config_avpf_enabled(proxy) forKey:@"avpf_preference"];
+		[self setBool:(linphone_core_get_default_proxy_config(lc) == proxy) forKey:@"is_default_preference"];
 
 		const LinphoneAuthInfo *ai =
 			linphone_core_find_auth_info(lc, NULL, [self stringForKey:@"username_preference"].UTF8String,
@@ -379,7 +380,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	LinphoneManager *lm = [LinphoneManager instance];
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneProxyConfig *proxyCfg = NULL;
-	BOOL isEditing = FALSE;
 	NSString *error = nil;
 
 	int port_preference = [self integerForKey:@"port_preference"];
@@ -411,13 +411,15 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 	// mandatory parameters
 	NSString *username = [self stringForKey:@"username_preference"];
+	NSString *displayName = [self stringForKey:@"display_name_preference"];
 	NSString *userID = [self stringForKey:@"userid_preference"];
 	NSString *domain = [self stringForKey:@"domain_preference"];
 	NSString *transport = [self stringForKey:@"transport_preference"];
 	NSString *accountHa1 = [self stringForKey:@"ha1_preference"];
 	NSString *accountPassword = [self stringForKey:@"password_preference"];
-	bool isOutboundProxy = [self boolForKey:@"outbound_proxy_preference"];
+	BOOL isOutboundProxy = [self boolForKey:@"outbound_proxy_preference"];
 	BOOL use_avpf = [self boolForKey:@"avpf_preference"];
+	BOOL is_default = [self boolForKey:@"is_default_preference"];
 
 	if (username && [username length] > 0 && domain && [domain length] > 0) {
 		int expire = [self integerForKey:@"expire_preference"];
@@ -468,7 +470,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 											   sizeof(normalizedUserName));
 		linphone_address_set_username(linphoneAddress, normalizedUserName);
 		linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
-
+		linphone_address_set_display_name(linphoneAddress, (displayName.length ? displayName.UTF8String : NULL));
 		const char *identity = linphone_address_as_string_uri_only(linphoneAddress);
 		const char *password = [accountPassword UTF8String];
 		const char *ha1 = [accountHa1 UTF8String];
@@ -503,38 +505,30 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_proxy_config_enable_register(proxyCfg, true);
 		linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
 		linphone_proxy_config_set_expires(proxyCfg, expire);
-
+		if (is_default) {
+			linphone_core_set_default_proxy_config(lc, proxyCfg);
+		} else if (linphone_core_get_default_proxy_config(lc) == proxyCfg) {
+			linphone_core_set_default_proxy_config(lc, NULL);
+		}
 		LinphoneAuthInfo *proxyAi = (LinphoneAuthInfo *)linphone_proxy_config_find_auth_info(proxyCfg);
 
 		// setup new proxycfg
-		if (isEditing) {
-			linphone_proxy_config_done(proxyCfg);
-		} else {
-			// was a new proxy config, add it
-			linphone_core_add_proxy_config(lc, proxyCfg);
-			linphone_core_set_default_proxy_config(lc, proxyCfg);
-		}
+		linphone_proxy_config_done(proxyCfg);
 
 		// modify auth info only after finishing editting the proxy config, so that
 		// UNREGISTER succeed
 		if (proxyAi) {
-			linphone_auth_info_set_username(proxyAi, username.UTF8String);
-			if (password) {
-				linphone_auth_info_set_passwd(proxyAi, password);
-				linphone_auth_info_set_ha1(proxyAi, NULL);
-			}
-			linphone_auth_info_set_domain(proxyAi, linphone_proxy_config_get_domain(proxyCfg));
-		} else {
-			LinphoneAddress *from = linphone_address_new(identity);
-			if (from) {
-				const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
-				LinphoneAuthInfo *info = linphone_auth_info_new(
-					linphone_address_get_username(from), userid_str, password ? password : NULL, password ? NULL : ha1,
-					linphone_proxy_config_get_realm(proxyCfg), linphone_proxy_config_get_domain(proxyCfg));
-				linphone_address_destroy(from);
-				linphone_core_add_auth_info(lc, info);
-				linphone_auth_info_destroy(info);
-			}
+			linphone_core_remove_auth_info(lc, proxyAi);
+		}
+		LinphoneAddress *from = linphone_address_new(identity);
+		if (from) {
+			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
+			LinphoneAuthInfo *info = linphone_auth_info_new(
+				linphone_address_get_username(from), userid_str, password ? password : NULL, password ? NULL : ha1,
+				linphone_proxy_config_get_realm(proxyCfg), linphone_proxy_config_get_domain(proxyCfg));
+			linphone_address_destroy(from);
+			linphone_core_add_auth_info(lc, info);
+			linphone_auth_info_destroy(info);
 		}
 
 	bad_proxy:
@@ -545,10 +539,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		// in case of error, show an alert to the user
 		if (error != nil) {
-			if (isEditing)
-				linphone_proxy_config_done(proxyCfg);
-			else
-				linphone_proxy_config_destroy(proxyCfg);
+			linphone_proxy_config_done(proxyCfg);
 
 			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
 										message:error
@@ -580,8 +571,10 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	{
 		BOOL account_changed =
 			[self valueChangedForKey:@"username_preference"] || [self valueChangedForKey:@"password_preference"] ||
-			[self valueChangedForKey:@"domain_preference"] || [self valueChangedForKey:@"expire_preference"] ||
-			[self valueChangedForKey:@"proxy_preference"] || [self valueChangedForKey:@"outbound_proxy_preference"] ||
+			[self valueChangedForKey:@"display_name_preference"] ||
+			[self valueChangedForKey:@"is_default_preference"] || [self valueChangedForKey:@"domain_preference"] ||
+			[self valueChangedForKey:@"expire_preference"] || [self valueChangedForKey:@"proxy_preference"] ||
+			[self valueChangedForKey:@"outbound_proxy_preference"] ||
 			[self valueChangedForKey:@"transport_preference"] || [self valueChangedForKey:@"port_preference"] ||
 			[self valueChangedForKey:@"random_port_preference"] || [self valueChangedForKey:@"prefix_preference"] ||
 			[self valueChangedForKey:@"substitute_+_by_00_preference"] || [self valueChangedForKey:@"use_ipv6"] ||

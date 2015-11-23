@@ -36,6 +36,7 @@ typedef enum _ViewElement {
 	ViewElement_Email = 103,
 	ViewElement_Domain = 104,
 	ViewElement_URL = 105,
+	ViewElement_DisplayName = 106,
 	ViewElement_TextFieldCount = 6,
 	ViewElement_Transport = 110,
 	ViewElement_Username_Label = 120,
@@ -212,25 +213,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return nil;
 }
 
-- (BOOL)addProxyConfig:(LinphoneProxyConfig *)proxy {
+- (void)configureProxyConfig {
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneManager *lm = [LinphoneManager instance];
 
-	if (new_config != NULL && proxy != new_config) {
+	// remove previous proxy config, if any
+	if (new_config != NULL) {
 		const LinphoneAuthInfo *auth = linphone_proxy_config_find_auth_info(new_config);
 		linphone_core_remove_proxy_config(lc, new_config);
 		if (auth) {
 			linphone_core_remove_auth_info(lc, auth);
 		}
 	}
-	new_config = proxy;
 
-	[lm configurePushTokenForProxyConfig:proxy];
-	linphone_core_set_default_proxy_config(lc, proxy);
-	// reload address book to prepend proxy config domain to contacts' phone number
-	// todo: STOP doing that!
-	[[[LinphoneManager instance] fastAddressBook] reload];
-	return TRUE;
+	new_config = linphone_account_creator_configure(account_creator);
+
+	if (new_config) {
+		[lm configurePushTokenForProxyConfig:new_config];
+		linphone_core_set_default_proxy_config(lc, new_config);
+		// reload address book to prepend proxy config domain to contacts' phone number
+		// todo: STOP doing that!
+		[[[LinphoneManager instance] fastAddressBook] reload];
+	}
 }
 
 #pragma mark - UI update
@@ -299,6 +303,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_contentView insertSubview:view atIndex:0];
 	[view setFrame:[_contentView bounds]];
 	[_contentView setContentSize:[view bounds].size];
+
+	// Resize next button to fix text length
+	UIButton *button = [self findButton:ViewElement_NextButton];
+	CGSize size = [button.titleLabel.text sizeWithFont:button.titleLabel.font];
+	size.width += 60;
+	CGRect frame = button.frame;
+	frame.origin.x += (button.frame.size.width - size.width) / 2;
+	frame.size.width = size.width;
+	[button setFrame:frame];
 
 	[self prepareErrorLabels];
 }
@@ -462,6 +475,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 				return TRUE;
 			  }];
 
+	UIAssistantTextField *displayName = [self findTextField:ViewElement_DisplayName];
+	[displayName showError:[AssistantView errorForStatus:LinphoneAccountCreatorDisplayNameInvalid]
+					  when:^BOOL(NSString *inputEntry) {
+						LinphoneAccountCreatorStatus s =
+							linphone_account_creator_set_display_name(account_creator, inputEntry.UTF8String);
+						displayName.errorLabel.text = [AssistantView errorForStatus:s];
+						return s != LinphoneAccountCreatorOK;
+					  }];
+
 	[self shouldEnableNextButton];
 }
 
@@ -504,7 +526,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:nil];
 			[alert show];
-			linphone_core_remove_proxy_config([LinphoneManager getLc], new_config);
 			break;
 		}
 		case LinphoneRegistrationProgress: {
@@ -580,7 +601,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	AssistantView *thiz = (__bridge AssistantView *)(linphone_account_creator_get_user_data(creator));
 	thiz.waitView.hidden = YES;
 	if (status == LinphoneAccountCreatorAccountValidated) {
-		[thiz addProxyConfig:linphone_account_creator_configure(creator)];
+		[thiz configureProxyConfig];
 	} else if (status == LinphoneAccountCreatorAccountNotValidated) {
 		DTAlertView *alert = [[DTAlertView alloc]
 			initWithTitle:NSLocalizedString(@"Account validation failed", nil)
@@ -591,7 +612,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 		[alert addCancelButtonWithTitle:NSLocalizedString(@"Back", nil) block:nil];
 		[alert addButtonWithTitle:NSLocalizedString(@"Skip verification", nil)
 							block:^{
-							  [thiz addProxyConfig:linphone_account_creator_configure(creator)];
+							  [thiz configureProxyConfig];
 							  [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 							}];
 		[alert show];
@@ -660,18 +681,18 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (IBAction)onLinphoneLoginClick:(id)sender {
 	_waitView.hidden = NO;
-	[self addProxyConfig:linphone_account_creator_configure(account_creator)];
+	[self configureProxyConfig];
 }
 
 - (IBAction)onLoginClick:(id)sender {
 	_waitView.hidden = NO;
-	[self addProxyConfig:linphone_account_creator_configure(account_creator)];
+	[self configureProxyConfig];
 }
 
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender {
 	_waitView.hidden = NO;
 	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
-	[self addProxyConfig:linphone_account_creator_configure(account_creator)];
+	[self configureProxyConfig];
 }
 
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender {

@@ -13,6 +13,16 @@
 			<string>IASKButtonSpecifier</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Default account</string>
+			<key>Key</key>
+			<string>is_default_preference</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>AutocapitalizationType</key>
 			<string>None</string>
 			<key>AutocorrectionType</key>
@@ -26,7 +36,25 @@
 			<key>KeyboardType</key>
 			<string>Alphabet</string>
 			<key>Title</key>
-			<string>User name</string>
+			<string>Username</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+		</dict>
+		<dict>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>IsSecure</key>
+			<false/>
+			<key>Key</key>
+			<string>display_name_preference</string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+			<key>Title</key>
+			<string>Display name</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>

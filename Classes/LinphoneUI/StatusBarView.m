@@ -181,10 +181,15 @@
 		message = NSLocalizedString(@"Fetching remote configuration", nil);
 	} else if (config == NULL) {
 		state = LinphoneRegistrationNone;
-		if (linphone_core_is_network_reachable([LinphoneManager getLc]))
-			message = NSLocalizedString(@"No account configured", nil);
-		else
+		if (linphone_core_is_network_reachable([LinphoneManager getLc])) {
+			if (linphone_core_get_proxy_config_list(lc) != NULL) {
+				message = NSLocalizedString(@"No default account", nil);
+			} else {
+				message = NSLocalizedString(@"No account configured", nil);
+			}
+		} else {
 			message = NSLocalizedString(@"Network down", nil);
+		}
 	} else {
 		state = linphone_proxy_config_get_state(config);
 

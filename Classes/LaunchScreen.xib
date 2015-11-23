@@ -35,7 +35,7 @@
                 </label>
                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" image="launchscreen.png" id="pz0-nR-x0f" userLabel="logoImage">
                     <rect key="frame" x="0.0" y="187" width="375" height="169"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <animations/>
                 </imageView>
             </subviews>

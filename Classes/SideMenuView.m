@@ -18,7 +18,7 @@
 	if (default_proxy != NULL) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_identity_address(default_proxy);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
-		char *as_string = linphone_address_as_string(addr);
+		char *as_string = linphone_address_as_string_uri_only(addr);
 		[_addressButton setTitle:[NSString stringWithUTF8String:as_string] forState:UIControlStateNormal];
 		ms_free(as_string);
 		[_addressButton setImage:[StatusBarView imageForState:linphone_proxy_config_get_state(default_proxy)]

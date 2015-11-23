@@ -21,6 +21,7 @@
 #import "FirstLoginView.h"
 #import "LinphoneManager.h"
 #import "PhoneMainView.h"
+#import "Utils/XMLRPCHelper.h"
 
 @implementation FirstLoginView
 

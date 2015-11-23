@@ -72,7 +72,7 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view autoresizesSubviews="NO" tag="3" contentMode="scaleToFill" id="21" userLabel="tabBar">
-                    <rect key="frame" x="0.0" y="309" width="667" height="66"/>
+                    <rect key="frame" x="0.0" y="0.0" width="66" height="375"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
