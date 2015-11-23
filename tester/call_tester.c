@@ -5314,6 +5314,7 @@ static void call_logs_sqlite_storage(void) {
 
 	logs = linphone_core_get_call_history_for_address(marie->lc, linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc)));
 	if (BC_ASSERT_TRUE(ms_list_size(logs) == 1)) {
+		const char *call_id;
 		const char *ref_key = linphone_call_log_get_ref_key(call_log);
 		call_log = logs->data;
 		BC_ASSERT_EQUAL(linphone_call_log_get_dir(call_log), LinphoneCallOutgoing, int, "%d");
@@ -5331,7 +5332,11 @@ static void call_logs_sqlite_storage(void) {
 			BC_ASSERT_STRING_EQUAL(ref_key, "ref_key");
 		}
 		BC_ASSERT_PTR_EQUAL(linphone_call_log_get_user_data(call_log), &start_time);
-		BC_ASSERT_PTR_NOT_NULL(linphone_call_log_get_call_id(call_log));
+
+		call_id = linphone_call_log_get_call_id(call_log);
+		BC_ASSERT_PTR_NOT_NULL(call_id);
+		BC_ASSERT_PTR_NOT_NULL(linphone_core_find_call_log_from_call_id(marie->lc, call_id));
+		
 		BC_ASSERT_TRUE(linphone_address_equal(
 			linphone_call_log_get_remote_address(call_log),
 			linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc))));
@@ -5339,6 +5344,7 @@ static void call_logs_sqlite_storage(void) {
 		BC_ASSERT_GREATER(linphone_call_log_get_start_date(call_log), start_time, int, "%d");
 		BC_ASSERT_EQUAL(linphone_call_log_get_status(call_log), LinphoneCallSuccess, int, "%d");
 	}
+	
 	linphone_core_delete_call_log(marie->lc, (LinphoneCallLog *)ms_list_nth_data(logs, 0));
 	ms_list_free_with_data(logs, (void (*)(void*))linphone_call_log_unref);
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 0);

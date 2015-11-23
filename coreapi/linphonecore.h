@@ -3277,6 +3277,14 @@ LINPHONE_PUBLIC MSList * linphone_core_get_call_history_for_address(LinphoneCore
 LINPHONE_PUBLIC LinphoneCallLog * linphone_core_get_last_outgoing_call_log(LinphoneCore *lc);
 
 /**
+ * Get the call log matching the call id, or NULL if can't be found.
+ * @param[in] lc LinphoneCore object
+ * @param[in] call_id Call id of the call log to find
+ * @return {LinphoneCallLog}
+**/
+LINPHONE_PUBLIC LinphoneCallLog * linphone_core_find_call_log_from_call_id(LinphoneCore *lc, const char *call_id);
+
+/**
  * Erase the call log.
  * @param[in] lc LinphoneCore object
 **/
