@@ -97,7 +97,8 @@
 	NSTimeZone *timeZone = [NSTimeZone systemTimeZone];
 	[calendar setTimeZone:timeZone];
 	NSDateComponents *dateComps =
-		[calendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:inputDate];
+		[calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:inputDate];
+
 	dateComps.hour = dateComps.minute = dateComps.second = 0;
 	return [calendar dateFromComponents:dateComps];
 }
@@ -129,9 +130,10 @@
 
 - (void)computeSections {
 	NSArray *unsortedDays = [self.sections allKeys];
-	_sortedDays = [unsortedDays sortedArrayUsingComparator:^NSComparisonResult(NSDate *d1, NSDate *d2) {
-	  return [d2 compare:d1]; // reverse order
-	}];
+	_sortedDays = [[NSMutableArray alloc]
+		initWithArray:[unsortedDays sortedArrayUsingComparator:^NSComparisonResult(NSDate *d1, NSDate *d2) {
+		  return [d2 compare:d1]; // reverse order
+		}]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -211,9 +213,9 @@
 		[[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
 		if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {
 			[_sections removeObjectForKey:_sortedDays[indexPath.section]];
+			[_sortedDays removeObjectAtIndex:indexPath.section];
 			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
 					 withRowAnimation:UITableViewRowAnimationFade];
-			[self computeSections];
 		}
 
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]

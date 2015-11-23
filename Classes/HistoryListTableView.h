@@ -27,6 +27,6 @@
 @property(nonatomic, assign) BOOL missedFilter;
 
 @property(strong, nonatomic) NSMutableDictionary *sections;
-@property(strong, nonatomic) NSArray *sortedDays;
+@property(strong, nonatomic) NSMutableArray *sortedDays;
 
 @end

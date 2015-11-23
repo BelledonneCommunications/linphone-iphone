@@ -759,11 +759,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Mail composer for sending logs
 
 - (void)sendEmailWithDebugAttachments {
-	LinphoneCore *lc = [LinphoneManager getLc];
 	NSMutableArray *attachments = [[NSMutableArray alloc] initWithCapacity:3];
 
 	// retrieve linphone logs if available
-	char *filepath = linphone_core_compress_log_collection(lc);
+	char *filepath = linphone_core_compress_log_collection();
 	if (filepath != NULL) {
 		NSString *filename = [[NSString stringWithUTF8String:filepath] componentsSeparatedByString:@"/"].lastObject;
 		NSString *mimeType = nil;

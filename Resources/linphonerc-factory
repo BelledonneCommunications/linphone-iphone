@@ -23,3 +23,7 @@ username_regex=^[a-z0-9_.\-]*$
 
 [in_app_purchase]
 enabled=0
+
+[misc]
+#by default it is set to 30 by liblinphone
+history_max_size=-1
