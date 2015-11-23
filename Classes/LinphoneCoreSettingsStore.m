@@ -505,7 +505,18 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		linphone_proxy_config_set_expires(proxyCfg, expire);
 
 		LinphoneAuthInfo *proxyAi = (LinphoneAuthInfo *)linphone_proxy_config_find_auth_info(proxyCfg);
-		// setup auth info
+
+		// setup new proxycfg
+		if (isEditing) {
+			linphone_proxy_config_done(proxyCfg);
+		} else {
+			// was a new proxy config, add it
+			linphone_core_add_proxy_config(lc, proxyCfg);
+			linphone_core_set_default_proxy_config(lc, proxyCfg);
+		}
+
+		// modify auth info only after finishing editting the proxy config, so that
+		// UNREGISTER succeed
 		if (proxyAi) {
 			linphone_auth_info_set_username(proxyAi, username.UTF8String);
 			if (password) {
@@ -524,15 +535,6 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 				linphone_core_add_auth_info(lc, info);
 				linphone_auth_info_destroy(info);
 			}
-		}
-
-		// setup new proxycfg
-		if (isEditing) {
-			linphone_proxy_config_done(proxyCfg);
-		} else {
-			// was a new proxy config, add it
-			linphone_core_add_proxy_config(lc, proxyCfg);
-			linphone_core_set_default_proxy_config(lc, proxyCfg);
 		}
 
 	bad_proxy:
