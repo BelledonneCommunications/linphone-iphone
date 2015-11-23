@@ -922,19 +922,11 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			addButtonWithTitle:NSLocalizedString(@"Continue", nil)
 						 block:^{
 						   NSString *password = [alertView textFieldAtIndex:0].text;
-						   LinphoneAuthInfo *info = (LinphoneAuthInfo *)linphone_core_find_auth_info(
-							   [LinphoneManager getLc], realm.UTF8String, username.UTF8String, domain.UTF8String);
-						   if (info) {
-							   linphone_auth_info_set_passwd(info, password.UTF8String);
-							   linphone_auth_info_set_ha1(info, NULL);
-						   } else {
-							   LOGW(@"Could not find auth info associated with %@@%@, creating it", username, domain);
-							   info = linphone_auth_info_new(username.UTF8String, NULL, password.UTF8String, NULL,
-															 realm.UTF8String, domain.UTF8String);
-							   linphone_core_add_auth_info([LinphoneManager getLc], info);
-						   }
-						   linphone_proxy_config_refresh_register(
-							   linphone_core_get_default_proxy_config([LinphoneManager getLc]));
+						   LinphoneAuthInfo *info =
+							   linphone_auth_info_new(username.UTF8String, NULL, password.UTF8String, NULL,
+													  realm.UTF8String, domain.UTF8String);
+						   linphone_core_add_auth_info([LinphoneManager getLc], info);
+						   [LinphoneManager.instance refreshRegisters];
 						 }];
 		[alertView show];
 	}
