@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CallIncomingView">
             <connections>
                 <outlet property="addressLabel" destination="78f-eb-xdx" id="Qjw-7G-oqG"/>
                 <outlet property="avatarImage" destination="19" id="20"/>
-                <outlet property="landscapeView" destination="25" id="Uik-db-6kN"/>
+                <outlet property="landscapeView" destination="r7T-Et-xrQ" id="rA1-2K-fUf"/>
                 <outlet property="nameLabel" destination="hjQ-4P-bKP" id="Elh-o8-zM9"/>
-                <outlet property="portraitView" destination="25" id="32"/>
+                <outlet property="portraitView" destination="25" id="6Gy-ZX-kTl"/>
                 <outlet property="tabBar" destination="4" id="9gd-FT-jaI"/>
                 <outlet property="tabVideoBar" destination="vIQ-QP-ooa" id="JZq-9l-pOy"/>
                 <outlet property="view" destination="25" id="26"/>
@@ -22,11 +22,11 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="25">
+                <view tag="1" contentMode="scaleToFill" id="25">
                     <rect key="frame" x="0.0" y="42" width="375" height="625"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Cro-ww-VIC" userLabel="headerBar">
+                        <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Cro-ww-VIC" userLabel="headerBar">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
@@ -36,7 +36,7 @@
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                         </button>
-                        <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" image="avatar.png" id="19" userLabel="avatarImage" customClass="UIRoundedImageView">
+                        <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleAspectFit" image="avatar.png" id="19" userLabel="avatarImage" customClass="UIRoundedImageView">
                             <rect key="frame" x="87" y="213" width="200" height="200"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
@@ -45,7 +45,7 @@
                                 <bool key="isElement" value="YES"/>
                             </accessibility>
                         </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="hjQ-4P-bKP" userLabel="nameLabel">
+                        <label opaque="NO" userInteractionEnabled="NO" tag="4" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="hjQ-4P-bKP" userLabel="nameLabel">
                             <rect key="frame" x="0.0" y="86" width="375" height="52"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
@@ -53,7 +53,7 @@
                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="78f-eb-xdx" userLabel="addressLabel">
+                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="78f-eb-xdx" userLabel="addressLabel">
                             <rect key="frame" x="0.0" y="146" width="375" height="34"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
@@ -61,11 +61,11 @@
                             <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <view tag="10" contentMode="scaleToFill" id="4" userLabel="tabBar">
+                        <view tag="6" contentMode="scaleToFill" id="4" userLabel="tabBar">
                             <rect key="frame" x="0.0" y="562" width="375" height="63"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <subviews>
-                                <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="declineButton">
+                                <button opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="declineButton">
                                     <rect key="frame" x="0.0" y="0.0" width="188" height="63"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <animations/>
@@ -80,7 +80,7 @@
                                         <action selector="onDeclineClick:" destination="-1" eventType="touchUpInside" id="16"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7" userLabel="acceptButton">
+                                <button opaque="NO" tag="8" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7" userLabel="acceptButton">
                                     <rect key="frame" x="187" y="0.0" width="188" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                                     <animations/>
@@ -99,11 +99,11 @@
                             <animations/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
-                        <view hidden="YES" tag="10" contentMode="scaleToFill" id="vIQ-QP-ooa" userLabel="tabVideoBar">
+                        <view hidden="YES" tag="9" contentMode="scaleToFill" id="vIQ-QP-ooa" userLabel="tabVideoBar">
                             <rect key="frame" x="0.0" y="562" width="375" height="63"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <subviews>
-                                <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="KnH-hj-g47" userLabel="declineButton">
+                                <button opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="KnH-hj-g47" userLabel="declineButton">
                                     <rect key="frame" x="0.0" y="0.0" width="125" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <animations/>
@@ -133,7 +133,7 @@
                                         <action selector="onAcceptAudioOnlyClick:" destination="-1" eventType="touchUpInside" id="N9h-i1-ejZ"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tX0-eE-di5" userLabel="acceptButton">
+                                <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tX0-eE-di5" userLabel="acceptButton">
                                     <rect key="frame" x="250" y="0.0" width="125" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                     <animations/>
@@ -161,7 +161,153 @@
             <animations/>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="-8.5" y="271.5"/>
+            <point key="canvasLocation" x="-86.5" y="508.5"/>
+        </view>
+        <view contentMode="scaleToFill" id="Znq-C0-ZAc" userLabel="iphone6MetricsView">
+            <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view tag="1" contentMode="scaleToFill" id="r7T-Et-xrQ">
+                    <rect key="frame" x="0.0" y="42" width="667" height="333"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="E9b-qt-GBq" userLabel="headerBar">
+                            <rect key="frame" x="0.0" y="0.0" width="667" height="66"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
+                            <state key="normal" title="INCOMING CALL" backgroundImage="color_F.png">
+                                <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                        </button>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="4" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="19" id="WsB-At-ejv" userLabel="nameLabel">
+                            <rect key="frame" x="298" y="121" width="369" height="37"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <fontDescription key="fontDescription" type="system" pointSize="33"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="john.doe@sip.linphone.org" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="tsb-6p-cAk" userLabel="addressLabel">
+                            <rect key="frame" x="298" y="166" width="369" height="33"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <view tag="6" contentMode="scaleToFill" id="0Tc-7G-eqT" userLabel="tabBar">
+                            <rect key="frame" x="0.0" y="270" width="667" height="63"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                            <subviews>
+                                <button opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="qpN-iY-3Ao" userLabel="declineButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="334" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Decline"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_hangup_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_I.png"/>
+                                    <connections>
+                                        <action selector="onDeclineClick:" destination="-1" eventType="touchUpInside" id="JKz-8y-c9T"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="8" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8dX-3c-mba" userLabel="acceptButton">
+                                    <rect key="frame" x="333" y="0.0" width="334" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="call_audio_start_default.png" backgroundImage="color_A.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_audio_start_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_L.png"/>
+                                    <connections>
+                                        <action selector="onAcceptClick:" destination="-1" eventType="touchUpInside" id="17v-kE-yOu"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <animations/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
+                        <view hidden="YES" tag="9" contentMode="scaleToFill" id="PPE-Fd-wDf" userLabel="tabVideoBar">
+                            <rect key="frame" x="0.0" y="270" width="667" height="63"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                            <subviews>
+                                <button opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="i8b-dr-IYG" userLabel="declineButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="222" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Decline"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="call_hangup_default.png" backgroundImage="color_D.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_hangup_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_I.png"/>
+                                    <connections>
+                                        <action selector="onDeclineClick:" destination="-1" eventType="touchUpInside" id="mjN-BB-4ph"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="QYg-9G-We0" userLabel="acceptAudioOnlyButton">
+                                    <rect key="frame" x="222" y="0.0" width="223" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="call_audio_start_default.png" backgroundImage="color_A.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_audio_start_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_L.png"/>
+                                    <connections>
+                                        <action selector="onAcceptAudioOnlyClick:" destination="-1" eventType="touchUpInside" id="veh-c0-GOe"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="sbd-NW-OZx" userLabel="acceptButton">
+                                    <rect key="frame" x="445" y="0.0" width="222" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="call_video_start_default.png" backgroundImage="color_A.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_video_start_disabled.png"/>
+                                    <state key="selected" image="call_video_start_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_L.png"/>
+                                    <connections>
+                                        <action selector="onAcceptClick:" destination="-1" eventType="touchUpInside" id="RLl-y6-yhs"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <animations/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
+                        <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleAspectFit" image="avatar.png" id="Q0C-CO-AYR" userLabel="avatarImage" customClass="UIRoundedImageView">
+                            <rect key="frame" x="110" y="74" width="180" height="180"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <accessibility key="accessibilityConfiguration" label="Contact avatar">
+                                <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
+                                <bool key="isElement" value="YES"/>
+                            </accessibility>
+                        </imageView>
+                    </subviews>
+                    <animations/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+            <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="59.5" y="-62.5"/>
         </view>
     </objects>
     <resources>

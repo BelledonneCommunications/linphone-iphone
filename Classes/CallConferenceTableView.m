@@ -51,7 +51,7 @@
 	const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
 	int i = -1;
 	while (calls) {
-		if (linphone_call_params_get_local_conference_mode(calls->data)) {
+		if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(calls->data))) {
 			i++;
 			if (i == row)
 				break;
@@ -77,7 +77,7 @@
 	const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
 	int count = 0;
 	while (calls) {
-		if (linphone_call_params_get_local_conference_mode(calls->data)) {
+		if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(calls->data))) {
 			count++;
 		}
 		calls = calls->next;

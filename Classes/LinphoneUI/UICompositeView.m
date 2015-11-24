@@ -529,37 +529,46 @@
 		origin = 0;
 
 	if (self.statusBarViewController != nil && currentViewDescription.statusBarEnabled) {
-		contentFrame.origin.y = origin + statusBarFrame.size.height;
 		statusBarFrame.origin.y = origin;
 	} else {
-		contentFrame.origin.y = origin;
 		statusBarFrame.origin.y = origin - statusBarFrame.size.height;
 	}
+	contentFrame.origin.y = statusBarFrame.origin.y + statusBarFrame.size.height;
 
 	// Resize TabBar
 	CGRect tabFrame = self.tabBarView.frame;
 	if (self.tabBarViewController != nil && currentViewDescription.tabBarEnabled) {
-		tabFrame.origin.y = viewFrame.size.height;
-		tabFrame.origin.x = viewFrame.size.width;
-		tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
-		// tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
-		tabFrame.origin.y -= tabFrame.size.height;
-		tabFrame.origin.x -= tabFrame.size.width;
-		contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
+		if (UIInterfaceOrientationIsLandscape([self currentOrientation])) {
+			tabFrame.origin.x = 0;
+			tabFrame.origin.y = contentFrame.origin.y;
+			tabFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
+			contentFrame.origin.x = tabFrame.size.width;
+			contentFrame.size.height = tabFrame.size.height;
+		} else {
+			tabFrame.origin.y = viewFrame.size.height;
+			tabFrame.origin.x = viewFrame.size.width;
+			tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
+			// tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
+			tabFrame.origin.y -= tabFrame.size.height;
+			tabFrame.origin.x -= tabFrame.size.width;
+			contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
 
-		// for some views, we need the content to overlap, in which case
-		// we insert in the tab XIB a mask with tag -1 and with y = the amount of
-		// points that the content should overlap.
-		for (UIView *view in self.tabBarViewController.view.subviews) {
-			if (view.tag == -1) {
-				contentFrame.size.height += view.frame.origin.y;
-				break;
+			// for some views, we need the content to overlap, in which case
+			// we insert in the tab XIB a mask with tag -1 and with y = the amount of
+			// points that the content should overlap.
+			for (UIView *view in self.tabBarViewController.view.subviews) {
+				if (view.tag == -1) {
+					contentFrame.size.height += view.frame.origin.y;
+					break;
+				}
 			}
 		}
 	} else {
+		contentFrame.origin.x = 0;
 		contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
 		tabFrame.origin.y = viewFrame.size.height;
 	}
+	contentFrame.size.width = viewFrame.size.width - contentFrame.origin.x;
 
 	if (currentViewDescription.fullscreen) {
 		//		contentFrame.origin.y = origin;
@@ -568,9 +577,14 @@
 
 	// Resize SideMenu
 	CGRect sideMenuFrame = contentFrame;
-	sideMenuFrame.size.height += tabFrame.size.height;
+	if (UIInterfaceOrientationIsPortrait([self currentOrientation])) {
+		sideMenuFrame.size.height += tabFrame.size.height;
+	} else {
+		sideMenuFrame.origin.x = 0;
+	}
+
 	if (!currentViewDescription.sideMenuEnabled) {
-		sideMenuFrame.origin.x = -contentFrame.size.width;
+		sideMenuFrame.origin.x = -sideMenuFrame.size.width;
 	}
 
 	// Set frames

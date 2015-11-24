@@ -136,7 +136,7 @@ static NSString *const kDisappearAnimation = @"disappear";
 #pragma mark - UI Update
 
 - (void)update:(BOOL)appear {
-	[self updateSelectedButton:[PhoneMainView.instance firstView]];
+	[self updateSelectedButton:[PhoneMainView.instance currentView]];
 	[self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:appear];
 	[self updateUnreadMessage:appear];
 }
@@ -222,15 +222,29 @@ static NSString *const kDisappearAnimation = @"disappear";
 						  [view equal:ChatConversationCreateView.compositeViewDescription] ||
 						  [view equal:ChatConversationView.compositeViewDescription];
 	CGRect selectedNewFrame = _selectedButtonImage.frame;
-	selectedNewFrame.origin.x =
-		(historyButton.selected
-			 ? historyButton.frame.origin.x
-			 : (contactsButton.selected
-					? contactsButton.frame.origin.x
-					: (dialerButton.selected
-						   ? dialerButton.frame.origin.x
-						   : (chatButton.selected ? chatButton.frame.origin.x
-												  : -selectedNewFrame.size.width /*hide it if none is selected*/))));
+	if ([self viewIsCurrentlyPortrait]) {
+		selectedNewFrame.origin.x =
+			(historyButton.selected
+				 ? historyButton.frame.origin.x
+				 : (contactsButton.selected
+						? contactsButton.frame.origin.x
+						: (dialerButton.selected
+							   ? dialerButton.frame.origin.x
+							   : (chatButton.selected
+									  ? chatButton.frame.origin.x
+									  : -selectedNewFrame.size.width /*hide it if none is selected*/))));
+	} else {
+		selectedNewFrame.origin.y =
+			(historyButton.selected
+				 ? historyButton.frame.origin.y
+				 : (contactsButton.selected
+						? contactsButton.frame.origin.y
+						: (dialerButton.selected
+							   ? dialerButton.frame.origin.y
+							   : (chatButton.selected
+									  ? chatButton.frame.origin.y
+									  : -selectedNewFrame.size.height /*hide it if none is selected*/))));
+	}
 	_selectedButtonImage.frame = selectedNewFrame;
 }
 

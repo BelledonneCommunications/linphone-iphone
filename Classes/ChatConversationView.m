@@ -574,7 +574,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 						 // Show TabBar and status bar and also top bar
 						 [PhoneMainView.instance fullScreen:NO];
-						 [PhoneMainView.instance showTabBar:YES];
+						 if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+							 [PhoneMainView.instance showTabBar:YES];
+						 }
 						 [PhoneMainView.instance showStatusBar:YES];
 						 _topBar.alpha = 1.0;
 
@@ -631,7 +633,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 						 // Hide TabBar and status bar and also top bar
 						 [PhoneMainView.instance fullScreen:YES];
-						 [PhoneMainView.instance showTabBar:NO];
+						 if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+							 [PhoneMainView.instance showTabBar:NO];
+						 }
 						 [PhoneMainView.instance showStatusBar:NO];
 						 _topBar.alpha = 0.0;
 

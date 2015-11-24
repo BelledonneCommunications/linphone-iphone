@@ -35,14 +35,13 @@
 
 @class VideoView;
 
-@interface CallView : UIViewController <UIGestureRecognizerDelegate, UICompositeViewDelegate> {
+@interface CallView : TPMultiLayoutViewController <UIGestureRecognizerDelegate, UICompositeViewDelegate> {
   @private
 	UITapGestureRecognizer *singleFingerTap;
 	NSTimer *hideControlsTimer;
 	NSTimer *videoDismissTimer;
 	BOOL videoShown;
 	VideoZoomHandler *videoZoomHandler;
-	UIView *blackVideoStatusBar;
 }
 
 @property(nonatomic, strong) IBOutlet CallPausedTableView *pausedCallsTable;
