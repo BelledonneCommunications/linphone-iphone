@@ -253,7 +253,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[controller setToRecipients:recipients];
 
 			if (attachLogs) {
-				char *filepath = linphone_core_compress_log_collection([LinphoneManager getLc]);
+				char *filepath = linphone_core_compress_log_collection();
 				if (filepath == NULL) {
 					LOGE(@"Cannot sent logs: file is NULL");
 					return;
