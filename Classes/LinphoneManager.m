@@ -1917,7 +1917,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	// Continue by checking that the provided address is a valid SIP address, abort otherwise.
 	if ([address length] == 0) {
 		// no address provided... nothing to do
-	} else if ((addr = linphone_proxy_config_normalize_sip_uri(NULL, address.UTF8String)) == NULL) {
+	} else if ((addr = linphone_core_interpret_url([LinphoneManager getLc], address.UTF8String)) == NULL) {
 		UIAlertView *error = [[UIAlertView alloc]
 				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
 					  message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a "

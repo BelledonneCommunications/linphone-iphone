@@ -78,18 +78,14 @@
 	while (proxies) {
 		LinphoneProxyConfig *cfg = (LinphoneProxyConfig *)proxies->data;
 		const char *domain = linphone_proxy_config_get_domain(cfg);
-		const char *identity = linphone_proxy_config_get_identity(cfg);
-		LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(NULL, identity);
+		const LinphoneAddress *addr = linphone_proxy_config_get_identity_address(cfg);
 		const char *username = linphone_address_get_username(addr);
 
 		if (addr && (username && strcmp(username, [[self me] UTF8String]) == 0) &&
 			(domain && strcmp(domain, [[self accountDomain] UTF8String]) == 0) &&
 			linphone_proxy_config_get_state(cfg) == LinphoneRegistrationOk) {
 			isOK = true;
-			linphone_address_destroy(addr);
 			break;
-		} else if (addr) {
-			linphone_address_destroy(addr);
 		}
 
 		proxies = proxies->next;
