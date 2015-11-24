@@ -879,20 +879,19 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 		NSString *username = [NSString stringWithUTF8String:usernameC];
 		NSString *domain = [NSString stringWithUTF8String:domainC];
 		alertView = [[DTAlertView alloc]
-			initWithTitle:NSLocalizedString(@"Authentication needed.", nil)
-				  message:[NSString stringWithFormat:NSLocalizedString(@"Registration failed because authentication is "
-																	   @"missing or invalid for %@@%@.\nYou can "
-																	   @"provide password again, or check your "
-																	   @"account configuration in the settings.",
-																	   nil),
-													 username, realm]];
-		alertView.alertViewStyle = UIAlertViewStyleSecureTextInput;
-		[alertView addCancelButtonWithTitle:NSLocalizedString(@"Go to settings", nil)
-									  block:^{
-										SettingsView *view = VIEW(SettingsView);
-										[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-									  }];
+				initWithTitle:NSLocalizedString(@"Authentication needed.", nil)
+					  message:[NSString
+								  stringWithFormat:NSLocalizedString(@"Registration failed because authentication is "
+																	 @"missing or invalid for %@@%@.\nYou can "
+																	 @"provide password again, or check your "
+																	 @"account configuration in the settings.",
+																	 nil),
+												   username, realm]
+					 delegate:nil
+			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+			otherButtonTitles:nil];
 
+		alertView.alertViewStyle = UIAlertViewStyleSecureTextInput;
 		[alertView addButtonWithTitle:NSLocalizedString(@"Confirm password", nil)
 								block:^{
 								  NSString *password = [alertView textFieldAtIndex:0].text;
@@ -901,6 +900,11 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 															 realm.UTF8String, domain.UTF8String);
 								  linphone_core_add_auth_info([LinphoneManager getLc], info);
 								  [LinphoneManager.instance refreshRegisters];
+								}];
+		[alertView addButtonWithTitle:NSLocalizedString(@"Go to settings", nil)
+								block:^{
+								  SettingsView *view = VIEW(SettingsView);
+								  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 								}];
 		[alertView show];
 	}

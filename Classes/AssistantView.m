@@ -520,11 +520,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 			if ([message isEqualToString:@"Forbidden"]) {
 				message = NSLocalizedString(@"Incorrect username or password.", nil);
 			}
-			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
+			DTAlertView *alert = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
 															message:message
 														   delegate:nil
-												  cancelButtonTitle:@"OK"
+												  cancelButtonTitle:@"Cancel"
 												  otherButtonTitles:nil];
+			[alert addButtonWithTitle:@"Continue"
+								block:^(void) {
+								  [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+								}];
 			[alert show];
 			break;
 		}
