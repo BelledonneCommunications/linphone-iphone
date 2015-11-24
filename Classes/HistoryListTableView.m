@@ -222,4 +222,17 @@
 	}
 }
 
+- (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
+	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
+	  id log = [_sections objectForKey:_sortedDays[indexPath.section]][indexPath.row];
+	  LinphoneCallLog *callLog = [log pointerValue];
+	  linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+	  [[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
+	  if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {
+		  [_sections removeObjectForKey:_sortedDays[indexPath.section]];
+		  [_sortedDays removeObjectAtIndex:indexPath.section];
+	  }
+	}];
+}
+
 @end

@@ -176,4 +176,30 @@ static void chatTable_free_chatrooms(void *data) {
 	}
 }
 
+- (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
+	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
+	  LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row]);
+	  LinphoneChatMessage *last_msg = linphone_chat_room_get_user_data(chatRoom);
+	  if (last_msg) {
+		  linphone_chat_message_unref(last_msg);
+		  linphone_chat_room_set_user_data(chatRoom, NULL);
+	  }
+
+	  FileTransferDelegate *ftdToDelete = nil;
+	  for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+		  if (linphone_chat_message_get_chat_room(ftd.message) == chatRoom) {
+			  ftdToDelete = ftd;
+			  break;
+		  }
+	  }
+	  [ftdToDelete cancel];
+
+	  linphone_core_delete_chat_room(linphone_chat_room_get_core(chatRoom), chatRoom);
+	  data = ms_list_remove(data, chatRoom);
+
+	  // will force a call to [self loadData]
+	  [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
+	}];
+}
+
 @end

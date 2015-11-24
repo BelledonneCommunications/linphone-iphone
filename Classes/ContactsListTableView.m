@@ -247,4 +247,20 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		ABAddressBookRegisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
 	}
 }
+
+- (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
+	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
+	  ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
+	  OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
+	  NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
+	  ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
+	  NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1];
+	  [[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
+	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
+		  [addressBookMap removeObjectForKey:firstChar];
+	  }
+	  [[[LinphoneManager instance] fastAddressBook] removeContact:contact];
+	}];
+}
+
 @end

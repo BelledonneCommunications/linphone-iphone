@@ -99,7 +99,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		  [self onEditionChangeClick:nil];
 		}
 		onConfirmationClick:^() {
-		  [_tableController removeSelection];
+		  [_tableController removeSelectionUsing:nil];
 		  [_tableController loadData];
 		  [self onEditionChangeClick:nil];
 		}];

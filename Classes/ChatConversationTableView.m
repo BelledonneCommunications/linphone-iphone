@@ -190,27 +190,32 @@
 
 #pragma mark - UITableViewDelegate Functions
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
+	return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height;
+}
+
 - (void)tableView:(UITableView *)tableView
 	commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		[tableView beginUpdates];
 		LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
-		if (chat) {
-			linphone_chat_room_delete_message(chatRoom, chat);
-			messageList = ms_list_remove(messageList, chat);
+		linphone_chat_room_delete_message(chatRoom, chat);
+		messageList = ms_list_remove(messageList, chat);
 
-			[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-							 withRowAnimation:UITableViewRowAnimationBottom];
-		}
+		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+						 withRowAnimation:UITableViewRowAnimationBottom];
 		[tableView endUpdates];
 	}
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
-	return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height;
+- (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
+	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
+	  LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
+	  linphone_chat_room_delete_message(chatRoom, chat);
+	  messageList = ms_list_remove(messageList, chat);
+	}];
 }
-
 
 @end

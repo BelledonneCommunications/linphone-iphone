@@ -21,7 +21,7 @@
 
 - (void)loadData;
 - (void)accessoryForCell:(UITableViewCell *)cell atPath:(NSIndexPath *)indexPath;
-- (void)removeSelection;
+- (void)removeSelectionUsing:(void (^)(NSIndexPath *indexPath))remover;
 
 - (IBAction)onSelectionToggle:(id)sender;
 - (IBAction)onEditClick:(id)sender;

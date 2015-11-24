@@ -107,16 +107,20 @@
 	_editButton.enabled = _emptyView.hidden = ([self totalNumberOfItems] > 0);
 }
 
-- (void)removeSelection {
+- (void)removeSelectionUsing:(void (^)(NSIndexPath *indexPath))remover {
 	// we must iterate through selected items in reverse order
 	[_selectedItems sortUsingComparator:^(NSIndexPath *obj1, NSIndexPath *obj2) {
 	  return [obj2 compare:obj1];
 	}];
 	NSArray *copy = [[NSArray alloc] initWithArray:_selectedItems];
 	for (NSIndexPath *indexPath in copy) {
-		[self tableView:self.tableView
-			commitEditingStyle:UITableViewCellEditingStyleDelete
-			 forRowAtIndexPath:indexPath];
+		if (remover) {
+			remover(indexPath);
+		} else {
+			[self tableView:self.tableView
+				commitEditingStyle:UITableViewCellEditingStyleDelete
+				 forRowAtIndexPath:indexPath];
+		}
 	}
 	[_selectedItems removeAllObjects];
 	[self setEditing:NO animated:YES];
