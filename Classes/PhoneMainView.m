@@ -561,13 +561,26 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[self _changeCurrentView:view transition:nil animated:animated];
 }
 
+- (BOOL)isUnauthorizedView:(UICompositeViewDescription *)view {
+	return [[LinphoneManager.instance lpConfigStringForKey:@"unauthorized_views"] containsString:view.content];
+}
+
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view
 							  transition:(CATransition *)transition
 								animated:(BOOL)animated {
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
 
+	if ([self isUnauthorizedView:view]) {
+		NSString *fallback = [LinphoneManager.instance lpConfigStringForKey:@"fallback_view"];
+		UICompositeViewDescription *fallback_view = DialerView.compositeViewDescription;
+		if (fallback && [NSClassFromString(fallback) respondsToSelector:@selector(compositeViewDescription)]) {
+			fallback_view = [NSClassFromString(fallback) performSelector:@selector(compositeViewDescription)];
+		}
+		LOGW(@"Trying to access unauthorized view %@, going back to %@", view.content, fallback_view.content);
+		view = fallback_view;
+	}
 	if (![view equal:vc.currentView] || vc != self) {
-		LOGI(@"PhoneMainView: Change current view to %@", [view content]);
+		LOGI(@"Change current view to %@", [view content]);
 		if (animated && transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
 		[vc.mainViewController setViewTransition:(animated ? transition : nil)];
