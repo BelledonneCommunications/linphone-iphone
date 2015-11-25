@@ -596,13 +596,13 @@
 	// 2. tab bar
 	self.tabBarView.frame = tabFrame;
 	CGRect frame = self.tabBarViewController.view.frame;
-	frame.size.width = self.tabBarView.bounds.size.width;
+	frame.size = self.tabBarView.bounds.size;
 	self.tabBarViewController.view.frame = frame;
 
 	// 3. status bar
 	self.statusBarView.frame = statusBarFrame;
 	frame = self.statusBarViewController.view.frame;
-	frame.size.width = self.statusBarView.bounds.size.width;
+	frame.size = self.statusBarView.bounds.size;
 	self.statusBarViewController.view.frame = frame;
 
 	// 4. side menu
