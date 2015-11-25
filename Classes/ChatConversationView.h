@@ -31,8 +31,8 @@
 #include "linphone/linphonecore.h"
 
 @interface ChatConversationView
-	: UIViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate,
-						ChatConversationDelegate, UISearchBarDelegate> {
+	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate,
+								   ChatConversationDelegate, UISearchBarDelegate> {
 	LinphoneChatRoom *chatRoom;
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;

@@ -77,7 +77,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_messageField.font = [UIFont systemFontOfSize:18.0f];
 	_messageField.contentInset = UIEdgeInsetsMake(0, -5, -2, -5);
 	_messageField.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 10);
-
 	[_tableController setChatRoomDelegate:self];
 }
 
@@ -136,16 +135,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	// force offset recomputing
+	composingVisible = !composingVisible;
+	[self setComposingVisible:!composingVisible withDelay:0];
+	[_backToCallButton update];
 	[_tableController scrollToBottom:true];
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-										 duration:(NSTimeInterval)duration {
-	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-}
-
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
 }
 
 #pragma mark -
@@ -199,6 +193,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
 	_addressLabel.accessibilityValue = _addressLabel.text;
+	_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), _addressLabel.text];
 }
 
 - (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL *)externalUrl withInternalURL:(NSURL *)internalUrl {
@@ -283,10 +278,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	CGRect newTableFrame = [_tableController.tableView frame];
 
 	if (visible) {
-		_composeLabel.text =
-			[NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), _addressLabel.text];
 		// pull up the composing frame and shrink the table view
-
 		newTableFrame.size.height -= newComposingFrame.size.height;
 		newComposingFrame.origin.y = keyboardFrame.origin.y - newComposingFrame.size.height;
 	} else {
@@ -567,119 +559,120 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)keyboardWillHide:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
 	[UIView animateWithDuration:duration
-						  delay:0
-						options:UIViewAnimationOptionBeginFromCurrentState
-					 animations:^{
-						 CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
+		delay:0
+		options:UIViewAnimationOptionBeginFromCurrentState
+		animations:^{
+		  CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
 
-						 // Show TabBar and status bar and also top bar
-						 [PhoneMainView.instance fullScreen:NO];
-						 if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
-							 [PhoneMainView.instance showTabBar:YES];
-						 }
-						 [PhoneMainView.instance showStatusBar:YES];
-						 _topBar.alpha = 1.0;
+		  //						  Show TabBar and status bar and also top bar
 
-						 // Resize chat view
-						 {
-							 CGRect chatFrame = [_chatView frame];
-							 chatFrame.origin.y = _topBar.frame.origin.y + _topBar.frame.size.height;
-							 chatFrame.size.height = [[self view] frame].size.height - chatFrame.origin.y;
-							 [_chatView setFrame:chatFrame];
-						 }
+		  // somehow, it breaks rotation if we put that in the block above when rotating portrait -> landscape
+		  //						 if (!UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+		  [PhoneMainView.instance showTabBar:YES];
+		  //						 }
+		  [PhoneMainView.instance showStatusBar:YES];
+		  [PhoneMainView.instance fullScreen:NO];
+		  _topBar.alpha = 1.0;
 
-						 // Resize & Move table view
-						 {
-							 CGRect tableFrame = [_tableController.view frame];
-							 tableFrame.size.height =
-							 [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
-							 [_tableController.view setFrame:tableFrame];
+		  // Resize chat view
+		  {
+			  CGRect chatFrame = [_chatView frame];
+			  chatFrame.origin.y = _topBar.frame.origin.y + _topBar.frame.size.height;
+			  chatFrame.size.height = [[self view] frame].size.height - chatFrame.origin.y;
+			  [_chatView setFrame:chatFrame];
+		  }
 
-							 // Scroll to bottom
-							 NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
-							 if (lastSection >= 0) {
-								 NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
-								 if (lastRow >= 0) {
-									 [_tableController.tableView
-									  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
-									  atScrollPosition:UITableViewScrollPositionBottom
-									  animated:FALSE];
-								 }
-							 }
-						 }
+		  // Resize & Move table view
+		  {
+			  CGRect tableFrame = [_tableController.view frame];
+			  tableFrame.size.height =
+				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
+			  [_tableController.view setFrame:tableFrame];
 
-					 }
-					 completion:^(BOOL finished){
-					 }];
+			  // Scroll to bottom
+			  NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
+			  if (lastSection >= 0) {
+				  NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
+				  if (lastRow >= 0) {
+					  [_tableController.tableView
+						  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
+								atScrollPosition:UITableViewScrollPositionBottom
+										animated:FALSE];
+				  }
+			  }
+		  }
+		}
+		completion:^(BOOL finished){
+
+		}];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-	CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
 
 	[UIView animateWithDuration:duration
-						  delay:0
-						options:UIViewAnimationOptionBeginFromCurrentState
-					 animations:^{
+		delay:0
+		options:UIViewAnimationOptionBeginFromCurrentState
+		animations:^{
+		  CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
 
-						 CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+		  CGRect endFrame = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
 
-						 if (([[UIDevice currentDevice].systemVersion floatValue] < 8) &&
-							 UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-							 int width = endFrame.size.height;
-							 endFrame.size.height = endFrame.size.width;
-							 endFrame.size.width = width;
-						 }
+		  if (([[UIDevice currentDevice].systemVersion floatValue] < 8) &&
+			  UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+			  int width = endFrame.size.height;
+			  endFrame.size.height = endFrame.size.width;
+			  endFrame.size.width = width;
+		  }
 
-						 // Hide TabBar and status bar and also top bar
-						 [PhoneMainView.instance fullScreen:YES];
-						 if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
-							 [PhoneMainView.instance showTabBar:NO];
-						 }
-						 [PhoneMainView.instance showStatusBar:NO];
-						 _topBar.alpha = 0.0;
+		  //						 Hide TabBar and status bar and also top bar
+		  if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+			  [PhoneMainView.instance showTabBar:NO];
+		  }
+		  [PhoneMainView.instance showStatusBar:NO];
+		  [PhoneMainView.instance fullScreen:YES];
+		  _topBar.alpha = 0.0;
 
-						 // Resize chat view
-						 {
-							 CGRect viewFrame = [[self view] frame];
-							 CGRect rect = PhoneMainView.instance.view.bounds;
-							 CGPoint pos = {viewFrame.size.width, viewFrame.size.height};
-							 CGPoint gPos =
-							 [self.view convertPoint:pos
-											  toView:[UIApplication sharedApplication]
-							  .keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
-							 float diff = (rect.size.height - gPos.y - endFrame.size.height);
-							 if (diff > 0)
-								 diff = 0;
-							 CGRect chatFrame = [_chatView frame];
-							 chatFrame.origin.y = 0;
-							 chatFrame.size.height = viewFrame.size.height - chatFrame.origin.y + diff;
-							 [_chatView setFrame:chatFrame];
-						 }
+		  // Resize chat view
+		  {
+			  CGRect viewFrame = [[self view] frame];
+			  CGRect rect = PhoneMainView.instance.view.bounds;
+			  CGPoint pos = {viewFrame.size.width, viewFrame.size.height};
+			  CGPoint gPos =
+				  [self.view convertPoint:pos
+								   toView:[UIApplication sharedApplication]
+											  .keyWindow.rootViewController.view]; // Bypass IOS bug on landscape mode
+			  float diff = (rect.size.height - gPos.y - endFrame.size.height);
+			  if (diff > 0)
+				  diff = 0;
+			  CGRect chatFrame = [_chatView frame];
+			  chatFrame.origin.y = 0;
+			  chatFrame.size.height = viewFrame.size.height - chatFrame.origin.y + diff;
+			  [_chatView setFrame:chatFrame];
+		  }
 
-						 // Resize & Move table view
-						 {
-							 CGRect tableFrame = _tableController.view.frame;
-							 tableFrame.size.height =
-							 [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
-							 [_tableController.view setFrame:tableFrame];
-						 }
+		  // Resize & Move table view
+		  {
+			  CGRect tableFrame = _tableController.view.frame;
+			  tableFrame.size.height =
+				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
+			  [_tableController.view setFrame:tableFrame];
+		  }
 
-						 // Scroll
-						 NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
-						 if (lastSection >= 0) {
-							 NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
-							 if (lastRow >= 0) {
-								 [_tableController.tableView
-								  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
-								  atScrollPosition:UITableViewScrollPositionBottom
-								  animated:FALSE];
-							 }
-						 }
-
-					 }
-					 completion:^(BOOL finished){
-					 }];
+		  // Scroll
+		  NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
+		  if (lastSection >= 0) {
+			  NSInteger lastRow = [_tableController.tableView numberOfRowsInSection:lastSection] - 1;
+			  if (lastRow >= 0) {
+				  [_tableController.tableView
+					  scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:lastSection]
+							atScrollPosition:UITableViewScrollPositionBottom
+									animated:FALSE];
+			  }
+		  }
+		}
+		completion:^(BOOL finished){
+		}];
 }
 
 @end
