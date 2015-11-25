@@ -447,7 +447,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 + (CATransition *)getBackwardTransition {
 	BOOL RTL = [LinphoneManager langageDirectionIsRTL];
-	NSString *transition = RTL ? kCATransitionFromRight : kCATransitionFromLeft;
+	BOOL land = UIInterfaceOrientationIsLandscape([self.instance interfaceOrientation]);
+	NSString *transition = land ? kCATransitionFromBottom : (RTL ? kCATransitionFromRight : kCATransitionFromLeft);
 	CATransition *trans = [CATransition animation];
 	[trans setType:kCATransitionPush];
 	[trans setDuration:0.35];
@@ -459,7 +460,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 + (CATransition *)getForwardTransition {
 	BOOL RTL = [LinphoneManager langageDirectionIsRTL];
-	NSString *transition = RTL ? kCATransitionFromLeft : kCATransitionFromRight;
+	BOOL land = UIInterfaceOrientationIsLandscape([self.instance interfaceOrientation]);
+	NSString *transition = land ? kCATransitionFromTop : (RTL ? kCATransitionFromLeft : kCATransitionFromRight);
 	CATransition *trans = [CATransition animation];
 	[trans setType:kCATransitionPush];
 	[trans setDuration:0.35];

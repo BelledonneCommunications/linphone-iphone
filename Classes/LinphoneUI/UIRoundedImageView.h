@@ -13,4 +13,7 @@
 - (void)setImage:(UIImage *)image;
 - (void)setImage:(UIImage *)image bordered:(BOOL)bordered withRoundedRadius:(BOOL)rounded;
 
+- (void)setBordered:(BOOL)bordered;
+- (void)setRoundRadius;
+
 @end

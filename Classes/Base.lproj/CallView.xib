@@ -80,7 +80,7 @@
                     <rect key="frame" x="0.0" y="42" width="375" height="625"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <view tag="2" contentMode="scaleToFill" id="0Ju-u5-N7A" userLabel="conferenceView">
+                        <view hidden="YES" tag="2" contentMode="scaleToFill" id="0Ju-u5-N7A" userLabel="conferenceView">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="499"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -163,7 +163,7 @@
                                             <animations/>
                                         </activityIndicatorView>
                                         <button opaque="NO" tag="13" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="160" userLabel="videoCameraSwitch" customClass="UICamSwitch">
-                                            <rect key="frame" x="65" y="80" width="52" height="52"/>
+                                            <rect key="frame" x="65" y="122" width="52" height="52"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <animations/>
                                             <accessibility key="accessibilityConfiguration" label="Switch camera"/>
@@ -489,7 +489,7 @@
                             </subviews>
                             <animations/>
                         </view>
-                        <view tag="42" contentMode="scaleToFill" id="sHZ-53-Hta" userLabel="optionsView">
+                        <view hidden="YES" tag="42" contentMode="scaleToFill" id="sHZ-53-Hta" userLabel="optionsView">
                             <rect key="frame" x="282" y="301" width="94" height="198"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <subviews>
@@ -712,7 +712,7 @@
                     <rect key="frame" x="0.0" y="42" width="667" height="333"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <view tag="2" contentMode="scaleToFill" id="M3B-Lp-M9l" userLabel="conferenceView">
+                        <view hidden="YES" tag="2" contentMode="scaleToFill" id="M3B-Lp-M9l" userLabel="conferenceView">
                             <rect key="frame" x="0.0" y="0.0" width="667" height="270"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
@@ -1189,7 +1189,7 @@
                             <subviews>
                                 <view tag="48" contentMode="scaleToFill" id="GBW-Ly-Q5U" userLabel="higherBar">
                                     <rect key="frame" x="334" y="0.0" width="333" height="63"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" tag="49" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="et0-89-ccc" userLabel="backgroundColor">
                                             <rect key="frame" x="0.0" y="0.0" width="333" height="66"/>
@@ -1280,7 +1280,7 @@
                                 </view>
                                 <view tag="56" contentMode="scaleToFill" id="vRZ-Xg-uo9" userLabel="lowerBar">
                                     <rect key="frame" x="0.0" y="0.0" width="334" height="63"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                                     <subviews>
                                         <button opaque="NO" tag="57" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Fyf-if-w6d" userLabel="numpadButton" customClass="UIToggleButton">
                                             <rect key="frame" x="0.0" y="0.0" width="83" height="63"/>

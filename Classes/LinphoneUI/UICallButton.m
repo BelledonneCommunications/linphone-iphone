@@ -96,7 +96,8 @@
 }
 
 - (void)updateVideoPolicy {
-	if (linphone_core_get_video_policy([LinphoneManager getLc])->automatically_initiate) {
+	LinphoneCore *lc = [LinphoneManager getLc];
+	if (linphone_core_video_capture_enabled(lc) && linphone_core_get_video_policy(lc)->automatically_initiate) {
 		[self setImage:[UIImage imageNamed:@"call_video_start_default.png"] forState:UIControlStateNormal];
 		[self setImage:[UIImage imageNamed:@"call_video_start_disabled.png"] forState:UIControlStateDisabled];
 	} else {

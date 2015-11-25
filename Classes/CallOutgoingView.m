@@ -60,6 +60,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+										 duration:(NSTimeInterval)duration {
+	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	[_avatarImage setRoundRadius];
+}
+
 - (IBAction)onDeclineClick:(id)sender {
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (call) {

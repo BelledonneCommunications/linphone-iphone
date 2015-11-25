@@ -62,7 +62,7 @@
 	self.fullscreen = fullscreen;
 	self.landscapeMode = YES; // landscapeMode;
 	self.portraitMode = YES;  // portraitMode;
-	self.darkBackground = false;
+	self.darkBackground = true;
 
 	return self;
 }

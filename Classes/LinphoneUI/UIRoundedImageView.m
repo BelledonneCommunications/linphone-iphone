@@ -12,13 +12,9 @@
 
 @implementation UIRoundedImageView
 
-- (id)init {
-	self = [super init];
-	if (self) {
-		[self setRoundRadius];
-		[self setBordered:NO];
-	}
-	return self;
+INIT_WITH_COMMON {
+	[self setRoundRadius];
+	[self setBordered:YES];
 }
 
 - (void)setImage:(UIImage *)image {
@@ -39,15 +35,19 @@
 		self.layer.borderWidth = 0;
 	}
 }
-// warning: for non-squared image, this function will generate an ellipsoidal image, not a round image!
+
 - (void)setRoundRadius {
 	CALayer *imageLayer = self.layer;
-	CGFloat height = imageLayer.frame.size.height;
-	CGFloat width = imageLayer.frame.size.width;
+
+	CGFloat height = self.frame.size.height;
+	CGFloat width = self.frame.size.width;
 	CGFloat roundRadius = MIN(width, height) / 2;
 
+	CGRect frame = self.frame;
+	frame.size.width = frame.size.height = MIN(width, height);
+	self.bounds = frame;
+
 	[imageLayer setCornerRadius:roundRadius];
-	[imageLayer setMasksToBounds:YES];
 }
 
 @end
