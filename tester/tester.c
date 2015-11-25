@@ -549,6 +549,37 @@ void liblinphone_tester_uninit(void) {
 	bc_tester_uninit();
 }
 
+static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStreamType stream_type) {
+	MediaStream ms;
+	switch (stream_type) {
+	case LinphoneStreamTypeAudio:
+			ms=c1->audiostream->ms;
+			break;
+	case LinphoneStreamTypeVideo:
+			ms=c1->videostream->ms;
+			break;
+	case LinphoneStreamTypeUnknown:
+			ms=c1->textstream->ms;
+			break;
+  default:
+			ms_error("Uknown stream type [%s]",  linphone_streamtype_to_string(stream_type));
+			break;
+	}
+	
+	
+	if (linphone_call_get_audio_stats(c1)->ice_state == LinphoneIceStateHostConnection && media_stream_started(&ms)) {
+		char ip[16];
+		char port[8];
+		getnameinfo((const struct sockaddr *)&c1->audiostream->ms.sessions.rtp_session->rtp.gs.rem_addr
+					, c1->audiostream->ms.sessions.rtp_session->rtp.gs.rem_addrlen
+					, ip
+					, sizeof(ip)
+					, port
+					, sizeof(port)
+					, NI_NUMERICHOST|NI_NUMERICSERV);
+		BC_ASSERT_STRING_EQUAL(ip, c2->media_localip);
+	}
+}
 bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state) {
 	LinphoneCall *c1,*c2;
 	bool_t audio_success=FALSE;
@@ -576,6 +607,8 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 			if (linphone_call_get_audio_stats(c1)->ice_state==state &&
 				linphone_call_get_audio_stats(c2)->ice_state==state ){
 				audio_success=TRUE;
+				check_ice_from_rtp(c1,c2,LinphoneStreamTypeAudio);
+				check_ice_from_rtp(c2,c1,LinphoneStreamTypeAudio);
 				break;
 			}
 			linphone_core_iterate(caller->lc);
@@ -591,6 +624,8 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 				if (linphone_call_get_video_stats(c1)->ice_state==state &&
 					linphone_call_get_video_stats(c2)->ice_state==state ){
 					video_success=TRUE;
+					check_ice_from_rtp(c1,c2,LinphoneStreamTypeVideo);
+					check_ice_from_rtp(c2,c1,LinphoneStreamTypeVideo);
 					break;
 				}
 				linphone_core_iterate(caller->lc);
@@ -607,6 +642,8 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 				if (linphone_call_get_text_stats(c1)->ice_state==state &&
 					linphone_call_get_text_stats(c2)->ice_state==state ){
 					text_success=TRUE;
+					check_ice_from_rtp(c1,c2,LinphoneStreamTypeText);
+					check_ice_from_rtp(c2,c1,LinphoneStreamTypeText);
 					break;
 				}
 				linphone_core_iterate(caller->lc);

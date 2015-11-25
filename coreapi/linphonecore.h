@@ -139,7 +139,14 @@ enum _LinphoneStreamType {
  * @ingroup initializing
 **/
 typedef enum _LinphoneStreamType LinphoneStreamType;
-
+/**
+ * Function returning a humain readable value for LinphoneStreamType.
+ * @param LinphoneStreamType
+ * @returns
+ * @ingroup initializing
+ **/
+	
+LINPHONE_PUBLIC const char *linphone_streamtype_to_string(const LinphoneStreamType);
 /**
  * Object that represents a SIP address.
  *

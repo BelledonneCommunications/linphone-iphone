@@ -319,7 +319,9 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 	/*wait ice re-invite*/
 	if (linphone_core_get_firewall_policy(caller_mgr->lc) == LinphonePolicyUseIce
 			&& linphone_core_get_firewall_policy(callee_mgr->lc) == LinphonePolicyUseIce
-			&& !linphone_core_sdp_200_ack_enabled(caller_mgr->lc)) { /*ice does not work with sdp less invite*/
+			&& !linphone_core_sdp_200_ack_enabled(caller_mgr->lc) /*ice does not work with sdp less invite*/
+			&& lp_config_get_int(callee_mgr->lc->config, "sip", "update_call_when_ice_completed", TRUE)
+			&& lp_config_get_int(caller_mgr->lc->config, "sip", "update_call_when_ice_completed", TRUE)) {
 		BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+2));
 		BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+2));
 
@@ -5422,7 +5424,7 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
-static void _call_with_rtcp_mux(bool_t caller_rtcp_mux, bool_t callee_rtcp_mux, bool_t with_ice){
+static void _call_with_rtcp_mux(bool_t caller_rtcp_mux, bool_t callee_rtcp_mux, bool_t with_ice,bool_t with_ice_reinvite){
 	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	const LinphoneCallParams *params;
@@ -5438,8 +5440,14 @@ static void _call_with_rtcp_mux(bool_t caller_rtcp_mux, bool_t callee_rtcp_mux, 
 		lp_config_set_int(linphone_core_get_config(pauline->lc), "rtp", "rtcp_mux", 1);
 	}
 	if (with_ice){
+		linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
+		linphone_core_set_user_agent(marie->lc, "Natted Linphone", NULL);
 		linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 		linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+	}
+	if (!with_ice_reinvite) {
+		lp_config_set_int(linphone_core_get_config(pauline->lc), "sip", "update_call_when_ice_completed", 0);
+		lp_config_set_int(linphone_core_get_config(marie->lc), "sip", "update_call_when_ice_completed", 0);
 	}
 	
 	if (!BC_ASSERT_TRUE(call(marie,pauline))) goto end;
@@ -5476,18 +5484,20 @@ end:
 }
 
 static void call_with_rtcp_mux(void){
-	_call_with_rtcp_mux(TRUE, TRUE, FALSE);
+	_call_with_rtcp_mux(TRUE, TRUE, FALSE,TRUE);
 }
 
 static void call_with_rtcp_mux_not_accepted(void){
-	_call_with_rtcp_mux(TRUE, FALSE, FALSE);
+	_call_with_rtcp_mux(TRUE, FALSE, FALSE,TRUE);
 }
 
 static void call_with_ice_and_rtcp_mux(void){
-	
-	_call_with_rtcp_mux(TRUE, TRUE, TRUE);
+	_call_with_rtcp_mux(TRUE, TRUE, TRUE,TRUE);
 }
 
+static void call_with_ice_and_rtcp_mux_without_reinvite(void){
+	_call_with_rtcp_mux(TRUE, TRUE, TRUE,FALSE);
+}
 
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
@@ -5650,7 +5660,8 @@ test_t call_tests[] = {
 	{ "Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh },
 	{ "Call with rtcp-mux", call_with_rtcp_mux},
 	{ "Call with rtcp-mux not accepted", call_with_rtcp_mux_not_accepted},
-	{ "Call with ICE and rtcp-mux", call_with_ice_and_rtcp_mux}
+	{ "Call with ICE and rtcp-mux", call_with_ice_and_rtcp_mux},
+	{ "Call with ICE and rtcp-mux without ICE re-invite", call_with_ice_and_rtcp_mux_without_reinvite}
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
