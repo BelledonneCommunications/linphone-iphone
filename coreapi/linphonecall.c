@@ -2940,6 +2940,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 	bool_t mute;
 	const char *playfile;
 	const char *recfile;
+	const char *file_to_play = NULL;
 	const SalStreamDescription *local_st_desc;
 	int crypto_idx;
 	MSMediaStreamIO io = MS_MEDIA_STREAM_IO_INITIALIZER;
@@ -3052,21 +3053,29 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 					io.input.soundcard = captcard;
 				}else{
 					io.input.type = MSResourceFile;
-					io.input.file = playfile;
+					file_to_play = playfile;
+					io.input.file = NULL; /*we prefer to use the remote_play api, that allows to play multimedia files */
 				}
 
 			}
 			if (ok == TRUE) {
-				audio_stream_start_from_io(call->audiostream,
+				int err = audio_stream_start_from_io(call->audiostream,
 					call->audio_profile,
 					rtp_addr,
 					stream->rtp_port,
 					stream->rtcp_addr[0]!='\0' ? stream->rtcp_addr : call->resultdesc->addr,
 					(linphone_core_rtcp_enabled(lc) && !is_multicast) ? (stream->rtcp_port ? stream->rtcp_port : stream->rtp_port+1) : 0,
 					used_pt,
-					&io
-				);
-				post_configure_audio_streams(call, (call->all_muted || call->audio_muted) && !call->playing_ringbacktone);
+					&io);
+				if (err == 0){
+					post_configure_audio_streams(call, (call->all_muted || call->audio_muted) && !call->playing_ringbacktone);
+					if (file_to_play){
+						MSFilter *player = audio_stream_open_remote_play(call->audiostream, file_to_play);
+						if (player){
+							ms_filter_call_method_noarg(player, MS_PLAYER_START);
+						}
+					}
+				}
 			}
 
 			ms_media_stream_sessions_set_encryption_mandatory(&call->audiostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
