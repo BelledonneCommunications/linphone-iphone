@@ -37,7 +37,8 @@ try:
     import prepare
 except Exception as e:
     error(
-        "Could not find prepare module: {}, probably missing submodules/cmake-builder? Try running:\ngit submodule update --init --recursive".format(e))
+        "Could not find prepare module: {}, probably missing submodules/cmake-builder? Try running:\n"
+        "git submodule sync && git submodule update --init --recursive".format(e))
     exit(1)
 
 
