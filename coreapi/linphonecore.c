@@ -7387,11 +7387,13 @@ const char* linphone_transport_to_string(LinphoneTransportType transport) {
 LinphoneTransportType linphone_transport_parse(const char* transport) {
 	return (LinphoneTransportType)sal_transport_parse(transport);
 }
-const char *linphone_streamtype_to_string(const LinphoneStreamType type) {
+
+const char *linphone_stream_type_to_string(const LinphoneStreamType type) {
 	switch (type) {
 		case LinphoneStreamTypeAudio: return "LinphoneStreamTypeAudio";
 		case LinphoneStreamTypeVideo: return "LinphoneStreamTypeVideo";
 		case LinphoneStreamTypeText: return "LinphoneStreamTypeText";
 		case LinphoneStreamTypeUnknown: return "LinphoneStreamTypeUnknown";
 	}
+	return "INVALID";
 }

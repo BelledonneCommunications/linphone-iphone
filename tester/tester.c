@@ -550,24 +550,25 @@ void liblinphone_tester_uninit(void) {
 }
 
 static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStreamType stream_type) {
-	MediaStream ms;
+	MediaStream *ms;
 	switch (stream_type) {
 	case LinphoneStreamTypeAudio:
-			ms=c1->audiostream->ms;
-			break;
+		ms=&c1->audiostream->ms;
+		break;
 	case LinphoneStreamTypeVideo:
-			ms=c1->videostream->ms;
-			break;
-	case LinphoneStreamTypeUnknown:
-			ms=c1->textstream->ms;
-			break;
-  default:
-			ms_error("Uknown stream type [%s]",  linphone_streamtype_to_string(stream_type));
-			break;
+		ms=&c1->videostream->ms;
+		break;
+	case LinphoneStreamTypeText:
+		ms=&c1->textstream->ms;
+		break;
+	default:
+		ms_error("Unknown stream type [%s]",  linphone_stream_type_to_string(stream_type));
+		BC_ASSERT_FALSE(stream_type >= LinphoneStreamTypeUnknown);
+		return;
 	}
 	
 	
-	if (linphone_call_get_audio_stats(c1)->ice_state == LinphoneIceStateHostConnection && media_stream_started(&ms)) {
+	if (linphone_call_get_audio_stats(c1)->ice_state == LinphoneIceStateHostConnection && media_stream_started(ms)) {
 		char ip[16];
 		char port[8];
 		getnameinfo((const struct sockaddr *)&c1->audiostream->ms.sessions.rtp_session->rtp.gs.rem_addr

@@ -146,7 +146,7 @@ typedef enum _LinphoneStreamType LinphoneStreamType;
  * @ingroup initializing
  **/
 	
-LINPHONE_PUBLIC const char *linphone_streamtype_to_string(const LinphoneStreamType);
+LINPHONE_PUBLIC const char *linphone_stream_type_to_string(const LinphoneStreamType);
 /**
  * Object that represents a SIP address.
  *
