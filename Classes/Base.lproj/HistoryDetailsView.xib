@@ -12,6 +12,8 @@
                 <outlet property="avatarImage" destination="23" id="43"/>
                 <outlet property="contactLabel" destination="25" id="rTL-Ut-42o"/>
                 <outlet property="headerView" destination="33" id="iv2-Rj-j3j"/>
+                <outlet property="landscapeView" destination="NHC-7w-48z" id="kTJ-YT-Ejm"/>
+                <outlet property="portraitView" destination="4" id="0gH-12-O02"/>
                 <outlet property="tableView" destination="baU-d4-eu3" id="3q4-5X-yCB"/>
                 <outlet property="view" destination="4" id="10"/>
             </connections>
@@ -21,20 +23,20 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" id="4">
+                <view tag="1" contentMode="scaleToFill" id="4">
                     <rect key="frame" x="0.0" y="42" width="375" height="559"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
-                        <view contentMode="scaleToFill" id="6" userLabel="topBar">
+                        <view tag="2" contentMode="scaleToFill" id="6" userLabel="topBar">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="gee-PW-IqY" userLabel="backgroundColor">
+                                <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="gee-PW-IqY" userLabel="backgroundColor">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                 </imageView>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
+                                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
                                     <rect key="frame" x="0.0" y="0.0" width="72" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -47,7 +49,7 @@
                                         <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="11"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="50" userLabel="addButton" customClass="UIIconButton">
+                                <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="50" userLabel="addButton" customClass="UIIconButton">
                                     <rect key="frame" x="303" y="0.0" width="72" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -63,7 +65,7 @@
                             </subviews>
                             <animations/>
                         </view>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="30" sectionHeaderHeight="44" sectionFooterHeight="22" id="k6N-Av-eOu">
+                        <tableView clipsSubviews="YES" tag="6" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="30" sectionHeaderHeight="44" sectionFooterHeight="22" id="k6N-Av-eOu">
                             <rect key="frame" x="0.0" y="316" width="375" height="243"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <animations/>
@@ -73,11 +75,11 @@
                                 <outlet property="delegate" destination="baU-d4-eu3" id="iS5-xg-0C2"/>
                             </connections>
                         </tableView>
-                        <view contentMode="scaleToFill" id="33" userLabel="headerView">
+                        <view tag="7" contentMode="scaleToFill" id="33" userLabel="headerView">
                             <rect key="frame" x="0.0" y="66" width="375" height="250"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar.png" id="23" userLabel="avatarImage" customClass="UIRoundedImageView">
+                                <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="avatar.png" id="23" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="137" y="8" width="100" height="100"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -86,7 +88,7 @@
                                         <bool key="isElement" value="YES"/>
                                     </accessibility>
                                 </imageView>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="17" id="25" userLabel="contactLabel">
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="9" contentMode="left" text="John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="17" id="25" userLabel="contactLabel">
                                     <rect key="frame" x="0.0" y="110" width="375" height="40"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -95,7 +97,7 @@
                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
+                                <imageView hidden="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFit" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="245" y="39" width="21" height="37"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -104,7 +106,7 @@
                                         <bool key="isElement" value="YES"/>
                                     </accessibility>
                                 </imageView>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="johndoe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="EoB-ux-sD7" userLabel="addressLabel">
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="11" contentMode="left" text="johndoe@sip.linphone.org" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="EoB-ux-sD7" userLabel="addressLabel">
                                     <rect key="frame" x="0.0" y="158" width="375" height="23"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -113,11 +115,11 @@
                                     <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="obZ-W7-q8P" userLabel="chatButton">
+                                <button opaque="NO" tag="12" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="obZ-W7-q8P" userLabel="chatButton">
                                     <rect key="frame" x="202" y="189" width="51" height="51"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
-                                    <state key="normal" title="Button" image="chat_start_body_default.png">
+                                    <state key="normal" image="chat_start_body_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <state key="disabled" image="chat_start_body_disabled.png"/>
@@ -126,11 +128,11 @@
                                         <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="Dd5-7a-ev8"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5eX-W0-T4B" userLabel="callButton">
+                                <button opaque="NO" tag="13" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5eX-W0-T4B" userLabel="callButton">
                                     <rect key="frame" x="122" y="189" width="51" height="51"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
-                                    <state key="normal" title="Button" image="call_start_body_default.png">
+                                    <state key="normal" image="call_start_body_default.png">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <state key="disabled" image="call_start_body_disabled.png"/>
@@ -152,6 +154,143 @@
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
             <point key="canvasLocation" x="254.5" y="288.5"/>
+        </view>
+        <view contentMode="scaleToFill" id="LBc-mh-ozk" userLabel="iphone6MetricsView">
+            <rect key="frame" x="0.0" y="0.0" width="667" height="375"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view tag="1" contentMode="scaleToFill" id="NHC-7w-48z">
+                    <rect key="frame" x="0.0" y="42" width="667" height="333"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <view tag="2" contentMode="scaleToFill" id="Rtv-hu-bCz" userLabel="topBar">
+                            <rect key="frame" x="0.0" y="0.0" width="667" height="66"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="JOe-5t-C7f" userLabel="backgroundColor">
+                                    <rect key="frame" x="0.0" y="0.0" width="667" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                </imageView>
+                                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="NJl-Lb-CU6" userLabel="backButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="72" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Back"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="back_default.png"/>
+                                    <state key="disabled" image="back_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="zZF-e0-7RY"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="O7r-6t-b7w" userLabel="addButton" customClass="UIIconButton">
+                                    <rect key="frame" x="595" y="0.0" width="72" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Add to contact"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="contact_add_default.png"/>
+                                    <state key="disabled" image="contact_add_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onAddContactClick:" destination="-1" eventType="touchUpInside" id="pow-32-7RJ"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <animations/>
+                        </view>
+                        <tableView clipsSubviews="YES" tag="6" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="30" sectionHeaderHeight="44" sectionFooterHeight="22" id="2jK-gw-ULv">
+                            <rect key="frame" x="0.0" y="168" width="667" height="165"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                            <animations/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <outlet property="dataSource" destination="baU-d4-eu3" id="fI9-T2-u1D"/>
+                                <outlet property="delegate" destination="baU-d4-eu3" id="xk6-7r-gBl"/>
+                            </connections>
+                        </tableView>
+                        <view tag="7" contentMode="scaleToFill" id="Mwp-y3-g1b" userLabel="headerView">
+                            <rect key="frame" x="0.0" y="66" width="667" height="102"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="avatar.png" id="d9m-G0-1u3" userLabel="avatarImage" customClass="UIRoundedImageView">
+                                    <rect key="frame" x="8" y="8" width="175" height="86"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact avatar">
+                                        <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
+                                        <bool key="isElement" value="YES"/>
+                                    </accessibility>
+                                </imageView>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="9" contentMode="left" text="John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="17" id="Qbg-hm-bd7" userLabel="contactLabel">
+                                    <rect key="frame" x="161" y="8" width="356" height="50"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact name"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="33"/>
+                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <imageView hidden="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFit" image="linphone_user.png" id="G2O-Yh-fZA" userLabel="linphoneImage" customClass="UIRoundedImageView">
+                                    <rect key="frame" x="132" y="8" width="29" height="15"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact avatar">
+                                        <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
+                                        <bool key="isElement" value="YES"/>
+                                    </accessibility>
+                                </imageView>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="11" contentMode="left" text="johndoe@sip.linphone.org" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="XJa-f6-K0y" userLabel="addressLabel">
+                                    <rect key="frame" x="161" y="56" width="356" height="38"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact name"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                    <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" tag="12" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="MRH-yi-acw" userLabel="chatButton">
+                                    <rect key="frame" x="608" y="25" width="51" height="51"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="chat_start_body_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="chat_start_body_disabled.png"/>
+                                    <state key="highlighted" image="chat_start_body_over.png"/>
+                                    <connections>
+                                        <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="ygZ-jT-J3b"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="13" contentMode="scaleAspectFit" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="zZo-Pc-EVi" userLabel="callButton">
+                                    <rect key="frame" x="525" y="25" width="51" height="51"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <state key="normal" image="call_start_body_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_start_body_disabled.png"/>
+                                    <state key="highlighted" image="call_start_body_over.png"/>
+                                    <connections>
+                                        <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="xBV-3j-apE"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <animations/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
+                    </subviews>
+                    <animations/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+            <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="794.5" y="246.5"/>
         </view>
         <tableViewController id="baU-d4-eu3" customClass="HistoryDetailsTableView">
             <connections>

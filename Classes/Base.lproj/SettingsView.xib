@@ -8,9 +8,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SettingsView">
             <connections>
+                <outlet property="backButton" destination="gTj-vM-UtG" id="RTt-uX-4Lf"/>
                 <outlet property="navigationController" destination="10" id="15"/>
                 <outlet property="settingsController" destination="6" id="8"/>
                 <outlet property="subView" destination="Qjf-HX-coQ" id="f2I-hh-aOI"/>
+                <outlet property="titleLabel" destination="SqM-h2-idp" id="shs-j2-U5I"/>
                 <outlet property="view" destination="4" id="9"/>
             </connections>
         </placeholder>
@@ -25,7 +27,7 @@
                     <subviews>
                         <view contentMode="scaleToFill" id="SRV-nz-KWT" userLabel="topBar">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="RyH-Uy-VKo" userLabel="backgroundColor">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
@@ -55,12 +57,27 @@
                                     <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
+                                <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="gTj-vM-UtG" userLabel="backButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Back"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="back_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="back_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="0PT-42-Pyi"/>
+                                    </connections>
+                                </button>
                             </subviews>
                             <animations/>
                         </view>
                         <view contentMode="scaleToFill" id="Qjf-HX-coQ" userLabel="subView">
                             <rect key="frame" x="0.0" y="66" width="375" height="513"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
@@ -74,9 +91,10 @@
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
             <point key="canvasLocation" x="-42.5" y="261.5"/>
         </view>
-        <navigationController definesPresentationContext="YES" id="10" userLabel="navigationController" customClass="UINavigationControllerEx">
+        <navigationController definesPresentationContext="YES" navigationBarHidden="YES" id="10" userLabel="navigationController" customClass="UINavigationControllerEx">
             <extendedEdge key="edgesForExtendedLayout"/>
-            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
             <navigationBar key="navigationBar" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" barStyle="black" translucent="NO" id="11" userLabel="navigationBar" customClass="UINavigationBarEx">
                 <autoresizingMask key="autoresizingMask"/>
                 <animations/>
@@ -88,6 +106,8 @@
         </viewController>
     </objects>
     <resources>
+        <image name="back_default.png" width="24" height="21"/>
+        <image name="back_disabled.png" width="24" height="21"/>
         <image name="color_E.png" width="2" height="2"/>
         <image name="color_F.png" width="2" height="2"/>
         <image name="dialer_back_default.png" width="27" height="27"/>

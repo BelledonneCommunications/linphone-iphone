@@ -395,8 +395,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Sync settings with linphone core settings
 	[settingsStore transformLinphoneCoreToKeys];
-	_settingsController.hiddenKeys = [self findHiddenKeys];
-	[_settingsController.tableView reloadData];
+	[self recomputeAccountLabelsAndSync];
 
 	// Set observer
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -642,26 +641,34 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return hiddenKeys;
 }
 
+- (void)recomputeAccountLabelsAndSync {
+	// it's a bit violent... but IASK is not designed to dynamically change subviews' name
+	_settingsController.hiddenKeys = [self findHiddenKeys];
+	[_settingsController.settingsReader indexPathForKey:@"account_1_menu"]; // force refresh username'
+	[_settingsController.settingsReader indexPathForKey:@"account_2_menu"]; // force refresh username'
+	[_settingsController.settingsReader indexPathForKey:@"account_3_menu"]; // force refresh username'
+	[_settingsController.settingsReader indexPathForKey:@"account_4_menu"]; // force refresh username'
+	[_settingsController.settingsReader indexPathForKey:@"account_5_menu"]; // force refresh username'
+	[[_settingsController tableView] reloadData];
+}
+
 #pragma mark - IASKSettingsDelegate Functions
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender {
 }
 
 - (void)settingsViewControllerWillAppear:(IASKAppSettingsViewController *)sender {
-	// going to account: fill info
+	_backButton.hidden = (sender.file == nil || [sender.file isEqualToString:@"Root"]);
+	_titleLabel.text = sender.title;
+
+	// going to account: fill account specific info
 	if ([sender.file isEqualToString:@"Account"]) {
 		LOGI(@"Going editting account %@", sender.title);
 		[settingsStore transformAccountToKeys:sender.title];
 		// coming back to default: if we were in account, we must synchronize account now
 	} else if ([sender.file isEqualToString:@"Root"]) {
 		[settingsStore synchronize];
-		// it's a bit violent... but IASK is not designed to dynamically change subviews' name
-		[_settingsController.settingsReader indexPathForKey:@"account_1_menu"]; // force refresh username'
-		[_settingsController.settingsReader indexPathForKey:@"account_2_menu"]; // force refresh username'
-		[_settingsController.settingsReader indexPathForKey:@"account_3_menu"]; // force refresh username'
-		[_settingsController.settingsReader indexPathForKey:@"account_4_menu"]; // force refresh username'
-		[_settingsController.settingsReader indexPathForKey:@"account_5_menu"]; // force refresh username'
-		[[_settingsController tableView] reloadData];
+		[self recomputeAccountLabelsAndSync];
 	}
 }
 
@@ -709,17 +716,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[alert addButtonWithTitle:NSLocalizedString(@"Yes", nil)
 							block:^{
 							  [settingsStore removeAccount];
-							  _settingsController.hiddenKeys = [self findHiddenKeys];
-							  [_settingsController.settingsReader
-								  indexPathForKey:@"account_1_menu"]; // force refresh username'
-							  [_settingsController.settingsReader
-								  indexPathForKey:@"account_2_menu"]; // force refresh username'
-							  [_settingsController.settingsReader
-								  indexPathForKey:@"account_3_menu"]; // force refresh username'
-							  [_settingsController.settingsReader
-								  indexPathForKey:@"account_4_menu"]; // force refresh username'
-							  [_settingsController.settingsReader
-								  indexPathForKey:@"account_5_menu"]; // force refresh username'
+							  [self recomputeAccountLabelsAndSync];
 							  [_settingsController.navigationController popViewControllerAnimated:NO];
 							}];
 		[alert show];
@@ -847,9 +844,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDialerBackClick:(id)sender {
-	[settingsStore synchronize];
+	[_settingsController.navigationController popViewControllerAnimated:NO];
 
 	DialerView *view = VIEW(DialerView);
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+- (IBAction)onBackClick:(id)sender {
+	[_settingsController.navigationController popViewControllerAnimated:YES];
 }
 @end

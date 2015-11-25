@@ -25,7 +25,7 @@
 #import "HistoryDetailsTableView.h"
 #import "UIRoundedImageView.h"
 
-@interface HistoryDetailsView : UIViewController <UICompositeViewDelegate> {
+@interface HistoryDetailsView : TPMultiLayoutViewController <UICompositeViewDelegate> {
   @private
 	LinphoneCallLog *callLog;
 }

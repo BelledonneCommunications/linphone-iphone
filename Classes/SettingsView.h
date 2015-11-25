@@ -32,6 +32,10 @@
 @property(nonatomic, strong) IBOutlet UINavigationController *navigationController;
 @property(nonatomic, strong) IBOutlet IASKAppSettingsViewController *settingsController;
 @property(weak, nonatomic) IBOutlet UIView *subView;
+@property(weak, nonatomic) IBOutlet UIButton *backButton;
+@property(weak, nonatomic) IBOutlet UILabel *titleLabel;
+
 - (IBAction)onDialerBackClick:(id)sender;
+- (IBAction)onBackClick:(id)sender;
 
 @end
