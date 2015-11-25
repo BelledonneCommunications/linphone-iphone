@@ -520,7 +520,7 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 				(belle_sip_header_t *)belle_sip_header_content_type_create(linphone_content_get_type(core->log_collection_upload_information), linphone_content_get_subtype(core->log_collection_upload_information)));
 
 			/* Insert it in a multipart body handler which will manage the boundaries of multipart message */
-			bh = belle_sip_multipart_body_handler_new(log_collection_upload_on_progress, core, (belle_sip_body_handler_t *)first_part_bh);
+			bh = belle_sip_multipart_body_handler_new(log_collection_upload_on_progress, core, (belle_sip_body_handler_t *)first_part_bh, NULL);
 			ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
 			uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
 			req = belle_http_request_create("POST", uri, belle_sip_header_create("User-Agent", ua), NULL);
