@@ -71,7 +71,6 @@ static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend
 static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
 static void linphone_gtk_display_status(LinphoneCore *lc, const char *status);
 static void linphone_gtk_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
-static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg);
 static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
 static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const char *url);
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
@@ -267,12 +266,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	vtable.notify_presence_received=linphone_gtk_notify_recv;
 	vtable.new_subscription_requested=linphone_gtk_new_unknown_subscriber;
 	vtable.auth_info_requested=linphone_gtk_auth_info_requested;
-	vtable.display_status=linphone_gtk_display_status;
-	vtable.display_message=linphone_gtk_display_message;
-	vtable.display_warning=linphone_gtk_display_warning;
-	vtable.display_url=linphone_gtk_display_url;
 	vtable.call_log_updated=linphone_gtk_call_log_updated;
-	//vtable.text_received=linphone_gtk_text_received;
 	vtable.message_received=linphone_gtk_text_received;
 	vtable.is_composing_received=linphone_gtk_is_composing_received;
 	vtable.refer_received=linphone_gtk_refer_received;
@@ -1133,32 +1127,10 @@ static void linphone_gtk_dtmf_received(LinphoneCore *lc, LinphoneCall *call, int
 	ms_message("Dtmf %c received.",dtmf);
 }
 
-static void linphone_gtk_display_status(LinphoneCore *lc, const char *status){
-	GtkWidget *w=linphone_gtk_get_main_window();
-	GtkWidget *status_bar=linphone_gtk_get_widget(w,"status_bar");
-
-	gtk_statusbar_push(GTK_STATUSBAR(status_bar),
-			gtk_statusbar_get_context_id(GTK_STATUSBAR(status_bar),""),
-			status);
-}
 
 static void linphone_gtk_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
 	if (config_fetching_dialog) linphone_gtk_close_config_fetching(config_fetching_dialog, status);
 	config_fetching_dialog=NULL;
-}
-
-static void linphone_gtk_display_message(LinphoneCore *lc, const char *msg){
-	linphone_gtk_display_something(GTK_MESSAGE_INFO,msg);
-}
-
-static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning){
-	linphone_gtk_display_something(GTK_MESSAGE_WARNING,warning);
-}
-
-static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const char *url){
-	char richtext[4096];
-	snprintf(richtext,sizeof(richtext),"%s %s",msg,url);
-	linphone_gtk_display_something(GTK_MESSAGE_INFO,richtext);
 }
 
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl){
@@ -1624,7 +1596,7 @@ void linphone_gtk_load_identities(void){
 		store=GTK_LIST_STORE(gtk_combo_box_get_model(box));
 	}
 	gtk_list_store_clear(store);
-	linphone_core_get_default_proxy(linphone_gtk_get_core(),&def);
+	def = linphone_core_get_default_proxy_config(linphone_gtk_get_core());
 	def_identity=g_strdup_printf(_("%s (Default)"),linphone_core_get_primary_contact(linphone_gtk_get_core()));
 	gtk_list_store_append(store,&iter);
 	gtk_list_store_set(store,&iter,0,def_identity,1,NULL,2,NULL,-1);
@@ -1651,7 +1623,7 @@ static void linphone_gtk_dtmf_pressed(GtkButton *button){
 	gtk_editable_insert_text(GTK_EDITABLE(uri_bar),label,1,&pos);
 	linphone_core_play_dtmf (linphone_gtk_get_core(),label[0],-1);
 	if (linphone_core_in_call(linphone_gtk_get_core())){
-		linphone_core_send_dtmf(linphone_gtk_get_core(),label[0]);
+		linphone_call_send_dtmf(linphone_core_get_current_call(linphone_gtk_get_core()),label[0]);
 	}
 }
 
@@ -1738,8 +1710,7 @@ static void linphone_gtk_configure_main_window(void){
 
 void linphone_gtk_manage_login(void){
 	LinphoneCore *lc=linphone_gtk_get_core();
-	LinphoneProxyConfig *cfg=NULL;
-	linphone_core_get_default_proxy(lc,&cfg);
+	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(lc);
 	if (cfg){
 		SipSetup *ss=linphone_proxy_config_get_sip_setup(cfg);
 		if (ss && (sip_setup_get_capabilities(ss) & SIP_SETUP_CAP_LOGIN)){

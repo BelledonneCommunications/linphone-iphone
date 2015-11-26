@@ -3360,11 +3360,11 @@ LINPHONE_PUBLIC bool_t linphone_core_video_supported(LinphoneCore *lc);
 LINPHONE_PUBLIC	LINPHONE_DEPRECATED void linphone_core_enable_video(LinphoneCore *lc, bool_t vcap_enabled, bool_t display_enabled);
 
 /**
- * Returns TRUE if video is enabled, FALSE otherwise.
+ * Returns TRUE if either capture or display is enabled, FALSE otherwise.
+ * same as  ( #linphone_core_video_capture_enabled | #linphone_core_video_display_enabled )
  * @ingroup media_parameters
- * @deprecated Use #linphone_core_video_capture_enabled and #linphone_core_video_display_enabled instead.
 **/
-LINPHONE_PUBLIC LINPHONE_DEPRECATED bool_t linphone_core_video_enabled(LinphoneCore *lc);
+LINPHONE_PUBLIC  bool_t linphone_core_video_enabled(LinphoneCore *lc);
 
 /**
  * Enable or disable video capture.

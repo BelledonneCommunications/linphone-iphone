@@ -93,7 +93,7 @@ void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc){
 	}
 	/*to ensure removed configs are erased:*/
 	linphone_proxy_config_write_to_config_file(lc->config,NULL,i);
-	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy(lc,NULL));
+	lp_config_set_int(lc->config,"sip","default_proxy",linphone_core_get_default_proxy_config_index(lc));
 }
 
 static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cfg) {
@@ -1167,7 +1167,7 @@ void linphone_core_clear_proxy_config(LinphoneCore *lc){
 	linphone_proxy_config_write_all_to_config_file(lc);
 }
 
-static int linphone_core_get_default_proxy_config_index(LinphoneCore *lc) {
+int linphone_core_get_default_proxy_config_index(LinphoneCore *lc) {
 	int pos = -1;
 	if (lc->default_proxy != NULL) {
 		pos = ms_list_position(lc->sip_conf.proxies, ms_list_find(lc->sip_conf.proxies, (void *)lc->default_proxy));
