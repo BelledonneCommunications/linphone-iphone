@@ -292,10 +292,10 @@
 		NSString *accessibilityValue = [NSString stringWithFormat:NSLocalizedString(@"Call quality: %d", nil), quality];
 		if (![accessibilityValue isEqualToString:_callQualityButton.accessibilityValue]) {
 			_callQualityButton.accessibilityValue = accessibilityValue;
-			_callQualityButton.hidden = (quality == -1.f);
+			_callQualityButton.hidden = NO; //(quality == -1.f);
 			UIImage *image =
 				(quality == -1.f)
-					? nil
+					? [UIImage imageNamed:@"call_quality_indicator_0.png"] // nil
 					: [UIImage imageNamed:[NSString stringWithFormat:@"call_quality_indicator_%d.png", quality]];
 			[_callQualityButton setImage:image forState:UIControlStateNormal];
 		}

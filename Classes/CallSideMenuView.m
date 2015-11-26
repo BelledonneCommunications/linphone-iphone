@@ -63,38 +63,39 @@
 
 - (NSString *)updateStatsForCall:(LinphoneCall *)call stream:(LinphoneStreamType)stream {
 	NSMutableString *result = [[NSMutableString alloc] init];
-	const PayloadType *payload;
+	const PayloadType *payload = NULL;
 	const LinphoneCallStats *stats;
 	const LinphoneCallParams *params = linphone_call_get_current_params(call);
-
-	[result appendString:@"\n"];
+	NSString *name;
 
 	switch (stream) {
 		case LinphoneStreamTypeAudio:
-			[result appendString:@"Audio"];
+			name = @"Audio";
 			payload = linphone_call_params_get_used_audio_codec(params);
 			stats = linphone_call_get_audio_stats(call);
 			break;
 		case LinphoneStreamTypeText:
-			[result appendString:@"Text"];
+			name = @"Text";
 			payload = linphone_call_params_get_used_text_codec(params);
 			stats = linphone_call_get_text_stats(call);
 			break;
 		case LinphoneStreamTypeVideo:
-			[result appendString:@"Video"];
+			name = @"Video";
 			payload = linphone_call_params_get_used_video_codec(params);
 			stats = linphone_call_get_video_stats(call);
 			break;
 		case LinphoneStreamTypeUnknown:
-			return @"Unsupported stream type";
+			break;
 	}
-	[result appendString:@"\n"];
-
 	if (payload == NULL) {
-		[result appendString:NSLocalizedString(@"Not enabled yet", nil)];
-		[result appendString:@"\n"];
 		return result;
 	}
+
+	[result appendString:@"\n"];
+	[result appendString:name];
+	[result appendString:@"\n"];
+	[result appendString:NSLocalizedString(@"Not enabled yet", nil)];
+	[result appendString:@"\n"];
 
 	[result appendString:[NSString stringWithFormat:@"Codec: %s/%iHz", payload->mime_type, payload->clock_rate]];
 	if (stream == LinphoneStreamTypeAudio) {
