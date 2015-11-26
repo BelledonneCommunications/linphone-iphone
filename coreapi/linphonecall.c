@@ -3434,7 +3434,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 		linphone_call_start_video_stream(call, next_state);
 	}
 	/*the onhold file is to be played once both audio and video are ready.*/
-	if (call->onhold_file && call->audiostream){
+	if (call->onhold_file && !call->params->in_conference && call->audiostream){
 		MSFilter *player = audio_stream_open_remote_play(call->audiostream, call->onhold_file);
 		if (player){
 			ms_filter_call_method_noarg(player, MS_PLAYER_START);
