@@ -2929,6 +2929,16 @@ static RtpSession * create_audio_rtp_io_session(LinphoneCall *call) {
 	return rtp_session;
 }
 
+static void linphone_call_set_on_hold_file(LinphoneCall *call, const char *file){
+	if (call->onhold_file){
+		ms_free(call->onhold_file);
+		call->onhold_file = NULL;
+	}
+	if (file){
+		call->onhold_file = ms_strdup(file);
+	}
+}
+
 static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallState next_state, bool_t use_arc){
 	LinphoneCore *lc=call->core;
 	int used_pt=-1;
@@ -3069,12 +3079,6 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 					&io);
 				if (err == 0){
 					post_configure_audio_streams(call, (call->all_muted || call->audio_muted) && !call->playing_ringbacktone);
-					if (file_to_play){
-						MSFilter *player = audio_stream_open_remote_play(call->audiostream, file_to_play);
-						if (player){
-							ms_filter_call_method_noarg(player, MS_PLAYER_START);
-						}
-					}
 				}
 			}
 
@@ -3097,6 +3101,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 			call->current_params->low_bandwidth=call->params->low_bandwidth;
 		}else ms_warning("No audio stream accepted ?");
 	}
+	linphone_call_set_on_hold_file(call, file_to_play);
 }
 
 #ifdef VIDEO_ENABLED
@@ -3427,6 +3432,13 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 	if (call->videostream!=NULL) {
 		if (call->audiostream) audio_stream_link_video(call->audiostream,call->videostream);
 		linphone_call_start_video_stream(call, next_state);
+	}
+	/*the onhold file is to be played once both audio and video are ready.*/
+	if (call->onhold_file && call->audiostream){
+		MSFilter *player = audio_stream_open_remote_play(call->audiostream, call->onhold_file);
+		if (player){
+			ms_filter_call_method_noarg(player, MS_PLAYER_START);
+		}
 	}
 
 	call->up_bw=linphone_core_get_upload_bandwidth(lc);

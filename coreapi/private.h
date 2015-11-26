@@ -318,6 +318,7 @@ struct _LinphoneCall{
 	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
 	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
+	char *onhold_file; /*set if a on-hold file is to be played*/
 	LinphoneChatRoom *chat_room;
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
