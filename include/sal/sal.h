@@ -55,6 +55,10 @@ struct SalAddress;
 
 typedef struct SalAddress SalAddress;
 
+struct SalBodyHandler;
+
+typedef struct SalBodyHandler SalBodyHandler;
+
 struct SalCustomHeader;
 
 typedef struct SalCustomHeader SalCustomHeader;
@@ -453,14 +457,6 @@ typedef struct SalAuthInfo{
 	SalCertificatesChain *certificates;
 }SalAuthInfo;
 
-typedef struct SalBody{
-	const char *type;
-	const char *subtype;
-	const void *data;
-	size_t size;
-	const char *encoding;
-}SalBody;
-
 typedef void (*SalOnCallReceived)(SalOp *op);
 typedef void (*SalOnCallRinging)(SalOp *op);
 typedef void (*SalOnCallAccepted)(SalOp *op);
@@ -482,8 +478,8 @@ typedef void (*SalOnTextDeliveryUpdate)(SalOp *op, SalTextDeliveryStatus);
 typedef void (*SalOnIsComposingReceived)(SalOp *op, const SalIsComposing *is_composing);
 typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
 typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status);
-typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, const SalBody *body);
-typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *event, const SalBody *body);
+typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, SalBodyHandler *body);
+typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *event, const SalBodyHandler *body);
 typedef void (*SalOnSubscribeClosed)(SalOp *salop);
 typedef void (*SalOnParsePresenceRequested)(SalOp *salop, const char *content_type, const char *content_subtype, const char *content, SalPresenceModel **result);
 typedef void (*SalOnConvertPresenceToXMLRequested)(SalOp *salop, SalPresenceModel *presence, const char *contact, char **content);
@@ -491,7 +487,7 @@ typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenc
 typedef void (*SalOnSubscribePresenceReceived)(SalOp *salop, const char *from);
 typedef void (*SalOnSubscribePresenceClosed)(SalOp *salop, const char *from);
 typedef void (*SalOnPingReply)(SalOp *salop);
-typedef void (*SalOnInfoReceived)(SalOp *salop, const SalBody *body);
+typedef void (*SalOnInfoReceived)(SalOp *salop, SalBodyHandler *body);
 typedef void (*SalOnPublishResponse)(SalOp *salop);
 typedef void (*SalOnExpire)(SalOp *salop);
 /*allows sal implementation to access auth info if available, return TRUE if found*/
@@ -739,16 +735,16 @@ int sal_publish_presence(SalOp *op, const char *from, const char *to, int expire
 int sal_ping(SalOp *op, const char *from, const char *to);
 
 /*info messages*/
-int sal_send_info(SalOp *op, const char *from, const char *to, const SalBody *body);
+int sal_send_info(SalOp *op, const char *from, const char *to, const SalBodyHandler *body);
 
 /*generic subscribe/notify/publish api*/
-int sal_subscribe(SalOp *op, const char *from, const char *to, const char *eventname, int expires, const SalBody *body);
+int sal_subscribe(SalOp *op, const char *from, const char *to, const char *eventname, int expires, const SalBodyHandler *body);
 int sal_unsubscribe(SalOp *op);
 int sal_subscribe_accept(SalOp *op);
 int sal_subscribe_decline(SalOp *op, SalReason reason);
-int sal_notify(SalOp *op, const SalBody *body);
+int sal_notify(SalOp *op, const SalBodyHandler *body);
 int sal_notify_close(SalOp *op);
-int sal_publish(SalOp *op, const char *from, const char *to, const char*event_name, int expires, const SalBody *body);
+int sal_publish(SalOp *op, const char *from, const char *to, const char*event_name, int expires, const SalBodyHandler *body);
 
 /*privacy, must be in sync with LinphonePrivacyMask*/
 typedef enum _SalPrivacy {
@@ -844,7 +840,21 @@ unsigned char * sal_get_random_bytes(unsigned char *ret, size_t size);
 belle_sip_source_t * sal_create_timer(Sal *sal, belle_sip_source_func_t func, void *data, unsigned int timeout_value_ms, const char* timer_name);
 void sal_cancel_timer(Sal *sal, belle_sip_source_t *timer);
 
-int sal_body_has_type(const SalBody *body, const char *type, const char *subtype);
+//SalBodyHandler * sal_body_handler_new(const char *type, const char *subtype, void *data, size_t size, const char *encoding);
+SalBodyHandler * sal_body_handler_new(void);
+SalBodyHandler * sal_body_handler_ref(SalBodyHandler *body_handler);
+void sal_body_handler_unref(SalBodyHandler *body_handler);
+const char * sal_body_handler_get_type(const SalBodyHandler *body_handler);
+void sal_body_handler_set_type(SalBodyHandler *body_handler, const char *type);
+const char * sal_body_handler_get_subtype(const SalBodyHandler *body_handler);
+void sal_body_handler_set_subtype(SalBodyHandler *body_handler, const char *subtype);
+const char * sal_body_handler_get_encoding(const SalBodyHandler *body_handler);
+void sal_body_handler_set_encoding(SalBodyHandler *body_handler, const char *encoding);
+void * sal_body_handler_get_data(const SalBodyHandler *body_handler);
+void sal_body_handler_set_data(SalBodyHandler *body_handler, void *data);
+size_t sal_body_handler_get_size(const SalBodyHandler *body_handler);
+void sal_body_handler_set_size(SalBodyHandler *body_handler, size_t size);
+
 /*this function parses a document with key=value pairs separated by new lines, and extracts the value for a given key*/
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size);
 

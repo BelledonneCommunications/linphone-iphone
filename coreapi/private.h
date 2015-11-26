@@ -1071,10 +1071,10 @@ const char *linphone_core_create_uuid(LinphoneCore *lc);
 void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact);
 void linphone_call_create_op(LinphoneCall *call);
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer);
-void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body);
+void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, SalBodyHandler *body);
 LinphoneContent * linphone_content_new(void);
 LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
-SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *content);
+SalBodyHandler *sal_body_handler_from_content(const LinphoneContent *content);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
@@ -1086,14 +1086,18 @@ LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp 
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
-LinphoneContent *linphone_content_from_sal_body(const SalBody *ref);
+LinphoneContent *linphone_content_from_sal_body_handler(SalBodyHandler *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
 
 
 struct _LinphoneContent {
 	belle_sip_object_t base;
 	void *user_data;
-	struct _LinphoneContentPrivate lcp;
+	SalBodyHandler *body_handler;
+	char *name; /**< used by RCS File transfer messages to store the original filename of the file to be downloaded from server */
+	char *key; /**< used by RCS File transfer messages to store the key to encrypt file if needed */
+	size_t keyLength; /**< Length of key in bytes */
+	void *cryptoContext; /**< crypto context used to encrypt file for RCS file transfer */
 	bool_t owned_fields;
 };
 

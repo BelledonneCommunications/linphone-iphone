@@ -1276,9 +1276,9 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	}
 }
 
-static void info_received(SalOp *op, const SalBody *body){
+static void info_received(SalOp *op, SalBodyHandler *body_handler){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	linphone_core_notify_info_message(lc,op,body);
+	linphone_core_notify_info_message(lc,op,body_handler);
 }
 
 static void subscribe_response(SalOp *op, SalSubscribeStatus status){
@@ -1299,7 +1299,7 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 	}
 }
 
-static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, const SalBody *body){
+static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, SalBodyHandler *body_handler){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 
@@ -1308,7 +1308,7 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, cons
 		lev=linphone_event_new_with_out_of_dialog_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
 	}
 	{
-		LinphoneContent *ct=linphone_content_from_sal_body(body);
+		LinphoneContent *ct=linphone_content_from_sal_body_handler(body_handler);
 		if (ct) linphone_core_notify_notify_received(lc,lev,eventname,ct);
 	}
 	if (st!=SalSubscribeNone){
@@ -1316,7 +1316,7 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, cons
 	}
 }
 
-static void subscribe_received(SalOp *op, const char *eventname, const SalBody *body){
+static void subscribe_received(SalOp *op, const char *eventname, const SalBodyHandler *body_handler){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 
