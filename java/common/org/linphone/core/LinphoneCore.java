@@ -2220,4 +2220,15 @@ public interface LinphoneCore {
 	**/
 	public int getHttpProxyPort();
 
+	/*
+	 * Set the nortp timeout (timeout after which call is closed if no RTP or RTCP packets are received).
+	 */
+	public void setNortpTimeout(int seconds);
+
+	/**
+	 * Get the nortp timeout.
+	 * @return
+	 */
+	public int getNortpTimeout();
+
 }
