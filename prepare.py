@@ -378,6 +378,60 @@ help: help-prepare-options
     gpl_disclaimer(platforms)
 
 
+def list_features_with_args(debug, additional_args):
+    tmpdir = tempfile.mkdtemp(prefix="linphone-iphone")
+    tmptarget = IOSarm64Target()
+    tmptarget.abs_cmake_dir = tmpdir
+
+    option_regex = re.compile("ENABLE_(.*):(.*)=(.*)")
+    options = {}
+    ended = True
+    build_type = 'Debug' if debug else 'Release'
+
+    for line in Popen(tmptarget.cmake_command(build_type, False, True, additional_args, verbose=False),
+                      cwd=tmpdir, shell=False, stdout=PIPE).stdout.readlines():
+        match = option_regex.match(line)
+        if match is not None:
+            (name, typeof, value) = match.groups()
+            options["ENABLE_{}".format(name)] = value
+            ended &= (value == 'ON')
+    shutil.rmtree(tmpdir)
+    return (options, ended)
+
+
+def list_features(debug, args):
+    additional_args = args
+    options = {}
+    info("Searching for available features...")
+    # We have to iterate multiple times to activate ALL options, so that options depending
+    # of others are also listed (cmake_dependent_option macro will not output options if
+    # prerequisite is not met)
+    while True:
+        (options, ended) = list_features_with_args(debug, additional_args)
+        if ended:
+            break
+        else:
+            additional_args = []
+            # Activate ALL available options
+            for k in options.keys():
+                additional_args.append("-D{}=ON".format(k))
+
+    # Now that we got the list of ALL available options, we must correct default values
+    # Step 1: all options are turned off by default
+    for x in options.keys():
+        options[x] = 'OFF'
+    # Step 2: except options enabled when running with default args
+    (options_tmp, ended) = list_features_with_args(debug, args)
+    final_dict = dict(options.items() + options_tmp.items())
+
+    notice_features = "Here are available features:"
+    for k, v in final_dict.items():
+        notice_features += "\n\t{}={}".format(k, v)
+    info(notice_features)
+    info("To enable some feature, please use -DENABLE_SOMEOPTION=ON (example: -DENABLE_OPUS=ON)")
+    info("Similarly, to disable some feature, please use -DENABLE_SOMEOPTION=OFF (example: -DENABLE_OPUS=OFF)")
+
+
 def main(argv=None):
     basicConfig(format="%(levelname)s: %(message)s", level=INFO)
 
@@ -402,13 +456,13 @@ def main(argv=None):
     argparser.add_argument(
         '-G', '--generator', help="CMake build system generator (default: Unix Makefiles, use cmake -h to get the complete list).", default='Unix Makefiles', dest='generator')
     argparser.add_argument(
-        '-L', '--list-cmake-variables', help="List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
-    argparser.add_argument(
         '-lf', '--list-features', help="List optional features and their default values.", action='store_true', dest='list_features')
     argparser.add_argument(
         '-t', '--tunnel', help="Enable Tunnel.", action='store_true')
     argparser.add_argument('platform', nargs='*', action=PlatformListAction, default=[
                            'x86_64', 'devices'], help="The platform to build for (default is 'x86_64 devices'). Space separated architectures in list: {0}.".format(', '.join([repr(platform) for platform in platforms])))
+    argparser.add_argument(
+        '-L', '--list-cmake-variables', help="(debug) List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
 
     args, additional_args = argparser.parse_known_args()
 
@@ -444,7 +498,7 @@ def main(argv=None):
     if args.disable_gpl_third_parties is True:
         additional_args += ["-DENABLE_GPL_THIRD_PARTIES=NO"]
 
-    if args.tunnel or os.path.isdir("submodules/tunnel"):
+    if args.tunnel:
         if not os.path.isdir("submodules/tunnel"):
             info("Tunnel wanted but not found yet, trying to clone it...")
             p = Popen("git clone gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" "))
@@ -456,22 +510,7 @@ def main(argv=None):
         additional_args += ["-DENABLE_TUNNEL=ON", "-DENABLE_GPL_THIRD_PARTIES=OFF"]
 
     if args.list_features:
-        tmpdir = tempfile.mkdtemp(prefix="linphone-iphone")
-        tmptarget = IOSarm64Target()
-        tmptarget.abs_cmake_dir = tmpdir
-
-        option_regex = re.compile("ENABLE_(.*):(.*)=(.*)")
-        option_list = [""]
-        build_type = 'Debug' if args.debug else 'Release'
-        for line in Popen(tmptarget.cmake_command(build_type, False, True, additional_args),
-                          cwd=tmpdir, shell=False, stdout=PIPE).stdout.readlines():
-            match = option_regex.match(line)
-            if match is not None:
-                option_list.append("ENABLE_{} (is currently {})".format(match.groups()[0], match.groups()[2]))
-        info("Here is the list of available features: {}".format("\n\t".join(option_list)))
-        info("To enable some feature, please use -DENABLE_SOMEOPTION=ON")
-        info("Similarly, to disable some feature, please use -DENABLE_SOMEOPTION=OFF")
-        shutil.rmtree(tmpdir)
+        list_features(args.debug, additional_args)
         return 0
 
     selected_platforms_dup = []
