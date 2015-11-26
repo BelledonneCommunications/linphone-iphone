@@ -69,10 +69,7 @@ static void linphone_gtk_registration_state_changed(LinphoneCore *lc, LinphonePr
 static void linphone_gtk_notify_recv(LinphoneCore *lc, LinphoneFriend * fid);
 static void linphone_gtk_new_unknown_subscriber(LinphoneCore *lc, LinphoneFriend *lf, const char *url);
 static void linphone_gtk_auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain);
-static void linphone_gtk_display_status(LinphoneCore *lc, const char *status);
 static void linphone_gtk_configuring_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message);
-static void linphone_gtk_display_warning(LinphoneCore *lc, const char *warning);
-static void linphone_gtk_display_url(LinphoneCore *lc, const char *msg, const char *url);
 static void linphone_gtk_call_log_updated(LinphoneCore *lc, LinphoneCallLog *cl);
 static void linphone_gtk_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cs, const char *msg);
 static void linphone_gtk_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t enabled, const char *token);
