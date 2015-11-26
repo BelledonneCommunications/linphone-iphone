@@ -61,11 +61,14 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (PhoneMainView *)setViewControllerForDescription:(UICompositeViewDescription *)description {
-	PhoneMainView *newMainView = description.landscapeMode ? self.rotatingViewController : self.portraitViewController;
+	return currentViewController;
 
-	if (true || LinphoneManager.runningOnIpad)
+// not sure what this code was doing... but since iphone does support rotation as well now...
+#if 0
+	if (LinphoneManager.runningOnIpad)
 		return currentViewController;
 
+	PhoneMainView *newMainView = description.landscapeMode ? self.rotatingViewController : self.portraitViewController;
 	if (newMainView != currentViewController) {
 		PhoneMainView *previousMainView = currentViewController;
 		UIInterfaceOrientation nextViewOrientation = newMainView.interfaceOrientation;
@@ -107,6 +110,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		}
 	}
 	return currentViewController;
+#endif
 }
 
 @end

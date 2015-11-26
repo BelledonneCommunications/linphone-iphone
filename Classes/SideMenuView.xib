@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SideMenuView">
@@ -71,7 +71,7 @@
                                 <outletCollection property="gestureRecognizers" destination="1kD-az-BAx" appends="YES" id="OGc-fj-HQy"/>
                             </connections>
                         </view>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Ttt-1k-jAm">
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" style="plain" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Ttt-1k-jAm">
                             <rect key="frame" x="0.0" y="100" width="300" height="525"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
@@ -97,7 +97,6 @@
         <tableViewController id="Yyh-z6-IGO" customClass="SideMenuTableView">
             <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
-            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
             <connections>
                 <outlet property="view" destination="Ttt-1k-jAm" id="Njc-lf-vXv"/>
             </connections>
@@ -119,9 +118,4 @@
         <image name="color_F.png" width="2" height="2"/>
         <image name="led_connected.png" width="11" height="11"/>
     </resources>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4"/>
-    </simulatedMetricsContainer>
 </document>

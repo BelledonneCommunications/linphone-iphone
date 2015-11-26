@@ -113,8 +113,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+- (void)fitContent {
+	// always resize content view so that it fits whole available width
+	CGRect frame = currentView.frame;
+	frame.size.width = _contentView.bounds.size.width;
+	currentView.frame = frame;
+
+	[_contentView setContentSize:frame.size];
 	[_contentView contentSizeToFit];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	[self fitContent];
 }
 
 #pragma mark - Utils
@@ -300,9 +310,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Set current view
 	currentView = view;
-	[_contentView insertSubview:view atIndex:0];
-	[view setFrame:[_contentView bounds]];
-	[_contentView setContentSize:[view bounds].size];
+	[_contentView insertSubview:currentView atIndex:0];
+	[_contentView setContentOffset:CGPointMake(0, -_contentView.contentInset.top) animated:NO];
+	[self fitContent];
 
 	// Resize next button to fix text length
 	UIButton *button = [self findButton:ViewElement_NextButton];
