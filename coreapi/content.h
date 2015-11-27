@@ -174,15 +174,37 @@ LINPHONE_PUBLIC const char * linphone_content_get_name(const LinphoneContent *co
  */
 LINPHONE_PUBLIC void linphone_content_set_name(LinphoneContent *content, const char *name);
 
+/**
+ * Tell whether a content is a multipart content.
+ * @param[in] content LinphoneContent object.
+ * @return A boolean value telling whether the content is multipart or not.
+ */
 LINPHONE_PUBLIC bool_t linphone_content_is_multipart(const LinphoneContent *content);
 
-LINPHONE_PUBLIC LinphoneContent * linphone_content_get_part(const LinphoneContent *content);
+/**
+ * Get a part from a multipart content according to its index.
+ * @param[in] content LinphoneContent object.
+ * @param[in] idx The index of the part to get.
+ * @return A LinphoneContent object holding the part if found, NULL otherwise.
+ */
+LINPHONE_PUBLIC LinphoneContent * linphone_content_get_part(const LinphoneContent *content, int idx);
 
-LINPHONE_PUBLIC void linphone_content_add_part(LinphoneContent *content, LinphoneContent *part);
+/**
+ * Find a part from a multipart content looking for a part header with a specified value.
+ * @param[in] content LinphoneContent object.
+ * @param[in] header_name The name of the header to look for.
+ * @param[in] header_value The value of the header to look for.
+ * @return A LinphoneContent object object the part if found, NULL otherwise.
+ */
+LINPHONE_PUBLIC LinphoneContent * linphone_content_find_part_by_header(const LinphoneContent *content, const char *header_name, const char *header_value);
 
+/**
+ * Get a custom header value of a content.
+ * @param[in] content LinphoneContent object.
+ * @param[in] header_name The name of the header to get the value from.
+ * @return The value of the header if found, NULL otherwise.
+ */
 LINPHONE_PUBLIC const char * linphone_content_get_custom_header(const LinphoneContent *content, const char *header_name);
-
-LINPHONE_PUBLIC void linphone_content_add_custom_header(LinphoneContent *content, const char *header_name, const char *header_value);
 
 /**
  * @}

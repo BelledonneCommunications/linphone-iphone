@@ -196,28 +196,26 @@ void ** linphone_content_get_cryptoContext_address(LinphoneContent *content) {
 }
 
 bool_t linphone_content_is_multipart(const LinphoneContent *content) {
-	// TODO
-	return FALSE;
+	return sal_body_handler_is_multipart(content->body_handler);
 }
 
-LinphoneContent * linphone_content_get_part(const LinphoneContent *content) {
-	// TODO
-	return NULL;
+LinphoneContent * linphone_content_get_part(const LinphoneContent *content, int idx) {
+	SalBodyHandler *part_body_handler;
+	if (!linphone_content_is_multipart(content)) return NULL;
+	part_body_handler = sal_body_handler_get_part(content->body_handler, idx);
+	return linphone_content_from_sal_body_handler(part_body_handler);
 }
 
-void linphone_content_add_part(LinphoneContent *content, LinphoneContent *part) {
-	// TODO
+LinphoneContent * linphone_content_find_part_by_header(const LinphoneContent *content, const char *header_name, const char *header_value) {
+	SalBodyHandler *part_body_handler;
+	if (!linphone_content_is_multipart(content)) return NULL;
+	part_body_handler = sal_body_handler_find_part_by_header(content->body_handler, header_name, header_value);
+	return linphone_content_from_sal_body_handler(part_body_handler);
 }
 
 const char * linphone_content_get_custom_header(const LinphoneContent *content, const char *header_name) {
-	// TODO
-	return NULL;
+	return sal_body_handler_get_header(content->body_handler, header_name);
 }
-
-void linphone_content_add_custom_header(LinphoneContent *content, const char *header_name, const char *header_value) {
-	// TODO
-}
-
 
 
 LinphoneContent * linphone_content_new(void) {

@@ -854,6 +854,10 @@ void * sal_body_handler_get_data(const SalBodyHandler *body_handler);
 void sal_body_handler_set_data(SalBodyHandler *body_handler, void *data);
 size_t sal_body_handler_get_size(const SalBodyHandler *body_handler);
 void sal_body_handler_set_size(SalBodyHandler *body_handler, size_t size);
+bool_t sal_body_handler_is_multipart(const SalBodyHandler *body_handler);
+SalBodyHandler * sal_body_handler_get_part(const SalBodyHandler *body_handler, int idx);
+SalBodyHandler * sal_body_handler_find_part_by_header(const SalBodyHandler *body_handler, const char *header_name, const char *header_value);
+const char * sal_body_handler_get_header(const SalBodyHandler *body_handler, const char *header_name);
 
 /*this function parses a document with key=value pairs separated by new lines, and extracts the value for a given key*/
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size);
