@@ -83,7 +83,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 
 - (NSString *)displayNameForContact:(ABRecordRef)person {
 	NSString *name = [FastAddressBook displayNameForContact:person];
-	if (name != nil && [name length] > 0 && ![name isEqualToString:NSLocalizedString(@"Unkonwn", nil)]) {
+	if (name != nil && [name length] > 0 && ![name isEqualToString:NSLocalizedString(@"Unknown", nil)]) {
 		// Add the contact only if it fuzzy match filter too (if any)
 		if ([ContactSelection getNameOrEmailFilter] == nil ||
 			(ms_strcmpfuz([[[ContactSelection getNameOrEmailFilter] lowercaseString] UTF8String],
