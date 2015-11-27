@@ -13,6 +13,7 @@
 
 INIT_WITH_COMMON {
 	self.delegate = self;
+	return self;
 }
 
 - (void)showError:(NSString *)msg {

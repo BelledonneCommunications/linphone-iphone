@@ -124,4 +124,4 @@ typedef enum {
 		[self commonInit];                                                                                             \
 		return self;                                                                                                   \
 	}                                                                                                                  \
-	-(void)commonInit
+	-(instancetype)commonInit

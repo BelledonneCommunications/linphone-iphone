@@ -79,7 +79,7 @@
                             <rect key="frame" x="0.0" y="66" width="375" height="250"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="avatar.png" id="23" userLabel="avatarImage" customClass="UIRoundedImageView">
+                                <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFill" image="avatar.png" id="23" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="137" y="8" width="100" height="100"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -97,7 +97,7 @@
                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <imageView hidden="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFit" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
+                                <imageView hidden="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFill" image="linphone_user.png" id="mfN-Ai-9RX" userLabel="linphoneImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="245" y="39" width="21" height="37"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -215,7 +215,7 @@
                             <rect key="frame" x="0.0" y="66" width="667" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="avatar.png" id="d9m-G0-1u3" userLabel="avatarImage" customClass="UIRoundedImageView">
+                                <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFill" image="avatar.png" id="d9m-G0-1u3" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="8" y="8" width="175" height="86"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -233,7 +233,7 @@
                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <imageView hidden="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFit" image="linphone_user.png" id="G2O-Yh-fZA" userLabel="linphoneImage" customClass="UIRoundedImageView">
+                                <imageView hidden="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFill" image="linphone_user.png" id="G2O-Yh-fZA" userLabel="linphoneImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="132" y="8" width="29" height="15"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>

@@ -50,7 +50,7 @@
                             <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" tag="6" contentMode="scaleAspectFit" image="avatar.png" id="bNo-O5-DWh" userLabel="avatarImage" customClass="UIRoundedImageView">
+                        <imageView userInteractionEnabled="NO" tag="6" contentMode="scaleAspectFill" image="avatar.png" id="bNo-O5-DWh" userLabel="avatarImage" customClass="UIRoundedImageView">
                             <rect key="frame" x="87" y="214" width="200" height="200"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
@@ -157,7 +157,7 @@
                             <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" tag="6" contentMode="scaleAspectFit" image="avatar.png" id="1ZH-n6-QZ0" userLabel="avatarImage" customClass="UIRoundedImageView">
+                        <imageView userInteractionEnabled="NO" tag="6" contentMode="scaleAspectFill" image="avatar.png" id="1ZH-n6-QZ0" userLabel="avatarImage" customClass="UIRoundedImageView">
                             <rect key="frame" x="110" y="74" width="180" height="180"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>

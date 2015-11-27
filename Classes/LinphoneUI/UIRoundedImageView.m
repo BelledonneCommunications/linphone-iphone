@@ -15,6 +15,7 @@
 INIT_WITH_COMMON {
 	[self setRoundRadius];
 	[self setBordered:YES];
+	return self;
 }
 
 - (void)setImage:(UIImage *)image {
@@ -39,15 +40,16 @@ INIT_WITH_COMMON {
 - (void)setRoundRadius {
 	CALayer *imageLayer = self.layer;
 
-	CGFloat height = self.frame.size.height;
-	CGFloat width = self.frame.size.width;
+	CGFloat height = imageLayer.frame.size.height;
+	CGFloat width = imageLayer.frame.size.width;
 	CGFloat roundRadius = MIN(width, height) / 2;
 
-	CGRect frame = self.frame;
-	frame.size.width = frame.size.height = MIN(width, height);
-	self.bounds = frame;
+	//	CGRect frame = imageLayer.frame;
+	//	frame.size.width = frame.size.height = MIN(width, height);
+	//	imageLayer.bounds = frame;
 
 	[imageLayer setCornerRadius:roundRadius];
+	[imageLayer setMasksToBounds:YES];
 }
 
 @end

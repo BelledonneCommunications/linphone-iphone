@@ -123,7 +123,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="375" height="625"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" image="avatar.png" id="fZy-K5-yQp" userLabel="avatarImage" customClass="UIRoundedImageView">
+                                <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFill" image="avatar.png" id="fZy-K5-yQp" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="62" y="210" width="250" height="250"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
@@ -755,7 +755,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="667" height="333"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFit" image="avatar.png" id="gyO-uH-sSi" userLabel="avatarImage" customClass="UIRoundedImageView">
+                                <imageView userInteractionEnabled="NO" tag="7" contentMode="scaleAspectFill" image="avatar.png" id="gyO-uH-sSi" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="248" y="74" width="171" height="171"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>

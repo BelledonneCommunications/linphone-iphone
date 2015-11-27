@@ -38,6 +38,7 @@
                     <accessibility key="accessibilityConfiguration" label="History"/>
                     <state key="normal" image="footer_history_default.png"/>
                     <state key="disabled" image="footer_history_disabled.png"/>
+                    <state key="selected" backgroundImage="color_A.png"/>
                     <state key="highlighted" backgroundImage="color_A.png"/>
                     <connections>
                         <action selector="onHistoryClick:" destination="-1" eventType="touchUpInside" id="22"/>
