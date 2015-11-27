@@ -1609,7 +1609,7 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_payload_type(lc,&payload_type_speex_nb,"vbr=on",TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcmu8000,NULL,TRUE);
 	linphone_core_register_payload_type(lc,&payload_type_pcma8000,NULL,TRUE);
-	
+
 	/* Text codecs in order or preference (RED first (more robust), then T140) */
 	linphone_core_register_payload_type(lc, &payload_type_t140_red, NULL, TRUE);
 	linphone_core_register_payload_type(lc, &payload_type_t140, NULL, TRUE);
@@ -2576,7 +2576,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 			lc->prevtime_ms = curtime_ms;
 		}else{
 			lc->prevtime_ms += 1000;
-			
+
 		}
 	}
 
@@ -6732,7 +6732,7 @@ const char *linphone_reason_to_string(LinphoneReason err){
 		case LinphoneReasonIOError:
 			return "IO error";
 		case LinphoneReasonDoNotDisturb:
-			return "Do not distrub";
+			return "Do not disturb";
 		case LinphoneReasonUnauthorized:
 			return "Unauthorized";
 		case LinphoneReasonNotAcceptable:
