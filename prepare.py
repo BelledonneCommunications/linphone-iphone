@@ -480,6 +480,7 @@ def main(argv=None):
     if args.enable_non_free_codecs is True:
         additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
     if args.build_all_codecs is True:
+        additional_args += ["-DENABLE_GPL_THIRD_PARTIES=YES"]
         additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
         additional_args += ["-DENABLE_AMRNB=YES"]
         additional_args += ["-DENABLE_AMRWB=YES"]
