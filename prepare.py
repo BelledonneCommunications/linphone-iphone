@@ -464,7 +464,9 @@ def main(argv=None):
     argparser.add_argument(
         '-L', '--list-cmake-variables', help="(debug) List non-advanced CMake cache variables.", action='store_true', dest='list_cmake_variables')
 
-    args, additional_args = argparser.parse_known_args()
+    args, additional_args2 = argparser.parse_known_args()
+
+    additional_args = []
 
     additional_args += ["-G", args.generator]
 
@@ -508,6 +510,9 @@ def main(argv=None):
                 return 1
         warning("Tunnel enabled, disabling GPL third parties.")
         additional_args += ["-DENABLE_TUNNEL=ON", "-DENABLE_GPL_THIRD_PARTIES=OFF"]
+
+    # User's options are priority upon all automatic options
+    additional_args += additional_args2
 
     if args.list_features:
         list_features(args.debug, additional_args)
