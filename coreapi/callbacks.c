@@ -1122,7 +1122,7 @@ static void is_composing_received(SalOp *op, const SalIsComposing *is_composing)
 }
 
 static void parse_presence_requested(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
-	linphone_notify_parse_presence(op, content_type, content_subtype, body, result);
+	linphone_notify_parse_presence(content_type, content_subtype, body, result);
 }
 
 static void convert_presence_to_xml_requested(SalOp *op, SalPresenceModel *presence, const char *contact, char **content) {

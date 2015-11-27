@@ -1508,7 +1508,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	ms_free(tmp);
 }
 
-void linphone_notify_parse_presence(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
+void linphone_notify_parse_presence(const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
 	xmlparsing_context_t *xml_ctx;
 	LinphonePresenceModel *model = NULL;
 
@@ -1866,10 +1866,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 		activity_str = linphone_presence_activity_to_string(activity);
 		ms_message("We are notified that [%s] has presence [%s]", tmp, activity_str);
 		if (activity_str != NULL) ms_free(activity_str);
-		if (lf->presence != NULL) {
-			linphone_presence_model_unref(lf->presence);
-		}
-		lf->presence = presence;
+		linphone_friend_set_presence_model(lf, presence);
 		lf->subscribe_active=TRUE;
 		linphone_core_notify_notify_presence_received(lc,(LinphoneFriend*)lf);
 		ms_free(tmp);

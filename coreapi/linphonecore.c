@@ -1664,10 +1664,17 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_static_payloads(lc);
 }
 
+static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
+	if (strcmp(notified_event, "Presence") == 0) {
+		linphone_friend_list_notify_presence_received(lc->friendlist, lev, body);
+	}
+}
+
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata){
 	const char *rls_uri = NULL;
 	const char *remote_provisioning_uri = NULL;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
+	LinphoneCoreVTable *internal_vtable = linphone_core_v_table_new();
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
 	lc->config=lp_config_ref(config);
@@ -1679,6 +1686,8 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 		linphone_friend_list_set_rls_uri(lc->friendlist, rls_uri);
 	linphone_task_list_init(&lc->hooks);
 
+	internal_vtable->notify_received = linphone_core_internal_notify_received;
+	_linphone_core_add_listener(lc, internal_vtable, TRUE);
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
 	_linphone_core_add_listener(lc, local_vtable, TRUE);
 

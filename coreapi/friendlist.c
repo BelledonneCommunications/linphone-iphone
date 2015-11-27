@@ -91,6 +91,64 @@ static char * create_resource_list_xml(const LinphoneFriendList *list) {
 	return xml_content;
 }
 
+static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList *list, const LinphoneContent *body, const char *first_part_body) {
+	xmlparsing_context_t *xml_ctx = linphone_xmlparsing_context_new();
+	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
+	xml_ctx->doc = xmlReadDoc((const unsigned char*)first_part_body, 0, NULL, 0);
+	if (xml_ctx->doc != NULL) {
+		char xpath_str[MAX_XPATH_LENGTH];
+		LinphoneFriend *friend;
+		LinphoneContent *presence_part;
+		xmlXPathObjectPtr resource_object;
+		const char *uri = NULL;
+		int i;
+
+		if (linphone_create_xml_xpath_context(xml_ctx) < 0) goto end;
+		xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"rlmi", (const xmlChar *)"urn:ietf:params:xml:ns:rlmi");
+		resource_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/rlmi:list/rlmi:resource");
+		if ((resource_object != NULL) && (resource_object->nodesetval != NULL)) {
+			for (i = 1; i <= resource_object->nodesetval->nodeNr; i++) {
+				snprintf(xpath_str, sizeof(xpath_str), "/rlmi:list/rlmi:resource[%i]/@uri", i);
+				uri = linphone_get_xml_text_content(xml_ctx, xpath_str);
+				if (uri == NULL) continue;
+				friend = linphone_friend_list_find_friend_by_uri(list, uri);
+				if (friend != NULL) {
+					const char *state = NULL;
+					snprintf(xpath_str, sizeof(xpath_str),"/rlmi:list/rlmi:resource[%i]/rlmi:instance/@state", i);
+					state = linphone_get_xml_text_content(xml_ctx, xpath_str);
+					if ((state != NULL) && (strcmp(state, "active") == 0)) {
+						const char *cid = NULL;
+						snprintf(xpath_str, sizeof(xpath_str),"/rlmi:list/rlmi:resource[%i]/rlmi:instance/@cid", i);
+						cid = linphone_get_xml_text_content(xml_ctx, xpath_str);
+						if (cid != NULL) {
+							presence_part = linphone_content_find_part_by_header(body, "Content-Id", cid);
+							if (presence_part == NULL) {
+								ms_warning("rlmi+xml: Cannot find part with Content-Id: %s", cid);
+							} else {
+								SalPresenceModel *presence = NULL;
+								linphone_notify_parse_presence(linphone_content_get_type(presence_part), linphone_content_get_subtype(presence_part), linphone_content_get_string_buffer(presence_part), &presence);
+								if (presence != NULL) {
+									linphone_friend_set_presence_model(friend, (LinphonePresenceModel *)presence);
+									linphone_core_notify_notify_presence_received(list->lc, friend);
+								}
+							}
+						}
+						if (cid != NULL) linphone_free_xml_text_content(cid);
+					}
+					if (state != NULL) linphone_free_xml_text_content(state);
+				}
+				linphone_free_xml_text_content(uri);
+			}
+		}
+		if (resource_object != NULL) xmlXPathFreeObject(resource_object);
+	} else {
+		ms_warning("Wrongly formatted rlmi+xml body: %s", xml_ctx->errorBuffer);
+	}
+
+end:
+	linphone_xmlparsing_context_destroy(xml_ctx);
+}
+
 static LinphoneFriendList * linphone_friend_list_new(void) {
 	LinphoneFriendList *list = belle_sip_object_new(LinphoneFriendList);
 	belle_sip_object_ref(list);
@@ -249,6 +307,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 			int expires = lp_config_get_int(list->lc->config, "sip", "rls_presence_expires", 3600);
 			event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
 			linphone_event_add_custom_header(event, "Require", "recipient-list-subscribe");
+			linphone_event_add_custom_header(event, "Supported", "eventlist");
 			linphone_event_add_custom_header(event, "Accept", "multipart/related, application/pidf+xml, application/rlmi+xml");
 			linphone_event_add_custom_header(event, "Content-Disposition", "recipient-list");
 			content = linphone_core_create_content(list->lc);
@@ -280,5 +339,33 @@ void linphone_friend_list_notify_presence(LinphoneFriendList *list, LinphonePres
 	for(elem = list->friends; elem != NULL; elem = elem->next) {
 		LinphoneFriend *friend = (LinphoneFriend *)elem->data;
 		linphone_friend_notify(friend, presence);
+	}
+}
+
+void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, LinphoneEvent *lev, const LinphoneContent *body) {
+	if (linphone_content_is_multipart(body)) {
+		LinphoneContent *first_part;
+		const char *type = linphone_content_get_type(body);
+		const char *subtype = linphone_content_get_subtype(body);
+
+		if ((strcmp(type, "multipart") != 0) || (strcmp(subtype, "related") != 0)) {
+			ms_warning("multipart presence notified but it is not 'multipart/related'");
+			return;
+		}
+
+		first_part = linphone_content_get_part(body, 0);
+		if (first_part == NULL) {
+			ms_warning("'multipart/related' presence notified but it doesn't contain any part");
+			return;
+		}
+
+		type = linphone_content_get_type(first_part);
+		subtype = linphone_content_get_subtype(first_part);
+		if ((strcmp(type, "application") != 0) || (strcmp(subtype, "rlmi+xml") != 0)) {
+			ms_warning("multipart presence notified but first part is not 'application/rlmi+xml'");
+			return;
+		}
+
+		linphone_friend_list_parse_multipart_related_body(list, body, linphone_content_get_string_buffer(first_part));
 	}
 }

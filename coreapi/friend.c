@@ -389,6 +389,13 @@ const LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend 
 	return lf->presence;
 }
 
+void linphone_friend_set_presence_model(LinphoneFriend *lf, LinphonePresenceModel *presence) {
+	if (lf->presence != NULL) {
+		linphone_presence_model_unref(lf->presence);
+	}
+	lf->presence = presence;
+}
+
 BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){
 	return lf->info;
 }
