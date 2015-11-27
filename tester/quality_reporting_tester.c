@@ -430,8 +430,10 @@ test_t quality_reporting_tests[] = {
 	{ "Call term session report invalid if missing mandatory fields", quality_reporting_invalid_report},
 	{ "Call term session report sent if call ended normally", quality_reporting_at_call_termination},
 	{ "Interval report if interval is configured", quality_reporting_interval_report},
+	#ifdef VIDEO_ENABLED
 	{ "Interval report if interval is configured with video and realtime text", quality_reporting_interval_report_video_and_rtt},
 	{ "Session report sent if video stopped during call", quality_reporting_session_report_if_video_stopped},
+	#endif
 	{ "Sent using custom route", quality_reporting_sent_using_custom_route},
 };
 
