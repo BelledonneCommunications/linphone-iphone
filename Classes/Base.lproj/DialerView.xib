@@ -77,11 +77,11 @@
                             <animations/>
                         </view>
                         <view contentMode="scaleToFill" id="180" userLabel="pad">
-                            <rect key="frame" x="0.0" y="66" width="375" height="428"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <rect key="frame" x="0.0" y="66" width="375" height="427"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="38" userLabel="1" customClass="UIDigitButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="120" height="102"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <color key="backgroundColor" red="0.40000001000000002" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
@@ -96,7 +96,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="37" userLabel="2" customClass="UIDigitButton">
-                                    <rect key="frame" x="128" y="0.0" width="120" height="102"/>
+                                    <rect key="frame" x="128" y="0.0" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="2"/>
@@ -110,7 +110,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="29" userLabel="3" customClass="UIDigitButton">
-                                    <rect key="frame" x="255" y="0.0" width="120" height="102"/>
+                                    <rect key="frame" x="255" y="0.0" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="3"/>
@@ -124,7 +124,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="30" userLabel="4" customClass="UIDigitButton">
-                                    <rect key="frame" x="0.0" y="108" width="120" height="102"/>
+                                    <rect key="frame" x="0.0" y="107" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="4"/>
@@ -138,7 +138,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="31" userLabel="5" customClass="UIDigitButton">
-                                    <rect key="frame" x="128" y="108" width="120" height="102"/>
+                                    <rect key="frame" x="128" y="107" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="5"/>
@@ -152,7 +152,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="33" userLabel="6" customClass="UIDigitButton">
-                                    <rect key="frame" x="255" y="108" width="120" height="102"/>
+                                    <rect key="frame" x="255" y="107" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="6"/>
@@ -166,7 +166,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="34" userLabel="7" customClass="UIDigitButton">
-                                    <rect key="frame" x="0.0" y="215" width="120" height="102"/>
+                                    <rect key="frame" x="0.0" y="214" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="7"/>
@@ -180,7 +180,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="35" userLabel="8" customClass="UIDigitButton">
-                                    <rect key="frame" x="128" y="215" width="120" height="102"/>
+                                    <rect key="frame" x="128" y="214" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="8"/>
@@ -194,7 +194,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="36" userLabel="9" customClass="UIDigitButton">
-                                    <rect key="frame" x="255" y="215" width="120" height="102"/>
+                                    <rect key="frame" x="255" y="214" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="9"/>
@@ -208,7 +208,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="39" userLabel="*" customClass="UIDigitButton">
-                                    <rect key="frame" x="0.0" y="323" width="120" height="102"/>
+                                    <rect key="frame" x="0.0" y="322" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Star"/>
@@ -222,7 +222,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="40" userLabel="0" customClass="UIDigitButton">
-                                    <rect key="frame" x="128" y="323" width="120" height="102"/>
+                                    <rect key="frame" x="128" y="322" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="0"/>
@@ -236,7 +236,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="41" userLabel="#" customClass="UIDigitButton">
-                                    <rect key="frame" x="255" y="323" width="120" height="102"/>
+                                    <rect key="frame" x="255" y="322" width="120" height="101"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Hash"/>
@@ -344,6 +344,7 @@
             <animations/>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="-67.5" y="223.5"/>
         </view>
     </objects>
     <resources>
