@@ -4853,8 +4853,7 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 	const MSList *elem;
 
 	if (linphone_core_is_in_conference(lc)){
-		lc->conf_ctx.local_muted=val;
-		linphone_core_mute_audio_stream(lc, lc->conf_ctx.local_participant, val);
+		linphone_conference_mute_microphone(lc->conf_ctx, val);
 	}
 	list = linphone_core_get_calls(lc);
 	for (elem = list; elem != NULL; elem = elem->next) {
@@ -4867,7 +4866,7 @@ void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
 bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (linphone_core_is_in_conference(lc)){
-		return lc->conf_ctx.local_muted;
+		return linphone_conference_microphone_is_muted(lc->conf_ctx);
 	}else if (call==NULL){
 		ms_warning("linphone_core_is_mic_muted(): No current call !");
 		return FALSE;
@@ -5896,7 +5895,7 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 	if (call){
 		stream=call->audiostream;
 	}else if (linphone_core_is_in_conference(lc)){
-		stream=lc->conf_ctx.local_participant;
+		stream=linphone_conference_get_audio_stream(lc->conf_ctx);
 	}
 	if (stream){
 		if (rtype==LinphoneToneGenerator) return stream->dtmfgen;
@@ -7396,4 +7395,81 @@ const char *linphone_stream_type_to_string(const LinphoneStreamType type) {
 		case LinphoneStreamTypeUnknown: return "LinphoneStreamTypeUnknown";
 	}
 	return "INVALID";
+}
+
+int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
+	const char *conf_method_name;
+	LinphoneConferenceType method;
+	if(lc->conf_ctx == NULL) {
+		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_method", "media");
+		if(strcasecmp(conf_method_name, "media") == 0) {
+			method = LinphoneConferenceTypeMedia;
+		} else if(strcasecmp(conf_method_name, "transport") == 0) {
+			method = LinphoneConferenceTypeTransport;
+		} else {
+			ms_error("'%s' is not a valid conference method", conf_method_name);
+			return -1;
+		}
+		lc->conf_ctx = linphone_conference_make(lc, method);
+	}
+	return linphone_conference_add_call(lc->conf_ctx, call);
+}
+
+int linphone_core_add_all_to_conference(LinphoneCore *lc) {
+	MSList *calls=lc->calls;
+	while (calls) {
+		LinphoneCall *call=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		linphone_core_add_to_conference(lc, call);
+	}
+	linphone_core_enter_conference(lc);
+	return 0;
+}
+
+int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call) {
+	if(lc->conf_ctx) return linphone_conference_remove_call(lc->conf_ctx, call);
+	else return -1;
+}
+
+int linphone_core_terminate_conference(LinphoneCore *lc) {
+	if(lc->conf_ctx == NULL) return -1;
+	linphone_conference_terminate(lc->conf_ctx);
+	linphone_conference_free(lc->conf_ctx);
+	lc->conf_ctx = NULL;
+	return 0;
+}
+
+int linphone_core_enter_conference(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_add_local_participant(lc->conf_ctx);
+	else return -1;
+}
+
+int linphone_core_leave_conference(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_remove_local_participant(lc->conf_ctx);
+	else return -1;
+}
+
+bool_t linphone_core_is_in_conference(const LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_local_participant_is_in(lc->conf_ctx);
+	else return FALSE;
+}
+
+int linphone_core_get_conference_size(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_get_participant_count(lc->conf_ctx);
+	return 0;
+}
+
+float linphone_core_get_conference_local_input_volume(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_get_input_volume(lc->conf_ctx);
+	else return -1.0;
+}
+
+int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path) {
+	if(lc->conf_ctx) return linphone_conference_start_recording(lc->conf_ctx, path);
+	return -1;
+}
+
+int linphone_core_stop_conference_recording(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_stop_recording(lc->conf_ctx);
+	return -1;
 }

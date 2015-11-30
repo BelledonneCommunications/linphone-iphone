@@ -1424,7 +1424,7 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (linphone_core_del_call(lc,call) != 0){
 		ms_error("Could not remove the call from the list !!!");
 	}
-	linphone_core_conference_check_uninit(lc);
+	if(lc->conf_ctx) linphone_conference_on_call_terminating(lc->conf_ctx, call);
 	if (call->ringing_beep){
 		linphone_core_stop_dtmf(lc);
 		call->ringing_beep=FALSE;
@@ -3091,7 +3091,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 			if (call->params->in_conference){
 				/*transform the graph to connect it to the conference filter */
 				mute = stream->dir==SalStreamRecvOnly;
-				linphone_call_add_to_conf(call, mute);
+				linphone_conference_on_call_stream_starting(lc->conf_ctx, call, mute);
 			}
 			call->current_params->in_conference=call->params->in_conference;
 			call->current_params->low_bandwidth=call->params->low_bandwidth;
@@ -3575,6 +3575,7 @@ static void update_rtp_stats(LinphoneCall *call, int stream_index) {
 }
 
 static void linphone_call_stop_audio_stream(LinphoneCall *call) {
+	LinphoneCore *lc = call->core;
 	if (call->audiostream!=NULL) {
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_AUDIO);
 		media_stream_reclaim_sessions(&call->audiostream->ms,&call->sessions[call->main_audio_stream_index]);
@@ -3590,7 +3591,7 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 		audio_stream_get_local_rtp_stats(call->audiostream,&call->log->local_stats);
 		linphone_call_log_fill_stats (call->log,(MediaStream*)call->audiostream);
 		if (call->endpoint){
-			linphone_call_remove_from_conf(call);
+			linphone_conference_on_call_stream_stopping(lc->conf_ctx, call);
 		}
 		update_rtp_stats(call, call->main_audio_stream_index);
 		audio_stream_stop(call->audiostream);
@@ -4851,4 +4852,3 @@ void linphone_call_refresh_sockets(LinphoneCall *call){
 		}
 	}
 }
-
