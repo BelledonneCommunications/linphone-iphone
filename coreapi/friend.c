@@ -462,8 +462,9 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
 		}
 		fr->inc_subscribe_pending=FALSE;
 	}
-	if (fr->lc)
-		linphone_friend_update_subscribes(fr,NULL,linphone_core_should_subscribe_friends_only_when_registered(fr->lc));
+	if (fr->lc) {
+		linphone_friend_list_update_subscriptions(fr->lc->friendlist, NULL, linphone_core_should_subscribe_friends_only_when_registered(fr->lc));
+	}
 	ms_message("linphone_friend_apply() done.");
 	lc->bl_refresh=TRUE;
 	fr->commit=FALSE;

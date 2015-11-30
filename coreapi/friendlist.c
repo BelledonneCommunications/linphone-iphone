@@ -175,6 +175,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 						if (cid != NULL) linphone_free_xml_text_content(cid);
 					}
 					if (state != NULL) linphone_free_xml_text_content(state);
+					friend->subscribe_active = TRUE;
 				}
 				linphone_free_xml_text_content(uri);
 			}
@@ -196,6 +197,19 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 
 end:
 	linphone_xmlparsing_context_destroy(xml_ctx);
+}
+
+static bool_t linphone_friend_list_has_subscribe_inactive(const LinphoneFriendList *list) {
+	MSList *l = list->friends;
+	bool_t has_subscribe_inactive = FALSE;
+	for (; l != NULL; l = l->next) {
+		LinphoneFriend *friend = (LinphoneFriend *)l->data;
+		if (friend->subscribe_active != TRUE) {
+			has_subscribe_inactive = TRUE;
+			break;
+		}
+	}
+	return has_subscribe_inactive;
 }
 
 static LinphoneFriendList * linphone_friend_list_new(void) {
@@ -350,10 +364,11 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 	if (list->rls_uri != NULL) {
 		LinphoneAddress *address = linphone_address_new(list->rls_uri);
 		char *xml_content = create_resource_list_xml(list);
-		if ((address != NULL) && (xml_content != NULL)) {
+		if ((address != NULL) && (xml_content != NULL) && (linphone_friend_list_has_subscribe_inactive(list) == TRUE)) {
 			LinphoneEvent *event;
 			LinphoneContent *content;
 			int expires = lp_config_get_int(list->lc->config, "sip", "rls_presence_expires", 3600);
+			list->expected_notification_version = 0;
 			event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
 			linphone_event_add_custom_header(event, "Require", "recipient-list-subscribe");
 			linphone_event_add_custom_header(event, "Supported", "eventlist");
