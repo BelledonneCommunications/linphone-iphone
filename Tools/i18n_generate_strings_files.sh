@@ -73,11 +73,11 @@ function generate_strings_from_xib {
 			if ! grep -q $res_name $root_directory/.tx/config; then
 				echo "not found in .tx/config, adding it"
 				echo "
-	[linphone-ios.$res_name]
-	file_filter = $(echo $dir_name| sed 's/Base.lproj/<lang>.lproj/')/$(basename "$stringsfile")
-	source_file = $dir_name/$(basename "$stringsfile")
-	source_lang = en
-	" >> $root_directory/.tx/config
+[linphone-ios.$res_name]
+file_filter = $(echo $dir_name| sed 's/Base.lproj/<lang>.lproj/')/$(basename "$stringsfile")
+source_file = $dir_name/$(basename "$stringsfile")
+source_lang = en
+" >> $root_directory/.tx/config
 			fi
 		fi
 	done
