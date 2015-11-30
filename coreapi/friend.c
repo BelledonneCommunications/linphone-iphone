@@ -657,11 +657,15 @@ void linphone_core_write_friends_config(LinphoneCore* lc)
 {
 	MSList *elem;
 	int i;
+	int store_friends;
 	if (! linphone_core_ready(lc)) return; /*dont write config when reading it !*/
-	for (elem=lc->friendlist->friends,i=0; elem!=NULL; elem=ms_list_next(elem),i++){
-		linphone_friend_write_to_config_file(lc->config,(LinphoneFriend*)elem->data,i);
+	store_friends = lp_config_get_int(lc->config, "misc", "store_friends", 1);
+	if (store_friends) {
+		for (elem=lc->friendlist->friends,i=0; elem!=NULL; elem=ms_list_next(elem),i++){
+			linphone_friend_write_to_config_file(lc->config,(LinphoneFriend*)elem->data,i);
+		}
+		linphone_friend_write_to_config_file(lc->config,NULL,i);	/* set the end */
 	}
-	linphone_friend_write_to_config_file(lc->config,NULL,i);	/* set the end */
 }
 
 LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr){
