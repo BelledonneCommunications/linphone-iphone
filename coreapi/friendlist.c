@@ -68,6 +68,7 @@ static char * create_resource_list_xml(const LinphoneFriendList *list) {
 			/* Close the "entry" element. */
 			err = xmlTextWriterEndElement(writer);
 		}
+		if (uri) ms_free(uri);
 	}
 	if (err >= 0) {
 		/* Close the "list" element. */
@@ -116,6 +117,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 			goto end;
 		}
 		version = atoi(version_str);
+		linphone_free_xml_text_content(version_str);
 		if (version < list->expected_notification_version) {
 			ms_warning("rlmi+xml: Discarding received notification with version %d because %d was expected", version, list->expected_notification_version);
 			goto end;
@@ -170,6 +172,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 										linphone_core_notify_notify_presence_received(list->lc, friend);
 									}
 								}
+								linphone_content_unref(presence_part);
 							}
 						}
 						if (cid != NULL) linphone_free_xml_text_content(cid);
@@ -379,6 +382,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 			linphone_content_set_subtype(content, "resource-lists+xml");
 			linphone_content_set_string_buffer(content, xml_content);
 			linphone_event_send_subscribe(event, content);
+			linphone_content_unref(content);
 		}
 		if (address != NULL) linphone_address_unref(address);
 		if (xml_content != NULL) ms_free(xml_content);
@@ -427,9 +431,11 @@ void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, Lin
 		subtype = linphone_content_get_subtype(first_part);
 		if ((strcmp(type, "application") != 0) || (strcmp(subtype, "rlmi+xml") != 0)) {
 			ms_warning("multipart presence notified but first part is not 'application/rlmi+xml'");
+			linphone_content_unref(first_part);
 			return;
 		}
 
 		linphone_friend_list_parse_multipart_related_body(list, body, linphone_content_get_string_buffer(first_part));
+		linphone_content_unref(first_part);
 	}
 }

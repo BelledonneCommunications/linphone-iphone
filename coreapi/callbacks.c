@@ -1309,7 +1309,10 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, SalB
 	}
 	{
 		LinphoneContent *ct=linphone_content_from_sal_body_handler(body_handler);
-		if (ct) linphone_core_notify_notify_received(lc,lev,eventname,ct);
+		if (ct) {
+			linphone_core_notify_notify_received(lc,lev,eventname,ct);
+			linphone_content_unref(ct);
+		}
 	}
 	if (st!=SalSubscribeNone){
 		linphone_event_set_state(lev,linphone_subscription_state_from_sal(st));
