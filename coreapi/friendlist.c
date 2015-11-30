@@ -100,11 +100,47 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		LinphoneFriend *friend;
 		LinphoneContent *presence_part;
 		xmlXPathObjectPtr resource_object;
+		const char *version_str = NULL;
+		const char *full_state_str = NULL;
 		const char *uri = NULL;
+		bool_t full_state = FALSE;
+		int version;
 		int i;
 
 		if (linphone_create_xml_xpath_context(xml_ctx) < 0) goto end;
 		xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar *)"rlmi", (const xmlChar *)"urn:ietf:params:xml:ns:rlmi");
+
+		version_str = linphone_get_xml_attribute_text_content(xml_ctx, "/rlmi:list", "version");
+		if (version_str == NULL) {
+			ms_warning("rlmi+xml: No version attribute in list");
+			goto end;
+		}
+		version = atoi(version_str);
+		if (version < list->expected_notification_version) {
+			ms_warning("rlmi+xml: Discarding received notification with version %d because %d was expected", version, list->expected_notification_version);
+			goto end;
+		}
+
+		full_state_str = linphone_get_xml_attribute_text_content(xml_ctx, "/rlmi:list", "fullState");
+		if (full_state_str == NULL) {
+			ms_warning("rlmi+xml: No fullState attribute in list");
+			goto end;
+		}
+		if ((strcmp(full_state_str, "true") == 0) || (strcmp(full_state_str, "1") == 0)) {
+			MSList *l = list->friends;
+			for (; l != NULL; l = l->next) {
+				friend = (LinphoneFriend *)l->data;
+				linphone_friend_set_presence_model(friend, NULL);
+			}
+			full_state = TRUE;
+		}
+		linphone_free_xml_text_content(full_state_str);
+		if ((list->expected_notification_version == 0) && (full_state == FALSE)) {
+			ms_warning("rlmi+xml: Notification with version 0 is not full state, this is not valid");
+			goto end;
+		}
+		list->expected_notification_version = version + 1;
+
 		resource_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/rlmi:list/rlmi:resource");
 		if ((resource_object != NULL) && (resource_object->nodesetval != NULL)) {
 			for (i = 1; i <= resource_object->nodesetval->nodeNr; i++) {
@@ -128,8 +164,11 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 								SalPresenceModel *presence = NULL;
 								linphone_notify_parse_presence(linphone_content_get_type(presence_part), linphone_content_get_subtype(presence_part), linphone_content_get_string_buffer(presence_part), &presence);
 								if (presence != NULL) {
+									friend->presence_received = TRUE;
 									linphone_friend_set_presence_model(friend, (LinphonePresenceModel *)presence);
-									linphone_core_notify_notify_presence_received(list->lc, friend);
+									if (full_state == FALSE) {
+										linphone_core_notify_notify_presence_received(list->lc, friend);
+									}
 								}
 							}
 						}
@@ -141,6 +180,16 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 			}
 		}
 		if (resource_object != NULL) xmlXPathFreeObject(resource_object);
+
+		if (full_state == TRUE) {
+			MSList *l = list->friends;
+			for (; l != NULL; l = l->next) {
+				friend = (LinphoneFriend *)l->data;
+				if (linphone_friend_is_presence_received(friend) == TRUE) {
+					linphone_core_notify_notify_presence_received(list->lc, friend);
+				}
+			}
+		}
 	} else {
 		ms_warning("Wrongly formatted rlmi+xml body: %s", xml_ctx->errorBuffer);
 	}

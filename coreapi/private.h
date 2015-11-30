@@ -647,6 +647,7 @@ struct _LinphoneFriend{
 	bool_t inc_subscribe_pending;
 	bool_t commit;
 	bool_t initial_subscribes_sent; /*used to know if initial subscribe message was sent or not*/
+	bool_t presence_received;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
@@ -659,6 +660,7 @@ struct _LinphoneFriendList {
 	char *display_name;
 	char *rls_uri;
 	MSList *friends;
+	int expected_notification_version;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriendList);
@@ -1245,6 +1247,7 @@ void linphone_xmlparsing_context_destroy(xmlparsing_context_t *ctx);
 void linphone_xmlparsing_genericxml_error(void *ctx, const char *fmt, ...);
 int linphone_create_xml_xpath_context(xmlparsing_context_t *xml_ctx);
 char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
+const char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name);
 void linphone_free_xml_text_content(const char *text);
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
 

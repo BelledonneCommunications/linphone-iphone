@@ -396,6 +396,10 @@ void linphone_friend_set_presence_model(LinphoneFriend *lf, LinphonePresenceMode
 	lf->presence = presence;
 }
 
+bool_t linphone_friend_is_presence_received(const LinphoneFriend *lf) {
+	return lf->presence_received;
+}
+
 BuddyInfo * linphone_friend_get_info(const LinphoneFriend *lf){
 	return lf->info;
 }
@@ -597,6 +601,8 @@ LinphoneFriend * linphone_friend_new_from_config_file(LinphoneCore *lc, int inde
 	}
 	a=lp_config_get_int(config,item,"subscribe",0);
 	linphone_friend_send_subscribe(lf,a);
+	a = lp_config_get_int(config, item, "presence_received", 0);
+	lf->presence_received = (bool_t)a;
 
 	linphone_friend_set_ref_key(lf,lp_config_get_string(config,item,"refkey",NULL));
 	return lf;
@@ -639,6 +645,7 @@ void linphone_friend_write_to_config_file(LpConfig *config, LinphoneFriend *lf, 
 	}
 	lp_config_set_string(config,key,"pol",__policy_enum_to_str(lf->pol));
 	lp_config_set_int(config,key,"subscribe",lf->subscribe);
+	lp_config_set_int(config, key, "presence_received", lf->presence_received);
 
 	refkey=linphone_friend_get_ref_key(lf);
 	if (refkey){
