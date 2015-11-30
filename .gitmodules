@@ -7,12 +7,6 @@
 [submodule "submodules/externals/speex"]
 	path = submodules/externals/speex
 	url = git://git.linphone.org/speex
-[submodule "submodules/msilbc"]
-	path = submodules/msilbc
-	url = git://git.linphone.org/msilbc
-[submodule "submodules/libilbc-rfc3951"]
-	path = submodules/libilbc-rfc3951
-	url = git://git.linphone.org/libilbc-rfc3951
 [submodule "submodules/externals/opencore-amr"]
 	path = submodules/externals/opencore-amr
 	url = git://git.linphone.org/opencore-amr
