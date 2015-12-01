@@ -57,6 +57,13 @@ typedef struct _LinphoneFriendList LinphoneFriendList;
 LINPHONE_PUBLIC LinphoneFriendList * linphone_core_create_friend_list(LinphoneCore *lc);
 
 /**
+ * Set the friend list.
+ * @param[in] lc LinphoneCore object
+ * @param[in] list LinphoneFriendList object
+ */
+LINPHONE_PUBLIC void linphone_core_set_friend_list(LinphoneCore *lc, LinphoneFriendList *list);
+
+/**
  * Acquire a reference to the friend list.
  * @param[in] list LinphoneFriendList object.
  * @return The same LinphoneFriendList object.
