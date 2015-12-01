@@ -132,14 +132,6 @@
 		_messageImageView.hidden = _cancelButton.hidden = (_ftd.message == nil);
 		_downloadButton.hidden = !_cancelButton.hidden;
 		_fileTransferProgress.hidden = NO;
-
-#if DEBUG
-		const LinphoneContent *c = linphone_chat_message_get_file_transfer_information(self.message);
-		if (c) {
-			const char *name = linphone_content_get_name(c);
-			[_downloadButton setTitle:[NSString stringWithUTF8String:name ?: "NULL"] forState:UIControlStateNormal];
-		}
-#endif
 	}
 
 	// resize image so that it take the full bubble space available
