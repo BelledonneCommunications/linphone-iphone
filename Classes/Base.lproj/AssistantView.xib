@@ -75,7 +75,7 @@
                             <animations/>
                         </view>
                         <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" tag="7" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" id="98" userLabel="contentView" customClass="TPKeyboardAvoidingScrollView">
-                            <rect key="frame" x="0.0" y="93" width="375" height="532"/>
+                            <rect key="frame" x="0.0" y="66" width="375" height="559"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

@@ -69,9 +69,10 @@ function generate_strings_from_xib {
 
 			res_name=$(basename "$stringsfile" | tr -d '_.~-' | tr '[:upper:]' '[:lower:]')
 			dir_name=$(echo $(dirname "$stringsfile") | sed -E "s|$root_directory/||")
+
 			# if not registered in transifex config file, register it
 			if ! grep -q $res_name $root_directory/.tx/config; then
-				echo "not found in .tx/config, adding it"
+				echo "$res_name not found in .tx/config, adding it"
 				echo "
 [linphone-ios.$res_name]
 file_filter = $(echo $dir_name| sed 's/Base.lproj/<lang>.lproj/')/$(basename "$stringsfile")
@@ -97,7 +98,7 @@ function generate_strings_from_inappsettings_plist {
 
 		mv $tmp_file $root_directory/Settings/InAppSettings.bundle/en.lproj/$plistfilestrings
 
-		res_name=$(echo "$plistfilestrings" | tr -d '_.~-' | tr '[:upper:]' '[:lower:]')
+		res_name=inappsettings$(echo "$plistfilestrings" | tr -d '_.~-' | tr '[:upper:]' '[:lower:]')
 		if ! grep -q $res_name $root_directory/.tx/config; then
 			echo "not found in .tx/config, adding it"
 			echo "

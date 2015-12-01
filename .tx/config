@@ -74,6 +74,12 @@ source_file = Classes/Base.lproj/DialerView.strings
 source_lang = en
 
 
+[linphone-ios.firstloginviewstrings]
+file_filter = Classes/<lang>.lproj/FirstLoginView.strings
+source_file = Classes/Base.lproj/FirstLoginView.strings
+source_lang = en
+
+
 [linphone-ios.historydetailsviewstrings]
 file_filter = Classes/<lang>.lproj/HistoryDetailsView.strings
 source_file = Classes/Base.lproj/HistoryDetailsView.strings
@@ -92,9 +98,21 @@ source_file = Classes/Base.lproj/ImageView.strings
 source_lang = en
 
 
+[linphone-ios.launchscreenstrings]
+file_filter = Classes/<lang>.lproj/LaunchScreen.strings
+source_file = Classes/Base.lproj/LaunchScreen.strings
+source_lang = en
+
+
 [linphone-ios.settingsviewstrings]
 file_filter = Classes/<lang>.lproj/SettingsView.strings
 source_file = Classes/Base.lproj/SettingsView.strings
+source_lang = en
+
+
+[linphone-ios.sidemenuviewstrings]
+file_filter = Classes/<lang>.lproj/SideMenuView.strings
+source_file = Classes/Base.lproj/SideMenuView.strings
 source_lang = en
 
 
@@ -116,15 +134,51 @@ source_file = Classes/LinphoneUI/Base.lproj/UICallConferenceCell.strings
 source_lang = en
 
 
+[linphone-ios.uicallpausedcellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UICallPausedCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UICallPausedCell.strings
+source_lang = en
+
+
+[linphone-ios.uichatbubblephotocellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatBubblePhotoCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatBubblePhotoCell.strings
+source_lang = en
+
+
+[linphone-ios.uichatbubbletextcellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatBubbleTextCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatBubbleTextCell.strings
+source_lang = en
+
+
 [linphone-ios.uichatcellstrings]
 file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatCell.strings
 source_file = Classes/LinphoneUI/Base.lproj/UIChatCell.strings
 source_lang = en
 
 
+[linphone-ios.uichatcreatecellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatCreateCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatCreateCell.strings
+source_lang = en
+
+
+[linphone-ios.uiconfirmationdialogstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIConfirmationDialog.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIConfirmationDialog.strings
+source_lang = en
+
+
 [linphone-ios.uicontactcellstrings]
 file_filter = Classes/LinphoneUI/<lang>.lproj/UIContactCell.strings
 source_file = Classes/LinphoneUI/Base.lproj/UIContactCell.strings
+source_lang = en
+
+
+[linphone-ios.uicontactdetailscellstrings]
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIContactDetailsCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIContactDetailsCell.strings
 source_lang = en
 
 
