@@ -153,6 +153,7 @@ typedef struct _stats {
 
 	int number_of_NewSubscriptionRequest;
 	int number_of_NotifyReceived;
+	int number_of_NotifyPresenceReceived;
 	int number_of_LinphonePresenceActivityOffline;
 	int number_of_LinphonePresenceActivityOnline;
 	int number_of_LinphonePresenceActivityAppointment;
