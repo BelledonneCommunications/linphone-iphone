@@ -92,7 +92,6 @@
 		6334DDFB1BBAC99400631900 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D32B6E2E15A5C0AC0033019F /* libsqlite3.dylib */; };
 		6334DDFC1BBAC99B00631900 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 152F22351B15E889008C0621 /* libxml2.dylib */; };
 		6334DDFD1BBAC9A200631900 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F0B026F21AA710AF00FF49F7 /* libiconv.dylib */; };
-		6334DE001BBAD5AA00631900 /* UICheckBoxTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6334DDFF1BBAD5AA00631900 /* UICheckBoxTableViewController.m */; };
 		633671611BCBAAD200BFCBDE /* ChatConversationCreateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */; };
 		633756391B67BAF400E21BAD /* SideMenuTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756381B67BAF400E21BAD /* SideMenuTableView.m */; };
 		633756451B67D2B200E21BAD /* SideMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633756431B67D2B100E21BAD /* SideMenuView.m */; };
@@ -481,6 +480,7 @@
 		639CEB001A1DF4E4004DE38F /* UIHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB021A1DF4E4004DE38F /* UIHistoryCell.xib */; };
 		639CEB031A1DF4EB004DE38F /* UICompositeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB051A1DF4EB004DE38F /* UICompositeView.xib */; };
 		639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */; };
+		639E9C801C0DB13D00019A75 /* UICheckBoxTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 639E9C7F1C0DB13D00019A75 /* UICheckBoxTableView.m */; };
 		63AADBE81B6A0FF200AA16FD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC41B6A0FF200AA16FD /* Localizable.strings */; };
 		63AADBE91B6A0FF200AA16FD /* hold.wav in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC91B6A0FF200AA16FD /* hold.wav */; };
 		63AADBEA1B6A0FF200AA16FD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBCA1B6A0FF200AA16FD /* Images.xcassets */; };
@@ -898,8 +898,6 @@
 		631348311B6FA53300C6BDCB /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = "liblinphone-sdk/apple-darwin/share/linphone/rootca.pem"; sourceTree = SOURCE_ROOT; };
 		6316FA6B1BE12A3E0050E441 /* UIRightImageButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRightImageButton.h; sourceTree = "<group>"; };
 		6316FA6C1BE12A3E0050E441 /* UIRightImageButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRightImageButton.m; sourceTree = "<group>"; };
-		6334DDFE1BBAD5AA00631900 /* UICheckBoxTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBoxTableViewController.h; sourceTree = "<group>"; };
-		6334DDFF1BBAD5AA00631900 /* UICheckBoxTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICheckBoxTableViewController.m; sourceTree = "<group>"; };
 		6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateView.h; sourceTree = "<group>"; };
 		6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateView.m; sourceTree = "<group>"; };
 		633756371B67BAF400E21BAD /* SideMenuTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuTableView.h; sourceTree = "<group>"; };
@@ -1306,6 +1304,8 @@
 		639CEB011A1DF4E4004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIHistoryCell.xib; sourceTree = "<group>"; };
 		639CEB041A1DF4EB004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICompositeView.xib; sourceTree = "<group>"; };
 		639CEB0A1A1DF4FA004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatCell.xib; sourceTree = "<group>"; };
+		639E9C7E1C0DB13D00019A75 /* UICheckBoxTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBoxTableView.h; sourceTree = "<group>"; };
+		639E9C7F1C0DB13D00019A75 /* UICheckBoxTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICheckBoxTableView.m; sourceTree = "<group>"; };
 		63AADBC51B6A0FF200AA16FD /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		63AADBC61B6A0FF200AA16FD /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		63AADBC71B6A0FF200AA16FD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1876,8 +1876,8 @@
 				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
 				63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */,
 				63B8D6A11BCBF43100C12B09 /* UIChatCreateCell.xib */,
-				6334DDFE1BBAD5AA00631900 /* UICheckBoxTableViewController.h */,
-				6334DDFF1BBAD5AA00631900 /* UICheckBoxTableViewController.m */,
+				639E9C7E1C0DB13D00019A75 /* UICheckBoxTableView.h */,
+				639E9C7F1C0DB13D00019A75 /* UICheckBoxTableView.m */,
 				D31B4B1E159876C0002E6C72 /* UICompositeView.h */,
 				D31B4B1F159876C0002E6C72 /* UICompositeView.m */,
 				639CEB051A1DF4EB004DE38F /* UICompositeView.xib */,
@@ -3466,12 +3466,12 @@
 				D3807FC515C28940005BE9BC /* DCRoundSwitchToggleLayer.m in Sources */,
 				D3807FE815C2894A005BE9BC /* IASKAppSettingsViewController.m in Sources */,
 				D3807FEA15C2894A005BE9BC /* IASKAppSettingsWebViewController.m in Sources */,
-				6334DE001BBAD5AA00631900 /* UICheckBoxTableViewController.m in Sources */,
 				D3807FEC15C2894A005BE9BC /* IASKSpecifierValuesViewController.m in Sources */,
 				D3807FEE15C2894A005BE9BC /* IASKSettingsReader.m in Sources */,
 				D3807FF015C2894A005BE9BC /* IASKSettingsStore.m in Sources */,
 				D3807FF215C2894A005BE9BC /* IASKSettingsStoreFile.m in Sources */,
 				D3807FF415C2894A005BE9BC /* IASKSettingsStoreUserDefaults.m in Sources */,
+				639E9C801C0DB13D00019A75 /* UICheckBoxTableView.m in Sources */,
 				D3807FF615C2894A005BE9BC /* IASKSpecifier.m in Sources */,
 				D3807FF815C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,

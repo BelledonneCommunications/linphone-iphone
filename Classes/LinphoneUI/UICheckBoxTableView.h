@@ -10,7 +10,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UICheckBoxTableViewController : UITableViewController
+@interface UICheckBoxTableView : UITableViewController
 
 @property(nonatomic, readonly) NSMutableArray *selectedItems;
 @property(weak, nonatomic) IBOutlet UIButton *deleteButton;

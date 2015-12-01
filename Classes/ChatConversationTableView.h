@@ -20,7 +20,7 @@
 #import <UIKit/UIKit.h>
 #include "linphone/linphonecore.h"
 
-#import "UICheckBoxTableViewController.h"
+#import "UICheckBoxTableView.h"
 
 @protocol ChatConversationDelegate <NSObject>
 
@@ -29,7 +29,7 @@
 
 @end
 
-@interface ChatConversationTableView : UICheckBoxTableViewController {
+@interface ChatConversationTableView : UICheckBoxTableView {
   @private
 	LinphoneChatRoom *chatRoom;
 	MSList *messageList;

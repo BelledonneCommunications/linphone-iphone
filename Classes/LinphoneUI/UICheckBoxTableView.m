@@ -17,10 +17,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "UICheckBoxTableViewController.h"
+#import "UICheckBoxTableView.h"
 #import "Utils.h"
 
-@implementation UICheckBoxTableViewController
+@implementation UICheckBoxTableView
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
 	self = [super initWithCoder:aDecoder];
