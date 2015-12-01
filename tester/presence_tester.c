@@ -653,12 +653,81 @@ static void test_presence_list(void) {
 	BC_ASSERT_EQUAL(lf->presence_received, TRUE, int, "%d");
 	BC_ASSERT_EQUAL(lf->subscribe_active, TRUE, int, "%d");
 
+	linphone_core_set_presence_model(marie->lc, linphone_core_create_presence_model_with_activity(marie->lc, LinphonePresenceActivityOnThePhone, NULL));
+
+	wait_for_list(lcs, &laure->stat.number_of_NotifyReceived, 2, 2000);
+	wait_for_list(lcs, &laure->stat.number_of_NotifyPresenceReceived, 4, 2000);
+	BC_ASSERT_EQUAL(laure->stat.number_of_NotifyReceived, 2, int, "%d");
+	BC_ASSERT_EQUAL(laure->stat.number_of_NotifyPresenceReceived, 4, int, "%d");
+	BC_ASSERT_EQUAL(laure->lc->friendlist->expected_notification_version, 2, int, "%d");
+	lf = linphone_friend_list_find_friend_by_uri(laure->lc->friendlist, marie_identity);
+	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOnThePhone, int, "%d");
+
+	wait_for_list(lcs, &pauline->stat.number_of_NotifyReceived, 2, 2000);
+	wait_for_list(lcs, &pauline->stat.number_of_NotifyPresenceReceived, 2, 2000);
+	BC_ASSERT_EQUAL(pauline->stat.number_of_NotifyReceived, 2, int, "%d");
+	BC_ASSERT_EQUAL(pauline->stat.number_of_NotifyPresenceReceived, 2, int, "%d");
+	BC_ASSERT_EQUAL(pauline->lc->friendlist->expected_notification_version, 2, int, "%d");
+	lf = linphone_friend_list_find_friend_by_uri(pauline->lc->friendlist, marie_identity);
+	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOnThePhone, int, "%d");
+
 	enable_publish(laure, FALSE);
 	enable_publish(marie, FALSE);
 	enable_publish(pauline, FALSE);
 
 	linphone_core_manager_destroy(laure);
 	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void test_presence_list_subscribe_before_publish(void) {
+	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	const char *rls_uri = "sip:rls@sip.example.org";
+	LinphoneFriendList *lfl;
+	LinphoneFriend *lf;
+	const char *pauline_identity;
+	MSList* lcs = NULL;
+	int dummy = 0;
+
+	pauline_identity = get_identity(pauline);
+
+	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL));
+
+	lfl = linphone_core_create_friend_list(laure->lc);
+	linphone_friend_list_set_rls_uri(lfl, rls_uri);
+	lf = linphone_core_create_friend_with_address(laure->lc, pauline_identity);
+	linphone_friend_list_add_friend(lfl, lf);
+	lf = linphone_core_create_friend_with_address(laure->lc, "sip:michelle@sip.inexistentdomain.com");
+	linphone_friend_list_add_friend(lfl, lf);
+	linphone_core_set_friend_list(laure->lc, lfl);
+	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
+	//linphone_friend_list_update_subscriptions(pauline->lc->friendlist, NULL, FALSE);
+
+	lcs = ms_list_append(lcs, laure->lc);
+	lcs = ms_list_append(lcs, pauline->lc);
+
+	wait_for_list(lcs, &dummy, 1, 2000); /* Wait a little bit for the subscribe to happen */
+
+	enable_publish(pauline, TRUE);
+	wait_for_list(lcs, &pauline->stat.number_of_NotifyReceived, 1, 2000);
+	wait_for_list(lcs, &pauline->stat.number_of_NotifyPresenceReceived, 1, 2000);
+	BC_ASSERT_GREATER(laure->stat.number_of_NotifyReceived, 1, int, "%d");
+	BC_ASSERT_GREATER(laure->stat.number_of_NotifyPresenceReceived, 1, int, "%d");
+	BC_ASSERT_GREATER(laure->lc->friendlist->expected_notification_version, 1, int, "%d");
+	lf = linphone_friend_list_find_friend_by_uri(laure->lc->friendlist, pauline_identity);
+	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusVacation, int, "%d");
+	BC_ASSERT_EQUAL(lf->presence_received, TRUE, int, "%d");
+	BC_ASSERT_EQUAL(lf->subscribe_active, TRUE, int, "%d");
+	lf = linphone_friend_list_find_friend_by_uri(laure->lc->friendlist, "sip:michelle@sip.inexistentdomain.com");
+	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
+	BC_ASSERT_EQUAL(lf->presence_received, FALSE, int, "%d");
+	BC_ASSERT_EQUAL(lf->subscribe_active, TRUE, int, "%d");
+
+	enable_publish(laure, FALSE);
+	enable_publish(pauline, FALSE);
+
+	linphone_core_manager_destroy(laure);
 	linphone_core_manager_destroy(pauline);
 }
 
@@ -676,7 +745,8 @@ test_t presence_tests[] = {
 	{ "Subscribe with late publish", test_subscribe_notify_publish },
 	{ "Forked subscribe with late publish", test_forked_subscribe_notify_publish },
 #endif
-	{ "Presence list", test_presence_list }
+	{ "Presence list", test_presence_list },
+	{ "Presence list (subscribe before publish)", test_presence_list_subscribe_before_publish }
 };
 
 test_suite_t presence_test_suite = {"Presence", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
