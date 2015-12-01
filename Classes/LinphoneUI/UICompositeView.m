@@ -584,7 +584,8 @@
 	}
 
 	if (!currentViewDescription.sideMenuEnabled) {
-		sideMenuFrame.origin.x = -sideMenuFrame.size.width;
+		sideMenuFrame.origin.x =
+			-3 * sideMenuFrame.size.width; // really hide; -width won't be enough since some animations may use this...
 	}
 
 	// Set frames
