@@ -29,6 +29,19 @@ if [ $# != 0 ]; then
 	exit 0
 fi
 
+function generate_transifex_config {
+	res_name=$1
+	file_filter=$2
+	if ! grep -q $res_name $root_directory/.tx/config; then
+		echo "not found in .tx/config, adding it"
+		echo "
+[linphone-ios.$res_name]
+file_filter = $file_filter
+source_lang = en
+" >> $root_directory/.tx/config
+	fi
+}
+
 ##### 1. Generate Localizable.strings from source files (.m)
 function generate_localizable_from_sources {
 	#WARNING: in case of sed issue "extra characters at the end of g command", it means that
@@ -49,6 +62,8 @@ function generate_localizable_from_sources {
 	sed -i.bak "s/= \"IM_MSG\";/= \"$IM_MSG_EN\";/" $localizable_en.tmp
 	iconv -f utf-8 -t utf-16LE $localizable_en.tmp > $localizable_en
 	rm $localizable_en.tmp.bak $localizable_en.tmp
+
+	generate_transifex_config localizablestrings "Resources/<lang>.lproj/Localizable.strings"
 }
 
 ##### 2. Generate .strings for all XIB files
@@ -70,16 +85,8 @@ function generate_strings_from_xib {
 			res_name=$(basename "$stringsfile" | tr -d '_.~-' | tr '[:upper:]' '[:lower:]')
 			dir_name=$(echo $(dirname "$stringsfile") | sed -E "s|$root_directory/||")
 
-			# if not registered in transifex config file, register it
-			if ! grep -q $res_name $root_directory/.tx/config; then
-				echo "$res_name not found in .tx/config, adding it"
-				echo "
-[linphone-ios.$res_name]
-file_filter = $(echo $dir_name| sed 's/Base.lproj/<lang>.lproj/')/$(basename "$stringsfile")
-source_file = $dir_name/$(basename "$stringsfile")
-source_lang = en
-" >> $root_directory/.tx/config
-			fi
+
+			generate_transifex_config $res_name $(echo $dir_name| sed 's/Base.lproj/<lang>.lproj/')/$(basename "$stringsfile")
 		fi
 	done
 	rm $to_utf8_file
@@ -99,14 +106,7 @@ function generate_strings_from_inappsettings_plist {
 		mv $tmp_file $root_directory/Settings/InAppSettings.bundle/en.lproj/$plistfilestrings
 
 		res_name=inappsettings$(echo "$plistfilestrings" | tr -d '_.~-' | tr '[:upper:]' '[:lower:]')
-		if ! grep -q $res_name $root_directory/.tx/config; then
-			echo "not found in .tx/config, adding it"
-			echo "
-[linphone-ios.$res_name]
-file_filter = Settings/InAppSettings.bundle/<lang>.lproj/$plistfilestrings
-source_lang = en
-" >> $root_directory/.tx/config
-		fi
+		generate_transifex_config $res_name "Settings/InAppSettings.bundle/<lang>.lproj/$plistfilestrings"
 	done
 }
 

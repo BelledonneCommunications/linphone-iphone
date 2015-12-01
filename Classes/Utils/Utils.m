@@ -141,26 +141,40 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 	switch (format) {
 		case LinphoneDateHistoryList:
 			if (sameYear) {
-				formatstr = NSLocalizedString(@"EEE dd MMMM", nil);
+				formatstr = NSLocalizedString(@"EEE dd MMMM",
+											  @"Date formatting in History List, for current year (also see "
+											  @"http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
 			} else {
-				formatstr = NSLocalizedString(@"EEE dd MMMM yyyy", nil);
+				formatstr = NSLocalizedString(@"EEE dd MMMM yyyy",
+											  @"Date formatting in History List, for previous years (also see "
+											  @"http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
 			}
 			break;
 		case LinphoneDateHistoryDetails:
-			formatstr = NSLocalizedString(@"MM/dd '-' HH'h'mm", nil);
+			formatstr = NSLocalizedString(@"MM/dd '-' HH'h'mm", @"Date formatting in History Details (also see "
+																@"http://cybersam.com/ios-dev/"
+																@"quick-guide-to-ios-dateformatting)");
 			break;
 		case LinphoneDateChatList:
 			if (sameDay) {
-				formatstr = NSLocalizedString(@"HH:mm", nil);
+				formatstr =
+					NSLocalizedString(@"HH:mm", @"Date formatting in Chat List, for current day (also see "
+												@"http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
 			} else {
-				formatstr = NSLocalizedString(@"MM/dd", nil);
+				formatstr =
+					NSLocalizedString(@"MM/dd", @"Date formatting in Chat List, for all but current day (also see "
+												@"http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
 			}
 			break;
 		case LinphoneDateChatBubble:
 			if (sameDay) {
-				formatstr = NSLocalizedString(@"HH:mm", nil);
+				formatstr =
+					NSLocalizedString(@"HH:mm", @"Date formatting in Conversation bubbles, for current day (also see "
+												@"http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
 			} else {
-				formatstr = NSLocalizedString(@"MM/dd - HH:mm", nil);
+				formatstr = NSLocalizedString(@"MM/dd - HH:mm",
+											  @"Date formatting in Conversation bubbles, for all but current day (also "
+											  @"see http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
 			}
 			break;
 	}
@@ -416,17 +430,19 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 
 @implementation ContactDisplay
 
-+ (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact {
++ (void)setDisplayNameLabel:(UILabel *)label forContact:(const LinphoneFriend *)contact {
 	label.text = [FastAddressBook displayNameForContact:contact];
+#if 0
 	NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));
 	NSString *lLocalizedLastName = [FastAddressBook localizedLabel:lLastName];
 	if (lLocalizedLastName) {
 		[label boldSubstring:lLocalizedLastName];
 	}
+#endif
 }
 
 + (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr {
-	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
+	const LinphoneFriend *contact = [FastAddressBook getContactWithAddress:addr];
 	if (contact) {
 		[ContactDisplay setDisplayNameLabel:label forContact:contact];
 	} else {
