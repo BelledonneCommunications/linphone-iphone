@@ -96,7 +96,7 @@ LinphoneBuffer * tester_file_transfer_send(LinphoneChatMessage *msg, const Linph
 	size_t size_to_send;
 	uint8_t *buf;
 	FILE *file_to_send = linphone_chat_message_get_user_data(msg);
-	
+
 	BC_ASSERT_PTR_NOT_NULL(file_to_send);
 	if (file_to_send == NULL){
 		return NULL;
@@ -802,6 +802,37 @@ static void lime_text_message(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void lime_text_message_to_non_lime(void) {
+	FILE *ZIDCachePaulineFD;
+	LinphoneChatRoom* chat_room;
+	char* filepath;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+
+	/* make sure lime is enabled */
+	linphone_core_enable_lime(marie->lc, 0);
+	linphone_core_enable_lime(pauline->lc, 1);
+
+	/* set the zid caches files : create two ZID cache from this valid one inserting the auto-generated sip URI for the peer account as keys in ZID cache are indexed by peer sip uri */
+	ZIDCachePaulineFD = fopen_from_write_dir("tmpZIDCachePauline.xml", "w");
+	fprintf(ZIDCachePaulineFD, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cache><selfZID>005dbe0399643d953a2202dd</selfZID><peer><ZID>ef7692d0792a67491ae2d44e</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><rcvKey>08df5907d30959b8cb70f6fff2d8febd88fb41b0c8afc39e4b972f86dd5cfe2d</rcvKey><sndKey>60f020a3fe11dc2cc0e1e8ed9341b4cd14944db806ca4fc95456bbe45d95c43a</sndKey><rcvSId>5f9aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndSId>bcffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvIndex>00000078</rcvIndex><sndIndex>000001cf</sndIndex><pvs>01</pvs></peer><peer><ZID>1234567889643d953a2202ee</ZID><rs1>9b5c8f06f3b6c2c695f2dfc3c26f31f5fef8661f8c5fe7c95aeb5c5b0435b045</rs1><aux>f8324dd18ea905171ec2be89f879d01d5994132048d92ea020778cbdf31c605e</aux><rs2>2fdcef69380937c2cf221f7d11526f286c39f49641452ba9012521c705094899</rs2><uri>%s</uri><sndKey>81e6e6362c34dc974263d1f77cbb9a8d6d6a718330994379099a8fa19fb12faa</sndKey><rcvKey>25d9ac653a83c4559cb0ae7394e7cd3b2d3c57bb28e62068d2df23e8f9b77193</rcvKey><sndSId>f69aa1e5e4c7ec88fa389a9f6b8879b42d3c57bb28e62068d2df23e8f9b77193</sndSId><rcvSId>22ffd51e7316a6c6f53a50fcf01b01bf2d3c57bb28e62068d2df23e8f9b77193</rcvSId><sndIndex>0000002e</sndIndex><rcvIndex>00000000</rcvIndex><pvs>01</pvs></peer></cache>", linphone_address_as_string_uri_only(marie->identity), linphone_address_as_string_uri_only(marie->identity));
+	fclose(ZIDCachePaulineFD);
+
+	filepath = bc_tester_file("tmpZIDCachePauline.xml");
+	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
+	ms_free(filepath);
+
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+
+	linphone_chat_room_send_message(chat_room,"Bla bla bla bla");
+	//since we cannot decrypt message, we should not receive any message
+	BC_ASSERT_FALSE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy,0, int, "%d");
+
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
 void lime_transfer_message_base(bool_t encrypt_file) {
 	FILE *ZIDCacheMarieFD, *ZIDCachePaulineFD;
 	LinphoneCoreManager *marie, *pauline;
@@ -1295,7 +1326,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCallParams *marie_params = NULL;
 	LinphoneCall *pauline_call, *marie_call;
-	
+
 	if (mess_with_marie_payload_number) {
 		MSList *elem;
 		for (elem = marie->lc->codecs_conf.text_codecs; elem != NULL; elem = elem->next) {
@@ -1315,12 +1346,12 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			}
 		}
 	}
-	
+
 	if (ice_enabled) {
 		linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 		linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
 	}
-	
+
 	if (srtp_enabled) {
 		BC_ASSERT_TRUE(linphone_core_media_encryption_supported(marie->lc, LinphoneMediaEncryptionSRTP));
 		linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionSRTP);
@@ -1336,7 +1367,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 		linphone_core_set_nortp_timeout(marie->lc, 10);
 		linphone_core_set_nortp_timeout(pauline->lc, 10);
 	}
-	
+
 	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
 	pauline_call = linphone_core_get_current_call(pauline->lc);
 	marie_call = linphone_core_get_current_call(marie->lc);
@@ -1353,7 +1384,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			int i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
-			
+
 			for (i = 0; i < strlen(message); i++) {
 				linphone_chat_message_put_char(rtt_message, message[i]);
 				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
@@ -1369,7 +1400,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			BC_ASSERT_FALSE(marie->stat.number_of_LinphoneCallEnd > 0);
 			BC_ASSERT_FALSE(pauline->stat.number_of_LinphoneCallEnd > 0);
 		}
-		
+
 		if (ice_enabled) {
 			BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
 		}
@@ -1505,7 +1536,7 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 
 	marie_params = linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
-	
+
 	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	marie_call=linphone_core_get_current_call(marie->lc);
@@ -1527,7 +1558,7 @@ static void real_time_text_message_compat(bool_t end_with_crlf, bool_t end_with_
 				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
 				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
 			}
-			
+
 			if (end_with_crlf) {
 				linphone_chat_message_put_char(rtt_message, crlf);
 			} else if (end_with_lf) {
@@ -1560,7 +1591,7 @@ static void real_time_text_message_accented_chars(void) {
 
 	marie_params = linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
-	
+
 	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
 	pauline_call=linphone_core_get_current_call(pauline->lc);
 	marie_call=linphone_core_get_current_call(marie->lc);
@@ -1589,7 +1620,7 @@ static void real_time_text_message_accented_chars(void) {
 				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
 				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], unsigned long, "%lu");
 			}
-			
+
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
 			BC_ASSERT_EQUAL(strcmp(marie->stat.last_received_chat_message->message, "ãæçéîøùÿ"), 0, int, "%i");
@@ -1618,7 +1649,7 @@ static void real_time_text_copy_paste(void) {
 
 	marie_params = linphone_core_create_call_params(marie->lc, NULL);
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
-	
+
 	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
 	pauline_call = linphone_core_get_current_call(pauline->lc);
 	marie_call = linphone_core_get_current_call(marie->lc);
@@ -1632,7 +1663,7 @@ static void real_time_text_copy_paste(void) {
 			int i;
 			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
-			
+
 			for (i = 1; i <= strlen(message); i++) {
 				linphone_chat_message_put_char(rtt_message, message[i-1]);
 				if (i % 4 == 0) {
@@ -1688,6 +1719,7 @@ test_t message_tests[] = {
 	{"IsComposing notification", is_composing_notification},
 #ifdef HAVE_LIME
 	{"Lime text message", lime_text_message},
+	{"Lime text message to non lime", lime_text_message_to_non_lime},
 	{"Lime transfer message", lime_transfer_message},
 	{"Lime transfer message without encryption", lime_transfer_message_without_encryption},
 	{"Lime unitary", lime_unit},
