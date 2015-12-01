@@ -118,7 +118,17 @@
 				[self.sections setObject:eventsOnThisDay forKey:startDate];
 			}
 
-			[eventsOnThisDay addObject:[NSValue valueWithPointer:log]];
+			// if this contact was already the previous entry, do not add it twice
+			LinphoneCallLog *prev = [eventsOnThisDay lastObject] ? [[eventsOnThisDay lastObject] pointerValue] : NULL;
+			if (prev && linphone_address_weak_equal(linphone_call_log_get_remote_address(prev),
+													linphone_call_log_get_remote_address(log))) {
+				long value = (long)linphone_call_log_get_user_data(prev);
+				value++;
+				linphone_call_log_set_user_data(prev, (void *)value);
+			} else {
+				linphone_call_log_set_user_data(log, (void *)1);
+				[eventsOnThisDay addObject:[NSValue valueWithPointer:log]];
+			}
 		}
 		logs = ms_list_next(logs);
 	}
