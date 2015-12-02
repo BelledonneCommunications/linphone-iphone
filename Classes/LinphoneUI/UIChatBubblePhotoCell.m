@@ -168,7 +168,14 @@
 }
 
 - (void)onResendClick:(id)event {
-	[super onResendClick:event];
+	if (_downloadButton.hidden == NO) {
+		// if download button is displayed, click on it
+		[self onDownloadClick:event];
+	} else if (_cancelButton.hidden == NO) {
+		[self onCancelClick:event];
+	} else {
+		[super onResendClick:event];
+	}
 }
 
 - (IBAction)onImageClick:(id)event {

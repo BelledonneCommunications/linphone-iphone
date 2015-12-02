@@ -203,7 +203,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneMessageReceived object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:UIDeviceBatteryLevelDidChangeNotification
 												  object:nil];
