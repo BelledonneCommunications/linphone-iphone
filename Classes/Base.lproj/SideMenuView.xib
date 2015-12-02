@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="addressButton" destination="MFj-XQ-w5V" id="EPi-6H-59a"/>
                 <outlet property="avatarImage" destination="BNQ-7N-NGT" id="LXr-Yr-zSK"/>
+                <outlet property="grayBackground" destination="ccB-VK-LF9" id="Rbz-Ix-k62"/>
                 <outlet property="nameLabel" destination="XbU-2B-u1b" id="rKF-4e-1HA"/>
                 <outlet property="sideMenuTableViewController" destination="Yyh-z6-IGO" id="6Xq-OQ-vYm"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -29,6 +30,12 @@
                     <rect key="frame" x="0.0" y="42" width="375" height="625"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
+                        <view hidden="YES" alpha="0.80000000000000004" contentMode="scaleToFill" id="ccB-VK-LF9">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="625"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <animations/>
+                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
                         <view contentMode="scaleToFill" id="i1P-cG-q8h" userLabel="headerView">
                             <rect key="frame" x="0.0" y="0.0" width="300" height="100"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -83,6 +90,7 @@
                         </tableView>
                     </subviews>
                     <animations/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     <gestureRecognizers/>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="JRs-i1-zCl" appends="YES" id="SPs-Nb-Y0e"/>

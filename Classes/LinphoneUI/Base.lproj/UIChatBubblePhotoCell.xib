@@ -48,7 +48,7 @@
                             </accessibility>
                         </imageView>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="11:35 John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JyR-RQ-uwF" userLabel="contactDateLabel">
-                            <rect key="frame" x="48" y="0.0" width="246" height="20"/>
+                            <rect key="frame" x="55" y="8" width="246" height="14"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <animations/>
                             <accessibility key="accessibilityConfiguration" label="Contact name"/>
@@ -57,11 +57,11 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" id="8I3-n2-0kS" userLabel="view">
-                            <rect key="frame" x="48" y="24" width="266" height="100"/>
+                            <rect key="frame" x="55" y="24" width="259" height="100"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="linphone_logo.png" id="yMW-cT-bpU" userLabel="image" customClass="UILoadingImageView">
-                                    <rect key="frame" x="0.0" y="0.0" width="266" height="68"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="259" height="68"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <gestureRecognizers/>
@@ -70,16 +70,16 @@
                                     </connections>
                                 </imageView>
                                 <view contentMode="scaleToFill" id="GmN-7v-uuO" userLabel="imageSubView">
-                                    <rect key="frame" x="0.0" y="68" width="265" height="32"/>
+                                    <rect key="frame" x="0.0" y="68" width="258" height="32"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                                     <subviews>
                                         <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" id="USm-wC-GvG" userLabel="transferProgress">
-                                            <rect key="frame" x="10" y="0.0" width="245" height="2"/>
+                                            <rect key="frame" x="10" y="0.0" width="238" height="2"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <animations/>
                                         </progressView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="N75-gL-R6t" userLabel="downloadButton" customClass="UIRoundBorderedButton">
-                                            <rect key="frame" x="70" y="4" width="124" height="27"/>
+                                            <rect key="frame" x="66" y="4" width="124" height="27"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <animations/>
                                             <accessibility key="accessibilityConfiguration" label="Download"/>
@@ -92,7 +92,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="6dl-Nz-rdv" userLabel="cancelButton" customClass="UIRoundBorderedButton">
-                                            <rect key="frame" x="70" y="4" width="124" height="27"/>
+                                            <rect key="frame" x="66" y="4" width="124" height="27"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <animations/>
                                             <accessibility key="accessibilityConfiguration" label="Cancel"/>
@@ -111,7 +111,7 @@
                             </subviews>
                             <animations/>
                         </view>
-                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="6dA-3U-OPW" userLabel="bottomBarColor">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="6dA-3U-OPW" userLabel="bottomBarColor">
                             <rect key="frame" x="0.0" y="129" width="322" height="1"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <animations/>

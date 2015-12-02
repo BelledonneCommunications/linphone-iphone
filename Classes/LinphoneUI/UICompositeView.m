@@ -628,6 +628,11 @@
 			[UICompositeView addSubView:self.sideMenuViewController view:self.sideMenuView];
 		}
 	}
+	if (currentViewDescription.sideMenuEnabled) {
+		[_sideMenuViewController viewDidAppear:YES];
+	} else {
+		[_sideMenuViewController viewDidDisappear:YES];
+	}
 
 	// Dealloc old view description
 }

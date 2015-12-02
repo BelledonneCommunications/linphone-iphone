@@ -43,6 +43,16 @@
 	[_sideMenuTableViewController.tableView reloadData];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	_grayBackground.hidden = NO;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	_grayBackground.hidden = YES;
+	// should be better than that with alpha animation..
+}
 - (IBAction)onLateralSwipe:(id)sender {
 	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
 }

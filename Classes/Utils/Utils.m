@@ -151,9 +151,9 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 			}
 			break;
 		case LinphoneDateHistoryDetails:
-			formatstr = NSLocalizedString(@"MM/dd '-' HH'h'mm", @"Date formatting in History Details (also see "
-																@"http://cybersam.com/ios-dev/"
-																@"quick-guide-to-ios-dateformatting)");
+			formatstr = NSLocalizedString(@"EEE dd MMM 'at' HH'h'mm", @"Date formatting in History Details (also see "
+																	  @"http://cybersam.com/ios-dev/"
+																	  @"quick-guide-to-ios-dateformatting)");
 			break;
 		case LinphoneDateChatList:
 			if (sameDay) {
@@ -430,7 +430,7 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 
 @implementation ContactDisplay
 
-+ (void)setDisplayNameLabel:(UILabel *)label forContact:(const LinphoneFriend *)contact {
++ (void)setDisplayNameLabel:(UILabel *)label forContact:(ABRecordRef)contact {
 	label.text = [FastAddressBook displayNameForContact:contact];
 #if 0
 	NSString *lLastName = CFBridgingRelease(ABRecordCopyValue(contact, kABPersonLastNameProperty));

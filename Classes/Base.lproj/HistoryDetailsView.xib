@@ -65,16 +65,6 @@
                             </subviews>
                             <animations/>
                         </view>
-                        <tableView clipsSubviews="YES" tag="6" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="30" sectionHeaderHeight="44" sectionFooterHeight="22" id="k6N-Av-eOu">
-                            <rect key="frame" x="0.0" y="316" width="375" height="243"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
-                            <animations/>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <connections>
-                                <outlet property="dataSource" destination="baU-d4-eu3" id="p7o-Mx-Kmc"/>
-                                <outlet property="delegate" destination="baU-d4-eu3" id="iS5-xg-0C2"/>
-                            </connections>
-                        </tableView>
                         <view tag="7" contentMode="scaleToFill" id="33" userLabel="headerView">
                             <rect key="frame" x="0.0" y="66" width="375" height="250"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -145,6 +135,16 @@
                             <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </view>
+                        <tableView clipsSubviews="YES" tag="6" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="30" sectionHeaderHeight="28" sectionFooterHeight="28" id="k6N-Av-eOu">
+                            <rect key="frame" x="0.0" y="316" width="375" height="243"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                            <animations/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <outlet property="dataSource" destination="baU-d4-eu3" id="p7o-Mx-Kmc"/>
+                                <outlet property="delegate" destination="baU-d4-eu3" id="iS5-xg-0C2"/>
+                            </connections>
+                        </tableView>
                     </subviews>
                     <animations/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -201,7 +201,7 @@
                             </subviews>
                             <animations/>
                         </view>
-                        <tableView clipsSubviews="YES" tag="6" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="30" sectionHeaderHeight="44" sectionFooterHeight="22" id="2jK-gw-ULv">
+                        <tableView clipsSubviews="YES" tag="6" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="30" sectionHeaderHeight="44" sectionFooterHeight="22" id="2jK-gw-ULv">
                             <rect key="frame" x="0.0" y="168" width="667" height="165"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
                             <animations/>
@@ -216,7 +216,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFill" image="avatar.png" id="d9m-G0-1u3" userLabel="avatarImage" customClass="UIRoundedImageView">
-                                    <rect key="frame" x="8" y="8" width="175" height="86"/>
+                                    <rect key="frame" x="30" y="8" width="86" height="86"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Contact avatar">
@@ -233,15 +233,6 @@
                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <imageView hidden="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFill" image="linphone_user.png" id="G2O-Yh-fZA" userLabel="linphoneImage" customClass="UIRoundedImageView">
-                                    <rect key="frame" x="132" y="8" width="29" height="15"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <animations/>
-                                    <accessibility key="accessibilityConfiguration" label="Contact avatar">
-                                        <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
-                                        <bool key="isElement" value="YES"/>
-                                    </accessibility>
-                                </imageView>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="11" contentMode="left" text="johndoe@sip.linphone.org" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="XJa-f6-K0y" userLabel="addressLabel">
                                     <rect key="frame" x="161" y="56" width="356" height="38"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
@@ -277,6 +268,15 @@
                                         <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="xBV-3j-apE"/>
                                     </connections>
                                 </button>
+                                <imageView hidden="YES" userInteractionEnabled="NO" tag="10" contentMode="scaleAspectFit" image="linphone_user.png" id="G2O-Yh-fZA" userLabel="linphoneImage">
+                                    <rect key="frame" x="124" y="8" width="29" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact avatar">
+                                        <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
+                                        <bool key="isElement" value="YES"/>
+                                    </accessibility>
+                                </imageView>
                             </subviews>
                             <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -290,7 +290,7 @@
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="794.5" y="246.5"/>
+            <point key="canvasLocation" x="740.5" y="222.5"/>
         </view>
         <tableViewController id="baU-d4-eu3" customClass="HistoryDetailsTableView">
             <connections>

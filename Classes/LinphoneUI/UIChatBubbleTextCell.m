@@ -238,26 +238,26 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 static const CGFloat CELL_MIN_HEIGHT = 60.0f;
 static const CGFloat CELL_MIN_WIDTH = 150.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 78 + 10.0f;
-static const CGFloat CELL_MESSAGE_Y_MARGIN = 32;
+static const CGFloat CELL_MESSAGE_Y_MARGIN = 44;
 static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
 static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
 
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
 	NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
-	UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
 	static UIFont *messageFont = nil;
 	if (!messageFont) {
 		UIChatBubbleTextCell *cell =
 			[[UIChatBubbleTextCell alloc] initWithIdentifier:NSStringFromClass(UIChatBubbleTextCell.class)];
 		messageFont = cell.messageText.font;
 	}
-	if (tableView.isEditing)
+	//	UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
+	//	if (tableView.isEditing)
 		width -= 40; /*checkbox */
 	CGSize size;
 	const char *url = linphone_chat_message_get_external_body_url(chat);
 	if (url == nil && linphone_chat_message_get_file_transfer_information(chat) == NULL) {
 		size = [self computeBoundingBox:messageText
-								   size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN, CGFLOAT_MAX)
+								   size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
 								   font:messageFont];
 	} else {
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
