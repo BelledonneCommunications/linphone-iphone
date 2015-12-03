@@ -227,18 +227,14 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 }
 
-//#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
-//- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-//#else
-//- (NSUInteger)supportedInterfaceOrientations
-//#endif
-//{
-//	if ([LinphoneManager runningOnIpad] || [mainViewController currentViewSupportsLandscape]) {
-//		return UIInterfaceOrientationMaskAll;
-//	} else {
-//		return UIInterfaceOrientationMaskPortrait;
-//	}
-//}
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+#else
+- (NSUInteger)supportedInterfaceOrientations
+#endif
+{
+	return UIInterfaceOrientationMaskAll;
+}
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 								duration:(NSTimeInterval)duration {

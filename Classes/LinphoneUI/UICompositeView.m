@@ -268,37 +268,37 @@
 		[firstResponder resignFirstResponder];
 		[firstResponder becomeFirstResponder];
 	}
-	}
+}
 
-	+ (UIView *)findFirstResponder:(UIView *)view {
-		if (view.isFirstResponder) {
-			return view;
-		}
-		for (UIView *subView in view.subviews) {
-			UIView *ret = [UICompositeView findFirstResponder:subView];
-			if (ret != nil)
-				return ret;
-		}
-		return nil;
++ (UIView *)findFirstResponder:(UIView *)view {
+	if (view.isFirstResponder) {
+		return view;
 	}
+	for (UIView *subView in view.subviews) {
+		UIView *ret = [UICompositeView findFirstResponder:subView];
+		if (ret != nil)
+			return ret;
+	}
+	return nil;
+}
 
-	- (void)clearCache:(NSArray *)exclude {
-		for (NSString *key in [viewControllerCache allKeys]) {
-			bool remove = true;
-			if (exclude != nil) {
-				for (UICompositeViewDescription *description in exclude) {
-					if ([key isEqualToString:description.content] || [key isEqualToString:description.statusBar] ||
-						[key isEqualToString:description.tabBar] || [key isEqualToString:description.sideMenu]) {
-						remove = false;
-						break;
-					}
+- (void)clearCache:(NSArray *)exclude {
+	for (NSString *key in [viewControllerCache allKeys]) {
+		bool remove = true;
+		if (exclude != nil) {
+			for (UICompositeViewDescription *description in exclude) {
+				if ([key isEqualToString:description.content] || [key isEqualToString:description.statusBar] ||
+					[key isEqualToString:description.tabBar] || [key isEqualToString:description.sideMenu]) {
+					remove = false;
+					break;
 				}
 			}
-			if (remove) {
-				LOGI(@"Free cached view: %@", key);
-				[viewControllerCache removeObjectForKey:key];
-			}
 		}
+		if (remove) {
+			LOGI(@"Free cached view: %@", key);
+			[viewControllerCache removeObjectForKey:key];
+		}
+	}
 }
 
 - (UIInterfaceOrientation)currentOrientation {
@@ -390,21 +390,22 @@
 		if (oldViewDescription != nil && self.viewTransition != nil) {
 			[self.contentView.layer removeAnimationForKey:@"transition"];
 			[self.contentView.layer addAnimation:self.viewTransition forKey:@"transition"];
-			if (oldViewDescription.statusBar != currentViewDescription.statusBar ||
-				oldViewDescription.statusBarEnabled != currentViewDescription.statusBarEnabled ||
-				[self.statusBarView.layer animationForKey:@"transition"] != nil) {
+			if (![oldViewDescription.statusBar isEqualToString:currentViewDescription.statusBar] ||
+				oldViewDescription.statusBarEnabled != currentViewDescription.statusBarEnabled) {
 				[self.statusBarView.layer removeAnimationForKey:@"transition"];
 				[self.statusBarView.layer addAnimation:self.viewTransition forKey:@"transition"];
+			} else {
+				[self.statusBarView.layer removeAnimationForKey:@"transition"];
 			}
-			if (oldViewDescription.tabBar != currentViewDescription.tabBar ||
-				oldViewDescription.tabBarEnabled != currentViewDescription.tabBarEnabled ||
-				[self.tabBarView.layer animationForKey:@"transition"] != nil) {
+			if (![oldViewDescription.tabBar isEqualToString:currentViewDescription.tabBar] ||
+				oldViewDescription.tabBarEnabled != currentViewDescription.tabBarEnabled) {
 				[self.tabBarView.layer removeAnimationForKey:@"transition"];
 				[self.tabBarView.layer addAnimation:self.viewTransition forKey:@"transition"];
+			} else {
+				[self.tabBarView.layer removeAnimationForKey:@"transition"];
 			}
-			if (oldViewDescription.sideMenu != currentViewDescription.sideMenu ||
-				oldViewDescription.sideMenuEnabled != currentViewDescription.sideMenuEnabled ||
-				[self.sideMenuView.layer animationForKey:@"transition"] != nil) {
+			if (![oldViewDescription.sideMenu isEqualToString:currentViewDescription.sideMenu] ||
+				oldViewDescription.sideMenuEnabled != currentViewDescription.sideMenuEnabled) {
 				[self.sideMenuView.layer removeAnimationForKey:@"transition"];
 				[self.sideMenuView.layer addAnimation:self.viewTransition forKey:@"transition"];
 			}
@@ -582,8 +583,8 @@
 		sideMenuFrame.size.height += tabFrame.size.height;
 	} else {
 		sideMenuFrame = viewFrame;
-		sideMenuFrame.size.height -= statusBarFrame.size.height;
-		sideMenuFrame.origin.y = statusBarFrame.size.height;
+		sideMenuFrame.size.height -= origin + statusBarFrame.size.height;
+		sideMenuFrame.origin.y = origin + statusBarFrame.size.height;
 	}
 
 	if (!currentViewDescription.sideMenuEnabled) {
