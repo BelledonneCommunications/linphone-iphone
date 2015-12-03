@@ -62,19 +62,6 @@
 	return _nameLabel.text;
 }
 
-- (void)setHighlighted:(BOOL)highlighted {
-	[self setHighlighted:highlighted animated:FALSE];
-}
-
-- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
-	[super setHighlighted:highlighted animated:animated];
-	if (highlighted) {
-		[_nameLabel setTextColor:[UIColor whiteColor]];
-	} else {
-		[_nameLabel setTextColor:[UIColor blackColor]];
-	}
-}
-
 - (void)setEditing:(BOOL)editing {
 	[self setEditing:editing animated:FALSE];
 }
