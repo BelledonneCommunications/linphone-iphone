@@ -175,6 +175,7 @@
 	}
 	tempLabel.textAlignment = NSTextAlignmentCenter;
 	tempLabel.font = [UIFont boldSystemFontOfSize:17];
+	tempLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
 	[tempView addSubview:tempLabel];
 
 	return tempView;

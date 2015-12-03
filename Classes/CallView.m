@@ -215,13 +215,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidUnload];
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-										 duration:(NSTimeInterval)duration {
-	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-	[_avatarImage setRoundRadius];
-	// in mode display_filter_auto_rotate=0, no need to rotate the preview
-}
-
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self previewTouchLift];

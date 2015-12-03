@@ -27,7 +27,7 @@
 #import "ImagePickerView.h"
 
 @interface ContactDetailsView
-	: UIViewController <UICompositeViewDelegate, ContactDetailsDelegate, ImagePickerDelegate> {
+	: TPMultiLayoutViewController <UICompositeViewDelegate, ContactDetailsDelegate, ImagePickerDelegate> {
 	ABAddressBookRef addressBook;
 	BOOL inhibUpdate;
 }

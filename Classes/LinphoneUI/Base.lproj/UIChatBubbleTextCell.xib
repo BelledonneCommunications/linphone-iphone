@@ -68,7 +68,7 @@
                         </activityIndicatorView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="mlr-pl-B6T" userLabel="bottomBarColor">
                             <rect key="frame" x="0.0" y="49" width="322" height="1"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                             <animations/>
                         </imageView>
                         <textView clipsSubviews="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Lore ipsum..." id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">

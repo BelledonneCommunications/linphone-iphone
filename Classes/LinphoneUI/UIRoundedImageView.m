@@ -15,7 +15,16 @@
 INIT_WITH_COMMON {
 	[self setRoundRadius];
 	[self setBordered:YES];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(orientationDidChange:)
+												 name:@"UIDeviceOrientationDidChangeNotification"
+											   object:nil];
+
 	return self;
+}
+
+- (void)orientationDidChange:(NSNotification *)k {
+	[self setRoundRadius];
 }
 
 - (void)setImage:(UIImage *)image {

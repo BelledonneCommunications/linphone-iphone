@@ -202,6 +202,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	tempLabel.text = [addressBookMap keyAtIndex:section];
 	tempLabel.textAlignment = NSTextAlignmentCenter;
 	tempLabel.font = [UIFont boldSystemFontOfSize:17];
+	tempLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
 	[tempView addSubview:tempLabel];
 
 	return tempView;

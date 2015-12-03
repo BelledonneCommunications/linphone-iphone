@@ -215,7 +215,7 @@
                             <rect key="frame" x="0.0" y="66" width="667" height="102"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFill" image="avatar.png" id="d9m-G0-1u3" userLabel="avatarImage" customClass="UIRoundedImageView">
+                                <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="avatar.png" id="d9m-G0-1u3" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="30" y="8" width="86" height="86"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <animations/>

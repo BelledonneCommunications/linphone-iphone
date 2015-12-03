@@ -694,10 +694,11 @@
 	tempLabel.text = text.uppercaseString;
 	tempLabel.textAlignment = NSTextAlignmentCenter;
 	tempLabel.font = [UIFont systemFontOfSize:15];
+	tempLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
 	[tempView addSubview:tempLabel];
 
 	if (canAddEntry) {
-		frame.origin.x = tableView.frame.size.width / 2 - 24;
+		frame.origin.x = tableView.frame.size.width / 2 - 28;
 		UIIconButton *tempAddButton = [[UIIconButton alloc] initWithFrame:frame];
 		[tempAddButton setImage:[UIImage imageNamed:@"add_field_default.png"] forState:UIControlStateNormal];
 		[tempAddButton setImage:[UIImage imageNamed:@"add_field_over.png"] forState:UIControlStateHighlighted];
@@ -705,6 +706,7 @@
 		[tempAddButton addTarget:self action:@selector(onAddClick:) forControlEvents:UIControlEventTouchUpInside];
 		tempAddButton.tag = section;
 		tempAddButton.accessibilityLabel = addEntryName;
+		tempAddButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
 		[tempView addSubview:tempAddButton];
 	}
 

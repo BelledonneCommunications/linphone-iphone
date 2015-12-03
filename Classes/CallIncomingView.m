@@ -42,12 +42,6 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-										 duration:(NSTimeInterval)duration {
-	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-	[_avatarImage setRoundRadius];
-}
-
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;

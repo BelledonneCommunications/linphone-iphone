@@ -78,8 +78,8 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </view>
                 <view clearsContextBeforeDrawing="NO" tag="4" contentMode="scaleToFill" id="JXU-o0-1po" userLabel="sideMenuView">
-                    <rect key="frame" x="0.0" y="42" width="375" height="333"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                    <rect key="frame" x="0.0" y="42" width="667" height="333"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                     <animations/>
                 </view>
             </subviews>

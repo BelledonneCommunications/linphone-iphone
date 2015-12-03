@@ -229,16 +229,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_nameLabel.hidden = editing;
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:_contact];
 
-	CGRect frame = self.contentView.frame;
-	frame.size.height -= _avatarImage.frame.origin.y + _avatarImage.frame.size.height;
-	frame.origin.y = _nameLabel.frame.origin.y;
-	if (!editing) {
-		frame.origin.y += _nameLabel.frame.size.height;
-		frame.size.height -= _nameLabel.frame.size.height;
+	if ([self viewIsCurrentlyPortrait]) {
+		CGRect frame = self.contentView.frame;
+		frame.size.height -= _avatarImage.frame.origin.y + _avatarImage.frame.size.height;
+		frame.origin.y = _nameLabel.frame.origin.y;
+		if (!editing) {
+			frame.origin.y += _nameLabel.frame.size.height;
+			frame.size.height -= _nameLabel.frame.size.height;
+		}
+
+		_tableController.tableView.frame = frame;
 	}
-
-	_tableController.tableView.frame = frame;
-
 	if (animated) {
 		[UIView commitAnimations];
 	}

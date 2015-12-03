@@ -576,11 +576,14 @@
 	}
 
 	// Resize SideMenu
-	CGRect sideMenuFrame = contentFrame;
+	CGRect sideMenuFrame;
 	if (UIInterfaceOrientationIsPortrait([self currentOrientation])) {
+		sideMenuFrame = contentFrame;
 		sideMenuFrame.size.height += tabFrame.size.height;
 	} else {
-		sideMenuFrame.origin.x = 0;
+		sideMenuFrame = viewFrame;
+		sideMenuFrame.size.height -= statusBarFrame.size.height;
+		sideMenuFrame.origin.y = statusBarFrame.size.height;
 	}
 
 	if (!currentViewDescription.sideMenuEnabled) {
@@ -633,7 +636,6 @@
 	} else {
 		[_sideMenuViewController viewDidDisappear:YES];
 	}
-
 	// Dealloc old view description
 }
 
