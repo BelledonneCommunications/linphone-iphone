@@ -226,8 +226,6 @@
 
 	_outcallView.hidden = inCall;
 	_incallView.hidden = !inCall;
-	// always hide icons at start since they are not ready yet
-	_callQualityButton.hidden = _callSecurityButton.hidden = YES;
 
 	if (callQualityTimer) {
 		[callQualityTimer invalidate];
