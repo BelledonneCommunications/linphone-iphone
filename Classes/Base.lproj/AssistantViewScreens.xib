@@ -459,7 +459,7 @@
                     <accessibility key="accessibilityConfiguration" label="Password"/>
                     <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" secureTextEntry="YES"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="QcZ-wS-LhT"/>
                         <outlet property="errorLabel" destination="YzC-qL-tc0" id="SbI-Cd-cxw"/>
@@ -650,7 +650,7 @@
                     <accessibility key="accessibilityConfiguration" label="Password"/>
                     <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <textInputTraits key="textInputTraits" autocorrectionType="no" secureTextEntry="YES"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                     <connections>
                         <outlet property="delegate" destination="-1" id="e0Y-gb-t9q"/>
                         <outlet property="errorLabel" destination="3nU-NE-Lke" id="AlW-17-Y8Q"/>

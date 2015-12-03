@@ -75,8 +75,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_messageField.maxNumberOfLines = ([LinphoneManager runningOnIpad]) ? 10 : 3;
 	_messageField.delegate = self;
 	_messageField.font = [UIFont systemFontOfSize:18.0f];
-	_messageField.contentInset = UIEdgeInsetsMake(0, -5, -2, -5);
-	_messageField.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 10);
+	_messageField.contentInset = UIEdgeInsetsMake(-15, 0, 0, 0);
+	//	_messageField.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 10);
 	[_tableController setChatRoomDelegate:self];
 }
 
@@ -552,6 +552,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
 	[self chooseImageQuality:image url:url];
+}
+
+- (void)tableViewIsScrolling {
+	// if user is scrolling in table view, we should hide the keyboard
+	if ([_messageField isFirstResponder]) {
+		[_messageField resignFirstResponder];
+	}
 }
 
 #pragma mark - Keyboard Event Functions

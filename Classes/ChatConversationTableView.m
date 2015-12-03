@@ -190,6 +190,10 @@
 
 #pragma mark - UITableViewDelegate Functions
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+	[_chatRoomDelegate tableViewIsScrolling];
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
 	return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height;

@@ -26,6 +26,7 @@
 
 - (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url;
 - (void)resendChat:(NSString *)message withExternalUrl:(NSString *)url;
+- (void)tableViewIsScrolling;
 
 @end
 
