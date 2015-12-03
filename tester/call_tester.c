@@ -1965,6 +1965,7 @@ static void call_with_declined_video_using_policy(void) {
 	call_with_declined_video_base(TRUE);
 }
 
+
 void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
 	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
 	LinphoneCall* marie_call;
@@ -2030,16 +2031,129 @@ void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
 	}
 }
 
+
+
+void video_call_base_3(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
+    LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
+    
+    
+    LinphoneCall* marie_call;
+    LinphoneCall* pauline_call;
+    LinphoneVideoPolicy marie_policy, pauline_policy;
+    
+    
+    if (using_policy) {
+        marie_policy.automatically_initiate=FALSE;
+        marie_policy.automatically_accept=TRUE;
+        pauline_policy.automatically_initiate=TRUE;
+        pauline_policy.automatically_accept=FALSE;
+        
+        linphone_core_set_video_policy(marie->lc,&marie_policy);
+        linphone_core_set_video_policy(pauline->lc,&pauline_policy);
+    }
+    
+    linphone_core_enable_video_display(marie->lc, callee_video_enabled);
+    linphone_core_enable_video_capture(marie->lc, callee_video_enabled);
+    
+    linphone_core_enable_video_display(pauline->lc, caller_video_enabled);
+    linphone_core_enable_video_capture(pauline->lc, caller_video_enabled);
+    
+    if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
+        marie->lc->user_certificates_path = bc_tester_file("certificates-marie");
+        pauline->lc->user_certificates_path = bc_tester_file("certificates-pauline");
+        belle_sip_mkdir(marie->lc->user_certificates_path);
+        belle_sip_mkdir(pauline->lc->user_certificates_path);
+    }
+    
+    linphone_core_set_media_encryption(marie->lc,mode);
+    linphone_core_set_media_encryption(pauline->lc,mode);
+    /* Create call params */
+    caller_test_params.base=linphone_core_create_call_params(pauline->lc, NULL);
+
+ 
+    if (!using_policy)
+        linphone_call_params_enable_video(caller_test_params.base,TRUE);
+    
+    if (!using_policy){
+        callee_test_params.base=linphone_core_create_call_params(marie->lc, NULL);
+        linphone_call_params_enable_video(callee_test_params.base,TRUE);
+        
+    }
+
+    
+    BC_ASSERT_TRUE(call_with_params2(pauline,marie,&caller_test_params,&callee_test_params,using_policy));
+    marie_call=linphone_core_get_current_call(marie->lc);
+    pauline_call=linphone_core_get_current_call(pauline->lc);
+    
+    linphone_call_params_destroy(caller_test_params.base);
+    if (callee_test_params.base) linphone_call_params_destroy(callee_test_params.base);
+    
+    if (marie_call && pauline_call ) {
+        if (callee_video_enabled && caller_video_enabled) {
+            BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(marie_call)));
+            BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(pauline_call)));
+            
+            /*check video path*/
+            linphone_call_set_next_video_frame_decoded_callback(marie_call,linphone_call_iframe_decoded_cb,marie->lc);
+      
+            linphone_call_send_vfu_request(marie_call);
+            BC_ASSERT_TRUE( wait_for(marie->lc,pauline->lc,&marie->stat.number_of_IframeDecoded,1));
+            if (rtp_session_avpf_enabled(marie_call->sessions->rtp_session)){
+     
+                BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline_call->videostream->ms_video_stat.counter_rcvd_fir, 1));
+            }
+            else{
+                 BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline_call->videostream->ms_video_stat.counter_rcvd_fir, 0));
+            }
+            ms_message ("video_call_base_3 : [%p] received  %d FIR  ",&pauline_call ,pauline_call->videostream->ms_video_stat.counter_rcvd_fir);
+            ms_message ("video_call_base_3 : [%p] stat number of iframe decoded  %d ",&marie_call, marie->stat.number_of_IframeDecoded);
+            linphone_call_set_next_video_frame_decoded_callback(pauline_call,linphone_call_iframe_decoded_cb,pauline->lc);
+            linphone_call_send_vfu_request(pauline_call);
+            BC_ASSERT_TRUE( wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_IframeDecoded,1));
+            if (rtp_session_avpf_enabled(pauline_call->sessions->rtp_session)){
+                
+                BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie_call->videostream->ms_video_stat.counter_rcvd_fir, 1));
+            }
+            else{
+                BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie_call->videostream->ms_video_stat.counter_rcvd_fir, 0));
+            }
+            ms_message ("video_call_base_3 : [%p] received  %d FIR  ",&marie_call ,marie_call->videostream->ms_video_stat.counter_rcvd_fir);
+            ms_message ("video_call_base_3 : [%p] stat number of iframe decoded  %d ",&pauline_call, pauline->stat.number_of_IframeDecoded);
+        } else {
+            BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(marie_call)));
+            BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(pauline_call)));
+        }
+        liblinphone_tester_check_rtcp(marie,pauline);
+    }
+}
+
 static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
 	video_call_base_2(pauline,marie,using_policy,mode,callee_video_enabled,caller_video_enabled);
 	end_call(pauline, marie);
 }
+
 static void video_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	video_call_base(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void video_call_base_avpf(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
+    linphone_core_set_avpf_mode(pauline->lc,LinphoneAVPFEnabled);
+    linphone_core_set_avpf_mode(marie->lc,LinphoneAVPFEnabled);
+    video_call_base_3(pauline,marie,using_policy,mode,callee_video_enabled,caller_video_enabled);
+    end_call(pauline, marie);
+}
+static void video_call_avpf(void) {
+    LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+    LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+    video_call_base_avpf(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+
+    linphone_core_manager_destroy(marie);
+    linphone_core_manager_destroy(pauline);
 }
 
 static void video_call_zrtp(void) {
@@ -5550,7 +5664,8 @@ test_t call_tests[] = {
 	{ "Call with mkv file player", call_with_mkv_file_player},
 	{ "Audio call with ICE no matching audio codecs", audio_call_with_ice_no_matching_audio_codecs },
 #ifdef VIDEO_ENABLED
-	{ "Simple video call",video_call},
+	{ "Simple video call",video_call_avpf},
+    //{ "Simple video call",video_call},
 	{ "Simple ZRTP video call",video_call_zrtp},
 	{ "Simple DTLS video call",video_call_dtls},
 	{ "Simple video call using policy",video_call_using_policy},
