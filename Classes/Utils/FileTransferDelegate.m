@@ -49,6 +49,10 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 		CFBridgingRetain(thiz);
 		[[[LinphoneManager instance] fileTransferDelegates] removeObject:thiz];
 
+		// until image is properly saved, keep a reminder on it so that the
+		// chat bubble is aware of the fact that image is being saved to device
+		[LinphoneManager setValueInMessageAppData:@"saving..." forKey:@"localimage" inMessage:message];
+
 		[[LinphoneManager instance]
 				.photoLibrary
 			writeImageToSavedPhotosAlbum:image.CGImage
@@ -56,7 +60,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 						 completionBlock:^(NSURL *assetURL, NSError *error) {
 						   if (error) {
 							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-
+							   [LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
 							   UIAlertView *errorAlert = [[UIAlertView alloc]
 									   initWithTitle:NSLocalizedString(@"Transfer error", nil)
 											 message:NSLocalizedString(@"Cannot write image to photo library", nil)

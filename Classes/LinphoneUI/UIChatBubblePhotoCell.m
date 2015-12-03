@@ -92,39 +92,45 @@
 	BOOL fullScreenImage = NO;
 	assert(is_external || localImage);
 	if (localImage) {
-		// we did not load the image yet, so start doing so
-		if (_messageImageView.image == nil) {
-			NSURL *imageUrl = [NSURL URLWithString:localImage];
-			[_messageImageView startLoading];
-			__block LinphoneChatMessage *achat = self.message;
-			[LinphoneManager.instance.photoLibrary assetForURL:imageUrl
-				resultBlock:^(ALAsset *asset) {
-				  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
-								 ^(void) {
-								   if (achat == self.message) { // Avoid glitch and scrolling
-									   UIImage *image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
-									   dispatch_async(dispatch_get_main_queue(), ^{
-										 [_messageImageView setImage:image];
-										 [_messageImageView setFullImageUrl:asset];
-										 [_messageImageView stopLoading];
-										 _messageImageView.hidden = NO;
-										 _imageGestureRecognizer.enabled = YES;
-									   });
-								   }
-								 });
-				}
-				failureBlock:^(NSError *error) {
-				  LOGE(@"Can't read image");
-				}];
-		}
-		// we are uploading the image
-		if (_ftd.message != nil) {
-			_cancelButton.hidden = NO;
-			_fileTransferProgress.hidden = NO;
-			_downloadButton.hidden = YES;
-		} else {
+		// image is being saved on device - just wait for it
+		if ([localImage isEqualToString:@"saving..."]) {
 			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
 			fullScreenImage = YES;
+		} else {
+			// we did not load the image yet, so start doing so
+			if (_messageImageView.image == nil) {
+				NSURL *imageUrl = [NSURL URLWithString:localImage];
+				[_messageImageView startLoading];
+				__block LinphoneChatMessage *achat = self.message;
+				[LinphoneManager.instance.photoLibrary assetForURL:imageUrl
+					resultBlock:^(ALAsset *asset) {
+					  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
+									 ^(void) {
+									   if (achat == self.message) { // Avoid glitch and scrolling
+										   UIImage *image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
+										   dispatch_async(dispatch_get_main_queue(), ^{
+											 [_messageImageView setImage:image];
+											 [_messageImageView setFullImageUrl:asset];
+											 [_messageImageView stopLoading];
+											 _messageImageView.hidden = NO;
+											 _imageGestureRecognizer.enabled = YES;
+										   });
+									   }
+									 });
+					}
+					failureBlock:^(NSError *error) {
+					  LOGE(@"Can't read image");
+					}];
+			}
+			// we are uploading the image
+			if (_ftd.message != nil) {
+				_cancelButton.hidden = NO;
+				_fileTransferProgress.hidden = NO;
+				_downloadButton.hidden = YES;
+			} else {
+				_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
+				fullScreenImage = YES;
+			}
 		}
 		// we must download the image: either it has already started (show cancel button) or not yet (show download
 		// button)
