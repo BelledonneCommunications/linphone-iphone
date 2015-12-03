@@ -914,7 +914,7 @@ void linphone_gtk_draw_mute_button(GtkButton *button, gboolean active){
 
 void linphone_gtk_mute_clicked(GtkButton *button){
 	int active=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button),"active"));
-	linphone_core_mute_mic(linphone_gtk_get_core(),!active);
+	linphone_core_enable_mic(linphone_gtk_get_core(),active);
 	linphone_gtk_draw_mute_button(button,!active);
 }
 

@@ -6570,4 +6570,23 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getSipTransportTi
 	return linphone_core_get_sip_transport_timeout((LinphoneCore*)pcore);
 }
 
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setNortpTimeout
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setNortpTimeout(JNIEnv *env, jobject obj, jlong core, jint timeout){
+	linphone_core_set_nortp_timeout((LinphoneCore*)core, timeout);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    getNortpTimeout
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getNortpTimeout(JNIEnv *env, jobject obj, jlong core){
+	return linphone_core_get_nortp_timeout((LinphoneCore*)core);
+}
+
+
 

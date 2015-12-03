@@ -5613,6 +5613,40 @@ static void call_with_ice_and_rtcp_mux_without_reinvite(void){
 	_call_with_rtcp_mux(TRUE, TRUE, TRUE,FALSE);
 }
 
+static void call_with_zrtp_configured_calling_base(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
+	bool_t call_ok;
+	
+	linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionZRTP);
+	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	
+	liblinphone_tester_check_rtcp(marie,pauline);
+	
+	BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))
+					, LinphoneMediaEncryptionNone, int, "%i");
+	BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)))
+					, LinphoneMediaEncryptionNone, int, "%i");
+	end_call(pauline, marie);
+	
+}
+static void call_with_zrtp_configured_calling_side(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+
+	call_with_zrtp_configured_calling_base(marie,pauline);
+
+	linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
+	linphone_core_set_user_agent(marie->lc, "Natted Linphone", NULL);
+	call_with_zrtp_configured_calling_base(marie,pauline);
+
+	linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+	linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+	call_with_zrtp_configured_calling_base(marie,pauline);
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+
+	
+}
 test_t call_tests[] = {
 	{ "Early declined call", early_declined_call },
 	{ "Call declined", call_declined },
@@ -5776,7 +5810,8 @@ test_t call_tests[] = {
 	{ "Call with rtcp-mux", call_with_rtcp_mux},
 	{ "Call with rtcp-mux not accepted", call_with_rtcp_mux_not_accepted},
 	{ "Call with ICE and rtcp-mux", call_with_ice_and_rtcp_mux},
-	{ "Call with ICE and rtcp-mux without ICE re-invite", call_with_ice_and_rtcp_mux_without_reinvite}
+	{ "Call with ICE and rtcp-mux without ICE re-invite", call_with_ice_and_rtcp_mux_without_reinvite},
+	{ "call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side}
 };
 
 test_suite_t call_test_suite = {"Single Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

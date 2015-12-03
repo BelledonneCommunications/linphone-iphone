@@ -1111,7 +1111,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setSipDscp(long nativePtr, int dscp);
 	@Override
 	public synchronized void setSipDscp(int dscp) {
-		setSipDscp(nativePtr,dscp);
+		setSipDscp(nativePtr, dscp);
 	}
 
 	private native int getSipDscp(long nativePtr);
@@ -1276,7 +1276,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setMtu(long nativePtr, int mtu);
 	@Override
 	public synchronized void setMtu(int mtu) {
-		setMtu(nativePtr,mtu);
+		setMtu(nativePtr, mtu);
 	}
 	private native int getMtu(long nativePtr);
 	@Override
@@ -1285,7 +1285,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	@Override
 	public synchronized void enableSdp200Ack(boolean enable) {
-		enableSdp200Ack(nativePtr,enable);
+		enableSdp200Ack(nativePtr, enable);
 	}
 	@Override
 	public synchronized boolean isSdp200AckEnabled() {
@@ -1340,7 +1340,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	@Override
 	public synchronized void enableAdaptiveRateControl(boolean enable) {
-		enableAdaptiveRateControl(nativePtr,enable);
+		enableAdaptiveRateControl(nativePtr, enable);
 
 	}
 	@Override
@@ -1423,7 +1423,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setPreferredFramerate(long nativePtr, float fps);
 	@Override
 	public void setPreferredFramerate(float fps) {
-		setPreferredFramerate(nativePtr,fps);
+		setPreferredFramerate(nativePtr, fps);
 	}
 	private native float getPreferredFramerate(long nativePtr);
 	@Override
@@ -1578,5 +1578,15 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public int getSipTransportTimeout(){
 		return getSipTransportTimeout(nativePtr);
 	}
+	private native void setNortpTimeout(long nativePtr, int timeout);
+	@Override
+	public void setNortpTimeout(int timeout){
+		setNortpTimeout(nativePtr, timeout);
+	}
 
+	private native int getNortpTimeout(long nativePtr);
+	@Override
+	public int getNortpTimeout(){
+		return getNortpTimeout(nativePtr);
+	}
 }

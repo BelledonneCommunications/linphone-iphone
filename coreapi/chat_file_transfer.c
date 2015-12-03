@@ -215,8 +215,7 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 												  linphone_content_get_subtype(msg->file_transfer_information)));
 
 			/* insert it in a multipart body handler which will manage the boundaries of multipart msg */
-			bh = belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg,
-													  first_part_bh);
+			bh = belle_sip_multipart_body_handler_new(linphone_chat_message_file_transfer_on_progress, msg, first_part_bh, NULL);
 
 			linphone_chat_message_ref(msg);
 			_release_http_request(msg);

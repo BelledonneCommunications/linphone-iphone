@@ -55,7 +55,7 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 	LinphoneCallParams * call_params;
 	switch(cstate){
 		case LinphoneCallIncomingReceived:
-			ms_message("Incoming call arrive  !\n");
+			ms_message("Incoming call arriving !\n");
 			/* accept the incoming call*/
 			call_params = linphone_core_create_call_params(lc, call);
 			linphone_call_params_enable_video(call_params,TRUE);
@@ -63,7 +63,6 @@ static void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCal
 			linphone_call_params_set_video_direction(call_params,LinphoneMediaDirectionSendOnly);
 			linphone_core_accept_call_with_params(lc,call,call_params);
 			linphone_call_params_destroy(call_params);
-
 		break;
 		default:
 			break;
@@ -74,6 +73,7 @@ static void helper(const char *progname) {
 	printf("%s --help\n"
 			"\t\t\t--listening-uri <uri> uri to listen on, default [sip:localhost:5060]\n"
 			"\t\t\t--max-call-duration max duration of a call in seconds, default [3600]\n"
+			"\t\t\t--media-file <wav or mkv file to play to caller>\n"
 			"\t\t\t--verbose\n", progname);
 	exit(0);
 }
@@ -88,6 +88,7 @@ int main(int argc, char *argv[]){
 	char * tmp = NULL;
 	LpConfig * lp_config = lp_config_new(NULL);
 	int max_call_duration=3600;
+	static const char *media_file = NULL;
 
 	policy.automatically_accept=TRUE;
 	signal(SIGINT,stop);
@@ -115,6 +116,11 @@ int main(int argc, char *argv[]){
 				helper();
 				break;
 			}*/
+		} else if (strcmp(argv[i], "--media-file") == 0){
+			i++;
+			if (i<argc){
+				media_file = argv[i];
+			}else helper(argv[0]);
 		} else {
 			helper(argv[0]);
 		}
@@ -138,8 +144,22 @@ int main(int argc, char *argv[]){
 
 
 	/*instead of using sound capture card, a file is played to the calling party*/
-	linphone_core_set_play_file(lc,PACKAGE_DATA_DIR "/sounds/linphone/hello16000.wav");
 	linphone_core_set_use_files(lc,TRUE);
+	linphone_core_enable_echo_cancellation(lc, FALSE); /*no need for local echo cancellation when playing files*/
+	if (!media_file){
+		linphone_core_set_play_file(lc,PACKAGE_DATA_DIR "/sounds/linphone/hello16000.wav");
+		linphone_core_set_preferred_framerate(lc,5);
+	}else{
+		PayloadType *pt = linphone_core_find_payload_type(lc, "opus", 48000, -1);
+		/*if opus is present, give it a bitrate for good quality with music, and stereo enabled*/
+		if (pt){
+			linphone_core_set_payload_type_bitrate(lc, pt, 150);
+			payload_type_set_send_fmtp(pt, "stereo=1");
+			payload_type_set_recv_fmtp(pt, "stereo=1");
+		}
+		linphone_core_set_play_file(lc, media_file);
+		linphone_core_set_preferred_video_size_by_name(lc, "720p");
+	}
 
 	{
 		MSWebCamDesc *desc = ms_mire_webcam_desc_get();
@@ -158,7 +178,7 @@ int main(int argc, char *argv[]){
 
 	linphone_core_set_sip_transports(lc,&tp);
 	linphone_core_set_audio_port_range(lc,1024,65000);
-	linphone_core_set_preferred_framerate(lc,5);
+	linphone_core_set_video_port_range(lc,1024,65000);
 	linphone_core_set_primary_contact(lc,tmp=linphone_address_as_string(addr));
 	ms_free(tmp);
 
@@ -169,8 +189,8 @@ int main(int argc, char *argv[]){
 		ms_usleep(50000);
 		if (print_stats) {
 			ms_message("*********************************");
-			ms_message("*Current number of call   [%10i]  *",ms_list_size(linphone_core_get_calls(lc)));
-			ms_message("*Number of call until now [%10i]  *",ms_list_size(linphone_core_get_call_logs(lc)));
+			ms_message("*Current number of calls   [%10i]  *",ms_list_size(linphone_core_get_calls(lc)));
+			ms_message("*Number of calls until now [%10i]  *",ms_list_size(linphone_core_get_call_logs(lc)));
 			ms_message("*********************************");
 			print_stats=FALSE;
 		}

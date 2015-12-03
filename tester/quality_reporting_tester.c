@@ -279,6 +279,7 @@ static void quality_reporting_interval_report(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+#ifdef VIDEO_ENABLED
 static void quality_reporting_session_report_if_video_stopped(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc_rtcp_xr");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
@@ -325,6 +326,7 @@ static void quality_reporting_session_report_if_video_stopped(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+#endif
 
 void publish_report_with_route_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state){
 	if (state == LinphonePublishProgress) {
@@ -358,6 +360,7 @@ static void quality_reporting_sent_using_custom_route(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+#ifdef VIDEO_ENABLED
 static void quality_reporting_interval_report_video_and_rtt(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc_rtcp_xr");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc_rtcp_xr");
@@ -418,6 +421,7 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+#endif
 
 test_t quality_reporting_tests[] = {
 	{ "Not used if no config", quality_reporting_not_used_without_config},
@@ -426,8 +430,10 @@ test_t quality_reporting_tests[] = {
 	{ "Call term session report invalid if missing mandatory fields", quality_reporting_invalid_report},
 	{ "Call term session report sent if call ended normally", quality_reporting_at_call_termination},
 	{ "Interval report if interval is configured", quality_reporting_interval_report},
+	#ifdef VIDEO_ENABLED
 	{ "Interval report if interval is configured with video and realtime text", quality_reporting_interval_report_video_and_rtt},
 	{ "Session report sent if video stopped during call", quality_reporting_session_report_if_video_stopped},
+	#endif
 	{ "Sent using custom route", quality_reporting_sent_using_custom_route},
 };
 

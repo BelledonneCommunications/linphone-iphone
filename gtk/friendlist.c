@@ -652,7 +652,7 @@ gboolean linphone_gtk_directory_search_focus_in(GtkWidget *entry){
 void linphone_gtk_directory_search_activate(GtkWidget *entry){
 	LinphoneProxyConfig *cfg;
 	GtkWidget *w;
-	linphone_core_get_default_proxy(linphone_gtk_get_core(),&cfg);
+	cfg = linphone_core_get_default_proxy_config(linphone_gtk_get_core());
 	w=linphone_gtk_show_buddy_lookup_window(linphone_proxy_config_get_sip_setup_context(cfg));
 	if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(entry),"active"))==1)
 		linphone_gtk_buddy_lookup_set_keyword(w,gtk_entry_get_text(GTK_ENTRY(entry)));
@@ -809,7 +809,7 @@ static GtkWidget *linphone_gtk_create_contact_menu(GtkWidget *contact_list){
 	SipSetupContext * ssc=NULL;
 	bool_t show_menu_separator=FALSE;
 
-	linphone_core_get_default_proxy(lc,&cfg);
+	cfg = linphone_core_get_default_proxy_config(lc);
 	if (cfg){
 		ssc=linphone_proxy_config_get_sip_setup_context(cfg);
 	}

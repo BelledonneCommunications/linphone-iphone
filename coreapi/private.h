@@ -213,7 +213,6 @@ struct _LinphoneChatMessage {
 	LinphoneChatMessageCbs *callbacks;
 	LinphoneChatMessageDir dir;
 	char* message;
-	LinphoneChatMessageStateChangedCb message_state_changed_cb;
 	void* message_state_changed_user_data;
 	void* message_userdata;
 	char* appdata;
@@ -231,6 +230,15 @@ struct _LinphoneChatMessage {
 	belle_http_request_t *http_request; /**< keep a reference to the http_request in case of file transfer in order to be able to cancel the transfer */
 	belle_http_request_listener_t *http_listener; /* our listener, only owned by us*/
 	char *file_transfer_filepath;
+
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+	LinphoneChatMessageStateChangedCb message_state_changed_cb;
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneChatMessage);
@@ -310,6 +318,7 @@ struct _LinphoneCall{
 	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 
 	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
+	char *onhold_file; /*set if a on-hold file is to be played*/
 	LinphoneChatRoom *chat_room;
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
@@ -1386,6 +1395,8 @@ bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 
 BELLE_SIP_DECLARE_VPTR(LinphoneTunnelConfig);
 
+int linphone_core_get_default_proxy_config_index(LinphoneCore *lc);
+	
 #ifdef __cplusplus
 }
 #endif
