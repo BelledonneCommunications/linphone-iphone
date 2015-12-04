@@ -1119,7 +1119,7 @@ jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend){
 
 			jobj=env->NewLocalRef((jobject)up);
 			if (jobj == NULL){
-				jobj=env->NewObject(lcData->friendClass, lcData->friendCtrId, lcData->(jlong)lfriend);
+				jobj=env->NewObject(lcData->friendClass, lcData->friendCtrId, (jlong)lfriend);
 				linphone_friend_set_user_data(lfriend,(void*)env->NewWeakGlobalRef(jobj));
 			}
 		}
