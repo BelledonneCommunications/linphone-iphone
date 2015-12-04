@@ -30,29 +30,23 @@
 namespace Linphone {
 class Conference {
 public:
-	enum Method {
-		Unknown = 0,
-		Media = 1,
-		Transport = 2
-	};
-	
-	Conference(LinphoneCore *core, Method method);
+	Conference(LinphoneCore *core);
 	virtual ~Conference() {};
 	
 	virtual int addCall(LinphoneCall *call) = 0;
 	virtual int removeCall(LinphoneCall *call) = 0;
 	virtual int terminate() = 0;
 	
-	virtual int addLocalParticipant() = 0;
-	virtual int removeLocalParticipant() = 0;
-	virtual bool localParticipantIsIn() const = 0;
-	virtual AudioStream *getAudioStream() const = 0;
+	virtual int enter() = 0;
+	virtual int leave() = 0;
+	virtual bool isIn() const = 0;
 	
-	virtual int muteMicrophone(bool val) = 0;
-	virtual bool microphoneIsMuted() const = 0;
-	virtual float getInputVolume() const = 0;
+	AudioStream *getAudioStream() const {return m_localParticipantStream;}
+	int muteMicrophone(bool val);
+	bool microphoneIsMuted() const {return m_isMuted;}
+	float getInputVolume() const;
+	
 	virtual int getParticipantCount() const = 0;
-	Method getMethod() const {return m_method;}
 	
 	virtual int startRecording(const char *path) = 0;
 	virtual int stopRecording() = 0;
@@ -61,19 +55,43 @@ public:
 	virtual void onCallStreamStopping(LinphoneCall *call) {};
 	virtual void onCallTerminating(LinphoneCall *call) {};
 	
-	static Conference *make(LinphoneCore *core, Conference::Method method);
-	
 protected:
 	LinphoneCore *m_core;
-	Method m_method;
+	AudioStream *m_localParticipantStream;
+	bool m_isMuted;
 };
 };
 
 using namespace Linphone;
 
-Conference::Conference(LinphoneCore *core, Conference::Method type) :
+Conference::Conference(LinphoneCore *core) :
 	m_core(core),
-	m_method(type) {
+	m_localParticipantStream(NULL),
+	m_isMuted(false) {
+}
+
+int Conference::muteMicrophone(bool val)  {
+	if (val) {
+		audio_stream_set_mic_gain(m_localParticipantStream, 0);
+	} else {
+		audio_stream_set_mic_gain_db(m_localParticipantStream, m_core->sound_conf.soft_mic_lev);
+	}
+	if ( linphone_core_get_rtp_no_xmit_on_audio_mute(m_core) ){
+		audio_stream_mute_rtp(m_localParticipantStream, val);
+	}
+	m_isMuted=val;
+	return 0;
+}
+
+float Conference::getInputVolume() const {
+	AudioStream *st=m_localParticipantStream;
+	if (st && st->volsend && !m_isMuted){
+		float vol=0;
+		ms_filter_call_method(st->volsend,MS_VOLUME_GET,&vol);
+		return vol;
+
+	}
+	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
 
@@ -84,18 +102,12 @@ public:
 	virtual ~MediaConference();
 	
 	virtual int addCall(LinphoneCall *call);
-	virtual int addAllCalls(LinphoneCall &call);
 	virtual int removeCall(LinphoneCall *call);
 	virtual int terminate();
 	
-	virtual int addLocalParticipant();
-	virtual int removeLocalParticipant();
-	virtual bool localParticipantIsIn() const {return m_localParticipant!=NULL;}
-	virtual AudioStream *getAudioStream() const {return m_localParticipant;}
-	
-	virtual int muteMicrophone(bool val);
-	virtual bool microphoneIsMuted() const {return m_localMuted;}
-	virtual float getInputVolume() const;
+	virtual int enter();
+	virtual int leave();
+	virtual bool isIn() const {return m_localParticipantStream!=NULL;}
 	virtual int getParticipantCount() const;
 	
 	virtual int startRecording(const char *path);
@@ -114,22 +126,18 @@ private:
 	static RtpProfile *sMakeDummyProfile(int samplerate);
 
 	MSAudioConference *m_conf;
-	AudioStream *m_localParticipant;
 	MSAudioEndpoint *m_localEndpoint;
 	MSAudioEndpoint *m_recordEndpoint;
 	RtpProfile *m_localDummyProfile;
-	bool_t m_localMuted;
 	bool_t m_terminated;
 };
 };
 
-MediaConference::MediaConference(LinphoneCore *core): Conference(core, Media),
+MediaConference::MediaConference(LinphoneCore *core): Conference(core),
 	m_conf(NULL),
-	m_localParticipant(NULL),
 	m_localEndpoint(NULL),
 	m_recordEndpoint(NULL),
 	m_localDummyProfile(NULL),
-	m_localMuted(FALSE),
 	m_terminated(FALSE) {
 	MSAudioConferenceParams params;
 	params.samplerate = lp_config_get_int(m_core->config, "sound","conference_rate",16000);
@@ -172,7 +180,7 @@ void MediaConference::addLocalEndpoint() {
 				linphone_core_echo_cancellation_enabled(m_core)
 				);
 	_post_configure_audio_stream(st,m_core,FALSE);
-	m_localParticipant=st;
+	m_localParticipantStream=st;
 	m_localEndpoint=ms_audio_endpoint_get_from_stream(st,FALSE);
 	ms_audio_conference_add_member(m_conf,m_localEndpoint);
 }
@@ -211,17 +219,6 @@ int MediaConference::addCall(LinphoneCall *call) {
 	return 0;
 }
 
-int MediaConference::addAllCalls(LinphoneCall &call) {
-	MSList *calls=m_core->calls;
-	while (calls) {
-		LinphoneCall *call=(LinphoneCall*)calls->data;
-		calls=calls->next;
-		if (!call->current_params->in_conference) addCall(call);
-	}
-	addLocalParticipant();
-	return 0;
-}
-
 int MediaConference::removeFromConference(LinphoneCall *call, bool_t active){
 	int err=0;
 	char *str;
@@ -244,9 +241,9 @@ int MediaConference::removeFromConference(LinphoneCall *call, bool_t active){
 		LinphoneCallParams *params=linphone_call_params_copy(linphone_call_get_current_params(call));
 		params->in_conference=FALSE;
 		// reconnect local audio with this call
-		if (localParticipantIsIn()){
+		if (isIn()){
 			ms_message("Leaving conference for reconnecting with unique call.");
-			removeLocalParticipant();
+			leave();
 		}
 		ms_message("Updating call to actually remove from conference");
 		err=linphone_core_update_call(m_core,call,params);
@@ -261,7 +258,7 @@ int MediaConference::removeFromConference(LinphoneCall *call, bool_t active){
 int MediaConference::remoteParticipantsCount() {
 	int count=getParticipantCount();
 	if (count==0) return 0;
-	if (!m_localParticipant) return count;
+	if (!m_localParticipantStream) return count;
 	return count -1;
 }
 
@@ -278,7 +275,7 @@ int MediaConference::convertConferenceToCall(){
 		LinphoneCall *rc=(LinphoneCall*)calls->data;
 		calls=calls->next;
 		if (rc->params->in_conference) { // not using current_param
-			bool_t active_after_removed=localParticipantIsIn();
+			bool_t active_after_removed=isIn();
 			err=removeFromConference(rc, active_after_removed);
 			break;
 		}
@@ -320,14 +317,14 @@ int MediaConference::terminate() {
 	return 0;
 }
 
-int MediaConference::addLocalParticipant() {
+int MediaConference::enter() {
 	if (linphone_core_sound_resources_locked(m_core)) {
 		return -1;
 	}
 	if (m_core->current_call != NULL) {
 		_linphone_core_pause_call(m_core, m_core->current_call);
 	}
-	if (m_localParticipant==NULL) addLocalEndpoint();
+	if (m_localParticipantStream==NULL) addLocalEndpoint();
 	return 0;
 }
 
@@ -336,40 +333,16 @@ void MediaConference::removeLocalEndpoint(){
 		ms_audio_conference_remove_member(m_conf,m_localEndpoint);
 		ms_audio_endpoint_release_from_stream(m_localEndpoint);
 		m_localEndpoint=NULL;
-		audio_stream_stop(m_localParticipant);
-		m_localParticipant=NULL;
+		audio_stream_stop(m_localParticipantStream);
+		m_localParticipantStream=NULL;
 		rtp_profile_destroy(m_localDummyProfile);
 	}
 }
 
-int MediaConference::removeLocalParticipant() {
-	if (localParticipantIsIn())
+int MediaConference::leave() {
+	if (isIn())
 		removeLocalEndpoint();
 	return 0;
-}
-
-int MediaConference::muteMicrophone(bool val)  {
-	if (val) {
-		audio_stream_set_mic_gain(m_localParticipant, 0);
-	} else {
-		audio_stream_set_mic_gain_db(m_localParticipant, m_core->sound_conf.soft_mic_lev);
-	}
-	if ( linphone_core_get_rtp_no_xmit_on_audio_mute(m_core) ){
-		audio_stream_mute_rtp(m_localParticipant, val);
-	}
-	m_localMuted=val;
-	return 0;
-}
-
-float MediaConference::getInputVolume() const {
-	AudioStream *st=m_localParticipant;
-	if (st && st->volsend && !m_localMuted){
-		float vol=0;
-		ms_filter_call_method(st->volsend,MS_VOLUME_GET,&vol);
-		return vol;
-
-	}
-	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
 int MediaConference::getParticipantCount() const {
@@ -405,15 +378,6 @@ int MediaConference::stopRecording() {
 	return 0;
 }
 
-Conference *Conference::make(LinphoneCore *core, Conference::Method type) {
-	switch(type) {
-		case Media:
-			return new MediaConference(core);
-		default:
-			return NULL;
-	}
-}
-
 void MediaConference::onCallStreamStarting(LinphoneCall *call, bool isPausedByRemote) {
 	call->params->has_video = FALSE;
 	call->camera_enabled = FALSE;
@@ -436,7 +400,7 @@ void MediaConference::onCallTerminating(LinphoneCall *call) {
 		convertConferenceToCall();
 	}
 	if (remote_count==0){
-		if (m_localParticipant)
+		if (m_localParticipantStream)
 			removeLocalEndpoint();
 		if (m_recordEndpoint){
 			ms_audio_conference_remove_member(m_conf, m_recordEndpoint);
@@ -450,8 +414,250 @@ void MediaConference::onCallTerminating(LinphoneCall *call) {
 	}
 }
 
-LinphoneConference *linphone_conference_make(LinphoneCore *core, LinphoneConferenceType type) {
-	return Conference::make(core, (Conference::Method)type);
+namespace Linphone {
+class TransportConference: public Conference {
+public:
+	TransportConference(LinphoneCore *core);
+	virtual ~TransportConference();
+	
+	virtual int addCall(LinphoneCall *call);
+	virtual int removeCall(LinphoneCall *call) {return 0;}
+	virtual int terminate();
+	
+	virtual int enter();
+	virtual int leave();
+	virtual bool isIn() const;
+	virtual int getParticipantCount() const {return -1;}
+	
+	virtual int startRecording(const char *path) {return 0;}
+	virtual int stopRecording() {return 0;}
+
+private:
+	enum State {
+		NotConnectedToFocus,
+		ConnectingToFocus,
+		ConnectedToFocus,
+	};
+	static const char *stateToString(State state);
+	
+	void onFocusCallSateChanged(LinphoneCallState state);
+	void onPendingCallStateChanged(LinphoneCall *call, LinphoneCallState state);
+	
+	static void callStateChangedCb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message);
+	static void transferStateChanged(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
+	
+	const char *m_focusAddr;
+	const char *m_focusContact;
+	LinphoneCall *m_focusCall;
+	State m_state;
+	LinphoneCoreVTable *m_vtable;
+	MSList *m_pendingCalls;
+	MSList *m_transferingCalls;
+};
+};
+
+TransportConference::TransportConference(LinphoneCore *core):
+	Conference(core),
+	m_focusAddr(NULL),
+	m_focusContact(NULL),
+	m_focusCall(NULL),
+	m_state(NotConnectedToFocus),
+	m_vtable(NULL),
+	m_pendingCalls(NULL),
+	m_transferingCalls(NULL) {
+	m_focusAddr = lp_config_get_string(m_core->config, "misc", "conference_focus_addr", "");
+	m_vtable = linphone_core_v_table_new();
+	m_vtable->call_state_changed = callStateChangedCb;
+	m_vtable->transfer_state_changed = transferStateChanged;
+	linphone_core_v_table_set_user_data(m_vtable, this);
+	linphone_core_add_listener(m_core, m_vtable);
+}
+
+TransportConference::~TransportConference() {
+	linphone_core_remove_listener(m_core, m_vtable);
+	linphone_core_v_table_destroy(m_vtable);
+	if(m_pendingCalls) ms_list_free(m_pendingCalls);
+}
+
+int TransportConference::addCall(LinphoneCall *call) {
+	LinphoneAddress *addr;
+	
+	switch(m_state) {
+		case NotConnectedToFocus:
+			ms_message("Calling the conference focus (%s)", m_focusAddr);
+			addr = linphone_address_new(m_focusAddr);
+			if(addr) {
+				m_focusCall = linphone_core_invite_address(m_core, addr);
+				m_localParticipantStream = m_focusCall->audiostream;
+				m_pendingCalls = ms_list_append(m_pendingCalls, call);
+				m_state = ConnectingToFocus;
+				linphone_address_unref(addr);
+				return 0;
+			} else return -1;
+
+		case ConnectedToFocus:
+			linphone_core_transfer_call(m_core, call, m_focusContact);
+			m_transferingCalls = ms_list_append(m_transferingCalls, call);
+			return 0;
+
+		default:
+			ms_error("Could not add call %p to the conference. Bad conference state (%s)", call, stateToString(m_state));
+			return -1;
+	}
+}
+
+int TransportConference::terminate() {
+	switch(m_state) {
+		case ConnectingToFocus:
+		case ConnectedToFocus:
+			linphone_core_terminate_call(m_core, m_focusCall);
+			break;
+		default:
+			break;
+	}
+	return 0;
+}
+
+int TransportConference::enter() {
+	if(m_state != ConnectedToFocus) {
+		ms_error("Could not add local participant to the conference: bad conference state (%s)", stateToString(m_state));
+		return -1;
+	}
+	LinphoneCallState callState = linphone_call_get_state(m_focusCall);
+	switch(callState) {
+		case LinphoneCallStreamsRunning: break;
+		case LinphoneCallPaused:
+			linphone_core_resume_call(m_core, m_focusCall);
+			break;
+		default:
+			ms_error("Could not join the conference: bad focus call state (%s)", linphone_call_state_to_string(callState));
+			return -1;
+	}
+	return 0;
+}
+
+int TransportConference::leave() {
+	if(m_state != ConnectedToFocus) {
+		ms_error("Could not remove local participant from the conference: bad conference state (%s)", stateToString(m_state));
+		return -1;
+	}
+	LinphoneCallState callState = linphone_call_get_state(m_focusCall);
+	switch(callState) {
+		case LinphoneCallPaused: break;
+		case LinphoneCallStreamsRunning:
+			linphone_core_pause_call(m_core, m_focusCall);
+			break;
+		default:
+			ms_error("Could not leave the conference: bad focus call state (%s)", linphone_call_state_to_string(callState));
+			return -1;
+	}
+	return 0;
+}
+
+bool TransportConference::isIn() const {
+	if(m_state != ConnectedToFocus) return false;
+	LinphoneCallState callState = linphone_call_get_state(m_focusCall);
+	return callState == LinphoneCallStreamsRunning;
+}
+
+const char *TransportConference::stateToString(TransportConference::State state) {
+	switch(state) {
+		case NotConnectedToFocus: return "NotConnectedToFocus";
+		case ConnectingToFocus: return "ConnectingToFocus";
+		case ConnectedToFocus: return "ConnectedToFocus";
+		default: return "Unknown";
+	}
+}
+
+void TransportConference::onFocusCallSateChanged(LinphoneCallState state) {
+	switch (state) {
+			case LinphoneCallConnected:
+				m_state = ConnectedToFocus;
+				m_focusContact = linphone_call_get_remote_contact(m_focusCall);
+				for (MSList *it = m_pendingCalls; it; it = it->next) {
+					LinphoneCall *pendingCall = (LinphoneCall *)it->data;
+					LinphoneCallState pendingCallState = linphone_call_get_state(pendingCall);
+					if(pendingCallState == LinphoneCallStreamsRunning || pendingCallState == LinphoneCallPaused) {
+						MSList *current_elem = it;
+						it = it->next;
+						linphone_core_transfer_call(m_core, pendingCall, m_focusContact);
+						m_pendingCalls = ms_list_remove_link(m_pendingCalls, current_elem);
+						m_transferingCalls = ms_list_append_link(m_transferingCalls, current_elem);
+						continue;
+					}
+				}
+				break;
+
+			case LinphoneCallError:
+			case LinphoneCallEnd:
+				m_state = NotConnectedToFocus;
+				m_focusCall = NULL;
+				m_localParticipantStream = NULL;
+				m_focusContact = NULL;
+				m_pendingCalls = ms_list_free(m_pendingCalls);
+				m_transferingCalls = ms_list_free(m_transferingCalls);
+				break;
+
+			default: break;
+		}
+}
+
+void TransportConference::onPendingCallStateChanged(LinphoneCall *call, LinphoneCallState state) {
+	MSList *elem = ms_list_find(m_pendingCalls, call);
+	switch(state) {
+			case LinphoneCallStreamsRunning:
+			case LinphoneCallPaused:
+				if(m_state == ConnectedToFocus) {
+					linphone_core_transfer_call(m_core, call, m_focusContact);
+					m_pendingCalls = ms_list_remove_link(m_pendingCalls, elem);
+					m_transferingCalls = ms_list_append_link(m_transferingCalls, elem);
+				}
+				break;
+				
+			case LinphoneCallError:
+			case LinphoneCallEnd:
+				m_pendingCalls = ms_list_remove_link(m_pendingCalls, elem);
+				break;
+				
+			default: break;
+		}
+}
+
+void TransportConference::callStateChangedCb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
+	LinphoneCoreVTable *vtable = linphone_core_get_current_vtable(lc);
+	TransportConference *conf = (TransportConference *)linphone_core_v_table_get_user_data(vtable);
+	if (call == conf->m_focusCall) {
+		conf->onFocusCallSateChanged(cstate);
+	} else if(ms_list_find(conf->m_pendingCalls, call)) {
+		conf->onPendingCallStateChanged(call, cstate);
+	}
+}
+
+void TransportConference::transferStateChanged(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state) {
+	LinphoneCoreVTable *vtable = linphone_core_get_current_vtable(lc);
+	TransportConference *conf = (TransportConference *)linphone_core_v_table_get_user_data(vtable);
+	if (ms_list_find(conf->m_transferingCalls, transfered)) {
+		switch (new_call_state) {
+			case LinphoneCallConnected:
+			case LinphoneCallError:
+				conf->m_transferingCalls = ms_list_remove(conf->m_transferingCalls, transfered);
+				break;
+
+			default:
+				break;
+		}
+	}
+}
+
+
+
+
+LinphoneConference *linphone_media_conference_new(LinphoneCore *core) {
+	return new MediaConference(core);
+}
+
+LinphoneConference *linphone_transport_conference_new(LinphoneCore *core) {
+	return new TransportConference(core);
 }
 
 void linphone_conference_free(LinphoneConference *obj) {
@@ -471,15 +677,15 @@ int linphone_conference_terminate(LinphoneConference *obj) {
 }
 
 int linphone_conference_add_local_participant(LinphoneConference *obj) {
-	return ((Conference *)obj)->addLocalParticipant();
+	return ((Conference *)obj)->enter();
 }
 
 int linphone_conference_remove_local_participant(LinphoneConference *obj) {
-	return ((Conference *)obj)->removeLocalParticipant();
+	return ((Conference *)obj)->leave();
 }
 
 bool_t linphone_conference_local_participant_is_in(const LinphoneConference *obj) {
-	return ((Conference *)obj)->localParticipantIsIn() ? TRUE : FALSE;
+	return ((Conference *)obj)->isIn() ? TRUE : FALSE;
 }
 
 AudioStream *linphone_conference_get_audio_stream(const LinphoneConference *obj) {
@@ -500,10 +706,6 @@ float linphone_conference_get_input_volume(const LinphoneConference *obj) {
 
 int linphone_conference_get_participant_count(const LinphoneConference *obj) {
 	return ((Conference *)obj)->getParticipantCount();
-}
-
-LinphoneConferenceType linphone_conference_get_method(const LinphoneConference *obj) {
-	return (LinphoneConferenceType)((Conference *)obj)->getMethod();
 }
 
 int linphone_conference_start_recording(LinphoneConference *obj, const char *path) {

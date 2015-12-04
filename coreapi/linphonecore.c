@@ -7399,18 +7399,16 @@ const char *linphone_stream_type_to_string(const LinphoneStreamType type) {
 
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
 	const char *conf_method_name;
-	LinphoneConferenceType method;
 	if(lc->conf_ctx == NULL) {
 		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_method", "media");
 		if(strcasecmp(conf_method_name, "media") == 0) {
-			method = LinphoneConferenceTypeMedia;
+			lc->conf_ctx = linphone_media_conference_new(lc);
 		} else if(strcasecmp(conf_method_name, "transport") == 0) {
-			method = LinphoneConferenceTypeTransport;
+			lc->conf_ctx = linphone_transport_conference_new(lc);
 		} else {
 			ms_error("'%s' is not a valid conference method", conf_method_name);
 			return -1;
 		}
-		lc->conf_ctx = linphone_conference_make(lc, method);
 	}
 	return linphone_conference_add_call(lc->conf_ctx, call);
 }

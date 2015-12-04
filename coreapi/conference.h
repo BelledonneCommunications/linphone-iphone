@@ -28,16 +28,10 @@
 
 #include "linphonecore.h"
 
-typedef enum _LinphoneConferenceType {
-	LinphoneConferenceTypeUnknown = 0,
-	LinphoneConferenceTypeMedia = 1,
-	LinphoneConferenceTypeTransport = 2
-} LinphoneConferenceType;
-
-
 typedef void LinphoneConference;
 
-LinphoneConference *linphone_conference_make(LinphoneCore *core, LinphoneConferenceType type);
+LinphoneConference *linphone_media_conference_new(LinphoneCore *core);
+LinphoneConference *linphone_transport_conference_new(LinphoneCore *core);
 void linphone_conference_free(LinphoneConference *obj);
 
 int linphone_conference_add_call(LinphoneConference *obj, LinphoneCall *call);
@@ -53,7 +47,6 @@ int linphone_conference_mute_microphone(LinphoneConference *obj, bool_t val);
 bool_t linphone_conference_microphone_is_muted(const LinphoneConference *obj);
 float linphone_conference_get_input_volume(const LinphoneConference *obj);
 int linphone_conference_get_participant_count(const LinphoneConference *obj);
-LinphoneConferenceType linphone_conference_get_method(const LinphoneConference *obj);
 
 int linphone_conference_start_recording(LinphoneConference *obj, const char *path);
 int linphone_conference_stop_recording(LinphoneConference *obj);
