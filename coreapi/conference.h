@@ -30,6 +30,11 @@
 
 typedef void LinphoneConference;
 
+typedef enum {
+	LinphoneConferenceClassMedia,
+	LinphoneConferenceClassTransport
+} LinphoneConferenceClass;
+
 LinphoneConference *linphone_media_conference_new(LinphoneCore *core);
 LinphoneConference *linphone_transport_conference_new(LinphoneCore *core);
 void linphone_conference_free(LinphoneConference *obj);
@@ -54,5 +59,7 @@ int linphone_conference_stop_recording(LinphoneConference *obj);
 void linphone_conference_on_call_stream_starting(LinphoneConference *obj, LinphoneCall *call, bool_t is_paused_by_remote);
 void linphone_conference_on_call_stream_stopping(LinphoneConference *obj, LinphoneCall *call);
 void linphone_conference_on_call_terminating(LinphoneConference *obj, LinphoneCall *call);
+
+bool_t linphone_conference_check_class(LinphoneConference *obj, LinphoneConferenceClass _class);
 
 #endif // CONFERENCE_H

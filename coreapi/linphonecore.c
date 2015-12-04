@@ -7420,7 +7420,9 @@ int linphone_core_add_all_to_conference(LinphoneCore *lc) {
 		calls=calls->next;
 		linphone_core_add_to_conference(lc, call);
 	}
-	linphone_core_enter_conference(lc);
+	if(lc->conf_ctx && linphone_conference_check_class(lc->conf_ctx, LinphoneConferenceClassMedia)) {
+		linphone_core_enter_conference(lc);
+	}
 	return 0;
 }
 

@@ -26,6 +26,7 @@
 #include "private.h"
 #include "conference.h"
 #include <mediastreamer2/msvolume.h>
+#include <typeinfo>
 
 namespace Linphone {
 class Conference {
@@ -725,4 +726,12 @@ void linphone_conference_on_call_stream_stopping(LinphoneConference *obj, Linpho
 
 void linphone_conference_on_call_terminating(LinphoneConference *obj, LinphoneCall *call) {
 	((Conference *)obj)->onCallTerminating(call);
+}
+
+bool_t linphone_conference_check_class(LinphoneConference *obj, LinphoneConferenceClass _class) {
+	switch(_class) {
+		case LinphoneConferenceClassMedia: return typeid(obj) == typeid(MediaConference);
+		case LinphoneConferenceClassTransport: return typeid(obj) == typeid(TransportConference);
+		default: return FALSE;
+	}
 }
