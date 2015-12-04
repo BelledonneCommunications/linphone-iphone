@@ -31,8 +31,8 @@
 											 selector:@selector(textReceivedEvent:)
 												 name:kLinphoneMessageReceived
 											   object:nil];
-	[self setEditing:NO];
 	[_backToCallButton update];
+	[self setEditing:NO];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -76,7 +76,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
-	_addButton.hidden = self.tableController.isEditing;
+	_addButton.hidden = _backToCallButton.hidden = self.tableController.isEditing;
 }
 
 - (IBAction)onDeleteClick:(id)sender {

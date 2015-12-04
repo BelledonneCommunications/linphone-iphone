@@ -31,7 +31,7 @@
 }
 
 - (void)update {
-	self.hidden = (linphone_core_get_current_call([LinphoneManager getLc]) == NULL);
+	self.hidden |= (linphone_core_get_current_call([LinphoneManager getLc]) == NULL);
 }
 
 - (IBAction)onBackToCallClick:(id)sender {

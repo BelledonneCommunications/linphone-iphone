@@ -384,8 +384,8 @@
 
 - (void)removeEmptyEntry:(UITableView *)tableview section:(NSInteger)section animated:(BOOL)animated {
 	NSMutableArray *sectionDict = [self getSectionData:section];
-	NSInteger row = [sectionDict count] - 1;
-	if (row >= 0) {
+	NSInteger i = [sectionDict count];
+	for (NSInteger row = i - 1; row >= 0; row--) {
 		Entry *entry = [sectionDict objectAtIndex:row];
 
 		ABPropertyID property = [self propertyIDForSection:(ContactSections)section];

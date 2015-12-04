@@ -287,7 +287,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAvatarClick:(id)sender {
 	if (_tableController.isEditing) {
-		[ImagePickerView SelectImageFromDevice:self atPosition:CGRectNull inView:nil];
+		[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
 	}
 }
 

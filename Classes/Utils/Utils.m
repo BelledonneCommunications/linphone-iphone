@@ -477,6 +477,21 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 	return ret;
 }
 
+- (UIImage *)scaleToSize:(CGSize)size squared:(BOOL)squared {
+	UIImage *scaledImage = self;
+	if (squared) {
+		scaledImage = [self squareCrop];
+		size.width = size.height = MAX(size.width, size.height);
+	}
+
+	UIGraphicsBeginImageContext(scaledImage.size);
+	[scaledImage drawInRect:CGRectMake(0, 0, scaledImage.size.width, scaledImage.size.height)];
+	scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+
+	return scaledImage;
+}
+
 @end
 
 @implementation UIColor (LightAndDark)

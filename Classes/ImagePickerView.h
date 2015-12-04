@@ -38,7 +38,7 @@
 @property(nonatomic, readonly) UIPopoverController *popoverController;
 
 + (void)SelectImageFromDevice:(id<ImagePickerDelegate>)delegate
-				   atPosition:(CGRect)ipadPopoverPosition
+				   atPosition:(UIView *)ipadPopoverPosition
 					   inView:(UIView *)view;
 
 @end

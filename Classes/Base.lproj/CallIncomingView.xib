@@ -36,7 +36,7 @@
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                         </button>
-                        <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleAspectFill" image="avatar.png" id="19" userLabel="avatarImage" customClass="UIRoundedImageView">
+                        <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleAspectFit" image="avatar.png" id="19" userLabel="avatarImage" customClass="UIRoundedImageView">
                             <rect key="frame" x="87" y="213" width="200" height="200"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
@@ -289,7 +289,7 @@
                             <animations/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </view>
-                        <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleAspectFill" image="avatar.png" id="Q0C-CO-AYR" userLabel="avatarImage" customClass="UIRoundedImageView">
+                        <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleAspectFit" image="avatar.png" id="Q0C-CO-AYR" userLabel="avatarImage" customClass="UIRoundedImageView">
                             <rect key="frame" x="110" y="74" width="180" height="180"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>

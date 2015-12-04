@@ -64,8 +64,9 @@
 
 - (IBAction)onAvatarClick:(id)sender {
 	// hide ourself because we are on top of image picker
-	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
-	[ImagePickerView SelectImageFromDevice:self atPosition:CGRectNull inView:nil];
+	//	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
+
+	[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
 }
 
 - (void)registrationUpdateEvent:(NSNotification *)notif {

@@ -38,7 +38,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <animations/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" image="avatar.png" id="hD2-19-7IH" userLabel="avatarImage" customClass="UIRoundedImageView">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar.png" id="hD2-19-7IH" userLabel="avatarImage" customClass="UIRoundedImageView">
                             <rect key="frame" x="7" y="7" width="40" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <animations/>

@@ -111,6 +111,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 												 name:kLinphoneCallUpdate
 											   object:nil];
 
+	[_backToCallButton update];
+
 	if (_tableController.isEditing) {
 		[_tableController setEditing:NO];
 	}
@@ -120,7 +122,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_pictureButton setEnabled:fileSharingEnabled];
 
 	[self callUpdateEvent:nil];
-	[_backToCallButton update];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -497,7 +498,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
-	_backButton.hidden = _callButton.hidden = _tableController.isEditing;
+	_backButton.hidden = _callButton.hidden = _backToCallButton.hidden = _tableController.isEditing;
 }
 
 - (IBAction)onCallClick:(id)sender {
@@ -524,8 +525,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onPictureClick:(id)event {
 	[_messageField resignFirstResponder];
-	CGRect rect = [_messageView convertRect:[_pictureButton frame] toView:self.view];
-	[ImagePickerView SelectImageFromDevice:self atPosition:rect inView:self.view];
+	[ImagePickerView SelectImageFromDevice:self atPosition:_pictureButton inView:self.view];
 }
 
 #pragma mark ChatRoomDelegate

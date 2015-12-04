@@ -74,6 +74,7 @@ typedef enum {
 @interface UIImage (squareCrop)
 
 - (UIImage *)squareCrop;
+- (UIImage *)scaleToSize:(CGSize)size squared:(BOOL)squared;
 
 @end
 

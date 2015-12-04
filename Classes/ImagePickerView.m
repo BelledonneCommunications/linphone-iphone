@@ -168,8 +168,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (void)SelectImageFromDevice:(id<ImagePickerDelegate>)delegate
-				   atPosition:(CGRect)ipadPopoverPosition
-					   inView:(UIView *)ipadView {
+				   atPosition:(UIView *)ipadPopoverView
+					   inView:(UIView *_Nonnull)ipadView {
 	void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
 	  ImagePickerView *view = VIEW(ImagePickerView);
 	  if (!LinphoneManager.runningOnIpad) {
@@ -187,6 +187,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	  view.imagePickerDelegate = delegate;
 
 	  if (LinphoneManager.runningOnIpad) {
+		  UIView *iterview = ipadPopoverView;
+		  CGRect ipadPopoverPosition = iterview.frame;
+		  do {
+			  //			  [_avatarImage.superview convertRect:_avatarImage.frame toView:self.view];
+			  //			  CGRect rect = [_messageView convertRect:[_pictureButton frame] toView:self.view];
+			  ipadPopoverPosition =
+				  [iterview.superview convertRect:ipadPopoverPosition toView:iterview.superview.superview];
+			  iterview = iterview.superview;
+		  } while (iterview.superview.superview != ipadView);
 		  [view.popoverController presentPopoverFromRect:ipadPopoverPosition
 												  inView:ipadView
 								permittedArrowDirections:UIPopoverArrowDirectionAny
