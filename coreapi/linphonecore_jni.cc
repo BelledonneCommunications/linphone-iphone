@@ -199,117 +199,15 @@ extern "C" void Java_org_linphone_core_LinphoneCoreFactoryImpl_setLogCollectionP
 /*
  * returns the java LinphoneProxyConfig associated with a C LinphoneProxyConfig.
 **/
-jobject getProxy(JNIEnv *env, LinphoneProxyConfig *proxy, jobject core){
-	jobject jobj=0;
+jobject getProxy(JNIEnv *env, LinphoneProxyConfig *proxy, jobject core);
 
-	if (proxy!=NULL){
-		jclass proxyClass = (jclass)env->FindClass("org/linphone/core/LinphoneProxyConfigImpl");
-		jmethodID proxyCtrId = env->GetMethodID(proxyClass,"<init>", "(Lorg/linphone/core/LinphoneCoreImpl;J)V");
+jobject getCall(JNIEnv *env, LinphoneCall *call);
 
-		void *up=linphone_proxy_config_get_user_data(proxy);
+jobject getChatMessage(JNIEnv *env, LinphoneChatMessage *msg);
 
-		if (up==NULL){
-			jobj=env->NewObject(proxyClass,proxyCtrId,core,(jlong)proxy);
-			linphone_proxy_config_set_user_data(proxy,(void*)env->NewWeakGlobalRef(jobj));
-			linphone_proxy_config_ref(proxy);
-		}else{
-			//promote the weak ref to local ref
-			jobj=env->NewLocalRef((jobject)up);
-			if (jobj == NULL){
-				//the weak ref was dead
-				jobj=env->NewObject(proxyClass,proxyCtrId,core,(jlong)proxy);
-				linphone_proxy_config_set_user_data(proxy,(void*)env->NewWeakGlobalRef(jobj));
-			}
-		}
-		env->DeleteLocalRef(proxyClass);
-	}
-	return jobj;
-}
+jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend);
 
-jobject getCall(JNIEnv *env, LinphoneCall *call){
-	jobject jobj=0;
-
-	if (call!=NULL){
-		jclass callClass = (jclass)env->FindClass("org/linphone/core/LinphoneCallImpl");
-		jmethodID callCtrId = env->GetMethodID(callClass,"<init>", "(J)V");
-
-		void *up=linphone_call_get_user_pointer(call);
-
-		if (up==NULL){
-			jobj=env->NewObject(callClass,callCtrId,(jlong)call);
-			jobj=env->NewGlobalRef(jobj);
-			linphone_call_set_user_pointer(call,(void*)jobj);
-			linphone_call_ref(call);
-		}else{
-			jobj=(jobject)up;
-		}
-		env->DeleteLocalRef(callClass);
-	}
-	return jobj;
-}
-
-jobject getChatMessage(JNIEnv *env, LinphoneChatMessage *msg){
-	jobject jobj = 0;
-
-	if (msg != NULL){
-		jclass chatMessageClass = (jclass)env->FindClass("org/linphone/core/LinphoneChatMessageImpl");
-		jmethodID chatMessageCtrId = env->GetMethodID(chatMessageClass,"<init>", "(J)V");
-
-		void *up = linphone_chat_message_get_user_data(msg);
-
-		if (up == NULL) {
-			jobj = env->NewObject(chatMessageClass,chatMessageCtrId,(jlong)linphone_chat_message_ref(msg));
-			jobj = env->NewGlobalRef(jobj);
-			linphone_chat_message_set_user_data(msg,(void*)jobj);
-		} else {
-			jobj = (jobject)up;
-		}
-		env->DeleteLocalRef(chatMessageClass);
-	}
-	return jobj;
-}
-
-jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend){
-	jobject jobj=0;
-
-	if (lfriend != NULL){
-		jclass friendClass = (jclass)env->FindClass("org/linphone/core/LinphoneFriendImpl");
-		jmethodID friendCtrId = env->GetMethodID(friendClass,"<init>", "(J)V");
-
-		void *up=linphone_friend_get_user_data(lfriend);
-
-		if (up == NULL){
-			jobj=env->NewObject(friendClass,friendCtrId,(jlong)lfriend);
-			linphone_friend_set_user_data(lfriend,(void*)env->NewWeakGlobalRef(jobj));
-			linphone_friend_ref(lfriend);
-		}else{
-
-			jobj=env->NewLocalRef((jobject)up);
-			if (jobj == NULL){
-				jobj=env->NewObject(friendClass,friendCtrId,(jlong)lfriend);
-				linphone_friend_set_user_data(lfriend,(void*)env->NewWeakGlobalRef(jobj));
-			}
-		}
-		env->DeleteLocalRef(friendClass);
-	}
-	return jobj;
-}
-
-jobject getEvent(JNIEnv *env, LinphoneEvent *lev){
-	if (lev==NULL) return NULL;
-	jobject jev=(jobject)linphone_event_get_user_data(lev);
-	if (jev==NULL){
-		jclass linphoneEventClass = (jclass)env->FindClass("org/linphone/core/LinphoneEventImpl");
-		jmethodID linphoneEventCtrId = env->GetMethodID(linphoneEventClass,"<init>", "(J)V");
-
-		jev=env->NewObject(linphoneEventClass,linphoneEventCtrId,(jlong)linphone_event_ref(lev));
-		jev=env->NewGlobalRef(jev);
-		linphone_event_set_user_data(lev,jev);
-
-		env->DeleteLocalRef(linphoneEventClass);
-	}
-	return jev;
-}
+jobject getEvent(JNIEnv *env, LinphoneEvent *lev);
 
 class LinphoneCoreData {
 public:
@@ -1131,6 +1029,118 @@ private:
 		}
 	}
 };
+
+jobject getProxy(JNIEnv *env, LinphoneProxyConfig *proxy, jobject core){
+	jobject jobj=0;
+
+	if (proxy!=NULL){
+		LinphoneCore *lc = linphone_proxy_config_get_core(proxy);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+
+		void *up=linphone_proxy_config_get_user_data(proxy);
+
+		if (up==NULL){
+			jobj=env->NewObject(lcData->proxyClass, lcData->proxyCtrId, core, (jlong)proxy);
+			linphone_proxy_config_set_user_data(proxy,(void*)env->NewWeakGlobalRef(jobj));
+			linphone_proxy_config_ref(proxy);
+		}else{
+			//promote the weak ref to local ref
+			jobj=env->NewLocalRef((jobject)up);
+			if (jobj == NULL){
+				//the weak ref was dead
+				jobj=env->NewObject(lcData->proxyClass, lcData->proxyCtrId, core, (jlong)proxy);
+				linphone_proxy_config_set_user_data(proxy,(void*)env->NewWeakGlobalRef(jobj));
+			}
+		}
+	}
+	return jobj;
+}
+
+jobject getCall(JNIEnv *env, LinphoneCall *call){
+	jobject jobj=0;
+
+	if (call!=NULL){
+		LinphoneCore *lc = linphone_call_get_core(call);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+
+		void *up=linphone_call_get_user_pointer(call);
+
+		if (up==NULL){
+			jobj=env->NewObject(lcData->callClass, lcData->callCtrId, (jlong)call);
+			jobj=env->NewGlobalRef(jobj);
+			linphone_call_set_user_pointer(call,(void*)jobj);
+			linphone_call_ref(call);
+		}else{
+			jobj=(jobject)up;
+		}
+	}
+	return jobj;
+}
+
+jobject getChatMessage(JNIEnv *env, LinphoneChatMessage *msg){
+	jobject jobj = 0;
+
+	if (msg != NULL){
+		LinphoneChatRoom *room = linphone_chat_message_get_chat_room(msg);
+		LinphoneCore *lc = linphone_chat_room_get_core(room);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+
+		void *up = linphone_chat_message_get_user_data(msg);
+
+		if (up == NULL) {
+			jobj = env->NewObject(lcData->chatMessageClass, lcData->chatMessageCtrId, (jlong)linphone_chat_message_ref(msg));
+			jobj = env->NewGlobalRef(jobj);
+			linphone_chat_message_set_user_data(msg,(void*)jobj);
+		} else {
+			jobj = (jobject)up;
+		}
+	}
+	return jobj;
+}
+
+jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend){
+	jobject jobj=0;
+
+	if (lfriend != NULL){
+		LinphoneCore *lc = linphone_friend_get_core(lfriend);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+
+		void *up=linphone_friend_get_user_data(lfriend);
+
+		if (up == NULL){
+			jobj=env->NewObject(lcData->friendClass, lcData->friendCtrId, (jlong)lfriend);
+			linphone_friend_set_user_data(lfriend,(void*)env->NewWeakGlobalRef(jobj));
+			linphone_friend_ref(lfriend);
+		}else{
+
+			jobj=env->NewLocalRef((jobject)up);
+			if (jobj == NULL){
+				jobj=env->NewObject(lcData->friendClass, lcData->friendCtrId, lcData->(jlong)lfriend);
+				linphone_friend_set_user_data(lfriend,(void*)env->NewWeakGlobalRef(jobj));
+			}
+		}
+	}
+	return jobj;
+}
+
+jobject getEvent(JNIEnv *env, LinphoneEvent *lev){
+	if (lev==NULL) return NULL;
+	jobject jev=(jobject)linphone_event_get_user_data(lev);
+	if (jev==NULL){
+		LinphoneCore *lc = linphone_event_get_core(lev);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+
+		jev=env->NewObject(lcData->linphoneEventClass, lcData->linphoneEventCtrId, (jlong)linphone_event_ref(lev));
+		jev=env->NewGlobalRef(jev);
+		linphone_event_set_user_data(lev,jev);
+	}
+	return jev;
+}
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*  env
 		,jobject thiz
