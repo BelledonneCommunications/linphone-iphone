@@ -31,12 +31,8 @@ static bool_t only_telephone_event(const MSList *l){
 	return TRUE;
 }
 
-typedef struct _PayloadTypeMatcher{
-	const char *mime_type;
-	PayloadType *(*match_func)(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads);
-}PayloadTypeMatcher;
 
-static PayloadType * opus_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
+static PayloadType * opus_match(MSOfferAnswerContext *ctx, const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads, bool_t reading_response){
 	PayloadType *pt;
 	const MSList *elem;
 	PayloadType *candidate=NULL;
@@ -54,11 +50,21 @@ static PayloadType * opus_match(const MSList *local_payloads, const PayloadType 
 			}
 		}
 	}
-	return candidate;
+	return candidate ? payload_type_clone(candidate) : NULL;
 }
 
+static MSOfferAnswerContext *opus_offer_answer_create_context(void){
+	static MSOfferAnswerContext opus_oa = {opus_match, NULL};
+	return &opus_oa;
+}
+
+MSOfferAnswerProvider opus_offer_answer_provider={
+	"opus",
+	opus_offer_answer_create_context
+};
+
 /* the reason for this matcher is for some stupid uncompliant phone that offer G729a mime type !*/
-static PayloadType * g729A_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
+static PayloadType * g729A_match(MSOfferAnswerContext *ctx, const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads, bool_t reading_response){
 	PayloadType *pt;
 	const MSList *elem;
 	PayloadType *candidate=NULL;
@@ -70,37 +76,55 @@ static PayloadType * g729A_match(const MSList *local_payloads, const PayloadType
 			candidate=pt;
 		}
 	}
-	return candidate;
+	return candidate ? payload_type_clone(candidate) : NULL;
 }
 
-static PayloadType * amr_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
-	PayloadType *pt;
-	char value[10];
-	const MSList *elem;
-	PayloadType *candidate=NULL;
+static MSOfferAnswerContext *g729a_offer_answer_create_context(void){
+	static MSOfferAnswerContext g729_oa = {g729A_match, NULL};
+	return &g729_oa;
+}
 
-	for (elem=local_payloads;elem!=NULL;elem=elem->next){
-		pt=(PayloadType*)elem->data;
+MSOfferAnswerProvider g729a_offer_answer_provider={
+	"G729A",
+	g729a_offer_answer_create_context
+};
+
+static PayloadType * red_match(MSOfferAnswerContext *ctx, const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads, bool_t reading_response) {
+	const MSList *elem_local, *elem_remote;
+	PayloadType *red = NULL;
+
+	for (elem_local = local_payloads; elem_local != NULL; elem_local = elem_local->next) {
+		PayloadType *pt = (PayloadType*)elem_local->data;
 		
-		if ( pt->mime_type && refpt->mime_type 
-			&& strcasecmp(pt->mime_type, refpt->mime_type)==0
-			&& pt->clock_rate==refpt->clock_rate
-			&& pt->channels==refpt->channels) {
-			int octedalign1=0,octedalign2=0;
-			if (pt->recv_fmtp!=NULL && fmtp_get_value(pt->recv_fmtp,"octet-align",value,sizeof(value))){
-				octedalign1=atoi(value);
+		if (strcasecmp(pt->mime_type, payload_type_t140_red.mime_type) == 0) {
+			red = payload_type_clone(pt);
+			
+			for (elem_remote = remote_payloads; elem_remote != NULL; elem_remote = elem_remote->next) {
+				PayloadType *pt2 = (PayloadType*)elem_remote->data;
+				if (strcasecmp(pt2->mime_type, payload_type_t140.mime_type) == 0) {
+					int t140_payload_number = payload_type_get_number(pt2);
+					const char *red_fmtp = ms_strdup_printf("%i/%i/%i", t140_payload_number, t140_payload_number, t140_payload_number);
+					/*modify the local payload and the return value*/
+					payload_type_set_recv_fmtp(pt, red_fmtp);
+					payload_type_set_recv_fmtp(red, red_fmtp);
+					break;
+				}
 			}
-			if (refpt->send_fmtp!=NULL && fmtp_get_value(refpt->send_fmtp,"octet-align",value,sizeof(value))){
-				octedalign2=atoi(value);
-			}
-			if (octedalign1==octedalign2) {
-				candidate=pt;
-				break; /*exact match */
-			}
+			break;
 		}
 	}
-	return candidate;
+	return red;
 }
+
+static MSOfferAnswerContext *red_offer_answer_create_context(void){
+	static MSOfferAnswerContext red_oa = {red_match, NULL};
+	return &red_oa;
+}
+
+MSOfferAnswerProvider red_offer_answer_provider={
+	"red",
+	red_offer_answer_create_context
+};
 
 static PayloadType * generic_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
 	PayloadType *pt;
@@ -113,55 +137,31 @@ static PayloadType * generic_match(const MSList *local_payloads, const PayloadTy
 			&& strcasecmp(pt->mime_type, refpt->mime_type)==0
 			&& pt->clock_rate==refpt->clock_rate
 			&& pt->channels==refpt->channels)
-			return pt;
+			return payload_type_clone(pt);
 	}
 	return NULL;
 }
 
-static PayloadType * red_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads) {
-	const MSList *elem_local, *elem_remote;
-	PayloadType *red = NULL;
 
-	for (elem_local = local_payloads; elem_local != NULL; elem_local = elem_local->next) {
-		PayloadType *pt = (PayloadType*)elem_local->data;
-		
-		if (strcasecmp(pt->mime_type, payload_type_t140_red.mime_type) == 0) {
-			red = pt;
-			
-			for (elem_remote = remote_payloads; elem_remote != NULL; elem_remote = elem_remote->next) {
-				PayloadType *pt2 = (PayloadType*)elem_remote->data;
-				if (strcasecmp(pt2->mime_type, payload_type_t140.mime_type) == 0) {
-					int t140_payload_number = payload_type_get_number(pt2);
-					const char *red_fmtp = ms_strdup_printf("%i/%i/%i", t140_payload_number, t140_payload_number, t140_payload_number);
-					payload_type_set_recv_fmtp(red, red_fmtp);
-					break;
-				}
-			}
-			break;
-		}
-	}
-	return red;
+void linphone_core_register_offer_answer_providers(LinphoneCore *lc){
+	MSFactory *factory = ms_factory_get_fallback();
+	ms_factory_register_offer_answer_provider(factory, &red_offer_answer_provider);
+	ms_factory_register_offer_answer_provider(factory, &g729a_offer_answer_provider);
+	ms_factory_register_offer_answer_provider(factory, &opus_offer_answer_provider);
 }
-
-static PayloadTypeMatcher matchers[]={
-	{"opus", opus_match},
-	{"G729A", g729A_match},
-	{"AMR", amr_match},
-	{"AMR-WB", amr_match},
-	{"red", red_match},
-	{NULL, NULL}
-};
-
 
 /*
  * Returns a PayloadType from the local list that matches a PayloadType offered or answered in the remote list
 */
-static PayloadType * find_payload_type_best_match(const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads){
-	PayloadTypeMatcher *m;
-	for(m=matchers;m->mime_type!=NULL;++m){
-		if (refpt->mime_type && strcasecmp(m->mime_type,refpt->mime_type)==0){
-			return m->match_func(local_payloads, refpt, remote_payloads);
-		}
+static PayloadType * find_payload_type_best_match(const MSList *local_payloads, const PayloadType *refpt,
+						  const MSList *remote_payloads, bool_t reading_response){
+	PayloadType *ret = NULL;
+	MSOfferAnswerContext *ctx = ms_factory_create_offer_answer_context(ms_factory_get_fallback(), refpt->mime_type);
+	if (ctx){
+		ms_message("Doing offer/answer processing with specific provider for codec [%s]", refpt->mime_type); 
+		ret = ms_offer_answer_context_match_payload(ctx, local_payloads, refpt, remote_payloads, reading_response);
+		ms_offer_answer_context_destroy(ctx);
+		return ret;
 	}
 	return generic_match(local_payloads, refpt, remote_payloads);
 }
@@ -175,9 +175,8 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 
 	for(e2=remote;e2!=NULL;e2=e2->next){
 		PayloadType *p2=(PayloadType*)e2->data;
-		matched=find_payload_type_best_match(local,p2,remote);
+		matched=find_payload_type_best_match(local, p2, remote, reading_response);
 		if (matched){
-			PayloadType *newp;
 			int local_number=payload_type_get_number(matched);
 			int remote_number=payload_type_get_number(p2);
 
@@ -189,37 +188,36 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 				}
 			}
 
-			newp=payload_type_clone(matched);
 			if (p2->send_fmtp){
-				payload_type_append_send_fmtp(newp,p2->send_fmtp);
+				payload_type_append_send_fmtp(matched,p2->send_fmtp);
 			}
-			newp->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV|PAYLOAD_TYPE_FLAG_CAN_SEND;
+			matched->flags|=PAYLOAD_TYPE_FLAG_CAN_RECV|PAYLOAD_TYPE_FLAG_CAN_SEND;
 			if (p2->flags & PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED) {
-				newp->flags |= PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED;
+				matched->flags |= PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED;
 				/* Negotiation of AVPF features (keep common features) */
-				newp->avpf.features &= p2->avpf.features;
-				newp->avpf.rpsi_compatibility = p2->avpf.rpsi_compatibility;
+				matched->avpf.features &= p2->avpf.features;
+				matched->avpf.rpsi_compatibility = p2->avpf.rpsi_compatibility;
 				/* Take bigger AVPF trr interval */
 				if (p2->avpf.trr_interval < matched->avpf.trr_interval) {
-					newp->avpf.trr_interval = matched->avpf.trr_interval;
+					matched->avpf.trr_interval = matched->avpf.trr_interval;
 				}
 			}
-			res=ms_list_append(res,newp);
+			res=ms_list_append(res,matched);
 			/* we should use the remote numbering even when parsing a response */
-			payload_type_set_number(newp,remote_number);
-			payload_type_set_flag(newp, PAYLOAD_TYPE_FROZEN_NUMBER);
+			payload_type_set_number(matched,remote_number);
+			payload_type_set_flag(matched, PAYLOAD_TYPE_FROZEN_NUMBER);
 			if (reading_response && remote_number!=local_number){
 				ms_warning("For payload type %s, proposed number was %i but the remote phone answered %i",
-						  newp->mime_type, local_number, remote_number);
+						  matched->mime_type, local_number, remote_number);
 				/*
 				 We must add this payload type with our local numbering in order to be able to receive it.
 				 Indeed despite we must sent with the remote numbering, we must be able to receive with
 				 our local one.
 				*/
-				newp=payload_type_clone(newp);
-				payload_type_set_number(newp,local_number);
-				payload_type_set_flag(newp, PAYLOAD_TYPE_FROZEN_NUMBER);
-				res=ms_list_append(res,newp);
+				matched=payload_type_clone(matched);
+				payload_type_set_number(matched,local_number);
+				payload_type_set_flag(matched, PAYLOAD_TYPE_FROZEN_NUMBER);
+				res=ms_list_append(res,matched);
 			}
 		}else{
 			if (p2->channels>0)

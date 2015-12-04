@@ -1082,6 +1082,7 @@ void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState s
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
 LinphoneContent *linphone_content_from_sal_body(const SalBody *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
+void linphone_core_register_offer_answer_providers(LinphoneCore *lc);
 
 
 struct _LinphoneContent {
