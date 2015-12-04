@@ -520,7 +520,7 @@ int TransportConference::terminate() {
 
 int TransportConference::enter() {
 	if(m_state != ConnectedToFocus) {
-		ms_error("Could not add local participant to the conference: bad conference state (%s)", stateToString(m_state));
+		ms_error("Could not enter in the conference: bad conference state (%s)", stateToString(m_state));
 		return -1;
 	}
 	LinphoneCallState callState = linphone_call_get_state(m_focusCall);
@@ -538,7 +538,7 @@ int TransportConference::enter() {
 
 int TransportConference::leave() {
 	if(m_state != ConnectedToFocus) {
-		ms_error("Could not remove local participant from the conference: bad conference state (%s)", stateToString(m_state));
+		ms_error("Could not leave the conference: bad conference state (%s)", stateToString(m_state));
 		return -1;
 	}
 	LinphoneCallState callState = linphone_call_get_state(m_focusCall);
@@ -582,7 +582,7 @@ void TransportConference::onFocusCallSateChanged(LinphoneCallState state) {
 						it = it->next;
 						linphone_core_transfer_call(m_core, pendingCall, m_focusContact);
 						m_pendingCalls = ms_list_remove_link(m_pendingCalls, current_elem);
-						m_transferingCalls = ms_list_append_link(m_transferingCalls, current_elem);
+						m_transferingCalls = ms_list_append(m_transferingCalls, pendingCall);
 						continue;
 					}
 				}
@@ -603,20 +603,19 @@ void TransportConference::onFocusCallSateChanged(LinphoneCallState state) {
 }
 
 void TransportConference::onPendingCallStateChanged(LinphoneCall *call, LinphoneCallState state) {
-	MSList *elem = ms_list_find(m_pendingCalls, call);
 	switch(state) {
 			case LinphoneCallStreamsRunning:
 			case LinphoneCallPaused:
 				if(m_state == ConnectedToFocus) {
 					linphone_core_transfer_call(m_core, call, m_focusContact);
-					m_pendingCalls = ms_list_remove_link(m_pendingCalls, elem);
-					m_transferingCalls = ms_list_append_link(m_transferingCalls, elem);
+					m_pendingCalls = ms_list_remove(m_pendingCalls, call);
+					m_transferingCalls = ms_list_append(m_transferingCalls, call);
 				}
 				break;
 				
 			case LinphoneCallError:
 			case LinphoneCallEnd:
-				m_pendingCalls = ms_list_remove_link(m_pendingCalls, elem);
+				m_pendingCalls = ms_list_remove(m_pendingCalls, call);
 				break;
 				
 			default: break;
