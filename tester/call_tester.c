@@ -5698,8 +5698,8 @@ test_t call_tests[] = {
 	{ "Call with mkv file player", call_with_mkv_file_player},
 	{ "Audio call with ICE no matching audio codecs", audio_call_with_ice_no_matching_audio_codecs },
 #ifdef VIDEO_ENABLED
-	{ "Simple video call",video_call_avpf},
-    //{ "Simple video call",video_call},
+	{ "Simple video call AVPF",video_call_avpf},
+    { "Simple video call",video_call},
 	{ "Simple ZRTP video call",video_call_zrtp},
 	{ "Simple DTLS video call",video_call_dtls},
 	{ "Simple video call using policy",video_call_using_policy},
