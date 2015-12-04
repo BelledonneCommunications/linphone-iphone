@@ -26,6 +26,8 @@ INIT_WITH_COMMON {
 												 name:@"UIDeviceOrientationDidChangeNotification"
 											   object:nil];
 
+	//	self.layer.borderWidth = 1;
+	//	self.layer.borderColor = [UIColor redColor].CGColor;
 	return self;
 }
 
@@ -51,20 +53,20 @@ INIT_WITH_COMMON {
 - (void)setBordered:(BOOL)bordered {
 	borderView.hidden = !bordered;
 	if (bordered) {
-		CGRect frame = borderView.frame;
-		frame.size.height = frame.size.height = MIN(self.layer.frame.size.height, self.layer.frame.size.width);
-		frame.origin.x += (borderView.frame.size.width - frame.size.width) / 2;
-		frame.origin.y += (borderView.frame.size.height - frame.size.height) / 2;
+		CGRect frame = self.frame;
+		frame.size.height = frame.size.width = MIN(self.layer.frame.size.height, self.layer.frame.size.width);
+		frame.origin.x = (self.frame.size.width - frame.size.width) / 2;
+		frame.origin.y = (self.frame.size.height - frame.size.height) / 2;
 		borderView.frame = frame;
-		borderView.layer.borderWidth = 10;
-		borderView.layer.borderColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]].CGColor;
+		self.layer.borderWidth = 10;
+		//		[borderView.layer setCornerRadius:frame.size.height / 2];
+		self.layer.borderColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]].CGColor;
 	} else {
-		borderView.layer.borderWidth = 0;
+		self.layer.borderWidth = 0;
 	}
 }
 
 - (void)setRoundRadius {
-	return;
 	CALayer *imageLayer = self.layer;
 
 	CGFloat height = imageLayer.frame.size.height;

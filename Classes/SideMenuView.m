@@ -64,8 +64,9 @@
 
 - (IBAction)onAvatarClick:(id)sender {
 	// hide ourself because we are on top of image picker
-	//	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
-
+	if (!LinphoneManager.runningOnIpad) {
+		[PhoneMainView.instance.mainViewController hideSideMenu:YES];
+	}
 	[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
 }
 
@@ -77,9 +78,16 @@
 #pragma mark - Image picker delegate
 
 - (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
+	// Dismiss popover on iPad
+	if (LinphoneManager.runningOnIpad) {
+		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
+	} else {
+		[PhoneMainView.instance.mainViewController hideSideMenu:NO];
+	}
+
 	NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
 	[LinphoneManager.instance lpConfigSetString:url.absoluteString forKey:@"avatar"];
-	[PhoneMainView.instance.mainViewController hideSideMenu:NO];
+	_avatarImage.image = [LinphoneUtils selfAvatar];
 }
 
 @end

@@ -455,8 +455,6 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 @implementation UIImage (squareCrop)
 
 - (UIImage *)squareCrop {
-	UIImage *ret = nil;
-
 	// This calculates the crop area.
 
 	float originalWidth = self.size.width;
@@ -467,20 +465,38 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 	float posX = (originalWidth - edge) / 2.0f;
 	float posY = (originalHeight - edge) / 2.0f;
 
-	CGRect cropSquare = CGRectMake(posX, posY, edge, edge);
+	CGRect rect = CGRectMake(posX, posY, edge, edge);
 
-	CGImageRef imageRef = CGImageCreateWithImageInRect([self CGImage], cropSquare);
-	ret = [UIImage imageWithCGImage:imageRef scale:self.scale orientation:self.imageOrientation];
-
+	// Create bitmap image from original image data,
+	// using rectangle to specify desired crop area
+	CGImageRef imageRef = CGImageCreateWithImageInRect([self CGImage], rect);
+	UIImage *img = [UIImage imageWithCGImage:imageRef];
 	CGImageRelease(imageRef);
 
-	return ret;
+	return img; /*
+	 UIImage *ret = nil;
+
+
+
+	 CGRect cropSquare = CGRectMake(posX, posY, edge, edge);
+
+ //	CGImageRef imageRef = CGImageCreateWithImageInRect([self CGImage], cropSquare);
+ //	ret = [UIImage imageWithCGImage:imageRef scale:self.scale orientation:self.imageOrientation];
+ //
+ //	CGImageRelease(imageRef);
+
+	 CGImageRef imageRef = CGImageCreateWithImageInRect(self.CGImage, cropSquare);
+	 ret = [UIImage imageWithCGImage:imageRef scale:self.scale orientation:self.imageOrientation];
+	 CGImageRelease(imageRef);
+
+
+	 return ret;*/
 }
 
 - (UIImage *)scaleToSize:(CGSize)size squared:(BOOL)squared {
 	UIImage *scaledImage = self;
 	if (squared) {
-		scaledImage = [self squareCrop];
+		//		scaledImage = [self squareCrop];
 		size.width = size.height = MAX(size.width, size.height);
 	}
 

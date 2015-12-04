@@ -302,6 +302,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Image picker delegate
 
 - (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
+	// Dismiss popover on iPad
+	if (LinphoneManager.runningOnIpad) {
+		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
+	}
+
 	FastAddressBook *fab = [LinphoneManager instance].fastAddressBook;
 	CFErrorRef error = NULL;
 	if (!ABPersonRemoveImageData(_contact, (CFErrorRef *)&error)) {

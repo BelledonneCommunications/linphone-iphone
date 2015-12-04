@@ -352,10 +352,12 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 			LOGI(@"Remove contact %p: Success!", contact);
 		}
 		contact = NULL;
-
 		// Save address book
 		error = NULL;
 		ABAddressBookSave(addressBook, (CFErrorRef *)&error);
+
+		[self reload];
+
 		if (error != NULL) {
 			LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
 		} else {
