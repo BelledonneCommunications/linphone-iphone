@@ -46,7 +46,7 @@ static PayloadType * opus_match(MSOfferAnswerContext *ctx, const MSList *local_p
 				pt->channels=1; /*so that we respond with same number of channels */
 				candidate=pt;
 			}else if (refpt->channels==2){
-				return pt;
+				return payload_type_clone(pt);
 			}
 		}
 	}
@@ -103,10 +103,11 @@ static PayloadType * red_match(MSOfferAnswerContext *ctx, const MSList *local_pa
 				PayloadType *pt2 = (PayloadType*)elem_remote->data;
 				if (strcasecmp(pt2->mime_type, payload_type_t140.mime_type) == 0) {
 					int t140_payload_number = payload_type_get_number(pt2);
-					const char *red_fmtp = ms_strdup_printf("%i/%i/%i", t140_payload_number, t140_payload_number, t140_payload_number);
+					char *red_fmtp = ms_strdup_printf("%i/%i/%i", t140_payload_number, t140_payload_number, t140_payload_number);
 					/*modify the local payload and the return value*/
 					payload_type_set_recv_fmtp(pt, red_fmtp);
 					payload_type_set_recv_fmtp(red, red_fmtp);
+					ms_free(red_fmtp);
 					break;
 				}
 			}
