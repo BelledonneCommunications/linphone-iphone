@@ -13,6 +13,7 @@
 
 @interface SideMenuView : UIViewController <ImagePickerDelegate>
 
+@property(strong, nonatomic) IBOutlet UISwipeGestureRecognizer *swipeGestureRecognizer;
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property(weak, nonatomic) IBOutlet UIButton *addressButton;

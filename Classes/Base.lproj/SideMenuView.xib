@@ -12,11 +12,12 @@
                 <outlet property="grayBackground" destination="ccB-VK-LF9" id="Rbz-Ix-k62"/>
                 <outlet property="nameLabel" destination="XbU-2B-u1b" id="rKF-4e-1HA"/>
                 <outlet property="sideMenuTableViewController" destination="Yyh-z6-IGO" id="6Xq-OQ-vYm"/>
+                <outlet property="swipeGestureRecognizer" destination="JRs-i1-zCl" id="YA3-UP-6Dc"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <swipeGestureRecognizer direction="left" id="JRs-i1-zCl" userLabel="OnLateralSwipe">
+        <swipeGestureRecognizer enabled="NO" direction="left" id="JRs-i1-zCl" userLabel="OnLateralSwipe">
             <connections>
                 <action selector="onLateralSwipe:" destination="-1" id="5td-pZ-6Vc"/>
                 <outlet property="delegate" destination="-1" id="yhK-9x-aT0"/>

@@ -12,25 +12,17 @@
 
 @implementation SideMenuView
 
-- (void)updateHeader {
-	LinphoneProxyConfig *default_proxy = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
-
-	if (default_proxy != NULL) {
-		const LinphoneAddress *addr = linphone_proxy_config_get_identity_address(default_proxy);
-		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
-		char *as_string = linphone_address_as_string_uri_only(addr);
-		[_addressButton setTitle:[NSString stringWithUTF8String:as_string] forState:UIControlStateNormal];
-		ms_free(as_string);
-		[_addressButton setImage:[StatusBarView imageForState:linphone_proxy_config_get_state(default_proxy)]
-						forState:UIControlStateNormal];
-	} else {
-		_nameLabel.text = @"No account";
-		[_addressButton setTitle:NSLocalizedString(@"No address", nil) forState:UIControlStateNormal];
-		[_addressButton setImage:nil forState:UIControlStateNormal];
-	}
-	_avatarImage.image = [LinphoneUtils selfAvatar];
+- (void)viewDidLoad {
+	[super viewDidLoad];
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
+	// it's better to detect only pan from screen edges
+	UIScreenEdgePanGestureRecognizer *pan =
+		[[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(onLateralSwipe:)];
+	pan.edges = UIRectEdgeRight;
+	[self.view addGestureRecognizer:pan];
+	_swipeGestureRecognizer.enabled = NO;
+#endif
 }
-
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
@@ -53,7 +45,27 @@
 	_grayBackground.hidden = YES;
 	// should be better than that with alpha animation..
 }
-- (IBAction)onLateralSwipe:(id)sender {
+
+- (void)updateHeader {
+	LinphoneProxyConfig *default_proxy = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
+
+	if (default_proxy != NULL) {
+		const LinphoneAddress *addr = linphone_proxy_config_get_identity_address(default_proxy);
+		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
+		char *as_string = linphone_address_as_string_uri_only(addr);
+		[_addressButton setTitle:[NSString stringWithUTF8String:as_string] forState:UIControlStateNormal];
+		ms_free(as_string);
+		[_addressButton setImage:[StatusBarView imageForState:linphone_proxy_config_get_state(default_proxy)]
+						forState:UIControlStateNormal];
+	} else {
+		_nameLabel.text = @"No account";
+		[_addressButton setTitle:NSLocalizedString(@"No address", nil) forState:UIControlStateNormal];
+		[_addressButton setImage:nil forState:UIControlStateNormal];
+	}
+	_avatarImage.image = [LinphoneUtils selfAvatar];
+}
+
+- (void)onLateralSwipe:(UIScreenEdgePanGestureRecognizer *)pan {
 	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
 }
 
