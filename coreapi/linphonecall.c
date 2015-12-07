@@ -3323,7 +3323,7 @@ static void linphone_call_start_text_stream(LinphoneCall *call) {
 			if (is_multicast) rtp_session_set_multicast_ttl(call->textstream->ms.sessions.rtp_session,tstream->ttl);
 
 			text_stream_start(call->textstream, call->text_profile, rtp_addr, tstream->rtp_port, rtcp_addr, (linphone_core_rtcp_enabled(lc) && !is_multicast)  ? (tstream->rtcp_port ? tstream->rtcp_port : tstream->rtp_port + 1) : 0, used_pt);
-			ms_filter_add_notify_callback(call->textstream->rttsink, real_time_text_character_received, call, TRUE);
+			ms_filter_add_notify_callback(call->textstream->rttsink, real_time_text_character_received, call, FALSE);
 
 			ms_media_stream_sessions_set_encryption_mandatory(&call->textstream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
 		} else ms_warning("No text stream accepted.");
