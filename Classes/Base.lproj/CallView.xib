@@ -892,7 +892,7 @@
                         </view>
                         <tableView clipsSubviews="YES" tag="23" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="grouped" allowsSelection="NO" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" id="Yha-y8-ihb" userLabel="pausedCallsTableView">
                             <rect key="frame" x="0.0" y="220" width="334" height="50"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <animations/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -1212,11 +1212,6 @@
                                                 <outlet property="waitView" destination="PFh-Rq-z48" id="q07-6z-jsc"/>
                                             </connections>
                                         </button>
-                                        <activityIndicatorView hidden="YES" opaque="NO" tag="51" contentMode="scaleToFill" hidesWhenStopped="YES" style="whiteLarge" id="PFh-Rq-z48" userLabel="videoWaitView">
-                                            <rect key="frame" x="26" y="15" width="37" height="37"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <animations/>
-                                        </activityIndicatorView>
                                         <button opaque="NO" tag="52" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Pgq-7X-X64" userLabel="microButton" customClass="UIMicroButton">
                                             <rect key="frame" x="83" y="0.0" width="83" height="63"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -1275,6 +1270,11 @@
                                                 <action selector="onOptionsClick:" destination="-1" eventType="touchUpInside" id="4Kd-S1-s93"/>
                                             </connections>
                                         </button>
+                                        <activityIndicatorView hidden="YES" opaque="NO" tag="51" contentMode="scaleToFill" hidesWhenStopped="YES" style="whiteLarge" id="PFh-Rq-z48" userLabel="videoWaitView">
+                                            <rect key="frame" x="23" y="13" width="37" height="37"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <animations/>
+                                        </activityIndicatorView>
                                     </subviews>
                                     <animations/>
                                 </view>
