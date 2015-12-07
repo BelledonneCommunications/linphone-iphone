@@ -219,6 +219,12 @@ bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd) {
 	return FALSE;
 }
 
+bool_t sal_stream_description_has_implicit_avpf(const SalStreamDescription *sd){
+    if (sd->implicit_rtcp_fb){
+        return TRUE;
+    }
+    return FALSE;
+}
 /*these are switch case, so that when a new proto is added we can't forget to modify this function*/
 bool_t sal_stream_description_has_srtp(const SalStreamDescription *sd) {
 	switch (sd->proto){

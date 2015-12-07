@@ -138,6 +138,7 @@ struct _LinphoneCallParams{
 	bool_t has_audio;
 	bool_t has_video;
 	bool_t avpf_enabled; /* RTCP feedback messages are enabled */
+    bool_t implicit_rtcp_fb;
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 

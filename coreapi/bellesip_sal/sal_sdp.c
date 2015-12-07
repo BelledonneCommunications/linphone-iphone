@@ -335,7 +335,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 		}
 	}
 
-	if ((rtp_port != 0) && sal_stream_description_has_avpf(stream)) {
+	if ((rtp_port != 0) && (sal_stream_description_has_avpf(stream) || sal_stream_description_has_implicit_avpf(stream))) {
 		add_rtcp_fb_attributes(media_desc, md, stream);
 	}
 

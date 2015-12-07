@@ -2041,7 +2041,6 @@ void video_call_base_3(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
     LinphoneCall* pauline_call;
     LinphoneVideoPolicy marie_policy, pauline_policy;
     
-    
     if (using_policy) {
         marie_policy.automatically_initiate=FALSE;
         marie_policy.automatically_accept=TRUE;
@@ -2070,7 +2069,7 @@ void video_call_base_3(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, 
     /* Create call params */
     caller_test_params.base=linphone_core_create_call_params(pauline->lc, NULL);
 
- 
+    
     if (!using_policy)
         linphone_call_params_enable_video(caller_test_params.base,TRUE);
     
@@ -2140,6 +2139,20 @@ static void video_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void video_call_disable_implicit_AVPF_on_rcv(void) {
+    LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+    LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+    LpConfig *pauline_lp;
+    pauline_lp = linphone_core_get_config(pauline->lc);
+    lp_config_set_int(pauline_lp,"rtp","rtcp_fb_implicit_rtcp_fb",0);
+
+    video_call_base_3(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+    end_call(pauline, marie);
+    linphone_core_manager_destroy(marie);
+    linphone_core_manager_destroy(pauline);
+
+
+}
 static void video_call_base_avpf(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
     linphone_core_set_avpf_mode(pauline->lc,LinphoneAVPFEnabled);
     linphone_core_set_avpf_mode(marie->lc,LinphoneAVPFEnabled);
@@ -5699,6 +5712,7 @@ test_t call_tests[] = {
 	{ "Audio call with ICE no matching audio codecs", audio_call_with_ice_no_matching_audio_codecs },
 #ifdef VIDEO_ENABLED
 	{ "Simple video call AVPF",video_call_avpf},
+    { "Simple video call disable implicit",video_call_disable_implicit_AVPF_on_rcv},
     { "Simple video call",video_call},
 	{ "Simple ZRTP video call",video_call_zrtp},
 	{ "Simple DTLS video call",video_call_dtls},

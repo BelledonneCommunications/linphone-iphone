@@ -236,7 +236,8 @@ typedef struct SalStreamDescription{
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
 	int max_rate;
-	OrtpRtcpFbConfiguration rtcp_fb;
+    bool_t  implicit_rtcp_fb;
+    OrtpRtcpFbConfiguration rtcp_fb;
 	OrtpRtcpXrConfiguration rtcp_xr;
 	SalCustomSdpAttribute *custom_sdp_attributes;
 	SalIceCandidate ice_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES];
@@ -309,6 +310,7 @@ SalStreamDescription * sal_media_description_find_best_stream(SalMediaDescriptio
 void sal_media_description_set_dir(SalMediaDescription *md, SalStreamDir stream_dir);
 bool_t sal_stream_description_active(const SalStreamDescription *sd);
 bool_t sal_stream_description_has_avpf(const SalStreamDescription *sd);
+bool_t sal_stream_description_has_implicit_avpf(const SalStreamDescription *sd);
 bool_t sal_stream_description_has_srtp(const SalStreamDescription *sd);
 bool_t sal_stream_description_has_dtls(const SalStreamDescription *sd);
 bool_t sal_media_description_has_avpf(const SalMediaDescription *md);
