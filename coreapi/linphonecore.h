@@ -3803,6 +3803,8 @@ LINPHONE_PUBLIC const char *linphone_core_get_user_certificates_path(LinphoneCor
  */
 LINPHONE_PUBLIC LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const char *uri);
 
+typedef struct _LinphoneConference LinphoneConference;
+
 LINPHONE_PUBLIC	int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
 LINPHONE_PUBLIC	int linphone_core_add_all_to_conference(LinphoneCore *lc);
 /**
@@ -3835,6 +3837,7 @@ LINPHONE_PUBLIC	int linphone_core_terminate_conference(LinphoneCore *lc);
 LINPHONE_PUBLIC	int linphone_core_get_conference_size(LinphoneCore *lc);
 LINPHONE_PUBLIC int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path);
 LINPHONE_PUBLIC int linphone_core_stop_conference_recording(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneConference *linphone_core_get_conference(LinphoneCore *lc);
 /**
  * Get the maximum number of simultaneous calls Linphone core can manage at a time. All new call above this limit are declined with a busy answer
  * @ingroup initializing

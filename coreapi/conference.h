@@ -28,7 +28,7 @@
 
 #include "linphonecore.h"
 
-typedef void LinphoneConference;
+typedef struct _LinphoneConference LinphoneConference;
 
 typedef enum {
 	LinphoneConferenceClassMedia,

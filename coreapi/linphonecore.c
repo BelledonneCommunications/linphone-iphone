@@ -7473,3 +7473,7 @@ int linphone_core_stop_conference_recording(LinphoneCore *lc) {
 	if(lc->conf_ctx) return linphone_conference_stop_recording(lc->conf_ctx);
 	return -1;
 }
+
+LinphoneConference *linphone_core_get_conference(LinphoneCore *lc) {
+	return lc->conf_ctx;
+}

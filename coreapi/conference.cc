@@ -653,11 +653,11 @@ void TransportConference::transferStateChanged(LinphoneCore *lc, LinphoneCall *t
 
 
 LinphoneConference *linphone_media_conference_new(LinphoneCore *core) {
-	return new MediaConference(core);
+	return (LinphoneConference *) new MediaConference(core);
 }
 
 LinphoneConference *linphone_transport_conference_new(LinphoneCore *core) {
-	return new TransportConference(core);
+	return (LinphoneConference *) new TransportConference(core);
 }
 
 void linphone_conference_free(LinphoneConference *obj) {
