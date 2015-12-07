@@ -99,17 +99,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
 
-- (void)viewDidLoad {
-	[super viewDidLoad];
-	if (LinphoneManager.runningOnIpad) {
-		[LinphoneUtils adjustFontSize:_welcomeView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_createAccountView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_linphoneLoginView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_loginView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_createAccountActivationView mult:2.22f];
-		[LinphoneUtils adjustFontSize:_remoteProvisioningLoginView mult:2.22f];
+	// if we quit assistant without creating a new proxy config, just restore the previous one
+	if (!linphone_core_get_default_proxy_config([LinphoneManager getLc])) {
+		linphone_core_set_default_proxy_config([LinphoneManager getLc], previous_default_config);
 	}
 }
 
@@ -154,6 +147,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self resetLiblinphone];
 	// we will set the new default proxy config in the assistant
+	previous_default_config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
 	linphone_core_set_default_proxy_config([LinphoneManager getLc], NULL);
 }
 
