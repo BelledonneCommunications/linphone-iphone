@@ -22,7 +22,6 @@ reg_expires=3600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
-quality_reporting_collector=sip:collector@sip.example.org
 quality_reporting_enabled=1
 
 [friend_0]
@@ -34,6 +33,7 @@ subscribe=0
 [rtp]
 audio_rtp_port=20070-22070
 video_rtp_port=24000-25000
+text_rtp_port=26000-30000
 rtcp_xr_enabled=1
 rtcp_xr_rcvr_rtt_mode=all
 rtcp_xr_rcvr_rtt_max_size=10000

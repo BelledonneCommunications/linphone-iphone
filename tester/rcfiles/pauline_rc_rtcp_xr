@@ -15,8 +15,8 @@ realm=sip.example.org
 
 
 [proxy_0]
-reg_proxy=sip2.linphone.org;transport=tls
-reg_route=sip2.linphone.org;transport=tls
+reg_proxy=sip2.linphone.org;transport=tcp
+reg_route=sip2.linphone.org;transport=tcp
 reg_identity=sip:pauline@sip.example.org
 reg_expires=3600
 reg_sendregister=1
@@ -31,6 +31,7 @@ dial_escape_plus=0
 [rtp]
 audio_rtp_port=18070-28000
 video_rtp_port=39072-49000
+text_rtp_port=29000-38000
 rtcp_xr_enabled=1
 rtcp_xr_rcvr_rtt_mode=all
 rtcp_xr_rcvr_rtt_max_size=10000

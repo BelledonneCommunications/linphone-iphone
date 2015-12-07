@@ -52,16 +52,18 @@ static void remote_provisioning_transient(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_transient_remote_rc", FALSE);
 	BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneRegistrationOk,1));
-	BC_ASSERT_TRUE(linphone_core_is_provisioning_transient(marie->lc) == TRUE);
-	BC_ASSERT_TRUE(linphone_core_get_provisioning_uri(marie->lc) == NULL);
+	BC_ASSERT_TRUE(linphone_core_is_provisioning_transient(marie->lc));
+	BC_ASSERT_PTR_NULL(linphone_core_get_provisioning_uri(marie->lc));
 	linphone_core_manager_destroy(marie);
 }
 
 static void remote_provisioning_https(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_https_rc", FALSE);
-	BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
-	BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneRegistrationOk,1));
-	linphone_core_manager_destroy(marie);
+	if (transport_supported(LinphoneTransportTls)) {
+		LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_https_rc", FALSE);
+		BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
+		BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneRegistrationOk,1));
+		linphone_core_manager_destroy(marie);
+	}
 }
 
 static void remote_provisioning_not_found(void) {
@@ -87,8 +89,8 @@ static void remote_provisioning_default_values(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_default_values_rc", FALSE);
 	BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
 	lpc = linphone_core_create_proxy_config(marie->lc);
-	BC_ASSERT_TRUE(lpc->reg_sendregister == TRUE);
-	BC_ASSERT_TRUE(lpc->expires == 604800);
+	BC_ASSERT_TRUE(lpc->reg_sendregister);
+	BC_ASSERT_EQUAL(lpc->expires, 604800, int, "%d");
 	BC_ASSERT_STRING_EQUAL(lpc->reg_proxy, "<sip:sip.linphone.org:5223;transport=tls>");
 	BC_ASSERT_STRING_EQUAL(lpc->reg_route, "<sip:sip.linphone.org:5223;transport=tls>");
 	BC_ASSERT_STRING_EQUAL(lpc->reg_identity, "sip:?@sip.linphone.org");
@@ -96,7 +98,7 @@ static void remote_provisioning_default_values(void) {
 		LpConfig* lp = linphone_core_get_config(marie->lc);
 		BC_ASSERT_STRING_EQUAL(lp_config_get_string(lp,"app","toto","empty"),"titi");
 	}
-
+	linphone_proxy_config_destroy(lpc);
 	linphone_core_manager_destroy(marie);
 }
 
@@ -108,6 +110,8 @@ static void remote_provisioning_file(void) {
 	return;
 #elif defined(ANDROID)
 	marie = linphone_core_manager_new2("marie_remote_localfile_android_rc", FALSE);
+#elif defined(LINPHONE_WINDOWS_UNIVERSAL)
+	marie = linphone_core_manager_new2("marie_remote_localfile_win10_rc", FALSE);
 #else
 	marie = linphone_core_manager_new2("marie_remote_localfile_rc", FALSE);
 #endif
@@ -132,10 +136,6 @@ test_t remote_provisioning_tests[] = {
 	{ "Remote provisioning invalid URI", remote_provisioning_invalid_uri }
 };
 
-test_suite_t remote_provisioning_test_suite = {
-	"RemoteProvisioning",
-	NULL,
-	NULL,
-	sizeof(remote_provisioning_tests) / sizeof(remote_provisioning_tests[0]),
-	remote_provisioning_tests
-};
+test_suite_t remote_provisioning_test_suite = {"RemoteProvisioning", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+											   sizeof(remote_provisioning_tests) / sizeof(remote_provisioning_tests[0]),
+											   remote_provisioning_tests};

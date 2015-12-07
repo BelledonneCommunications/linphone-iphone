@@ -50,6 +50,8 @@ coreapi/help/chatroom
 coreapi/help/doc/
 coreapi/help/helloworld
 coreapi/help/registration
+coreapi/help/realtimetext_receiver
+coreapi/help/realtimetext_sender
 coreapi/test_ecc
 coreapi/test_lsd
 gtk/version_date.h
@@ -68,6 +70,9 @@ specs.c
 *.swp
 .deps
 .libs
+tools/test_ecc
+tools/test_lsd
+tools/test_numbers
 coreapi/help/notify
 share/fresh-rootca.pem
 tester/liblinphone_tester
@@ -89,7 +94,12 @@ tester/linphone_log.gz.txt
 tools/auto_answer
 tools/lp-autoanswer
 build/macos/pkg-distribution.xml
-tester/record_for_lc_*.wav
+record_for_lc_*.wav
 tester/record-call_with_file_player.wav
 tester/ZIDCache*.xml
 
+tester/stereo-record.wav
+.dirstamp
+git-clang-format.diff
+*.log
+.bc_tester_utils.tmp

@@ -193,4 +193,10 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	public PresenceModel createPresenceModel(PresenceActivityType type, String description, String note, String lang) {
 		return new PresenceModelImpl(type, description, note, lang);
 	}
+
+	private native Object _createTunnelConfig();
+	@Override
+	public TunnelConfig createTunnelConfig() {
+		return (TunnelConfig)_createTunnelConfig();
+	}
 }

@@ -1,9 +1,40 @@
+linphone-3.9.1 -- November 16th, 2015
+	* Fix crash when recording video calls with the VP8 codec
+	* Fix H.264 codec support in Mac OS X package
+	* Fix translation of account assistant
+	* Bug fixes
+
+linphone-3.9.0 -- November 2nd, 2015
+	* Video recording of calls in MKV format
+	* Clickable URLs in chat view
+	* Add buttons to change the record and playback volumes during a call
+	* Add button to start chatting without having to create a contact first
+	* Some icon changes
+	* Call logs now stored in database
+	* Bug fixes
+
+linphone-3.8.5 -- June 30th, 2015
+	* Fix bug about status icon on MacOSX. Attention request worked only once
+	* Fix crash at the end of the audio assistant
+	* Fix crash when configuring a remote provisioning
+	* Fix regression in the codec view. Codec which are not usable because
+	  bandwidth limits are to low were not greyed anymore
+	* Fix language selection on Windows and MacOSX
+	* Add translation for 'Arabic' and 'Turkish' items in the language selection
+	  list
+
+linphone-3.8.4 -- June 9th, 2015
+	* Add a built-in XMLRPC client. Linphone does not depend on libsoup anymore
+
+linphone-3.8.3 -- June 4th, 2015
+	* Fix status icons on all platforms (Windows, MacOS, non-KDE Linux desktop environment)
+
 linphone-3.8.2 -- May 7th, 2015
 	Application level improvements:
 	* add support of the StatusNotifierItem standard to display a status icon on KDE5
 	* auto-answering can be set through the preferences panel
 	* bug fixes
-	
+
 	Liblinphone level improvements:
 	* fix audio bug with opus codec
 	* fix ICE corner case not properly handled and resulting bad final ice status
@@ -51,14 +82,14 @@ linphone-3.7.0 -- February 20th, 2014
 	* Keyboard can be used for DTMF input
 	* Faster and higly responsive UI thanks to fully asynchronous operation of the liblinphone.
 	* Addon of opus codec
-	* Possibility to specify a remote provisionning http URI for configuration
+	* Possibility to specify a remote provisioning http URI for configuration
 	* LDAP search integration for Linux and MacOSX
-	* is-composing notification in chat area 
+	* is-composing notification in chat area
 
 	Liblinphone level improvements thanks to new "belle-sip" SIP stack:
 	* multiple SIP transports simultaneously now allowed
 	* IP dual stack: can use IPv6 and IPv4 simultaneously
-	* fully asynchronous behavior: no more lengthly DNS or connections 
+	* fully asynchronous behavior: no more lengthly DNS or connections
 	* +sip.instance parameter (RFC5626)
 	* alias parameter (RFC5923)
 	* better management of network disconnections
@@ -76,7 +107,7 @@ linphone-3.7.0 -- February 20th, 2014
 
 linphone-3.6.1 -- June 17, 2013
 	* fix memory leak with some video cameras on windows.
-	
+
 	Requires: mediastreamer2 = 2.9.1 and ortp = 0.22.0
 
 linphone-3.6.0 -- May 27, 2013
@@ -141,9 +172,9 @@ linphone-3.4.1 -- February 17th, 2011
 	Requires mediastreamer-2.7.1
 
 linphone-3.4.0 -- February 7th, 2011
-	* implement multiple calls feature: 
+	* implement multiple calls feature:
 		- call hold (with possibility to play a music file)
-		- call resume 
+		- call resume
 		- acceptance of 2nd call while putting the others on hold
 		- creation of another outgoing call while already in call
 		- blind call transfer
@@ -314,7 +345,7 @@ linphone-1.4.1 -- September 18, 2006
 	* do not change mixer settings at startup
 
 linphone-1.4.0 -- September 11, 2006
-	* no more glib dependency at all 
+	* no more glib dependency at all
 	* new mediastreamer2 framework for audio/video streaming
 	* stable video support with H.263-1998
 	* echo cancelation

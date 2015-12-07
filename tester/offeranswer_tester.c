@@ -43,13 +43,13 @@ static void start_with_no_config(void){
 	int speex16_codec_pos=get_codec_position(codecs, "speex", 16000);
 	PayloadType *pt;
 	opus_codec_pos=get_codec_position(codecs, "opus", 48000);
-	if (opus_codec_pos!=-1) BC_ASSERT_TRUE(opus_codec_pos==0);
-	BC_ASSERT_TRUE(speex16_codec_pos<speex_codec_pos);
+	if (opus_codec_pos!=-1) BC_ASSERT_EQUAL(opus_codec_pos,0,int, "%d");
+	BC_ASSERT_LOWER(speex16_codec_pos,speex_codec_pos,int,"%d");
 
 	pt=linphone_core_find_payload_type(lc, "speex", 16000, 1);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt) {
-		BC_ASSERT_TRUE(linphone_core_payload_type_enabled(lc, pt)==TRUE);
+		BC_ASSERT_TRUE(linphone_core_payload_type_enabled(lc, pt));
 	}
 	linphone_core_destroy(lc);
 }
@@ -59,28 +59,23 @@ static void check_payload_type_numbers(LinphoneCall *call1, LinphoneCall *call2,
 	const PayloadType *pt=linphone_call_params_get_used_audio_codec(params);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		BC_ASSERT_TRUE(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt)==expected_number);
+		BC_ASSERT_EQUAL(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt),expected_number, int, "%d");
 	}
 	params=linphone_call_get_current_params(call2);
 	pt=linphone_call_params_get_used_audio_codec(params);
 	BC_ASSERT_PTR_NOT_NULL(pt);
 	if (pt){
-		BC_ASSERT_TRUE(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt)==expected_number);
+		BC_ASSERT_EQUAL(linphone_core_get_payload_type_number(linphone_call_get_core(call1),pt),expected_number, int, "%d");
 	}
 }
 
 static void simple_call_with_different_codec_mappings(void) {
-	int begin;
-	int leaked_objects;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	LinphoneCall *pauline_call;
 
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
-
 	marie = linphone_core_manager_new( "marie_rc");
-	pauline = linphone_core_manager_new( "pauline_rc");
+	pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
 	disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
 	disable_all_audio_codecs_except_one(pauline->lc,"pcmu",-1);
@@ -111,52 +106,34 @@ static void simple_call_with_different_codec_mappings(void) {
 	end_call(marie,pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
 }
 
 static void call_failed_because_of_codecs(void) {
-	int begin,leaked_objects;
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCall* out_call;
 
-	belle_sip_object_enable_leak_detector(TRUE);
-	begin=belle_sip_object_get_object_count();
+	disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
+	disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
+	out_call = linphone_core_invite_address(pauline->lc,marie->identity);
+	linphone_call_ref(out_call);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
 
-	{
-		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-		LinphoneCall* out_call;
+	/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
+	BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable, int, "%d");
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0, int, "%d");
 
-		disable_all_audio_codecs_except_one(marie->lc,"pcmu",-1);
-		disable_all_audio_codecs_except_one(pauline->lc,"pcma",-1);
-		out_call = linphone_core_invite_address(pauline->lc,marie->identity);
-		linphone_call_ref(out_call);
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallOutgoingInit,1));
-
-		/*flexisip will retain the 488 until the "urgent reply" timeout (I.E 5s) arrives.*/
-		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallError,1,7000));
-		BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonNotAcceptable, int, "%d");
-		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived,0, int, "%d");
-		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallReleased,0, int, "%d");
-
-		linphone_call_unref(out_call);
-		linphone_core_manager_destroy(marie);
-		linphone_core_manager_destroy(pauline);
-	}
-	leaked_objects=belle_sip_object_get_object_count()-begin;
-	BC_ASSERT_TRUE(leaked_objects==0);
-	if (leaked_objects>0){
-		belle_sip_object_dump_active_objects();
-	}
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 
 
 static void profile_call_base(bool_t avpf1, LinphoneMediaEncryption srtp1,bool_t avpf2, LinphoneMediaEncryption srtp2, bool_t encryption_mandatory, const char *expected_profile) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneProxyConfig *lpc;
 	const LinphoneCallParams *params;
 
@@ -214,7 +191,7 @@ end:
 }
 
 static void profile_call(bool_t avpf1, LinphoneMediaEncryption srtp1, bool_t avpf2, LinphoneMediaEncryption srtp2, const char *expected_profile) {
-	return profile_call_base(avpf1, srtp1, avpf2,srtp2,FALSE,expected_profile);
+	profile_call_base(avpf1, srtp1, avpf2,srtp2,FALSE,expected_profile);
 }
 static void avp_to_avp_call(void) {
 	profile_call(FALSE, LinphoneMediaEncryptionNone, FALSE, LinphoneMediaEncryptionNone, "RTP/AVP");
@@ -298,6 +275,94 @@ static void savpf_dtls_to_avpf_call(void) {
 	profile_call(TRUE, LinphoneMediaEncryptionDTLS, TRUE, LinphoneMediaEncryptionNone, "UDP/TLS/RTP/SAVPF");
 }
 
+#ifdef VIDEO_ENABLED
+static LinphonePayloadType * configure_core_for_avpf_and_video(LinphoneCore *lc) {
+	LinphoneProxyConfig *lpc;
+	LinphonePayloadType *lpt;
+	LinphoneVideoPolicy policy = { 0 };
+
+	policy.automatically_initiate = TRUE;
+	policy.automatically_accept = TRUE;
+	linphone_core_get_default_proxy(lc, &lpc);
+	linphone_proxy_config_enable_avpf(lpc, TRUE);
+	linphone_proxy_config_set_avpf_rr_interval(lpc, 3);
+	linphone_core_set_video_device(lc, "StaticImage: Static picture");
+	linphone_core_enable_video_capture(lc, TRUE);
+	linphone_core_enable_video_display(lc, TRUE);
+	linphone_core_set_video_policy(lc, &policy);
+	lpt = linphone_core_find_payload_type(lc, "VP8", 90000, -1);
+	if (lpt == NULL) {
+		ms_warning("VP8 codec not available.");
+	} else {
+		disable_all_video_codecs_except_one(lc, "VP8");
+	}
+	return lpt;
+}
+
+static void check_avpf_features(LinphoneCore *lc, unsigned char expected_features) {
+	LinphoneCall *lcall = linphone_core_get_current_call(lc);
+	BC_ASSERT_PTR_NOT_NULL(lcall);
+	if (lcall != NULL) {
+		SalStreamDescription *desc = sal_media_description_find_stream(lcall->resultdesc, SalProtoRtpAvpf, SalVideo);
+		BC_ASSERT_PTR_NOT_NULL(desc);
+		if (desc != NULL) {
+			BC_ASSERT_PTR_NOT_NULL(desc->payloads);
+			if (desc->payloads) {
+				PayloadType *pt = (PayloadType *)desc->payloads->data;
+				BC_ASSERT_STRING_EQUAL(pt->mime_type, "VP8");
+				BC_ASSERT_EQUAL(pt->avpf.features, expected_features, int, "%d");
+			}
+		}
+	}
+}
+
+static void compatible_avpf_features(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphonePayloadType *lpt;
+	bool_t call_ok;
+
+	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
+	lpt = configure_core_for_avpf_and_video(pauline->lc);
+
+	BC_ASSERT_TRUE((call_ok=call(marie, pauline)));
+	if (!call_ok) goto end;
+
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	check_avpf_features(marie->lc, lpt->avpf.features);
+	check_avpf_features(pauline->lc, lpt->avpf.features);
+
+	end_call(marie,pauline);
+end:
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
+static void incompatible_avpf_features(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphonePayloadType *lpt;
+	bool_t call_ok;
+
+	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
+	lpt = configure_core_for_avpf_and_video(pauline->lc);
+	lpt->avpf.features = PAYLOAD_TYPE_AVPF_NONE;
+
+	BC_ASSERT_TRUE(call_ok=call(marie, pauline));
+	if (!call_ok) goto end;
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1));
+	check_avpf_features(marie->lc, PAYLOAD_TYPE_AVPF_NONE);
+	check_avpf_features(pauline->lc, PAYLOAD_TYPE_AVPF_NONE);
+
+	end_call(marie,pauline);
+end:
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+#endif
+
 static test_t offeranswer_tests[] = {
 	{ "Start with no config", start_with_no_config },
 	{ "Call failed because of codecs", call_failed_because_of_codecs },
@@ -323,13 +388,11 @@ static test_t offeranswer_tests[] = {
 	{ "SAVPF/DTLS to SAVPF call", savpf_dtls_to_savpf_call},
 	{ "SAVPF/DTLS to SAVPF encryption mandatory call", savpf_dtls_to_savpf_encryption_mandatory_call},
 	{ "SAVPF/DTLS to AVPF call", savpf_dtls_to_avpf_call},
-
+#ifdef VIDEO_ENABLED
+	{ "Compatible AVPF features", compatible_avpf_features },
+	{ "Incompatible AVPF features", incompatible_avpf_features },
+#endif
 };
 
-test_suite_t offeranswer_test_suite = {
-	"Offer-answer",
-	NULL,
-	NULL,
-	sizeof(offeranswer_tests) / sizeof(offeranswer_tests[0]),
-	offeranswer_tests
-};
+test_suite_t offeranswer_test_suite = {"Offer-answer", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+									   sizeof(offeranswer_tests) / sizeof(offeranswer_tests[0]), offeranswer_tests};

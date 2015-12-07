@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
+import org.linphone.core.LinphoneCore.MediaDirection;
 import org.linphone.core.LinphoneCore.MediaEncryption;
+import org.linphone.core.LinphoneCore.StreamType;
 /**
  * The LinphoneCallParams is an object containing various call related parameters.
  * It can be used to retrieve parameters from a currently running call or modify the call's characteristics
@@ -96,7 +98,48 @@ public interface LinphoneCallParams {
 	 * @return value for the header, or null if it doesn't exist.
 	 */
 	String getCustomHeader(String name);
-	
+
+	/**
+	 * Add a custom attribute related to all the streams in the SDP exchanged within SIP messages during a call.
+	 * @param name The name of the attribute to add.
+	 * @param value The content value of the attribute to add.
+	**/
+	void addCustomSdpAttribute(String name, String value);
+
+	/**
+	 * Add a custom attribute related to a specific stream in the SDP exchanged within SIP messages during a call.
+	 * @param type The type of the stream to add a custom SDP attribute to.
+	 * @param name The name of the attribute to add.
+	 * @param value The content value of the attribute to add.
+	**/
+	void addCustomSdpMediaAttribute(StreamType type, String name, String value);
+
+	/**
+	 * Get a custom SDP attribute that is related to all the streams.
+	 * @param name The name of the attribute to get.
+	 * @return The content value of the attribute or null if not found.
+	**/
+	String getCustomSdpAttribute(String name);
+
+	/**
+	 * Get a custom SDP attribute that is related to a specific stream.
+	 * @param type The type of the stream to add a custom SDP attribute to.
+	 * @param name The name of the attribute to get.
+	 * @return The content value of the attribute or null if not found.
+	**/
+	String getCustomSdpMediaAttribute(StreamType type, String name);
+
+	/**
+	 * Clear the custom SDP attributes related to all the streams in the SDP exchanged within SIP messages during a call.
+	**/
+	void clearCustomSdpAttributes();
+
+	/**
+	 * Clear the custom SDP attributes related to a specific stream in the SDP exchanged within SIP messages during a call.
+	 * @param type The type of the stream to clear custom SDP attributes from.
+	**/
+	void clearCustomSdpMediaAttributes(StreamType type);
+
 	/**
 	 * Set the privacy for the call.
 	 * @param privacy_mask a or'd int of values defined in interface {@link org.linphone.core.Privacy}
@@ -158,4 +201,40 @@ public interface LinphoneCallParams {
 	**/
 	boolean videoMulticastEnabled();
 	
+	/**
+	 * Use to enable real time text following rfc4103.
+	 * If enabled, outgoing calls put a m=text line in SDP offer .
+	 * @param yesno if yes, subsequent outgoing calls will propose rtt
+	 * 
+	**/
+	void enableRealTimeText(boolean yesno);
+	/**
+	 * Use to get real time text following rfc4103.
+	 * @returns returns true if call rtt is activated.
+	**/
+	boolean realTimeTextEnabled();
+
+	/**
+	 * Get the audio stream direction.
+	 * @return The audio stream direction associated with the call params.
+	**/
+	MediaDirection getAudioDirection();
+
+	/**
+	 * Get the video stream direction.
+	 * @return The video stream direction associated with the call params.
+	**/
+	MediaDirection getVideoDirection();
+
+	/**
+	 * Set the audio stream direction.
+	 * @param The audio stream direction associated with this call params.
+	**/
+	void setAudioDirection(MediaDirection dir);
+
+	/**
+	 * Set the video stream direction.
+	 * @param The video stream direction associated with this call params.
+	**/
+	void setVideoDirection(MediaDirection dir);
 }

@@ -31,10 +31,13 @@ struct _SipSetup;
 
 struct _BuddyInfo;
 
+struct _LinphoneXmlRpcSession;
+
 
 struct _SipSetupContext{
 	struct _SipSetup *funcs;
 	struct _LinphoneProxyConfig *cfg;
+	struct _LinphoneXmlRpcSession *xmlrpc_session;
 	char domain[128];
 	char username[128];
 	void *data;

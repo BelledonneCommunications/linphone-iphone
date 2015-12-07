@@ -27,7 +27,7 @@ static void upnp_start_n_stop(void) {
 	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
 #ifdef BUILD_UPNP
-	BC_ASSERT_TRUE(lc_upnp->lc->upnp != NULL);
+	BC_ASSERT_PTR_NOT_NULL(lc_upnp->lc->upnp);
 #endif
 	linphone_core_manager_destroy(lc_upnp);
 }
@@ -36,7 +36,7 @@ static void upnp_check_state(void) {
 	int tmp = 0;
 	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
-	BC_ASSERT_TRUE(linphone_core_get_upnp_state(lc_upnp->lc) == LinphoneUpnpStateOk);
+	BC_ASSERT_EQUAL(linphone_core_get_upnp_state(lc_upnp->lc), LinphoneUpnpStateOk, int, "%d");
 	linphone_core_manager_destroy(lc_upnp);
 }
 
@@ -46,7 +46,10 @@ static void upnp_check_ipaddress(void) {
 	LinphoneCoreManager* lc_upnp = linphone_core_manager_new2( "upnp_rc", FALSE);
 	wait_for(lc_upnp->lc,lc_upnp->lc,&tmp,1);
 	addr = linphone_core_get_upnp_external_ipaddress(lc_upnp->lc);
-	BC_ASSERT_TRUE(addr != NULL && strlen(addr)>=7);
+	BC_ASSERT_PTR_NOT_NULL(addr);
+	if (addr!=NULL) {
+		BC_ASSERT_GREATER((int)strlen(addr),7,int,"%d");
+	}
 	linphone_core_manager_destroy(lc_upnp);
 }
 
@@ -56,10 +59,5 @@ test_t upnp_tests[] = {
 	{ "Check ip address", upnp_check_ipaddress },
 };
 
-test_suite_t upnp_test_suite = {
-	"Upnp",
-	NULL,
-	NULL,
-	sizeof(upnp_tests) / sizeof(upnp_tests[0]),
-	upnp_tests
-};
+test_suite_t upnp_test_suite = {"Upnp", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+								sizeof(upnp_tests) / sizeof(upnp_tests[0]), upnp_tests};

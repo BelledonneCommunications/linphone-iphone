@@ -25,7 +25,7 @@
 static void linphone_version_test(void){
 	const char *version=linphone_core_get_version();
 	/*make sure the git version is always included in the version number*/
-	BC_ASSERT_TRUE(strstr(version,"unknown")==NULL);
+	BC_ASSERT_PTR_NULL(strstr(version,"unknown"));
 }
 
 static void core_init_test(void) {
@@ -71,7 +71,7 @@ static void core_sip_transport_test(void) {
 	linphone_core_destroy(lc);
 }
 
-static void linphone_interpret_url_test()
+static void linphone_interpret_url_test(void)
 {
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
@@ -94,7 +94,7 @@ static void linphone_interpret_url_test()
 	linphone_core_destroy ( lc );
 }
 
-static void linphone_lpconfig_from_buffer(){
+static void linphone_lpconfig_from_buffer(void){
 	const char* buffer = "[buffer]\ntest=ok";
 	const char* buffer_linebreaks = "[buffer_linebreaks]\n\n\n\r\n\n\r\ntest=ok";
 	LpConfig* conf;
@@ -108,7 +108,7 @@ static void linphone_lpconfig_from_buffer(){
 	lp_config_destroy(conf);
 }
 
-static void linphone_lpconfig_from_buffer_zerolen_value(){
+static void linphone_lpconfig_from_buffer_zerolen_value(void){
 	/* parameters that have no value should return NULL, not "". */
 	const char* zerolen = "[test]\nzero_len=\nnon_zero_len=test";
 	LpConfig* conf;
@@ -124,10 +124,10 @@ static void linphone_lpconfig_from_buffer_zerolen_value(){
 	lp_config_destroy(conf);
 }
 
-static void linphone_lpconfig_from_file_zerolen_value(){
+static void linphone_lpconfig_from_file_zerolen_value(void){
 	/* parameters that have no value should return NULL, not "". */
 	const char* zero_rc_file = "zero_length_params_rc";
-	char* rc_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_read_dir_prefix, zero_rc_file);
+	char* rc_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_get_resource_dir_prefix(), zero_rc_file);
 	LpConfig* conf;
 
 	/* not using lp_config_new() because it expects a readable file, and iOS (for instance)
@@ -146,9 +146,9 @@ static void linphone_lpconfig_from_file_zerolen_value(){
 	lp_config_destroy(conf);
 }
 
-static void linphone_lpconfig_from_xml_zerolen_value(){
+static void linphone_lpconfig_from_xml_zerolen_value(void){
 	const char* zero_xml_file = "remote_zero_length_params_rc";
-	char* xml_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_read_dir_prefix, zero_xml_file);
+	char* xml_path = ms_strdup_printf("%s/rcfiles/%s", bc_tester_get_resource_dir_prefix(), zero_xml_file);
 	LpConfig* conf;
 
 	LinphoneCoreManager* mgr = linphone_core_manager_new2("empty_rc",FALSE);
@@ -167,7 +167,7 @@ static void linphone_lpconfig_from_xml_zerolen_value(){
 	ms_free(xml_path);
 }
 
-void linphone_proxy_config_address_equal_test() {
+void linphone_proxy_config_address_equal_test(void) {
 	LinphoneAddress *a = linphone_address_new("sip:toto@titi");
 	LinphoneAddress *b = linphone_address_new("sips:toto@titi");
 	LinphoneAddress *c = linphone_address_new("sip:toto@titi;transport=tcp");
@@ -189,9 +189,11 @@ void linphone_proxy_config_address_equal_test() {
 	linphone_address_destroy(b);
 	linphone_address_destroy(c);
 	linphone_address_destroy(d);
+	linphone_address_destroy(e);
+	linphone_address_destroy(f);
 }
 
-void linphone_proxy_config_is_server_config_changed_test() {
+void linphone_proxy_config_is_server_config_changed_test(void) {
 	LinphoneProxyConfig* proxy_config = linphone_proxy_config_new();
 
 	linphone_proxy_config_done(proxy_config); /*test done without edit*/
@@ -233,13 +235,13 @@ void linphone_proxy_config_is_server_config_changed_test() {
 	linphone_proxy_config_destroy(proxy_config);
 }
 
-static void chat_root_test(void) {
+static void chat_room_test(void) {
 	LinphoneCoreVTable v_table;
 	LinphoneCore* lc;
 	memset (&v_table,0,sizeof(v_table));
 	lc = linphone_core_new(&v_table,NULL,NULL,NULL);
 	BC_ASSERT_PTR_NOT_NULL_FATAL(lc);
-	linphone_core_create_chat_room(lc,"sip:toto@titi.com");
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room_from_uri(lc,"sip:toto@titi.com"));
 	linphone_core_destroy(lc);
 }
 
@@ -265,6 +267,30 @@ static void devices_reload_test(void) {
 	linphone_core_manager_destroy(mgr);
 }
 
+static void codec_usability_test(void) {
+	LinphoneCoreManager *mgr = linphone_core_manager_new2("empty_rc", FALSE);
+	PayloadType *pt = linphone_core_find_payload_type(mgr->lc, "PCMU", 8000, -1);
+
+	BC_ASSERT_PTR_NOT_NULL(pt);
+	if (!pt) goto end;
+	/*no limit*/
+	linphone_core_set_upload_bandwidth(mgr->lc, 0);
+	linphone_core_set_download_bandwidth(mgr->lc, 0);
+	BC_ASSERT_TRUE(linphone_core_check_payload_type_usability(mgr->lc, pt));
+	/*low limit*/
+	linphone_core_set_upload_bandwidth(mgr->lc, 50);
+	linphone_core_set_download_bandwidth(mgr->lc, 50);
+	BC_ASSERT_FALSE(linphone_core_check_payload_type_usability(mgr->lc, pt));
+
+	/*reasonable limit*/
+	linphone_core_set_upload_bandwidth(mgr->lc, 200);
+	linphone_core_set_download_bandwidth(mgr->lc, 200);
+	BC_ASSERT_TRUE(linphone_core_check_payload_type_usability(mgr->lc, pt));
+
+end:
+	linphone_core_manager_destroy(mgr);
+}
+
 test_t setup_tests[] = {
 	{ "Version check", linphone_version_test },
 	{ "Linphone Address", linphone_address_test },
@@ -277,15 +303,10 @@ test_t setup_tests[] = {
 	{ "LPConfig zero_len value from buffer", linphone_lpconfig_from_buffer_zerolen_value },
 	{ "LPConfig zero_len value from file", linphone_lpconfig_from_file_zerolen_value },
 	{ "LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value },
-	{ "Chat room", chat_root_test },
-	{ "Devices reload", devices_reload_test }
+	{ "Chat room", chat_room_test },
+	{ "Devices reload", devices_reload_test },
+	{ "Codec usability", codec_usability_test }
 };
 
-test_suite_t setup_test_suite = {
-	"Setup",
-	NULL,
-	NULL,
-	sizeof(setup_tests) / sizeof(setup_tests[0]),
-	setup_tests
-};
-
+test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+								 sizeof(setup_tests) / sizeof(setup_tests[0]), setup_tests};

@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([linphone],[3.8.2-linphone-daemon],[linphone-developers@nongnu.org])
+AC_INIT([linphone],[3.9.1-linphone-daemon],[linphone-developers@nongnu.org])
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([coreapi/linphonecore.c])
 
@@ -17,7 +17,7 @@ if test "$LINPHONE_EXTRA_VERSION" != "" ;then
 	LINPHONE_VERSION=$LINPHONE_VERSION.${LINPHONE_EXTRA_VERSION}
 fi
 
-LIBLINPHONE_SO_CURRENT=7 dnl increment this number when you add/change/remove an interface
+LIBLINPHONE_SO_CURRENT=8 dnl increment this number when you add/change/remove an interface
 LIBLINPHONE_SO_REVISION=0 dnl increment this number when you change source code, without changing interfaces; set to 0 when incrementing CURRENT
 LIBLINPHONE_SO_AGE=0 dnl increment this number when you add an interface, set to 0 if you remove an interface
 
@@ -132,7 +132,7 @@ AC_CONFIG_COMMANDS([libtool-hacking],
 
 dnl Add the languages which your application supports here.
 PKG_PROG_PKG_CONFIG
-ALL_LINGUAS=$(cd po && echo *.po | sed 's/\.po//g')
+ALL_LINGUAS=$(cd $srcdir/po && echo *.po | sed 's/\.po//g')
 AC_SUBST(ALL_LINGUAS)
 AC_DEFINE_UNQUOTED(LINPHONE_ALL_LANGS, "$ALL_LINGUAS", [All supported languages])
 
@@ -147,8 +147,7 @@ if test "$mingw_found" != "yes" ; then
 	LIBS="$LIBS $LIBINTL"
 else
 	if test "$USE_NLS" = "yes" ; then
-		AC_DEFINE(ENABLE_NLS,1,[Tells whether localisation is possible])
-		AC_DEFINE(HAVE_GETTEXT,1,[Tells wheter localisation is possible])
+		AC_DEFINE(HAVE_INTL,1,[Tells wheter localisation is possible])
 		LIBS="$LIBS -lintl"
 	fi
 fi
@@ -633,7 +632,7 @@ AC_ARG_ENABLE(zrtp,
 
 dnl this options are just for passing to mediastreamer2 subproject
 AC_ARG_ENABLE(dtls,
-	[AS_HELP_STRING([--enable-dtls], [Turn on dtls support - requires polarssl > 1.4])],
+	[AS_HELP_STRING([--enable-dtls], [Turn on srtp-dtls support - requires polarssl > 1.4])],
 	[case "${enableval}" in
 		yes)	dtls=true ;;
 		no)	dtls=false ;;
@@ -739,16 +738,6 @@ AC_ARG_ENABLE(assistant,
 	[build_wizard=check]
 )
 
-dnl check libsoup (needed for wizard)
-if test "$build_wizard" != "false" ; then
-	PKG_CHECK_MODULES(LIBSOUP, [libsoup-2.4 >= 2.26],[],
-		[if test "$build_wizard" = "true" ; then
-			AC_MSG_ERROR([Could not found libsoup, assistant cannot be compiled.])
-		else
-			build_wizard=false
-		fi]
-	)
-fi
 if test "$build_wizard" != "false" ; then
 	PKG_CHECK_MODULES(LIBGTKWIZARD, [gtk+-2.0 >= 2.22.0],[],
 		[if test "$build_wizard" = "true" ; then
@@ -758,8 +747,6 @@ if test "$build_wizard" != "false" ; then
 		fi]
 	)
 fi
-AC_SUBST(LIBSOUP_CFLAGS)
-AC_SUBST(LIBSOUP_LIBS)
 AM_CONDITIONAL(BUILD_WIZARD, test x$build_wizard != xfalse)
 if test "$build_wizard" != "false" ; then
 	build_wizard=true
@@ -781,7 +768,7 @@ AC_ARG_ENABLE(strict,
 )
 
 STRICT_OPTIONS="-Wall -Wuninitialized"
-STRICT_OPTIONS_CC="-Wdeclaration-after-statement "
+STRICT_OPTIONS_CC="-Wdeclaration-after-statement -Wstrict-prototypes"
 STRICT_OPTIONS_CXX=""
 
 #for clang
@@ -804,7 +791,7 @@ case "$target_os" in
 	;;
 esac
 if test "$strictness" = "yes" ; then
-	STRICT_OPTIONS="$STRICT_OPTIONS -Werror"
+	STRICT_OPTIONS="$STRICT_OPTIONS -Werror -Wno-error=deprecated-declarations -Wno-error=strict-prototypes"
 	CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
 
@@ -907,7 +894,7 @@ if test x$enable_msg_storage != xfalse; then
 		AC_CHECK_LIB(sqlite3, sqlite3_open, [SQLITE3_LIBS+=" -lsqlite3 "; found_sqlite=yes], [foo=bar])
 	fi
 	if test "$found_sqlite" = "yes"; then
-		SQLITE3_CFLAGS+="-DMSG_STORAGE_ENABLED"
+		SQLITE3_CFLAGS+=" -DMSG_STORAGE_ENABLED"
 		if test "$build_macos" = "yes" -o "$ios_found" = "yes"; then
 			SQLITE3_LIBS+=" -liconv"
 		fi
@@ -924,6 +911,41 @@ if test x$enable_msg_storage != xfalse; then
 fi
 
 AM_CONDITIONAL(BUILD_MSG_STORAGE, test x$enable_msg_storage = xtrue)
+
+AC_ARG_ENABLE(call-logs-storage,
+        [AS_HELP_STRING([--enable-call-logs-storage=[yes/no]], [Turn on compilation of call logs storage (default=auto)])],
+        [case "${enableval}" in
+                yes)    enable_call_logs_storage=true ;;
+                no)     enable_call_logs_storage=false ;;
+                *)      AC_MSG_ERROR(bad value ${enableval} for --enable-call-logs-storage) ;;
+        esac],
+        [enable_call_logs_storage=auto]
+)
+
+if test x$enable_call_logs_storage != xfalse; then
+        PKG_CHECK_MODULES(SQLITE3,[sqlite3 >= 3.6.0],[found_sqlite=yes],[found_sqlite=no])
+        if test "$found_sqlite" = "no"; then
+                dnl Check the lib presence in case the PKG-CONFIG version is not found
+                AC_CHECK_LIB(sqlite3, sqlite3_open, [SQLITE3_LIBS+=" -lsqlite3 "; found_sqlite=yes], [foo=bar])
+        fi
+        if test "$found_sqlite" = "yes"; then
+                SQLITE3_CFLAGS+=" -DCALL_LOGS_STORAGE_ENABLED"
+                if test "$build_macos" = "yes" -o "$ios_found" = "yes"; then
+                        SQLITE3_LIBS+=" -liconv"
+                fi
+                enable_call_logs_storage=true
+        else
+                if test x$enable_call_logs_storage = xtrue; then
+                        AC_MSG_ERROR([sqlite3, required for call logs storage, not found])
+                fi
+                enable_call_logs_storage=false
+        fi
+
+        AC_SUBST(SQLITE3_CFLAGS)
+        AC_SUBST(SQLITE3_LIBS)
+fi
+
+AM_CONDITIONAL(BUILD_CALL_LOGS_STORAGE, test x$enable_call_logs_storage = xtrue)
 
 PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.4.0])
 
@@ -1019,12 +1041,12 @@ dnl ##################################################
 dnl # Check for doxygen
 dnl ##################################################
 
-AC_ARG_ENABLE(doxygen,
-	[AS_HELP_STRING([--disable-documentation], [Disable documentation generation using doxygen (default=no)])],
+AC_ARG_ENABLE(documentation,
+	[AS_HELP_STRING([--enable-documentation], [Documentation generation using doxygen (default=yes)])],
 	[case "${enableval}" in
 		yes)	documentation_enabled=yes;;
 		no)		documentation_enabled=no;;
-		*)		AC_MSG_ERROR("Bad value for --disable-documentation");;
+		*)		AC_MSG_ERROR("Bad value for --enable-documentation");;
 	esac],
 	[documentation_enabled=yes]
 )
@@ -1035,6 +1057,11 @@ else
 fi
 AM_CONDITIONAL(HAVE_DOXYGEN, test "$DOXYGEN" != "false")
 
+AC_PATH_PROG([SIPP],[sipp],[false])
+if test "x$SIPP" != "xfalse" ; then
+	AC_DEFINE(HAVE_SIPP,1,[defined when SIPP is available])
+	AC_DEFINE_UNQUOTED(SIPP_COMMAND,"$SIPP",[defined when SIPP is available])
+fi
 
 AC_CONFIG_FILES([
 	Makefile
@@ -1077,12 +1104,14 @@ printf "* %-30s %s\n" "Video support"		$video
 printf "* %-30s %s\n" "GTK interface"		$gtk_ui
 printf "* %-30s %s\n" "Account assistant"	$build_wizard
 printf "* %-30s %s\n" "Console interface"	$console_ui
-printf "* %-30s %s\n" "Tools"			$build_tools
+printf "* %-30s %s\n" "Tools"				$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
+printf "* %-30s %s\n" "Call logs storage"       $enable_call_logs_storage
 printf "* %-30s %s\n" "IM encryption"		$lime
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp
 printf "* %-30s %s\n" "LDAP support" 		$enable_ldap
 printf "* %-30s %s\n" "ZLIB support" 		$found_zlib
+printf "* %-30s %s\n" "Documentation" 		$documentation_enabled
 
 if test "$enable_tunnel" = "true" ; then
 	printf "* %-30s %s\n" "Tunnel support" "true"

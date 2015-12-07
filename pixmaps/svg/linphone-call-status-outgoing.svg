@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="85"
+   height="85"
+   viewBox="0 0 85 85"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-call-status-outgoing.svg"
+   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-call-status-outgoing.png"
+   inkscape:export-xdpi="50.82"
+   inkscape:export-ydpi="50.82">
+  <metadata
+     id="metadata20">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>call_status_outgoing</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1133"
+     id="namedview18"
+     showgrid="false"
+     inkscape:zoom="5.862558"
+     inkscape:cx="8.7248173"
+     inkscape:cy="36.080998"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">call_status_outgoing</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <path
+     d="m 82.012174,35.030086 0,-27.705641 -0.0024,-1.931282 0.0024,29.636923 z M 52.394396,5.38359 82.009781,5.39319 52.394396,5.38359 Z M 80.490123,6.915214 51.149952,36.252992 80.490123,6.915214 Z"
+     id="Imported-Layers"
+     inkscape:connector-curvature="0"
+     style="fill:none;fill-rule:evenodd;stroke:#3eb5c0;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" />
+  <path
+     d="m 4.6651697,19.998632 c -5.0782906,14.354188 2.034188,34.87077 13.5429063,46.374701 l 0.239316,0.24171 C 29.953717,78.121368 50.470298,85.22906 64.8197,80.155556 L 75.706195,65.885128 60.882947,51.06188 47.31611,62.532308 22.290811,37.504615 33.756452,23.935385 18.933204,9.1145299 4.6651697,19.998632 l 0,0 z"
+     id="Path"
+     inkscape:connector-curvature="0"
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+  <rect
+     style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:none;stroke-width:1"
+     height="110"
+     width="110"
+     y="-13"
+     x="-12"
+     sketch:type="MSShapeGroup"
+     id="Rectangle-232-Copy-49" />
+</svg>

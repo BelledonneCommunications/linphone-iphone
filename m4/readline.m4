@@ -12,7 +12,7 @@ AC_ARG_WITH( readline,
 	[ readline_prefix="/usr" ]
 )
 
-if test "$readline_prefix" != "none"; then
+if test "$readline_prefix" != "none" -a "$readline_prefix" != "no"; then
 
 	if test "$readline_prefix" != "/usr"; then
 		READLINE_CFLAGS="-I$readline_prefix/include"

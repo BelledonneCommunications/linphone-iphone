@@ -27,6 +27,13 @@ import java.util.Vector;
 
 public interface LinphoneCall {
 	/**
+	 * LinphoneCall listener
+	 */
+	interface LinphoneCallListener {
+		void onNextVideoFrameDecoded(LinphoneCall call);
+	}
+
+	/**
 	 * Linphone call states
 	 *
 	 */
@@ -359,5 +366,15 @@ public interface LinphoneCall {
 	 * @return A player
 	 */
 	public LinphonePlayer getPlayer();
+	
+	/**
+	 * Create a new chat room for messaging from a call if not already existing, else return existing one
+	 * @return LinphoneChatRoom where messaging can take place.
+	 */
+	public LinphoneChatRoom getChatRoom() ;
 
+	/**
+	 * Set the callbacks associated with the LinphoneCall.
+	 */
+	void setListener(LinphoneCall.LinphoneCallListener listener);
 }

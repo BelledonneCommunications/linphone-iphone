@@ -39,7 +39,7 @@ const char *liblinphone_tester_get_notify_content(void){
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content){
 	LinphoneCoreManager *mgr;
 	BC_ASSERT_PTR_NOT_NULL_FATAL(content);
-	BC_ASSERT_TRUE(strcmp(notify_content,(const char*)linphone_content_get_buffer(content))==0);
+	BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
 	mgr=get_manager(lc);
 	mgr->stat.number_of_NotifyReceived++;
 }
@@ -122,7 +122,7 @@ void linphone_publish_state_changed(LinphoneCore *lc, LinphoneEvent *ev, Linphon
 
 static void subscribe_test_declined(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneContent* content;
 	LinphoneEvent *lev;
 	const LinphoneErrorInfo *ei;
@@ -164,7 +164,7 @@ typedef enum RefreshTestType{
 
 static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTestType refresh_type) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneContent* content;
 	LinphoneEvent *lev;
 	int expires= refresh_type!=NoRefresh ? 4 : 600;
@@ -193,7 +193,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 
 	if (refresh_type==AutoRefresh){
 		wait_for_list(lcs,NULL,0,6000);
-		BC_ASSERT_TRUE(linphone_event_get_subscription_state(pauline->lev)==LinphoneSubscriptionActive);
+		BC_ASSERT_EQUAL(linphone_event_get_subscription_state(pauline->lev), LinphoneSubscriptionActive, int, "%d");
 	}else if (refresh_type==ManualRefresh){
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionExpiring,1,4000));
 		linphone_event_update_subscribe(lev,NULL);
@@ -217,7 +217,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 
 static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTestType refresh_type) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneContent* content;
 	LinphoneEvent *lev;
 	int expires= refresh_type!=NoRefresh ? 4 : 600;
@@ -242,10 +242,11 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
 
-	/*check good receipt of custom headers*/
-	BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header"),"pouet");
-	BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header2"),"pimpon");
-
+	if (pauline->stat.number_of_LinphoneSubscriptionIncomingReceived == 1) {
+		/*check good receipt of custom headers*/
+		BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header"),"pouet");
+		BC_ASSERT_STRING_EQUAL(linphone_event_get_custom_header(pauline->lev,"My-Header2"),"pimpon");
+	}
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
 
@@ -254,7 +255,7 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 
 	if (refresh_type==AutoRefresh){
 		wait_for_list(lcs,NULL,0,6000);
-		BC_ASSERT_TRUE(linphone_event_get_subscription_state(pauline->lev)==LinphoneSubscriptionActive);
+		BC_ASSERT_EQUAL(linphone_event_get_subscription_state(pauline->lev), LinphoneSubscriptionActive, int, "%d");
 	}else if (refresh_type==ManualRefresh){
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionExpiring,1,4000));
 		linphone_event_update_subscribe(lev,NULL);
@@ -301,7 +302,7 @@ static void subscribe_test_manually_refreshed(void){
 
 static void publish_test_with_args(bool_t refresh, int expires){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneContent* content;
 	LinphoneEvent *lev;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
@@ -342,15 +343,15 @@ static void publish_test_with_args(bool_t refresh, int expires){
 	linphone_core_manager_destroy(pauline);
 }
 
-static void publish_test(){
+static void publish_test(void){
 	publish_test_with_args(TRUE,5);
 }
 
-static void publish_no_auto_test(){
+static void publish_no_auto_test(void){
 	publish_test_with_args(FALSE,5);
 }
 
-static void publish_without_expires(){
+static void publish_without_expires(void){
 	publish_test_with_args(TRUE,-1);
 }
 
@@ -366,11 +367,5 @@ test_t event_tests[] = {
 	{ "Publish without automatic refresh",publish_no_auto_test }
 };
 
-test_suite_t event_test_suite = {
-	"Event",
-	NULL,
-	NULL,
-	sizeof(event_tests) / sizeof(event_tests[0]),
-	event_tests
-};
-
+test_suite_t event_test_suite = {"Event", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+								 sizeof(event_tests) / sizeof(event_tests[0]), event_tests};

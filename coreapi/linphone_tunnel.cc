@@ -162,7 +162,7 @@ static void linphone_tunnel_add_server_intern(LinphoneTunnel *tunnel, LinphoneTu
 			linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
 			linphone_tunnel_config_get_delay(tunnel_config));
 	}
-	tunnel->config_list = ms_list_append(tunnel->config_list, tunnel_config);
+	tunnel->config_list = ms_list_append(tunnel->config_list, linphone_tunnel_config_ref(tunnel_config));
 }
 
 
@@ -211,7 +211,7 @@ void linphone_tunnel_remove_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig 
 	MSList *elem = ms_list_find(tunnel->config_list, tunnel_config);
 	if(elem != NULL) {
 		tunnel->config_list = ms_list_remove(tunnel->config_list, tunnel_config);
-		linphone_tunnel_config_destroy(tunnel_config);
+		linphone_tunnel_config_unref(tunnel_config);
 		linphone_tunnel_refresh_config(tunnel);
 		linphone_tunnel_save_config(tunnel);
 	}

@@ -39,13 +39,6 @@ public class LinphoneCoreListenerBase implements LinphoneCoreListener {
 	}
 
 	@Override
-	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,
-			LinphoneAddress from, String message) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {
 		// TODO Auto-generated method stub
 

@@ -77,11 +77,6 @@ public interface LinphoneChatRoom {
 	LinphoneChatMessage[] getHistoryRange(int begin, int end);
 
 	/**
-	 * Destroys a LinphoneChatRoom.
-	 */
-	void destroy();
-
-	/**
 	 * Returns the amount of unread messages associated with the peer of this chatRoom.
 	 * @return the amount of unread messages
 	 */
@@ -121,12 +116,6 @@ public interface LinphoneChatRoom {
 	void deleteMessage(LinphoneChatMessage message);
 
 	/**
-	 * Update the value stored in the database for the external_body_url field
-	 * @param message to update
-	 */
-	void updateUrl(LinphoneChatMessage message);
-
-	/**
 	 * Create a LinphoneChatMessage
 	 * @return LinphoneChatMessage object
 	 */
@@ -150,4 +139,19 @@ public interface LinphoneChatRoom {
 	 * @param message
 	 */
 	void sendChatMessage(LinphoneChatMessage message);
+	
+	/**
+	 * get Curent Call associated to this chatroom if any
+	 * To commit a message, use #linphone_chat_room_send_message
+	 * @returns LinphoneCall or NULL.
+	 */
+	public LinphoneCall getCall();
+	/**
+	 * When realtime text is enabled LinphoneCallParams.realTimeTextEnabled, LinphoneCoreListener.isComposingReceived is call every time a char is received from peer.
+	 * At the end of remote typing a regular LinphoneChatMessage is received with committed data from LinphoneCoreListener.messageReceived .
+	 * @returns  RFC 4103/T.140 char
+	 */
+	long getChar();
+	
+	
 }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="120"
+   height="120"
+   viewBox="0 0 120 120"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-media-play.svg"
+   inkscape:export-filename="/home/ghislain/code/linphone-desktop/submodules/linphone/pixmaps/linphone-media-play.png"
+   inkscape:export-xdpi="36"
+   inkscape:export-ydpi="36">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>pause_big_default</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1141"
+     id="namedview16"
+     showgrid="false"
+     inkscape:zoom="3.1677852"
+     inkscape:cx="29.600633"
+     inkscape:cy="74.184322"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">pause_big_default</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:7;stroke-linecap:round;stroke-linejoin:round"
+     inkscape:connector-curvature="0"
+     sketch:type="MSShapeGroup"
+     id="Imported-Layers"
+     d="M 48.306767,32.08877 47.991089,90.983616 78.113534,61.941243 48.439804,32.08877"
+     sodipodi:nodetypes="cccc" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:7.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     inkscape:connector-curvature="0"
+     sketch:type="MSShapeGroup"
+     id="Stroke-2-6"
+     d="M 112.92098,60.39048 C 112.92098,89.999684 89.20792,114 59.957182,114 30.70644,114 7,89.999684 7,60.39048 7,30.784624 30.70644,6.7809643 59.957182,6.7809643 c 29.250738,0 52.963798,24.0036597 52.963798,53.6095157 l 0,0 z" />
+</svg>

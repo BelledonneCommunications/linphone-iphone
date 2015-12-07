@@ -1,0 +1,128 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:liblinphone_tester"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="using:liblinphone_tester.DataModel"
+    xmlns:uixdata="using:Windows.UI.Xaml.Data" x:Name="page"
+    x:Class="liblinphone_tester.MainPage">
+
+    <Page.Resources>
+        <CollectionViewSource x:Name="UnitTestCVS"
+                              Source="{x:Bind Suites}"
+                              ItemsPath="Cases"
+                              IsSourceGrouped="True"/>
+
+        <DataTemplate x:Key="ZoomedInTemplate" x:DataType="model:UnitTestCase">
+            <Grid Width="320">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Grid.Column="0"
+                          Content="{x:Bind Name}"
+                          IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <SymbolIcon Grid.Column="1"
+                    Symbol="{Binding State, Mode=OneWay, Converter={StaticResource UnitTestCaseStateToSymbol}, UpdateSourceTrigger=PropertyChanged}"
+                            Foreground="{Binding State, Mode=OneWay, Converter={StaticResource UnitTestCaseStateToSymbolColor}, UpdateSourceTrigger=PropertyChanged}" Margin="16,0,32,0"/>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ZoomedInGroupHeaderTemplate" x:DataType="model:UnitTestSuite">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Bind Name}" Foreground="{ThemeResource ApplicationForegroundThemeBrush}" Style="{StaticResource SubtitleTextBlockStyle}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ZoomedOutTemplate" x:DataType="uixdata:ICollectionViewGroup">
+            <TextBlock Text="{x:Bind Group.(model:UnitTestSuite.Name)}" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TraceTemplate">
+            <TextBlock FontFamily="Courier New">
+                <Run Text="{Binding Msg}" Foreground="{Binding Level, Converter={StaticResource OutputTraceLevelToColor}}"/>
+            </TextBlock>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Page.BottomAppBar>
+        <CommandBar x:Name="CommandBar">
+            <AppBarButton x:Name="Run" Icon="Play" Label="Run" Click="RunSelected_Click"/>
+            <AppBarButton x:Name="SelectAll" Icon="SelectAll" Label="Select all" Click="SelectAll_Click"/>
+            <AppBarToggleButton x:Name="Verbose" Icon="Comment" IsChecked="True" Label="Verbose"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <SplitView x:Name="splitView" Grid.Row="0" IsPaneOpen="True" DisplayMode="Inline">
+            <SplitView.Pane>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Test selection" Style="{StaticResource HeaderTextBlockStyle}" Margin="12,0,0,0"/>
+                    <SemanticZoom x:Name="SemanticZoom" Grid.Row="1">
+                        <SemanticZoom.ZoomedInView>
+                            <ListView ItemsSource="{x:Bind UnitTestCVS.View}"
+                              ScrollViewer.IsHorizontalScrollChainingEnabled="False"
+                              SelectionMode="None"
+                              ItemTemplate="{StaticResource ZoomedInTemplate}"
+                              IsItemClickEnabled="True"
+                              ItemClick="UnitTestCase_Click">
+                                <ListView.GroupStyle>
+                                    <GroupStyle HeaderTemplate="{StaticResource ZoomedInGroupHeaderTemplate}" />
+                                </ListView.GroupStyle>
+                            </ListView>
+                        </SemanticZoom.ZoomedInView>
+                        <SemanticZoom.ZoomedOutView>
+                            <ListView ItemsSource="{x:Bind UnitTestCVS.View.CollectionGroups}"
+                              SelectionMode="None"
+                              ItemTemplate="{StaticResource ZoomedOutTemplate}">
+                            </ListView>
+                        </SemanticZoom.ZoomedOutView>
+                    </SemanticZoom>
+                </Grid>
+            </SplitView.Pane>
+
+            <Grid x:Name="TestResultPage">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Test result" Style="{StaticResource HeaderTextBlockStyle}" Margin="12,0,0,0"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Style="{StaticResource SubheaderTextBlockStyle}" Margin="16,0,0,0" Text="{Binding Name, Mode=OneWay}"/>
+                    <SymbolIcon Grid.Column="1" x:Name="TestResultState"
+                                Visibility="Collapsed"
+                                Symbol="{Binding State, Mode=OneWay, Converter={StaticResource UnitTestCaseStateToSymbol}, UpdateSourceTrigger=PropertyChanged}"
+                                Foreground="{Binding State, Mode=OneWay, Converter={StaticResource UnitTestCaseStateToSymbolColor}, UpdateSourceTrigger=PropertyChanged}" Margin="16,0,32,0"/>
+                    <AppBarButton Grid.Column="2" x:Name="TestResultRun"
+                                  Icon="Play" Label="Run"
+                                  IsEnabled="{Binding IsEnabled, ElementName=CommandBar}"
+                                  Click="RunSingle_Click" Visibility="Collapsed"/>
+                </Grid>
+                <ScrollViewer Grid.Row="2">
+                    <ItemsControl ItemsSource="{Binding Traces}" ItemTemplate="{StaticResource TraceTemplate}" Margin="20,12,0,0"/>
+                </ScrollViewer>
+            </Grid>
+        </SplitView>
+        <ProgressBar x:Name="ProgressIndicator" Grid.Row="1"
+                     Width="{Binding ActualWidth, ElementName=CommandBar, Mode=OneWay}" Margin="16,0,0,0"/>
+    </Grid>
+</Page>

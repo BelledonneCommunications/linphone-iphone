@@ -87,12 +87,31 @@ void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
 	}
 }
 
-void sal_enable_logs(){
-	belle_sip_set_log_level(BELLE_SIP_LOG_MESSAGE);
+void sal_enable_log(){
+	sal_set_log_level(ORTP_MESSAGE);
 }
 
-void sal_disable_logs() {
-	belle_sip_set_log_level(BELLE_SIP_LOG_ERROR);
+void sal_disable_log() {
+	sal_set_log_level(ORTP_ERROR);
+}
+
+void sal_set_log_level(OrtpLogLevel level) {
+	belle_sip_log_level belle_sip_level;
+	if ((level&ORTP_FATAL) != 0) {
+		belle_sip_level = BELLE_SIP_LOG_FATAL;
+	} else if ((level&ORTP_ERROR) != 0) {
+		belle_sip_level = BELLE_SIP_LOG_ERROR;
+	} else if ((level&ORTP_WARNING) != 0) {
+		belle_sip_level = BELLE_SIP_LOG_WARNING;
+	} else if ((level&ORTP_MESSAGE) != 0) {
+		belle_sip_level = BELLE_SIP_LOG_MESSAGE;
+	} else if (((level&ORTP_DEBUG) != 0) || ((level&ORTP_TRACE) != 0)) {
+		belle_sip_level = BELLE_SIP_LOG_DEBUG;
+	} else {
+		//well, this should never occurs but...
+		belle_sip_level = BELLE_SIP_LOG_MESSAGE;
+	}
+	belle_sip_set_log_level(belle_sip_level);
 }
 
 void sal_add_pending_auth(Sal *sal, SalOp *op){
@@ -221,6 +240,14 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 			return;
 		}
 	}else if (strcmp("INVITE",method)==0) {
+		/*handle the case where we are receiving a request with to tag but it is not belonging to any dialog*/
+		belle_sip_header_to_t *to = belle_sip_message_get_header_by_type(req, belle_sip_header_to_t);
+		if (belle_sip_header_to_get_tag(to) != NULL){
+			ms_warning("Receiving INVITE with to-tag but no know dialog here. Rejecting.");
+			resp=belle_sip_response_create_from_request(req,481);
+			belle_sip_provider_send_response(sal->prov,resp);
+			return;
+		}
 		op=sal_op_new(sal);
 		op->dir=SalOpDirIncoming;
 		sal_op_call_fill_cbs(op);
@@ -471,6 +498,7 @@ Sal * sal_init(){
 	sal->tls_verify_cn=TRUE;
 	sal->refresher_retry_after=60000; /*default value in ms*/
 	sal->enable_sip_update=TRUE;
+	sal->pending_trans_checking=TRUE;
 	return sal;
 }
 
@@ -482,7 +510,7 @@ void *sal_get_user_pointer(const Sal *sal){
 	return sal->up;
 }
 
-static void unimplemented_stub(){
+static void unimplemented_stub(void){
 	ms_warning("Unimplemented SAL callback");
 }
 
@@ -594,7 +622,9 @@ static int sal_add_listen_port(Sal *ctx, SalAddress* addr, bool_t is_tunneled){
 	if (lp) {
 		belle_sip_listening_point_set_keep_alive(lp,ctx->keep_alive);
 		result = belle_sip_provider_add_listening_point(ctx->prov,lp);
-		if (sal_address_get_transport(addr)==SalTransportTLS) set_tls_properties(ctx);
+		if (sal_address_get_transport(addr)==SalTransportTLS) {
+			set_tls_properties(ctx);
+		}
 	} else {
 		return -1;
 	}
@@ -749,9 +779,6 @@ MSList * sal_get_pending_auths(Sal *sal){
 	return ms_list_copy(sal->pending_auths);
 }
 
-#define payload_type_set_number(pt,n)	(pt)->user_data=(void*)((long)n);
-#define payload_type_get_number(pt)		((int)(long)(pt)->user_data)
-
 /*misc*/
 void sal_get_default_local_ip(Sal *sal, int address_family, char *ip, size_t iplen){
 	strncpy(ip,address_family==AF_INET6 ? "::1" : "127.0.0.1",iplen);
@@ -895,6 +922,40 @@ SalCustomHeader *sal_custom_header_clone(const SalCustomHeader *ch){
 const SalCustomHeader *sal_op_get_recv_custom_header(SalOp *op){
 	SalOpBase *b=(SalOpBase *)op;
 	return b->recv_custom_headers;
+}
+
+SalCustomSdpAttribute * sal_custom_sdp_attribute_append(SalCustomSdpAttribute *csa, const char *name, const char *value) {
+	belle_sdp_session_description_t *desc = (belle_sdp_session_description_t *)csa;
+	belle_sdp_attribute_t *attr;
+
+	if (desc == NULL) {
+		desc = (belle_sdp_session_description_t *)belle_sdp_session_description_new();
+		belle_sip_object_ref(desc);
+	}
+	attr = BELLE_SDP_ATTRIBUTE(belle_sdp_raw_attribute_create(name, value));
+	if (attr == NULL) {
+		belle_sip_error("Fail to create custom SDP attribute.");
+		return (SalCustomSdpAttribute*)desc;
+	}
+	belle_sdp_session_description_add_attribute(desc, attr);
+	return (SalCustomSdpAttribute *)desc;
+}
+
+const char * sal_custom_sdp_attribute_find(const SalCustomSdpAttribute *csa, const char *name) {
+	if (csa) {
+		return belle_sdp_session_description_get_attribute_value((belle_sdp_session_description_t *)csa, name);
+	}
+	return NULL;
+}
+
+void sal_custom_sdp_attribute_free(SalCustomSdpAttribute *csa) {
+	if (csa == NULL) return;
+	belle_sip_object_unref((belle_sdp_session_description_t *)csa);
+}
+
+SalCustomSdpAttribute * sal_custom_sdp_attribute_clone(const SalCustomSdpAttribute *csa) {
+	if (csa == NULL) return NULL;
+	return (SalCustomSdpAttribute *)belle_sip_object_ref((belle_sdp_session_description_t *)csa);
 }
 
 void sal_set_uuid(Sal *sal, const char *uuid){
@@ -1153,3 +1214,28 @@ void sal_default_set_sdp_handling(Sal *sal, SalOpSDPHandling sdp_handling_method
 	if (sdp_handling_method != SalOpSDPNormal ) ms_message("Enabling special SDP handling for all new SalOp in Sal[%p]!", sal);
 	sal->default_sdp_handling = sdp_handling_method;
 }
+
+bool_t sal_pending_trans_checking_enabled(const Sal *sal) {
+	return sal->pending_trans_checking;
+}
+
+int sal_enable_pending_trans_checking(Sal *sal, bool_t value) {
+	sal->pending_trans_checking = value;
+	return 0;
+}
+void sal_set_http_proxy_host(Sal *sal, const char *host) {
+	belle_sip_stack_set_http_proxy_host(sal->stack, host);
+}
+
+void sal_set_http_proxy_port(Sal *sal, int port) {
+	belle_sip_stack_set_http_proxy_port(sal->stack, port);
+}
+const char *sal_get_http_proxy_host(const Sal *sal) {
+	return belle_sip_stack_get_http_proxy_host(sal->stack);
+}
+
+int sal_get_http_proxy_port(const Sal *sal) {
+	return belle_sip_stack_get_http_proxy_port(sal->stack);
+}
+
+

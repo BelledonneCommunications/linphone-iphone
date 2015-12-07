@@ -104,7 +104,6 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 	public void displayMessage(LinphoneCore lc, String message) {}
 	public void displayWarning(LinphoneCore lc, String message) {}
 	public void globalState(LinphoneCore lc, GlobalState state, String message) {}
-	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr,LinphoneAddress from, String message) {}
 	public void callState(LinphoneCore lc, LinphoneCall call, State cstate, String msg) {}
 	public void callStatsUpdated(LinphoneCore lc, LinphoneCall call, LinphoneCallStats stats) {}
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,int delay_ms, Object data) {}

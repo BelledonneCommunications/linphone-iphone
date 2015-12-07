@@ -94,13 +94,13 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint 
 	return TRUE;
 }
 
-static unsigned long get_native_handle(GdkWindow *gdkw){
+static void *get_native_handle(GdkWindow *gdkw){
 #ifdef GDK_WINDOWING_X11
-	return (unsigned long)GDK_WINDOW_XID(gdkw);
+	return (void *)GDK_WINDOW_XID(gdkw);
 #elif defined(WIN32)
-	return (unsigned long)GDK_WINDOW_HWND(gdkw);
+	return (void *)GDK_WINDOW_HWND(gdkw);
 #elif defined(__APPLE__)
-	return (unsigned long)gdk_quartz_window_get_nsview(gdkw);
+	return (void *)gdk_quartz_window_get_nsview(gdkw);
 #endif
 	g_warning("No way to get the native handle from gdk window");
 	return 0;
@@ -132,7 +132,7 @@ static gint resize_video_window(LinphoneCall *call){
 
 static void on_video_window_destroy(GtkWidget *w, guint timeout){
 	g_source_remove(timeout);
-	linphone_core_set_native_video_window_id(linphone_gtk_get_core(),(unsigned long)-1);
+	linphone_core_set_native_video_window_id(linphone_gtk_get_core(),LINPHONE_VIDEO_DISPLAY_NONE);
 }
 
 static void video_window_set_fullscreen(GtkWidget *w, gboolean val){
@@ -227,13 +227,14 @@ static GtkWidget *show_video_controls(GtkWidget *video_window){
 		gboolean isfullscreen=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(video_window),"fullscreen"));
 		const char *stock_button=isfullscreen ? GTK_STOCK_LEAVE_FULLSCREEN : GTK_STOCK_FULLSCREEN;
 		gint response_id=isfullscreen ? GTK_RESPONSE_NO : GTK_RESPONSE_YES ;
+		GtkWidget *image = gtk_image_new_from_icon_name(linphone_gtk_get_ui_config("stop_call_icon_name","linphone-stop-call"), GTK_ICON_SIZE_BUTTON);
 		gint timeout;
 		GtkWidget *button;
 		w=gtk_dialog_new_with_buttons("",GTK_WINDOW(video_window),GTK_DIALOG_DESTROY_WITH_PARENT,stock_button,response_id,NULL);
 		gtk_window_set_opacity(GTK_WINDOW(w),0.5);
 		gtk_window_set_decorated(GTK_WINDOW(w),FALSE);
 		button=gtk_button_new_with_label(_("Hang up"));
-		gtk_button_set_image(GTK_BUTTON(button),create_pixmap (linphone_gtk_get_ui_config("stop_call_icon","stopcall-small.png")));
+		gtk_button_set_image(GTK_BUTTON(button), image);
 		gtk_widget_show(button);
 		gtk_dialog_add_action_widget(GTK_DIALOG(w),button,GTK_RESPONSE_REJECT);
 		g_signal_connect(w,"response",(GCallback)on_controls_response,video_window);
@@ -264,6 +265,7 @@ static GtkWidget *create_video_window(LinphoneCall *call){
 	addr=linphone_call_get_remote_address(call);
 	remote=linphone_gtk_address(addr);
 	video_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	/*gtk_window_set_transient_for(GTK_WINDOW(video_window), GTK_WINDOW(linphone_gtk_get_main_window()));*/
 	title=g_strdup_printf("%s - Video call with %s",linphone_gtk_get_ui_config("title","Linphone"),remote);
 	ms_free(remote);
 	gtk_window_set_title(GTK_WINDOW(video_window),title);
@@ -292,17 +294,20 @@ void linphone_gtk_in_call_show_video(LinphoneCall *call){
 	GtkWidget *video_window=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"video_window");
 	const LinphoneCallParams *params=linphone_call_get_current_params(call);
 	LinphoneCore *lc=linphone_gtk_get_core();
-	
-	if (linphone_call_get_state(call)!=LinphoneCallPaused && params && linphone_call_params_video_enabled(params)){
-		if (video_window==NULL){
-			video_window=create_video_window(call);
-			g_object_set_data(G_OBJECT(callview),"video_window",video_window);
-		}
-		linphone_core_set_native_video_window_id(lc,get_native_handle(gtk_widget_get_window(video_window)));
-	}else{
-		if (video_window){
-			gtk_widget_destroy(video_window);
-			g_object_set_data(G_OBJECT(callview),"video_window",NULL);
+
+	if (((bool_t)lp_config_get_int(linphone_core_get_config(lc), "video", "rtp_io", FALSE)) == FALSE) {
+		if (linphone_call_get_state(call)!=LinphoneCallPaused && params && linphone_call_params_video_enabled(params)){
+			if (video_window==NULL){
+				video_window=create_video_window(call);
+				g_object_set_data(G_OBJECT(callview),"video_window",video_window);
+			}
+			linphone_core_set_native_video_window_id(lc,get_native_handle(gtk_widget_get_window(video_window)));
+			gtk_window_present(GTK_WINDOW(video_window));
+		}else{
+			if (video_window){
+				gtk_widget_destroy(video_window);
+				g_object_set_data(G_OBJECT(callview),"video_window",NULL);
+			}
 		}
 	}
 }
@@ -312,7 +317,7 @@ static void on_video_preview_destroyed(GtkWidget *video_preview, GtkWidget *mw){
 	guint timeout_id=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(video_preview),"timeout-id"));
 	g_object_set_data(G_OBJECT(mw),"video_preview",NULL);
 	linphone_core_enable_video_preview(lc,FALSE);
-	linphone_core_set_native_preview_window_id(lc,-1);
+	linphone_core_set_native_preview_window_id(lc,(void *)(unsigned long)-1);
 	g_source_remove(timeout_id);
 }
 

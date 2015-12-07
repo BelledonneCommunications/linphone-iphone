@@ -251,6 +251,94 @@ public interface LinphoneCore {
 		}
 	}
 	/**
+	 * Stream type enum-like.
+	 *
+	 */
+	static public final class StreamType {
+
+		static private Vector<StreamType> values = new Vector<StreamType>();
+		/**
+		 * Audio
+		 */
+		static public final StreamType Audio = new StreamType(0, "Audio");
+		/**
+		 * Video
+		 */
+		static public final StreamType Video = new StreamType(1, "Video");
+		/**
+		 * Text
+		 */
+		static public final StreamType Text = new StreamType(2, "Text");
+		/**
+		 * Unknown
+		 */
+		static public final StreamType Unknown = new StreamType(3, "Unknown");
+		protected final int mValue;
+		private final String mStringValue;
+
+		private StreamType(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+		public static StreamType fromInt(int value) {
+			for (int i = 0; i < values.size(); i++) {
+				StreamType stype = (StreamType) values.elementAt(i);
+				if (stype.mValue == value) return stype;
+			}
+			throw new RuntimeException("StreamType not found [" + value + "]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
+	 * Stream type enum-like.
+	 *
+	 */
+	static public final class MediaDirection {
+
+		static private Vector<MediaDirection> values = new Vector<MediaDirection>();
+		/**
+		 * Invalid
+		 */
+		static public final MediaDirection Invalid = new MediaDirection(-1, "Invalid");
+		/**
+		 * Inactive
+		 */
+		static public final MediaDirection Inactive = new MediaDirection(0, "Inactive");
+		/**
+		 * SendOnly
+		 */
+		static public final MediaDirection SendOnly = new MediaDirection(1, "SendOnly");
+		/**
+		 * RecvOnly
+		 */
+		static public final MediaDirection RecvOnly = new MediaDirection(2, "RecvOnly");
+		/**
+		 * SendRecv
+		 */
+		static public final MediaDirection SendRecv = new MediaDirection(3, "SendRecv");
+		protected final int mValue;
+		private final String mStringValue;
+
+		private MediaDirection(int value, String stringValue) {
+			mValue = value;
+			values.addElement(this);
+			mStringValue = stringValue;
+		}
+		public static MediaDirection fromInt(int value) {
+			for (int i = 0; i < values.size(); i++) {
+				MediaDirection dir = (MediaDirection) values.elementAt(i);
+				if (dir.mValue == value) return dir;
+			}
+			throw new RuntimeException("MediaDirection not found [" + value + "]");
+		}
+		public String toString() {
+			return mStringValue;
+		}
+	}
+	/**
 	 * Media (RTP) encryption enum-like.
 	 *
 	 */
@@ -480,6 +568,11 @@ public interface LinphoneCore {
 	public void setContext(Object context);
 
 	/**
+	 * Get the LinphoneCore's global state.
+	**/
+	public GlobalState getGlobalState();
+
+	/**
 	 * clear all added proxy configs
 	 */
 	public void clearProxyConfigs();
@@ -569,7 +662,7 @@ public interface LinphoneCore {
 	 * @param call the LinphoneCall, must be in the {@link LinphoneCall.State#IncomingReceived} state.
 	 * @param reason the reason for rejecting the call: {@link Reason#Declined}  or {@link Reason#Busy}
 	 */
-	public void declineCall(LinphoneCall aCall, Reason reason);
+	public void declineCall(LinphoneCall call, Reason reason);
 	/**
 	 * Returns The LinphoneCall the current call if one is in call
 	 *
@@ -654,11 +747,16 @@ public interface LinphoneCore {
 	public LinphoneCallLog[] getCallLogs();
 
 	/**
+	 * @return the latest outgoing call log.
+	 */
+	public LinphoneCallLog getLastOutgoingCallLog();
+
+	/**
 	 * This method is called by the application to notify the Linphone core library when network is reachable.
 	 * Calling this method with true trigger Linphone to initiate a registration process for all proxy
 	 * configuration with parameter register set to enable.
 	 * This method disable the automatic registration mode. It means you must call this method after each network state changes
-	 * @param network state
+	 * @param isReachable network state
 	 *
 	 */
 	public void setNetworkReachable(boolean isReachable);
@@ -705,7 +803,7 @@ public interface LinphoneCore {
 
 	/**
 	 * Initiate a dtmf signal if in call
-	 * @param send dtmf ['0'..'9'] | '#', '*'
+	 * @param number send dtmf ['0'..'9'] | '#', '*'
 	 */
 	void sendDtmf(char number);
 	/**
@@ -758,7 +856,7 @@ public interface LinphoneCore {
 	/**
 	 * Enable payload type
 	 * @param pt payload type to enable, can be retrieve from {@link #findPayloadType}
-	 * @param true if enabled
+	 * @param enable for enable or disable the payload type
 	 * @exception LinphoneCoreException
 	 *
 	 */
@@ -867,6 +965,18 @@ public interface LinphoneCore {
 	void setSipDscp(int dscp);
 
 	/**
+	 * Set the timeout in milliseconds for SIP transport (TCP or TLS connection establishment maximum time).
+	 * @param timeout_ms
+	**/
+	void setSipTransportTimeout(int timeout_ms);
+
+	/**
+	 * Get the current SIP transport timeout.
+	 * @param timeout_ms
+	**/
+	int getSipTransportTimeout();
+
+	/**
 	 * Get DSCP used for SIP socket.
 	 * @return the DSCP value used for the SIP socket.
 	 */
@@ -926,6 +1036,13 @@ public interface LinphoneCore {
 	 * @return {@link LinphoneChatRoom} where messaging can take place.
 	 */
 	LinphoneChatRoom getOrCreateChatRoom(String to);
+	/**
+	 * Create a new chat room for messaging from a linphone address
+	 * @param to 	destination address for messages
+	 *
+	 * @return {@link LinphoneChatRoom} where messaging can take place.
+	 */
+	LinphoneChatRoom getChatRoom(LinphoneAddress to);
 	/**
 	 * Set the native video window id where the video is to be displayed.
 	 * On Android, it must be of type {@link AndroidVideoWindowImpl}
@@ -1029,12 +1146,17 @@ public interface LinphoneCore {
 	 * @return 0 if successful, -1 otherwise.
 	**/
 	int updateCall(LinphoneCall call, LinphoneCallParams params);
-	/**
-	 * Get default call parameters reflecting current linphone core configuration
-	 * @return  LinphoneCallParams
-	 */
-	LinphoneCallParams createDefaultCallParameters();
 
+	/**
+	 * Create a LinphoneCallParams suitable to be used for a new incoming call or an established call, in
+	 * methods LinphoneCore.inviteAddressWithParams(), LinphoneCore.updateCall(), LinphoneCore.acceptCallWithParams(), LinphoneCore.acceptCallUpdate().
+	 * The call parameter is optional: when creating a LinphoneCallParams for an outgoing call that is about to be created, 
+	 * it shall be set to null.
+	 * @param call (optional)
+	 * @return a LinphoneCallParams object, representing the call settings guessed from the current LinphoneCore and compatible with the call object if any.
+	 */
+	LinphoneCallParams createCallParams(LinphoneCall call);
+	
 	/**
 	 * Sets the path to a wav file used for ringing.
 	 *
@@ -1064,7 +1186,18 @@ public interface LinphoneCore {
 	 */
 	void setRingback(String path);
 
+	/**
+	 * Retrieve the maximum available upload bandwidth.
+	**/
+	int getUploadBandwidth();
+
 	void setUploadBandwidth(int bw);
+
+	/**
+	 * Retrieve the maximum available download bandwidth.
+	**/
+	int getDownloadBandwidth();
+
 	/**
 	 * Sets maximum available download bandwidth
 	 *
@@ -1175,7 +1308,7 @@ public interface LinphoneCore {
 	 * Returns true if the software echo canceler needs to be turned on.
 	 * If the device has a builtin echo canceller, it will return false.
 	 */
-	boolean needsEchoCanceler();
+	boolean hasBuiltInEchoCanceler();
 
 	void enableIpv6(boolean enable);
 
@@ -1758,6 +1891,12 @@ public interface LinphoneCore {
 	public void setChatDatabasePath(String path);
 
 	/**
+	 * Sets the path to the database where the logs will be stored (if enabled)
+	 * @param path the database where the logs will be stored.
+	 */
+	public void setCallLogsDatabasePath(String path);
+
+	/**
 	 * Gets the chat rooms
 	 * @return an array of LinphoneChatRoom
 	 */
@@ -1780,6 +1919,11 @@ public interface LinphoneCore {
 	public int migrateToMultiTransport();
 
 	/**
+	 * Migrates the call logs from the linphonerc to the database if not done yet
+	 **/
+	public void migrateCallLogs();
+
+	/**
 	 * When receiving an incoming, accept to start a media session as early-media.
 	 * This means the call is not accepted but audio & video streams can be established if the remote party supports early media.
 	 * However, unlike after call acceptance, mic and camera input are not sent during early-media, though received audio & video are played normally.
@@ -1795,8 +1939,8 @@ public interface LinphoneCore {
 	 * Accept an early media session for an incoming call.
 	 * This is identical as calling linphone_core_accept_early_media_with_params() with NULL call parameters.
 	 * @see linphone_core_accept_early_media_with_params()
-	 * @param lc the core
 	 * @param call the incoming call
+	 * @param params
 	 * @return true if successful, false otherwise.
 	 */
 	public boolean acceptEarlyMediaWithParams(LinphoneCall call, LinphoneCallParams params);
@@ -2034,5 +2178,57 @@ public interface LinphoneCore {
 	 * @return true if DNS SRV resolution is enabled, false if disabled.
 	 */
 	public boolean dnsSrvEnabled();
+
+	/**
+	 * Set the video preset to be used for video calls.
+	 * @param lc LinphoneCore object
+	 * @param preset The name of the video preset to be used (can be null to use the default video preset).
+	 */
+	public void setVideoPreset(String preset);
+
+	/**
+	 * Get the video preset used for video calls.
+	 * @param lc LinphoneCore object
+	 * @return The name of the video preset used for video calls (can be null if the default video preset is used).
+	 */
+	public String getVideoPreset();
+
+	/**
+	 * Set a provisioning URI to fetch an xml linphonerc config file from, at next LinphoneCore instantiation.
+	**/
+	public void setProvisioningUri(String uri);
+
+	/**
+	 * Get the provisioning URI previously set.
+    **/
+	public String getProvisioningUri();
+
+	/**
+	 * Set an http proxy hostname or IP address to use for SIP connection.
+	 */
+	public void setHttpProxyHost(String host);
+	/**
+	 * Set an http proxy port to use for SIP connection.
+	 */
+	public void setHttpProxyPort(int port);
+	/**
+	 * Get the http proxy host previously set.
+	**/
+	public String getHttpProxyHost();
+	/**
+	 * Get the http proxy port previously set.
+	**/
+	public int getHttpProxyPort();
+
+	/*
+	 * Set the nortp timeout (timeout after which call is closed if no RTP or RTCP packets are received).
+	 */
+	public void setNortpTimeout(int seconds);
+
+	/**
+	 * Get the nortp timeout.
+	 * @return
+	 */
+	public int getNortpTimeout();
 
 }

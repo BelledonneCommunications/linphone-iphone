@@ -31,12 +31,13 @@ dial_escape_plus=0
 [rtp]
 audio_rtp_port=18070-28000
 video_rtp_port=39072-49000
+text_rtp_port=49001-55000
 
 [video]
 display=0
 capture=0
 show_local=0
-size=vga
+size=qcif
 enabled=0
 self_view=0
 automatically_initiate=0

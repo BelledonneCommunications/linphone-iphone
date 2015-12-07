@@ -26,6 +26,7 @@ include $(CLEAR_VARS)
 LOCAL_CPP_EXTENSION := .cc
 
 LOCAL_SRC_FILES := \
+	account_creator.c \
 	address.c \
 	authentication.c \
 	bellesip_sal/sal_address_impl.c \
@@ -45,6 +46,7 @@ LOCAL_SRC_FILES := \
 	call_log.c \
 	call_params.c \
 	chat.c \
+	chat_file_transfer.c \
 	conference.c \
 	content.c \
 	ec-calibrator.c \
@@ -73,6 +75,7 @@ LOCAL_SRC_FILES := \
 	sipsetup.c \
 	xml2lpc.c \
 	xml.c \
+	xmlrpc.c \
 	vtables.c
 
 ifndef LIBLINPHONE_VERSION
@@ -80,6 +83,7 @@ LIBLINPHONE_VERSION = "Devel"
 endif
 
 LOCAL_CFLAGS += \
+	-Wno-error=deprecated-declarations \
 	-D_BYTE_ORDER=_LITTLE_ENDIAN \
 	-DORTP_INET6 \
 	-DINET6 \
@@ -116,6 +120,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../build/android \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
+	$(LOCAL_PATH)/../mediastreamer2/src/audiofilters/ \
 	$(LOCAL_PATH)/../../belle-sip/include \
 	$(LOCAL_PATH)/../../../gen \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
@@ -168,6 +173,11 @@ endif
 ifeq ($(BUILD_SILK),1)
 LOCAL_CFLAGS += -DHAVE_SILK
 LOCAL_STATIC_LIBRARIES += libmssilk
+endif
+
+ifeq ($(BUILD_CODEC2),1)
+LOCAL_CFLAGS += -DHAVE_CODEC2
+LOCAL_STATIC_LIBRARIES += libcodec2 libmscodec2
 endif
 
 ifneq ($(BUILD_WEBRTC_AECM)$(BUILD_WEBRTC_ISAC),00)
@@ -250,7 +260,7 @@ ifeq ($(BUILD_SRTP),1)
 endif
 
 ifeq ($(BUILD_SQLITE),1)
-LOCAL_CFLAGS += -DMSG_STORAGE_ENABLED
+LOCAL_CFLAGS += -DMSG_STORAGE_ENABLED -DCALL_LOGS_STORAGE_ENABLED
 LOCAL_STATIC_LIBRARIES += liblinsqlite
 LOCAL_C_INCLUDES += \
         $(LOCAL_PATH)/../../externals/sqlite3/
@@ -274,6 +284,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 LOCAL_CPPFLAGS=$(LOCAL_CFLAGS)
 LOCAL_CFLAGS += -Wdeclaration-after-statement
+LOCAL_LDFLAGS := -Wl,-soname,$(LOCAL_MODULE_FILENAME).so
 
 $(call import-module,android/cpufeatures)
 

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="80px"
+   height="80px"
+   viewBox="0 0 80 80"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-start-chat.svg"
+   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-start-chat.png"
+   inkscape:export-xdpi="54"
+   inkscape:export-ydpi="54">
+  <metadata
+     id="metadata18">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>footer_chat</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1133"
+     id="namedview16"
+     showgrid="false"
+     inkscape:zoom="2.95"
+     inkscape:cx="-5.4237288"
+     inkscape:cy="40"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">footer_chat</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <g
+     id="g4159">
+    <path
+       d="m 28.299535,68.274419 c -9.3e-4,0 -11.122791,11.769302 -25.299535,8.603721 0,0 13.88186,-4.053954 10.732093,-16.31814 L 13.630698,59.992558 C 7.054884,53.943256 3,45.663256 3,36.527442 3,18.011163 19.662326,3 40.210233,3 60.75907,3 77.419535,18.011163 77.419535,36.527442 c 0,18.516279 -16.660465,33.526512 -37.209302,33.526512 -4.167442,0 -8.172094,-0.614884 -11.912559,-1.753489 l 0.0019,-0.02605 0,0 z m -5.413954,-37.680931 34.552558,0 -34.552558,0 z m 0,11.867907 34.552558,0 -34.552558,0 z"
+       sketch:type="MSShapeGroup"
+       id="path13"
+       inkscape:connector-curvature="0"
+       style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+    <rect
+       id="Rectangle-250-Copy-11"
+       sketch:type="MSShapeGroup"
+       x="-6"
+       y="-5"
+       width="90"
+       height="90"
+       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:none;stroke-width:1" />
+  </g>
+</svg>

@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\tester\accountmanager.c" />
+    <ClCompile Include="..\..\..\..\tester\call_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\common\bc_tester_utils.c" />
+    <ClCompile Include="..\..\..\..\tester\dtmf_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\eventapi_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\flexisip_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\liblinphone_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\log_collection_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\message_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\multicast_call_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\multi_call_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\offeranswer_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\player_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\presence_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\proxy_config_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\quality_reporting_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\register_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\remote_provisioning_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\setup_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\stun_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\tester.c" />
+    <ClCompile Include="..\..\..\..\tester\tunnel_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\upnp_tester.c" />
+    <ClCompile Include="..\..\..\..\tester\video_tester.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\tester\common\bc_tester_utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\belle-sip\build\windows10\belle-sip\belle-sip.vcxproj">
+      <Project>{b6cdf482-7da3-43d4-9b12-70150106c191}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\cunit\build\windows10\cunit\cunit.vcxproj">
+      <Project>{025e28a8-9dfb-4015-ad56-19896aa6cc9b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\mediastreamer2\build\windows10\mediastreamer2\mediastreamer2.vcxproj">
+      <Project>{88e3c241-eb6f-4c84-80dc-89b8961daf80}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\oRTP\build\windows10\ortp\ortp.vcxproj">
+      <Project>{2e56b851-9d8d-40e5-84bb-e4ee63b71d25}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\liblinphone\liblinphone.vcxproj">
+      <Project>{c7139899-d8bc-48a3-a437-6844a8baabef}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9eb3fe8d-2d91-4d29-a3bb-98ddb51d45b7}</ProjectGuid>
+    <Keyword>StaticLibrary</Keyword>
+    <ProjectName>liblinphone-tester-static</ProjectName>
+    <RootNamespace>liblinphone_tester_static</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10</ApplicationTypeRevision>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.10069.0</WindowsTargetPlatformMinVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(Platform)\$(Configuration)\include;$(ProjectDir)..\..\..\..\tester;$(ProjectDir)..\..\..\..\tester\common;$(ProjectDir)..\..\liblinphone;$(ProjectDir)..\..\..\..\coreapi;$(ProjectDir)..\..\..\..\include;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\..\oRTP\include;$(ProjectDir)..\..\..\..\..\belle-sip\include;$(ProjectDir)..\..\..\..\..\sqlite;$(ProjectDir)..\..\..\..\..\zlib;$(ProjectDir)..\..\..\..\..\cunit\build\windows10\cunit\$(Platform)\$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BC_CONFIG_FILE="config.h";IN_LINPHONE;MSG_STORAGE_ENABLED;VIDEO_ENABLED;HAVE_CU_GET_SUITE;HAVE_ZLIB;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

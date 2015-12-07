@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="150px"
+   height="150px"
+   viewBox="0 0 150 150"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-chat-writing.svg"
+   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-chat-writing.png"
+   inkscape:export-xdpi="28.799999"
+   inkscape:export-ydpi="28.799999">
+  <metadata
+     id="metadata20">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1133"
+     id="namedview18"
+     showgrid="false"
+     inkscape:zoom="1.5733333"
+     inkscape:cx="-38.503645"
+     inkscape:cy="131.19171"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">chat_start_body_over</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <circle
+     id="Oval-1-Copy"
+     cx="74.822746"
+     cy="74.829407"
+     r="74.503311"
+     style="fill:#a1a1a1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1" />
+  <g
+     id="Chat-icon-Copy"
+     transform="matrix(1.3250402,0,0,1.3250402,31.392175,31.399019)"
+     style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round">
+    <path
+       d="m 23.561239,60.789504 c -8.66e-4,0 -10.358559,10.96065 -23.561239,8.012571 0,0 12.928057,-3.775412 9.9947058,-15.196942 L 9.9002772,53.076679 C 3.7762783,47.443016 0,39.731923 0,31.223818 0,13.979767 15.51748,0 34.653569,0 c 19.136955,0 34.652703,13.979767 34.652703,31.223818 0,17.244051 -15.515748,31.222952 -34.652703,31.222952 -3.881103,0 -7.6106,-0.572636 -11.094063,-1.633009 l 0.0017,-0.02426 0,0 z m -5.041968,-35.091926 32.1785,0 -32.1785,0 z m 0,11.05248 32.1785,0 -32.1785,0 z"
+       id="path16"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

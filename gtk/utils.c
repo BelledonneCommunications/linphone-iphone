@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
-static void run_gtk(){
+static void run_gtk(void){
 	while (gtk_events_pending ())
 		gtk_main_iteration ();
 
@@ -30,7 +30,7 @@ void *linphone_gtk_wait(LinphoneCore *lc, void *ctx, LinphoneWaitingState ws, co
 	switch(ws){
 		case LinphoneWaitingStart:
 			gdk_threads_enter();
-			w=linphone_gtk_create_window("waiting");
+			w=linphone_gtk_create_window("waiting", NULL);
 			gtk_window_set_transient_for(GTK_WINDOW(w),GTK_WINDOW(linphone_gtk_get_main_window()));
 			gtk_window_set_position(GTK_WINDOW(w),GTK_WIN_POS_CENTER_ON_PARENT);
 			if (purpose) {
@@ -110,6 +110,17 @@ void linphone_gtk_reload_video_devices(void){
 	GtkWidget *pb=(GtkWidget*)g_object_get_data(G_OBJECT(mw),"parameters");
 	linphone_core_reload_video_devices(linphone_gtk_get_core());
 	if (pb) linphone_gtk_fill_webcams(pb);
+}
+
+bool_t linphone_gtk_is_friend(LinphoneCore *lc, const char *contact) {
+	LinphoneAddress *addr = linphone_core_interpret_url(lc, contact);
+	if (addr) {
+		char *uri = linphone_address_as_string_uri_only(addr);
+		LinphoneFriend *lf = linphone_core_get_friend_by_address(lc, uri);
+		linphone_address_destroy(addr);
+		if (lf) return TRUE;
+	}
+	return FALSE;
 }
 
 #ifdef HAVE_LIBUDEV_H

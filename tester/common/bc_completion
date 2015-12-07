@@ -70,16 +70,16 @@ _liblinphone_complete() {
 
 		# if latest arg does not start with '--', it is a custom value
 		if [ $latest_is_empty = 0 ] && ! grep -q -- '^--' <<< "$latest_arg"; then
-			# echo "yes!$prev_arg $has_not_set_suite"
 			if [ "$prev_arg" = "--test" ] && [ $has_not_set_suite = 0 ]; then
-				suite_name=$(echo $@ | sed -nE 's/.*--suite (.*) (--.*)$/\1/p' |sed "s@\\\\@@g")
+				suite_name=$(echo $@ | sed -nE 's/.*--suite ([^(--)]*) (--.*)$/\1/p' |sed "s@\\\\@@g")
 				completions="$($program --list-tests $suite_name)"
 			elif [ "$prev_arg" = "--suite" ] || [ "$prev_arg" = "--list-tests" ]; then
 				completions="$($program --list-suites)"
 			fi
 		elif [ "$latest_arg" = "--test" ]; then
+			# list available tests if --suite was provided
 			if [ $has_not_set_suite = 0 ]; then
-				suite_name=$(echo $@ | sed -nE 's/.*--suite (.*) (--.*)$/\1/p' |sed "s@\\\\@@g")
+				suite_name=$(echo $@ | sed -nE 's/.*--suite ([^(--)]*) (--.*)/\1/p' |sed "s@\\\\@@g")
 				completions="$($program --list-tests $suite_name)"
 			fi
 		elif [ "$latest_arg" = "--suite" ] || [ "$latest_arg" = "--list-tests" ]; then

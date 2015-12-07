@@ -29,6 +29,7 @@ set(LINPHONECSH_SOURCE_FILES
 	shell.c
 )
 
+apply_compile_flags(LINPHONEC_SOURCE_FILES "CPP" "C")
 add_executable(linphonec ${LINPHONEC_SOURCE_FILES})
 target_link_libraries(linphonec linphone)
 

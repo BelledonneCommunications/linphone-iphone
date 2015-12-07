@@ -23,24 +23,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "bc_tester_utils.h"
 
 #include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
+
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
 
 #include "CUnit/Basic.h"
 #include "CUnit/Automated.h"
+#include "CUnit/MyMem.h"
 
-#if WINAPI_FAMILY_PHONE_APP
-const char *bc_tester_read_dir_prefix="Assets";
-#elif defined(__QNX__)
-const char *bc_tester_read_dir_prefix="./app/native/assets/";
-#else
-const char *bc_tester_read_dir_prefix=".";
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
 #endif
 
-/* TODO: have the same "static" for QNX and windows as above? */
-#ifdef ANDROID
-const char *bc_tester_writable_dir_prefix = "/data/data/org.linphone.tester/cache";
-#else
-const char *bc_tester_writable_dir_prefix = ".";
+#ifdef _WIN32
+#if defined(__MINGW32__) || !defined(WINAPI_FAMILY_PARTITION) || !defined(WINAPI_PARTITION_DESKTOP)
+#define BC_TESTER_WINDOWS_DESKTOP 1
+#elif defined(WINAPI_FAMILY_PARTITION)
+#if defined(WINAPI_PARTITION_DESKTOP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+#define BC_TESTER_WINDOWS_DESKTOP 1
 #endif
+#if defined(WINAPI_PARTITION_PHONE_APP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_PHONE_APP)
+#define BC_TESTER_WINDOWS_PHONE 1
+#endif
+#if defined(WINAPI_PARTITION_APP) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+#define BC_TESTER_WINDOWS_UNIVERSAL 1
+#endif
+#endif
+#endif
+
+#ifdef __linux
+/*for monitoring total space allocated via malloc*/
+#include <malloc.h>
+#endif
+
+static char *bc_tester_resource_dir_prefix = NULL;
+// by default writable will always write near the executable
+static char *bc_tester_writable_dir_prefix = NULL;
+
+static char *bc_current_suite_name = NULL;
+static char *bc_current_test_name = NULL;
 
 int bc_printf_verbosity_info;
 int bc_printf_verbosity_error;
@@ -57,19 +82,21 @@ char* xml_file = "CUnitAutomated-Results.xml";
 int   xml_enabled = 0;
 char * suite_name;
 char * test_name;
-void (*tester_printf_va)(int level, const char *fmt, va_list args);
+static long max_vm_kb = 0;
 
-void bc_tester_printf(int level, const char *fmt, ...) {
+void (*tester_printf_va)(int level, const char *format, va_list args);
+
+void bc_tester_printf(int level, const char *format, ...) {
 	va_list args;
-	va_start (args, fmt);
-	tester_printf_va(level, fmt, args);
+	va_start (args, format);
+	tester_printf_va(level, format, args);
 	va_end (args);
 }
 
 int bc_tester_run_suite(test_suite_t *suite) {
 	int i;
 
-	CU_pSuite pSuite = CU_add_suite(suite->name, suite->init_func, suite->cleanup_func);
+	CU_pSuite pSuite = CU_add_suite(suite->name, suite->before_all, suite->after_all);
 
 	for (i = 0; i < suite->nb_tests; i++) {
 		if (NULL == CU_add_test(pSuite, suite->tests[i].name, suite->tests[i].func)) {
@@ -89,7 +116,7 @@ int bc_tester_suite_index(const char *suite_name) {
 	int i;
 
 	for (i = 0; i < nb_test_suites; i++) {
-		if ((strcmp(suite_name, test_suite[i]->name) == 0) && (strlen(suite_name) == strlen(test_suite[i]->name))) {
+		if (strcmp(suite_name, test_suite[i]->name) == 0) {
 			return i;
 		}
 	}
@@ -97,7 +124,7 @@ int bc_tester_suite_index(const char *suite_name) {
 	return -1;
 }
 
-int bc_tester_nb_suites() {
+int bc_tester_nb_suites(void) {
 	return nb_test_suites;
 }
 
@@ -114,7 +141,7 @@ int bc_tester_nb_tests(const char *suite_name) {
 	return test_suite[i]->nb_tests;
 }
 
-void bc_tester_list_suites() {
+void bc_tester_list_suites(void) {
 	int j;
 	for(j=0;j<nb_test_suites;j++) {
 		bc_tester_printf(bc_printf_verbosity_info, "%s", bc_tester_suite_name(j));
@@ -133,7 +160,7 @@ static void all_complete_message_handler(const CU_pFailureRecord pFailure) {
 #ifdef HAVE_CU_GET_SUITE
 	char * results = CU_get_run_results_string();
 	bc_tester_printf(bc_printf_verbosity_info,"\n%s",results);
-	free(results);
+	CU_FREE(results);
 #endif
 }
 
@@ -146,39 +173,81 @@ static void suite_cleanup_failure_message_handler(const CU_pSuite pSuite) {
 }
 
 #ifdef HAVE_CU_GET_SUITE
+static time_t suite_start_time = 0;
 static void suite_start_message_handler(const CU_pSuite pSuite) {
 	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] started\n", pSuite->pName);
+	suite_start_time = time(NULL);
+	bc_current_suite_name = pSuite->pName;
 }
 static void suite_complete_message_handler(const CU_pSuite pSuite, const CU_pFailureRecord pFailure) {
-	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] ended\n", pSuite->pName);
+	bc_tester_printf(bc_printf_verbosity_info, "Suite [%s] ended in %lu sec\n", pSuite->pName,
+					 time(NULL) - suite_start_time);
 }
 
+static time_t test_start_time = 0;
 static void test_start_message_handler(const CU_pTest pTest, const CU_pSuite pSuite) {
+	int suite_index = bc_tester_suite_index(pSuite->pName);
+	if (test_suite[suite_index]->before_each) {
+		test_suite[suite_index]->before_each();
+	}
 	bc_tester_printf(bc_printf_verbosity_info,"Suite [%s] Test [%s] started", pSuite->pName,pTest->pName);
+	test_start_time = time(NULL);
+	bc_current_test_name = pTest->pName;
 }
 
 /*derivated from cunit*/
-static void test_complete_message_handler(const CU_pTest pTest,
-	const CU_pSuite pSuite,
-	const CU_pFailureRecord pFailureList) {
+static void test_complete_message_handler(const CU_pTest pTest, const CU_pSuite pSuite,
+										  const CU_pFailureRecord pFailureList) {
 	int i;
-	char result[2048];
-	char buffer[2048];
+	int suite_index = bc_tester_suite_index(pSuite->pName);
 	CU_pFailureRecord pFailure = pFailureList;
-	snprintf(result, sizeof(result), "Suite [%s] Test [%s]", pSuite->pName, pTest->pName);
+	char *buffer = NULL;
+	char* result = bc_sprintf("Suite [%s] Test [%s] %s in %lu secs", pSuite->pName, pTest->pName,
+			 pFailure ? "failed" : "passed", (unsigned long)(time(NULL) - test_start_time));
+
 	if (pFailure) {
-		strncat(result, " failed:", strlen(" failed:"));
-		for (i = 1 ; (NULL != pFailure) ; pFailure = pFailure->pNext, i++) {
-			snprintf(buffer, sizeof(buffer), "\n    %d. %s:%u  - %s", i,
-				(NULL != pFailure->strFileName) ? pFailure->strFileName : "",
-				pFailure->uiLineNumber,
-				(NULL != pFailure->strCondition) ? pFailure->strCondition : "");
-			strncat(result, buffer, strlen(buffer));
+		for (i = 1; (NULL != pFailure); pFailure = pFailure->pNext, i++) {
+			buffer = bc_sprintf("%s\n    %d. %s:%u  - %s",
+									result,
+									i,
+									(NULL != pFailure->strFileName) ? pFailure->strFileName : "",
+									pFailure->uiLineNumber,
+									(NULL != pFailure->strCondition) ? pFailure->strCondition : "");
+			free(result);
+			result = buffer;
 		}
-	} else {
-		strncat(result, " passed", strlen(" passed"));
 	}
-	bc_tester_printf(bc_printf_verbosity_info,"%s\n", result);
+
+	bc_tester_printf(bc_printf_verbosity_info,"%s", result);
+	free(result);
+
+	if (test_suite[suite_index]->after_each) {
+		test_suite[suite_index]->after_each();
+	}
+	//insert empty line
+	bc_tester_printf(bc_printf_verbosity_info,"");
+
+#ifdef __linux
+	/* use mallinfo() to monitor allocated space. It is linux specific but other methods don't work:
+	 * setrlimit() RLIMIT_DATA doesn't count memory allocated via mmap() (which is used internally by malloc)
+	 * setrlimit() RLIMIT_AS works but also counts virtual memory allocated by thread stacks, which is very big and
+	 * hardly controllable.
+	 * setrlimit() RLIMIT_RSS does nothing interesting on linux.
+	 * getrusage() of RSS is unreliable: memory blocks can be leaked without being read or written, which would not
+	 * appear in RSS.
+	 * mallinfo() itself is the less worse solution. Allocated bytes are returned as 'int' so limited to 2GB
+	 */
+	if (max_vm_kb) {
+		struct mallinfo minfo = mallinfo();
+		if (minfo.uordblks > max_vm_kb * 1024) {
+			bc_tester_printf(
+				bc_printf_verbosity_error,
+				"The program exceeded the maximum amount of memory allocatable (%i bytes), aborting now.\n",
+				minfo.uordblks);
+			abort();
+		}
+	}
+#endif
 }
 #endif
 
@@ -249,37 +318,147 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 			}
 		}
 	}
+#ifdef __linux
+	bc_tester_printf(bc_printf_verbosity_info, "Still %i kilobytes allocated when all tests are finished.",
+					 mallinfo().uordblks / 1024);
+#endif
+
 	return CU_get_number_of_tests_failed()!=0;
 
 }
 
 
 void bc_tester_helper(const char *name, const char* additionnal_helper) {
-	bc_tester_printf(bc_printf_verbosity_info,"%s --help\n"
-		"\t\t\t--list-suites\n"
-		"\t\t\t--list-tests <suite>\n"
-		"\t\t\t--suite <suite name>\n"
-		"\t\t\t--test <test name>\n"
+	bc_tester_printf(bc_printf_verbosity_info,
+					 "%s --help\n"
 #ifdef HAVE_CU_CURSES
-		"\t\t\t--curses\n"
+					 "\t\t\t--curses\n"
 #endif
-		"\t\t\t--xml\n"
-		"\t\t\t--xml-file <xml file prefix (will be suffixed by '-Results.xml')>\n"
-		"And additionally:\n"
-		"%s"
-		, name
-		, additionnal_helper);
+					 "\t\t\t--list-suites\n"
+					 "\t\t\t--list-tests <suite>\n"
+					 "\t\t\t--suite <suite name>\n"
+					 "\t\t\t--test <test name>\n"
+					 "\t\t\t--resource-dir <folder path> (directory where tester resource are located)\n"
+					 "\t\t\t--writable-dir <folder path> (directory where temporary files should be created)\n"
+					 "\t\t\t--xml\n"
+					 "\t\t\t--xml-file <xml file name>\n"
+					 "\t\t\t--max-alloc <size in ko> (maximum ammount of memory obtained via malloc allocator)\n"
+					 "And additionally:\n"
+					 "%s",
+					 name,
+					 additionnal_helper);
 }
 
-void bc_tester_init(void (*ftester_printf)(int level, const char *fmt, va_list args), int iverbosity_info, int iverbosity_error) {
+#if !defined(BC_TESTER_WINDOWS_PHONE) && !defined(BC_TESTER_WINDOWS_UNIVERSAL) && !defined(__QNX__) && !defined(ANDROID) && !defined(IOS)
+static int file_exists(const char* root_path) {
+	char * res_path = bc_sprintf("%s/common/bc_completion", root_path);
+	FILE* file = fopen(res_path, "r");
+	int found = (file != NULL);
+	free(res_path);
+	if (file) {
+		fclose(file);
+	}
+	return found;
+}
+#endif
+
+static void detect_res_prefix(const char* prog) {
+	char* progpath = NULL;
+	FILE* writable_file = NULL;
+
+	if (prog != NULL) {
+		progpath = strdup(prog);
+		if (strchr(prog, '/') != NULL) {
+			progpath[strrchr(prog, '/') - prog + 1] = '\0';
+		} else if (strchr(prog, '\\') != NULL) {
+			progpath[strrchr(prog, '\\') - prog + 1] = '\0';
+		}
+	}
+#if !defined(BC_TESTER_WINDOWS_PHONE) && !defined(BC_TESTER_WINDOWS_UNIVERSAL) && !defined(__QNX__) && !defined(ANDROID) && !defined(IOS)
+	{
+		char* prefix = NULL;
+
+		if (file_exists(".")) {
+			prefix = strdup(".");
+		} else if (file_exists("..")) {
+			prefix = strdup("..");
+		} else if (progpath) {
+			//for autotools, binary is in .libs/ subdirectory
+			char * progpath2 = bc_sprintf("%s/../", progpath);
+			if (file_exists(progpath)) {
+				prefix = strdup(progpath);
+			} else if (file_exists(progpath2)) {
+				prefix = strdup(progpath2);
+			}
+			free(progpath2);
+		}
+
+		if (bc_tester_resource_dir_prefix != NULL && !file_exists(bc_tester_resource_dir_prefix)) {
+			bc_tester_printf(bc_printf_verbosity_error, "Invalid provided resource directory: could not find expected resources in %s.\n", bc_tester_resource_dir_prefix);
+			free(bc_tester_resource_dir_prefix);
+			bc_tester_resource_dir_prefix = NULL;
+		}
+
+		if (prefix != NULL) {
+			if (bc_tester_resource_dir_prefix == NULL) {
+				bc_tester_printf(bc_printf_verbosity_error, "Resource directory set to %s\n", prefix);
+				bc_tester_set_resource_dir_prefix(prefix);
+			}
+
+			if (bc_tester_writable_dir_prefix == NULL) {
+				bc_tester_printf(bc_printf_verbosity_error, "Writable directory set to %s\n", prefix);
+				bc_tester_set_writable_dir_prefix(prefix);
+			}
+			free(prefix);
+		}
+	}
+#endif
+
+	// check that we can write in writable directory
+	if (bc_tester_writable_dir_prefix != NULL) {
+		char * writable_file_path = bc_sprintf("%s/%s", bc_tester_writable_dir_prefix, ".bc_tester_utils.tmp");
+		writable_file = fopen(writable_file_path, "w");
+		if (writable_file) {
+			fclose(writable_file);
+		}
+		free(writable_file_path);
+	}
+	if (bc_tester_resource_dir_prefix == NULL || writable_file == NULL) {
+		if (bc_tester_resource_dir_prefix == NULL) {
+			bc_tester_printf(bc_printf_verbosity_error, "Failed to detect resources for %s.\n", prog);
+			bc_tester_printf(bc_printf_verbosity_error, "Could not find resource directory in %s! Please try again using option --resource-dir.\n", progpath);
+		}
+		if (writable_file == NULL) {
+			bc_tester_printf(bc_printf_verbosity_error, "Failed to write file in %s. Please try again using option --writable-dir.\n", bc_tester_writable_dir_prefix);
+		}
+		abort();
+	}
+
+	if (progpath != NULL) {
+		free(progpath);
+	}
+}
+
+void bc_tester_init(void (*ftester_printf)(int level, const char *format, va_list args), int iverbosity_info, int iverbosity_error) {
 	tester_printf_va = ftester_printf;
 	bc_printf_verbosity_error = iverbosity_error;
 	bc_printf_verbosity_info = iverbosity_info;
+	bc_tester_writable_dir_prefix = strdup(".");
+}
+
+void bc_tester_set_max_vm(long max_vm_kb) {
+#ifdef __linux
+	max_vm_kb = max_vm_kb;
+	bc_tester_printf(bc_printf_verbosity_info, "Maximum virtual memory space set to %li kilo bytes", max_vm_kb);
+#else
+	bc_tester_printf(bc_printf_verbosity_error, "Maximum virtual memory space setting is only implemented on Linux.");
+#endif
 }
 
 int bc_tester_parse_args(int argc, char **argv, int argid)
 {
 	int i = argid;
+
 	if (strcmp(argv[i],"--help")==0){
 		return -1;
 	} else if (strcmp(argv[i],"--test")==0){
@@ -302,7 +481,16 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 		xml_enabled = 1;
 	} else if (strcmp(argv[i], "--xml") == 0){
 		xml_enabled = 1;
-	}else {
+	} else if (strcmp(argv[i], "--max-alloc") == 0) {
+		CHECK_ARG("--max-alloc", ++i, argc);
+		max_vm_kb = atol(argv[i]);
+	} else if (strcmp(argv[i], "--resource-dir") == 0) {
+		CHECK_ARG("--resource-dir", ++i, argc);
+		bc_tester_resource_dir_prefix = strdup(argv[i]);
+	} else if (strcmp(argv[i], "--writable-dir") == 0) {
+		CHECK_ARG("--writable-dir", ++i, argc);
+		bc_tester_writable_dir_prefix = strdup(argv[i]);
+	} else {
 		bc_tester_printf(bc_printf_verbosity_error, "Unknown option \"%s\"\n", argv[i]);
 		return -1;
 	}
@@ -316,12 +504,16 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	return i - argid + 1;
 }
 
-int bc_tester_start() {
+int bc_tester_start(const char* prog_name) {
 	int ret;
+
+	detect_res_prefix(prog_name);
+
+	if (max_vm_kb)
+		bc_tester_set_max_vm(max_vm_kb);
+
 	if( xml_enabled ){
-		size_t size = strlen(xml_file) + strlen(".tmp") + 1;
-		char * xml_tmp_file = malloc(sizeof(char) * size);
-		snprintf(xml_tmp_file, size, "%s.tmp", xml_file);
+		char * xml_tmp_file = bc_sprintf("%s.tmp", xml_file);
 		CU_set_output_filename(xml_tmp_file);
 		free(xml_tmp_file);
 	}
@@ -341,20 +533,22 @@ void bc_tester_add_suite(test_suite_t *suite) {
 	}
 }
 
-void bc_tester_uninit() {
+void bc_tester_uninit(void) {
+	/* Redisplay list of failed tests on end */
+	/*BUG: do not display list of failures on mingw, it crashes mysteriously*/
+#if !defined(WIN32) && !defined(_MSC_VER)
 	/* Redisplay list of failed tests on end */
 	if (CU_get_number_of_failure_records()){
 		CU_basic_show_failures(CU_get_failure_list());
 	}
+#endif
 	CU_cleanup_registry();
 	/*add missing final newline*/
 	bc_tester_printf(bc_printf_verbosity_info,"");
 
 	if( xml_enabled ){
 		/*create real xml file only if tester did not crash*/
-		size_t size = strlen(xml_file) + strlen(".tmp-Results.xml") + 1;
-		char * xml_tmp_file = malloc(sizeof(char) * size);
-		snprintf(xml_tmp_file, size, "%s.tmp-Results.xml", xml_file);
+		char * xml_tmp_file = bc_sprintf("%s.tmp-Results.xml", xml_file);
 		rename(xml_tmp_file, xml_file);
 		free(xml_tmp_file);
 	}
@@ -364,14 +558,108 @@ void bc_tester_uninit() {
 		test_suite = NULL;
 		nb_test_suites = 0;
 	}
+
+	if (bc_tester_resource_dir_prefix != NULL) {
+		free(bc_tester_resource_dir_prefix);
+		bc_tester_resource_dir_prefix = NULL;
+	}
+	if (bc_tester_writable_dir_prefix != NULL) {
+		free(bc_tester_writable_dir_prefix);
+		bc_tester_writable_dir_prefix = NULL;
+	}
+}
+
+static void bc_tester_set_dir_prefix(char **prefix, const char *name) {
+	if (*prefix != NULL) free(*prefix);
+	*prefix = strdup(name);
+}
+
+const char * bc_tester_get_resource_dir_prefix(void) {
+	return bc_tester_resource_dir_prefix;
+}
+
+void bc_tester_set_resource_dir_prefix(const char *name) {
+	bc_tester_set_dir_prefix(&bc_tester_resource_dir_prefix, name);
+}
+
+const char * bc_tester_get_writable_dir_prefix(void) {
+	return bc_tester_writable_dir_prefix;
+}
+
+void bc_tester_set_writable_dir_prefix(const char *name) {
+	bc_tester_set_dir_prefix(&bc_tester_writable_dir_prefix, name);
+}
+
+static char * bc_tester_path(const char *prefix, const char *name) {
+	if (name) {
+		return bc_sprintf("%s/%s", prefix, name);
+	} else {
+		return NULL;
+	}
 }
 
 char * bc_tester_res(const char *name) {
-	char* file = NULL;
-	if (name) {
-		size_t len = strlen(bc_tester_read_dir_prefix) + 1 + strlen(name) + 1;
-		file = malloc(len);
-		snprintf(file, len, "%s/%s", bc_tester_read_dir_prefix, name);
+	return bc_tester_path(bc_tester_resource_dir_prefix, name);
+}
+
+char * bc_tester_file(const char *name) {
+	return bc_tester_path(bc_tester_writable_dir_prefix, name);
+}
+
+char* bc_sprintfva(const char* format, va_list args) {
+	/* Guess we need no more than 100 bytes. */
+	int n, size = 200;
+	char *p,*np;
+#ifndef WIN32
+	va_list cap;/*copy of our argument list: a va_list cannot be re-used (SIGSEGV on linux 64 bits)*/
+#endif
+	if ((p = malloc(size)) == NULL)
+		return NULL;
+	while (1)
+	{
+		/* Try to print in the allocated space. */
+#ifndef WIN32
+		va_copy(cap,args);
+		n = vsnprintf (p, size, format, cap);
+		va_end(cap);
+#else
+		/*this works on 32 bits, luckily*/
+		n = vsnprintf (p, size, format, args);
+#endif
+		/* If that worked, return the string. */
+		if (n > -1 && n < size)
+			return p;
+		//bc_tester_printf(bc_printf_verbosity_error, "Reallocing space.\n");
+		/* Else try again with more space. */
+		if (n > -1)	/* glibc 2.1 */
+			size = n + 1;	/* precisely what is needed */
+		else		/* glibc 2.0 */
+			size *= 2;	/* twice the old size */
+		if ((np = realloc (p, size)) == NULL)
+		{
+			free(p);
+			return NULL;
+		}
+		else
+		{
+			p = np;
+		}
 	}
-	return file;
+}
+
+char* bc_sprintf(const char* format, ...) {
+	va_list args;
+	char* res;
+	va_start(args, format);
+	res = bc_sprintfva(format, args);
+	va_end (args);
+	return res;
+}
+
+const char * bc_tester_current_suite_name(void) {
+	return bc_current_suite_name;
+}
+
+const char * bc_tester_current_test_name(void) {
+	return bc_current_test_name;
 }

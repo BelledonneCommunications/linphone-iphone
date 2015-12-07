@@ -25,6 +25,7 @@ CLEANFILES=$(GITVERSION_FILE)
 linphone_includedir=$(includedir)/linphone
 
 linphone_include_HEADERS=\
+	account_creator.h \
 	buffer.h \
 	call_log.h \
 	call_params.h \
@@ -34,15 +35,18 @@ linphone_include_HEADERS=\
 	linphonecore_utils.h \
 	linphonefriend.h \
 	linphonepresence.h \
+	linphone_proxy_config.h \
 	linphone_tunnel.h \
 	lpc2xml.h \
 	lpconfig.h \
 	sipsetup.h \
-	xml2lpc.h
+	xml2lpc.h \
+	xmlrpc.h
 
 lib_LTLIBRARIES=liblinphone.la
 
 liblinphone_la_SOURCES=\
+	account_creator.c \
 	address.c \
 	authentication.c \
 	buffer.c \
@@ -50,23 +54,23 @@ liblinphone_la_SOURCES=\
 	call_log.c \
 	call_params.c \
 	chat.c \
+	chat_file_transfer.c \
 	conference.c \
 	contactprovider.c contactprovider.h contact_providers_priv.h \
 	content.c \
 	dict.c \
 	ec-calibrator.c \
 	enum.c enum.h \
-	event.c event.h \
+	event.c \
 	friend.c \
 	info.c \
 	ldap/ldapprovider.c ldap/ldapprovider.h \
 	linphonecall.c \
-	linphonecore.c linphonecore.h \
-	linphonecore_utils.h \
+	linphonecore.c \
 	localplayer.c \
 	lpc2xml.c \
 	lime.c lime.h\
-	lpconfig.c lpconfig.h \
+	lpconfig.c \
 	lsd.c \
 	message_storage.c \
 	misc.c  \
@@ -79,9 +83,10 @@ liblinphone_la_SOURCES=\
 	remote_provisioning.c \
 	sal.c \
 	siplogin.c \
-	sipsetup.c sipsetup.h \
+	sipsetup.c \
 	xml2lpc.c \
 	xml.c \
+	xmlrpc.c \
 	vtables.c \
 	$(GITVERSION_FILE)
 
@@ -101,10 +106,6 @@ liblinphone_la_SOURCES+=	bellesip_sal/sal_address_impl.c \
 				bellesip_sal/sal_op_call_transfer.c \
 				bellesip_sal/sal_op_info.c \
 				bellesip_sal/sal_op_events.c
-
-if BUILD_WIZARD
-liblinphone_la_SOURCES+=sipwizard.c
-endif
 
 liblinphone_la_SOURCES+=linphone_tunnel_config.c
 if BUILD_TUNNEL
@@ -137,29 +138,12 @@ liblinphone_la_LIBADD= \
 		$(ORTP_LIBS) \
 		$(SIPSTACK_LIBS) \
 		$(TUNNEL_LIBS) \
-		$(LIBSOUP_LIBS) \
 		$(SQLITE3_LIBS) \
 		$(LIBXML2_LIBS) \
 		$(LDAP_LIBS) \
 		$(SASL_LIBS) \
 		$(ZLIB_LIBS)
 
-
-if ENABLE_TESTS
-noinst_PROGRAMS=test_lsd test_ecc test_numbers
-
-test_lsd_SOURCES=test_lsd.c
-
-test_lsd_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
-
-test_ecc_SOURCES=test_ecc.c
-
-test_ecc_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
-
-test_numbers_SOURCES=test_numbers.c
-
-test_numbers_LDADD=liblinphone.la $(liblinphone_la_LIBADD)
-endif
 
 AM_CPPFLAGS=\
 	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir) \
@@ -170,7 +154,6 @@ COMMON_CFLAGS=\
 	$(STRICT_OPTIONS) \
 	-DIN_LINPHONE \
 	$(SIPSTACK_CFLAGS) \
-	$(LIBSOUP_CFLAGS) \
 	-DENABLE_TRACE 	\
 	-DLOG_DOMAIN=\"LinphoneCore\" \
 	$(IPV6_CFLAGS) \

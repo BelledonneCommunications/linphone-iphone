@@ -22,8 +22,6 @@ reg_expires=3600
 reg_sendregister=1
 publish=0
 dial_escape_plus=0
-quality_reporting_collector=sip:collector@sip.example.org
-quality_reporting_enabled=1
 
 [friend_0]
 url="Paupoche" <sip:pauline@sip.example.org>
@@ -34,6 +32,7 @@ subscribe=0
 [rtp]
 audio_rtp_port=18070-28000
 video_rtp_port=28070-38000
+text_rtp_port=39000-49000
 
 [video]
 display=0

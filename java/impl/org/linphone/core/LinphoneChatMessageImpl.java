@@ -16,7 +16,7 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	private native void store(long ptr);
 	private native int getStorageId(long ptr);
 	private native void setFileTransferFilepath(long ptr, String path);
-	private native void downloadFile(long ptr);
+	private native int downloadFile(long ptr);
 	private native void setListener(long ptr, LinphoneChatMessageListener listener);
 	private native void unref(long ptr);
 	
@@ -146,12 +146,18 @@ public class LinphoneChatMessageImpl implements LinphoneChatMessage {
 	}
 	
 	@Override
-	public void downloadFile() {
-		downloadFile(nativePtr);
+	public int downloadFile() {
+		return downloadFile(nativePtr);
 	}
 	
 	@Override
 	public void setListener(LinphoneChatMessageListener listener) {
 		setListener(nativePtr, listener);
+	}
+	
+	private native void putChar(long nativePtr, long character);
+	@Override
+	public void putChar(long character) throws LinphoneCoreException {
+		putChar(nativePtr, character);
 	}
 }

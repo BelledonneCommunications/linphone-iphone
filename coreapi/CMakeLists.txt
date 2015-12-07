@@ -20,17 +20,38 @@
 #
 ############################################################################
 
-if(MSVC AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
+if(MSVC AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone")
 	find_library(LIBGCC NAMES gcc)
 	find_library(LIBMINGWEX NAMES mingwex)
 endif()
 
 if(NOT WIN32)
-	find_package(Iconv)
+	find_package(Iconv QUIET)
 endif()
 
 
-set(SOURCE_FILES
+set(LINPHONE_HEADER_FILES
+	account_creator.h
+	buffer.h
+	call_log.h
+	call_params.h
+	content.h
+	event.h
+	linphonecore.h
+	linphonecore_utils.h
+	linphonefriend.h
+	linphonepresence.h
+	linphone_proxy_config.h
+	linphone_tunnel.h
+	lpc2xml.h
+	lpconfig.h
+	sipsetup.h
+	xml2lpc.h
+	xmlrpc.h
+)
+
+set(LINPHONE_SOURCE_FILES_C
+	account_creator.c
 	address.c
 	authentication.c
 	bellesip_sal/sal_address_impl.c
@@ -51,6 +72,7 @@ set(SOURCE_FILES
 	call_log.c
 	call_params.c
 	chat.c
+	chat_file_transfer.c
 	conference.c
 	contactprovider.c
 	content.c
@@ -59,19 +81,15 @@ set(SOURCE_FILES
 	enum.c
 	enum.h
 	event.c
-	event.h
 	friend.c
 	info.c
 	ldap/ldapprovider.c
 	lime.c
 	linphonecall.c
 	linphonecore.c
-	linphonecore.h
-	linphonecore_utils.h
-	linphonefriend.h
 	linphone_tunnel_config.c
-	linphone_tunnel.h
 	localplayer.c
+	lpc2xml.c
 	lpconfig.c
 	lpconfig.h
 	lsd.c
@@ -88,37 +106,36 @@ set(SOURCE_FILES
 	sal.c
 	siplogin.c
 	sipsetup.c
-	sipsetup.h
 	xml2lpc.c
-	xml2lpc.h
 	xml.c
+	xmlrpc.c
 	vtables.c
 )
+set(LINPHONE_SOURCE_FILES_CXX )
+
 if(ENABLE_TUNNEL)
-	list(APPEND SOURCE_FILES
+	list(APPEND LINPHONE_SOURCE_FILES_CXX
 		linphone_tunnel.cc
 		TunnelManager.cc
 	)
 	add_definitions(-DTUNNEL_ENABLED)
 else()
-	list(APPEND SOURCE_FILES linphone_tunnel_stubs.c)
-endif()
-if(ENABLE_ASSISTANT)
-	list(APPEND SOURCE_FILES sipwizard.c)
+	list(APPEND LINPHONE_SOURCE_FILES_C linphone_tunnel_stubs.c)
 endif()
 
-set(GENERATED_SOURCE_FILES
-	${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
-)
-set_source_files_properties(${GENERATED_SOURCE_FILES} PROPERTIES GENERATED TRUE)
 find_package(Git)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h
-	COMMAND ${CMAKE_COMMAND} -DGIT_EXECUTABLE=${GIT_EXECUTABLE} -DWORK_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/gitversion.cmake)
+add_custom_target(liblinphone-git-version
+	COMMAND ${CMAKE_COMMAND} -DGIT_EXECUTABLE=${GIT_EXECUTABLE} -DWORK_DIR=${CMAKE_CURRENT_SOURCE_DIR} -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/gitversion.cmake
+	BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/liblinphone_gitversion.h"
+)
 
 add_definitions(
 	-DUSE_BELLESIP
 	-DLIBLINPHONE_EXPORTS
 )
+
+apply_compile_flags(LINPHONE_SOURCE_FILES_C "CPP" "C")
+apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
 
 set(LIBS
 	${BELLESIP_LIBRARIES}
@@ -137,21 +154,21 @@ endif()
 if(ENABLE_TUNNEL)
 	list(APPEND LIBS ${TUNNEL_LIBRARIES})
 endif()
-if(ENABLE_ASSISTANT)
-	list(APPEND LIBS ${SOUP_LIBRARIES})
-endif()
-if(MSVC AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
+if(MSVC AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone")
 	list(APPEND LIBS ${LIBGCC} ${LIBMINGWEX})
 endif()
-if(WIN32 AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
+if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone")
 	list(APPEND LIBS shlwapi)
+endif()
+if(INTL_FOUND)
+	list(APPEND LIBS ${INTL_LIBRARIES})
 endif()
 
 if(ENABLE_STATIC)
-	add_library(linphone STATIC ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
+	add_library(linphone STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX})
 	target_link_libraries(linphone ${LIBS})
 else()
-	add_library(linphone SHARED ${SOURCE_FILES} ${GENERATED_SOURCE_FILES})
+	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX})
 	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
 	target_link_libraries(linphone ${LIBS})
 	if(MSVC)
@@ -163,7 +180,8 @@ else()
 		endif()
 	endif()
 endif()
-if(WIN32 AND "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsPhone")
+add_dependencies(linphone liblinphone-git-version)
+if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone")
 	set_target_properties(linphone PROPERTIES PREFIX "lib")
 endif()
 if(ICONV_FOUND)
@@ -175,32 +193,14 @@ if(ICONV_FOUND)
 	endif()
 endif()
 
-install(TARGETS linphone EXPORT LinphoneTargets
+install(TARGETS linphone EXPORT ${EXPORT_TARGETS_NAME}Targets
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-
-set(HEADER_FILES
-	buffer.h
-	call_log.h
-	call_params.h
-	content.h
-	event.h
-	linphonecore.h
-	linphonecore_utils.h
-	linphonefriend.h
-	linphonepresence.h
-	linphone_tunnel.h
-	lpc2xml.h
-	lpconfig.h
-	sipsetup.h
-	xml2lpc.h
-)
-
-install(FILES ${HEADER_FILES}
+install(FILES ${LINPHONE_HEADER_FILES}
 	DESTINATION include/linphone
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )

@@ -3,6 +3,7 @@ export LINPHONE_WORKDIR="$bundle_res"
 export GIO_EXTRA_MODULES="$bundle_lib/gio/modules"
 export PANGO_LIBDIR="$bundle_lib"
 export PANGO_SYSCONFDIR="$bundle_etc"
+export GDK_PIXBUF_MODULE_FILE="$bundle_lib/gdk-pixbuf-2.0/2.10.0/loaders.cache"
 
 #this is very important not to force a shared library path so that native frameworks can find their dependencies by themselves, 
 #and not be forced to use the few libraries we have in the bundle that have the same name as native libs (ex: libiconv)

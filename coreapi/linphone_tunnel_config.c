@@ -21,18 +21,23 @@
  */
 
 #include "linphone_tunnel.h"
+#include "private.h"
+
 
 struct _LinphoneTunnelConfig {
+	belle_sip_object_t base;
 	char *host;
 	int port;
 	int remote_udp_mirror_port;
-	int delay;	
+	int delay;
+	void *user_data;
 };
 
 LinphoneTunnelConfig *linphone_tunnel_config_new() {
-	LinphoneTunnelConfig *ltc = ms_new0(LinphoneTunnelConfig,1);
+	LinphoneTunnelConfig *ltc = belle_sip_object_new(LinphoneTunnelConfig);
 	ltc->remote_udp_mirror_port = 12345;
 	ltc->delay = 1000;
+	ltc->port = 443;
 	return ltc;
 }
 
@@ -74,10 +79,40 @@ int linphone_tunnel_config_get_delay(const LinphoneTunnelConfig *tunnel) {
 	return tunnel->delay;
 }
 
-void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel) {
+static void _linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel) {
 	if(tunnel->host != NULL) {
 		ms_free(tunnel->host);
 	}
-	ms_free(tunnel);
 }
+
+LinphoneTunnelConfig * linphone_tunnel_config_ref(LinphoneTunnelConfig *cfg){
+	return (LinphoneTunnelConfig*)belle_sip_object_ref(cfg);
+}
+
+void linphone_tunnel_config_unref(LinphoneTunnelConfig *cfg){
+	belle_sip_object_unref(cfg);
+}
+
+void linphone_tunnel_config_destroy(LinphoneTunnelConfig *tunnel){
+	linphone_tunnel_config_unref(tunnel);
+}
+
+void linphone_tunnel_config_set_user_data(LinphoneTunnelConfig *cfg, void *ud){
+	cfg->user_data = ud;
+}
+
+void *linphone_tunnel_config_get_user_data(LinphoneTunnelConfig *cfg){
+	return cfg->user_data;
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneTunnelConfig);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneTunnelConfig, belle_sip_object_t,
+	(belle_sip_object_destroy_t)_linphone_tunnel_config_destroy,
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+
 

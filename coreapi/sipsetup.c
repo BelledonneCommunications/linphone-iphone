@@ -24,14 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 
 extern SipSetup linphone_sip_login;
-#ifdef BUILD_WIZARD
-extern SipSetup linphone_sip_wizard;
-#endif
 static SipSetup *all_sip_setups[]={
 	&linphone_sip_login,
-#ifdef BUILD_WIZARD
-	&linphone_sip_wizard,
-#endif
 	NULL
 };
 
@@ -82,6 +76,7 @@ void sip_setup_unregister_all(void){
 			ss->initialized=FALSE;
 		}
 	}
+	registered_sip_setups = ms_list_free(registered_sip_setups);
 }
 
 void buddy_lookup_request_set_key(BuddyLookupRequest *req, const char *key){

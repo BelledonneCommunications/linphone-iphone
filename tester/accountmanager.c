@@ -123,7 +123,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 
 	vtable.registration_state_changed=account_created_on_server_cb;
 	vtable.auth_info_requested=account_created_auth_requested_cb;
-	lc=configure_lc_from(&vtable,bc_tester_read_dir_prefix,NULL,account);
+	lc=configure_lc_from(&vtable,bc_tester_get_resource_dir_prefix(),NULL,account);
 	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
@@ -146,7 +146,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_proxy_config_set_server_addr(cfg,tmp);
 	ms_free(tmp);
 	linphone_address_unref(server_addr);
-	linphone_proxy_config_set_expires(cfg,3600);
+	linphone_proxy_config_set_expires(cfg,3*3600); //accounts are valid 3 hours
 
 	linphone_core_add_proxy_config(lc,cfg);
 
@@ -187,6 +187,10 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	LinphoneAuthInfo *ai;
 	char *tmp;
 	bool_t create_account=FALSE;
+	const LinphoneAuthInfo *original_ai = linphone_core_find_auth_info(lc
+																		,NULL
+																		, linphone_address_get_username(id_addr)
+																		, linphone_address_get_domain(id_addr));
 
 	if (!account){
 		account=account_new(id_addr,m->unique_id);
@@ -203,6 +207,11 @@ LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyC
 	if (create_account){
 		account_create_on_server(account,cfg);
 	}
+
+	/*remove previous auth info to avoid mismatching*/
+	if (original_ai)
+		linphone_core_remove_auth_info(lc,original_ai);
+
 	ai=linphone_auth_info_new(linphone_address_get_username(account->modified_identity),
 				NULL,
 				account->password,NULL,NULL,linphone_address_get_domain(account->modified_identity));

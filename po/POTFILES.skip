@@ -10,6 +10,7 @@ mediastreamer2/src/audiofilters/dtmfgen.c
 mediastreamer2/src/audiofilters/equalizer.c
 mediastreamer2/src/audiofilters/gsm.c
 mediastreamer2/src/audiofilters/genericplc.c
+mediastreamer2/src/audiofilters/msgenericplc.c
 mediastreamer2/src/audiofilters/macsnd.c
 mediastreamer2/src/audiofilters/msconf.c
 mediastreamer2/src/audiofilters/msfileplayer.c

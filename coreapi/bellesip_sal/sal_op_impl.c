@@ -38,6 +38,7 @@ void sal_op_release(SalOp *op){
 	if (op->refresher) {
 		belle_sip_refresher_stop(op->refresher);
 	}
+	op->op_released = TRUE;
 	sal_op_unref(op);
 }
 
@@ -72,7 +73,7 @@ void sal_op_authenticate(SalOp *op, const SalAuthInfo *info){
 		/*Registration authenticate is just about registering again*/
 		sal_register_refresh(op,-1);
 	}else {
-		/*for sure auth info will be accesible from the provider*/
+		/*for sure auth info will be accessible from the provider*/
 		sal_process_authentication(op);
 	}
 	return ;
@@ -286,7 +287,7 @@ void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg){
 	}
 }
 
-static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request,bool_t add_contact) {
+static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* request, bool_t add_contact) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=op->base.root->prov;
 	belle_sip_uri_t* outbound_proxy=NULL;
@@ -294,10 +295,10 @@ static int _sal_op_send_request_with_contact(SalOp* op, belle_sip_request_t* req
 	int result =-1;
 	belle_sip_uri_t *next_hop_uri=NULL;
 
-	if (add_contact) {
+	if (add_contact && !belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_contact_t)) {
 		contact = sal_op_create_contact(op);
 		belle_sip_message_set_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
-	}
+	} /*keep existing*/
 
 	_sal_op_add_custom_headers(op, (belle_sip_message_t*)request);
 
@@ -464,6 +465,9 @@ SalReason sal_reason_to_sip_code(SalReason r){
 		case SalReasonBadGateway:
 			ret=502;
 			break;
+		case SalReasonInternalError:
+			ret=500;
+			break;
 	}
 	return ret;
 }
@@ -508,6 +512,8 @@ SalReason _sal_reason_from_sip_code(int code) {
 		return SalReasonNotAcceptable;
 	case 491:
 		return SalReasonRequestPending;
+	case 500:
+		return SalReasonInternalError;
 	case 501:
 		return SalReasonNotImplemented;
 	case 502:
@@ -608,7 +614,10 @@ void set_or_update_dialog(SalOp* op, belle_sip_dialog_t* dialog) {
 			unlink_op_with_dialog(op,op->dialog);
 			op->dialog=NULL;
 		}
-		if (dialog) op->dialog=link_op_with_dialog(op,dialog);
+		if (dialog) {
+			op->dialog=link_op_with_dialog(op,dialog);
+			belle_sip_dialog_enable_pending_trans_checking(dialog,op->base.root->pending_trans_checking);
+		}
 	}
 	sal_op_unref(op);
 }
@@ -806,6 +815,11 @@ void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling)  {
 void sal_op_cnx_ip_to_0000_if_sendonly_enable(SalOp *op,bool_t yesno) {
 	op->cnx_ip_to_0000_if_sendonly_enabled = yesno;
 }
+
 bool_t sal_op_cnx_ip_to_0000_if_sendonly_enabled(SalOp *op) {
 	return op->cnx_ip_to_0000_if_sendonly_enabled;
+}
+
+bool_t sal_op_is_forked_of(const SalOp *op1, const SalOp *op2){
+	return op1->base.call_id && op2->base.call_id && strcmp(op1->base.call_id, op2->base.call_id) == 0;
 }

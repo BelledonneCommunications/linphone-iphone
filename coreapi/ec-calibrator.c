@@ -114,8 +114,10 @@ static void ecc_deinit_filters(EcCalibrator *ecc){
 static void on_tone_sent(void *data, MSFilter *f, unsigned int event_id, void *arg){
 	MSDtmfGenEvent *ev=(MSDtmfGenEvent*)arg;
 	EcCalibrator *ecc=(EcCalibrator*)data;
-	ecc->acc-=ev->tone_start_time;
-	ms_message("Sent tone at %u",(unsigned int)ev->tone_start_time);
+	if (ev->tone_name[0] != '\0'){
+		ecc->acc-=ev->tone_start_time;
+		ms_message("Sent tone at %u",(unsigned int)ev->tone_start_time);
+	}
 }
 
 static bool_t is_valid_tone(EcCalibrator *ecc, MSToneDetectorEvent *ev){
@@ -159,23 +161,23 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	/* configure the tones to be scanned */
 	
 	strncpy(expected_tone.tone_name,"freq1",sizeof(expected_tone.tone_name));
-	expected_tone.frequency=2000;
+	expected_tone.frequency=(int)2349.32;
 	expected_tone.min_duration=40;
-	expected_tone.min_amplitude=0.1;
+	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
 	
 	strncpy(expected_tone.tone_name,"freq2",sizeof(expected_tone.tone_name));
-	expected_tone.frequency=2300;
+	expected_tone.frequency=(int)2637.02;
 	expected_tone.min_duration=40;
-	expected_tone.min_amplitude=0.1;
+	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
 	
 	strncpy(expected_tone.tone_name,"freq3",sizeof(expected_tone.tone_name));
-	expected_tone.frequency=2500;
+	expected_tone.frequency=(int)2093;
 	expected_tone.min_duration=40;
-	expected_tone.min_amplitude=0.1;
+	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
 	
@@ -191,24 +193,40 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	ms_filter_add_notify_callback(ecc->gen,on_tone_sent,ecc,TRUE);
 	
 	/* play the three tones*/
-	
-	tone.frequencies[0]=2000;
+	strncpy(tone.tone_name, "D", sizeof(tone.tone_name));
+	tone.frequencies[0]=(int)2349.32;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
 	
-	tone.frequencies[0]=2300;
+	strncpy(tone.tone_name, "E", sizeof(tone.tone_name));
+	tone.frequencies[0]=(int)2637.02;
 	tone.duration=100;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_usleep(300000);
 	
-	tone.frequencies[0]=2500;
+	strncpy(tone.tone_name, "C", sizeof(tone.tone_name));
+	tone.frequencies[0]=(int)2093;
 	tone.duration=100;
+	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+	ms_usleep(300000);
+	
+	/*these two next ones are for lyrism*/
+	
+	tone.tone_name[0]='\0';
+	tone.frequencies[0]=(int)1046.5;
+	tone.duration=400;
+	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+	ms_usleep(300000);
+	
+	tone.tone_name[0]='\0';
+	tone.frequencies[0]=(int)1567.98;
+	tone.duration=400;
 	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(1);
 	
 	if (ecc->freq1 && ecc->freq2 && ecc->freq3) {
-		int delay=ecc->acc/3;
+		int delay=(int)(ecc->acc/3);
 		if (delay<0){
 			ms_error("Quite surprising calibration result, delay=%i",delay);
 			ecc->status=LinphoneEcCalibratorFailed;

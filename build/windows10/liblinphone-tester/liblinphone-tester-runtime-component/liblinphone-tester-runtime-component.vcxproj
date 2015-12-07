@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\tester\liblinphone_tester_windows.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\tester\liblinphone_tester_windows.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\bcg729\build\windows10\libmsbcg729\libmsbcg729.vcxproj">
+      <Project>{acf5ea95-d647-4d0c-8f97-2cd9aae8a2e0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\build\sqlite\sqlite.vcxproj">
+      <Project>{74cad9d0-d8ae-4896-b71b-b2d9b48f30aa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\msamr\build\windows10\libmsamr\libmsamr.vcxproj">
+      <Project>{8c1bc968-c5c8-4d4b-9ef3-d6a065fc7c97}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\msilbc\build\windows10\libmsilbc\libmsilbc.vcxproj">
+      <Project>{6a18bbb9-08d1-41a8-be57-17fc992cc36f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\msopenh264\build\windows10\libmsopenh264\libmsopenh264.vcxproj">
+      <Project>{bb8ebb21-f22c-4a68-99cb-67fa36c495e3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\mssilk\build\windows10\libmssilk\libmssilk.vcxproj">
+      <Project>{b84d5c3b-6de5-49c8-b3dd-5eb67b01a527}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\mswasapi\windows10\libmswasapi\libmswasapi.vcxproj">
+      <Project>{266b769a-c04e-424c-9033-7209f0425bc0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\mswebrtc\build\windows10\libmswebrtc\libmswebrtc.vcxproj">
+      <Project>{878cf9d3-9761-479e-a715-a1de9f99cb78}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\mswinrtvid\windows10\libmswinrtvid\libmswinrtvid.vcxproj">
+      <Project>{2d0e44c4-e51d-4911-b876-345d1e5e5209}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\zlib\build\windows10\zlib\zlib.vcxproj">
+      <Project>{a34f450d-392d-4660-9618-810bd695b3b0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\mediastreamer2\build\windows10\mswinrtjpeg2yuv\mswinrtjpeg2yuv.vcxproj">
+      <Project>{545f846d-7f19-4d6d-a50b-172a7c9b61e7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\liblinphone-tester-static\liblinphone-tester-static.vcxproj">
+      <Project>{9eb3fe8d-2d91-4d29-a3bb-98ddb51d45b7}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1ce10f06-8fad-437f-b3d7-3b7a8909a190}</ProjectGuid>
+    <Keyword>WindowsRuntimeComponent</Keyword>
+    <ProjectName>liblinphone-tester-runtime-component</ProjectName>
+    <RootNamespace>liblinphone_tester_runtime_component</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10</ApplicationTypeRevision>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.10069.0</WindowsTargetPlatformMinVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <GenerateManifest>false</GenerateManifest>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>IN_LINPHONE;_WINRT_DLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\coreapi;$(ProjectDir)..\..\..\..\tester\common;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\..\oRTP\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>IN_LINPHONE;_WINRT_DLL;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>28204</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\coreapi;$(ProjectDir)..\..\..\..\tester\common;$(ProjectDir)..\..\..\..\mediastreamer2\include;$(ProjectDir)..\..\..\..\oRTP\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

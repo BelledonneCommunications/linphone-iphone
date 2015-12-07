@@ -99,7 +99,7 @@ typedef struct {
 
 typedef struct {
 	int x,y,w,h;
-	unsigned long wid;
+	void *wid;
 	bool_t show;
 	bool_t refresh;
 } VideoParams;
@@ -116,11 +116,11 @@ extern VideoParams lpc_preview_params;
 
 extern int linphonec_parse_command_line(LinphoneCore *lc, char *cl);
 extern char *linphonec_command_generator(const char *text, int state);
-void linphonec_main_loop_exit();
+void linphonec_main_loop_exit(void);
 extern void linphonec_finish(int exit_status);
 extern char *linphonec_readline(char *prompt);
 void linphonec_set_autoanswer(bool_t enabled);
-bool_t linphonec_get_autoanswer();
+bool_t linphonec_get_autoanswer(void);
 void linphonec_command_finished(void);
 void linphonec_set_caller(const char *caller);
 LinphoneCall *linphonec_get_call(long id);

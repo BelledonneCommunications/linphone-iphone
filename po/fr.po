@@ -12,74 +12,83 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-30 10:13+0200\n"
-"PO-Revision-Date: 2015-04-30 08:35+0000\n"
+"POT-Creation-Date: 2015-11-10 15:16+0100\n"
+"PO-Revision-Date: 2015-11-10 14:16+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
-"Language-Team: French (http://www.transifex.com/projects/p/linphone-gtk/language/fr/)\n"
+"Language-Team: French (http://www.transifex.com/belledonne-communications/linphone-gtk/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../gtk/calllogs.c:148 ../gtk/friendlist.c:974
+#: ../gtk/calllogs.c:178
 #, c-format
 msgid "Call %s"
 msgstr "Appeler %s"
 
-#: ../gtk/calllogs.c:149 ../gtk/friendlist.c:975
+#: ../gtk/calllogs.c:179
 #, c-format
 msgid "Send text to %s"
 msgstr "Chatter avec %s"
 
-#: ../gtk/calllogs.c:232
+#: ../gtk/calllogs.c:181
+#, c-format
+msgid "Add %s to your contact list"
+msgstr "Ajouter %s à la liste de contacts"
+
+#: ../gtk/calllogs.c:245 ../gtk/main.ui.h:21
+msgid "Recent calls"
+msgstr "Appels récents"
+
+#: ../gtk/calllogs.c:260
 #, c-format
 msgid "<b>Recent calls (%i)</b>"
 msgstr "<b>Appels récents (%i)</b>"
 
-#: ../gtk/calllogs.c:314
+#: ../gtk/calllogs.c:331
 msgid "n/a"
 msgstr "inconnu"
 
-#: ../gtk/calllogs.c:317
+#: ../gtk/calllogs.c:334
 msgid "Aborted"
 msgstr "Abandonné"
 
-#: ../gtk/calllogs.c:320
+#: ../gtk/calllogs.c:337
 msgid "Missed"
 msgstr "Manqué"
 
-#: ../gtk/calllogs.c:323
+#: ../gtk/calllogs.c:340
 msgid "Declined"
 msgstr "Refusé"
 
-#: ../gtk/calllogs.c:329
+#: ../gtk/calllogs.c:346
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
 msgstr[0] "%i minute"
 msgstr[1] "%i minutes"
 
-#: ../gtk/calllogs.c:332
+#: ../gtk/calllogs.c:349
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
 msgstr[0] "%i seconde"
 msgstr[1] "%i secondes"
 
-#: ../gtk/calllogs.c:337
+#: ../gtk/calllogs.c:354
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
 msgstr "<small><i>%s</i>\t<i>Qualité: %s</i></small>\n%s\t%s\t"
 
-#: ../gtk/calllogs.c:341
+#: ../gtk/calllogs.c:358
 #, c-format
 msgid "<big><b>%s</b></big>\t%s"
 msgstr "<big><b>%s</b></big>\t%s"
 
-#: ../gtk/conference.c:38 ../gtk/main.ui.h:13
+#: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:11
 msgid "Conference"
 msgstr "Conférence"
 
@@ -92,297 +101,314 @@ msgstr "Moi"
 msgid "Couldn't find pixmap file: %s"
 msgstr "Icone non trouvée: %s"
 
-#: ../gtk/main.c:137
+#: ../gtk/chat.c:196 ../gtk/chat.c:254
+msgid "Sending..."
+msgstr "Envoi en cours..."
+
+#: ../gtk/chat.c:213 ../gtk/chat.c:263
+msgid "Message not sent"
+msgstr "Message non envoyé"
+
+#: ../gtk/chat.c:472
+msgid "Copy"
+msgstr "Copier"
+
+#: ../gtk/main.c:138
 msgid "log to stdout some debug information while running."
 msgstr "affiche des informations de debogage"
 
-#: ../gtk/main.c:138
+#: ../gtk/main.c:139
+msgid "display version and exit."
+msgstr "Afficher la version et quitter."
+
+#: ../gtk/main.c:140
 msgid "path to a file to write logs into."
 msgstr "chemin vers le fichier de logs."
 
-#: ../gtk/main.c:139
+#: ../gtk/main.c:141
 msgid "Start linphone with video disabled."
 msgstr "Démarrer linphone avec la vidéo désactivée."
 
-#: ../gtk/main.c:140
+#: ../gtk/main.c:142
 msgid "Start only in the system tray, do not show the main interface."
 msgstr "Démarre iconifié, sans interface principale."
 
-#: ../gtk/main.c:141
+#: ../gtk/main.c:143
 msgid "address to call right now"
 msgstr "adresse à appeler maintenant"
 
-#: ../gtk/main.c:142
+#: ../gtk/main.c:144
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: "
 "c:\\Program Files\\Linphone)"
 msgstr "Spécifie un répertoire de travail (qui devrait être le répertoire d'installation, par exemple c:\\Program Files\\Linphone)"
 
-#: ../gtk/main.c:143
+#: ../gtk/main.c:145
 msgid "Configuration file"
 msgstr "Ficher de configuration"
 
-#: ../gtk/main.c:144
+#: ../gtk/main.c:146
 msgid "Run the audio assistant"
 msgstr "Démarre l'assistant audio"
 
-#: ../gtk/main.c:145
+#: ../gtk/main.c:147
 msgid "Run self test and exit 0 if succeed"
 msgstr "Exécuter le test local et retourner 0 en cas de succès"
 
-#: ../gtk/main.c:1070
+#: ../gtk/main.c:1046
 #, c-format
 msgid ""
-"%s would like to add you to his contact list.\n"
-"Would you allow him to see your presence status or add him to your contact list ?\n"
+"%s would like to add you to his/her contact list.\n"
+"Would you add him/her to your contact list and allow him/her to see your presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr "%s souhaite vous ajouter à sa liste de contact.\nSouhaitez vous l'autoriser à voir votre information de présence et l'ajouter à votre liste également ?\nSi vous répondez non, cette personne sera mise temporairement sur liste noire."
+msgstr "%s souhaite vous ajouter à sa liste de contact.\nSouhaitez vous l'ajouter à votre liste également et l'autoriser à voir votre information de présence  ?\nSi vous répondez non, cette personne sera mise temporairement sur liste noire."
 
-#: ../gtk/main.c:1147
+#: ../gtk/main.c:1123
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
 msgstr "Entrez le mot de passe pour <i>%s</i>\n sur le domaine <i>%s</i>:"
 
-#: ../gtk/main.c:1268
+#: ../gtk/main.c:1253
 msgid "Call error"
 msgstr "Erreur lors de l'appel"
 
-#: ../gtk/main.c:1271 ../coreapi/linphonecore.c:3846
+#: ../gtk/main.c:1256 ../coreapi/linphonecore.c:3813
 msgid "Call ended"
 msgstr "Appel terminé."
 
-#: ../gtk/main.c:1274 ../coreapi/call_log.c:221
+#: ../gtk/main.c:1259 ../coreapi/call_log.c:235
 msgid "Incoming call"
 msgstr "Appel entrant"
 
-#: ../gtk/main.c:1276 ../gtk/incall_view.c:532 ../gtk/main.ui.h:5
+#: ../gtk/main.c:1261 ../gtk/incall_view.c:580 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
 msgstr "Répondre"
 
-#: ../gtk/main.c:1278 ../gtk/main.ui.h:6
+#: ../gtk/main.c:1263 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
 msgstr "Refuser"
 
-#: ../gtk/main.c:1284
+#: ../gtk/main.c:1269
 msgid "Call paused"
 msgstr "Appel en pause"
 
-#: ../gtk/main.c:1284
+#: ../gtk/main.c:1269
 #, c-format
 msgid "<b>by %s</b>"
 msgstr "b>par %s</b>"
 
-#: ../gtk/main.c:1354
+#: ../gtk/main.c:1339
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
 msgstr "%s propose de démarrer la vidéo. Acceptez-vous ?"
 
-#: ../gtk/main.c:1509
+#: ../gtk/main.c:1505
 msgid "Website link"
 msgstr "Lien site web"
 
-#: ../gtk/main.c:1568 ../gtk/waiting.ui.h:1
+#: ../gtk/main.c:1564 ../gtk/waiting.ui.h:1
 msgid "Linphone"
 msgstr "Linphone"
 
-#: ../gtk/main.c:1569
+#: ../gtk/main.c:1565
 msgid "A video internet phone"
 msgstr "Appels vidéo via internet"
 
-#: ../gtk/main.c:1629
+#: ../gtk/main.c:1624
 #, c-format
 msgid "%s (Default)"
 msgstr "%s (par défaut)"
 
-#: ../gtk/main.c:1962 ../coreapi/callbacks.c:1063
+#: ../gtk/main.c:1960 ../coreapi/callbacks.c:1075
 #, c-format
 msgid "We are transferred to %s"
 msgstr "Transfert vers %s"
 
-#: ../gtk/main.c:1972
+#: ../gtk/main.c:1970
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
 msgstr "Aucune carte son n'a été détectée sur cet ordinateur.\nVous ne pourrez pas effectuer d'appels audio."
 
-#: ../gtk/main.c:2117
+#: ../gtk/main.c:2129
 msgid "A free SIP video-phone"
 msgstr "Un visiophone libre"
 
-#: ../gtk/main.c:2221
+#: ../gtk/main.c:2242
 #, c-format
 msgid "Hello\n"
 msgstr "Bonjour\n"
 
-#: ../gtk/friendlist.c:505
+#: ../gtk/friendlist.c:461
 msgid "Add to addressbook"
 msgstr "Ajouter au carnet d'adresse"
 
-#: ../gtk/friendlist.c:691
-msgid "Presence status"
-msgstr "Info de présence"
-
-#: ../gtk/friendlist.c:709 ../gtk/propertybox.c:569 ../gtk/contact.ui.h:1
-msgid "Name"
-msgstr "Nom"
-
-#: ../gtk/friendlist.c:721
-msgid "Call"
-msgstr "Appeler"
-
-#: ../gtk/friendlist.c:726
-msgid "Chat"
-msgstr "Chat"
-
-#: ../gtk/friendlist.c:756
+#: ../gtk/friendlist.c:627
 #, c-format
 msgid "Search in %s directory"
 msgstr "Rechercher dans l'annuaire de %s"
 
-#: ../gtk/friendlist.c:924
+#: ../gtk/friendlist.c:772
 msgid "Invalid sip contact !"
 msgstr "Contact sip invalide !"
 
-#: ../gtk/friendlist.c:976
+#: ../gtk/friendlist.c:820
+#, c-format
+msgid "Add a new contact"
+msgstr "Ajouter un nouveau contact"
+
+#: ../gtk/friendlist.c:823
 #, c-format
 msgid "Edit contact '%s'"
 msgstr "Editer le contact '%s'"
 
-#: ../gtk/friendlist.c:977
+#: ../gtk/friendlist.c:824
 #, c-format
 msgid "Delete contact '%s'"
 msgstr "Supprimer le contact '%s'"
 
-#: ../gtk/friendlist.c:978
+#: ../gtk/friendlist.c:825
 #, c-format
 msgid "Delete chat history of '%s'"
 msgstr "Supprimer l'historique de chat de '%s'"
 
-#: ../gtk/friendlist.c:1029
+#: ../gtk/friendlist.c:862
 #, c-format
 msgid "Add new contact from %s directory"
 msgstr "Ajouter un contact depuis l'annuaire %s"
 
-#: ../gtk/propertybox.c:575
+#: ../gtk/propertybox.c:592 ../gtk/contact.ui.h:1
+msgid "Name"
+msgstr "Nom"
+
+#: ../gtk/propertybox.c:598
 msgid "Rate (Hz)"
 msgstr "Fréquence (Hz)"
 
-#: ../gtk/propertybox.c:581
+#: ../gtk/propertybox.c:604
 msgid "Status"
 msgstr "Etat"
 
-#: ../gtk/propertybox.c:587
+#: ../gtk/propertybox.c:617
 msgid "IP Bitrate (kbit/s)"
 msgstr "Débit IP (kbit/s)"
 
-#: ../gtk/propertybox.c:596
+#: ../gtk/propertybox.c:628
 msgid "Parameters"
 msgstr "Paramètres"
 
-#: ../gtk/propertybox.c:639 ../gtk/propertybox.c:782
+#: ../gtk/propertybox.c:670 ../gtk/propertybox.c:824
 msgid "Enabled"
 msgstr "Activé"
 
-#: ../gtk/propertybox.c:641 ../gtk/propertybox.c:782 ../gtk/parameters.ui.h:20
+#: ../gtk/propertybox.c:672 ../gtk/propertybox.c:824 ../gtk/parameters.ui.h:60
 msgid "Disabled"
 msgstr "Désactivé"
 
-#: ../gtk/propertybox.c:828
+#: ../gtk/propertybox.c:902
 msgid "Account"
 msgstr "Compte"
 
-#: ../gtk/propertybox.c:1091
+#: ../gtk/propertybox.c:1170
 msgid "English"
 msgstr "Anglais"
 
-#: ../gtk/propertybox.c:1092
+#: ../gtk/propertybox.c:1171
 msgid "French"
 msgstr "Français"
 
-#: ../gtk/propertybox.c:1093
+#: ../gtk/propertybox.c:1172
 msgid "Swedish"
 msgstr "Suédois"
 
-#: ../gtk/propertybox.c:1094
+#: ../gtk/propertybox.c:1173
 msgid "Italian"
 msgstr "Italien"
 
-#: ../gtk/propertybox.c:1095
+#: ../gtk/propertybox.c:1174
 msgid "Spanish"
 msgstr "Espagnol"
 
-#: ../gtk/propertybox.c:1096
+#: ../gtk/propertybox.c:1175
 msgid "Brazilian Portugese"
 msgstr "Portugais brésilien"
 
-#: ../gtk/propertybox.c:1097
+#: ../gtk/propertybox.c:1176
 msgid "Polish"
 msgstr "Polonais"
 
-#: ../gtk/propertybox.c:1098
+#: ../gtk/propertybox.c:1177
 msgid "German"
 msgstr "Allemand"
 
-#: ../gtk/propertybox.c:1099
+#: ../gtk/propertybox.c:1178
 msgid "Russian"
 msgstr "Russe"
 
-#: ../gtk/propertybox.c:1100
+#: ../gtk/propertybox.c:1179
 msgid "Japanese"
 msgstr "日本語"
 
-#: ../gtk/propertybox.c:1101
+#: ../gtk/propertybox.c:1180
 msgid "Dutch"
 msgstr "Néérlandais"
 
-#: ../gtk/propertybox.c:1102
+#: ../gtk/propertybox.c:1181
 msgid "Hungarian"
 msgstr "Hongrois"
 
-#: ../gtk/propertybox.c:1103
+#: ../gtk/propertybox.c:1182
 msgid "Czech"
 msgstr "Tchèque"
 
-#: ../gtk/propertybox.c:1104
+#: ../gtk/propertybox.c:1183
 msgid "Chinese"
 msgstr "简体中文"
 
-#: ../gtk/propertybox.c:1105
+#: ../gtk/propertybox.c:1184
 msgid "Traditional Chinese"
 msgstr "Chinois traditionnel"
 
-#: ../gtk/propertybox.c:1106
+#: ../gtk/propertybox.c:1185
 msgid "Norwegian"
 msgstr "Norvégien"
 
-#: ../gtk/propertybox.c:1107
+#: ../gtk/propertybox.c:1186
 msgid "Hebrew"
 msgstr "Hébreu"
 
-#: ../gtk/propertybox.c:1108
+#: ../gtk/propertybox.c:1187
 msgid "Serbian"
 msgstr "Serbe"
 
-#: ../gtk/propertybox.c:1175
+#: ../gtk/propertybox.c:1188
+msgid "Arabic"
+msgstr "Arabe"
+
+#: ../gtk/propertybox.c:1189
+msgid "Turkish"
+msgstr "Turc"
+
+#: ../gtk/propertybox.c:1246
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
 msgstr "La nouvelle selection de langue prendra effet au prochain démarrage de linphone."
 
-#: ../gtk/propertybox.c:1255
+#: ../gtk/propertybox.c:1326
 msgid "None"
 msgstr "Aucun"
 
-#: ../gtk/propertybox.c:1259
+#: ../gtk/propertybox.c:1330
 msgid "SRTP"
 msgstr "SRTP"
 
-#: ../gtk/propertybox.c:1265
+#: ../gtk/propertybox.c:1336
 msgid "DTLS"
 msgstr "DTLS"
 
-#: ../gtk/propertybox.c:1272
+#: ../gtk/propertybox.c:1343
 msgid "ZRTP"
 msgstr "ZRTP"
 
@@ -424,324 +450,195 @@ msgid_plural "Found %i contacts"
 msgstr[0] "%i contact trouvé."
 msgstr[1] "%i contacts trouvés."
 
-#: ../gtk/setupwizard.c:32
-msgid ""
-"Welcome!\n"
-"This assistant will help you to use a SIP account for your calls."
-msgstr "Bienvenue !\nCet assistant va vous aider à utiliser un compte SIP pour vos appels."
-
-#: ../gtk/setupwizard.c:41
-msgid "Create an account on linphone.org"
-msgstr "Créer un compte sur linphone.org"
-
-#: ../gtk/setupwizard.c:42
-msgid "I have already a linphone.org account and I just want to use it"
-msgstr "J'ai déjà un compte linphone.org et je souhaite l'utiliser"
-
-#: ../gtk/setupwizard.c:43
-msgid "I have already a sip account and I just want to use it"
-msgstr "J'ai déjà un compte Sip et je souhaite l'utiliser"
-
-#: ../gtk/setupwizard.c:44
-msgid "I want to specify a remote configuration URI"
-msgstr "Je veux spécifier une URI de configuration"
-
-#: ../gtk/setupwizard.c:87
-msgid "Enter your linphone.org username"
-msgstr "Entrez votre identifiant linphone.org"
-
-#: ../gtk/setupwizard.c:100 ../gtk/parameters.ui.h:85 ../gtk/ldap.ui.h:4
-msgid "Username:"
-msgstr "Nom d'utilisateur:"
-
-#: ../gtk/setupwizard.c:102 ../gtk/password.ui.h:4 ../gtk/ldap.ui.h:5
-msgid "Password:"
-msgstr "Mot de passe:"
-
-#: ../gtk/setupwizard.c:122
-msgid "Enter your account informations"
-msgstr "Entrez les informations concernant votre compte"
-
-#: ../gtk/setupwizard.c:138
-msgid "Username*"
-msgstr "Nom d'utilisateur*"
-
-#: ../gtk/setupwizard.c:139
-msgid "Password*"
-msgstr "Mot de passe*"
-
-#: ../gtk/setupwizard.c:142
-msgid "Domain*"
-msgstr "Domaine*"
-
-#: ../gtk/setupwizard.c:143
-msgid "Proxy"
-msgstr "Proxy"
-
-#: ../gtk/setupwizard.c:322
-msgid "(*) Required fields"
-msgstr "(*) Champs requis"
-
-#: ../gtk/setupwizard.c:323
-msgid "Username: (*)"
-msgstr "Nom d'utilisateur: (*)"
-
-#: ../gtk/setupwizard.c:325
-msgid "Password: (*)"
-msgstr "Mot de passe: (*)"
-
-#: ../gtk/setupwizard.c:327
-msgid "Email: (*)"
-msgstr "Email : (*)"
-
-#: ../gtk/setupwizard.c:329
-msgid "Confirm your password: (*)"
-msgstr "Confirmez votre mot de passe: (*)"
-
-#: ../gtk/setupwizard.c:343
-msgid "Keep me informed with linphone updates"
-msgstr "Me tenir informer des mises à jour de Linphone "
-
-#: ../gtk/setupwizard.c:399
-msgid ""
-"Error, account not validated, username already used or server unreachable.\n"
-"Please go back and try again."
-msgstr "Erreur, le compte n'est pas validé, l'identifiant est déjà utilisé ou le serveur n'est pas accessible.\nMerci d'essayer à nouveau."
-
-#: ../gtk/setupwizard.c:410
-msgid "Thank you. Your account is now configured and ready for use."
-msgstr "Merci. Votre compte est maintenant configuré et prêt à être utilisé."
-
-#: ../gtk/setupwizard.c:418
-msgid ""
-"Please validate your account by clicking on the link we just sent you by email.\n"
-"Then come back here and press Next button."
-msgstr "Merci de valider votre compte en cliquant sur le lien que nous avons envoyé par email.\nPuis appuyez sur suivant."
-
-#: ../gtk/setupwizard.c:609
-msgid "SIP account configuration assistant"
-msgstr "Assistant de configuration de compte."
-
-#: ../gtk/setupwizard.c:629
-msgid "Welcome to the account setup assistant"
-msgstr "Bienvenue dans l'assistant de configuration de compte."
-
-#: ../gtk/setupwizard.c:634
-msgid "Account setup assistant"
-msgstr "Assistant de configuration de compte."
-
-#: ../gtk/setupwizard.c:640
-msgid "Configure your account (step 1/1)"
-msgstr "Configurez votre compte (étape 1/1)"
-
-#: ../gtk/setupwizard.c:645
-msgid "Enter your sip username (step 1/1)"
-msgstr "Entrez votre identifiant sip (étape 1/1)"
-
-#: ../gtk/setupwizard.c:649
-msgid "Enter account information (step 1/2)"
-msgstr "Entrez les informations concernant votre compte (étape 1/2)"
-
-#: ../gtk/setupwizard.c:658
-msgid "Validation (step 2/2)"
-msgstr "Validation (étape 2/2)"
-
-#: ../gtk/setupwizard.c:663
-msgid "Error"
-msgstr "Erreur"
-
-#: ../gtk/setupwizard.c:667 ../gtk/audio_assistant.c:534
-msgid "Terminating"
-msgstr "En cours d’arrêt."
-
-#: ../gtk/incall_view.c:70 ../gtk/incall_view.c:94
+#: ../gtk/incall_view.c:67 ../gtk/incall_view.c:87
 #, c-format
 msgid "Call #%i"
 msgstr "Appel #%i"
 
-#: ../gtk/incall_view.c:155
+#: ../gtk/incall_view.c:145
 #, c-format
 msgid "Transfer to call #%i with %s"
 msgstr "Transférer vers l'appel #%i avec %s"
 
-#: ../gtk/incall_view.c:211 ../gtk/incall_view.c:214
+#: ../gtk/incall_view.c:202 ../gtk/incall_view.c:205
 msgid "Not used"
 msgstr "Non utilisé"
 
-#: ../gtk/incall_view.c:221
+#: ../gtk/incall_view.c:212
 msgid "ICE not activated"
 msgstr "ICE non activé"
 
-#: ../gtk/incall_view.c:223
+#: ../gtk/incall_view.c:214
 msgid "ICE failed"
 msgstr "Erreur ICE"
 
-#: ../gtk/incall_view.c:225
+#: ../gtk/incall_view.c:216
 msgid "ICE in progress"
 msgstr "Négociation ICE en cours"
 
-#: ../gtk/incall_view.c:227
+#: ../gtk/incall_view.c:218
 msgid "Going through one or more NATs"
 msgstr "Via un ou plusieurs NATs"
 
-#: ../gtk/incall_view.c:229
+#: ../gtk/incall_view.c:220
 msgid "Direct"
 msgstr "En direct"
 
-#: ../gtk/incall_view.c:231
+#: ../gtk/incall_view.c:222
 msgid "Through a relay server"
 msgstr "Via un serveur relais"
 
-#: ../gtk/incall_view.c:239
+#: ../gtk/incall_view.c:230
 msgid "uPnP not activated"
 msgstr "uPnP non activé"
 
-#: ../gtk/incall_view.c:241
+#: ../gtk/incall_view.c:232
 msgid "uPnP in progress"
 msgstr "uPnP en cours"
 
-#: ../gtk/incall_view.c:243
+#: ../gtk/incall_view.c:234
 msgid "uPnp not available"
 msgstr "uPnP est indisponible"
 
-#: ../gtk/incall_view.c:245
+#: ../gtk/incall_view.c:236
 msgid "uPnP is running"
 msgstr "uPnP en cours d’exécution"
 
-#: ../gtk/incall_view.c:247
+#: ../gtk/incall_view.c:238
 msgid "uPnP failed"
 msgstr "uPnP a échoué."
 
-#: ../gtk/incall_view.c:257 ../gtk/incall_view.c:258
+#: ../gtk/incall_view.c:248 ../gtk/incall_view.c:249
 msgid "Direct or through server"
 msgstr "Directe ou via un serveur"
 
-#: ../gtk/incall_view.c:267 ../gtk/incall_view.c:279
+#: ../gtk/incall_view.c:258 ../gtk/incall_view.c:270
 #, c-format
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
 msgstr "débit descendant : %f\ndébit ascendant : %f (kbits/s)"
 
-#: ../gtk/incall_view.c:272 ../gtk/incall_view.c:274
+#: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
 #, c-format
 msgid "%ix%i @ %f fps"
 msgstr "%ix%i @ %f fps"
 
-#: ../gtk/incall_view.c:304
+#: ../gtk/incall_view.c:295
 #, c-format
 msgid "%.3f seconds"
 msgstr "%.3f secondes"
 
-#: ../gtk/incall_view.c:407 ../gtk/main.ui.h:12 ../gtk/videowindow.c:235
+#: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:10
+#: ../gtk/videowindow.c:236
 msgid "Hang up"
 msgstr "Raccrocher"
 
-#: ../gtk/incall_view.c:511
+#: ../gtk/incall_view.c:559
 msgid "<b>Calling...</b>"
 msgstr "<b>Tentative d'appel...</b>"
 
-#: ../gtk/incall_view.c:514 ../gtk/incall_view.c:733
-msgid "00::00::00"
-msgstr "00::00::00"
+#: ../gtk/incall_view.c:562 ../gtk/incall_view.c:792
+msgid "00:00:00"
+msgstr "00:00:00"
 
-#: ../gtk/incall_view.c:525
+#: ../gtk/incall_view.c:573
 msgid "<b>Incoming call</b>"
 msgstr "<b>Appel entrant</b>"
 
-#: ../gtk/incall_view.c:562
+#: ../gtk/incall_view.c:610
 msgid "good"
 msgstr "bon"
 
-#: ../gtk/incall_view.c:564
+#: ../gtk/incall_view.c:612
 msgid "average"
 msgstr "moyen"
 
-#: ../gtk/incall_view.c:566
+#: ../gtk/incall_view.c:614
 msgid "poor"
 msgstr "faible"
 
-#: ../gtk/incall_view.c:568
+#: ../gtk/incall_view.c:616
 msgid "very poor"
 msgstr "très faible"
 
-#: ../gtk/incall_view.c:570
+#: ../gtk/incall_view.c:618
 msgid "too bad"
 msgstr "nulle"
 
-#: ../gtk/incall_view.c:571 ../gtk/incall_view.c:587
+#: ../gtk/incall_view.c:619 ../gtk/incall_view.c:635
 msgid "unavailable"
 msgstr "indisponible"
 
-#: ../gtk/incall_view.c:679
+#: ../gtk/incall_view.c:731
 msgid "Secured by SRTP"
 msgstr "Sécurisé par SRTP"
 
-#: ../gtk/incall_view.c:685
+#: ../gtk/incall_view.c:737
 msgid "Secured by DTLS"
 msgstr "Sécurisé par DTLS"
 
-#: ../gtk/incall_view.c:691
+#: ../gtk/incall_view.c:743
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
 msgstr "Sécurisé par ZRTP- [jeton: %s]"
 
-#: ../gtk/incall_view.c:697
+#: ../gtk/incall_view.c:747
 msgid "Set unverified"
 msgstr "Marquer comme non vérifié"
 
-#: ../gtk/incall_view.c:697 ../gtk/main.ui.h:4
+#: ../gtk/incall_view.c:747
 msgid "Set verified"
 msgstr "Marquer comme vérifié"
 
-#: ../gtk/incall_view.c:728
+#: ../gtk/incall_view.c:787
 msgid "In conference"
 msgstr "En conférence"
 
-#: ../gtk/incall_view.c:728
+#: ../gtk/incall_view.c:787
 msgid "<b>In call</b>"
 msgstr "<b>Appel en cours</b>"
 
-#: ../gtk/incall_view.c:764
+#: ../gtk/incall_view.c:824
 msgid "<b>Paused call</b>"
 msgstr "<b>Appel en attente</b>"
 
-#: ../gtk/incall_view.c:800
+#: ../gtk/incall_view.c:861
 msgid "<b>Call ended.</b>"
 msgstr "<b>Appel terminé.</b>"
 
-#: ../gtk/incall_view.c:831
+#: ../gtk/incall_view.c:892
 msgid "Transfer in progress"
 msgstr "Transfert en cours"
 
-#: ../gtk/incall_view.c:834
+#: ../gtk/incall_view.c:895
 msgid "Transfer done."
 msgstr "Transfert terminé"
 
-#: ../gtk/incall_view.c:837
+#: ../gtk/incall_view.c:898
 msgid "Transfer failed."
 msgstr "Transfert échoué"
 
-#: ../gtk/incall_view.c:881
+#: ../gtk/incall_view.c:929
 msgid "Resume"
 msgstr "Reprendre"
 
-#: ../gtk/incall_view.c:888 ../gtk/main.ui.h:9
+#: ../gtk/incall_view.c:929 ../gtk/in_call_frame.ui.h:7
 msgid "Pause"
 msgstr "Pause"
 
-#: ../gtk/incall_view.c:954
+#: ../gtk/incall_view.c:995
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
 msgstr "<small><i>Enregistrement dans\n%s %s</i></small>"
 
-#: ../gtk/incall_view.c:954
+#: ../gtk/incall_view.c:995
 msgid "(Paused)"
 msgstr "(en attente)"
 
-#: ../gtk/loginframe.c:87
+#: ../gtk/loginframe.c:75
 #, c-format
 msgid "Please enter login information for %s"
 msgstr "Entrez vos identifiants pour %s"
@@ -756,263 +653,108 @@ msgstr "chargement depuis %s"
 msgid "Downloading of remote configuration from %s failed."
 msgstr "Le chargement de la configuration depuis %s a échoué."
 
-#: ../gtk/audio_assistant.c:98
+#: ../gtk/audio_assistant.c:103
 msgid "No voice detected"
 msgstr "Voix non détectée"
 
-#: ../gtk/audio_assistant.c:99
+#: ../gtk/audio_assistant.c:104
 msgid "Too low"
 msgstr "Trop bas"
 
-#: ../gtk/audio_assistant.c:100
+#: ../gtk/audio_assistant.c:105
 msgid "Good"
 msgstr "Bien"
 
-#: ../gtk/audio_assistant.c:101
+#: ../gtk/audio_assistant.c:106
 msgid "Too loud"
 msgstr "Trop bruyant"
 
-#: ../gtk/audio_assistant.c:183
+#: ../gtk/audio_assistant.c:188
 msgid "Did you hear three beeps ?"
 msgstr "Avez-vous entendu trois bips ?"
 
-#: ../gtk/audio_assistant.c:292 ../gtk/audio_assistant.c:297
+#: ../gtk/audio_assistant.c:299 ../gtk/audio_assistant.c:304
 msgid "Sound preferences not found "
 msgstr "Préférences son non trouvé"
 
-#: ../gtk/audio_assistant.c:306
+#: ../gtk/audio_assistant.c:313
 msgid "Cannot launch system sound control "
 msgstr "Impossible de démarrer le contrôleur système du son"
 
-#: ../gtk/audio_assistant.c:318
+#: ../gtk/audio_assistant.c:325
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
 msgstr "Bienvenue !\nCet assistant va vous aider à régler les paramètres audio de votre ordinateur pour une utilisation optimale avec Linphone."
 
-#: ../gtk/audio_assistant.c:328
+#: ../gtk/audio_assistant.c:335
 msgid "Capture device"
 msgstr "Périphérique de capture"
 
-#: ../gtk/audio_assistant.c:329
+#: ../gtk/audio_assistant.c:336
 msgid "Recorded volume"
 msgstr "Volume enregistré"
 
-#: ../gtk/audio_assistant.c:333
+#: ../gtk/audio_assistant.c:340
 msgid "No voice"
 msgstr "Silencieux"
 
-#: ../gtk/audio_assistant.c:334 ../gtk/audio_assistant.c:373
+#: ../gtk/audio_assistant.c:341 ../gtk/audio_assistant.c:380
 msgid "System sound preferences"
 msgstr "Préférences son système"
 
-#: ../gtk/audio_assistant.c:369
+#: ../gtk/audio_assistant.c:376
 msgid "Playback device"
 msgstr "Périphérique d'écoute"
 
-#: ../gtk/audio_assistant.c:370
+#: ../gtk/audio_assistant.c:377
 msgid "Play three beeps"
 msgstr "Joue trois bips"
 
-#: ../gtk/audio_assistant.c:403
+#: ../gtk/audio_assistant.c:410
 msgid "Press the record button and say some words"
 msgstr "Appuyer sur le bouton enregistrer et dites quelques mots"
 
-#: ../gtk/audio_assistant.c:404
+#: ../gtk/audio_assistant.c:411
 msgid "Listen to your record voice"
 msgstr "Ecoutez votre voix enregistrée"
 
-#: ../gtk/audio_assistant.c:405
+#: ../gtk/audio_assistant.c:412 ../gtk/conf_frame.ui.h:2
+#: ../gtk/in_call_frame.ui.h:4
 msgid "Record"
 msgstr "Enregistrer"
 
-#: ../gtk/audio_assistant.c:406
+#: ../gtk/audio_assistant.c:413
 msgid "Play"
 msgstr "Jouer"
 
-#: ../gtk/audio_assistant.c:433
+#: ../gtk/audio_assistant.c:440
 msgid "Let's start Linphone now"
 msgstr "Démarrons Linphone maintenant"
 
-#: ../gtk/audio_assistant.c:503
+#: ../gtk/audio_assistant.c:510
 msgid "Audio Assistant"
 msgstr "Assistant audio"
 
-#: ../gtk/audio_assistant.c:513 ../gtk/main.ui.h:32
+#: ../gtk/audio_assistant.c:520 ../gtk/main.ui.h:13
 msgid "Audio assistant"
 msgstr "Assistant audio"
 
-#: ../gtk/audio_assistant.c:518
+#: ../gtk/audio_assistant.c:525
 msgid "Mic Gain calibration"
 msgstr "Calibration du gain du microphone"
 
-#: ../gtk/audio_assistant.c:524
+#: ../gtk/audio_assistant.c:531
 msgid "Speaker volume calibration"
 msgstr "Calibration du volume du haut parleur"
 
-#: ../gtk/audio_assistant.c:529
+#: ../gtk/audio_assistant.c:536
 msgid "Record and Play"
 msgstr "Enregistrer et joue"
 
-#: ../gtk/main.ui.h:1
-msgid "<b>Callee name</b>"
-msgstr "<b>Nom du correspondant</b>"
-
-#: ../gtk/main.ui.h:2
-msgid "Send"
-msgstr "Envoyer"
-
-#: ../gtk/main.ui.h:3
-msgid "End conference"
-msgstr "Fin de conférence"
-
-#: ../gtk/main.ui.h:7
-msgid "Record this call to an audio file"
-msgstr "Enregistrement de l'appel dans un fichier audio."
-
-#: ../gtk/main.ui.h:8
-msgid "Video"
-msgstr "Vidéo"
-
-#: ../gtk/main.ui.h:10
-msgid "Mute"
-msgstr "Couper le son"
-
-#: ../gtk/main.ui.h:11
-msgid "Transfer"
-msgstr "Transfert"
-
-#: ../gtk/main.ui.h:14
-msgid "In call"
-msgstr "Appel en cours"
-
-#: ../gtk/main.ui.h:15
-msgid "Duration"
-msgstr "Durée"
-
-#: ../gtk/main.ui.h:16
-msgid "Call quality rating"
-msgstr "Qualité de l'appel"
-
-#: ../gtk/main.ui.h:17
-msgid "All users"
-msgstr "Tous"
-
-#: ../gtk/main.ui.h:18
-msgid "Online users"
-msgstr "En ligne"
-
-#: ../gtk/main.ui.h:19
-msgid "ADSL"
-msgstr "ADSL"
-
-#: ../gtk/main.ui.h:20
-msgid "Fiber Channel"
-msgstr "Fibre optique"
-
-#: ../gtk/main.ui.h:21
-msgid "Default"
-msgstr "Par défaut"
-
-#: ../gtk/main.ui.h:22
-msgid "Delete"
-msgstr "Supprimer"
-
-#: ../gtk/main.ui.h:23
-msgid "_Options"
-msgstr "_Options"
-
-#: ../gtk/main.ui.h:24
-msgid "Set configuration URI"
-msgstr "URI de configuration"
-
-#: ../gtk/main.ui.h:25
-msgid "Always start video"
-msgstr "Toujours démarrer la vidéo"
-
-#: ../gtk/main.ui.h:26
-msgid "Enable self-view"
-msgstr "Se voir"
-
-#: ../gtk/main.ui.h:27
-msgid "_Help"
-msgstr "_Aide"
-
-#: ../gtk/main.ui.h:28
-msgid "Show debug window"
-msgstr "Fenêtre de débogage"
-
-#: ../gtk/main.ui.h:29
-msgid "_Homepage"
-msgstr "_Site web"
-
-#: ../gtk/main.ui.h:30
-msgid "Check _Updates"
-msgstr "_Mises à jour"
-
-#: ../gtk/main.ui.h:31
-msgid "Account assistant"
-msgstr "Assistant de compte"
-
-#: ../gtk/main.ui.h:33
-msgid "SIP address or phone number:"
-msgstr "Adresse SIP ou numéro"
-
-#: ../gtk/main.ui.h:34
-msgid "Initiate a new call"
-msgstr "Démarrer un nouvel appel"
-
-#: ../gtk/main.ui.h:35
-msgid "Contacts"
-msgstr "Contacts"
-
-#: ../gtk/main.ui.h:36
-msgid "Search"
-msgstr "Rechercher"
-
-#: ../gtk/main.ui.h:37
-msgid "<b>Add contacts from directory</b>"
-msgstr "<b>Ajouter un contact depuis l'annuaire</b>"
-
-#: ../gtk/main.ui.h:38
-msgid "Add contact"
-msgstr "Ajouter un contact."
-
-#: ../gtk/main.ui.h:39
-msgid "Recent calls"
-msgstr "Appels récents"
-
-#: ../gtk/main.ui.h:40
-msgid "My current identity:"
-msgstr "Mon identité SIP :"
-
-#: ../gtk/main.ui.h:41 ../gtk/tunnel_config.ui.h:7
-msgid "Username"
-msgstr "Nom d'utilisateur"
-
-#: ../gtk/main.ui.h:42 ../gtk/tunnel_config.ui.h:8
-msgid "Password"
-msgstr "Mot de passe"
-
-#: ../gtk/main.ui.h:43
-msgid "Internet connection:"
-msgstr "Connexion internet:"
-
-#: ../gtk/main.ui.h:44
-msgid "Automatically log me in"
-msgstr "Me connecter automatiquement"
-
-#: ../gtk/main.ui.h:45 ../gtk/password.ui.h:3
-msgid "UserID"
-msgstr "ID utilisateur"
-
-#: ../gtk/main.ui.h:46
-msgid "Login information"
-msgstr "Information de login"
-
-#: ../gtk/main.ui.h:47
-msgid "<b>Welcome!</b>"
-msgstr "<b>Bienvenue !</b>"
+#: ../gtk/audio_assistant.c:541 ../gtk/setup_wizard.ui.h:38
+msgid "Terminating"
+msgstr "En cours d’arrêt."
 
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
@@ -1042,456 +784,6 @@ msgid ""
 "he: Eli Zaretskii <eliz@gnu.org>\n"
 msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\n"
 
-#: ../gtk/contact.ui.h:2
-msgid "SIP Address"
-msgstr "Adresse SIP"
-
-#: ../gtk/contact.ui.h:3
-msgid "Show this contact presence status"
-msgstr "Voir l'état de présence de ce contact"
-
-#: ../gtk/contact.ui.h:4
-msgid "Allow this contact to see my presence status"
-msgstr "Autoriser ce contact à voir ma présence"
-
-#: ../gtk/contact.ui.h:5
-msgid "<b>Contact information</b>"
-msgstr "<b>Information sur le contact</b>"
-
-#: ../gtk/log.ui.h:1
-msgid "Linphone debug window"
-msgstr "Fenêtre de débogage de linphone"
-
-#: ../gtk/log.ui.h:2
-msgid "Scroll to end"
-msgstr "Défiler jusqu'à la fin"
-
-#: ../gtk/password.ui.h:1
-msgid "Linphone - Authentication required"
-msgstr "Linphone - Authentification demandée"
-
-#: ../gtk/password.ui.h:2
-msgid "Please enter the domain password"
-msgstr "Entrez votre mot de passe pour le domaine"
-
-#: ../gtk/call_logs.ui.h:1
-msgid "Call history"
-msgstr "Historique des appels"
-
-#: ../gtk/call_logs.ui.h:2
-msgid "Clear all"
-msgstr "Tout vider"
-
-#: ../gtk/call_logs.ui.h:3
-msgid "Call back"
-msgstr "Rappeler"
-
-#: ../gtk/sip_account.ui.h:1
-msgid "Linphone - Configure a SIP account"
-msgstr "Linphone - Configurer un compte SIP"
-
-#: ../gtk/sip_account.ui.h:2
-msgid "Your SIP identity:"
-msgstr "Votre identité SIP :"
-
-#: ../gtk/sip_account.ui.h:3
-msgid "Looks like sip:<username>@<domain>"
-msgstr "De la forme sip:<username>@<domain>"
-
-#: ../gtk/sip_account.ui.h:4
-msgid "sip:"
-msgstr "sip:"
-
-#: ../gtk/sip_account.ui.h:5
-msgid "SIP Proxy address:"
-msgstr "Adresse du proxy SIP:"
-
-#: ../gtk/sip_account.ui.h:6
-msgid "Looks like sip:<proxy hostname>"
-msgstr "De la forme sip:<proxy hostname>"
-
-#: ../gtk/sip_account.ui.h:7
-msgid "Registration duration (sec):"
-msgstr "Période d'enregistrement (secondes):"
-
-#: ../gtk/sip_account.ui.h:8
-msgid "Contact params (optional):"
-msgstr "Paramètres de contact (optionnel):"
-
-#: ../gtk/sip_account.ui.h:9
-msgid "AVPF regular RTCP interval (sec):"
-msgstr "Intervalle standard RTCP AVPF (sec) :"
-
-#: ../gtk/sip_account.ui.h:10
-msgid "Route (optional):"
-msgstr "Route (optionnel):"
-
-#: ../gtk/sip_account.ui.h:11
-msgid "Transport"
-msgstr "Transport"
-
-#: ../gtk/sip_account.ui.h:12
-msgid "Register"
-msgstr "S'enregistrer"
-
-#: ../gtk/sip_account.ui.h:13
-msgid "Publish presence information"
-msgstr "Publier la présence"
-
-#: ../gtk/sip_account.ui.h:14
-msgid "Enable AVPF"
-msgstr "Activer AVPF"
-
-#: ../gtk/sip_account.ui.h:15
-msgid "Configure a SIP account"
-msgstr "Configurer un compte SIP"
-
-#: ../gtk/parameters.ui.h:1
-msgid "anonymous"
-msgstr "anonyme"
-
-#: ../gtk/parameters.ui.h:2
-msgid "GSSAPI"
-msgstr "GSSAPI"
-
-#: ../gtk/parameters.ui.h:3
-msgid "SASL"
-msgstr "SASL"
-
-#: ../gtk/parameters.ui.h:4
-msgid "default soundcard"
-msgstr "Carte son par défaut"
-
-#: ../gtk/parameters.ui.h:5
-msgid "a sound card"
-msgstr "une carte son"
-
-#: ../gtk/parameters.ui.h:6
-msgid "default camera"
-msgstr "camera par défaut"
-
-#: ../gtk/parameters.ui.h:7
-msgid "CIF"
-msgstr "CIF"
-
-#: ../gtk/parameters.ui.h:8
-msgid "Audio codecs"
-msgstr "Codecs audio"
-
-#: ../gtk/parameters.ui.h:9
-msgid "Video codecs"
-msgstr "Codecs vidéo"
-
-#: ../gtk/parameters.ui.h:10
-msgid "C"
-msgstr "C"
-
-#: ../gtk/parameters.ui.h:11
-msgid "SIP (UDP)"
-msgstr "SIP (UDP)"
-
-#: ../gtk/parameters.ui.h:12
-msgid "SIP (TCP)"
-msgstr "SIP (TCP)"
-
-#: ../gtk/parameters.ui.h:13
-msgid "SIP (TLS)"
-msgstr "SIP (TLS)"
-
-#: ../gtk/parameters.ui.h:14
-msgid "Settings"
-msgstr "Réglages"
-
-#: ../gtk/parameters.ui.h:15
-msgid "Set Maximum Transmission Unit:"
-msgstr "Spécifier la Maximum Transmission Unit"
-
-#: ../gtk/parameters.ui.h:16
-msgid "Send DTMFs as SIP info"
-msgstr "Envoyer les digits en tant que SIP INFO"
-
-#: ../gtk/parameters.ui.h:17
-msgid "Allow IPv6"
-msgstr "Utiliser IPv6"
-
-#: ../gtk/parameters.ui.h:18
-msgid "<b>Transport</b>"
-msgstr "<b>Transport</b>"
-
-#: ../gtk/parameters.ui.h:19
-msgid "SIP/UDP port"
-msgstr "Port SIP / UDP"
-
-#: ../gtk/parameters.ui.h:21
-msgid "Random"
-msgstr "Aléatoire"
-
-#: ../gtk/parameters.ui.h:22
-msgid "SIP/TCP port"
-msgstr "Port SIP / TCP"
-
-#: ../gtk/parameters.ui.h:23
-msgid "Audio RTP/UDP:"
-msgstr "Audio RTP / UDP :"
-
-#: ../gtk/parameters.ui.h:24
-msgid "Fixed"
-msgstr "Fixe"
-
-#: ../gtk/parameters.ui.h:25
-msgid "Video RTP/UDP:"
-msgstr "Vidéo RTP / UDP :"
-
-#: ../gtk/parameters.ui.h:26
-msgid "Media encryption type"
-msgstr "Type d'encryption media"
-
-#: ../gtk/parameters.ui.h:27
-msgid "Media encryption is mandatory"
-msgstr "Le chiffrement media est obligatoire"
-
-#: ../gtk/parameters.ui.h:28
-msgid "Tunnel"
-msgstr "Tunnel"
-
-#: ../gtk/parameters.ui.h:29
-msgid "DSCP fields"
-msgstr "Champs DSCP"
-
-#: ../gtk/parameters.ui.h:30
-msgid "<b>Network protocol and ports</b>"
-msgstr "<b>Protocoles réseaux et ports</b>"
-
-#: ../gtk/parameters.ui.h:31
-msgid "Direct connection to the Internet"
-msgstr "Connexion directe à l'Internet"
-
-#: ../gtk/parameters.ui.h:32
-msgid "Behind NAT / Firewall (specify gateway IP )"
-msgstr "Derrière un pare-feu (spécifier la passerelle ci dessous)"
-
-#: ../gtk/parameters.ui.h:33
-msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr "Derrière un pare-feu (utiliser STUN)"
-
-#: ../gtk/parameters.ui.h:34
-msgid "Behind NAT / Firewall (use ICE)"
-msgstr "Derrière un pare-feu (utiliser ICE)"
-
-#: ../gtk/parameters.ui.h:35
-msgid "Behind NAT / Firewall (use uPnP)"
-msgstr "Derrière un pare-feu (utiliser uPnP)"
-
-#: ../gtk/parameters.ui.h:36
-msgid "Public IP address:"
-msgstr "Adresse IP publique:"
-
-#: ../gtk/parameters.ui.h:37
-msgid "Stun server:"
-msgstr "Serveur STUN:"
-
-#: ../gtk/parameters.ui.h:38
-msgid "<b>NAT and Firewall</b>"
-msgstr "<b>Paramètres liés au pare-feu</b>"
-
-#: ../gtk/parameters.ui.h:39
-msgid "Network settings"
-msgstr "Paramètres réseau"
-
-#: ../gtk/parameters.ui.h:40
-msgid "Ring sound:"
-msgstr "Sonnerie:"
-
-#: ../gtk/parameters.ui.h:41
-msgid "ALSA special device (optional):"
-msgstr "Appareil ALSA spécifique (optionnel) :"
-
-#: ../gtk/parameters.ui.h:42
-msgid "Capture device:"
-msgstr "Périphérique de capture:"
-
-#: ../gtk/parameters.ui.h:43
-msgid "Ring device:"
-msgstr "Périphérique de sonnerie:"
-
-#: ../gtk/parameters.ui.h:44
-msgid "Playback device:"
-msgstr "Périphérique d'écoute:"
-
-#: ../gtk/parameters.ui.h:45
-msgid "Enable echo cancellation"
-msgstr "Activer l'annulation d'écho"
-
-#: ../gtk/parameters.ui.h:46
-msgid "<b>Audio</b>"
-msgstr "<b>Son</b>"
-
-#: ../gtk/parameters.ui.h:47
-msgid "Video input device:"
-msgstr "Périphérique d'entrée vidéo"
-
-#: ../gtk/parameters.ui.h:48
-msgid "Prefered video resolution:"
-msgstr "Résolution de vidéo préférée:"
-
-#: ../gtk/parameters.ui.h:49
-msgid "Video output method:"
-msgstr "Type de rendu video:"
-
-#: ../gtk/parameters.ui.h:50
-msgid "Show camera preview"
-msgstr "Afficher la vidéo"
-
-#: ../gtk/parameters.ui.h:51
-msgid "<b>Video</b>"
-msgstr "<b>Video</b>"
-
-#: ../gtk/parameters.ui.h:52
-msgid "Multimedia settings"
-msgstr "Paramètres multimedia"
-
-#: ../gtk/parameters.ui.h:53
-msgid "This section defines your SIP address when not using a SIP account"
-msgstr "Cette rubrique permet de définir son adresse SIP lorsqu'on ne possède pas de compte SIP"
-
-#: ../gtk/parameters.ui.h:54
-msgid "Your display name (eg: John Doe):"
-msgstr "Votre nom d'affichage (ex: John Doe)"
-
-#: ../gtk/parameters.ui.h:55
-msgid "Your username:"
-msgstr "Votre nom d'utilisateur:"
-
-#: ../gtk/parameters.ui.h:56
-msgid "Your resulting SIP address:"
-msgstr "Votre adresse SIP:"
-
-#: ../gtk/parameters.ui.h:57
-msgid "<b>Default identity</b>"
-msgstr "<b>Identité par défaut</b>"
-
-#: ../gtk/parameters.ui.h:58
-msgid "Wizard"
-msgstr "Assistant"
-
-#: ../gtk/parameters.ui.h:59
-msgid "Add"
-msgstr "Ajouter"
-
-#: ../gtk/parameters.ui.h:60
-msgid "Edit"
-msgstr "Editer"
-
-#: ../gtk/parameters.ui.h:61
-msgid "Remove"
-msgstr "Enlever"
-
-#: ../gtk/parameters.ui.h:62
-msgid "<b>Proxy accounts</b>"
-msgstr "<b>Comptes SIP via des proxy</b>"
-
-#: ../gtk/parameters.ui.h:63
-msgid "Erase all passwords"
-msgstr "Effacer tous les mots de passe"
-
-#: ../gtk/parameters.ui.h:64
-msgid "<b>Privacy</b>"
-msgstr "<b>Sécurité</b>"
-
-#: ../gtk/parameters.ui.h:65
-msgid "Automatically answer when a call is received"
-msgstr "Répondre automatiquement aux appels entrants"
-
-#: ../gtk/parameters.ui.h:66
-msgid "Delay before answering (ms)"
-msgstr "Temps d'attente avant réponse (ms)"
-
-#: ../gtk/parameters.ui.h:67
-msgid "<b>Auto-answer</b>"
-msgstr "<b>Décrochage automatique</b>"
-
-#: ../gtk/parameters.ui.h:68
-msgid "Manage SIP Accounts"
-msgstr "Gérer mes comptes SIP"
-
-#: ../gtk/parameters.ui.h:69 ../gtk/tunnel_config.ui.h:4
-msgid "Enable"
-msgstr "Activer"
-
-#: ../gtk/parameters.ui.h:70 ../gtk/tunnel_config.ui.h:5
-msgid "Disable"
-msgstr "Désactiver"
-
-#: ../gtk/parameters.ui.h:71
-msgid "<b>Codecs</b>"
-msgstr "<b>Codecs</b>"
-
-#: ../gtk/parameters.ui.h:72
-msgid "0 stands for \"unlimited\""
-msgstr "Indiquez 0 pour ne pas mettre de limite"
-
-#: ../gtk/parameters.ui.h:73
-msgid "Upload speed limit in Kbit/sec:"
-msgstr "Limite de débit montant en kbits/sec:"
-
-#: ../gtk/parameters.ui.h:74
-msgid "Download speed limit in Kbit/sec:"
-msgstr "Limite de débit descendant en kbits/sec:"
-
-#: ../gtk/parameters.ui.h:75
-msgid "Enable adaptive rate control"
-msgstr "Activer le control de débit adaptatif."
-
-#: ../gtk/parameters.ui.h:76
-msgid ""
-"<i>Adaptive rate control is a technique to dynamically guess the available "
-"bandwidth during a call.</i>"
-msgstr "<i>Le control de débit adaptatif est une technique pour adapter la qualité de l'audio et de la video en fonction de la bande passante disponible, durant l'appel.</i>"
-
-#: ../gtk/parameters.ui.h:77
-msgid "<b>Bandwidth control</b>"
-msgstr "<b>Gestion de la bande passante</b>"
-
-#: ../gtk/parameters.ui.h:78
-msgid "Codecs"
-msgstr "Codecs"
-
-#: ../gtk/parameters.ui.h:79
-msgid "<b>Language</b>"
-msgstr "<b>Langue</b>"
-
-#: ../gtk/parameters.ui.h:80
-msgid "Show advanced settings"
-msgstr "Montrer les réglages avancés"
-
-#: ../gtk/parameters.ui.h:81
-msgid "<b>Level</b>"
-msgstr "<b>Niveau</b>"
-
-#: ../gtk/parameters.ui.h:82
-msgid "User interface"
-msgstr "Interface utilisateur"
-
-#: ../gtk/parameters.ui.h:83 ../gtk/ldap.ui.h:2
-msgid "Server address:"
-msgstr "Adresse du serveur:"
-
-#: ../gtk/parameters.ui.h:84 ../gtk/ldap.ui.h:3
-msgid "Authentication method:"
-msgstr "Méthode d'authentification:"
-
-#: ../gtk/parameters.ui.h:86
-msgid "<b>LDAP Account setup</b>"
-msgstr "<b>Configuration LDAP</b>"
-
-#: ../gtk/parameters.ui.h:87
-msgid "LDAP"
-msgstr "LDAP"
-
-#: ../gtk/parameters.ui.h:88
-msgid "Done"
-msgstr "Fermer"
-
 #: ../gtk/buddylookup.ui.h:1
 msgid "Search contacts in directory"
 msgstr "Rechercher dans l'annuaire"
@@ -1504,29 +796,21 @@ msgstr "Ajouter à ma liste"
 msgid "<b>Search somebody</b>"
 msgstr "<b>Rechercher une personne</b>"
 
-#: ../gtk/waiting.ui.h:2
-msgid "Please wait"
-msgstr "En attente"
+#: ../gtk/callee_frame.ui.h:1
+msgid "<b>Callee name</b>"
+msgstr "<b>Nom du correspondant</b>"
 
-#: ../gtk/dscp_settings.ui.h:1
-msgid "DSCP settings"
-msgstr "Réglages DSCP"
+#: ../gtk/call_logs.ui.h:1
+msgid "Call history"
+msgstr "Historique des appels"
 
-#: ../gtk/dscp_settings.ui.h:2
-msgid "SIP"
-msgstr "SIP"
+#: ../gtk/call_logs.ui.h:2
+msgid "Clear all"
+msgstr "Tout vider"
 
-#: ../gtk/dscp_settings.ui.h:3
-msgid "Audio RTP stream"
-msgstr "Flux RTP audio"
-
-#: ../gtk/dscp_settings.ui.h:4
-msgid "Video RTP stream"
-msgstr "Flux RTP vidéo"
-
-#: ../gtk/dscp_settings.ui.h:5
-msgid "<b>Set DSCP values (in hexadecimal)</b>"
-msgstr "<b>Indiquez les valeurs DSCP (en hexacdécimal)</b>"
+#: ../gtk/call_logs.ui.h:3
+msgid "Call back"
+msgstr "Rappeler"
 
 #: ../gtk/call_statistics.ui.h:1
 msgid "Call statistics"
@@ -1576,29 +860,111 @@ msgstr "Profil RTP"
 msgid "<b>Call statistics and information</b>"
 msgstr "<b>Statistiques de l'appel et informations</b>"
 
-#: ../gtk/tunnel_config.ui.h:1
-msgid "Configure VoIP tunnel"
-msgstr "Configuer le mode tunnel"
+#: ../gtk/chatroom_frame.ui.h:1
+msgid "Send"
+msgstr "Envoyer"
 
-#: ../gtk/tunnel_config.ui.h:2
-msgid "Host"
-msgstr "Hôte"
+#: ../gtk/conf_frame.ui.h:1
+msgid "End conference"
+msgstr "Fin de conférence"
 
-#: ../gtk/tunnel_config.ui.h:3
-msgid "Port"
-msgstr "Port"
+#: ../gtk/config-uri.ui.h:1
+msgid "Specifying a remote configuration URI"
+msgstr "Spécifier une URI de configuration"
 
-#: ../gtk/tunnel_config.ui.h:6
-msgid "<b>Configure tunnel</b>"
-msgstr "<b>Configuration du tunnel</b>"
+#: ../gtk/config-uri.ui.h:2
+msgid ""
+"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
+"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
+msgstr "Cette boite de dialogue vous permet de spécifier une addresse http ou https où la configuration doit être téléchargée au démarrage.\nVeuillez entrer l'URI http(s) ci dessous. Après avoir validé, Linphone va redémarrer automatiquement pour charger et prendre en compte la nouvelle configuration."
 
-#: ../gtk/tunnel_config.ui.h:9
-msgid "<b>Configure http proxy (optional)</b>"
-msgstr "<b>Configuration d'un proxy http (optionel)</b>"
+#: ../gtk/contact.ui.h:2
+msgid "SIP Address"
+msgstr "Adresse SIP"
+
+#: ../gtk/contact.ui.h:3
+msgid "Show this contact presence status"
+msgstr "Voir l'état de présence de ce contact"
+
+#: ../gtk/contact.ui.h:4
+msgid "Allow this contact to see my presence status"
+msgstr "Autoriser ce contact à voir ma présence"
+
+#: ../gtk/contact.ui.h:5
+msgid "<b>Contact information</b>"
+msgstr "<b>Information sur le contact</b>"
+
+#: ../gtk/dscp_settings.ui.h:1
+msgid "DSCP settings"
+msgstr "Réglages DSCP"
+
+#: ../gtk/dscp_settings.ui.h:2
+msgid "SIP"
+msgstr "SIP"
+
+#: ../gtk/dscp_settings.ui.h:3
+msgid "Audio RTP stream"
+msgstr "Flux RTP audio"
+
+#: ../gtk/dscp_settings.ui.h:4
+msgid "Video RTP stream"
+msgstr "Flux RTP vidéo"
+
+#: ../gtk/dscp_settings.ui.h:5
+msgid "<b>Set DSCP values (in hexadecimal)</b>"
+msgstr "<b>Indiquez les valeurs DSCP (en hexacdécimal)</b>"
+
+#: ../gtk/in_call_frame.ui.h:1
+msgid "Click here to set the speakers volume"
+msgstr "Cliquer ici pour modifier le volume des haut-parleurs"
+
+#: ../gtk/in_call_frame.ui.h:5
+msgid "Record this call to an audio file"
+msgstr "Enregistrement de l'appel dans un fichier audio."
+
+#: ../gtk/in_call_frame.ui.h:6
+msgid "Video"
+msgstr "Vidéo"
+
+#: ../gtk/in_call_frame.ui.h:8
+msgid "Mute"
+msgstr "Couper le micro"
+
+#: ../gtk/in_call_frame.ui.h:9
+msgid "Transfer"
+msgstr "Transférer"
+
+#: ../gtk/in_call_frame.ui.h:12
+msgid "In call"
+msgstr "Appel en cours"
+
+#: ../gtk/in_call_frame.ui.h:13
+msgid "Duration"
+msgstr "Durée"
+
+#: ../gtk/in_call_frame.ui.h:14
+msgid "Call quality rating"
+msgstr "Qualité de l'appel"
 
 #: ../gtk/ldap.ui.h:1
 msgid "LDAP Settings"
 msgstr "Paramètres LDAP"
+
+#: ../gtk/ldap.ui.h:2 ../gtk/parameters.ui.h:89
+msgid "Server address:"
+msgstr "Adresse du serveur:"
+
+#: ../gtk/ldap.ui.h:3 ../gtk/parameters.ui.h:90
+msgid "Authentication method:"
+msgstr "Méthode d'authentification:"
+
+#: ../gtk/ldap.ui.h:4 ../gtk/parameters.ui.h:91 ../gtk/setup_wizard.ui.h:17
+msgid "Username:"
+msgstr "Nom d'utilisateur:"
+
+#: ../gtk/ldap.ui.h:5 ../gtk/password.ui.h:4 ../gtk/setup_wizard.ui.h:18
+msgid "Password:"
+msgstr "Mot de passe:"
 
 #: ../gtk/ldap.ui.h:6
 msgid "Use TLS Connection"
@@ -1685,15 +1051,503 @@ msgstr "DIGEST-MD5"
 msgid "NTLM"
 msgstr "NTLM"
 
-#: ../gtk/config-uri.ui.h:1
-msgid "Specifying a remote configuration URI"
-msgstr "Spécifier une URI de configuration"
+#: ../gtk/login_frame.ui.h:1 ../gtk/tunnel_config.ui.h:7
+msgid "Username"
+msgstr "Nom d'utilisateur"
 
-#: ../gtk/config-uri.ui.h:2
+#: ../gtk/login_frame.ui.h:2 ../gtk/tunnel_config.ui.h:8
+msgid "Password"
+msgstr "Mot de passe"
+
+#: ../gtk/login_frame.ui.h:3
+msgid "Internet connection:"
+msgstr "Connexion internet:"
+
+#: ../gtk/login_frame.ui.h:4
+msgid "Automatically log me in"
+msgstr "Me connecter automatiquement"
+
+#: ../gtk/login_frame.ui.h:5 ../gtk/password.ui.h:3
+msgid "UserID"
+msgstr "ID utilisateur"
+
+#: ../gtk/login_frame.ui.h:6
+msgid "Login information"
+msgstr "Information de login"
+
+#: ../gtk/login_frame.ui.h:7
+msgid "<b>Welcome!</b>"
+msgstr "<b>Bienvenue !</b>"
+
+#: ../gtk/login_frame.ui.h:8
+msgid "ADSL"
+msgstr "ADSL"
+
+#: ../gtk/login_frame.ui.h:9
+msgid "Fiber Channel"
+msgstr "Fibre optique"
+
+#: ../gtk/log.ui.h:1
+msgid "Linphone debug window"
+msgstr "Fenêtre de débogage de linphone"
+
+#: ../gtk/log.ui.h:2
+msgid "Scroll to end"
+msgstr "Défiler jusqu'à la fin"
+
+#: ../gtk/main.ui.h:1
+msgid "Default"
+msgstr "Par défaut"
+
+#: ../gtk/main.ui.h:2
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ../gtk/main.ui.h:3
+msgid "_Options"
+msgstr "_Options"
+
+#: ../gtk/main.ui.h:4
+msgid "Set configuration URI"
+msgstr "URI de configuration"
+
+#: ../gtk/main.ui.h:5
+msgid "Always start video"
+msgstr "Toujours activer la vidéo"
+
+#: ../gtk/main.ui.h:6
+msgid "Enable self-view"
+msgstr "Se voir"
+
+#: ../gtk/main.ui.h:7
+msgid "Show keypad"
+msgstr "Afficher le pavé numérique"
+
+#: ../gtk/main.ui.h:8
+msgid "_Help"
+msgstr "_Aide"
+
+#: ../gtk/main.ui.h:9
+msgid "Show debug window"
+msgstr "Fenêtre de débogage"
+
+#: ../gtk/main.ui.h:10
+msgid "_Homepage"
+msgstr "_Site web"
+
+#: ../gtk/main.ui.h:11
+msgid "Check _Updates"
+msgstr "_Mises à jour"
+
+#: ../gtk/main.ui.h:12
+msgid "Account assistant"
+msgstr "Assistant de compte"
+
+#: ../gtk/main.ui.h:14
+msgid "SIP address or phone number:"
+msgstr "Adresse SIP ou numéro"
+
+#: ../gtk/main.ui.h:15
+msgid "Initiate a new call"
+msgstr "Démarrer un nouvel appel"
+
+#: ../gtk/main.ui.h:16
+msgid "Contacts"
+msgstr "Contacts"
+
+#: ../gtk/main.ui.h:17
+msgid "Search"
+msgstr "Rechercher"
+
+#: ../gtk/main.ui.h:18
+msgid "<b>Add contacts from directory</b>"
+msgstr "<b>Ajouter un contact depuis l'annuaire</b>"
+
+#: ../gtk/main.ui.h:19
+msgid "Add contact"
+msgstr "Ajouter un contact."
+
+#: ../gtk/main.ui.h:20
+msgid "Clear call history"
+msgstr "Effacer l'historique d'appel"
+
+#: ../gtk/main.ui.h:22
+msgid "My current identity:"
+msgstr "Mon identité SIP :"
+
+#: ../gtk/main.ui.h:23
+msgid "Autoanswer is enabled"
+msgstr "Décrochage automatique activé"
+
+#: ../gtk/parameters.ui.h:1
+msgid "anonymous"
+msgstr "anonyme"
+
+#: ../gtk/parameters.ui.h:2
+msgid "GSSAPI"
+msgstr "GSSAPI"
+
+#: ../gtk/parameters.ui.h:3
+msgid "SASL"
+msgstr "SASL"
+
+#: ../gtk/parameters.ui.h:4
+msgid "default soundcard"
+msgstr "Carte son par défaut"
+
+#: ../gtk/parameters.ui.h:5
+msgid "a sound card"
+msgstr "une carte son"
+
+#: ../gtk/parameters.ui.h:6
+msgid "default camera"
+msgstr "camera par défaut"
+
+#: ../gtk/parameters.ui.h:7
+msgid "CIF"
+msgstr "CIF"
+
+#: ../gtk/parameters.ui.h:8
+msgid "Audio codecs"
+msgstr "Codecs audio"
+
+#: ../gtk/parameters.ui.h:9
+msgid "Video codecs"
+msgstr "Codecs vidéo"
+
+#: ../gtk/parameters.ui.h:10
+msgid "C"
+msgstr "C"
+
+#: ../gtk/parameters.ui.h:11
+msgid "SIP (UDP)"
+msgstr "SIP (UDP)"
+
+#: ../gtk/parameters.ui.h:12
+msgid "SIP (TCP)"
+msgstr "SIP (TCP)"
+
+#: ../gtk/parameters.ui.h:13
+msgid "SIP (TLS)"
+msgstr "SIP (TLS)"
+
+#: ../gtk/parameters.ui.h:14
+msgid "default"
+msgstr "Par défaut"
+
+#: ../gtk/parameters.ui.h:15
+msgid "high-fps"
+msgstr "Fréquence d'images élevée"
+
+#: ../gtk/parameters.ui.h:16
+msgid "custom"
+msgstr "Personnalisé"
+
+#: ../gtk/parameters.ui.h:17
+msgid "Settings"
+msgstr "Réglages"
+
+#: ../gtk/parameters.ui.h:18
+msgid "This section defines your SIP address when not using a SIP account"
+msgstr "Cette rubrique permet de définir son adresse SIP lorsqu'on ne possède pas de compte SIP"
+
+#: ../gtk/parameters.ui.h:19
+msgid "Your display name (eg: John Doe):"
+msgstr "Votre nom d'affichage (ex: John Doe)"
+
+#: ../gtk/parameters.ui.h:20
+msgid "Your username:"
+msgstr "Votre nom d'utilisateur:"
+
+#: ../gtk/parameters.ui.h:21
+msgid "Your resulting SIP address:"
+msgstr "Votre adresse SIP:"
+
+#: ../gtk/parameters.ui.h:22
+msgid "<b>Default identity</b>"
+msgstr "<b>Identité par défaut</b>"
+
+#: ../gtk/parameters.ui.h:23
+msgid "Wizard"
+msgstr "Assistant"
+
+#: ../gtk/parameters.ui.h:24
+msgid "Add"
+msgstr "Ajouter"
+
+#: ../gtk/parameters.ui.h:25
+msgid "Edit"
+msgstr "Editer"
+
+#: ../gtk/parameters.ui.h:26
+msgid "Remove"
+msgstr "Enlever"
+
+#: ../gtk/parameters.ui.h:27
+msgid "<b>Proxy accounts</b>"
+msgstr "<b>Comptes SIP via des proxy</b>"
+
+#: ../gtk/parameters.ui.h:28
+msgid "Erase all passwords"
+msgstr "Effacer tous les mots de passe"
+
+#: ../gtk/parameters.ui.h:29
+msgid "<b>Privacy</b>"
+msgstr "<b>Sécurité</b>"
+
+#: ../gtk/parameters.ui.h:30
+msgid "Automatically answer when a call is received"
+msgstr "Répondre automatiquement aux appels entrants"
+
+#: ../gtk/parameters.ui.h:31
+msgid "Delay before answering (ms)"
+msgstr "Temps d'attente avant réponse (ms)"
+
+#: ../gtk/parameters.ui.h:32
+msgid "<b>Auto-answer</b>"
+msgstr "<b>Décrochage automatique</b>"
+
+#: ../gtk/parameters.ui.h:33
+msgid "Manage SIP Accounts"
+msgstr "Gérer mes comptes SIP"
+
+#: ../gtk/parameters.ui.h:34
+msgid "Ring sound:"
+msgstr "Sonnerie:"
+
+#: ../gtk/parameters.ui.h:35
+msgid "ALSA special device (optional):"
+msgstr "Appareil ALSA spécifique (optionnel) :"
+
+#: ../gtk/parameters.ui.h:36
+msgid "Capture device:"
+msgstr "Périphérique de capture:"
+
+#: ../gtk/parameters.ui.h:37
+msgid "Ring device:"
+msgstr "Périphérique de sonnerie:"
+
+#: ../gtk/parameters.ui.h:38
+msgid "Playback device:"
+msgstr "Périphérique d'écoute:"
+
+#: ../gtk/parameters.ui.h:39
+msgid "Enable echo cancellation"
+msgstr "Activer l'annulation d'écho"
+
+#: ../gtk/parameters.ui.h:40
+msgid "<b>Audio</b>"
+msgstr "<b>Son</b>"
+
+#: ../gtk/parameters.ui.h:41
+msgid "Video input device:"
+msgstr "Périphérique d'entrée vidéo"
+
+#: ../gtk/parameters.ui.h:42
+msgid "Preferred video resolution:"
+msgstr "Résolution vidéo préférée :"
+
+#: ../gtk/parameters.ui.h:43
+msgid "Video output method:"
+msgstr "Type de rendu video:"
+
+#: ../gtk/parameters.ui.h:44
+msgid "Show camera preview"
+msgstr "Afficher la vidéo"
+
+#: ../gtk/parameters.ui.h:45
+msgid "Video preset:"
+msgstr "Profile vidéo:"
+
+#: ../gtk/parameters.ui.h:46
+msgid "Preferred video framerate:"
+msgstr "Fréquence d'images préférée"
+
+#: ../gtk/parameters.ui.h:47
+msgid "0 stands for \"unlimited\""
+msgstr "Indiquez 0 pour ne pas mettre de limite"
+
+#: ../gtk/parameters.ui.h:48
+msgid "<b>Video</b>"
+msgstr "<b>Video</b>"
+
+#: ../gtk/parameters.ui.h:49
+msgid "Upload speed limit in Kbit/sec:"
+msgstr "Limite de débit montant en kbits/sec:"
+
+#: ../gtk/parameters.ui.h:50
+msgid "Download speed limit in Kbit/sec:"
+msgstr "Limite de débit descendant en kbits/sec:"
+
+#: ../gtk/parameters.ui.h:51
+msgid "Enable adaptive rate control"
+msgstr "Activer le control de débit adaptatif."
+
+#: ../gtk/parameters.ui.h:52
 msgid ""
-"This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
-"Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
-msgstr "Cette boite de dialogue vous permet de spécifier une addresse http ou https où la configuration doit être téléchargée au démarrage.\nVeuillez entrer l'URI http(s) ci dessous. Après avoir validé, Linphone va redémarrer automatiquement pour charger et prendre en compte la nouvelle configuration."
+"<i>Adaptive rate control is a technique to dynamically guess the available "
+"bandwidth during a call.</i>"
+msgstr "<i>Le control de débit adaptatif est une technique pour adapter la qualité de l'audio et de la video en fonction de la bande passante disponible, durant l'appel.</i>"
+
+#: ../gtk/parameters.ui.h:53
+msgid "<b>Bandwidth control</b>"
+msgstr "<b>Gestion de la bande passante</b>"
+
+#: ../gtk/parameters.ui.h:54
+msgid "Multimedia settings"
+msgstr "Paramètres multimedia"
+
+#: ../gtk/parameters.ui.h:55
+msgid "Set Maximum Transmission Unit:"
+msgstr "Spécifier la Maximum Transmission Unit"
+
+#: ../gtk/parameters.ui.h:56
+msgid "Send DTMFs as SIP info"
+msgstr "Envoyer les digits en tant que SIP INFO"
+
+#: ../gtk/parameters.ui.h:57
+msgid "Allow IPv6"
+msgstr "Utiliser IPv6"
+
+#: ../gtk/parameters.ui.h:58
+msgid "<b>Transport</b>"
+msgstr "<b>Transport</b>"
+
+#: ../gtk/parameters.ui.h:59
+msgid "SIP/UDP port"
+msgstr "Port SIP / UDP"
+
+#: ../gtk/parameters.ui.h:61
+msgid "Random"
+msgstr "Aléatoire"
+
+#: ../gtk/parameters.ui.h:62
+msgid "SIP/TCP port"
+msgstr "Port SIP / TCP"
+
+#: ../gtk/parameters.ui.h:63
+msgid "Audio RTP/UDP:"
+msgstr "Audio RTP / UDP :"
+
+#: ../gtk/parameters.ui.h:64
+msgid "Fixed"
+msgstr "Fixe"
+
+#: ../gtk/parameters.ui.h:65
+msgid "Video RTP/UDP:"
+msgstr "Vidéo RTP / UDP :"
+
+#: ../gtk/parameters.ui.h:66
+msgid "Media encryption type"
+msgstr "Type d'encryption media"
+
+#: ../gtk/parameters.ui.h:67
+msgid "Media encryption is mandatory"
+msgstr "Le chiffrement media est obligatoire"
+
+#: ../gtk/parameters.ui.h:68
+msgid "Tunnel"
+msgstr "Tunnel"
+
+#: ../gtk/parameters.ui.h:69
+msgid "DSCP fields"
+msgstr "Champs DSCP"
+
+#: ../gtk/parameters.ui.h:70
+msgid "<b>Network protocol and ports</b>"
+msgstr "<b>Protocoles réseaux et ports</b>"
+
+#: ../gtk/parameters.ui.h:71
+msgid "Direct connection to the Internet"
+msgstr "Connexion directe à l'Internet"
+
+#: ../gtk/parameters.ui.h:72
+msgid "Behind NAT / Firewall (specify gateway IP )"
+msgstr "Derrière un pare-feu (spécifier la passerelle ci dessous)"
+
+#: ../gtk/parameters.ui.h:73
+msgid "Behind NAT / Firewall (use STUN to resolve)"
+msgstr "Derrière un pare-feu (utiliser STUN)"
+
+#: ../gtk/parameters.ui.h:74
+msgid "Behind NAT / Firewall (use ICE)"
+msgstr "Derrière un pare-feu (utiliser ICE)"
+
+#: ../gtk/parameters.ui.h:75
+msgid "Behind NAT / Firewall (use uPnP)"
+msgstr "Derrière un pare-feu (utiliser uPnP)"
+
+#: ../gtk/parameters.ui.h:76
+msgid "Public IP address:"
+msgstr "Adresse IP publique:"
+
+#: ../gtk/parameters.ui.h:77
+msgid "Stun server:"
+msgstr "Serveur STUN:"
+
+#: ../gtk/parameters.ui.h:78
+msgid "<b>NAT and Firewall</b>"
+msgstr "<b>Paramètres liés au pare-feu</b>"
+
+#: ../gtk/parameters.ui.h:79
+msgid "Network settings"
+msgstr "Paramètres réseau"
+
+#: ../gtk/parameters.ui.h:80 ../gtk/tunnel_config.ui.h:4
+msgid "Enable"
+msgstr "Activer"
+
+#: ../gtk/parameters.ui.h:81 ../gtk/tunnel_config.ui.h:5
+msgid "Disable"
+msgstr "Désactiver"
+
+#: ../gtk/parameters.ui.h:82
+msgid "<b>Audio codecs</b>"
+msgstr "<b>Codecs audio</b>"
+
+#: ../gtk/parameters.ui.h:83
+msgid "<b>Video codecs</b>"
+msgstr "<b>Codecs vidéo</b>"
+
+#: ../gtk/parameters.ui.h:84
+msgid "Codecs"
+msgstr "Codecs"
+
+#: ../gtk/parameters.ui.h:85
+msgid "<b>Language</b>"
+msgstr "<b>Langue</b>"
+
+#: ../gtk/parameters.ui.h:86
+msgid "Show advanced settings"
+msgstr "Montrer les réglages avancés"
+
+#: ../gtk/parameters.ui.h:87
+msgid "<b>Level</b>"
+msgstr "<b>Niveau</b>"
+
+#: ../gtk/parameters.ui.h:88
+msgid "User interface"
+msgstr "Interface utilisateur"
+
+#: ../gtk/parameters.ui.h:92
+msgid "<b>LDAP Account setup</b>"
+msgstr "<b>Configuration LDAP</b>"
+
+#: ../gtk/parameters.ui.h:93
+msgid "LDAP"
+msgstr "LDAP"
+
+#: ../gtk/parameters.ui.h:94
+msgid "Done"
+msgstr "Fermer"
+
+#: ../gtk/password.ui.h:1
+msgid "Linphone - Authentication required"
+msgstr "Linphone - Authentification demandée"
+
+#: ../gtk/password.ui.h:2
+msgid "Please enter the domain password"
+msgstr "Entrez votre mot de passe pour le domaine"
 
 #: ../gtk/provisioning-fetch.ui.h:1
 msgid "Configuring..."
@@ -1703,68 +1557,278 @@ msgstr "Configuration en cours"
 msgid "Please wait while fetching configuration from server..."
 msgstr "Veuillez patenter un instant pendant le chargement de la configuration distante..."
 
-#: ../coreapi/linphonecore.c:1539
+#: ../gtk/setup_wizard.ui.h:1
+msgid "SIP account configuration assistant"
+msgstr "Assistant de configuration de compte."
+
+#: ../gtk/setup_wizard.ui.h:2
+msgid ""
+"Welcome!\n"
+"This assistant will help you to use a SIP account for your calls."
+msgstr "Bienvenue !\nCet assistant va vous aider à utiliser un compte SIP pour vos appels."
+
+#: ../gtk/setup_wizard.ui.h:4
+msgid "Welcome to the account setup assistant"
+msgstr "Bienvenue dans l'assistant de configuration de compte."
+
+#: ../gtk/setup_wizard.ui.h:5
+msgid "Create an account on linphone.org"
+msgstr "Créer un compte sur linphone.org"
+
+#: ../gtk/setup_wizard.ui.h:6
+msgid "I have already a linphone.org account and I just want to use it"
+msgstr "J'ai déjà un compte linphone.org et je souhaite l'utiliser"
+
+#: ../gtk/setup_wizard.ui.h:7
+msgid "I have already a sip account and I just want to use it"
+msgstr "J'ai déjà un compte Sip et je souhaite l'utiliser"
+
+#: ../gtk/setup_wizard.ui.h:8
+msgid "I want to specify a remote configuration URI"
+msgstr "Je veux spécifier une URI de configuration"
+
+#: ../gtk/setup_wizard.ui.h:9
+msgid "Account setup assistant"
+msgstr "Assistant de configuration de compte."
+
+#: ../gtk/setup_wizard.ui.h:10
+msgid "Enter your account information"
+msgstr "Entrez vos paramètres de compte"
+
+#: ../gtk/setup_wizard.ui.h:11
+msgid "Username*"
+msgstr "Nom d'utilisateur*"
+
+#: ../gtk/setup_wizard.ui.h:12
+msgid "Password*"
+msgstr "Mot de passe*"
+
+#: ../gtk/setup_wizard.ui.h:13
+msgid "Domain*"
+msgstr "Domaine*"
+
+#: ../gtk/setup_wizard.ui.h:14
+msgid "Proxy"
+msgstr "Proxy"
+
+#: ../gtk/setup_wizard.ui.h:15
+msgid "Configure your account (step 1/1)"
+msgstr "Configurez votre compte (étape 1/1)"
+
+#: ../gtk/setup_wizard.ui.h:16
+msgid "Enter your linphone.org username"
+msgstr "Entrez votre identifiant linphone.org"
+
+#: ../gtk/setup_wizard.ui.h:19
+msgid "Enter your sip username (step 1/1)"
+msgstr "Entrez votre identifiant sip (étape 1/1)"
+
+#: ../gtk/setup_wizard.ui.h:20
+msgid "(*) Required fields"
+msgstr "(*) Champs requis"
+
+#: ../gtk/setup_wizard.ui.h:21
+msgid "Email: (*)"
+msgstr "Email : (*)"
+
+#: ../gtk/setup_wizard.ui.h:22
+msgid "Username: (*)"
+msgstr "Nom d'utilisateur: (*)"
+
+#: ../gtk/setup_wizard.ui.h:23
+msgid "Password: (*)"
+msgstr "Mot de passe: (*)"
+
+#: ../gtk/setup_wizard.ui.h:24
+msgid "Confirm your password: (*)"
+msgstr "Confirmez votre mot de passe: (*)"
+
+#: ../gtk/setup_wizard.ui.h:25
+msgid "Keep me informed with linphone updates"
+msgstr "Me tenir informé des mises à jour de Linphone "
+
+#: ../gtk/setup_wizard.ui.h:26
+msgid "Enter account information (step 1/2)"
+msgstr "Entrez les informations concernant votre compte (étape 1/2)"
+
+#: ../gtk/setup_wizard.ui.h:27
+msgid "Your account is being created, please wait."
+msgstr "Votre compte est en cours de création. Veuillez patienter."
+
+#: ../gtk/setup_wizard.ui.h:28
+msgid "Account creation in progress"
+msgstr "Création du compte en cours"
+
+#: ../gtk/setup_wizard.ui.h:29
+msgid ""
+"Please validate your account by clicking on the link we just sent you by email.\n"
+"Then come back here and press Next button."
+msgstr "Merci de valider votre compte en cliquant sur le lien que nous avons envoyé par email.\nPuis appuyez sur suivant."
+
+#: ../gtk/setup_wizard.ui.h:31
+msgid "Validation (step 2/2)"
+msgstr "Validation (étape 2/2)"
+
+#: ../gtk/setup_wizard.ui.h:32
+msgid "Checking if your account is been validated, please wait."
+msgstr "Vérification que le compte a été validé. Veuillez patienter."
+
+#: ../gtk/setup_wizard.ui.h:33
+msgid "Account validation check in progress"
+msgstr "Vérification de la validité du compte en cours"
+
+#: ../gtk/setup_wizard.ui.h:34
+msgid ""
+"Error, account not validated, username already used or server unreachable.\n"
+"Please go back and try again."
+msgstr "Erreur, le compte n'est pas validé, l'identifiant est déjà utilisé ou le serveur n'est pas accessible.\nMerci d'essayer à nouveau."
+
+#: ../gtk/setup_wizard.ui.h:36
+msgid "Error"
+msgstr "Erreur"
+
+#: ../gtk/setup_wizard.ui.h:37
+msgid "Thank you. Your account is now configured and ready for use."
+msgstr "Merci. Votre compte est maintenant configuré et prêt à être utilisé."
+
+#: ../gtk/sip_account.ui.h:1
+msgid "Linphone - Configure a SIP account"
+msgstr "Linphone - Configurer un compte SIP"
+
+#: ../gtk/sip_account.ui.h:2
+msgid "Your SIP identity:"
+msgstr "Votre identité SIP :"
+
+#: ../gtk/sip_account.ui.h:3
+msgid "Looks like sip:<username>@<domain>"
+msgstr "De la forme sip:<username>@<domain>"
+
+#: ../gtk/sip_account.ui.h:4
+msgid "sip:"
+msgstr "sip:"
+
+#: ../gtk/sip_account.ui.h:5
+msgid "SIP Proxy address:"
+msgstr "Adresse du proxy SIP:"
+
+#: ../gtk/sip_account.ui.h:6
+msgid "Looks like sip:<proxy hostname>"
+msgstr "De la forme sip:<proxy hostname>"
+
+#: ../gtk/sip_account.ui.h:7
+msgid "Registration duration (sec):"
+msgstr "Période d'enregistrement (secondes):"
+
+#: ../gtk/sip_account.ui.h:8
+msgid "Contact params (optional):"
+msgstr "Paramètres de contact (optionnel):"
+
+#: ../gtk/sip_account.ui.h:9
+msgid "AVPF regular RTCP interval (sec):"
+msgstr "Intervalle standard RTCP AVPF (sec) :"
+
+#: ../gtk/sip_account.ui.h:10
+msgid "Route (optional):"
+msgstr "Route (optionnel):"
+
+#: ../gtk/sip_account.ui.h:11
+msgid "Transport"
+msgstr "Transport"
+
+#: ../gtk/sip_account.ui.h:12
+msgid "Register"
+msgstr "S'enregistrer"
+
+#: ../gtk/sip_account.ui.h:13
+msgid "Publish presence information"
+msgstr "Publier la présence"
+
+#: ../gtk/sip_account.ui.h:14
+msgid "Enable AVPF"
+msgstr "Activer AVPF"
+
+#: ../gtk/sip_account.ui.h:15
+msgid "Configure a SIP account"
+msgstr "Configurer un compte SIP"
+
+#: ../gtk/tunnel_config.ui.h:1
+msgid "Configure VoIP tunnel"
+msgstr "Configuer le mode tunnel"
+
+#: ../gtk/tunnel_config.ui.h:2
+msgid "Host"
+msgstr "Hôte"
+
+#: ../gtk/tunnel_config.ui.h:3
+msgid "Port"
+msgstr "Port"
+
+#: ../gtk/tunnel_config.ui.h:6
+msgid "<b>Configure tunnel</b>"
+msgstr "<b>Configuration du tunnel</b>"
+
+#: ../gtk/tunnel_config.ui.h:9
+msgid "<b>Configure http proxy (optional)</b>"
+msgstr "<b>Configuration d'un proxy http (optionel)</b>"
+
+#: ../gtk/waiting.ui.h:2
+msgid "Please wait"
+msgstr "En attente"
+
+#: ../coreapi/linphonecore.c:1560
 msgid "Ready"
 msgstr "Prêt."
 
-#: ../coreapi/linphonecore.c:2551
+#: ../coreapi/linphonecore.c:2556
 msgid "Configuring"
 msgstr "Configuration en cours"
 
-#: ../coreapi/linphonecore.c:2725
-msgid "Looking for telephone number destination..."
-msgstr "Recherche de la destination du numéro de téléphone..."
-
-#: ../coreapi/linphonecore.c:2727
-msgid "Could not resolve this number."
-msgstr "La destination n'a pu être trouvée."
-
 #. must be known at that time
-#: ../coreapi/linphonecore.c:3013
+#: ../coreapi/linphonecore.c:2951
 msgid "Contacting"
 msgstr "Appel de"
 
-#: ../coreapi/linphonecore.c:3018
+#: ../coreapi/linphonecore.c:2956
 msgid "Could not call"
 msgstr "Echec de l'appel"
 
-#: ../coreapi/linphonecore.c:3169
+#: ../coreapi/linphonecore.c:3092
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
 msgstr "Désolé, le nombre maximum d'appels simultanés est atteint."
 
-#: ../coreapi/linphonecore.c:3327
+#: ../coreapi/linphonecore.c:3250
 msgid "is contacting you"
 msgstr "vous appelle"
 
-#: ../coreapi/linphonecore.c:3328
+#: ../coreapi/linphonecore.c:3251
 msgid " and asked autoanswer."
 msgstr "et sollicite un décrochage automatique."
 
-#: ../coreapi/linphonecore.c:3452
+#: ../coreapi/linphonecore.c:3377
 msgid "Modifying call parameters..."
 msgstr "Modifications des paramètres d'appels..."
 
-#: ../coreapi/linphonecore.c:3802
+#: ../coreapi/linphonecore.c:3769
 msgid "Connected."
 msgstr "En ligne."
 
-#: ../coreapi/linphonecore.c:3827
+#: ../coreapi/linphonecore.c:3794
 msgid "Call aborted"
 msgstr "Appel abandonné"
 
-#: ../coreapi/linphonecore.c:4024
+#: ../coreapi/linphonecore.c:3983
 msgid "Could not pause the call"
 msgstr "La mise en attente a échoué"
 
-#: ../coreapi/linphonecore.c:4027
+#: ../coreapi/linphonecore.c:3986
 msgid "Pausing the current call..."
 msgstr "Mise en attente de l'appel..."
 
-#: ../coreapi/misc.c:434
+#: ../coreapi/misc.c:440
 msgid "Stun lookup in progress..."
 msgstr "Découverte STUN en cours"
 
-#: ../coreapi/misc.c:615
+#: ../coreapi/misc.c:650
 msgid "ICE local candidates gathering in progress..."
 msgstr "Collection des candidats locaux ICE en cours..."
 
@@ -1820,166 +1884,173 @@ msgstr "En congé"
 msgid "Unknown status"
 msgstr "Status inconnu"
 
-#: ../coreapi/proxy.c:328
+#: ../coreapi/proxy.c:292
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
 msgstr "L'adresse SIP du proxy est invalide. Elle doit commencer par \"sip:\" suivie par un nom de domaine."
 
-#: ../coreapi/proxy.c:334
+#: ../coreapi/proxy.c:298
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
 msgstr "L'identité SIP que vous avez fourni est invalide.\nElle doit être de la forme sip:utilisateur@domaine, comme par exemple sip:alice@example.net"
 
-#: ../coreapi/proxy.c:1416
+#: ../coreapi/proxy.c:927
+msgid "Looking for telephone number destination..."
+msgstr "Recherche de la destination du numéro de téléphone..."
+
+#: ../coreapi/proxy.c:931
+msgid "Could not resolve this number."
+msgstr "La destination n'a pu être trouvée."
+
+#: ../coreapi/proxy.c:1324
 #, c-format
 msgid "Could not login as %s"
 msgstr "Echec de la connexion en tant que %s"
 
-#: ../coreapi/callbacks.c:428
+#: ../coreapi/proxy.c:1411
+#, c-format
+msgid "Refreshing on %s..."
+msgstr "Rafraichissement de %s..."
+
+#: ../coreapi/callbacks.c:423
 msgid "Remote ringing."
 msgstr "Sonnerie distante."
 
-#: ../coreapi/callbacks.c:440
+#: ../coreapi/callbacks.c:435
 msgid "Remote ringing..."
 msgstr "Sonnerie distante..."
 
-#: ../coreapi/callbacks.c:461
+#: ../coreapi/callbacks.c:458
 msgid "Early media."
 msgstr "Prise d'appel anticipée."
 
-#: ../coreapi/callbacks.c:534
+#: ../coreapi/callbacks.c:488
 #, c-format
-msgid "Call with %s is paused."
-msgstr "%s est maintenant en attente."
+msgid "Call answered by %s"
+msgstr "Appel répondu par %s"
 
-#: ../coreapi/callbacks.c:547
-#, c-format
-msgid "Call answered by %s - on hold."
-msgstr "Appel répondu par %s - en attente"
-
-#: ../coreapi/callbacks.c:557
+#: ../coreapi/callbacks.c:527
 msgid "Call resumed."
 msgstr "Appel repris."
 
-#: ../coreapi/callbacks.c:561
-#, c-format
-msgid "Call answered by %s."
-msgstr "Appel répondu par %s."
-
-#: ../coreapi/callbacks.c:584
+#: ../coreapi/callbacks.c:582
 msgid "Incompatible, check codecs or security settings..."
 msgstr "Incompatible, vérfiez les codecs ou les paramètres de sécurité..."
 
-#: ../coreapi/callbacks.c:589 ../coreapi/callbacks.c:906
+#: ../coreapi/callbacks.c:587 ../coreapi/callbacks.c:923
 msgid "Incompatible media parameters."
 msgstr "Paramètres media incompatibles."
 
-#: ../coreapi/callbacks.c:619
+#: ../coreapi/callbacks.c:612
 msgid "We have been resumed."
 msgstr "Appel repris."
 
 #. we are being paused
-#: ../coreapi/callbacks.c:628
+#: ../coreapi/callbacks.c:620
 msgid "We are paused by other party."
 msgstr "L'appel a été mis en attente."
 
-#. reINVITE and in-dialogs UPDATE go here
-#: ../coreapi/callbacks.c:666
+#: ../coreapi/callbacks.c:630
 msgid "Call is updated by remote."
 msgstr "L'appel est modifié par la partie distante."
 
-#: ../coreapi/callbacks.c:782
+#: ../coreapi/callbacks.c:799
 msgid "Call terminated."
 msgstr "Appel terminé."
 
-#: ../coreapi/callbacks.c:810
+#: ../coreapi/callbacks.c:827
 msgid "User is busy."
 msgstr "Occupé..."
 
-#: ../coreapi/callbacks.c:811
+#: ../coreapi/callbacks.c:828
 msgid "User is temporarily unavailable."
 msgstr "L'usager est temporairement indisponible."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
-#: ../coreapi/callbacks.c:813
+#: ../coreapi/callbacks.c:830
 msgid "User does not want to be disturbed."
 msgstr "L'usager ne souhaite pas être dérangé"
 
-#: ../coreapi/callbacks.c:814
+#: ../coreapi/callbacks.c:831
 msgid "Call declined."
 msgstr "Appel décliné."
 
-#: ../coreapi/callbacks.c:829
+#: ../coreapi/callbacks.c:846
 msgid "Request timeout."
 msgstr "Délai d'attente de la requête dépassé."
 
-#: ../coreapi/callbacks.c:860
+#: ../coreapi/callbacks.c:877
 msgid "Redirected"
 msgstr "Redirection"
 
-#: ../coreapi/callbacks.c:915
+#: ../coreapi/callbacks.c:927
 msgid "Call failed."
 msgstr "L'appel a échoué."
 
-#: ../coreapi/callbacks.c:993
+#: ../coreapi/callbacks.c:1005
 #, c-format
 msgid "Registration on %s successful."
 msgstr "Enregistrement sur %s effectué."
 
-#: ../coreapi/callbacks.c:994
+#: ../coreapi/callbacks.c:1006
 #, c-format
 msgid "Unregistration on %s done."
 msgstr "Désenregistrement sur %s effectué."
 
-#: ../coreapi/callbacks.c:1012
+#: ../coreapi/callbacks.c:1024
 msgid "no response timeout"
 msgstr "Pas de réponse"
 
-#: ../coreapi/callbacks.c:1015
+#: ../coreapi/callbacks.c:1027
 #, c-format
 msgid "Registration on %s failed: %s"
 msgstr "Echec de l'enregistrement sur %s: %s"
 
-#: ../coreapi/callbacks.c:1022
+#: ../coreapi/callbacks.c:1034
 msgid "Service unavailable, retrying"
 msgstr "Service indisponible, nouvelle tentative"
 
 #. if encryption is DTLS, no status to be displayed
-#: ../coreapi/linphonecall.c:180
+#: ../coreapi/linphonecall.c:197
 #, c-format
 msgid "Authentication token is %s"
 msgstr "Le jeton d'authentification est %s"
 
-#: ../coreapi/linphonecall.c:1310
+#: ../coreapi/linphonecall.c:1561
+#, c-format
+msgid "Call parameters could not be modified: %s."
+msgstr "Les paramètres d'appel n'ont pas pu être modifiés : %s."
+
+#: ../coreapi/linphonecall.c:1563
 msgid "Call parameters were successfully modified."
 msgstr "Les paramètres d'appel ont été modifiés avec succès."
 
-#: ../coreapi/linphonecall.c:3686
+#: ../coreapi/linphonecall.c:4396
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
 msgstr[0] "Vous avez manqué %i appel"
 msgstr[1] "Vous avez manqué %i appels"
 
-#: ../coreapi/call_log.c:209
+#: ../coreapi/call_log.c:223
 msgid "aborted"
 msgstr "interrompu"
 
-#: ../coreapi/call_log.c:212
+#: ../coreapi/call_log.c:226
 msgid "completed"
 msgstr "terminé"
 
-#: ../coreapi/call_log.c:215
+#: ../coreapi/call_log.c:229
 msgid "missed"
 msgstr "manqué"
 
-#: ../coreapi/call_log.c:218
+#: ../coreapi/call_log.c:232
 msgid "unknown"
 msgstr "inconnu"
 
-#: ../coreapi/call_log.c:220
+#: ../coreapi/call_log.c:234
 #, c-format
 msgid ""
 "%s at %s\n"
@@ -1989,7 +2060,7 @@ msgid ""
 "Duration: %i mn %i sec\n"
 msgstr "%s à %s\nDe : %s\nVers : %s\nStatus : %s\nDurée : %i min %i sec\n"
 
-#: ../coreapi/call_log.c:221
+#: ../coreapi/call_log.c:235
 msgid "Outgoing call"
 msgstr "Appel sortant"
 

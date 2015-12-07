@@ -32,6 +32,10 @@ public interface LinphoneCallStats {
 		 * Video
 		 */
 		static public MediaType Video = new MediaType(1, "Video");
+		/**
+		 * Text
+		*/
+		static public MediaType Text = new MediaType(2, "Text");
 		protected final int mValue;
 		private final String mStringValue;
 

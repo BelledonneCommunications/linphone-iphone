@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="63px" height="82px" viewBox="0 0 63 82" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+    <title>delete</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="OUTILS" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="linphone_v2.0_icones_buttons" sketch:type="MSArtboardGroup" transform="translate(-1451.000000, -7131.000000)">
+            <g id="delete" sketch:type="MSLayerGroup" transform="translate(1426.000000, 7115.000000)">
+                <g transform="translate(27.000000, 19.000000)" stroke="#444444" id="Delete-icon" stroke-width="5" sketch:type="MSShapeGroup" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M29.5231579,75.5263158 L34.8768421,75.5263158 C46.4010526,75.5263158 48.46,64.9796053 48.46,64.9796053 L58.3389474,10.9707368 L0.5,10.9707368 L10.38,64.9796053 C10.38,64.9796053 12.4410526,75.5263158 23.9652632,75.5263158 L29.5231579,75.5263158 L29.5231579,75.5263158 Z M22.7305263,24.4726842 L22.7305263,75.5263158 L22.7305263,24.4726842 Z M36.1094737,24.4726842 L36.1094737,75.5263158 L36.1094737,24.4726842 Z M17.5852632,9.09494702e-13 L41.2568421,9.09494702e-13 L17.5852632,9.09494702e-13 Z"></path>
+                </g>
+                <rect id="Rectangle-232-Copy-27" opacity="0" fill-opacity="0.7" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="120" height="120"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

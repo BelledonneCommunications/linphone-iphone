@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define quality_reporting_h
 
 #include "linphonecore.h"
+#include "sal/sal.h"
 
 #ifdef __cplusplus
 extern "C"{
@@ -41,7 +42,7 @@ typedef struct reporting_addr {
 } reporting_addr_t;
 
 /**
- * Linphone quality report sub object storing media metrics information as required by RFC035.
+ * Linphone quality report sub object storing media metrics information as required by RFC6035.
  */
 
 typedef struct reporting_content_metrics {
@@ -141,9 +142,9 @@ typedef struct reporting_session_report {
 } reporting_session_report_t;
 
 
-typedef void (*LinphoneQualityReportingReportSendCb)(const LinphoneCall *call, int stream_type, const LinphoneContent *content);
+typedef void (*LinphoneQualityReportingReportSendCb)(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content);
 
-reporting_session_report_t * linphone_reporting_new();
+reporting_session_report_t * linphone_reporting_new(void);
 void linphone_reporting_destroy(reporting_session_report_t * report);
 
 /**
@@ -186,10 +187,10 @@ int linphone_reporting_publish_interval_report(LinphoneCall* call);
 /**
  * Update publish reports with newly sent/received RTCP-XR packets (if available).
  * @param call #LinphoneCall object to consider
- * @param stats_type the media type (LINPHONE_CALL_STATS_AUDIO or LINPHONE_CALL_STATS_VIDEO)
+ * @param stats_type the media type
  *
  */
-void linphone_reporting_on_rtcp_update(LinphoneCall *call, int stats_type);
+void linphone_reporting_on_rtcp_update(LinphoneCall *call, SalStreamType stats_type);
 
 /**
  * Update publish reports on call state change.

@@ -24,24 +24,23 @@ In order to enable generation of bundle for older MacOS version, it is recommend
 ##### Linphone library (liblinphone)
 
         sudo port install automake autoconf libtool pkgconfig intltool wget cunit \
-        antlr3 speex libvpx readline sqlite3 openldap libupnp \
+        antlr3 speex readline sqlite3 openldap libupnp \
         ffmpeg-devel -gpl2
 
 ##### Linphone UI (GTK version)
 
 Install `GTK`. It is recommended to use the `quartz` backend for better integration.
 
-        sudo port install gtk2 +quartz +no_x11 libsoup
-        sudo port install gtk-osx-application +no_python
+        sudo port install gtk2 +quartz +no_x11
+        sudo port install gtk-osx-application-gtk2 +no_python
         sudo port install hicolor-icon-theme
 
 #### Using HomeBrew
 
 ##### Linphone library (liblinphone)
 
-        brew tap Gui13/linphone
         brew install intltool libtool wget pkg-config automake libantlr3.4c \
-                antlr3.2 gettext speex ffmpeg readline libvpx opus
+                homebrew/versions/antlr3 gettext speex ffmpeg readline libvpx opus
         ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
         brew link --force gettext
         #readline is required from linphonec.c otherwise compilation will fail
@@ -51,7 +50,7 @@ Install `GTK`. It is recommended to use the `quartz` backend for better integrat
 
         brew install cairo --without-x11
         brew install gtk+ --without-x11
-        brew install gtk-mac-integration libsoup hicolor-icon-theme
+        brew install gtk-mac-integration hicolor-icon-theme
 
 ### Building Linphone
 
@@ -75,6 +74,27 @@ The next pieces need to be compiled manually.
         git clone git://git.linphone.org/polarssl.git
         cd polarssl
         ./autogen.sh && ./configure --prefix=/opt/local && make
+        sudo make install
+
+* Install libvpx (Must be manualy build because the macport recipe does not support 'macosx_deployment_target')
+
+        git clone https://chromium.googlesource.com/webm/libvpx -b v1.4.0
+        cd libvpx
+        ./configure --prefix=/opt/local \
+                --target=x86_64-darwin10-gcc \
+                --enable-error-concealment \
+                --enable-multithread \
+                --enable-realtime-only \
+                --enable-spatial-resampling \
+                --enable-vp8 \
+                --disable-vp9 \
+                --enable-libs \
+                --disable-install-docs \
+                --disable-debug-libs \
+                --disable-examples \
+                --disable-unit-tests \
+                --as=yasm
+        make
         sudo make install
 
 * Install belle-sip (sip stack)
@@ -123,15 +143,12 @@ The next pieces need to be compiled manually.
 
 ### Generate portable bundle
 
-If you want to generate a portable bundle, then install `gtk-mac-bundler`:
+If you want to generate a portable bundle, then install `gtk-mac-bundler` linphone fork:
 
-        git clone https://github.com/jralls/gtk-mac-bundler.git
-        cd gtk-mac-bundler
-	git checkout 6e2ed855aaeae43c29436c342ae83568573b5636
+	git clone git://git.linphone.org/gtk-mac-bundler.git
+	cd gtk-mac-bundler
 	make install
-        export PATH=$PATH:~/.local/bin
-        # make this dummy charset.alias file for the bundler to be happy:
-        sudo touch /opt/local/lib/charset.alias
+    export PATH=$PATH:~/.local/bin
 	# set writing right for owner on the libssl and libcrypto libraries in order gtk-mac-bundler
 	# be able to rewrite their rpath
 	sudo chmod u+w /opt/local/lib/libssl.1.0.0.dylib /opt/local/lib/libcrypto.1.0.0.dylib
@@ -160,11 +177,11 @@ The resulting bundle is located in Linphone build directory, together with a zip
 
 * For a better appearance, you can install `gtk-quartz-engine` (a GTK theme) that makes GTK application more similar to other Mac applications (but not perfect).
 	sudo port install gnome-common
-        git clone https://github.com/jralls/gtk-quartz-engine.git
-        cd gtk-quartz-engine
-        ./autogen.sh
-        ./configure --prefix=/opt/local CFLAGS="$CFLAGS -Wno-error" && make
-        sudo make install
+	git clone https://github.com/jralls/gtk-quartz-engine.git
+	cd gtk-quartz-engine
+	./autogen.sh
+	./configure --prefix=/opt/local CFLAGS="$CFLAGS -Wno-error" && make
+	sudo make install
 
 Generate a new bundle to have it included.
 

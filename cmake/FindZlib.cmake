@@ -41,8 +41,13 @@ if(ZLIB_INCLUDE_DIRS)
 endif()
 
 if(ENABLE_STATIC)
+	if(IOS OR QNX)
+		set(_ZLIB_STATIC_NAMES z)
+	else()
+		set(_ZLIB_STATIC_NAMES zstatic zlibstatic zlibstaticd)
+	endif()
 	find_library(ZLIB_LIBRARIES
-		NAMES zstatic zlibstatic zlibstaticd
+		NAMES ${_ZLIB_STATIC_NAMES}
 		HINTS ${_ZLIB_ROOT_PATHS}
 		PATH_SUFFIXES bin lib
 	)

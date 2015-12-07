@@ -74,7 +74,7 @@ static void lpc2xml_log(lpc2xml_context *xmlCtx, int level, const char *fmt, ...
 
 static void lpc2xml_genericxml_error(void *ctx, const char *fmt, ...) {
 	lpc2xml_context *xmlCtx = (lpc2xml_context *)ctx;
-	int sl = strlen(xmlCtx->errorBuffer);
+	size_t sl = strlen(xmlCtx->errorBuffer);
 	va_list args;
 	va_start(args, fmt);
 	vsnprintf(xmlCtx->errorBuffer + sl, LPC2XML_BZ-sl, fmt, args);
@@ -101,6 +101,10 @@ static int processEntry(const char *section, const char *entry, xmlNode *node, l
 
 	lpc2xml_log(ctx, LPC2XML_MESSAGE, "Set %s|%s = %s", section, entry, content);
 	xmlNodeSetContent(node, (const xmlChar *) content);
+	
+	if (lp_config_get_overwrite_flag_for_entry(ctx->lpc, section, entry) || lp_config_get_overwrite_flag_for_section(ctx->lpc, section)) {
+		xmlSetProp(node, (const xmlChar *)"overwrite", (const xmlChar *) "true");
+	}
 	return 0;
 }
 

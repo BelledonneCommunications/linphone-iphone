@@ -10,9 +10,6 @@
 /* Define if wizard enabled */
 /* #undef BUILD_WIZARD */
 
-/* Tells whether localisation is possible */
-/* #undef ENABLE_NLS */
-
 /* Defined when using gsm at nonstandard rates */
 /* #undef ENABLE_NONSTANDARD_GSM */
 
@@ -60,7 +57,7 @@
 /* #undef HAVE_GETIFADDRS */
 
 /* Tells wheter localisation is possible */
-/* #undef HAVE_GETTEXT */
+/* #undef HAVE_INTL */
 
 /* Define to 1 if you have the `get_current_dir_name' function. */
 #define HAVE_GET_CURRENT_DIR_NAME 1
@@ -153,7 +150,7 @@
 /* #undef LINPHONE_CONFIG_DIR */
 
 /* path of liblinphone plugins, not mediastreamer2 plugins */
-/* #undef LINPHONE_PLUGINS_DIR */ 
+/* #undef LINPHONE_PLUGINS_DIR */
 
 /* Linphone's version number */
 /* #undef LINPHONE_VERSION */
@@ -205,10 +202,13 @@
 /* #undef VERSION */
 
 /* defined if video support is available */
-/* #undef VIDEO_ENABLED */ 
+/* #undef VIDEO_ENABLED */
 
 /* Tell whether RSVP support should be compiled. */
 /* #undef VINCENT_MAURY_RSVP */
+
+/* Defined when LIME support is compiled */
+#define HAVE_LIME 1
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="86px"
+   height="86px"
+   viewBox="0 0 86 86"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-start-call.svg"
+   inkscape:export-filename="/home/francois/projects/linphone/linphone/pixmaps/linphone-start-call.png"
+   inkscape:export-xdpi="50.23"
+   inkscape:export-ydpi="50.23">
+  <metadata
+     id="metadata17">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1133"
+     id="namedview15"
+     showgrid="false"
+     inkscape:zoom="2.744186"
+     inkscape:cx="-124.26271"
+     inkscape:cy="42.999998"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">call_alt_start</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+     inkscape:connector-curvature="0"
+     sketch:type="MSShapeGroup"
+     id="start_call_top"
+     d="m 4.582549,24.174568 c -4.828038,13.659309 1.937616,33.180264 12.887303,44.129951 l 0.229602,0.228002 C 28.646741,79.479808 48.172496,86.24546 61.827005,81.417423 L 72.184687,67.839716 58.076575,53.733203 45.170072,64.64769 33.374778,52.853996 33.148376,52.625995 21.354683,40.832301 32.26677,27.920998 18.164257,13.816086 4.582549,24.174568 l 0,0 z M 49.753309,3 C 68.115855,3 83.000773,17.884118 83.000773,36.249064 M 49.753309,13.738485 c 12.432898,0 22.510578,10.07928 22.510578,22.510579 M 49.753309,24.052967 c 6.734453,0 12.192097,5.462444 12.192097,12.196097" />
+  <rect
+     style="opacity:0;fill:#ffffff;fill-opacity:0.7;fill-rule:evenodd;stroke:none;stroke-width:1"
+     height="120"
+     width="120"
+     y="-17"
+     x="-16"
+     sketch:type="MSShapeGroup"
+     id="Rectangle-232-Copy-26" />
+</svg>

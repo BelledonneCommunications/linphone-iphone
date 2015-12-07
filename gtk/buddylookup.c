@@ -71,7 +71,7 @@ GtkWidget * linphone_gtk_show_buddy_lookup_window(SipSetupContext *ctx){
 	GtkCellRenderer *renderer,*pbuf_renderer;
 	GtkTreeViewColumn *column;
 	GtkTreeSelection *select;
-	GtkWidget *w=linphone_gtk_create_window("buddylookup");
+	GtkWidget *w=linphone_gtk_create_window("buddylookup", NULL);
 	GtkWidget *results=linphone_gtk_get_widget(w,"search_results");
 	GtkProgressBar *pb=GTK_PROGRESS_BAR(linphone_gtk_get_widget(w,"progressbar"));
 	

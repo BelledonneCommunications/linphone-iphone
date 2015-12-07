@@ -37,7 +37,7 @@ public interface LinphoneProxyConfig {
 	public void done();
 	/**
 	 * Sets the user identity as a SIP address.
-	 * @param identy This identity is normally formed with display name, username and domain, such as: Alice <sip:alice@example.net> The REGISTER messages will have from and to set to this identity.
+	 * @param identity This identity is normally formed with display name, username and domain, such as: Alice <sip:alice@example.net> The REGISTER messages will have from and to set to this identity.
 	 */
 	public void setIdentity(String identity) throws LinphoneCoreException;
 	/**
@@ -46,6 +46,17 @@ public interface LinphoneProxyConfig {
 	 * @return The SIP identity is a SIP address (Display Name <sip:username> )
 	 */
 	public String getIdentity();
+	/**
+	 * Sets the address of the proxy configuration
+	 * @param address
+	 */
+	public void setAddress(LinphoneAddress address) throws LinphoneCoreException;
+	/**
+	 *get linphoneAddress that belongs to this proxy configuration.
+	 *
+	 * @return LinphoneAddress
+	 */
+	public LinphoneAddress getAddress();
 	/**
 	 *Sets the proxy address
 	 * Examples of valid sip proxy address are:
@@ -78,6 +89,13 @@ public interface LinphoneProxyConfig {
 	 * @return
 	 */
 	public String normalizePhoneNumber(String number);
+	/**
+	 * Normalize a human readable sip uri into a fully qualified LinphoneAddress.
+	 * A sip address should look like DisplayName \<sip:username\@domain:port\> .
+	 * @param username the string to parse
+	 * @return NULL if invalid input, normalized sip address otherwise.
+	 */
+	public LinphoneAddress normalizeSipUri(String username);
 	/**
 	 * Useful function to automatically add international prefix to e164 phone numbers
 	 * @param prefix
@@ -126,8 +144,7 @@ public interface LinphoneProxyConfig {
 	/**
 	 * Indicates  either or not, PUBLISH must be issued for this #LinphoneProxyConfig .
 	 * <br> In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.
-	 * @param obj object pointer
-	 * @param val if true, publish will be engaged
+	 * @param enable if true, publish will be engaged
 	 *
 	 */
 	public void enablePublish(boolean enable);
@@ -227,7 +244,7 @@ public interface LinphoneProxyConfig {
 	/**
 	 * Set the outbound proxy realm. It is used in digest authentication to avoid
 	 * re-authentication if a previous token has already been provided.
-	 * @param The new outbound proxy realm.
+	 * @param realm The new outbound proxy realm.
 	 */
 	void setRealm(String realm);
 
@@ -269,7 +286,7 @@ public interface LinphoneProxyConfig {
 
 	/**
 	 * Return the international prefix for the given country
-	 * @param country iso code
+	 * @param iso code
 	 */
 	public int lookupCCCFromIso(String iso);
 

@@ -17,18 +17,23 @@
 */
 #include "private.h"
 
-#if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
+#if defined(VIDEO_ENABLED)
 
 
 #include "linphonecore.h"
 #include "liblinphone_tester.h"
 #include "lpconfig.h"
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
 
+#if HAVE_GTK
 #include <gtk/gtk.h>
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
-#elif defined(WIN32)
+#elif defined(_WIN32)
 #include <gdk/gdkwin32.h>
 #elif defined(__APPLE__)
 extern void *gdk_quartz_window_get_nswindow(GdkWindow      *window);
@@ -37,14 +42,18 @@ extern void *gdk_quartz_window_get_nsview(GdkWindow      *window);
 
 #include <gdk/gdkkeysyms.h>
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 
-static unsigned long get_native_handle(GdkWindow *gdkw) {
+
+static void *get_native_handle(GdkWindow *gdkw) {
 #ifdef GDK_WINDOWING_X11
-	return (unsigned long)GDK_WINDOW_XID(gdkw);
-#elif defined(WIN32)
-	return (unsigned long)GDK_WINDOW_HWND(gdkw);
+	return (void *)GDK_WINDOW_XID(gdkw);
+#elif defined(_WIN32)
+	return (void *)GDK_WINDOW_HWND(gdkw);
 #elif defined(__APPLE__)
-	return (unsigned long)gdk_quartz_window_get_nsview(gdkw);
+	return (void *)gdk_quartz_window_get_nsview(gdkw);
 #endif
 	g_warning("No way to get the native handle from gdk window");
 	return 0;
@@ -118,7 +127,7 @@ static void early_media_video_call_state_changed(LinphoneCore *lc, LinphoneCall 
 	video_call_state_changed(lc, call, cstate, msg);
 	switch (cstate) {
 		case LinphoneCallIncomingReceived:
-			params = linphone_core_create_default_call_parameters(lc);
+			params = linphone_core_create_call_params(lc, call);
 			linphone_call_params_enable_video(params, TRUE);
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendOnly);
 			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionRecvOnly);
@@ -136,7 +145,7 @@ static void early_media_video_call_state_changed_with_inactive_audio(LinphoneCor
 	video_call_state_changed(lc, call, cstate, msg);
 	switch (cstate) {
 		case LinphoneCallIncomingReceived:
-			params = linphone_core_create_default_call_parameters(lc);
+			params = linphone_core_create_call_params(lc, call);
 			linphone_call_params_enable_video(params, TRUE);
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionInactive);
 			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionRecvOnly);
@@ -175,10 +184,10 @@ static bool_t video_call_with_params(LinphoneCoreManager* caller_mgr, LinphoneCo
 
 	while (caller_mgr->stat.number_of_LinphoneCallOutgoingRinging != (initial_caller.number_of_LinphoneCallOutgoingRinging + 1)
 		&& caller_mgr->stat.number_of_LinphoneCallOutgoingEarlyMedia != (initial_caller.number_of_LinphoneCallOutgoingEarlyMedia + 1)
-		&& retry++ < 20) {
+		&& retry++ < 200) {
 		linphone_core_iterate(caller_mgr->lc);
 		linphone_core_iterate(callee_mgr->lc);
-		ms_usleep(100000);
+		ms_usleep(10000);
 	}
 
 	BC_ASSERT_TRUE((caller_mgr->stat.number_of_LinphoneCallOutgoingRinging == initial_caller.number_of_LinphoneCallOutgoingRinging + 1)
@@ -208,7 +217,7 @@ static LinphoneCallParams * _configure_for_video(LinphoneCoreManager *manager, L
 	linphone_core_set_video_device(manager->lc, "StaticImage: Static picture");
 	linphone_core_enable_video_capture(manager->lc, TRUE);
 	linphone_core_enable_video_display(manager->lc, TRUE);
-	params = linphone_core_create_default_call_parameters(manager->lc);
+	params = linphone_core_create_call_params(manager->lc, NULL);
 	linphone_call_params_enable_video(params, TRUE);
 	if (linphone_core_find_payload_type(manager->lc,"VP8", 90000, -1)!=NULL){
 		disable_all_video_codecs_except_one(manager->lc, "VP8");
@@ -247,7 +256,7 @@ static void early_media_video_during_video_call_test(void) {
 	LinphoneCallParams *laure_params;
 
 	marie = linphone_core_manager_new("marie_rc");
-	pauline = linphone_core_manager_new("pauline_rc");
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
 	laure = linphone_core_manager_new("laure_rc");
 	marie_params = configure_for_early_media_video_receiving(marie);
 	pauline_params = configure_for_video(pauline);
@@ -297,7 +306,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 	const MSList *calls_list;
 
 	marie = linphone_core_manager_new("marie_rc");
-	pauline = linphone_core_manager_new("pauline_rc");
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
 	laure = linphone_core_manager_new("laure_rc");
 	marie_params = configure_for_early_media_video_receiving(marie);
 	pauline_params = configure_for_early_media_video_sending(pauline);
@@ -305,7 +314,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 
 	/* Configure early media audio to play ring during early-media and send remote ring back tone. */
 	linphone_core_set_ring_during_incoming_early_media(marie->lc, TRUE);
-	ringback_path = ms_strdup_printf("%s/sounds/ringback.wav", bc_tester_read_dir_prefix);
+	ringback_path = bc_tester_res("sounds/ringback.wav");
 	linphone_core_set_remote_ringback_tone(marie->lc, ringback_path);
 	ms_free(ringback_path);
 
@@ -364,7 +373,7 @@ static void early_media_video_with_inactive_audio(void) {
 	LinphoneCallParams *pauline_params;
 
 	marie = linphone_core_manager_new("marie_rc");
-	pauline = linphone_core_manager_new("pauline_rc");
+	pauline = linphone_core_manager_new("pauline_tcp_rc");
 	marie_params = configure_for_early_media_video_receiving_with_inactive_audio(marie);
 	pauline_params = configure_for_early_media_video_sending(pauline);
 
@@ -422,7 +431,7 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	lcs = ms_list_append(lcs,marie2->lc);
 	lcs = ms_list_append(lcs,pauline->lc);
 
-	pauline_params = linphone_core_create_default_call_parameters(pauline->lc);
+	pauline_params = linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_enable_early_media_sending(pauline_params, TRUE);
 	linphone_call_params_enable_video(pauline_params, TRUE);
 	marie1_params = configure_for_early_media_video_receiving_with_inactive_audio(marie1);
@@ -431,27 +440,42 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	linphone_core_invite_address_with_params(pauline->lc, marie1->identity, pauline_params);
 	linphone_call_params_destroy(pauline_params);
 
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
+
+	marie1_call = linphone_core_get_current_call(marie1->lc);
+	marie2_call = linphone_core_get_current_call(marie2->lc);
+
+	if (marie1_call){
+		linphone_call_set_next_video_frame_decoded_callback(marie1_call, linphone_call_iframe_decoded_cb, marie1->lc);
+	}
+	if (marie2_call){
+		linphone_call_set_next_video_frame_decoded_callback(marie2_call, linphone_call_iframe_decoded_cb, marie2->lc);
+	}
+
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallIncomingEarlyMedia, 1, 3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallIncomingEarlyMedia, 1, 3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia, 1, 3000));
 
 	pauline_call = linphone_core_get_current_call(pauline->lc);
-	marie1_call = linphone_core_get_current_call(marie1->lc);
-	marie2_call = linphone_core_get_current_call(marie2->lc);
 
 	BC_ASSERT_PTR_NOT_NULL(pauline_call);
 	BC_ASSERT_PTR_NOT_NULL(marie1_call);
 	BC_ASSERT_PTR_NOT_NULL(marie2_call);
 
 	if (pauline_call && marie1_call && marie2_call) {
+		linphone_call_set_next_video_frame_decoded_callback(pauline_call, linphone_call_iframe_decoded_cb, pauline->lc);
+
 		/* wait a bit that streams are established */
-		wait_for_list(lcs, &dummy, 1, 6000);
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth == 0);
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth == 0);
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie2_call)->download_bandwidth == 0);
-		BC_ASSERT_TRUE(linphone_call_get_video_stats(pauline_call)->download_bandwidth == 0);
-		BC_ASSERT_TRUE(linphone_call_get_video_stats(marie1_call)->download_bandwidth > 0);
-		BC_ASSERT_TRUE(linphone_call_get_video_stats(marie2_call)->download_bandwidth > 0);
+		wait_for_list(lcs, &dummy, 1, 3000);
+		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(marie2_call)->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_LOWER(linphone_call_get_video_stats(pauline_call)->download_bandwidth, 11, float, "%f"); /* because of stun packets*/
+		BC_ASSERT_GREATER(linphone_call_get_video_stats(marie1_call)->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_GREATER(linphone_call_get_video_stats(marie2_call)->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_GREATER(marie1->stat.number_of_IframeDecoded, 1, int, "%i");
+		BC_ASSERT_GREATER(marie2->stat.number_of_IframeDecoded, 1, int, "%i");
 
 		linphone_call_params_set_audio_direction(marie1_params, LinphoneMediaDirectionSendRecv);
 		linphone_core_accept_call_with_params(marie1->lc, linphone_core_get_current_call(marie1->lc), marie1_params);
@@ -463,10 +487,11 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 
 		/*wait a bit that streams are established*/
 		wait_for_list(lcs, &dummy, 1, 3000);
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(pauline_call)->download_bandwidth > 71);
-		BC_ASSERT_TRUE(linphone_call_get_audio_stats(marie1_call)->download_bandwidth > 71);
-		BC_ASSERT_TRUE(linphone_call_get_video_stats(pauline_call)->download_bandwidth > 0);
-		BC_ASSERT_TRUE(linphone_call_get_video_stats(marie1_call)->download_bandwidth > 0);
+		BC_ASSERT_GREATER(linphone_call_get_audio_stats(pauline_call)->download_bandwidth, 71, float, "%f");
+		BC_ASSERT_GREATER(linphone_call_get_audio_stats(marie1_call)->download_bandwidth, 71, float, "%f");
+		BC_ASSERT_GREATER(linphone_call_get_video_stats(pauline_call)->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_GREATER(linphone_call_get_video_stats(marie1_call)->download_bandwidth, 0, float, "%f");
+		BC_ASSERT_GREATER(pauline->stat.number_of_IframeDecoded, 1, int, "%i");
 
 		/* send an INFO in reverse side to check that dialogs are properly established */
 		info = linphone_core_create_info_message(marie1->lc);
@@ -485,20 +510,58 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(pauline);
 }
+#endif /*HAVE_GTK*/
 
+static void enable_disable_camera_after_camera_switches(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	const char *currentCamId = (char*)linphone_core_get_video_device(marie->lc);
+	const char **cameras=linphone_core_get_video_devices(marie->lc);
+	const char *newCamId=NULL;
+	int i;
+
+
+	video_call_base_2(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+
+	for (i=0;cameras[i]!=NULL;++i){
+		if (strcmp(cameras[i],currentCamId)!=0){
+			newCamId=cameras[i];
+			break;
+		}
+	}
+	if (newCamId){
+		LinphoneCall *call = linphone_core_get_current_call(marie->lc);
+		ms_message("Switching from [%s] to [%s]", currentCamId, newCamId);
+		linphone_core_set_video_device(marie->lc, newCamId);
+		if(call != NULL) {
+			linphone_core_update_call(marie->lc, call, NULL);
+		}
+		BC_ASSERT_STRING_EQUAL(newCamId,ms_web_cam_get_string_id(linphone_call_get_video_device(call)));
+		linphone_call_enable_camera(call,FALSE);
+		linphone_core_iterate(marie->lc);
+		linphone_call_enable_camera(call,TRUE);
+		BC_ASSERT_STRING_EQUAL(newCamId,ms_web_cam_get_string_id(linphone_call_get_video_device(call)));
+	}
+
+
+	linphone_core_terminate_all_calls(pauline->lc);
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallEnd,1));
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
 test_t video_tests[] = {
+#if HAVE_GTK
 	{ "Early-media video during video call", early_media_video_during_video_call_test },
 	{ "Two incoming early-media video calls", two_incoming_early_media_video_calls_test },
 	{ "Early-media video with inactive audio", early_media_video_with_inactive_audio },
-	{ "Forked outgoing early-media video call with inactive audio", forked_outgoing_early_media_video_call_with_inactive_audio_test }
+	{ "Forked outgoing early-media video call with inactive audio", forked_outgoing_early_media_video_call_with_inactive_audio_test },
+#endif /*HAVE_GTK*/
+	{ "Enable/disable camera after camera switches", enable_disable_camera_after_camera_switches}
+
 };
 
-test_suite_t video_test_suite = {
-	"Video",
-	NULL,
-	NULL,
-	sizeof(video_tests) / sizeof(video_tests[0]),
-	video_tests
-};
+test_suite_t video_test_suite = {"Video", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+								 sizeof(video_tests) / sizeof(video_tests[0]), video_tests};
 
 #endif /* VIDEO_ENABLED */

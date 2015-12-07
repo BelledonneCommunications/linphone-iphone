@@ -18,7 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
+import org.linphone.core.LinphoneCore.MediaDirection;
 import org.linphone.core.LinphoneCore.MediaEncryption;
+import org.linphone.core.LinphoneCore.StreamType;
 
 public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	protected final long nativePtr;
@@ -107,6 +109,42 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 		return getCustomHeader(nativePtr,name);
 	}
 
+	private native void addCustomSdpAttribute(long nativePtr, String name, String value); 
+	@Override
+	public void addCustomSdpAttribute(String name, String value) {
+		addCustomSdpAttribute(nativePtr, name, value);
+	}
+
+	private native void addCustomSdpMediaAttribute(long nativePtr, int type, String name, String value); 
+	@Override
+	public void addCustomSdpMediaAttribute(StreamType type, String name, String value) {
+		addCustomSdpMediaAttribute(nativePtr, type.mValue, name, value);
+	}
+
+	private native String getCustomSdpAttribute(long nativePtr, String name);
+	@Override
+	public String getCustomSdpAttribute(String name) {
+		return getCustomSdpAttribute(nativePtr, name);
+	}
+
+	private native String getCustomSdpMediaAttribute(long nativePtr, int type, String name);
+	@Override
+	public String getCustomSdpMediaAttribute(StreamType type, String name) {
+		return getCustomSdpMediaAttribute(nativePtr, type.mValue, name);
+	}
+
+	private native void clearCustomSdpAttributes(long nativePtr);
+	@Override
+	public void clearCustomSdpAttributes() {
+		clearCustomSdpAttributes(nativePtr);
+	}
+
+	private native void clearCustomSdpMediaAttributes(long nativePtr, int type);
+	@Override
+	public void clearCustomSdpMediaAttributes(StreamType type) {
+		clearCustomSdpMediaAttributes(nativePtr, type.mValue);
+	}
+
 	private native void setPrivacy(long nativePtr, int mask);
 	@Override
 	public void setPrivacy(int privacy_mask) {
@@ -170,5 +208,41 @@ public class LinphoneCallParamsImpl implements LinphoneCallParams {
 	@Override
 	public boolean videoMulticastEnabled() {
 		return videoMulticastEnabled(nativePtr);
+	}
+
+	private native void enableRealTimeText(long nativePtr, boolean yesno);
+	@Override
+	public void enableRealTimeText(boolean yesno) {
+		enableRealTimeText(nativePtr, yesno);
+	}
+
+	private native boolean realTimeTextEnabled(long nativePtr);
+	@Override
+	public boolean realTimeTextEnabled() {
+		return realTimeTextEnabled(nativePtr);
+	}
+
+	private native int getAudioDirection(long nativePtr);
+	@Override
+	public MediaDirection getAudioDirection() {
+		return MediaDirection.fromInt(getAudioDirection(nativePtr));
+	}
+
+	private native int getVideoDirection(long nativePtr);
+	@Override
+	public MediaDirection getVideoDirection() {
+		return MediaDirection.fromInt(getVideoDirection(nativePtr));
+	}
+
+	private native void setAudioDirection(long nativePtr, int direction);
+	@Override
+	public void setAudioDirection(MediaDirection direction) {
+		setAudioDirection(nativePtr, direction.mValue);
+	}
+
+	private native void setVideoDirection(long nativePtr, int direction);
+	@Override
+	public void setVideoDirection(MediaDirection direction) {
+		setVideoDirection(nativePtr, direction.mValue);
 	}
 }

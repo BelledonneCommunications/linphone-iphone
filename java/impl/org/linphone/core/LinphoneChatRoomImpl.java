@@ -20,6 +20,7 @@ package org.linphone.core;
 
 import org.linphone.core.LinphoneChatMessage.State;
 import org.linphone.core.LinphoneChatMessage.StateListener;
+import org.linphone.core.LinphoneCall;
 
 @SuppressWarnings("deprecation")
 class LinphoneChatRoomImpl implements LinphoneChatRoom {
@@ -38,7 +39,6 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native boolean isRemoteComposing(long ptr);
 	private native void markAsRead(long ptr);
 	private native void deleteMessage(long room, long message);
-	private native void updateUrl(long room, long message);
 	private native long createLinphoneChatMessage2(long ptr, String message,
 			String url, int state, long timestamp, boolean isRead,
 			boolean isIncoming);
@@ -92,10 +92,6 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		}
 	}
 
-	public void destroy() {
-		destroy(nativePtr);
-	}
-
 	public int getUnreadMessagesCount() {
 		synchronized(getCore()){
 			return getUnreadMessagesCount(nativePtr);
@@ -139,13 +135,6 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		}
 	}
 
-	public void updateUrl(LinphoneChatMessage message) {
-		synchronized(getCore()){
-			if (message != null)
-				updateUrl(nativePtr, ((LinphoneChatMessageImpl)message).getNativePtr());
-		}
-	}
-
 	@Override
 	public LinphoneChatMessage createLinphoneChatMessage(String message,
 			String url, State state, long timestamp, boolean isRead,
@@ -181,5 +170,17 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	@Override
 	public void sendChatMessage(LinphoneChatMessage message) {
 		sendChatMessage(nativePtr, message, ((LinphoneChatMessageImpl)message).getNativePtr());
+	}
+	
+	private native Object getCall(long nativePtr);
+	@Override
+	public LinphoneCall getCall() {
+		return (LinphoneCall) getCall(nativePtr);
+	}
+	
+	private native long getChar(long nativePtr);
+	@Override
+	public long getChar() {
+		return getChar(nativePtr);
 	}
 }

@@ -698,19 +698,19 @@ int linphone_core_update_upnp_audio_video(LinphoneCall *call, bool_t audio, bool
 		 * Audio part
 		 */
 		linphone_upnp_update_port_binding(lupnp, &call->upnp_session->audio->rtp,
-			UPNP_IGD_IP_PROTOCOL_UDP, (audio)? call->media_ports[0].rtp_port:0, UPNP_CALL_RETRY_DELAY);
+			UPNP_IGD_IP_PROTOCOL_UDP, (audio)? call->media_ports[call->main_audio_stream_index].rtp_port:0, UPNP_CALL_RETRY_DELAY);
 
 		linphone_upnp_update_port_binding(lupnp, &call->upnp_session->audio->rtcp,
-			UPNP_IGD_IP_PROTOCOL_UDP, (audio)? call->media_ports[0].rtcp_port:0, UPNP_CALL_RETRY_DELAY);
+			UPNP_IGD_IP_PROTOCOL_UDP, (audio)? call->media_ports[call->main_audio_stream_index].rtcp_port:0, UPNP_CALL_RETRY_DELAY);
 
 		/*
 		 * Video part
 		 */
 		linphone_upnp_update_port_binding(lupnp, &call->upnp_session->video->rtp,
-			UPNP_IGD_IP_PROTOCOL_UDP, (video)? call->media_ports[1].rtp_port:0, UPNP_CALL_RETRY_DELAY);
+			UPNP_IGD_IP_PROTOCOL_UDP, (video)? call->media_ports[call->main_video_stream_index].rtp_port:0, UPNP_CALL_RETRY_DELAY);
 
 		linphone_upnp_update_port_binding(lupnp, &call->upnp_session->video->rtcp,
-			UPNP_IGD_IP_PROTOCOL_UDP, (video)? call->media_ports[1].rtcp_port:0, UPNP_CALL_RETRY_DELAY);
+			UPNP_IGD_IP_PROTOCOL_UDP, (video)? call->media_ports[call->main_video_stream_index].rtcp_port:0, UPNP_CALL_RETRY_DELAY);
 	}
 
 	ms_mutex_unlock(&lupnp->mutex);
@@ -731,8 +731,9 @@ int linphone_core_update_upnp_from_remote_media_description(LinphoneCall *call, 
 	int i;
 	const SalStreamDescription *stream;
 
-	for (i = 0; i < md->nb_streams; i++) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		stream = &md->streams[i];
+		if (!sal_stream_description_active(stream)) continue;
 		if(stream->type == SalAudio) {
 			audio = TRUE;
 		} else if(stream->type == SalVideo) {
@@ -1060,7 +1061,7 @@ int linphone_core_update_local_media_description_from_upnp(SalMediaDescription *
 	SalStreamDescription *stream;
 	UpnpStream *upnpStream;
 
-	for (i = 0; i < desc->nb_streams; i++) {
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		stream = &desc->streams[i];
 		if (!sal_stream_description_active(stream)) continue;
 		upnpStream = NULL;

@@ -128,6 +128,152 @@ static PyObject * pylinphone_module_method_set_log_handler(PyObject *self, PyObj
 }
 
 
+static PyObject * pylinphone_Call_get_native_video_window_id(PyObject *self, void *closure) {
+	void * cresult;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const LinphoneCall *native_ptr;
+	native_ptr = pylinphone_Call_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Call instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	cresult = linphone_call_get_native_video_window_id(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyret = Py_BuildValue("k", (unsigned long)cresult);
+	
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Call_set_native_video_window_id(PyObject *self, PyObject *value, void *closure) {
+	LinphoneCall *native_ptr;
+	unsigned long _id;
+	native_ptr = pylinphone_Call_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Call instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'native_video_window_id' attribute.");
+		return -1;
+	}
+	if (!PyInt_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'native_video_window_id' attribute value must be a unsigned int.");
+		return -1;
+	}
+
+	_id = (unsigned long)PyInt_AsUnsignedLongMask(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %u)", __FUNCTION__, self, native_ptr, _id);
+	linphone_call_set_native_video_window_id(native_ptr, (void *)_id);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}
+
+
+static PyObject * pylinphone_Core_get_native_preview_window_id(PyObject *self, void *closure) {
+	void * cresult;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const LinphoneCore *native_ptr;
+	native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	cresult = linphone_core_get_native_preview_window_id(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyret = Py_BuildValue("k", (unsigned long)cresult);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Core_set_native_preview_window_id(PyObject *self, PyObject *value, void *closure) {
+	LinphoneCore *native_ptr;
+	unsigned long _id;
+	native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'native_preview_window_id' attribute.");
+		return -1;
+	}
+	if (!PyInt_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'native_preview_window_id' attribute value must be a unsigned int.");
+		return -1;
+	}
+
+	_id = (unsigned long)PyInt_AsUnsignedLongMask(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %u)", __FUNCTION__, self, native_ptr, _id);
+	linphone_core_set_native_preview_window_id(native_ptr, (void *)_id);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}
+
+
+static PyObject * pylinphone_Core_get_native_video_window_id(PyObject *self, void *closure) {
+	void * cresult;
+	PyObject * pyresult;
+	PyObject * pyret;
+	const LinphoneCore *native_ptr;
+	native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	cresult = linphone_core_get_native_video_window_id(native_ptr);
+	pylinphone_dispatch_messages();
+
+	pyret = Py_BuildValue("k", (unsigned long)cresult);
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
+	return pyret;
+}
+
+static int pylinphone_Core_set_native_video_window_id(PyObject *self, PyObject *value, void *closure) {
+	LinphoneCore *native_ptr;
+	unsigned long _id;
+	native_ptr = pylinphone_Core_get_native_ptr(self);
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.Core instance");
+		return -1;
+	}
+
+	if (value == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Cannot delete the 'native_video_window_id' attribute.");
+		return -1;
+	}
+	if (!PyInt_Check(value)) {
+		PyErr_SetString(PyExc_TypeError, "The 'native_video_window_id' attribute value must be a unsigned int.");
+		return -1;
+	}
+
+	_id = (unsigned long)PyInt_AsUnsignedLongMask(value);
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p], %u)", __FUNCTION__, self, native_ptr, _id);
+	linphone_core_set_native_video_window_id(native_ptr, (void *)_id);
+	pylinphone_dispatch_messages();
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
+	return 0;
+}
+
 static PyObject * pylinphone_Core_get_sip_transports(PyObject *self, void *closure) {
     PyObject *pytr;
     LCSipTransports tr = { 0 };
@@ -823,4 +969,29 @@ static int pylinphone_Content_set_buffer(PyObject *self, PyObject *value, void *
 	pylinphone_dispatch_messages();
 	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> 0", __FUNCTION__);
 	return 0;
+}
+
+static PyObject * pylinphone_LpConfig_get_sections_names(PyObject *self, void *closure) {
+	PyObject *_list;
+	const char **_names;
+	LpConfig *native_ptr = pylinphone_LpConfig_get_native_ptr(self);
+
+	if (native_ptr == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Invalid linphone.LpConfig instance");
+		return NULL;
+	}
+
+	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
+	_names = lp_config_get_sections_names(native_ptr);
+	pylinphone_dispatch_messages();
+
+	_list = PyList_New(0);
+	while (*_names != NULL) {
+		PyObject *_item = PyString_FromString(*_names);
+		PyList_Append(_list, _item);
+		_names++;
+	}
+
+	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, _list);
+	return _list;
 }

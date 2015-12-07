@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="34"
+   height="34"
+   viewBox="0 0 34 34"
+   version="1.1"
+   id="svg4229"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="linphone-warning.svg"
+   inkscape:export-filename="/home/ghislain/code/linphone-desktop/submodules/linphone/pixmaps/linphone-warning.png"
+   inkscape:export-xdpi="127.06"
+   inkscape:export-ydpi="127.06">
+  <metadata
+     id="metadata4247">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>chat_message_not_delivered</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1141"
+     id="namedview4245"
+     showgrid="false"
+     inkscape:zoom="23.675886"
+     inkscape:cx="17"
+     inkscape:cy="16.669388"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4229" />
+  <!-- Generator: Sketch 3.3.3 (12081) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4231">chat_message_not_delivered</title>
+  <desc
+     id="desc4233">Created with Sketch.</desc>
+  <defs
+     id="defs4235" />
+  <g
+     id="OUTILS"
+     sketch:type="MSPage"
+     style="fill:none;fill-rule:evenodd;stroke:none;stroke-width:1"
+     transform="translate(0.04223707,2.5776293)">
+    <g
+       id="linphone_v2.0_icones_buttons"
+       sketch:type="MSArtboardGroup"
+       transform="translate(-4749,-15298)">
+      <g
+         id="chat_message_not_delivered"
+         sketch:type="MSLayerGroup"
+         transform="translate(4747,15295)">
+        <path
+           d="M 19.140723,3.4160156 2.1543948,32 35.845605,32 19.140723,3.4160156 Z"
+           id="Path-1067"
+           sketch:type="MSShapeGroup"
+           inkscape:connector-curvature="0"
+           style="fill:#ff0000" />
+        <g
+           id="chat_message_not_delivered-copy-2"
+           sketch:type="MSShapeGroup"
+           style="fill:#ffffff;fill-opacity:0">
+          <rect
+             id="Rectangle-232-Copy-22"
+             x="0"
+             y="0"
+             width="38"
+             height="38" />
+        </g>
+        <path
+           d="m 19.017716,19.516561 0,-7.030643"
+           id="chat_message_delivered-copy-4"
+           sketch:type="MSShapeGroup"
+           inkscape:connector-curvature="0"
+           style="stroke:#ffffff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round" />
+        <circle
+           id="Oval-51"
+           sketch:type="MSShapeGroup"
+           cx="19"
+           cy="27"
+           r="3"
+           style="fill:#ffffff" />
+      </g>
+    </g>
+  </g>
+</svg>

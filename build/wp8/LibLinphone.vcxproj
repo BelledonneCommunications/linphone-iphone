@@ -96,6 +96,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\coreapi\account_creator.c" />
     <ClCompile Include="..\..\coreapi\address.c" />
     <ClCompile Include="..\..\coreapi\authentication.c" />
     <ClCompile Include="..\..\coreapi\bellesip_sal\sal_address_impl.c" />
@@ -144,6 +145,7 @@
     <ClCompile Include="..\..\coreapi\TunnelManager.cc" />
     <ClCompile Include="..\..\coreapi\vtables.c" />
     <ClCompile Include="..\..\coreapi\xml.c" />
+    <ClCompile Include="..\..\coreapi\xmlrpc.c" />
     <ClCompile Include="..\..\coreapi\xml2lpc.c" />
   </ItemGroup>
   <ItemGroup>
