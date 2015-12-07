@@ -86,7 +86,8 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 			ms_list_free(history);
 		}
 		linphone_chat_room_set_user_data(chat_room, last_msg);
-		sorted = ms_list_insert_sorted(sorted, chat_room, (MSCompareFunc)sorted_history_comparison);
+		sorted =
+			ms_list_insert_sorted(sorted, linphone_chat_room_ref(chat_room), (MSCompareFunc)sorted_history_comparison);
 		iter = iter->next;
 	}
 	return sorted;
@@ -98,6 +99,7 @@ static void chatTable_free_chatrooms(void *data) {
 		linphone_chat_message_unref(lastMsg);
 		linphone_chat_room_set_user_data(data, NULL);
 	}
+	linphone_chat_room_unref(data);
 }
 
 - (void)loadData {

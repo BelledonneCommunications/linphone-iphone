@@ -156,10 +156,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onContactClick:(id)event {
 	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
-	ContactDetailsView *view = VIEW(ContactDetailsView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
-	[ContactSelection setSelectionMode:ContactSelectionModeNone];
-	[view setContact:contact];
+	if (contact) {
+		ContactDetailsView *view = VIEW(ContactDetailsView);
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[ContactSelection setSelectionMode:ContactSelectionModeNone];
+		[view setContact:contact];
+	}
 }
 
 - (IBAction)onAddContactClick:(id)event {
