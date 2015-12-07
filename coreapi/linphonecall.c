@@ -4520,6 +4520,10 @@ bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 	return call->params->in_conference;
 }
 
+LinphoneConference *linphone_call_get_conference(const LinphoneCall *call) {
+	return call->conf_ref;
+}
+
 /**
  * Perform a zoom of the video displayed during a call.
  * @param call the call.

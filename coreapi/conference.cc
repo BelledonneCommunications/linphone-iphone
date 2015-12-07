@@ -71,6 +71,16 @@ Conference::Conference(LinphoneCore *core) :
 	m_isMuted(false) {
 }
 
+int Conference::addCall(LinphoneCall *call) {
+	call->conf_ref = (LinphoneConference *)this;
+	return 0;
+}
+
+int Conference::removeCall(LinphoneCall *call) {
+	call->conf_ref = NULL;
+	return 0;
+}
+
 int Conference::muteMicrophone(bool val)  {
 	if (val) {
 		audio_stream_set_mic_gain(m_localParticipantStream, 0);
@@ -386,12 +396,14 @@ void MediaConference::onCallStreamStarting(LinphoneCall *call, bool isPausedByRe
 	ms_audio_conference_add_member(m_conf,ep);
 	ms_audio_conference_mute_member(m_conf,ep,isPausedByRemote);
 	call->endpoint=ep;
+	Conference::addCall(call);
 }
 
 void MediaConference::onCallStreamStopping(LinphoneCall *call) {
 	ms_audio_conference_remove_member(m_conf,call->endpoint);
 	ms_audio_endpoint_release_from_stream(call->endpoint);
 	call->endpoint=NULL;
+	Conference::removeCall(call);
 }
 
 void MediaConference::onCallTerminating(LinphoneCall *call) {
@@ -573,6 +585,7 @@ const char *TransportConference::stateToString(TransportConference::State state)
 void TransportConference::onFocusCallSateChanged(LinphoneCallState state) {
 	switch (state) {
 			case LinphoneCallConnected:
+				Conference::addCall(m_focusCall);
 				m_state = ConnectedToFocus;
 				m_focusContact = linphone_call_get_remote_contact(m_focusCall);
 				for (MSList *it = m_pendingCalls; it; it = it->next) {
@@ -591,6 +604,7 @@ void TransportConference::onFocusCallSateChanged(LinphoneCallState state) {
 
 			case LinphoneCallError:
 			case LinphoneCallEnd:
+				Conference::removeCall(m_focusCall);
 				m_state = NotConnectedToFocus;
 				m_focusCall = NULL;
 				m_localParticipantStream = NULL;
