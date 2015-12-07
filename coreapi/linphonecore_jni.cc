@@ -1434,8 +1434,8 @@ extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig
 extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigList(JNIEnv* env, jobject thiz, jlong lc) {
 	const MSList* proxies = linphone_core_get_proxy_config_list((LinphoneCore*)lc);
 	int proxyCount = ms_list_size(proxies);
-	jclass cls = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneProxyConfigImpl"));
-	jobjectArray jProxies = env->NewObjectArray(proxyCount,cls,NULL);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data((LinphoneCore *)lc);
+	jobjectArray jProxies = env->NewObjectArray(proxyCount,ljb->proxyClass,NULL);
 
 	for (int i = 0; i < proxyCount; i++ ) {
 		LinphoneProxyConfig* proxy = (LinphoneProxyConfig*)proxies->data;
@@ -1445,7 +1445,7 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getProxyConfigLi
 		}
 		proxies = proxies->next;
 	}
-	env->DeleteGlobalRef(cls);
+	
 	return jProxies;
 }
 
@@ -1944,8 +1944,8 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendList(JN
 																			,jlong lc) {
 	const MSList* friends = linphone_core_get_friend_list((LinphoneCore*)lc);
 	int friendsSize = ms_list_size(friends);
-	jclass cls = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendImpl"));
-	jobjectArray jFriends = env->NewObjectArray(friendsSize,cls,NULL);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data((LinphoneCore *)lc);
+	jobjectArray jFriends = env->NewObjectArray(friendsSize,ljb->friendClass,NULL);
 
 	for (int i = 0; i < friendsSize; i++) {
 		LinphoneFriend* lfriend = (LinphoneFriend*)friends->data;
@@ -1955,8 +1955,7 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendList(JN
 		}
 		friends = friends->next;
 	}
-
-	env->DeleteGlobalRef(cls);
+	
 	return jFriends;
 }
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPresenceInfo(JNIEnv*  env
@@ -3475,15 +3474,15 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 	jobject jmessage = getChatMessage(env, msg);
 	env->DeleteLocalRef(clazz);
 
-	jclass chatMessageStateClass = (jclass)env->FindClass("org/linphone/core/LinphoneChatMessage$State");
-	jmethodID chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass, "fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
-	env->CallVoidMethod(listener, method, jmessage, env->CallStaticObjectMethod(chatMessageStateClass, chatMessageStateFromIntId, (jint)state));
+	LinphoneChatRoom *room = linphone_chat_message_get_chat_room(msg);
+	LinphoneCore *lc = linphone_chat_room_get_core(room);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+	env->CallVoidMethod(listener, method, jmessage, env->CallStaticObjectMethod(ljb->chatMessageStateClass, ljb->chatMessageStateFromIntId, (jint)state));
 
 	if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
 		env->DeleteGlobalRef(listener);
 		msg->message_state_changed_user_data = NULL;
 	}
-	env->DeleteLocalRef(chatMessageStateClass);
 }
 
 static void file_transfer_progress_indication(LinphoneChatMessage *msg, const LinphoneContent* content, size_t offset, size_t total) {
@@ -3617,18 +3616,18 @@ static void chat_room_impl_callback(LinphoneChatMessage* msg, LinphoneChatMessag
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
 	jobject jmessage=(jobject)linphone_chat_message_get_user_data(msg);
 
-	jclass chatMessageStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneChatMessage$State"));
-	jmethodID chatMessageStateFromIntId = env->GetStaticMethodID(chatMessageStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneChatMessage$State;");
+	LinphoneChatRoom *room = linphone_chat_message_get_chat_room(msg);
+	LinphoneCore *lc = linphone_chat_room_get_core(room);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	env->CallVoidMethod(
 			listener,
 			method,
 			jmessage,
-			env->CallStaticObjectMethod(chatMessageStateClass,chatMessageStateFromIntId,(jint)state));
+			env->CallStaticObjectMethod(ljb->chatMessageStateClass,ljb->chatMessageStateFromIntId,(jint)state));
 
 	if (state == LinphoneChatMessageStateDelivered || state == LinphoneChatMessageStateNotDelivered) {
 		env->DeleteGlobalRef(listener);
 		env->DeleteGlobalRef(jmessage);
-		env->DeleteGlobalRef(chatMessageStateClass);
 		linphone_chat_message_set_user_data(msg,NULL);
 	}
 }
@@ -4433,6 +4432,7 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_tunnelGetServers
 		const MSList *servers = linphone_tunnel_get_servers(tunnel);
 		const MSList *it;
 		int i;
+		
 		tunnelConfigArray = env->NewObjectArray(ms_list_size(servers), tunnelConfigClass, NULL);
 		for(it = servers, i=0; it != NULL; it = it->next, i++) {
 			LinphoneTunnelConfig *conf =  (LinphoneTunnelConfig *)it->data;
