@@ -31,12 +31,12 @@
 typedef struct _LinphoneConference LinphoneConference;
 
 typedef enum {
-	LinphoneConferenceClassMedia,
-	LinphoneConferenceClassTransport
+	LinphoneConferenceClassLocal,
+	LinphoneConferenceClassRemote
 } LinphoneConferenceClass;
 
-LinphoneConference *linphone_media_conference_new(LinphoneCore *core);
-LinphoneConference *linphone_transport_conference_new(LinphoneCore *core);
+LinphoneConference *linphone_local_conference_new(LinphoneCore *core);
+LinphoneConference *linphone_remote_conference_new(LinphoneCore *core);
 void linphone_conference_free(LinphoneConference *obj);
 
 int linphone_conference_add_call(LinphoneConference *obj, LinphoneCall *call);

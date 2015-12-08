@@ -7400,11 +7400,11 @@ const char *linphone_stream_type_to_string(const LinphoneStreamType type) {
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
 	const char *conf_method_name;
 	if(lc->conf_ctx == NULL) {
-		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_method", "media");
-		if(strcasecmp(conf_method_name, "media") == 0) {
-			lc->conf_ctx = linphone_media_conference_new(lc);
-		} else if(strcasecmp(conf_method_name, "transport") == 0) {
-			lc->conf_ctx = linphone_transport_conference_new(lc);
+		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_type", "local");
+		if(strcasecmp(conf_method_name, "local") == 0) {
+			lc->conf_ctx = linphone_local_conference_new(lc);
+		} else if(strcasecmp(conf_method_name, "remote") == 0) {
+			lc->conf_ctx = linphone_remote_conference_new(lc);
 		} else {
 			ms_error("'%s' is not a valid conference method", conf_method_name);
 			return -1;
@@ -7420,7 +7420,7 @@ int linphone_core_add_all_to_conference(LinphoneCore *lc) {
 		calls=calls->next;
 		linphone_core_add_to_conference(lc, call);
 	}
-	if(lc->conf_ctx && linphone_conference_check_class(lc->conf_ctx, LinphoneConferenceClassMedia)) {
+	if(lc->conf_ctx && linphone_conference_check_class(lc->conf_ctx, LinphoneConferenceClassLocal)) {
 		linphone_core_enter_conference(lc);
 	}
 	return 0;
