@@ -509,11 +509,10 @@ void linphone_gtk_remove_in_call_view(LinphoneCall *call){
 	GtkWidget *w=(GtkWidget*)linphone_call_get_user_pointer (call);
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
 	GtkWidget *nb=linphone_gtk_get_widget(main_window,"viewswitch");
-	gboolean in_conf=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
 	int idx;
 	g_return_if_fail(w!=NULL);
 	idx=gtk_notebook_page_num(GTK_NOTEBOOK(nb),w);
-	if (in_conf){
+	if (linphone_gtk_call_is_in_conference_view(call)){
 		linphone_gtk_unset_from_conference(call);
 	}
 	linphone_call_set_user_pointer (call,NULL);
@@ -776,7 +775,7 @@ void linphone_gtk_in_call_view_set_in_call(LinphoneCall *call){
 	GtkWidget *callee=linphone_gtk_get_widget(callview,"in_call_uri");
 	GtkWidget *duration=linphone_gtk_get_widget(callview,"in_call_duration");
 	guint taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
-	gboolean in_conf=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
+	gboolean in_conf=(linphone_call_get_conference(call) != NULL);
 	GtkWidget *call_stats=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"call_stats");
 
 	linphone_gtk_in_call_show_video(call);
@@ -854,7 +853,7 @@ void linphone_gtk_in_call_view_terminate(LinphoneCall *call, const char *error_m
 	video_window=(GtkWidget*)g_object_get_data(G_OBJECT(callview),"video_window");
 	status=linphone_gtk_get_widget(callview,"in_call_status");
 	taskid=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(callview),"taskid"));
-	in_conf=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
+	in_conf=(linphone_call_get_conference(call) != NULL);
 	if (video_window) gtk_widget_destroy(video_window);
 	if (status==NULL) return;
 	if (error_msg==NULL)

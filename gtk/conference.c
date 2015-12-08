@@ -178,4 +178,6 @@ void linphone_gtk_unset_from_conference(LinphoneCall *call){
 	}
 }
 
-
+bool_t linphone_gtk_call_is_in_conference_view(LinphoneCall *call) {
+	return (find_conferencee_from_call(call) != NULL);
+}
