@@ -203,7 +203,7 @@
                         </view>
                         <tableView clipsSubviews="YES" tag="6" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="30" sectionHeaderHeight="44" sectionFooterHeight="22" id="2jK-gw-ULv">
                             <rect key="frame" x="0.0" y="168" width="667" height="165"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                             <animations/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
@@ -217,7 +217,7 @@
                             <subviews>
                                 <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="avatar.png" id="d9m-G0-1u3" userLabel="avatarImage" customClass="UIRoundedImageView">
                                     <rect key="frame" x="30" y="8" width="86" height="86"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <animations/>
                                     <accessibility key="accessibilityConfiguration" label="Contact avatar">
                                         <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
@@ -290,7 +290,7 @@
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
             <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
-            <point key="canvasLocation" x="740.5" y="222.5"/>
+            <point key="canvasLocation" x="348.5" y="-44.5"/>
         </view>
         <tableViewController id="baU-d4-eu3" customClass="HistoryDetailsTableView">
             <connections>

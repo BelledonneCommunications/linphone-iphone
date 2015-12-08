@@ -283,7 +283,7 @@
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="-155.5" y="270.5"/>
+            <point key="canvasLocation" x="25.5" y="275.5"/>
         </view>
         <tableViewController id="20" userLabel="tableController" customClass="ContactDetailsTableView">
             <extendedEdge key="edgesForExtendedLayout"/>

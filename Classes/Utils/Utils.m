@@ -500,8 +500,9 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 		size.width = size.height = MAX(size.width, size.height);
 	}
 
-	UIGraphicsBeginImageContext(scaledImage.size);
-	[scaledImage drawInRect:CGRectMake(0, 0, scaledImage.size.width, scaledImage.size.height)];
+	UIGraphicsBeginImageContext(size);
+
+	[scaledImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
 	scaledImage = UIGraphicsGetImageFromCurrentImageContext();
 	UIGraphicsEndImageContext();
 

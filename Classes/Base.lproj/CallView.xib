@@ -63,7 +63,7 @@
             <connections>
                 <outlet property="view" destination="106" id="166"/>
             </connections>
-            <point key="canvasLocation" x="126" y="-34"/>
+            <point key="canvasLocation" x="646" y="-13"/>
         </tableViewController>
         <tableViewController id="sif-q0-7oE" userLabel="conferenceCallsTableController" customClass="CallConferenceTableView">
             <extendedEdge key="edgesForExtendedLayout"/>

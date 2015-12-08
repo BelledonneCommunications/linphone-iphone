@@ -285,7 +285,11 @@
 - (void)clearCache:(NSArray *)exclude {
 	for (NSString *key in [viewControllerCache allKeys]) {
 		bool remove = true;
-		if (exclude != nil) {
+
+		/*ImagePickerView can be used as popover and we do NOT want to free it*/;
+		if ([key isEqualToString:ImagePickerView.compositeViewDescription.content]) {
+			remove = false;
+		} else if (exclude != nil) {
 			for (UICompositeViewDescription *description in exclude) {
 				if ([key isEqualToString:description.content] || [key isEqualToString:description.statusBar] ||
 					[key isEqualToString:description.tabBar] || [key isEqualToString:description.sideMenu]) {
