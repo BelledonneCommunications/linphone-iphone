@@ -122,11 +122,11 @@
 			LinphoneCallLog *prev = [eventsOnThisDay lastObject] ? [[eventsOnThisDay lastObject] pointerValue] : NULL;
 			if (prev && linphone_address_weak_equal(linphone_call_log_get_remote_address(prev),
 													linphone_call_log_get_remote_address(log))) {
-				long value = (long)linphone_call_log_get_user_data(prev);
-				value++;
-				linphone_call_log_set_user_data(prev, (void *)value);
+				MSList *list = linphone_call_log_get_user_data(prev);
+				list = ms_list_append(list, log);
+				linphone_call_log_set_user_data(prev, list);
 			} else {
-				linphone_call_log_set_user_data(log, (void *)1);
+				linphone_call_log_set_user_data(log, NULL);
 				[eventsOnThisDay addObject:[NSValue valueWithPointer:log]];
 			}
 		}
@@ -239,6 +239,11 @@
 	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
 	  id log = [_sections objectForKey:_sortedDays[indexPath.section]][indexPath.row];
 	  LinphoneCallLog *callLog = [log pointerValue];
+	  MSList *count = linphone_call_log_get_user_data(callLog);
+	  while (count) {
+		  linphone_core_remove_call_log([LinphoneManager getLc], count->data);
+		  count = count->next;
+	  }
 	  linphone_core_remove_call_log([LinphoneManager getLc], callLog);
 	  [[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
 	  if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {
