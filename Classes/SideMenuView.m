@@ -82,6 +82,10 @@
 	[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
 }
 
+- (IBAction)onBackgroundClicked:(id)sender {
+    [PhoneMainView.instance.mainViewController hideSideMenu:YES];
+}
+
 - (void)registrationUpdateEvent:(NSNotification *)notif {
 	[self updateHeader];
 	[_sideMenuTableViewController.tableView reloadData];

@@ -22,5 +22,6 @@
 - (IBAction)onLateralSwipe:(id)sender;
 - (IBAction)onHeaderClick:(id)sender;
 - (IBAction)onAvatarClick:(id)sender;
+- (IBAction)onBackgroundClicked:(id)sender;
 
 @end

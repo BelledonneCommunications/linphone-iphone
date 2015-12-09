@@ -36,6 +36,9 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <animations/>
                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="56h-cQ-B5V" appends="YES" id="umX-R7-2IR"/>
+                            </connections>
                         </view>
                         <view contentMode="scaleToFill" id="i1P-cG-q8h" userLabel="headerView">
                             <rect key="frame" x="0.0" y="0.0" width="300" height="100"/>
@@ -121,10 +124,20 @@
                 <action selector="onHeaderClick:" destination="-1" id="yqn-58-lbb"/>
             </connections>
         </tapGestureRecognizer>
+        <tapGestureRecognizer id="56h-cQ-B5V" userLabel="onBackgroundClicked">
+            <connections>
+                <action selector="onBackgroundClicked:" destination="-1" id="U5P-C2-4FD"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="avatar.png" width="255" height="255"/>
         <image name="color_F.png" width="2" height="2"/>
         <image name="led_connected.png" width="11" height="11"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>
