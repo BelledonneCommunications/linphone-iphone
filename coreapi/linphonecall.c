@@ -1769,7 +1769,7 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		break;
 	}
 
-	call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call);
+	call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call) && sal_media_description_has_avpf(md);
 	if (call->current_params->avpf_enabled == TRUE) {
 		call->current_params->avpf_rr_interval = linphone_call_get_avpf_rr_interval(call);
 	} else {
