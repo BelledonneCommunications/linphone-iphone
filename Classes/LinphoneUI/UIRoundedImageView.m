@@ -45,7 +45,7 @@ INIT_WITH_COMMON {
 
 - (void)setImage:(UIImage *)image bordered:(BOOL)bordered withRoundedRadius:(BOOL)rounded {
 	// We have to scale image to layers limits so that when we round image, we have a proper circle
-	[super setImage:image];
+	[super setImage:[image squareCrop]];
 	[self setBordered:bordered];
 	[self setRoundRadius];
 }

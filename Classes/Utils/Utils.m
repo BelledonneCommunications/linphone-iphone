@@ -457,10 +457,10 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 - (UIImage *)squareCrop {
 	// This calculates the crop area.
 
-	float originalWidth = self.size.width;
-	float originalHeight = self.size.height;
+	size_t originalWidth = CGImageGetWidth(self.CGImage);
+	size_t originalHeight = CGImageGetHeight(self.CGImage);
 
-	float edge = fminf(originalWidth, originalHeight);
+	size_t edge = MIN(originalWidth, originalHeight);
 
 	float posX = (originalWidth - edge) / 2.0f;
 	float posY = (originalHeight - edge) / 2.0f;
