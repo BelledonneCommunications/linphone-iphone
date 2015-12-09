@@ -12,10 +12,12 @@ Here's how to launch Linphone for iPhone (more details below):
 2. Install [HomeBrew, a package manager for OS X](http://brew.sh) (MacPorts is supported but deprecated).
 3. Install Linphone dependencies: open iTerm.app in the current directory and list dependencies to install using:
  `./prepare.py`
-4. Build SDK (see below for options and explanations):
+4. Reorder your path so that brew tools are used instead of Apple's ones which are obsolete:
+ `export PATH=/usr/local/bin:$PATH`
+5. Build SDK (see below for options and explanations):
  `./prepare.py -c && ./prepare.py && make`
-5. Open linphone.xcodeproj in Xcode: `open linphone.xcodeproj`
-6. Press `⌘R` and voilà!
+6. Open linphone.xcodeproj in Xcode: `open linphone.xcodeproj`
+7. Press `⌘R` and voilà!
 
 # Building the SDK
 
