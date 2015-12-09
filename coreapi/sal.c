@@ -167,7 +167,7 @@ static bool_t is_null_address(const char *addr){
 /*check for the presence of at least one stream with requested direction */
 static bool_t has_dir(const SalMediaDescription *md, SalStreamDir stream_dir){
 	int i;
-	
+
 	/* we are looking for at least one stream with requested direction, inactive streams are ignored*/
 	for(i=0;i<SAL_MEDIA_DESCRIPTION_MAX_STREAMS;++i){
 		const SalStreamDescription *ss=&md->streams[i];
@@ -813,7 +813,7 @@ const char* sal_privacy_to_string(SalPrivacy privacy) {
 }
 
 static void remove_trailing_spaces(char *line){
-	size_t i;
+	int i;
 	for(i=strlen(line)-1;i>=0;--i){
 		if (isspace(line[i])) line[i]='\0';
 		else break;
