@@ -258,7 +258,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	ContactsListView *view = VIEW(ContactsListView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 
 - (IBAction)onEditClick:(id)event {

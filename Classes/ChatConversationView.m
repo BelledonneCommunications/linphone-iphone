@@ -461,7 +461,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onBackClick:(id)event {
 	[_tableController setChatRoom:NULL];
 	ChatsListView *view = VIEW(ChatsListView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 
 - (IBAction)onEditClick:(id)event {
