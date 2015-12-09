@@ -118,6 +118,8 @@
 				[self.sections setObject:eventsOnThisDay forKey:startDate];
 			}
 
+			linphone_call_log_set_user_data(log, NULL);
+
 			// if this contact was already the previous entry, do not add it twice
 			LinphoneCallLog *prev = [eventsOnThisDay lastObject] ? [[eventsOnThisDay lastObject] pointerValue] : NULL;
 			if (prev && linphone_address_weak_equal(linphone_call_log_get_remote_address(prev),
