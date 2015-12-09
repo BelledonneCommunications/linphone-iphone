@@ -245,7 +245,12 @@ static NSString *const kDisappearAnimation = @"disappear";
 									  ? chatButton.frame.origin.y
 									  : -selectedNewFrame.size.height /*hide it if none is selected*/))));
 	}
-	_selectedButtonImage.frame = selectedNewFrame;
+	
+	CGFloat delay = [[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] ? 0.3 : 0;
+	[UIView animateWithDuration:delay animations:^{
+		_selectedButtonImage.frame = selectedNewFrame;
+		
+	}];
 }
 
 #pragma mark - Action Functions
