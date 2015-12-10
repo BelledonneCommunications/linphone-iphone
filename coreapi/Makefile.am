@@ -114,7 +114,8 @@ else
 liblinphone_la_SOURCES+=linphone_tunnel_stubs.c linphone_tunnel.h
 endif
 
-
+liblinphone_la_SOURCES+=vcard.cc vcard.h
+liblinphone_la_CXXFLAGS=-std=c++11
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 
@@ -142,6 +143,7 @@ liblinphone_la_LIBADD= \
 		$(LIBXML2_LIBS) \
 		$(LDAP_LIBS) \
 		$(SASL_LIBS) \
+		$(BELCARD_LIBS) \
 		$(ZLIB_LIBS)
 
 
@@ -164,6 +166,7 @@ COMMON_CFLAGS=\
 	$(LIBXML2_CFLAGS) \
 	$(LDAP_CFLAGS) \
 	$(SASL_CFLAGS) \
+	$(BELCARD_CFLAGS) \
 	$(ZLIB_CFLAGS)
 
 if BUILD_WIZARD

@@ -653,6 +653,7 @@ struct _LinphoneFriend{
 	bool_t inc_subscribe_pending;
 	bool_t commit;
 	bool_t initial_subscribes_sent; /*used to know if initial subscribe message was sent or not*/
+	LinphoneVCard *vcard;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriend);

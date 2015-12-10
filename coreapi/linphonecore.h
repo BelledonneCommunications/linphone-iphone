@@ -4232,7 +4232,6 @@ LINPHONE_PUBLIC const char* linphone_transport_to_string(LinphoneTransportType t
 **/
 LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* transport);
 
-
 /**
  * @ingroup media_parameters
  * Get default call parameters reflecting current linphone core configuration
@@ -4241,7 +4240,6 @@ LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* trans
  * @deprecated use linphone_core_create_call_params()
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
-
 
 #ifdef __cplusplus
 }

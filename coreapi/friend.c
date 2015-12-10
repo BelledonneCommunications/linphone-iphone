@@ -132,6 +132,7 @@ LinphoneFriend * linphone_friend_new(){
 	obj->pol=LinphoneSPAccept;
 	obj->presence=NULL;
 	obj->subscribe=TRUE;
+	obj->vcard = NULL;
 	return obj;
 }
 
@@ -290,6 +291,7 @@ static void _linphone_friend_destroy(LinphoneFriend *lf){
 	if (lf->presence != NULL) linphone_presence_model_unref(lf->presence);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
+	if (lf->vcard != NULL) linphone_vcard_free(lf->vcard);
 }
 
 static belle_sip_error_code _linphone_friend_marshall(belle_sip_object_t *obj, char* buff, size_t buff_size, size_t *offset) {
@@ -724,6 +726,17 @@ void linphone_friend_unref(LinphoneFriend *lf) {
 /* DEPRECATED */
 void linphone_friend_destroy(LinphoneFriend *lf) {
 	linphone_friend_unref(lf);
+}
+
+LinphoneVCard* linphone_friend_get_vcard(LinphoneFriend *fr) {
+	return fr->vcard;
+}
+
+void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard) {
+	if (fr->vcard) {
+		linphone_vcard_free(fr->vcard);
+	}
+	fr->vcard = vcard;
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriend);

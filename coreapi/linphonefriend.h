@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONEFRIEND_H_
 
 #include "linphonepresence.h"
+#include "vcard.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -411,6 +412,16 @@ LINPHONE_PUBLIC void linphone_friend_unref(LinphoneFriend *lf);
  * Returns the LinphoneCore object managing this friend, if any.
  */
 LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr);
+
+/**
+ * Returns the VCard object associated to this friend, if any
+ */
+LINPHONE_PUBLIC LinphoneVCard* linphone_friend_get_vcard(LinphoneFriend *fr);
+
+/**
+ * Returns the VCard object associated to this friend, if any
+ */
+LINPHONE_PUBLIC void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard);
 /**
  * @}
  */
