@@ -247,39 +247,13 @@
 
 #pragma mark - UINavigationBarEx Class
 
-@interface UINavigationBarEx : UINavigationBar {
-}
+@interface UINavigationBarEx : UINavigationBar
 @end
 
 @implementation UINavigationBarEx
 
-#pragma mark - Lifecycle Functions
-
-- (void)initUINavigationBarEx {
+INIT_WITH_COMMON {
 	[self setTintColor:[LINPHONE_MAIN_COLOR adjustHue:5.0f / 180.0f saturation:0.0f brightness:0.0f alpha:0.0f]];
-}
-
-- (id)init {
-	self = [super init];
-	if (self) {
-		[self initUINavigationBarEx];
-	}
-	return self;
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder {
-	self = [super initWithCoder:aDecoder];
-	if (self) {
-		[self initUINavigationBarEx];
-	}
-	return self;
-}
-
-- (id)initWithFrame:(CGRect)frame {
-	self = [super initWithFrame:frame];
-	if (self) {
-		[self initUINavigationBarEx];
-	}
 	return self;
 }
 
@@ -430,13 +404,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[keys addObject:@"send_logs_button"];
 		[keys addObject:@"reset_logs_button"];
 		[[LinphoneManager instance] setLogsEnabled:debugEnabled];
-	} else if ([@"advanced_account_preference" compare:notif.object] == NSOrderedSame) {
-		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"advanced_account_preference"] boolValue];
-		[keys addObject:@"userid_preference"];
-		[keys addObject:@"display_name_preference"];
-		[keys addObject:@"proxy_preference"];
-		[keys addObject:@"outbound_proxy_preference"];
-		[keys addObject:@"avpf_preference"];
+	} else if ([@"account_mandatory_advanced_preference" compare:notif.object] == NSOrderedSame) {
+		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"account_mandatory_advanced_preference"] boolValue];
+		for (NSString *key in settingsStore->dict) {
+			if (([key hasPrefix:@"account_"]) && (![key hasPrefix:@"account_mandatory_"])) {
+				[keys addObject:key];
+			}
+		}
+
 	} else if ([@"video_preset_preference" compare:notif.object] == NSOrderedSame) {
 		NSString *video_preset = [notif.userInfo objectForKey:@"video_preset_preference"];
 		removeFromHiddenKeys = [video_preset isEqualToString:@"custom"];
@@ -458,7 +433,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 + (IASKSpecifier *)filterSpecifier:(IASKSpecifier *)specifier {
 	if (!linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
-		if ([[specifier key] isEqualToString:@"transport_preference"]) {
+		if ([[specifier key] isEqualToString:@"account_transport_preference"]) {
 			NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
 			NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
 			[titles removeObject:@"TLS"];
@@ -499,12 +474,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 
-	if ([specifier.key hasPrefix:@"account_"] && [specifier.key hasSuffix:@"_menu"]) {
+	if ([specifier.key hasPrefix:@"menu_account_"]) {
 		const MSList *accounts = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
-		int index = [[specifier.key substringFromIndex:@"account_".length] stringByReplacingOccurrencesOfString:@"_menu"
-																									 withString:@""]
-						.intValue -
-					1;
+		int index = [specifier.key substringFromIndex:@"menu_account_".length].intValue - 1;
 		if (index < ms_list_size(accounts)) {
 			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)ms_list_nth_data(accounts, index);
 			NSString *name = [NSString
@@ -522,7 +494,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	const MSList *accounts = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
 	for (int i = ms_list_size(accounts) + 1; i <= 5; i++) {
-		[hiddenKeys addObject:[NSString stringWithFormat:@"account_%d_menu", i]];
+		[hiddenKeys addObject:[NSString stringWithFormat:@"menu_account_%d", i]];
 	}
 
 	if (!linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
@@ -622,12 +594,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"tunnel_menu"];
 	}
 
-	if (![lm lpConfigBoolForKey:@"advanced_account_preference"]) {
-		[hiddenKeys addObject:@"userid_preference"];
-		[hiddenKeys addObject:@"display_name_preference"];
-		[hiddenKeys addObject:@"proxy_preference"];
-		[hiddenKeys addObject:@"outbound_proxy_preference"];
-		[hiddenKeys addObject:@"avpf_preference"];
+	if (![lm lpConfigBoolForKey:@"account_mandatory_advanced_preference"]) {
+		for (NSString *key in settingsStore->dict) {
+			if (([key hasPrefix:@"account_"]) && (![key hasPrefix:@"account_mandatory_"])) {
+				[hiddenKeys addObject:key];
+			}
+		}
 	}
 
 	if (![[[LinphoneManager instance] iapManager] enabled]) {
@@ -644,11 +616,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)recomputeAccountLabelsAndSync {
 	// it's a bit violent... but IASK is not designed to dynamically change subviews' name
 	_settingsController.hiddenKeys = [self findHiddenKeys];
-	[_settingsController.settingsReader indexPathForKey:@"account_1_menu"]; // force refresh username'
-	[_settingsController.settingsReader indexPathForKey:@"account_2_menu"]; // force refresh username'
-	[_settingsController.settingsReader indexPathForKey:@"account_3_menu"]; // force refresh username'
-	[_settingsController.settingsReader indexPathForKey:@"account_4_menu"]; // force refresh username'
-	[_settingsController.settingsReader indexPathForKey:@"account_5_menu"]; // force refresh username'
+	[_settingsController.settingsReader indexPathForKey:@"menu_account_1"]; // force refresh username'
+	[_settingsController.settingsReader indexPathForKey:@"menu_account_2"]; // force refresh username'
+	[_settingsController.settingsReader indexPathForKey:@"menu_account_3"]; // force refresh username'
+	[_settingsController.settingsReader indexPathForKey:@"menu_account_4"]; // force refresh username'
+	[_settingsController.settingsReader indexPathForKey:@"menu_account_5"]; // force refresh username'
 	[[_settingsController tableView] reloadData];
 }
 
@@ -707,7 +679,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([key isEqual:@"assistant_button"]) {
 		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
 		return;
-	} else if ([key isEqual:@"remove_proxy_button"]) {
+	} else if ([key isEqual:@"account_mandatory_remove_button"]) {
 		DTAlertView *alert = [[DTAlertView alloc]
 			initWithTitle:NSLocalizedString(@"Warning", nil)
 				  message:NSLocalizedString(@"Are you sure to want to remove your proxy setup?", nil)];

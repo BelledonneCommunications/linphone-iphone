@@ -23,7 +23,7 @@
 #import "LinphoneManager.h"
 
 @interface LinphoneCoreSettingsStore : IASKAbstractSettingsStore {
-	@private
+  @public
 	NSDictionary *dict;
 	NSDictionary *changedDict;
 }

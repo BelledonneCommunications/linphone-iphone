@@ -20,7 +20,7 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>account_1_menu</string>
+			<string>menu_account_1</string>
 			<key>File</key>
 			<string>Account</string>
 			<key>Title</key>
@@ -30,7 +30,7 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>account_2_menu</string>
+			<string>menu_account_2</string>
 			<key>File</key>
 			<string>Account</string>
 			<key>Title</key>
@@ -40,7 +40,7 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>account_3_menu</string>
+			<string>menu_account_3</string>
 			<key>File</key>
 			<string>Account</string>
 			<key>Title</key>
@@ -50,7 +50,7 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>account_4_menu</string>
+			<string>menu_account_4</string>
 			<key>File</key>
 			<string>Account</string>
 			<key>Title</key>
@@ -60,7 +60,7 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>account_5_menu</string>
+			<string>menu_account_5</string>
 			<key>File</key>
 			<string>Account</string>
 			<key>Title</key>

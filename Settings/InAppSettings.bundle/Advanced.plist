@@ -93,24 +93,6 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
-			<key>Key</key>
-			<string>expire_preference</string>
-			<key>Title</key>
-			<string>Expire</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>KeyboardType</key>
-			<string>NumberPad</string>
-			<key>DefaultValue</key>
-			<integer>600</integer>
-			<key>IASKTextAlignment</key>
-			<string>IASKUITextAlignmentRight</string>
-		</dict>
-		<dict>
 			<key>Title</key>
 			<string>Primary account</string>
 			<key>Type</key>

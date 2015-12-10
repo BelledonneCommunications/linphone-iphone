@@ -60,15 +60,7 @@ voiceproc_preference=1
 enable_log_collect=0
 
 [default_values]
-reg_expires=600
-
-[assistant]
-expires=1314000
-push_notification=1
-transport=tls
-ice=1
-stun=stun.linphone.org
-
+reg_expires=1314000
 
 [misc]
 max_calls=3

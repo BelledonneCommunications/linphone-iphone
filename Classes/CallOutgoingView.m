@@ -49,7 +49,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (!call) {
-		[PhoneMainView.instance popCurrentView];
+		if (![PhoneMainView.instance popCurrentView]) {
+			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+		}
 	} else {
 		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
