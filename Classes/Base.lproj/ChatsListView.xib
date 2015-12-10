@@ -74,6 +74,7 @@
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onBackToCallClick:" destination="-2" eventType="touchUpInside" id="eUD-Gk-qji"/>
+                                        <outlet property="tableView" destination="6" id="ePS-cV-S6m"/>
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="uqG-2T-VOa" userLabel="toggleSelectionButton" customClass="UIIconButton">

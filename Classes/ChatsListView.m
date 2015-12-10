@@ -76,7 +76,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
-	_addButton.hidden = _backToCallButton.hidden = self.tableController.isEditing;
+	_addButton.hidden = self.tableController.isEditing;
+	[_backToCallButton update];
 }
 
 - (IBAction)onDeleteClick:(id)sender {

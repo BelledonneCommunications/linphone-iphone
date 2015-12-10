@@ -169,7 +169,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
-	_callButton.hidden = (linphone_core_get_current_call([LinphoneManager getLc]) != NULL);
+	_callButton.hidden =
+		(_tableController.isEditing || linphone_core_get_current_call([LinphoneManager getLc]) != NULL);
 }
 
 - (void)update {
@@ -499,7 +500,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onEditionChangeClick:(id)sender {
 	_backButton.hidden = _callButton.hidden = _tableController.isEditing;
-	_backToCallButton.hidden |= _tableController.isEditing;
+	[_backToCallButton update];
 }
 
 - (IBAction)onCallClick:(id)sender {

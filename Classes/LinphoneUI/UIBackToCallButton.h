@@ -13,4 +13,5 @@
 - (IBAction)onBackToCallClick:(id)sender;
 - (void)update;
 
+@property(assign, nonatomic) IBOutlet UITableView *tableView;
 @end

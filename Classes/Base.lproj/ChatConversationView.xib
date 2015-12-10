@@ -112,6 +112,7 @@
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onBackToCallClick:" destination="-2" eventType="touchUpInside" id="bOG-ra-UpM"/>
+                                        <outlet property="tableView" destination="8" id="w1i-Px-Wdf"/>
                                     </connections>
                                 </button>
                                 <button hidden="YES" opaque="NO" tag="8" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wag-Nx-kd6" userLabel="deleteButton" customClass="UIIconButton">
