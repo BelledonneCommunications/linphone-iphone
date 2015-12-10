@@ -192,7 +192,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	CGRect frame = CGRectMake(0, 0, tableView.frame.size.width, 44);
+	CGRect frame = CGRectMake(0, 0, tableView.frame.size.width, tableView.sectionHeaderHeight);
 	UIView *tempView = [[UIView alloc] initWithFrame:frame];
 	tempView.backgroundColor = [UIColor whiteColor];
 
