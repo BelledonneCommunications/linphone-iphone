@@ -87,7 +87,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	[self showStatusBar:true];
+	[self disableVideoDisplay:NO];
 
 	if (hideControlsTimer != nil) {
 		[hideControlsTimer invalidate];
@@ -218,6 +218,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self previewTouchLift];
+	[self showStatusBar:!videoShown || (_nameLabel.alpha > 0.f)];
 }
 
 #pragma mark -
