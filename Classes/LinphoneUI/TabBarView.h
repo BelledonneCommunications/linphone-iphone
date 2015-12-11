@@ -19,6 +19,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TPMultiLayoutViewController.h"
+#import "UIBouncingView.h"
 
 @interface TabBarView : TPMultiLayoutViewController {
 }
@@ -27,10 +28,10 @@
 @property(nonatomic, strong) IBOutlet UIButton *contactsButton;
 @property(nonatomic, strong) IBOutlet UIButton *dialerButton;
 @property(nonatomic, strong) IBOutlet UIButton *chatButton;
-@property(nonatomic, strong) IBOutlet UIView *historyNotificationView;
-@property(nonatomic, strong) IBOutlet UILabel *historyNotificationLabel;
-@property(nonatomic, strong) IBOutlet UIView *chatNotificationView;
+@property(nonatomic, strong) IBOutlet UIBouncingView *historyNotificationView;
+@property(nonatomic, strong) IBOutlet UIBouncingView *chatNotificationView;
 @property(nonatomic, strong) IBOutlet UILabel *chatNotificationLabel;
+@property(nonatomic, strong) IBOutlet UILabel *historyNotificationLabel;
 @property(weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
 
 - (IBAction)onHistoryClick:(id)event;

@@ -112,6 +112,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(messageReceived:)
+												 name:kLinphoneMessageReceived
+											   object:nil];
+	[self updateUnreadMessage:FALSE];
+
 	// Update on show
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
@@ -217,6 +223,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[self updateUnreadMessage:NO];
 	[self previewTouchLift];
 	[self showStatusBar:!videoShown || (_nameLabel.alpha > 0.f)];
 }
@@ -876,4 +883,17 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		}];
 }
 
+#pragma mark - Bounce
+- (void)messageReceived:(NSNotification *)notif {
+	[self updateUnreadMessage:TRUE];
+}
+- (void)updateUnreadMessage:(BOOL)appear {
+	int unreadMessage = [LinphoneManager unreadMessageCount];
+	if (unreadMessage > 0) {
+		_chatNotificationLabel.text = [NSString stringWithFormat:@"%i", unreadMessage];
+		[_chatNotificationView startAnimating:appear];
+	} else {
+		[_chatNotificationView stopAnimating:appear];
+	}
+}
 @end

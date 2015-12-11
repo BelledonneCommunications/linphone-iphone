@@ -345,22 +345,4 @@
 	linphone_core_refresh_registers([LinphoneManager getLc]);
 }
 
-#pragma mark - TPMultiLayoutViewController Functions
-
-- (NSDictionary *)attributesForView:(UIView *)view {
-	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-
-	[attributes setObject:[NSValue valueWithCGRect:view.frame] forKey:@"frame"];
-	[attributes setObject:[NSValue valueWithCGRect:view.bounds] forKey:@"bounds"];
-	[attributes setObject:[NSNumber numberWithInteger:view.autoresizingMask] forKey:@"autoresizingMask"];
-
-	return attributes;
-}
-
-- (void)applyAttributes:(NSDictionary *)attributes toView:(UIView *)view {
-	view.frame = [[attributes objectForKey:@"frame"] CGRectValue];
-	view.bounds = [[attributes objectForKey:@"bounds"] CGRectValue];
-	view.autoresizingMask = [[attributes objectForKey:@"autoresizingMask"] integerValue];
-}
-
 @end

@@ -95,8 +95,12 @@
 	}
 
 	int count = linphone_chat_room_get_unread_messages_count(chatRoom);
-	[_unreadCountButton setTitle:[NSString stringWithFormat:@"%i", count] forState:UIControlStateNormal];
-	_unreadCountButton.hidden = (count <= 0);
+	_unreadCountLabel.text = [NSString stringWithFormat:@"%i", count];
+	if (count > 0) {
+		[_unreadCountView startAnimating:YES];
+	} else {
+		[_unreadCountView stopAnimating:YES];
+	}
 
 	UIFont *addressFont = (count <= 0) ? [UIFont systemFontOfSize:25] : [UIFont boldSystemFontOfSize:25];
 	_addressLabel.font = addressFont;

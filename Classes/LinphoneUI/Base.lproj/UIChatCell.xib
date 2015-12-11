@@ -11,7 +11,8 @@
                 <outlet property="avatarImage" destination="19" id="30"/>
                 <outlet property="chatContentLabel" destination="21" id="24"/>
                 <outlet property="chatLatestTimeLabel" destination="r7A-Mk-LQX" id="J0r-yr-YLk"/>
-                <outlet property="unreadCountButton" destination="VDt-hI-meD" id="YO9-Vz-JKy"/>
+                <outlet property="unreadCountLabel" destination="ZXq-Do-7Ua" id="anx-Na-sYz"/>
+                <outlet property="unreadCountView" destination="7DE-KJ-9Q3" id="hkt-rA-EKa"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -51,17 +52,30 @@
                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="VDt-hI-meD" userLabel="unreadCountButton" customClass="UIIconButton">
-                    <rect key="frame" x="346" y="4" width="28" height="27"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                <view autoresizesSubviews="NO" userInteractionEnabled="NO" tag="7" contentMode="scaleToFill" id="7DE-KJ-9Q3" userLabel="unreadCountView" customClass="UIBouncingView">
+                    <rect key="frame" x="350" y="7" width="21" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="NXj-A8-YLh" userLabel="unreadCountImage">
+                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                        </imageView>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="9" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="ZXq-Do-7Ua" userLabel="unreadCountLabel">
+                            <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <accessibility key="accessibilityConfiguration" label="Missed message(s)">
+                                <accessibilityTraits key="traits" none="YES"/>
+                            </accessibility>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
                     <animations/>
-                    <accessibility key="accessibilityConfiguration" label="Unread message count">
-                        <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
-                    </accessibility>
-                    <state key="normal" title="0" backgroundImage="chat_list_indicator.png">
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                </button>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
             </subviews>
             <animations/>
             <nil key="simulatedStatusBarMetrics"/>
@@ -71,6 +85,6 @@
     </objects>
     <resources>
         <image name="avatar.png" width="255" height="255"/>
-        <image name="chat_list_indicator.png" width="20" height="20"/>
+        <image name="history_chat_indicator.png" width="13" height="13"/>
     </resources>
 </document>

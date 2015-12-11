@@ -32,6 +32,7 @@
 #import "UIHangUpButton.h"
 #import "UIDigitButton.h"
 #import "UIRoundedImageView.h"
+#import "UIBouncingView.h"
 
 @class VideoView;
 
@@ -71,6 +72,8 @@
 @property(nonatomic, strong) IBOutlet UIButton *optionsTransferButton;
 @property(nonatomic, strong) IBOutlet UIToggleButton *numpadButton;
 @property(weak, nonatomic) IBOutlet UIPauseButton *conferencePauseButton;
+@property(weak, nonatomic) IBOutlet UIBouncingView *chatNotificationView;
+@property(weak, nonatomic) IBOutlet UILabel *chatNotificationLabel;
 
 @property(weak, nonatomic) IBOutlet UIView *bottomBar;
 @property(nonatomic, strong) IBOutlet UIDigitButton *oneButton;

@@ -21,6 +21,7 @@
 
 #import "UIRoundedImageView.h"
 #import "UIIconButton.h"
+#import "UIBouncingView.h"
 
 #include "linphone/linphonecore.h"
 
@@ -33,6 +34,8 @@
 @property (nonatomic, strong) IBOutlet UILabel* chatContentLabel;
 @property(weak, nonatomic) IBOutlet UILabel *chatLatestTimeLabel;
 @property(weak, nonatomic) IBOutlet UIIconButton *unreadCountButton;
+@property(weak, nonatomic) IBOutlet UIBouncingView *unreadCountView;
+@property(weak, nonatomic) IBOutlet UILabel *unreadCountLabel;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

@@ -11,6 +11,8 @@
                 <outlet property="bottomBar" destination="mga-O5-mUn" id="ObF-wX-nBD"/>
                 <outlet property="callPauseButton" destination="7f5-7T-fV3" id="A5d-op-0Iq"/>
                 <outlet property="callView" destination="9" id="TKY-dp-lKv"/>
+                <outlet property="chatNotificationLabel" destination="Saa-p5-chV" id="XEA-19-Jur"/>
+                <outlet property="chatNotificationView" destination="d9Y-2a-CDI" id="Cys-zI-ApZ"/>
                 <outlet property="conferenceCallsTable" destination="sif-q0-7oE" id="Fjr-dB-s4q"/>
                 <outlet property="conferencePauseButton" destination="HAk-mv-6sG" id="SJg-ew-UIZ"/>
                 <outlet property="conferenceView" destination="0Ju-u5-N7A" id="H5K-Nv-IKI"/>
@@ -688,6 +690,30 @@
                                                 <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="Jdk-1s-UnN"/>
                                             </connections>
                                         </button>
+                                        <view autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="d9Y-2a-CDI" userLabel="chatNotificationView" customClass="UIBouncingView">
+                                            <rect key="frame" x="330" y="8" width="21" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" tag="71" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="nPO-PM-4zJ" userLabel="chatNotificationImage">
+                                                    <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <animations/>
+                                                </imageView>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="72" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="Saa-p5-chV" userLabel="chatNotificationLabel">
+                                                    <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <animations/>
+                                                    <accessibility key="accessibilityConfiguration" label="Missed message(s)">
+                                                        <accessibilityTraits key="traits" none="YES"/>
+                                                    </accessibility>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <animations/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
                                     </subviews>
                                     <animations/>
                                 </view>
@@ -1320,6 +1346,30 @@
                                                 <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="PMo-F3-WMK"/>
                                             </connections>
                                         </button>
+                                        <view autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="1pd-et-5dy" userLabel="chatNotificationView" customClass="UIBouncingView">
+                                            <rect key="frame" x="295" y="8" width="21" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" tag="71" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="7ZF-Ch-AL1" userLabel="chatNotificationImage">
+                                                    <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <animations/>
+                                                </imageView>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="72" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="P2K-eB-z8Z" userLabel="chatNotificationLabel">
+                                                    <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <animations/>
+                                                    <accessibility key="accessibilityConfiguration" label="Missed message(s)">
+                                                        <accessibilityTraits key="traits" none="YES"/>
+                                                    </accessibility>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <animations/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
                                     </subviews>
                                     <animations/>
                                 </view>
@@ -1357,6 +1407,7 @@
         <image name="footer_chat_default.png" width="27" height="27"/>
         <image name="footer_dialer_default.png" width="27" height="27"/>
         <image name="footer_dialer_disabled.png" width="27" height="27"/>
+        <image name="history_chat_indicator.png" width="13" height="13"/>
         <image name="micro_default.png" width="29" height="37"/>
         <image name="micro_disabled.png" width="29" height="37"/>
         <image name="micro_selected.png" width="29" height="37"/>
