@@ -594,6 +594,7 @@ static void test_presence_list(void) {
 	lf = linphone_core_create_friend_with_address(laure->lc, "sip:michelle@sip.inexistentdomain.com");
 	linphone_friend_list_add_friend(lfl, lf);
 	linphone_core_set_friend_list(laure->lc, lfl);
+	linphone_friend_list_unref(lfl);
 	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
 
 	lcs = ms_list_append(lcs, laure->lc);
@@ -624,6 +625,7 @@ static void test_presence_list(void) {
 	lf = linphone_core_create_friend_with_address(marie->lc, laure_identity);
 	linphone_friend_list_add_friend(lfl, lf);
 	linphone_core_set_friend_list(marie->lc, lfl);
+	linphone_friend_list_unref(lfl);
 	linphone_friend_list_update_subscriptions(pauline->lc->friendlist, NULL, FALSE);
 
 	wait_for_list(lcs, &marie->stat.number_of_NotifyReceived, 1, 2000);
@@ -641,6 +643,7 @@ static void test_presence_list(void) {
 	lf = linphone_core_create_friend_with_address(pauline->lc, marie_identity);
 	linphone_friend_list_add_friend(lfl, lf);
 	linphone_core_set_friend_list(pauline->lc, lfl);
+	linphone_friend_list_unref(lfl);
 	linphone_friend_list_update_subscriptions(pauline->lc->friendlist, NULL, FALSE);
 
 	wait_for_list(lcs, &pauline->stat.number_of_NotifyReceived, 1, 2000);
@@ -701,8 +704,8 @@ static void test_presence_list_subscribe_before_publish(void) {
 	lf = linphone_core_create_friend_with_address(laure->lc, "sip:michelle@sip.inexistentdomain.com");
 	linphone_friend_list_add_friend(lfl, lf);
 	linphone_core_set_friend_list(laure->lc, lfl);
+	linphone_friend_list_unref(lfl);
 	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
-	//linphone_friend_list_update_subscriptions(pauline->lc->friendlist, NULL, FALSE);
 
 	lcs = ms_list_append(lcs, laure->lc);
 	lcs = ms_list_append(lcs, pauline->lc);
