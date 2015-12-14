@@ -27,7 +27,7 @@
 #import "UIDigitButton.h"
 
 @interface DialerView
-	: UIViewController <UITextFieldDelegate, UICompositeViewDelegate, MFMailComposeViewControllerDelegate> {
+	: TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, MFMailComposeViewControllerDelegate> {
 }
 
 - (void)setAddress:(NSString *)address;

@@ -34,8 +34,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 																 tabBar:TabBarView.class
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
-														  landscapeMode:LinphoneManager.runningOnIpad
-														   portraitMode:true];
+														 isLeftFragment:NO
+														   fragmentWith:HistoryListView.class];
 	}
 	return compositeDescription;
 }
@@ -56,6 +56,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
+	// if we use fragments, remove back button
+	if (LinphoneManager.runningOnIpad) {
+		_backButton.hidden = YES;
+		_backButton.alpha = 0;
+	}
+
 	UITapGestureRecognizer *headerTapGesture =
 		[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onContactClick:)];
 	[_headerView addGestureRecognizer:headerTapGesture];
@@ -65,7 +71,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillAppear:animated];
 
 	[self update];
-	[_tableView loadDataForAddress:(callLog ? linphone_call_log_get_remote_address(callLog) : NULL)];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(update)
@@ -91,52 +96,29 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark -
 
-+ (void)adaptSize:(UILabel *)label field:(UIView *)field {
-	//
-	// Adapt size
-	//
-	CGRect labelFrame = [label frame];
-	CGRect fieldFrame = [field frame];
-
-	fieldFrame.origin.x -= labelFrame.size.width;
-
-	// Compute firstName size
-	CGSize contraints;
-	contraints.height = [label frame].size.height;
-	contraints.width = ([field frame].size.width + [field frame].origin.x) - [label frame].origin.x;
-	CGSize firstNameSize = [[label text] sizeWithFont:[label font] constrainedToSize:contraints];
-	labelFrame.size.width = firstNameSize.width;
-
-	// Compute lastName size & position
-	fieldFrame.origin.x += labelFrame.size.width;
-	fieldFrame.size.width = (contraints.width + [label frame].origin.x) - fieldFrame.origin.x;
-
-	[label setFrame:labelFrame];
-	[field setFrame:fieldFrame];
-}
-
-- (void)retrieveCallLog {
+- (void)update {
 	// Look for the call log
 	callLog = NULL;
-	const MSList *list = linphone_core_get_call_logs([LinphoneManager getLc]);
-	while (list != NULL) {
-		LinphoneCallLog *log = (LinphoneCallLog *)list->data;
-		const char *cid = linphone_call_log_get_call_id(log);
-		if (cid != NULL && [_callLogId isEqualToString:[NSString stringWithUTF8String:cid]]) {
-			callLog = log;
-			break;
+	if (_callLogId) {
+		const MSList *list = linphone_core_get_call_logs([LinphoneManager getLc]);
+		while (list != NULL) {
+			LinphoneCallLog *log = (LinphoneCallLog *)list->data;
+			const char *cid = linphone_call_log_get_call_id(log);
+			if (cid != NULL && [_callLogId isEqualToString:[NSString stringWithUTF8String:cid]]) {
+				callLog = log;
+				break;
+			}
+			list = list->next;
 		}
-		list = list->next;
 	}
-}
 
-- (void)update {
 	// Pop if callLog is null
-	[self retrieveCallLog];
 	if (callLog == NULL) {
-		[PhoneMainView.instance popCurrentView];
+		_emptyLabel.hidden = NO;
+		_addContactButton.hidden = YES;
 		return;
 	}
+	_emptyLabel.hidden = YES;
 
 	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	_addContactButton.hidden = ([FastAddressBook getContactWithAddress:addr] != nil);
@@ -145,6 +127,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	char *addrURI = linphone_address_as_string_uri_only(addr);
 	_addressLabel.text = [NSString stringWithUTF8String:addrURI];
 	ms_free(addrURI);
+
+	[_tableView loadDataForAddress:(callLog ? linphone_call_log_get_remote_address(callLog) : NULL)];
 }
 
 #pragma mark - Action Functions

@@ -112,6 +112,9 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 - (void)selectContact:(ABRecordRef)acontact andReload:(BOOL)reload {
 	_contact = NULL;
 	[self resetData];
+
+	_emptyLabel.hidden = (acontact != NULL);
+
 	_contact = acontact;
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:acontact];
@@ -168,20 +171,28 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 #pragma mark - ViewController Functions
 
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
+- (void)viewDidLoad {
+	[super viewDidLoad];
+
+	// if we use fragments, remove back button
+	if (LinphoneManager.runningOnIpad) {
+		_backButton.hidden = YES;
+		_backButton.alpha = 0;
+	}
+
+	[self setContact:NULL];
 
 	_tableController.tableView.accessibilityIdentifier = @"Contact table";
 
 	[_editButton setImage:[UIImage imageNamed:@"valid_disabled.png"]
 				 forState:(UIControlStateDisabled | UIControlStateSelected)];
+}
 
-	if ([ContactSelection getSelectionMode] == ContactSelectionModeEdit ||
-		[ContactSelection getSelectionMode] == ContactSelectionModeNone) {
-		[_editButton setHidden:FALSE];
-	} else {
-		[_editButton setHidden:TRUE];
-	}
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+
+	_editButton.hidden = ([ContactSelection getSelectionMode] != ContactSelectionModeEdit &&
+						  [ContactSelection getSelectionMode] != ContactSelectionModeNone);
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -195,8 +206,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 																 tabBar:TabBarView.class
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
-														  landscapeMode:LinphoneManager.runningOnIpad
-														   portraitMode:true];
+														 isLeftFragment:NO
+														   fragmentWith:ContactsListView.class];
 	}
 	return compositeDescription;
 }
@@ -273,7 +284,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
-	NSString *msg = NSLocalizedString(@"Do you want to delete selected this contact?", nil);
+	NSString *msg = NSLocalizedString(@"Do you want to delete selected contact?", nil);
 	[UIConfirmationDialog ShowWithMessage:msg
 							cancelMessage:nil
 						   confirmMessage:nil

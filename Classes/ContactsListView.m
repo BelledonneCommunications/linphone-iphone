@@ -96,8 +96,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 																 tabBar:TabBarView.class
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
-														  landscapeMode:LinphoneManager.runningOnIpad
-														   portraitMode:true];
+														 isLeftFragment:YES
+														   fragmentWith:ContactDetailsView.class];
 	}
 	return compositeDescription;
 }
@@ -194,7 +194,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
-	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected contact?", nil)];
+	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected contacts?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil
 		confirmMessage:nil

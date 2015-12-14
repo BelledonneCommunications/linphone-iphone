@@ -563,7 +563,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (BOOL)isUnauthorizedView:(UICompositeViewDescription *)view {
-	return [[LinphoneManager.instance lpConfigStringForKey:@"unauthorized_views"] containsString:view.content];
+	return [[LinphoneManager.instance lpConfigStringForKey:@"unauthorized_views"] containsString:view.name];
 }
 
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view
@@ -577,11 +577,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 		if (fallback && [NSClassFromString(fallback) respondsToSelector:@selector(compositeViewDescription)]) {
 			fallback_view = [NSClassFromString(fallback) performSelector:@selector(compositeViewDescription)];
 		}
-		LOGW(@"Trying to access unauthorized view %@, going back to %@", view.content, fallback_view.content);
+		LOGW(@"Trying to access unauthorized view %@, going back to %@", view.name, fallback_view.name);
 		view = fallback_view;
 	}
 	if (![view equal:vc.currentView] || vc != self) {
-		LOGI(@"Change current view to %@", [view content]);
+		LOGI(@"Change current view to %@", view.name);
 		if (animated && transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
 		[vc.mainViewController setViewTransition:(animated ? transition : nil)];
@@ -598,14 +598,14 @@ static RootViewManager *rootViewManagerInstance = nil;
 	return [vc->mainViewController getCurrentViewController];
 }
 
-- (void)popToView:(UICompositeViewDescription *)view {
+- (UIViewController *)popToView:(UICompositeViewDescription *)view {
 	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
 	while ([viewStack count] > 1 && ![[viewStack lastObject] equal:view]) {
 		[viewStack removeLastObject];
 	}
-	[self _changeCurrentView:[viewStack lastObject]
-				  transition:[PhoneMainView getBackwardTransition]
-					animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+	return [self _changeCurrentView:[viewStack lastObject]
+						 transition:[PhoneMainView getBackwardTransition]
+						   animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
 }
 
 - (UICompositeViewDescription *)firstView {

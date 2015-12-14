@@ -22,8 +22,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 																 tabBar:TabBarView.class
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
-														  landscapeMode:false
-														   portraitMode:true];
+														 isLeftFragment:NO
+														   fragmentWith:ChatsListView.class];
 	}
 	return compositeDescription;
 }

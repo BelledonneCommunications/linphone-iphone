@@ -27,27 +27,29 @@
 @interface UICompositeViewDescription : NSObject {
 }
 
-@property(strong) NSString *content;
+@property(strong) NSString *name;
 @property(strong) NSString *statusBar;
 @property(strong) NSString *tabBar;
 @property(strong) NSString *sideMenu;
+@property(strong) NSString *otherFragment;
 @property(assign) BOOL statusBarEnabled;
 @property(assign) BOOL tabBarEnabled;
 @property(assign) BOOL sideMenuEnabled;
 @property(assign) BOOL fullscreen;
+@property(assign) BOOL isLeftFragment;
+@property(assign) BOOL darkBackground;
 @property(assign) BOOL landscapeMode;
 @property(assign) BOOL portraitMode;
-@property(assign) BOOL darkBackground;
 
 - (id)copy;
 - (BOOL)equal:(UICompositeViewDescription *)description;
-- (id)init:(Class)content
-		statusBar:(Class)statusBar
-		   tabBar:(Class)tabBar
-		 sideMenu:(Class)sideMenu
-	   fullscreen:(BOOL)fullscreen
-	landscapeMode:(BOOL)landscapeMode
-	 portraitMode:(BOOL)portraitMode;
+- (id)init:(Class)name
+		 statusBar:(Class)statusBar
+			tabBar:(Class)tabBar
+		  sideMenu:(Class)sideMenu
+		fullscreen:(BOOL)fullscreen
+	isLeftFragment:(BOOL)isLeftFragment
+	  fragmentWith:(Class)otherFragment;
 
 @end
 
@@ -66,9 +68,9 @@
 }
 
 @property(strong) CATransition *viewTransition;
-
 @property(nonatomic, strong) IBOutlet UIView *statusBarView;
-@property(nonatomic, strong) IBOutlet UIView *contentView;
+@property(nonatomic, strong) IBOutlet UIView *mainView;
+@property(nonatomic, strong) IBOutlet UIView *detailsView;
 @property(nonatomic, strong) IBOutlet UIView *tabBarView;
 @property(strong, nonatomic) IBOutlet UIView *sideMenuView;
 

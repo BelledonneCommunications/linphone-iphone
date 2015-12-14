@@ -27,31 +27,8 @@
 
 @synthesize waitView;
 
-- (void)initUIVideoButton {
+INIT_WITH_COMMON {
 	last_update_state = FALSE;
-}
-
-- (id)init {
-	self = [super init];
-	if (self) {
-		[self initUIVideoButton];
-	}
-	return self;
-}
-
-- (id)initWithCoder:(NSCoder *)decoder {
-	self = [super initWithCoder:decoder];
-	if (self) {
-		[self initUIVideoButton];
-	}
-	return self;
-}
-
-- (id)initWithFrame:(CGRect)frame {
-	self = [super initWithFrame:frame];
-	if (self) {
-		[self initUIVideoButton];
-	}
 	return self;
 }
 

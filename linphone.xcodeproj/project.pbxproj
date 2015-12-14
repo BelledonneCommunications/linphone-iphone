@@ -81,6 +81,7 @@
 		6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6306440C1BECB08500134C72 /* FirstLoginView.m */; };
 		6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6308F9C41BF0DD6600D1234B /* XMLRPCHelper.m */; };
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
+		63130FB21C1ED06900371918 /* SideMenuView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63130FB01C1ED06900371918 /* SideMenuView~ipad.xib */; };
 		631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */; };
 		631348321B6FA53300C6BDCB /* rootca.pem in Resources */ = {isa = PBXBuildFile; fileRef = 631348311B6FA53300C6BDCB /* rootca.pem */; };
 		6316FA6D1BE12A3E0050E441 /* UIRightImageButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6316FA6C1BE12A3E0050E441 /* UIRightImageButton.m */; };
@@ -470,6 +471,9 @@
 		63730FBA1C07570C00AD7A74 /* waiting_time@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 63730E521C07570C00AD7A74 /* waiting_time@2x.png */; };
 		6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6377AC7F1BDE4069007F7625 /* UIBackToCallButton.m */; };
 		6381DA7D1C1AD5EA00DF3BBD /* UIBouncingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6381DA7C1C1AD5EA00DF3BBD /* UIBouncingView.m */; };
+		638F1A621C2021B2004B8E02 /* DialerView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 638F1A601C2021B2004B8E02 /* DialerView~ipad.xib */; };
+		638F1A881C2167C2004B8E02 /* CallView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 638F1A861C2167C2004B8E02 /* CallView~ipad.xib */; };
+		638F1A911C21993D004B8E02 /* UICompositeView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 638F1A8F1C21993D004B8E02 /* UICompositeView~ipad.xib */; };
 		639CEAFD1A1DF4D9004DE38F /* StatusBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEAFF1A1DF4D9004DE38F /* StatusBarView.xib */; };
 		639CEB001A1DF4E4004DE38F /* UIHistoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB021A1DF4E4004DE38F /* UIHistoryCell.xib */; };
 		639CEB031A1DF4EB004DE38F /* UICompositeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB051A1DF4EB004DE38F /* UICompositeView.xib */; };
@@ -885,6 +889,7 @@
 		6308F9C41BF0DD6600D1234B /* XMLRPCHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XMLRPCHelper.m; path = Utils/XMLRPCHelper.m; sourceTree = "<group>"; };
 		630CF5551AF7CE1500539F7A /* UITextField+DoneButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+DoneButton.h"; sourceTree = "<group>"; };
 		630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+DoneButton.m"; sourceTree = "<group>"; };
+		63130FB11C1ED06900371918 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/SideMenuView~ipad.xib"; sourceTree = "<group>"; };
 		6313482E1B6F7B6600C6BDCB /* UIRoundBorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundBorderedButton.h; sourceTree = "<group>"; };
 		6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundBorderedButton.m; sourceTree = "<group>"; };
 		631348311B6FA53300C6BDCB /* rootca.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rootca.pem; path = "liblinphone-sdk/apple-darwin/share/linphone/rootca.pem"; sourceTree = SOURCE_ROOT; };
@@ -1289,6 +1294,9 @@
 		6377AC7F1BDE4069007F7625 /* UIBackToCallButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBackToCallButton.m; sourceTree = "<group>"; };
 		6381DA7B1C1AD5EA00DF3BBD /* UIBouncingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBouncingView.h; sourceTree = "<group>"; };
 		6381DA7C1C1AD5EA00DF3BBD /* UIBouncingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBouncingView.m; sourceTree = "<group>"; };
+		638F1A611C2021B2004B8E02 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/DialerView~ipad.xib"; sourceTree = "<group>"; };
+		638F1A871C2167C2004B8E02 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/CallView~ipad.xib"; sourceTree = "<group>"; };
+		638F1A901C21993D004B8E02 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = "Base.lproj/UICompositeView~ipad.xib"; sourceTree = "<group>"; };
 		639CEAFE1A1DF4D9004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/StatusBarView.xib; sourceTree = "<group>"; };
 		639CEB011A1DF4E4004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIHistoryCell.xib; sourceTree = "<group>"; };
 		639CEB041A1DF4EB004DE38F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICompositeView.xib; sourceTree = "<group>"; };
@@ -1740,6 +1748,7 @@
 				D3F83EE91582021700336684 /* CallView.h */,
 				D3F83EEA1582021700336684 /* CallView.m */,
 				D381881C15FE3FCA00C3EDCA /* CallView.xib */,
+				638F1A861C2167C2004B8E02 /* CallView~ipad.xib */,
 				6341807A1BBC103100F71761 /* ChatConversationCreateTableView.h */,
 				6341807B1BBC103100F71761 /* ChatConversationCreateTableView.m */,
 				6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */,
@@ -1769,6 +1778,7 @@
 				22F2508B107141E100AC9B3F /* DialerView.h */,
 				22F2508C107141E100AC9B3F /* DialerView.m */,
 				D38187C415FE345B00C3EDCA /* DialerView.xib */,
+				638F1A601C2021B2004B8E02 /* DialerView~ipad.xib */,
 				6306440B1BECB08500134C72 /* FirstLoginView.h */,
 				6306440C1BECB08500134C72 /* FirstLoginView.m */,
 				639E9C951C0DB7BE00019A75 /* FirstLoginView.xib */,
@@ -1809,6 +1819,7 @@
 				633756421B67D2B100E21BAD /* SideMenuView.h */,
 				633756431B67D2B100E21BAD /* SideMenuView.m */,
 				639E9CB21C0DB83000019A75 /* SideMenuView.xib */,
+				63130FB01C1ED06900371918 /* SideMenuView~ipad.xib */,
 				D354981E1587716B000081D8 /* StatusBarView.h */,
 				D354981F1587716B000081D8 /* StatusBarView.m */,
 				639CEAFF1A1DF4D9004DE38F /* StatusBarView.xib */,
@@ -1871,6 +1882,7 @@
 				D31B4B1E159876C0002E6C72 /* UICompositeView.h */,
 				D31B4B1F159876C0002E6C72 /* UICompositeView.m */,
 				639CEB051A1DF4EB004DE38F /* UICompositeView.xib */,
+				638F1A8F1C21993D004B8E02 /* UICompositeView~ipad.xib */,
 				63701DDD1BA32039006A9AE3 /* UIConfirmationDialog.h */,
 				63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */,
 				639E9CAB1C0DB7FB00019A75 /* UIConfirmationDialog.xib */,
@@ -2761,7 +2773,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0720;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = Z2V957B3D6;
@@ -2873,6 +2885,7 @@
 				636316D11A1DEBCB0009B839 /* AboutView.xib in Resources */,
 				63730F931C07570C00AD7A74 /* route_earpiece_selected.png in Resources */,
 				63730F1B1C07570C00AD7A74 /* history_chat_indicator@2x.png in Resources */,
+				638F1A621C2021B2004B8E02 /* DialerView~ipad.xib in Resources */,
 				63730E981C07570C00AD7A74 /* call_transfer_default@2x.png in Resources */,
 				63730ED01C07570C00AD7A74 /* color_D.png in Resources */,
 				63730FB81C07570C00AD7A74 /* voicemail@2x.png in Resources */,
@@ -2998,6 +3011,7 @@
 				63730E791C07570C00AD7A74 /* call_hangup_disabled.png in Resources */,
 				F088488A19FF8C41007FFCF3 /* UIContactCell.xib in Resources */,
 				63730EF41C07570C00AD7A74 /* deselect_all.png in Resources */,
+				63130FB21C1ED06900371918 /* SideMenuView~ipad.xib in Resources */,
 				63730F461C07570C00AD7A74 /* numpad_3_default.png in Resources */,
 				63730EB11C07570C00AD7A74 /* chat_add_disabled.png in Resources */,
 				63730F5F1C07570C00AD7A74 /* numpad_9_default@2x.png in Resources */,
@@ -3044,6 +3058,7 @@
 				63730F9C1C07570C00AD7A74 /* routes_default@2x.png in Resources */,
 				63730F8B1C07570C00AD7A74 /* route_bluetooth_disabled.png in Resources */,
 				63AADBFA1B6A0FF200AA16FD /* msg.wav in Resources */,
+				638F1A911C21993D004B8E02 /* UICompositeView~ipad.xib in Resources */,
 				63730E971C07570C00AD7A74 /* call_transfer_default.png in Resources */,
 				63730ED91C07570C00AD7A74 /* conference_exit_default@2x.png in Resources */,
 				63730F101C07570C00AD7A74 /* footer_history_default.png in Resources */,
@@ -3108,6 +3123,7 @@
 				63730F791C07570C00AD7A74 /* options_transfer_call_default.png in Resources */,
 				63730EC51C07570C00AD7A74 /* chat_start_body_disabled.png in Resources */,
 				D38187DD15FE348A00C3EDCA /* AssistantView.xib in Resources */,
+				638F1A881C2167C2004B8E02 /* CallView~ipad.xib in Resources */,
 				63730F851C07570C00AD7A74 /* pause_small_disabled.png in Resources */,
 				63730EAC1C07570C00AD7A74 /* cancel_edit_default@2x.png in Resources */,
 				63730F411C07570C00AD7A74 /* numpad_1_over@2x.png in Resources */,
@@ -3590,6 +3606,14 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
+		63130FB01C1ED06900371918 /* SideMenuView~ipad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				63130FB11C1ED06900371918 /* Base */,
+			);
+			name = "SideMenuView~ipad.xib";
+			sourceTree = "<group>";
+		};
 		634610101B6140A500548952 /* CallOutgoingView.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -3615,6 +3639,30 @@
 				F0AF070E1A24BA770086C9C1 /* ar */,
 			);
 			name = SettingsView.xib;
+			sourceTree = "<group>";
+		};
+		638F1A601C2021B2004B8E02 /* DialerView~ipad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				638F1A611C2021B2004B8E02 /* Base */,
+			);
+			name = "DialerView~ipad.xib";
+			sourceTree = "<group>";
+		};
+		638F1A861C2167C2004B8E02 /* CallView~ipad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				638F1A871C2167C2004B8E02 /* Base */,
+			);
+			name = "CallView~ipad.xib";
+			sourceTree = "<group>";
+		};
+		638F1A8F1C21993D004B8E02 /* UICompositeView~ipad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				638F1A901C21993D004B8E02 /* Base */,
+			);
+			name = "UICompositeView~ipad.xib";
 			sourceTree = "<group>";
 		};
 		639CEAFF1A1DF4D9004DE38F /* StatusBarView.xib */ = {

@@ -29,6 +29,7 @@
   @private
 	LinphoneCallLog *callLog;
 }
+@property(weak, nonatomic) IBOutlet UIButton *backButton;
 @property(weak, nonatomic) IBOutlet UILabel *contactLabel;
 @property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, strong) IBOutlet UILabel *addressLabel;
@@ -36,6 +37,7 @@
 @property(nonatomic, copy, setter=setCallLogId:) NSString *callLogId;
 @property(weak, nonatomic) IBOutlet UIView *headerView;
 @property(strong, nonatomic) IBOutlet HistoryDetailsTableView *tableView;
+@property(weak, nonatomic) IBOutlet UILabel *emptyLabel;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;

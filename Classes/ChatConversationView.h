@@ -39,6 +39,7 @@
 	BOOL composingVisible;
 }
 
+@property(weak, nonatomic) IBOutlet UIIconButton *backButton;
 @property(nonatomic, strong) IBOutlet ChatConversationTableView *tableController;
 @property(weak, nonatomic) IBOutlet HPGrowingTextView *messageField;
 @property(weak, nonatomic) IBOutlet UIView *topBar;
@@ -51,7 +52,6 @@
 @property(strong, nonatomic) IBOutlet UILabel *composeLabel;
 @property(strong, nonatomic) IBOutlet UIView *composeIndicatorView;
 @property(nonatomic, strong) IBOutlet UIButton *pictureButton;
-@property(weak, nonatomic) IBOutlet UIIconButton *backButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *callButton;
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
 

@@ -53,8 +53,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 																 tabBar:nil
 															   sideMenu:CallSideMenuView.class
 															 fullscreen:false
-														  landscapeMode:LinphoneManager.runningOnIpad
-														   portraitMode:true];
+														 isLeftFragment:YES
+														   fragmentWith:nil];
 		compositeDescription.darkBackground = true;
 	}
 	return compositeDescription;

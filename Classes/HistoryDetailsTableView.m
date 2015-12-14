@@ -18,11 +18,16 @@
 	} else {
 		[callLogs removeAllObjects];
 	}
-	const MSList *logs = linphone_core_get_call_history_for_address([LinphoneManager getLc], peer);
-	while (logs != NULL) {
-		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
-		[callLogs addObject:[NSValue valueWithPointer:log]];
-		logs = ms_list_next(logs);
+
+	if (peer) {
+		const MSList *logs = linphone_core_get_call_history_for_address([LinphoneManager getLc], peer);
+		while (logs != NULL) {
+			LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
+			if (linphone_address_weak_equal(linphone_call_log_get_remote_address(log), peer)) {
+				[callLogs addObject:[NSValue valueWithPointer:log]];
+			}
+			logs = ms_list_next(logs);
+		}
 	}
 	[[self tableView] reloadData];
 }

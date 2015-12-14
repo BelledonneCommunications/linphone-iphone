@@ -123,8 +123,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 																 tabBar:nil
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
-														  landscapeMode:LinphoneManager.runningOnIpad
-														   portraitMode:true];
+														 isLeftFragment:NO
+														   fragmentWith:nil];
 	}
 	return compositeDescription;
 }

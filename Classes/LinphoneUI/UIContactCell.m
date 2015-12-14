@@ -36,6 +36,13 @@
 		UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:0]);
 		[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
 		[self addSubview:sub];
+
+		// Sections are wider on iPad and overlap linphone image - let's move it a bit
+		if (LinphoneManager.runningOnIpad) {
+			CGRect frame = _linphoneImage.frame;
+			frame.origin.x -= frame.size.width / 2;
+			_linphoneImage.frame = frame;
+		}
 	}
 	return self;
 }

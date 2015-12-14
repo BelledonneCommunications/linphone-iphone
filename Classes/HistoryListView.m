@@ -19,6 +19,7 @@
 
 #import "HistoryListView.h"
 #import "PhoneMainView.h"
+#import "LinphoneUI/UIHistoryCell.h"
 
 @implementation HistoryListView
 
@@ -35,8 +36,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 																 tabBar:TabBarView.class
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
-														  landscapeMode:LinphoneManager.runningOnIpad
-														   portraitMode:true];
+														 isLeftFragment:YES
+														   fragmentWith:HistoryDetailsView.class];
 	}
 	return compositeDescription;
 }
@@ -91,7 +92,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)event {
-	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected log?", nil)];
+	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected logs?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil
 		confirmMessage:nil

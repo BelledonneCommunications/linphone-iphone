@@ -104,6 +104,12 @@
 }
 
 - (void)loadData {
+	for (id day in self.sections.allKeys) {
+		for (id log in self.sections[day]) {
+			linphone_call_log_unref([log pointerValue]);
+		}
+	}
+
 	const MSList *logs = linphone_core_get_call_logs([LinphoneManager getLc]);
 	self.sections = [NSMutableDictionary dictionary];
 	while (logs != NULL) {
@@ -128,8 +134,7 @@
 				list = ms_list_append(list, log);
 				linphone_call_log_set_user_data(prev, list);
 			} else {
-				linphone_call_log_set_user_data(log, NULL);
-				[eventsOnThisDay addObject:[NSValue valueWithPointer:log]];
+				[eventsOnThisDay addObject:[NSValue valueWithPointer:linphone_call_log_ref(log)]];
 			}
 		}
 		logs = ms_list_next(logs);
@@ -138,6 +143,17 @@
 	[self computeSections];
 
 	[super loadData];
+
+	// reset details view since in fragment mode, details are relative to current data
+	// select first log if any
+	NSString *callId = nil;
+	if ([self totalNumberOfItems] > 0) {
+		id logId = [_sections objectForKey:_sortedDays[0]][0];
+		LinphoneCallLog *log = [logId pointerValue];
+		callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(log) ?: ""];
+	}
+	HistoryDetailsView *view = VIEW(HistoryDetailsView);
+	[view setCallLogId:callId];
 }
 
 - (void)computeSections {
@@ -222,7 +238,13 @@
 		[tableView beginUpdates];
 		id log = [_sections objectForKey:_sortedDays[indexPath.section]][indexPath.row];
 		LinphoneCallLog *callLog = [log pointerValue];
+		MSList *count = linphone_call_log_get_user_data(callLog);
+		while (count) {
+			linphone_core_remove_call_log([LinphoneManager getLc], count->data);
+			count = count->next;
+		}
 		linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+		linphone_call_log_unref(callLog);
 		[[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
 		if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {
 			[_sections removeObjectForKey:_sortedDays[indexPath.section]];
@@ -247,6 +269,7 @@
 		  count = count->next;
 	  }
 	  linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+	  linphone_call_log_unref(callLog);
 	  [[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
 	  if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {
 		  [_sections removeObjectForKey:_sortedDays[indexPath.section]];

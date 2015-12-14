@@ -60,8 +60,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 																 tabBar:nil
 															   sideMenu:CallSideMenuView.class
 															 fullscreen:false
-														  landscapeMode:false
-														   portraitMode:true];
+														 isLeftFragment:YES
+														   fragmentWith:nil];
 		compositeDescription.darkBackground = true;
 	}
 	return compositeDescription;

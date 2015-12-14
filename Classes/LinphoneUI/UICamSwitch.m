@@ -26,36 +26,8 @@
 
 #pragma mark - Lifecycle Functions
 
-- (id)initUICamSwitch {
+INIT_WITH_COMMON {
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
-	return self;
-}
-
-- (id)init {
-	self = [super init];
-	if (self) {
-		if (!(self = [self initUICamSwitch]))
-			return nil;
-	}
-	return self;
-}
-
-- (id)initWithFrame:(CGRect)frame {
-
-	self = [super initWithFrame:frame];
-	if (self) {
-		if (!(self = [self initUICamSwitch]))
-			return nil;
-	}
-	return self;
-}
-
-- (id)initWithCoder:(NSCoder *)decoder {
-	self = [super initWithCoder:decoder];
-	if (self) {
-		if (!(self = [self initUICamSwitch]))
-			return nil;
-	}
 	return self;
 }
 

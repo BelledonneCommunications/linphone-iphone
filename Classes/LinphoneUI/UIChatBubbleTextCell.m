@@ -276,11 +276,12 @@ static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
 			[[UIChatBubbleTextCell alloc] initWithIdentifier:NSStringFromClass(UIChatBubbleTextCell.class)];
 		dateFont = cell.contactDateLabel.font;
 		dateViewSize = cell.contactDateLabel.frame.size;
+		dateViewSize.width = CGFLOAT_MAX;
 	}
 
 	CGSize messageSize = [self ViewHeightForMessage:chat withWidth:width];
 	CGSize dateSize = [self computeBoundingBox:[self ContactDateForChat:chat] size:dateViewSize font:dateFont];
-	messageSize.width = MAX(MAX(messageSize.width, dateSize.width + CELL_MESSAGE_X_MARGIN), CELL_MIN_WIDTH);
+	messageSize.width = MAX(MAX(messageSize.width, MIN(dateSize.width + CELL_MESSAGE_X_MARGIN, width)), CELL_MIN_WIDTH);
 
 	return messageSize;
 }

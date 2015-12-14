@@ -27,4 +27,6 @@
 - (IBAction)onEditClick:(id)sender;
 - (IBAction)onCancelClick:(id)sender;
 
+- (NSInteger)totalNumberOfItems;
+
 @end

@@ -35,4 +35,6 @@
 
 - (id)initWithIdentifier:(NSString*)identifier;
 
+- (IBAction)onDetails:(id)event;
+
 @end

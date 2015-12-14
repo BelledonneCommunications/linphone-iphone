@@ -342,7 +342,14 @@
 }
 
 - (IBAction)onRegistrationStateClick:(id)sender {
-	linphone_core_refresh_registers([LinphoneManager getLc]);
+	LinphoneCore *lc = [LinphoneManager getLc];
+	if (linphone_core_get_default_proxy_config(lc)) {
+		linphone_core_refresh_registers(lc);
+	} else if (linphone_core_get_proxy_config_list(lc)) {
+		[PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
+	} else {
+		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
+	}
 }
 
 @end

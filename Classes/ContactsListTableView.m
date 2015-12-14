@@ -144,6 +144,12 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		}
 	}
 	[super loadData];
+	// reset details view since in fragment mode, details are relative to current data
+	// select first contact if any
+	ABRecordRef contact =
+		([self totalNumberOfItems] > 0) ? [self contactForIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] : nil;
+	ContactDetailsView *view = VIEW(ContactDetailsView);
+	[view setContact:contact];
 }
 
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
@@ -167,16 +173,20 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	return [(OrderedDictionary *)[addressBookMap objectForKey:[addressBookMap keyAtIndex:section]] count];
 }
 
+- (ABRecordRef)contactForIndexPath:(NSIndexPath *)indexPath {
+
+	OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
+	NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
+	return (__bridge ABRecordRef)([subDic objectForKey:key]);
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = NSStringFromClass(UIContactCell.class);
 	UIContactCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
 		cell = [[UIContactCell alloc] initWithIdentifier:kCellId];
 	}
-	OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
-
-	NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
-	ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
+	ABRecordRef contact = [self contactForIndexPath:indexPath];
 
 	// Cached avatar
 	UIImage *image = [avatarMap objectForKey:[NSNumber numberWithInt:ABRecordGetRecordID(contact)]];

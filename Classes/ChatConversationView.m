@@ -56,8 +56,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 																 tabBar:TabBarView.class
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
-														  landscapeMode:false
-														   portraitMode:true];
+														 isLeftFragment:NO
+														   fragmentWith:ChatsListView.class];
 	}
 	return compositeDescription;
 }
@@ -70,6 +70,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+
+	// if we use fragments, remove back button
+	if (LinphoneManager.runningOnIpad) {
+		_backButton.hidden = YES;
+		_backButton.alpha = 0;
+	}
 
 	_messageField.minNumberOfLines = 1;
 	_messageField.maxNumberOfLines = ([LinphoneManager runningOnIpad]) ? 10 : 3;
@@ -155,7 +161,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self update];
 		linphone_chat_room_mark_as_read(chatRoom);
 		[self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
-		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
+		//		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 	} else {
 		_chatView.hidden = YES;
 	}
@@ -164,7 +170,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
 	if (chatRoom != nil) {
 		linphone_chat_room_mark_as_read(chatRoom);
-		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
+		//		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
 	}
 }
 
@@ -461,8 +467,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onBackClick:(id)event {
 	[_tableController setChatRoom:NULL];
-	ChatsListView *view = VIEW(ChatsListView);
-	[PhoneMainView.instance popToView:view.compositeViewDescription];
+	[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
 }
 
 - (IBAction)onEditClick:(id)event {
@@ -484,7 +489,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
-	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected message?", nil)];
+	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected messages?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil
 		confirmMessage:nil

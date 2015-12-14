@@ -27,7 +27,7 @@
 
 - (id)copy {
 	UICompositeViewDescription *copy = [UICompositeViewDescription alloc];
-	copy.content = self.content;
+	copy.name = self.name;
 	copy.statusBar = self.statusBar;
 	copy.tabBar = self.tabBar;
 	copy.sideMenu = self.sideMenu;
@@ -37,22 +37,24 @@
 	copy.fullscreen = self.fullscreen;
 	copy.landscapeMode = self.landscapeMode;
 	copy.portraitMode = self.portraitMode;
+	copy.isLeftFragment = self.isLeftFragment;
+	copy.otherFragment = self.otherFragment;
 	copy.darkBackground = self.darkBackground;
 	return copy;
 }
 
 - (BOOL)equal:(UICompositeViewDescription *)description {
-	return [self.content compare:description.content] == NSOrderedSame;
+	return [self.name compare:description.name] == NSOrderedSame;
 }
 
 - (id)init:(Class)content
-		statusBar:(Class)statusBar
-		   tabBar:(Class)tabBar
-		 sideMenu:(Class)sideMenu
-	   fullscreen:(BOOL)fullscreen
-	landscapeMode:(BOOL)landscapeMode
-	 portraitMode:(BOOL)portraitMode {
-	self.content = NSStringFromClass(content);
+		 statusBar:(Class)statusBar
+			tabBar:(Class)tabBar
+		  sideMenu:(Class)sideMenu
+		fullscreen:(BOOL)fullscreen
+	isLeftFragment:(BOOL)isLeftFragment
+	  fragmentWith:(Class)otherFragment {
+	self.name = NSStringFromClass(content);
 	self.statusBar = NSStringFromClass(statusBar);
 	self.tabBar = NSStringFromClass(tabBar);
 	self.sideMenu = NSStringFromClass(sideMenu);
@@ -60,8 +62,10 @@
 	self.tabBarEnabled = YES;
 	self.sideMenuEnabled = NO;
 	self.fullscreen = fullscreen;
-	self.landscapeMode = YES; // landscapeMode;
-	self.portraitMode = YES;  // portraitMode;
+	self.landscapeMode = YES;
+	self.portraitMode = YES;
+	self.isLeftFragment = isLeftFragment || (otherFragment == nil);
+	self.otherFragment = LinphoneManager.runningOnIpad ? NSStringFromClass(otherFragment) : nil;
 	self.darkBackground = true;
 
 	return self;
@@ -72,7 +76,8 @@
 
 @property(nonatomic, strong) UIViewController *statusBarViewController;
 @property(nonatomic, strong) UIViewController *tabBarViewController;
-@property(nonatomic, strong) UIViewController *contentViewController;
+@property(nonatomic, strong) UIViewController *mainViewController;
+@property(nonatomic, strong) UIViewController *detailsViewController;
 @property(nonatomic, strong) UIViewController *sideMenuViewController;
 
 @end
@@ -148,7 +153,8 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[self.contentViewController viewWillAppear:animated];
+	[self.mainViewController viewWillAppear:animated];
+	[self.detailsViewController viewWillAppear:animated];
 	[self.tabBarViewController viewWillAppear:animated];
 	[self.statusBarViewController viewWillAppear:animated];
 	[self.sideMenuViewController viewWillAppear:animated];
@@ -161,7 +167,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	[self.contentViewController viewDidAppear:animated];
+	[self.mainViewController viewDidAppear:animated];
+	[self.detailsViewController viewDidAppear:animated];
 	[self.tabBarViewController viewDidAppear:animated];
 	[self.statusBarViewController viewDidAppear:animated];
 	[self.sideMenuViewController viewDidAppear:animated];
@@ -169,7 +176,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[self.contentViewController viewWillDisappear:animated];
+	[self.mainViewController viewWillDisappear:animated];
+	[self.detailsViewController viewWillDisappear:animated];
 	[self.tabBarViewController viewWillDisappear:animated];
 	[self.statusBarViewController viewWillDisappear:animated];
 	[self.sideMenuViewController viewWillDisappear:animated];
@@ -181,7 +189,8 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
-	[self.contentViewController viewDidDisappear:animated];
+	[self.mainViewController viewDidDisappear:animated];
+	[self.detailsViewController viewDidDisappear:animated];
 	[self.tabBarViewController viewDidDisappear:animated];
 	[self.statusBarViewController viewDidDisappear:animated];
 	[self.sideMenuViewController viewDidDisappear:animated];
@@ -193,7 +202,8 @@
 								duration:(NSTimeInterval)duration {
 	currentOrientation = toInterfaceOrientation;
 	[super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-	[self.contentViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	[self.mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	[self.detailsViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.tabBarViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.statusBarViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.sideMenuViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
@@ -203,7 +213,8 @@
 										 duration:(NSTimeInterval)duration {
 	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation
 											duration:duration]; // Will invoke TPMultiLayout
-	[self.contentViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	[self.mainViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
+	[self.detailsViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.tabBarViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.statusBarViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self.sideMenuViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
@@ -212,7 +223,8 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-	[self.contentViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[self.mainViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[self.detailsViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self.tabBarViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self.statusBarViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self.sideMenuViewController didRotateFromInterfaceOrientation:fromInterfaceOrientation];
@@ -287,11 +299,11 @@
 		bool remove = true;
 
 		/*ImagePickerView can be used as popover and we do NOT want to free it*/;
-		if ([key isEqualToString:ImagePickerView.compositeViewDescription.content]) {
+		if ([key isEqualToString:ImagePickerView.compositeViewDescription.name]) {
 			remove = false;
 		} else if (exclude != nil) {
 			for (UICompositeViewDescription *description in exclude) {
-				if ([key isEqualToString:description.content] || [key isEqualToString:description.statusBar] ||
+				if ([key isEqualToString:description.name] || [key isEqualToString:description.statusBar] ||
 					[key isEqualToString:description.tabBar] || [key isEqualToString:description.sideMenu]) {
 					remove = false;
 					break;
@@ -379,7 +391,8 @@
 	  sideMenu:(NSNumber *)sideMenu
 	fullscreen:(NSNumber *)fullscreen {
 
-	UIViewController *oldContentViewController = self.contentViewController;
+	UIViewController *oldMainViewController = self.mainViewController;
+	UIViewController *oldDetailsViewController = self.detailsViewController;
 	UIViewController *oldStatusBarViewController = self.statusBarViewController;
 	UIViewController *oldTabBarViewController = self.tabBarViewController;
 	UIViewController *oldSideMenuViewController = self.sideMenuViewController;
@@ -390,37 +403,58 @@
 		oldViewDescription = currentViewDescription;
 		currentViewDescription = [description copy];
 
+		UIViewController *newMainViewController = description.isLeftFragment
+													  ? [self getCachedController:description.name]
+													  : [self getCachedController:description.otherFragment];
+		UIViewController *newDetailsViewController = description.isLeftFragment
+														 ? [self getCachedController:description.otherFragment]
+														 : [self getCachedController:description.name];
+		UIViewController *newStatusBarViewController = [self getCachedController:description.statusBar];
+		UIViewController *newTabBarViewController = [self getCachedController:description.tabBar];
+		UIViewController *newSideMenuViewController = [self getCachedController:description.sideMenu];
+
 		// Animate only with a previous screen
 		if (oldViewDescription != nil && self.viewTransition != nil) {
-			[self.contentView.layer removeAnimationForKey:@"transition"];
-			[self.contentView.layer addAnimation:self.viewTransition forKey:@"transition"];
-			if (![oldViewDescription.statusBar isEqualToString:currentViewDescription.statusBar] ||
+			if (oldMainViewController != newMainViewController) {
+				[self.mainView.layer removeAnimationForKey:@"transition"];
+				[self.mainView.layer addAnimation:self.viewTransition forKey:@"transition"];
+			} else {
+				[self.mainView.layer removeAnimationForKey:@"transition"];
+			}
+			if (oldDetailsViewController != newDetailsViewController) {
+				[self.detailsView.layer removeAnimationForKey:@"transition"];
+				[self.detailsView.layer addAnimation:self.viewTransition forKey:@"transition"];
+			} else {
+				[self.detailsView.layer removeAnimationForKey:@"transition"];
+			}
+
+			if (oldStatusBarViewController != newStatusBarViewController ||
 				oldViewDescription.statusBarEnabled != currentViewDescription.statusBarEnabled) {
 				[self.statusBarView.layer removeAnimationForKey:@"transition"];
 				[self.statusBarView.layer addAnimation:self.viewTransition forKey:@"transition"];
 			} else {
 				[self.statusBarView.layer removeAnimationForKey:@"transition"];
 			}
-			if (![oldViewDescription.tabBar isEqualToString:currentViewDescription.tabBar] ||
+			if (oldTabBarViewController != newTabBarViewController ||
 				oldViewDescription.tabBarEnabled != currentViewDescription.tabBarEnabled) {
 				[self.tabBarView.layer removeAnimationForKey:@"transition"];
 				[self.tabBarView.layer addAnimation:self.viewTransition forKey:@"transition"];
 			} else {
 				[self.tabBarView.layer removeAnimationForKey:@"transition"];
 			}
-			if (![oldViewDescription.sideMenu isEqualToString:currentViewDescription.sideMenu] ||
+			if (oldSideMenuViewController != newSideMenuViewController ||
 				oldViewDescription.sideMenuEnabled != currentViewDescription.sideMenuEnabled) {
 				[self.sideMenuView.layer removeAnimationForKey:@"transition"];
 				[self.sideMenuView.layer addAnimation:self.viewTransition forKey:@"transition"];
 			}
 		}
 
-		UIViewController *newContentViewController = [self getCachedController:description.content];
-		UIViewController *newStatusBarViewController = [self getCachedController:description.statusBar];
-		UIViewController *newTabBarViewController = [self getCachedController:description.tabBar];
-		UIViewController *newSideMenuViewController = [self getCachedController:description.sideMenu];
-
-		[UICompositeView removeSubView:oldContentViewController];
+		if (oldMainViewController != nil && oldMainViewController != newMainViewController) {
+			[UICompositeView removeSubView:oldMainViewController];
+		}
+		if (oldDetailsViewController != nil && oldDetailsViewController != newDetailsViewController) {
+			[UICompositeView removeSubView:oldDetailsViewController];
+		}
 		if (oldTabBarViewController != nil && oldTabBarViewController != newTabBarViewController) {
 			[UICompositeView removeSubView:oldTabBarViewController];
 		}
@@ -432,7 +466,8 @@
 		}
 
 		self.statusBarViewController = newStatusBarViewController;
-		self.contentViewController = newContentViewController;
+		self.mainViewController = newMainViewController;
+		self.detailsViewController = newDetailsViewController;
 		self.tabBarViewController = newTabBarViewController;
 		self.sideMenuViewController = newSideMenuViewController;
 
@@ -443,17 +478,24 @@
 			[UICompositeView setOrientation:correctOrientation
 								   animated:currentOrientation != UIDeviceOrientationUnknown];
 			if (UIInterfaceOrientationIsLandscape(correctOrientation)) {
-				[self.contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+				[self.mainViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+				[self.detailsViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
 				[self.tabBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
 				[self.statusBarViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
 				[self.sideMenuViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
 			}
 		} else {
-			if (oldContentViewController != newContentViewController) {
-				UIInterfaceOrientation oldOrientation = self.contentViewController.interfaceOrientation;
-				[self.contentViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
-				[self.contentViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
-				[self.contentViewController didRotateFromInterfaceOrientation:oldOrientation];
+			if (oldMainViewController != newMainViewController) {
+				UIInterfaceOrientation oldOrientation = self.mainViewController.interfaceOrientation;
+				[self.mainViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+				[self.mainViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+				[self.mainViewController didRotateFromInterfaceOrientation:oldOrientation];
+			}
+			if (oldDetailsViewController != newDetailsViewController) {
+				UIInterfaceOrientation oldOrientation = self.detailsViewController.interfaceOrientation;
+				[self.detailsViewController willRotateToInterfaceOrientation:correctOrientation duration:0];
+				[self.detailsViewController willAnimateRotationToInterfaceOrientation:correctOrientation duration:0];
+				[self.detailsViewController didRotateFromInterfaceOrientation:oldOrientation];
 			}
 			if (oldTabBarViewController != newTabBarViewController) {
 				UIInterfaceOrientation oldOrientation = self.tabBarViewController.interfaceOrientation;
@@ -524,83 +566,69 @@
 		[UIView setAnimationDuration:0.35];
 	}
 
-	CGRect contentFrame = self.contentView.frame;
-	CGRect viewFrame = [self.view frame];
+	// Compute frame for each elements
+	CGRect viewFrame = self.view.frame;
 
-	// Resize StatusBar
+	// 1. status bar - fixed size on top
 	CGRect statusBarFrame = self.statusBarView.frame;
-	int origin = IPHONE_STATUSBAR_HEIGHT;
-	if (currentViewDescription.fullscreen)
-		origin = 0;
-
+	int origin = currentViewDescription.fullscreen ? 0 : IPHONE_STATUSBAR_HEIGHT;
 	if (self.statusBarViewController != nil && currentViewDescription.statusBarEnabled) {
 		statusBarFrame.origin.y = origin;
 	} else {
 		statusBarFrame.origin.y = origin - statusBarFrame.size.height;
 	}
-	contentFrame.origin.y = statusBarFrame.origin.y + statusBarFrame.size.height;
 
+	//	2. side menu - fixed size, always starting below status bar
+	CGRect sideMenuFrame = viewFrame;
+	sideMenuFrame.origin.y = origin + statusBarFrame.size.height;
+	sideMenuFrame.size.height -= sideMenuFrame.origin.y;
+	if (!currentViewDescription.sideMenuEnabled) {
+		// really hide; -width won't be enough since some animations may use this...
+		sideMenuFrame.origin.x = -3 * sideMenuFrame.size.width;
+	}
+
+	//	3. tab bar - on portrait full width at bottom / on landscape on left, starting below status bar
 	// Resize TabBar
 	CGRect tabFrame = self.tabBarView.frame;
 	if (self.tabBarViewController != nil && currentViewDescription.tabBarEnabled) {
-		if (UIInterfaceOrientationIsLandscape([self currentOrientation])) {
-			tabFrame.origin.x = 0;
-			tabFrame.origin.y = contentFrame.origin.y;
-			tabFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
-			contentFrame.origin.x = tabFrame.size.width;
-			contentFrame.size.height = tabFrame.size.height;
+		tabFrame.origin.x = 0;
+		if (UIInterfaceOrientationIsPortrait([self currentOrientation])) {
+			tabFrame.origin.y = viewFrame.size.height - tabFrame.size.height;
 		} else {
-			tabFrame.origin.y = viewFrame.size.height;
-			tabFrame.origin.x = viewFrame.size.width;
-			tabFrame.size.height = self.tabBarViewController.view.frame.size.height;
-			// tabFrame.size.width = self.tabBarViewController.view.frame.size.width;
-			tabFrame.origin.y -= tabFrame.size.height;
-			tabFrame.origin.x -= tabFrame.size.width;
-			contentFrame.size.height = tabFrame.origin.y - contentFrame.origin.y;
-
-			// for some views, we need the content to overlap, in which case
-			// we insert in the tab XIB a mask with tag -1 and with y = the amount of
-			// points that the content should overlap.
-			for (UIView *view in self.tabBarViewController.view.subviews) {
-				if (view.tag == -1) {
-					contentFrame.size.height += view.frame.origin.y;
-					break;
-				}
-			}
+			tabFrame.origin.y = statusBarFrame.origin.y + statusBarFrame.size.height;
+			tabFrame.size.height = viewFrame.size.height - tabFrame.origin.y;
 		}
 	} else {
-		contentFrame.origin.x = 0;
-		contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
+		tabFrame.origin.x = -tabFrame.size.width;
 		tabFrame.origin.y = viewFrame.size.height;
 	}
-	contentFrame.size.width = viewFrame.size.width - contentFrame.origin.x;
 
-	if (currentViewDescription.fullscreen) {
-		//		contentFrame.origin.y = origin;
-		contentFrame.size.height = viewFrame.size.height - contentFrame.origin.y;
+	//	4. main view and details view - space left width of 35%/65% each
+	CGRect mainFrame = viewFrame;
+	mainFrame.origin.y = statusBarFrame.origin.y + statusBarFrame.size.height;
+	mainFrame.size.height -= mainFrame.origin.y;
+	if (!currentViewDescription.fullscreen) {
+		if (UIInterfaceOrientationIsPortrait([self currentOrientation])) {
+			mainFrame.size.height -= viewFrame.size.height - tabFrame.origin.y;
+		} else {
+			mainFrame.origin.x = tabFrame.origin.x + tabFrame.size.width;
+			mainFrame.size.width -= mainFrame.origin.x;
+		}
 	}
-
-	// Resize SideMenu
-	CGRect sideMenuFrame;
-	if (UIInterfaceOrientationIsPortrait([self currentOrientation])) {
-		sideMenuFrame = contentFrame;
-		sideMenuFrame.size.height += tabFrame.size.height;
-	} else {
-		sideMenuFrame = viewFrame;
-		sideMenuFrame.size.height -= origin + statusBarFrame.size.height;
-		sideMenuFrame.origin.y = origin + statusBarFrame.size.height;
-	}
-
-	if (!currentViewDescription.sideMenuEnabled) {
-		sideMenuFrame.origin.x =
-			-3 * sideMenuFrame.size.width; // really hide; -width won't be enough since some animations may use this...
+	CGRect detailsFrame = mainFrame;
+	if (self.detailsViewController != nil) {
+		detailsFrame = mainFrame;
+		mainFrame.size.width = ceil(mainFrame.size.width * .35);
+		detailsFrame.size.width -= mainFrame.size.width;
+		detailsFrame.origin.x += mainFrame.size.width;
 	}
 
 	// Set frames
-
-	// 1. content view
-	self.contentView.frame = contentFrame;
-	self.contentViewController.view.frame = self.contentView.bounds;
+	// 1. main view and details view
+	self.mainView.frame = mainFrame;
+	self.mainViewController.view.frame = self.mainView.bounds;
+	self.detailsView.frame = detailsFrame;
+	self.detailsViewController.view.frame = self.detailsView.bounds;
 
 	// 2. tab bar
 	self.tabBarView.frame = tabFrame;
@@ -625,7 +653,12 @@
 
 	// Change view
 	if (description != nil) {
-		[UICompositeView addSubView:self.contentViewController view:self.contentView];
+		if (oldMainViewController == nil || oldMainViewController != self.tabBarViewController) {
+			[UICompositeView addSubView:self.mainViewController view:self.mainView];
+		}
+		if (oldDetailsViewController == nil || oldDetailsViewController != self.detailsViewController) {
+			[UICompositeView addSubView:self.detailsViewController view:self.detailsView];
+		}
 		if (oldTabBarViewController == nil || oldTabBarViewController != self.tabBarViewController) {
 			[UICompositeView addSubView:self.tabBarViewController view:self.tabBarView];
 		}
@@ -665,7 +698,7 @@
 	[self update:nil tabBar:nil statusBar:nil sideMenu:[NSNumber numberWithBool:!hidden] fullscreen:nil];
 }
 - (UIViewController *)getCurrentViewController {
-	return self.contentViewController;
+	return self.mainViewController;
 }
 
 - (BOOL)currentViewSupportsLandscape {

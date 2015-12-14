@@ -53,7 +53,7 @@
 	})
 
 #define VIEW(x)                                                                                                        \
-	DYNAMIC_CAST([PhoneMainView.instance.mainViewController getCachedController:x.compositeViewDescription.content], x)
+	DYNAMIC_CAST([PhoneMainView.instance.mainViewController getCachedController:x.compositeViewDescription.name], x)
 
 @class PhoneMainView;
 
@@ -85,7 +85,7 @@
 - (void)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;
 - (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated;
 - (UIViewController*)popCurrentView;
-- (void)popToView:(UICompositeViewDescription *)currentView;
+- (UIViewController *)popToView:(UICompositeViewDescription *)currentView;
 - (UICompositeViewDescription *)firstView;
 - (void)showStatusBar:(BOOL)show;
 - (void)showTabBar:(BOOL)show;

@@ -29,6 +29,10 @@ INIT_WITH_COMMON {
 	return self;
 }
 
+- (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)settingsUpdate:(NSNotification *)notif {
 	if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == false) {
 		[self stopBounceAnimation:kBounceAnimation target:self];
@@ -92,6 +96,9 @@ INIT_WITH_COMMON {
 }
 
 - (void)startAnimating:(BOOL)animated {
+	if (!self.hidden) {
+		return;
+	}
 	[self setHidden:FALSE];
 	if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
 		if (animated) {
@@ -108,6 +115,10 @@ INIT_WITH_COMMON {
 }
 
 - (void)stopAnimating:(BOOL)animated {
+	if (self.hidden) {
+		return;
+	}
+
 	[self stopBounceAnimation:kBounceAnimation target:self];
 	if (animated) {
 		[self disappearAnimation:kDisappearAnimation
