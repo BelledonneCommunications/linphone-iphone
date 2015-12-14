@@ -1845,6 +1845,15 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriend(JNIEnv*  env
 																			) {
 	linphone_core_add_friend((LinphoneCore*)lc,(LinphoneFriend*)aFriend);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setFriendList(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong friendList
+																			) {
+	linphone_core_set_friend_list((LinphoneCore*)lc,(LinphoneFriendList*)friendList);
+}
+
 extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendList(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc) {
@@ -2960,12 +2969,47 @@ extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNI
 	}
 	return (jlong)lResult;
 }
+
+extern "C" jlong Java_org_linphone_core_LinphoneFriendListImpl_newLinphoneFriendList(JNIEnv*  env
+																		,jobject  thiz, jlong lc) {
+	LinphoneFriendList* fl = linphone_core_create_friend_list((LinphoneCore *)lc);
+	linphone_friend_list_set_user_data(fl,env->NewWeakGlobalRef(thiz));
+	return (jlong)fl;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
 																		,jlong linphoneAddress) {
 	linphone_friend_set_address((LinphoneFriend*)ptr,(LinphoneAddress*)linphoneAddress);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setRLSUri(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jrlsUri) {
+	const char* uri = env->GetStringUTFChars(jrlsUri, NULL);
+	linphone_friend_list_set_rls_uri((LinphoneFriendList*)ptr,uri);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_addFriend(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong friendListptr
+																		,jlong friendPtr) {
+	linphone_friend_list_add_friend((LinphoneFriendList*)friendListptr,(LinphoneFriend*)friendPtr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscriptions(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong friendListptr
+																		,jlong proxyConfigPtr
+																		,jboolean jonlyWhenRegistered) {
+	linphone_friend_list_update_subscriptions((LinphoneFriendList*)friendListptr,(LinphoneProxyConfig*)proxyConfigPtr,jonlyWhenRegistered);
+}
+
+
+
+
 extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_getAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -3008,6 +3052,18 @@ extern "C" jobject Java_org_linphone_core_LinphoneFriendImpl_getCore(JNIEnv*  en
 	}
 	return NULL;
 }
+
+extern "C" jobject Java_org_linphone_core_LinphoneFriendListImpl_getCore(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneCore *lc=linphone_friend_get_core((LinphoneFriend*)ptr);
+	if (lc!=NULL){
+		jobject core = (jobject)linphone_core_get_user_data(lc);
+		return core;
+	}
+	return NULL;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setRefKey(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
@@ -3030,6 +3086,14 @@ extern "C" void  Java_org_linphone_core_LinphoneFriendImpl_finalize(JNIEnv*  env
 	LinphoneFriend *lfriend=(LinphoneFriend*)ptr;
 	linphone_friend_set_user_data(lfriend,NULL);
 	linphone_friend_unref(lfriend);
+}
+
+extern "C" void  Java_org_linphone_core_LinphoneFriendListImpl_finalize(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneFriendList *lfriendList=(LinphoneFriendList*)ptr;
+	linphone_friend_list_set_user_data(lfriendList,NULL);
+	linphone_friend_list_unref(lfriendList);
 }
 
 /*
