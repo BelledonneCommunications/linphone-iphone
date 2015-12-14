@@ -784,8 +784,54 @@ bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
 	
 	vcard = linphone_vcard_new();
 	linphone_vcard_set_full_name(vcard, fullName);
-	fr->vcard = vcard;
+	linphone_friend_set_vcard(fr, vcard);
 	return TRUE;
+}
+
+LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard) {
+	LinphoneAddress* linphone_address = NULL;
+	LinphoneFriend *fr;
+	const char *name = NULL;
+	MSList *sipAddresses = NULL;
+
+	if (vcard == NULL) {
+		ms_error("Cannot create friend from null vcard");
+		return NULL;
+	}
+	name = linphone_vcard_get_full_name(vcard);
+	sipAddresses = linphone_vcard_get_sip_addresses(vcard);
+	
+	fr = linphone_friend_new();
+	linphone_friend_set_vcard(fr, vcard);
+	
+	if (sipAddresses) {
+		const char *sipAddress = (const char *)sipAddresses->data;
+		linphone_address = linphone_address_new(sipAddress);
+		if (linphone_address) {
+			linphone_friend_set_address(fr, linphone_address);
+			linphone_address_destroy(linphone_address);
+		}
+	}
+	linphone_friend_set_name(fr, name);
+	
+	return fr;
+}
+
+int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *vcard_file) {
+	MSList *vcards = linphone_vcard_new_from_vcard4_file(vcard_file);
+	int count = 0;
+	
+	while (vcards != NULL && vcards->data != NULL) {
+		LinphoneVCard *vcard = (LinphoneVCard *)vcards->data;
+		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
+		if (lf) {
+			linphone_core_add_friend(lc, lf);
+			count++;
+		}
+		vcards = ms_list_next(vcards);
+	}
+	
+	return count;
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriend);

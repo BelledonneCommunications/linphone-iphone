@@ -1832,6 +1832,21 @@ void linphone_gtk_show_keypad_checked(GtkCheckMenuItem *check_menu_item) {
 	}
 }
 
+void linphone_gtk_import_contacts(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *dialog;
+	dialog = gtk_file_chooser_dialog_new ("Open File", (GtkWindow *)mw, GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+		LinphoneCore *lc = linphone_gtk_get_core();
+		char *filename;
+		filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+		linphone_core_import_friends_from_vcard4_file(lc, filename);
+		g_free (filename);
+		linphone_gtk_show_friends();
+	}
+	gtk_widget_destroy (dialog);
+}
+
 gboolean linphone_gtk_keypad_destroyed_handler(void) {
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *show_keypad_item = linphone_gtk_get_widget(mw, "show_keypad_menu_item");

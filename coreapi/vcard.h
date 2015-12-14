@@ -35,9 +35,12 @@ typedef struct _LinphoneVCard LinphoneVCard;
 
 LINPHONE_PUBLIC LinphoneVCard* linphone_vcard_new(void);
 LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVCard *vcard);
+LINPHONE_PUBLIC MSList* linphone_vcard_new_from_vcard4_file(const char *file);
 
 LINPHONE_PUBLIC void linphone_vcard_set_full_name(LinphoneVCard *vcard, const char *name);
-LINPHONE_PUBLIC const char* linphone_vcard_get_full_name(LinphoneVCard *vcard);
+LINPHONE_PUBLIC const char* linphone_vcard_get_full_name(const LinphoneVCard *vcard);
+
+LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vcard);
 
 #ifdef __cplusplus
 }

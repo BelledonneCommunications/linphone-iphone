@@ -434,6 +434,22 @@ LINPHONE_PUBLIC void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard
  * @return true if the vCard has been created, false if it wasn't possible (for exemple if name and the friend's SIP URI are null or if the friend's SIP URI doesn't have a display name), or if there is already one vcard
  */
 LINPHONE_PUBLIC bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name);
+
+/**
+ * Contructor same as linphone_friend_new() + linphone_friend_set_address()
+ * @param vcard a VCard object
+ * @return a new #LinphoneFriend with \link linphone_friend_get_vcard() vcard initialized \endlink
+ */
+LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard);
+
+/**
+ * Creates and adds LinphoneFriend objects to LinphoneCore from a file that contains the vcard(s) to parse
+ * @param[in] lc the LinphoneCore object
+ * @param[in] vcard_file the path to a file that contains the vcard(s) to parse
+ * @return the amount of linphone friends created
+ */
+LINPHONE_PUBLIC int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *vcard_file);
+
 /**
  * @}
  */

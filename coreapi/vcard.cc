@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "vcard.h"
 #include "belcard/belcard.hpp"
+#include "belcard/belcard_parser.hpp"
 
 struct _LinphoneVCard {
 	shared_ptr<belcard::BelCard> belcard;
@@ -35,13 +36,41 @@ extern "C" void linphone_vcard_free(LinphoneVCard *vcard) {
 	ms_free(vcard);
 }
 
+extern "C" MSList* linphone_vcard_new_from_vcard4_file(const char *filename) {
+	MSList *result = NULL;
+	if (filename) {
+		if (ortp_file_exist(filename) == 0) {
+			belcard::BelCardParser *parser = new belcard::BelCardParser();
+			shared_ptr<belcard::BelCardList> belCards = parser->parseFile(filename);
+			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
+				shared_ptr<belcard::BelCard> belcard = (*it);
+				LinphoneVCard *vcard = linphone_vcard_new();
+				vcard->belcard = belcard;
+				result = ms_list_append(result, vcard);
+			}
+		}
+	}
+	return result;
+}
+
 extern "C" void linphone_vcard_set_full_name(LinphoneVCard *vcard, const char *name) {
 	shared_ptr<belcard::BelCardFullName> fn = belcard::BelCardGeneric::create<belcard::BelCardFullName>();
 	fn->setValue(name);
 	vcard->belcard->setFullName(fn);
 }
 
-extern "C" const char* linphone_vcard_get_full_name(LinphoneVCard *vcard) {
+extern "C" const char* linphone_vcard_get_full_name(const LinphoneVCard *vcard) {
 	const char *result = vcard->belcard->getFullName() ? vcard->belcard->getFullName()->getValue().c_str() : NULL;
+	return result;
+}
+
+extern "C" MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vcard) {
+	MSList *result = NULL;
+	for (auto it = vcard->belcard->getImpp().begin(); it != vcard->belcard->getImpp().end(); ++it) {
+		const char *value = (*it)->getValue().c_str();
+		if (strncmp(value, "sip:", 4) == 0) {
+			result = ms_list_append(result, (char *)value);
+		}
+	}
 	return result;
 }
