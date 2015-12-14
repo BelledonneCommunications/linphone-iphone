@@ -716,19 +716,28 @@ void linphone_gtk_show_friends(void){
 }
 
 void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *parent){
-	GtkWidget *w=linphone_gtk_create_window("contact", parent);
+	GtkWidget *w = linphone_gtk_create_window("contact", parent);
 	char *uri;
 	const char *name;
-	const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
+	const LinphoneAddress *f_uri = linphone_friend_get_address(lf);
+	LinphoneVCard *vcard = linphone_friend_get_vcard(lf);
+	
+	if (vcard) {
+		name = linphone_vcard_get_full_name(vcard);
+	} else {
+		name = linphone_address_get_display_name(f_uri);
+	}
+	
 	uri=linphone_address_as_string_uri_only(f_uri);
-	name=linphone_address_get_display_name(f_uri);
 	if (uri) {
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")),uri);
 		ms_free(uri);
 	}
+	
 	if (name){
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"name")),name);
 	}
+	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"show_presence")),
 					linphone_friend_get_send_subscribe(lf));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"allow_presence")),
@@ -772,9 +781,8 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 		return ;
 	}
 
-	linphone_address_set_display_name(friend_address,name);
-	linphone_friend_set_name(lf,name);
 	linphone_friend_set_address(lf,friend_address);
+	linphone_friend_set_name(lf,name);
 	linphone_friend_send_subscribe(lf,show_presence);
 	linphone_friend_set_inc_subscribe_policy(lf,allow_presence==TRUE ? LinphoneSPAccept : LinphoneSPDeny);
 	if (linphone_friend_in_list(lf)) {

@@ -404,24 +404,36 @@ LINPHONE_PUBLIC LinphoneFriend * linphone_friend_ref(LinphoneFriend *lf);
 
 /**
  * Release a reference to the linphone friend.
- * @param[in] lf LinohoneFriend object
+ * @param[in] lf LinphoneFriend object
 **/
 LINPHONE_PUBLIC void linphone_friend_unref(LinphoneFriend *lf);
 
 /**
  * Returns the LinphoneCore object managing this friend, if any.
+ * @param[in] fr LinphoneFriend object
  */
 LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr);
 
 /**
  * Returns the VCard object associated to this friend, if any
+ * @param[in] fr LinphoneFriend object
  */
 LINPHONE_PUBLIC LinphoneVCard* linphone_friend_get_vcard(LinphoneFriend *fr);
 
 /**
- * Returns the VCard object associated to this friend, if any
+ * Binds a VCard object to a friend
+ * @param[in] fr LinphoneFriend object
+ * @param[in] vcard The VCard object to bind
  */
 LINPHONE_PUBLIC void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard);
+
+/**
+ * Creates a VCard object associated to this friend if there isn't one yet and if the full name is available, either by the parameter or the one in the friend's SIP URI
+ * @param[in] fr LinphoneFriend object
+ * @param[in] name The full name of the friend or NULL to use the one from the friend's SIP URI
+ * @return true if the vCard has been created, false if it wasn't possible (for exemple if name and the friend's SIP URI are null or if the friend's SIP URI doesn't have a display name), or if there is already one vcard
+ */
+LINPHONE_PUBLIC bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name);
 /**
  * @}
  */
