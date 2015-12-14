@@ -232,9 +232,18 @@
                       <object class="GtkMenuItem" id="contacts_import_item">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Import contacts</property>
+                        <property name="label" translatable="yes">Import contacts from vCards</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="linphone_gtk_import_contacts" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="contacts_export_item">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Export contacts as vCards</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="linphone_gtk_export_contacts" swapped="no"/>
                       </object>
                     </child>
                     <child>

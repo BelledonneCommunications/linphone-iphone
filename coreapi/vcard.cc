@@ -53,6 +53,10 @@ extern "C" MSList* linphone_vcard_new_from_vcard4_file(const char *filename) {
 	return result;
 }
 
+extern "C" const char * linphone_vcard_as_vcard4_string(LinphoneVCard *vcard) {
+	return vcard->belcard->toFoldedString().c_str();
+}
+
 extern "C" void linphone_vcard_set_full_name(LinphoneVCard *vcard, const char *name) {
 	shared_ptr<belcard::BelCardFullName> fn = belcard::BelCardGeneric::create<belcard::BelCardFullName>();
 	fn->setValue(name);

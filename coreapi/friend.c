@@ -834,6 +834,31 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 	return count;
 }
 
+void linphone_core_export_friends_as_vcard4_file(LinphoneCore *lc, const char *vcard_file) {
+	FILE *file = NULL;
+	MSList *friends = lc->friends;
+	
+	file = fopen(vcard_file, "w");
+	if (file == NULL) {
+		ms_warning("Could not write %s ! Maybe it is read-only. Contacts will not be saved.", vcard_file);
+		return;
+	}
+	
+	while (friends != NULL && friends->data != NULL) {
+		LinphoneFriend *lf = (LinphoneFriend *)friends->data;
+		LinphoneVCard *vcard = linphone_friend_get_vcard(lf);
+		if (vcard) {
+			const char *vcard_text = linphone_vcard_as_vcard4_string(vcard);
+			fprintf(file, "%s", vcard_text);
+		} else {
+			ms_warning("Couldn't export friend %s because it doesn't have a vCard attached", linphone_address_as_string(linphone_friend_get_address(lf)));
+		}
+		friends = ms_list_next(friends);
+	}
+	
+	fclose(file);
+}
+
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriend);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneFriend, belle_sip_object_t,

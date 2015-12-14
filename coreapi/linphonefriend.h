@@ -415,20 +415,20 @@ LINPHONE_PUBLIC void linphone_friend_unref(LinphoneFriend *lf);
 LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr);
 
 /**
- * Returns the VCard object associated to this friend, if any
+ * Returns the vCard object associated to this friend, if any
  * @param[in] fr LinphoneFriend object
  */
 LINPHONE_PUBLIC LinphoneVCard* linphone_friend_get_vcard(LinphoneFriend *fr);
 
 /**
- * Binds a VCard object to a friend
+ * Binds a vCard object to a friend
  * @param[in] fr LinphoneFriend object
- * @param[in] vcard The VCard object to bind
+ * @param[in] vcard The vCard object to bind
  */
 LINPHONE_PUBLIC void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard);
 
 /**
- * Creates a VCard object associated to this friend if there isn't one yet and if the full name is available, either by the parameter or the one in the friend's SIP URI
+ * Creates a vCard object associated to this friend if there isn't one yet and if the full name is available, either by the parameter or the one in the friend's SIP URI
  * @param[in] fr LinphoneFriend object
  * @param[in] name The full name of the friend or NULL to use the one from the friend's SIP URI
  * @return true if the vCard has been created, false if it wasn't possible (for exemple if name and the friend's SIP URI are null or if the friend's SIP URI doesn't have a display name), or if there is already one vcard
@@ -437,18 +437,25 @@ LINPHONE_PUBLIC bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const ch
 
 /**
  * Contructor same as linphone_friend_new() + linphone_friend_set_address()
- * @param vcard a VCard object
- * @return a new #LinphoneFriend with \link linphone_friend_get_vcard() vcard initialized \endlink
+ * @param vcard a vCard object
+ * @return a new #LinphoneFriend with \link linphone_friend_get_vcard() vCard initialized \endlink
  */
 LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard);
 
 /**
- * Creates and adds LinphoneFriend objects to LinphoneCore from a file that contains the vcard(s) to parse
+ * Creates and adds LinphoneFriend objects to LinphoneCore from a file that contains the vCard(s) to parse
  * @param[in] lc the LinphoneCore object
- * @param[in] vcard_file the path to a file that contains the vcard(s) to parse
+ * @param[in] vcard_file the path to a file that contains the vCard(s) to parse
  * @return the amount of linphone friends created
  */
 LINPHONE_PUBLIC int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *vcard_file);
+
+/**
+ * Creates and export LinphoneFriend objects from LinphoneCore to a file using vCard 4 format
+ * @param[in] lc the LinphoneCore object
+ * @param[in] vcard_file the path to a file that will contain the vCards
+ */
+LINPHONE_PUBLIC void linphone_core_export_friends_as_vcard4_file(LinphoneCore *lc, const char *vcard_file);
 
 /**
  * @}
