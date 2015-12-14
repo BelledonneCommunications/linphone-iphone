@@ -38,10 +38,10 @@ extern "C" void linphone_vcard_free(LinphoneVCard *vcard) {
 
 extern "C" MSList* linphone_vcard_new_from_vcard4_file(const char *filename) {
 	MSList *result = NULL;
-	if (filename) {
-		if (ortp_file_exist(filename) == 0) {
-			belcard::BelCardParser *parser = new belcard::BelCardParser();
-			shared_ptr<belcard::BelCardList> belCards = parser->parseFile(filename);
+	if (filename && ortp_file_exist(filename) == 0) {
+		belcard::BelCardParser *parser = new belcard::BelCardParser();
+		shared_ptr<belcard::BelCardList> belCards = parser->parseFile(filename);
+		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belcard = (*it);
 				LinphoneVCard *vcard = linphone_vcard_new();
