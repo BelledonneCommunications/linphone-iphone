@@ -825,7 +825,6 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	setup_encryption_keys(call,md);
 	setup_dtls_keys(call,md);
     
-    if (params->implicit_rtcp_fb) md->streams[call->main_video_stream_index].implicit_rtcp_fb = TRUE;
 	setup_rtcp_fb(call, md);
 	setup_rtcp_xr(call, md);
 
@@ -1769,7 +1768,7 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		break;
 	}
 
-	call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call) && sal_media_description_has_avpf(md);
+    call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call) && sal_media_description_has_avpf(md);
 	if (call->current_params->avpf_enabled == TRUE) {
 		call->current_params->avpf_rr_interval = linphone_call_get_avpf_rr_interval(call);
 	} else {
