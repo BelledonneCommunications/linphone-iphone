@@ -54,7 +54,21 @@ LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVCard *vcard);
  * @param[in] file the path to the file to parse
  * @return \mslist{LinphoneVCard}
  */
-LINPHONE_PUBLIC MSList* linphone_vcard_new_from_vcard4_file(const char *file);
+LINPHONE_PUBLIC MSList* linphone_vcard_list_from_vcard4_file(const char *file);
+
+/**
+ * Uses belcard to parse the content of a buffer and returns all the vcards it contains as LinphoneVCards, or NULL if it contains none.
+ * @param[in] buffer the buffer to parse
+ * @return \mslist{LinphoneVCard}
+ */
+LINPHONE_PUBLIC MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer);
+
+/**
+ * Uses belcard to parse the content of a buffer and returns one vCard if possible, or NULL otherwise.
+ * @param[in] buffer the buffer to parse
+ * @return a LinphoneVCard if one could be parsed, or NULL otherwise
+ */
+LINPHONE_PUBLIC LinphoneVCard* linphone_vcard_new_from_vcard4_buffer(const char *buffer);
 
 /**
  * Returns the vCard4 representation of the LinphoneVCard.

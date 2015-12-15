@@ -818,7 +818,7 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard) {
 }
 
 int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *vcard_file) {
-	MSList *vcards = linphone_vcard_new_from_vcard4_file(vcard_file);
+	MSList *vcards = linphone_vcard_list_from_vcard4_file(vcard_file);
 	int count = 0;
 	
 	while (vcards != NULL && vcards->data != NULL) {

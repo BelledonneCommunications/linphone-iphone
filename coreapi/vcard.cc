@@ -22,21 +22,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "belcard/belcard_parser.hpp"
 
 struct _LinphoneVCard {
-	shared_ptr<belcard::BelCard> belcard;
+	shared_ptr<belcard::BelCard> belCard;
 };
 
 extern "C" LinphoneVCard* linphone_vcard_new(void) {
-	LinphoneVCard* vcard = (LinphoneVCard*) ms_new0(LinphoneVCard, 1);
-	vcard->belcard = belcard::BelCardGeneric::create<belcard::BelCard>();
-	return vcard;
+	LinphoneVCard* vCard = (LinphoneVCard*) ms_new0(LinphoneVCard, 1);
+	vCard->belCard = belcard::BelCardGeneric::create<belcard::BelCard>();
+	return vCard;
 }
 
-extern "C" void linphone_vcard_free(LinphoneVCard *vcard) {
-	vcard->belcard.reset();
-	ms_free(vcard);
+extern "C" void linphone_vcard_free(LinphoneVCard *vCard) {
+	vCard->belCard.reset();
+	ms_free(vCard);
 }
 
-extern "C" MSList* linphone_vcard_new_from_vcard4_file(const char *filename) {
+extern "C" MSList* linphone_vcard_list_from_vcard4_file(const char *filename) {
 	MSList *result = NULL;
 	if (filename && ortp_file_exist(filename) == 0) {
 		belcard::BelCardParser *parser = new belcard::BelCardParser();
@@ -44,33 +44,63 @@ extern "C" MSList* linphone_vcard_new_from_vcard4_file(const char *filename) {
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belcard = (*it);
-				LinphoneVCard *vcard = linphone_vcard_new();
-				vcard->belcard = belcard;
-				result = ms_list_append(result, vcard);
+				LinphoneVCard *vCard = linphone_vcard_new();
+				vCard->belCard = belcard;
+				result = ms_list_append(result, vCard);
 			}
 		}
 	}
 	return result;
 }
 
-extern "C" const char * linphone_vcard_as_vcard4_string(LinphoneVCard *vcard) {
-	return vcard->belcard->toFoldedString().c_str();
-}
-
-extern "C" void linphone_vcard_set_full_name(LinphoneVCard *vcard, const char *name) {
-	shared_ptr<belcard::BelCardFullName> fn = belcard::BelCardGeneric::create<belcard::BelCardFullName>();
-	fn->setValue(name);
-	vcard->belcard->setFullName(fn);
-}
-
-extern "C" const char* linphone_vcard_get_full_name(const LinphoneVCard *vcard) {
-	const char *result = vcard->belcard->getFullName() ? vcard->belcard->getFullName()->getValue().c_str() : NULL;
+extern "C" MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
+	MSList *result = NULL;
+	if (buffer) {
+		belcard::BelCardParser *parser = new belcard::BelCardParser();
+		shared_ptr<belcard::BelCardList> belCards = parser->parse(buffer);
+		if (belCards) {
+			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
+				shared_ptr<belcard::BelCard> belCard = (*it);
+				LinphoneVCard *vCard = linphone_vcard_new();
+				vCard->belCard = belCard;
+				result = ms_list_append(result, vCard);
+			}
+		}
+	}
 	return result;
 }
 
-extern "C" MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vcard) {
+extern "C" LinphoneVCard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
+	LinphoneVCard *vCard = NULL;
+	if (buffer) {
+		belcard::BelCardParser *parser = new belcard::BelCardParser();
+		shared_ptr<belcard::BelCard> belCard = parser->parseOne(buffer);
+		if (belCard) {
+			vCard = linphone_vcard_new();
+			vCard->belCard = belCard;
+		}
+	}
+	return vCard;
+}
+
+extern "C" const char * linphone_vcard_as_vcard4_string(LinphoneVCard *vCard) {
+	return vCard->belCard->toFoldedString().c_str();
+}
+
+extern "C" void linphone_vcard_set_full_name(LinphoneVCard *vCard, const char *name) {
+	shared_ptr<belcard::BelCardFullName> fn = belcard::BelCardGeneric::create<belcard::BelCardFullName>();
+	fn->setValue(name);
+	vCard->belCard->setFullName(fn);
+}
+
+extern "C" const char* linphone_vcard_get_full_name(const LinphoneVCard *vCard) {
+	const char *result = vCard->belCard->getFullName() ? vCard->belCard->getFullName()->getValue().c_str() : NULL;
+	return result;
+}
+
+extern "C" MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vCard) {
 	MSList *result = NULL;
-	for (auto it = vcard->belcard->getImpp().begin(); it != vcard->belcard->getImpp().end(); ++it) {
+	for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
 		const char *value = (*it)->getValue().c_str();
 		if (strncmp(value, "sip:", 4) == 0) {
 			result = ms_list_append(result, (char *)value);
