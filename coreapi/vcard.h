@@ -45,9 +45,9 @@ LINPHONE_PUBLIC LinphoneVCard* linphone_vcard_new(void);
 
 /**
  * Deletes a LinphoneVCard object properly
- * @param[in] vcard the LinphoneVCard to destroy
+ * @param[in] vCard the LinphoneVCard to destroy
  */
-LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVCard *vcard);
+LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVCard *vCard);
 
 /**
  * Uses belcard to parse the content of a file and returns all the vcards it contains as LinphoneVCards, or NULL if it contains none.
@@ -72,31 +72,38 @@ LINPHONE_PUBLIC LinphoneVCard* linphone_vcard_new_from_vcard4_buffer(const char 
 
 /**
  * Returns the vCard4 representation of the LinphoneVCard.
- * @param[in] vcard the LinphoneVCard
- * @return a const char * that represents the vcard
+ * @param[in] vCard the LinphoneVCard
+ * @return a const char * that represents the vCard
  */
-LINPHONE_PUBLIC const char* linphone_vcard_as_vcard4_string(LinphoneVCard *vcard);
+LINPHONE_PUBLIC const char* linphone_vcard_as_vcard4_string(LinphoneVCard *vCard);
 
 /**
  * Sets the FN attribute of the vCard (which is mandatory).
- * @param[in] vcard the LinphoneVCard
+ * @param[in] vCard the LinphoneVCard
  * @param[in] name the display name to set for the vCard
  */
-LINPHONE_PUBLIC void linphone_vcard_set_full_name(LinphoneVCard *vcard, const char *name);
+LINPHONE_PUBLIC void linphone_vcard_set_full_name(LinphoneVCard *vCard, const char *name);
 
 /**
  * Returns the FN attribute of the vCard, or NULL if it isn't set yet.
- * @param[in] vcard the LinphoneVCard
+ * @param[in] vCard the LinphoneVCard
  * @return the display name of the vCard, or NULL
  */
-LINPHONE_PUBLIC const char* linphone_vcard_get_full_name(const LinphoneVCard *vcard);
+LINPHONE_PUBLIC const char* linphone_vcard_get_full_name(const LinphoneVCard *vCard);
+
+/**
+ * Adds a SIP address in the vCard, using the IMPP property
+ * @param[in] vCard the LinphoneVCard
+ * @param[in] sip_address the SIP address to add
+ */
+LINPHONE_PUBLIC void linphone_vcard_add_sip_address(LinphoneVCard *vCard, const char *sip_address);
 
 /**
  * Returns the list of SIP addresses (as const char *) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
- * @param[in] vcard the LinphoneVCard
+ * @param[in] vCard the LinphoneVCard
  * @return \mslist{const char *}
  */
-LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vcard);
+LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vCard);
 
 /**
  * @}

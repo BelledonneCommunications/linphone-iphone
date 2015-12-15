@@ -98,6 +98,12 @@ extern "C" const char* linphone_vcard_get_full_name(const LinphoneVCard *vCard) 
 	return result;
 }
 
+extern "C" void linphone_vcard_add_sip_address(LinphoneVCard *vCard, const char *sip_address) {
+	shared_ptr<belcard::BelCardImpp> impp = belcard::BelCardGeneric::create<belcard::BelCardImpp>();
+	impp->setValue(sip_address);
+	vCard->belCard->addImpp(impp);
+}
+
 extern "C" MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vCard) {
 	MSList *result = NULL;
 	for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {

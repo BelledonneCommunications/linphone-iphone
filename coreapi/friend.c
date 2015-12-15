@@ -836,7 +836,7 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 
 void linphone_core_export_friends_as_vcard4_file(LinphoneCore *lc, const char *vcard_file) {
 	FILE *file = NULL;
-	MSList *friends = lc->friends;
+	const MSList *friends = linphone_core_get_friend_list(lc);
 	
 	file = fopen(vcard_file, "w");
 	if (file == NULL) {
