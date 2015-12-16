@@ -110,6 +110,15 @@
 	reply.destructive = NO;
 	reply.authenticationRequired = YES;
 
+	UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
+
+	reply_inline.identifier = @"reply_inline";
+	reply_inline.title = NSLocalizedString(@"Reply", nil);
+	reply_inline.activationMode = UIUserNotificationActivationModeBackground;
+	reply_inline.destructive = NO;
+	reply_inline.authenticationRequired = NO;
+	reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
+
 	UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
 	mark_read.identifier = @"mark_read";
 	mark_read.title = NSLocalizedString(@"Mark Read", nil);
@@ -117,12 +126,18 @@
 	mark_read.destructive = NO;
 	mark_read.authenticationRequired = NO;
 
-	NSArray *localRingActions = @[ mark_read, reply ];
+	NSArray *actions;
+	if ([[UIDevice.currentDevice systemVersion] floatValue] < 9) {
+		actions = @[ mark_read, reply ];
+	} else {
+		// iOS 9 allows for inline reply. We don't propose mark_read in this case
+		actions = @[ reply_inline ];
+	}
 
 	UIMutableUserNotificationCategory *localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
 	localRingNotifAction.identifier = @"incoming_msg";
-	[localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
-	[localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
+	[localRingNotifAction setActions:actions forContext:UIUserNotificationActionContextDefault];
+	[localRingNotifAction setActions:actions forContext:UIUserNotificationActionContextMinimal];
 
 	return localRingNotifAction;
 }
@@ -430,6 +445,24 @@
 		}
 	}
 	completionHandler();
+}
+
+- (void)application:(UIApplication *)application
+	handleActionWithIdentifier:(NSString *)identifier
+		  forLocalNotification:(UILocalNotification *)notification
+			  withResponseInfo:(NSDictionary *)responseInfo
+			 completionHandler:(void (^)())completionHandler {
+
+	if ([notification.category isEqualToString:@"incoming_msg"] && [identifier isEqualToString:@"reply_inline"]) {
+		LinphoneCore *lc = [LinphoneManager getLc];
+		NSString *replyText = [responseInfo objectForKey:UIUserNotificationActionResponseTypedTextKey];
+		NSString *from = [notification.userInfo objectForKey:@"from_addr"];
+		LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
+		if (room) {
+			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
+			linphone_chat_room_send_chat_message(room, msg);
+		}
+	}
 }
 
 - (void)application:(UIApplication *)application
