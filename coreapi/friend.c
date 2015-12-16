@@ -212,7 +212,7 @@ int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
 	LinphoneAddress *fr = lf->uri;
 	LinphoneVCard *vcard = NULL;
 	
-	if (fr == NULL){
+	if (fr == NULL) {
 		ms_error("linphone_friend_set_address() must be called before linphone_friend_set_name().");
 		return -1;
 	}

@@ -72,7 +72,7 @@ RCFILES = \
 
 IMAGE_FILES = images/nowebcamCIF.jpg
 
-COMMON_FILE = common/bc_completion
+COMMON_FILE = common/bc_completion common/vcards.vcf
 
 EXTRA_DIST = tester_hosts\
 			messages.db\

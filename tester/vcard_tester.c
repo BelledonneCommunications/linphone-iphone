@@ -16,13 +16,36 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
 
-test_t vcard_tests[] = {
+static void linphone_vcard_import_friends_test(void) {
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	const MSList *friends = linphone_core_get_friend_list(manager->lc);
+	int count = 0;
+	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
 	
+	count = linphone_core_import_friends_from_vcard4_file(manager->lc, bc_tester_res("common/vcards.vcf"));
+	BC_ASSERT_EQUAL(count, 3, int, "%d");
+	friends = linphone_core_get_friend_list(manager->lc);
+	BC_ASSERT_EQUAL(ms_list_size(friends), 3, int, "%d");
+	
+	linphone_core_manager_destroy(manager);
+}
+
+static void linphone_vcard_export_friends_test(void) {
+	
+}
+
+static void linphone_vcard_create_edit_friends_test(void) {
+	
+}
+
+test_t vcard_tests[] = {
+	{ "Import friends from vCards", linphone_vcard_import_friends_test },
+	{ "Export friends to vCards", linphone_vcard_export_friends_test },
+	{ "Create and edit friends' vCards", linphone_vcard_create_edit_friends_test },
 };
 
 test_suite_t vcard_test_suite = {
