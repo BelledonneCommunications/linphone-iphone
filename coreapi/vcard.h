@@ -99,6 +99,20 @@ LINPHONE_PUBLIC const char* linphone_vcard_get_full_name(const LinphoneVCard *vC
 LINPHONE_PUBLIC void linphone_vcard_add_sip_address(LinphoneVCard *vCard, const char *sip_address);
 
 /**
+ * Removes a SIP address in the vCard (if it exists), using the IMPP property
+ * @param[in] vCard the LinphoneVCard
+ * @param[in] sip_address the SIP address to remove
+ */
+LINPHONE_PUBLIC void linphone_vcard_remove_sip_address(LinphoneVCard *vCard, const char *sip_address);
+
+/**
+ * Edits the preferred SIP address in the vCard (or the first one), using the IMPP property
+ * @param[in] vCard the LinphoneVCard
+ * @param[in] sip_address the new SIP address
+ */
+LINPHONE_PUBLIC void linphone_vcard_edit_main_sip_address(LinphoneVCard *vCard, const char *sip_address);
+
+/**
  * Returns the list of SIP addresses (as const char *) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
  * @param[in] vCard the LinphoneVCard
  * @return \mslist{const char *}

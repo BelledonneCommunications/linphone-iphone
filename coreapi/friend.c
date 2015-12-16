@@ -199,10 +199,12 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 }
 
 int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr){
-	LinphoneAddress *fr=linphone_address_clone(addr);
+	LinphoneAddress *fr = linphone_address_clone(addr);
+	
 	linphone_address_clean(fr);
-	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
-	lf->uri=fr;
+	if (lf->uri != NULL) linphone_address_destroy(lf->uri);
+	lf->uri = fr;
+	
 	return 0;
 }
 
@@ -211,17 +213,19 @@ int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
 	LinphoneVCard *vcard = NULL;
 	
 	if (fr == NULL){
-		ms_error("linphone_friend_set_sip_addr() must be called before linphone_friend_set_name().");
+		ms_error("linphone_friend_set_address() must be called before linphone_friend_set_name().");
 		return -1;
 	}
-	linphone_address_set_display_name(fr,name);
-	
+	linphone_address_set_display_name(fr, name);
 	
 	vcard = linphone_friend_get_vcard(lf);
 	if (!vcard) {
 		linphone_friend_create_vcard(lf, name);
-	} else {
+		vcard = linphone_friend_get_vcard(lf);
+	}	
+	if (vcard) {
 		linphone_vcard_set_full_name(vcard, name);
+		linphone_vcard_edit_main_sip_address(vcard, linphone_address_as_string_uri_only(fr));
 	}
 	
 	return 0;
@@ -771,10 +775,10 @@ bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
 	} else {
 		const char *displayName = linphone_address_get_display_name(addr);
 		if (!displayName) {
-			ms_error("Friend's URI doesn't have a display name");
-			return FALSE;
+			fullName = linphone_address_get_username(addr);
+		} else {
+			fullName = displayName;
 		}
-		fullName = displayName;
 	}
 	
 	if (!fullName) {

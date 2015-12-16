@@ -32,6 +32,8 @@ extern "C" LinphoneVCard* linphone_vcard_new(void) {
 }
 
 extern "C" void linphone_vcard_free(LinphoneVCard *vCard) {
+	if (!vCard) return;
+	
 	vCard->belCard.reset();
 	ms_free(vCard);
 }
@@ -84,28 +86,63 @@ extern "C" LinphoneVCard* linphone_vcard_new_from_vcard4_buffer(const char *buff
 }
 
 extern "C" const char * linphone_vcard_as_vcard4_string(LinphoneVCard *vCard) {
+	if (!vCard) return NULL;
+	
 	return vCard->belCard->toFoldedString().c_str();
 }
 
 extern "C" void linphone_vcard_set_full_name(LinphoneVCard *vCard, const char *name) {
+	if (!vCard || !name) return;
+	
 	shared_ptr<belcard::BelCardFullName> fn = belcard::BelCardGeneric::create<belcard::BelCardFullName>();
 	fn->setValue(name);
 	vCard->belCard->setFullName(fn);
 }
 
 extern "C" const char* linphone_vcard_get_full_name(const LinphoneVCard *vCard) {
+	if (!vCard) return NULL;
+	
 	const char *result = vCard->belCard->getFullName() ? vCard->belCard->getFullName()->getValue().c_str() : NULL;
 	return result;
 }
 
 extern "C" void linphone_vcard_add_sip_address(LinphoneVCard *vCard, const char *sip_address) {
+	if (!vCard || !sip_address) return;
+	
 	shared_ptr<belcard::BelCardImpp> impp = belcard::BelCardGeneric::create<belcard::BelCardImpp>();
 	impp->setValue(sip_address);
 	vCard->belCard->addImpp(impp);
 }
 
+extern "C" void linphone_vcard_remove_sip_address(LinphoneVCard *vCard, const char *sip_address) {
+	if (!vCard) return;
+	
+	for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
+		const char *value = (*it)->getValue().c_str();
+		if (strcmp(value, sip_address) == 0) {
+			vCard->belCard->removeImpp(*it);
+			break;
+		}
+	}
+}
+
+extern "C" void linphone_vcard_edit_main_sip_address(LinphoneVCard *vCard, const char *sip_address) {
+	if (!vCard || !sip_address) return;
+	
+	if (vCard->belCard->getImpp().size() > 0) {
+		const shared_ptr<belcard::BelCardImpp> impp = vCard->belCard->getImpp().front();
+		impp->setValue(sip_address);
+	} else {
+		shared_ptr<belcard::BelCardImpp> impp = belcard::BelCardGeneric::create<belcard::BelCardImpp>();
+		impp->setValue(sip_address);
+		vCard->belCard->addImpp(impp);
+	}
+}
+
 extern "C" MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vCard) {
 	MSList *result = NULL;
+	if (!vCard) return NULL;
+	
 	for (auto it = vCard->belCard->getImpp().begin(); it != vCard->belCard->getImpp().end(); ++it) {
 		const char *value = (*it)->getValue().c_str();
 		if (strncmp(value, "sip:", 4) == 0) {
