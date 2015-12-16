@@ -135,6 +135,7 @@ liblinphonetester_la_SOURCES = \
 				tester.c \
 				upnp_tester.c \
 				video_tester.c \
+				vcard_tester.c \
 				common/bc_tester_utils.c
 
 liblinphonetester_ladir = $(includedir)/linphone
