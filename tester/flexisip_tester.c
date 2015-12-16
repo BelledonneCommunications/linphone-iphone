@@ -884,9 +884,6 @@ static void dos_module_trigger(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-#define USE_PRESENCE_SERVER 1
-
-#if USE_PRESENCE_SERVER
 
 static void test_subscribe_notify_with_sipp_publisher(void) {
 	char *scen;
@@ -1050,7 +1047,7 @@ static void test_list_subscribe (void) {
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
 }
-#endif
+
 
 test_t flexisip_tests[] = {
 	{ "Subscribe forking", subscribe_forking },
@@ -1069,12 +1066,10 @@ test_t flexisip_tests[] = {
 	{ "Call with sips", call_with_sips },
 	{ "Call with sips not achievable", call_with_sips_not_achievable },
 	{ "Call with ipv6", call_with_ipv6 },
-#if USE_PRESENCE_SERVER
 	{ "Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher },
 	{ "Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish },
 	{ "Publish/unpublish", test_publish_unpublish },
 	{ "List subscribe", test_list_subscribe },
-#endif
 	{ "File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client },
 	{ "File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client },
 	{ "File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client },
