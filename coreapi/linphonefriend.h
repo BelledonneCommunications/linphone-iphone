@@ -458,6 +458,22 @@ LINPHONE_PUBLIC int linphone_core_import_friends_from_vcard4_file(LinphoneCore *
 LINPHONE_PUBLIC void linphone_core_export_friends_as_vcard4_file(LinphoneCore *lc, const char *vcard_file);
 
 /**
+ * Sets the database filename where friends will be stored.
+ * If the file does not exist, it will be created.
+ * @ingroup initializing
+ * @param lc the linphone core
+ * @param path filesystem path
+**/
+LINPHONE_PUBLIC void linphone_core_set_friends_database_path(LinphoneCore *lc, const char *path);
+
+/**
+ * Migrates the friends from the linphonerc to the database if not done yet
+ * @ingroup initializing
+ * @param lc the linphone core
+**/
+LINPHONE_PUBLIC void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc);
+
+/**
  * @}
  */
 

@@ -395,6 +395,11 @@ LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
 MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf);
 bool_t linphone_core_should_subscribe_friends_only_when_registered(const LinphoneCore *lc);
 void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyConfig *cfg, bool_t only_when_registered);
+void linphone_core_friends_storage_init(LinphoneCore *lc);
+void linphone_core_friends_storage_close(LinphoneCore *lc);
+void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf);
+void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf);
+MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc);
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 
@@ -654,6 +659,7 @@ struct _LinphoneFriend{
 	bool_t commit;
 	bool_t initial_subscribes_sent; /*used to know if initial subscribe message was sent or not*/
 	LinphoneVCard *vcard;
+	unsigned int storage_id;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
@@ -914,6 +920,10 @@ struct _LinphoneCore
 	char *logs_db_file;
 #ifdef CALL_LOGS_STORAGE_ENABLED
 	sqlite3 *logs_db;
+#endif
+	char *friends_db_file;
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	sqlite3 *friends_db;
 #endif
 #ifdef BUILD_UPNP
 	UpnpContext *upnp;

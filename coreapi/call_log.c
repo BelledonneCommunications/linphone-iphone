@@ -345,7 +345,7 @@ static void linphone_create_table(sqlite3* db) {
 	}
 }
 
-void linphone_update_call_log_table(sqlite3* db) {
+static void linphone_update_call_log_table(sqlite3* db) {
 	char* errmsg=NULL;
 	int ret;
 
@@ -445,7 +445,7 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	return 0;
 }
 
-void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, MSList **list) {
+static void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, MSList **list) {
 	char* errmsg = NULL;
 	int ret;
 	ret = sqlite3_exec(db, stmt, create_call_log, list, &errmsg);
@@ -455,7 +455,7 @@ void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, MSList **list)
 	}
 }
 
-int linphone_sql_request_generic(sqlite3* db, const char *stmt) {
+static int linphone_sql_request_generic(sqlite3* db, const char *stmt) {
 	char* errmsg = NULL;
 	int ret;
 	ret = sqlite3_exec(db, stmt, NULL, NULL, &errmsg);

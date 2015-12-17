@@ -980,6 +980,41 @@ fi
 
 AM_CONDITIONAL(BUILD_CALL_LOGS_STORAGE, test x$enable_call_logs_storage = xtrue)
 
+AC_ARG_ENABLE(friends-db-storage,
+        [AS_HELP_STRING([--enable-friends-db-storage=[yes/no]], [Turn on compilation of friends database storage (default=auto)])],
+        [case "${enableval}" in
+                yes)    enable_friends_db_storage=true ;;
+                no)     enable_friends_db_storage=false ;;
+                *)      AC_MSG_ERROR(bad value ${enableval} for --enable-friends-db-storage) ;;
+        esac],
+        [enable_friends_db_storage=auto]
+)
+ 
+if test x$enable_friends_db_storage != xfalse; then
+        PKG_CHECK_MODULES(SQLITE3,[sqlite3 >= 3.6.0],[found_sqlite=yes],[found_sqlite=no])
+        if test "$found_sqlite" = "no"; then
+                dnl Check the lib presence in case the PKG-CONFIG version is not found
+                AC_CHECK_LIB(sqlite3, sqlite3_open, [SQLITE3_LIBS+=" -lsqlite3 "; found_sqlite=yes], [foo=bar])
+        fi
+        if test "$found_sqlite" = "yes"; then
+                SQLITE3_CFLAGS+=" -DFRIENDS_SQL_STORAGE_ENABLED"
+                if test "$build_macos" = "yes" -o "$ios_found" = "yes"; then
+                        SQLITE3_LIBS+=" -liconv"
+                fi
+                enable_friends_db_storage=true
+        else
+                if test x$enable_friends_db_storage = xtrue; then
+                        AC_MSG_ERROR([sqlite3, required for friends database storage, not found])
+                fi
+                enable_friends_db_storage=false
+        fi
+
+        AC_SUBST(SQLITE3_CFLAGS)
+        AC_SUBST(SQLITE3_LIBS) 
+fi
+
+AM_CONDITIONAL(BUILD_FRIENDS_DB_STORAGE, test x$enable_friends_db_storage = xtrue)
+
 PKG_CHECK_MODULES(BELLESIP, [belle-sip >= 1.4.0])
 
 SIPSTACK_CFLAGS="$BELLESIP_CFLAGS"
@@ -1139,6 +1174,7 @@ printf "* %-30s %s\n" "Console interface"	$console_ui
 printf "* %-30s %s\n" "Tools"				$build_tools
 printf "* %-30s %s\n" "Message storage"		$enable_msg_storage
 printf "* %-30s %s\n" "Call logs storage"	$enable_call_logs_storage
+printf "* %-30s %s\n" "Friends db storage"      $enable_friends_db_storage
 printf "* %-30s %s\n" "VCard support"		$enable_vcard
 printf "* %-30s %s\n" "IM encryption"		$lime
 printf "* %-30s %s\n" "uPnP support" 		$build_upnp

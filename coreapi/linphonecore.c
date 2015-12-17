@@ -1364,10 +1364,17 @@ static void video_config_read(LinphoneCore *lc){
 
 static void ui_config_read(LinphoneCore *lc)
 {
-	LinphoneFriend *lf;
+	LinphoneFriend *lf = NULL;
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	MSList *friends = linphone_core_fetch_friends_from_db(lc);
+	while (friends && friends->data) {
+		lf = friends->data;
+		friends = ms_list_next(friends);
+#else
 	int i;
 	for (i=0;(lf=linphone_friend_new_from_config_file(lc,i))!=NULL;i++){
-		linphone_core_add_friend(lc,lf);
+#endif
+		linphone_core_add_friend(lc, lf);
 		linphone_friend_unref(lf);
 	}
 
