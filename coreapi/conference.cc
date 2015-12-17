@@ -227,6 +227,7 @@ int LocalConference::addCall(LinphoneCall *call) {
 		ms_error("Call is in state %s, it cannot be added to the conference.",linphone_call_state_to_string(call->state));
 		return -1;
 	}
+	Conference::addCall(call);
 	return 0;
 }
 
@@ -244,6 +245,7 @@ int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
 		}
 	}
 	call->params->in_conference=FALSE;
+	Conference::removeCall(call);
 
 	str=linphone_call_get_remote_address_as_string(call);
 	ms_message("%s will be removed from conference", str);
@@ -396,14 +398,12 @@ void LocalConference::onCallStreamStarting(LinphoneCall *call, bool isPausedByRe
 	ms_audio_conference_add_member(m_conf,ep);
 	ms_audio_conference_mute_member(m_conf,ep,isPausedByRemote);
 	call->endpoint=ep;
-	Conference::addCall(call);
 }
 
 void LocalConference::onCallStreamStopping(LinphoneCall *call) {
 	ms_audio_conference_remove_member(m_conf,call->endpoint);
 	ms_audio_endpoint_release_from_stream(call->endpoint);
 	call->endpoint=NULL;
-	Conference::removeCall(call);
 }
 
 void LocalConference::onCallTerminating(LinphoneCall *call) {
@@ -460,7 +460,7 @@ private:
 	static void transferStateChanged(LinphoneCore *lc, LinphoneCall *transfered, LinphoneCallState new_call_state);
 	
 	const char *m_focusAddr;
-	const char *m_focusContact;
+	char *m_focusContact;
 	LinphoneCall *m_focusCall;
 	State m_state;
 	LinphoneCoreVTable *m_vtable;
@@ -487,9 +487,9 @@ RemoteConference::RemoteConference(LinphoneCore *core):
 }
 
 RemoteConference::~RemoteConference() {
+	if(m_state == ConnectedToFocus) terminate();
 	linphone_core_remove_listener(m_core, m_vtable);
 	linphone_core_v_table_destroy(m_vtable);
-	if(m_pendingCalls) ms_list_free(m_pendingCalls);
 }
 
 int RemoteConference::addCall(LinphoneCall *call) {
@@ -497,20 +497,27 @@ int RemoteConference::addCall(LinphoneCall *call) {
 	
 	switch(m_state) {
 		case NotConnectedToFocus:
+			Conference::addCall(call);
 			ms_message("Calling the conference focus (%s)", m_focusAddr);
 			addr = linphone_address_new(m_focusAddr);
 			if(addr) {
-				m_focusCall = linphone_core_invite_address(m_core, addr);
+				m_focusCall = linphone_call_ref(linphone_core_invite_address(m_core, addr));
 				m_localParticipantStream = m_focusCall->audiostream;
-				m_pendingCalls = ms_list_append(m_pendingCalls, call);
+				m_pendingCalls = ms_list_append(m_pendingCalls, linphone_call_ref(call));
 				m_state = ConnectingToFocus;
 				linphone_address_unref(addr);
 				return 0;
 			} else return -1;
 
+		case ConnectingToFocus:
+			Conference::addCall(call);
+			m_pendingCalls = ms_list_append(m_pendingCalls, linphone_call_ref(call));
+			return 0;
+			
 		case ConnectedToFocus:
+			Conference::addCall(call);
+			m_transferingCalls = ms_list_append(m_transferingCalls, linphone_call_ref(call));
 			linphone_core_transfer_call(m_core, call, m_focusContact);
-			m_transferingCalls = ms_list_append(m_transferingCalls, call);
 			return 0;
 
 		default:
@@ -523,6 +530,7 @@ int RemoteConference::terminate() {
 	switch(m_state) {
 		case ConnectingToFocus:
 		case ConnectedToFocus:
+			Conference::removeCall(m_focusCall);
 			linphone_core_terminate_call(m_core, m_focusCall);
 			break;
 		default:
@@ -583,38 +591,45 @@ const char *RemoteConference::stateToString(RemoteConference::State state) {
 }
 
 void RemoteConference::onFocusCallSateChanged(LinphoneCallState state) {
+	MSList *it;
+	
 	switch (state) {
-			case LinphoneCallConnected:
-				Conference::addCall(m_focusCall);
-				m_state = ConnectedToFocus;
-				m_focusContact = linphone_call_get_remote_contact(m_focusCall);
-				for (MSList *it = m_pendingCalls; it; it = it->next) {
-					LinphoneCall *pendingCall = (LinphoneCall *)it->data;
-					LinphoneCallState pendingCallState = linphone_call_get_state(pendingCall);
-					if(pendingCallState == LinphoneCallStreamsRunning || pendingCallState == LinphoneCallPaused) {
-						MSList *current_elem = it;
-						it = it->next;
-						linphone_core_transfer_call(m_core, pendingCall, m_focusContact);
-						m_pendingCalls = ms_list_remove_link(m_pendingCalls, current_elem);
-						m_transferingCalls = ms_list_append(m_transferingCalls, pendingCall);
-						continue;
-					}
+		case LinphoneCallConnected:
+			m_state = ConnectedToFocus;
+			m_focusContact = ms_strdup(linphone_call_get_remote_contact(m_focusCall));
+			it = m_pendingCalls;
+			while (it) {
+				LinphoneCall *pendingCall = (LinphoneCall *)it->data;
+				LinphoneCallState pendingCallState = linphone_call_get_state(pendingCall);
+				if(pendingCallState == LinphoneCallStreamsRunning || pendingCallState == LinphoneCallPaused) {
+					MSList *current_elem = it;
+					it = it->next;
+					m_pendingCalls = ms_list_remove_link(m_pendingCalls, current_elem);
+					m_transferingCalls = ms_list_append(m_transferingCalls, pendingCall);
+					linphone_core_transfer_call(m_core, pendingCall, m_focusContact);
+				} else {
+					it = it->next;
 				}
-				break;
+			}
+			break;
 
-			case LinphoneCallError:
-			case LinphoneCallEnd:
-				Conference::removeCall(m_focusCall);
-				m_state = NotConnectedToFocus;
-				m_focusCall = NULL;
-				m_localParticipantStream = NULL;
+		case LinphoneCallError:
+		case LinphoneCallEnd:
+			Conference::removeCall(m_focusCall);
+			m_state = NotConnectedToFocus;
+			linphone_call_unref(m_focusCall);
+			m_focusCall = NULL;
+			m_localParticipantStream = NULL;
+			if(m_focusContact) {
+				ms_free(m_focusContact);
 				m_focusContact = NULL;
-				m_pendingCalls = ms_list_free(m_pendingCalls);
-				m_transferingCalls = ms_list_free(m_transferingCalls);
-				break;
+			}
+			m_pendingCalls = ms_list_free_with_data(m_pendingCalls, (void (*)(void *))linphone_call_unref);
+			m_transferingCalls = ms_list_free_with_data(m_transferingCalls, (void (*)(void *))linphone_call_unref);
+			break;
 
-			default: break;
-		}
+		default: break;
+	}
 }
 
 void RemoteConference::onPendingCallStateChanged(LinphoneCall *call, LinphoneCallState state) {
@@ -622,15 +637,17 @@ void RemoteConference::onPendingCallStateChanged(LinphoneCall *call, LinphoneCal
 			case LinphoneCallStreamsRunning:
 			case LinphoneCallPaused:
 				if(m_state == ConnectedToFocus) {
-					linphone_core_transfer_call(m_core, call, m_focusContact);
 					m_pendingCalls = ms_list_remove(m_pendingCalls, call);
 					m_transferingCalls = ms_list_append(m_transferingCalls, call);
+					linphone_core_transfer_call(m_core, call, m_focusContact);
 				}
 				break;
 				
 			case LinphoneCallError:
 			case LinphoneCallEnd:
+				Conference::removeCall(call);
 				m_pendingCalls = ms_list_remove(m_pendingCalls, call);
+				linphone_call_unref(call);
 				break;
 				
 			default: break;
@@ -655,6 +672,7 @@ void RemoteConference::transferStateChanged(LinphoneCore *lc, LinphoneCall *tran
 			case LinphoneCallConnected:
 			case LinphoneCallError:
 				conf->m_transferingCalls = ms_list_remove(conf->m_transferingCalls, transfered);
+				linphone_call_unref(transfered);
 				break;
 
 			default:
