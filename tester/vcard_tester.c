@@ -22,7 +22,7 @@
 
 #include <time.h>
 
-#if BUILD_VCARD
+#ifdef VCARD_ENABLED
 static char *create_filepath(const char *dir, const char *filename, const char *ext) {
 	return ms_strdup_printf("%s/%s.%s", dir, filename, ext);
 }
@@ -165,7 +165,7 @@ static void friends_sqlite_storage(void) {
 #endif
 
 test_t vcard_tests[] = {
-#if BUILD_VCARD
+#ifdef VCARD_ENABLED
 	{ "Import / Export friends from vCards", linphone_vcard_import_export_friends_test },
 	{ "Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test },
 #ifdef FRIENDS_SQL_STORAGE_ENABLED

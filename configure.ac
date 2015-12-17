@@ -896,6 +896,7 @@ if test x$enable_vcard != xfalse; then
 		AC_LANG_C
 	fi
 	if test "$found_vcard" = "yes"; then
+		BELCARD_CFLAGS+=" -DVCARD_ENABLED"
 		enable_vcard=true
 	else
 		if test x$enable_vcard = xtrue; then
