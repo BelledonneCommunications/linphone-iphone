@@ -994,6 +994,7 @@ struct _EcCalibrator{
 	unsigned int rate;
 	LinphoneEcCalibratorStatus status;
 	bool_t freq1,freq2,freq3;
+	bool_t play_cool_tones;
 };
 
 typedef struct _EcCalibrator EcCalibrator;
