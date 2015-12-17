@@ -1047,7 +1047,7 @@ void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf) {
 	}
 }
 
-MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc) {
+const MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc) {
 	char *buf;
 	uint64_t begin,end;
 	MSList *result = NULL;
@@ -1079,7 +1079,7 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf) {
 }
 
-MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc) {
+const MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc) {
 	return NULL;
 }
 

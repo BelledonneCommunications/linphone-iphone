@@ -1366,7 +1366,7 @@ static void ui_config_read(LinphoneCore *lc)
 {
 	LinphoneFriend *lf = NULL;
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
-	MSList *friends = linphone_core_fetch_friends_from_db(lc);
+	const MSList *friends = linphone_core_fetch_friends_from_db(lc);
 	while (friends && friends->data) {
 		lf = friends->data;
 		friends = ms_list_next(friends);

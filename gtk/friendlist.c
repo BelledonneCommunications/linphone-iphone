@@ -991,3 +991,30 @@ gboolean linphone_gtk_friend_list_motion_event_handler(GtkTreeView *friendlist, 
 	return FALSE;
 }
 
+#define CONFIG_FILE ".linphone-friends.db"
+
+char *linphone_gtk_friends_storage_get_db_file(const char *filename){
+	const int path_max=1024;
+	char *db_file=NULL;
+
+	db_file=(char *)g_malloc(path_max*sizeof(char));
+	if (filename==NULL) filename=CONFIG_FILE;
+	/*try accessing a local file first if exists*/
+	if (access(CONFIG_FILE,F_OK)==0){
+		snprintf(db_file,path_max,"%s",filename);
+	}else{
+#ifdef WIN32
+		const char *appdata=getenv("APPDATA");
+		if (appdata){
+			snprintf(db_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
+			CreateDirectory(db_file,NULL);
+			snprintf(db_file,path_max,"%s\\%s\\%s",appdata,LINPHONE_CONFIG_DIR,filename);
+		}
+#else
+		const char *home=getenv("HOME");
+		if (home==NULL) home=".";
+		snprintf(db_file,path_max,"%s/%s",home,filename);
+#endif
+	}
+	return db_file;
+}
