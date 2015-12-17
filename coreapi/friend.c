@@ -508,28 +508,32 @@ LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, cons
 	return linphone_friend_new_with_address(address);
 }
 
-void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf)
-{
-	ms_return_if_fail(lf->lc==NULL);
-	ms_return_if_fail(lf->uri!=NULL);
-	if (ms_list_find(lc->friends,lf)!=NULL){
-		char *tmp=NULL;
-		const LinphoneAddress *addr=linphone_friend_get_address(lf);
-		if (addr) tmp=linphone_address_as_string(addr);
+void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
+	ms_return_if_fail(!lf->lc);
+	if (!lf->uri) {
+		return; // Do not abort if friend doesn't have a SIP URI
+	}
+	
+	if (ms_list_find(lc->friends, lf)) {
+		char *tmp = NULL;
+		const LinphoneAddress *addr = linphone_friend_get_address(lf);
+		if (addr) tmp = linphone_address_as_string(addr);
 		ms_warning("Friend %s already in list, ignored.", tmp ? tmp : "unknown");
 		if (tmp) ms_free(tmp);
-		return ;
+		return;
 	}
-	lc->friends=ms_list_append(lc->friends,linphone_friend_ref(lf));
-	if (ms_list_find(lc->subscribers, lf)){
+	linphone_core_import_friend(lc, lf);
+	if (ms_list_find(lc->subscribers, lf)) {
 		/*if this friend was in the pending subscriber list, now remove it from this list*/
 		lc->subscribers = ms_list_remove(lc->subscribers, lf);
 		linphone_friend_unref(lf);
 	}
-	lf->lc=lc;
-	if ( linphone_core_ready(lc)) linphone_friend_apply(lf,lc);
-	else lf->commit=TRUE;
-	return ;
+}
+
+void linphone_core_import_friend(LinphoneCore *lc, LinphoneFriend *lf) {
+	lc->friends = ms_list_append(lc->friends, linphone_friend_ref(lf));
+	if (linphone_core_ready(lc)) linphone_friend_apply(lf, lc);
+	else lf->commit = TRUE;
 }
 
 void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* fl){

@@ -1399,6 +1399,8 @@ bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 BELLE_SIP_DECLARE_VPTR(LinphoneTunnelConfig);
 
 int linphone_core_get_default_proxy_config_index(LinphoneCore *lc);
+
+void linphone_core_import_friend(LinphoneCore *lc, LinphoneFriend *lf);
 	
 #ifdef __cplusplus
 }

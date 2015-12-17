@@ -20,6 +20,8 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
+#include <time.h>
+
 static char *create_filepath(const char *dir, const char *filename, const char *ext) {
 	return ms_strdup_printf("%s/%s.%s", dir, filename, ext);
 }
@@ -52,8 +54,25 @@ static void linphone_vcard_import_export_friends_test(void) {
 	linphone_core_manager_destroy(manager);
 }
 
+static void linphone_vcard_import_a_lot_of_friends_test(void) {
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	char *import_filepath = bc_tester_res("common/thousand_vcards.vcf");
+	clock_t start, end;
+	double elapsed = 0;
+
+	start = clock();
+	linphone_core_import_friends_from_vcard4_file(manager->lc, import_filepath);
+	end = clock();
+	
+	elapsed = (double)(end - start);
+	ms_error("Imported a thousand of friends in %f seconds", elapsed / CLOCKS_PER_SEC);
+	BC_ASSERT_TRUE(elapsed < 2500000); // 2.5 seconds
+	linphone_core_manager_destroy(manager);
+}
+
 test_t vcard_tests[] = {
 	{ "Import / Export friends from vCards", linphone_vcard_import_export_friends_test },
+	{ "Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test },
 };
 
 test_suite_t vcard_test_suite = {
