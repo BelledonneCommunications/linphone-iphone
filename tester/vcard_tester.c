@@ -72,9 +72,104 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	linphone_core_manager_destroy(manager);
 }
 
+static void friends_if_no_db_set(void) {
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriend *lf = linphone_friend_new();
+	LinphoneAddress *addr = linphone_address_new("sip:sylvain@sip.linphone.org");
+	const MSList *friends = NULL;
+	
+	linphone_friend_set_address(lf, addr);
+	linphone_friend_set_name(lf, "Sylvain");
+	linphone_core_add_friend(manager->lc, lf);
+	linphone_friend_unref(lf);
+	friends = linphone_core_get_friend_list(manager->lc);
+	BC_ASSERT_EQUAL(ms_list_size(friends), 1, int, "%d");
+	
+	linphone_core_remove_friend(manager->lc, lf);
+	friends = linphone_core_get_friend_list(manager->lc);
+	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
+	
+	linphone_address_destroy(addr);
+	linphone_core_manager_destroy(manager);
+}
+
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+static void friends_migration(void) {
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriend *lf = linphone_friend_new();
+	LinphoneFriend *lf2 = NULL;
+	LinphoneAddress *addr = linphone_address_new("sip:sylvain@sip.linphone.org");
+	const MSList *friends = linphone_core_get_friend_list(manager->lc);
+	MSList *friends_from_db = NULL;
+	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
+	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
+	
+	linphone_friend_set_address(lf, addr);
+	linphone_friend_set_name(lf, "Sylvain");
+	linphone_core_add_friend(manager->lc, lf);
+	linphone_friend_unref(lf);
+	friends = linphone_core_get_friend_list(manager->lc);
+	BC_ASSERT_EQUAL(ms_list_size(friends), 1, int, "%d");
+	
+	unlink(friends_db);
+	linphone_core_set_friends_database_path(manager->lc, friends_db);
+	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc);
+	BC_ASSERT_EQUAL_FATAL(ms_list_size(friends_from_db), 1, int, "%d");
+	
+	lf2 = (LinphoneFriend *)friends_from_db->data;
+	BC_ASSERT_EQUAL(linphone_friend_get_name(lf2), linphone_friend_get_name(lf), const char *, "%s");
+	
+	unlink(friends_db);
+	ms_free(friends_db);
+	linphone_address_destroy(addr);
+	friends_from_db = ms_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
+	linphone_core_manager_destroy(manager);
+}
+
+static void friends_sqlite_storage(void) {
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriend *lf = linphone_friend_new();
+	LinphoneFriend *lf2 = NULL;
+	LinphoneAddress *addr = linphone_address_new("sip:sylvain@sip.linphone.org");
+	const MSList *friends = linphone_core_get_friend_list(manager->lc);
+	MSList *friends_from_db = NULL;
+	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
+	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
+	
+	unlink(friends_db);
+	linphone_core_set_friends_database_path(manager->lc, friends_db);
+	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc);
+	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
+	
+	linphone_friend_set_address(lf, addr);
+	linphone_friend_set_name(lf, "Sylvain");
+	linphone_core_add_friend(manager->lc, lf);
+	linphone_friend_unref(lf);
+	
+	friends = linphone_core_get_friend_list(manager->lc);
+	BC_ASSERT_EQUAL(ms_list_size(friends), 1, int, "%d");
+	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc);
+	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 1, int, "%d");
+	
+	lf2 = (LinphoneFriend *)friends_from_db->data;
+	BC_ASSERT_EQUAL(linphone_friend_get_name(lf2), linphone_friend_get_name(lf), const char *, "%s");
+	
+	unlink(friends_db);
+	ms_free(friends_db);
+	linphone_address_destroy(addr);
+	friends_from_db = ms_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
+	linphone_core_manager_destroy(manager);
+}
+#endif
+
 test_t vcard_tests[] = {
 	{ "Import / Export friends from vCards", linphone_vcard_import_export_friends_test },
 	{ "Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test },
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	{ "Friends working if no db set", friends_if_no_db_set },
+	{ "Friends storage migration from rc to db", friends_migration },
+	{ "Friends storage in sqlite database", friends_sqlite_storage },
+#endif
 };
 
 test_suite_t vcard_test_suite = {

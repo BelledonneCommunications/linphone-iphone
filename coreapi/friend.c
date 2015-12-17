@@ -960,7 +960,7 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 
 	linphone_core_friends_storage_close(lc);
 
-	ret=_linphone_sqlite3_open(lc->friends_db_file, &db);
+	ret = _linphone_sqlite3_open(lc->friends_db_file, &db);
 	if (ret != SQLITE_OK) {
 		errmsg = sqlite3_errmsg(db);
 		ms_error("Error in the opening: %s.\n", errmsg);
@@ -986,8 +986,13 @@ void linphone_core_friends_storage_close(LinphoneCore *lc) {
 static int create_friend(void *data, int argc, char **argv, char **colName) {
 	MSList **list = (MSList **)data;
 	LinphoneFriend *lf = NULL;
+	LinphoneVCard *vcard = NULL;
+	
+	vcard = linphone_vcard_new_from_vcard4_buffer(argv[1]);
+	lf = linphone_friend_new_from_vcard(vcard);
 	//TODO
-	*list = ms_list_append(*list, lf);
+	*list = ms_list_append(*list, linphone_friend_ref(lf));
+	linphone_friend_unref(lf);
 	return 0;
 }
 
@@ -1047,7 +1052,7 @@ void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf) {
 	}
 }
 
-const MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc) {
+MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc) {
 	char *buf;
 	uint64_t begin,end;
 	MSList *result = NULL;
@@ -1079,7 +1084,7 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf) {
 }
 
-const MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc) {
+MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc) {
 	return NULL;
 }
 
@@ -1103,4 +1108,5 @@ void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
 	ms_warning("linphone has been compiled without sqlite, can't migrate friends");
 	return;
 #endif
+	//TODO
 }
