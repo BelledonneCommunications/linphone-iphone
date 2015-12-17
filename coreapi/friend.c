@@ -987,10 +987,18 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 	MSList **list = (MSList **)data;
 	LinphoneFriend *lf = NULL;
 	LinphoneVCard *vcard = NULL;
+	unsigned int storage_id = atoi(argv[0]);
 	
 	vcard = linphone_vcard_new_from_vcard4_buffer(argv[1]);
 	lf = linphone_friend_new_from_vcard(vcard);
+	if (!lf) {
+		lf = linphone_friend_new();
+		//TODO
+	}
+	
 	//TODO
+	
+	lf->storage_id = storage_id;
 	*list = ms_list_append(*list, linphone_friend_ref(lf));
 	linphone_friend_unref(lf);
 	return 0;

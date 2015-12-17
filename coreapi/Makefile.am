@@ -114,8 +114,12 @@ else
 liblinphone_la_SOURCES+=linphone_tunnel_stubs.c linphone_tunnel.h
 endif
 
+if BUILD_VCARD
 liblinphone_la_SOURCES+=vcard.cc vcard.h
 liblinphone_la_CXXFLAGS=-std=c++11
+else
+liblinphone_la_SOURCES+=vcard_stubs.c vcard.h
+endif
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 

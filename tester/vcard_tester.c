@@ -22,6 +22,7 @@
 
 #include <time.h>
 
+#if BUILD_VCARD
 static char *create_filepath(const char *dir, const char *filename, const char *ext) {
 	return ms_strdup_printf("%s/%s.%s", dir, filename, ext);
 }
@@ -161,14 +162,17 @@ static void friends_sqlite_storage(void) {
 	linphone_core_manager_destroy(manager);
 }
 #endif
+#endif
 
 test_t vcard_tests[] = {
+#if BUILD_VCARD
 	{ "Import / Export friends from vCards", linphone_vcard_import_export_friends_test },
 	{ "Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test },
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
 	{ "Friends working if no db set", friends_if_no_db_set },
 	{ "Friends storage migration from rc to db", friends_migration },
 	{ "Friends storage in sqlite database", friends_sqlite_storage },
+#endif
 #endif
 };
 
