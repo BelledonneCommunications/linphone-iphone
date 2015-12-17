@@ -535,6 +535,13 @@ def main(argv=None):
         if x not in selected_platforms:
             selected_platforms.append(x)
 
+    if os.path.isdir('WORK') and not args.clean:
+        warning("Working directory WORK already exists. Please remove it (option -C or -c) before re-executing CMake "
+                "to avoid conflicts between executions.")
+        if os.path.isfile('Makefile'):
+            Popen("make help-prepare-options".split(" "))
+        return 0
+
     for platform in selected_platforms:
         target = targets[platform]
 
@@ -543,9 +550,6 @@ def main(argv=None):
         else:
             retcode = prepare.run(target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
             if retcode != 0:
-                if retcode == 51:
-                    Popen("make help-prepare-options".split(" "))
-                    retcode = 0
                 return retcode
 
     if args.clean:
@@ -562,9 +566,9 @@ def main(argv=None):
         elif args.generator == "Unix Makefiles":
             generate_makefile(selected_platforms, '$(MAKE) -C')
         elif args.generator == "Xcode":
-            print("You can now open Xcode project with: open WORK/cmake/Project.xcodeproj")
+            info("You can now open Xcode project with: open WORK/cmake/Project.xcodeproj")
         else:
-            print("Not generating meta-makefile for generator {}.".format(args.generator))
+            info("Not generating meta-makefile for generator {}.".format(args.generator))
 
     return 0
 
