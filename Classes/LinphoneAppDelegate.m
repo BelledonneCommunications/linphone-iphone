@@ -127,7 +127,8 @@
 	mark_read.authenticationRequired = NO;
 
 	NSArray *actions;
-	if ([[UIDevice.currentDevice systemVersion] floatValue] < 9) {
+	if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
+		[LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
 		actions = @[ mark_read, reply ];
 	} else {
 		// iOS 9 allows for inline reply. We don't propose mark_read in this case
@@ -167,14 +168,8 @@
 	return localRingNotifAction;
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
-	UIApplication *app = [UIApplication sharedApplication];
-	UIApplicationState state = app.applicationState;
-
-	LinphoneManager *instance = LinphoneManager.instance;
-	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
-	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
+- (void)registerForNotifications:(UIApplication *)app {
+	LinphoneManager *instance = [LinphoneManager instance];
 
 	if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
 		/* iOS8 notifications can be actioned! Awesome: */
@@ -191,12 +186,25 @@
 			[app registerForRemoteNotifications];
 		}
 	} else {
+		/* iOS7 and below */
 		if (!instance.isTesting) {
 			NSUInteger notifTypes =
 				UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;
 			[app registerForRemoteNotificationTypes:notifTypes];
 		}
 	}
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+	UIApplication *app = [UIApplication sharedApplication];
+	UIApplicationState state = app.applicationState;
+
+	LinphoneManager *instance = [LinphoneManager instance];
+	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
+	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
+
+	[self registerForNotifications:app];
 
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
@@ -461,6 +469,7 @@
 		if (room) {
 			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
 			linphone_chat_room_send_chat_message(room, msg);
+			linphone_chat_room_mark_as_read(room);
 		}
 	}
 }

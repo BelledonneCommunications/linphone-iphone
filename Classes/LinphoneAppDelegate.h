@@ -30,6 +30,7 @@
 }
 
 - (void)processRemoteNotification:(NSDictionary*)userInfo;
+- (void)registerForNotifications:(UIApplication *)app;
 
 @property (nonatomic, retain) UIAlertView *waitingIndicator;
 @property (nonatomic, retain) NSString *configURL;
