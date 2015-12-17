@@ -25,7 +25,7 @@ void CallCommand::exec(Daemon *app, const char *args) {
 		char *opt;
 		LinphoneCallParams *cp;
 		opt = strstr(early_media,"--early-media");
-		cp = linphone_core_create_default_call_parameters(app->getCore());
+		cp = linphone_core_create_call_params(app->getCore(), NULL);
 		if (opt) {
 			linphone_call_params_enable_early_media_sending(cp, TRUE);
 			ostr << "Early media: Ok\n";

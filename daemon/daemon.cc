@@ -515,7 +515,12 @@ void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const
 }
 
 void Daemon::callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats) {
-	if (mUseStatsEvents) mEventQueue.push(new CallStatsResponse(this, call, stats, true));
+	if (mUseStatsEvents) {
+		/* don't queue periodical updates (3 per seconds for just bandwidth updates) */
+		if (!(stats->updated & LINPHONE_CALL_STATS_PERIODICAL_UPDATE)){
+			mEventQueue.push(new CallStatsResponse(this, call, stats, true));
+		}
+	}
 }
 
 void Daemon::dtmfReceived(LinphoneCall *call, int dtmf) {
