@@ -51,6 +51,7 @@ extern "C" MSList* linphone_vcard_list_from_vcard4_file(const char *filename) {
 				result = ms_list_append(result, vCard);
 			}
 		}
+		delete parser;
 	}
 	return result;
 }
@@ -68,6 +69,7 @@ extern "C" MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
 				result = ms_list_append(result, vCard);
 			}
 		}
+		delete parser;
 	}
 	return result;
 }
@@ -81,6 +83,7 @@ extern "C" LinphoneVCard* linphone_vcard_new_from_vcard4_buffer(const char *buff
 			vCard = linphone_vcard_new();
 			vCard->belCard = belCard;
 		}
+		delete parser;
 	}
 	return vCard;
 }
