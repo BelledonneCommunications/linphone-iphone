@@ -200,10 +200,16 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 
 int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr){
 	LinphoneAddress *fr = linphone_address_clone(addr);
+	LinphoneVCard *vcard = NULL;
 	
 	linphone_address_clean(fr);
 	if (lf->uri != NULL) linphone_address_destroy(lf->uri);
 	lf->uri = fr;
+	
+	vcard = linphone_friend_get_vcard(lf);
+	if (vcard) {
+		linphone_vcard_edit_main_sip_address(vcard, linphone_address_as_string_uri_only(fr));
+	}
 	
 	return 0;
 }
@@ -211,22 +217,26 @@ int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr)
 int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
 	LinphoneAddress *fr = lf->uri;
 	LinphoneVCard *vcard = NULL;
-	
-	if (fr == NULL) {
-		ms_error("linphone_friend_set_address() must be called before linphone_friend_set_name().");
-		return -1;
-	}
-	linphone_address_set_display_name(fr, name);
+	bool_t vcard_created = FALSE;
 	
 	vcard = linphone_friend_get_vcard(lf);
 	if (!vcard) {
 		linphone_friend_create_vcard(lf, name);
 		vcard = linphone_friend_get_vcard(lf);
-	}	
+		vcard_created = TRUE;
+	}
 	if (vcard) {
 		linphone_vcard_set_full_name(vcard, name);
-		linphone_vcard_edit_main_sip_address(vcard, linphone_address_as_string_uri_only(fr));
+		if (fr && vcard_created) { // SIP address wasn't set yet, let's do it
+			linphone_vcard_edit_main_sip_address(vcard, linphone_address_as_string_uri_only(fr));
+		}
 	}
+	
+	if (!fr) {
+		ms_warning("linphone_friend_set_address() must be called before linphone_friend_set_name() to be able to set display name.");
+		return -1;
+	}
+	linphone_address_set_display_name(fr, name);
 	
 	return 0;
 }
@@ -531,6 +541,10 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
 }
 
 void linphone_core_import_friend(LinphoneCore *lc, LinphoneFriend *lf) {
+	if (!lf->uri) {
+		return; // Do not abort if friend doesn't have a SIP URI
+	}
+	lf->lc = lc;
 	lc->friends = ms_list_append(lc->friends, linphone_friend_ref(lf));
 	if (linphone_core_ready(lc)) linphone_friend_apply(lf, lc);
 	else lf->commit = TRUE;
@@ -833,7 +847,8 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 		LinphoneVCard *vcard = (LinphoneVCard *)vcards->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
-			linphone_core_add_friend(lc, lf);
+			linphone_core_import_friend(lc, lf);
+			linphone_friend_unref(lf);	
 			count++;
 		}
 		vcards = ms_list_next(vcards);

@@ -6424,6 +6424,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->chat_db_file){
 		ms_free(lc->chat_db_file);
 	}
+	
 	linphone_core_free_payload_types(lc);
 	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);

@@ -59,14 +59,16 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	char *import_filepath = bc_tester_res("common/thousand_vcards.vcf");
 	clock_t start, end;
 	double elapsed = 0;
+	const MSList *friends = NULL;
 
 	start = clock();
 	linphone_core_import_friends_from_vcard4_file(manager->lc, import_filepath);
 	end = clock();
 	
+	friends = linphone_core_get_friend_list(manager->lc);
 	elapsed = (double)(end - start);
-	ms_error("Imported a thousand of friends in %f seconds", elapsed / CLOCKS_PER_SEC);
-	BC_ASSERT_TRUE(elapsed < 2500000); // 2.5 seconds
+	ms_error("Imported a thousand of vCards (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
+	BC_ASSERT_TRUE(elapsed < 5000000); // 5 seconds
 	linphone_core_manager_destroy(manager);
 }
 
