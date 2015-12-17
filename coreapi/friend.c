@@ -467,47 +467,51 @@ void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *
 	}
 }
 
-void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc){
+void linphone_friend_save(LinphoneFriend *fr, LinphoneCore *lc) {
+	linphone_core_write_friends_config(lc);
+}
+
+void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 	LinphonePresenceModel *model;
 
-	if (fr->uri==NULL) {
+	if (!fr->uri) {
 		ms_warning("No sip url defined.");
 		return;
 	}
 
-	linphone_core_write_friends_config(lc);
-
-	if (fr->inc_subscribe_pending){
-		switch(fr->pol){
+	if (fr->inc_subscribe_pending) {
+		switch(fr->pol) {
 			case LinphoneSPWait:
 				model = linphone_presence_model_new_with_activity(LinphonePresenceActivityOther, "Waiting for user acceptance");
-				linphone_friend_notify(fr,model);
+				linphone_friend_notify(fr, model);
 				linphone_presence_model_unref(model);
 				break;
 			case LinphoneSPAccept:
-				if (fr->lc!=NULL)
-					linphone_friend_notify(fr,fr->lc->presence_model);
+				if (fr->lc)
+					linphone_friend_notify(fr, fr->lc->presence_model);
 				break;
 			case LinphoneSPDeny:
-				linphone_friend_notify(fr,NULL);
+				linphone_friend_notify(fr, NULL);
 				break;
 		}
-		fr->inc_subscribe_pending=FALSE;
+		fr->inc_subscribe_pending = FALSE;
 	}
-	if (fr->lc)
-		linphone_friend_update_subscribes(fr,NULL,linphone_core_should_subscribe_friends_only_when_registered(fr->lc));
+	if (fr->lc) {
+		linphone_friend_update_subscribes(fr, NULL, linphone_core_should_subscribe_friends_only_when_registered(fr->lc));
+	}
 	ms_message("linphone_friend_apply() done.");
-	lc->bl_refresh=TRUE;
-	fr->commit=FALSE;
+	lc->bl_refresh = TRUE;
+	fr->commit = FALSE;
 }
 
 void linphone_friend_edit(LinphoneFriend *fr){
 }
 
 void linphone_friend_done(LinphoneFriend *fr){
-	ms_return_if_fail(fr!=NULL);
-	if (fr->lc==NULL) return;
-	linphone_friend_apply(fr,fr->lc);
+	ms_return_if_fail(fr);
+	if (!fr->lc) return;
+	linphone_friend_apply(fr, fr->lc);
+	linphone_friend_save(fr, fr->lc);
 }
 
 LinphoneFriend * linphone_core_create_friend(LinphoneCore *lc) {
@@ -533,6 +537,7 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
 		return;
 	}
 	linphone_core_import_friend(lc, lf);
+	linphone_friend_save(lf, lc);
 	if (ms_list_find(lc->subscribers, lf)) {
 		/*if this friend was in the pending subscriber list, now remove it from this list*/
 		lc->subscribers = ms_list_remove(lc->subscribers, lf);
@@ -853,6 +858,7 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 		}
 		vcards = ms_list_next(vcards);
 	}
+	linphone_core_write_friends_config(lc);
 	
 	return count;
 }

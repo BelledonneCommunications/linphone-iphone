@@ -68,7 +68,7 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	friends = linphone_core_get_friend_list(manager->lc);
 	elapsed = (double)(end - start);
 	ms_error("Imported a thousand of vCards (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
-	BC_ASSERT_TRUE(elapsed < 5000000); // 5 seconds
+	BC_ASSERT_TRUE(elapsed < 1500000); // 1.5 seconds
 	linphone_core_manager_destroy(manager);
 }
 
