@@ -47,7 +47,7 @@ LOCAL_SRC_FILES := \
 	call_params.c \
 	chat.c \
 	chat_file_transfer.c \
-	conference.c \
+	conference.cc \
 	content.c \
 	ec-calibrator.c \
 	enum.c \
