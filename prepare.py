@@ -236,7 +236,7 @@ def check_tools():
     # needed by x264
     if not find_executable("gas-preprocessor.pl"):
         error("""Could not find gas-preprocessor.pl, please install it:
-        wget --no-check-certificate https://raw.github.com/yuvi/gas-preprocessor/master/gas-preprocessor.pl && \\
+        wget --no-check-certificate https://raw.githubusercontent.com/FFmpeg/gas-preprocessor/master/gas-preprocessor.pl && \\
         chmod +x gas-preprocessor.pl && \\
         sudo mv gas-preprocessor.pl {}""".format(package_manager_info[detect_package_manager() + "-binary-path"]))
         reterr = 1
