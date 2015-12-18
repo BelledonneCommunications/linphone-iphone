@@ -1440,7 +1440,6 @@ static BOOL libStarted = FALSE;
 	}
 	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
 	[self setLogsEnabled:[self lpConfigBoolForKey:@"debugenable_preference"]];
-	LOGI(@"Create linphonecore");
 	connectivity = none;
 
 	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
@@ -1463,6 +1462,7 @@ static BOOL libStarted = FALSE;
 
 	theLinphoneCore =
 		linphone_core_new_with_config(&linphonec_vtable, configDb, (__bridge void *)(self) /* user_data */);
+	LOGI(@"Create linphonecore %p", theLinphoneCore);
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
 	const char *lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] UTF8String];
@@ -1509,8 +1509,8 @@ static BOOL libStarted = FALSE;
 		}
 		[_fileTransferDelegates removeAllObjects];
 
-		LOGI(@"Destroy linphonecore");
 		linphone_core_destroy(theLinphoneCore);
+		LOGI(@"Destroy linphonecore %p", theLinphoneCore);
 		theLinphoneCore = nil;
 		ms_exit(); // Uninitialize mediastreamer2
 

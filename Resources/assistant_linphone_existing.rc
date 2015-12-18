@@ -2,45 +2,20 @@
 <config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
 
 	<section name="proxy_default_values">
-		<entry name="reg_identity" overwrite="true">sip:?@sip.linphone.org</entry>
-		<entry name="reg_expires" overwrite="true">1314000</entry>
-		<entry name="reg_sendregister" overwrite="true">1</entry>
-		<entry name="publish" overwrite="true">0</entry>
-		<entry name="dial_escape_plus" overwrite="true">0</entry>
 		<entry name="avpf" overwrite="true">1</entry>
+		<entry name="dial_escape_plus" overwrite="true">0</entry>
+		<entry name="publish" overwrite="true">0</entry>
 		<entry name="quality_reporting_collector" overwrite="true">sip:voip-metrics@sip.linphone.org;transport=tls</entry>
 		<entry name="quality_reporting_enabled" overwrite="true">1</entry>
 		<entry name="quality_reporting_interval" overwrite="true">180</entry>
-		<entry name="realm" overwrite="true">sip.linphone.org</entry>
+		<entry name="reg_expires" overwrite="true">1314000</entry>
+		<entry name="reg_identity" overwrite="true">sip:?@sip.linphone.org</entry>
+		<entry name="reg_sendregister" overwrite="true">1</entry>
 	</section>
 
 	<section name="assistant">
-		<entry name="username_regex" overwrite="true">^[a-z0-9_.\-]*$</entry>
 		<entry name="domain" overwrite="true">sip.linphone.org</entry>
+		<entry name="username_regex" overwrite="true">^[a-z0-9_.\-]*$</entry>
 		<entry name="xmlrpc_url" overwrite="true">https://www.linphone.org/assistant.php</entry>
-		<entry name="sharing_server" overwrite="true">https://www.linphone.org:444/lft.php</entry>
-	</section>
-
-	<section name="app">
-		<entry name="pushnotification_preference" overwrite="true">1</entry>
-		<entry name="ice_preference" overwrite="true">1</entry>
-		<entry name="stun_preference" overwrite="true">stun.linphone.org</entry>
-		<entry name="random_port_preference" overwrite="true">1</entry>
-		<entry name="file_transfer_migration_done" overwrite="true">1</entry>
-	</section>
-
-	<section name="net">
-		<entry name="firewall_policy" overwrite="true">ice</entry>
-		<entry name="stun_server" overwrite="true">stun.linphone.org</entry>
-	</section>
-
-	<section name="sip">
-		<entry name="sip_port" overwrite="true">-1</entry>
-		<entry name="sip_tcp_port" overwrite="true">-1</entry>
-		<entry name="sip_tls_port" overwrite="true">-1</entry>
-	</section>
-
-	<section name="misc">
-		<entry name="file_transfer_server_url" overwrite="true">https://www.linphone.org:444/lft.php</entry>
 	</section>
 </config>

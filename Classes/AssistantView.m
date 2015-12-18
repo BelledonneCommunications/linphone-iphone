@@ -92,6 +92,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 											 selector:@selector(configuringUpdate:)
 												 name:kLinphoneConfiguringStateUpdate
 											   object:nil];
+	// we will set the new default proxy config in the assistant
+	previous_default_config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
+	linphone_core_set_default_proxy_config([LinphoneManager getLc], NULL);
+
 	new_config = NULL;
 	[self resetTextFields];
 	[self changeView:_welcomeView back:FALSE animation:FALSE];
@@ -147,9 +151,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
 
 	[self resetLiblinphone];
-	// we will set the new default proxy config in the assistant
-	previous_default_config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
-	linphone_core_set_default_proxy_config([LinphoneManager getLc], NULL);
 }
 
 - (void)reset {
@@ -354,12 +355,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)resetTextFields {
-	[AssistantView cleanTextField:_welcomeView];
-	[AssistantView cleanTextField:_createAccountView];
-	[AssistantView cleanTextField:_linphoneLoginView];
-	[AssistantView cleanTextField:_loginView];
-	[AssistantView cleanTextField:_createAccountActivationView];
-	[AssistantView cleanTextField:_remoteProvisioningLoginView];
+	for (UIView *view in @[
+			 _welcomeView,
+			 _createAccountView,
+			 _linphoneLoginView,
+			 _loginView,
+			 _createAccountActivationView,
+			 _remoteProvisioningLoginView
+		 ]) {
+		[AssistantView cleanTextField:view];
+#if DEBUG
+		UIAssistantTextField *atf =
+			(UIAssistantTextField *)[self findView:ViewElement_Domain inView:view ofType:UIAssistantTextField.class];
+		atf.text = @"test.linphone.org";
+#endif
+	}
 }
 
 - (void)displayUsernameAsPhoneOrUsername {

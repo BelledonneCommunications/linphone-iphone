@@ -40,9 +40,10 @@ automatically_initiate=0
 automatically_accept=0
 
 [net]
-firewall_policy=0
 download_bw=512
 upload_bw=512
+firewall_policy=ice
+stun_server=stun.linphone.org
 
 [sound]
 playback_dev_id=AU: Audio Unit Receiver
@@ -58,10 +59,15 @@ backgroundmode_preference=1
 autoanswer_notif_preference=1
 voiceproc_preference=1
 enable_log_collect=0
+file_transfer_migration_done=1
+pushnotification_preference=1
+ice_preference=1
+stun_preference=stun.linphone.org
+random_port_preference=1
 
 [default_values]
 reg_expires=1314000
 
-
 [misc]
 max_calls=3
+file_transfer_server_url=https://www.linphone.org:444/lft.php
