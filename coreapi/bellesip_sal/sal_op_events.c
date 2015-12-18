@@ -223,6 +223,15 @@ int sal_subscribe(SalOp *op, const char *from, const char *to, const char *event
 	return -1;
 }
 
+int sal_subscribe_refresh(SalOp *op) {
+	if (op->refresher) {
+		belle_sip_refresher_refresh(op->refresher,belle_sip_refresher_get_expires(op->refresher));
+		return 0;
+	}
+	ms_warning("sal_refresh_subscribe(): no refresher");
+	return -1;
+}
+
 int sal_unsubscribe(SalOp *op){
 	if (op->refresher){
 		const belle_sip_transaction_t *tr=(const belle_sip_transaction_t*) belle_sip_refresher_get_transaction(op->refresher);

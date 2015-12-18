@@ -192,6 +192,10 @@ int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *b
 	return linphone_event_send_subscribe(lev,body);
 }
 
+int linphone_event_refresh_subscribe(LinphoneEvent *lev) {
+	return sal_subscribe_refresh(lev->op);
+}
+
 int linphone_event_accept_subscription(LinphoneEvent *lev){
 	int err;
 	if (lev->subscription_state!=LinphoneSubscriptionIncomingReceived){
