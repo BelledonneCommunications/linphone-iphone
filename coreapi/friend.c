@@ -488,7 +488,7 @@ LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, cons
 }
 
 void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
-	if (linphone_friend_list_add_friend(lc->friendlist, lf) != LinphoneFriendListOK) return;
+	if ((lc->friendlist == NULL) || (linphone_friend_list_add_friend(lc->friendlist, lf) != LinphoneFriendListOK)) return;
 	if (ms_list_find(lc->subscribers, lf)) {
 		/*if this friend was in the pending subscriber list, now remove it from this list*/
 		lc->subscribers = ms_list_remove(lc->subscribers, lf);
@@ -515,9 +515,34 @@ bool_t linphone_core_should_subscribe_friends_only_when_registered(const Linphon
 }
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc){
+	bool_t proxy_config_for_rls_presence_uri_domain = FALSE;
+	LinphoneAddress *rls_address = NULL;
+	const MSList *elem;
+
 	if (lc->initial_subscribes_sent) return;
 	lc->initial_subscribes_sent=TRUE;
-	linphone_core_update_friends_subscriptions(lc,NULL,linphone_core_should_subscribe_friends_only_when_registered(lc));
+	if (lc->friendlist->rls_uri != NULL) {
+		rls_address = linphone_core_create_address(lc, lc->friendlist->rls_uri);
+	}
+	if (rls_address != NULL) {
+		const char *rls_domain = linphone_address_get_domain(rls_address);
+		if (rls_domain != NULL) {
+			for (elem = linphone_core_get_proxy_config_list(lc); elem != NULL; elem = elem->next) {
+				LinphoneProxyConfig *cfg = (LinphoneProxyConfig *)elem->data;
+				const char *proxy_domain = linphone_proxy_config_get_domain(cfg);
+				if (strcmp(rls_domain, proxy_domain) == 0) {
+					proxy_config_for_rls_presence_uri_domain = TRUE;
+					break;
+				}
+			}
+		}
+		linphone_address_unref(rls_address);
+	}
+	if (proxy_config_for_rls_presence_uri_domain == TRUE) {
+		ms_message("Presence list activated so do not send initial subscribes it will be done when registered");
+	} else {
+		linphone_core_update_friends_subscriptions(lc,NULL,linphone_core_should_subscribe_friends_only_when_registered(lc));
+	}
 }
 
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc){

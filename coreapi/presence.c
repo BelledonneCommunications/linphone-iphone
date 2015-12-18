@@ -1482,7 +1482,9 @@ void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from){
 	ms_message("Receiving new subscription from %s.",from);
 
 	/* check if we answer to this subscription */
-	lf = linphone_friend_list_find_friend_by_address(lc->friendlist, uri);
+	if (lc->friendlist != NULL) {
+		lf = linphone_friend_list_find_friend_by_address(lc->friendlist, uri);
+	}
 	if (lf!=NULL){
 		linphone_friend_add_incoming_subscription(lf, op);
 		lf->inc_subscribe_pending=TRUE;

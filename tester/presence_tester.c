@@ -560,7 +560,7 @@ static void enable_publish(LinphoneCoreManager *mgr, bool_t enable) {
 	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(mgr->lc);
 	linphone_proxy_config_edit(cfg);
 	linphone_proxy_config_enable_publish(cfg, enable);
-	linphone_proxy_config_set_publish_expires(cfg, 3);
+	linphone_proxy_config_set_publish_expires(cfg, 60);
 	linphone_proxy_config_done(cfg);
 }
 
@@ -581,6 +581,7 @@ static void test_presence_list(void) {
 	pauline_identity = get_identity(pauline);
 	enable_publish(marie, TRUE);
 	enable_publish(pauline, TRUE);
+	enable_publish(laure, TRUE);
 
 	linphone_core_set_presence_model(marie->lc, linphone_core_create_presence_model_with_activity(marie->lc, LinphonePresenceActivityBusy, NULL));
 	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL));
@@ -601,9 +602,9 @@ static void test_presence_list(void) {
 	lcs = ms_list_append(lcs, marie->lc);
 	lcs = ms_list_append(lcs, pauline->lc);
 
-	wait_for_list(lcs, &laure->stat.number_of_NotifyReceived, 1, 2000);
+	wait_for_list(lcs, &laure->stat.number_of_NotifyReceived, 2, 2000);
 	wait_for_list(lcs, &laure->stat.number_of_NotifyPresenceReceived, 2, 2000);
-	BC_ASSERT_EQUAL(laure->stat.number_of_NotifyReceived, 1, int, "%d");
+	BC_ASSERT_EQUAL(laure->stat.number_of_NotifyReceived, 2, int, "%d");
 	BC_ASSERT_EQUAL(laure->stat.number_of_NotifyPresenceReceived, 2, int, "%d");
 	BC_ASSERT_EQUAL(laure->lc->friendlist->expected_notification_version, 1, int, "%d");
 	lf = linphone_friend_list_find_friend_by_uri(laure->lc->friendlist, marie_identity);
@@ -619,14 +620,13 @@ static void test_presence_list(void) {
 	BC_ASSERT_EQUAL(lf->presence_received, FALSE, int, "%d");
 	BC_ASSERT_EQUAL(lf->subscribe_active, TRUE, int, "%d");
 
-	enable_publish(laure, TRUE);
 	lfl = linphone_core_create_friend_list(marie->lc);
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
 	lf = linphone_core_create_friend_with_address(marie->lc, laure_identity);
 	linphone_friend_list_add_friend(lfl, lf);
 	linphone_core_set_friend_list(marie->lc, lfl);
 	linphone_friend_list_unref(lfl);
-	linphone_friend_list_update_subscriptions(pauline->lc->friendlist, NULL, FALSE);
+	linphone_friend_list_update_subscriptions(marie->lc->friendlist, NULL, FALSE);
 
 	wait_for_list(lcs, &marie->stat.number_of_NotifyReceived, 1, 2000);
 	wait_for_list(lcs, &marie->stat.number_of_NotifyPresenceReceived, 1, 2000);
@@ -658,9 +658,9 @@ static void test_presence_list(void) {
 
 	linphone_core_set_presence_model(marie->lc, linphone_core_create_presence_model_with_activity(marie->lc, LinphonePresenceActivityOnThePhone, NULL));
 
-	wait_for_list(lcs, &laure->stat.number_of_NotifyReceived, 2, 2000);
+	wait_for_list(lcs, &laure->stat.number_of_NotifyReceived, 3, 2000);
 	wait_for_list(lcs, &laure->stat.number_of_NotifyPresenceReceived, 4, 2000);
-	BC_ASSERT_EQUAL(laure->stat.number_of_NotifyReceived, 2, int, "%d");
+	BC_ASSERT_EQUAL(laure->stat.number_of_NotifyReceived, 3, int, "%d");
 	BC_ASSERT_EQUAL(laure->stat.number_of_NotifyPresenceReceived, 4, int, "%d");
 	BC_ASSERT_EQUAL(laure->lc->friendlist->expected_notification_version, 2, int, "%d");
 	lf = linphone_friend_list_find_friend_by_uri(laure->lc->friendlist, marie_identity);
@@ -706,6 +706,7 @@ static void test_presence_list_subscribe_before_publish(void) {
 	linphone_core_set_friend_list(laure->lc, lfl);
 	linphone_friend_list_unref(lfl);
 	linphone_core_set_presence_model(laure->lc, linphone_core_create_presence_model_with_activity(laure->lc, LinphonePresenceActivityOnline, NULL));
+	linphone_friend_list_update_subscriptions(laure->lc->friendlist, NULL, FALSE);
 
 	lcs = ms_list_append(lcs, laure->lc);
 	lcs = ms_list_append(lcs, pauline->lc);
