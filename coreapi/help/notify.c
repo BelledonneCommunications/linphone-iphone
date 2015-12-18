@@ -152,12 +152,12 @@ int main(int argc, char *argv[]){
 		ms_usleep(50000);
 		++i;
 		if (data->ev && i%100==0){
-			LinphoneContentPrivate content;
-			content.type="application";
-			content.subtype="goodxml";
-			content.data="really cool";
-			content.size=strlen((const char*)content.data);
-			linphone_event_notify(data->ev,LINPHONE_CONTENT(&content));
+			LinphoneContent *content = linphone_core_create_content(lc);
+			linphone_content_set_type(content, "application");
+			linphone_content_set_subtype(content, "goodxml");
+			linphone_content_set_string_buffer(content, "really cool");
+			linphone_event_notify(data->ev, content);
+			linphone_content_unref(content);
 		}
 	}
 
