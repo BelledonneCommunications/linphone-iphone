@@ -99,6 +99,7 @@ INIT_WITH_COMMON {
 	if (!self.hidden) {
 		return;
 	}
+
 	[self setHidden:FALSE];
 	if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
 		if (animated) {
@@ -106,7 +107,9 @@ INIT_WITH_COMMON {
 						   target:self
 					   completion:^(BOOL finished) {
 						 [self startBounceAnimation:kBounceAnimation target:self];
-						 [self.layer removeAnimationForKey:kAppearAnimation];
+						 if (finished) {
+							 [self.layer removeAnimationForKey:kAppearAnimation];
+						 }
 					   }];
 		} else {
 			[self startBounceAnimation:kBounceAnimation target:self];
@@ -125,7 +128,9 @@ INIT_WITH_COMMON {
 						  target:self
 					  completion:^(BOOL finished) {
 						[self setHidden:TRUE];
-						[self.layer removeAnimationForKey:kDisappearAnimation];
+						if (finished) {
+							[self.layer removeAnimationForKey:kDisappearAnimation];
+						}
 					  }];
 	} else {
 		[self setHidden:TRUE];
