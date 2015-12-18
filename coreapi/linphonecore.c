@@ -412,7 +412,7 @@ static void clean_log_collection_upload_context(LinphoneCore *lc) {
 	unlink(filename);
 	ms_free(filename);
 	if (lc && lc->log_collection_upload_information) {
-		ms_free(lc->log_collection_upload_information);
+		linphone_content_unref(lc->log_collection_upload_information);
 		lc->log_collection_upload_information=NULL;
 	}
 }
@@ -657,8 +657,7 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		belle_http_request_t *req;
 		char *name;
 
-		core->log_collection_upload_information = (LinphoneContent *)malloc(sizeof(LinphoneContent));
-		memset(core->log_collection_upload_information, 0, sizeof(LinphoneContent));
+		core->log_collection_upload_information = linphone_core_create_content(core);
 #ifdef HAVE_ZLIB
 		linphone_content_set_type(core->log_collection_upload_information, "application");
 		linphone_content_set_subtype(core->log_collection_upload_information, "gzip");
@@ -671,7 +670,7 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 			COMPRESSED_LOG_COLLECTION_EXTENSION);
 		linphone_content_set_name(core->log_collection_upload_information, name);
 		if (prepare_log_collection_file_to_upload(name) <= 0) {
-		    ms_free(core->log_collection_upload_information);
+		    linphone_content_unref(core->log_collection_upload_information);
 			core->log_collection_upload_information = NULL;
 		    return;
 		}
