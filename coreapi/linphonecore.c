@@ -7410,7 +7410,7 @@ int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
 			return -1;
 		}
 	}
-	return linphone_conference_add_call(lc->conf_ctx, call);
+	return linphone_conference_add_participant(lc->conf_ctx, call);
 }
 
 int linphone_core_add_all_to_conference(LinphoneCore *lc) {
@@ -7427,7 +7427,7 @@ int linphone_core_add_all_to_conference(LinphoneCore *lc) {
 }
 
 int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call) {
-	if(lc->conf_ctx) return linphone_conference_remove_call(lc->conf_ctx, call);
+	if(lc->conf_ctx) return linphone_conference_remove_participant_with_call(lc->conf_ctx, call);
 	else return -1;
 }
 
@@ -7440,17 +7440,17 @@ int linphone_core_terminate_conference(LinphoneCore *lc) {
 }
 
 int linphone_core_enter_conference(LinphoneCore *lc) {
-	if(lc->conf_ctx) return linphone_conference_add_local_participant(lc->conf_ctx);
+	if(lc->conf_ctx) return linphone_conference_enter(lc->conf_ctx);
 	else return -1;
 }
 
 int linphone_core_leave_conference(LinphoneCore *lc) {
-	if(lc->conf_ctx) return linphone_conference_remove_local_participant(lc->conf_ctx);
+	if(lc->conf_ctx) return linphone_conference_leave(lc->conf_ctx);
 	else return -1;
 }
 
 bool_t linphone_core_is_in_conference(const LinphoneCore *lc) {
-	if(lc->conf_ctx) return linphone_conference_local_participant_is_in(lc->conf_ctx);
+	if(lc->conf_ctx) return linphone_conference_is_in(lc->conf_ctx);
 	else return FALSE;
 }
 

@@ -3858,6 +3858,9 @@ LINPHONE_PUBLIC	int linphone_core_add_all_to_conference(LinphoneCore *lc);
  LINPHONE_PUBLIC	int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
 /**
  * Indicates whether the local participant is part of a conference.
+ * @warning That function automatically fails in the case of conferences using a
+ * conferencet server (focus). If you use such a conference, you should use
+ * linphone_conference_remove_participant() instead.
  * @param lc the linphone core
  * @return TRUE if the local participant is in a conference, FALSE otherwise.
 */
@@ -3909,11 +3912,25 @@ LINPHONE_PUBLIC int linphone_core_start_conference_recording(LinphoneCore *lc, c
  */
 LINPHONE_PUBLIC int linphone_core_stop_conference_recording(LinphoneCore *lc);
 /**
-* Get a pointer on the internal conference object.
-* @param lc #LinphoneCore
-* @return A pointer on #LinphoneConference or NULL if no conference are going on
-*/
+ * Get a pointer on the internal conference object.
+ * @param lc #LinphoneCore
+ * @return A pointer on #LinphoneConference or NULL if no conference are going on
+ */
 LINPHONE_PUBLIC LinphoneConference *linphone_core_get_conference(LinphoneCore *lc);
+/**
+ * Get URIs of all participants of one conference
+ * @param obj A #LinphoneConference
+ * @return A #MSList containing URIs of all participant. That list must be
+ * freed after utilisation and each URI must be unref with linphone_address_unref()
+ */
+LINPHONE_PUBLIC MSList *linphone_conference_get_participants(const LinphoneConference *obj);
+/**
+ * Remove a participant from a conference
+ * @param obj A #LinphoneConference
+ * @param uri SIP URI of the participant to remove
+ * @return 0 if succeeded, -1 if failed
+ */
+LINPHONE_PUBLIC int linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri);
 
 /**
  * @}
