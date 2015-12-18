@@ -221,12 +221,18 @@
 		id log = [_sections objectForKey:_sortedDays[indexPath.section]][indexPath.row];
 		LinphoneCallLog *callLog = [log pointerValue];
 		if (callLog != NULL && linphone_call_log_get_call_id(callLog) != NULL) {
-			LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-			char *uri = linphone_address_as_string(addr);
-			DialerView *view = VIEW(DialerView);
-			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-			[view call:[NSString stringWithUTF8String:uri] displayName:[FastAddressBook displayNameForAddress:addr]];
-			ms_free(uri);
+			if (LinphoneManager.runningOnIpad) {
+				UIHistoryCell *cell = (UIHistoryCell *)[self tableView:tableView cellForRowAtIndexPath:indexPath];
+				[cell onDetails:self];
+			} else {
+				LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+				char *uri = linphone_address_as_string(addr);
+				DialerView *view = VIEW(DialerView);
+				[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+				[view call:[NSString stringWithUTF8String:uri]
+					displayName:[FastAddressBook displayNameForAddress:addr]];
+				ms_free(uri);
+			}
 		}
 	}
 }

@@ -64,8 +64,8 @@
 	self.fullscreen = fullscreen;
 	self.landscapeMode = YES;
 	self.portraitMode = YES;
-	self.isLeftFragment = isLeftFragment || (otherFragment == nil);
 	self.otherFragment = LinphoneManager.runningOnIpad ? NSStringFromClass(otherFragment) : nil;
+	self.isLeftFragment = isLeftFragment || (self.otherFragment == nil);
 	self.darkBackground = true;
 
 	return self;
@@ -406,9 +406,9 @@
 		UIViewController *newMainViewController = description.isLeftFragment
 													  ? [self getCachedController:description.name]
 													  : [self getCachedController:description.otherFragment];
-		UIViewController *newDetailsViewController = description.isLeftFragment
-														 ? [self getCachedController:description.otherFragment]
-														 : [self getCachedController:description.name];
+		UIViewController *newDetailsViewController = !description.isLeftFragment
+														 ? [self getCachedController:description.name]
+														 : [self getCachedController:description.otherFragment];
 		UIViewController *newStatusBarViewController = [self getCachedController:description.statusBar];
 		UIViewController *newTabBarViewController = [self getCachedController:description.tabBar];
 		UIViewController *newSideMenuViewController = [self getCachedController:description.sideMenu];
