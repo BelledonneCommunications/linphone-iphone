@@ -2152,7 +2152,7 @@ static void video_call(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void video_call_disable_implicit_AVPF_on_rcv(void) {
+static void video_call_disable_implicit_AVPF_on_callee(void) {
     LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
     LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
     LpConfig   *callee_lp;
@@ -2170,8 +2170,57 @@ static void video_call_disable_implicit_AVPF_on_rcv(void) {
     linphone_core_manager_destroy(callee);
     linphone_core_manager_destroy(caller);
 
+}
+
+
+static void video_call_disable_implicit_AVPF_on_caller(void) {
+    LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
+    LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
+    LpConfig   *caller_lp;
+    const LinphoneCallParams *params, *params2;
+    
+    caller_lp = linphone_core_get_config(caller->lc);
+    lp_config_set_int(caller_lp,"rtp","rtcp_fb_implicit_rtcp_fb",0);
+    
+    video_call_base_3(caller,callee,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+    params = linphone_call_get_current_params(linphone_core_get_current_call(callee->lc));
+    BC_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params), "RTP/AVP");
+    params2 =linphone_call_get_current_params(linphone_core_get_current_call(caller->lc));
+    BC_ASSERT_STRING_EQUAL(linphone_call_params_get_rtp_profile(params2), "RTP/AVP");
+    end_call(caller, callee);
+    linphone_core_manager_destroy(callee);
+    linphone_core_manager_destroy(caller);
+  
+}
+
+static void video_call_AVPF_to_implicit_AVPF(void)
+{
+    LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
+    LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
+
+    linphone_core_set_avpf_mode(caller->lc,LinphoneAVPFEnabled);
+    video_call_base_3(caller,callee,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+    end_call(caller,callee);
+    
+    linphone_core_manager_destroy(callee);
+    linphone_core_manager_destroy(caller);
 
 }
+
+static void video_call_implicit_AVPF_to_AVPF(void)
+{
+    LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
+    LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
+    
+    linphone_core_set_avpf_mode(callee->lc,LinphoneAVPFEnabled);
+    video_call_base_3(caller,callee,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+    end_call(caller,callee);
+    
+    linphone_core_manager_destroy(callee);
+    linphone_core_manager_destroy(caller);
+    
+}
+
 static void video_call_base_avpf(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
     linphone_core_set_avpf_mode(pauline->lc,LinphoneAVPFEnabled);
     linphone_core_set_avpf_mode(marie->lc,LinphoneAVPFEnabled);
@@ -5731,7 +5780,10 @@ test_t call_tests[] = {
 	{ "Audio call with ICE no matching audio codecs", audio_call_with_ice_no_matching_audio_codecs },
 #ifdef VIDEO_ENABLED
 	{ "Simple video call AVPF",video_call_avpf},
-    { "Simple video call disable implicit",video_call_disable_implicit_AVPF_on_rcv},
+    { "Simple video call disable implicit AVPF on callee",video_call_disable_implicit_AVPF_on_callee},
+    { "Simple video call disable implicit AVPF on caller",video_call_disable_implicit_AVPF_on_caller},
+    { "Simple video call AVPF to implicit AVPF",video_call_AVPF_to_implicit_AVPF},
+    { "Simple video call implicit AVPF to AVPF",video_call_implicit_AVPF_to_AVPF},
     { "Simple video call",video_call},
 	{ "Simple ZRTP video call",video_call_zrtp},
 	{ "Simple DTLS video call",video_call_dtls},

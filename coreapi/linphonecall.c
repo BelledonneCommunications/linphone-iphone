@@ -526,7 +526,9 @@ static void setup_rtcp_fb(LinphoneCall *call, SalMediaDescription *md) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		md->streams[i].rtcp_fb.generic_nack_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_generic_nack_enabled", 0);
 		md->streams[i].rtcp_fb.tmmbr_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_tmmbr_enabled", 0);
-		for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
+        md->streams[i].implicit_rtcp_fb = call->params->implicit_rtcp_fb;
+        
+        for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
 			pt = (PayloadType *)pt_it->data;
             
             if (call->params->avpf_enabled == FALSE && call->params->implicit_rtcp_fb == FALSE)  {

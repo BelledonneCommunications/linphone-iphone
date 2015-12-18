@@ -832,7 +832,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	sdp_parse_media_ice_parameters(media_desc, stream);
 
 	/* Get RTCP-FB attributes if any */
-	if (sal_stream_description_has_avpf(stream)) {
+	if (sal_stream_description_has_avpf(stream) || sal_stream_description_has_implicit_avpf(stream)) {
 		enable_avpf_for_stream(stream);
 		sdp_parse_rtcp_fb_parameters(media_desc, stream);
 	}
