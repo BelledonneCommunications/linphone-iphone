@@ -2199,7 +2199,7 @@ static void video_call_AVPF_to_implicit_AVPF(void)
     LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
 
     linphone_core_set_avpf_mode(caller->lc,LinphoneAVPFEnabled);
-    video_call_base_3(caller,callee,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+    video_call_base_3(caller,callee,TRUE,LinphoneMediaEncryptionNone,TRUE,TRUE);
     end_call(caller,callee);
     
     linphone_core_manager_destroy(callee);
@@ -2213,7 +2213,7 @@ static void video_call_implicit_AVPF_to_AVPF(void)
     LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
     
     linphone_core_set_avpf_mode(callee->lc,LinphoneAVPFEnabled);
-    video_call_base_3(caller,callee,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+    video_call_base_3(caller,callee,TRUE,LinphoneMediaEncryptionNone,TRUE,TRUE);
     end_call(caller,callee);
     
     linphone_core_manager_destroy(callee);
