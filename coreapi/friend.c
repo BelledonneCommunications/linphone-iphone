@@ -351,9 +351,13 @@ const LinphoneAddress *linphone_friend_get_address(const LinphoneFriend *lf){
 }
 
 const char * linphone_friend_get_name(const LinphoneFriend *lf) {
-	LinphoneAddress *fr = lf->uri;
-	if (fr == NULL) return NULL;
-	return linphone_address_get_display_name(fr);
+	if (lf && lf->vcard) {
+		return linphone_vcard_get_full_name(lf->vcard);
+	} else if (lf && lf->uri) {
+		LinphoneAddress *fr = lf->uri;
+		return linphone_address_get_display_name(fr);
+	}
+	return NULL;
 }
 
 bool_t linphone_friend_get_send_subscribe(const LinphoneFriend *lf){
@@ -519,15 +523,15 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 	if (fr->lc) {
 		linphone_friend_update_subscribes(fr, NULL, linphone_core_should_subscribe_friends_only_when_registered(fr->lc));
 	}
-	ms_message("linphone_friend_apply() done.");
+	ms_debug("linphone_friend_apply() done.");
 	lc->bl_refresh = TRUE;
 	fr->commit = FALSE;
 }
 
-void linphone_friend_edit(LinphoneFriend *fr){
+void linphone_friend_edit(LinphoneFriend *fr) {
 }
 
-void linphone_friend_done(LinphoneFriend *fr){
+void linphone_friend_done(LinphoneFriend *fr) {
 	ms_return_if_fail(fr);
 	if (!fr->lc) return;
 	linphone_friend_apply(fr, fr->lc);
@@ -542,8 +546,7 @@ LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, cons
 	return linphone_friend_new_with_address(address);
 }
 
-void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
-	ms_return_if_fail(!lf->lc);
+void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {	
 	if (!lf->uri) {
 		return; // Do not abort if friend doesn't have a SIP URI
 	}
@@ -578,13 +581,13 @@ void linphone_core_import_friend(LinphoneCore *lc, LinphoneFriend *lf) {
 void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend* lf){
 	MSList *el = ms_list_find(lc->friends, lf);
 	if (el != NULL) {
-		linphone_friend_unref((LinphoneFriend*)el->data);
-		lc->friends=ms_list_remove_link(lc->friends, el);
+		lc->friends = ms_list_remove_link(lc->friends, el);
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
 		linphone_core_remove_friend_from_db(lc, lf);
 #else
 		linphone_core_write_friends_config(lc);
 #endif
+		linphone_friend_unref(lf);
 	} else {
 		ms_error("linphone_core_remove_friend(): friend [%p] is not part of core's list.", lf);
 	}
@@ -940,8 +943,13 @@ static void linphone_create_table(sqlite3* db) {
 	char* errmsg = NULL;
 	int ret;
 	ret = sqlite3_exec(db,"CREATE TABLE IF NOT EXISTS friends ("
-							 
-						");",//TODO
+						"id               INTEGER PRIMARY KEY AUTOINCREMENT,"
+						"sip_uri          TEXT NOT NULL,"
+						"subscribe_policy INTEGER,"
+						"send_subscribe   INTEGER,"
+						"ref_key          TEXT,"
+						"vCard            TEXT"
+						");",
 			0, 0, &errmsg);
 	if (ret != SQLITE_OK) {
 		ms_error("Error in creation: %s.\n", errmsg);
@@ -957,6 +965,7 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	int ret;
 	const char *errmsg;
 	sqlite3 *db;
+	const MSList *friends = NULL;
 
 	linphone_core_friends_storage_close(lc);
 
@@ -971,6 +980,15 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	linphone_create_table(db);
 	linphone_update_table(db);
 	lc->friends_db = db;
+	
+	friends = linphone_core_fetch_friends_from_db(lc);
+	while (friends && friends->data) {
+		LinphoneFriend *lf = friends->data;
+		linphone_core_add_friend(lc, lf);
+		linphone_friend_unref(lf);
+		
+		friends = ms_list_next(friends);
+	}
 }
 
 void linphone_core_friends_storage_close(LinphoneCore *lc) {
@@ -982,6 +1000,11 @@ void linphone_core_friends_storage_close(LinphoneCore *lc) {
 
 /* DB layout:
  * | 0  | storage_id
+ * | 1  | sip_uri
+ * | 2  | subscribe_policy
+ * | 3  | send_subscribe
+ * | 4  | ref_key
+ * | 5  | vCard
  */
 static int create_friend(void *data, int argc, char **argv, char **colName) {
 	MSList **list = (MSList **)data;
@@ -989,16 +1012,18 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 	LinphoneVCard *vcard = NULL;
 	unsigned int storage_id = atoi(argv[0]);
 	
-	vcard = linphone_vcard_new_from_vcard4_buffer(argv[1]);
+	vcard = linphone_vcard_new_from_vcard4_buffer(argv[5]);
 	lf = linphone_friend_new_from_vcard(vcard);
 	if (!lf) {
+		LinphoneAddress *addr = linphone_address_new(argv[1]);
 		lf = linphone_friend_new();
-		//TODO
+		linphone_friend_set_address(lf, addr);
 	}
-	
-	//TODO
-	
+	linphone_friend_set_inc_subscribe_policy(lf, atoi(argv[2]));
+	linphone_friend_send_subscribe(lf, atoi(argv[3]));
+	linphone_friend_set_ref_key(lf, argv[4]);
 	lf->storage_id = storage_id;
+	
 	*list = ms_list_append(*list, linphone_friend_ref(lf));
 	linphone_friend_unref(lf);
 	return 0;
@@ -1031,11 +1056,22 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 		char *buf;
 
 		if (lf->storage_id > 0) {
-			buf = sqlite3_mprintf("UPDATE friends SET WHERE (id = %i);", //TODO
+			buf = sqlite3_mprintf("UPDATE friends SET sip_uri=%Q,subscribe_policy=%i,send_subscribe=%i,ref_key=%Q,vCard=%Q WHERE (id = %i);",
+				linphone_address_as_string(linphone_friend_get_address(lf)),
+				lf->pol,
+				lf->subscribe,
+				lf->refkey,
+				linphone_vcard_as_vcard4_string(linphone_friend_get_vcard(lf)),
 				lf->storage_id
 			);
 		} else {
-			buf = sqlite3_mprintf("INSERT INTO friends VALUES(NULL);"); //TODO
+			buf = sqlite3_mprintf("INSERT INTO friends VALUES(NULL,%Q,%i,%i,%Q,%Q);",
+				linphone_address_as_string(linphone_friend_get_address(lf)),
+				lf->pol,
+				lf->subscribe,
+				lf->refkey,
+				linphone_vcard_as_vcard4_string(linphone_friend_get_vcard(lf))
+			);
 		}
 		linphone_sql_request_generic(lc->friends_db, buf);
 		sqlite3_free(buf);
@@ -1047,12 +1083,14 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 }
 
 void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf) {
-	if (lc && lc->friends_db && lf->storage_id > 0) {
+	if (lc && lc->friends_db) {
 		char *buf;
+		if (lf->storage_id == 0) {
+			ms_error("Friend doesn't have a storage_id !");
+			return;
+		}
 
-		buf = sqlite3_mprintf("DELETE FROM friends WHERE (id = %i);",
-			lf->storage_id
-		);
+		buf = sqlite3_mprintf("DELETE FROM friends WHERE id = %i", lf->storage_id);
 		linphone_sql_request_generic(lc->friends_db, buf);
 		sqlite3_free(buf);
 
@@ -1065,7 +1103,10 @@ MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc) {
 	uint64_t begin,end;
 	MSList *result = NULL;
 
-	if (!lc || lc->friends_db == NULL) return NULL;
+	if (!lc || lc->friends_db == NULL) {
+		ms_warning("Either lc is NULL or friends database wasn't initialized with linphone_core_friends_storage_init() yet");
+		return NULL;
+	}
 
 	buf = sqlite3_mprintf("SELECT * FROM friends ORDER BY id");
 
@@ -1112,9 +1153,37 @@ void linphone_core_set_friends_database_path(LinphoneCore *lc, const char *path)
 }
 
 void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
+	LpConfig *lpc = NULL;
+	LinphoneFriend *lf = NULL;
+	int i;
 #ifndef FRIENDS_SQL_STORAGE_ENABLED
 	ms_warning("linphone has been compiled without sqlite, can't migrate friends");
 	return;
 #endif
-	//TODO
+	if (!lc) {
+		return;
+	}
+	
+	lpc = linphone_core_get_config(lc);
+	if (!lpc) {
+		ms_warning("this core has been started without a rc file, nothing to migrate");
+		return;
+	}
+	if (lp_config_get_int(lpc, "misc", "friends_migration_done", 0) == 1) {
+		ms_warning("the friends migration has already been done, skipping...");
+		return;
+	}
+	
+	for (i = 0; (lf = linphone_friend_new_from_config_file(lc, i)) != NULL; i++) {
+		char friend_section[32];
+			
+		linphone_core_add_friend(lc, lf);
+		linphone_friend_unref(lf);
+		
+		snprintf(friend_section, sizeof(friend_section), "friend_%i", i);
+		lp_config_clean_section(lpc, friend_section);
+	}
+	
+	ms_debug("friends migration successful: %i friends migrated", i);
+	lp_config_set_int(lpc, "misc", "friends_migration_done", 1);
 }

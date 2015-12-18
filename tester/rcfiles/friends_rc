@@ -1,0 +1,21 @@
+[net]
+mtu=1300
+
+[sip]
+ping_with_options=0
+sip_random_port=1
+
+[friend_0]
+url=sip:sylvain@sip.linphone.org
+pol=wait
+subscribe=0
+
+[friend_1]
+url="François Grisez" <sip:francois.grisez@sip.linphone.org>
+pol=accept
+subscribe=1
+
+[friend_2]
+url=sip:margaux.clerc@sip.linphone.org
+pol=deny
+subscribe=0

@@ -687,14 +687,14 @@ void linphone_gtk_show_friends(void){
 		LinphoneFriend *lf=(LinphoneFriend*)itf->data;
 		const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
 		char *uri=linphone_address_as_string(f_uri);
-		const char *name=linphone_address_get_display_name(f_uri);
+		const char *name=linphone_friend_get_name(lf);
 		const char *display=name;
 		char *escaped=NULL;
 		int nbmsg=0;
 
 		//BuddyInfo *bi;
 		gboolean send_subscribe=linphone_friend_get_send_subscribe(lf);
-		if (name==NULL || name[0]=='\0') {
+		if (display==NULL || display[0]=='\0') {
 			display=linphone_address_get_username(f_uri);
 		}
 		gtk_list_store_append(store,&iter);

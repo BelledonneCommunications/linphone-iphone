@@ -2223,6 +2223,9 @@ core_start:
 #ifdef CALL_LOGS_STORAGE_ENABLED
 	linphone_gtk_call_log_update(the_ui);
 #endif
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	linphone_gtk_show_friends();
+#endif
 
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_iterate,(gpointer)linphone_gtk_get_core());
