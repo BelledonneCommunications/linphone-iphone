@@ -241,6 +241,20 @@ LINPHONE_PUBLIC LinphoneOnlineStatus linphone_friend_get_status(const LinphoneFr
 LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model(LinphoneFriend *lf);
 
 /**
+ * Set the presence model of a friend
+ * @param[in] lf A #LinphoneFriend object
+ * @param[in] presence The #LinphonePresenceModel object to set for the friend
+ */
+LINPHONE_PUBLIC void linphone_friend_set_presence_model(LinphoneFriend *lf, LinphonePresenceModel *presence);
+
+/**
+ * Tells whether we already received presence information for a friend.
+ * @param[in] lf A #LinphoneFriend object
+ * @return TRUE if presence information has been received for the friend, FALSE otherwise.
+ */
+LINPHONE_PUBLIC bool_t linphone_friend_is_presence_received(const LinphoneFriend *lf);
+
+/**
  * Store user pointer to friend object.
 **/
 LINPHONE_PUBLIC void linphone_friend_set_user_data(LinphoneFriend *lf, void *data);

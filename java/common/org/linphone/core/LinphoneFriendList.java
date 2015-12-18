@@ -1,6 +1,6 @@
 /*
-linphone
-Copyright (C) 2012  Belledonne Communications, Grenoble, France
+LinphoneFriend.java
+Copyright (C) 2010  Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,17 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "sal_impl.h"
+package org.linphone.core;
 
 
-int sal_send_info(SalOp *op, const char *from, const char *to, const SalBodyHandler *body_handler){
-	if (op->dialog){
-		belle_sip_request_t *req;
-		belle_sip_dialog_enable_pending_trans_checking(op->dialog,op->base.root->pending_trans_checking);
-		req=belle_sip_dialog_create_queued_request(op->dialog,"INFO");
-		belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(body_handler));
-		return sal_op_send_request(op,req);
-	}
-	return -1;
+public interface LinphoneFriendList {
+	public void  setRLSUri(String uri);
+	public void addFriend(LinphoneFriend friend);
+	public void updateSubscriptions(LinphoneProxyConfig proxyConfig,boolean onlyWhenRegistered);
+	long getNativePtr();	
 }
-

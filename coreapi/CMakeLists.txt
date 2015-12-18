@@ -37,6 +37,7 @@ set(LINPHONE_HEADER_FILES
 	call_params.h
 	content.h
 	event.h
+	friendlist.h
 	linphonecore.h
 	linphonecore_utils.h
 	linphonefriend.h
@@ -82,6 +83,7 @@ set(LINPHONE_SOURCE_FILES_C
 	enum.h
 	event.c
 	friend.c
+	friendlist.c
 	info.c
 	ldap/ldapprovider.c
 	lime.c

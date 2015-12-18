@@ -153,6 +153,7 @@ typedef struct _stats {
 
 	int number_of_NewSubscriptionRequest;
 	int number_of_NotifyReceived;
+	int number_of_NotifyPresenceReceived;
 	int number_of_LinphonePresenceActivityOffline;
 	int number_of_LinphonePresenceActivityOnline;
 	int number_of_LinphonePresenceActivityAppointment;
@@ -350,6 +351,10 @@ int liblinphone_tester_set_log_file(const char *filename);
 bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state);
 
 extern const char *liblinphone_tester_mire_id;
+
+FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress* dest_addres);
+
+void wait_core(LinphoneCore *core) ;
 
 
 #ifdef __cplusplus

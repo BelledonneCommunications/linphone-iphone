@@ -151,7 +151,7 @@ LinphoneEvent *linphone_core_subscribe(LinphoneCore *lc, const LinphoneAddress *
 
 
 int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
-	SalBody salbody;
+	SalBodyHandler *body_handler;
 	int err;
 
 	if (lev->dir!=LinphoneSubscriptionOutgoing){
@@ -179,7 +179,8 @@ int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *bod
 		lev->send_custom_headers=NULL;
 	}else sal_op_set_sent_custom_header(lev->op,NULL);
 
-	err=sal_subscribe(lev->op,NULL,NULL,lev->name,lev->expires,sal_body_from_content(&salbody,body));
+	body_handler = sal_body_handler_from_content(body);
+	err=sal_subscribe(lev->op,NULL,NULL,lev->name,lev->expires,body_handler);
 	if (err==0){
 		if (lev->subscription_state==LinphoneSubscriptionNone)
 			linphone_event_set_state(lev,LinphoneSubscriptionOutgoingInit);
@@ -189,6 +190,10 @@ int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *bod
 
 int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body){
 	return linphone_event_send_subscribe(lev,body);
+}
+
+int linphone_event_refresh_subscribe(LinphoneEvent *lev) {
+	return sal_subscribe_refresh(lev->op);
 }
 
 int linphone_event_accept_subscription(LinphoneEvent *lev){
@@ -216,7 +221,7 @@ int linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReason reason){
 }
 
 int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body){
-	SalBody salbody;
+	SalBodyHandler *body_handler;
 	if (lev->subscription_state!=LinphoneSubscriptionActive){
 		ms_error("linphone_event_notify(): cannot notify if subscription is not active.");
 		return -1;
@@ -225,7 +230,8 @@ int linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *body){
 		ms_error("linphone_event_notify(): cannot notify if not an incoming subscription.");
 		return -1;
 	}
-	return sal_notify(lev->op,sal_body_from_content(&salbody,body));
+	body_handler = sal_body_handler_from_content(body);
+	return sal_notify(lev->op, body_handler);
 }
 
 LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires){
@@ -236,7 +242,7 @@ LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddr
 }
 
 static int _linphone_event_send_publish(LinphoneEvent *lev, const LinphoneContent *body, bool_t notify_err){
-	SalBody salbody;
+	SalBodyHandler *body_handler;
 	int err;
 
 	if (lev->dir!=LinphoneSubscriptionInvalidDir){
@@ -247,7 +253,8 @@ static int _linphone_event_send_publish(LinphoneEvent *lev, const LinphoneConten
 		sal_op_set_sent_custom_header(lev->op,lev->send_custom_headers);
 		lev->send_custom_headers=NULL;
 	}else sal_op_set_sent_custom_header(lev->op,NULL);
-	err=sal_publish(lev->op,NULL,NULL,lev->name,lev->expires,sal_body_from_content(&salbody,body));
+	body_handler = sal_body_handler_from_content(body);
+	err=sal_publish(lev->op,NULL,NULL,lev->name,lev->expires,body_handler);
 	if (err==0){
 		linphone_event_set_publish_state(lev,LinphonePublishProgress);
 	}else if (notify_err){

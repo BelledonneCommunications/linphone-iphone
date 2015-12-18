@@ -884,6 +884,171 @@ static void dos_module_trigger(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+
+static void test_subscribe_notify_with_sipp_publisher(void) {
+	char *scen;
+	FILE * sipp_out;
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	/*just to get an identity*/
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	
+	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
+	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
+	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
+	ms_free(lf_identity);
+	
+	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);
+	
+	linphone_core_add_friend(pauline->lc,lf);
+	
+	/*wait for subscribe acknowledgment*/
+	wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,1,2000);
+	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
+	
+	scen = bc_tester_res("sipp/simple_publish.xml");
+	
+	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
+	
+	if (TRUE/*sipp_out*/) {
+		/*wait for marie status*/
+		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
+		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
+		pclose(sipp_out);
+	}
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
+	char *scen;
+	FILE * sipp_out;
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+	/*just to get an identity*/
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	
+	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
+	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
+	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
+	ms_free(lf_identity);
+	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);
+	
+	linphone_core_add_friend(pauline->lc,lf);
+	
+	/*wait for subscribe acknowledgment*/
+	wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,1,2000);
+	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
+	
+	scen = bc_tester_res("sipp/double_publish_with_error.xml");
+	
+	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
+	
+	if (sipp_out) {
+		/*wait for marie status*/
+		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
+		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
+		pclose(sipp_out);
+		BC_ASSERT_EQUAL(pauline->stat.number_of_NotifyReceived,2,int, "%d");
+	}
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void test_publish_unpublish(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneProxyConfig* proxy;
+	
+	linphone_core_get_default_proxy(marie->lc,&proxy);
+	linphone_proxy_config_edit(proxy);
+	linphone_proxy_config_enable_publish(proxy,TRUE);
+	linphone_proxy_config_done(proxy);
+	wait_core(marie->lc);
+	linphone_proxy_config_edit(proxy);
+	linphone_proxy_config_enable_publish(proxy,FALSE);
+	linphone_proxy_config_done(proxy);
+	wait_core(marie->lc);
+	linphone_core_manager_destroy(marie);
+}
+
+static void test_list_subscribe (void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
+	
+	char *list =	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+					"<resource-lists xmlns=\"urn:ietf:params:xml:ns:resource-lists\"\n"
+					"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+					"<list>\n"
+						"\t<entry uri=\"%s\" />\n"
+						"\t<entry uri=\"%s\" />\n"
+					"</list>\n"
+					"</resource-lists>\n";
+	
+	
+	LinphoneEvent *lev;
+	MSList* lcs=ms_list_append(NULL,marie->lc);
+	char * pauline_uri=linphone_address_as_string_uri_only(pauline->identity);
+	char * laure_uri=linphone_address_as_string_uri_only(laure->identity);
+	char * subscribe_content = ms_strdup_printf(list,pauline_uri,laure_uri);
+	LinphoneContent* content = linphone_core_create_content(marie->lc);
+	LinphoneAddress *list_name = linphone_address_new("sip:mescops@sip.example.org");
+	LinphoneProxyConfig* proxy_config;
+	int dummy=0;
+	
+	ms_free(pauline_uri);
+	ms_free(laure_uri);
+	
+	lcs=ms_list_append(lcs,pauline->lc);
+	lcs=ms_list_append(lcs,laure->lc);
+	
+	linphone_content_set_type(content,"application");
+	linphone_content_set_subtype(content,"resource-lists+xml");
+	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	
+	lev=linphone_core_create_subscribe(marie->lc,list_name,"presence",60);
+	
+	linphone_event_add_custom_header(lev,"Supported","eventlist");
+	linphone_event_add_custom_header(lev,"Accept","application/pidf+xml, application/rlmi+xml");
+	linphone_event_add_custom_header(lev,"Content-Disposition", "recipient-list");
+	
+	linphone_event_send_subscribe(lev,content);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
+	
+	/*make sure marie receives first notification before terminating*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
+	/*dummy wait to avoid derred notify*/
+	wait_for_list(lcs,&dummy,1,2000);
+	linphone_core_get_default_proxy(pauline->lc,&proxy_config);
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_enable_publish(proxy_config,TRUE);
+	linphone_proxy_config_done(proxy_config);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
+	
+	linphone_core_get_default_proxy(laure->lc,&proxy_config);
+	linphone_proxy_config_edit(proxy_config);
+	linphone_proxy_config_enable_publish(proxy_config,TRUE);
+	linphone_proxy_config_done(proxy_config);
+	/*make sure notify is not sent "imadiatly but defered*/
+	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,3,1000));
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,3,5000));
+	
+	linphone_event_terminate(lev);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
+	
+	ms_free(subscribe_content);
+	linphone_address_destroy(list_name);
+	linphone_content_unref(content);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+}
+
+
 test_t flexisip_tests[] = {
 	{ "Subscribe forking", subscribe_forking },
 	{ "Message forking", message_forking },
@@ -901,6 +1066,10 @@ test_t flexisip_tests[] = {
 	{ "Call with sips", call_with_sips },
 	{ "Call with sips not achievable", call_with_sips_not_achievable },
 	{ "Call with ipv6", call_with_ipv6 },
+	{ "Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher },
+	{ "Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish },
+	{ "Publish/unpublish", test_publish_unpublish },
+	{ "List subscribe", test_list_subscribe },
 	{ "File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client },
 	{ "File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client },
 	{ "File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client },

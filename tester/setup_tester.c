@@ -41,6 +41,8 @@ static void core_init_test(void) {
 
 static void linphone_address_test(void) {
 	linphone_address_destroy(create_linphone_address(NULL));
+	BC_ASSERT_PTR_NULL(linphone_address_new("sip:@sip.linphone.org"));
+	
 }
 
 static void core_sip_transport_test(void) {

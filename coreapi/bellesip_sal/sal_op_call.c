@@ -669,15 +669,19 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 
 				}
 			}else{
-				SalBody salbody;
-				if (sal_op_get_body(op,(belle_sip_message_t*)req,&salbody)) {
-					if (sal_body_has_type(&salbody,"application","dtmf-relay")){
+				belle_sip_message_t *msg = BELLE_SIP_MESSAGE(req);
+				belle_sip_body_handler_t *body_handler = BELLE_SIP_BODY_HANDLER(sal_op_get_body_handler(op, msg));
+				if (body_handler) {
+					belle_sip_header_content_type_t *content_type = belle_sip_message_get_header_by_type(msg, belle_sip_header_content_type_t);
+					if (content_type
+						&& (strcmp(belle_sip_header_content_type_get_type(content_type), "application") == 0)
+						&& (strcmp(belle_sip_header_content_type_get_subtype(content_type), "dtmf-relay") == 0)) {
 						char tmp[10];
-						if (sal_lines_get_value(salbody.data, "Signal",tmp, sizeof(tmp))){
+						if (sal_lines_get_value(belle_sip_message_get_body(msg), "Signal",tmp, sizeof(tmp))){
 							op->base.root->callbacks.dtmf_received(op,tmp[0]);
 						}
 					}else
-						op->base.root->callbacks.info_received(op,&salbody);
+						op->base.root->callbacks.info_received(op, (SalBodyHandler *)body_handler);
 				} else {
 					op->base.root->callbacks.info_received(op,NULL);
 				}

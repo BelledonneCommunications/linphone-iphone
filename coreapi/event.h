@@ -138,11 +138,18 @@ LINPHONE_PUBLIC LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, 
 LINPHONE_PUBLIC int linphone_event_send_subscribe(LinphoneEvent *ev, const LinphoneContent *body);
 
 /**
- * Update (refresh) an outgoing subscription.
+ * Update (refresh) an outgoing subscription, changing the body.
  * @param lev a LinphoneEvent
  * @param body an optional body to include in the subscription update, may be NULL.
 **/
 LINPHONE_PUBLIC int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body);
+
+/**
+ * Refresh an outgoing subscription keeping the same body.
+ * @param lev LinphoneEvent object.
+ * @return 0 if successful, -1 otherwise.
+ */
+LINPHONE_PUBLIC int linphone_event_refresh_subscribe(LinphoneEvent *lev);
 
 
 /**

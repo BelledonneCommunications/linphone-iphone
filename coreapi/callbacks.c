@@ -1122,7 +1122,7 @@ static void is_composing_received(SalOp *op, const SalIsComposing *is_composing)
 }
 
 static void parse_presence_requested(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result) {
-	linphone_notify_parse_presence(op, content_type, content_subtype, body, result);
+	linphone_notify_parse_presence(content_type, content_subtype, body, result);
 }
 
 static void convert_presence_to_xml_requested(SalOp *op, SalPresenceModel *presence, const char *contact, char **content) {
@@ -1276,9 +1276,9 @@ static void text_delivery_update(SalOp *op, SalTextDeliveryStatus status){
 	}
 }
 
-static void info_received(SalOp *op, const SalBody *body){
+static void info_received(SalOp *op, SalBodyHandler *body_handler){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-	linphone_core_notify_info_message(lc,op,body);
+	linphone_core_notify_info_message(lc,op,body_handler);
 }
 
 static void subscribe_response(SalOp *op, SalSubscribeStatus status){
@@ -1299,7 +1299,7 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 	}
 }
 
-static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, const SalBody *body){
+static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, SalBodyHandler *body_handler){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 
@@ -1308,15 +1308,18 @@ static void notify(SalOp *op, SalSubscribeStatus st, const char *eventname, cons
 		lev=linphone_event_new_with_out_of_dialog_op(lc,op,LinphoneSubscriptionOutgoing,eventname);
 	}
 	{
-		LinphoneContent *ct=linphone_content_from_sal_body(body);
-		if (ct) linphone_core_notify_notify_received(lc,lev,eventname,ct);
+		LinphoneContent *ct=linphone_content_from_sal_body_handler(body_handler);
+		if (ct) {
+			linphone_core_notify_notify_received(lc,lev,eventname,ct);
+			linphone_content_unref(ct);
+		}
 	}
 	if (st!=SalSubscribeNone){
 		linphone_event_set_state(lev,linphone_subscription_state_from_sal(st));
 	}
 }
 
-static void subscribe_received(SalOp *op, const char *eventname, const SalBody *body){
+static void subscribe_received(SalOp *op, const char *eventname, const SalBodyHandler *body_handler){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
 

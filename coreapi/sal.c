@@ -855,10 +855,134 @@ int sal_lines_get_value(const char *data, const char *key, char *value, size_t v
 	return FALSE;
 }
 
-int sal_body_has_type(const SalBody *body, const char *type, const char *subtype){
-	return body->type && body->subtype
-		&& strcmp(body->type,type)==0
-		&& strcmp(body->subtype,subtype)==0;
+static belle_sip_header_t * sal_body_handler_find_header(const SalBodyHandler *body_handler, const char *header_name) {
+	belle_sip_body_handler_t *bsbh = BELLE_SIP_BODY_HANDLER(body_handler);
+	const belle_sip_list_t *l = belle_sip_body_handler_get_headers(bsbh);
+	for (; l != NULL; l = l->next) {
+		belle_sip_header_t *header = BELLE_SIP_HEADER(l->data);
+		if (strcmp(belle_sip_header_get_name(header), header_name) == 0) {
+			return header;
+		}
+	}
+	return NULL;
+}
+
+SalBodyHandler * sal_body_handler_new(void) {
+	belle_sip_memory_body_handler_t *body_handler = belle_sip_memory_body_handler_new(NULL, NULL);
+	return (SalBodyHandler *)BELLE_SIP_BODY_HANDLER(body_handler);
+}
+
+SalBodyHandler * sal_body_handler_ref(SalBodyHandler *body_handler) {
+	return (SalBodyHandler *)belle_sip_object_ref(BELLE_SIP_OBJECT(body_handler));
+}
+
+void sal_body_handler_unref(SalBodyHandler *body_handler) {
+	belle_sip_object_unref(BELLE_SIP_OBJECT(body_handler));
+}
+
+const char * sal_body_handler_get_type(const SalBodyHandler *body_handler) {
+	belle_sip_header_content_type_t *content_type = BELLE_SIP_HEADER_CONTENT_TYPE(sal_body_handler_find_header(body_handler, "Content-Type"));
+	if (content_type != NULL) {
+		return belle_sip_header_content_type_get_type(content_type);
+	}
+	return NULL;
+}
+
+void sal_body_handler_set_type(SalBodyHandler *body_handler, const char *type) {
+	belle_sip_header_content_type_t *content_type = BELLE_SIP_HEADER_CONTENT_TYPE(sal_body_handler_find_header(body_handler, "Content-Type"));
+	if (content_type == NULL) {
+		content_type = belle_sip_header_content_type_new();
+		belle_sip_body_handler_add_header(BELLE_SIP_BODY_HANDLER(body_handler), BELLE_SIP_HEADER(content_type));
+	}
+	belle_sip_header_content_type_set_type(content_type, type);
+}
+
+const char * sal_body_handler_get_subtype(const SalBodyHandler *body_handler) {
+	belle_sip_header_content_type_t *content_type = BELLE_SIP_HEADER_CONTENT_TYPE(sal_body_handler_find_header(body_handler, "Content-Type"));
+	if (content_type != NULL) {
+		return belle_sip_header_content_type_get_subtype(content_type);
+	}
+	return NULL;
+}
+
+void sal_body_handler_set_subtype(SalBodyHandler *body_handler, const char *subtype) {
+	belle_sip_header_content_type_t *content_type = BELLE_SIP_HEADER_CONTENT_TYPE(sal_body_handler_find_header(body_handler, "Content-Type"));
+	if (content_type == NULL) {
+		content_type = belle_sip_header_content_type_new();
+		belle_sip_body_handler_add_header(BELLE_SIP_BODY_HANDLER(body_handler), BELLE_SIP_HEADER(content_type));
+	}
+	belle_sip_header_content_type_set_subtype(content_type, subtype);
+}
+
+const char * sal_body_handler_get_encoding(const SalBodyHandler *body_handler) {
+	belle_sip_header_t *content_encoding = sal_body_handler_find_header(body_handler, "Content-Encoding");
+	if (content_encoding != NULL) {
+		return belle_sip_header_get_unparsed_value(content_encoding);
+	}
+	return NULL;
+}
+
+void sal_body_handler_set_encoding(SalBodyHandler *body_handler, const char *encoding) {
+	belle_sip_header_t *content_encoding = sal_body_handler_find_header(body_handler, "Content-Encoding");
+	if (content_encoding != NULL) {
+		belle_sip_body_handler_remove_header_from_ptr(BELLE_SIP_BODY_HANDLER(body_handler), content_encoding);
+	}
+	belle_sip_body_handler_add_header(BELLE_SIP_BODY_HANDLER(body_handler), belle_sip_header_create("Content-Encoding", encoding));
+}
+
+void * sal_body_handler_get_data(const SalBodyHandler *body_handler) {
+	return belle_sip_memory_body_handler_get_buffer(BELLE_SIP_MEMORY_BODY_HANDLER(body_handler));
+}
+
+void sal_body_handler_set_data(SalBodyHandler *body_handler, void *data) {
+	belle_sip_memory_body_handler_set_buffer(BELLE_SIP_MEMORY_BODY_HANDLER(body_handler), data);
+}
+
+size_t sal_body_handler_get_size(const SalBodyHandler *body_handler) {
+	return belle_sip_body_handler_get_size(BELLE_SIP_BODY_HANDLER(body_handler));
+}
+
+void sal_body_handler_set_size(SalBodyHandler *body_handler, size_t size) {
+	belle_sip_header_content_length_t *content_length = BELLE_SIP_HEADER_CONTENT_LENGTH(sal_body_handler_find_header(body_handler, "Content-Length"));
+	if (content_length == NULL) {
+		content_length = belle_sip_header_content_length_new();
+		belle_sip_body_handler_add_header(BELLE_SIP_BODY_HANDLER(body_handler), BELLE_SIP_HEADER(content_length));
+	}
+	belle_sip_header_content_length_set_content_length(content_length, size);
+	belle_sip_body_handler_set_size(BELLE_SIP_BODY_HANDLER(body_handler), size);
+}
+
+bool_t sal_body_handler_is_multipart(const SalBodyHandler *body_handler) {
+	if (BELLE_SIP_IS_INSTANCE_OF(body_handler, belle_sip_multipart_body_handler_t)) return TRUE;
+	return FALSE;
+}
+
+SalBodyHandler * sal_body_handler_get_part(const SalBodyHandler *body_handler, int idx) {
+	const belle_sip_list_t *l = belle_sip_multipart_body_handler_get_parts(BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler));
+	return (SalBodyHandler *)belle_sip_list_nth_data(l, idx);
+}
+
+SalBodyHandler * sal_body_handler_find_part_by_header(const SalBodyHandler *body_handler, const char *header_name, const char *header_value) {
+	const belle_sip_list_t *l = belle_sip_multipart_body_handler_get_parts(BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler));
+	for (; l != NULL; l = l->next) {
+		belle_sip_body_handler_t *bsbh = BELLE_SIP_BODY_HANDLER(l->data);
+		const belle_sip_list_t *headers = belle_sip_body_handler_get_headers(bsbh);
+		for (; headers != NULL; headers = headers->next) {
+			belle_sip_header_t *header = BELLE_SIP_HEADER(headers->data);
+			if ((strcmp(belle_sip_header_get_name(header), header_name) == 0) && (strcmp(belle_sip_header_get_unparsed_value(header), header_value) == 0)) {
+				return (SalBodyHandler *)bsbh;
+			}
+		}
+	}
+	return NULL;
+}
+
+const char * sal_body_handler_get_header(const SalBodyHandler *body_handler, const char *header_name) {
+	belle_sip_header_t *header = sal_body_handler_find_header(body_handler, header_name);
+	if (header != NULL) {
+		return belle_sip_header_get_unparsed_value(header);
+	}
+	return NULL;
 }
 
 belle_sip_stack_t *sal_get_belle_sip_stack(Sal *sal) {

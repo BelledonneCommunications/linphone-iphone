@@ -166,8 +166,7 @@ belle_sip_response_t *sal_create_response_from_request(Sal *sal, belle_sip_reque
 
 void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming);
 
-void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body);
-bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody);
+SalBodyHandler * sal_op_get_body_handler(SalOp *op, belle_sip_message_t *msg);
 
 SalReason sal_reason_to_sip_code(SalReason r);
 

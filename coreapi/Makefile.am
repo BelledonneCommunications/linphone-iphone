@@ -31,6 +31,7 @@ linphone_include_HEADERS=\
 	call_params.h \
 	content.h \
 	event.h \
+	friendlist.h \
 	linphonecore.h \
 	linphonecore_utils.h \
 	linphonefriend.h \
@@ -63,6 +64,7 @@ liblinphone_la_SOURCES=\
 	enum.c enum.h \
 	event.c \
 	friend.c \
+	friendlist.c \
 	info.c \
 	ldap/ldapprovider.c ldap/ldapprovider.h \
 	linphonecall.c \

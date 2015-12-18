@@ -1664,16 +1664,26 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	linphone_core_register_static_payloads(lc);
 }
 
+static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
+	if (strcmp(notified_event, "Presence") == 0) {
+		linphone_friend_list_notify_presence_received(lc->friendlist, lev, body);
+	}
+}
+
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata){
 	const char *remote_provisioning_uri = NULL;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
+	LinphoneCoreVTable *internal_vtable = linphone_core_v_table_new();
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
+	linphone_core_set_friend_list(lc, NULL);
 	linphone_task_list_init(&lc->hooks);
 
+	internal_vtable->notify_received = linphone_core_internal_notify_received;
+	_linphone_core_add_listener(lc, internal_vtable, TRUE);
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
 	_linphone_core_add_listener(lc, local_vtable, TRUE);
 
@@ -1906,7 +1916,23 @@ bool_t linphone_core_generic_confort_noise_enabled(const LinphoneCore *lc){
 
 const MSList * linphone_core_get_friend_list(const LinphoneCore *lc)
 {
-	return lc->friends;
+	return lc->friendlist->friends;
+}
+
+void linphone_core_set_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
+	if (lc->friendlist != NULL) {
+		linphone_friend_list_unref(lc->friendlist);
+		lc->friendlist = NULL;
+	}
+	if (list != NULL) {
+		lc->friendlist = linphone_friend_list_ref(list);
+	} else {
+		const char *rls_uri = NULL;
+		lc->friendlist = linphone_core_create_friend_list(lc);
+		rls_uri = lp_config_get_string(lc->config, "sip", "rls_uri", NULL);
+		if (rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0))
+			linphone_friend_list_set_rls_uri(lc->friendlist, rls_uri);
+	}
 }
 
 void linphone_core_enable_audio_adaptive_jittcomp(LinphoneCore* lc, bool_t val)
@@ -6324,9 +6350,8 @@ static void codecs_config_uninit(LinphoneCore *lc)
 void ui_config_uninit(LinphoneCore* lc)
 {
 	ms_message("Destroying friends.");
-	if (lc->friends){
-		lc->friends = ms_list_free_with_data(lc->friends, (void (*)(void *))linphone_friend_unref);
-	}
+	linphone_friend_list_unref(lc->friendlist);
+	lc->friendlist = NULL;
 	if (lc->subscribers){
 		lc->subscribers = ms_list_free_with_data(lc->subscribers, (void (*)(void *))linphone_friend_unref);
 	}
@@ -6366,9 +6391,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		ms_usleep(50000);
 	}
 
-	if (lc->friends) /* FIXME we should wait until subscription to complete*/
-		ms_list_for_each(lc->friends,(void (*)(void *))linphone_friend_close_subscriptions);
-
+	linphone_friend_list_close_subscriptions(lc->friendlist);
 	lc->chatrooms = ms_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
 
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
