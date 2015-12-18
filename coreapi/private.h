@@ -361,7 +361,6 @@ void linphone_core_write_auth_info(LinphoneCore *lc, LinphoneAuthInfo *ai);
 const LinphoneAuthInfo *_linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain, bool_t ignore_realm);
 
 void linphone_core_update_proxy_register(LinphoneCore *lc);
-void linphone_core_refresh_subscribes(LinphoneCore *lc);
 int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *error);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 
@@ -657,6 +656,7 @@ struct _LinphoneFriendList {
 	belle_sip_object_t base;
 	void *user_data;
 	LinphoneCore *lc;
+	LinphoneEvent *event;
 	char *display_name;
 	char *rls_uri;
 	MSList *friends;

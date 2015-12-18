@@ -120,6 +120,7 @@ static void linphone_friend_list_parse_multipart_related_body(LinphoneFriendList
 		linphone_free_xml_text_content(version_str);
 		if (version < list->expected_notification_version) {
 			ms_warning("rlmi+xml: Discarding received notification with version %d because %d was expected", version, list->expected_notification_version);
+			linphone_friend_list_update_subscriptions(list, NULL, FALSE); /* Refresh subscription to get new full state notify. */
 			goto end;
 		}
 
@@ -224,6 +225,7 @@ static LinphoneFriendList * linphone_friend_list_new(void) {
 static void linphone_friend_list_destroy(LinphoneFriendList *list) {
 	if (list->display_name != NULL) ms_free(list->display_name);
 	if (list->rls_uri != NULL) ms_free(list->rls_uri);
+	if (list->event != NULL) linphone_event_unref(list->event);
 	list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))linphone_friend_unref);
 }
 
@@ -364,24 +366,25 @@ void linphone_friend_list_close_subscriptions(LinphoneFriendList *list) {
 
 void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered) {
 	const MSList *elem;
-	if (list->rls_uri != NULL) {
+	if (list->event != NULL) {
+		linphone_event_refresh_subscribe(list->event);
+	} else if (list->rls_uri != NULL) {
 		LinphoneAddress *address = linphone_address_new(list->rls_uri);
 		char *xml_content = create_resource_list_xml(list);
 		if ((address != NULL) && (xml_content != NULL) && (linphone_friend_list_has_subscribe_inactive(list) == TRUE)) {
-			LinphoneEvent *event;
 			LinphoneContent *content;
 			int expires = lp_config_get_int(list->lc->config, "sip", "rls_presence_expires", 3600);
 			list->expected_notification_version = 0;
-			event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
-			linphone_event_add_custom_header(event, "Require", "recipient-list-subscribe");
-			linphone_event_add_custom_header(event, "Supported", "eventlist");
-			linphone_event_add_custom_header(event, "Accept", "multipart/related, application/pidf+xml, application/rlmi+xml");
-			linphone_event_add_custom_header(event, "Content-Disposition", "recipient-list");
+			list->event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
+			linphone_event_add_custom_header(list->event, "Require", "recipient-list-subscribe");
+			linphone_event_add_custom_header(list->event, "Supported", "eventlist");
+			linphone_event_add_custom_header(list->event, "Accept", "multipart/related, application/pidf+xml, application/rlmi+xml");
+			linphone_event_add_custom_header(list->event, "Content-Disposition", "recipient-list");
 			content = linphone_core_create_content(list->lc);
 			linphone_content_set_type(content, "application");
 			linphone_content_set_subtype(content, "resource-lists+xml");
 			linphone_content_set_string_buffer(content, xml_content);
-			linphone_event_send_subscribe(event, content);
+			linphone_event_send_subscribe(list->event, content);
 			linphone_content_unref(content);
 		}
 		if (address != NULL) linphone_address_unref(address);
