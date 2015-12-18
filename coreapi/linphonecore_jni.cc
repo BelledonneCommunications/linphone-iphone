@@ -1939,6 +1939,15 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriend(JNIEnv*  env
 																			) {
 	linphone_core_add_friend((LinphoneCore*)lc,(LinphoneFriend*)aFriend);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setFriendList(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong friendList
+																			) {
+	linphone_core_set_friend_list((LinphoneCore*)lc,(LinphoneFriendList*)friendList);
+}
+
 extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendList(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc) {
@@ -3054,12 +3063,47 @@ extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_newLinphoneFriend(JNI
 	}
 	return (jlong)lResult;
 }
+
+extern "C" jlong Java_org_linphone_core_LinphoneFriendListImpl_newLinphoneFriendList(JNIEnv*  env
+																		,jobject  thiz, jlong lc) {
+	LinphoneFriendList* fl = linphone_core_create_friend_list((LinphoneCore *)lc);
+	linphone_friend_list_set_user_data(fl,env->NewWeakGlobalRef(thiz));
+	return (jlong)fl;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
 																		,jlong linphoneAddress) {
 	linphone_friend_set_address((LinphoneFriend*)ptr,(LinphoneAddress*)linphoneAddress);
 }
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setRLSUri(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr
+																		,jstring jrlsUri) {
+	const char* uri = env->GetStringUTFChars(jrlsUri, NULL);
+	linphone_friend_list_set_rls_uri((LinphoneFriendList*)ptr,uri);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_addFriend(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong friendListptr
+																		,jlong friendPtr) {
+	linphone_friend_list_add_friend((LinphoneFriendList*)friendListptr,(LinphoneFriend*)friendPtr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscriptions(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong friendListptr
+																		,jlong proxyConfigPtr
+																		,jboolean jonlyWhenRegistered) {
+	linphone_friend_list_update_subscriptions((LinphoneFriendList*)friendListptr,(LinphoneProxyConfig*)proxyConfigPtr,jonlyWhenRegistered);
+}
+
+
+
+
 extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_getAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr) {
@@ -3103,6 +3147,18 @@ extern "C" jobject Java_org_linphone_core_LinphoneFriendImpl_getCore(JNIEnv*  en
 	}
 	return NULL;
 }
+
+extern "C" jobject Java_org_linphone_core_LinphoneFriendListImpl_getCore(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneCore *lc=linphone_friend_get_core((LinphoneFriend*)ptr);
+	if (lc!=NULL){
+		jobject core = (jobject)linphone_core_get_user_data(lc);
+		return core;
+	}
+	return NULL;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setRefKey(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
@@ -3125,6 +3181,14 @@ extern "C" void  Java_org_linphone_core_LinphoneFriendImpl_finalize(JNIEnv*  env
 	LinphoneFriend *lfriend=(LinphoneFriend*)ptr;
 	linphone_friend_set_user_data(lfriend,NULL);
 	linphone_friend_unref(lfriend);
+}
+
+extern "C" void  Java_org_linphone_core_LinphoneFriendListImpl_finalize(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong ptr) {
+	LinphoneFriendList *lfriendList=(LinphoneFriendList*)ptr;
+	linphone_friend_list_set_user_data(lfriendList,NULL);
+	linphone_friend_list_unref(lfriendList);
 }
 
 /*
@@ -3277,17 +3341,10 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_markAsRead(JNIEnv*  
 
 
 extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferMessage(JNIEnv* env, jobject thiz, jlong ptr, jstring jname, jstring jtype, jstring jsubtype, jint data_size) {
-	LinphoneContentPrivate content = {0};
+	LinphoneContent content = {0};
 	LinphoneChatMessage *message = NULL;
 
-	content.type = (char*)env->GetStringUTFChars(jtype, NULL);
-	content.subtype = (char*)env->GetStringUTFChars(jsubtype, NULL);
-	content.name = (char*)env->GetStringUTFChars(jname, NULL);
-	content.size = data_size;
-	message = linphone_chat_room_create_file_transfer_message((LinphoneChatRoom *)ptr, LINPHONE_CONTENT(&content));
-	env->ReleaseStringUTFChars(jtype, content.type);
-	env->ReleaseStringUTFChars(jsubtype, content.subtype);
-	env->ReleaseStringUTFChars(jname, content.name);
+	message = linphone_chat_room_create_file_transfer_message((LinphoneChatRoom *)ptr, &content);
 
 	return (jlong) message;
 }
@@ -4673,24 +4730,14 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_subscribe(JNIE
 		jstring jevname, jint expires, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding){
 	LinphoneCore *lc=(LinphoneCore*)coreptr;
 	LinphoneAddress *addr=(LinphoneAddress*)addrptr;
-	LinphoneContentPrivate content={0};
+	LinphoneContent content={0};
 	LinphoneEvent *ev;
 	jobject jev=NULL;
 	const char *evname=env->GetStringUTFChars(jevname,NULL);
 
+	ev=linphone_core_subscribe(lc,addr,evname,expires,linphone_content_get_type(&content) ? &content : NULL);
 	if (jtype){
-		content.type=(char*)env->GetStringUTFChars(jtype,NULL);
-		content.subtype=(char*)env->GetStringUTFChars(jsubtype,NULL);
-		content.encoding=jencoding ? (char*)env->GetStringUTFChars(jencoding,NULL) : NULL;
-		content.data=(void*)env->GetByteArrayElements(jdata,NULL);
-		content.size=env->GetArrayLength(jdata);
-	}
-	ev=linphone_core_subscribe(lc,addr,evname,expires,content.type ? LINPHONE_CONTENT(&content) : NULL);
-	if (jtype){
-		env->ReleaseStringUTFChars(jtype,content.type);
-		env->ReleaseStringUTFChars(jsubtype,content.subtype);
-		if (jencoding) env->ReleaseStringUTFChars(jencoding,content.encoding);
-		env->ReleaseByteArrayElements(jdata,(jbyte*)content.data,JNI_ABORT);
+		env->ReleaseByteArrayElements(jdata,(jbyte*)linphone_content_get_user_data(&content),JNI_ABORT);
 	}
 	env->ReleaseStringUTFChars(jevname,evname);
 	if (ev){
@@ -4708,24 +4755,16 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_publish(JNIEnv
 																		  jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding){
 	LinphoneCore *lc=(LinphoneCore*)coreptr;
 	LinphoneAddress *addr=(LinphoneAddress*)addrptr;
-	LinphoneContentPrivate content={0};
+	LinphoneContent content={0};
 	LinphoneEvent *ev;
 	jobject jev=NULL;
 	const char *evname=env->GetStringUTFChars(jevname,NULL);
 
+        ev=linphone_core_subscribe(lc,addr,evname,expires,linphone_content_get_type(&content) ? &content : NULL);
+
 	if (jtype){
-		content.type=(char*)env->GetStringUTFChars(jtype,NULL);
-		content.subtype=(char*)env->GetStringUTFChars(jsubtype,NULL);
-		content.encoding=jencoding ? (char*)env->GetStringUTFChars(jencoding,NULL) : NULL;
-		content.data=(void*)env->GetByteArrayElements(jdata,NULL);
-		content.size=env->GetArrayLength(jdata);
-	}
-	ev=linphone_core_publish(lc,addr,evname,expires,content.type ? LINPHONE_CONTENT(&content) : NULL);
-	if (jtype){
-		env->ReleaseStringUTFChars(jtype,content.type);
-		env->ReleaseStringUTFChars(jsubtype,content.subtype);
-		if (jencoding) env->ReleaseStringUTFChars(jencoding,content.encoding);
-		env->ReleaseByteArrayElements(jdata,(jbyte*)content.data,JNI_ABORT);
+                env->ReleaseByteArrayElements(jdata,(jbyte*)linphone_content_get_user_data(&content),JNI_ABORT);
+
 	}
 	env->ReleaseStringUTFChars(jevname,evname);
 	if (ev){
@@ -4868,33 +4907,24 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	jstring jtype, jsubtype, jencoding, jname;
 	jbyteArray jdata = NULL;
 	jint jsize = 0;
-	const LinphoneContentPrivate *content = LINPHONE_CONTENT_PRIVATE(icontent);
 
 	contentClass = (jclass)env->FindClass("org/linphone/core/LinphoneContentImpl");
 	ctor = env->GetMethodID(contentClass,"<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[BLjava/lang/String;I)V");
 
-	jtype = env->NewStringUTF(content->type);
-	jsubtype = env->NewStringUTF(content->subtype);
-	jencoding = content->encoding ? env->NewStringUTF(content->encoding) : NULL;
-	jname = content->name ? env->NewStringUTF(content->name) : NULL;
-	jsize = (jint) content->size;
+	jtype = env->NewStringUTF(linphone_content_get_type(icontent));
+	jsubtype = env->NewStringUTF(linphone_content_get_subtype(icontent));
+	jencoding = linphone_content_get_encoding(icontent) ? env->NewStringUTF(linphone_content_get_encoding(icontent)) : NULL;
+	jname = linphone_content_get_name(icontent)  ? env->NewStringUTF(linphone_content_get_name(icontent)) : NULL;
+	jsize = (jint) linphone_content_get_size(icontent);
 
-	if (content->data){
-		jdata = env->NewByteArray(content->size);
-		env->SetByteArrayRegion(jdata, 0, content->size, (jbyte*)content->data);
+	if (linphone_content_get_user_data(icontent)){
+		jdata = env->NewByteArray(linphone_content_get_size(icontent));
+		env->SetByteArrayRegion(jdata, 0, linphone_content_get_size(icontent), (jbyte*)linphone_content_get_user_data(icontent));
 	}
 
 	jobject jobj = env->NewObject(contentClass, ctor, jname, jtype, jsubtype, jdata, jencoding, jsize);
 
 	env->DeleteLocalRef(contentClass);
-	env->DeleteLocalRef(jtype);
-	env->DeleteLocalRef(jsubtype);
-	if (jencoding) {
-		env->DeleteLocalRef(jencoding);
-	}
-	if (jname) {
-		env->DeleteLocalRef(jname);
-	}
 
 	return jobj;
 }
@@ -4964,16 +4994,9 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_getCont
  * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_setContent(JNIEnv *env, jobject jobj, jlong infoptr, jstring jtype, jstring jsubtype, jstring jdata){
-	LinphoneContentPrivate content={0};
+	LinphoneContent content={0};
 
-	content.type=(char*)env->GetStringUTFChars(jtype,NULL);
-	content.subtype=(char*)env->GetStringUTFChars(jsubtype,NULL);
-	content.data=(void*)env->GetStringUTFChars(jdata,NULL);
-	content.size=strlen((char*)content.data);
-	linphone_info_message_set_content((LinphoneInfoMessage*)infoptr,LINPHONE_CONTENT(&content));
-	env->ReleaseStringUTFChars(jtype,content.type);
-	env->ReleaseStringUTFChars(jsubtype,content.subtype);
-	env->ReleaseStringUTFChars(jdata,(char*)content.data);
+	linphone_info_message_set_content((LinphoneInfoMessage*)infoptr,&content);
 }
 
 /*
@@ -5073,26 +5096,13 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneEventImpl_denySubscription
  * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneEventImpl_notify(JNIEnv *env, jobject jobj, jlong evptr, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding){
-	LinphoneContentPrivate content={0};
+	LinphoneContent content={0};
 	LinphoneEvent *ev=(LinphoneEvent*)evptr;
 	jint err;
 
-	if (jtype){
-		content.type=(char*)env->GetStringUTFChars(jtype,NULL);
-		content.subtype=(char*)env->GetStringUTFChars(jsubtype,NULL);
-		content.encoding=jencoding ? (char*)env->GetStringUTFChars(jsubtype,NULL) : NULL;
-		content.data=(void*)env->GetByteArrayElements(jdata,NULL);
-		content.size=env->GetArrayLength(jdata);
-	}
 
-	err=linphone_event_notify(ev,content.type ? LINPHONE_CONTENT(&content) : NULL);
+	err=linphone_event_notify(ev,linphone_content_get_type(&content) ? &content : NULL);
 
-	if (jtype){
-		env->ReleaseStringUTFChars(jtype,content.type);
-		env->ReleaseStringUTFChars(jsubtype,content.subtype);
-		if (jencoding) env->ReleaseStringUTFChars(jencoding,content.encoding);
-		env->ReleaseByteArrayElements(jdata,(jbyte*)content.data,JNI_ABORT);
-	}
 	return err;
 }
 
@@ -5102,26 +5112,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneEventImpl_notify(JNIEnv *e
  * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneEventImpl_updateSubscribe(JNIEnv *env, jobject jobj, jlong evptr, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding){
-	LinphoneContentPrivate content={0};
+	LinphoneContent content={0};
 	LinphoneEvent *ev=(LinphoneEvent*)evptr;
 	jint err;
 
-	if (jtype){
-		content.type=(char*)env->GetStringUTFChars(jtype,NULL);
-		content.subtype=(char*)env->GetStringUTFChars(jsubtype,NULL);
-		content.encoding=jencoding ? (char*)env->GetStringUTFChars(jsubtype,NULL) : NULL;
-		content.data=(void*)env->GetByteArrayElements(jdata,NULL);
-		content.size=env->GetArrayLength(jdata);
-	}
+	err=linphone_event_update_subscribe(ev,linphone_content_get_type(&content) ? &content : NULL);
 
-	err=linphone_event_update_subscribe(ev,content.type ? LINPHONE_CONTENT(&content) : NULL);
-
-	if (jtype){
-		env->ReleaseStringUTFChars(jtype,content.type);
-		env->ReleaseStringUTFChars(jsubtype,content.subtype);
-		if (jencoding) env->ReleaseStringUTFChars(jencoding,content.encoding);
-		env->ReleaseByteArrayElements(jdata,(jbyte*)content.data,JNI_ABORT);
-	}
 	return err;
 }
 
@@ -5131,26 +5127,12 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneEventImpl_updateSubscribe(
  * Signature: (JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneEventImpl_updatePublish(JNIEnv *env, jobject jobj, jlong evptr, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding){
-	LinphoneContentPrivate content={0};
+	LinphoneContent content={0};
 	LinphoneEvent *ev=(LinphoneEvent*)evptr;
 	jint err;
 
-	if (jtype){
-		content.type=(char*)env->GetStringUTFChars(jtype,NULL);
-		content.subtype=(char*)env->GetStringUTFChars(jsubtype,NULL);
-		content.encoding=jencoding ? (char*)env->GetStringUTFChars(jsubtype,NULL) : NULL;
-		content.data=(void*)env->GetByteArrayElements(jdata,NULL);
-		content.size=env->GetArrayLength(jdata);
-	}
+        err=linphone_event_update_publish(ev,linphone_content_get_type(&content) ? &content : NULL);
 
-	err=linphone_event_update_publish(ev,content.type ? LINPHONE_CONTENT(&content) : NULL);
-
-	if (jtype){
-		env->ReleaseStringUTFChars(jtype,content.type);
-		env->ReleaseStringUTFChars(jsubtype,content.subtype);
-		if (jencoding) env->ReleaseStringUTFChars(jencoding,content.encoding);
-		env->ReleaseByteArrayElements(jdata,(jbyte*)content.data,JNI_ABORT);
-	}
 	return err;
 }
 
@@ -5216,21 +5198,8 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_createSubscrib
 }
 
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneEventImpl_sendSubscribe(JNIEnv *env, jobject thiz, jlong jevent, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding) {
-	LinphoneContentPrivate content = {0};
-	if (jtype) {
-		content.type = (char*) env->GetStringUTFChars(jtype, NULL);
-		content.subtype = (char*) env->GetStringUTFChars(jsubtype, NULL);
-		content.encoding = jencoding ? (char*) env->GetStringUTFChars(jencoding, NULL) : NULL;
-		content.data = (void*) env->GetByteArrayElements(jdata, NULL);
-		content.size = env->GetArrayLength(jdata);
-	}
-	linphone_event_send_subscribe((LinphoneEvent*) jevent, content.type ? LINPHONE_CONTENT(&content) : NULL);
-	if (jtype) {
-		env->ReleaseStringUTFChars(jtype, content.type);
-		env->ReleaseStringUTFChars(jsubtype, content.subtype);
-		if (jencoding) env->ReleaseStringUTFChars(jencoding, content.encoding);
-		env->ReleaseByteArrayElements(jdata, (jbyte*) content.data, JNI_ABORT);
-	}
+	LinphoneContent content = {0};
+	linphone_event_send_subscribe((LinphoneEvent*) jevent, linphone_content_get_type(&content)? &content : NULL);
 }
 
 JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_createPublish(JNIEnv *env, jobject thiz, jlong jcore, jlong jaddr, jstring jeventname, jint expires) {
@@ -5249,21 +5218,10 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_createPublish(
 }
 
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneEventImpl_sendPublish(JNIEnv *env, jobject thiz, jlong jevent, jstring jtype, jstring jsubtype, jbyteArray jdata, jstring jencoding) {
-	LinphoneContentPrivate content = {0};
-	if (jtype) {
-		content.type = (char*) env->GetStringUTFChars(jtype, NULL);
-		content.subtype = (char*) env->GetStringUTFChars(jsubtype, NULL);
-		content.encoding = jencoding ? (char*) env->GetStringUTFChars(jencoding, NULL) : NULL;
-		content.data = (void*) env->GetByteArrayElements(jdata, NULL);
-		content.size = env->GetArrayLength(jdata);
-	}
-	linphone_event_send_publish((LinphoneEvent*) jevent, content.type ? LINPHONE_CONTENT(&content) : NULL);
-	if (jtype) {
-		env->ReleaseStringUTFChars(jtype, content.type);
-		env->ReleaseStringUTFChars(jsubtype, content.subtype);
-		if (jencoding) env->ReleaseStringUTFChars(jencoding, content.encoding);
-		env->ReleaseByteArrayElements(jdata, (jbyte*) content.data, JNI_ABORT);
-	}
+	LinphoneContent content = {0};
+        linphone_event_send_publish((LinphoneEvent*) jevent, linphone_content_get_type(&content)? &content : NULL);
+
+
 }
 
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneEventImpl_addCustomHeader(JNIEnv *env, jobject thiz, jlong jevent, jstring jname, jstring jvalue) {

@@ -193,36 +193,60 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	ms_filter_add_notify_callback(ecc->gen,on_tone_sent,ecc,TRUE);
 	
 	/* play the three tones*/
-	strncpy(tone.tone_name, "D", sizeof(tone.tone_name));
-	tone.frequencies[0]=(int)2349.32;
-	tone.duration=100;
-	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	ms_usleep(300000);
 	
-	strncpy(tone.tone_name, "E", sizeof(tone.tone_name));
-	tone.frequencies[0]=(int)2637.02;
-	tone.duration=100;
-	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	ms_usleep(300000);
 	
-	strncpy(tone.tone_name, "C", sizeof(tone.tone_name));
-	tone.frequencies[0]=(int)2093;
-	tone.duration=100;
-	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	ms_usleep(300000);
+	if (ecc->play_cool_tones){
+		strncpy(tone.tone_name, "D", sizeof(tone.tone_name));
+		tone.frequencies[0]=(int)2349.32;
+		tone.duration=100;
+		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+		ms_usleep(300000);
+		
+		strncpy(tone.tone_name, "E", sizeof(tone.tone_name));
+		tone.frequencies[0]=(int)2637.02;
+		tone.duration=100;
+		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+		ms_usleep(300000);
+		
+		strncpy(tone.tone_name, "C", sizeof(tone.tone_name));
+		tone.frequencies[0]=(int)2093;
+		tone.duration=100;
+		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+		ms_usleep(300000);
+	}else{
+		strncpy(tone.tone_name, "C", sizeof(tone.tone_name));
+		tone.frequencies[0]=(int)2093;
+		tone.duration=100;
+		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+		ms_usleep(300000);
+		
+		strncpy(tone.tone_name, "D", sizeof(tone.tone_name));
+		tone.frequencies[0]=(int)2349.32;
+		tone.duration=100;
+		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+		ms_usleep(300000);
+		
+		strncpy(tone.tone_name, "E", sizeof(tone.tone_name));
+		tone.frequencies[0]=(int)2637.02;
+		tone.duration=100;
+		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+		ms_usleep(300000);
+	}
 	
 	/*these two next ones are for lyrism*/
+	if (ecc->play_cool_tones){
+		tone.tone_name[0]='\0';
+		tone.frequencies[0]=(int)1046.5;
+		tone.duration=400;
+		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+		ms_usleep(300000);
+		
+		tone.tone_name[0]='\0';
+		tone.frequencies[0]=(int)1567.98;
+		tone.duration=400;
+		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
+	}
 	
-	tone.tone_name[0]='\0';
-	tone.frequencies[0]=(int)1046.5;
-	tone.duration=400;
-	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
-	ms_usleep(300000);
-	
-	tone.tone_name[0]='\0';
-	tone.frequencies[0]=(int)1567.98;
-	tone.duration=400;
-	ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	ms_sleep(1);
 	
 	if (ecc->freq1 && ecc->freq2 && ecc->freq3) {
@@ -268,8 +292,11 @@ EcCalibrator * ec_calibrator_new(MSSndCard *play_card, MSSndCard *capt_card, uns
 	ecc->audio_uninit_cb=audio_uninit_cb;
 	ecc->capt_card=capt_card;
 	ecc->play_card=play_card;
-	ms_thread_create(&ecc->thread,NULL,ecc_thread,ecc);
 	return ecc;
+}
+
+void ec_calibrator_start(EcCalibrator *ecc){
+	ms_thread_create(&ecc->thread,NULL,ecc_thread,ecc);
 }
 
 LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc){
@@ -277,7 +304,7 @@ LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc){
 }
 
 void ec_calibrator_destroy(EcCalibrator *ecc){
-	ms_thread_join(ecc->thread,NULL);
+	if (ecc->thread != 0) ms_thread_join(ecc->thread,NULL);
 	ms_free(ecc);
 }
 
@@ -291,6 +318,8 @@ int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibration
 	}
 	rate = lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
 	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,audio_init_cb,audio_uninit_cb,cb_data);
+	lc->ecc->play_cool_tones = lp_config_get_int(lc->config, "sound", "ec_calibrator_cool_tones", 0);
+	ec_calibrator_start(lc->ecc);
 	return 0;
 }
 

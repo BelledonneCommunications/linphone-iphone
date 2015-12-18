@@ -30,6 +30,7 @@ extern "C" {
 #endif
 #include "linphonecore.h"
 #include "linphonefriend.h"
+#include "friendlist.h"
 #include "linphone_tunnel.h"
 #include "linphonecore_utils.h"
 #include "sal/sal.h"
@@ -370,7 +371,6 @@ void linphone_core_write_auth_info(LinphoneCore *lc, LinphoneAuthInfo *ai);
 const LinphoneAuthInfo *_linphone_core_find_auth_info(LinphoneCore *lc, const char *realm, const char *username, const char *domain, bool_t ignore_realm);
 
 void linphone_core_update_proxy_register(LinphoneCore *lc);
-void linphone_core_refresh_subscribes(LinphoneCore *lc);
 int linphone_core_abort_call(LinphoneCore *lc, LinphoneCall *call, const char *error);
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 
@@ -385,13 +385,16 @@ void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
 
+void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list);
+void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, LinphoneEvent *lev, const LinphoneContent *body);
+void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
 void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op);
-LinphoneFriend *linphone_find_friend_by_inc_subscribe(MSList *l, SalOp *op);
-LinphoneFriend *linphone_find_friend_by_out_subscribe(MSList *l, SalOp *op);
+LinphoneFriend *linphone_friend_list_find_friend_by_inc_subscribe(const LinphoneFriendList *list, SalOp *op);
+LinphoneFriend *linphone_friend_list_find_friend_by_out_subscribe(const LinphoneFriendList *list, SalOp *op);
 MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf);
 bool_t linphone_core_should_subscribe_friends_only_when_registered(const LinphoneCore *lc);
 void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyConfig *cfg, bool_t only_when_registered);
@@ -400,6 +403,7 @@ void linphone_core_friends_storage_close(LinphoneCore *lc);
 void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf);
 void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf);
 MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc);
+LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *friend);
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 
@@ -446,7 +450,7 @@ void linphone_process_authentication(LinphoneCore* lc, SalOp *op);
 void linphone_authentication_ok(LinphoneCore *lc, SalOp *op);
 void linphone_subscription_new(LinphoneCore *lc, SalOp *op, const char *from);
 void linphone_core_send_presence(LinphoneCore *lc, LinphonePresenceModel *presence);
-void linphone_notify_parse_presence(SalOp *op, const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result);
+void linphone_notify_parse_presence(const char *content_type, const char *content_subtype, const char *body, SalPresenceModel **result);
 void linphone_notify_convert_presence_to_xml(SalOp *op, SalPresenceModel *presence, const char *contact, char **content);
 void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model);
 void linphone_proxy_config_process_authentication_failure(LinphoneCore *lc, SalOp *op);
@@ -658,11 +662,26 @@ struct _LinphoneFriend{
 	bool_t inc_subscribe_pending;
 	bool_t commit;
 	bool_t initial_subscribes_sent; /*used to know if initial subscribe message was sent or not*/
+	bool_t presence_received;
 	LinphoneVCard *vcard;
 	unsigned int storage_id;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
+
+
+struct _LinphoneFriendList {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneCore *lc;
+	LinphoneEvent *event;
+	char *display_name;
+	char *rls_uri;
+	MSList *friends;
+	int expected_notification_version;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneFriendList);
 
 
 typedef struct sip_config
@@ -855,7 +874,7 @@ struct _LinphoneCore
 	ui_config_t ui_conf;
 	autoreplier_config_t autoreplier_conf;
 	LinphoneProxyConfig *default_proxy;
-	MSList *friends;
+	LinphoneFriendList *friendlist;
 	MSList *auth_info;
 	struct _RingStream *ringstream;
 	time_t dmfs_playing_start_time;
@@ -1005,6 +1024,7 @@ struct _EcCalibrator{
 	unsigned int rate;
 	LinphoneEcCalibratorStatus status;
 	bool_t freq1,freq2,freq3;
+	bool_t play_cool_tones;
 };
 
 typedef struct _EcCalibrator EcCalibrator;
@@ -1077,10 +1097,10 @@ const char *linphone_core_create_uuid(LinphoneCore *lc);
 void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact);
 void linphone_call_create_op(LinphoneCall *call);
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer);
-void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body);
+void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, SalBodyHandler *body);
 LinphoneContent * linphone_content_new(void);
 LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
-SalBody *sal_body_from_content(SalBody *body, const LinphoneContent *content);
+SalBodyHandler *sal_body_handler_from_content(const LinphoneContent *content);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
@@ -1092,7 +1112,7 @@ LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp 
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
-LinphoneContent *linphone_content_from_sal_body(const SalBody *ref);
+LinphoneContent *linphone_content_from_sal_body_handler(SalBodyHandler *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
 void linphone_core_register_offer_answer_providers(LinphoneCore *lc);
 
@@ -1100,7 +1120,11 @@ void linphone_core_register_offer_answer_providers(LinphoneCore *lc);
 struct _LinphoneContent {
 	belle_sip_object_t base;
 	void *user_data;
-	struct _LinphoneContentPrivate lcp;
+	SalBodyHandler *body_handler;
+	char *name; /**< used by RCS File transfer messages to store the original filename of the file to be downloaded from server */
+	char *key; /**< used by RCS File transfer messages to store the key to encrypt file if needed */
+	size_t keyLength; /**< Length of key in bytes */
+	void *cryptoContext; /**< crypto context used to encrypt file for RCS file transfer */
 	bool_t owned_fields;
 };
 
@@ -1247,6 +1271,7 @@ void linphone_xmlparsing_context_destroy(xmlparsing_context_t *ctx);
 void linphone_xmlparsing_genericxml_error(void *ctx, const char *fmt, ...);
 int linphone_create_xml_xpath_context(xmlparsing_context_t *xml_ctx);
 char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
+const char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name);
 void linphone_free_xml_text_content(const char *text);
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
 
@@ -1300,6 +1325,7 @@ BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneProxyConfig),
 BELLE_SIP_TYPE_ID(LinphoneFriend),
+BELLE_SIP_TYPE_ID(LinphoneFriendList),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
@@ -1409,8 +1435,6 @@ bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 BELLE_SIP_DECLARE_VPTR(LinphoneTunnelConfig);
 
 int linphone_core_get_default_proxy_config_index(LinphoneCore *lc);
-
-void linphone_core_import_friend(LinphoneCore *lc, LinphoneFriend *lf);
 	
 #ifdef __cplusplus
 }

@@ -89,6 +89,33 @@ char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *
 	return (char *)text;
 }
 
+const char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name) {
+	xmlXPathObjectPtr xpath_obj;
+	xmlChar *text = NULL;
+
+	xpath_obj = xmlXPathEvalExpression((const xmlChar *)xpath_expression, xml_ctx->xpath_ctx);
+	if (xpath_obj != NULL) {
+		if (xpath_obj->nodesetval != NULL) {
+			xmlNodeSetPtr nodes = xpath_obj->nodesetval;
+			if ((nodes != NULL) && (nodes->nodeNr >= 1)) {
+				xmlNodePtr node = nodes->nodeTab[0];
+				xmlAttr *attr = node->properties;
+				while (attr) {
+					if (strcmp((char *)attr->name, attribute_name) == 0) {
+						text = xmlStrcat(text, attr->children->content);
+						attr = NULL;
+					} else {
+						attr = attr->next;
+					}
+				}
+			}
+		}
+		xmlXPathFreeObject(xpath_obj);
+	}
+
+	return (const char *)text;
+}
+
 void linphone_free_xml_text_content(const char *text) {
 	xmlFree((xmlChar *)text);
 }

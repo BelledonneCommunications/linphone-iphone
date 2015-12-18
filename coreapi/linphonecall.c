@@ -526,7 +526,9 @@ static void setup_rtcp_fb(LinphoneCall *call, SalMediaDescription *md) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		md->streams[i].rtcp_fb.generic_nack_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_generic_nack_enabled", 0);
 		md->streams[i].rtcp_fb.tmmbr_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_tmmbr_enabled", 0);
-		for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
+        md->streams[i].implicit_rtcp_fb = call->params->implicit_rtcp_fb;
+        
+        for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
 			pt = (PayloadType *)pt_it->data;
             
             if (call->params->avpf_enabled == FALSE && call->params->implicit_rtcp_fb == FALSE)  {
@@ -825,7 +827,6 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	setup_encryption_keys(call,md);
 	setup_dtls_keys(call,md);
     
-    if (params->implicit_rtcp_fb) md->streams[call->main_video_stream_index].implicit_rtcp_fb = TRUE;
 	setup_rtcp_fb(call, md);
 	setup_rtcp_xr(call, md);
 
@@ -1769,7 +1770,7 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		break;
 	}
 
-	call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call) && sal_media_description_has_avpf(md);
+    call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call) && sal_media_description_has_avpf(md);
 	if (call->current_params->avpf_enabled == TRUE) {
 		call->current_params->avpf_rr_interval = linphone_call_get_avpf_rr_interval(call);
 	} else {

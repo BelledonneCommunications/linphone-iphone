@@ -42,7 +42,7 @@ static void linphone_vcard_import_export_friends_test(void) {
 	
 	linphone_core_export_friends_as_vcard4_file(manager->lc, export_filepath);
 	
-	manager->lc->friends = ms_list_free_with_data(manager->lc->friends, (void (*)(void *))linphone_friend_unref);
+	linphone_core_set_friend_list(manager->lc, NULL);
 	friends = linphone_core_get_friend_list(manager->lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
 	
@@ -105,13 +105,13 @@ static void friends_migration(void) {
 	
 	unlink(friends_db);
 	linphone_core_set_friends_database_path(manager->lc, friends_db);
+	friends = linphone_core_get_friend_list(manager->lc);
+	BC_ASSERT_EQUAL(ms_list_size(friends), 3, int, "%d");
 	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 3, int, "%d");
 	if (ms_list_size(friends_from_db) < 3) {
 		goto end;
 	}
-	friends = linphone_core_get_friend_list(manager->lc);
-	BC_ASSERT_EQUAL(ms_list_size(friends), 3, int, "%d");
 	
 end:
 	unlink(friends_db);

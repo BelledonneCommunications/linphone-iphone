@@ -118,6 +118,7 @@ bool_t linphone_gtk_is_friend(LinphoneCore *lc, const char *contact) {
 		char *uri = linphone_address_as_string_uri_only(addr);
 		LinphoneFriend *lf = linphone_core_get_friend_by_address(lc, uri);
 		linphone_address_destroy(addr);
+		if (uri) ms_free(uri);
 		if (lf) return TRUE;
 	}
 	return FALSE;

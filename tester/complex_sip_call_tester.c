@@ -48,7 +48,7 @@ void check_rtcp(LinphoneCall *call) {
 	linphone_call_unref(call);
 }
 
-static FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress* dest_addres) {
+FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress* dest_addres) {
 #if HAVE_SIPP
 	char *dest;
 	char *command;

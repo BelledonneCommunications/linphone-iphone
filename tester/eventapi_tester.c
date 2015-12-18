@@ -39,7 +39,10 @@ const char *liblinphone_tester_get_notify_content(void){
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content){
 	LinphoneCoreManager *mgr;
 	BC_ASSERT_PTR_NOT_NULL_FATAL(content);
-	BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
+	if (!linphone_content_is_multipart(content)) {
+		/*hack to disable content checking for list notify */
+		BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
+	}
 	mgr=get_manager(lc);
 	mgr->stat.number_of_NotifyReceived++;
 }

@@ -998,6 +998,16 @@ public interface LinphoneCore {
 	 * @throws LinphoneCoreException
 	 */
 	void addFriend(LinphoneFriend lf) throws LinphoneCoreException;
+	
+	/**
+	 * Sets the friend list for the linphone core.
+	 */
+	void setFriendList(LinphoneFriendList friendList) throws LinphoneCoreException;
+	
+	/**
+	 * Creates a friend list.
+	 */
+	LinphoneFriendList createLinphoneFriendList() throws LinphoneCoreException;
 
 	/**
 	 * Get list of LinphoneFriend

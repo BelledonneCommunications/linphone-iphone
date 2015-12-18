@@ -69,10 +69,10 @@ LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc){
  * @param call the call
  * @param info the info message
 **/
-int linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info){
-	SalBody body;
-	sal_op_set_sent_custom_header(call->op,info->headers);
-	return sal_send_info(call->op,NULL, NULL, sal_body_from_content(&body,info->content));
+int linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info) {
+	SalBodyHandler *body_handler = sal_body_handler_from_content(info->content);
+	sal_op_set_sent_custom_header(call->op, info->headers);
+	return sal_send_info(call->op,NULL, NULL, body_handler);
 }
 
 /**
@@ -112,12 +112,12 @@ const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMess
 	return (im->content && linphone_content_get_type(im->content)) ? im->content : NULL;
 }
 
-void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, const SalBody *body){
+void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, SalBodyHandler *body_handler){
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
 	if (call){
 		LinphoneInfoMessage *info=ms_new0(LinphoneInfoMessage,1);
 		info->headers=sal_custom_header_clone(sal_op_get_recv_custom_header(op));
-		if (body) info->content=linphone_content_from_sal_body(body);
+		if (body_handler) info->content=linphone_content_from_sal_body_handler(body_handler);
 		linphone_core_notify_info_received(lc,call,info);
 		linphone_info_message_destroy(info);
 	}
