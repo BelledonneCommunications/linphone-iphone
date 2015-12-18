@@ -125,7 +125,7 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 	uint16_t trr_int = 0;
 
 	general_trr_int = is_rtcp_fb_trr_int_the_same_for_all_payloads(stream, &trr_int);
-	if (general_trr_int == TRUE) {
+    if (general_trr_int == TRUE && trr_int != 0) {
 		add_rtcp_fb_trr_int_attribute(media_desc, -1, trr_int);
 	}
 	if (stream->rtcp_fb.generic_nack_enabled == TRUE) {
@@ -143,7 +143,7 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 		avpf_params = payload_type_get_avpf_params(pt);
 
 		/* Add trr-int if not set generally. */
-		if (general_trr_int != TRUE) {
+		if (general_trr_int != TRUE && trr_int != 0) {
 			add_rtcp_fb_trr_int_attribute(media_desc, payload_type_get_number(pt), avpf_params.trr_interval);
 		}
 

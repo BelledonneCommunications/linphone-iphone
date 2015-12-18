@@ -61,6 +61,7 @@ SalMediaDescription *sal_media_description_new(){
 		md->streams[i].dir=SalStreamInactive;
 		md->streams[i].rtp_port = 0;
 		md->streams[i].rtcp_port = 0;
+        md->streams[i].implicit_rtcp_fb = TRUE;
 	}
 	return md;
 }
