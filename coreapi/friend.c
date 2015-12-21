@@ -835,6 +835,9 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard) {
 	sipAddresses = linphone_vcard_get_sip_addresses(vcard);
 	
 	fr = linphone_friend_new();
+	fr->pol = LinphoneSPDeny;
+	fr->subscribe = FALSE;
+	
 	linphone_friend_set_vcard(fr, vcard);
 	
 	if (sipAddresses) {
