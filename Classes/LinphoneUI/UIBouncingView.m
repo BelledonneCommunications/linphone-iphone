@@ -45,10 +45,10 @@ INIT_WITH_COMMON {
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
 	// Force the animations
-	if (!self.isHidden) {
-		[self startAnimating:NO];
-	} else {
+	if (self.isHidden) {
 		[self stopAnimating:NO];
+	} else {
+		[self startAnimating:NO];
 	}
 }
 

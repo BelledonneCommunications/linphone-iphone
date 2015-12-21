@@ -161,7 +161,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self update];
 		linphone_chat_room_mark_as_read(chatRoom);
 		[self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
-		//		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
+		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
+			getCachedController:NSStringFromClass(TabBarView.class)];
+		[tab update:YES];
 	} else {
 		_chatView.hidden = YES;
 	}
@@ -170,7 +172,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
 	if (chatRoom != nil) {
 		linphone_chat_room_mark_as_read(chatRoom);
-		//		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
+		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
+			getCachedController:NSStringFromClass(TabBarView.class)];
+		[tab update:YES];
 	}
 }
 

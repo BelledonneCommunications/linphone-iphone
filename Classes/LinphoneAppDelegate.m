@@ -290,7 +290,7 @@
 						LOGE(@"PushNotification: does not have call-id yet, fix it !");
 					}
 
-					if ([loc_key isEqualToString:@"IM_MSG"]) {
+					if ([loc_key isEqualToString:@"IM_MSG"] || [loc_key isEqualToString:@"IM_FULLMSG"]) {
 
 						[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 
@@ -431,6 +431,9 @@
 				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
 				if (room) {
 					linphone_chat_room_mark_as_read(room);
+					TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
+						getCachedController:NSStringFromClass(TabBarView.class)];
+					[tab update:YES];
 					[PhoneMainView.instance updateApplicationBadgeNumber];
 				}
 			}

@@ -34,6 +34,8 @@
 @property(nonatomic, strong) IBOutlet UILabel *historyNotificationLabel;
 @property(weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
 
+- (void)update:(BOOL)appear;
+
 - (IBAction)onHistoryClick:(id)event;
 - (IBAction)onContactsClick:(id)event;
 - (IBAction)onDialerClick:(id)event;

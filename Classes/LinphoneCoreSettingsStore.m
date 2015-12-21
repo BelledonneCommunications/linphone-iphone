@@ -375,6 +375,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			   forKey:@"start_at_boot_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference" withDefault:NO]
 			   forKey:@"autoanswer_notif_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES] forKey:@"show_msg_in_notif"];
 		[self setBool:[lm lpConfigBoolForKey:@"enable_first_login_view_preference" withDefault:NO]
 			   forKey:@"enable_first_login_view_preference"];
 		LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
@@ -812,6 +813,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		[lm lpConfigSetInt:[self integerForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
 		[lm lpConfigSetInt:[self integerForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
+		[lm lpConfigSetInt:[self integerForKey:@"show_msg_in_notif"] forKey:@"show_msg_in_notif"];
 
 		BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
 		[lm lpConfigSetInt:firstloginview forKey:@"enable_first_login_view_preference"];

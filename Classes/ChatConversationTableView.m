@@ -139,6 +139,9 @@
 	}
 
 	linphone_chat_room_mark_as_read(chatRoom);
+	TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
+		getCachedController:NSStringFromClass(TabBarView.class)];
+	[tab update:YES];
 
 	// Scroll to unread
 	if (index >= 0) {

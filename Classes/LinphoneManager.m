@@ -925,10 +925,13 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 	NSString *from = [FastAddressBook displayNameForAddress:remoteAddress];
 	char *c_address = linphone_address_as_string_uri_only(remoteAddress);
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
+	const char *chat = linphone_chat_message_get_text(msg);
+	if (chat == NULL)
+		chat = "";
+
 	ms_free(c_address);
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-
 		// Create a new notification
 		UILocalNotification *notif = [[UILocalNotification alloc] init];
 		if (notif) {
@@ -936,7 +939,11 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 				notif.category = @"incoming_msg";
 			}
-			notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
+			if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
+				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, @(chat)];
+			} else {
+				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
+			}
 			notif.alertAction = NSLocalizedString(@"Show", nil);
 			notif.soundName = @"msg.caf";
 			notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };

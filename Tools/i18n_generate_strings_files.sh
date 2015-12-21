@@ -54,12 +54,14 @@ function generate_localizable_from_sources {
 	iconv -f utf-16 -t utf-8 $localizable_en > $localizable_en.tmp
 	IC_MSG_EN=$(sed -nE 's/"IC_MSG" = "(.*)";/\1/p' $localizable_en.tmp)
 	IM_MSG_EN=$(sed -nE 's/"IM_MSG" = "(.*)";/\1/p' $localizable_en.tmp)
+	IM_FULLMSG_EN=$(sed -nE 's/"IM_FULLMSG_EN" = "(.*)";/\1/p' $localizable_en.tmp)
 	rm -f $localizable_en $localizable_en.tmp
 
 	find $root_directory/Classes -name '*.m' | xargs genstrings -u -a -o $(dirname $localizable_en)
 	iconv -f utf-16LE -t utf-8 $localizable_en > $localizable_en.tmp
 	sed -i.bak "s/= \"IC_MSG\";/= \"$IC_MSG_EN\";/" $localizable_en.tmp
 	sed -i.bak "s/= \"IM_MSG\";/= \"$IM_MSG_EN\";/" $localizable_en.tmp
+	sed -i.bak "s/= \"IM_FULLMSG\";/= \"$IM_FULLMSG_EN\";/" $localizable_en.tmp
 	iconv -f utf-8 -t utf-16LE $localizable_en.tmp > $localizable_en
 	rm $localizable_en.tmp.bak $localizable_en.tmp
 
