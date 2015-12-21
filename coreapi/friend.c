@@ -858,13 +858,14 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 		LinphoneVCard *vcard = (LinphoneVCard *)vcards->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
-			linphone_friend_list_import_friend(lc->friendlist, lf);
-			lf->lc = lc;
+			if (LinphoneFriendListOK == linphone_friend_list_import_friend(lc->friendlist, lf)) {
+				lf->lc = lc;
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
-			linphone_core_store_friend_in_db(lc, lf);
+				linphone_core_store_friend_in_db(lc, lf);
 #endif
+				count++;
+			}
 			linphone_friend_unref(lf);
-			count++;
 		}
 		vcards = ms_list_next(vcards);
 	}

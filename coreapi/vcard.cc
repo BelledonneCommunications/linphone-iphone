@@ -41,8 +41,8 @@ extern "C" void linphone_vcard_free(LinphoneVCard *vCard) {
 extern "C" MSList* linphone_vcard_list_from_vcard4_file(const char *filename) {
 	MSList *result = NULL;
 	if (filename && ortp_file_exist(filename) == 0) {
-		belcard::BelCardParser *parser = new belcard::BelCardParser();
-		shared_ptr<belcard::BelCardList> belCards = parser->parseFile(filename);
+		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
+		shared_ptr<belcard::BelCardList> belCards = parser.parseFile(filename);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belcard = (*it);
@@ -51,7 +51,6 @@ extern "C" MSList* linphone_vcard_list_from_vcard4_file(const char *filename) {
 				result = ms_list_append(result, vCard);
 			}
 		}
-		delete parser;
 	}
 	return result;
 }
@@ -59,8 +58,8 @@ extern "C" MSList* linphone_vcard_list_from_vcard4_file(const char *filename) {
 extern "C" MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
 	MSList *result = NULL;
 	if (buffer) {
-		belcard::BelCardParser *parser = new belcard::BelCardParser();
-		shared_ptr<belcard::BelCardList> belCards = parser->parse(buffer);
+		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
+		shared_ptr<belcard::BelCardList> belCards = parser.parse(buffer);
 		if (belCards) {
 			for (auto it = belCards->getCards().begin(); it != belCards->getCards().end(); ++it) {
 				shared_ptr<belcard::BelCard> belCard = (*it);
@@ -69,7 +68,6 @@ extern "C" MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
 				result = ms_list_append(result, vCard);
 			}
 		}
-		delete parser;
 	}
 	return result;
 }
@@ -77,13 +75,12 @@ extern "C" MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
 extern "C" LinphoneVCard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
 	LinphoneVCard *vCard = NULL;
 	if (buffer) {
-		belcard::BelCardParser *parser = new belcard::BelCardParser();
-		shared_ptr<belcard::BelCard> belCard = parser->parseOne(buffer);
+		belcard::BelCardParser parser = belcard::BelCardParser::getInstance();
+		shared_ptr<belcard::BelCard> belCard = parser.parseOne(buffer);
 		if (belCard) {
 			vCard = linphone_vcard_new();
 			vCard->belCard = belCard;
 		}
-		delete parser;
 	}
 	return vCard;
 }
