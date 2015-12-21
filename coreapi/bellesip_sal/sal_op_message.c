@@ -160,11 +160,11 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 
 	}
 
-	rcs_filetransfer=is_rcs_filetransfer(content_type);
+	
 	if (content_type && ((plain_text=is_plain_text(content_type))
 						|| (external_body=is_external_body(content_type))
 						|| (decryptedMessage!=NULL) 
-						|| rcs_filetransfer)) {
+						|| (rcs_filetransfer = is_rcs_filetransfer(content_type)) )) {
 		SalMessage salmsg;
 		char message_id[256]={0};
 	
@@ -241,6 +241,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	size_t content_length = msg?strlen(msg):0;
 	time_t curtime=time(NULL);
 	uint8_t *multipartEncryptedMessage = NULL;
+	const char *body;
 	int retval;
 	
 	if (op->dialog){
@@ -321,7 +322,11 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_type_parse(content_type_raw)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_content_length_create(content_length)));
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(belle_sip_header_date_create_from_time(&curtime)));
-	belle_sip_message_set_body(BELLE_SIP_MESSAGE(req),(multipartEncryptedMessage==NULL)?msg:(const char *)multipartEncryptedMessage,content_length);
+	body = (multipartEncryptedMessage==NULL) ? msg : (char*) multipartEncryptedMessage;
+	if (body){
+		/*don't call set_body() with null argument because it resets content type and content length*/
+		belle_sip_message_set_body(BELLE_SIP_MESSAGE(req), body, content_length);
+	}
 	retval = sal_op_send_request(op,req);
 	free(multipartEncryptedMessage);
 
