@@ -316,7 +316,7 @@
                                                 <outlet property="addressField" destination="4" id="237"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" tag="27" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="184" userLabel="addCallButton" customClass="UICallButton">
+                                        <button hidden="YES" opaque="NO" tag="27" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="184" userLabel="addCallButton" customClass="UICallButton">
                                             <rect key="frame" x="102" y="0.0" width="208" height="80"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Add call"/>
@@ -642,7 +642,7 @@
                                                 <outlet property="addressField" destination="Omx-NU-xKz" id="SO9-Af-1mi"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" tag="27" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4rB-ub-Jg9" userLabel="addCallButton" customClass="UICallButton">
+                                        <button hidden="YES" opaque="NO" tag="27" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4rB-ub-Jg9" userLabel="addCallButton" customClass="UICallButton">
                                             <rect key="frame" x="101" y="0.0" width="207" height="80"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                             <accessibility key="accessibilityConfiguration" label="Add call"/>

@@ -184,14 +184,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 }
 
-- (void)viewDidUnload {
-	[super viewDidUnload];
-}
-
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 										 duration:(NSTimeInterval)duration {
 	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
-	CGRect frame = [videoPreview frame];
 	switch (toInterfaceOrientation) {
 		case UIInterfaceOrientationPortrait:
 			[videoPreview setTransform:CGAffineTransformMakeRotation(0)];
@@ -208,7 +203,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		default:
 			break;
 	}
-	[videoPreview setFrame:frame];
+	CGRect frame = self.view.frame;
+	frame.origin = CGPointMake(0, 0);
+	videoPreview.frame = frame;
 }
 
 #pragma mark - Event Functions
