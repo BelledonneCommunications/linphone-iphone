@@ -835,6 +835,7 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard) {
 	sipAddresses = linphone_vcard_get_sip_addresses(vcard);
 	
 	fr = linphone_friend_new();
+	// Currently presence takes too much time when dealing with hundreds of friends, so I disabled it for now
 	fr->pol = LinphoneSPDeny;
 	fr->subscribe = FALSE;
 	
