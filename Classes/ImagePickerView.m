@@ -36,7 +36,7 @@
 	self = [super init];
 	if (self != nil) {
 		pickerController = [[UIImagePickerController alloc] init];
-		if (LinphoneManager.runningOnIpad) {
+		if (IPAD) {
 			popoverController = [[UIPopoverController alloc] initWithContentViewController:pickerController];
 		}
 	}
@@ -172,7 +172,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 					   inView:(UIView *)ipadView {
 	void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
 	  ImagePickerView *view = VIEW(ImagePickerView);
-	  if (!(LinphoneManager.runningOnIpad && ipadView && ipadPopoverView)) {
+	  if (!(IPAD && ipadView && ipadPopoverView)) {
 		  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	  }
 	  view.sourceType = type;
@@ -186,7 +186,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	  view.allowsEditing = NO;
 	  view.imagePickerDelegate = delegate;
 
-	  if (LinphoneManager.runningOnIpad && ipadView && ipadPopoverView) {
+	  if (IPAD && ipadView && ipadPopoverView) {
 		  UIView *iterview = ipadPopoverView;
 		  CGRect ipadPopoverPosition = iterview.frame;
 		  do {

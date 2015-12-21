@@ -634,7 +634,7 @@
                                                 <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="Jdk-1s-UnN"/>
                                             </connections>
                                         </button>
-                                        <view autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="d9Y-2a-CDI" userLabel="chatNotificationView" customClass="UIBouncingView">
+                                        <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="d9Y-2a-CDI" userLabel="chatNotificationView" customClass="UIBouncingView">
                                             <rect key="frame" x="353" y="8" width="44" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <subviews>
@@ -1227,7 +1227,7 @@
                                                 <action selector="onChatClick:" destination="-1" eventType="touchUpInside" id="PMo-F3-WMK"/>
                                             </connections>
                                         </button>
-                                        <view autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="1pd-et-5dy" userLabel="chatNotificationView" customClass="UIBouncingView">
+                                        <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="1pd-et-5dy" userLabel="chatNotificationView" customClass="UIBouncingView">
                                             <rect key="frame" x="357" y="8" width="25" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <subviews>

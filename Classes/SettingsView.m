@@ -583,7 +583,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"console_button"];
 	}
 
-	if (!LinphoneManager.runningOnIpad) {
+	if (!IPAD) {
 		[hiddenKeys addObject:@"preview_preference"];
 	}
 	if ([lm lpConfigBoolForKey:@"hide_run_assistant_preference"]) {

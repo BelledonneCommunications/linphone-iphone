@@ -118,7 +118,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
 	[self callUpdate:call state:state];
 
-	if (LinphoneManager.runningOnIpad) {
+	if (IPAD) {
 		BOOL videoEnabled = linphone_core_video_display_enabled(lc);
 		BOOL previewPref = [mgr lpConfigBoolForKey:@"preview_preference"];
 
@@ -176,7 +176,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onOneLongClick:)];
 	[oneButton addGestureRecognizer:oneLongGesture];
 
-	if (LinphoneManager.runningOnIpad) {
+	if (IPAD) {
 		if ([LinphoneManager instance].frontCamId != nil) {
 			// only show camera switch button if we have more than 1 camera
 			[videoCameraSwitch setHidden:FALSE];
@@ -217,7 +217,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)coreUpdateEvent:(NSNotification *)notif {
-	if (LinphoneManager.runningOnIpad) {
+	if (IPAD) {
 		LinphoneCore *lc = [LinphoneManager getLc];
 		if (linphone_core_video_display_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
 			linphone_core_set_native_preview_window_id(lc, (__bridge void *)(videoPreview));

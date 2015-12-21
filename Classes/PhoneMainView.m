@@ -65,7 +65,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 // not sure what this code was doing... but since iphone does support rotation as well now...
 #if 0
-	if (LinphoneManager.runningOnIpad)
+	if (IPAD)
 		return currentViewController;
 
 	PhoneMainView *newMainView = description.landscapeMode ? self.rotatingViewController : self.portraitViewController;

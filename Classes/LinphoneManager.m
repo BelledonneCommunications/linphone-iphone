@@ -1712,7 +1712,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_core_start_dtmf_stream(theLinphoneCore);
 
 	/*start the video preview in case we are in the main view*/
-	if (LinphoneManager.runningOnIpad && linphone_core_video_display_enabled(theLinphoneCore) &&
+	if (IPAD && linphone_core_video_display_enabled(theLinphoneCore) &&
 		[self lpConfigBoolForKey:@"preview_preference"]) {
 		linphone_core_enable_video_preview(theLinphoneCore, TRUE);
 	}
@@ -1770,7 +1770,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)copyDefaultSettings {
 	NSString *src = [LinphoneManager bundleFile:@"linphonerc"];
 	NSString *srcIpad = [LinphoneManager bundleFile:@"linphonerc~ipad"];
-	if (LinphoneManager.runningOnIpad && [[NSFileManager defaultManager] fileExistsAtPath:srcIpad]) {
+	if (IPAD && [[NSFileManager defaultManager] fileExistsAtPath:srcIpad]) {
 		src = srcIpad;
 	}
 	NSString *dst = [LinphoneManager documentFile:@"linphonerc"];
@@ -1780,7 +1780,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)overrideDefaultSettings {
 	NSString *factory = [LinphoneManager bundleFile:@"linphonerc-factory"];
 	NSString *factoryIpad = [LinphoneManager bundleFile:@"linphonerc-factory~ipad"];
-	if (LinphoneManager.runningOnIpad && [[NSFileManager defaultManager] fileExistsAtPath:factoryIpad]) {
+	if (IPAD && [[NSFileManager defaultManager] fileExistsAtPath:factoryIpad]) {
 		factory = factoryIpad;
 	}
 	NSString *confiFileName = [LinphoneManager documentFile:@"linphonerc"];
@@ -1797,7 +1797,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		NSString *route = (__bridge NSString *)lNewRoute;
 		notallow = [route isEqualToString:@"Headset"] || [route isEqualToString:@"Headphone"] ||
 				   [route isEqualToString:@"HeadphonesAndMicrophone"] || [route isEqualToString:@"HeadsetInOut"] ||
-				   [route isEqualToString:@"Lineout"] || LinphoneManager.runningOnIpad;
+				   [route isEqualToString:@"Lineout"] || IPAD;
 		CFRelease(lNewRoute);
 	}
 	return !notallow;
@@ -1821,7 +1821,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 		LOGI(@"Current audio route is [%s]", [route UTF8String]);
 
 		speakerEnabled = [route isEqualToString:@"Speaker"] || [route isEqualToString:@"SpeakerAndMicrophone"];
-		if (!LinphoneManager.runningOnIpad && [route isEqualToString:@"HeadsetBT"] && !speakerEnabled) {
+		if (!IPAD && [route isEqualToString:@"HeadsetBT"] && !speakerEnabled) {
 			lm.bluetoothEnabled = TRUE;
 			lm.bluetoothAvailable = TRUE;
 			NSDictionary *dict = [NSDictionary

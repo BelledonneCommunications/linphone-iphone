@@ -57,7 +57,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidLoad];
 
 	// if we use fragments, remove back button
-	if (LinphoneManager.runningOnIpad) {
+	if (IPAD) {
 		_backButton.hidden = YES;
 		_backButton.alpha = 0;
 	}

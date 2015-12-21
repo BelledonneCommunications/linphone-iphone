@@ -116,9 +116,9 @@
 		[UIView setAnimationDuration:0.3];
 	}
 	if (editing) {
-		[_unreadCountButton setAlpha:0.0f];
+		[_unreadCountView setAlpha:0.0f];
 	} else {
-		[_unreadCountButton setAlpha:1.0f];
+		[_unreadCountView setAlpha:1.0f];
 	}
 	if (animated) {
 		[UIView commitAnimations];

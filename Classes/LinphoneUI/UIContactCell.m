@@ -38,7 +38,7 @@
 		[self addSubview:sub];
 
 		// Sections are wider on iPad and overlap linphone image - let's move it a bit
-		if (LinphoneManager.runningOnIpad) {
+		if (IPAD) {
 			CGRect frame = _linphoneImage.frame;
 			frame.origin.x -= frame.size.width / 2;
 			_linphoneImage.frame = frame;

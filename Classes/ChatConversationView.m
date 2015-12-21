@@ -72,7 +72,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidLoad];
 
 	// if we use fragments, remove back button
-	if (LinphoneManager.runningOnIpad) {
+	if (IPAD) {
 		_backButton.hidden = YES;
 		_backButton.alpha = 0;
 	}
@@ -557,7 +557,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
 	// Dismiss popover on iPad
-	if (LinphoneManager.runningOnIpad) {
+	if (IPAD) {
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
 

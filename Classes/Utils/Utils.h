@@ -19,6 +19,15 @@
 
 #import "LinphoneManager.h"
 
+#define LOGV(level, ...) [LinphoneLogger log:level file:__FILE__ line:__LINE__ format:__VA_ARGS__]
+#define LOGD(...) LOGV(ORTP_DEBUG, __VA_ARGS__)
+#define LOGI(...) LOGV(ORTP_MESSAGE, __VA_ARGS__)
+#define LOGW(...) LOGV(ORTP_WARNING, __VA_ARGS__)
+#define LOGE(...) LOGV(ORTP_ERROR, __VA_ARGS__)
+#define LOGF(...) LOGV(ORTP_FATAL, __VA_ARGS__)
+
+#define IPAD (LinphoneManager.runningOnIpad)
+
 @interface LinphoneLogger : NSObject {
 
 }
@@ -57,13 +66,6 @@ typedef enum {
 - (NSString*)toHumanReadableSize;
 
 @end
-
-#define LOGV(level, ...) [LinphoneLogger log:level file:__FILE__ line:__LINE__ format:__VA_ARGS__]
-#define LOGD(...) LOGV(ORTP_DEBUG, __VA_ARGS__)
-#define LOGI(...) LOGV(ORTP_MESSAGE, __VA_ARGS__)
-#define LOGW(...) LOGV(ORTP_WARNING, __VA_ARGS__)
-#define LOGE(...) LOGV(ORTP_ERROR, __VA_ARGS__)
-#define LOGF(...) LOGV(ORTP_FATAL, __VA_ARGS__)
 
 @interface NSString(md5)
 

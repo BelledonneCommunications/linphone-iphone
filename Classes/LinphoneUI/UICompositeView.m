@@ -64,7 +64,7 @@
 	self.fullscreen = fullscreen;
 	self.landscapeMode = YES;
 	self.portraitMode = YES;
-	self.otherFragment = LinphoneManager.runningOnIpad ? NSStringFromClass(otherFragment) : nil;
+	self.otherFragment = IPAD ? NSStringFromClass(otherFragment) : nil;
 	self.isLeftFragment = isLeftFragment || (self.otherFragment == nil);
 	self.darkBackground = true;
 

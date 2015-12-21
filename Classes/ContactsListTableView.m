@@ -144,12 +144,15 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		}
 	}
 	[super loadData];
-	// reset details view since in fragment mode, details are relative to current data
-	// select first contact if any
-	ABRecordRef contact =
-		([self totalNumberOfItems] > 0) ? [self contactForIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] : nil;
-	ContactDetailsView *view = VIEW(ContactDetailsView);
-	[view setContact:contact];
+	if (IPAD) {
+		// reset details view since in fragment mode, details are relative to current data
+		// select first contact if any
+		ABRecordRef contact = ([self totalNumberOfItems] > 0)
+								  ? [self contactForIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]]
+								  : nil;
+		ContactDetailsView *view = VIEW(ContactDetailsView);
+		[view setContact:contact];
+	}
 }
 
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {

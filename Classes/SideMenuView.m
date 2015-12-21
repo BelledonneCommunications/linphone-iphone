@@ -76,7 +76,7 @@
 
 - (IBAction)onAvatarClick:(id)sender {
 	// hide ourself because we are on top of image picker
-	if (!LinphoneManager.runningOnIpad) {
+	if (!IPAD) {
 		[PhoneMainView.instance.mainViewController hideSideMenu:YES];
 	}
 	[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
@@ -95,7 +95,7 @@
 
 - (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
 	// Dismiss popover on iPad
-	if (LinphoneManager.runningOnIpad) {
+	if (IPAD) {
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	} else {
 		[PhoneMainView.instance.mainViewController hideSideMenu:NO];
