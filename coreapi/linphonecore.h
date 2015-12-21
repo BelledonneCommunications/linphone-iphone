@@ -4035,6 +4035,15 @@ LINPHONE_PUBLIC const char * linphone_core_get_file_transfer_server(LinphoneCore
 **/
 LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneCore *core);
 
+/**
+ * Returns whether a specific file format is supported.
+ * @see linphone_core_get_supported_file_formats
+ * @param lc the core
+ * @param the format extension (wav, mkv).
+ * @ingroup media_paramaters
+**/
+LINPHONE_PUBLIC bool_t linphone_core_file_format_supported(LinphoneCore *lc, const char *fmt);
+
 LINPHONE_PUBLIC void linphone_core_add_supported_tag(LinphoneCore *core, const char *tag);
 
 LINPHONE_PUBLIC void linphone_core_remove_supported_tag(LinphoneCore *core, const char *tag);

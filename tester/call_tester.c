@@ -2820,14 +2820,6 @@ end:
 	ms_free(hellopath);
 }
 
-static bool_t is_format_supported(LinphoneCore *lc, const char *fmt){
-	const char **formats=linphone_core_get_supported_file_formats(lc);
-	for(;*formats!=NULL;++formats){
-		if (strcasecmp(*formats,fmt)==0) return TRUE;
-	}
-	return FALSE;
-}
-
 static void call_with_mkv_file_player(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -2844,7 +2836,7 @@ static void call_with_mkv_file_player(void) {
 	hellowav = bc_tester_res("sounds/hello8000_mkv_ref.wav");
 	hellomkv = bc_tester_res("sounds/hello8000.mkv");
 
-	if (!is_format_supported(marie->lc,"mkv")){
+	if (!linphone_core_file_format_supported(marie->lc,"mkv")){
 		ms_warning("Test skipped, no mkv support.");
 		goto end;
 	}
