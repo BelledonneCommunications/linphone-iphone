@@ -909,7 +909,7 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
 	
-	if (TRUE/*sipp_out*/) {
+	if (sipp_out) {
 		/*wait for marie status*/
 		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
 		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
