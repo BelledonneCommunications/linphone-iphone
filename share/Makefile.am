@@ -18,7 +18,7 @@ LINPHONE_RINGS=		\
 
 sounddir=$(datadir)/sounds/linphone
 
-sound_DATA=$(LINPHONE_SOUNDS) $(LINPHONE_ONHOLD_MUSIC)
+sound_DATA=$(LINPHONE_SOUNDS)
 
 ringdir=$(datadir)/sounds/linphone/rings
 
