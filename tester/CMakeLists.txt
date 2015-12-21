@@ -46,6 +46,7 @@ set(SOURCE_FILES
 	tunnel_tester.c
 	upnp_tester.c
 	video_tester.c
+	vcard_tester.c
 )
 
 apply_compile_flags(SOURCE_FILES "CPP" "C")

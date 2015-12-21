@@ -49,6 +49,7 @@ set(LINPHONE_HEADER_FILES
 	sipsetup.h
 	xml2lpc.h
 	xmlrpc.h
+	vcard.h
 )
 
 set(LINPHONE_SOURCE_FILES_C
@@ -164,6 +165,13 @@ if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone")
 endif()
 if(INTL_FOUND)
 	list(APPEND LIBS ${INTL_LIBRARIES})
+endif()
+if(BELCARD_FOUND)
+	list(APPEND LIBS ${BELCARD_LIBRARIES})
+	list(APPEND LINPHONE_SOURCE_FILES_CXX vcard.cc)
+	add_definitions(-DVCARD_ENABLED)
+else()
+	list(APPEND LINPHONE_SOURCE_FILES_C vcard_stubs.c)
 endif()
 
 if(ENABLE_STATIC)
