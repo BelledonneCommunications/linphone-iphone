@@ -39,8 +39,9 @@ int unread_messages_count() {
 }
 
 void linphone_gtk_update_badge_count() {
-	ms_error("%d\n", unread_messages_count());
-	[[NSApp dockTile] setBadgeLabel:[NSString stringWithFormat:@"%d", unread_messages_count()]];
+	int count = unread_messages_count();
+	NSString* badgeStr = (count > 0) ? [NSString stringWithFormat:@"%d", count] : @"";
+	[[NSApp dockTile] setBadgeLabel:badgeStr];
 }
 
 #endif
