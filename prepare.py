@@ -535,9 +535,9 @@ def main(argv=None):
         if x not in selected_platforms:
             selected_platforms.append(x)
 
-    if os.path.isdir('WORK') and not args.clean:
+    if os.path.isdir('WORK') and not args.clean and not args.force:
         warning("Working directory WORK already exists. Please remove it (option -C or -c) before re-executing CMake "
-                "to avoid conflicts between executions.")
+                "to avoid conflicts between executions, or force execution (option -f) if you are aware of consequences.")
         if os.path.isfile('Makefile'):
             Popen("make help-prepare-options".split(" "))
         return 0
