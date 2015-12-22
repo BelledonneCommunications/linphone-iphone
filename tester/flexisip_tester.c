@@ -73,6 +73,11 @@ static void message_forking(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
+	
+	/*wait a bit that 200Ok for MESSAGE are sent to server before shuting down the cores, because otherwise Flexisip will consider the messages
+	 * as not delivered and will expedite them in the next test, after receiving the REGISTER from marie's instances*/
+	wait_for_list(lcs, NULL, 0, 2000);
+	
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
