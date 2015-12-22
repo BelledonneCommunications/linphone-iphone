@@ -94,8 +94,6 @@
 	[result appendString:@"\n"];
 	[result appendString:name];
 	[result appendString:@"\n"];
-	[result appendString:NSLocalizedString(@"Not enabled yet", nil)];
-	[result appendString:@"\n"];
 
 	[result appendString:[NSString stringWithFormat:@"Codec: %s/%iHz", payload->mime_type, payload->clock_rate]];
 	if (stream == LinphoneStreamTypeAudio) {

@@ -635,7 +635,7 @@
                                             </connections>
                                         </button>
                                         <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="d9Y-2a-CDI" userLabel="chatNotificationView" customClass="UIBouncingView">
-                                            <rect key="frame" x="330" y="8" width="21" height="22"/>
+                                            <rect key="frame" x="337" y="8" width="22" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" tag="71" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="nPO-PM-4zJ" userLabel="chatNotificationImage">
@@ -1228,7 +1228,7 @@
                                             </connections>
                                         </button>
                                         <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="1pd-et-5dy" userLabel="chatNotificationView" customClass="UIBouncingView">
-                                            <rect key="frame" x="295" y="8" width="21" height="22"/>
+                                            <rect key="frame" x="302" y="8" width="22" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" tag="71" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="7ZF-Ch-AL1" userLabel="chatNotificationImage">

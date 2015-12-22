@@ -45,8 +45,8 @@
                             <rect key="frame" x="0.0" y="0.0" width="800" height="1130"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" tag="2" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="linphone_logo.png" id="tsy-aZ-cHg" userLabel="logoImage">
-                            <rect key="frame" x="280" y="267" width="240" height="128"/>
+                        <imageView userInteractionEnabled="NO" tag="2" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dialer_background.png" id="tsy-aZ-cHg" userLabel="logoImage">
+                            <rect key="frame" x="245" y="267" width="310" height="177"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <view tag="3" contentMode="scaleAspectFill" id="30b-JN-Ibj" userLabel="preview">
@@ -357,7 +357,7 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="-68" y="222.5"/>
+            <point key="canvasLocation" x="-68" y="222"/>
         </view>
         <view contentMode="scaleToFill" id="bb3-7f-P2J" userLabel="iphone6MetricsView">
             <rect key="frame" x="0.0" y="0.0" width="1290" height="800"/>
@@ -371,7 +371,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="1240" height="770"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" tag="2" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="linphone_logo.png" id="bV0-6N-YFL" userLabel="logoImage">
+                        <imageView userInteractionEnabled="NO" tag="2" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dialer_background.png" id="bV0-6N-YFL" userLabel="logoImage">
                             <rect key="frame" x="143" y="265" width="240" height="240"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                         </imageView>
@@ -709,7 +709,7 @@
         <image name="color_L.png" width="2" height="2"/>
         <image name="contact_add_default.png" width="34" height="29"/>
         <image name="contact_add_disabled.png" width="34" height="29"/>
-        <image name="linphone_logo.png" width="26" height="22"/>
+        <image name="dialer_background.png" width="85" height="77"/>
         <image name="numpad_0_default.png" width="52" height="48"/>
         <image name="numpad_0_over.png" width="52" height="48"/>
         <image name="numpad_1_default.png" width="52" height="48"/>

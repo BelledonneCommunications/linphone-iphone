@@ -501,27 +501,18 @@
 	Entry *entry = [sectionDict objectAtIndex:[indexPath row]];
 
 	NSString *value = @"";
-	// default label is our app name
-	NSString *label = [FastAddressBook localizedLabel:[labelArray objectAtIndex:0]];
-
 	[cell hideDeleteButton:NO];
 	if (indexPath.section == ContactSections_First_Name) {
-		value =
-			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
-		label = nil;
+		value = (NSString *)CFBridgingRelease(
+			ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
 		[cell hideDeleteButton:YES];
 	} else if (indexPath.section == ContactSections_Last_Name) {
-		value =
-			(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
-		label = nil;
+		value = (NSString *)CFBridgingRelease(
+			ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
 		[cell hideDeleteButton:YES];
 	} else if ([indexPath section] == ContactSections_Number) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
 		NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-		NSString *labelRef = CFBridgingRelease(ABMultiValueCopyLabelAtIndex(lMap, index));
-		if (labelRef != NULL) {
-			label = [FastAddressBook localizedLabel:labelRef];
-		}
 		NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
 		if (valueRef != NULL) {
 			value = [FastAddressBook localizedLabel:valueRef];
@@ -530,13 +521,8 @@
 	} else if ([indexPath section] == ContactSections_Sip) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
 		NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-
-		NSString *labelRef = CFBridgingRelease(ABMultiValueCopyLabelAtIndex(lMap, index));
-		if (labelRef != NULL) {
-			label = [FastAddressBook localizedLabel:labelRef];
-		}
 		CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
-		value = (__bridge NSString *)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
+		value = (NSString *)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
 		if (value != NULL) {
 			LinphoneAddress *addr = NULL;
 			if ([[LinphoneManager instance] lpConfigBoolForKey:@"contact_display_username_only"] &&
@@ -554,10 +540,6 @@
 	} else if ([indexPath section] == ContactSections_Email) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
 		NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-		NSString *labelRef = CFBridgingRelease(ABMultiValueCopyLabelAtIndex(lMap, index));
-		if (labelRef != NULL) {
-			label = [FastAddressBook localizedLabel:labelRef];
-		}
 		NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
 		if (valueRef != NULL) {
 			value = [FastAddressBook localizedLabel:valueRef];
@@ -822,10 +804,10 @@
 	return TRUE;
 }
 - (BOOL)isValid {
-	NSString *firstName =
-		(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
-	NSString *lastName =
-		(__bridge NSString *)(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
+	NSString *firstName = (NSString *)CFBridgingRelease(
+		ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
+	NSString *lastName = (NSString *)CFBridgingRelease(
+		ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
 	return firstName.length > 0 || lastName.length > 0;
 }
 

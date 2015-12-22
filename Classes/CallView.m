@@ -380,7 +380,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[PhoneMainView.instance fullScreen:true];
 	[PhoneMainView.instance showTabBar:false];
-	[self showStatusBar:false];
 
 #ifdef TEST_VIDEO_VIEW_CHANGE
 	[NSTimer scheduledTimerWithTimeInterval:5.0

@@ -296,7 +296,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	static BOOL already_shown = FALSE;
 	if (state == LinphoneGlobalOn && !already_shown && [LinphoneManager instance].wasRemoteProvisioned) {
 		LinphoneProxyConfig *conf = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" forSection:@"app"] && conf == NULL) {
+		if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" inSection:@"app"] && conf == NULL) {
 			already_shown = TRUE;
 			AssistantView *view = VIEW(AssistantView);
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
@@ -556,7 +556,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated {
 	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-	if (push) {
+	if (push && view) {
 		[viewStack addObject:view];
 	}
 	[self _changeCurrentView:view transition:nil animated:animated];

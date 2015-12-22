@@ -1951,7 +1951,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 		}
 		if ([[LinphoneManager instance] lpConfigBoolForKey:@"override_domain_with_default_one"]) {
 			linphone_address_set_domain(
-				addr, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" forSection:@"assistant"] UTF8String]);
+				addr, [[[LinphoneManager instance] lpConfigStringForKey:@"domain" inSection:@"assistant"] UTF8String]);
 		}
 
 		if (transfer) {
@@ -2169,9 +2169,9 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 #pragma mark - LPConfig Functions
 
 - (void)lpConfigSetString:(NSString *)value forKey:(NSString *)key {
-	[self lpConfigSetString:value forKey:key forSection:LINPHONERC_APPLICATION_KEY];
+	[self lpConfigSetString:value forKey:key inSection:LINPHONERC_APPLICATION_KEY];
 }
-- (void)lpConfigSetString:(NSString *)value forKey:(NSString *)key forSection:(NSString *)section {
+- (void)lpConfigSetString:(NSString *)value forKey:(NSString *)key inSection:(NSString *)section {
 	if (!key)
 		return;
 	lp_config_set_string(configDb, [section UTF8String], [key UTF8String], value ? [value UTF8String] : NULL);
@@ -2180,12 +2180,12 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	return [self lpConfigStringForKey:key withDefault:nil];
 }
 - (NSString *)lpConfigStringForKey:(NSString *)key withDefault:(NSString *)defaultValue {
-	return [self lpConfigStringForKey:key forSection:LINPHONERC_APPLICATION_KEY withDefault:defaultValue];
+	return [self lpConfigStringForKey:key inSection:LINPHONERC_APPLICATION_KEY withDefault:defaultValue];
 }
-- (NSString *)lpConfigStringForKey:(NSString *)key forSection:(NSString *)section {
-	return [self lpConfigStringForKey:key forSection:section withDefault:nil];
+- (NSString *)lpConfigStringForKey:(NSString *)key inSection:(NSString *)section {
+	return [self lpConfigStringForKey:key inSection:section withDefault:nil];
 }
-- (NSString *)lpConfigStringForKey:(NSString *)key forSection:(NSString *)section withDefault:(NSString *)defaultValue {
+- (NSString *)lpConfigStringForKey:(NSString *)key inSection:(NSString *)section withDefault:(NSString *)defaultValue {
 	if (!key)
 		return defaultValue;
 	const char *value = lp_config_get_string(configDb, [section UTF8String], [key UTF8String], NULL);
@@ -2193,9 +2193,9 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 }
 
 - (void)lpConfigSetInt:(int)value forKey:(NSString *)key {
-	[self lpConfigSetInt:value forKey:key forSection:LINPHONERC_APPLICATION_KEY];
+	[self lpConfigSetInt:value forKey:key inSection:LINPHONERC_APPLICATION_KEY];
 }
-- (void)lpConfigSetInt:(int)value forKey:(NSString *)key forSection:(NSString *)section {
+- (void)lpConfigSetInt:(int)value forKey:(NSString *)key inSection:(NSString *)section {
 	if (!key)
 		return;
 	lp_config_set_int(configDb, [section UTF8String], [key UTF8String], (int)value);
@@ -2204,36 +2204,36 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	return [self lpConfigIntForKey:key withDefault:-1];
 }
 - (int)lpConfigIntForKey:(NSString *)key withDefault:(int)defaultValue {
-	return [self lpConfigIntForKey:key forSection:LINPHONERC_APPLICATION_KEY withDefault:defaultValue];
+	return [self lpConfigIntForKey:key inSection:LINPHONERC_APPLICATION_KEY withDefault:defaultValue];
 }
-- (int)lpConfigIntForKey:(NSString *)key forSection:(NSString *)section {
-	return [self lpConfigIntForKey:key forSection:section withDefault:-1];
+- (int)lpConfigIntForKey:(NSString *)key inSection:(NSString *)section {
+	return [self lpConfigIntForKey:key inSection:section withDefault:-1];
 }
-- (int)lpConfigIntForKey:(NSString *)key forSection:(NSString *)section withDefault:(int)defaultValue {
+- (int)lpConfigIntForKey:(NSString *)key inSection:(NSString *)section withDefault:(int)defaultValue {
 	if (!key)
 		return defaultValue;
 	return lp_config_get_int(configDb, [section UTF8String], [key UTF8String], (int)defaultValue);
 }
 
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString *)key {
-	[self lpConfigSetBool:value forKey:key forSection:LINPHONERC_APPLICATION_KEY];
+	[self lpConfigSetBool:value forKey:key inSection:LINPHONERC_APPLICATION_KEY];
 }
-- (void)lpConfigSetBool:(BOOL)value forKey:(NSString *)key forSection:(NSString *)section {
-	[self lpConfigSetInt:(int)(value == TRUE)forKey:key forSection:section];
+- (void)lpConfigSetBool:(BOOL)value forKey:(NSString *)key inSection:(NSString *)section {
+	[self lpConfigSetInt:(int)(value == TRUE) forKey:key inSection:section];
 }
 - (BOOL)lpConfigBoolForKey:(NSString *)key {
 	return [self lpConfigBoolForKey:key withDefault:FALSE];
 }
 - (BOOL)lpConfigBoolForKey:(NSString *)key withDefault:(BOOL)defaultValue {
-	return [self lpConfigBoolForKey:key forSection:LINPHONERC_APPLICATION_KEY withDefault:defaultValue];
+	return [self lpConfigBoolForKey:key inSection:LINPHONERC_APPLICATION_KEY withDefault:defaultValue];
 }
-- (BOOL)lpConfigBoolForKey:(NSString *)key forSection:(NSString *)section {
-	return [self lpConfigBoolForKey:key forSection:section withDefault:FALSE];
+- (BOOL)lpConfigBoolForKey:(NSString *)key inSection:(NSString *)section {
+	return [self lpConfigBoolForKey:key inSection:section withDefault:FALSE];
 }
-- (BOOL)lpConfigBoolForKey:(NSString *)key forSection:(NSString *)section withDefault:(BOOL)defaultValue {
+- (BOOL)lpConfigBoolForKey:(NSString *)key inSection:(NSString *)section withDefault:(BOOL)defaultValue {
 	if (!key)
 		return defaultValue;
-	int val = [self lpConfigIntForKey:key forSection:section withDefault:-1];
+	int val = [self lpConfigIntForKey:key inSection:section withDefault:-1];
 	return (val != -1) ? (val == 1) : defaultValue;
 }
 

@@ -53,7 +53,7 @@ static XMLRPCHelper *xmlManager = nil;
 					 onError:(BOOL (^)(XMLRPCRequest *req))errorBlock {
 	LOGI(@"XMLRPC %@ - %@", method, params);
 	NSURL *URL =
-		[NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" forSection:@"assistant"]];
+		[NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant"]];
 	BlockXMLRPCRequest *request = [[BlockXMLRPCRequest alloc] initWithURL:URL];
 	[request setMethod:method withParameters:params];
 	if (successBlock) {
@@ -148,7 +148,7 @@ static XMLRPCHelper *xmlManager = nil;
 			  NSString *url =
 				  [NSString stringWithFormat:@"%@/%@.xml",
 											 [LinphoneManager.instance lpConfigStringForKey:@"remote_prosivioning_root"
-																				 forSection:@"assistant"],
+																				  inSection:@"assistant"],
 											 response.object];
 			  onSuccess(url);
 		  } else {

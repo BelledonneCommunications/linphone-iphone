@@ -44,7 +44,7 @@
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
 		_enabled = (([SKPaymentQueue canMakePayments]) &&
-					([[LinphoneManager instance] lpConfigBoolForKey:@"enabled" forSection:@"in_app_purchase"]));
+					([[LinphoneManager instance] lpConfigBoolForKey:@"enabled" inSection:@"in_app_purchase"]));
 		_initialized = false;
 		_available = false;
 		_accountActivationInProgress = false;
@@ -108,7 +108,7 @@
 	if (phoneNumber) {
 		NSString *productID =
 			[[LinphoneManager instance] lpConfigStringForKey:(monthly ? @"paid_account_id_monthly" : @"paid_account_id")
-												  forSection:@"in_app_purchase"];
+												   inSection:@"in_app_purchase"];
 		self.accountCreationData = @{ @"phoneNumber" : phoneNumber, @"password" : password, @"email" : email };
 
 		if (![self purchaseWitID:productID]) {
@@ -124,7 +124,7 @@
 		NSString *receiptBase64 = [self getReceipt];
 		if (receiptBase64) {
 			NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"receipt_validation_url"
-																					forSection:@"in_app_purchase"]];
+																					 inSection:@"in_app_purchase"]];
 			XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
 			// buying for the first time: need to create the account
 			// if ([transaction.transactionIdentifier
@@ -175,7 +175,7 @@
 #pragma mark ProductListLoading
 
 - (void)loadProducts {
-	NSArray *list = [[[[LinphoneManager instance] lpConfigStringForKey:@"products_list" forSection:@"in_app_purchase"]
+	NSArray *list = [[[[LinphoneManager instance] lpConfigStringForKey:@"products_list" inSection:@"in_app_purchase"]
 		stringByReplacingOccurrencesOfString:@" "
 								  withString:@""] componentsSeparatedByString:@","];
 
@@ -263,7 +263,7 @@
 		// transaction is null when restoring user purchases at application start or if user clicks the "restore" button
 		// We must validate the receipt on our server
 		NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"receipt_validation_url"
-																				forSection:@"in_app_purchase"]];
+																				 inSection:@"in_app_purchase"]];
 		XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
 		// buying for the first time: need to create the account
 		// if ([transaction.transactionIdentifier
@@ -387,7 +387,7 @@
 
 	LOGI(@"XMLRPC response %@: %@", [request method], [response body]);
 	NSString *productID =
-		[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" forSection:@"in_app_purchase"];
+		[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" inSection:@"in_app_purchase"];
 
 	// validation succeeded
 	if (![response isFault] && [response object] != nil) {

@@ -134,9 +134,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[[LinphoneManager instance] resetLinphoneCore];
 	account_creator = linphone_account_creator_new(
-												   [LinphoneManager getLc],
-												   [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" forSection:@"assistant" withDefault:@""]
-												   .UTF8String);
+		[LinphoneManager getLc],
+		[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
+			.UTF8String);
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
 	linphone_account_creator_cbs_set_existence_tested(linphone_account_creator_get_callbacks(account_creator),
 													  assistant_existence_tested);
@@ -148,7 +148,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
 	linphone_core_set_provisioning_uri([LinphoneManager getLc], fullPath.UTF8String);
-	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
+	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
 
 	[self resetLiblinphone];
 }
@@ -179,7 +179,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status {
-	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number" forSection:@"assistant"];
+	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"];
 	switch (status) {
 		case LinphoneAccountCreatorEmailInvalid:
 			return NSLocalizedString(@"Invalid email.", nil);
@@ -685,7 +685,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	nextView = _remoteProvisioningView;
 	[self loadAssistantConfig:@"assistant_remote.rc"];
 	[self findTextField:ViewElement_URL].text =
-		[[LinphoneManager instance] lpConfigStringForKey:@"config-uri" forSection:@"misc"];
+		[[LinphoneManager instance] lpConfigStringForKey:@"config-uri" inSection:@"misc"];
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
@@ -710,7 +710,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender {
 	_waitView.hidden = NO;
-	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" forSection:@"misc"];
+	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
 	[self configureProxyConfig];
 }
 

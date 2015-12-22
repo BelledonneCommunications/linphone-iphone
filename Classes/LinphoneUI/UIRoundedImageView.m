@@ -66,6 +66,7 @@ INIT_WITH_COMMON {
 
 	CGPathRef path = CGPathCreateWithEllipseInRect(box, NULL);
 	UIBezierPath *maskPath = [UIBezierPath bezierPathWithCGPath:path];
+	CGPathRelease(path);
 	CAShapeLayer *maskLayer = [CAShapeLayer layer];
 	maskLayer.frame = self.bounds;
 	maskLayer.path = maskPath.CGPath;

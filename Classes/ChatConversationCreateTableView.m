@@ -20,6 +20,7 @@
 @implementation ChatConversationCreateTableView
 
 - (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
 	self.allContacts =
 		[[NSDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
 	self.contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];

@@ -116,9 +116,9 @@
 		[UIView setAnimationDuration:0.3];
 	}
 	if (editing) {
-		[_unreadCountView setAlpha:0.0f];
-	} else {
-		[_unreadCountView setAlpha:1.0f];
+		[_unreadCountView stopAnimating:animated];
+	} else if (linphone_chat_room_get_unread_messages_count(chatRoom) > 0) {
+		[_unreadCountView startAnimating:animated];
 	}
 	if (animated) {
 		[UIView commitAnimations];

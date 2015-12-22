@@ -56,6 +56,7 @@
 
 	if (_message) {
 		linphone_chat_message_unref(_message);
+		CFBridgingRelease(linphone_chat_message_get_user_data(_message));
 		linphone_chat_message_set_user_data(_message, NULL);
 		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(_message), NULL);
 	}

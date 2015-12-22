@@ -510,8 +510,6 @@
 				[self.sideMenuViewController didRotateFromInterfaceOrientation:oldOrientation];
 			}
 		}
-	} else {
-		oldViewDescription = (currentViewDescription != nil) ? [currentViewDescription copy] : nil;
 	}
 
 	if (currentViewDescription == nil) {

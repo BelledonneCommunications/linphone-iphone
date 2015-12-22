@@ -250,11 +250,11 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 		[self setFloat:linphone_core_get_playback_gain_db(lc) forKey:@"playback_gain_preference"];
 		[self setFloat:linphone_core_get_mic_gain_db(lc) forKey:@"microphone_gain_preference"];
 		[self setInteger:[lm lpConfigIntForKey:@"codec_bitrate_limit"
-									forSection:@"audio"
+									 inSection:@"audio"
 								   withDefault:kLinphoneAudioVbrCodecDefaultBitrate]
 				  forKey:@"audio_codec_bitrate_limit_preference"];
 		[self setInteger:[lm lpConfigIntForKey:@"voiceproc_preference" withDefault:1] forKey:@"voiceproc_preference"];
-		[self setInteger:[lm lpConfigIntForKey:@"eq_active" forSection:@"sound" withDefault:0] forKey:@"eq_active"];
+		[self setInteger:[lm lpConfigIntForKey:@"eq_active" inSection:@"sound" withDefault:0] forKey:@"eq_active"];
 	}
 
 	// video section
@@ -429,7 +429,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	[self setInteger:port_preference forKey:@"port_preference"]; // Update back preference
 
 	BOOL enable_ipv6 = [self boolForKey:@"use_ipv6"];
-	[lm lpConfigSetBool:enable_ipv6 forKey:@"use_ipv6" forSection:@"sip"];
+	[lm lpConfigSetBool:enable_ipv6 forKey:@"use_ipv6" inSection:@"sip"];
 	if (linphone_core_ipv6_enabled(lc) != enable_ipv6) {
 		LOGD(@"%@ IPV6", enable_ipv6 ? @"ENABLING" : @"DISABLING");
 		linphone_core_enable_ipv6(lc, enable_ipv6);
@@ -634,13 +634,13 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		[lm lpConfigSetInt:[self integerForKey:@"audio_codec_bitrate_limit_preference"]
 					forKey:@"codec_bitrate_limit"
-				forSection:@"audio"];
+				 inSection:@"audio"];
 
 		BOOL voice_processing = [self boolForKey:@"voiceproc_preference"];
 		[lm lpConfigSetInt:voice_processing forKey:@"voiceproc_preference"];
 
 		BOOL equalizer = [self boolForKey:@"eq_active"];
-		[lm lpConfigSetBool:equalizer forKey:@"eq_active" forSection:@"sound"];
+		[lm lpConfigSetBool:equalizer forKey:@"eq_active" inSection:@"sound"];
 
 		[[LinphoneManager instance] configureVbrCodecs];
 

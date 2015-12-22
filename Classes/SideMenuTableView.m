@@ -27,6 +27,8 @@
 @implementation SideMenuTableView
 
 - (void)viewDidLoad {
+	[super viewDidLoad];
+
 	// remove separators between empty items, cf
 	// http://stackoverflow.com/questions/1633966/can-i-force-a-uitableview-to-hide-the-separator-between-empty-cells
 	self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -107,8 +109,9 @@
 		LOGI(@"Entry %@ has been tapped", entry->title);
 		if (entry->onTapBlock == nil) {
 			LOGF(@"Entry %@ has no onTapBlock!", entry->title);
+		} else {
+			entry->onTapBlock();
 		}
-		entry->onTapBlock();
 	}
 	[PhoneMainView.instance.mainViewController hideSideMenu:YES];
 }
