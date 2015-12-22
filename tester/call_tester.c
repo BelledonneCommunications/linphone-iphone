@@ -4666,6 +4666,8 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	char *stereo_file = bc_tester_res("sounds/vrroom.wav");
 	char *recordpath = bc_tester_file("stereo-record.wav");
 	bool_t audio_cmp_failed = FALSE;
+	
+	unlink(recordpath);
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -4691,8 +4693,8 @@ static void simple_stereo_call(const char *codec_name, int clock_rate, int bitra
 	linphone_core_set_record_file(pauline->lc, recordpath);
 
 	/*stereo is supported only without volume control, echo canceller...*/
-	lp_config_set_string(marie->lc->config,"sound","features","NONE");
-	lp_config_set_string(pauline->lc->config,"sound","features","NONE");
+	lp_config_set_string(marie->lc->config,"sound","features","REMOTE_PLAYING");
+	lp_config_set_string(pauline->lc->config,"sound","features","REMOTE_PLAYING");
 
 	if (!BC_ASSERT_TRUE(call(pauline,marie))) goto end;
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 6000);
