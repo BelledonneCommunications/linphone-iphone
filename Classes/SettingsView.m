@@ -362,6 +362,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_settingsController dismiss:self];
 	// Set observer
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:kIASKAppSettingChanged object:nil];
+
+	if (linphone_ringtoneplayer_is_started(linphone_core_get_ringtoneplayer([LinphoneManager getLc]))) {
+		linphone_core_stop_ringing([LinphoneManager getLc]);
+	}
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -411,7 +415,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 				[keys addObject:key];
 			}
 		}
-
 	} else if ([@"video_preset_preference" compare:notif.object] == NSOrderedSame) {
 		NSString *video_preset = [notif.userInfo objectForKey:@"video_preset_preference"];
 		removeFromHiddenKeys = [video_preset isEqualToString:@"custom"];
@@ -694,7 +697,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[alert show];
 	} else if ([key isEqual:@"about_button"]) {
 		[PhoneMainView.instance changeCurrentView:AboutView.compositeViewDescription push:TRUE];
-	} else if ([key isEqualToString:@"reset_logs_button"]) {
+	} else if ([key isEqual:@"reset_logs_button"]) {
 		linphone_core_reset_log_collection();
 	} else if ([key isEqual:@"send_logs_button"]) {
 		NSString *message;
@@ -722,6 +725,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 							  [self sendEmailWithDebugAttachments];
 							}];
 		[alert show];
+	} else if ([key isEqual:@"preview_ringtone_button"]) {
+		LinphoneCore *lc = [LinphoneManager getLc];
+		if (linphone_ringtoneplayer_is_started(linphone_core_get_ringtoneplayer(lc))) {
+			linphone_core_stop_ringing(lc);
+		} else {
+			linphone_core_preview_ring(lc, linphone_core_get_ring(lc), NULL, NULL);
+		}
 	}
 }
 

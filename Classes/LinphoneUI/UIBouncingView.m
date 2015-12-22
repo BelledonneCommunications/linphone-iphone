@@ -35,10 +35,11 @@ INIT_WITH_COMMON {
 
 - (void)settingsUpdate:(NSNotification *)notif {
 	if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == false) {
-		[self stopBounceAnimation:kBounceAnimation target:self];
+		[self stopAnimating:NO];
 	} else {
-		if (![self isHidden] && [self.layer animationForKey:kBounceAnimation] == nil) {
-			[self startBounceAnimation:kBounceAnimation target:self];
+		if (![self isHidden]) {
+			self.hidden = YES;
+			[self startAnimating:YES];
 		}
 	}
 }
@@ -46,8 +47,10 @@ INIT_WITH_COMMON {
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
 	// Force the animations
 	if (self.isHidden) {
+		self.hidden = NO;
 		[self stopAnimating:NO];
 	} else {
+		self.hidden = YES;
 		[self startAnimating:NO];
 	}
 }
@@ -96,6 +99,7 @@ INIT_WITH_COMMON {
 }
 
 - (void)startAnimating:(BOOL)animated {
+	animated = NO;
 	if (!self.hidden) {
 		return;
 	}
@@ -118,6 +122,7 @@ INIT_WITH_COMMON {
 }
 
 - (void)stopAnimating:(BOOL)animated {
+	animated = NO;
 	if (self.hidden) {
 		return;
 	}

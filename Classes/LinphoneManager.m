@@ -663,10 +663,15 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 					// iOS8 doesn't need the timer trick for the local notification.
 					if ([[UIDevice currentDevice].systemVersion floatValue] >= 8 &&
 						[self lpConfigBoolForKey:@"repeat_call_notification"] == NO) {
-						data->notification.soundName = @"ring.caf";
+						NSString *ring =
+							([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring" inSection:@"sound"]]
+								 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
+								.lastPathComponent;
+						NSString *soundName = [NSString stringWithFormat:@"sounds/%@", ring];
+						data->notification.soundName = soundName;
 						data->notification.category = @"incoming_call";
 					} else {
-						data->notification.soundName = @"shortring.caf";
+						data->notification.soundName = @"sounds/shortring.caf";
 						data->timer = [NSTimer scheduledTimerWithTimeInterval:4.0
 																	   target:self
 																	 selector:@selector(localNotifContinue:)
@@ -875,6 +880,12 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			[alertView dismissWithClickedButtonIndex:0 animated:NO];
 		}
 
+		// dont pop up if we are in background, in any case we will refresh registers when entering
+		// the application again
+		if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+			return;
+		}
+
 		NSString *realm = [NSString stringWithUTF8String:realmC];
 		NSString *username = [NSString stringWithUTF8String:usernameC];
 		NSString *domain = [NSString stringWithUTF8String:domainC];
@@ -945,7 +956,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
 			}
 			notif.alertAction = NSLocalizedString(@"Show", nil);
-			notif.soundName = @"msg.caf";
+			notif.soundName = @"sounds/msg.caf";
 			notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
 
 			[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
@@ -1335,14 +1346,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 	}
 
 	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
-	// Set audio assets
-	const char *lRing = [[LinphoneManager bundleFile:@"ring.wav"] UTF8String];
-	linphone_core_set_ring(theLinphoneCore, lRing);
-	const char *lRingBack = [[LinphoneManager bundleFile:@"ringback.wav"] UTF8String];
-	linphone_core_set_ringback(theLinphoneCore, lRingBack);
-	const char *lPlay = [[LinphoneManager bundleFile:@"hold.wav"] UTF8String];
-	lPlay = NULL;
-	linphone_core_set_play_file(theLinphoneCore, lPlay);
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName UTF8String]);
 	linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
@@ -1460,15 +1463,19 @@ static BOOL libStarted = FALSE;
 	libmswebrtc_init();
 
 	// Set audio assets
-	const char *lRing = [[LinphoneManager bundleFile:@"ring.wav"] UTF8String];
-	lp_config_set_string(configDb, "sound", "local_ring", lRing);
-	const char *lRingBack = [[LinphoneManager bundleFile:@"ringback.wav"] UTF8String];
-	lp_config_set_string(configDb, "sound", "ringback_tone", lRingBack);
-	const char *lPlay = [[LinphoneManager bundleFile:@"hold.wav"] UTF8String];
-	lp_config_set_string(configDb, "sound", "hold_music", lPlay);
-
-	theLinphoneCore =
-		linphone_core_new_with_config(&linphonec_vtable, configDb, (__bridge void *)(self) /* user_data */);
+	NSString *ring = ([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring" inSection:@"sound"]]
+						  ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
+						 .lastPathComponent;
+	NSString *ringback = ([LinphoneManager bundleFile:[self lpConfigStringForKey:@"ringback_tone" inSection:@"sound"]]
+							  ?: [LinphoneManager bundleFile:@"ringback.wav"])
+							 .lastPathComponent;
+	NSString *hold = ([LinphoneManager bundleFile:[self lpConfigStringForKey:@"hold_music" inSection:@"sound"]]
+						  ?: [LinphoneManager bundleFile:@"hold.caf"])
+						 .lastPathComponent;
+	[self lpConfigSetString:[LinphoneManager bundleFile:ring] forKey:@"local_ring" inSection:@"sound"];
+	[self lpConfigSetString:[LinphoneManager bundleFile:ringback] forKey:@"ringback_tone" inSection:@"sound"];
+	[self lpConfigSetString:[LinphoneManager bundleFile:hold] forKey:@"hold_music" inSection:@"sound"];
+	theLinphoneCore = linphone_core_new_with_config(&linphonec_vtable, configDb, (__bridge void *)(self));
 	LOGI(@"Create linphonecore %p", theLinphoneCore);
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
@@ -2009,15 +2016,17 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 		}
 // NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
 // NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
+// NSLocalizedString(@"IM_FULLMSG", nil); // Fake for genstrings
 #ifdef USE_APN_DEV
 #define APPMODE_SUFFIX @"dev"
 #else
 #define APPMODE_SUFFIX @"prod"
 #endif
-		NSString *params =
-			[NSString stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
-									   @"call-snd=ring.caf;pn-msg-snd=msg.caf",
-									   [[NSBundle mainBundle] bundleIdentifier], APPMODE_SUFFIX, tokenString];
+		NSString *soundName = @"shortring.caf";
+		NSString *params = [NSString
+			stringWithFormat:@"app-id=%@.%@;pn-type=apple;pn-tok=%@;pn-msg-str=IM_MSG;pn-call-str=IC_MSG;pn-"
+							 @"call-snd=%@;pn-msg-snd=sounds/msg.caf",
+							 [[NSBundle mainBundle] bundleIdentifier], APPMODE_SUFFIX, tokenString, soundName];
 
 		linphone_proxy_config_set_contact_uri_parameters(proxyCfg, [params UTF8String]);
 		linphone_proxy_config_set_contact_parameters(proxyCfg, NULL);
