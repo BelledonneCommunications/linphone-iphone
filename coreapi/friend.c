@@ -860,7 +860,7 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 	
 #ifndef VCARD_ENABLED
 	ms_error("vCard support wasn't enabled at compilation time");
-#else
+#endif
 	while (vcards != NULL && vcards->data != NULL) {
 		LinphoneVCard *vcard = (LinphoneVCard *)vcards->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
@@ -879,7 +879,6 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 #ifndef FRIENDS_SQL_STORAGE_ENABLED
 	linphone_core_write_friends_config(lc);
 #endif
-#endif
 	return count;
 }
 
@@ -895,7 +894,7 @@ void linphone_core_export_friends_as_vcard4_file(LinphoneCore *lc, const char *v
 	
 #ifndef VCARD_ENABLED
 	ms_error("vCard support wasn't enabled at compilation time");
-#else
+#endif
 	while (friends != NULL && friends->data != NULL) {
 		LinphoneFriend *lf = (LinphoneFriend *)friends->data;
 		LinphoneVCard *vcard = linphone_friend_get_vcard(lf);
@@ -907,7 +906,6 @@ void linphone_core_export_friends_as_vcard4_file(LinphoneCore *lc, const char *v
 		}
 		friends = ms_list_next(friends);
 	}
-#endif
 	
 	fclose(file);
 }
