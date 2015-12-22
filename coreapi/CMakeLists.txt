@@ -137,9 +137,6 @@ add_definitions(
 	-DLIBLINPHONE_EXPORTS
 )
 
-apply_compile_flags(LINPHONE_SOURCE_FILES_C "CPP" "C")
-apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
-
 set(LIBS
 	${BELLESIP_LIBRARIES}
 	${MEDIASTREAMER2_LIBRARIES}
@@ -173,6 +170,9 @@ if(BELCARD_FOUND)
 else()
 	list(APPEND LINPHONE_SOURCE_FILES_C vcard_stubs.c)
 endif()
+
+apply_compile_flags(LINPHONE_SOURCE_FILES_C "CPP" "C")
+apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
 
 if(ENABLE_STATIC)
 	add_library(linphone STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX})
