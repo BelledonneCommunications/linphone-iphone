@@ -187,12 +187,12 @@
     ${project}/../../gtk/gtkrc.mac
   </data>
 
-  <data dest="${bundle}/Contents/Resources/share/sounds/linphone/rings/oldphone.wav">
-      ${prefix:linphone}/share/sounds/linphone/rings/oldphone.wav
+  <data dest="${bundle}/Contents/Resources/share/sounds/linphone/rings/oldphone-mono.wav">
+      ${prefix:linphone}/share/sounds/linphone/rings/oldphone-mono.wav
   </data>
 
-  <data dest="${bundle}/Contents/Resources/share/sounds/linphone/rings/toy-mono.wav">
-      ${prefix:linphone}/share/sounds/linphone/rings/toy-mono.wav
+  <data dest="${bundle}/Contents/Resources/share/sounds/linphone/toy-mono.wav">
+      ${prefix:linphone}/share/sounds/linphone/toy-mono.wav
   </data>
 
   <data dest="${bundle}/Contents/Resources/share/sounds/linphone/ringback.wav">
