@@ -1555,6 +1555,9 @@ void linphone_gtk_status_icon_set_blinking(gboolean val) {
 	if(icon) {
 		linphone_status_icon_enable_blinking(icon, val);
 	}
+#ifdef __APPLE__
+	linphone_gtk_update_badge_count();
+#endif
 }
 
 void linphone_gtk_options_activate(GtkWidget *item){
@@ -1945,6 +1948,12 @@ static void linphone_gtk_check_soundcards(void){
 }
 
 static void linphone_gtk_quit_core(void){
+#ifdef HAVE_GTK_OSX
+	{
+		GtkosxApplication *theMacApp = gtkosx_application_get();
+		gtkosx_application_set_menu_bar(theMacApp,NULL);
+	}
+#endif
 	linphone_gtk_unmonitor_usb();
 	g_source_remove_by_user_data(linphone_gtk_get_core());
 #ifdef BUILD_WIZARD
@@ -2022,7 +2031,7 @@ static void populate_xdg_data_dirs_envvar(void) {
 	int i;
 	gchar *value;
 	gchar **paths;
-	
+
 	if(g_getenv("XDG_DATA_DIRS") == NULL) {
 		value = g_strdup("/usr/share:/usr/local/share:/opt/local/share");
 	} else {
@@ -2066,7 +2075,7 @@ int main(int argc, char *argv[]){
 	/*for pulseaudio:*/
 	g_setenv("PULSE_PROP_media.role", "phone", TRUE);
 #endif
-	
+
 	populate_xdg_data_dirs_envvar();
 
 	lang=linphone_gtk_get_lang(config_file);
@@ -2198,7 +2207,7 @@ core_start:
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)linphone_gtk_get_core());
 
 	signal(SIGINT, sigint_handler);
-	
+
 	gtk_main();
 	linphone_gtk_quit();
 
@@ -2225,7 +2234,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 GtkWidget *linphone_gtk_make_tab_header(const gchar *label, const gchar *icon_name, gboolean show_quit_button, GCallback cb, gpointer user_data) {
 	GtkWidget *tab_header=gtk_hbox_new (FALSE,0);
 	GtkWidget *label_widget = gtk_label_new (label);
-	
+
 	if(icon_name) {
 		GtkWidget *icon=gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_MENU);
 #ifdef HAVE_GTK_OSX

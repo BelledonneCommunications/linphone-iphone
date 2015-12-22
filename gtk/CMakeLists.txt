@@ -71,6 +71,12 @@ set(SOURCE_FILES
 	utils.c
 	videowindow.c
 )
+
+set(OBJC_FILES)
+if (APPLE)
+	list(APPEND OBJC_FILES mac.m)
+endif()
+
 if(ENABLE_ASSISTANT)
 	list(APPEND SOURCE_FILES setupwizard.c)
 endif()
@@ -78,11 +84,14 @@ if(WIN32)
 	list(APPEND SOURCE_FILES linphone.rc)
 endif()
 
+
 apply_compile_flags(SOURCE_FILES "CPP" "C")
+apply_compile_flags(OBJC_FILES "CPP" "OBJC")
+
 if(WIN32)
 	add_executable(linphone-gtk WIN32 ${SOURCE_FILES})
 else()
-	add_executable(linphone-gtk ${SOURCE_FILES})
+	add_executable(linphone-gtk ${SOURCE_FILES} ${OBJC_FILES})
 endif()
 set_target_properties(linphone-gtk PROPERTIES OUTPUT_NAME linphone LINKER_LANGUAGE CXX)
 target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS} ${INTL_INCLUDE_DIRS})
@@ -104,6 +113,10 @@ if(GTKMACINTEGRATION_FOUND)
 	target_include_directories(linphone-gtk PUBLIC ${GTKMACINTEGRATION_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${GTKMACINTEGRATION_LIBRARIES})
 endif()
+if(APPLE)
+	target_link_libraries(linphone-gtk "-framework Cocoa")
+endif()
+
 
 install(TARGETS linphone-gtk
 	RUNTIME DESTINATION bin
