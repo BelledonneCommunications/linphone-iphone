@@ -24,6 +24,7 @@ common_SRC_FILES := \
 	tunnel_tester.c \
 	upnp_tester.c \
  	multicast_call_tester.c \
+	complex_sip_call_tester.c
 
 common_C_INCLUDES += \
         $(LOCAL_PATH) \
