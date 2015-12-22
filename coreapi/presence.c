@@ -1447,6 +1447,7 @@ void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalO
 	char *tmp;
 	
 	if (fl==NULL) return ;
+	fl->lc = lc;
 	linphone_friend_add_incoming_subscription(fl, op);
 	linphone_friend_set_inc_subscribe_policy(fl,LinphoneSPAccept);
 	fl->inc_subscribe_pending=TRUE;
