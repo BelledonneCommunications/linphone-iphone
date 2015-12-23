@@ -647,6 +647,20 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
+	if (textField.returnKeyType == UIReturnKeyNext) {
+		// text fields must be ordored by increasing tag value
+		NSInteger tag = textField.tag + 1;
+		while (tag < ViewElement_NextButton) {
+			UIView *v = [self.view viewWithTag:tag];
+			if ([v isKindOfClass:UITextField.class]) {
+				[v becomeFirstResponder];
+				break;
+			}
+			tag++;
+		}
+	} else if (textField.returnKeyType == UIReturnKeyDone) {
+		[[self findButton:ViewElement_NextButton] sendActionsForControlEvents:UIControlEventTouchUpInside];
+	}
 	return YES;
 }
 

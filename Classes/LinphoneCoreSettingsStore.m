@@ -851,12 +851,21 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 	LinphoneProxyConfig *config = ms_list_nth_data(linphone_core_get_proxy_config_list(lc),
 												   [self integerForKey:@"current_proxy_config_preference"]);
 
+	BOOL isDefault = (linphone_core_get_default_proxy_config(lc) == config);
+
 	const LinphoneAuthInfo *ai = linphone_proxy_config_find_auth_info(config);
 	linphone_core_remove_proxy_config(lc, config);
 	if (ai) {
 		linphone_core_remove_auth_info(lc, ai);
 	}
 	[self setInteger:-1 forKey:@"current_proxy_config_preference"];
+
+	if (isDefault) {
+		// if we removed the default proxy config, set another one instead
+		if (linphone_core_get_proxy_config_list(lc) != NULL) {
+			linphone_core_set_default_proxy_index(lc, 0);
+		}
+	}
 	[self transformLinphoneCoreToKeys];
 }
 @end
