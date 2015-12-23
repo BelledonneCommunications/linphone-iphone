@@ -59,8 +59,9 @@
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="9" contentMode="left" text="99" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" id="ZXq-Do-7Ua" userLabel="unreadCountLabel">
                             <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Missed message(s)">
+                            <accessibility key="accessibilityConfiguration">
                                 <accessibilityTraits key="traits" none="YES"/>
+                                <bool key="isElement" value="NO"/>
                             </accessibility>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

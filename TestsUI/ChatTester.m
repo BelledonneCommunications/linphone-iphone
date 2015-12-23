@@ -87,12 +87,17 @@
 	[tester choosePhotoInAlbum:@"Camera Roll" atRow:2 column:2 + (messagesCount % 2)];
 
 	// wait for the quality popup to show up
-	[tester waitForTimeInterval:1];
-
-	UIAccessibilityElement *element =
-		[[UIApplication sharedApplication] accessibilityElementMatchingBlock:^BOOL(UIAccessibilityElement *element) {
-		  return [element.accessibilityLabel containsString:quality];
-		}];
+	UIAccessibilityElement *element = nil;
+	float timeout = 10;
+	while (!element && timeout > 0.f) {
+		[tester waitForTimeInterval:.5];
+		timeout -= .5f;
+		element =
+			[[UIApplication sharedApplication] accessibilityElementMatchingBlock:^BOOL(UIAccessibilityElement *e) {
+			  return [e.accessibilityLabel containsString:quality];
+			}];
+	}
+	XCTAssertNotNil(element);
 	[tester tapViewWithAccessibilityLabel:element.accessibilityLabel];
 }
 

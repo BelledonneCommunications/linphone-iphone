@@ -23,6 +23,9 @@
 - (void)afterEach {
 	[super afterEach];
 	[LinphoneManager.instance removeAllAccounts];
+	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Cancel" error:nil]) {
+		[tester tapViewWithAccessibilityLabel:@"Cancel"];
+	}
 	[tester tapViewWithAccessibilityLabel:@"Dialer"];
 }
 
@@ -42,6 +45,7 @@
 
 	[tester enterText:[self me] intoViewWithAccessibilityLabel:@"Username"];
 	[tester enterText:[self me] intoViewWithAccessibilityLabel:@"Password"];
+	[tester clearTextFromViewWithAccessibilityLabel:@"Domain"];
 	[tester enterText:[self accountDomain] intoViewWithAccessibilityLabel:@"Domain"];
 	[tester tapViewWithAccessibilityLabel:protocol];
 
@@ -101,8 +105,7 @@
 		if (reason == nil) {
 			[tester fail];
 		} else {
-			[tester tapViewWithAccessibilityLabel:@"OK"];	 // alertview
-			[tester tapViewWithAccessibilityLabel:@"Dialer"];
+			[tester tapViewWithAccessibilityLabel:@"Continue"];
 		}
 	} else {
 		[tester fail];

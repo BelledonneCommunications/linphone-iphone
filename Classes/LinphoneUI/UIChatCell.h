@@ -33,7 +33,6 @@
 @property (nonatomic, strong) IBOutlet UILabel* addressLabel;
 @property (nonatomic, strong) IBOutlet UILabel* chatContentLabel;
 @property(weak, nonatomic) IBOutlet UILabel *chatLatestTimeLabel;
-@property(weak, nonatomic) IBOutlet UIIconButton *unreadCountButton;
 @property(weak, nonatomic) IBOutlet UIBouncingView *unreadCountView;
 @property(weak, nonatomic) IBOutlet UILabel *unreadCountLabel;
 
