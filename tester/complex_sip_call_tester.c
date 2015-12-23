@@ -22,10 +22,6 @@
 #include "lpconfig.h"
 #include "private.h"
 
-#ifdef _MSC_VER
-#define popen _popen
-#define pclose _pclose
-#endif
 
 void check_rtcp(LinphoneCall *call) {
 	MSTimeSpec ts;
