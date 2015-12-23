@@ -1,3 +1,4 @@
+
 /*
 linphone
 Copyright (C) 2012  Belledonne Communications, Grenoble, France
@@ -629,14 +630,15 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 	payload_type_set_avpf_params(pt, avpf_params);
 }
 
-static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
+static bool_t sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
 	belle_sip_list_t *it;
 	belle_sdp_attribute_t *attribute;
 	belle_sdp_rtcp_fb_attribute_t *fb_attribute;
 	MSList *pt_it;
 	PayloadType *pt;
 	int8_t pt_num;
-
+    bool_t retval = FALSE;
+    
 	/* Handle rtcp-fb attributes that concern all payload types. */
 	for (it = belle_sdp_media_description_get_attributes(media_desc); it != NULL; it = it->next) {
 		attribute = BELLE_SDP_ATTRIBUTE(it->data);
@@ -646,6 +648,7 @@ static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_de
 				for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 					pt = (PayloadType *)pt_it->data;
 					apply_rtcp_fb_attribute_to_payload(fb_attribute, stream, pt);
+                    retval = TRUE;
 				}
 			}
 		}
@@ -659,12 +662,14 @@ static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_de
 			pt_num = belle_sdp_rtcp_fb_attribute_get_id(fb_attribute);
 			for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 				pt = (PayloadType *)pt_it->data;
+                retval = TRUE;
 				if (payload_type_get_number(pt) == (int)pt_num) {
 					apply_rtcp_fb_attribute_to_payload(fb_attribute, stream, pt);
 				}
 			}
 		}
 	}
+    return retval;
 }
 
 static void sal_init_rtcp_xr_description(OrtpRtcpXrConfiguration *config) {
@@ -727,6 +732,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	belle_sip_list_t *custom_attribute_it;
 	const char* value;
 	const char *mtype,*proto;
+    bool_t has_avpf_attributes;
 
 	stream=&md->streams[md->nb_streams];
 	media=belle_sdp_media_description_get_media ( media_desc );
@@ -830,12 +836,17 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 
 	/* Get ICE candidate attributes if any */
 	sdp_parse_media_ice_parameters(media_desc, stream);
-
+    
+    has_avpf_attributes = sdp_parse_rtcp_fb_parameters(media_desc, stream);
+    
 	/* Get RTCP-FB attributes if any */
-	if (sal_stream_description_has_avpf(stream) || sal_stream_description_has_implicit_avpf(stream)) {
+	if (sal_stream_description_has_avpf(stream)) {
 		enable_avpf_for_stream(stream);
-		sdp_parse_rtcp_fb_parameters(media_desc, stream);
 	}
+    else if (has_avpf_attributes ){
+        
+        stream->implicit_rtcp_fb = TRUE;
+    }
 
 	/* Get RTCP-XR attributes if any */
 	stream->rtcp_xr = md->rtcp_xr;	// Use session parameters if no stream parameters are defined

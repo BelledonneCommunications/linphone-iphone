@@ -434,6 +434,7 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 		result->dtls_role = SalDtlsRoleInvalid;
 	}
 	result->rtcp_mux = remote_answer->rtcp_mux && local_offer->rtcp_mux;
+    result->implicit_rtcp_fb = local_offer->implicit_rtcp_fb && remote_answer->implicit_rtcp_fb;
 }
 
 
@@ -502,6 +503,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 		result->dtls_role = SalDtlsRoleInvalid;
 	}
 	result->rtcp_mux = remote_offer->rtcp_mux && local_cap->rtcp_mux;
+    result->implicit_rtcp_fb = local_cap->implicit_rtcp_fb && remote_offer->implicit_rtcp_fb;
 }
 
 
