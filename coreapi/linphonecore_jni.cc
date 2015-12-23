@@ -3007,8 +3007,13 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscription
 	linphone_friend_list_update_subscriptions((LinphoneFriendList*)friendListptr,(LinphoneProxyConfig*)proxyConfigPtr,jonlyWhenRegistered);
 }
 
-
-
+extern "C" jlong Java_org_linphone_core_LinphoneFriendListImpl_findFriendByUri(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong friendListptr
+																		,jstring juri) {
+	const char* uri = env->GetStringUTFChars(juri, NULL);
+	return (jlong)linphone_friend_list_find_friend_by_uri((LinphoneFriendList*)friendListptr,uri);
+}
 
 extern "C" jlong Java_org_linphone_core_LinphoneFriendImpl_getAddress(JNIEnv*  env
 																		,jobject  thiz
