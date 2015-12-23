@@ -39,6 +39,7 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl do not put anythingelse before AC_PROG_CC unless checking if macro still work for clang
 AC_PROG_CXX(["xcrun clang++" g++])
 AC_PROG_CC(["xcrun clang" gcc])
+AC_PROG_OBJC(["xcrun clang" gcc])
 
 gl_LD_OUTPUT_DEF
 
@@ -594,6 +595,8 @@ AC_ARG_WITH(ffmpeg,
 	[ ffmpegdir=${withval}],
 	[ ffmpegdir=/usr ]
 )
+
+AM_CONDITIONAL([BUILD_MACOS], [test "x$build_macos" = "xyes"])
 
 if test "$video" = "true"; then
 
