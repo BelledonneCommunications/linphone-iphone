@@ -36,6 +36,7 @@ extern "C" {
 #include "sal/sal.h"
 #include "sipsetup.h"
 #include "quality_reporting.h"
+#include "ringtoneplayer.h"
 
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
@@ -950,6 +951,7 @@ struct _LinphoneCore
 	const char **supported_formats;
 	LinphoneContent *log_collection_upload_information;
 	LinphoneCoreVTable *current_vtable; // the latest vtable to call a callback, see linphone_core_get_current_vtable
+	LinphoneRingtonePlayer *ringtoneplayer;
 #ifdef ANDROID
 	jobject wifi_lock;
 	jclass wifi_lock_class;
@@ -1436,7 +1438,7 @@ bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 BELLE_SIP_DECLARE_VPTR(LinphoneTunnelConfig);
 
 int linphone_core_get_default_proxy_config_index(LinphoneCore *lc);
-	
+
 #ifdef __cplusplus
 }
 #endif

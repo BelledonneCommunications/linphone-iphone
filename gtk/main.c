@@ -2179,12 +2179,11 @@ int main(int argc, char *argv[]){
 
 core_start:
 	if (linphone_gtk_init_instance(app_name, start_option, addr_to_call) == FALSE){
-		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
+		g_warning("Another running instance of Linphone has been detected. It has been woken-up.");
 		g_warning("This instance is going to exit now.");
 		gdk_threads_leave();
 		return 0;
 	}
-
 	the_ui=linphone_gtk_create_window("main", NULL);
 
 	g_object_set_data(G_OBJECT(the_ui),"is_created",GINT_TO_POINTER(FALSE));

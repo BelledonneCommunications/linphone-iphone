@@ -4254,6 +4254,11 @@ LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* trans
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
 
+typedef struct _LinphoneRingtonePlayer LinphoneRingtonePlayer;
+
+LINPHONE_PUBLIC LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc);
+
+#include "ringtoneplayer.h"
 
 #ifdef __cplusplus
 }
