@@ -41,7 +41,7 @@ if(BELCARD_INCLUDE_DIRS)
 endif()
 
 find_library(BELCARD_LIBRARIES
-	NAMES belr belcard
+	NAMES belcard
 	HINTS ${_BELCARD_ROOT_PATHS}
 	PATH_SUFFIXES bin lib
 )
