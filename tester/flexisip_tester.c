@@ -97,6 +97,13 @@ static void message_forking_with_unreachable_recipients(void) {
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
 	lcs=ms_list_append(lcs,marie3->lc);
+	
+	/*the following lines are to workaround a problem with messages sent by a previous test (Message forking) that arrive together with REGISTER responses,
+	 * because the ForkMessageContext is not terminated at flexisip side if Message forking test is passing fast*/
+	wait_for_list(lcs,NULL,0,1000);
+	marie->stat.number_of_LinphoneMessageReceived = 0;
+	marie2->stat.number_of_LinphoneMessageReceived = 0;
+	marie3->stat.number_of_LinphoneMessageReceived = 0;
 
 	/*marie2 and marie3 go offline*/
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
@@ -139,6 +146,14 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	lcs=ms_list_append(lcs,marie2->lc);
 	lcs=ms_list_append(lcs,marie3->lc);
 
+	/*the following lines are to workaround a problem with messages sent by a previous test (Message forking) that arrive together with REGISTER responses,
+	 * because the ForkMessageContext is not terminated at flexisip side if Message forking test is passing fast*/
+	wait_for_list(lcs,NULL,0,1000);
+	marie->stat.number_of_LinphoneMessageReceived = 0;
+	marie2->stat.number_of_LinphoneMessageReceived = 0;
+	marie3->stat.number_of_LinphoneMessageReceived = 0;
+
+	
 	/*All marie's device go offline*/
 	linphone_core_set_network_reachable(marie->lc,FALSE);
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
