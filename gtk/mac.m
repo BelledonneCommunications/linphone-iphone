@@ -22,7 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #import <Cocoa/Cocoa.h>
 #import "linphone.h"
 
-int unread_messages_count() {
+
+static int unread_messages_count() {
 	LinphoneCore* lc = linphone_gtk_get_core();
 	int count = 0;
 	const MSList *rooms = linphone_core_get_chat_rooms(lc);
@@ -34,7 +35,6 @@ int unread_messages_count() {
 		}
 		item = item->next;
 	}
-
 	return count;
 }
 
