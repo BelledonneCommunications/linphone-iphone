@@ -403,7 +403,7 @@ void linphone_core_friends_storage_close(LinphoneCore *lc);
 void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf);
 void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf);
 MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc);
-LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *friend);
+LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf);
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 
