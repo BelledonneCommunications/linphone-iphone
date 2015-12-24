@@ -1947,8 +1947,9 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriend(JNIEnv*  env
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_importFriendsFromVCardFile(JNIEnv* env, jobject thiz, jlong lc, jstring jpath) {
 	const char* path = env->GetStringUTFChars(jpath, NULL);
-	return linphone_core_import_friends_from_vcard4_file((LinphoneCore*)lc, path);
+	int count = linphone_core_import_friends_from_vcard4_file((LinphoneCore*)lc, path);
 	env->ReleaseStringUTFChars(jpath, path);
+	return count;
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_exportFriendsToVCardFile(JNIEnv* env, jobject thiz, jlong lc, jstring jpath) {
