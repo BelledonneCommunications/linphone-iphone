@@ -53,7 +53,6 @@ LOCAL_SRC_FILES := \
 	enum.c \
 	event.c \
 	friend.c \
-	friendlist.c \
 	info.c \
 	linphonecall.c \
 	linphonecore.c \
