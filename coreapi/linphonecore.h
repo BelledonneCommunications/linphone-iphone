@@ -1190,8 +1190,10 @@ LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpCon
 
 #ifdef IN_LINPHONE
 #include "account_creator.h"
+#include "friendlist.h"
 #else
 #include "linphone/account_creator.h"
+#include "linphone/friendlist.h"
 #endif
 
 
