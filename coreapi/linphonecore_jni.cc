@@ -3084,6 +3084,18 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setRLSUri(JNIEnv* 
 																		,jstring jrlsUri) {
 	const char* uri = env->GetStringUTFChars(jrlsUri, NULL);
 	linphone_friend_list_set_rls_uri((LinphoneFriendList*)ptr,uri);
+	env->ReleaseStringUTFChars(jrlsUri, uri);	
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneFriendListImpl_findFriendByUri(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong friendListptr
+																		,jstring juri) {
+	const char* uri = env->GetStringUTFChars(juri, NULL);
+        LinphoneFriend* lResult;
+	lResult = linphone_friend_list_find_friend_by_uri((LinphoneFriendList*)friendListptr,uri);
+        env->ReleaseStringUTFChars(juri, uri);
+	return (jlong)lResult;
 }
 
 extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_addFriend(JNIEnv*  env

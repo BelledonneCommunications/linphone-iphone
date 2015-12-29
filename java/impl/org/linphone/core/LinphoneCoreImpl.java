@@ -25,6 +25,8 @@ import java.io.IOException;
 
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCoreListener;
+import org.linphone.core.LinphoneProxyConfigImpl;
+
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
