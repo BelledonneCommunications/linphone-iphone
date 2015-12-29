@@ -145,4 +145,14 @@ public interface LinphoneFriend {
 	 * @return The reference key of the friend.
 	 **/
 	String getRefKey();
+	/**
+	 * Set a name for this friend
+	 * @param name
+	 */
+	void setName(String name);
+	/**
+	 * get name of this friend
+	 * @return
+	 */
+	String getName();
 }
