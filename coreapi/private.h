@@ -111,6 +111,11 @@ extern "C" {
 #endif
 #endif
 #endif
+#ifdef _MSC_VER
+#if (_MSC_VER >= 1900)
+#define LINPHONE_MSC_VER_GREATER_19
+#endif
+#endif
 
 struct _LinphoneCallParams{
 	belle_sip_object_t base;
