@@ -194,6 +194,7 @@ test_t vcard_tests[] = {
 	{ "Friends storage in sqlite database", friends_sqlite_storage },
 #endif
 #endif
+	{ },
 };
 
 test_suite_t vcard_test_suite = {
