@@ -4969,7 +4969,7 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	jname = ((tmp = linphone_content_get_name(icontent))) ? env->NewStringUTF(tmp) : NULL;
 	jsize = (jint) linphone_content_get_size(icontent);
 
-	data = linphone_content_get_buffer(icontent);
+	data = (!linphone_content_is_multipart(icontent) ? linphone_content_get_buffer(icontent) : NULL);
 	if (data){
 		jdata = env->NewByteArray(linphone_content_get_size(icontent));
 		env->SetByteArrayRegion(jdata, 0, linphone_content_get_size(icontent), (jbyte*)data);
