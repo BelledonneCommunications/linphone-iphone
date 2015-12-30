@@ -157,7 +157,7 @@ static void presence_activity_delete(LinphonePresenceActivity *activity) {
 static time_t parse_timestamp(const char *timestamp) {
 	struct tm ret;
 	time_t seconds;
-#ifdef LINPHONE_WINDOWS_UNIVERSAL
+#if defined(LINPHONE_WINDOWS_UNIVERSAL) || defined(LINPHONE_MSC_VER_GREATER_19)
 	long adjust_timezone;
 #else
 	time_t adjust_timezone;
@@ -174,7 +174,7 @@ static time_t parse_timestamp(const char *timestamp) {
 		ms_error("mktime() failed: %s", strerror(errno));
 		return (time_t)-1;
 	}
-#ifdef LINPHONE_WINDOWS_UNIVERSAL
+#if defined(LINPHONE_WINDOWS_UNIVERSAL) || defined(LINPHONE_MSC_VER_GREATER_19)
 	_get_timezone(&adjust_timezone);
 #else
 	adjust_timezone = timezone;
