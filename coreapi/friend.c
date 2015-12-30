@@ -156,7 +156,7 @@ void* linphone_friend_get_user_data(const LinphoneFriend *lf){
 }
 
 bool_t linphone_friend_in_list(const LinphoneFriend *lf){
-	return lf->lc!=NULL;
+	return lf->in_list;
 }
 
 void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result){
@@ -528,7 +528,7 @@ void linphone_friend_edit(LinphoneFriend *fr) {
 
 void linphone_friend_done(LinphoneFriend *fr) {
 	ms_return_if_fail(fr);
-	if (!fr->lc) return;
+	if (!fr->lc || !fr->in_list) return;
 	linphone_friend_apply(fr, fr->lc);
 	linphone_friend_save(fr, fr->lc);
 }
@@ -548,7 +548,7 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
 		lc->subscribers = ms_list_remove(lc->subscribers, lf);
 		linphone_friend_unref(lf);
 	}
-	lf->lc = lc;
+	lf->lc = lc; /*I would prefer this to be done in linphone_friend_list_add_friend()*/
 	if (linphone_core_ready(lc)) linphone_friend_apply(lf, lc);
 	else lf->commit = TRUE;
 	linphone_friend_save(lf, lc);

@@ -22,8 +22,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONE_FRIENDLIST_H_
 
 
+#ifdef IN_LINPHONE
 #include "linphonefriend.h"
 #include "linphonepresence.h"
+#else
+#include "linphone/linphonefriend.h"
+#include "linphone/linphonepresence.h"
+#endif
 
 
 #ifdef __cplusplus

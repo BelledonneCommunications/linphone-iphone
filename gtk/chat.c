@@ -81,6 +81,12 @@ char *linphone_gtk_message_storage_get_db_file(const char *filename){
 	return db_file;
 }
 
+void linphone_gtk_mark_chat_read(LinphoneChatRoom *cr) {
+	linphone_chat_room_mark_as_read(cr);
+#ifdef __APPLE__
+	linphone_gtk_update_badge_count();
+#endif
+}
 
 void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 	GtkWidget *main_window=linphone_gtk_get_main_window ();
@@ -91,7 +97,7 @@ void linphone_gtk_quit_chatroom(LinphoneChatRoom *cr) {
 
 	g_return_if_fail(w!=NULL);
 	gtk_notebook_remove_page(GTK_NOTEBOOK(nb),gtk_notebook_page_num(GTK_NOTEBOOK(nb),w));
-	linphone_chat_room_mark_as_read(cr);
+	linphone_gtk_mark_chat_read(cr);
 	g_object_set_data(G_OBJECT(friendlist),"chatview",NULL);
 	from=g_object_get_data(G_OBJECT(w),"from_message");
 	if (from){
@@ -280,7 +286,7 @@ void linphone_gtk_compose_text(void) {
 	LinphoneChatRoom *cr=g_object_get_data(G_OBJECT(w),"cr");
 	if (cr) {
 		linphone_chat_room_compose(cr);
-		linphone_chat_room_mark_as_read(cr);
+		linphone_gtk_mark_chat_read(cr);
 		linphone_gtk_friend_list_update_button_display(GTK_TREE_VIEW(friendlist));
 	}
 }
@@ -341,7 +347,7 @@ void display_history_message(GtkWidget *chat_view,MSList *messages,const Linphon
 			g_object_set_data(G_OBJECT(chat_view),"from_message",NULL);
 			g_free(tmp);
 		}
-		
+
 		linphone_gtk_free_list(messages);
 	}
 }
@@ -381,7 +387,7 @@ static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent 
 		LinphoneChatRoom *chat_room = (LinphoneChatRoom *)g_object_get_data(G_OBJECT(chat_view), "cr");
 		GtkWidget *main_window = linphone_gtk_get_main_window();
 		GtkWidget *friendlist = linphone_gtk_get_widget(main_window, "contact_list");
-		
+
 		gtk_text_iter_backward_to_tag_toggle(&uri_begin, tag);
 		gtk_text_iter_forward_to_tag_toggle(&uri_end, tag);
 		uri = gtk_text_iter_get_slice(&uri_begin, &uri_end);
@@ -393,10 +399,10 @@ static gboolean link_event_handler(GtkTextTag *tag, GObject *text_view,GdkEvent 
 			gtk_menu_popup(menu, NULL, NULL, NULL, NULL, 3, gdk_event_get_time(event));
 		}
 		g_free(uri);
-		
-		linphone_chat_room_mark_as_read(chat_room);
+
+		linphone_gtk_mark_chat_read(chat_room);
 		linphone_gtk_friend_list_update_button_display(GTK_TREE_VIEW(friendlist));
-		
+
 		return TRUE;
 	}
 	return FALSE;

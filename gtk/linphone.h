@@ -361,3 +361,8 @@ LINPHONE_PUBLIC bool_t linphone_gtk_is_friend(LinphoneCore *lc, const char *cont
 LINPHONE_PUBLIC gboolean linphone_gtk_auto_answer_enabled(void);
 LINPHONE_PUBLIC void linphone_gtk_update_status_bar_icons(void);
 LINPHONE_PUBLIC void linphone_gtk_enable_auto_answer(GtkToggleButton *checkbox, gpointer user_data);
+
+LINPHONE_PUBLIC void linphone_gtk_mark_chat_read(LinphoneChatRoom *cr);
+#ifdef __APPLE__
+LINPHONE_PUBLIC void linphone_gtk_update_badge_count();
+#endif

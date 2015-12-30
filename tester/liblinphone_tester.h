@@ -29,6 +29,12 @@
 #include "config.h"
 #endif
 
+
+#ifdef _MSC_VER
+#define popen _popen
+#define pclose _pclose
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

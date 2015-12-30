@@ -266,6 +266,16 @@ bool_t sal_media_description_has_avpf(const SalMediaDescription *md) {
 	return TRUE;
 }
 
+bool_t sal_media_description_has_implicit_avpf(const SalMediaDescription *md) {
+    int i;
+    if (md->nb_streams == 0) return FALSE;
+    for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+        if (!sal_stream_description_active(&md->streams[i])) continue;
+        if (sal_stream_description_has_implicit_avpf(&md->streams[i]) != TRUE) return FALSE;
+    }
+    return TRUE;
+}
+
 bool_t sal_media_description_has_srtp(const SalMediaDescription *md) {
 	int i;
 	if (md->nb_streams == 0) return FALSE;

@@ -116,11 +116,13 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 #define SOUNDS_PREFIX
 #endif
 /* relative path where is stored local ring*/
-#define LOCAL_RING SOUNDS_PREFIX "rings/oldphone.wav"
+#define LOCAL_RING SOUNDS_PREFIX "rings/oldphone-mono.wav"
+#define LOCAL_RING_MKV SOUNDS_PREFIX "rings/notes_of_the_optimistic.mkv"
 /* same for remote ring (ringback)*/
 #define REMOTE_RING SOUNDS_PREFIX "ringback.wav"
-#define HOLD_MUSIC SOUNDS_PREFIX "rings/toy-mono.wav"
 
+#define HOLD_MUSIC SOUNDS_PREFIX "toy-mono.wav"
+#define HOLD_MUSIC_MKV SOUNDS_PREFIX "dont_wait_too_long.mkv"
 
 extern SalCallbacks linphone_sal_callbacks;
 
@@ -815,6 +817,20 @@ static void build_sound_devices_table(LinphoneCore *lc){
 	if (old!=NULL) ms_free(old);
 }
 
+static const char *get_default_local_ring(LinphoneCore * lc){
+	if (linphone_core_file_format_supported(lc, "mkv")){
+		return PACKAGE_SOUND_DIR "/" LOCAL_RING_MKV;
+	}
+	return PACKAGE_SOUND_DIR "/" LOCAL_RING;
+}
+
+static const char *get_default_onhold_music(LinphoneCore * lc){
+	if (linphone_core_file_format_supported(lc, "mkv")){
+		return PACKAGE_SOUND_DIR "/" HOLD_MUSIC_MKV;
+	}
+	return PACKAGE_SOUND_DIR "/" HOLD_MUSIC;
+}
+
 static void sound_config_read(LinphoneCore *lc)
 {
 	int tmp;
@@ -870,15 +886,11 @@ static void sound_config_read(LinphoneCore *lc)
 	linphone_core_set_sound_source(lc,tmpbuf[0]);
 */
 
-	tmpbuf=PACKAGE_SOUND_DIR "/" LOCAL_RING;
+	tmpbuf = get_default_local_ring(lc);
 	tmpbuf=lp_config_get_string(lc->config,"sound","local_ring",tmpbuf);
 	if (ortp_file_exist(tmpbuf)==-1) {
 		ms_warning("%s does not exist",tmpbuf);
-		tmpbuf=PACKAGE_SOUND_DIR "/" LOCAL_RING;
-	}
-	if (strstr(tmpbuf,".wav")==NULL){
-		/* it currently uses old sound files, so replace them */
-		tmpbuf=PACKAGE_SOUND_DIR "/" LOCAL_RING;
+		tmpbuf = get_default_local_ring(lc);
 	}
 	linphone_core_set_ring(lc,tmpbuf);
 
@@ -893,7 +905,7 @@ static void sound_config_read(LinphoneCore *lc)
 	}
 	linphone_core_set_ringback(lc,tmpbuf);
 
-	linphone_core_set_play_file(lc,lp_config_get_string(lc->config,"sound","hold_music",PACKAGE_SOUND_DIR "/" HOLD_MUSIC));
+	linphone_core_set_play_file(lc,lp_config_get_string(lc->config,"sound","hold_music", get_default_onhold_music(lc)));
 	lc->sound_conf.latency=0;
 #ifndef __ios
 	tmp=TRUE;

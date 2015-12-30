@@ -291,7 +291,10 @@ void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_
 }
 
 LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
-	if ((lf->lc != NULL) || (lf->uri == NULL)) return LinphoneFriendListInvalidFriend;
+	if (lf->uri == NULL || lf->in_list) {
+		ms_error("linphone_friend_list_add_friend(): invalid friend");
+		return LinphoneFriendListInvalidFriend;
+	}
 	if (ms_list_find(list->friends, lf) != NULL) {
 		char *tmp = NULL;
 		const LinphoneAddress *addr = linphone_friend_get_address(lf);
@@ -299,6 +302,7 @@ LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *lis
 		ms_warning("Friend %s already in list [%s], ignored.", tmp ? tmp : "unknown", list->display_name);
 		if (tmp) ms_free(tmp);
 	} else {
+		lf->in_list = TRUE;
 		return linphone_friend_list_import_friend(list, lf);
 	}
 	return LinphoneFriendListOK;
@@ -318,7 +322,8 @@ LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *
 	linphone_core_remove_friend_from_db(lf->lc, lf);
 #endif
 	
-	linphone_friend_unref((LinphoneFriend *)elem->data);
+	lf->in_list = FALSE;
+	linphone_friend_unref(lf);
 	list->friends = ms_list_remove_link(list->friends, elem);
 	return LinphoneFriendListOK;
 }

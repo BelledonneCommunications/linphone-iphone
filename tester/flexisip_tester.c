@@ -73,6 +73,11 @@ static void message_forking(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
+	
+	/*wait a bit that 200Ok for MESSAGE are sent to server before shuting down the cores, because otherwise Flexisip will consider the messages
+	 * as not delivered and will expedite them in the next test, after receiving the REGISTER from marie's instances*/
+	wait_for_list(lcs, NULL, 0, 2000);
+	
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
@@ -92,6 +97,13 @@ static void message_forking_with_unreachable_recipients(void) {
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
 	lcs=ms_list_append(lcs,marie3->lc);
+	
+	/*the following lines are to workaround a problem with messages sent by a previous test (Message forking) that arrive together with REGISTER responses,
+	 * because the ForkMessageContext is not terminated at flexisip side if Message forking test is passing fast*/
+	wait_for_list(lcs,NULL,0,1000);
+	marie->stat.number_of_LinphoneMessageReceived = 0;
+	marie2->stat.number_of_LinphoneMessageReceived = 0;
+	marie3->stat.number_of_LinphoneMessageReceived = 0;
 
 	/*marie2 and marie3 go offline*/
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
@@ -134,6 +146,14 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	lcs=ms_list_append(lcs,marie2->lc);
 	lcs=ms_list_append(lcs,marie3->lc);
 
+	/*the following lines are to workaround a problem with messages sent by a previous test (Message forking) that arrive together with REGISTER responses,
+	 * because the ForkMessageContext is not terminated at flexisip side if Message forking test is passing fast*/
+	wait_for_list(lcs,NULL,0,1000);
+	marie->stat.number_of_LinphoneMessageReceived = 0;
+	marie2->stat.number_of_LinphoneMessageReceived = 0;
+	marie3->stat.number_of_LinphoneMessageReceived = 0;
+
+	
 	/*All marie's device go offline*/
 	linphone_core_set_network_reachable(marie->lc,FALSE);
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
@@ -909,7 +929,7 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
 	
-	if (TRUE/*sipp_out*/) {
+	if (sipp_out) {
 		/*wait for marie status*/
 		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
 		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");

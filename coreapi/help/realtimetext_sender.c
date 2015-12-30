@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 /**
- * @defgroup real_time_text Real Time Text Sender
+ * @defgroup real_time_text_sender Real Time Text Sender
  * @ingroup tutorials
  This program just send chat message in real time to dest uri. Use realtimetext_receiver to receive  message.
  usage: ./realtimetext_sender sip:localhost:5060

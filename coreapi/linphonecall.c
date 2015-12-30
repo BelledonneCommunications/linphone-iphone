@@ -1452,6 +1452,7 @@ void linphone_call_fix_call_parameters(LinphoneCall *call, SalMediaDescription *
 	if (rmd) {
 		linphone_call_compute_streams_indexes(call, rmd);
 		linphone_call_update_biggest_desc(call, rmd);
+        call->params->implicit_rtcp_fb &= sal_media_description_has_implicit_avpf(rmd);
 	}
 	rcp = linphone_call_get_remote_params(call);
 	if (rcp){
@@ -1767,9 +1768,8 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		break;
 	case LinphoneMediaEncryptionNone:
 		call->current_params->media_encryption=LinphoneMediaEncryptionNone;
-		break;
+        break;
 	}
-
     call->current_params->avpf_enabled = linphone_call_all_streams_avpf_enabled(call) && sal_media_description_has_avpf(md);
 	if (call->current_params->avpf_enabled == TRUE) {
 		call->current_params->avpf_rr_interval = linphone_call_get_avpf_rr_interval(call);
@@ -1780,6 +1780,7 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		const char *rtp_addr;
 
 		SalStreamDescription *sd=sal_media_description_find_best_stream(md,SalAudio);
+     
 		call->current_params->audio_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneMediaDirectionInactive;
 		if (call->current_params->audio_dir != LinphoneMediaDirectionInactive) {
 			rtp_addr = sd->rtp_addr[0]!='\0' ? sd->rtp_addr : call->resultdesc->addr;
@@ -1788,6 +1789,7 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 			call->current_params->audio_multicast_enabled = FALSE;
 
 		sd=sal_media_description_find_best_stream(md,SalVideo);
+        call->current_params->implicit_rtcp_fb = sd ? sal_stream_description_has_implicit_avpf(sd): FALSE;
 		call->current_params->video_dir=sd ? media_direction_from_sal_stream_dir(sd->dir) : LinphoneMediaDirectionInactive;
 		if (call->current_params->video_dir != LinphoneMediaDirectionInactive) {
 			rtp_addr = sd->rtp_addr[0]!='\0' ? sd->rtp_addr : call->resultdesc->addr;
@@ -1795,7 +1797,8 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 		} else
 			call->current_params->video_multicast_enabled = FALSE;
 
-		sd=sal_media_description_find_best_stream(md,SalText);
+     
+
 	}
 
 	return call->current_params;
@@ -2043,10 +2046,11 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 void linphone_call_send_vfu_request(LinphoneCall *call) {
 #ifdef VIDEO_ENABLED
 	const LinphoneCallParams *current_params = linphone_call_get_current_params(call);
-	if (current_params->avpf_enabled && call->videostream && media_stream_get_state((const MediaStream *)call->videostream) == MSStreamStarted) {
+	if ((current_params->avpf_enabled || current_params->implicit_rtcp_fb  )&& call->videostream && media_stream_get_state((const MediaStream *)call->videostream) == MSStreamStarted) { // || sal_media_description_has_implicit_avpf((const SalMediaDescription *)call->resultdesc)
 		ms_message("Request Full Intra Request on call [%p]", call);
 		video_stream_send_fir(call->videostream);
 	} else if (call->core->sip_conf.vfu_with_info) {
+        ms_message("Request SIP INFO FIR on call [%p]", call);
 		if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
 			sal_call_send_vfu_request(call->op);
 	} else {

@@ -21,17 +21,16 @@
 ############################################################################
 
 set(RING_FILES
-	bigben.wav
 	oldphone-mono-30s.caf
 	oldphone-mono.wav
-	oldphone.wav
-	orig.wav
-	rock.wav
-	sweet.wav
-	synth.wav
-	tapping.wav
-	toy-mono.wav
+	four_hands_together.mkv
+	house_keeping.mkv
+	its_a_game.mkv
+	leaving_dreams.mkv
+	notes_of_the_optimistic.mkv
+	soft_as_snow.mkv
 )
+
 
 install(FILES ${RING_FILES}
 	DESTINATION ${PACKAGE_RING_DIR}
