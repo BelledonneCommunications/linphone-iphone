@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "vcard.h"
 
 struct _LinphoneVCard {
+	void *dummy;
 };
 
 LinphoneVCard* linphone_vcard_new(void) {
