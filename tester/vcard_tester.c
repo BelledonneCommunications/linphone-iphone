@@ -182,6 +182,10 @@ end:
 	linphone_core_manager_destroy(manager);
 }
 #endif
+#else
+static void dummy_test(void) {
+	
+}
 #endif
 
 test_t vcard_tests[] = {
@@ -192,9 +196,10 @@ test_t vcard_tests[] = {
 	{ "Friends working if no db set", friends_if_no_db_set },
 	{ "Friends storage migration from rc to db", friends_migration },
 	{ "Friends storage in sqlite database", friends_sqlite_storage },
+#endif	
+#else
+	{ "Dummy test", dummy_test }
 #endif
-#endif
-	{ },
 };
 
 test_suite_t vcard_test_suite = {
