@@ -381,6 +381,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 			int expires = lp_config_get_int(list->lc->config, "sip", "rls_presence_expires", 3600);
 			list->expected_notification_version = 0;
 			list->event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
+			linphone_event_set_internal(list->event, TRUE);
 			linphone_event_add_custom_header(list->event, "Require", "recipient-list-subscribe");
 			linphone_event_add_custom_header(list->event, "Supported", "eventlist");
 			linphone_event_add_custom_header(list->event, "Accept", "multipart/related, application/pidf+xml, application/rlmi+xml");

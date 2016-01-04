@@ -976,6 +976,7 @@ struct _LinphoneEvent{
 	int expires;
 	bool_t terminating;
 	bool_t is_out_of_dialog_op; /*used for out of dialog notify*/
+	bool_t internal;
 };
 
 
@@ -1103,6 +1104,8 @@ LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneS
  * Useful for out of dialog notify
  * */
 LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name);
+void linphone_event_set_internal(LinphoneEvent *lev, bool_t internal);
+bool_t linphone_event_is_internal(LinphoneEvent *lev);
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state);
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
@@ -1420,6 +1423,10 @@ typedef struct _VTableReference  VTableReference;
 void v_table_reference_destroy(VTableReference *ref);
 
 void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease);
+
+void linphone_core_v_table_set_internal(LinphoneCoreVTable *table, bool_t internal);
+bool_t linphone_core_v_table_is_internal(LinphoneCoreVTable *table);
+
 #ifdef VIDEO_ENABLED
 LINPHONE_PUBLIC MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);
 MSWebCam *get_nowebcam_device(void);

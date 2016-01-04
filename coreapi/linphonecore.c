@@ -1685,6 +1685,8 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	const char *remote_provisioning_uri = NULL;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
 	LinphoneCoreVTable *internal_vtable = linphone_core_v_table_new();
+
+	linphone_core_v_table_set_internal(internal_vtable, TRUE);
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
 	lc->config=lp_config_ref(config);

@@ -33,6 +33,14 @@ void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table) {
 	return table->user_data;
 }
 
+void linphone_core_v_table_set_internal(LinphoneCoreVTable *table, bool_t internal) {
+	table->internal = internal;
+}
+
+bool_t linphone_core_v_table_is_internal(LinphoneCoreVTable *table) {
+	return table->internal;
+}
+
 void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
 	ms_free(table);
 }
@@ -61,6 +69,17 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	bool_t has_cb = FALSE; \
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
 		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name) {\
+			lc->current_vtable->function_name(__VA_ARGS__);\
+			has_cb = TRUE;\
+		}\
+	if (has_cb) ms_message("Linphone core [%p] notifying [%s]",lc,#function_name)
+
+#define NOTIFY_IF_EXIST_INTERNAL(function_name, internal, ...) \
+	MSList* iterator; \
+	VTableReference *ref; \
+	bool_t has_cb = FALSE; \
+	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
+		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name && (linphone_core_v_table_is_internal(lc->current_vtable) == internal)) {\
 			lc->current_vtable->function_name(__VA_ARGS__);\
 			has_cb = TRUE;\
 		}\
@@ -229,7 +248,7 @@ void linphone_core_notify_network_reachable(LinphoneCore *lc, bool_t reachable) 
 }
 
 void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
-	NOTIFY_IF_EXIST(notify_received, lc,lev,notified_event,body);
+	NOTIFY_IF_EXIST_INTERNAL(notify_received, linphone_event_is_internal(lev), lc, lev, notified_event, body);
 	cleanup_dead_vtable_refs(lc);
 }
 
