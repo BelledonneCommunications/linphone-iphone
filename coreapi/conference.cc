@@ -562,7 +562,7 @@ RemoteConference::RemoteConference(LinphoneCore *core):
 	m_vtable->call_state_changed = callStateChangedCb;
 	m_vtable->transfer_state_changed = transferStateChanged;
 	linphone_core_v_table_set_user_data(m_vtable, this);
-	linphone_core_add_listener(m_core, m_vtable);
+	_linphone_core_add_listener(m_core, m_vtable, FALSE, TRUE);
 }
 
 RemoteConference::~RemoteConference() {
@@ -609,7 +609,7 @@ int RemoteConference::addParticipant(LinphoneCall *call) {
 int RemoteConference::removeParticipant(const LinphoneAddress *uri) {
 	SalOp *op;
 	const char *from;
-	LinphoneAddress *refer_to;
+	char *tmp, *refer_to;
 	int res;
 	
 	switch(m_state) {
@@ -620,10 +620,11 @@ int RemoteConference::removeParticipant(const LinphoneAddress *uri) {
 			sal_op_set_from(op, from);
 			sal_op_set_to(op, m_focusContact);
 			
-			refer_to = linphone_address_clone(uri);
-			linphone_address_set_header(refer_to, "method", "BYE");
-			res = sal_call_refer(op, linphone_address_as_string(refer_to));
-			linphone_address_unref(refer_to);
+			tmp = linphone_address_as_string_uri_only(uri);
+			refer_to = ms_strdup_printf("%s;method=BYE", tmp);
+			res = sal_call_refer(op, refer_to);
+			ms_free(tmp);
+			ms_free(refer_to);
 			
 			if(res == 0) return Conference::removeParticipant(uri);
 			else return -1;
