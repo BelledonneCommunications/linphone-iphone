@@ -265,6 +265,7 @@ LinphoneCoreManager* linphone_core_manager_init(const char* rc_file) {
 	char *rc_path = NULL;
 	char *hellopath = bc_tester_res("sounds/hello8000.wav");
 	mgr->number_of_cunit_error_at_creation = CU_get_number_of_failures();
+	linphone_core_v_table_set_internal(&mgr->v_table, TRUE);
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
 	mgr->v_table.call_state_changed=call_state_changed;
