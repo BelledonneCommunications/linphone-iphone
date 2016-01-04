@@ -480,6 +480,11 @@ static void test_subscribe_notify_publish(void) {
 	/*wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_NotifyPresenceReceived,4,5000);
 	BC_ASSERT_EQUAL(LinphonePresenceActivityOffline,linphone_friend_get_status(lf), int, "%d");
 	 */
+	
+	/*Expect a notify at publication expiration*/
+	wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyPresenceReceived,6,5000);
+	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
+	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -512,13 +517,13 @@ static void test_forked_subscribe_notify_publish(void) {
 
 	/*enable publish*/
 
-	linphone_core_get_default_proxy(marie->lc,&proxy);
+	proxy = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_proxy_config_edit(proxy);
 	linphone_proxy_config_enable_publish(proxy,TRUE);
 	linphone_proxy_config_set_publish_expires(proxy,3);
 	linphone_proxy_config_done(proxy);
 
-	linphone_core_get_default_proxy(marie2->lc,&proxy);
+	proxy = linphone_core_get_default_proxy_config(marie2->lc);
 	linphone_proxy_config_edit(proxy);
 	linphone_proxy_config_enable_publish(proxy,TRUE);
 	linphone_proxy_config_set_publish_expires(proxy,3);
@@ -678,6 +683,17 @@ static void test_presence_list(void) {
 	enable_publish(marie, FALSE);
 	enable_publish(pauline, FALSE);
 
+	wait_for_list(lcs, &pauline->stat.number_of_NotifyReceived, 2, 2000);
+	wait_for_list(lcs, &marie->stat.number_of_NotifyReceived, 2, 2000);
+	wait_for_list(lcs, &laure->stat.number_of_NotifyReceived, 2, 2000);
+	
+	lf = linphone_friend_list_find_friend_by_uri(pauline->lc->friendlist, marie_identity);
+	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
+	lf = linphone_friend_list_find_friend_by_uri(pauline->lc->friendlist, pauline_identity);
+	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
+	lf = linphone_friend_list_find_friend_by_uri(pauline->lc->friendlist, laure_identity);
+	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
+	
 	linphone_core_manager_destroy(laure);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
