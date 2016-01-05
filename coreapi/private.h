@@ -972,6 +972,7 @@ struct _LinphoneCore
 	jmethodID multicast_lock_acquire_id;
 	jmethodID multicast_lock_release_id;
 #endif
+	char *carddav_server_url;
 };
 
 

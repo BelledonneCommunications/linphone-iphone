@@ -7436,3 +7436,13 @@ const char *linphone_stream_type_to_string(const LinphoneStreamType type) {
 	}
 	return "INVALID";
 }
+
+void linphone_core_set_carddav_server_url(LinphoneCore *lc, const char *carddav_server_url) {
+	if (lc->carddav_server_url) {
+		ms_free(lc->carddav_server_url);
+		lc->carddav_server_url = NULL;
+	}
+	if (carddav_server_url) {
+		lc->carddav_server_url = ms_strdup(carddav_server_url);
+	}
+}

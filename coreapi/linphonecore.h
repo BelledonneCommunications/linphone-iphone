@@ -4252,6 +4252,13 @@ LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* trans
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCallParams *linphone_core_create_default_call_parameters(LinphoneCore *lc);
 
+/**
+ * Sets the CardDAV server URL
+ * @param lc LinphoneCore object
+ * @param carddav_server_url the URL to the CardDAV server
+ */
+LINPHONE_PUBLIC void linphone_core_set_carddav_server_url(LinphoneCore *lc, const char *carddav_server_url);
+
 #ifdef __cplusplus
 }
 #endif
