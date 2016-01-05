@@ -19,6 +19,7 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
+#include "carddav.h"
 
 #include <time.h>
 
@@ -182,6 +183,27 @@ end:
 	linphone_core_manager_destroy(manager);
 }
 #endif
+
+static void carddav_sync_done(LinphoneCardDavContext *c, bool_t success, const char *message) {
+	BC_ASSERT_TRUE(success);
+	linphone_carddav_destroy(c);
+}
+
+static void carddav_sync(void) {
+	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
+	LinphoneCardDavContext *c = linphone_core_create_carddav_context(manager->lc);
+	
+	BC_ASSERT_PTR_NOT_NULL_FATAL(c);
+	BC_ASSERT_PTR_NOT_NULL(c->server_url);
+	BC_ASSERT_PTR_NOT_NULL(c->username);
+	BC_ASSERT_PTR_NOT_NULL(c->ha1);
+	
+	linphone_carddav_set_synchronization_done_callback(c, carddav_sync_done);
+	linphone_carddav_synchronize(c);
+	
+	wait_for_until(manager->lc, NULL, NULL, 1, 1000);
+	linphone_core_manager_destroy(manager);
+}
 #else
 static void dummy_test(void) {
 	
@@ -196,7 +218,8 @@ test_t vcard_tests[] = {
 	{ "Friends working if no db set", friends_if_no_db_set },
 	{ "Friends storage migration from rc to db", friends_migration },
 	{ "Friends storage in sqlite database", friends_sqlite_storage },
-#endif	
+#endif
+	{ "CardDAV synchronization", carddav_sync }
 #else
 	{ "Dummy test", dummy_test }
 #endif

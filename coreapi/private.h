@@ -972,7 +972,6 @@ struct _LinphoneCore
 	jmethodID multicast_lock_acquire_id;
 	jmethodID multicast_lock_release_id;
 #endif
-	char *carddav_server_url;
 };
 
 
@@ -1223,9 +1222,57 @@ struct _LinphoneAccountCreator {
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);
 
+/*****************************************************************************
+ * CardDAV interface                                                         *
+ ****************************************************************************/
+
+struct _LinphoneCardDavContext {
+	LinphoneCore *lc;
+	int ctag;
+	const char *server_url;
+	const char *username;
+	const char *password;
+	const char *ha1;
+	void *user_data;
+	LinphoneCardDavContactCreatedCb contact_created_cb;
+	LinphoneCardDavContactUpdatedCb contact_updated_cb;
+	LinphoneCardDavContactRemovedCb contact_removed_cb;
+	LinphoneCardDavSynchronizationDoneCb sync_done_cb;
+};
+
+struct _LinphoneCardDavQuery {
+	LinphoneCardDavContext *context;
+	const char *url;
+	const char *method;
+	const char *body;
+	const char *depth;
+	LinphoneCardDavQueryType type;
+	LinphoneCardDavQueryStatus status;
+};
+
+struct _LinphoneCardDavResponse {
+	LinphoneCardDavContext *context;
+	const char *etag;
+	const char *url;
+	const char *vcard;
+};
+
+/**
+ * Sets the CardDAV server current cTag
+ * @param lc LinphoneCore object
+ * @param ctag the current cTag for the CardDAV server
+ */
+void linphone_core_set_carddav_current_ctag(LinphoneCore *lc, int ctag);
+
+/**
+ * Gets the CardDAV server last cTag
+ * @param lc LinphoneCore object
+ * @return the last cTag for the CardDAV server if set, otherwise -1
+ */
+int linphone_core_get_carddav_last_ctag(LinphoneCore *lc);
 
 /*****************************************************************************
- * REMOTE PROVISIONING FUNCTIONS                                                     *
+ * REMOTE PROVISIONING FUNCTIONS                                             *
  ****************************************************************************/
 
 void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
@@ -1233,7 +1280,7 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 LINPHONE_PUBLIC int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path);
 
 /*****************************************************************************
- * Player interface
+ * Player interface                                                          *
  ****************************************************************************/
 
 struct _LinphonePlayer{

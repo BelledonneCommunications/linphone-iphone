@@ -91,10 +91,9 @@ liblinphone_la_SOURCES=\
 	xml.c \
 	xmlrpc.c \
 	vtables.c \
-	carddav.cc \
+	carddav.c \
 	$(GITVERSION_FILE)
 
-liblinphone_la_CXXFLAGS=-std=c++11
 if BUILD_UPNP
 liblinphone_la_SOURCES+=upnp.c upnp.h
 endif
@@ -121,6 +120,7 @@ endif
 
 if BUILD_VCARD
 liblinphone_la_SOURCES+=vcard.cc vcard.h
+liblinphone_la_CXXFLAGS=-std=c++11
 else
 liblinphone_la_SOURCES+=vcard_stubs.c vcard.h
 endif

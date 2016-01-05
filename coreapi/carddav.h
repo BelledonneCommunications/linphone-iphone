@@ -23,10 +23,118 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef __cplusplus
 extern "C" {
 #endif
+	
+typedef struct _LinphoneCardDavContext LinphoneCardDavContext;
 
-#include "linphonecore.h"
+typedef enum _LinphoneCardDavQueryType {
+	LinphoneCardDavQueryTypePropfind,
+	LinphoneCardDavQueryTypeAddressbookQuery,
+	LinphoneCardDavQueryTypeAddressbookMultiget
+} LinphoneCardDavQueryType;
 
-LINPHONE_PUBLIC void linphone_core_start_carddav_sync(LinphoneCore *lc);
+typedef enum _LinphoneCardDavQueryStatus {
+	LinphoneCardDavQueryStatusIdle,
+	LinphoneCardDavQueryStatusPending,
+	LinphoneCardDavQueryStatusOk,
+	LinphoneCardDavQueryStatusFailed
+} LinphoneCardDavQueryStatus;
+
+typedef struct _LinphoneCardDavQuery LinphoneCardDavQuery;
+
+typedef struct _LinphoneCardDavResponse LinphoneCardDavResponse;
+
+/**
+ * Callback used to notify a new contact has been created on the CardDAV server
+**/
+typedef void (*LinphoneCardDavContactCreatedCb)(LinphoneFriend *lf);
+
+/**
+ * Callback used to notify a contact has been updated on the CardDAV server
+**/
+typedef void (*LinphoneCardDavContactUpdatedCb)(LinphoneFriend *lf);
+
+/**
+ * Callback used to notify a contact has been removed on the CardDAV server
+**/
+typedef void (*LinphoneCardDavContactRemovedCb)(LinphoneFriend *lf);
+
+/**
+ * Callback used to notify a contact has been removed on the CardDAV server
+**/
+typedef void (*LinphoneCardDavSynchronizationDoneCb)(LinphoneCardDavContext *cdc, bool_t success, const char *message);
+
+/**
+ * Creates a CardDAV context for all related operations
+ * @param lc LinphoneCore object
+ * @return LinphoneCardDavContext object if vCard support is enabled and server URL is available, NULL otherwise
+ */
+LINPHONE_PUBLIC LinphoneCardDavContext* linphone_core_create_carddav_context(LinphoneCore *lc);
+
+/**
+ * Deletes a LinphoneCardDavContext object
+ * @param cdc LinphoneCardDavContext object
+ */
+LINPHONE_PUBLIC void linphone_carddav_destroy(LinphoneCardDavContext *cdc);
+
+/**
+ * Sets a user pointer to the LinphoneCardDAVContext object
+ * @param cdc LinphoneCardDavContext object
+ * @param ud The user data pointer
+ */
+LINPHONE_PUBLIC void linphone_carddav_set_user_data(LinphoneCardDavContext *cdc, void *ud);
+
+/**
+ * Gets the user pointer set in the LinphoneCardDAVContext object
+ * @param cdc LinphoneCardDavContext object
+ * @return The user data pointer if set, NULL otherwise
+ */
+LINPHONE_PUBLIC void* linphone_carddav_get_user_data(LinphoneCardDavContext *cdc);
+
+/**
+ * Starts a synchronization with the remote server to update local friends with server changes
+ * @param cdc LinphoneCardDavContext object
+ */
+LINPHONE_PUBLIC void linphone_carddav_synchronize(LinphoneCardDavContext *cdc);
+
+/**
+ * Sends a LinphoneFriend to the CardDAV server for update or creation
+ * @param cdc LinphoneCardDavContext object
+ * @param lf a LinphoneFriend object to update/create on the server
+ */
+LINPHONE_PUBLIC void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf);
+
+/**
+ * Deletes a LinphoneFriend on the CardDAV server 
+ * @param cdc LinphoneCardDavContext object
+ * @param lf a LinphoneFriend object to delete on the server
+ */
+LINPHONE_PUBLIC void linphone_carddav_delete_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf);
+
+/**
+ * Set the synchronization done callback.
+ * @param cdc LinphoneCardDavContext object
+ * @param cb The synchronization done callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_carddav_set_synchronization_done_callback(LinphoneCardDavContext *cdc, LinphoneCardDavSynchronizationDoneCb cb);
+
+/**
+ * Retrieves the current cTag value for the remote server
+ * @param cdc LinphoneCardDavContext object
+ */
+void linphone_carddav_get_current_ctag(LinphoneCardDavContext *cdc);
+
+/**
+ * Retrieves a list of all the vCards on server side to be able to detect changes
+ * @param cdc LinphoneCardDavContext object
+ */
+void linphone_carddav_fetch_vcards(LinphoneCardDavContext *cdc);
+
+/**
+ * Download asked vCards from the server
+ * @param cdc LinphoneCardDavContext object
+ * @param vcards_to_pull a MSList of LinphoneCardDavResponse objects with at least the url field filled
+ */
+void linphone_carddav_pull_vcards(LinphoneCardDavContext *cdc, MSList *vcards_to_pull);
 
 #ifdef __cplusplus
 }
