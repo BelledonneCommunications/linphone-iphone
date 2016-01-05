@@ -6352,10 +6352,10 @@ static void codecs_config_uninit(LinphoneCore *lc)
 void ui_config_uninit(LinphoneCore* lc)
 {
 	ms_message("Destroying friends.");
-	linphone_friend_list_unref(lc->friendlist);
+	_linphone_friend_list_release(lc->friendlist);
 	lc->friendlist = NULL;
 	if (lc->subscribers){
-		lc->subscribers = ms_list_free_with_data(lc->subscribers, (void (*)(void *))linphone_friend_unref);
+		lc->subscribers = ms_list_free_with_data(lc->subscribers, (void (*)(void *))_linphone_friend_release);
 	}
 	if (lc->presence_model) {
 		linphone_presence_model_unref(lc->presence_model);

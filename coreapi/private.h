@@ -393,8 +393,10 @@ const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphonePro
 
 void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list);
 void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, LinphoneEvent *lev, const LinphoneContent *body);
+void _linphone_friend_list_release(LinphoneFriendList *list);
 void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
+void _linphone_friend_release(LinphoneFriend *lf);
 void linphone_friend_update_subscribes(LinphoneFriend *fr, LinphoneProxyConfig *cfg, bool_t only_when_registered);
 void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence);
 void linphone_friend_add_incoming_subscription(LinphoneFriend *lf, SalOp *op);
