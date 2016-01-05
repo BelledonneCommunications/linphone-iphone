@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#import "private.h"
+#include "private.h"
 
 int linphone_ringtoneplayer_start(LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms) {
 	return linphone_ringtoneplayer_start_with_cb(rp, card, ringtone, loop_pause_ms, NULL, NULL);
@@ -26,7 +26,7 @@ int linphone_ringtoneplayer_start(LinphoneRingtonePlayer* rp, MSSndCard* card, c
 
 #ifdef __ios
 
-#import "ringtoneplayer_ios.h"
+#include "ringtoneplayer_ios.h"
 
 LinphoneRingtonePlayer* linphone_ringtoneplayer_new() {
 	return linphone_ringtoneplayer_ios_new();
