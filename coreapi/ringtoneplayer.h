@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef void (*LinphoneRingtonePlayerFunc)(LinphoneRingtonePlayer* rp, void* user_data, int status);
 
-LINPHONE_PUBLIC LinphoneRingtonePlayer* linphone_ringtoneplayer_new();
+LINPHONE_PUBLIC LinphoneRingtonePlayer* linphone_ringtoneplayer_new(void);
 LINPHONE_PUBLIC void linphone_ringtoneplayer_destroy(LinphoneRingtonePlayer* rp);
 
 LINPHONE_PUBLIC int linphone_ringtoneplayer_start(LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms);

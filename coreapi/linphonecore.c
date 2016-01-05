@@ -1732,7 +1732,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 
 	certificates_config_read(lc);
 
-	lc->ringtoneplayer = linphone_ringtoneplayer_new(lc);
+	lc->ringtoneplayer = linphone_ringtoneplayer_new();
 
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
 	if (remote_provisioning_uri == NULL) {
