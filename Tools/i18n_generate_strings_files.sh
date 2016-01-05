@@ -32,13 +32,16 @@ fi
 function generate_transifex_config {
 	res_name=$1
 	file_filter=$2
+	source_file=$(test -f ${file_filter/<lang>/en}&&echo ${file_filter/<lang>/en}||echo ${file_filter/<lang>/Base})
 	if ! grep -q $res_name $root_directory/.tx/config; then
 		echo "not found in .tx/config, adding it"
 		echo "
 [linphone-ios.$res_name]
-file_filter = $file_filter
 source_lang = en
-" >> $root_directory/.tx/config
+file_filter = $file_filter" >> $root_directory/.tx/config
+		if [ ! -z "$source_file" ]; then
+			echo "source_file = $source_file" >> $root_directory/.tx/config
+		fi
 	fi
 }
 
@@ -54,7 +57,7 @@ function generate_localizable_from_sources {
 	iconv -f utf-16 -t utf-8 $localizable_en > $localizable_en.tmp
 	IC_MSG_EN=$(sed -nE 's/"IC_MSG" = "(.*)";/\1/p' $localizable_en.tmp)
 	IM_MSG_EN=$(sed -nE 's/"IM_MSG" = "(.*)";/\1/p' $localizable_en.tmp)
-	IM_FULLMSG_EN=$(sed -nE 's/"IM_FULLMSG_EN" = "(.*)";/\1/p' $localizable_en.tmp)
+	IM_FULLMSG_EN=$(sed -nE 's/"IM_FULLMSG" = "(.*)";/\1/p' $localizable_en.tmp)
 	rm -f $localizable_en $localizable_en.tmp
 
 	find $root_directory/Classes -name '*.m' | xargs genstrings -u -a -o $(dirname $localizable_en)

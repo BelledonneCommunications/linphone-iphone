@@ -1,8 +1,8 @@
-"Prefix" = "Prefix";
-"Substitute + by 00" = "Substitute + by 00";
 "Send inband DTMFs" = "Send inband DTMFs";
 "Send SIP INFO DTMFs" = "Send SIP INFO DTMFs";
 "Incoming call timeout" = "Incoming call timeout";
 "In call timeout" = "In call timeout";
 "Voice mail URI" = "Voice mail URI";
 "Repeat call notification" = "Repeat call notification";
+"Ringtone" = "Ringtone";
+"Listen ringtone" = "Listen ringtone";

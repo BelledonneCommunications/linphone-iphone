@@ -157,9 +157,9 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 			break;
 		case LinphoneDateChatList:
 			if (sameDay) {
-				formatstr =
-					NSLocalizedString(@"HH:mm", @"Date formatting in Chat List, for current day (also see "
-												@"http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
+				formatstr = NSLocalizedString(
+					@"HH:mm", @"Date formatting in Chat List and Conversation bubbles, for current day (also see "
+							  @"http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
 			} else {
 				formatstr =
 					NSLocalizedString(@"MM/dd", @"Date formatting in Chat List, for all but current day (also see "
@@ -168,9 +168,9 @@ void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 			break;
 		case LinphoneDateChatBubble:
 			if (sameDay) {
-				formatstr =
-					NSLocalizedString(@"HH:mm", @"Date formatting in Conversation bubbles, for current day (also see "
-												@"http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
+				formatstr = NSLocalizedString(
+					@"HH:mm", @"Date formatting in Chat List and Conversation bubbles, for current day (also see "
+							  @"http://cybersam.com/ios-dev/quick-guide-to-ios-dateformatting)");
 			} else {
 				formatstr = NSLocalizedString(@"MM/dd - HH:mm",
 											  @"Date formatting in Conversation bubbles, for all but current day (also "

@@ -1,4 +1,4 @@
-"Remove Account" = "Remove Account";
+"More options" = "More options";
 "Default account" = "Default account";
 "Username" = "Username";
 "Display name" = "Display name";
@@ -9,4 +9,8 @@
 "Transport" = "Transport";
 "Outbound proxy" = "Outbound proxy";
 "AVPF" = "AVPF";
-"More options" = "More options";
+"Expire" = "Expire";
+"Prefix" = "Prefix";
+"Substitute + by 00" = "Substitute + by 00";
+"Account enabled" = "Account enabled";
+"Remove Account" = "Remove Account";

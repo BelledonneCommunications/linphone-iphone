@@ -3,201 +3,216 @@ host = https://www.transifex.com
 minimum_perc = 1
 
 [linphone-ios.localizablestrings]
-file_filter = Resources/<lang>.lproj/Localizable.strings
 source_lang = en
-
+file_filter = Resources/<lang>.lproj/Localizable.strings
+source_file = Resources/en.lproj/Localizable.strings
 
 [linphone-ios.aboutviewstrings]
-file_filter = Classes/<lang>.lproj/AboutView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/AboutView.strings
+source_file = Classes/Base.lproj/AboutView.strings
 
 [linphone-ios.assistantviewstrings]
-file_filter = Classes/<lang>.lproj/AssistantView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/AssistantView.strings
+source_file = Classes/Base.lproj/AssistantView.strings
 
 [linphone-ios.assistantviewscreensstrings]
-file_filter = Classes/<lang>.lproj/AssistantViewScreens.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/AssistantViewScreens.strings
+source_file = Classes/Base.lproj/AssistantViewScreens.strings
 
 [linphone-ios.callincomingviewstrings]
-file_filter = Classes/<lang>.lproj/CallIncomingView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/CallIncomingView.strings
+source_file = Classes/Base.lproj/CallIncomingView.strings
 
 [linphone-ios.calloutgoingviewstrings]
-file_filter = Classes/<lang>.lproj/CallOutgoingView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/CallOutgoingView.strings
+source_file = Classes/Base.lproj/CallOutgoingView.strings
 
 [linphone-ios.callviewstrings]
-file_filter = Classes/<lang>.lproj/CallView.strings
 source_lang = en
+file_filter = Classes/<lang>.lproj/CallView.strings
+source_file = Classes/Base.lproj/CallView.strings
 
+[linphone-ios.callviewipadstrings]
+source_lang = en
+file_filter = Classes/<lang>.lproj/CallView~ipad.strings
+source_file = Classes/Base.lproj/CallView~ipad.strings
 
 [linphone-ios.chatconversationcreateviewstrings]
-file_filter = Classes/<lang>.lproj/ChatConversationCreateView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/ChatConversationCreateView.strings
+source_file = Classes/Base.lproj/ChatConversationCreateView.strings
 
 [linphone-ios.chatconversationviewstrings]
-file_filter = Classes/<lang>.lproj/ChatConversationView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/ChatConversationView.strings
+source_file = Classes/Base.lproj/ChatConversationView.strings
 
 [linphone-ios.chatslistviewstrings]
-file_filter = Classes/<lang>.lproj/ChatsListView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/ChatsListView.strings
+source_file = Classes/Base.lproj/ChatsListView.strings
 
 [linphone-ios.contactdetailsviewstrings]
-file_filter = Classes/<lang>.lproj/ContactDetailsView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/ContactDetailsView.strings
+source_file = Classes/Base.lproj/ContactDetailsView.strings
 
 [linphone-ios.contactslistviewstrings]
-file_filter = Classes/<lang>.lproj/ContactsListView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/ContactsListView.strings
+source_file = Classes/Base.lproj/ContactsListView.strings
 
 [linphone-ios.dialerviewstrings]
-file_filter = Classes/<lang>.lproj/DialerView.strings
 source_lang = en
+file_filter = Classes/<lang>.lproj/DialerView.strings
+source_file = Classes/Base.lproj/DialerView.strings
 
+[linphone-ios.dialerviewipadstrings]
+source_lang = en
+file_filter = Classes/<lang>.lproj/DialerView~ipad.strings
+source_file = Classes/Base.lproj/DialerView~ipad.strings
 
 [linphone-ios.firstloginviewstrings]
-file_filter = Classes/<lang>.lproj/FirstLoginView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/FirstLoginView.strings
+source_file = Classes/Base.lproj/FirstLoginView.strings
 
 [linphone-ios.historydetailsviewstrings]
-file_filter = Classes/<lang>.lproj/HistoryDetailsView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/HistoryDetailsView.strings
+source_file = Classes/Base.lproj/HistoryDetailsView.strings
 
 [linphone-ios.historylistviewstrings]
-file_filter = Classes/<lang>.lproj/HistoryListView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/HistoryListView.strings
+source_file = Classes/Base.lproj/HistoryListView.strings
 
 [linphone-ios.imageviewstrings]
-file_filter = Classes/<lang>.lproj/ImageView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/ImageView.strings
+source_file = Classes/Base.lproj/ImageView.strings
 
 [linphone-ios.launchscreenstrings]
-file_filter = Classes/<lang>.lproj/LaunchScreen.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/LaunchScreen.strings
+source_file = Classes/Base.lproj/LaunchScreen.strings
 
 [linphone-ios.settingsviewstrings]
-file_filter = Classes/<lang>.lproj/SettingsView.strings
 source_lang = en
-
+file_filter = Classes/<lang>.lproj/SettingsView.strings
+source_file = Classes/Base.lproj/SettingsView.strings
 
 [linphone-ios.sidemenuviewstrings]
-file_filter = Classes/<lang>.lproj/SideMenuView.strings
 source_lang = en
+file_filter = Classes/<lang>.lproj/SideMenuView.strings
+source_file = Classes/Base.lproj/SideMenuView.strings
 
+[linphone-ios.sidemenuviewipadstrings]
+source_lang = en
+file_filter = Classes/<lang>.lproj/SideMenuView~ipad.strings
+source_file = Classes/Base.lproj/SideMenuView~ipad.strings
 
 [linphone-ios.statusbarviewstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/StatusBarView.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/StatusBarView.strings
+source_file = Classes/LinphoneUI/Base.lproj/StatusBarView.strings
 
 [linphone-ios.tabbarviewstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/TabBarView.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/TabBarView.strings
+source_file = Classes/LinphoneUI/Base.lproj/TabBarView.strings
 
 [linphone-ios.uicallconferencecellstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UICallConferenceCell.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UICallConferenceCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UICallConferenceCell.strings
 
 [linphone-ios.uicallpausedcellstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UICallPausedCell.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UICallPausedCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UICallPausedCell.strings
 
 [linphone-ios.uichatbubblephotocellstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatBubblePhotoCell.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatBubblePhotoCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatBubblePhotoCell.strings
 
 [linphone-ios.uichatbubbletextcellstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatBubbleTextCell.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatBubbleTextCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatBubbleTextCell.strings
 
 [linphone-ios.uichatcellstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatCell.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatCell.strings
 
 [linphone-ios.uichatcreatecellstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatCreateCell.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatCreateCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatCreateCell.strings
 
 [linphone-ios.uiconfirmationdialogstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UIConfirmationDialog.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIConfirmationDialog.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIConfirmationDialog.strings
 
 [linphone-ios.uicontactcellstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UIContactCell.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIContactCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIContactCell.strings
 
 [linphone-ios.uicontactdetailscellstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UIContactDetailsCell.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIContactDetailsCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIContactDetailsCell.strings
 
 [linphone-ios.uihistorycellstrings]
-file_filter = Classes/LinphoneUI/<lang>.lproj/UIHistoryCell.strings
 source_lang = en
-
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIHistoryCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIHistoryCell.strings
 
 [linphone-ios.inappsettingsaccountstrings]
-file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Account.strings
 source_lang = en
-
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Account.strings
+source_file = Settings/InAppSettings.bundle/en.lproj/Account.strings
 
 [linphone-ios.inappsettingsadvancedstrings]
-file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Advanced.strings
 source_lang = en
-
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Advanced.strings
+source_file = Settings/InAppSettings.bundle/en.lproj/Advanced.strings
 
 [linphone-ios.inappsettingsaudiostrings]
-file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Audio.strings
 source_lang = en
-
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Audio.strings
+source_file = Settings/InAppSettings.bundle/en.lproj/Audio.strings
 
 [linphone-ios.inappsettingscallstrings]
-file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Call.strings
 source_lang = en
-
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Call.strings
+source_file = Settings/InAppSettings.bundle/en.lproj/Call.strings
 
 [linphone-ios.inappsettingsnetworkstrings]
-file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Network.strings
 source_lang = en
-
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Network.strings
+source_file = Settings/InAppSettings.bundle/en.lproj/Network.strings
 
 [linphone-ios.inappsettingsrootstrings]
-file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Root.strings
 source_lang = en
-
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Root.strings
+source_file = Settings/InAppSettings.bundle/en.lproj/Root.strings
 
 [linphone-ios.inappsettingstunnelstrings]
-file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Tunnel.strings
 source_lang = en
-
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Tunnel.strings
+source_file = Settings/InAppSettings.bundle/en.lproj/Tunnel.strings
 
 [linphone-ios.inappsettingsvideostrings]
-file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Video.strings
 source_lang = en
-
+file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Video.strings
+source_file = Settings/InAppSettings.bundle/en.lproj/Video.strings
