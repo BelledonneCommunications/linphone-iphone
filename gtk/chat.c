@@ -460,7 +460,7 @@ static gboolean copy_uri_into_clipboard_handler(GtkMenuItem *menuitem, gpointer 
 	return FALSE;
 }
 
-static void linphone_gtk_window_focused(void) {
+static gint linphone_gtk_window_focused(GtkWidget* widget, GdkEvent *event, gpointer user_data) {
 	// if we are in a chat, mark it as read
 	GtkWidget *main_window=linphone_gtk_get_main_window();
 	GtkWidget *friendlist=linphone_gtk_get_widget(main_window,"contact_list");
@@ -469,6 +469,7 @@ static void linphone_gtk_window_focused(void) {
 	if (cr) {
 		linphone_gtk_mark_chat_read(cr);
 	}
+	return FALSE;
 }
 
 GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddress *with){
@@ -548,7 +549,7 @@ GtkWidget* linphone_gtk_init_chatroom(LinphoneChatRoom *cr, const LinphoneAddres
 	g_signal_connect_swapped(G_OBJECT(entry),"changed",(GCallback)linphone_gtk_compose_text,NULL);
 	g_signal_connect(G_OBJECT(notebook),"switch_page",(GCallback)linphone_gtk_notebook_tab_select,NULL);
 
-	g_signal_connect(G_OBJECT(main_window), "focus-in-event", G_CALLBACK(linphone_gtk_window_focused), NULL);
+	gtk_signal_connect(GTK_OBJECT(main_window), "focus-in-event", GTK_SIGNAL_FUNC(linphone_gtk_window_focused), NULL);
 
 	return chat_view;
 }
