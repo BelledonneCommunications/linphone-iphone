@@ -19,6 +19,23 @@ Here's how to launch Linphone for iPhone (more details below):
 6. Open linphone.xcodeproj in Xcode: `open linphone.xcodeproj`
 7. Press `⌘R` and voilà!
 
+# How can I contribute?
+
+Thanks for asking! We love pull requests from everyone. Depending on what you want to do, you can help us improve Linphone in
+various ways:
+
+## Help on translations
+
+<a target="_blank" style="text-decoration:none; color:black; font-size:66%" href="/projects/p/linphone-ios/resource/localizablestrings/"
+title="See more information on Transifex.com">Top translations: linphone-ios</a><br/>
+<img border="0" src="/projects/p/linphone-ios/resource/localizablestrings/chart/image_png"/><br/><a target="_blank" href="/"><img border="0" src="https://ds0k0en9abmn1.cloudfront.net/static/charts/images/tx-logo-micro.646b0065fce6.png"/></a>
+
+Interested in helping translate Linphone? Contribute [on Transifex](https://www.transifex.com/belledonne-communications/linphone-ios).
+
+## Report bugs and submit patchs
+
+If you want to dig through Linphone code or report a bug, please read CONTRIBUTING.md first. You should also read this README entirely ;-).
+
 # Building the SDK
 
 Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makefiles and shell scripts.
