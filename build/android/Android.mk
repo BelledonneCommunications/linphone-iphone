@@ -77,7 +77,9 @@ LOCAL_SRC_FILES := \
 	xml2lpc.c \
 	xml.c \
 	xmlrpc.c \
-	vtables.c
+	vtables.c \
+	ringtoneplayer.c
+
 
 ifndef LIBLINPHONE_VERSION
 LIBLINPHONE_VERSION = "Devel"
