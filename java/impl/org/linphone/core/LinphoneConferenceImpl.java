@@ -25,17 +25,16 @@ import java.util.List;
 public class LinphoneConferenceImpl implements LinphoneConference {
 	private final long nativePtr;
 	
+	
 	private LinphoneConferenceImpl(long nativePtr) {
 		this.nativePtr = nativePtr;
 	}
-	private native void finalize(long nativePtr);
-	protected void finalize() {
-		finalize(nativePtr);
-	}
+	
 	private native List<LinphoneAddress> getParticipants(long nativePtr);
 	public List<LinphoneAddress> getParticipants() {
 		return getParticipants(nativePtr);
 	}
+	
 	private native int removeParticipant(long nativePtr, LinphoneAddress uri);
 	public int removeParticipant(LinphoneAddress uri) {
 		return removeParticipant(nativePtr, uri);

@@ -1413,7 +1413,7 @@ public interface LinphoneCore {
 	 * That function can be used to test whether a conference is running.
 	 * @return A positive value if a conference is running, 0 if not.
 	**/
-	long getConference();
+	LinphoneConference getConference();
 
 	/**
 	 * Request recording of the conference into a supplied file path.

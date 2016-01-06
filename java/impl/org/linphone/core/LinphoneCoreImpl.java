@@ -709,8 +709,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized int getConferenceSize() {
 		return getConferenceSize(nativePtr);
 	}
-	private native long getConference(long nativePtr);
-	public synchronized long getConference() {
+	private native LinphoneConference getConference(long nativePtr);
+	public synchronized LinphoneConference getConference() {
 		return getConference(nativePtr);
 	}
 	private native int getCallsNb(long nativePtr);
