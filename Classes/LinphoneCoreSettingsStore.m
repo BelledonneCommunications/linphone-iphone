@@ -295,7 +295,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 
 		[self setBool:[lm lpConfigBoolForKey:@"repeat_call_notification"]
 			   forKey:@"repeat_call_notification_preference"];
-		NSString *ringtone = ([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_ring(lc)]]
+		NSString *ringtone = ([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_ring(lc)].lastPathComponent]
 								  ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
 								 .lastPathComponent;
 		[self setObject:ringtone forKey:@"call_ringtone_preference"];
