@@ -30,16 +30,16 @@
 #import "IASKSettingsStore.h"
 #import "IASKAppSettingsViewController.h"
 #import "FastAddressBook.h"
-#import "Utils.h"
+#import "InAppProductsManager.h"
 
 #include "linphone/linphonecore.h"
 #include "linphone/linphone_tunnel.h"
 
-extern const char *const LINPHONERC_APPLICATION_KEY;
+extern NSString *const LINPHONERC_APPLICATION_KEY;
 
 extern NSString *const kLinphoneCoreUpdate;
 extern NSString *const kLinphoneDisplayStatusUpdate;
-extern NSString *const kLinphoneTextReceived;
+extern NSString *const kLinphoneMessageReceived;
 extern NSString *const kLinphoneTextComposeEvent;
 extern NSString *const kLinphoneCallUpdate;
 extern NSString *const kLinphoneRegistrationUpdate;
@@ -51,6 +51,9 @@ extern NSString *const kLinphoneBluetoothAvailabilityUpdate;
 extern NSString *const kLinphoneConfiguringStateUpdate;
 extern NSString *const kLinphoneGlobalStateUpdate;
 extern NSString *const kLinphoneNotifyReceived;
+extern NSString *const kLinphoneCallEncryptionChanged;
+extern NSString *const kLinphoneFileTransferSendUpdate;
+extern NSString *const kLinphoneFileTransferRecvUpdate;
 
 typedef enum _NetworkType {
     network_none = 0,
@@ -104,7 +107,7 @@ typedef struct _LinphoneManagerSounds {
 @interface LinphoneManager : NSObject {
 @protected
 	SCNetworkReachabilityRef proxyReachability;
-	
+
 @private
 	NSTimer* mIterateTimer;
     NSMutableArray*  pushCallIDs;
@@ -121,7 +124,6 @@ typedef struct _LinphoneManagerSounds {
 + (void)instanceRelease;
 #endif
 + (LinphoneCore*) getLc;
-+ (BOOL)isLcReady;
 + (BOOL)runningOnIpad;
 + (BOOL)isNotIphone3G;
 + (NSString *)getPreferenceForCodec: (const char*) name withRate: (int) rate;
@@ -132,8 +134,8 @@ typedef struct _LinphoneManagerSounds {
 
 - (void)playMessageSound;
 - (void)resetLinphoneCore;
-- (void)startLibLinphone;
-- (void)destroyLibLinphone;
+- (void)startLinphoneCore;
+- (void)destroyLinphoneCore;
 - (BOOL)resignActive;
 - (void)becomeActive;
 - (BOOL)enterBackgroundMode;
@@ -159,7 +161,7 @@ typedef struct _LinphoneManagerSounds {
 + (NSString*)documentFile:(NSString*)file;
 + (NSString*)cacheDirectory;
 
-- (void)acceptCall:(LinphoneCall *)call;
+- (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video;
 - (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
 
 
@@ -167,29 +169,41 @@ typedef struct _LinphoneManagerSounds {
 +(void)setValueInMessageAppData:(id)value forKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
 
 - (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key;
-- (NSString*)lpConfigStringForKey:(NSString*)key;
-- (NSString*)lpConfigStringForKey:(NSString*)key withDefault:(NSString*)value;
-- (void)lpConfigSetString:(NSString*)value forKey:(NSString*)key forSection:(NSString*)section;
-- (NSString*)lpConfigStringForKey:(NSString*)key forSection:(NSString*)section;
-- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key;
-- (NSInteger)lpConfigIntForKey:(NSString*)key;
-- (void)lpConfigSetInt:(NSInteger)value forKey:(NSString*)key forSection:(NSString*)section;
-- (NSInteger)lpConfigIntForKey:(NSString*)key forSection:(NSString*)section;
+- (void)lpConfigSetString:(NSString *)value forKey:(NSString *)key inSection:(NSString *)section;
+- (NSString *)lpConfigStringForKey:(NSString *)key;
+- (NSString *)lpConfigStringForKey:(NSString *)key inSection:(NSString *)section;
+- (NSString *)lpConfigStringForKey:(NSString *)key withDefault:(NSString *)value;
+- (NSString *)lpConfigStringForKey:(NSString *)key inSection:(NSString *)section withDefault:(NSString *)value;
+
+- (void)lpConfigSetInt:(int)value forKey:(NSString *)key;
+- (void)lpConfigSetInt:(int)value forKey:(NSString *)key inSection:(NSString *)section;
+- (int)lpConfigIntForKey:(NSString *)key;
+- (int)lpConfigIntForKey:(NSString *)key inSection:(NSString *)section;
+- (int)lpConfigIntForKey:(NSString *)key withDefault:(int)value;
+- (int)lpConfigIntForKey:(NSString *)key inSection:(NSString *)section withDefault:(int)value;
+
 - (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key;
-- (BOOL)lpConfigBoolForKey:(NSString*)key;
-- (void)lpConfigSetBool:(BOOL)value forKey:(NSString*)key forSection:(NSString*)section;
-- (BOOL)lpConfigBoolForKey:(NSString*)key forSection:(NSString*)section;
+- (void)lpConfigSetBool:(BOOL)value forKey:(NSString *)key inSection:(NSString *)section;
+- (BOOL)lpConfigBoolForKey:(NSString *)key;
+- (BOOL)lpConfigBoolForKey:(NSString *)key inSection:(NSString *)section;
+- (BOOL)lpConfigBoolForKey:(NSString *)key withDefault:(BOOL)value;
+- (BOOL)lpConfigBoolForKey:(NSString *)key inSection:(NSString *)section withDefault:(BOOL)value;
+
 - (void)silentPushFailed:(NSTimer*)timer;
 
+- (void)removeAllAccounts;
+
++ (BOOL)isMyself:(const LinphoneAddress *)addr;
+
 @property (readonly) BOOL isTesting;
-@property (readonly) FastAddressBook* fastAddressBook;
+@property(readonly, strong) FastAddressBook *fastAddressBook;
 @property Connectivity connectivity;
 @property (readonly) NetworkType network;
 @property (readonly) const char*  frontCamId;
 @property (readonly) const char*  backCamId;
-@property (retain, nonatomic) NSString* SSID;
+@property(strong, nonatomic) NSString *SSID;
 @property (readonly) sqlite3* database;
-@property (nonatomic, retain) NSData *pushNotificationToken;
+@property(nonatomic, strong) NSData *pushNotificationToken;
 @property (readonly) LinphoneManagerSounds sounds;
 @property (readonly) NSMutableArray *logs;
 @property (nonatomic, assign) BOOL speakerEnabled;
@@ -202,6 +216,7 @@ typedef struct _LinphoneManagerSounds {
 @property (copy) void (^silentPushCompletion)(UIBackgroundFetchResult);
 @property (readonly) BOOL wasRemoteProvisioned;
 @property (readonly) LpConfig *configDb;
+@property(readonly) InAppProductsManager *iapManager;
+@property(strong, nonatomic) NSMutableArray *fileTransferDelegates;
 
 @end
-

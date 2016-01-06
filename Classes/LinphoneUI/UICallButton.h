@@ -19,10 +19,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UIIconButton.h"
 
-@interface UICallButton : UIButton {
+@interface UICallButton : UIIconButton {
 }
 
-@property (nonatomic, retain) IBOutlet UITextField* addressField;
+@property(nonatomic, strong) IBOutlet UITextField *addressField;
+
+- (void)updateVideoPolicy;
 
 @end

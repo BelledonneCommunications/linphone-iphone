@@ -8,38 +8,74 @@
 
 #import "UIRoundedImageView.h"
 #import <QuartzCore/QuartzCore.h>
+#import "Utils.h"
 
-@implementation UIRoundedImageView
-
-
-- (id) init {
-    self = [super init];
-    if (self ){
-        [self setRoundRadius:TRUE];
-    }
-    return self;
+@implementation UIRoundedImageView {
+	UIView *borderView;
 }
 
-- (void) setImage:(UIImage *)image {
-	[self setImage:image withRoundedRadius:TRUE];
+INIT_WITH_COMMON {
+	borderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+	borderView.layer.borderWidth = 10;
+	borderView.layer.borderColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]].CGColor;
+	borderView.hidden = YES;
+	[self addSubview:borderView];
+
+	[self setBordered:NO];
+	[self setRoundRadius];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(orientationDidChange:)
+												 name:@"UIDeviceOrientationDidChangeNotification"
+											   object:nil];
+	return self;
 }
 
-- (void) setImage:(UIImage *)image withRoundedRadius:(BOOL)rounded {
-    [super setImage:image];
-    [self setRoundRadius:rounded];
+- (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-// warning: for non-squared image, this function will generate an ellipsoidal image, not a round image!
-- (void)setRoundRadius:(BOOL)radius {
-	CALayer *imageLayer = self.layer;
-	CGFloat height = imageLayer.frame.size.height;
-	CGFloat width = imageLayer.frame.size.width;
-	CGFloat roundRadius = height > width ? width / 2 : height / 2;
-
-	[imageLayer setCornerRadius:roundRadius];
-	[imageLayer setBorderWidth:0];
-	[imageLayer setMasksToBounds:YES];
+- (void)orientationDidChange:(NSNotification *)k {
+	[self setRoundRadius];
+	[self layoutSubviews];
 }
 
+- (void)setImage:(UIImage *)image {
+	[self setImage:image bordered:NO withRoundedRadius:TRUE];
+}
 
+- (void)setImage:(UIImage *)image bordered:(BOOL)bordered withRoundedRadius:(BOOL)rounded {
+	// We have to scale image to layers limits so that when we round image, we have a proper circle
+	[super setImage:[image squareCrop]];
+	[self setBordered:bordered];
+	[self setRoundRadius];
+}
+
+- (void)setBordered:(BOOL)bordered {
+	borderView.hidden = !bordered;
+}
+- (CGRect)computeBox {
+	CGFloat min = MIN(self.frame.size.width, self.frame.size.height);
+	CGRect box = CGRectMake((self.frame.size.width - min) / 2, (self.frame.size.height - min) / 2, min, min);
+	return box;
+}
+- (void)setRoundRadius {
+	CGRect box = [self computeBox];
+
+	borderView.frame = box;
+	borderView.layer.cornerRadius = borderView.frame.size.height / 2;
+
+	CGPathRef path = CGPathCreateWithEllipseInRect(box, NULL);
+	UIBezierPath *maskPath = [UIBezierPath bezierPathWithCGPath:path];
+	CGPathRelease(path);
+	CAShapeLayer *maskLayer = [CAShapeLayer layer];
+	maskLayer.frame = self.bounds;
+	maskLayer.path = maskPath.CGPath;
+	self.layer.mask = maskLayer;
+}
+
+- (void)layoutSubviews {
+	[super layoutSubviews];
+	borderView.frame = [self computeBox];
+	borderView.layer.cornerRadius = borderView.frame.size.height / 2;
+}
 @end

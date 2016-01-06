@@ -19,20 +19,22 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UITransparentTVCell.h"
+#import "UIRoundedImageView.h"
+#import "UIIconButton.h"
+#import "UIBouncingView.h"
 
 #include "linphone/linphonecore.h"
 
-@interface UIChatCell : UITransparentTVCell {
-    LinphoneChatRoom* chatRoom;
+@interface UIChatCell : UITableViewCell {
+	LinphoneChatRoom *chatRoom;
 }
 
-@property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
-@property (nonatomic, retain) IBOutlet UILabel* addressLabel;
-@property (nonatomic, retain) IBOutlet UILabel* chatContentLabel;
-@property (nonatomic, retain) IBOutlet UIButton * deleteButton;
-@property (nonatomic, retain) IBOutlet UIView * unreadMessageView;
-@property (nonatomic, retain) IBOutlet UILabel * unreadMessageLabel;
+@property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
+@property(nonatomic, strong) IBOutlet UILabel *addressLabel;
+@property(nonatomic, strong) IBOutlet UILabel *chatContentLabel;
+@property(weak, nonatomic) IBOutlet UILabel *chatLatestTimeLabel;
+@property(weak, nonatomic) IBOutlet UIBouncingView *unreadCountView;
+@property(weak, nonatomic) IBOutlet UILabel *unreadCountLabel;
 
 - (id)initWithIdentifier:(NSString*)identifier;
 

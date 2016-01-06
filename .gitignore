@@ -7,3 +7,11 @@ xcuserdata/
 Classes/LinphoneIOSVersion.h
 Pods/
 build
+test-reports
+WORK
+Makefile
+OUTPUT
+git-clang-format.diff
+submodules/tunnel
+submodules/binaries/dummy-*.a
+linphone-iphone.ipa

@@ -19,9 +19,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UITransferButton : UIButton {
-}
+#import "UIIconButton.h"
 
-@property (nonatomic, retain) IBOutlet UITextField* addressField;
+@interface UITransferButton : UIIconButton
+
+@property(nonatomic, strong) IBOutlet UITextField *addressField;
 
 @end

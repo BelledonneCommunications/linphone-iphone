@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0610"
+   LastUpgradeVersion = "0720"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,26 +15,26 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F0BB8BD41936208100974404"
-               BuildableName = "LinphoneTester.app"
-               BlueprintName = "LinphoneTester"
+               BuildableName = "liblinphoneTester.app"
+               BlueprintName = "liblinphoneTester"
                ReferencedContainer = "container:linphone.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      buildConfiguration = "Debug">
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F08F118319C09C6A007D70C2"
-               BuildableName = "LinphoneTester Tests.xctest"
-               BlueprintName = "LinphoneTester Tests"
+               BuildableName = "liblinphoneTesterTests.xctest"
+               BlueprintName = "liblinphoneTesterTests"
                ReferencedContainer = "container:linphone.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -43,27 +43,31 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F0BB8BD41936208100974404"
-            BuildableName = "LinphoneTester.app"
-            BlueprintName = "LinphoneTester"
+            BuildableName = "liblinphoneTester.app"
+            BlueprintName = "liblinphoneTester"
             ReferencedContainer = "container:linphone.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <AdditionalOptions>
+      </AdditionalOptions>
    </TestAction>
    <LaunchAction
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F0BB8BD41936208100974404"
-            BuildableName = "LinphoneTester.app"
-            BlueprintName = "LinphoneTester"
+            BuildableName = "liblinphoneTester.app"
+            BlueprintName = "liblinphoneTester"
             ReferencedContainer = "container:linphone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -71,17 +75,18 @@
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
+      buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F0BB8BD41936208100974404"
-            BuildableName = "LinphoneTester.app"
-            BlueprintName = "LinphoneTester"
+            BuildableName = "liblinphoneTester.app"
+            BlueprintName = "liblinphoneTester"
             ReferencedContainer = "container:linphone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

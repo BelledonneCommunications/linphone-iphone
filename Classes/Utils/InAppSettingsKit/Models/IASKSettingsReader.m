@@ -45,8 +45,8 @@ hiddenKeys = _hiddenKeys;
 		self.path = [self locateSettingsFile: file];
 		[self setSettingsBundle:[NSDictionary dictionaryWithContentsOfFile:self.path]];
 		self.bundlePath = [self.path stringByDeletingLastPathComponent];
-		_bundle = [[NSBundle bundleWithPath:[self bundlePath]] retain];
-		
+		_bundle = [NSBundle bundleWithPath:[self bundlePath]];
+
 		// Look for localization file
 		self.localizationTable = [self.settingsBundle objectForKey:@"StringsTable"];
 		if (!self.localizationTable)
@@ -70,24 +70,20 @@ hiddenKeys = _hiddenKeys;
 }
 
 - (void)dealloc {
-	[_path release], _path = nil;
-	[_localizationTable release], _localizationTable = nil;
-	[_bundlePath release], _bundlePath = nil;
-	[_settingsBundle release], _settingsBundle = nil;
-	[_dataSource release], _dataSource = nil;
-	[_bundle release], _bundle = nil;
-    [_hiddenKeys release], _hiddenKeys = nil;
-
-	[super dealloc];
+	_path = nil;
+	_localizationTable = nil;
+	_bundlePath = nil;
+	_settingsBundle = nil;
+	_dataSource = nil;
+	_bundle = nil;
+	_hiddenKeys = nil;
 }
 
 
 - (void)setHiddenKeys:(NSSet *)anHiddenKeys {
 	if (_hiddenKeys != anHiddenKeys) {
-		id old = _hiddenKeys;
-		_hiddenKeys = [anHiddenKeys retain];
-		[old release];
-		
+		_hiddenKeys = anHiddenKeys;
+
 		if (_settingsBundle) {
 			[self _reinterpretBundle:_settingsBundle];
 		}
@@ -98,8 +94,8 @@ hiddenKeys = _hiddenKeys;
 - (void)_reinterpretBundle:(NSDictionary*)settingsBundle {
 	NSArray *preferenceSpecifiers	= [settingsBundle objectForKey:kIASKPreferenceSpecifiers];
 	NSInteger sectionCount			= -1;
-	NSMutableArray *dataSource		= [[[NSMutableArray alloc] init] autorelease];
-	
+	NSMutableArray *dataSource = [[NSMutableArray alloc] init];
+
 	for (NSDictionary *specifier in preferenceSpecifiers) {
 		if ([self.hiddenKeys containsObject:[specifier objectForKey:kIASKKey]]) {
 			continue;
@@ -109,20 +105,17 @@ hiddenKeys = _hiddenKeys;
 			
 			[newArray addObject:specifier];
 			[dataSource addObject:newArray];
-			[newArray release];
 			sectionCount++;
 		}
 		else {
 			if (sectionCount == -1) {
 				NSMutableArray *newArray = [[NSMutableArray alloc] init];
 				[dataSource addObject:newArray];
-				[newArray release];
 				sectionCount++;
 			}
 
 			IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifier];
 			[(NSMutableArray*)[dataSource objectAtIndex:sectionCount] addObject:newSpecifier];
-			[newSpecifier release];
 		}
 	}
 	[self setDataSource:dataSource];

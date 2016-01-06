@@ -19,8 +19,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface UIHangUpButton : UIButton {
+#import "UIIconButton.h"
 
+@interface UIHangUpButton : UIIconButton {
 }
 
 - (void)update;

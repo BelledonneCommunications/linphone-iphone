@@ -1,27 +1,29 @@
 language: objective-c
-xcode_project: linphone.xcworkspace
-xcode_scheme: linphone
-
-git:
-  submodules: false
 
 env:
     global:
-        - VERSION="8.1"
-        - KIF_SCREENSHOTS="${TRAVIS_BUILD_DIR}/Screenshots"
+        - secure: "JPPcWdmNIJiR3YcIwe0LRYce6qDdsiagO+eKKAp7eVk/wD9UHbz96Ms2FFkXxPhRJB1PA6Pf8FpAzIL2YRiJL9jRtKHSvtdF1cSto+57XyBkCsw7PkMVUIxp7fg6Wiwn3H3tucF8jisIkv/Pn7R+9EqePkZSqqu3+ig5AX9ApQ4="
+        - KIF_SCREENSHOTS=$PWD/Screens
 
-install: 
-    - cd submodules/build 
-    - make download-sdk
-    - cd ../..
-    - pod install
-    - ls -la
+before_install:
+    - brew update 1>/dev/null
+    - brew install doxygen nasm yasm optipng imagemagick coreutils intltool ninja antlr
+    - brew upgrade cmake
+    - wget --no-check-certificate https://raw.githubusercontent.com/FFmpeg/gas-preprocessor/master/gas-preprocessor.pl
+    - chmod +x gas-preprocessor.pl
+    - sudo mv gas-preprocessor.pl /usr/local/bin
+    - sudo ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+    - sudo ln -s /usr/bin/strings /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/strings
+    - git submodule update --init --recursive
+
+install:
+    - ./prepare.py -d x86_64 -G Ninja
+    - make -j4 -s 1>/dev/null
+    - mkdir -p $KIF_SCREENSHOTS
 
 script:
-    - export KIF_SCREENSHOTS=$TRAVIS_BUILD_DIR/Screenshots
-    - mkdir -p "$KIF_SCREENSHOTS"
-    - echo $KIF_SCREENSHOTS
-    - xcodebuild -scheme linphone -workspace linphone.xcworkspace -sdk iphonesimulator8.1 test
+    - xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator -destination name='iPhone 6' build 1>/dev/null
+    - xctool -project linphone.xcodeproj -scheme linphone -sdk iphonesimulator -destination name='iPhone 6' test
 
-after_failure:
-    - ls -la $KIF_SCREENSHOTS
+after_script:
+    - ./Tools/imgur_upload.sh

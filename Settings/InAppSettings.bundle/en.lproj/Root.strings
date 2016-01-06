@@ -1,65 +1,23 @@
-/* SIP account */
-"SIP account" = "SIP account";
-
-/* Wizard */
-"Wizard" = "Run assistant";
-
-/* User name */
-"User name" = "User name";
-
-/* User ID */
-"User ID" = "User ID";
-
-/* Password */
-"Password" = "Password";
-
-/* Domain */
-"Domain" = "Domain";
-
-/* Proxy */
-"Proxy" = "Proxy";
-
-/* Outbound proxy */
-"Outbound proxy" = "Outbound proxy";
-
-/* Settings */
+"SIP accounts" = "SIP accounts";
+"Run assistant" = "Run assistant";
+"Account 1" = "Account 1";
+"Account 2" = "Account 2";
+"Account 3" = "Account 3";
+"Account 4" = "Account 4";
+"Account 5" = "Account 5";
 "Settings" = "Settings";
-
-/* Enable video */
 "Enable video" = "Enable video";
-
-/* Audio */
 "Audio" = "Audio";
-
-/* Video */
 "Video" = "Video";
-
-/* Call */
 "Call" = "Call";
-
-/* Network */
 "Network" = "Network";
-
-/* Advanced */
+"Tunnel" = "Tunnel";
 "Advanced" = "Advanced";
-
-/*  */
-"" = "";
-
-/* About */
+"Development debug actions" = "Development debug actions";
 "About" = "About";
-
-/* Quit */
 "Quit" = "Quit";
-
-/* Release */
-"Release" = "Release";
-
-/* Clear cache */
+"Release core" = "Release core";
 "Clear cache" = "Clear cache";
-
-/* More options */
-"More options" = "More options";
-
-/* Clear Account */
-"Clear Account" = "Clear Account";
+"Battery alert" = "Battery alert";
+"Flush downloaded images" = "Flush downloaded images";
+"Auto answer call immediately" = "Auto answer call immediately";

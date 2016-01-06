@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatConversationView">
+            <connections>
+                <outlet property="addressLabel" destination="40" id="43"/>
+                <outlet property="backButton" destination="9" id="Jcb-ET-bKd"/>
+                <outlet property="backToCallButton" destination="Hc0-GX-fC5" id="pYe-gN-Z64"/>
+                <outlet property="callButton" destination="Wzg-i0-spp" id="w9L-aT-1AD"/>
+                <outlet property="chatView" destination="49" id="Rxt-Zy-19x"/>
+                <outlet property="composeIndicatorView" destination="fx4-ao-53M" id="xk5-nK-lur"/>
+                <outlet property="composeLabel" destination="fpY-Fv-ht2" id="4L6-ik-ZAe"/>
+                <outlet property="landscapeView" destination="VoU-7Q-fgp" id="iRJ-sh-thF"/>
+                <outlet property="listSwipeGestureRecognizer" destination="dzw-n4-l9i" id="JVP-Vl-lIa"/>
+                <outlet property="listTapGestureRecognizer" destination="tkk-Tm-A7C" id="gqU-iJ-RGm"/>
+                <outlet property="messageField" destination="pqa-tg-5ml" id="emj-yI-K60"/>
+                <outlet property="messageView" destination="14" id="89"/>
+                <outlet property="pictureButton" destination="73" id="84"/>
+                <outlet property="portraitView" destination="6" id="xJJ-1H-6N6"/>
+                <outlet property="sendButton" destination="15" id="27"/>
+                <outlet property="tableController" destination="29" id="32"/>
+                <outlet property="topBar" destination="7" id="JH8-F4-Bdq"/>
+                <outlet property="view" destination="6" id="11"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="v2I-ka-LYa" userLabel="iphone6MetricsView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view tag="1" contentMode="scaleToFill" id="6">
+                    <rect key="frame" x="0.0" y="42" width="375" height="559"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <view tag="2" contentMode="scaleToFill" id="7" userLabel="topBar">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="v5G-Qf-X82" userLabel="backgroundColor">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                </imageView>
+                                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="9" userLabel="backButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Back"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="back_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="back_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="12"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="bci-3K-AcG" userLabel="cancelButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Cancel"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="cancel_edit_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="cancel_edit_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onCancelClick:" destination="29" eventType="touchUpInside" id="tdO-wP-Ttr"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="c6C-ow-Yhi"/>
+                                    </connections>
+                                </button>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" text="Contact1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="40" userLabel="addressLabel">
+                                    <rect key="frame" x="75" y="0.0" width="150" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact name">
+                                        <accessibilityTraits key="traits" none="YES"/>
+                                    </accessibility>
+                                    <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wzg-i0-spp" userLabel="callButton" customClass="UIIconButton">
+                                    <rect key="frame" x="225" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <state key="normal" image="call_alt_start_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_alt_start_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="Dsf-nS-K3V"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Hc0-GX-fC5" userLabel="backToCallButton" customClass="UIBackToCallButton">
+                                    <rect key="frame" x="225" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <state key="normal" image="call_back_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_back_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onBackToCallClick:" destination="-2" eventType="touchUpInside" id="bOG-ra-UpM"/>
+                                        <outlet property="tableView" destination="8" id="w1i-Px-Wdf"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" tag="8" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Wag-Nx-kd6" userLabel="deleteButton" customClass="UIIconButton">
+                                    <rect key="frame" x="300" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="delete_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="delete_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="JoY-wC-JQy"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="9" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="FqM-Ud-i58" userLabel="editButton" customClass="UIIconButton">
+                                    <rect key="frame" x="300" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Edit"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="edit_list_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="edit_list_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onEditClick:" destination="29" eventType="touchUpInside" id="2Q7-xM-Shx"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="0we-lw-TyJ"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="c9z-aq-2UP" userLabel="toggleSelectionButton" customClass="UIIconButton">
+                                    <rect key="frame" x="225" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Select all"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="deselect_all.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="select_all_disabled.png"/>
+                                    <state key="selected" image="select_all_default.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onSelectionToggle:" destination="29" eventType="touchUpInside" id="eP5-bU-LEA"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
+                        <view tag="12" contentMode="scaleToFill" id="49" userLabel="contentView">
+                            <rect key="frame" x="0.0" y="66" width="375" height="493"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <tableView clipsSubviews="YES" tag="13" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelection="NO" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="8" userLabel="messagesTableView">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="399"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outlet property="dataSource" destination="29" id="6U9-NJ-Z7W"/>
+                                        <outlet property="delegate" destination="29" id="8Lv-aI-a0V"/>
+                                        <outletCollection property="gestureRecognizers" destination="dzw-n4-l9i" appends="YES" id="ba4-aY-7EA"/>
+                                        <outletCollection property="gestureRecognizers" destination="tkk-Tm-A7C" appends="YES" id="rxU-cr-Kav"/>
+                                    </connections>
+                                </tableView>
+                                <view hidden="YES" tag="14" contentMode="scaleToFill" id="fx4-ao-53M" userLabel="composeIndicatorView">
+                                    <rect key="frame" x="0.0" y="404" width="375" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="fpY-Fv-ht2" userLabel="composeLabel">
+                                            <rect key="frame" x="0.0" y="1" width="375" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label=""/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="16" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No conversation." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="p7C-WH-uR1" userLabel="emptyTableLabel">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="430"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <view tag="17" contentMode="scaleToFill" id="14" userLabel="messageView">
+                                    <rect key="frame" x="0.0" y="427" width="375" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" tag="18" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="pGT-LQ-zpg" userLabel="backgroundColor">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </imageView>
+                                        <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="73" userLabel="pictureButton">
+                                            <rect key="frame" x="0.0" y="0.0" width="66" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="Send picture"/>
+                                            <state key="normal" image="chat_attachment_default.png">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <state key="disabled" image="chat_attachment_disabled.png"/>
+                                            <state key="highlighted" image="chat_attachment_over.png"/>
+                                            <connections>
+                                                <action selector="onPictureClick:" destination="-1" eventType="touchUpInside" id="87"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" tag="21" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="15" userLabel="sendButton">
+                                            <rect key="frame" x="310" y="0.0" width="66" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="Send"/>
+                                            <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="0.0" maxY="0.0"/>
+                                            <state key="normal" image="chat_send_default.png">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <state key="disabled" image="chat_send_disabled.png"/>
+                                            <state key="highlighted" image="chat_send_over.png"/>
+                                            <connections>
+                                                <action selector="onSendClick:" destination="-1" eventType="touchUpInside" id="25"/>
+                                            </connections>
+                                        </button>
+                                        <view tag="20" contentMode="scaleToFill" id="pqa-tg-5ml" userLabel="messageField" customClass="HPGrowingTextView">
+                                            <rect key="frame" x="66" y="13" width="243" height="40"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <accessibility key="accessibilityConfiguration" label="Message field"/>
+                                        </view>
+                                    </subviews>
+                                </view>
+                            </subviews>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <gestureRecognizers/>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+            <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="228.5" y="-40.5"/>
+        </view>
+        <view contentMode="scaleToFill" id="680-UL-sil" userLabel="iphone6MetricsView">
+            <rect key="frame" x="0.0" y="0.0" width="736" height="414"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view tag="1" contentMode="scaleToFill" id="VoU-7Q-fgp">
+                    <rect key="frame" x="90" y="42" width="646" height="372"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <view tag="2" contentMode="scaleToFill" id="Z3y-hY-5xp" userLabel="topBar">
+                            <rect key="frame" x="0.0" y="0.0" width="646" height="66"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView userInteractionEnabled="NO" tag="3" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="Uvs-m3-GPj" userLabel="backgroundColor">
+                                    <rect key="frame" x="0.0" y="0.0" width="646" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                </imageView>
+                                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="N2g-vL-3x8" userLabel="backButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Back"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="back_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="back_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="oLf-ke-zgQ"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Bqf-Gg-2Rw" userLabel="cancelButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Cancel"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="cancel_edit_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="cancel_edit_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onCancelClick:" destination="29" eventType="touchUpInside" id="EVj-uP-wVf"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="hGj-xz-K5n"/>
+                                    </connections>
+                                </button>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="5" contentMode="left" text="Contact1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="uEp-mD-eik" userLabel="addressLabel">
+                                    <rect key="frame" x="75" y="0.0" width="421" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Contact name">
+                                        <accessibilityTraits key="traits" none="YES"/>
+                                    </accessibility>
+                                    <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button hidden="YES" opaque="NO" tag="8" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="RDW-7W-25T" userLabel="deleteButton" customClass="UIIconButton">
+                                    <rect key="frame" x="571" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="delete_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="delete_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="NWL-CQ-eNR"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="9" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="KeL-Ej-92j" userLabel="editButton" customClass="UIIconButton">
+                                    <rect key="frame" x="571" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Edit"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="edit_list_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="edit_list_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onEditClick:" destination="29" eventType="touchUpInside" id="4ei-sX-oIk"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="fNp-ya-dag"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="wag-QV-oUD" userLabel="callButton" customClass="UIIconButton">
+                                    <rect key="frame" x="496" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <state key="normal" image="call_alt_start_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_alt_start_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onCallClick:" destination="-1" eventType="touchUpInside" id="gcb-ac-VkW"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="t25-en-4LP" userLabel="backToCallButton" customClass="UIBackToCallButton">
+                                    <rect key="frame" x="496" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <state key="normal" image="call_back_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="call_back_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onBackToCallClick:" destination="-2" eventType="touchUpInside" id="5cp-dW-Oc7"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="4RV-US-Kr1" userLabel="toggleSelectionButton" customClass="UIIconButton">
+                                    <rect key="frame" x="496" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Select all"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="deselect_all.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="select_all_disabled.png"/>
+                                    <state key="selected" image="select_all_default.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onSelectionToggle:" destination="29" eventType="touchUpInside" id="17V-y4-JHi"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
+                        <view tag="12" contentMode="scaleToFill" id="OTt-fc-941" userLabel="contentView">
+                            <rect key="frame" x="0.0" y="66" width="646" height="306"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <tableView clipsSubviews="YES" tag="13" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" allowsSelection="NO" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="CU7-Za-RwN" userLabel="messagesTableView">
+                                    <rect key="frame" x="0.0" y="0.0" width="646" height="222"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outlet property="dataSource" destination="29" id="hC0-KH-0e3"/>
+                                        <outlet property="delegate" destination="29" id="sSq-5N-DaD"/>
+                                    </connections>
+                                </tableView>
+                                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="16" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No conversation." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="pzm-tk-LH0" userLabel="emptyTableLabel">
+                                    <rect key="frame" x="0.0" y="0.0" width="646" height="210"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <view hidden="YES" tag="14" contentMode="scaleToFill" id="nTf-7h-Z4z" userLabel="composeIndicatorView">
+                                    <rect key="frame" x="0.0" y="220" width="646" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="%@ is composing..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="I34-aL-yuS" userLabel="composeLabel">
+                                            <rect key="frame" x="0.0" y="1" width="646" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label=""/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <view tag="17" contentMode="scaleToFill" id="LA5-wD-ftj" userLabel="messageView">
+                                    <rect key="frame" x="0.0" y="240" width="646" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" tag="18" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="kKc-DG-gwg" userLabel="backgroundColor">
+                                            <rect key="frame" x="0.0" y="0.0" width="646" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </imageView>
+                                        <button opaque="NO" tag="19" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="gSL-jE-GYO" userLabel="pictureButton">
+                                            <rect key="frame" x="0.0" y="0.0" width="66" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="Send picture"/>
+                                            <state key="normal" image="chat_attachment_default.png">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <state key="disabled" image="chat_attachment_disabled.png"/>
+                                            <state key="highlighted" image="chat_attachment_over.png"/>
+                                            <connections>
+                                                <action selector="onPictureClick:" destination="-1" eventType="touchUpInside" id="Ag3-po-DGR"/>
+                                            </connections>
+                                        </button>
+                                        <view tag="20" contentMode="scaleToFill" id="C02-2r-vXK" userLabel="messageField" customClass="HPGrowingTextView">
+                                            <rect key="frame" x="66" y="13" width="513" height="40"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <accessibility key="accessibilityConfiguration" label="Message field"/>
+                                        </view>
+                                        <button opaque="NO" tag="21" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="nV9-xZ-oSM" userLabel="sendButton">
+                                            <rect key="frame" x="580" y="0.0" width="66" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="Send"/>
+                                            <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="0.0" maxY="0.0"/>
+                                            <state key="normal" image="chat_send_default.png">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <state key="disabled" image="chat_send_disabled.png"/>
+                                            <state key="highlighted" image="chat_send_over.png"/>
+                                            <connections>
+                                                <action selector="onSendClick:" destination="-1" eventType="touchUpInside" id="dx4-lF-ekG"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                </view>
+                            </subviews>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <gestureRecognizers/>
+                </view>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+            <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
+            <point key="canvasLocation" x="252" y="-176"/>
+        </view>
+        <tableViewController autoresizesArchivedViewToFullSize="NO" id="29" userLabel="messagesTableView" customClass="ChatConversationTableView">
+            <extendedEdge key="edgesForExtendedLayout"/>
+            <nil key="simulatedStatusBarMetrics"/>
+            <connections>
+                <outlet property="cancelButton" destination="bci-3K-AcG" id="ZTI-gJ-SEL"/>
+                <outlet property="deleteButton" destination="Wag-Nx-kd6" id="hOb-3g-mnR"/>
+                <outlet property="editButton" destination="FqM-Ud-i58" id="9L7-rC-Aqy"/>
+                <outlet property="toggleSelectionButton" destination="c9z-aq-2UP" id="a2J-JQ-rhX"/>
+                <outlet property="view" destination="8" id="g4m-ne-lbP"/>
+            </connections>
+            <point key="canvasLocation" x="639" y="328"/>
+        </tableViewController>
+        <swipeGestureRecognizer direction="left" id="dzw-n4-l9i">
+            <connections>
+                <action selector="onListSwipe:" destination="-1" id="bd8-v2-u8H"/>
+            </connections>
+        </swipeGestureRecognizer>
+        <tapGestureRecognizer enabled="NO" id="tkk-Tm-A7C">
+            <connections>
+                <action selector="onListTap:" destination="-1" id="ejK-2Q-qkC"/>
+            </connections>
+        </tapGestureRecognizer>
+    </objects>
+    <resources>
+        <image name="back_default.png" width="24" height="21"/>
+        <image name="back_disabled.png" width="24" height="21"/>
+        <image name="call_alt_start_default.png" width="29" height="29"/>
+        <image name="call_alt_start_disabled.png" width="29" height="29"/>
+        <image name="call_back_default.png" width="38" height="27"/>
+        <image name="call_back_disabled.png" width="38" height="27"/>
+        <image name="cancel_edit_default.png" width="29" height="29"/>
+        <image name="cancel_edit_disabled.png" width="29" height="29"/>
+        <image name="chat_attachment_default.png" width="40" height="40"/>
+        <image name="chat_attachment_disabled.png" width="40" height="40"/>
+        <image name="chat_attachment_over.png" width="40" height="40"/>
+        <image name="chat_send_default.png" width="40" height="40"/>
+        <image name="chat_send_disabled.png" width="40" height="40"/>
+        <image name="chat_send_over.png" width="40" height="40"/>
+        <image name="color_E.png" width="2" height="2"/>
+        <image name="color_F.png" width="2" height="2"/>
+        <image name="delete_default.png" width="21" height="27"/>
+        <image name="delete_disabled.png" width="21" height="27"/>
+        <image name="deselect_all.png" width="26" height="26"/>
+        <image name="edit_list_default.png" width="29" height="28"/>
+        <image name="edit_list_disabled.png" width="29" height="28"/>
+        <image name="select_all_default.png" width="26" height="26"/>
+        <image name="select_all_disabled.png" width="26" height="26"/>
+    </resources>
+</document>

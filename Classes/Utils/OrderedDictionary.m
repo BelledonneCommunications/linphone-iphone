@@ -23,23 +23,15 @@
 
 #import "OrderedDictionary.h"
 
-NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
-{
+NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent) {
 	NSString *objectString;
-	if ([object isKindOfClass:[NSString class]])
-	{
-		objectString = (NSString *)[[object retain] autorelease];
-	}
-	else if ([object respondsToSelector:@selector(descriptionWithLocale:indent:)])
-	{
+	if ([object isKindOfClass:[NSString class]]) {
+		objectString = (NSString *)object;
+	} else if ([object respondsToSelector:@selector(descriptionWithLocale:indent:)]) {
 		objectString = [(NSDictionary *)object descriptionWithLocale:locale indent:indent];
-	}
-	else if ([object respondsToSelector:@selector(descriptionWithLocale:)])
-	{
+	} else if ([object respondsToSelector:@selector(descriptionWithLocale:)]) {
 		objectString = [(NSSet *)object descriptionWithLocale:locale];
-	}
-	else
-	{
+	} else {
 		objectString = [object description];
 	}
 	return objectString;
@@ -47,128 +39,101 @@ NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 
 @implementation OrderedDictionary
 
-- (void) initObjectsWithCapacity:(NSUInteger)capacity
-{
-	if (self != nil)
-	{
+- (void)initObjectsWithCapacity:(NSUInteger)capacity {
+	if (self != nil) {
 		dictionary = [[NSMutableDictionary alloc] initWithCapacity:capacity];
 		array = [[NSMutableArray alloc] initWithCapacity:capacity];
 	}
 }
 
-- (id)init
-{
+- (id)init {
 	self = [super init];
 	[self initObjectsWithCapacity:0];
 	return self;
 }
 
-- (id)initWithCapacity:(NSUInteger)capacity
-{
+- (id)initWithCapacity:(NSUInteger)capacity {
 	self = [super init];
 	[self initObjectsWithCapacity:0];
 	return self;
 }
 
-- (void)dealloc
-{
-	[dictionary release];
-	[array release];
-	[super dealloc];
-}
-
-- (id)copy
-{
+- (id)copy {
 	return [self mutableCopy];
 }
 
-- (void)setObject:(id)anObject forKey:(id)aKey
-{
-	if (![dictionary objectForKey:aKey])
-	{
+- (void)setObject:(id)anObject forKey:(id)aKey {
+	if (![dictionary objectForKey:aKey]) {
 		[array addObject:aKey];
 	}
 	[dictionary setObject:anObject forKey:aKey];
 }
 
-- (void)removeObjectForKey:(id)aKey
-{
+- (void)removeObjectForKey:(id)aKey {
 	[dictionary removeObjectForKey:aKey];
 	[array removeObject:aKey];
 }
 
-- (NSUInteger)count
-{
+- (NSUInteger)count {
 	return [dictionary count];
 }
 
-- (id)objectForKey:(id)aKey
-{
+- (id)objectForKey:(id)aKey {
 	return [dictionary objectForKey:aKey];
 }
 
-- (NSEnumerator *)keyEnumerator
-{
+- (NSEnumerator *)keyEnumerator {
 	return [array objectEnumerator];
 }
 
-- (NSEnumerator *)reverseKeyEnumerator
-{
+- (NSEnumerator *)reverseKeyEnumerator {
 	return [array reverseObjectEnumerator];
 }
 
-
 // Added by Diorcet Yann
-- (void)insertObject:(id)anObject forKey:(id)aKey selector:(SEL)comparator
-{
-	if ([dictionary objectForKey:aKey])
-	{
+- (void)insertObject:(id)anObject forKey:(id)aKey selector:(SEL)comparator {
+	if ([dictionary objectForKey:aKey]) {
 		[self removeObjectForKey:aKey];
 	}
-    NSUInteger anIndex;
-    for(anIndex = 0; anIndex < [array count]; ++anIndex) {
-        NSComparisonResult result = (NSComparisonResult) [aKey performSelector:comparator withObject:[array objectAtIndex: anIndex]];
-         if(result <= 0) {
-            break;
-        }
-    }
+	NSUInteger anIndex;
+	IMP imp = [aKey methodForSelector:comparator];
+	NSComparisonResult (*func)(id, SEL, id) = (void *)imp;
+
+	for (anIndex = 0; anIndex < [array count]; ++anIndex) {
+		NSComparisonResult result = (NSComparisonResult)func(aKey, comparator, [array objectAtIndex:anIndex]);
+		if (result <= 0) {
+			break;
+		}
+	}
 	[array insertObject:aKey atIndex:anIndex];
 	[dictionary setObject:anObject forKey:aKey];
 }
 //
 
-- (void)insertObject:(id)anObject forKey:(id)aKey atIndex:(NSUInteger)anIndex
-{
-	if ([dictionary objectForKey:aKey])
-	{
+- (void)insertObject:(id)anObject forKey:(id)aKey atIndex:(NSUInteger)anIndex {
+	if ([dictionary objectForKey:aKey]) {
 		[self removeObjectForKey:aKey];
 	}
 	[array insertObject:aKey atIndex:anIndex];
 	[dictionary setObject:anObject forKey:aKey];
 }
 
-- (id)keyAtIndex:(NSUInteger)anIndex
-{
+- (id)keyAtIndex:(NSUInteger)anIndex {
 	return [array objectAtIndex:anIndex];
 }
 
-- (NSString *)descriptionWithLocale:(id)locale indent:(NSUInteger)level
-{
+- (NSString *)descriptionWithLocale:(id)locale indent:(NSUInteger)level {
 	NSMutableString *indentString = [NSMutableString string];
 	NSUInteger i, count = level;
-	for (i = 0; i < count; i++)
-	{
+	for (i = 0; i < count; i++) {
 		[indentString appendFormat:@"    "];
 	}
-	
+
 	NSMutableString *description = [NSMutableString string];
 	[description appendFormat:@"%@{\n", indentString];
-	for (NSObject *key in self)
-	{
-		[description appendFormat:@"%@    %@ = %@;\n",
-			indentString,
-			DescriptionForObject(key, locale, level),
-			DescriptionForObject([self objectForKey:key], locale, level)];
+	for (NSObject *key in self) {
+		[description appendFormat:@"%@    %@ = %@;\n", indentString, DescriptionForObject(key, locale, level),
+								  DescriptionForObject([self objectForKey:key], locale, level)];
 	}
 	[description appendFormat:@"%@}\n", indentString];
 	return description;

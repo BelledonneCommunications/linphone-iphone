@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIChatBubblePhotoCell">
+            <connections>
+                <outlet property="avatarImage" destination="hD2-19-7IH" id="N1B-Jn-wTo"/>
+                <outlet property="backgroundColorImage" destination="U2P-5n-gg8" id="1Hn-bx-mua"/>
+                <outlet property="bottomBarColor" destination="6dA-3U-OPW" id="xJX-pe-zlu"/>
+                <outlet property="bubbleView" destination="UGz-WT-BUv" id="8qr-kw-dSx"/>
+                <outlet property="cancelButton" destination="6dl-Nz-rdv" id="ygz-nv-omC"/>
+                <outlet property="contactDateLabel" destination="JyR-RQ-uwF" id="Tc4-9t-i5V"/>
+                <outlet property="downloadButton" destination="N75-gL-R6t" id="EgN-Ab-Ded"/>
+                <outlet property="fileTransferProgress" destination="USm-wC-GvG" id="POt-YD-NCG"/>
+                <outlet property="imageGestureRecognizer" destination="aDF-hC-ddO" id="2jh-Rr-eKk"/>
+                <outlet property="imageSubView" destination="GmN-7v-uuO" id="k9r-Xc-csv"/>
+                <outlet property="messageImageView" destination="yMW-cT-bpU" id="MNr-F2-abQ"/>
+                <outlet property="resendRecognizer" destination="5ZI-Ip-lGl" id="G2r-On-6mV"/>
+                <outlet property="statusErrorImage" destination="ASM-vr-ei3" id="MK9-hl-6UF"/>
+                <outlet property="statusInProgressSpinner" destination="Eab-ND-ix3" id="UuC-eY-MSf"/>
+                <outlet property="totalView" destination="8I3-n2-0kS" id="aa8-j9-saW"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="UGz-WT-BUv">
+            <rect key="frame" x="0.0" y="0.0" width="334" height="140"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view clipsSubviews="YES" contentMode="scaleToFill" id="Y7i-Gm-AdY" userLabel="innerView">
+                    <rect key="frame" x="6" y="5" width="322" height="130"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" alpha="0.20000000298023224" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="U2P-5n-gg8" userLabel="backgroundColorImage">
+                            <rect key="frame" x="0.0" y="0.0" width="322" height="130"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                        </imageView>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar.png" id="hD2-19-7IH" userLabel="avatarImage" customClass="UIRoundedImageView">
+                            <rect key="frame" x="7" y="7" width="40" height="40"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <accessibility key="accessibilityConfiguration" label="Contact avatar">
+                                <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
+                                <bool key="isElement" value="YES"/>
+                            </accessibility>
+                        </imageView>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="11:35 John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JyR-RQ-uwF" userLabel="contactDateLabel">
+                            <rect key="frame" x="55" y="8" width="246" height="14"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <accessibility key="accessibilityConfiguration" label="Contact name"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <view contentMode="scaleToFill" id="8I3-n2-0kS" userLabel="view">
+                            <rect key="frame" x="55" y="24" width="259" height="100"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="linphone_logo.png" id="yMW-cT-bpU" userLabel="image" customClass="UILoadingImageView">
+                                    <rect key="frame" x="0.0" y="0.0" width="259" height="68"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                    <animations/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="7kE-0j-s1g"/>
+                                    </connections>
+                                </imageView>
+                                <view contentMode="scaleToFill" id="GmN-7v-uuO" userLabel="imageSubView">
+                                    <rect key="frame" x="0.0" y="68" width="258" height="32"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" id="USm-wC-GvG" userLabel="transferProgress">
+                                            <rect key="frame" x="10" y="0.0" width="238" height="2"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                            <animations/>
+                                        </progressView>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="N75-gL-R6t" userLabel="downloadButton" customClass="UIRoundBorderedButton">
+                                            <rect key="frame" x="66" y="4" width="124" height="27"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <animations/>
+                                            <accessibility key="accessibilityConfiguration" label="Download"/>
+                                            <state key="normal" title="DOWNLOAD" backgroundImage="color_G.png">
+                                                <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="onDownloadClick:" destination="-1" eventType="touchUpInside" id="8BO-9E-iOX"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="6dl-Nz-rdv" userLabel="cancelButton" customClass="UIRoundBorderedButton">
+                                            <rect key="frame" x="66" y="4" width="124" height="27"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <animations/>
+                                            <accessibility key="accessibilityConfiguration" label="Cancel"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <state key="normal" title="CANCEL" backgroundImage="color_I.png">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <state key="highlighted" backgroundImage="color_M.png"/>
+                                            <connections>
+                                                <action selector="onCancelClick:" destination="-1" eventType="touchUpInside" id="D9y-vf-I4Y"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <animations/>
+                                </view>
+                            </subviews>
+                            <animations/>
+                        </view>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="6dA-3U-OPW" userLabel="bottomBarColor">
+                            <rect key="frame" x="0.0" y="129" width="322" height="1"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                            <animations/>
+                        </imageView>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chat_message_not_delivered.png" id="ASM-vr-ei3" userLabel="statusErrorImage">
+                            <rect key="frame" x="302" y="0.0" width="20" height="20"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                            <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
+                        </imageView>
+                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" id="Eab-ND-ix3" userLabel="statusInprogressSpinner">
+                            <rect key="frame" x="302" y="0.0" width="20" height="20"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <animations/>
+                        </activityIndicatorView>
+                    </subviews>
+                    <animations/>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="5ZI-Ip-lGl" appends="YES" id="1iY-46-rRR"/>
+                    </connections>
+                </view>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="-95" y="166"/>
+        </view>
+        <tapGestureRecognizer id="aDF-hC-ddO" userLabel="imageClick">
+            <connections>
+                <action selector="onImageClick:" destination="-1" id="feN-LT-89b"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="5ZI-Ip-lGl" userLabel="resendClick">
+            <connections>
+                <action selector="onResendClick:" destination="-1" id="XOF-AF-Hes"/>
+            </connections>
+        </tapGestureRecognizer>
+    </objects>
+    <resources>
+        <image name="avatar.png" width="255" height="255"/>
+        <image name="chat_message_not_delivered.png" width="11" height="9"/>
+        <image name="color_A.png" width="2" height="2"/>
+        <image name="color_G.png" width="2" height="2"/>
+        <image name="color_I.png" width="2" height="2"/>
+        <image name="color_M.png" width="2" height="2"/>
+        <image name="linphone_logo.png" width="26" height="22"/>
+    </resources>
+</document>

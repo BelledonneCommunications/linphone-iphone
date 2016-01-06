@@ -105,6 +105,7 @@
 }
 
 - (void)viewDidUnload {
+	[super viewDidUnload];
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
 	self.tableView = nil;
@@ -112,12 +113,11 @@
 
 
 - (void)dealloc {
-    [_currentSpecifier release], _currentSpecifier = nil;
-	[_checkedItem release], _checkedItem = nil;
-	[_settingsReader release], _settingsReader = nil;
-    [_settingsStore release], _settingsStore = nil;
-	[_tableView release], _tableView = nil;
-    [super dealloc];
+	_currentSpecifier = nil;
+	_checkedItem = nil;
+	_settingsReader = nil;
+	_settingsStore = nil;
+	_tableView = nil;
 }
 
 
@@ -151,9 +151,9 @@
     NSArray *titles         = [_currentSpecifier multipleTitles];
 	
     if (!cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellValue] autorelease];
-    }
-	
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellValue];
+	}
+
 	if ([indexPath isEqual:[self checkedItem]]) {
 		[self selectCell:cell];
     } else {
@@ -197,7 +197,7 @@
 #pragma mark Notifications
 
 - (void)userDefaultsDidChange {
-	NSIndexPath *oldCheckedItem = [[self.checkedItem retain] autorelease];
+	NSIndexPath *oldCheckedItem = self.checkedItem;
 	if(_currentSpecifier) {
 		[self updateCheckedItem];
 	}

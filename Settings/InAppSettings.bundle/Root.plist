@@ -6,167 +6,67 @@
 	<array>
 		<dict>
 			<key>Title</key>
-			<string>SIP account</string>
+			<string>SIP accounts</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>wizard_button</string>
+			<string>assistant_button</string>
 			<key>Title</key>
-			<string>Wizard</string>
+			<string>Run assistant</string>
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>clear_proxy_button</string>
+			<string>menu_account_1</string>
+			<key>File</key>
+			<string>Account</string>
 			<key>Title</key>
-			<string>Clear Account</string>
+			<string>Account 1</string>
 			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
+			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<false/>
 			<key>Key</key>
-			<string>username_preference</string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
+			<string>menu_account_2</string>
+			<key>File</key>
+			<string>Account</string>
 			<key>Title</key>
-			<string>User name</string>
+			<string>Account 2</string>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<false/>
 			<key>Key</key>
-			<string>userid_preference</string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
+			<string>menu_account_3</string>
+			<key>File</key>
+			<string>Account</string>
 			<key>Title</key>
-			<string>User ID</string>
+			<string>Account 3</string>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<true/>
 			<key>Key</key>
-			<string>password_preference</string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
+			<string>menu_account_4</string>
+			<key>File</key>
+			<string>Account</string>
 			<key>Title</key>
-			<string>Password</string>
+			<string>Account 4</string>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
+			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<false/>
 			<key>Key</key>
-			<string>domain_preference</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
+			<string>menu_account_5</string>
+			<key>File</key>
+			<string>Account</string>
 			<key>Title</key>
-			<string>Domain</string>
+			<string>Account 5</string>
 			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<false/>
-			<key>Key</key>
-			<string>proxy_preference</string>
-			<key>KeyboardType</key>
-			<string>URL</string>
-			<key>Title</key>
-			<string>Proxy</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>DefaultValue</key>
-			<string>udp</string>
-			<key>Key</key>
-			<string>transport_preference</string>
-			<key>Title</key>
-			<string>Transport</string>
-			<key>Titles</key>
-			<array>
-				<string>UDP</string>
-				<string>TCP</string>
-				<string>TLS</string>
-			</array>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Values</key>
-			<array>
-				<string>udp</string>
-				<string>tcp</string>
-				<string>tls</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string>Outbound proxy</string>
-			<key>DefaultValue</key>
-			<false/>
-			<key>Key</key>
-			<string>outbound_proxy_preference</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>Title</key>
-			<string>AVPF</string>
-			<key>DefaultValue</key>
-			<true/>
-			<key>Key</key>
-			<string>avpf_preference</string>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>More options</string>
-			<key>Key</key>
-			<string>advanced_account_preference</string>
-			<key>DefaultValue</key>
-			<false/>
+			<string>PSChildPaneSpecifier</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -244,7 +144,9 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string></string>
+			<string>Development debug actions</string>
+			<key>Key</key>
+			<string>debug_actions_group</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -268,7 +170,7 @@
 			<key>Key</key>
 			<string>release_button</string>
 			<key>Title</key>
-			<string>Exit</string>
+			<string>Release core</string>
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
 		</dict>
@@ -287,6 +189,24 @@
 			<string>Battery alert</string>
 			<key>Type</key>
 			<string>IASKButtonSpecifier</string>
+		</dict>
+		<dict>
+			<key>Key</key>
+			<string>flush_images_button</string>
+			<key>Title</key>
+			<string>Flush downloaded images</string>
+			<key>Type</key>
+			<string>IASKButtonSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Auto answer call immediately</string>
+			<key>Key</key>
+			<string>enable_auto_answer_preference</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 	</array>
 	<key>StringsTable</key>

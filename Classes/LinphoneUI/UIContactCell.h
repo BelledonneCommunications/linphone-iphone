@@ -19,14 +19,13 @@
 
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
-#import "UITransparentTVCell.h"
+#import "UIRoundedImageView.h"
 
-@interface UIContactCell : UITransparentTVCell {
-}
+@interface UIContactCell : UITableViewCell
 
-@property (nonatomic, retain) IBOutlet UILabel* firstNameLabel;
-@property (nonatomic, retain) IBOutlet UILabel* lastNameLabel;
-@property (nonatomic, retain) IBOutlet UIImageView *avatarImage;
+@property(nonatomic, strong) IBOutlet UILabel *nameLabel;
+@property(nonatomic, strong) IBOutlet UIRoundedImageView *avatarImage;
+@property(weak, nonatomic) IBOutlet UIImageView *linphoneImage;
 @property (nonatomic, assign) ABRecordRef contact;
 
 - (id)initWithIdentifier:(NSString*)identifier;

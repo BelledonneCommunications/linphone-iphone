@@ -28,31 +28,26 @@
     [super viewDidLoad];
     
     // Construct attribute tables
-    portraitAttributes = [[self attributeTableForViewHierarchy:portraitView associateWithViewHierarchy:self.view] retain];
-    landscapeAttributes = [[self attributeTableForViewHierarchy:landscapeView associateWithViewHierarchy:self.view] retain];
-    viewIsCurrentlyPortrait = (self.view == portraitView);
-    
-    // Don't need to retain the original template view hierarchies any more
-    self.portraitView = nil;
+	portraitAttributes = [self attributeTableForViewHierarchy:portraitView associateWithViewHierarchy:self.view];
+	landscapeAttributes = [self attributeTableForViewHierarchy:landscapeView associateWithViewHierarchy:self.view];
+	viewIsCurrentlyPortrait = (self.view == portraitView);
+
+	// Don't need to retain the original template view hierarchies any more
+	self.portraitView = nil;
     self.landscapeView = nil;
 }
 
 - (void)viewDidUnload {
     [super viewDidUnload];
     
-    [portraitAttributes release];
     portraitAttributes = nil;
-    [landscapeAttributes release];
     landscapeAttributes = nil;
 }
 
 - (void)dealloc {
-    [portraitAttributes release];
     portraitAttributes = nil;
-    [landscapeAttributes release];
     landscapeAttributes = nil;
     
-    [super dealloc];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -89,12 +84,14 @@
 }
 
 - (void)addAttributesForSubviewHierarchy:(UIView*)view associatedWithSubviewHierarchy:(UIView*)associatedView toTable:(NSMutableDictionary*)table {
-    [table setObject:[self attributesForView:view] forKey:[NSValue valueWithPointer:associatedView]];
-    
-    if ( ![self shouldDescendIntoSubviewsOfView:view] ) return;
-    
-    for ( UIView *subview in view.subviews ) {
-        UIView *associatedSubView = (view == associatedView ? subview : [self findAssociatedViewForView:subview amongViews:associatedView.subviews]);
+	[table setObject:[self attributesForView:view]
+			  forKey:[NSValue valueWithPointer:(__bridge const void *)(associatedView)]];
+
+	if (![self shouldDescendIntoSubviewsOfView:view])
+		return;
+
+	for (UIView *subview in view.subviews) {
+		UIView *associatedSubView = (view == associatedView ? subview : [self findAssociatedViewForView:subview amongViews:associatedView.subviews]);
         if ( associatedSubView ) {
             [self addAttributesForSubviewHierarchy:subview associatedWithSubviewHierarchy:associatedSubView toTable:table];
         }
@@ -189,10 +186,10 @@
 }
 
 - (void)applyAttributeTable:(NSDictionary*)table toViewHierarchy:(UIView*)view {
-    NSDictionary *attributes = [table objectForKey:[NSValue valueWithPointer:view]];
-    if ( attributes ) {
-        [self applyAttributes:attributes toView:view];
-    }
+	NSDictionary *attributes = [table objectForKey:[NSValue valueWithPointer:(__bridge const void *)(view)]];
+	if (attributes) {
+		[self applyAttributes:attributes toView:view];
+	}
     
     //if ( view.hidden ) return;
     

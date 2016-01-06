@@ -26,6 +26,7 @@
 
 @protocol IASKSettingsDelegate
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
+- (void)settingsViewControllerWillAppear:(IASKAppSettingsViewController *)sender;
 
 @optional
 #pragma mark - UITableView header customization
@@ -60,10 +61,10 @@
 
 
 @interface IASKAppSettingsViewController : UITableViewController <IASKViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate> {
-	id<IASKSettingsDelegate>  _delegate;
-    
-    NSMutableArray          *_viewList;
-	
+	id<IASKSettingsDelegate> __weak _delegate;
+
+	NSMutableArray *_viewList;
+
 	IASKSettingsReader		*_settingsReader;
     id<IASKSettingsStore>  _settingsStore;
 	NSString				*_file;
@@ -76,11 +77,11 @@
     NSSet                   *_hiddenKeys;
 }
 
-@property (nonatomic, assign) IBOutlet id delegate;
+@property(nonatomic, weak) IBOutlet id delegate;
 @property (nonatomic, copy) NSString *file;
 @property (nonatomic, assign) BOOL showCreditsFooter;
 @property (nonatomic, assign) BOOL showDoneButton;
-@property (nonatomic, retain) NSSet *hiddenKeys;
+@property(nonatomic, strong) NSSet *hiddenKeys;
 
 - (void)synchronizeSettings;
 - (void)dismiss:(id)sender;

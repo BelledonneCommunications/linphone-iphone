@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <development version="6000" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UICompositeView">
+            <connections>
+                <outlet property="detailsView" destination="UhA-h1-Cu8" id="hQz-db-5Lg"/>
+                <outlet property="landscapeView" destination="20" id="25"/>
+                <outlet property="mainView" destination="15" id="kv5-r4-iMR"/>
+                <outlet property="portraitView" destination="1" id="24"/>
+                <outlet property="sideMenuView" destination="26" id="37"/>
+                <outlet property="statusBarView" destination="14" id="jau-xd-cYL"/>
+                <outlet property="tabBarView" destination="16" id="19"/>
+                <outlet property="view" destination="1" id="3"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="1" userLabel="Portrait View">
+            <rect key="frame" x="0.0" y="0.0" width="800" height="1290"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view autoresizesSubviews="NO" tag="5" contentMode="scaleToFill" id="UhA-h1-Cu8" userLabel="detailsView">
+                    <rect key="frame" x="400" y="60" width="600" height="1130"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <gestureRecognizers/>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="40" appends="YES" id="tJn-gF-d0A"/>
+                    </connections>
+                </view>
+                <view autoresizesSubviews="NO" tag="1" contentMode="scaleToFill" id="15" userLabel="mainView">
+                    <rect key="frame" x="0.0" y="60" width="400" height="1130"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <gestureRecognizers/>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="40" appends="YES" id="41"/>
+                    </connections>
+                </view>
+                <view autoresizesSubviews="NO" tag="2" contentMode="scaleToFill" id="14" userLabel="statusBar">
+                    <rect key="frame" x="0.0" y="0.0" width="800" height="60"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
+                <view autoresizesSubviews="NO" tag="3" contentMode="scaleToFill" id="16" userLabel="tabBar">
+                    <rect key="frame" x="0.0" y="1190" width="800" height="100"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
+                <view clearsContextBeforeDrawing="NO" tag="4" contentMode="scaleToFill" id="26" userLabel="sideMenuView">
+                    <rect key="frame" x="-800" y="60" width="800" height="1290"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                </view>
+            </subviews>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="-96.5" y="-25.5"/>
+        </view>
+        <view contentMode="scaleToFill" id="20" userLabel="Landscape View">
+            <rect key="frame" x="0.0" y="0.0" width="1290" height="800"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view autoresizesSubviews="NO" tag="5" contentMode="scaleToFill" id="Vgs-Nv-m9Q" userLabel="detailsView">
+                    <rect key="frame" x="695" y="60" width="595" height="740"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+                <view autoresizesSubviews="NO" tag="1" contentMode="scaleToFill" id="23" userLabel="mainView">
+                    <rect key="frame" x="100" y="60" width="595" height="740"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+                <view autoresizesSubviews="NO" tag="2" contentMode="scaleToFill" id="22" userLabel="statusBar">
+                    <rect key="frame" x="0.0" y="0.0" width="1290" height="60"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+                <view autoresizesSubviews="NO" tag="3" contentMode="scaleToFill" id="21" userLabel="tabBar">
+                    <rect key="frame" x="0.0" y="60" width="100" height="740"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+                <view clearsContextBeforeDrawing="NO" tag="4" contentMode="scaleToFill" id="JXU-o0-1po" userLabel="sideMenuView">
+                    <rect key="frame" x="0.0" y="60" width="1290" height="740"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <nil key="simulatedStatusBarMetrics"/>
+            <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="452.5" y="-106.5"/>
+        </view>
+        <swipeGestureRecognizer direction="right" id="40">
+            <connections>
+                <action selector="onRightSwipe:" destination="-1" id="43"/>
+                <outlet property="delegate" destination="-1" id="42"/>
+            </connections>
+        </swipeGestureRecognizer>
+    </objects>
+</document>

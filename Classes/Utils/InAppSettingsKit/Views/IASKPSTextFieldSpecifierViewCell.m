@@ -29,11 +29,10 @@
 		self.textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
 
         // TextField
-        _textField = [[[IASKTextField alloc] initWithFrame:CGRectMake(0, 0, 200, 21)] autorelease];
-        _textField.autoresizingMask = UIViewAutoresizingFlexibleWidth |
-        UIViewAutoresizingFlexibleBottomMargin |
-        UIViewAutoresizingFlexibleLeftMargin;
-        _textField.font = [UIFont systemFontOfSize:17.0f];
+		_textField = [[IASKTextField alloc] initWithFrame:CGRectMake(0, 0, 200, 21)];
+		_textField.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin |
+									  UIViewAutoresizingFlexibleLeftMargin;
+		_textField.font = [UIFont systemFontOfSize:17.0f];
 		_textField.minimumFontSize = kIASKMinimumFontSize;
         _textField.textColor = [UIColor colorWithRed:0.275 green:0.376 blue:0.522 alpha:1.000];
         [self.contentView addSubview:_textField];
@@ -69,9 +68,6 @@
 }
 
 
-- (void)dealloc {
-    [super dealloc];
-}
 
 
 @end

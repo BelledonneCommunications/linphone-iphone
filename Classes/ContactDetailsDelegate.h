@@ -19,7 +19,6 @@
 
 @protocol ContactDetailsDelegate <NSObject>
 
-- (void)onRemove:(id)event;
 - (void)onModification:(id)event;
 
 @end

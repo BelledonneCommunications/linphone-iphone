@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HistoryListView">
+            <connections>
+                <outlet property="allButton" destination="4" id="27"/>
+                <outlet property="missedButton" destination="5" id="28"/>
+                <outlet property="selectedButtonImage" destination="o8E-gw-vhI" id="hNf-FA-7aQ"/>
+                <outlet property="tableController" destination="18" id="26"/>
+                <outlet property="view" destination="2" id="16"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="o8E-Bz-RWL" userLabel="iphone6MetricsView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" id="2">
+                    <rect key="frame" x="0.0" y="42" width="375" height="559"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" id="3" userLabel="topBar">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="upG-IP-6mg" userLabel="backgroundColor">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <animations/>
+                                </imageView>
+                                <view contentMode="scaleToFill" id="38" userLabel="switchView">
+                                    <rect key="frame" x="0.0" y="0.0" width="150" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4" userLabel="allButton" customClass="UIIconButton">
+                                            <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                            <animations/>
+                                            <accessibility key="accessibilityConfiguration" label="All contacts filter"/>
+                                            <inset key="titleEdgeInsets" minX="0.0" minY="16" maxX="0.0" maxY="0.0"/>
+                                            <state key="normal" image="history_all_default.png">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <state key="disabled" image="history_all_disabled.png"/>
+                                            <state key="selected" image="history_all_selected.png"/>
+                                            <state key="highlighted" backgroundImage="color_E.png"/>
+                                            <connections>
+                                                <action selector="onAllClick:" destination="-1" eventType="touchUpInside" id="29"/>
+                                            </connections>
+                                        </button>
+                                        <button opaque="NO" contentMode="bottom" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="missedButton" customClass="UIIconButton">
+                                            <rect key="frame" x="75" y="0.0" width="75" height="66"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                            <animations/>
+                                            <accessibility key="accessibilityConfiguration" label="Missed contacts filter"/>
+                                            <state key="normal" image="history_missed_default.png">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <state key="disabled" image="history_missed_disabled.png"/>
+                                            <state key="selected" image="history_missed_selected.png"/>
+                                            <state key="highlighted" backgroundImage="color_E.png"/>
+                                            <connections>
+                                                <action selector="onMissedClick:" destination="-1" eventType="touchUpInside" id="30"/>
+                                            </connections>
+                                        </button>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="o8E-gw-vhI" userLabel="selectedButtonImage">
+                                            <rect key="frame" x="0.0" y="63" width="75" height="3"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
+                                            <animations/>
+                                        </imageView>
+                                    </subviews>
+                                    <animations/>
+                                </view>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="00K-MU-NUc" userLabel="cancelButton" customClass="UIIconButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <state key="normal" image="cancel_edit_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="cancel_edit_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onCancelClick:" destination="18" eventType="touchUpInside" id="DAX-W6-l0H"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="WQf-rB-DUt"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="nhN-oH-LQ9" userLabel="toggleSelectionButton" customClass="UIIconButton">
+                                    <rect key="frame" x="225" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Select all"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="deselect_all.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="select_all_disabled.png"/>
+                                    <state key="selected" image="select_all_default.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onSelectionToggle:" destination="18" eventType="touchUpInside" id="ADr-KR-SmA"/>
+                                    </connections>
+                                </button>
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="35" userLabel="deleteButton" customClass="UIIconButton">
+                                    <rect key="frame" x="300" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Delete all"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="delete_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="delete_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onDeleteClick:" destination="-1" eventType="touchUpInside" id="37"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="editButton" customClass="UIIconButton">
+                                    <rect key="frame" x="300" y="0.0" width="75" height="66"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <animations/>
+                                    <accessibility key="accessibilityConfiguration" label="Edit"/>
+                                    <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
+                                    <state key="normal" image="edit_list_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="edit_list_disabled.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                    <connections>
+                                        <action selector="onEditClick:" destination="18" eventType="touchUpInside" id="5Ft-HW-cVh"/>
+                                        <action selector="onEditionChangeClick:" destination="-1" eventType="touchUpInside" id="9gC-6R-w0j"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <animations/>
+                        </view>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="35" sectionFooterHeight="1" id="17" userLabel="tableView">
+                            <rect key="frame" x="0.0" y="66" width="375" height="493"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <animations/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <inset key="contentInset" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
+                            <inset key="scrollIndicatorInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="10"/>
+                            <color key="separatorColor" red="0.7254902124" green="0.76862746479999999" blue="0.79607844350000001" alpha="1" colorSpace="deviceRGB"/>
+                            <connections>
+                                <outlet property="dataSource" destination="18" id="23"/>
+                                <outlet property="delegate" destination="18" id="24"/>
+                            </connections>
+                        </tableView>
+                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No call in your history" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xtr-Fp-60Z" userLabel="emptyTableLabel">
+                            <rect key="frame" x="0.0" y="66" width="375" height="493"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <animations/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <animations/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </view>
+            </subviews>
+            <animations/>
+            <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="245.5" y="373.5"/>
+        </view>
+        <tableViewController autoresizesArchivedViewToFullSize="NO" id="18" userLabel="tableController" customClass="HistoryListTableView">
+            <extendedEdge key="edgesForExtendedLayout"/>
+            <connections>
+                <outlet property="cancelButton" destination="00K-MU-NUc" id="KSi-MC-Usk"/>
+                <outlet property="deleteButton" destination="35" id="n8o-lE-u1t"/>
+                <outlet property="editButton" destination="6" id="Sgc-Z3-NeQ"/>
+                <outlet property="emptyView" destination="xtr-Fp-60Z" id="hgd-7A-cLI"/>
+                <outlet property="toggleSelectionButton" destination="nhN-oH-LQ9" id="77r-l0-3Yi"/>
+                <outlet property="view" destination="17" id="25"/>
+            </connections>
+            <point key="canvasLocation" x="596" y="305"/>
+        </tableViewController>
+    </objects>
+    <resources>
+        <image name="cancel_edit_default.png" width="29" height="29"/>
+        <image name="cancel_edit_disabled.png" width="29" height="29"/>
+        <image name="color_A.png" width="2" height="2"/>
+        <image name="color_E.png" width="2" height="2"/>
+        <image name="color_F.png" width="2" height="2"/>
+        <image name="delete_default.png" width="21" height="27"/>
+        <image name="delete_disabled.png" width="21" height="27"/>
+        <image name="deselect_all.png" width="26" height="26"/>
+        <image name="edit_list_default.png" width="29" height="28"/>
+        <image name="edit_list_disabled.png" width="29" height="28"/>
+        <image name="history_all_default.png" width="32" height="31"/>
+        <image name="history_all_disabled.png" width="32" height="31"/>
+        <image name="history_all_selected.png" width="32" height="31"/>
+        <image name="history_missed_default.png" width="32" height="32"/>
+        <image name="history_missed_disabled.png" width="32" height="32"/>
+        <image name="history_missed_selected.png" width="32" height="32"/>
+        <image name="select_all_default.png" width="26" height="26"/>
+        <image name="select_all_disabled.png" width="26" height="26"/>
+    </resources>
+</document>

@@ -19,10 +19,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "UIIconButton.h"
 
-@interface UICamSwitch : UIButton {
-@private
+@interface UICamSwitch : UIIconButton
 
-}
-@property (nonatomic, retain) IBOutlet UIView* preview;
+@property(nonatomic, weak) IBOutlet UIView *preview;
+
 @end

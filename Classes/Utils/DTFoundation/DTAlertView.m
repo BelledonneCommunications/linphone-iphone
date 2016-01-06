@@ -23,7 +23,6 @@
 {
 	[super setDelegate:nil];
 	self.alertViewDelegate = nil;
-	[super dealloc];
 }
 
 // designated initializer

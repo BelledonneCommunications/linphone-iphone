@@ -18,7 +18,7 @@
 #import "IASKSettingsReader.h"
 
 @interface IASKSpecifier ()
-@property (nonatomic, retain) NSDictionary  *multipleValuesDict;
+@property(nonatomic, strong) NSDictionary *multipleValuesDict;
 - (void)_reinterpretValues:(NSDictionary*)specifierDict;
 @end
 
@@ -41,21 +41,20 @@
 }
 
 - (void)dealloc {
-    [_specifierDict release], _specifierDict = nil;
-    [_multipleValuesDict release], _multipleValuesDict = nil;
-	
+	_specifierDict = nil;
+	_multipleValuesDict = nil;
+
 	_settingsReader = nil;
 
-    [super dealloc];
 }
 
 - (void)_reinterpretValues:(NSDictionary*)specifierDict {
     NSArray *values = [_specifierDict objectForKey:kIASKValues];
     NSArray *titles = [_specifierDict objectForKey:kIASKTitles];
-    
-    NSMutableDictionary *multipleValuesDict = [[[NSMutableDictionary alloc] init] autorelease];
-    
-    if (values) {
+
+	NSMutableDictionary *multipleValuesDict = [[NSMutableDictionary alloc] init];
+
+	if (values) {
 		[multipleValuesDict setObject:values forKey:kIASKValues];
 	}
 	
@@ -252,20 +251,19 @@
 	return !boxedResult || [boxedResult boolValue];
 }
 
-- (UITextAlignment)textAlignment
-{
-    if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentLeft]) {
-        return UITextAlignmentLeft;
-    } else if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentCenter]) {
-        return UITextAlignmentCenter;
-    } else if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentRight]) {
-        return UITextAlignmentRight;
-    }
-    if ([self.type isEqualToString:kIASKButtonSpecifier] && !self.cellImage) {
-		return UITextAlignmentCenter;
-	} else if ([self.type isEqualToString:kIASKPSMultiValueSpecifier] || [self.type isEqualToString:kIASKPSTitleValueSpecifier]) {
-		return UITextAlignmentRight;
+- (NSTextAlignment)textAlignment {
+	if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentLeft]) {
+		return NSTextAlignmentLeft;
+	} else if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentCenter]) {
+		return NSTextAlignmentCenter;
+	} else if ([[_specifierDict objectForKey:kIASKTextLabelAlignment] isEqualToString:kIASKTextLabelAlignmentRight]) {
+		return NSTextAlignmentRight;
 	}
-	return UITextAlignmentLeft;
+	if ([self.type isEqualToString:kIASKButtonSpecifier] && !self.cellImage) {
+		return NSTextAlignmentCenter;
+	} else if ([self.type isEqualToString:kIASKPSMultiValueSpecifier] || [self.type isEqualToString:kIASKPSTitleValueSpecifier]) {
+		return NSTextAlignmentRight;
+	}
+	return NSTextAlignmentLeft;
 }
 @end
