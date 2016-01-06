@@ -4135,8 +4135,12 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv
 	return (jint)linphone_core_get_conference_size((LinphoneCore *) pCore);
 }
 
-extern "C" jlong Jave_org_linphone_core_LinphoneCoreImpl_getConference(JNIEnv *env, jobject thiz, jlong pCore) {
-	return (jlong)linphone_core_get_conference((LinphoneCore *)pCore);
+extern "C" jobject Jave_org_linphone_core_LinphoneCoreImpl_getConference(JNIEnv *env, jobject thiz, jlong pCore) {
+	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConference");
+	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)");
+	LinphoneConference *conf = linphone_core_get_conference((LinphoneCore *)pCore);
+	if(conf) return env->NewObject(conference_class, conference_constructor, conf);
+	else return NULL;
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startConferenceRecording(JNIEnv *env,jobject thiz,jlong pCore, jstring jpath){
@@ -4273,8 +4277,12 @@ extern "C" void Java_org_linphone_core_LinphoneCallImpl_setAuthenticationTokenVe
 	linphone_call_set_authentication_token_verified(call, verified);
 }
 
-extern "C" jlong Java_org_linphnoe_core_LinphoneCallImpl_getConference(JNIEnv *env, jobject thiz, jlong ptr) {
-	return (jlong)linphone_call_get_conference((LinphoneCall *)ptr);
+extern "C" jobject Java_org_linphnoe_core_LinphoneCallImpl_getConference(JNIEnv *env, jobject thiz, jlong ptr) {
+	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConference");
+	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)");
+	LinphoneConference *conf = linphone_call_get_conference((LinphoneCall *)ptr);
+	if(conf) return env->NewObject(conference_class, conference_constructor, conf);
+	return NULL;
 }
 
 extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getPlayVolume(JNIEnv* env, jobject thiz, jlong ptr) {
