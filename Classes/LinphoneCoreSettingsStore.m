@@ -515,7 +515,7 @@ extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
 			linphone_core_set_default_proxy_config(lc, proxyCfg);
 		}
 
-		// add auth info only after finishing editting the proxy config, so that
+		// add auth info only after finishing editing the proxy config, so that
 		// UNREGISTER succeed
 		linphone_core_clear_all_auth_info(lc);
 		if (info) {
