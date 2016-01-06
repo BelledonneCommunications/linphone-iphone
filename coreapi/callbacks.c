@@ -1065,7 +1065,15 @@ static void dtmf_received(SalOp *op, char dtmf){
 static void refer_received(Sal *sal, SalOp *op, const char *referto){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	if (call){
+	LinphoneAddress *refer_to_addr = linphone_address_new(referto);
+	char method[20] = "";
+	
+	if(refer_to_addr) {
+		const char *tmp = linphone_address_get_method_param(refer_to_addr);
+		if(tmp) strncpy(method, tmp, sizeof(method));
+		linphone_address_destroy(refer_to_addr);
+	}
+	if (call && (strlen(method) == 0 || strcmp(method, "INVITE") == 0)) {
 		if (call->refer_to!=NULL){
 			ms_free(call->refer_to);
 		}
