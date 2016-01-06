@@ -253,7 +253,10 @@ LinphoneFriendList * linphone_friend_list_ref(LinphoneFriendList *list) {
 void _linphone_friend_list_release(LinphoneFriendList *list){
 	/*drops all references to core and unref*/
 	list->lc = NULL;
-	if (list->event != NULL) linphone_event_unref(list->event);
+	if (list->event != NULL) {
+		linphone_event_unref(list->event);
+		list->event = NULL;
+	}
 	list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
 	belle_sip_object_unref(list);
 }
