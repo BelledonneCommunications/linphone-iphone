@@ -700,12 +700,31 @@ void linphone_conference_server_call_state_changed(LinphoneCore *lc, LinphoneCal
 	}
 }
 
+void linphone_conference_server_refer_received(LinphoneCore *core, const char *refer_to) {
+	char method[20];
+	LinphoneAddress *refer_to_addr = linphone_address_new(refer_to);
+	char *uri;
+	LinphoneCall *call;
+	
+	if(refer_to_addr == NULL) return;
+	strncpy(method, linphone_address_get_method_param(refer_to_addr), sizeof(method));
+	if(strcmp(method, "BYE") == 0) {
+		linphone_address_clean(refer_to_addr);
+		uri = linphone_address_as_string_uri_only(refer_to_addr);
+		call = linphone_core_find_call_from_uri(core, uri);
+		if(call) linphone_core_terminate_call(core, call);
+		ms_free(uri);
+	}
+	linphone_address_destroy(refer_to_addr);
+}
+
 LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file) {
 	LinphoneConferenceServer *conf_srv = (LinphoneConferenceServer *)ms_new0(LinphoneConferenceServer, 1);
 	LinphoneCoreManager *lm = (LinphoneCoreManager *)conf_srv;
 	
 	conf_srv->vtable = linphone_core_v_table_new();
 	conf_srv->vtable->call_state_changed = linphone_conference_server_call_state_changed;
+	conf_srv->vtable->refer_received = linphone_conference_server_refer_received;
 	conf_srv->vtable->user_data = conf_srv;
 	linphone_core_manager_init(lm, rc_file);
 	linphone_core_add_listener(lm->lc, conf_srv->vtable);

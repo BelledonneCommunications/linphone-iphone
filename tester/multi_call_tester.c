@@ -653,7 +653,7 @@ static void eject_from_3_participants_conference(LinphoneCoreManager *marie, Lin
 		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,10000));
 	} else {
 		linphone_core_terminate_conference(marie->lc);
-		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,initial_laure_stat.number_of_LinphoneCallEnd+1,3000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,initial_laure_stat.number_of_LinphoneCallEnd+2,3000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,initial_marie_stat.number_of_LinphoneCallEnd+3,3000));
 	}
 
@@ -832,7 +832,7 @@ test_t multi_call_tests[] = {
 	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
 	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
 	{ "Simple remote conference", simple_remote_conference },
-	{ "Eject from 3 participants remote conference", eject_from_3_participants_remote_conference }
+	{ "Eject from 3 participants in remote conference", eject_from_3_participants_remote_conference }
 };
 
 test_suite_t multi_call_test_suite = {"Multi call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
