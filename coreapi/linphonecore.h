@@ -449,6 +449,8 @@ LINPHONE_PUBLIC void linphone_address_set_secure(LinphoneAddress *addr, bool_t e
 LINPHONE_PUBLIC bool_t linphone_address_is_sip(const LinphoneAddress *uri);
 LINPHONE_PUBLIC LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri);
 LINPHONE_PUBLIC void linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
+LINPHONE_PUBLIC const char *linphone_address_get_method_param(const LinphoneAddress *addr);
+LINPHONE_PUBLIC void linphone_address_set_method_param(LinphoneAddress *addr, const char *method);
 LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
 LINPHONE_PUBLIC	char *linphone_address_as_string_uri_only(const LinphoneAddress *u);
 LINPHONE_PUBLIC	bool_t linphone_address_weak_equal(const LinphoneAddress *a1, const LinphoneAddress *a2);
