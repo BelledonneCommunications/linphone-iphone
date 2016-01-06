@@ -1989,7 +1989,7 @@ void video_call_base_2(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 	linphone_core_enable_video_capture(caller->lc, caller_video_enabled);
 
 	if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-		const char *path = bc_tester_file("certificates-marie");
+		char *path = bc_tester_file("certificates-marie");
 		callee->lc->user_certificates_path = ms_strdup(path);
 		bc_free(path);
 		path = bc_tester_file("certificates-pauline");
@@ -2101,7 +2101,7 @@ void video_call_base_3(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
     linphone_core_enable_video_capture(caller->lc, caller_video_enabled);
     
     if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-		const char *path = bc_tester_file("certificates-marie");
+		char *path = bc_tester_file("certificates-marie");
 		callee->lc->user_certificates_path = ms_strdup(path);
 		bc_free(path);
 		path = bc_tester_file("certificates-pauline");
@@ -2944,7 +2944,7 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 		linphone_core_set_media_encryption(marie->lc,mode);
 		linphone_core_set_media_encryption(pauline->lc,mode);
 		if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-			const char *path = bc_tester_file("certificates-marie");
+			char *path = bc_tester_file("certificates-marie");
 			marie->lc->user_certificates_path = ms_strdup(path);
 			bc_free(path);
 			path = bc_tester_file("certificates-pauline");
