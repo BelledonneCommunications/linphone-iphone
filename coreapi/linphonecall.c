@@ -2483,7 +2483,7 @@ void linphone_call_init_text_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	char* cname;
 
-	if (call->textstream != NULL || !call->params->realtimetext_enabled) return;
+	if (call->textstream != NULL) return;
 	if (call->sessions[call->main_text_stream_index].rtp_session == NULL) {
 		SalMulticastRole multicast_role = linphone_call_get_multicast_role(call, SalText);
 		SalMediaDescription *remotedesc = NULL;

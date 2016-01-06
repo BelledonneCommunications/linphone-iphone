@@ -90,7 +90,7 @@ liblinphone_la_SOURCES=\
 	xml.c \
 	xmlrpc.c \
 	vtables.c \
-	ringtoneplayer.c \
+	ringtoneplayer.c ringtoneplayer.h\
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
