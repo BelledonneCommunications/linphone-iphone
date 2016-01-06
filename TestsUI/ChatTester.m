@@ -16,8 +16,6 @@
 - (void)beforeAll {
 	[super beforeAll];
 	[self switchToValidAccountIfNeeded];
-	// turn off logs for chat tests because there are way to much logs in liblinphone in filetransfer and sqlite
-	linphone_core_set_log_level(ORTP_WARNING);
 }
 
 - (void)beforeEach {
@@ -29,7 +27,6 @@
 
 - (void)afterAll {
 	[super afterAll];
-	linphone_core_set_log_level(ORTP_MESSAGE);
 	// at the end of tests, go back to chat rooms to display main bar
 	[self goBackFromChat];
 	ASSERT_EQ([LinphoneManager instance].fileTransferDelegates.count, 0)
@@ -182,6 +179,12 @@
 	int count = 0;
 	LinphoneCore *lc = [LinphoneManager getLc];
 	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [[self me] UTF8String]);
+
+	NSTimeInterval beforeEmpty = [[NSDate date] timeIntervalSince1970];
+	[self startChatWith:[self me]];
+	NSTimeInterval afterEmpty = [[NSDate date] timeIntervalSince1970];
+	[self goBackFromChat];
+
 	// generate lots of messages...
 	for (; count < 50; count++) {
 		LinphoneChatMessage *msg =
@@ -204,8 +207,8 @@
 	[self startChatWith:[self me]];
 	NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
 
-	// conversation loading MUST be less than 1 sec - opening an empty conversation is around 2.15 sec
-	XCTAssertLessThan(after - before, 2.15 + 1.);
+	// conversation loading MUST be less than 1 sec - loading messages only
+	XCTAssertLessThan(after - before, afterEmpty - beforeEmpty + 1.);
 }
 
 - (void)testRemoveAllChats {
@@ -283,7 +286,7 @@
 	[self uploadImageWithQuality:@"Minimum"];
 	UITableView *tv = [self findTableView:@"ChatRoom list"];
 	// wait for ALL uploads to terminate...
-	for (int i = 0; i < 45; i++) {
+	for (int i = 0; i < 90; i++) {
 		[tester waitForTimeInterval:1.f];
 		if ([tv numberOfRowsInSection:0] == 4)
 			break;
