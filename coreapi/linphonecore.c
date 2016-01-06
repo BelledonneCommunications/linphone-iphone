@@ -2947,7 +2947,7 @@ int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_stop_media_streams(call);
 	ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
 	ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
-	if (call->params->realtimetext_enabled) ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
+	ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
 	linphone_call_init_media_streams(call);
 	return linphone_core_start_invite(lc,call, NULL);
 }

@@ -1241,8 +1241,16 @@ static void history_count(void) {
 		messages=linphone_chat_room_get_history(chatroom,0);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270, int, "%d");
 		BC_ASSERT_EQUAL(ms_list_size(messages), 1270, int, "%d");
+		
 		/*check the second most recent msg*/
-		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->next->data), "Fore and aft follow each other.");
+		BC_ASSERT_PTR_NOT_NULL(messages);
+		if (messages){
+			BC_ASSERT_PTR_NOT_NULL(messages->next->data);
+			if (messages->next->data){
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->next->data), "Fore and aft follow each other.");
+			}
+		}
+		
 		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test offset+limit: retrieve the 42th latest msg only and check its content*/

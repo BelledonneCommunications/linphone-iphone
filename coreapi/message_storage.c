@@ -468,12 +468,13 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 		ms_free(buf);
 		buf = buf2;
 	}
-
+	
+	begin=ortp_get_cur_time_ms();
+	linphone_sql_request_message(lc->db,buf,cr);
+	end=ortp_get_cur_time_ms();
+	
 	if (endm+1-startm > 1) {
 		//display message only if at least 2 messages are loaded
-		begin=ortp_get_cur_time_ms();
-		linphone_sql_request_message(lc->db,buf,cr);
-		end=ortp_get_cur_time_ms();
 		ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
 	}
 	ms_free(buf);

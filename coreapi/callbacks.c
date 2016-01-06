@@ -187,7 +187,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 			ms_message("Media ip type has changed, destroying sessions context on call [%p]",call);
 			ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
 			ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
-			if (call->params->realtimetext_enabled) ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
+			ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
 		}
 		linphone_call_init_media_streams (call);
 	}
