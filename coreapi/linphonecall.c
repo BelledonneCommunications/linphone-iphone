@@ -1369,10 +1369,12 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
  * (_linphone_call_destroy) if the call was never notified to the application.
  */
 void linphone_call_free_media_resources(LinphoneCall *call){
+	int i;
+	
 	linphone_call_stop_media_streams(call);
-	ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
-	ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
-	if (call->params->realtimetext_enabled) ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
+		ms_media_stream_sessions_uninit(&call->sessions[i]);
+	}
 	linphone_call_delete_upnp_session(call);
 	linphone_call_delete_ice_session(call);
 	linphone_call_stats_uninit(&call->stats[LINPHONE_CALL_STATS_AUDIO]);
