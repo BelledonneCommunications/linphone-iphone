@@ -97,6 +97,7 @@ const char * bc_tester_current_test_name(void);
 
 char* bc_sprintfva(const char* format, va_list args);
 char* bc_sprintf(const char* format, ...);
+void bc_free(void *ptr);
 
 /**
  * Get full path to the given resource

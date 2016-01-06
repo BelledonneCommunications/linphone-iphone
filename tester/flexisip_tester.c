@@ -791,7 +791,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
-		ms_free(receive_filepath);
+		bc_free(receive_filepath);
 	}
 }
 

@@ -656,6 +656,10 @@ char* bc_sprintf(const char* format, ...) {
 	return res;
 }
 
+void bc_free(void *ptr) {
+	free(ptr);
+}
+
 const char * bc_tester_current_suite_name(void) {
 	return bc_current_suite_name;
 }
