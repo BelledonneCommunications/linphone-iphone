@@ -607,22 +607,14 @@ int RemoteConference::addParticipant(LinphoneCall *call) {
 }
 
 int RemoteConference::removeParticipant(const LinphoneAddress *uri) {
-	SalOp *op;
-	const char *from;
 	char *tmp, *refer_to;
 	int res;
 	
 	switch(m_state) {
 		case ConnectedToFocus:
-			op = sal_op_new(m_core->sal);
-			
-			from = sal_op_get_from(m_focusCall->op);
-			sal_op_set_from(op, from);
-			sal_op_set_to(op, m_focusContact);
-			
 			tmp = linphone_address_as_string_uri_only(uri);
 			refer_to = ms_strdup_printf("%s;method=BYE", tmp);
-			res = sal_call_refer(op, refer_to);
+			res = sal_call_refer(m_focusCall->op, refer_to);
 			ms_free(tmp);
 			ms_free(refer_to);
 			
