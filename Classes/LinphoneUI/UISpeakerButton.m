@@ -39,35 +39,12 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	[button update];
 }
 
-- (void)initUISpeakerButton {
+INIT_WITH_COMMON {
 	AudioSessionInitialize(NULL, NULL, NULL, NULL);
 	OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange,
 													   audioRouteChangeListenerCallback, (__bridge void *)(self));
 	if (lStatus) {
 		LOGE(@"cannot register route change handler [%ld]", lStatus);
-	}
-}
-
-- (id)init {
-	self = [super init];
-	if (self) {
-		[self initUISpeakerButton];
-	}
-	return self;
-}
-
-- (id)initWithFrame:(CGRect)frame {
-	self = [super initWithFrame:frame];
-	if (self) {
-		[self initUISpeakerButton];
-	}
-	return self;
-}
-
-- (id)initWithCoder:(NSCoder *)decoder {
-	self = [super initWithCoder:decoder];
-	if (self) {
-		[self initUISpeakerButton];
 	}
 	return self;
 }

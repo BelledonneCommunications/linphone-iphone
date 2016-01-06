@@ -47,11 +47,6 @@
 
 #define LINPHONE_LOGS_MAX_ENTRY 5000
 
-static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
-											 AudioSessionPropertyID inPropertyID, // 2
-											 UInt32 inPropertyValueSize,		  // 3
-											 const void *inPropertyValue		  // 4
-											 );
 static LinphoneCore *theLinphoneCore = nil;
 static LinphoneManager *theLinphoneManager = nil;
 
@@ -256,11 +251,10 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 - (id)init {
 	if ((self = [super init])) {
 		AudioSessionInitialize(NULL, NULL, NULL, NULL);
-		OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange,
-														   audioRouteChangeListenerCallback, (__bridge void *)(self));
-		if (lStatus) {
-			LOGE(@"cannot register route change handler [%ld]", lStatus);
-		}
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(audioRouteChangeListenerCallback2:)
+													 name:AVAudioSessionRouteChangeNotification
+												   object:nil];
 
 		NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
 		self.messagePlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil];
@@ -298,15 +292,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 }
 
 - (void)dealloc {
-
-	OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(
-		kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, (__bridge void *)(self));
-	if (lStatus) {
-		LOGE(@"cannot un register route change handler [%ld]", lStatus);
-	}
-
-	[[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:kLinphoneGlobalStateUpdate];
-	[[NSNotificationCenter defaultCenter] removeObserver:self forKeyPath:kLinphoneConfiguringStateUpdate];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)silentPushFailed:(NSTimer *)timer {
@@ -713,7 +699,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		if (linphone_core_get_calls_nb(theLinphoneCore) == 0) {
 			[self setSpeakerEnabled:FALSE];
 			[self removeCTCallCenterCb];
-			bluetoothAvailable = FALSE;
+			// disable this because I don't find anygood reason for it: bluetoothAvailable = FALSE;
+			// furthermore it introduces a bug when calling multiple times since route may not be
+			// reconfigured between cause leading to bluetooth being disabled while it should not
 			bluetoothEnabled = FALSE;
 			/*IOS specific*/
 			linphone_core_start_dtmf_stream(theLinphoneCore);
@@ -1800,69 +1788,76 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
 	if (!lStatus && lNewRouteSize > 0) {
 		NSString *route = (__bridge NSString *)lNewRoute;
-		notallow = [route isEqualToString:@"Headset"] || [route isEqualToString:@"Headphone"] ||
-				   [route isEqualToString:@"HeadphonesAndMicrophone"] || [route isEqualToString:@"HeadsetInOut"] ||
-				   [route isEqualToString:@"Lineout"] || IPAD;
+		notallow = [route containsString:@"Heads"] || [route isEqualToString:@"Lineout"] || IPAD;
 		CFRelease(lNewRoute);
 	}
 	return !notallow;
 }
 
-static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
-											 AudioSessionPropertyID inPropertyID, // 2
-											 UInt32 inPropertyValueSize,		  // 3
-											 const void *inPropertyValue		  // 4
-											 ) {
-	if (inPropertyID != kAudioSessionProperty_AudioRouteChange)
-		return; // 5
-	LinphoneManager *lm = (__bridge LinphoneManager *)inUserData;
+- (void)audioRouteChangeListenerCallback2:(NSNotification *)notif {
+	// there is at least one bug when you disconnect an audio bluetooth headset
+	// since we only get notification of route having changed, we cannot tell if that is due to:
+	// -bluetooth headset disconnected or
+	// -user wanted to use earpiece
+	// the only thing we can assume is that when we lost a device, it must be a bluetooth one (strong hypothesis though)
+	if ([[notif.userInfo valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue] ==
+		AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+		bluetoothAvailable = NO;
+	}
 
-	bool speakerEnabled = false;
-	CFStringRef lNewRoute = CFSTR("Unknown");
-	UInt32 lNewRouteSize = sizeof(lNewRoute);
-	OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
-	if (!lStatus && lNewRouteSize > 0) {
-		NSString *route = (__bridge NSString *)lNewRoute;
+	CFStringRef newRoute = CFSTR("Unknown");
+	UInt32 newRouteSize = sizeof(newRoute);
+
+	OSStatus status = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &newRouteSize, &newRoute);
+	if (!status && newRouteSize > 0) {
+		NSString *route = (__bridge NSString *)newRoute;
 		LOGI(@"Current audio route is [%s]", [route UTF8String]);
 
 		speakerEnabled = [route isEqualToString:@"Speaker"] || [route isEqualToString:@"SpeakerAndMicrophone"];
 		if (!IPAD && [route isEqualToString:@"HeadsetBT"] && !speakerEnabled) {
-			lm.bluetoothEnabled = TRUE;
-			lm.bluetoothAvailable = TRUE;
-			NSDictionary *dict = [NSDictionary
-				dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:lm.bluetoothAvailable], @"available", nil];
-			[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneBluetoothAvailabilityUpdate
-																object:lm
-															  userInfo:dict];
+			bluetoothAvailable = TRUE;
+			bluetoothEnabled = TRUE;
 		} else {
-			lm.bluetoothEnabled = FALSE;
+			bluetoothEnabled = FALSE;
 		}
-		CFRelease(lNewRoute);
-	}
-
-	if (speakerEnabled != lm.speakerEnabled) { // Reforce value
-		lm.speakerEnabled = lm.speakerEnabled;
+		NSDictionary *dict =
+			[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:bluetoothAvailable], @"available", nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneBluetoothAvailabilityUpdate
+															object:self
+														  userInfo:dict];
+		CFRelease(newRoute);
 	}
 }
 
 - (void)setSpeakerEnabled:(BOOL)enable {
+	OSStatus ret;
 	speakerEnabled = enable;
+	UInt32 override = kAudioSessionUnspecifiedError;
 
-	if (enable && [self allowSpeaker]) {
-		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
-		AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(audioRouteOverride),
-								&audioRouteOverride);
-		bluetoothEnabled = FALSE;
-	} else {
-		UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;
-		AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(audioRouteOverride),
-								&audioRouteOverride);
+	if (!enable && bluetoothAvailable) {
+		UInt32 bluetoothInputOverride = bluetoothEnabled;
+		ret = AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryEnableBluetoothInput,
+									  sizeof(bluetoothInputOverride), &bluetoothInputOverride);
+		// if setting bluetooth failed, it must be because the device is not available
+		// anymore (disconnected), so deactivate bluetooth.
+		if (ret != kAudioSessionNoError) {
+			bluetoothAvailable = bluetoothEnabled = FALSE;
+		}
 	}
 
-	if (bluetoothAvailable) {
-		UInt32 bluetoothInputOverride = bluetoothEnabled;
-		AudioSessionSetProperty(kAudioSessionProperty_OverrideCategoryEnableBluetoothInput,
-								sizeof(bluetoothInputOverride), &bluetoothInputOverride);
+	if (override != kAudioSessionNoError) {
+		if (enable && [self allowSpeaker]) {
+			override = kAudioSessionOverrideAudioRoute_Speaker;
+			ret = AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(override), &override);
+			bluetoothEnabled = FALSE;
+		} else {
+			override = kAudioSessionOverrideAudioRoute_None;
+			ret = AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(override), &override);
+		}
+	}
+
+	if (ret != kAudioSessionNoError) {
+		LOGE(@"Failed to change audio route: err %d", ret);
 	}
 }
 

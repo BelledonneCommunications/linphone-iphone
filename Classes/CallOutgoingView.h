@@ -28,7 +28,13 @@
 }
 @property(weak, nonatomic) IBOutlet UIRoundedImageView *avatarImage;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property(weak, nonatomic) IBOutlet UISpeakerButton *speakerButton;
 @property(weak, nonatomic) IBOutlet UILabel *addressLabel;
+@property(weak, nonatomic) IBOutlet UIToggleButton *routesButton;
+@property(weak, nonatomic) IBOutlet UIView *routesView;
+@property(weak, nonatomic) IBOutlet UIBluetoothButton *routesBluetoothButton;
+@property(weak, nonatomic) IBOutlet UIButton *routesEarpieceButton;
+@property(weak, nonatomic) IBOutlet UISpeakerButton *routesSpeakerButton;
 
 - (IBAction)onDeclineClick:(id)sender;
 

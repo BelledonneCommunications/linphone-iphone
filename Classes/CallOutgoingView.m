@@ -48,6 +48,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(bluetoothAvailabilityUpdateEvent:)
+												 name:kLinphoneBluetoothAvailabilityUpdate
+											   object:nil];
+
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (!call) {
 		if (![PhoneMainView.instance popCurrentView]) {
@@ -61,6 +66,37 @@ static UICompositeViewDescription *compositeDescription = nil;
 		ms_free(uri);
 		[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:NO] bordered:YES withRoundedRadius:YES];
 	}
+
+	[self hideSpeaker:LinphoneManager.instance.bluetoothAvailable];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (IBAction)onRoutesBluetoothClick:(id)sender {
+	[self hideRoutes:TRUE animated:TRUE];
+	[[LinphoneManager instance] setBluetoothEnabled:TRUE];
+}
+
+- (IBAction)onRoutesEarpieceClick:(id)sender {
+	[self hideRoutes:TRUE animated:TRUE];
+	[[LinphoneManager instance] setSpeakerEnabled:FALSE];
+	[[LinphoneManager instance] setBluetoothEnabled:FALSE];
+}
+
+- (IBAction)onRoutesSpeakerClick:(id)sender {
+	[self hideRoutes:TRUE animated:TRUE];
+	[[LinphoneManager instance] setSpeakerEnabled:TRUE];
+}
+
+- (IBAction)onRoutesClick:(id)sender {
+	if ([_routesView isHidden]) {
+		[self hideRoutes:FALSE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+	} else {
+		[self hideRoutes:TRUE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+	}
 }
 
 - (IBAction)onDeclineClick:(id)sender {
@@ -68,6 +104,46 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (call) {
 		linphone_core_terminate_call([LinphoneManager getLc], call);
 	}
-	[PhoneMainView.instance popCurrentView];
+	if (![PhoneMainView.instance popCurrentView]) {
+		[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+	}
 }
+
+- (void)hideRoutes:(BOOL)hidden animated:(BOOL)animated {
+	if (IPAD)
+		return;
+
+	if (hidden) {
+		[_routesButton setOff];
+	} else {
+		[_routesButton setOn];
+	}
+
+	_routesBluetoothButton.selected = LinphoneManager.instance.bluetoothEnabled;
+	_routesSpeakerButton.selected = LinphoneManager.instance.speakerEnabled;
+	_routesEarpieceButton.selected = !_routesBluetoothButton.selected && !_routesSpeakerButton.selected;
+
+	if (hidden != _routesView.hidden) {
+		//		if (animated) {
+		//			[self hideAnimation:hidden forView:_routesView completion:nil];
+		//		} else {
+		[_routesView setHidden:hidden];
+		//		}
+	}
+}
+
+- (void)hideSpeaker:(BOOL)hidden {
+	if (IPAD)
+		return;
+	_speakerButton.hidden = hidden;
+	_routesButton.hidden = !hidden;
+}
+
+#pragma mark - Event Functions
+
+- (void)bluetoothAvailabilityUpdateEvent:(NSNotification *)notif {
+	bool available = [[notif.userInfo objectForKey:@"available"] intValue];
+	[self hideSpeaker:available];
+}
+
 @end
