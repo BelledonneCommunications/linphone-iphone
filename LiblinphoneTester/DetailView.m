@@ -10,7 +10,7 @@
 #import "MasterView.h"
 #import "LogsView.h"
 #include "linphone/liblinphone_tester.h"
-#import "Utils.h"
+#import "Log.h"
 
 static NSString *const kAllTestsName = @"Run All tests";
 

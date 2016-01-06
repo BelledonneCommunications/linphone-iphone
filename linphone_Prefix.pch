@@ -7,4 +7,5 @@
     #import <UIKit/UIKit.h>
 #endif
 
+#import "Log.h"
 #import "Utils.h"
