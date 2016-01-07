@@ -96,6 +96,7 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 					LinphoneFriend *lf2 = (LinphoneFriend *)local_friend->data;
 					if (cdc->contact_updated_cb) {
 						ms_debug("Contact updated: %s", linphone_friend_get_name(lf));
+						lf2 = linphone_friend_ref(lf2);
 						cdc->contact_updated_cb(cdc, lf, lf2);
 					}
 				} else {
@@ -107,7 +108,7 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 			}
 			vCards = ms_list_next(vCards);
 		}
-		ms_list_free(localFriends);
+		localFriends = ms_list_free_with_data(localFriends, (void (*)(void *))linphone_friend_unref);
 	}
 	ms_list_free(vCards);
 	linphone_carddav_sync_done(cdc, TRUE, "");
@@ -174,8 +175,8 @@ static void linphone_carddav_vcards_fetched(LinphoneCardDavContext *cdc, MSList 
 				if (!vCard) {
 					ms_debug("Local friend %s isn't in the remote vCard list, delete it", linphone_friend_get_name(lf));
 					if (cdc->contact_removed_cb) {
-						lf = linphone_friend_ref(lf);
 						ms_debug("Contact removed: %s", linphone_friend_get_name(lf));
+						lf = linphone_friend_ref(lf);
 						cdc->contact_removed_cb(cdc, lf);
 					}
 				} else {
@@ -186,13 +187,14 @@ static void linphone_carddav_vcards_fetched(LinphoneCardDavContext *cdc, MSList 
 						ms_debug("Local friend eTag is %s, remote vCard eTag is %s", linphone_vcard_get_etag(lvc), response->etag);
 						if (lvc && strcmp(linphone_vcard_get_etag(lvc), response->etag) == 0) {
 							ms_list_remove(vCards, vCard);
+							ms_free(response);
 						}
 					}
 				}
 			}
 			friends = ms_list_next(friends);
 		}
-		ms_list_free(localFriends);
+		localFriends = ms_list_free_with_data(localFriends, (void (*)(void *))linphone_friend_unref);
 		linphone_carddav_pull_vcards(cdc, vCards);
 	}
 	ms_list_free(vCards);
