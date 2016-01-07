@@ -37,7 +37,7 @@ typedef enum _ViewElement {
 	ViewElement_Domain = 104,
 	ViewElement_URL = 105,
 	ViewElement_DisplayName = 106,
-	ViewElement_TextFieldCount = 6,
+	ViewElement_TextFieldCount = 7,
 	ViewElement_Transport = 110,
 	ViewElement_Username_Label = 120,
 	ViewElement_NextButton = 130,
@@ -399,7 +399,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	for (int i = 0; i < ViewElement_TextFieldCount; i++) {
 		UIAssistantTextField *field = [self findTextField:100 + i];
 		if (field) {
-			invalidInputs |= (field.isInvalid || field.lastText.length == 0);
+			invalidInputs |= field.isInvalid;
 		}
 	}
 	[self findButton:ViewElement_NextButton].enabled = !invalidInputs;
@@ -639,6 +639,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
 	[atf textFieldDidEndEditing:atf];
+	[self shouldEnableNextButton];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -664,14 +665,18 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	shouldChangeCharactersInRange:(NSRange)range
 				replacementString:(NSString *)string {
 	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
+	BOOL replace = YES;
+	// if we are hitting backspace, invalid range is given (length=1 instead of text size, new string="")
+	if ([string isEqual:@""]) {
+		range = NSMakeRange(0, atf.text.length);
+	}
 	[atf textField:atf shouldChangeCharactersInRange:range replacementString:string];
 	if (atf.tag == ViewElement_Username && currentView == _createAccountView) {
 		atf.text = [atf.text stringByReplacingCharactersInRange:range withString:string.lowercaseString];
-		[self shouldEnableNextButton];
-		return NO;
+		replace = NO;
 	}
 	[self shouldEnableNextButton];
-	return YES;
+	return replace;
 }
 
 #pragma mark - Action Functions

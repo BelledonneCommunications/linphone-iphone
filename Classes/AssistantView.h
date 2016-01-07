@@ -22,7 +22,7 @@
 #import "UICompositeView.h"
 #import "TPKeyboardAvoidingScrollView.h"
 
-@interface AssistantView : TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate> {
+@interface AssistantView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
   @private
 	LinphoneAccountCreator *account_creator;
 	UIView *currentView;
