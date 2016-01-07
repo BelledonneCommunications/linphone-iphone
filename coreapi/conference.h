@@ -28,7 +28,7 @@
 
 #include "linphonecore.h"
 
-typedef struct _LinphoneConference LinphoneConference;
+//typedef struct _LinphoneConference LinphoneConference;
 
 typedef enum {
 	LinphoneConferenceClassLocal,
