@@ -86,37 +86,28 @@ static MSList* parse_vcards_from_xml_response(const char *body) {
 		if (linphone_create_xml_xpath_context(xml_ctx) < 0) goto end;
 		linphone_xml_xpath_context_init_carddav_ns(xml_ctx);
 		{
-			xmlXPathObjectPtr etags = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/d:multistatus/d:response/d:propstat/d:prop/d:getetag");
-			xmlXPathObjectPtr hrefs = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/d:multistatus/d:response/d:href");
-			xmlXPathObjectPtr vcards = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/d:multistatus/d:response/d:propstat/d:prop/card:address-data");
-			if (etags != NULL && hrefs != NULL && vcards != NULL) {
-				if (etags->nodesetval != NULL && hrefs->nodesetval != NULL && vcards->nodesetval != NULL) {
-					xmlNodeSetPtr etags_nodes = etags->nodesetval;
-					xmlNodeSetPtr hrefs_nodes = hrefs->nodesetval;
-					xmlNodeSetPtr vcards_nodes = vcards->nodesetval;
-					if (etags_nodes->nodeNr >= 1 && hrefs_nodes->nodeNr == etags_nodes->nodeNr && vcards_nodes->nodeNr == etags_nodes->nodeNr) {
-						int i;
-						for (i = 0; i < vcards_nodes->nodeNr; i++) {
-							xmlNodePtr etag_node = etags_nodes->nodeTab[i];
-							xmlNodePtr href_node = hrefs_nodes->nodeTab[i];
-							xmlNodePtr vcard_node = vcards_nodes->nodeTab[i];
-							if (vcard_node->children != NULL) {
-								char *etag = (char *)xmlNodeListGetString(xml_ctx->doc, etag_node->children, 1);
-								char *url = (char *)xmlNodeListGetString(xml_ctx->doc, href_node->children, 1);
-								char *vcard = (char *)xmlNodeListGetString(xml_ctx->doc, vcard_node->children, 1);
-								LinphoneCardDavResponse *response = ms_new0(LinphoneCardDavResponse, 1);
-								response->etag = ms_strdup(etag);
-								response->url = ms_strdup(url);
-								response->vcard = ms_strdup(vcard);
-								result = ms_list_append(result, response);
-								ms_debug("Added vCard object with eTag %s, URL %s and vCard %s", etag, url, vcard);
-							}
+			xmlXPathObjectPtr responses = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/d:multistatus/d:response");
+			if (responses != NULL && responses->nodesetval != NULL) {
+				xmlNodeSetPtr responses_nodes = responses->nodesetval;
+				if (responses_nodes->nodeNr >= 1) {
+					int i;
+					for (i = 0; i < responses_nodes->nodeNr; i++) {
+						xmlNodePtr response_node = responses_nodes->nodeTab[i];
+						xml_ctx->xpath_ctx->node = response_node;
+						{
+							char *etag = linphone_get_xml_text_content(xml_ctx, "d:propstat/d:prop/d:getetag");
+							char *url =  linphone_get_xml_text_content(xml_ctx, "d:href");
+							char *vcard = linphone_get_xml_text_content(xml_ctx, "d:propstat/d:prop/card:address-data");
+							LinphoneCardDavResponse *response = ms_new0(LinphoneCardDavResponse, 1);
+							response->etag = ms_strdup(etag);
+							response->url = ms_strdup(url);
+							response->vcard = ms_strdup(vcard);
+							result = ms_list_append(result, response);
+							ms_debug("Added vCard object with eTag %s, URL %s and vCard %s", etag, url, vcard);
 						}
 					}
 				}
-				xmlXPathFreeObject(vcards);
-				xmlXPathFreeObject(etags);
-				xmlXPathFreeObject(hrefs);
+				xmlXPathFreeObject(responses);
 			}
 		}
 	}
@@ -144,31 +135,26 @@ static MSList* parse_vcards_etags_from_xml_response(const char *body) {
 		if (linphone_create_xml_xpath_context(xml_ctx) < 0) goto end;
 		linphone_xml_xpath_context_init_carddav_ns(xml_ctx);
 		{
-			xmlXPathObjectPtr etags = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/d:multistatus/d:response/d:propstat/d:prop/d:getetag");
-			xmlXPathObjectPtr hrefs = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/d:multistatus/d:response/d:href");
-			if (etags != NULL && hrefs != NULL) {
-				if (etags->nodesetval != NULL && hrefs->nodesetval != NULL) {
-					xmlNodeSetPtr etags_nodes = etags->nodesetval;
-					xmlNodeSetPtr hrefs_nodes = hrefs->nodesetval;
-					if (etags_nodes->nodeNr >= 1 && hrefs_nodes->nodeNr == etags_nodes->nodeNr) {
-						int i;
-						for (i = 0; i < etags_nodes->nodeNr; i++) {
-							xmlNodePtr etag_node = etags_nodes->nodeTab[i];
-							xmlNodePtr href_node = hrefs_nodes->nodeTab[i];
-							if (etag_node->children != NULL && href_node->children != NULL) {
-								char *etag = (char *)xmlNodeListGetString(xml_ctx->doc, etag_node->children, 1);
-								char *url = (char *)xmlNodeListGetString(xml_ctx->doc, href_node->children, 1);
-								LinphoneCardDavResponse *response = ms_new0(LinphoneCardDavResponse, 1);
-								response->etag = ms_strdup(etag);
-								response->url = ms_strdup(url);
-								result = ms_list_append(result, response);
-								ms_debug("Added vCard object with eTag %s and URL %s", etag, url);
-							}
+			xmlXPathObjectPtr responses = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/d:multistatus/d:response");
+			if (responses != NULL && responses->nodesetval != NULL) {
+				xmlNodeSetPtr responses_nodes = responses->nodesetval;
+				if (responses_nodes->nodeNr >= 1) {
+					int i;
+					for (i = 0; i < responses_nodes->nodeNr; i++) {
+						xmlNodePtr response_node = responses_nodes->nodeTab[i];
+						xml_ctx->xpath_ctx->node = response_node;
+						{
+							char *etag = linphone_get_xml_text_content(xml_ctx, "d:propstat/d:prop/d:getetag");
+							char *url =  linphone_get_xml_text_content(xml_ctx, "d:href");
+							LinphoneCardDavResponse *response = ms_new0(LinphoneCardDavResponse, 1);
+							response->etag = ms_strdup(etag);
+							response->url = ms_strdup(url);
+							result = ms_list_append(result, response);
+							ms_debug("Added vCard object with eTag %s and URL %s", etag, url);
 						}
 					}
 				}
-				xmlXPathFreeObject(etags);
-				xmlXPathFreeObject(hrefs);
+				xmlXPathFreeObject(responses);
 			}
 		}
 	}
