@@ -1686,7 +1686,6 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
 	LinphoneCoreVTable *internal_vtable = linphone_core_v_table_new();
 
-	linphone_core_v_table_set_internal(internal_vtable, TRUE);
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
 	lc->config=lp_config_ref(config);
@@ -1696,9 +1695,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_task_list_init(&lc->hooks);
 
 	internal_vtable->notify_received = linphone_core_internal_notify_received;
-	_linphone_core_add_listener(lc, internal_vtable, TRUE);
+	_linphone_core_add_listener(lc, internal_vtable, TRUE, TRUE);
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
-	_linphone_core_add_listener(lc, local_vtable, TRUE, TRUE);
+	_linphone_core_add_listener(lc, local_vtable, TRUE, FALSE);
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();

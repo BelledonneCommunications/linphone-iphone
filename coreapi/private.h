@@ -1412,9 +1412,6 @@ typedef struct _VTableReference  VTableReference;
 
 void v_table_reference_destroy(VTableReference *ref);
 
-LINPHONE_PUBLIC void linphone_core_v_table_set_internal(LinphoneCoreVTable *table, bool_t internal);
-bool_t linphone_core_v_table_is_internal(LinphoneCoreVTable *table);
-
 void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease, bool_t internal);
 
 #ifdef VIDEO_ENABLED

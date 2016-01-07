@@ -33,14 +33,6 @@ void* linphone_core_v_table_get_user_data(LinphoneCoreVTable *table) {
 	return table->user_data;
 }
 
-void linphone_core_v_table_set_internal(LinphoneCoreVTable *table, bool_t internal) {
-	table->internal = internal;
-}
-
-bool_t linphone_core_v_table_is_internal(LinphoneCoreVTable *table) {
-	return table->internal;
-}
-
 void linphone_core_v_table_destroy(LinphoneCoreVTable* table) {
 	ms_free(table);
 }
@@ -74,12 +66,12 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 		}\
 	if (has_cb) ms_message("Linphone core [%p] notifying [%s]",lc,#function_name)
 
-#define NOTIFY_IF_EXIST_INTERNAL(function_name, internal, ...) \
+#define NOTIFY_IF_EXIST_INTERNAL(function_name, internal_val, ...) \
 	MSList* iterator; \
 	VTableReference *ref; \
 	bool_t has_cb = FALSE; \
 	for (iterator=lc->vtable_refs; iterator!=NULL; iterator=iterator->next)\
-		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name && (linphone_core_v_table_is_internal(lc->current_vtable) == internal)) {\
+		if ((ref=(VTableReference*)iterator->data)->valid && (lc->current_vtable=ref->vtable)->function_name && (ref->internal == internal_val)) {\
 			lc->current_vtable->function_name(__VA_ARGS__);\
 			has_cb = TRUE;\
 		}\
