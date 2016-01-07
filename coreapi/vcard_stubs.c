@@ -70,3 +70,23 @@ void linphone_vcard_edit_main_sip_address(LinphoneVCard *vCard, const char *sip_
 MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vCard) {
 	return NULL;
 }
+
+const char* linphone_vcard_get_uid(const LinphoneVCard *vCard) {
+	return NULL;
+}
+
+void linphone_vcard_set_etag(LinphoneVCard *vCard, const char * etag) {
+	
+}
+
+const char* linphone_vcard_get_etag(const LinphoneVCard *vCard) {
+	return NULL;
+}
+
+void linphone_vcard_set_url(LinphoneVCard *vCard, const char * url) {
+	
+}
+
+const char* linphone_vcard_get_url(const LinphoneVCard *vCard) {
+	return NULL;
+}

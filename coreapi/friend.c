@@ -935,6 +935,8 @@ static void linphone_create_table(sqlite3* db) {
 						"send_subscribe    INTEGER,"
 						"ref_key           TEXT,"
 						"vCard             TEXT,"
+						"vCard_etag        TEXT,"
+						"vCard_url         TEXT,"
 						"presence_received INTEGER"
 						");",
 			0, 0, &errmsg);
@@ -992,7 +994,9 @@ void linphone_core_friends_storage_close(LinphoneCore *lc) {
  * | 3  | send_subscribe
  * | 4  | ref_key
  * | 5  | vCard
- * | 6  | presence_received
+ * | 6  | vCard eTag
+ * | 7  | vCard URL
+ * | 8  | presence_received
  */
 static int create_friend(void *data, int argc, char **argv, char **colName) {
 	MSList **list = (MSList **)data;
@@ -1001,7 +1005,11 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 	unsigned int storage_id = atoi(argv[0]);
 	
 	vcard = linphone_vcard_new_from_vcard4_buffer(argv[5]);
-	lf = linphone_friend_new_from_vcard(vcard);
+	if (vcard) {
+		linphone_vcard_set_etag(vcard, argv[6]);
+		linphone_vcard_set_url(vcard, argv[7]);
+		lf = linphone_friend_new_from_vcard(vcard);
+	}
 	if (!lf) {
 		LinphoneAddress *addr = linphone_address_new(argv[1]);
 		lf = linphone_friend_new();
@@ -1009,8 +1017,8 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 	}
 	linphone_friend_set_inc_subscribe_policy(lf, atoi(argv[2]));
 	linphone_friend_send_subscribe(lf, atoi(argv[3]));
-	linphone_friend_set_ref_key(lf, argv[4]);
-	lf->presence_received = atoi(argv[6]);
+	linphone_friend_set_ref_key(lf, ms_strdup(argv[4]));
+	lf->presence_received = atoi(argv[8]);
 	lf->storage_id = storage_id;
 	
 	*list = ms_list_append(*list, linphone_friend_ref(lf));
@@ -1044,27 +1052,33 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 	if (lc && lc->friends_db) {
 		char *buf;
 		int store_friends = lp_config_get_int(lc->config, "misc", "store_friends", 1);
+		LinphoneVCard *vcard = linphone_friend_get_vcard(lf);
+		
 		if (!store_friends) {
 			return;
 		}
 
 		if (lf->storage_id > 0) {
-			buf = sqlite3_mprintf("UPDATE friends SET sip_uri=%Q,subscribe_policy=%i,send_subscribe=%i,ref_key=%Q,vCard=%Q,presence_received=%i WHERE (id = %i);",
+			buf = sqlite3_mprintf("UPDATE friends SET sip_uri=%Q,subscribe_policy=%i,send_subscribe=%i,ref_key=%Q,vCard=%Q,vCard_etag=%Q,vCard_url=%Q,presence_received=%i WHERE (id = %i);",
 				linphone_address_as_string(linphone_friend_get_address(lf)),
 				lf->pol,
 				lf->subscribe,
 				lf->refkey,
-				linphone_vcard_as_vcard4_string(linphone_friend_get_vcard(lf)),
+				linphone_vcard_as_vcard4_string(vcard),
+				linphone_vcard_get_etag(vcard),
+				linphone_vcard_get_url(vcard),
 				lf->presence_received,
 				lf->storage_id
 			);
 		} else {
-			buf = sqlite3_mprintf("INSERT INTO friends VALUES(NULL,%Q,%i,%i,%Q,%Q,%i);",
+			buf = sqlite3_mprintf("INSERT INTO friends VALUES(NULL,%Q,%i,%i,%Q,%Q,%Q,%Q,%i);",
 				linphone_address_as_string(linphone_friend_get_address(lf)),
 				lf->pol,
 				lf->subscribe,
 				lf->refkey,
-				linphone_vcard_as_vcard4_string(linphone_friend_get_vcard(lf)),
+				linphone_vcard_as_vcard4_string(vcard),
+				linphone_vcard_get_etag(vcard),
+				linphone_vcard_get_url(vcard),
 				lf->presence_received
 			);
 		}

@@ -61,7 +61,10 @@ void linphone_carddav_synchronize(LinphoneCardDavContext *cdc) {
 
 static void linphone_carddav_sync_done(LinphoneCardDavContext *cdc, bool_t success, const char *msg) {
 	if (success) {
+		ms_debug("CardDAV sync successful, saving new cTag: %i", cdc->ctag);
 		linphone_core_set_carddav_current_ctag(cdc->lc, cdc->ctag);
+	} else {
+		ms_error("CardDAV sync failure: %s", msg);
 	}
 	
 	if (cdc->sync_done_cb) {
@@ -69,9 +72,37 @@ static void linphone_carddav_sync_done(LinphoneCardDavContext *cdc, bool_t succe
 	}
 }
 
+static int find_matching_friend(LinphoneFriend *lf1, LinphoneFriend *lf2) {
+	LinphoneVCard *lvc1 = linphone_friend_get_vcard(lf1);
+	LinphoneVCard *lvc2 = linphone_friend_get_vcard(lf2);
+	return strcmp(linphone_vcard_get_uid(lvc1), linphone_vcard_get_uid(lvc2));
+}
+
 static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *vCards) {
 	if (vCards != NULL && ms_list_size(vCards) > 0) {
-		//TODO: find out which one is new and which one is an update and call the according callback
+		MSList *localFriends = linphone_core_fetch_friends_from_db(cdc->lc);
+		while (vCards) {
+			LinphoneCardDavResponse *vCard = (LinphoneCardDavResponse *)vCards->data;
+			if (vCard) {
+				LinphoneVCard *lvc = linphone_vcard_new_from_vcard4_buffer(vCard->vcard);
+				LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
+				MSList *local_friend = ms_list_find_custom(localFriends, (int (*)(const void*, const void*))find_matching_friend, lf);
+				if (local_friend) {
+					LinphoneFriend *lf2 = (LinphoneFriend *)local_friend->data;
+					if (cdc->contact_updated_cb) {
+						ms_debug("Contact updated: %s", linphone_friend_get_name(lf));
+						cdc->contact_updated_cb(cdc, lf, lf2);
+					}
+				} else {
+					if (cdc->contact_created_cb) {
+						ms_debug("Contact created: %s", linphone_friend_get_name(lf));
+						cdc->contact_created_cb(cdc, lf);
+					}
+				}
+			}
+			vCards = ms_list_next(vCards);
+		}
+		ms_list_free(localFriends);
 	}
 	ms_list_free(vCards);
 	linphone_carddav_sync_done(cdc, TRUE, "");
@@ -116,11 +147,42 @@ end:
 	return result;
 }
 
+static int find_matching_vcard(LinphoneCardDavResponse *response, LinphoneFriend *lf) {
+	LinphoneVCard *lvc1 = linphone_vcard_new_from_vcard4_buffer(response->vcard);
+	LinphoneVCard *lvc2 = linphone_friend_get_vcard(lf);
+	return strcmp(linphone_vcard_get_uid(lvc1), linphone_vcard_get_uid(lvc2));
+}
+
 static void linphone_carddav_vcards_fetched(LinphoneCardDavContext *cdc, MSList *vCards) {
 	if (vCards != NULL && ms_list_size(vCards) > 0) {
-		//MSList *localFriends = linphone_core_fetch_friends_from_db(cdc->lc);
-		//TODO: call onDelete from the ones that are in localFriends but not in vCards
-		//TODO: remove from vCards the one that are in localFriends and for which the eTag hasn't changed
+		MSList *localFriends = linphone_core_fetch_friends_from_db(cdc->lc);
+		MSList *friends = localFriends;
+		while (friends) {
+			LinphoneFriend *lf = (LinphoneFriend *)friends->data;
+			if (lf) {
+				MSList *vCard = ms_list_find_custom(vCards, (int (*)(const void*, const void*))find_matching_vcard, lf);
+				if (!vCard) {
+					ms_debug("Local friend %s isn't in the remote vCard list, delete it", linphone_friend_get_name(lf));
+					if (cdc->contact_removed_cb) {
+						lf = linphone_friend_ref(lf);
+						ms_debug("Contact removed: %s", linphone_friend_get_name(lf));
+						cdc->contact_removed_cb(cdc, lf);
+					}
+				} else {
+					LinphoneCardDavResponse *response = (LinphoneCardDavResponse *)vCard->data;
+					ms_debug("Local friend %s is in the remote vCard list, check eTag", linphone_friend_get_name(lf));
+					if (response) {
+						LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+						ms_debug("Local friend eTag is %s, remote vCard eTag is %s", linphone_vcard_get_etag(lvc), response->etag);
+						if (lvc && strcmp(linphone_vcard_get_etag(lvc), response->etag) == 0) {
+							ms_list_remove(vCards, vCard);
+						}
+					}
+				}
+			}
+			friends = ms_list_next(friends);
+		}
+		ms_list_free(localFriends);
 		linphone_carddav_pull_vcards(cdc, vCards);
 	}
 	ms_list_free(vCards);
@@ -291,6 +353,18 @@ void linphone_carddav_set_synchronization_done_callback(LinphoneCardDavContext *
 	cdc->sync_done_cb = cb;
 }
 
+void linphone_carddav_set_new_contact_callback(LinphoneCardDavContext *cdc, LinphoneCardDavContactCreatedCb cb) {
+	cdc->contact_created_cb = cb;
+}
+
+void linphone_carddav_set_updated_contact_callback(LinphoneCardDavContext *cdc, LinphoneCardDavContactUpdatedCb cb) {
+	cdc->contact_updated_cb = cb;
+}
+
+void linphone_carddav_set_removed_contact_callback(LinphoneCardDavContext *cdc, LinphoneCardDavContactRemovedCb cb) {
+	cdc->contact_removed_cb = cb;
+}
+
 static LinphoneCardDavQuery* linphone_carddav_create_propfind_query(LinphoneCardDavContext *cdc) {
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)ms_new0(LinphoneCardDavQuery, 1);
 	query->context = cdc;
@@ -340,10 +414,12 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_multiget_query(
 	sprintf(body, "%s", "<card:addressbook-multiget xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /><card:address-data content-type='text-vcard' version='4.0'/></d:prop>");
 	while (iterator) {
 		LinphoneCardDavResponse *response = (LinphoneCardDavResponse *)iterator->data;
-		char temp_body[100];
-		sprintf(temp_body, "<d:href>%s</d:href>", response->url);
-		sprintf(body, "%s%s", body, temp_body);
-		iterator = ms_list_next(iterator);
+		if (response) {
+			char temp_body[100];
+			sprintf(temp_body, "<d:href>%s</d:href>", response->url);
+			sprintf(body, "%s%s", body, temp_body);
+			iterator = ms_list_next(iterator);
+		}
 	}
 	sprintf(body, "%s%s", body, "</card:addressbook-multiget>");
 	query->body = ms_strdup(body);

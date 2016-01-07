@@ -46,17 +46,17 @@ typedef struct _LinphoneCardDavResponse LinphoneCardDavResponse;
 /**
  * Callback used to notify a new contact has been created on the CardDAV server
 **/
-typedef void (*LinphoneCardDavContactCreatedCb)(LinphoneFriend *lf);
+typedef void (*LinphoneCardDavContactCreatedCb)(LinphoneCardDavContext *cdc, LinphoneFriend *lf);
 
 /**
  * Callback used to notify a contact has been updated on the CardDAV server
 **/
-typedef void (*LinphoneCardDavContactUpdatedCb)(LinphoneFriend *lf);
+typedef void (*LinphoneCardDavContactUpdatedCb)(LinphoneCardDavContext *cdc, LinphoneFriend *new_friend, LinphoneFriend *old_friend);
 
 /**
  * Callback used to notify a contact has been removed on the CardDAV server
 **/
-typedef void (*LinphoneCardDavContactRemovedCb)(LinphoneFriend *lf);
+typedef void (*LinphoneCardDavContactRemovedCb)(LinphoneCardDavContext *cdc, LinphoneFriend *lf);
 
 /**
  * Callback used to notify a contact has been removed on the CardDAV server
@@ -116,6 +116,27 @@ LINPHONE_PUBLIC void linphone_carddav_delete_vcard(LinphoneCardDavContext *cdc, 
  * @param cb The synchronization done callback to be used.
  */
 LINPHONE_PUBLIC void linphone_carddav_set_synchronization_done_callback(LinphoneCardDavContext *cdc, LinphoneCardDavSynchronizationDoneCb cb);
+
+/**
+ * Set the new contact callback.
+ * @param cdc LinphoneCardDavContext object
+ * @param cb The new contact callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_carddav_set_new_contact_callback(LinphoneCardDavContext *cdc, LinphoneCardDavContactCreatedCb cb);
+
+/**
+ * Set the updated contact callback.
+ * @param cdc LinphoneCardDavContext object
+ * @param cb The updated contact callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_carddav_set_updated_contact_callback(LinphoneCardDavContext *cdc, LinphoneCardDavContactUpdatedCb cb);
+
+/**
+ * Set the removed contact callback.
+ * @param cdc LinphoneCardDavContext object
+ * @param cb The removed contact callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_carddav_set_removed_contact_callback(LinphoneCardDavContext *cdc, LinphoneCardDavContactRemovedCb cb);
 
 /**
  * Retrieves the current cTag value for the remote server

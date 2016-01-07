@@ -184,24 +184,62 @@ end:
 }
 #endif
 
+typedef struct _LinphoneCardDAVStats {
+	int sync_done_count;
+	int new_contact_count;
+	int removed_contact_count;
+	int updated_contact_count;
+} LinphoneCardDAVStats;
+
 static void carddav_sync_done(LinphoneCardDavContext *c, bool_t success, const char *message) {
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_carddav_get_user_data(c);
 	BC_ASSERT_TRUE(success);
+	stats->sync_done_count++;
 	linphone_carddav_destroy(c);
+}
+
+static void carddav_new_contact(LinphoneCardDavContext *c, LinphoneFriend *lf) {
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_carddav_get_user_data(c);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(lf);
+	stats->new_contact_count++;
+	linphone_friend_unref(lf);
+}
+
+static void carddav_removed_contact(LinphoneCardDavContext *c, LinphoneFriend *lf) {
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_carddav_get_user_data(c);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(lf);
+	stats->removed_contact_count++;
+	linphone_friend_unref(lf);
+}
+
+static void carddav_updated_contact(LinphoneCardDavContext *c, LinphoneFriend *lf1, LinphoneFriend *lf2) {
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_carddav_get_user_data(c);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(lf1);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(lf2);
+	stats->updated_contact_count++;
+	linphone_friend_unref(lf1);
+	linphone_friend_unref(lf2);
 }
 
 static void carddav_sync(void) {
 	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
 	LinphoneCardDavContext *c = linphone_core_create_carddav_context(manager->lc);
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
 	
 	BC_ASSERT_PTR_NOT_NULL_FATAL(c);
 	BC_ASSERT_PTR_NOT_NULL(c->server_url);
 	BC_ASSERT_PTR_NOT_NULL(c->username);
 	BC_ASSERT_PTR_NOT_NULL(c->ha1);
 	
+	linphone_carddav_set_user_data(c, stats);
 	linphone_carddav_set_synchronization_done_callback(c, carddav_sync_done);
+	linphone_carddav_set_new_contact_callback(c, carddav_new_contact);
+	linphone_carddav_set_removed_contact_callback(c, carddav_removed_contact);
+	linphone_carddav_set_updated_contact_callback(c, carddav_updated_contact);
 	linphone_carddav_synchronize(c);
 	
-	wait_for_until(manager->lc, NULL, NULL, 1, 1000);
+	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 1, 2000);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
 	linphone_core_manager_destroy(manager);
 }
 #else
@@ -219,7 +257,7 @@ test_t vcard_tests[] = {
 	{ "Friends storage migration from rc to db", friends_migration },
 	{ "Friends storage in sqlite database", friends_sqlite_storage },
 #endif
-	{ "CardDAV synchronization", carddav_sync }
+	{ "CardDAV synchronization", carddav_sync },
 #else
 	{ "Dummy test", dummy_test }
 #endif
