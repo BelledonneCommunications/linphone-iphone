@@ -45,10 +45,6 @@
 										   [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"],
 										   linphone_core_get_version()]];
 
-	if (IPAD) {
-		[LinphoneUtils adjustFontSize:self.view mult:2.22f];
-	}
-
 	[AboutView removeBackground:_licensesView];
 
 	// Create a request to the resource
