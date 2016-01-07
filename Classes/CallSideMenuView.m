@@ -18,9 +18,16 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	updateTimer =
-		[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updateStats) userInfo:nil repeats:YES];
-	[self updateStats];
+	if (updateTimer != nil) {
+		[updateTimer invalidate];
+	}
+	updateTimer = [NSTimer scheduledTimerWithTimeInterval:1
+												   target:self
+												 selector:@selector(updateStats:)
+												 userInfo:nil
+												  repeats:YES];
+
+	[self updateStats:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -126,7 +133,7 @@
 	return result;
 }
 
-- (void)updateStats {
+- (void)updateStats:(NSTimer *)timer {
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 
 	if (!call) {
