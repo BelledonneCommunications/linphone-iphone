@@ -50,7 +50,7 @@
                 </label>
                 <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="7" contentMode="scaleToFill" id="7DE-KJ-9Q3" userLabel="unreadCountView" customClass="UIBouncingView">
                     <rect key="frame" x="350" y="7" width="21" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" tag="8" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="NXj-A8-YLh" userLabel="unreadCountImage">
                             <rect key="frame" x="0.0" y="0.0" width="21" height="21"/>

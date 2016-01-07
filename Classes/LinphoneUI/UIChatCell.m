@@ -93,6 +93,10 @@
 		_chatLatestTimeLabel.text = NSLocalizedString(@"Now", nil);
 	}
 
+	[self updateUnreadBadge];
+}
+
+- (void)updateUnreadBadge {
 	int count = linphone_chat_room_get_unread_messages_count(chatRoom);
 	_unreadCountLabel.text = [NSString stringWithFormat:@"%i", count];
 	if (count > 0) {
@@ -100,7 +104,6 @@
 	} else {
 		[_unreadCountView stopAnimating:YES];
 	}
-
 	UIFont *addressFont = (count <= 0) ? [UIFont systemFontOfSize:25] : [UIFont boldSystemFontOfSize:25];
 	_addressLabel.font = addressFont;
 }

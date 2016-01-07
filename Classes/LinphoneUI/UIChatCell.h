@@ -39,6 +39,6 @@
 - (id)initWithIdentifier:(NSString*)identifier;
 
 - (IBAction)onDeleteClick:(id)event;
-
+- (void)updateUnreadBadge;
 - (void)setChatRoom:(LinphoneChatRoom *)achat;
 @end

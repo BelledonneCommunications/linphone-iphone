@@ -152,6 +152,11 @@ static void chatTable_free_chatrooms(void *data) {
 		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)ms_list_nth_data(data, (int)[indexPath row]);
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view setChatRoom:chatRoom];
+		// on iPad, force unread bubble to disappear by reloading the cell
+		if (IPAD) {
+			UIChatCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+			[cell updateUnreadBadge];
+		}
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	}
 }
