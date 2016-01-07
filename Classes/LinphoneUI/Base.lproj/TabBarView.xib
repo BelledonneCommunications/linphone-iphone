@@ -30,7 +30,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="360" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6" userLabel="historyButton" customClass="UIIconButton">
+                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="6" userLabel="historyButton" customClass="UIIconButton">
                     <rect key="frame" x="0.0" y="0.0" width="90" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="History"/>
@@ -41,7 +41,7 @@
                         <action selector="onHistoryClick:" destination="-1" eventType="touchUpInside" id="22"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="3" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8" userLabel="contactsButton" customClass="UIIconButton">
+                <button opaque="NO" tag="3" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="8" userLabel="contactsButton" customClass="UIIconButton">
                     <rect key="frame" x="90" y="0.0" width="90" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Contacts"/>
@@ -56,7 +56,7 @@
                         <action selector="onContactsClick:" destination="-1" eventType="touchUpInside" id="23"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="7" userLabel="dialerButton" customClass="UIIconButton">
+                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="7" userLabel="dialerButton" customClass="UIIconButton">
                     <rect key="frame" x="180" y="0.0" width="90" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Dialer"/>
@@ -67,7 +67,7 @@
                         <action selector="onDialerClick:" destination="-1" eventType="touchUpInside" id="24"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5" userLabel="chatButton" customClass="UIIconButton">
+                <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="5" userLabel="chatButton" customClass="UIIconButton">
                     <rect key="frame" x="270" y="0.0" width="90" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Chat"/>
@@ -138,7 +138,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="90" height="333"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="hlj-lf-AGD" userLabel="historyButton" customClass="UIIconButton">
+                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="hlj-lf-AGD" userLabel="historyButton" customClass="UIIconButton">
                     <rect key="frame" x="0.0" y="35" width="90" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="History"/>
@@ -149,7 +149,7 @@
                         <action selector="onHistoryClick:" destination="-1" eventType="touchUpInside" id="apg-Ia-q2O"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="ea1-DR-JeN" userLabel="contactsButton" customClass="UIIconButton">
+                <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="ea1-DR-JeN" userLabel="contactsButton" customClass="UIIconButton">
                     <rect key="frame" x="0.0" y="101" width="90" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Contacts"/>
@@ -164,7 +164,7 @@
                         <action selector="onContactsClick:" destination="-1" eventType="touchUpInside" id="Mha-05-jl6"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Leo-2i-huu" userLabel="dialerButton" customClass="UIIconButton">
+                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="Leo-2i-huu" userLabel="dialerButton" customClass="UIIconButton">
                     <rect key="frame" x="0.0" y="167" width="90" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Dialer"/>
@@ -175,7 +175,7 @@
                         <action selector="onDialerClick:" destination="-1" eventType="touchUpInside" id="f7N-Mt-lPq"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="TbS-j0-yv4" userLabel="chatButton" customClass="UIIconButton">
+                <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" id="TbS-j0-yv4" userLabel="chatButton" customClass="UIIconButton">
                     <rect key="frame" x="0.0" y="233" width="90" height="66"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                     <accessibility key="accessibilityConfiguration" label="Chat"/>

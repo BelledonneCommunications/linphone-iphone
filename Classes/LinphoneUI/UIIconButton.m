@@ -12,9 +12,8 @@
 
 @implementation UIIconButton
 
-- (id)fixBackgroundImageForState {
-
-	[super setImage:[self imageForState:UIControlStateSelected]
+INIT_WITH_COMMON {
+	[super setImage:[self imageForState:UIControlStateNormal]
 		   forState:(UIControlStateHighlighted | UIControlStateSelected)];
 	[super setImage:[self imageForState:UIControlStateDisabled]
 		   forState:(UIControlStateDisabled | UIControlStateSelected)];
@@ -29,20 +28,8 @@
 	return self;
 }
 
-- (id)init {
-	return [[super init] fixBackgroundImageForState];
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder {
-	return [[super initWithCoder:aDecoder] fixBackgroundImageForState];
-}
-
-- (id)initWithFrame:(CGRect)frame {
-	return [[super initWithFrame:frame] fixBackgroundImageForState];
-}
-
 - (void)setImage:(UIImage *)image forState:(UIControlState)state {
 	[super setImage:image forState:state];
-	[self fixBackgroundImageForState];
+	[self commonInit];
 }
 @end

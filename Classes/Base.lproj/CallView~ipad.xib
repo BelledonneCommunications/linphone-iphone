@@ -723,16 +723,16 @@
                                     </accessibility>
                                 </imageView>
                                 <view alpha="0.0" tag="8" contentMode="scaleToFill" id="yHe-pI-2lf" userLabel="video">
-                                    <rect key="frame" x="0.0" y="-60" width="1290" height="800"/>
+                                    <rect key="frame" x="0.0" y="-60" width="1290" height="818"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <view tag="9" contentMode="scaleToFill" id="GJN-dZ-7aa" userLabel="background">
-                                            <rect key="frame" x="0.0" y="0.0" width="1290" height="800"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1290" height="818"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                         </view>
                                         <view tag="10" contentMode="scaleToFill" id="adR-fL-QtT" userLabel="display">
-                                            <rect key="frame" x="0.0" y="0.0" width="1290" height="800"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1290" height="818"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             <accessibility key="accessibilityConfiguration">
@@ -740,12 +740,12 @@
                                             </accessibility>
                                         </view>
                                         <view tag="11" contentMode="scaleAspectFit" id="FcF-4P-SjT" userLabel="preview">
-                                            <rect key="frame" x="888" y="492" width="394" height="245"/>
+                                            <rect key="frame" x="888" y="504" width="394" height="251"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <activityIndicatorView hidden="YES" opaque="NO" tag="12" contentMode="scaleToFill" animating="YES" style="whiteLarge" id="kKz-zi-1k6" userLabel="waitIndicator">
-                                            <rect key="frame" x="622" y="383" width="37" height="37"/>
+                                            <rect key="frame" x="622" y="392" width="37" height="37"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         </activityIndicatorView>
                                         <button opaque="NO" tag="13" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="7Mv-7u-XVs" userLabel="videoCameraSwitch" customClass="UICamSwitch">
