@@ -4316,8 +4316,8 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv
 }
 
 extern "C" jobject Jave_org_linphone_core_LinphoneCoreImpl_getConference(JNIEnv *env, jobject thiz, jlong pCore) {
-	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConference");
-	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)");
+	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConferenceImpl");
+	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)V");
 	LinphoneConference *conf = linphone_core_get_conference((LinphoneCore *)pCore);
 	if(conf) return env->NewObject(conference_class, conference_constructor, conf);
 	else return NULL;
@@ -4457,9 +4457,9 @@ extern "C" void Java_org_linphone_core_LinphoneCallImpl_setAuthenticationTokenVe
 	linphone_call_set_authentication_token_verified(call, verified);
 }
 
-extern "C" jobject Java_org_linphnoe_core_LinphoneCallImpl_getConference(JNIEnv *env, jobject thiz, jlong ptr) {
-	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConference");
-	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)");
+extern "C" jobject Java_org_linphone_core_LinphoneCallImpl_getConference(JNIEnv *env, jobject thiz, jlong ptr) {
+	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConferenceImpl");
+	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)V");
 	LinphoneConference *conf = linphone_call_get_conference((LinphoneCall *)ptr);
 	if(conf) return env->NewObject(conference_class, conference_constructor, conf);
 	return NULL;

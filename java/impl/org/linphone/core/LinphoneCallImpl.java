@@ -165,10 +165,10 @@ class LinphoneCallImpl implements LinphoneCall {
 	}
 
 	public boolean isInConference() {
-		return getConference() != 0;
+		return getConference() != null;
 	}
-	private native long getConference(long nativePtr);
-	public long getConference() {
+	public native LinphoneConference getConference(long nativePtr);
+	public LinphoneConference getConference() {
 		return getConference(nativePtr);
 	}
 

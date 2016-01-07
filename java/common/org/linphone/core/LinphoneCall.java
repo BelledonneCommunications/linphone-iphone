@@ -280,10 +280,11 @@ public interface LinphoneCall {
 	 */
 	boolean isInConference();
 	/**
-	 * Get the pointer on the C conference instance associated to that call.
-	 * @return A positive value if the call is part of a conference, 0 if not.
+	 * Get the conference instance which the call is part of.
+	 * @return An instance of #LinphoneConference if the call is part
+	 * of a conference. null instead.
 	 */
-	long getConference();
+	LinphoneConference getConference();
 
 	/**
 	 * Indicates whether an operation is in progress at the media side.
