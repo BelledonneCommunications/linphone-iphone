@@ -154,7 +154,7 @@ static void chatTable_free_chatrooms(void *data) {
 		[view setChatRoom:chatRoom];
 		// on iPad, force unread bubble to disappear by reloading the cell
 		if (IPAD) {
-			UIChatCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+			UIChatCell *cell = (UIChatCell *)[tableView cellForRowAtIndexPath:indexPath];
 			[cell updateUnreadBadge];
 		}
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];

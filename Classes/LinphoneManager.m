@@ -1453,19 +1453,19 @@ static BOOL libStarted = FALSE;
 
 	// Set audio assets
 	NSString *ring =
-		([LinphoneManager
-			 bundleFile:[NSString stringWithUTF8String:linphone_core_get_ringback(theLinphoneCore)].lastPathComponent]
+		([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_ringback(theLinphoneCore) ?: ""]
+										 .lastPathComponent]
 			 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
 			.lastPathComponent;
 	NSString *ringback =
 		([LinphoneManager
-			 bundleFile:[NSString stringWithUTF8String:linphone_core_get_remote_ringback_tone(theLinphoneCore)]
+			 bundleFile:[NSString stringWithUTF8String:linphone_core_get_remote_ringback_tone(theLinphoneCore) ?: ""]
 							.lastPathComponent]
 			 ?: [LinphoneManager bundleFile:@"ringback.wav"])
 			.lastPathComponent;
 	NSString *hold =
-		([LinphoneManager
-			 bundleFile:[NSString stringWithUTF8String:linphone_core_get_play_file(theLinphoneCore)].lastPathComponent]
+		([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_play_file(theLinphoneCore) ?: ""]
+										 .lastPathComponent]
 			 ?: [LinphoneManager bundleFile:@"hold.caf"])
 			.lastPathComponent;
 
