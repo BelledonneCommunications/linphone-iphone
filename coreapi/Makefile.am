@@ -56,7 +56,7 @@ liblinphone_la_SOURCES=\
 	call_params.c \
 	chat.c \
 	chat_file_transfer.c \
-	conference.cc \
+	conference.cc conference.h \
 	contactprovider.c contactprovider.h contact_providers_priv.h \
 	content.c \
 	dict.c \
@@ -118,8 +118,7 @@ liblinphone_la_SOURCES+=linphone_tunnel_stubs.c linphone_tunnel.h
 endif
 
 
-
-liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
+liblinphone_la_LDFLAGS=-lstdc++ -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 
 if HAVE_LD_OUTPUT_DEF
 liblinphone_la_LDFLAGS += -Wl,--output-def,liblinphone-$(LIBLINPHONE_SO_CURRENT).def
