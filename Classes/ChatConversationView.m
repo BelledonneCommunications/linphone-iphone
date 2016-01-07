@@ -586,9 +586,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		  // somehow, it breaks rotation if we put that in the block above when rotating portrait -> landscape
 		  //						 if (!UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
-		  [PhoneMainView.instance showTabBar:YES];
+		  [PhoneMainView.instance hideTabBar:NO];
 		  //						 }
-		  [PhoneMainView.instance showStatusBar:YES];
+		  [PhoneMainView.instance hideStatusBar:NO];
 		  [PhoneMainView.instance fullScreen:NO];
 		  _topBar.alpha = 1.0;
 
@@ -645,9 +645,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		  //						 Hide TabBar and status bar and also top bar
 		  if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
-			  [PhoneMainView.instance showTabBar:NO];
+			  [PhoneMainView.instance hideTabBar:YES];
 		  }
-		  [PhoneMainView.instance showStatusBar:NO];
+		  [PhoneMainView.instance hideStatusBar:YES];
 		  [PhoneMainView.instance fullScreen:YES];
 		  _topBar.alpha = 0.0;
 

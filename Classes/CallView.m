@@ -45,6 +45,7 @@ const NSInteger SECURE_BUTTON_TAG = 5;
 	if (self != nil) {
 		singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleControls:)];
 		videoZoomHandler = [[VideoZoomHandler alloc] init];
+		videoHidden = TRUE;
 	}
 	return self;
 }
@@ -221,7 +222,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	[self updateUnreadMessage:NO];
 	[self previewTouchLift];
-	[self hideStatusBar:videoShown && (_nameLabel.alpha == 0.f)];
+	[self hideStatusBar:!videoHidden && (_nameLabel.alpha <= 0.f)];
 }
 
 #pragma mark - UI modification
@@ -296,7 +297,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)hideControls:(BOOL)hidden sender:(id)sender {
-	if (hidden == videoShown)
+	if (videoHidden)
 		return;
 
 	if (hideControlsTimer) {
@@ -308,15 +309,15 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		// show controls
 		[UIView beginAnimations:nil context:nil];
 		[UIView setAnimationDuration:0.35];
-		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _callPauseButton.alpha = (hidden ? 0 : 1);
-		_routesView.alpha = _optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = (hidden ? 1 : 0);
-		_nameLabel.alpha = _durationLabel.alpha = (hidden ? 0 : .8);
+		_pausedCallsTable.tableView.alpha = _videoCameraSwitch.alpha = _callPauseButton.alpha = _routesView.alpha =
+			_optionsView.alpha = _numpadView.alpha = _bottomBar.alpha = (hidden ? 0 : 1);
+		_nameLabel.alpha = _durationLabel.alpha = (hidden ? 0 : .8f);
 
 		[self hideStatusBar:hidden];
 
 		[UIView commitAnimations];
 
-		[PhoneMainView.instance showTabBar:!hidden];
+		[PhoneMainView.instance hideTabBar:hidden];
 
 		if (!hidden) {
 		// hide controls in 5 sec
@@ -330,8 +331,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)disableVideoDisplay:(BOOL)disabled animated:(BOOL)animation {
-	if (disabled == videoShown && animation)
+	if (disabled == videoHidden && animation)
 		return;
+	videoHidden = disabled;
 
 	if (!disabled) {
 		[videoZoomHandler resetZoom];
@@ -359,7 +361,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	}
 
 	[PhoneMainView.instance fullScreen:!disabled];
-	[PhoneMainView.instance showTabBar:disabled];
+	[PhoneMainView.instance hideTabBar:!disabled];
 
 	if (!disabled) {
 #ifdef TEST_VIDEO_VIEW_CHANGE
@@ -642,23 +644,17 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (CGFloat)coerce:(CGFloat)value betweenMin:(CGFloat)min andMax:(CGFloat)max {
-	if (value > max) {
-		value = max;
-	}
-	if (value < min) {
-		value = min;
-	}
-	return value;
+	return MAX(min, MIN(value, max));
 }
 
 - (void)previewTouchLift {
 	CGRect previewFrame = _videoPreview.frame;
 	previewFrame.origin.x = [self coerce:previewFrame.origin.x
 							  betweenMin:5
-								  andMax:(self.view.frame.size.width - previewFrame.size.width - 5)];
+								  andMax:(UIScreen.mainScreen.bounds.size.width - 5 - previewFrame.size.width)];
 	previewFrame.origin.y = [self coerce:previewFrame.origin.y
 							  betweenMin:5
-								  andMax:(self.view.frame.size.height - previewFrame.size.height - 5)];
+								  andMax:(UIScreen.mainScreen.bounds.size.height - 5 - previewFrame.size.height)];
 
 	if (!CGRectEqualToRect(previewFrame, _videoPreview.frame)) {
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

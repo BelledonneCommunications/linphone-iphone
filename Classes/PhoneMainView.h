@@ -87,8 +87,8 @@
 - (UIViewController*)popCurrentView;
 - (UIViewController *)popToView:(UICompositeViewDescription *)currentView;
 - (UICompositeViewDescription *)firstView;
-- (void)showStatusBar:(BOOL)show;
-- (void)showTabBar:(BOOL)show;
+- (void)hideStatusBar:(BOOL)hide;
+- (void)hideTabBar:(BOOL)hide;
 - (void)fullScreen:(BOOL)enabled;
 - (void)updateStatusBar:(UICompositeViewDescription*)to_view;
 - (void)startUp;

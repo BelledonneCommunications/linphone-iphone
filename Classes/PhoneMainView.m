@@ -506,12 +506,12 @@ static RootViewManager *rootViewManagerInstance = nil;
 	return [[RootViewManager instance] currentView];
 }
 
-- (void)showTabBar:(BOOL)show {
-	[mainViewController hideTabBar:!show];
+- (void)hideTabBar:(BOOL)hide {
+	[mainViewController hideTabBar:hide];
 }
 
-- (void)showStatusBar:(BOOL)show {
-	[mainViewController hideStatusBar:!show];
+- (void)hideStatusBar:(BOOL)hide {
+	[mainViewController hideStatusBar:hide];
 }
 
 - (void)updateStatusBar:(UICompositeViewDescription *)to_view {
