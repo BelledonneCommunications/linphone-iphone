@@ -297,7 +297,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)hideControls:(BOOL)hidden sender:(id)sender {
-	if (videoHidden)
+	if (videoHidden && hidden)
 		return;
 
 	if (hideControlsTimer) {
@@ -320,12 +320,12 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[PhoneMainView.instance hideTabBar:hidden];
 
 		if (!hidden) {
-		// hide controls in 5 sec
-		hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
-															 target:self
-														   selector:@selector(timerHideControls:)
-														   userInfo:nil
-															repeats:NO];
+			// hide controls in 5 sec
+			hideControlsTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
+																 target:self
+															   selector:@selector(timerHideControls:)
+															   userInfo:nil
+																repeats:NO];
 		}
 	}
 }
