@@ -978,7 +978,7 @@ static void test_publish_unpublish(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneProxyConfig* proxy;
 	
-	linphone_core_get_default_proxy(marie->lc,&proxy);
+	proxy = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_proxy_config_edit(proxy);
 	linphone_proxy_config_enable_publish(proxy,TRUE);
 	linphone_proxy_config_done(proxy);
@@ -1040,14 +1040,14 @@ static void test_list_subscribe (void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
 	/*dummy wait to avoid derred notify*/
 	wait_for_list(lcs,&dummy,1,2000);
-	linphone_core_get_default_proxy(pauline->lc,&proxy_config);
+	proxy_config = linphone_core_get_default_proxy_config(pauline->lc);
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_enable_publish(proxy_config,TRUE);
 	linphone_proxy_config_done(proxy_config);
 	
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
 	
-	linphone_core_get_default_proxy(laure->lc,&proxy_config);
+	proxy_config = linphone_core_get_default_proxy_config(laure->lc);
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_enable_publish(proxy_config,TRUE);
 	linphone_proxy_config_done(proxy_config);
