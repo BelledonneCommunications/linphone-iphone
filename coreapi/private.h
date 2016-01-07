@@ -33,6 +33,7 @@ extern "C" {
 #include "friendlist.h"
 #include "linphone_tunnel.h"
 #include "linphonecore_utils.h"
+#include "conference.h"
 #include "sal/sal.h"
 #include "sipsetup.h"
 #include "quality_reporting.h"
@@ -345,6 +346,8 @@ struct _LinphoneCall{
 
 	bool_t paused_by_app;
 	bool_t broken; /*set to TRUE when the call is in broken state due to network disconnection or transport */
+	
+	LinphoneConference *conf_ref; /**> Point on the associated conference if this call is part of a conference. NULL instead. */
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCall);
@@ -820,16 +823,6 @@ typedef struct autoreplier_config
 	const char *message;		/* the path of the file to be played */
 }autoreplier_config_t;
 
-struct _LinphoneConference{
-	MSAudioConference *conf;
-	AudioStream *local_participant;
-	MSAudioEndpoint *local_endpoint;
-	MSAudioEndpoint *record_endpoint;
-	RtpProfile *local_dummy_profile;
-	bool_t local_muted;
-	bool_t terminated;
-};
-
 
 typedef struct _LinphoneToneDescription{
 	LinphoneReason reason;
@@ -844,7 +837,6 @@ void linphone_core_play_call_error_tone(LinphoneCore *lc, LinphoneReason reason)
 void _linphone_core_set_tone(LinphoneCore *lc, LinphoneReason reason, LinphoneToneID id, const char *audiofile);
 const char *linphone_core_get_tone_file(const LinphoneCore *lc, LinphoneToneID id);
 int _linphone_core_accept_call_update(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params, LinphoneCallState next_state, const char *state_info);
-typedef struct _LinphoneConference LinphoneConference;
 
 typedef struct _LinphoneTaskList{
 	MSList *hooks;
@@ -906,7 +898,7 @@ struct _LinphoneCore
 	time_t netup_time; /*time when network went reachable */
 	struct _EcCalibrator *ecc;
 	LinphoneTaskList hooks; /*tasks periodically executed in linphone_core_iterate()*/
-	LinphoneConference conf_ctx;
+	LinphoneConference *conf_ctx;
 	char* zrtp_secrets_cache;
 	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
@@ -1040,13 +1032,6 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 
 /*conferencing subsystem*/
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted);
-/* When a conference participant pause the conference he may send a music.
- * We don't want to hear that music or to send it to the other participants.
- * Use muted=yes to handle this case.
- */
-void linphone_call_add_to_conf(LinphoneCall *call, bool_t muted);
-void linphone_call_remove_from_conf(LinphoneCall *call);
-void linphone_core_conference_check_uninit(LinphoneCore *lc);
 bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
 void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall);
 unsigned int linphone_core_get_audio_features(LinphoneCore *lc);
@@ -1420,16 +1405,17 @@ struct _VTableReference{
 	LinphoneCoreVTable *vtable;
 	bool_t valid;
 	bool_t autorelease;
+	bool_t internal;
 };
 
 typedef struct _VTableReference  VTableReference;
 
 void v_table_reference_destroy(VTableReference *ref);
 
-void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease);
-
 LINPHONE_PUBLIC void linphone_core_v_table_set_internal(LinphoneCoreVTable *table, bool_t internal);
 bool_t linphone_core_v_table_is_internal(LinphoneCoreVTable *table);
+
+void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease, bool_t internal);
 
 #ifdef VIDEO_ENABLED
 LINPHONE_PUBLIC MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);

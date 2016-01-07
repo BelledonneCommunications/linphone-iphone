@@ -1698,7 +1698,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	internal_vtable->notify_received = linphone_core_internal_notify_received;
 	_linphone_core_add_listener(lc, internal_vtable, TRUE);
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
-	_linphone_core_add_listener(lc, local_vtable, TRUE);
+	_linphone_core_add_listener(lc, local_vtable, TRUE, TRUE);
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
@@ -4890,8 +4890,7 @@ void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable) {
 	const MSList *elem;
 
 	if (linphone_core_is_in_conference(lc)){
-		lc->conf_ctx.local_muted=!enable;
-		linphone_core_mute_audio_stream(lc, lc->conf_ctx.local_participant, !enable);
+		linphone_conference_mute_microphone(lc->conf_ctx, !enable);
 	}
 	list = linphone_core_get_calls(lc);
 	for (elem = list; elem != NULL; elem = elem->next) {
@@ -4904,7 +4903,7 @@ void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable) {
 bool_t linphone_core_mic_enabled(LinphoneCore *lc) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (linphone_core_is_in_conference(lc)){
-		return !lc->conf_ctx.local_muted;
+		return linphone_conference_microphone_is_muted(lc->conf_ctx);
 	}else if (call==NULL){
 		ms_warning("%s(): No current call!", __FUNCTION__);
 		return TRUE;
@@ -5925,7 +5924,7 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 	if (call){
 		stream=call->audiostream;
 	}else if (linphone_core_is_in_conference(lc)){
-		stream=lc->conf_ctx.local_participant;
+		stream=linphone_conference_get_audio_stream(lc->conf_ctx);
 	}
 	if (stream){
 		if (rtype==LinphoneToneGenerator) return stream->dtmfgen;
@@ -7433,4 +7432,85 @@ const char *linphone_stream_type_to_string(const LinphoneStreamType type) {
 
 LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc) {
 	return lc->ringtoneplayer;
+}
+
+int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
+	const char *conf_method_name;
+	if(lc->conf_ctx == NULL) {
+		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_type", "local");
+		if(strcasecmp(conf_method_name, "local") == 0) {
+			lc->conf_ctx = linphone_local_conference_new(lc);
+		} else if(strcasecmp(conf_method_name, "remote") == 0) {
+			lc->conf_ctx = linphone_remote_conference_new(lc);
+		} else {
+			ms_error("'%s' is not a valid conference method", conf_method_name);
+			return -1;
+		}
+	}
+	return linphone_conference_add_participant(lc->conf_ctx, call);
+}
+
+int linphone_core_add_all_to_conference(LinphoneCore *lc) {
+	MSList *calls=lc->calls;
+	while (calls) {
+		LinphoneCall *call=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		linphone_core_add_to_conference(lc, call);
+	}
+	if(lc->conf_ctx && linphone_conference_check_class(lc->conf_ctx, LinphoneConferenceClassLocal)) {
+		linphone_core_enter_conference(lc);
+	}
+	return 0;
+}
+
+int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call) {
+	if(lc->conf_ctx) return linphone_conference_remove_participant_with_call(lc->conf_ctx, call);
+	else return -1;
+}
+
+int linphone_core_terminate_conference(LinphoneCore *lc) {
+	if(lc->conf_ctx == NULL) return -1;
+	linphone_conference_terminate(lc->conf_ctx);
+	linphone_conference_free(lc->conf_ctx);
+	lc->conf_ctx = NULL;
+	return 0;
+}
+
+int linphone_core_enter_conference(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_enter(lc->conf_ctx);
+	else return -1;
+}
+
+int linphone_core_leave_conference(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_leave(lc->conf_ctx);
+	else return -1;
+}
+
+bool_t linphone_core_is_in_conference(const LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_is_in(lc->conf_ctx);
+	else return FALSE;
+}
+
+int linphone_core_get_conference_size(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_get_participant_count(lc->conf_ctx);
+	return 0;
+}
+
+float linphone_core_get_conference_local_input_volume(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_get_input_volume(lc->conf_ctx);
+	else return -1.0;
+}
+
+int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path) {
+	if(lc->conf_ctx) return linphone_conference_start_recording(lc->conf_ctx, path);
+	return -1;
+}
+
+int linphone_core_stop_conference_recording(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_stop_recording(lc->conf_ctx);
+	return -1;
+}
+
+LinphoneConference *linphone_core_get_conference(LinphoneCore *lc) {
+	return lc->conf_ctx;
 }

@@ -40,7 +40,7 @@ static void sal_op_set_referred_by(SalOp* op,belle_sip_header_referred_by_t* ref
 
 int sal_call_refer_to(SalOp *op, belle_sip_header_refer_to_t* refer_to, belle_sip_header_referred_by_t* referred_by){
 	char* tmp;
-	belle_sip_request_t* req=op->dialog?belle_sip_dialog_create_request(op->dialog,"REFER"):NULL; /*cannot create request if dialog not set yet*/
+	belle_sip_request_t* req=op->dialog?belle_sip_dialog_create_request(op->dialog,"REFER"):sal_op_build_request(op, "REFER");
 	if (!req) {
 		tmp=belle_sip_uri_to_string(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(refer_to)));
 		ms_error("Cannot refer to [%s] for op [%p]",tmp,op);

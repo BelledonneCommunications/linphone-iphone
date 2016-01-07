@@ -1,0 +1,26 @@
+[sip]
+default_proxy=0
+sip_port=-1
+sip_tcp_port=-1
+sip_dtls_port=-1
+sip_tls_port=-1
+
+[rtp]
+audio_rtp_port=18070-28000
+text_rtp_port=39000-49000
+video_rtp_port=28070-38000
+
+[proxy_0]
+reg_proxy=sip.example.org;transport=tcp
+reg_route=sip.example.org;transport=tcp;lr
+reg_identity="Focus" <sip:focus@sip.example.org>
+reg_expires=3600
+reg_sendregister=1
+publish=0
+
+[auth_info_0]
+username=focus
+userid=focus
+passwd=secret
+realm=sip.example.org
+

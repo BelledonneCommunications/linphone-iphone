@@ -272,10 +272,11 @@ void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore
 	cleanup_dead_vtable_refs(lc);
 }
 
-static VTableReference * v_table_reference_new(LinphoneCoreVTable *vtable, bool_t autorelease){
+static VTableReference * v_table_reference_new(LinphoneCoreVTable *vtable, bool_t autorelease, bool_t internal){
 	VTableReference *ref=ms_new0(VTableReference,1);
 	ref->valid=1;
 	ref->autorelease=autorelease;
+	ref->internal = internal;
 	ref->vtable=vtable;
 	return ref;
 }
@@ -285,13 +286,13 @@ void v_table_reference_destroy(VTableReference *ref){
 	ms_free(ref);
 }
 
-void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease) {
+void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, bool_t autorelease, bool_t internal) {
 	ms_message("Vtable [%p] registered on core [%p]",lc,vtable);
-	lc->vtable_refs=ms_list_append(lc->vtable_refs,v_table_reference_new(vtable, autorelease));
+	lc->vtable_refs=ms_list_append(lc->vtable_refs,v_table_reference_new(vtable, autorelease, internal));
 }
 
 void linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable){
-	_linphone_core_add_listener(lc, vtable, FALSE);
+	_linphone_core_add_listener(lc, vtable, FALSE, FALSE);
 }
 
 void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *vtable) {

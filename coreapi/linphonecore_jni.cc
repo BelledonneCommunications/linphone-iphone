@@ -1311,7 +1311,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeListener(JNIEnv* e
 		VTableReference *ref=(VTableReference*)(iterator->data);
 		LinphoneCoreVTable *vTable = ref->valid ? ref->vtable : NULL;
 		iterator = iterator->next; //Because linphone_core_remove_listener may change the list
-		if (vTable) {
+		if (vTable && !ref->internal) {
 			LinphoneCoreData *data = (LinphoneCoreData*) linphone_core_v_table_get_user_data(vTable);
 			if (data && env->IsSameObject(data->listener, jlistener)) {
 				linphone_core_remove_listener(core, vTable);
@@ -4315,6 +4315,14 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv
 	return (jint)linphone_core_get_conference_size((LinphoneCore *) pCore);
 }
 
+extern "C" jobject Jave_org_linphone_core_LinphoneCoreImpl_getConference(JNIEnv *env, jobject thiz, jlong pCore) {
+	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConference");
+	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)");
+	LinphoneConference *conf = linphone_core_get_conference((LinphoneCore *)pCore);
+	if(conf) return env->NewObject(conference_class, conference_constructor, conf);
+	else return NULL;
+}
+
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startConferenceRecording(JNIEnv *env,jobject thiz,jlong pCore, jstring jpath){
 	int err=-1;
 	if (jpath){
@@ -4447,6 +4455,14 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallImpl_isAuthenticationToke
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_setAuthenticationTokenVerified(JNIEnv*  env,jobject thiz,jlong ptr,jboolean verified) {
 	LinphoneCall *call = (LinphoneCall *) ptr;
 	linphone_call_set_authentication_token_verified(call, verified);
+}
+
+extern "C" jobject Java_org_linphnoe_core_LinphoneCallImpl_getConference(JNIEnv *env, jobject thiz, jlong ptr) {
+	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConference");
+	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)");
+	LinphoneConference *conf = linphone_call_get_conference((LinphoneCall *)ptr);
+	if(conf) return env->NewObject(conference_class, conference_constructor, conf);
+	return NULL;
 }
 
 extern "C" jfloat Java_org_linphone_core_LinphoneCallImpl_getPlayVolume(JNIEnv* env, jobject thiz, jlong ptr) {
@@ -6730,3 +6746,26 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getNortpTimeout(J
 
 
 
+JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneConferenceImpl_getParticipants(JNIEnv *env, jobject thiz, jlong pconference) {
+	MSList *participants, *it;
+	jclass addr_class = env->FindClass("org/linphone/core/LinphoneAddressImpl");
+	jclass addr_list_class = env->FindClass("[Lorg/linphone/core/LinphoneAddressImpl;");
+	jmethodID addr_constructor = env->GetMethodID(addr_class, "<init>", "(J)");
+	jmethodID addr_list_constructor = env->GetMethodID(addr_list_class, "<init>", "(V)");
+	jmethodID addr_list_append = env->GetMethodID(addr_list_class, "add", "(Lorg/linphone/core/LinphoneAddressImpl;)Z");
+	jobject jaddr_list = env->NewObject(addr_list_class, addr_list_constructor);
+	
+	participants = linphone_conference_get_participants((LinphoneConference *)pconference);
+	for(it = participants; it; it = ms_list_next(it)) {
+		LinphoneAddress *addr = (LinphoneAddress *)it->data;
+		jobject jaddr = env->NewObject(addr_class, addr_constructor, addr);
+		env->CallBooleanMethod(jaddr_list, addr_list_append, jaddr);
+	}
+	return jaddr_list;
+}
+
+JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneConferenteImpl_removeParticipant(JNIEnv *env, jobject thiz, jlong pconference, jobject uri) {
+	jfieldID native_ptr_attr = env->GetFieldID(env->GetObjectClass(uri), "nativePtr", "J");
+	LinphoneAddress *addr = (LinphoneAddress *)env->GetLongField(uri, native_ptr_attr);
+	return linphone_conference_remove_participant((LinphoneConference *)pconference, addr);
+}

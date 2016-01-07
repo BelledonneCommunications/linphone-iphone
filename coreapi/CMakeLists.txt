@@ -75,7 +75,6 @@ set(LINPHONE_SOURCE_FILES_C
 	call_params.c
 	chat.c
 	chat_file_transfer.c
-	conference.c
 	contactprovider.c
 	content.c
 	dict.c
@@ -115,7 +114,7 @@ set(LINPHONE_SOURCE_FILES_C
 	xmlrpc.c
 	vtables.c
 )
-set(LINPHONE_SOURCE_FILES_CXX )
+set(LINPHONE_SOURCE_FILES_CXX conference.cc)
 
 set(LINPHONE_SOURCE_FILES_OBJC)
 if (IOS)
