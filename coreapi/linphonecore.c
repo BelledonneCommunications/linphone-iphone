@@ -7511,7 +7511,7 @@ void linphone_core_set_carddav_current_ctag(LinphoneCore *lc, int ctag) {
 int linphone_core_get_carddav_last_ctag(LinphoneCore *lc) {
 	if (lc) {
 		LpConfig *lpc = linphone_core_get_config(lc);
-		return lp_config_get_int(lpc, "carddav", "ctag", -1);
+		return lp_config_get_int(lpc, "carddav", "ctag", 0);
 	}
-	return -1;
+	return 0;
 }

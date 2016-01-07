@@ -1328,6 +1328,7 @@ char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *
 const char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name);
 void linphone_free_xml_text_content(const char *text);
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
+void linphone_xml_xpath_context_init_carddav_ns(xmlparsing_context_t *xml_ctx);
 
 /*****************************************************************************
  * OTHER UTILITY FUNCTIONS                                                     *

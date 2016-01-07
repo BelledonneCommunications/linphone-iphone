@@ -123,3 +123,11 @@ void linphone_free_xml_text_content(const char *text) {
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression) {
 	return xmlXPathEvalExpression((const xmlChar *)xpath_expression, xml_ctx->xpath_ctx);
 }
+
+void linphone_xml_xpath_context_init_carddav_ns(xmlparsing_context_t *xml_ctx) {
+	if (xml_ctx && xml_ctx->xpath_ctx) {
+		xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar*)"d", (const xmlChar*)"DAV:");
+		xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar*)"card", (const xmlChar*)"urn:ietf:params:xml:ns:carddav");
+		xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar*)"x1", (const xmlChar*)"http://calendarserver.org/ns/");
+	}
+}
