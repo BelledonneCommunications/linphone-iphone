@@ -75,7 +75,12 @@ static void linphone_carddav_sync_done(LinphoneCardDavContext *cdc, bool_t succe
 static int find_matching_friend(LinphoneFriend *lf1, LinphoneFriend *lf2) {
 	LinphoneVCard *lvc1 = linphone_friend_get_vcard(lf1);
 	LinphoneVCard *lvc2 = linphone_friend_get_vcard(lf2);
-	return strcmp(linphone_vcard_get_uid(lvc1), linphone_vcard_get_uid(lvc2));
+	const char *uid1 = linphone_vcard_get_uid(lvc1);
+	const char *uid2 = linphone_vcard_get_uid(lvc2);
+	if (!uid1 || !uid2) {
+		return 1;
+	}
+	return strcmp(uid1, uid2);
 }
 
 static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *vCards) {
@@ -150,7 +155,12 @@ end:
 static int find_matching_vcard(LinphoneCardDavResponse *response, LinphoneFriend *lf) {
 	LinphoneVCard *lvc1 = linphone_vcard_new_from_vcard4_buffer(response->vcard);
 	LinphoneVCard *lvc2 = linphone_friend_get_vcard(lf);
-	return strcmp(linphone_vcard_get_uid(lvc1), linphone_vcard_get_uid(lvc2));
+	const char *uid1 = linphone_vcard_get_uid(lvc1);
+	const char *uid2 = linphone_vcard_get_uid(lvc2);
+	if (!uid1 || !uid2) {
+		return 1;
+	}
+	return strcmp(uid1, uid2);
 }
 
 static void linphone_carddav_vcards_fetched(LinphoneCardDavContext *cdc, MSList *vCards) {

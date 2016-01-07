@@ -82,6 +82,8 @@ extern "C" LinphoneVCard* linphone_vcard_new_from_vcard4_buffer(const char *buff
 		if (belCard) {
 			vCard = linphone_vcard_new();
 			vCard->belCard = belCard;
+		} else {
+			ms_error("Couldn't parse buffer %s", buffer);
 		}
 	}
 	return vCard;
@@ -155,7 +157,7 @@ extern "C" MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vCard) 
 }
 
 extern "C" const char* linphone_vcard_get_uid(const LinphoneVCard *vCard) {
-	if (vCard->belCard->getUniqueId()) {
+	if (vCard && vCard->belCard->getUniqueId()) {
 		return vCard->belCard->getUniqueId()->getValue().c_str();
 	}
 	return NULL;
@@ -166,6 +168,7 @@ extern "C" void linphone_vcard_set_etag(LinphoneVCard *vCard, const char * etag)
 }
 
 extern "C" const char* linphone_vcard_get_etag(const LinphoneVCard *vCard) {
+	if (!vCard) return NULL;
 	return vCard->etag;
 }
 
@@ -174,5 +177,6 @@ extern "C" void linphone_vcard_set_url(LinphoneVCard *vCard, const char * url) {
 }
 
 extern "C" const char* linphone_vcard_get_url(const LinphoneVCard *vCard) {
+	if (!vCard) return NULL;
 	return vCard->url;
 }
