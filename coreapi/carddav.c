@@ -90,8 +90,20 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 			LinphoneCardDavResponse *vCard = (LinphoneCardDavResponse *)vCards->data;
 			if (vCard) {
 				LinphoneVCard *lvc = linphone_vcard_new_from_vcard4_buffer(vCard->vcard);
-				LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
-				MSList *local_friend = ms_list_find_custom(localFriends, (int (*)(const void*, const void*))find_matching_friend, lf);
+				LinphoneFriend *lf = NULL;
+				MSList *local_friend = NULL;
+				
+				if (lvc) {
+					// Compute downloaded vCards' URL and save it (+ eTag)
+					char *vCard_name = strrchr(vCard->url, '/');
+					char full_url[300];
+					snprintf(full_url, sizeof(full_url), "%s%s", cdc->server_url, vCard_name);
+					linphone_vcard_set_url(lvc, full_url);
+					linphone_vcard_set_etag(lvc, vCard->etag);
+				}
+				lf = linphone_friend_new_from_vcard(lvc);
+				local_friend = ms_list_find_custom(localFriends, (int (*)(const void*, const void*))find_matching_friend, lf);
+				
 				if (local_friend) {
 					LinphoneFriend *lf2 = (LinphoneFriend *)local_friend->data;
 					if (cdc->contact_updated_cb) {
