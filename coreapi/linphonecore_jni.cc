@@ -6757,7 +6757,7 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneConferenceImpl_getPartici
 	jaddr_list = env->NewObjectArray(ms_list_size(participants), addr_class, NULL);
 	for(it=participants, i=0; it; it=ms_list_next(it), i++) {
 		LinphoneAddress *addr = (LinphoneAddress *)it->data;
-		jobject jaddr = env->NewObject(addr_class, addr_constructor, addr);
+		jobject jaddr = env->NewObject(addr_class, addr_constructor, (jlong)addr);
 		env->SetObjectArrayElement(jaddr_list, i, jaddr);
 	}
 	ms_list_free(participants);
