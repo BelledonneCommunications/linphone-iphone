@@ -798,7 +798,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
 		picker.mailComposeDelegate = self;
 
-		[picker setSubject:@"Linphone iOS Logs"];
+		[picker setSubject:@"<Please describe your problem>"];
 		[picker setToRecipients:[NSArray arrayWithObjects:@"linphone-iphone@belledonne-communications.com", nil]];
 		[picker setMessageBody:@"Here are information about an issue I had on my device.\nI was "
 							   @"doing ...\nI expected Linphone to ...\nInstead, I got an "

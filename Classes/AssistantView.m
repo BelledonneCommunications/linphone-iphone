@@ -666,8 +666,8 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 				replacementString:(NSString *)string {
 	UIAssistantTextField *atf = (UIAssistantTextField *)textField;
 	BOOL replace = YES;
-	// if we are hitting backspace, invalid range is given (length=1 instead of text size, new string="")
-	if ([string isEqual:@""]) {
+	// if we are hitting backspace on secure entry, this will clear all text
+	if ([string isEqual:@""] && textField.isSecureTextEntry) {
 		range = NSMakeRange(0, atf.text.length);
 	}
 	[atf textField:atf shouldChangeCharactersInRange:range replacementString:string];
