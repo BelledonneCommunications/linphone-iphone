@@ -124,6 +124,7 @@ end:
 
 static void friends_sqlite_storage(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneVCard *lvc = linphone_vcard_new();
 	LinphoneFriend *lf = linphone_friend_new();
 	LinphoneFriend *lf2 = NULL;
 	LinphoneAddress *addr = linphone_address_new("sip:sylvain@sip.linphone.org");
@@ -137,6 +138,9 @@ static void friends_sqlite_storage(void) {
 	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
 	
+	linphone_vcard_set_etag(lvc, "\"123-456789\"");
+	linphone_vcard_set_url(lvc, "http://dav.somewhere.fr/addressbook/me/someone.vcf");
+	linphone_friend_set_vcard(lf, lvc);
 	linphone_friend_set_address(lf, addr);
 	linphone_friend_set_name(lf, "Sylvain");
 	linphone_core_add_friend(manager->lc, lf);
@@ -154,6 +158,8 @@ static void friends_sqlite_storage(void) {
 	lf2 = (LinphoneFriend *)friends_from_db->data;
 	BC_ASSERT_STRING_EQUAL(linphone_friend_get_name(lf2), linphone_friend_get_name(lf));
 	BC_ASSERT_EQUAL(lf2->storage_id, lf->storage_id, int, "%i");
+	BC_ASSERT_STRING_EQUAL(linphone_vcard_get_etag(linphone_friend_get_vcard(lf2)), linphone_vcard_get_etag(linphone_friend_get_vcard(lf)));
+	BC_ASSERT_STRING_EQUAL(linphone_vcard_get_url(linphone_friend_get_vcard(lf2)), linphone_vcard_get_url(linphone_friend_get_vcard(lf)));
 	BC_ASSERT_STRING_EQUAL(linphone_address_as_string(linphone_friend_get_address(lf2)), linphone_address_as_string(linphone_friend_get_address(lf)));
 
 	linphone_friend_edit(lf);
