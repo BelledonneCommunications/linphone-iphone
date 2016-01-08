@@ -24,10 +24,7 @@
 
 #ifndef _PRIVATE_H
 #define _PRIVATE_H
-#ifdef __cplusplus
 
-extern "C" {
-#endif
 #include "linphonecore.h"
 #include "linphonefriend.h"
 #include "friendlist.h"
@@ -117,6 +114,15 @@ extern "C" {
 #if (_MSC_VER >= 1900)
 #define LINPHONE_MSC_VER_GREATER_19
 #endif
+#endif
+
+#include <libxml/xmlreader.h>
+#include <libxml/xmlwriter.h>
+#include <libxml/xpath.h>
+#include <libxml/xpathInternals.h>
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 struct _LinphoneCallParams{
@@ -1296,11 +1302,6 @@ void _linphone_player_destroy(LinphonePlayer *player);
 /*****************************************************************************
  * XML UTILITY FUNCTIONS                                                     *
  ****************************************************************************/
-
-#include <libxml/xmlreader.h>
-#include <libxml/xmlwriter.h>
-#include <libxml/xpath.h>
-#include <libxml/xpathInternals.h>
 
 #define XMLPARSING_BUFFER_LEN 2048
 #define MAX_XPATH_LENGTH 256
