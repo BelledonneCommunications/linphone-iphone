@@ -6746,20 +6746,20 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getNortpTimeout(J
 
 
 
-JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneConferenceImpl_getParticipants(JNIEnv *env, jobject thiz, jlong pconference) {
+JNIEXPORT jobjectArray JNICALL Java_org_linphone_core_LinphoneConferenceImpl_getParticipants(JNIEnv *env, jobject thiz, jlong pconference) {
 	MSList *participants, *it;
 	jclass addr_class = env->FindClass("org/linphone/core/LinphoneAddressImpl");
 	jclass addr_list_class = env->FindClass("[Lorg/linphone/core/LinphoneAddressImpl;");
 	jmethodID addr_constructor = env->GetMethodID(addr_class, "<init>", "(J)");
-	jmethodID addr_list_constructor = env->GetMethodID(addr_list_class, "<init>", "(V)");
-	jmethodID addr_list_append = env->GetMethodID(addr_list_class, "add", "(Lorg/linphone/core/LinphoneAddressImpl;)Z");
-	jobject jaddr_list = env->NewObject(addr_list_class, addr_list_constructor);
+	jobjectArray jaddr_list;
+	int i;
 	
 	participants = linphone_conference_get_participants((LinphoneConference *)pconference);
-	for(it = participants; it; it = ms_list_next(it)) {
+	jaddr_list = env->NewObjectArray(ms_list_size(participants), addr_class, NULL);
+	for(it=participants, i=0; it; it=ms_list_next(it), i++) {
 		LinphoneAddress *addr = (LinphoneAddress *)it->data;
 		jobject jaddr = env->NewObject(addr_class, addr_constructor, addr);
-		env->CallBooleanMethod(jaddr_list, addr_list_append, jaddr);
+		env->SetObjectArrayElement(jaddr_list, i, jaddr);
 	}
 	return jaddr_list;
 }

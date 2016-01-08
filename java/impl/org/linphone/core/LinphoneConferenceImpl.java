@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 import org.linphone.core.LinphoneConference;
-import java.util.List;
 
 public class LinphoneConferenceImpl implements LinphoneConference {
 	private final long nativePtr;
@@ -30,8 +29,8 @@ public class LinphoneConferenceImpl implements LinphoneConference {
 		this.nativePtr = nativePtr;
 	}
 	
-	private native List<LinphoneAddress> getParticipants(long nativePtr);
-	public List<LinphoneAddress> getParticipants() {
+	private native LinphoneAddress[] getParticipants(long nativePtr);
+	public LinphoneAddress[] getParticipants() {
 		return getParticipants(nativePtr);
 	}
 	

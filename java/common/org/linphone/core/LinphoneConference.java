@@ -29,7 +29,7 @@ public interface LinphoneConference {
 	/**
 	 * Get the URIs of all participants of the conference
 	 */
-	public List<LinphoneAddress> getParticipants();
+	public LinphoneAddress[] getParticipants();
 	/**
 	 * Remove a participant from the conference
 	 * @param uri The URI of the participant to remove
