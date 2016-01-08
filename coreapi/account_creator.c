@@ -132,12 +132,12 @@ void linphone_account_creator_set_user_data(LinphoneAccountCreator *creator, voi
 static LinphoneAccountCreatorStatus validate_uri(const char* username, const char* domain, const char* route, const char* display_name) {
 	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
 	LinphoneAddress* addr;
-
-	linphone_proxy_config_set_identity(proxy, "sip:user@domain.com");
+	LinphoneAccountCreatorStatus status = LinphoneAccountCreatorOK;
+	linphone_proxy_config_set_identity(proxy, "sip:userame@domain.com");
 
 	if (route && linphone_proxy_config_set_route(proxy, route) != 0) {
-		linphone_proxy_config_destroy(proxy);
-		return LinphoneAccountCreatorRouteInvalid;
+		status = LinphoneAccountCreatorRouteInvalid;
+		goto end;
 	}
 
 	if (username) {
@@ -145,24 +145,23 @@ static LinphoneAccountCreatorStatus validate_uri(const char* username, const cha
 	} else {
 		addr = linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
 	}
-	linphone_proxy_config_destroy(proxy);
 
 	if (addr == NULL) {
-		return LinphoneAccountCreatorUsernameInvalid;
+		status = LinphoneAccountCreatorUsernameInvalid;
 	}
 
-	if (domain) {
-		ms_error("TODO: detect invalid domain");
-		linphone_address_set_domain(addr, domain);
+	if (domain && linphone_address_set_domain(addr, domain) != 0) {
+		status = LinphoneAccountCreatorDomainInvalid;
 	}
 
-	if (display_name) {
-		ms_error("TODO: detect invalid display name");
-		linphone_address_set_display_name(addr, display_name);
+	if (display_name && linphone_address_set_display_name(addr, display_name) != 0) {
+		status = LinphoneAccountCreatorDisplayNameInvalid;
 	}
 
 	linphone_address_unref(addr);
-	return LinphoneAccountCreatorOK;
+end:
+	linphone_proxy_config_destroy(proxy);
+	return status;
 }
 
 static bool_t is_matching_regex(const char *entry, const char* regex) {

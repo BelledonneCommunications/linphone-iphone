@@ -436,10 +436,11 @@ LINPHONE_PUBLIC	const char *linphone_address_get_display_name(const LinphoneAddr
 LINPHONE_PUBLIC	const char *linphone_address_get_username(const LinphoneAddress *u);
 LINPHONE_PUBLIC	const char *linphone_address_get_domain(const LinphoneAddress *u);
 LINPHONE_PUBLIC int linphone_address_get_port(const LinphoneAddress *u);
-LINPHONE_PUBLIC	void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
-LINPHONE_PUBLIC	void linphone_address_set_username(LinphoneAddress *uri, const char *username);
-LINPHONE_PUBLIC	void linphone_address_set_domain(LinphoneAddress *uri, const char *host);
-LINPHONE_PUBLIC	void linphone_address_set_port(LinphoneAddress *uri, int port);
+LINPHONE_PUBLIC	int linphone_address_set_display_name(LinphoneAddress *u, const char *display_name);
+LINPHONE_PUBLIC	int linphone_address_set_username(LinphoneAddress *uri, const char *username);
+LINPHONE_PUBLIC	int linphone_address_set_domain(LinphoneAddress *uri, const char *host);
+LINPHONE_PUBLIC	int linphone_address_set_port(LinphoneAddress *uri, int port);
+LINPHONE_PUBLIC int linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
 /*remove tags, params etc... so that it is displayable to the user*/
 LINPHONE_PUBLIC	void linphone_address_clean(LinphoneAddress *uri);
 LINPHONE_PUBLIC bool_t linphone_address_is_secure(const LinphoneAddress *addr);
@@ -447,7 +448,6 @@ LINPHONE_PUBLIC bool_t linphone_address_get_secure(const LinphoneAddress *addr);
 LINPHONE_PUBLIC void linphone_address_set_secure(LinphoneAddress *addr, bool_t enabled);
 LINPHONE_PUBLIC bool_t linphone_address_is_sip(const LinphoneAddress *uri);
 LINPHONE_PUBLIC LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri);
-LINPHONE_PUBLIC void linphone_address_set_transport(LinphoneAddress *uri,LinphoneTransportType type);
 LINPHONE_PUBLIC const char *linphone_address_get_method_param(const LinphoneAddress *addr);
 LINPHONE_PUBLIC void linphone_address_set_method_param(LinphoneAddress *addr, const char *method);
 LINPHONE_PUBLIC	char *linphone_address_as_string(const LinphoneAddress *u);
