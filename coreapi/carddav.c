@@ -274,9 +274,8 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 	
 	if (event->response) {
 		int code = belle_http_response_get_status_code(event->response);
-		if (code == 207 || code == 200) {
+		if (code == 207 || code == 200 || code == 201 || code == 204) {
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
-			query->status = LinphoneCardDavQueryStatusOk;
 			switch(query->type) {
 			case LinphoneCardDavQueryTypePropfind:
 				linphone_carddav_ctag_fetched(query->context, parse_ctag_value_from_xml_response(body));
@@ -287,10 +286,38 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 			case LinphoneCardDavQueryTypeAddressbookMultiget:
 				linphone_carddav_vcards_pulled(query->context, parse_vcards_from_xml_response(body));
 				break;
+			case LinphoneCardDavQueryTypePut:
+				{
+					belle_sip_header_t *header = belle_sip_message_get_header((belle_sip_message_t *)event->response, "ETag");
+					LinphoneFriend *lf = (LinphoneFriend *)query->user_data;
+					if (lf) {
+						LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+						if (header && lvc && !linphone_vcard_get_etag(lvc)) {
+							const char *etag = belle_sip_header_get_unparsed_value(header);
+							ms_debug("eTag for newly created vCard is: %s", etag);
+							linphone_vcard_set_etag(lvc, etag);
+						}
+						linphone_carddav_sync_done(query->context, TRUE, "");
+						linphone_friend_unref(lf);
+					} else {
+						linphone_carddav_sync_done(query->context, FALSE, "No LinphoneFriend found in user_date field of query");
+					}
+				}
+				break;
+			case LinphoneCardDavQueryTypeDelete:
+				linphone_carddav_sync_done(query->context, TRUE, "");
+				break;
+			default:
+				ms_error("Unknown request: %i", query->type);
+				break;
 			}
 		} else {
-			query->status = LinphoneCardDavQueryStatusFailed;
+			char msg[100];
+			snprintf(msg, sizeof(msg), "Unexpected HTTP response code: %i", code);
+			linphone_carddav_sync_done(query->context, FALSE, msg);
 		}
+	} else {
+		linphone_carddav_sync_done(query->context, FALSE, "No response found");
 	}
 	ms_free(query);
 }
@@ -298,7 +325,6 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 static void process_io_error_from_carddav_request(void *data, const belle_sip_io_error_event_t *event) {
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)data;
 	ms_error("I/O error during CardDAV request sending");
-	query->status = LinphoneCardDavQueryStatusFailed;
 	ms_free(query);
 	linphone_carddav_sync_done(query->context, FALSE, "I/O error during CardDAV request sending");
 }
@@ -316,7 +342,6 @@ static void process_auth_requested_from_carddav_request(void *data, belle_sip_au
 			belle_sip_auth_event_set_ha1(event, context->ha1);
 		}
 	} else {
-		query->status = LinphoneCardDavQueryStatusFailed;
 		ms_error("Authentication requested during CardDAV request sending, and username/password weren't provided");
 		linphone_carddav_sync_done(query->context, FALSE, "Authentication requested during CardDAV request sending, and username/password weren't provided");
 	}
@@ -331,18 +356,33 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 
 	uri = belle_generic_uri_parse(query->url);
 	if (!uri) {
+		LinphoneCardDavContext *cdc = query->context;
+		if (cdc && cdc->sync_done_cb) {
+			cdc->sync_done_cb(cdc, FALSE, "Could not send request, URL is invalid");
+		}
 		belle_sip_error("Could not send request, URL %s is invalid", query->url);
-		query->status = LinphoneCardDavQueryStatusFailed;
 		return;
 	}
-	req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), belle_sip_header_create("Depth", query->depth), NULL);
+	if (query->depth) {
+		req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), belle_sip_header_create("Depth", query->depth), NULL);
+	} else if (query->ifmatch) {
+		req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), belle_sip_header_create("If-Match", query->ifmatch), NULL);
+	} else {
+		if (strcmp(query->method, "PUT")) {
+			req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), belle_sip_header_create("If-None-Match", "*"), NULL);
+		} else {
+			req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), NULL);
+		}
+	}
 	if (!req) {
+		LinphoneCardDavContext *cdc = query->context;
+		if (cdc && cdc->sync_done_cb) {
+			cdc->sync_done_cb(cdc, FALSE, "Could not create belle_http_request_t");
+		}
 		belle_sip_object_unref(uri);
 		belle_sip_error("Could not create belle_http_request_t");
-		query->status = LinphoneCardDavQueryStatusFailed;
 		return;
 	}
-	query->status = LinphoneCardDavQueryStatusPending;
 	
 	bh = belle_sip_memory_body_handler_new_copy_from_buffer(query->body, strlen(query->body), NULL, NULL);
 	belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(bh));
@@ -354,12 +394,106 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 	belle_http_provider_send_request(query->context->lc->http_provider, req, l);
 }
 
+static LinphoneCardDavQuery* linphone_carddav_create_put_query(LinphoneCardDavContext *cdc, LinphoneVCard *lvc) {
+	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)ms_new0(LinphoneCardDavQuery, 1);
+	query->context = cdc;
+	query->depth = NULL;
+	query->ifmatch = linphone_vcard_get_etag(lvc);
+	query->body = linphone_vcard_as_vcard4_string(lvc);
+	query->method = "PUT";
+	query->url = linphone_vcard_get_url(lvc);
+	query->type = LinphoneCardDavQueryTypePut;
+	return query;
+}
+
+static char* generate_url_from_server_address_and_uid(const char *server_url) {
+	if (server_url) {
+		char uuid[32];
+		if (sal_generate_uuid(uuid, sizeof(uuid)) == 0) {
+			char url[300];
+			snprintf(url, sizeof(url), "%s/linphone-%s.vcf", server_url, uuid);
+			ms_debug("Generated url is %s", url);
+			return ms_strdup(url);
+		}
+	}
+	return NULL;
+}
+
 void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
-	//TODO
+	LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+	if (lvc && linphone_vcard_get_uid(lvc)) {
+		LinphoneCardDavQuery *query = NULL;
+		
+		if (!linphone_vcard_get_url(lvc)) {
+			char *url = generate_url_from_server_address_and_uid(cdc->server_url);
+			linphone_vcard_set_url(lvc, url);
+			ms_free(url);
+		}
+		
+		query = linphone_carddav_create_put_query(cdc, lvc);
+		query->user_data = linphone_friend_ref(lf);
+		linphone_carddav_send_query(query);
+	} else {
+		const char *msg = NULL;
+		if (!lvc) {
+			msg = "LinphoneVCard is NULL";
+		} else if (!linphone_vcard_get_url(lvc)) {
+			msg = "LinphoneVCard doesn't have an UID";
+		}
+		
+		if (msg) {
+			ms_error("%s", msg);
+		}
+		
+		if (cdc && cdc->sync_done_cb) {
+			cdc->sync_done_cb(cdc, FALSE, msg);
+		}
+	}
+}
+
+static LinphoneCardDavQuery* linphone_carddav_create_delete_query(LinphoneCardDavContext *cdc, LinphoneVCard *lvc) {
+	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)ms_new0(LinphoneCardDavQuery, 1);
+	query->context = cdc;
+	query->depth = NULL;
+	query->ifmatch = linphone_vcard_get_etag(lvc);
+	query->body = linphone_vcard_as_vcard4_string(lvc);
+	query->method = "DELETE";
+	query->url = linphone_vcard_get_url(lvc);
+	query->type = LinphoneCardDavQueryTypeDelete;
+	return query;
 }
 
 void linphone_carddav_delete_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
-	//TODO
+	LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+	if (lvc && linphone_vcard_get_uid(lvc) && linphone_vcard_get_etag(lvc)) {
+		LinphoneCardDavQuery *query = NULL;
+		
+		if (!linphone_vcard_get_url(lvc)) {
+			char *url = generate_url_from_server_address_and_uid(cdc->server_url);
+			linphone_vcard_set_url(lvc, url);
+			ms_free(url);
+		}
+		
+		query = linphone_carddav_create_delete_query(cdc, lvc);
+		linphone_carddav_send_query(query);
+	} else {
+		const char *msg = NULL;
+		if (!lvc) {
+			msg = "LinphoneVCard is NULL";
+		} else if (!linphone_vcard_get_uid(lvc)) {
+			msg = "LinphoneVCard doesn't have an UID";
+		} else if (!linphone_vcard_get_etag(lvc)) {
+			msg = "LinphoneVCard doesn't have an eTag";
+		}
+		
+		if (msg) {
+			ms_error("%s", msg);
+		}
+		
+		if (cdc && cdc->sync_done_cb) {
+			cdc->sync_done_cb(cdc, FALSE, msg);
+		}
+	}
 }
 
 void linphone_carddav_set_synchronization_done_callback(LinphoneCardDavContext *cdc, LinphoneCardDavSynchronizationDoneCb cb) {
@@ -382,11 +516,11 @@ static LinphoneCardDavQuery* linphone_carddav_create_propfind_query(LinphoneCard
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)ms_new0(LinphoneCardDavQuery, 1);
 	query->context = cdc;
 	query->depth = "0";
+	query->ifmatch = NULL;
 	query->body = "<d:propfind xmlns:d=\"DAV:\" xmlns:cs=\"http://calendarserver.org/ns/\"><d:prop><cs:getctag /></d:prop></d:propfind>";
 	query->method = "PROPFIND";
 	query->url = cdc->server_url;
 	query->type = LinphoneCardDavQueryTypePropfind;
-	query->status = LinphoneCardDavQueryStatusIdle;
 	return query;
 }
 
@@ -399,11 +533,11 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_query(LinphoneC
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)ms_new0(LinphoneCardDavQuery, 1);
 	query->context = cdc;
 	query->depth = "1";
+	query->ifmatch = NULL;
 	query->body = "<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /></d:prop></card:addressbook-query>";
 	query->method = "REPORT";
 	query->url = cdc->server_url;
 	query->type = LinphoneCardDavQueryTypeAddressbookQuery;
-	query->status = LinphoneCardDavQueryStatusIdle;
 	return query;
 }
 
@@ -414,22 +548,22 @@ void linphone_carddav_fetch_vcards(LinphoneCardDavContext *cdc) {
 
 static LinphoneCardDavQuery* linphone_carddav_create_addressbook_multiget_query(LinphoneCardDavContext *cdc, MSList *vcards) {
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)ms_new0(LinphoneCardDavQuery, 1);
-	char body[(ms_list_size(vcards)+1)*100];
+	char body[(ms_list_size(vcards)+1)*300];
 	MSList *iterator = vcards;
 	
 	query->context = cdc;
 	query->depth = "1";
+	query->ifmatch = NULL;
 	query->method = "REPORT";
 	query->url = cdc->server_url;
 	query->type = LinphoneCardDavQueryTypeAddressbookMultiget;
-	query->status = LinphoneCardDavQueryStatusIdle;
 
 	sprintf(body, "%s", "<card:addressbook-multiget xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /><card:address-data content-type='text-vcard' version='4.0'/></d:prop>");
 	while (iterator) {
 		LinphoneCardDavResponse *response = (LinphoneCardDavResponse *)iterator->data;
 		if (response) {
-			char temp_body[100];
-			sprintf(temp_body, "<d:href>%s</d:href>", response->url);
+			char temp_body[300];
+			snprintf(temp_body, sizeof(temp_body), "<d:href>%s</d:href>", response->url);
 			sprintf(body, "%s%s", body, temp_body);
 			iterator = ms_list_next(iterator);
 		}

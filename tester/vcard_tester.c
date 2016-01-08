@@ -200,7 +200,6 @@ typedef struct _LinphoneCardDAVStats {
 static void carddav_sync_done(LinphoneCardDavContext *c, bool_t success, const char *message) {
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_carddav_get_user_data(c);
 	BC_ASSERT_TRUE(success);
-	linphone_carddav_destroy(c);
 	stats->sync_done_count++;
 }
 
@@ -250,6 +249,7 @@ static void carddav_sync(void) {
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	
 	ms_free(stats);
+	linphone_carddav_destroy(c);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -288,6 +288,7 @@ static void carddav_sync_2(void) {
 	ms_free(stats);
 	unlink(friends_db);
 	ms_free(friends_db);
+	linphone_carddav_destroy(c);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -325,6 +326,40 @@ static void carddav_sync_3(void) {
 	ms_free(stats);
 	unlink(friends_db);
 	ms_free(friends_db);
+	linphone_carddav_destroy(c);
+	linphone_core_manager_destroy(manager);
+}
+
+static void carddav_sync_4(void) {
+	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
+	LinphoneCardDavContext *c = linphone_core_create_carddav_context(manager->lc);
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
+	LinphoneVCard *lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Margaux Clerc\r\nIMPP;TYPE=work:sip:margaux@sip.linphone.org\r\nEND:VCARD\r\n");
+	LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
+	
+	BC_ASSERT_PTR_NOT_NULL_FATAL(c);
+	BC_ASSERT_PTR_NOT_NULL(c->server_url);
+	BC_ASSERT_PTR_NOT_NULL(c->username);
+	BC_ASSERT_PTR_NOT_NULL(c->ha1);
+	
+	linphone_carddav_set_user_data(c, stats);
+	linphone_carddav_set_synchronization_done_callback(c, carddav_sync_done);
+	
+	BC_ASSERT_PTR_NULL(linphone_vcard_get_uid(lvc));
+	BC_ASSERT_TRUE(linphone_vcard_generate_unique_id(lvc));
+	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
+	
+	linphone_carddav_put_vcard(c, lf);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
+	
+	linphone_carddav_delete_vcard(c, lf);
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, 2000);
+	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
+
+	linphone_friend_unref(lf);
+	ms_free(stats);
+	linphone_carddav_destroy(c);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -346,6 +381,7 @@ test_t vcard_tests[] = {
 	{ "CardDAV synchronization", carddav_sync },
 	{ "CardDAV synchronization 2", carddav_sync_2 },
 	{ "CardDAV synchronization 3", carddav_sync_3 },
+	{ "CardDAV synchronization 4", carddav_sync_4 },
 #else
 	{ "Dummy test", dummy_test }
 #endif

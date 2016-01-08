@@ -32,7 +32,7 @@ extern "C"
 #endif
 
 /**
- * @addtogroup buddy_list
+ * @addtogroup carddav_vcard
  * @{
  */
 
@@ -119,12 +119,54 @@ LINPHONE_PUBLIC void linphone_vcard_edit_main_sip_address(LinphoneVCard *vCard, 
  */
 LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vCard);
 
+/**
+ * Generates a random unique id for the vCard.
+ * If is required to be able to synchronize the vCard with a CardDAV server
+ * @param[in] vCard the LinphoneVCard
+ * @return TRUE if operation is successful, otherwise FALSE (for example if it already has an unique ID)
+ */
+LINPHONE_PUBLIC bool_t linphone_vcard_generate_unique_id(LinphoneVCard *vCard);
+
+/**
+ * Sets the unique ID of the vCard
+ * @param[in] vCard the LinphoneVCard
+ * @param[in] uid the unique id
+ */
+void linphone_vcard_set_uid(LinphoneVCard *vCard, const char *uid);
+
+/**
+ * Gets the UID of the vCard
+ * @param[in] vCard the LinphoneVCard
+ * @return the UID of the vCard, otherwise NULL
+ */
 const char* linphone_vcard_get_uid(const LinphoneVCard *vCard);
 
+/**
+ * Sets the eTAG of the vCard
+ * @param[in] vCard the LinphoneVCard
+ * @param[in] etag the eTAG
+ */
 void linphone_vcard_set_etag(LinphoneVCard *vCard, const char * etag);
+
+/**
+ * Gets the eTag of the vCard
+ * @param[in] vCard the LinphoneVCard
+ * @return the eTag of the vCard in the CardDAV server, otherwise NULL
+ */
 const char* linphone_vcard_get_etag(const LinphoneVCard *vCard);
 
+/**
+ * Sets the URL of the vCard
+ * @param[in] vCard the LinphoneVCard
+ * @param[in] url the URL
+ */
 void linphone_vcard_set_url(LinphoneVCard *vCard, const char * url);
+
+/**
+ * Gets the URL of the vCard
+ * @param[in] vCard the LinphoneVCard
+ * @return the URL of the vCard in the CardDAV server, otherwise NULL
+ */
 const char* linphone_vcard_get_url(const LinphoneVCard *vCard);
 
 /**

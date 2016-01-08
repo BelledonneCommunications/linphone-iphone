@@ -1244,8 +1244,9 @@ struct _LinphoneCardDavQuery {
 	const char *method;
 	const char *body;
 	const char *depth;
+	const char *ifmatch;
+	void *user_data;
 	LinphoneCardDavQueryType type;
-	LinphoneCardDavQueryStatus status;
 };
 
 struct _LinphoneCardDavResponse {

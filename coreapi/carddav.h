@@ -23,21 +23,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * @addtogroup carddav_vcard
+ * @{
+ */
 	
 typedef struct _LinphoneCardDavContext LinphoneCardDavContext;
 
 typedef enum _LinphoneCardDavQueryType {
 	LinphoneCardDavQueryTypePropfind,
 	LinphoneCardDavQueryTypeAddressbookQuery,
-	LinphoneCardDavQueryTypeAddressbookMultiget
+	LinphoneCardDavQueryTypeAddressbookMultiget,
+	LinphoneCardDavQueryTypePut,
+	LinphoneCardDavQueryTypeDelete
 } LinphoneCardDavQueryType;
-
-typedef enum _LinphoneCardDavQueryStatus {
-	LinphoneCardDavQueryStatusIdle,
-	LinphoneCardDavQueryStatusPending,
-	LinphoneCardDavQueryStatusOk,
-	LinphoneCardDavQueryStatusFailed
-} LinphoneCardDavQueryStatus;
 
 typedef struct _LinphoneCardDavQuery LinphoneCardDavQuery;
 
@@ -156,6 +156,10 @@ void linphone_carddav_fetch_vcards(LinphoneCardDavContext *cdc);
  * @param vcards_to_pull a MSList of LinphoneCardDavResponse objects with at least the url field filled
  */
 void linphone_carddav_pull_vcards(LinphoneCardDavContext *cdc, MSList *vcards_to_pull);
+
+/**
+ * @}
+ */
 
 #ifdef __cplusplus
 }
