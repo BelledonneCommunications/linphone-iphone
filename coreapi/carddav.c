@@ -396,8 +396,10 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 		return;
 	}
 	
-	bh = belle_sip_memory_body_handler_new_copy_from_buffer(query->body, strlen(query->body), NULL, NULL);
-	belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(bh));
+	if (query->body) {
+		bh = belle_sip_memory_body_handler_new_copy_from_buffer(query->body, strlen(query->body), NULL, NULL);
+		belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), bh ? BELLE_SIP_BODY_HANDLER(bh) : NULL);
+	}
 	
 	cbs.process_response = process_response_from_carddav_request;
 	cbs.process_io_error = process_io_error_from_carddav_request;
@@ -468,7 +470,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_delete_query(LinphoneCardDa
 	query->context = cdc;
 	query->depth = NULL;
 	query->ifmatch = linphone_vcard_get_etag(lvc);
-	query->body = linphone_vcard_as_vcard4_string(lvc);
+	query->body = NULL;
 	query->method = "DELETE";
 	query->url = linphone_vcard_get_url(lvc);
 	query->type = LinphoneCardDavQueryTypeDelete;
