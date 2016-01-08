@@ -26,6 +26,10 @@
 #ifndef CONFERENCE_H
 #define CONFERENCE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+	
 #include "linphonecore.h"
 
 //typedef struct _LinphoneConference LinphoneConference;
@@ -64,5 +68,9 @@ void linphone_conference_on_call_stream_stopping(LinphoneConference *obj, Linpho
 void linphone_conference_on_call_terminating(LinphoneConference *obj, LinphoneCall *call);
 
 bool_t linphone_conference_check_class(LinphoneConference *obj, LinphoneConferenceClass _class);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // CONFERENCE_H

@@ -38,6 +38,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*Dirty hack, keep in sync with mediastreamer2/include/mediastream.h */
 #ifndef PAYLOAD_TYPE_FLAG_CAN_RECV
 #define PAYLOAD_TYPE_FLAG_CAN_RECV	PAYLOAD_TYPE_USER_FLAG_1
@@ -883,6 +887,9 @@ void sal_set_http_proxy_port(Sal *sal, int port) ;
 const char *sal_get_http_proxy_host(const Sal *sal);
 int sal_get_http_proxy_port(const Sal *sal);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
