@@ -513,16 +513,21 @@
 	} else if ([indexPath section] == ContactSections_Number) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
 		NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-		NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
-		if (valueRef != NULL) {
-			value = [FastAddressBook localizedLabel:valueRef];
+		if (index != -1) {
+			NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
+			if (valueRef != NULL) {
+				value = [FastAddressBook localizedLabel:valueRef];
+			}
 		}
 		CFRelease(lMap);
 	} else if ([indexPath section] == ContactSections_Sip) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonInstantMessageProperty);
 		NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-		CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
-		value = (NSString *)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
+		if (index != -1) {
+			CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, index);
+			value = (NSString *)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
+			CFRelease(lDict);
+		}
 		if (value != NULL) {
 			LinphoneAddress *addr = NULL;
 			if ([[LinphoneManager instance] lpConfigBoolForKey:@"contact_display_username_only"] &&
@@ -535,14 +540,15 @@
 			if (addr)
 				linphone_address_destroy(addr);
 		}
-		CFRelease(lDict);
 		CFRelease(lMap);
 	} else if ([indexPath section] == ContactSections_Email) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonEmailProperty);
 		NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-		NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
-		if (valueRef != NULL) {
-			value = [FastAddressBook localizedLabel:valueRef];
+		if (index != -1) {
+			NSString *valueRef = CFBridgingRelease(ABMultiValueCopyValueAtIndex(lMap, index));
+			if (valueRef != NULL) {
+				value = [FastAddressBook localizedLabel:valueRef];
+			}
 		}
 		CFRelease(lMap);
 	}

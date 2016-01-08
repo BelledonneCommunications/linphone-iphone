@@ -22,8 +22,6 @@
 
 #include "linphone/lpconfig.h"
 
-extern void linphone_iphone_log_handler(int lev, const char *fmt, va_list args);
-
 @implementation LinphoneCoreSettingsStore
 
 - (id)init {

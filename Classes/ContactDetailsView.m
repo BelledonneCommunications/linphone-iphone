@@ -297,6 +297,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAvatarClick:(id)sender {
+	[LinphoneUtils findAndResignFirstResponder:self.view];
 	if (_tableController.isEditing) {
 		[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
 	}

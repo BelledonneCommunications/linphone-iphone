@@ -164,6 +164,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 			getCachedController:NSStringFromClass(TabBarView.class)];
 		[tab update:YES];
+		[PhoneMainView.instance updateApplicationBadgeNumber];
 	} else {
 		_chatView.hidden = YES;
 	}
@@ -175,6 +176,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 			getCachedController:NSStringFromClass(TabBarView.class)];
 		[tab update:YES];
+		[PhoneMainView.instance updateApplicationBadgeNumber];
 	}
 }
 

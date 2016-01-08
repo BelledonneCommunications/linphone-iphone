@@ -510,12 +510,6 @@
 		63CDC45D1C3BDE370085F529 /* hold.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4521C3BDE370085F529 /* hold.caf */; };
 		63CDC45E1C3BDE370085F529 /* msg.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4531C3BDE370085F529 /* msg.caf */; };
 		63CDC45F1C3BDE370085F529 /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4541C3BDE370085F529 /* ringback.wav */; };
-		63CDC4601C3BDE370085F529 /* four_hands_together.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4561C3BDE370085F529 /* four_hands_together.caf */; };
-		63CDC4611C3BDE370085F529 /* house_keeping.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4571C3BDE370085F529 /* house_keeping.caf */; };
-		63CDC4621C3BDE370085F529 /* it_s_a_game.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4581C3BDE370085F529 /* it_s_a_game.caf */; };
-		63CDC4631C3BDE370085F529 /* leaving_a_dream.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4591C3BDE370085F529 /* leaving_a_dream.caf */; };
-		63CDC4641C3BDE370085F529 /* notes_of_the_optimistic.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC45A1C3BDE370085F529 /* notes_of_the_optimistic.caf */; };
-		63CDC4651C3BDE370085F529 /* soft_as_snow.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC45B1C3BDE370085F529 /* soft_as_snow.caf */; };
 		63CDC4661C3BDE370085F529 /* shortring.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC45C1C3BDE370085F529 /* shortring.caf */; };
 		63CFEDE81B9EDD74007EA5BD /* libantlr3c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223CA7E416D9255800EF1BEC /* libantlr3c.a */; };
 		63CFEDE91B9EDD74007EA5BD /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22276E8013C73D3100210156 /* libavcodec.a */; };
@@ -549,6 +543,12 @@
 		63CFEE131B9EDF65007EA5BD /* libvo-amrwbenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CFEDE31B9EDD36007EA5BD /* libvo-amrwbenc.a */; };
 		63D11C531C3D501200E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63D11C551C3D50A100E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
+		63DFE0471C40161700DA5E87 /* four_hands_together.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0411C40161700DA5E87 /* four_hands_together.caf */; };
+		63DFE0481C40161700DA5E87 /* house_keeping.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0421C40161700DA5E87 /* house_keeping.caf */; };
+		63DFE0491C40161700DA5E87 /* it_s_a_game.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0431C40161700DA5E87 /* it_s_a_game.caf */; };
+		63DFE04A1C40161700DA5E87 /* leaving_a_dream.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0441C40161700DA5E87 /* leaving_a_dream.caf */; };
+		63DFE04B1C40161700DA5E87 /* notes_of_the_optimistic.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */; };
+		63DFE04C1C40161700DA5E87 /* soft_as_snow.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0461C40161700DA5E87 /* soft_as_snow.caf */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63EEE3FF1BBA9AC00087D3AF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		63EEE4001BBA9AC00087D3AF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
@@ -1354,18 +1354,18 @@
 		63CDC4521C3BDE370085F529 /* hold.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = hold.caf; sourceTree = "<group>"; };
 		63CDC4531C3BDE370085F529 /* msg.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = msg.caf; sourceTree = "<group>"; };
 		63CDC4541C3BDE370085F529 /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ringback.wav; sourceTree = "<group>"; };
-		63CDC4561C3BDE370085F529 /* four_hands_together.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = four_hands_together.caf; sourceTree = "<group>"; };
-		63CDC4571C3BDE370085F529 /* house_keeping.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = house_keeping.caf; sourceTree = "<group>"; };
-		63CDC4581C3BDE370085F529 /* it_s_a_game.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = it_s_a_game.caf; sourceTree = "<group>"; };
-		63CDC4591C3BDE370085F529 /* leaving_a_dream.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = leaving_a_dream.caf; sourceTree = "<group>"; };
-		63CDC45A1C3BDE370085F529 /* notes_of_the_optimistic.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = notes_of_the_optimistic.caf; sourceTree = "<group>"; };
-		63CDC45B1C3BDE370085F529 /* soft_as_snow.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = soft_as_snow.caf; sourceTree = "<group>"; };
 		63CDC45C1C3BDE370085F529 /* shortring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = shortring.caf; sourceTree = "<group>"; };
 		63CFEDE21B9EDD36007EA5BD /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = "liblinphone-sdk/apple-darwin/lib/libswresample.a"; sourceTree = "<group>"; };
 		63CFEDE31B9EDD36007EA5BD /* libvo-amrwbenc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libvo-amrwbenc.a"; path = "liblinphone-sdk/apple-darwin/lib/libvo-amrwbenc.a"; sourceTree = "<group>"; };
 		63CFEDE41B9EDD36007EA5BD /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
 		63D11C521C3D501200E8FCEE /* Log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Log.m; path = Utils/Log.m; sourceTree = "<group>"; };
 		63D11C541C3D503A00E8FCEE /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
+		63DFE0411C40161700DA5E87 /* four_hands_together.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = four_hands_together.caf; sourceTree = "<group>"; };
+		63DFE0421C40161700DA5E87 /* house_keeping.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = house_keeping.caf; sourceTree = "<group>"; };
+		63DFE0431C40161700DA5E87 /* it_s_a_game.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = it_s_a_game.caf; sourceTree = "<group>"; };
+		63DFE0441C40161700DA5E87 /* leaving_a_dream.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = leaving_a_dream.caf; sourceTree = "<group>"; };
+		63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = notes_of_the_optimistic.caf; sourceTree = "<group>"; };
+		63DFE0461C40161700DA5E87 /* soft_as_snow.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = soft_as_snow.caf; sourceTree = "<group>"; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
 		63EA4C941B50189D00922857 /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
@@ -2543,25 +2543,25 @@
 			isa = PBXGroup;
 			children = (
 				63CDC4521C3BDE370085F529 /* hold.caf */,
+				63DFE0401C40161700DA5E87 /* ringtones */,
 				63CDC4531C3BDE370085F529 /* msg.caf */,
 				63CDC4541C3BDE370085F529 /* ringback.wav */,
-				63CDC4551C3BDE370085F529 /* rings */,
 				63CDC45C1C3BDE370085F529 /* shortring.caf */,
 			);
 			path = sounds;
 			sourceTree = "<group>";
 		};
-		63CDC4551C3BDE370085F529 /* rings */ = {
+		63DFE0401C40161700DA5E87 /* ringtones */ = {
 			isa = PBXGroup;
 			children = (
-				63CDC4561C3BDE370085F529 /* four_hands_together.caf */,
-				63CDC4571C3BDE370085F529 /* house_keeping.caf */,
-				63CDC4581C3BDE370085F529 /* it_s_a_game.caf */,
-				63CDC4591C3BDE370085F529 /* leaving_a_dream.caf */,
-				63CDC45A1C3BDE370085F529 /* notes_of_the_optimistic.caf */,
-				63CDC45B1C3BDE370085F529 /* soft_as_snow.caf */,
+				63DFE0411C40161700DA5E87 /* four_hands_together.caf */,
+				63DFE0421C40161700DA5E87 /* house_keeping.caf */,
+				63DFE0431C40161700DA5E87 /* it_s_a_game.caf */,
+				63DFE0441C40161700DA5E87 /* leaving_a_dream.caf */,
+				63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */,
+				63DFE0461C40161700DA5E87 /* soft_as_snow.caf */,
 			);
-			path = rings;
+			path = ringtones;
 			sourceTree = "<group>";
 		};
 		D326483415887D4400930C67 /* Utils */ = {
@@ -2944,6 +2944,7 @@
 				636B98251C298401003BA37C /* call_status_missed@2x.png in Resources */,
 				636B98F21C298401003BA37C /* numpad_hash_default.png in Resources */,
 				636B98211C298401003BA37C /* call_start_body_over@2x.png in Resources */,
+				63DFE0481C40161700DA5E87 /* house_keeping.caf in Resources */,
 				636B990E1C298401003BA37C /* pause_big_default@2x.png in Resources */,
 				636B98841C298401003BA37C /* dialer_alt_back.png in Resources */,
 				636B97F11C298401003BA37C /* backspace_disabled@2x.png in Resources */,
@@ -2977,7 +2978,7 @@
 				636B98471C298401003BA37C /* chat_attachment_disabled@2x.png in Resources */,
 				636B97FC1C298401003BA37C /* call_alt_start_default.png in Resources */,
 				636B98321C298401003BA37C /* camera_disabled.png in Resources */,
-				63CDC4611C3BDE370085F529 /* house_keeping.caf in Resources */,
+				63DFE04B1C40161700DA5E87 /* notes_of_the_optimistic.caf in Resources */,
 				636B97E41C298401003BA37C /* add_field_default.png in Resources */,
 				636B98F31C298401003BA37C /* numpad_hash_default@2x.png in Resources */,
 				636B98601C298401003BA37C /* color_F.png in Resources */,
@@ -2989,8 +2990,6 @@
 				639CEAFD1A1DF4D9004DE38F /* StatusBarView.xib in Resources */,
 				636B98221C298401003BA37C /* call_status_incoming.png in Resources */,
 				636B983F1C298401003BA37C /* cancel_edit_disabled@2x.png in Resources */,
-				63CDC4641C3BDE370085F529 /* notes_of_the_optimistic.caf in Resources */,
-				63CDC4621C3BDE370085F529 /* it_s_a_game.caf in Resources */,
 				636B98541C298401003BA37C /* chat_start_body_disabled.png in Resources */,
 				636B97F31C298401003BA37C /* backspace_over@2x.png in Resources */,
 				636B98351C298401003BA37C /* camera_selected@2x.png in Resources */,
@@ -3002,8 +3001,10 @@
 				636B98291C298401003BA37C /* call_transfer_default@2x.png in Resources */,
 				636B98671C298401003BA37C /* conference_exit_default@2x.png in Resources */,
 				636B98061C298401003BA37C /* call_back_disabled.png in Resources */,
+				63DFE0471C40161700DA5E87 /* four_hands_together.caf in Resources */,
 				636B98871C298401003BA37C /* dialer_back_default@2x.png in Resources */,
 				636B98921C298401003BA37C /* edit_list_disabled.png in Resources */,
+				63DFE04C1C40161700DA5E87 /* soft_as_snow.caf in Resources */,
 				636B98791C298401003BA37C /* contacts_sip_selected@2x.png in Resources */,
 				636B98DE1C298401003BA37C /* numpad_5_default.png in Resources */,
 				636B99281C298401003BA37C /* route_speaker_disabled@2x.png in Resources */,
@@ -3058,7 +3059,6 @@
 				636316D41A1DEC650009B839 /* SettingsView.xib in Resources */,
 				636B98131C298401003BA37C /* call_quality_indicator_0@2x.png in Resources */,
 				636B99251C298401003BA37C /* route_speaker_default.png in Resources */,
-				63CDC4651C3BDE370085F529 /* soft_as_snow.caf in Resources */,
 				636B98421C298401003BA37C /* chat_add_disabled.png in Resources */,
 				636B98D11C298401003BA37C /* numpad_1_over@2x.png in Resources */,
 				636B981C1C298401003BA37C /* call_start_body_default.png in Resources */,
@@ -3104,7 +3104,6 @@
 				636B980F1C298401003BA37C /* call_missed@2x.png in Resources */,
 				63CDC45E1C3BDE370085F529 /* msg.caf in Resources */,
 				636B98F41C298401003BA37C /* numpad_hash_over.png in Resources */,
-				63CDC4601C3BDE370085F529 /* four_hands_together.caf in Resources */,
 				636B98901C298401003BA37C /* edit_list_default.png in Resources */,
 				636B98F01C298401003BA37C /* numpad_9_over.png in Resources */,
 				636B984A1C298401003BA37C /* chat_message_not_delivered.png in Resources */,
@@ -3135,6 +3134,7 @@
 				D38187B915FE342200C3EDCA /* ContactDetailsView.xib in Resources */,
 				636B98491C298401003BA37C /* chat_attachment_over@2x.png in Resources */,
 				636B98201C298401003BA37C /* call_start_body_over.png in Resources */,
+				63DFE04A1C40161700DA5E87 /* leaving_a_dream.caf in Resources */,
 				636B99131C298401003BA37C /* pause_small_default.png in Resources */,
 				63AADC001B6A0FF200AA16FD /* assistant_linphone_create.rc in Resources */,
 				636B99121C298401003BA37C /* pause_big_over_selected@2x.png in Resources */,
@@ -3214,7 +3214,6 @@
 				636B98AD1C298401003BA37C /* history_missed_default@2x.png in Resources */,
 				636B98A71C298401003BA37C /* history_all_disabled@2x.png in Resources */,
 				636B98641C298401003BA37C /* color_L.png in Resources */,
-				63CDC4631C3BDE370085F529 /* leaving_a_dream.caf in Resources */,
 				636B98191C298401003BA37C /* call_quality_indicator_3@2x.png in Resources */,
 				636B98991C298401003BA37C /* footer_contacts_default@2x.png in Resources */,
 				636B98681C298401003BA37C /* conference_exit_over.png in Resources */,
@@ -3309,6 +3308,7 @@
 				636B987C1C298401003BA37C /* delete_disabled.png in Resources */,
 				636B98161C298401003BA37C /* call_quality_indicator_2.png in Resources */,
 				636B989D1C298401003BA37C /* footer_dialer_default@2x.png in Resources */,
+				63DFE0491C40161700DA5E87 /* it_s_a_game.caf in Resources */,
 				636B988E1C298401003BA37C /* edit_disabled.png in Resources */,
 				636B985A1C298401003BA37C /* checkbox_unchecked.png in Resources */,
 				636B987B1C298401003BA37C /* delete_default@2x.png in Resources */,
