@@ -1989,8 +1989,12 @@ void video_call_base_2(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 	linphone_core_enable_video_capture(caller->lc, caller_video_enabled);
 
 	if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-		callee->lc->user_certificates_path = bc_tester_file("certificates-marie");
-		caller->lc->user_certificates_path = bc_tester_file("certificates-pauline");
+		char *path = bc_tester_file("certificates-marie");
+		callee->lc->user_certificates_path = ms_strdup(path);
+		bc_free(path);
+		path = bc_tester_file("certificates-pauline");
+		caller->lc->user_certificates_path = ms_strdup(path);
+		bc_free(path);
 		belle_sip_mkdir(callee->lc->user_certificates_path);
 		belle_sip_mkdir(caller->lc->user_certificates_path);
 	}
@@ -2097,8 +2101,12 @@ void video_call_base_3(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
     linphone_core_enable_video_capture(caller->lc, caller_video_enabled);
     
     if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-        callee->lc->user_certificates_path = bc_tester_file("certificates-marie");
-        caller->lc->user_certificates_path = bc_tester_file("certificates-pauline");
+		char *path = bc_tester_file("certificates-marie");
+		callee->lc->user_certificates_path = ms_strdup(path);
+		bc_free(path);
+		path = bc_tester_file("certificates-pauline");
+		caller->lc->user_certificates_path = ms_strdup(path);
+		bc_free(path);
         belle_sip_mkdir(callee->lc->user_certificates_path);
         belle_sip_mkdir(caller->lc->user_certificates_path);
     }
@@ -2936,8 +2944,12 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 		linphone_core_set_media_encryption(marie->lc,mode);
 		linphone_core_set_media_encryption(pauline->lc,mode);
 		if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
-			marie->lc->user_certificates_path = bc_tester_file("certificates-marie");
-			pauline->lc->user_certificates_path = bc_tester_file("certificates-pauline");
+			char *path = bc_tester_file("certificates-marie");
+			marie->lc->user_certificates_path = ms_strdup(path);
+			bc_free(path);
+			path = bc_tester_file("certificates-pauline");
+			pauline->lc->user_certificates_path = ms_strdup(path);
+			bc_free(path);
 			belle_sip_mkdir(marie->lc->user_certificates_path);
 			belle_sip_mkdir(pauline->lc->user_certificates_path);
 		}
@@ -4373,7 +4385,7 @@ static void call_with_generic_cn(void) {
 	linphone_core_manager_destroy(pauline);
 
 	ms_free(audio_file_with_silence);
-	ms_free(recorded_file);
+	bc_free(recorded_file);
 }
 void static call_state_changed_2(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	LCSipTransports sip_tr;
@@ -4736,7 +4748,7 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	ms_free(stereo_file);
-	ms_free(recordpath);
+	bc_free(recordpath);
 }
 
 static void simple_stereo_call_l16(void){

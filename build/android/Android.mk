@@ -47,7 +47,7 @@ LOCAL_SRC_FILES := \
 	call_params.c \
 	chat.c \
 	chat_file_transfer.c \
-	conference.c \
+	conference.cc \
 	content.c \
 	ec-calibrator.c \
 	enum.c \
@@ -78,6 +78,7 @@ LOCAL_SRC_FILES := \
 	xml.c \
 	xmlrpc.c \
 	vtables.c \
+	ringtoneplayer.c
 
 ifndef LIBLINPHONE_VERSION
 LIBLINPHONE_VERSION = "Devel"

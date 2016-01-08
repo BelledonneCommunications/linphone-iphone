@@ -72,11 +72,6 @@ set(SOURCE_FILES
 	videowindow.c
 )
 
-set(OBJC_FILES)
-if (APPLE)
-	list(APPEND OBJC_FILES mac.m)
-endif()
-
 if(ENABLE_ASSISTANT)
 	list(APPEND SOURCE_FILES setupwizard.c)
 endif()
@@ -84,9 +79,13 @@ if(WIN32)
 	list(APPEND SOURCE_FILES linphone.rc)
 endif()
 
+set(OBJC_FILES)
+if (APPLE)
+	list(APPEND OBJC_FILES mac.m)
+endif()
 
-apply_compile_flags(SOURCE_FILES "CPP" "C")
 apply_compile_flags(OBJC_FILES "CPP" "OBJC")
+apply_compile_flags(SOURCE_FILES "CPP" "C")
 
 if(WIN32)
 	add_executable(linphone-gtk WIN32 ${SOURCE_FILES})

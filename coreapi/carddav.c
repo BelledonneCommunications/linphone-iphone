@@ -158,6 +158,7 @@ static int find_matching_vcard(LinphoneCardDavResponse *response, LinphoneFriend
 	LinphoneVCard *lvc2 = linphone_friend_get_vcard(lf);
 	const char *uid1 = linphone_vcard_get_uid(lvc1);
 	const char *uid2 = linphone_vcard_get_uid(lvc2);
+	linphone_vcard_free(lvc1);
 	if (!uid1 || !uid2) {
 		return 1;
 	}

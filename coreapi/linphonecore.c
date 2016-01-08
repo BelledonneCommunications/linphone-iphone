@@ -523,7 +523,7 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 
 			/* Insert it in a multipart body handler which will manage the boundaries of multipart message */
 			bh = belle_sip_multipart_body_handler_new(log_collection_upload_on_progress, core, (belle_sip_body_handler_t *)first_part_bh, NULL);
-			ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
+			ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent(core), linphone_core_get_version());
 			uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
 			req = belle_http_request_create("POST", uri, belle_sip_header_create("User-Agent", ua), NULL);
 			ms_free(ua);
@@ -1687,6 +1687,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	const char *remote_provisioning_uri = NULL;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
 	LinphoneCoreVTable *internal_vtable = linphone_core_v_table_new();
+
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
 	lc->config=lp_config_ref(config);
@@ -1696,9 +1697,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_task_list_init(&lc->hooks);
 
 	internal_vtable->notify_received = linphone_core_internal_notify_received;
-	_linphone_core_add_listener(lc, internal_vtable, TRUE);
+	_linphone_core_add_listener(lc, internal_vtable, TRUE, TRUE);
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
-	_linphone_core_add_listener(lc, local_vtable, TRUE);
+	_linphone_core_add_listener(lc, local_vtable, TRUE, FALSE);
 
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
@@ -1731,6 +1732,8 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	belle_http_provider_set_tls_verify_policy(lc->http_provider,lc->http_verify_policy);
 
 	certificates_config_read(lc);
+
+	lc->ringtoneplayer = linphone_ringtoneplayer_new();
 
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
 	if (remote_provisioning_uri == NULL) {
@@ -2545,8 +2548,7 @@ static void linphone_core_grab_buddy_infos(LinphoneCore *lc, LinphoneProxyConfig
 }
 
 static void linphone_core_do_plugin_tasks(LinphoneCore *lc){
-	LinphoneProxyConfig *cfg=NULL;
-	linphone_core_get_default_proxy(lc,&cfg);
+	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(lc);
 	if (cfg){
 		if (lc->bl_refresh){
 			SipSetupContext *ctx=linphone_proxy_config_get_sip_setup_context(cfg);
@@ -2642,8 +2644,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 
 	if (lc->preview_finished){
 		lc->preview_finished=0;
-		ring_stop(lc->ringstream);
-		lc->ringstream=NULL;
+		linphone_ringtoneplayer_stop(lc->ringtoneplayer);
 		lc_callback_obj_invoke(&lc->preview_finished_cb,lc);
 	}
 
@@ -2758,9 +2759,8 @@ LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url)
  * it returns the registered identity on the proxy.
 **/
 const char * linphone_core_get_identity(LinphoneCore *lc){
-	LinphoneProxyConfig *proxy=NULL;
+	LinphoneProxyConfig *proxy=linphone_core_get_default_proxy_config(lc);
 	const char *from;
-	linphone_core_get_default_proxy(lc,&proxy);
 	if (proxy!=NULL) {
 		from=linphone_proxy_config_get_identity(proxy);
 	}else from=linphone_core_get_primary_contact(lc);
@@ -2768,9 +2768,8 @@ const char * linphone_core_get_identity(LinphoneCore *lc){
 }
 
 const char * linphone_core_get_route(LinphoneCore *lc){
-	LinphoneProxyConfig *proxy=NULL;
+	LinphoneProxyConfig *proxy=linphone_core_get_default_proxy_config(lc);
 	const char *route=NULL;
-	linphone_core_get_default_proxy(lc,&proxy);
 	if (proxy!=NULL) {
 		route=linphone_proxy_config_get_route(proxy);
 	}
@@ -2949,7 +2948,7 @@ int linphone_core_restart_invite(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_stop_media_streams(call);
 	ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
 	ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
-	if (call->params->realtimetext_enabled) ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
+	ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
 	linphone_call_init_media_streams(call);
 	return linphone_core_start_invite(lc,call, NULL);
 }
@@ -3296,21 +3295,12 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 
 	/* play the ring if this is the only call*/
 	if (ms_list_size(lc->calls)==1){
+		MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
 		lc->current_call=call;
 		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
 			linphone_core_stop_dtmf_stream(lc);
 		}
-		if (lc->sound_conf.ring_sndcard!=NULL){
-			if(lc->ringstream==NULL && lc->sound_conf.local_ring){
-				MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
-				ms_message("Starting local ring...");
-				lc->ringstream=ring_start(lc->sound_conf.local_ring,2000,ringcard);
-			}
-			else
-			{
-				ms_message("the local ring is already started");
-			}
-		}
+		linphone_ringtoneplayer_start(lc->ringtoneplayer, ringcard, lc->sound_conf.local_ring, 2000);
 	}else{
 		/* else play a tone within the context of the current call */
 		call->ringing_beep=TRUE;
@@ -3772,7 +3762,7 @@ int linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, 
 	}
 
 	/*stop ringing */
-	if (lc->ringstream!=NULL) {
+	if (linphone_ringtoneplayer_is_started(lc->ringtoneplayer)) {
 		ms_message("stop ringing");
 		linphone_core_stop_ringing(lc);
 		was_ringing=TRUE;
@@ -4797,26 +4787,26 @@ void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
 	lp_config_set_int(lc->config,"sip","verify_server_cn",yesno);
 }
 
-static void notify_end_of_ring(void *ud, MSFilter *f, unsigned int event, void *arg){
-	LinphoneCore *lc=(LinphoneCore*)ud;
-	if (event==MS_PLAYER_EOF){
-		lc->preview_finished=1;
-	}
+static void notify_end_of_ringtone( LinphoneRingtonePlayer* rp, void* user_data, int status) {
+	LinphoneCore *lc=(LinphoneCore*)user_data;
+	lc->preview_finished=1;
 }
 
-int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata)
+int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc end_of_ringtone,void * userdata)
 {
-	if (lc->ringstream!=0){
+	int err;
+	MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+	if (linphone_ringtoneplayer_is_started(lc->ringtoneplayer)){
 		ms_warning("Cannot start ring now,there's already a ring being played");
 		return -1;
 	}
-	lc_callback_obj_init(&lc->preview_finished_cb,func,userdata);
+	lc_callback_obj_init(&lc->preview_finished_cb,end_of_ringtone,userdata);
 	lc->preview_finished=0;
-	if (lc->sound_conf.ring_sndcard!=NULL){
-		MSSndCard *ringcard=lc->sound_conf.lsd_card ? lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
-		lc->ringstream=ring_start_with_cb(ring,2000,ringcard,notify_end_of_ring,(void *)lc);
+	err = linphone_ringtoneplayer_start_with_cb(lc->ringtoneplayer, ringcard, ring, -1, notify_end_of_ringtone,(void *)lc);
+	if (err) {
+		lc->preview_finished=1;
 	}
-	return 0;
+	return err;
 }
 
 /**
@@ -4888,39 +4878,38 @@ static void linphone_core_mute_audio_stream(LinphoneCore *lc, AudioStream *st, b
 }
 
 void linphone_core_mute_mic(LinphoneCore *lc, bool_t val){
+	linphone_core_enable_mic(lc, !val);
+}
+
+bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
+	return !linphone_core_mic_enabled(lc);
+}
+
+void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable) {
 	LinphoneCall *call;
 	const MSList *list;
 	const MSList *elem;
 
 	if (linphone_core_is_in_conference(lc)){
-		lc->conf_ctx.local_muted=val;
-		linphone_core_mute_audio_stream(lc, lc->conf_ctx.local_participant, val);
+		linphone_conference_mute_microphone(lc->conf_ctx, !enable);
 	}
 	list = linphone_core_get_calls(lc);
 	for (elem = list; elem != NULL; elem = elem->next) {
 		call = (LinphoneCall *)elem->data;
-		call->audio_muted = val;
-		linphone_core_mute_audio_stream(lc, call->audiostream, val);
+		call->audio_muted = !enable;
+		linphone_core_mute_audio_stream(lc, call->audiostream, !enable);
 	}
-}
-
-bool_t linphone_core_is_mic_muted(LinphoneCore *lc) {
-	LinphoneCall *call=linphone_core_get_current_call(lc);
-	if (linphone_core_is_in_conference(lc)){
-		return lc->conf_ctx.local_muted;
-	}else if (call==NULL){
-		ms_warning("linphone_core_is_mic_muted(): No current call !");
-		return FALSE;
-	}
-	return call->audio_muted;
-}
-
-void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable) {
-	linphone_core_mute_mic(lc, (enable == TRUE) ? FALSE : TRUE);
 }
 
 bool_t linphone_core_mic_enabled(LinphoneCore *lc) {
-	return (linphone_core_is_mic_muted(lc) == TRUE) ? FALSE : TRUE;
+	LinphoneCall *call=linphone_core_get_current_call(lc);
+	if (linphone_core_is_in_conference(lc)){
+		return linphone_conference_microphone_is_muted(lc->conf_ctx);
+	}else if (call==NULL){
+		ms_warning("%s(): No current call!", __FUNCTION__);
+		return TRUE;
+	}
+	return !call->audio_muted;
 }
 
 // returns rtp transmission status for an active stream
@@ -5936,7 +5925,7 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 	if (call){
 		stream=call->audiostream;
 	}else if (linphone_core_is_in_conference(lc)){
-		stream=lc->conf_ctx.local_participant;
+		stream=linphone_conference_get_audio_stream(lc->conf_ctx);
 	}
 	if (stream){
 		if (rtype==LinphoneToneGenerator) return stream->dtmfgen;
@@ -6363,10 +6352,10 @@ static void codecs_config_uninit(LinphoneCore *lc)
 void ui_config_uninit(LinphoneCore* lc)
 {
 	ms_message("Destroying friends.");
-	linphone_friend_list_unref(lc->friendlist);
+	_linphone_friend_list_release(lc->friendlist);
 	lc->friendlist = NULL;
 	if (lc->subscribers){
-		lc->subscribers = ms_list_free_with_data(lc->subscribers, (void (*)(void *))linphone_friend_unref);
+		lc->subscribers = ms_list_free_with_data(lc->subscribers, (void (*)(void *))_linphone_friend_release);
 	}
 	if (lc->presence_model) {
 		linphone_presence_model_unref(lc->presence_model);
@@ -6460,7 +6449,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->chat_db_file){
 		ms_free(lc->chat_db_file);
 	}
-	
+	if (lc->ringtoneplayer) {
+		linphone_ringtoneplayer_destroy(lc->ringtoneplayer);
+	}
 	linphone_core_free_payload_types(lc);
 	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);
@@ -6838,6 +6829,9 @@ void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
 **/
 void linphone_core_stop_ringing(LinphoneCore* lc) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
+	if (linphone_ringtoneplayer_is_started(lc->ringtoneplayer)) {
+		linphone_ringtoneplayer_stop(lc->ringtoneplayer);
+	}
 	if (lc->ringstream) {
 		ring_stop(lc->ringstream);
 		lc->ringstream=NULL;
@@ -7514,4 +7508,89 @@ int linphone_core_get_carddav_last_ctag(LinphoneCore *lc) {
 		return lp_config_get_int(lpc, "carddav", "ctag", 0);
 	}
 	return 0;
+}
+
+LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc) {
+	return lc->ringtoneplayer;
+}
+
+int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
+	const char *conf_method_name;
+	if(lc->conf_ctx == NULL) {
+		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_type", "local");
+		if(strcasecmp(conf_method_name, "local") == 0) {
+			lc->conf_ctx = linphone_local_conference_new(lc);
+		} else if(strcasecmp(conf_method_name, "remote") == 0) {
+			lc->conf_ctx = linphone_remote_conference_new(lc);
+		} else {
+			ms_error("'%s' is not a valid conference method", conf_method_name);
+			return -1;
+		}
+	}
+	return linphone_conference_add_participant(lc->conf_ctx, call);
+}
+
+int linphone_core_add_all_to_conference(LinphoneCore *lc) {
+	MSList *calls=lc->calls;
+	while (calls) {
+		LinphoneCall *call=(LinphoneCall*)calls->data;
+		calls=calls->next;
+		linphone_core_add_to_conference(lc, call);
+	}
+	if(lc->conf_ctx && linphone_conference_check_class(lc->conf_ctx, LinphoneConferenceClassLocal)) {
+		linphone_core_enter_conference(lc);
+	}
+	return 0;
+}
+
+int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call) {
+	if(lc->conf_ctx) return linphone_conference_remove_participant_with_call(lc->conf_ctx, call);
+	else return -1;
+}
+
+int linphone_core_terminate_conference(LinphoneCore *lc) {
+	if(lc->conf_ctx == NULL) return -1;
+	linphone_conference_terminate(lc->conf_ctx);
+	linphone_conference_free(lc->conf_ctx);
+	lc->conf_ctx = NULL;
+	return 0;
+}
+
+int linphone_core_enter_conference(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_enter(lc->conf_ctx);
+	else return -1;
+}
+
+int linphone_core_leave_conference(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_leave(lc->conf_ctx);
+	else return -1;
+}
+
+bool_t linphone_core_is_in_conference(const LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_is_in(lc->conf_ctx);
+	else return FALSE;
+}
+
+int linphone_core_get_conference_size(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_get_participant_count(lc->conf_ctx);
+	return 0;
+}
+
+float linphone_core_get_conference_local_input_volume(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_get_input_volume(lc->conf_ctx);
+	else return -1.0;
+}
+
+int linphone_core_start_conference_recording(LinphoneCore *lc, const char *path) {
+	if(lc->conf_ctx) return linphone_conference_start_recording(lc->conf_ctx, path);
+	return -1;
+}
+
+int linphone_core_stop_conference_recording(LinphoneCore *lc) {
+	if(lc->conf_ctx) return linphone_conference_stop_recording(lc->conf_ctx);
+	return -1;
+}
+
+LinphoneConference *linphone_core_get_conference(LinphoneCore *lc) {
+	return lc->conf_ctx;
 }

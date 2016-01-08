@@ -46,6 +46,7 @@ set(LINPHONE_HEADER_FILES
 	linphone_tunnel.h
 	lpc2xml.h
 	lpconfig.h
+	ringtoneplayer.h
 	sipsetup.h
 	xml2lpc.h
 	xmlrpc.h
@@ -75,7 +76,6 @@ set(LINPHONE_SOURCE_FILES_C
 	call_params.c
 	chat.c
 	chat_file_transfer.c
-	conference.c
 	contactprovider.c
 	content.c
 	dict.c
@@ -106,6 +106,7 @@ set(LINPHONE_SOURCE_FILES_C
 	proxy.c
 	quality_reporting.c
 	remote_provisioning.c
+	ringtoneplayer.c
 	sal.c
 	siplogin.c
 	sipsetup.c
@@ -114,7 +115,13 @@ set(LINPHONE_SOURCE_FILES_C
 	xmlrpc.c
 	vtables.c
 )
-set(LINPHONE_SOURCE_FILES_CXX )
+set(LINPHONE_SOURCE_FILES_CXX conference.cc)
+
+set(LINPHONE_SOURCE_FILES_OBJC)
+if (IOS)
+	list(APPEND LINPHONE_SOURCE_FILES_OBJC ringtoneplayer_ios.m ringtoneplayer_ios.h)
+endif()
+
 
 if(ENABLE_TUNNEL)
 	list(APPEND LINPHONE_SOURCE_FILES_CXX
@@ -136,6 +143,10 @@ add_definitions(
 	-DUSE_BELLESIP
 	-DLIBLINPHONE_EXPORTS
 )
+
+apply_compile_flags(LINPHONE_SOURCE_FILES_C "CPP" "C")
+apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
+apply_compile_flags(LINPHONE_SOURCE_FILES_OBJC "CPP" "OBJC")
 
 set(LIBS
 	${BELLESIP_LIBRARIES}
@@ -175,10 +186,10 @@ apply_compile_flags(LINPHONE_SOURCE_FILES_C "CPP" "C")
 apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
 
 if(ENABLE_STATIC)
-	add_library(linphone STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX})
+	add_library(linphone STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
 	target_link_libraries(linphone ${LIBS})
 else()
-	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX})
+	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
 	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
 	target_link_libraries(linphone ${LIBS})
 	if(MSVC)
@@ -189,6 +200,9 @@ else()
 			)
 		endif()
 	endif()
+endif()
+if(IOS)
+	target_link_libraries(linphone "-framework Foundation" "-framework AVFoundation")
 endif()
 add_dependencies(linphone liblinphone-git-version)
 if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone")

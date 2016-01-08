@@ -307,12 +307,16 @@ void linphone_friend_close_subscriptions(LinphoneFriend *lf){
 	lf->insubs = ms_list_free_with_data(lf->insubs, (MSIterateFunc)sal_op_release);
 }
 
-static void _linphone_friend_destroy(LinphoneFriend *lf){
+static void _linphone_friend_release_ops(LinphoneFriend *lf){
 	lf->insubs = ms_list_free_with_data(lf->insubs, (MSIterateFunc) sal_op_release);
 	if (lf->outsub){
 		sal_op_release(lf->outsub);
 		lf->outsub=NULL;
 	}
+}
+
+static void _linphone_friend_destroy(LinphoneFriend *lf){
+	_linphone_friend_release_ops(lf);
 	if (lf->presence != NULL) linphone_presence_model_unref(lf->presence);
 	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
@@ -908,6 +912,13 @@ void linphone_core_export_friends_as_vcard4_file(LinphoneCore *lc, const char *v
 	}
 	
 	fclose(file);
+}
+
+/*drops all references to the core and unref*/
+void _linphone_friend_release(LinphoneFriend *lf){
+	lf->lc = NULL;
+	_linphone_friend_release_ops(lf);
+	linphone_friend_unref(lf);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriend);

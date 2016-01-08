@@ -723,7 +723,7 @@ static void call_with_ipv6(void) {
 
 static void file_transfer_message_rcs_to_external_body_client(void) {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager* marie = linphone_core_manager_init( "marie_rc");
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneChatRoom* chat_room;
 		LinphoneChatMessage* message;
 		LinphoneChatMessageCbs *cbs;
@@ -732,13 +732,13 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		size_t file_size;
 		char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
 		char *receive_filepath = bc_tester_file("receive_file.dump");
-		LinphoneCoreManager* pauline = linphone_core_manager_init( "pauline_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
-		linphone_core_manager_start(marie, "marie_rc", TRUE);
+		linphone_core_manager_start(marie, TRUE);
 
 		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
-		linphone_core_manager_start(pauline, "pauline_rc", TRUE);
+		linphone_core_manager_start(pauline, TRUE);
 
 		reset_counters(&marie->stat);
 		reset_counters(&pauline->stat);
@@ -791,7 +791,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
-		ms_free(receive_filepath);
+		bc_free(receive_filepath);
 	}
 }
 
@@ -823,14 +823,14 @@ void send_file_transfer_message_using_external_body_url(LinphoneCoreManager *mar
 
 static void file_transfer_message_external_body_to_external_body_client(void) {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager* marie = linphone_core_manager_init( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_init( "pauline_rc");
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
-		linphone_core_manager_start(marie, "marie_rc", TRUE);
+		linphone_core_manager_start(marie, TRUE);
 
 		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp");
-		linphone_core_manager_start(pauline, "pauline_rc", TRUE);
+		linphone_core_manager_start(pauline, TRUE);
 
 		reset_counters(&marie->stat);
 		reset_counters(&pauline->stat);
@@ -847,14 +847,14 @@ static void file_transfer_message_external_body_to_external_body_client(void) {
 
 static void file_transfer_message_external_body_to_rcs_client(void) {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager* marie = linphone_core_manager_init( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_init( "pauline_rc");
+		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
 		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
-		linphone_core_manager_start(marie, "marie_rc", TRUE);
+		linphone_core_manager_start(marie, TRUE);
 
 		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
-		linphone_core_manager_start(pauline, "pauline_rc", TRUE);
+		linphone_core_manager_start(pauline, TRUE);
 
 		reset_counters(&marie->stat);
 		reset_counters(&pauline->stat);
@@ -978,7 +978,7 @@ static void test_publish_unpublish(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneProxyConfig* proxy;
 	
-	linphone_core_get_default_proxy(marie->lc,&proxy);
+	proxy = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_proxy_config_edit(proxy);
 	linphone_proxy_config_enable_publish(proxy,TRUE);
 	linphone_proxy_config_done(proxy);
@@ -1040,14 +1040,14 @@ static void test_list_subscribe (void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
 	/*dummy wait to avoid derred notify*/
 	wait_for_list(lcs,&dummy,1,2000);
-	linphone_core_get_default_proxy(pauline->lc,&proxy_config);
+	proxy_config = linphone_core_get_default_proxy_config(pauline->lc);
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_enable_publish(proxy_config,TRUE);
 	linphone_proxy_config_done(proxy_config);
 	
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
 	
-	linphone_core_get_default_proxy(laure->lc,&proxy_config);
+	proxy_config = linphone_core_get_default_proxy_config(laure->lc);
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_enable_publish(proxy_config,TRUE);
 	linphone_proxy_config_done(proxy_config);

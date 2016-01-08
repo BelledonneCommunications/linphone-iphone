@@ -187,7 +187,7 @@ void linphone_core_update_streams(LinphoneCore *lc, LinphoneCall *call, SalMedia
 			ms_message("Media ip type has changed, destroying sessions context on call [%p]",call);
 			ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
 			ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
-			if (call->params->realtimetext_enabled) ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
+			ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
 		}
 		linphone_call_init_media_streams (call);
 	}
@@ -791,7 +791,7 @@ static void call_terminated(SalOp *op, const char *from){
 		linphone_core_start_refered_call(lc,call,NULL);
 	}
 	//we stop the call only if we have this current call or if we are in call
-	if (lc->ringstream!=NULL && ( (ms_list_size(lc->calls)  == 1) || linphone_core_in_call(lc) )) {
+	if ((ms_list_size(lc->calls)  == 1) || linphone_core_in_call(lc)) {
 		linphone_core_stop_ringing(lc);
 	}
 	linphone_call_stop_media_streams(call);
@@ -1065,7 +1065,15 @@ static void dtmf_received(SalOp *op, char dtmf){
 static void refer_received(Sal *sal, SalOp *op, const char *referto){
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	if (call){
+	LinphoneAddress *refer_to_addr = linphone_address_new(referto);
+	char method[20] = "";
+	
+	if(refer_to_addr) {
+		const char *tmp = linphone_address_get_method_param(refer_to_addr);
+		if(tmp) strncpy(method, tmp, sizeof(method));
+		linphone_address_destroy(refer_to_addr);
+	}
+	if (call && (strlen(method) == 0 || strcmp(method, "INVITE") == 0)) {
 		if (call->refer_to!=NULL){
 			ms_free(call->refer_to);
 		}

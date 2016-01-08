@@ -816,7 +816,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
 	if(conf_frame==NULL){
 		linphone_gtk_enable_transfer_button(lc,call_list_size>1);
-		linphone_gtk_enable_conference_button(lc,call_list_size>1);
+		linphone_gtk_enable_conference_button(lc,call_list_size>0);
 	} else {
 		linphone_gtk_enable_transfer_button(lc,FALSE);
 		linphone_gtk_enable_conference_button(lc,FALSE);
@@ -1958,13 +1958,22 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 
 
 void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
-	GtkEntry * uri_bar =GTK_ENTRY(linphone_gtk_get_widget(
-		linphone_gtk_get_main_window(), "uribar"));
-	char *text;
-	linphone_gtk_notify(NULL,NULL,(text=ms_strdup_printf(_("We are transferred to %s"),refer_to)));
-	g_free(text);
-	gtk_entry_set_text(uri_bar, refer_to);
-	linphone_gtk_start_call(linphone_gtk_get_main_window());
+	char method[20] = "";
+	LinphoneAddress *addr = linphone_address_new(refer_to);
+	if(addr) {
+		const char *tmp = linphone_address_get_method_param(addr);
+		strncpy(method, tmp, sizeof(20));
+		linphone_address_destroy(addr);
+	}
+	if(strlen(method) == 0 || strcmp(method, "INVITE") == 0) {
+		GtkEntry * uri_bar =GTK_ENTRY(linphone_gtk_get_widget(
+			linphone_gtk_get_main_window(), "uribar"));
+		char *text;
+		linphone_gtk_notify(NULL,NULL,(text=ms_strdup_printf(_("We are transferred to %s"),refer_to)));
+		g_free(text);
+		gtk_entry_set_text(uri_bar, refer_to);
+		linphone_gtk_start_call(linphone_gtk_get_main_window());
+	}
 }
 
 static void linphone_gtk_check_soundcards(void){
@@ -2208,12 +2217,11 @@ int main(int argc, char *argv[]){
 
 core_start:
 	if (linphone_gtk_init_instance(app_name, start_option, addr_to_call) == FALSE){
-		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
+		g_warning("Another running instance of Linphone has been detected. It has been woken-up.");
 		g_warning("This instance is going to exit now.");
 		gdk_threads_leave();
 		return 0;
 	}
-
 	the_ui=linphone_gtk_create_window("main", NULL);
 
 	g_object_set_data(G_OBJECT(the_ui),"is_created",GINT_TO_POINTER(FALSE));

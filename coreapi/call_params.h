@@ -125,6 +125,10 @@ LINPHONE_PUBLIC const char *linphone_call_params_get_custom_header(const Linphon
 
 /**
  * Tell whether the call is part of the locally managed conference.
+ * @warning If a conference server is used to manage conferences,
+ * that function does not return TRUE even if the conference is running.<br/>
+ * If you want to test whether the conference is running, you should test
+ * whether linphone_core_get_conference() return a non-null pointer.
  * @param[in] cp LinphoneCallParams object
  * @return A boolean value telling whether the call is part of the locally managed conference.
 **/

@@ -88,6 +88,14 @@ LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp 
 	return linphone_event_new_with_op_base(lc,op,dir,name,TRUE);
 }
 
+void linphone_event_set_internal(LinphoneEvent *lev, bool_t internal) {
+	lev->internal = internal;
+}
+
+bool_t linphone_event_is_internal(LinphoneEvent *lev) {
+	return lev->internal;
+}
+
 void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState state){
 	if (lev->subscription_state!=state){
 		ms_message("LinphoneEvent [%p] moving to subscription state %s",lev,linphone_subscription_state_to_string(state));

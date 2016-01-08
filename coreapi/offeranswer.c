@@ -476,8 +476,10 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	if (sal_stream_description_has_srtp(result) == TRUE) {
 		/* select crypto algo */
 		memset(result->crypto, 0, sizeof(result->crypto));
-		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE))
+		if (!match_crypto_algo(local_cap->crypto, remote_offer->crypto, &result->crypto[0], &result->crypto_local_tag, TRUE)) {
 			result->rtp_port = 0;
+			ms_message("No matching crypto algo for remote stream's offer [%p]",remote_offer);
+		}
 
 	}
 	strcpy(result->ice_pwd, local_cap->ice_pwd);

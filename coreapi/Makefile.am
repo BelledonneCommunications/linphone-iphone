@@ -57,7 +57,7 @@ liblinphone_la_SOURCES=\
 	call_params.c \
 	chat.c \
 	chat_file_transfer.c \
-	conference.c \
+	conference.cc conference.h \
 	contactprovider.c contactprovider.h contact_providers_priv.h \
 	content.c \
 	dict.c \
@@ -92,6 +92,7 @@ liblinphone_la_SOURCES=\
 	xmlrpc.c \
 	vtables.c \
 	carddav.c \
+	ringtoneplayer.c ringtoneplayer.h\
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
@@ -125,7 +126,7 @@ else
 liblinphone_la_SOURCES+=vcard_stubs.c vcard.h
 endif
 
-liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
+liblinphone_la_LDFLAGS=-lstdc++ -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 
 if HAVE_LD_OUTPUT_DEF
 liblinphone_la_LDFLAGS += -Wl,--output-def,liblinphone-$(LIBLINPHONE_SO_CURRENT).def

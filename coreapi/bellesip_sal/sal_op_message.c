@@ -117,7 +117,8 @@ void sal_process_incoming_message(SalOp *op,const belle_sip_request_event_t *eve
 		if ((cipher_xml=is_cipher_xml(content_type))) {
 			/* access the zrtp cache to get keys needed to decipher the message */
 			LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal_op_get_sal(op));
-			FILE *CACHEFD = fopen(lc->zrtp_secrets_cache, "rb+");
+			FILE *CACHEFD = NULL;
+			if (lc->zrtp_secrets_cache != NULL) CACHEFD = fopen(lc->zrtp_secrets_cache, "rb+");
 			if (CACHEFD == NULL) {
 				ms_warning("Unable to access ZRTP ZID cache to decrypt message");
 				goto error;

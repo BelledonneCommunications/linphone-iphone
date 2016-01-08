@@ -1417,6 +1417,13 @@ public interface LinphoneCore {
 	 * @returns the number of participants to the conference
 	**/
 	int getConferenceSize();
+	/**
+	 * Return the value of the C pointer on the conference instance.
+	 * 
+	 * That function can be used to test whether a conference is running.
+	 * @return A positive value if a conference is running, 0 if not.
+	**/
+	LinphoneConference getConference();
 
 	/**
 	 * Request recording of the conference into a supplied file path.

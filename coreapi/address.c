@@ -130,6 +130,20 @@ LinphoneTransportType linphone_address_get_transport(const LinphoneAddress *uri)
 }
 
 /**
+ * Set the value of the method parameter
+**/
+void linphone_address_set_method_param(LinphoneAddress *addr, const char *method) {
+	sal_address_set_method_param(addr, method);
+}
+
+/**
+ * Get the value of the method parameter
+**/
+const char *linphone_address_get_method_param(const LinphoneAddress *addr) {
+	return sal_address_get_method_param(addr);
+}
+
+/**
  * Removes address's tags and uri headers so that it is displayable to the user.
 **/
 void linphone_address_clean(LinphoneAddress *uri){

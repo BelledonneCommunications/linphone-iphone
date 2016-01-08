@@ -72,7 +72,7 @@ void file_transfer_received(LinphoneChatMessage *msg, const LinphoneContent* con
 		file = fopen(receive_file,"wb");
 		linphone_chat_message_set_user_data(msg,(void*)file); /*store fd for next chunks*/
 	}
-	ms_free(receive_file);
+	bc_free(receive_file);
 	file = (FILE*)linphone_chat_message_get_user_data(msg);
 	BC_ASSERT_PTR_NOT_NULL(file);
 	if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
@@ -456,7 +456,7 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	}
 	ms_free(send_filepath);
-	ms_free(receive_filepath);
+	bc_free(receive_filepath);
 }
 
 void transfer_message_base(bool_t upload_error, bool_t download_error) {
@@ -642,7 +642,7 @@ static void file_transfer_2_messages_simultaneously(void) {
 		}
 		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
-		ms_free(receive_filepath);
+		bc_free(receive_filepath);
 		linphone_core_manager_destroy(marie);
 	}
 }
@@ -758,7 +758,7 @@ static void is_composing_notification(void) {
 static FILE* fopen_from_write_dir(const char * name, const char * mode) {
 	char *filepath = bc_tester_file(name);
 	FILE * file = fopen(filepath,mode);
-	ms_free(filepath);
+	bc_free(filepath);
 	return file;
 }
 
@@ -783,11 +783,11 @@ static void lime_text_message(void) {
 
 	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	filepath = bc_tester_file("tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
@@ -820,7 +820,7 @@ static void lime_text_message_to_non_lime(void) {
 
 	filepath = bc_tester_file("tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
@@ -866,11 +866,11 @@ void lime_transfer_message_base(bool_t encrypt_file) {
 
 	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	filepath = bc_tester_file("tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
@@ -1172,7 +1172,7 @@ static void database_migration(void) {
 	linphone_core_manager_destroy(marie);
 	remove(tmp_db);
 	ms_free(src_db);
-	ms_free(tmp_db);
+	bc_free(tmp_db);
 }
 
 static void history_range(void){
@@ -1212,7 +1212,7 @@ static void history_range(void){
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
 	ms_free(src_db);
-	ms_free(tmp_db);
+	bc_free(tmp_db);
 }
 
 static void history_count(void) {
@@ -1241,8 +1241,16 @@ static void history_count(void) {
 		messages=linphone_chat_room_get_history(chatroom,0);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270, int, "%d");
 		BC_ASSERT_EQUAL(ms_list_size(messages), 1270, int, "%d");
+		
 		/*check the second most recent msg*/
-		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->next->data), "Fore and aft follow each other.");
+		BC_ASSERT_PTR_NOT_NULL(messages);
+		if (messages){
+			BC_ASSERT_PTR_NOT_NULL(messages->next->data);
+			if (messages->next->data){
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->next->data), "Fore and aft follow each other.");
+			}
+		}
+		
 		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test offset+limit: retrieve the 42th latest msg only and check its content*/
@@ -1270,7 +1278,7 @@ static void history_count(void) {
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
 	ms_free(src_db);
-	ms_free(tmp_db);
+	bc_free(tmp_db);
 }
 #endif
 

@@ -399,7 +399,6 @@ void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, Linph
 	belle_http_request_t *req;
 	belle_sip_memory_body_handler_t *bh;
 	const char *data;
-	LinphoneContent *content;
 	linphone_xml_rpc_request_ref(request);
 
 	uri = belle_generic_uri_parse(session->url);
@@ -413,10 +412,6 @@ void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, Linph
 		belle_sip_object_unref(uri);
 		process_io_error_from_post_xml_rpc_request(request, NULL);
 	}
-	content = linphone_content_new();
-	linphone_content_set_type(content, "text");
-	linphone_content_set_subtype(content, "xml");
-	linphone_content_set_string_buffer(content, linphone_xml_rpc_request_get_content(request));
 	data = linphone_xml_rpc_request_get_content(request);
 	bh = belle_sip_memory_body_handler_new_copy_from_buffer(data, strlen(data), NULL, NULL);
 	belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(bh));
@@ -425,5 +420,4 @@ void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, Linph
 	cbs.process_auth_requested = process_auth_requested_from_post_xml_rpc_request;
 	l = belle_http_request_listener_create_from_callbacks(&cbs, request);
 	belle_http_provider_send_request(session->core->http_provider, req, l);
-	linphone_content_unref(content);
 }

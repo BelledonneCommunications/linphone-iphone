@@ -1369,10 +1369,12 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
  * (_linphone_call_destroy) if the call was never notified to the application.
  */
 void linphone_call_free_media_resources(LinphoneCall *call){
+	int i;
+	
 	linphone_call_stop_media_streams(call);
-	ms_media_stream_sessions_uninit(&call->sessions[call->main_audio_stream_index]);
-	ms_media_stream_sessions_uninit(&call->sessions[call->main_video_stream_index]);
-	if (call->params->realtimetext_enabled) ms_media_stream_sessions_uninit(&call->sessions[call->main_text_stream_index]);
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
+		ms_media_stream_sessions_uninit(&call->sessions[i]);
+	}
 	linphone_call_delete_upnp_session(call);
 	linphone_call_delete_ice_session(call);
 	linphone_call_stats_uninit(&call->stats[LINPHONE_CALL_STATS_AUDIO]);
@@ -1431,7 +1433,7 @@ static void linphone_call_set_terminated(LinphoneCall *call){
 	if (linphone_core_del_call(lc,call) != 0){
 		ms_error("Could not remove the call from the list !!!");
 	}
-	linphone_core_conference_check_uninit(lc);
+	if(lc->conf_ctx) linphone_conference_on_call_terminating(lc->conf_ctx, call);
 	if (call->ringing_beep){
 		linphone_core_stop_dtmf(lc);
 		call->ringing_beep=FALSE;
@@ -2483,7 +2485,7 @@ void linphone_call_init_text_stream(LinphoneCall *call){
 	LinphoneCore *lc=call->core;
 	char* cname;
 
-	if (call->textstream != NULL || !call->params->realtimetext_enabled) return;
+	if (call->textstream != NULL) return;
 	if (call->sessions[call->main_text_stream_index].rtp_session == NULL) {
 		SalMulticastRole multicast_role = linphone_call_get_multicast_role(call, SalText);
 		SalMediaDescription *remotedesc = NULL;
@@ -3106,7 +3108,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 			if (call->params->in_conference){
 				/*transform the graph to connect it to the conference filter */
 				mute = stream->dir==SalStreamRecvOnly;
-				linphone_call_add_to_conf(call, mute);
+				linphone_conference_on_call_stream_starting(lc->conf_ctx, call, mute);
 			}
 			call->current_params->in_conference=call->params->in_conference;
 			call->current_params->low_bandwidth=call->params->low_bandwidth;
@@ -3598,6 +3600,7 @@ static void update_rtp_stats(LinphoneCall *call, int stream_index) {
 }
 
 static void linphone_call_stop_audio_stream(LinphoneCall *call) {
+	LinphoneCore *lc = call->core;
 	if (call->audiostream!=NULL) {
 		linphone_reporting_update_media_info(call, LINPHONE_CALL_STATS_AUDIO);
 		media_stream_reclaim_sessions(&call->audiostream->ms,&call->sessions[call->main_audio_stream_index]);
@@ -3613,7 +3616,7 @@ static void linphone_call_stop_audio_stream(LinphoneCall *call) {
 		audio_stream_get_local_rtp_stats(call->audiostream,&call->log->local_stats);
 		linphone_call_log_fill_stats (call->log,(MediaStream*)call->audiostream);
 		if (call->endpoint){
-			linphone_call_remove_from_conf(call);
+			linphone_conference_on_call_stream_stopping(lc->conf_ctx, call);
 		}
 		update_rtp_stats(call, call->main_audio_stream_index);
 		audio_stream_stop(call->audiostream);
@@ -4542,6 +4545,10 @@ bool_t linphone_call_is_in_conference(const LinphoneCall *call) {
 	return call->params->in_conference;
 }
 
+LinphoneConference *linphone_call_get_conference(const LinphoneCall *call) {
+	return call->conf_ref;
+}
+
 /**
  * Perform a zoom of the video displayed during a call.
  * @param call the call.
@@ -4874,4 +4881,3 @@ void linphone_call_refresh_sockets(LinphoneCall *call){
 		}
 	}
 }
-

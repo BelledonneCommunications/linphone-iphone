@@ -199,6 +199,7 @@ LINPHONE_PUBLIC void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gbool
 LINPHONE_PUBLIC void linphone_gtk_enable_conference_button(LinphoneCore *lc, gboolean value);
 LINPHONE_PUBLIC void linphone_gtk_set_in_conference(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_gtk_unset_from_conference(LinphoneCall *call);
+LINPHONE_PUBLIC bool_t linphone_gtk_call_is_in_conference_view(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_gtk_terminate_conference_participant(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_gtk_in_call_view_hide_encryption(LinphoneCall *call);

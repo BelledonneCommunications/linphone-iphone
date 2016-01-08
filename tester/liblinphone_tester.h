@@ -257,6 +257,12 @@ typedef struct _LinphoneCoreManager {
 	int number_of_cunit_error_at_creation;
 } LinphoneCoreManager;
 
+typedef struct _LinphoneConferenceServer {
+	LinphoneCoreManager base;
+	LinphoneCall *first_call;
+	LinphoneCoreVTable *vtable;
+} LinphoneConferenceServer;
+
 typedef struct _LinphoneCallTestParams {
 	LinphoneCallParams *base;
 	bool_t sdp_removal;
@@ -266,11 +272,12 @@ typedef struct _LinphoneCallTestParams {
 
 void liblinphone_tester_add_suites(void);
 
-LinphoneCoreManager* linphone_core_manager_init(const char* rc_file);
-void linphone_core_manager_start(LinphoneCoreManager *mgr, const char* rc_file, int check_for_proxies);
+void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file);
+void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);
 void linphone_core_manager_stop(LinphoneCoreManager *mgr);
+void linphone_core_manager_uninit(LinphoneCoreManager *mgr);
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr);
 
 void reset_counters( stats* counters);
@@ -356,6 +363,9 @@ void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, v
 void liblinphone_tester_uninit(void);
 int liblinphone_tester_set_log_file(const char *filename);
 bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state);
+
+LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file);
+void linphone_conference_server_destroy(LinphoneConferenceServer *conf_srv);
 
 extern const char *liblinphone_tester_mire_id;
 
