@@ -185,6 +185,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	LinphoneCall* marie_call_pauline;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* marie_call_laure;
+	LinphoneConference *conference;
 	const MSList* calls;
 	bool_t is_remote_conf;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
@@ -258,6 +259,14 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 		BC_ASSERT_EQUAL(linphone_core_get_media_encryption(marie->lc),linphone_call_params_get_media_encryption(linphone_call_get_current_params(call)),int,"%d");
 	}
 
+	BC_ASSERT_PTR_NOT_NULL(conference = linphone_core_get_conference(marie->lc));
+	if(conference) {
+		MSList *participants = linphone_conference_get_participants(conference);
+		BC_ASSERT_EQUAL(linphone_conference_get_participant_count(conference), linphone_core_get_conference_size(marie->lc), int, "%d");
+		BC_ASSERT_EQUAL(linphone_conference_get_participant_count(conference), ms_list_size(participants), int, "%d");
+		ms_list_free_with_data(participants, (void(*)(void *))linphone_address_destroy);
+	}
+	
 	linphone_core_terminate_conference(marie->lc);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,is_remote_conf?2:1,10000));
