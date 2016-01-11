@@ -226,6 +226,7 @@ static LinphoneFriendList * linphone_friend_list_new(void) {
 static void linphone_friend_list_destroy(LinphoneFriendList *list) {
 	if (list->display_name != NULL) ms_free(list->display_name);
 	if (list->rls_uri != NULL) ms_free(list->rls_uri);
+	if (list->content_digest != NULL) ms_free(list->content_digest);
 	if (list->event != NULL) linphone_event_unref(list->event);
 	list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))linphone_friend_unref);
 }
