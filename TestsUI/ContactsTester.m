@@ -47,13 +47,13 @@
 									   traits:UIAccessibilityTraitButton | UIAccessibilityTraitNotEnabled |
 											  UIAccessibilityTraitSelected];
 
-	[self setText:firstName forIndex:0 inSection:ContactSections_First_Name];
+	[self setText:firstName forIndex:0 inSection:ContactSections_FirstName];
 
 	// entering text should enable the "edit" button
 	[tester waitForViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton | UIAccessibilityTraitSelected];
 
 	if (lastName) {
-		[self setText:lastName forIndex:0 inSection:ContactSections_Last_Name];
+		[self setText:lastName forIndex:0 inSection:ContactSections_LastName];
 	}
 
 	if (phone) {
@@ -70,17 +70,18 @@
 - (void)tapCellForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section atX:(CGFloat)x {
 	UITableView *tv = [self findTableView:@"Contact table"];
 	NSIndexPath *path = [NSIndexPath indexPathForRow:idx inSection:section];
-	UITableViewCell *last =
+	UITableViewCell *cell =
 		[tester waitForCellAtIndexPath:path inTableViewWithAccessibilityIdentifier:@"Contact table"];
-	XCTAssertNotNil(last);
+	XCTAssertNotNil(cell);
 
-	CGRect cellFrame = [last.contentView convertRect:last.contentView.frame toView:tv];
-	[tv tapAtPoint:CGPointMake(x > 0 ? x : cellFrame.size.width + x, cellFrame.origin.y + cellFrame.size.height / 2.)];
+	CGRect cellFrame = [cell.contentView convertRect:cell.contentView.frame toView:tv];
+	[tv tapAtPoint:CGPointMake(x > 0 ? x : tv.superview.frame.size.width + x,
+							   cellFrame.origin.y + cellFrame.size.height / 2.)];
 	[tester waitForAnimationsToFinish];
 }
 
 - (void)tapRemoveButtonForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section {
-	[self tapCellForRowAtIndexPath:idx inSection:section atX:-10];
+	[self tapCellForRowAtIndexPath:idx inSection:section atX:-7];
 }
 
 - (void)addEntries:(NSArray *)numbers inSection:(NSInteger)section {
@@ -100,12 +101,12 @@
 }
 
 - (void)deleteContactEntryForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section {
-	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Delete" error:nil]) {
-		[tester tapViewWithAccessibilityLabel:@"Delete"];
-	} else {
-		// hack: Travis seems to be unable to click on delete for what ever reason
+	//	if ([tester tryFindingTappableViewWithAccessibilityLabel:@"Delete" error:nil]) {
+	//		[tester tapViewWithAccessibilityLabel:@"Delete"];
+	//	} else {
+	// hack: Travis seems to be unable to click on delete for what ever reason
 		[self tapRemoveButtonForRowAtIndexPath:idx inSection:section];
-	}
+		//	}
 }
 
 #pragma mark - Tests
@@ -129,7 +130,6 @@
 	[tester tapViewWithAccessibilityLabel:fullName traits:UIAccessibilityTraitStaticText];
 
 	[tester tapViewWithAccessibilityLabel:@"Edit"];
-	[tester scrollViewWithAccessibilityIdentifier:@"Contact table" byFractionOfSizeHorizontal:0 vertical:-0.9];
 
 	[tester tapViewWithAccessibilityLabel:@"Delete"];
 	[tester tapViewWithAccessibilityLabel:@"DELETE"];
@@ -148,11 +148,11 @@
 	[tester tapViewWithAccessibilityLabel:@"Edit"];
 	// remove all numbers
 	for (NSInteger i = 0; i < phones.count; i++) {
-		[self tapRemoveButtonForRowAtIndexPath:0 inSection:ContactSections_Number];
+		[self deleteContactEntryForRowAtIndexPath:0 inSection:ContactSections_Number];
 	}
 	// remove all SIPs
 	for (NSInteger i = 0; i < SIPs.count; i++) {
-		[self tapRemoveButtonForRowAtIndexPath:0 inSection:ContactSections_Sip];
+		[self deleteContactEntryForRowAtIndexPath:0 inSection:ContactSections_Sip];
 	}
 	[tester tapViewWithAccessibilityLabel:@"Edit"];
 

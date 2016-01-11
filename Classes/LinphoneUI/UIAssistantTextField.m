@@ -11,7 +11,7 @@
 
 @implementation UIAssistantTextField
 
-INIT_WITH_COMMON {
+INIT_WITH_COMMON_CF {
 	self.delegate = self;
 	return self;
 }

@@ -14,7 +14,7 @@
 	UIView *borderView;
 }
 
-INIT_WITH_COMMON {
+INIT_WITH_COMMON_CF {
 	borderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
 	borderView.layer.borderWidth = 10;
 	borderView.layer.borderColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"color_A.png"]].CGColor;

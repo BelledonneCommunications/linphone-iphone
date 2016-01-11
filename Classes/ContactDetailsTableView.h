@@ -24,8 +24,8 @@
 
 typedef enum _ContactSections {
 	ContactSections_None = 0, // first section is empty because we cannot set header for first section
-	ContactSections_First_Name,
-	ContactSections_Last_Name,
+	ContactSections_FirstName,
+	ContactSections_LastName,
 	ContactSections_Sip,
 	ContactSections_Number,
 	ContactSections_Email,
@@ -36,7 +36,6 @@ typedef enum _ContactSections {
   @private
 	NSMutableArray *dataCache;
 	NSMutableArray *labelArray;
-	NSIndexPath *editingIndexPath;
 }
 
 @property(nonatomic, assign, setter=setContact:) ABRecordRef contact;

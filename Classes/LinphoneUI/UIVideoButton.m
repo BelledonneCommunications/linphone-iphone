@@ -27,7 +27,7 @@
 
 @synthesize waitView;
 
-INIT_WITH_COMMON {
+INIT_WITH_COMMON_CF {
 	last_update_state = FALSE;
 	return self;
 }

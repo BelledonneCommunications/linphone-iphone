@@ -39,7 +39,7 @@ static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 	[button update];
 }
 
-INIT_WITH_COMMON {
+INIT_WITH_COMMON_CF {
 	AudioSessionInitialize(NULL, NULL, NULL, NULL);
 	OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange,
 													   audioRouteChangeListenerCallback, (__bridge void *)(self));

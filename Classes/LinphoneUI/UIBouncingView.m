@@ -17,7 +17,7 @@ static NSString *const kDisappearAnimation = @"disappear";
 
 @implementation UIBouncingView
 
-INIT_WITH_COMMON {
+INIT_WITH_COMMON_CF {
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(settingsUpdate:)
 												 name:kLinphoneSettingsUpdate

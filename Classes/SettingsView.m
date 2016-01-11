@@ -252,7 +252,7 @@
 
 @implementation UINavigationBarEx
 
-INIT_WITH_COMMON {
+INIT_WITH_COMMON_CF {
 	[self setTintColor:[LINPHONE_MAIN_COLOR adjustHue:5.0f / 180.0f saturation:0.0f brightness:0.0f alpha:0.0f]];
 	return self;
 }

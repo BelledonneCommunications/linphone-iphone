@@ -12,7 +12,7 @@
 
 @implementation UIIconButton
 
-INIT_WITH_COMMON {
+INIT_WITH_COMMON_CF {
 	[super setImage:[self imageForState:UIControlStateNormal]
 		   forState:(UIControlStateHighlighted | UIControlStateSelected)];
 	[super setImage:[self imageForState:UIControlStateDisabled]

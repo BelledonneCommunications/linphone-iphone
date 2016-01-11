@@ -26,7 +26,7 @@
 
 #pragma mark - Lifecycle Functions
 
-INIT_WITH_COMMON {
+INIT_WITH_COMMON_CF {
 	[self addTarget:self action:@selector(touchUp:) forControlEvents:UIControlEventTouchUpInside];
 	return self;
 }

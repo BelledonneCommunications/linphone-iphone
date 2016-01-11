@@ -53,7 +53,7 @@
 
 #pragma mark - Lifecycle Functions
 
-- (void)initContactDetailsTableViewController {
+INIT_WITH_COMMON_C {
 	dataCache = [[NSMutableArray alloc] init];
 
 	// pre-fill the data-cache with empty arrays
@@ -66,22 +66,6 @@
 						[NSString stringWithString:(NSString *)kABPersonPhoneMobileLabel],
 						[NSString stringWithString:(NSString *)kABPersonPhoneIPhoneLabel],
 						[NSString stringWithString:(NSString *)kABPersonPhoneMainLabel], nil];
-	editingIndexPath = nil;
-}
-
-- (id)init {
-	self = [super init];
-	if (self) {
-		[self initContactDetailsTableViewController];
-	}
-	return self;
-}
-
-- (id)initWithCoder:(NSCoder *)decoder {
-	self = [super initWithCoder:decoder];
-	if (self) {
-		[self initContactDetailsTableViewController];
-	}
 	return self;
 }
 
@@ -92,10 +76,6 @@
 }
 
 #pragma mark -
-
-- (void)updateModification {
-	[contactDetailsDelegate onModification:nil];
-}
 
 - (NSMutableArray *)getSectionData:(NSInteger)section {
 	if (section == ContactSections_Number) {
@@ -114,9 +94,9 @@
 
 - (ABPropertyID)propertyIDForSection:(ContactSections)section {
 	switch (section) {
-		case ContactSections_First_Name:
+		case ContactSections_FirstName:
 			return kABPersonFirstNameProperty;
-		case ContactSections_Last_Name:
+		case ContactSections_LastName:
 			return kABPersonLastNameProperty;
 		case ContactSections_Sip:
 			return kABPersonInstantMessageProperty;
@@ -482,7 +462,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (section == ContactSections_First_Name || section == ContactSections_Last_Name) {
+	if (section == ContactSections_FirstName || section == ContactSections_LastName) {
 		return (self.tableView.isEditing) ? 1 : 0 /*no first and last name when not editting */;
 	} else {
 		return [[self getSectionData:section] count];
@@ -496,19 +476,20 @@
 		cell = [[UIContactDetailsCell alloc] initWithIdentifier:kCellId];
 		[cell.editTextfield setDelegate:self];
 	}
+	cell.indexPath = indexPath;
 
 	NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];
 	Entry *entry = [sectionDict objectAtIndex:[indexPath row]];
 
 	NSString *value = @"";
 	[cell hideDeleteButton:NO];
-	if (indexPath.section == ContactSections_First_Name) {
+	if (indexPath.section == ContactSections_FirstName) {
 		value = (NSString *)CFBridgingRelease(
-			ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
+			ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_FirstName]));
 		[cell hideDeleteButton:YES];
-	} else if (indexPath.section == ContactSections_Last_Name) {
+	} else if (indexPath.section == ContactSections_LastName) {
 		value = (NSString *)CFBridgingRelease(
-			ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
+			ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_LastName]));
 		[cell hideDeleteButton:YES];
 	} else if ([indexPath section] == ContactSections_Number) {
 		ABMultiValueRef lMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
@@ -563,30 +544,6 @@
 		[cell.editTextfield setKeyboardType:UIKeyboardTypeDefault];
 	}
 	return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:indexPath animated:NO];
-	NSMutableArray *sectionDict = [self getSectionData:[indexPath section]];
-	Entry *entry = [sectionDict objectAtIndex:[indexPath row]];
-	if ([self isEditing]) {
-		NSString *key = nil;
-		ABPropertyID property = [self propertyIDForSection:(ContactSections)indexPath.section];
-
-		if (property != kABInvalidPropertyType && property != kABPersonFirstNameProperty &&
-			property != kABPersonLastNameProperty) {
-			ABMultiValueRef lMap = ABRecordCopyValue(contact, property);
-			NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-			NSString *labelRef = CFBridgingRelease(ABMultiValueCopyLabelAtIndex(lMap, index));
-			if (labelRef != NULL) {
-				key = (NSString *)(labelRef);
-			}
-			CFRelease(lMap);
-		}
-		if (key != nil) {
-			editingIndexPath = indexPath;
-		}
-	}
 }
 
 - (void)tableView:(UITableView *)tableView
@@ -648,10 +605,10 @@
 	NSString *text = nil;
 	BOOL canAddEntry = self.tableView.isEditing;
 	NSString *addEntryName = nil;
-	if (section == ContactSections_First_Name && self.tableView.isEditing) {
+	if (section == ContactSections_FirstName && self.tableView.isEditing) {
 		text = NSLocalizedString(@"First name", nil);
 		canAddEntry = NO;
-	} else if (section == ContactSections_Last_Name && self.tableView.isEditing) {
+	} else if (section == ContactSections_LastName && self.tableView.isEditing) {
 		text = NSLocalizedString(@"Last name", nil);
 		canAddEntry = NO;
 	} else if ([self getSectionData:section].count > 0 || self.tableView.isEditing) {
@@ -711,40 +668,13 @@
 				  forRowAtIndexPath:indexPath];
 }
 
-#pragma mark - ContactDetailsLabelDelegate Functions
-
-- (void)changeContactDetailsLabel:(NSString *)value {
-	if (value != nil) {
-		NSInteger section = editingIndexPath.section;
-		NSMutableArray *sectionDict = [self getSectionData:section];
-		ABPropertyID property = [self propertyIDForSection:(int)section];
-		Entry *entry = [sectionDict objectAtIndex:editingIndexPath.row];
-
-		if (property != kABInvalidPropertyType) {
-			ABMultiValueRef lcMap = ABRecordCopyValue(contact, kABPersonPhoneProperty);
-			ABMutableMultiValueRef lMap = ABMultiValueCreateMutableCopy(lcMap);
-			CFRelease(lcMap);
-			NSInteger index = ABMultiValueGetIndexForIdentifier(lMap, [entry identifier]);
-			ABMultiValueReplaceLabelAtIndex(lMap, (__bridge CFStringRef)(value), index);
-			ABRecordSetValue(contact, kABPersonPhoneProperty, lMap, nil);
-			CFRelease(lMap);
-		}
-
-		[self.tableView beginUpdates];
-		[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:editingIndexPath] withRowAnimation:FALSE];
-		[self.tableView reloadSectionIndexTitles];
-		[self.tableView endUpdates];
-	}
-	editingIndexPath = nil;
-}
-
 #pragma mark - UITextFieldDelegate Functions
 
 - (BOOL)textField:(UITextField *)textField
 	shouldChangeCharactersInRange:(NSRange)range
 				replacementString:(NSString *)string {
 	if (contactDetailsDelegate != nil) {
-		[self performSelector:@selector(updateModification) withObject:nil afterDelay:0];
+		[contactDetailsDelegate onModification:nil];
 	}
 	return YES;
 }
@@ -756,26 +686,25 @@
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
 	UIView *view = [textField superview];
-
-	// Find TableViewCell
 	while (view != nil && ![view isKindOfClass:[UIContactDetailsCell class]])
 		view = [view superview];
 	if (view != nil) {
 		UIContactDetailsCell *cell = (UIContactDetailsCell *)view;
-		NSIndexPath *path = [self.tableView indexPathForCell:cell];
-		NSMutableArray *sectionDict = [self getSectionData:[path section]];
-		Entry *entry = [sectionDict objectAtIndex:[path row]];
+		// we cannot use indexPathForCell method here because if the cell is not visible anymore,
+		// it will return nil..
+		NSIndexPath *path = cell.indexPath; // [self.tableView indexPathForCell:cell];
 		ContactSections sect = (ContactSections)[path section];
-
 		ABPropertyID property = [self propertyIDForSection:sect];
 		NSString *value = [textField text];
 
+		NSMutableArray *sectionDict = [self getSectionData:[path section]];
+		Entry *entry = [sectionDict objectAtIndex:[path row]];
+
 		switch (sect) {
-			case ContactSections_First_Name:
-			case ContactSections_Last_Name: {
-				//				[cell.detailTextLabel setText:[textField text]];
+			case ContactSections_FirstName:
+			case ContactSections_LastName: {
 				CFErrorRef error = NULL;
-				ABRecordSetValue(contact, property, (__bridge CFTypeRef)([textField text]), (CFErrorRef *)&error);
+				ABRecordSetValue(contact, property, (__bridge CFTypeRef)value, (CFErrorRef *)&error);
 				if (error != NULL) {
 					LOGE(@"Error when saving property %i in contact %p: Fail(%@)", property, contact,
 						 [(__bridge NSError *)error localizedDescription]);
@@ -805,15 +734,15 @@
 		LOGE(@"Not valid UIEditableTableViewCell");
 	}
 	if (contactDetailsDelegate != nil) {
-		[self performSelector:@selector(updateModification) withObject:nil afterDelay:0];
+		[contactDetailsDelegate onModification:nil];
 	}
 	return TRUE;
 }
 - (BOOL)isValid {
 	NSString *firstName = (NSString *)CFBridgingRelease(
-		ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_First_Name]));
-	NSString *lastName = (NSString *)CFBridgingRelease(
-		ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_Last_Name]));
+		ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_FirstName]));
+	NSString *lastName =
+		(NSString *)CFBridgingRelease(ABRecordCopyValue(contact, [self propertyIDForSection:ContactSections_LastName]));
 	return firstName.length > 0 || lastName.length > 0;
 }
 
@@ -829,8 +758,8 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	if (section == 0 || (!self.tableView.isEditing &&
-						 (section == ContactSections_First_Name || section == ContactSections_Last_Name))) {
+	if (section == 0 ||
+		(!self.tableView.isEditing && (section == ContactSections_FirstName || section == ContactSections_LastName))) {
 		return 1e-5;
 	}
 	return [self tableView:tableView viewForHeaderInSection:section].frame.size.height;

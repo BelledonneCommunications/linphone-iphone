@@ -94,7 +94,7 @@ typedef enum {
 
 /* Use that macro when you want to invoke a custom initialisation method on your class,
  whatever is using it (xib, source code, etc., tableview cell) */
-#define INIT_WITH_COMMON                                                                                               \
+#define INIT_WITH_COMMON_C                                                                                             \
 	-(instancetype)init {                                                                                              \
 		self = [super init];                                                                                           \
 		[self commonInit];                                                                                             \
@@ -105,9 +105,12 @@ typedef enum {
 		[self commonInit];                                                                                             \
 		return self;                                                                                                   \
 	}                                                                                                                  \
+	-(instancetype)commonInit
+
+#define INIT_WITH_COMMON_CF                                                                                            \
 	-(instancetype)initWithFrame : (CGRect)frame {                                                                     \
 		self = [super initWithFrame:frame];                                                                            \
 		[self commonInit];                                                                                             \
 		return self;                                                                                                   \
 	}                                                                                                                  \
-	-(instancetype)commonInit
+	INIT_WITH_COMMON_C

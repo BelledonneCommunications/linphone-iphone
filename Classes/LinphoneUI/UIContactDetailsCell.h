@@ -23,6 +23,10 @@
 
 @interface UIContactDetailsCell : UITableViewCell
 
+// this is broken design... but we need this to know which cell was modified
+// last... must be totally revamped
+@property(strong) NSIndexPath *indexPath;
+
 @property(weak, nonatomic) IBOutlet UIView *defaultView;
 @property(weak, nonatomic) IBOutlet UILabel *addressLabel;
 @property(weak, nonatomic) IBOutlet UITextField *editTextfield;
