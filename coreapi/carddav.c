@@ -600,7 +600,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_multiget_query(
 	query->url = cdc->server_url;
 	query->type = LinphoneCardDavQueryTypeAddressbookMultiget;
 
-	sprintf(body, "%s", "<card:addressbook-multiget xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /><card:address-data content-type='text-vcard' version='4.0'/></d:prop>");
+	sprintf(body, "%s", "<card:addressbook-multiget xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /><card:address-data content-type='text/vcard' version='4.0'/></d:prop>");
 	while (iterator) {
 		LinphoneCardDavResponse *response = (LinphoneCardDavResponse *)iterator->data;
 		if (response) {
