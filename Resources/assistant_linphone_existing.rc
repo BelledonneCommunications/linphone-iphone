@@ -18,6 +18,8 @@
 		<entry name="username_regex" overwrite="true">^[a-z0-9_.\-]*$</entry>
 		<entry name="username_min_length" overwrite="true">1</entry>
 		<entry name="password_min_length" overwrite="true">1</entry>
+		<entry name="username_max_length" overwrite="true">64</entry>
+		<entry name="password_max_length" overwrite="true">34</entry>
 		<entry name="xmlrpc_url" overwrite="true">https://www.linphone.org/assistant.php</entry>
 	</section>
 </config>
