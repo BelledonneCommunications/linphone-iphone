@@ -543,12 +543,7 @@
 		63CFEE131B9EDF65007EA5BD /* libvo-amrwbenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CFEDE31B9EDD36007EA5BD /* libvo-amrwbenc.a */; };
 		63D11C531C3D501200E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63D11C551C3D50A100E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
-		63DFE0471C40161700DA5E87 /* four_hands_together.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0411C40161700DA5E87 /* four_hands_together.caf */; };
-		63DFE0481C40161700DA5E87 /* house_keeping.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0421C40161700DA5E87 /* house_keeping.caf */; };
-		63DFE0491C40161700DA5E87 /* it_s_a_game.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0431C40161700DA5E87 /* it_s_a_game.caf */; };
-		63DFE04A1C40161700DA5E87 /* leaving_a_dream.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0441C40161700DA5E87 /* leaving_a_dream.caf */; };
 		63DFE04B1C40161700DA5E87 /* notes_of_the_optimistic.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */; };
-		63DFE04C1C40161700DA5E87 /* soft_as_snow.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0461C40161700DA5E87 /* soft_as_snow.caf */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63EEE3FF1BBA9AC00087D3AF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		63EEE4001BBA9AC00087D3AF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
@@ -1360,12 +1355,7 @@
 		63CFEDE41B9EDD36007EA5BD /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
 		63D11C521C3D501200E8FCEE /* Log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Log.m; path = Utils/Log.m; sourceTree = "<group>"; };
 		63D11C541C3D503A00E8FCEE /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
-		63DFE0411C40161700DA5E87 /* four_hands_together.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = four_hands_together.caf; sourceTree = "<group>"; };
-		63DFE0421C40161700DA5E87 /* house_keeping.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = house_keeping.caf; sourceTree = "<group>"; };
-		63DFE0431C40161700DA5E87 /* it_s_a_game.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = it_s_a_game.caf; sourceTree = "<group>"; };
-		63DFE0441C40161700DA5E87 /* leaving_a_dream.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = leaving_a_dream.caf; sourceTree = "<group>"; };
 		63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = notes_of_the_optimistic.caf; sourceTree = "<group>"; };
-		63DFE0461C40161700DA5E87 /* soft_as_snow.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = soft_as_snow.caf; sourceTree = "<group>"; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
 		63EA4C941B50189D00922857 /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
@@ -2554,12 +2544,7 @@
 		63DFE0401C40161700DA5E87 /* ringtones */ = {
 			isa = PBXGroup;
 			children = (
-				63DFE0411C40161700DA5E87 /* four_hands_together.caf */,
-				63DFE0421C40161700DA5E87 /* house_keeping.caf */,
-				63DFE0431C40161700DA5E87 /* it_s_a_game.caf */,
-				63DFE0441C40161700DA5E87 /* leaving_a_dream.caf */,
 				63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */,
-				63DFE0461C40161700DA5E87 /* soft_as_snow.caf */,
 			);
 			path = ringtones;
 			sourceTree = "<group>";
@@ -2944,7 +2929,6 @@
 				636B98251C298401003BA37C /* call_status_missed@2x.png in Resources */,
 				636B98F21C298401003BA37C /* numpad_hash_default.png in Resources */,
 				636B98211C298401003BA37C /* call_start_body_over@2x.png in Resources */,
-				63DFE0481C40161700DA5E87 /* house_keeping.caf in Resources */,
 				636B990E1C298401003BA37C /* pause_big_default@2x.png in Resources */,
 				636B98841C298401003BA37C /* dialer_alt_back.png in Resources */,
 				636B97F11C298401003BA37C /* backspace_disabled@2x.png in Resources */,
@@ -3001,10 +2985,8 @@
 				636B98291C298401003BA37C /* call_transfer_default@2x.png in Resources */,
 				636B98671C298401003BA37C /* conference_exit_default@2x.png in Resources */,
 				636B98061C298401003BA37C /* call_back_disabled.png in Resources */,
-				63DFE0471C40161700DA5E87 /* four_hands_together.caf in Resources */,
 				636B98871C298401003BA37C /* dialer_back_default@2x.png in Resources */,
 				636B98921C298401003BA37C /* edit_list_disabled.png in Resources */,
-				63DFE04C1C40161700DA5E87 /* soft_as_snow.caf in Resources */,
 				636B98791C298401003BA37C /* contacts_sip_selected@2x.png in Resources */,
 				636B98DE1C298401003BA37C /* numpad_5_default.png in Resources */,
 				636B99281C298401003BA37C /* route_speaker_disabled@2x.png in Resources */,
@@ -3134,7 +3116,6 @@
 				D38187B915FE342200C3EDCA /* ContactDetailsView.xib in Resources */,
 				636B98491C298401003BA37C /* chat_attachment_over@2x.png in Resources */,
 				636B98201C298401003BA37C /* call_start_body_over.png in Resources */,
-				63DFE04A1C40161700DA5E87 /* leaving_a_dream.caf in Resources */,
 				636B99131C298401003BA37C /* pause_small_default.png in Resources */,
 				63AADC001B6A0FF200AA16FD /* assistant_linphone_create.rc in Resources */,
 				636B99121C298401003BA37C /* pause_big_over_selected@2x.png in Resources */,
@@ -3308,7 +3289,6 @@
 				636B987C1C298401003BA37C /* delete_disabled.png in Resources */,
 				636B98161C298401003BA37C /* call_quality_indicator_2.png in Resources */,
 				636B989D1C298401003BA37C /* footer_dialer_default@2x.png in Resources */,
-				63DFE0491C40161700DA5E87 /* it_s_a_game.caf in Resources */,
 				636B988E1C298401003BA37C /* edit_disabled.png in Resources */,
 				636B985A1C298401003BA37C /* checkbox_unchecked.png in Resources */,
 				636B987B1C298401003BA37C /* delete_default@2x.png in Resources */,

@@ -88,40 +88,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
-		<dict>
-			<key>Key</key>
-			<string>call_ringtone_preference</string>
-			<key>Title</key>
-			<string>Ringtone</string>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Titles</key>
-			<array>
-				<string>Four hands together</string>
-				<string>It&apos;s a game</string>
-				<string>Notes of the optimistic</string>
-				<string>Soft as snow</string>
-				<string>Leaving a dream</string>
-				<string>House Keeping</string>
-			</array>
-			<key>Values</key>
-			<array>
-				<string>four_hands_together.caf</string>
-				<string>it_s_a_game.caf</string>
-				<string>notes_of_the_optimistic.caf</string>
-				<string>soft_as_snow.caf</string>
-				<string>leaving_a_dream.caf</string>
-				<string>house_keeping.caf</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Key</key>
-			<string>preview_ringtone_button</string>
-			<key>Title</key>
-			<string>Listen ringtone</string>
-			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
-		</dict>
 	</array>
 </dict>
 </plist>

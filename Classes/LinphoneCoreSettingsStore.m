@@ -293,10 +293,6 @@
 
 		[self setBool:[lm lpConfigBoolForKey:@"repeat_call_notification"]
 			   forKey:@"repeat_call_notification_preference"];
-		NSString *ringtone = ([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_ring(lc)].lastPathComponent]
-								  ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
-								 .lastPathComponent;
-		[self setObject:ringtone forKey:@"call_ringtone_preference"];
 	}
 
 	// network section
@@ -707,8 +703,6 @@
 		[lm lpConfigSetString:[self stringForKey:@"voice_mail_uri_preference"] forKey:@"voice_mail_uri"];
 		[lm lpConfigSetBool:[self boolForKey:@"repeat_call_notification_preference"]
 					 forKey:@"repeat_call_notification"];
-		NSString *ringtone = [LinphoneManager bundleFile:[self objectForKey:@"call_ringtone_preference"]];
-		linphone_core_set_ring(lc, ringtone.UTF8String);
 	}
 
 	// network section

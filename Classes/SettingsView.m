@@ -726,13 +726,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 							  [self sendEmailWithDebugAttachments];
 							}];
 		[alert show];
-	} else if ([key isEqual:@"preview_ringtone_button"]) {
-		LinphoneCore *lc = [LinphoneManager getLc];
-		if (linphone_ringtoneplayer_is_started(linphone_core_get_ringtoneplayer(lc))) {
-			linphone_core_stop_ringing(lc);
-		} else {
-			linphone_core_preview_ring(lc, linphone_core_get_ring(lc), NULL, NULL);
-		}
 	}
 }
 
