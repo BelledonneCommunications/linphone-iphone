@@ -143,6 +143,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	// force offset recomputing
+	[_messageField refreshHeight];
 	composingVisible = !composingVisible;
 	[self setComposingVisible:!composingVisible withDelay:0];
 	[_backToCallButton update];
@@ -645,10 +646,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			  endFrame.size.width = width;
 		  }
 
-		  //						 Hide TabBar and status bar and also top bar
-		  if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
-			  [PhoneMainView.instance hideTabBar:YES];
-		  }
+		  // Hide TabBar and status bar and also top bar
+		  [PhoneMainView.instance hideTabBar:YES];
 		  [PhoneMainView.instance hideStatusBar:YES];
 		  [PhoneMainView.instance fullScreen:YES];
 		  _topBar.alpha = 0.0;
