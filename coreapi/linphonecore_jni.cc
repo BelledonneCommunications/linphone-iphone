@@ -4350,11 +4350,11 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv
 	return (jint)linphone_core_get_conference_size((LinphoneCore *) pCore);
 }
 
-extern "C" jobject Jave_org_linphone_core_LinphoneCoreImpl_getConference(JNIEnv *env, jobject thiz, jlong pCore) {
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getConference(JNIEnv *env, jobject thiz, jlong pCore) {
 	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConferenceImpl");
 	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)V");
 	LinphoneConference *conf = linphone_core_get_conference((LinphoneCore *)pCore);
-	if(conf) return env->NewObject(conference_class, conference_constructor, conf);
+	if(conf) return env->NewObject(conference_class, conference_constructor, (jlong)conf);
 	else return NULL;
 }
 
@@ -4496,7 +4496,7 @@ extern "C" jobject Java_org_linphone_core_LinphoneCallImpl_getConference(JNIEnv 
 	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConferenceImpl");
 	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)V");
 	LinphoneConference *conf = linphone_call_get_conference((LinphoneCall *)ptr);
-	if(conf) return env->NewObject(conference_class, conference_constructor, conf);
+	if(conf) return env->NewObject(conference_class, conference_constructor, (jlong)conf);
 	return NULL;
 }
 
@@ -6781,11 +6781,10 @@ JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getNortpTimeout(J
 
 
 
-JNIEXPORT jobjectArray JNICALL Java_org_linphone_core_LinphoneConferenceImpl_getParticipants(JNIEnv *env, jobject thiz, jlong pconference) {
+extern "C" jobjectArray Java_org_linphone_core_LinphoneConferenceImpl_getParticipants(JNIEnv *env, jobject thiz, jlong pconference) {
 	MSList *participants, *it;
 	jclass addr_class = env->FindClass("org/linphone/core/LinphoneAddressImpl");
-	jclass addr_list_class = env->FindClass("[Lorg/linphone/core/LinphoneAddressImpl;");
-	jmethodID addr_constructor = env->GetMethodID(addr_class, "<init>", "(J)");
+	jmethodID addr_constructor = env->GetMethodID(addr_class, "<init>", "(J)V");
 	jobjectArray jaddr_list;
 	int i;
 	
@@ -6793,13 +6792,14 @@ JNIEXPORT jobjectArray JNICALL Java_org_linphone_core_LinphoneConferenceImpl_get
 	jaddr_list = env->NewObjectArray(ms_list_size(participants), addr_class, NULL);
 	for(it=participants, i=0; it; it=ms_list_next(it), i++) {
 		LinphoneAddress *addr = (LinphoneAddress *)it->data;
-		jobject jaddr = env->NewObject(addr_class, addr_constructor, addr);
+		jobject jaddr = env->NewObject(addr_class, addr_constructor, (jlong)addr);
 		env->SetObjectArrayElement(jaddr_list, i, jaddr);
 	}
+	ms_list_free(participants);
 	return jaddr_list;
 }
 
-JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneConferenteImpl_removeParticipant(JNIEnv *env, jobject thiz, jlong pconference, jobject uri) {
+extern "C" jint Java_org_linphone_core_LinphoneConferenteImpl_removeParticipant(JNIEnv *env, jobject thiz, jlong pconference, jobject uri) {
 	jfieldID native_ptr_attr = env->GetFieldID(env->GetObjectClass(uri), "nativePtr", "J");
 	LinphoneAddress *addr = (LinphoneAddress *)env->GetLongField(uri, native_ptr_attr);
 	return linphone_conference_remove_participant((LinphoneConference *)pconference, addr);

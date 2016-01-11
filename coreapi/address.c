@@ -89,37 +89,51 @@ const char *linphone_address_get_domain(const LinphoneAddress *u){
 /**
  * Sets the display name.
 **/
-void linphone_address_set_display_name(LinphoneAddress *u, const char *display_name){
+int linphone_address_set_display_name(LinphoneAddress *u, const char *display_name){
 	sal_address_set_display_name(u,display_name);
+	return 0;
 }
 
 /**
  * Sets the username.
 **/
-void linphone_address_set_username(LinphoneAddress *uri, const char *username){
+int linphone_address_set_username(LinphoneAddress *uri, const char *username){
 	sal_address_set_username(uri,username);
+	return 0;
 }
 
 /**
  * Sets the domain.
 **/
-void linphone_address_set_domain(LinphoneAddress *uri, const char *host){
-	sal_address_set_domain(uri,host);
+int linphone_address_set_domain(LinphoneAddress *uri, const char *host){
+	if (host) {
+		char *identity = ms_strdup_printf("sip:%s", host);
+		LinphoneAddress* test = linphone_address_new(identity);
+		ms_free(identity);
+		if (test) {
+			sal_address_set_domain(uri,host);
+			linphone_address_destroy(test);
+			return 0;
+		}
+	}
+	return -1;
 }
 
 
 /**
  * Sets the port number.
 **/
-void linphone_address_set_port(LinphoneAddress *uri, int port){
+int linphone_address_set_port(LinphoneAddress *uri, int port){
 	sal_address_set_port(uri,port);
+	return 0;
 }
 
 /**
  * Set a transport.
 **/
-void linphone_address_set_transport(LinphoneAddress *uri, LinphoneTransportType tp){
+int linphone_address_set_transport(LinphoneAddress *uri, LinphoneTransportType tp){
 	sal_address_set_transport(uri,(SalTransport)tp);
+	return 0;
 }
 
 /**

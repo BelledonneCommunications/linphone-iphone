@@ -845,7 +845,7 @@ int linphone_conference_get_participant_count(const LinphoneConference *obj) {
 }
 
 MSList *linphone_conference_get_participants(const LinphoneConference *obj) {
-	const list<Participant> participants = ((Conference *)obj)->getParticipants();
+	const list<Participant> &participants = ((Conference *)obj)->getParticipants();
 	MSList *participants_list = NULL;
 	for(list<Participant>::const_iterator it=participants.begin();it!=participants.end();it++) {
 		LinphoneAddress *uri = linphone_address_clone(it->getUri());

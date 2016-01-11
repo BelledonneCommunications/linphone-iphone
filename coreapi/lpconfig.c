@@ -818,13 +818,13 @@ bool_t lp_config_relative_file_exists(const LpConfig *lpconfig, const char *file
 	if (lpconfig->filename == NULL) {
 		return FALSE;
 	} else {
-		char *filename = ms_strdup(lpconfig->filename);
-		const char *dir = _lp_config_dirname(filename);
+		char *conf_path = ms_strdup(lpconfig->filename);
+		const char *dir = _lp_config_dirname(conf_path);
 		char *filepath = ms_strdup_printf("%s/%s", dir, filename);
 		char *realfilepath = lp_realpath(filepath, NULL);
 		FILE *file;
 
-		ms_free(filename);
+		ms_free(conf_path);
 		ms_free(filepath);
 
 		if(realfilepath == NULL) return FALSE;
@@ -912,7 +912,7 @@ int lp_config_read_relative_file(const LpConfig *lpconfig, const char *filename,
 	return 0;
 
 err:
-	ms_free(filepath);
+	ms_free(dup_config_file);
 	ms_free(filepath);
 	if(realfilepath) ms_free(realfilepath);
 	return -1;

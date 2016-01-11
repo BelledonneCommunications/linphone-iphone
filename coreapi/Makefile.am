@@ -126,7 +126,7 @@ else
 liblinphone_la_SOURCES+=vcard_stubs.c vcard.h
 endif
 
-liblinphone_la_LDFLAGS=-version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
+liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 
 if HAVE_LD_OUTPUT_DEF
 liblinphone_la_LDFLAGS += -Wl,--output-def,liblinphone-$(LIBLINPHONE_SO_CURRENT).def
