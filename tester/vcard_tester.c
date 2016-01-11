@@ -252,14 +252,16 @@ static void carddav_sync(void) {
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	
 	friends = linphone_core_get_friend_list(manager->lc);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(friends);
-	lf = (LinphoneFriend *)friends->data;
-	linphone_carddav_put_vcard(c, lf);
+	BC_ASSERT_PTR_NOT_NULL(friends);
+	if (friends) {
+		lf = (LinphoneFriend *)friends->data;
+		linphone_carddav_put_vcard(c, lf);
 
-	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, 2000);
-	BC_ASSERT_EQUAL(stats->new_contact_count, 1, int, "%i");
-	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
-	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
+		wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, 2000);
+		BC_ASSERT_EQUAL(stats->new_contact_count, 1, int, "%i");
+		wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+		BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
+	}
 	
 	ms_free(stats);
 	linphone_carddav_destroy(c);

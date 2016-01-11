@@ -229,11 +229,12 @@ int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
 		}
 	}
 	
-	if (!fr) {
+	if (!fr && !vcard) {
 		ms_warning("linphone_friend_set_address() must be called before linphone_friend_set_name() to be able to set display name.");
 		return -1;
+	} else if (fr) {
+		linphone_address_set_display_name(fr, name);
 	}
-	linphone_address_set_display_name(fr, name);
 	
 	return 0;
 }
@@ -860,7 +861,9 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard) {
 			linphone_address_unref(linphone_address);
 		}
 	}
-	linphone_friend_set_name(fr, name);
+	if (name) {
+		linphone_friend_set_name(fr, name);
+	}
 	
 	return fr;
 }

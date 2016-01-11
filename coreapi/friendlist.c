@@ -313,7 +313,6 @@ LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *lis
 		ms_warning("Friend %s already in list [%s], ignored.", tmp ? tmp : "unknown", list->display_name);
 		if (tmp) ms_free(tmp);
 	} else {
-		lf->in_list = TRUE;
 		return linphone_friend_list_import_friend(list, lf);
 	}
 	return LinphoneFriendListOK;
@@ -322,6 +321,7 @@ LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *lis
 LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
 	if ((lf->lc != NULL) || (lf->uri == NULL)) return LinphoneFriendListInvalidFriend;
 	list->friends = ms_list_append(list->friends, linphone_friend_ref(lf));
+	lf->in_list = TRUE;
 	return LinphoneFriendListOK;
 }
 
