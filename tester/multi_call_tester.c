@@ -263,7 +263,8 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	if(conference) {
 		MSList *participants = linphone_conference_get_participants(conference);
 		BC_ASSERT_EQUAL(linphone_conference_get_participant_count(conference), linphone_core_get_conference_size(marie->lc), int, "%d");
-		BC_ASSERT_EQUAL(linphone_conference_get_participant_count(conference), ms_list_size(participants), int, "%d");
+		BC_ASSERT_EQUAL(linphone_conference_get_participant_count(conference), ms_list_size(participants)+(linphone_conference_is_in(conference)?1:0), int, "%d");
+		BC_ASSERT_TRUE(linphone_conference_is_in(conference));
 		ms_list_free_with_data(participants, (void(*)(void *))linphone_address_destroy);
 	}
 	

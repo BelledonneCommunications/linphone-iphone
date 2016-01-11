@@ -66,7 +66,7 @@ public:
 	bool microphoneIsMuted() const {return m_isMuted;}
 	float getInputVolume() const;
 	
-	virtual int getParticipantCount() const {return m_participants.size();}
+	virtual int getParticipantCount() const {return m_participants.size() + (isIn()?1:0);}
 	const std::list<Participant> &getParticipants() const {return m_participants;}
 	
 	virtual int startRecording(const char *path) = 0;
@@ -585,7 +585,7 @@ int RemoteConference::addParticipant(LinphoneCall *call) {
 				m_pendingCalls = ms_list_append(m_pendingCalls, linphone_call_ref(call));
 				m_state = ConnectingToFocus;
 				linphone_address_unref(addr);
-				addParticipant(m_focusCall);
+				call->conf_ref = (LinphoneConference *)this;
 				return 0;
 			} else return -1;
 
