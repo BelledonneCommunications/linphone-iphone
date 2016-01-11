@@ -148,6 +148,7 @@ static LinphoneAccountCreatorStatus validate_uri(const char* username, const cha
 
 	if (addr == NULL) {
 		status = LinphoneAccountCreatorUsernameInvalid;
+		goto end;
 	}
 
 	if (domain && linphone_address_set_domain(addr, domain) != 0) {
@@ -157,7 +158,6 @@ static LinphoneAccountCreatorStatus validate_uri(const char* username, const cha
 	if (display_name && linphone_address_set_display_name(addr, display_name) != 0) {
 		status = LinphoneAccountCreatorDisplayNameInvalid;
 	}
-
 	linphone_address_unref(addr);
 end:
 	linphone_proxy_config_destroy(proxy);
