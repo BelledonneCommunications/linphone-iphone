@@ -285,6 +285,7 @@
 	[self uploadImageWithQuality:@"Minimum"];
 	[self uploadImageWithQuality:@"Minimum"];
 	UITableView *tv = [self findTableView:@"ChatRoom list"];
+	int timeout = 3;
 	// wait for ALL uploads to terminate...
 	for (int i = 0; i < 90; i++) {
 		[tester waitForTimeInterval:1.f];
@@ -296,17 +297,20 @@
 	[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list" byFractionOfSizeHorizontal:0.f vertical:1.f];
 	for (int i = 0; i < 2; i++) {
 		// messages order is not known: if upload bitrate is huge, first image can be uploaded before last started
-		while (![tester tryFindingTappableViewWithAccessibilityLabel:@"Download" error:nil]) {
+		while (![tester tryFindingTappableViewWithAccessibilityLabel:@"Download" error:nil] && timeout) {
 			[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list"
 							   byFractionOfSizeHorizontal:0.f
 												 vertical:-.1f];
+			timeout--;
 		}
 		[tester waitForViewWithAccessibilityLabel:@"Download"];
 		[tester tapViewWithAccessibilityLabel:@"Download"];
 		[tester waitForTimeInterval:.2f]; // just wait a few secs to start download
 	}
-	while ([LinphoneManager instance].fileTransferDelegates.count > 0) {
+	timeout = 30;
+	while ([LinphoneManager instance].fileTransferDelegates.count > 0 && timeout) {
 		[tester waitForTimeInterval:.5];
+		timeout--;
 	}
 	[self goBackFromChat];
 }
