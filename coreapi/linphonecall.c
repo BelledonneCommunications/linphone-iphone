@@ -708,6 +708,16 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 		md->custom_sdp_attributes = sal_custom_sdp_attribute_clone(params->custom_sdp_attributes);
 
 	/*set audio capabilities */
+    
+    codec_hints.bandwidth_limit=params->audio_bw;
+    codec_hints.max_codecs=-1;
+    codec_hints.previously_used=old_md ? old_md->streams[call->main_audio_stream_index].already_assigned_payloads : NULL;
+    l=make_codec_list(lc, &codec_hints, SalAudio, lc->codecs_conf.audio_codecs);
+    
+    // in case where no audio codec was found for this stream, the audio is disabled 
+    if (l == NULL) {
+        params->has_audio = FALSE;
+    }
 	if (params->has_audio) {
 		strncpy(md->streams[call->main_audio_stream_index].rtp_addr,linphone_call_get_public_ip_for_stream(call,call->main_audio_stream_index),sizeof(md->streams[call->main_audio_stream_index].rtp_addr));
 		strncpy(md->streams[call->main_audio_stream_index].rtcp_addr,linphone_call_get_public_ip_for_stream(call,call->main_audio_stream_index),sizeof(md->streams[call->main_audio_stream_index].rtcp_addr));
@@ -722,10 +732,6 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 			md->streams[call->main_audio_stream_index].ptime=params->down_ptime;
 		else
 			md->streams[call->main_audio_stream_index].ptime=linphone_core_get_download_ptime(lc);
-		codec_hints.bandwidth_limit=params->audio_bw;
-		codec_hints.max_codecs=-1;
-		codec_hints.previously_used=old_md ? old_md->streams[call->main_audio_stream_index].already_assigned_payloads : NULL;
-		l=make_codec_list(lc, &codec_hints, SalAudio, lc->codecs_conf.audio_codecs);
 		md->streams[call->main_audio_stream_index].max_rate=get_max_codec_sample_rate(l);
 		md->streams[call->main_audio_stream_index].payloads=l;
 		if (call->audiostream && call->audiostream->ms.sessions.rtp_session) {
