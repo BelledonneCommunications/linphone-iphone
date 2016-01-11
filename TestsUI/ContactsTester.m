@@ -131,8 +131,8 @@
 
 	[tester tapViewWithAccessibilityLabel:@"Edit"];
 
-	[tester tapViewWithAccessibilityLabel:@"Delete"];
-	[tester tapViewWithAccessibilityLabel:@"DELETE"];
+	[tester tapViewWithAccessibilityLabel:@"Delete" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
 }
 
 - (void)testEditContact {
@@ -161,8 +161,8 @@
 
 	[tester scrollViewWithAccessibilityIdentifier:@"Contact table" byFractionOfSizeHorizontal:0 vertical:-0.9];
 
-	[tester tapViewWithAccessibilityLabel:@"Delete"];
-	[tester tapViewWithAccessibilityLabel:@"DELETE"];
+	[tester tapViewWithAccessibilityLabel:@"Delete" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
 }
 
 @end
