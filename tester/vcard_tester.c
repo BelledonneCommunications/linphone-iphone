@@ -91,7 +91,7 @@ static void friends_if_no_db_set(void) {
 	friends = linphone_core_get_friend_list(manager->lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
 	
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -117,7 +117,7 @@ static void friends_migration(void) {
 end:
 	unlink(friends_db);
 	ms_free(friends_db);
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 	friends_from_db = ms_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
 	linphone_core_manager_destroy(manager);
 }
@@ -184,7 +184,7 @@ static void friends_sqlite_storage(void) {
 end:
 	unlink(friends_db);
 	ms_free(friends_db);
-	linphone_address_destroy(addr);
+	linphone_address_unref(addr);
 	friends_from_db = ms_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
 	linphone_core_manager_destroy(manager);
 }

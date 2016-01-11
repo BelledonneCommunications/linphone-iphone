@@ -281,6 +281,19 @@ end:
 	return result;
 }
 
+static void linphone_carddav_query_free(LinphoneCardDavQuery *query) {
+	if (!query) {
+		return;
+	}
+	
+	if (query->http_request_listener) {
+		belle_sip_object_unref(query->http_request_listener);
+		query->http_request_listener = NULL;
+	}
+	
+	ms_free(query);
+}
+
 static void process_response_from_carddav_request(void *data, const belle_http_response_event_t *event) {
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)data;
 	
@@ -347,13 +360,13 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 	} else {
 		linphone_carddav_sync_done(query->context, FALSE, "No response found");
 	}
-	ms_free(query);
+	linphone_carddav_query_free(query);
 }
 
 static void process_io_error_from_carddav_request(void *data, const belle_sip_io_error_event_t *event) {
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)data;
 	ms_error("I/O error during CardDAV request sending");
-	ms_free(query);
+	linphone_carddav_query_free(query);
 	linphone_carddav_sync_done(query->context, FALSE, "I/O error during CardDAV request sending");
 }
 
@@ -371,13 +384,13 @@ static void process_auth_requested_from_carddav_request(void *data, belle_sip_au
 		}
 	} else {
 		ms_error("Authentication requested during CardDAV request sending, and username/password weren't provided");
+		linphone_carddav_query_free(query);
 		linphone_carddav_sync_done(query->context, FALSE, "Authentication requested during CardDAV request sending, and username/password weren't provided");
 	}
 }
 
 static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 	belle_http_request_listener_callbacks_t cbs = { 0 };
-	belle_http_request_listener_t *l = NULL;
 	belle_generic_uri_t *uri = NULL;
 	belle_http_request_t *req = NULL;
 	belle_sip_memory_body_handler_t *bh = NULL;
@@ -419,8 +432,8 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 	cbs.process_response = process_response_from_carddav_request;
 	cbs.process_io_error = process_io_error_from_carddav_request;
 	cbs.process_auth_requested = process_auth_requested_from_carddav_request;
-	l = belle_http_request_listener_create_from_callbacks(&cbs, query);
-	belle_http_provider_send_request(query->context->lc->http_provider, req, l);
+	query->http_request_listener = belle_http_request_listener_create_from_callbacks(&cbs, query);
+	belle_http_provider_send_request(query->context->lc->http_provider, req, query->http_request_listener);
 }
 
 static LinphoneCardDavQuery* linphone_carddav_create_put_query(LinphoneCardDavContext *cdc, LinphoneVCard *lvc) {

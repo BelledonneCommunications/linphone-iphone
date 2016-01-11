@@ -1245,6 +1245,7 @@ struct _LinphoneCardDavQuery {
 	const char *body;
 	const char *depth;
 	const char *ifmatch;
+	belle_http_request_listener_t *http_request_listener;
 	void *user_data;
 	LinphoneCardDavQueryType type;
 };
