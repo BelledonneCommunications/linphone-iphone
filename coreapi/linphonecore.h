@@ -3924,9 +3924,10 @@ LINPHONE_PUBLIC int linphone_core_stop_conference_recording(LinphoneCore *lc);
 LINPHONE_PUBLIC LinphoneConference *linphone_core_get_conference(LinphoneCore *lc);
 /**
  * Get URIs of all participants of one conference
+ * The returned MSList contains URIs of all participant. That list must be
+ * freed after use and each URI must be unref with linphone_address_unref()
  * @param obj A #LinphoneConference
- * @return A #MSList containing URIs of all participant. That list must be
- * freed after utilisation and each URI must be unref with linphone_address_unref()
+ * @return \mslist{LinphoneAddress}
  */
 LINPHONE_PUBLIC MSList *linphone_conference_get_participants(const LinphoneConference *obj);
 /**
