@@ -66,7 +66,7 @@ public:
 	bool microphoneIsMuted() const {return m_isMuted;}
 	float getInputVolume() const;
 	
-	virtual int getParticipantCount() const {return m_participants.size() + (isIn()?1:0);}
+	virtual int getSize() const {return m_participants.size() + (isIn()?1:0);}
 	const std::list<Participant> &getParticipants() const {return m_participants;}
 	
 	virtual int startRecording(const char *path) = 0;
@@ -98,7 +98,7 @@ public:
 	virtual int enter();
 	virtual int leave();
 	virtual bool isIn() const {return m_localParticipantStream!=NULL;}
-	virtual int getParticipantCount() const;
+	virtual int getSize() const;
 	
 	virtual int startRecording(const char *path);
 	virtual int stopRecording();
@@ -380,7 +380,7 @@ int LocalConference::removeFromConference(LinphoneCall *call, bool_t active){
 }
 
 int LocalConference::remoteParticipantsCount() {
-	int count=getParticipantCount();
+	int count=getSize();
 	if (count==0) return 0;
 	if (!m_localParticipantStream) return count;
 	return count -1;
@@ -477,7 +477,7 @@ int LocalConference::leave() {
 	return 0;
 }
 
-int LocalConference::getParticipantCount() const {
+int LocalConference::getSize() const {
 	if (m_conf == NULL) {
 		return 0;
 	}
@@ -527,7 +527,7 @@ void LocalConference::onCallStreamStopping(LinphoneCall *call) {
 
 void LocalConference::onCallTerminating(LinphoneCall *call) {
 	int remote_count=remoteParticipantsCount();
-	ms_message("conference_check_uninit(): size=%i", getParticipantCount());
+	ms_message("conference_check_uninit(): size=%i", getSize());
 	if (remote_count==1 && !m_terminated){
 		convertConferenceToCall();
 	}
@@ -840,8 +840,8 @@ float linphone_conference_get_input_volume(const LinphoneConference *obj) {
 	return ((Conference *)obj)->getInputVolume();
 }
 
-int linphone_conference_get_participant_count(const LinphoneConference *obj) {
-	return ((Conference *)obj)->getParticipantCount();
+int linphone_conference_get_size(const LinphoneConference *obj) {
+	return ((Conference *)obj)->getSize();
 }
 
 MSList *linphone_conference_get_participants(const LinphoneConference *obj) {

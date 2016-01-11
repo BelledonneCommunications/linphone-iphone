@@ -57,7 +57,7 @@ int linphone_conference_mute_microphone(LinphoneConference *obj, bool_t val);
 bool_t linphone_conference_microphone_is_muted(const LinphoneConference *obj);
 float linphone_conference_get_input_volume(const LinphoneConference *obj);
 
-LINPHONE_PUBLIC int linphone_conference_get_participant_count(const LinphoneConference *obj);
+LINPHONE_PUBLIC int linphone_conference_get_size(const LinphoneConference *obj);
 LINPHONE_PUBLIC MSList *linphone_conference_get_participants(const LinphoneConference *obj);
 
 int linphone_conference_start_recording(LinphoneConference *obj, const char *path);
