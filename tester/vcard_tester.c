@@ -206,6 +206,7 @@ static void carddav_sync_done(LinphoneCardDavContext *c, bool_t success, const c
 static void carddav_new_contact(LinphoneCardDavContext *c, LinphoneFriend *lf) {
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_carddav_get_user_data(c);
 	BC_ASSERT_PTR_NOT_NULL_FATAL(lf);
+	linphone_core_add_friend(c->lc, lf);
 	linphone_friend_unref(lf);
 	stats->new_contact_count++;
 }
@@ -230,6 +231,8 @@ static void carddav_sync(void) {
 	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
 	LinphoneCardDavContext *c = linphone_core_create_carddav_context(manager->lc);
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
+	const MSList *friends = NULL;
+	LinphoneFriend *lf = NULL;
 	
 	BC_ASSERT_PTR_NOT_NULL_FATAL(c);
 	BC_ASSERT_PTR_NOT_NULL(c->server_url);
@@ -247,6 +250,16 @@ static void carddav_sync(void) {
 	BC_ASSERT_EQUAL(stats->new_contact_count, 1, int, "%i");
 	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
+	
+	friends = linphone_core_get_friend_list(manager->lc);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(friends);
+	lf = (LinphoneFriend *)friends->data;
+	linphone_carddav_put_vcard(c, lf);
+
+	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, 2000);
+	BC_ASSERT_EQUAL(stats->new_contact_count, 1, int, "%i");
+	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
+	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
 	
 	ms_free(stats);
 	linphone_carddav_destroy(c);

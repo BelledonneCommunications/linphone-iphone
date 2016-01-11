@@ -777,10 +777,17 @@ void linphone_friend_destroy(LinphoneFriend *lf) {
 }
 
 LinphoneVCard* linphone_friend_get_vcard(LinphoneFriend *fr) {
-	return fr->vcard;
+	if (fr) {
+		return fr->vcard;
+	}
+	return NULL;
 }
 
 void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard) {
+	if (!fr) {
+		return;
+	}
+	
 	if (fr->vcard) {
 		linphone_vcard_free(fr->vcard);
 	}

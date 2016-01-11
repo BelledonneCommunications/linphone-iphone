@@ -302,16 +302,32 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 				{
 					belle_sip_header_t *header = belle_sip_message_get_header((belle_sip_message_t *)event->response, "ETag");
 					LinphoneFriend *lf = (LinphoneFriend *)query->user_data;
-					if (lf) {
-						LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
-						if (header && lvc && !linphone_vcard_get_etag(lvc)) {
+					LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+					if (lf && lvc) {
+						if (header) {
 							const char *etag = belle_sip_header_get_unparsed_value(header);
-							ms_debug("eTag for newly created vCard is: %s", etag);
+							if (!linphone_vcard_get_etag(lvc)) {
+								ms_debug("eTag for newly created vCard is: %s", etag);
+							} else {
+								ms_debug("eTag for updated vCard is: %s", etag);
+							}
 							linphone_vcard_set_etag(lvc, etag);
+
+							linphone_carddav_sync_done(query->context, TRUE, "");
+							linphone_friend_unref(lf);
+						} else {
+							// For some reason, server didn't return the eTag of the updated/created vCard
+							// We need to do a GET on the vCard to get the correct one
+							MSList *vcard = NULL;
+							LinphoneCardDavResponse *response = (LinphoneCardDavResponse *)ms_new0(LinphoneCardDavResponse, 1);
+							response->url = linphone_vcard_get_url(lvc);
+							response->context = query->context;
+							vcard = ms_list_append(vcard, response);
+							linphone_carddav_pull_vcards(query->context, vcard);
+							ms_list_free(vcard);
 						}
-						linphone_carddav_sync_done(query->context, TRUE, "");
-						linphone_friend_unref(lf);
-					} else {
+					}
+					else {
 						linphone_carddav_sync_done(query->context, FALSE, "No LinphoneFriend found in user_date field of query");
 					}
 				}
