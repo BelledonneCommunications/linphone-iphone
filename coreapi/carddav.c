@@ -391,17 +391,8 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 		belle_sip_error("Could not send request, URL %s is invalid", query->url);
 		return;
 	}
-	if (query->depth) {
-		req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), belle_sip_header_create("Depth", query->depth), NULL);
-	} else if (query->ifmatch) {
-		req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), belle_sip_header_create("If-Match", query->ifmatch), NULL);
-	} else {
-		if (strcmp(query->method, "PUT")) {
-			req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), belle_sip_header_create("If-None-Match", "*"), NULL);
-		} else {
-			req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), NULL);
-		}
-	}
+	req = belle_http_request_create(query->method, uri, belle_sip_header_content_type_create("application", "xml; charset=utf-8"), NULL);
+	
 	if (!req) {
 		LinphoneCardDavContext *cdc = query->context;
 		if (cdc && cdc->sync_done_cb) {
@@ -410,6 +401,14 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 		belle_sip_object_unref(uri);
 		belle_sip_error("Could not create belle_http_request_t");
 		return;
+	}
+	
+	if (query->depth) {
+		belle_sip_message_add_header((belle_sip_message_t *)req, belle_sip_header_create("Depth", query->depth));
+	} else if (query->ifmatch) {
+		belle_sip_message_add_header((belle_sip_message_t *)req, belle_sip_header_create("If-Match", query->ifmatch));
+	} else if (strcmp(query->method, "PUT")) {
+		belle_sip_message_add_header((belle_sip_message_t *)req, belle_sip_header_create("If-None-Match", "*"));
 	}
 	
 	if (query->body) {

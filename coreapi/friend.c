@@ -143,7 +143,7 @@ LinphoneFriend *linphone_friend_new_with_address(const char *addr){
 	}
 	fr=linphone_friend_new();
 	linphone_friend_set_address(fr,linphone_address);
-	linphone_address_destroy(linphone_address);
+	linphone_address_unref(linphone_address);
 	return fr;
 }
 
@@ -180,7 +180,7 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 				linphone_address_set_display_name(id,NULL);
 				linphone_address_set_username(id,uri);
 				*result=linphone_address_as_string(id);
-				linphone_address_destroy(id);
+				linphone_address_unref(id);
 			}
 		}
 		if (*result){
@@ -191,7 +191,7 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 		}
 	}else {
 		*result=linphone_address_as_string(fr);
-		linphone_address_destroy(fr);
+		linphone_address_unref(fr);
 	}
 }
 
@@ -200,7 +200,7 @@ int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr)
 	LinphoneVCard *vcard = NULL;
 	
 	linphone_address_clean(fr);
-	if (lf->uri != NULL) linphone_address_destroy(lf->uri);
+	if (lf->uri != NULL) linphone_address_unref(lf->uri);
 	lf->uri = fr;
 	
 	vcard = linphone_friend_get_vcard(lf);
@@ -318,7 +318,7 @@ static void _linphone_friend_release_ops(LinphoneFriend *lf){
 static void _linphone_friend_destroy(LinphoneFriend *lf){
 	_linphone_friend_release_ops(lf);
 	if (lf->presence != NULL) linphone_presence_model_unref(lf->presence);
-	if (lf->uri!=NULL) linphone_address_destroy(lf->uri);
+	if (lf->uri!=NULL) linphone_address_unref(lf->uri);
 	if (lf->info!=NULL) buddy_info_free(lf->info);
 	if (lf->vcard != NULL) linphone_vcard_free(lf->vcard);
 }
@@ -857,7 +857,7 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard) {
 		linphone_address = linphone_address_new(sipAddress);
 		if (linphone_address) {
 			linphone_friend_set_address(fr, linphone_address);
-			linphone_address_destroy(linphone_address);
+			linphone_address_unref(linphone_address);
 		}
 	}
 	linphone_friend_set_name(fr, name);
@@ -1032,6 +1032,7 @@ static int create_friend(void *data, int argc, char **argv, char **colName) {
 		LinphoneAddress *addr = linphone_address_new(argv[1]);
 		lf = linphone_friend_new();
 		linphone_friend_set_address(lf, addr);
+		linphone_address_unref(addr);
 	}
 	linphone_friend_set_inc_subscribe_policy(lf, atoi(argv[2]));
 	linphone_friend_send_subscribe(lf, atoi(argv[3]));
