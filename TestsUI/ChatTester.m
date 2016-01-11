@@ -297,6 +297,7 @@
 	[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list" byFractionOfSizeHorizontal:0.f vertical:1.f];
 	for (int i = 0; i < 2; i++) {
 		// messages order is not known: if upload bitrate is huge, first image can be uploaded before last started
+		timeout = 3;
 		while (![tester tryFindingTappableViewWithAccessibilityLabel:@"Download" error:nil] && timeout) {
 			[tester scrollViewWithAccessibilityIdentifier:@"ChatRoom list"
 							   byFractionOfSizeHorizontal:0.f
