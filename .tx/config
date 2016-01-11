@@ -97,11 +97,6 @@ source_lang = en
 file_filter = Classes/<lang>.lproj/ImageView.strings
 source_file = Classes/Base.lproj/ImageView.strings
 
-[linphone-ios.launchscreenstrings]
-source_lang = en
-file_filter = Classes/<lang>.lproj/LaunchScreen.strings
-source_file = Classes/Base.lproj/LaunchScreen.strings
-
 [linphone-ios.settingsviewstrings]
 source_lang = en
 file_filter = Classes/<lang>.lproj/SettingsView.strings

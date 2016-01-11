@@ -477,7 +477,6 @@
 		639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */; };
 		639E9C801C0DB13D00019A75 /* UICheckBoxTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 639E9C7F1C0DB13D00019A75 /* UICheckBoxTableView.m */; };
 		639E9C931C0DB7BE00019A75 /* FirstLoginView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639E9C951C0DB7BE00019A75 /* FirstLoginView.xib */; };
-		639E9C9A1C0DB7D300019A75 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639E9C9C1C0DB7D300019A75 /* LaunchScreen.xib */; };
 		639E9C9D1C0DB7DF00019A75 /* UICallPausedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639E9C9F1C0DB7DF00019A75 /* UICallPausedCell.xib */; };
 		639E9CA01C0DB7E500019A75 /* UIChatBubblePhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639E9CA21C0DB7E500019A75 /* UIChatBubblePhotoCell.xib */; };
 		639E9CA31C0DB7EA00019A75 /* UIChatBubbleTextCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639E9CA51C0DB7EA00019A75 /* UIChatBubbleTextCell.xib */; };
@@ -1301,7 +1300,6 @@
 		639E9C7E1C0DB13D00019A75 /* UICheckBoxTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICheckBoxTableView.h; sourceTree = "<group>"; };
 		639E9C7F1C0DB13D00019A75 /* UICheckBoxTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICheckBoxTableView.m; sourceTree = "<group>"; };
 		639E9C941C0DB7BE00019A75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/FirstLoginView.xib; sourceTree = "<group>"; };
-		639E9C9B1C0DB7D300019A75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		639E9C9E1C0DB7DF00019A75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICallPausedCell.xib; sourceTree = "<group>"; };
 		639E9CA11C0DB7E500019A75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatBubblePhotoCell.xib; sourceTree = "<group>"; };
 		639E9CA41C0DB7EA00019A75 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UIChatBubbleTextCell.xib; sourceTree = "<group>"; };
@@ -1797,7 +1795,6 @@
 				D37EE11016035793003608A6 /* ImageView.xib */,
 				63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */,
 				63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */,
-				639E9C9C1C0DB7D300019A75 /* LaunchScreen.xib */,
 				1D3623240D0F684500981E51 /* LinphoneAppDelegate.h */,
 				1D3623250D0F684500981E51 /* LinphoneAppDelegate.m */,
 				D37DC6BF1594AE1800B2A5EB /* LinphoneCoreSettingsStore.h */,
@@ -3260,7 +3257,6 @@
 				636B993D1C298401003BA37C /* speaker_disabled.png in Resources */,
 				636B98A51C298401003BA37C /* history_all_default@2x.png in Resources */,
 				636B98311C298401003BA37C /* camera_default@2x.png in Resources */,
-				639E9C9A1C0DB7D300019A75 /* LaunchScreen.xib in Resources */,
 				636B99201C298401003BA37C /* route_earpiece_default@2x.png in Resources */,
 				636B986C1C298401003BA37C /* contact_add_disabled.png in Resources */,
 				636B98501C298401003BA37C /* chat_send_over.png in Resources */,
@@ -3720,14 +3716,6 @@
 				639E9C941C0DB7BE00019A75 /* Base */,
 			);
 			name = FirstLoginView.xib;
-			sourceTree = "<group>";
-		};
-		639E9C9C1C0DB7D300019A75 /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				639E9C9B1C0DB7D300019A75 /* Base */,
-			);
-			name = LaunchScreen.xib;
 			sourceTree = "<group>";
 		};
 		639E9C9F1C0DB7DF00019A75 /* UICallPausedCell.xib */ = {
