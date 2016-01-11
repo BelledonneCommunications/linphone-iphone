@@ -11,6 +11,7 @@
 #include "linphone/liblinphone_tester.h"
 #import "NSObject+DTRuntime.h"
 #import "Utils.h"
+#import "Log.h"
 
 @interface LinphoneTester_Tests : XCTestCase
 @property(retain, nonatomic) NSString *bundlePath;
