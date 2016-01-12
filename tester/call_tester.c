@@ -717,80 +717,80 @@ static void disable_all_codecs(const MSList* elem, LinphoneCoreManager* call){
  ***/
 static void call_with_no_audio_codec(void){
     
-    LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
-    LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
-    LinphoneCall* out_call ;
-    
-    const MSList* elem =linphone_core_get_audio_codecs(caller->lc);
-    
-    disable_all_codecs(elem, caller);
-
-    
-    out_call = linphone_core_invite_address(caller->lc,callee->identity);
-    linphone_call_ref(out_call);
-    BC_ASSERT_TRUE(wait_for(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallOutgoingInit, 1));
-    
-
-    BC_ASSERT_TRUE(wait_for_until(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallError, 1, 6000));
-    BC_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable, int, "%d");
-    BC_ASSERT_EQUAL(callee->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
-    
-    linphone_call_unref(out_call);
-    linphone_core_manager_destroy(callee);
-    linphone_core_manager_destroy(caller);
+	LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall* out_call ;
+	
+	const MSList* elem =linphone_core_get_audio_codecs(caller->lc);
+	
+	disable_all_codecs(elem, caller);
+	
+	
+	out_call = linphone_core_invite_address(caller->lc,callee->identity);
+	linphone_call_ref(out_call);
+	BC_ASSERT_TRUE(wait_for(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallOutgoingInit, 1));
+	
+	
+	BC_ASSERT_TRUE(wait_for_until(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallError, 1, 6000));
+	BC_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable, int, "%d");
+	BC_ASSERT_EQUAL(callee->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+	
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(callee);
+	linphone_core_manager_destroy(caller);
 
 }
 
 static void video_call_with_no_audio_and_no_video_codec(void){
-    
-    LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
-    LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
-    LinphoneCall* out_call ;
-    LinphoneVideoPolicy callee_policy, caller_policy;
-    LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
-    
-    const MSList* elem_video =linphone_core_get_video_codecs(caller->lc);
-    
-    const MSList* elem_audio =linphone_core_get_audio_codecs(caller->lc);
-    
-    disable_all_codecs(elem_audio, caller);
-    disable_all_codecs(elem_video, caller);
-    
-    callee_policy.automatically_initiate=FALSE;
-    callee_policy.automatically_accept=TRUE;
-    caller_policy.automatically_initiate=TRUE;
-    caller_policy.automatically_accept=FALSE;
-        
-    linphone_core_set_video_policy(callee->lc,&callee_policy);
-    linphone_core_set_video_policy(caller->lc,&caller_policy);
-    
-    
-    linphone_core_enable_video_display(callee->lc, TRUE);
-    linphone_core_enable_video_capture(callee->lc, TRUE);
-    
-    linphone_core_enable_video_display(caller->lc, TRUE);
-    linphone_core_enable_video_capture(caller->lc, TRUE);
-    
-        /* Create call params */
-    caller_test_params.base = linphone_core_create_call_params(caller->lc, NULL);
-    
-    
-    out_call = linphone_core_invite_address_with_params(caller->lc, callee->identity,caller_test_params.base);
-    linphone_call_ref(out_call);
-    
-    linphone_call_params_destroy(caller_test_params.base);
-    if (callee_test_params.base) linphone_call_params_destroy(callee_test_params.base);
-    
-
-    BC_ASSERT_TRUE(wait_for(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallOutgoingInit, 1));
-    
-    BC_ASSERT_TRUE(wait_for_until(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallError, 1, 6000));
-    BC_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable, int, "%d");
-    BC_ASSERT_EQUAL(callee->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
-    
-    linphone_call_unref(out_call);
-    linphone_core_manager_destroy(callee);
-    linphone_core_manager_destroy(caller);
+	
+	LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall* out_call ;
+	LinphoneVideoPolicy callee_policy, caller_policy;
+	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
+	
+	const MSList* elem_video =linphone_core_get_video_codecs(caller->lc);
+	
+	const MSList* elem_audio =linphone_core_get_audio_codecs(caller->lc);
+	
+	disable_all_codecs(elem_audio, caller);
+	disable_all_codecs(elem_video, caller);
+	
+	callee_policy.automatically_initiate=FALSE;
+	callee_policy.automatically_accept=TRUE;
+	caller_policy.automatically_initiate=TRUE;
+	caller_policy.automatically_accept=FALSE;
+	
+	linphone_core_set_video_policy(callee->lc,&callee_policy);
+	linphone_core_set_video_policy(caller->lc,&caller_policy);
+	
+	
+	linphone_core_enable_video_display(callee->lc, TRUE);
+	linphone_core_enable_video_capture(callee->lc, TRUE);
+	
+	linphone_core_enable_video_display(caller->lc, TRUE);
+	linphone_core_enable_video_capture(caller->lc, TRUE);
+	
+	/* Create call params */
+	caller_test_params.base = linphone_core_create_call_params(caller->lc, NULL);
+	
+	
+	out_call = linphone_core_invite_address_with_params(caller->lc, callee->identity,caller_test_params.base);
+	linphone_call_ref(out_call);
+	
+	linphone_call_params_destroy(caller_test_params.base);
+	if (callee_test_params.base) linphone_call_params_destroy(callee_test_params.base);
+	
+	
+	BC_ASSERT_TRUE(wait_for(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallOutgoingInit, 1));
+	
+	BC_ASSERT_TRUE(wait_for_until(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallError, 1, 6000));
+	BC_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable, int, "%d");
+	BC_ASSERT_EQUAL(callee->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+	
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(callee);
+	linphone_core_manager_destroy(caller);
     
 }
 

@@ -753,17 +753,17 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	md->streams[call->main_video_stream_index].rtcp_mux = rtcp_mux;
 	strncpy(md->streams[call->main_video_stream_index].name,"Video",sizeof(md->streams[call->main_video_stream_index].name)-1);
 
-    codec_hints.bandwidth_limit=0;
-    codec_hints.max_codecs=-1;
-    codec_hints.previously_used=old_md ? old_md->streams[call->main_video_stream_index].already_assigned_payloads : NULL;
-    l=make_codec_list(lc, &codec_hints, SalVideo, lc->codecs_conf.video_codecs);
+	codec_hints.bandwidth_limit=0;
+	codec_hints.max_codecs=-1;
+	codec_hints.previously_used=old_md ? old_md->streams[call->main_video_stream_index].already_assigned_payloads : NULL;
+	l=make_codec_list(lc, &codec_hints, SalVideo, lc->codecs_conf.video_codecs);
     
-    if (params->has_video && l != NULL){
+	if (params->has_video && l != NULL){
 		strncpy(md->streams[call->main_video_stream_index].rtp_addr,linphone_call_get_public_ip_for_stream(call,call->main_video_stream_index),sizeof(md->streams[call->main_video_stream_index].rtp_addr));
 		strncpy(md->streams[call->main_video_stream_index].rtcp_addr,linphone_call_get_public_ip_for_stream(call,call->main_video_stream_index),sizeof(md->streams[call->main_video_stream_index].rtcp_addr));
 		md->streams[call->main_video_stream_index].rtp_port=call->media_ports[call->main_video_stream_index].rtp_port;
 		md->streams[call->main_video_stream_index].rtcp_port=call->media_ports[call->main_video_stream_index].rtcp_port;
-				md->streams[call->main_video_stream_index].payloads=l;
+		md->streams[call->main_video_stream_index].payloads=l;
 		if (call->videostream && call->videostream->ms.sessions.rtp_session) {
 			char* me = linphone_address_as_string_uri_only(call->me);
 			md->streams[call->main_video_stream_index].rtp_ssrc=rtp_session_get_send_ssrc(call->videostream->ms.sessions.rtp_session);
