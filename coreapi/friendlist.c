@@ -305,7 +305,10 @@ void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_
 
 LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *friend) {
 	if (friend->uri == NULL || friend->in_list) {
-		ms_error("linphone_friend_list_add_friend(): invalid friend");
+		if (!friend->uri)
+			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
+		if (friend->in_list)
+			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
 		return LinphoneFriendListInvalidFriend;
 	}
 	if (ms_list_find(list->friends, friend) != NULL) {
