@@ -148,6 +148,7 @@ static LinphoneAccountCreatorStatus validate_uri(const char* username, const cha
 
 	if (addr == NULL) {
 		status = LinphoneAccountCreatorUsernameInvalid;
+		goto end;
 	}
 
 	if (domain && linphone_address_set_domain(addr, domain) != 0) {
@@ -157,7 +158,6 @@ static LinphoneAccountCreatorStatus validate_uri(const char* username, const cha
 	if (display_name && linphone_address_set_display_name(addr, display_name) != 0) {
 		status = LinphoneAccountCreatorDisplayNameInvalid;
 	}
-
 	linphone_address_unref(addr);
 end:
 	linphone_proxy_config_destroy(proxy);
@@ -184,13 +184,16 @@ static bool_t is_matching_regex(const char *entry, const char* regex) {
 }
 
 LinphoneAccountCreatorStatus linphone_account_creator_set_username(LinphoneAccountCreator *creator, const char *username) {
-	int min_length = lp_config_get_int(creator->core->config, "assistant", "username_min_length", 0);
-	int fixed_length = lp_config_get_int(creator->core->config, "assistant", "username_length", 0);
+	int min_length = lp_config_get_int(creator->core->config, "assistant", "username_min_length", -1);
+	int fixed_length = lp_config_get_int(creator->core->config, "assistant", "username_length", -1);
+	int max_length = lp_config_get_int(creator->core->config, "assistant", "username_max_length", -1);
 	bool_t use_phone_number = lp_config_get_int(creator->core->config, "assistant", "use_phone_number", 0);
 	const char* regex = lp_config_get_string(creator->core->config, "assistant", "username_regex", 0);
 	LinphoneAccountCreatorStatus status;
 	if (min_length > 0 && strlen(username) < min_length) {
 		return LinphoneAccountCreatorUsernameTooShort;
+	} else if (max_length > 0 && strlen(username) > max_length) {
+		return LinphoneAccountCreatorUsernameTooLong;
 	} else if (fixed_length > 0 && strlen(username) != fixed_length) {
 		return LinphoneAccountCreatorUsernameInvalidSize;
 	} else if (use_phone_number && !linphone_proxy_config_is_phone_number(NULL, username)) {
@@ -209,9 +212,12 @@ const char * linphone_account_creator_get_username(const LinphoneAccountCreator 
 }
 
 LinphoneAccountCreatorStatus linphone_account_creator_set_password(LinphoneAccountCreator *creator, const char *password){
-	int min_length = lp_config_get_int(creator->core->config, "assistant", "password_min_length", 0);
+	int min_length = lp_config_get_int(creator->core->config, "assistant", "password_min_length", -1);
+	int max_length = lp_config_get_int(creator->core->config, "assistant", "password_max_length", -1);
 	if (min_length > 0 && strlen(password) < min_length) {
 		return LinphoneAccountCreatorPasswordTooShort;
+	} else if (max_length > 0 && strlen(password) > max_length) {
+		return LinphoneAccountCreatorPasswordTooLong;
 	}
 	set_string(&creator->password, password, FALSE);
 	return LinphoneAccountCreatorOK;

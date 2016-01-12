@@ -45,20 +45,20 @@ void linphone_conference_free(LinphoneConference *obj);
 
 int linphone_conference_add_participant(LinphoneConference *obj, LinphoneCall *call);
 int linphone_conference_remove_participant_with_call(LinphoneConference *obj, LinphoneCall *call);
-int linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri);
+LINPHONE_PUBLIC int linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri);
 int linphone_conference_terminate(LinphoneConference *obj);
 
 int linphone_conference_enter(LinphoneConference *obj);
 int linphone_conference_leave(LinphoneConference *obj);
-bool_t linphone_conference_is_in(const LinphoneConference *obj);
+LINPHONE_PUBLIC bool_t linphone_conference_is_in(const LinphoneConference *obj);
 AudioStream *linphone_conference_get_audio_stream(const LinphoneConference *obj);
 
 int linphone_conference_mute_microphone(LinphoneConference *obj, bool_t val);
 bool_t linphone_conference_microphone_is_muted(const LinphoneConference *obj);
 float linphone_conference_get_input_volume(const LinphoneConference *obj);
 
-int linphone_conference_get_participant_count(const LinphoneConference *obj);
-MSList *linphone_conference_get_participants(const LinphoneConference *obj);
+LINPHONE_PUBLIC int linphone_conference_get_size(const LinphoneConference *obj);
+LINPHONE_PUBLIC MSList *linphone_conference_get_participants(const LinphoneConference *obj);
 
 int linphone_conference_start_recording(LinphoneConference *obj, const char *path);
 int linphone_conference_stop_recording(LinphoneConference *obj);

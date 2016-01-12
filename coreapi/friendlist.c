@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "private.h"
 
+#include <polarssl/md5.h>
 
 
 static char * create_resource_list_xml(const LinphoneFriendList *list) {
@@ -225,6 +226,7 @@ static LinphoneFriendList * linphone_friend_list_new(void) {
 static void linphone_friend_list_destroy(LinphoneFriendList *list) {
 	if (list->display_name != NULL) ms_free(list->display_name);
 	if (list->rls_uri != NULL) ms_free(list->rls_uri);
+	if (list->content_digest != NULL) ms_free(list->content_digest);
 	if (list->event != NULL) linphone_event_unref(list->event);
 	list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))linphone_friend_unref);
 }
@@ -303,7 +305,10 @@ void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_
 
 LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
 	if (lf->uri == NULL || lf->in_list) {
-		ms_error("linphone_friend_list_add_friend(): invalid friend");
+		if (!lf->uri)
+			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
+		if (lf->in_list)
+			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
 		return LinphoneFriendListInvalidFriend;
 	}
 	if (ms_list_find(list->friends, lf) != NULL) {
@@ -393,27 +398,39 @@ void linphone_friend_list_close_subscriptions(LinphoneFriendList *list) {
 
 void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, LinphoneProxyConfig *cfg, bool_t only_when_registered) {
 	const MSList *elem;
-	if (list->event != NULL) {
-		linphone_event_refresh_subscribe(list->event);
-	} else if (list->rls_uri != NULL) {
+	if (list->rls_uri != NULL) {
 		LinphoneAddress *address = linphone_address_new(list->rls_uri);
 		char *xml_content = create_resource_list_xml(list);
 		if ((address != NULL) && (xml_content != NULL) && (linphone_friend_list_has_subscribe_inactive(list) == TRUE)) {
-			LinphoneContent *content;
-			int expires = lp_config_get_int(list->lc->config, "sip", "rls_presence_expires", 3600);
-			list->expected_notification_version = 0;
-			list->event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
-			linphone_event_set_internal(list->event, TRUE);
-			linphone_event_add_custom_header(list->event, "Require", "recipient-list-subscribe");
-			linphone_event_add_custom_header(list->event, "Supported", "eventlist");
-			linphone_event_add_custom_header(list->event, "Accept", "multipart/related, application/pidf+xml, application/rlmi+xml");
-			linphone_event_add_custom_header(list->event, "Content-Disposition", "recipient-list");
-			content = linphone_core_create_content(list->lc);
-			linphone_content_set_type(content, "application");
-			linphone_content_set_subtype(content, "resource-lists+xml");
-			linphone_content_set_string_buffer(content, xml_content);
-			linphone_event_send_subscribe(list->event, content);
-			linphone_content_unref(content);
+			unsigned char digest[16];
+			md5((unsigned char *)xml_content, strlen(xml_content), digest);
+			if ((list->event != NULL) && (list->content_digest != NULL) && (memcmp(list->content_digest, digest, sizeof(digest)) == 0)) {
+				/* The content has not changed, only refresh the event. */
+				linphone_event_refresh_subscribe(list->event);
+			} else {
+				LinphoneContent *content;
+				int expires = lp_config_get_int(list->lc->config, "sip", "rls_presence_expires", 3600);
+				list->expected_notification_version = 0;
+				if (list->content_digest != NULL) ms_free(list->content_digest);
+				list->content_digest = ms_malloc(sizeof(digest));
+				memcpy(list->content_digest, digest, sizeof(digest));
+				if (list->event != NULL) {
+					linphone_event_terminate(list->event);
+					linphone_event_unref(list->event);
+				}
+				list->event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
+				linphone_event_set_internal(list->event, TRUE);
+				linphone_event_add_custom_header(list->event, "Require", "recipient-list-subscribe");
+				linphone_event_add_custom_header(list->event, "Supported", "eventlist");
+				linphone_event_add_custom_header(list->event, "Accept", "multipart/related, application/pidf+xml, application/rlmi+xml");
+				linphone_event_add_custom_header(list->event, "Content-Disposition", "recipient-list");
+				content = linphone_core_create_content(list->lc);
+				linphone_content_set_type(content, "application");
+				linphone_content_set_subtype(content, "resource-lists+xml");
+				linphone_content_set_string_buffer(content, xml_content);
+				linphone_event_send_subscribe(list->event, content);
+				linphone_content_unref(content);
+			}
 		}
 		if (address != NULL) linphone_address_unref(address);
 		if (xml_content != NULL) ms_free(xml_content);

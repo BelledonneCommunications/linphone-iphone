@@ -3900,9 +3900,10 @@ LINPHONE_PUBLIC	float linphone_core_get_conference_local_input_volume(LinphoneCo
  */
 LINPHONE_PUBLIC	int linphone_core_terminate_conference(LinphoneCore *lc);
 /**
- * Get the number of remote participant in the running conference
+ * Get the number of participant in the running conference. The local
+ * participant is included in the count only if it is in the conference.
  * @param lc #LinphoneCore
- * @return The number of remote participant
+ * @return The number of participant
  */
 LINPHONE_PUBLIC	int linphone_core_get_conference_size(LinphoneCore *lc);
 /**

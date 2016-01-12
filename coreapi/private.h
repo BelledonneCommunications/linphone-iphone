@@ -696,6 +696,7 @@ struct _LinphoneFriendList {
 	char *display_name;
 	char *rls_uri;
 	MSList *friends;
+	unsigned char *content_digest;
 	int expected_notification_version;
 };
 

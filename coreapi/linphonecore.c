@@ -7572,7 +7572,7 @@ bool_t linphone_core_is_in_conference(const LinphoneCore *lc) {
 }
 
 int linphone_core_get_conference_size(LinphoneCore *lc) {
-	if(lc->conf_ctx) return linphone_conference_get_participant_count(lc->conf_ctx);
+	if(lc->conf_ctx) return linphone_conference_get_size(lc->conf_ctx);
 	return 0;
 }
 
