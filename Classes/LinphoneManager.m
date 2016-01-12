@@ -525,6 +525,17 @@ exit_dbmigration:
 		[self lpConfigSetBool:TRUE forKey:@"file_transfer_migration_done"];
 	}
 }
+
+static void migrateWizardToAssistant(const char *entry, void *user_data) {
+	LinphoneManager *thiz = (__bridge LinphoneManager *)(user_data);
+	NSString *key = [NSString stringWithUTF8String:entry];
+	[thiz lpConfigSetString:[thiz lpConfigStringForKey:key inSection:@"wizard"] forKey:key inSection:@"assistant"];
+}
+
+- (void)migrationFromVersion2To3 {
+	lp_config_for_each_entry(configDb, "wizard", migrateWizardToAssistant, (__bridge void *)(self));
+}
+
 #pragma mark - Linphone Core Functions
 
 + (LinphoneCore *)getLc {
@@ -1338,6 +1349,8 @@ static LinphoneCoreVTable linphonec_vtable = {
 	linphone_core_set_call_logs_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
 
 	[self migrationLinphoneSettings];
+
+	[self migrationFromVersion2To3];
 
 	[self setupNetworkReachabilityCallback];
 
