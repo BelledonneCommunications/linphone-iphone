@@ -116,7 +116,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (tableController.isEditing) {
 		tableController.editing = NO;
 	}
-	[self update];
+	[self refreshButtons];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -144,20 +144,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)changeView:(ContactsCategory)view {
 	CGRect frame = _selectedButtonImage.frame;
-	if (view == ContactsAll) {
+	if (view == ContactsAll && !allButton.selected) {
 		frame.origin.x = allButton.frame.origin.x;
 		[ContactSelection setSipFilter:nil];
 		[ContactSelection enableEmailFilter:FALSE];
-		[tableController loadData];
 		allButton.selected = TRUE;
 		linphoneButton.selected = FALSE;
-	} else {
+		[tableController loadData];
+	} else if (view == ContactsLinphone && !linphoneButton.selected) {
 		frame.origin.x = linphoneButton.frame.origin.x;
 		[ContactSelection setSipFilter:LinphoneManager.instance.contactFilter];
 		[ContactSelection enableEmailFilter:FALSE];
-		[tableController loadData];
 		linphoneButton.selected = TRUE;
 		allButton.selected = FALSE;
+		[tableController loadData];
 	}
 	_selectedButtonImage.frame = frame;
 }
@@ -165,11 +165,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)refreshButtons {
 	[addButton setHidden:FALSE];
 	[self changeView:[ContactSelection getSipFilter] ? ContactsLinphone : ContactsAll];
-}
-
-- (void)update {
-	[self refreshButtons];
-	[tableController loadData];
 }
 
 #pragma mark - Action Functions

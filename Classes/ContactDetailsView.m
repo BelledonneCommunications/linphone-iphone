@@ -52,7 +52,6 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		return;
 	}
 
-	LOGI(@"Reset data to contact %p", _contact);
 	ABRecordID recordID = ABRecordGetRecordID(_contact);
 	ABAddressBookRevert(addressBook);
 	_contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
@@ -60,8 +59,10 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		[PhoneMainView.instance popCurrentView];
 		return;
 	}
+	LOGI(@"Reset data to contact %p", _contact);
+
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
-	[_tableController setContact:_contact];
+	[_tableController setContact:[[Contact alloc] initWithPerson:_contact]];
 }
 
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
@@ -118,11 +119,10 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	_contact = acontact;
 	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
 	[ContactDisplay setDisplayNameLabel:_nameLabel forContact:acontact];
-	[_tableController setContact:_contact];
+	[_tableController setContact:[[Contact alloc] initWithPerson:_contact]];
 
 	if (reload) {
 		[self setEditing:TRUE animated:FALSE];
-		[[_tableController tableView] reloadData];
 	}
 }
 
@@ -274,10 +274,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onEditClick:(id)event {
 	if (_tableController.isEditing) {
-		if ([_tableController isValid]) {
-			[self setEditing:FALSE];
-			[self saveData];
-		}
+		[self setEditing:FALSE];
+		[self saveData];
 	} else {
 		[self setEditing:TRUE];
 	}
@@ -300,14 +298,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[LinphoneUtils findAndResignFirstResponder:self.view];
 	if (_tableController.isEditing) {
 		[ImagePickerView SelectImageFromDevice:self atPosition:_avatarImage inView:self.view];
-	}
-}
-
-- (void)onModification:(id)event {
-	if (!_tableController.isEditing || [_tableController isValid]) {
-		[_editButton setEnabled:TRUE];
-	} else {
-		[_editButton setEnabled:FALSE];
 	}
 }
 

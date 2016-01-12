@@ -18,7 +18,6 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <AddressBook/AddressBook.h>
 
 #import "UICompositeView.h"
 #import "UIToggleButton.h"
@@ -26,8 +25,7 @@
 #import "UIRoundedImageView.h"
 #import "ImagePickerView.h"
 
-@interface ContactDetailsView
-	: TPMultiLayoutViewController <UICompositeViewDelegate, ContactDetailsDelegate, ImagePickerDelegate> {
+@interface ContactDetailsView : TPMultiLayoutViewController <UICompositeViewDelegate, ImagePickerDelegate> {
 	ABAddressBookRef addressBook;
 	BOOL inhibUpdate;
 }

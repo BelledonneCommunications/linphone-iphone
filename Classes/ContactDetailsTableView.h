@@ -20,7 +20,8 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 
-#import "ContactDetailsDelegate.h"
+#import "Contact.h"
+#import "LinphoneUI/UIToggleButton.h"
 
 typedef enum _ContactSections {
 	ContactSections_None = 0, // first section is empty because we cannot set header for first section
@@ -32,19 +33,14 @@ typedef enum _ContactSections {
 	ContactSections_MAX
 } ContactSections;
 
-@interface ContactDetailsTableView : UITableViewController <UITextFieldDelegate> {
-  @private
-	NSMutableArray *dataCache;
-	NSMutableArray *labelArray;
-}
+@interface ContactDetailsTableView : UITableViewController <UITextFieldDelegate>
 
-@property(nonatomic, assign, setter=setContact:) ABRecordRef contact;
-@property(nonatomic, strong) IBOutlet id<ContactDetailsDelegate> contactDetailsDelegate;
+@property(strong, nonatomic) Contact *contact;
+@property(weak, nonatomic) IBOutlet UIToggleButton *editButton;
 
-- (BOOL)isValid;
 - (void)addPhoneField:(NSString *)number;
 - (void)addSipField:(NSString *)address;
 - (void)addEmailField:(NSString *)address;
-- (void)setContact:(ABRecordRef)contact;
+- (void)setContact:(Contact *)contact;
 
 @end

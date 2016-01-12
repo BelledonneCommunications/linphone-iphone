@@ -95,6 +95,7 @@
 		633888451BFB2C49001D5E7B /* HPGrowingTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 633888421BFB2C49001D5E7B /* HPGrowingTextView.m */; };
 		633888461BFB2C49001D5E7B /* HPTextViewInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 633888441BFB2C49001D5E7B /* HPTextViewInternal.m */; };
 		6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6341807B1BBC103100F71761 /* ChatConversationCreateTableView.m */; };
+		63423C0A1C4501D000D9A050 /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = 63423C091C4501D000D9A050 /* Contact.m */; };
 		634610061B61330300548952 /* UILabel+Boldify.m in Sources */ = {isa = PBXBuildFile; fileRef = 634610051B61330300548952 /* UILabel+Boldify.m */; };
 		6346100F1B61409800548952 /* CallOutgoingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6346100E1B61409800548952 /* CallOutgoingView.m */; };
 		634610121B6140A500548952 /* CallOutgoingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 634610101B6140A500548952 /* CallOutgoingView.xib */; };
@@ -905,6 +906,8 @@
 		633E388219FFB0F400936D1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		6341807A1BBC103100F71761 /* ChatConversationCreateTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateTableView.h; sourceTree = "<group>"; };
 		6341807B1BBC103100F71761 /* ChatConversationCreateTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateTableView.m; sourceTree = "<group>"; };
+		63423C081C4501D000D9A050 /* Contact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contact.h; sourceTree = "<group>"; };
+		63423C091C4501D000D9A050 /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
 		634610041B61330300548952 /* UILabel+Boldify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+Boldify.h"; sourceTree = "<group>"; };
 		634610051B61330300548952 /* UILabel+Boldify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+Boldify.m"; sourceTree = "<group>"; };
 		6346100D1B61409800548952 /* CallOutgoingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallOutgoingView.h; sourceTree = "<group>"; };
@@ -1378,7 +1381,6 @@
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
 		D306459C1611EC2900BB571E /* UILoadingImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILoadingImageView.h; sourceTree = "<group>"; };
 		D306459D1611EC2900BB571E /* UILoadingImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UILoadingImageView.m; sourceTree = "<group>"; };
-		D30BBD1215D3EFEB000F93DD /* ContactDetailsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsDelegate.h; sourceTree = "<group>"; };
 		D30BF33216A427BC00AF0026 /* libtunnel.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtunnel.a; path = "liblinphone-sdk/apple-darwin/lib/libtunnel.a"; sourceTree = "<group>"; };
 		D3128FDE15AABC7E00A2147A /* ContactDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsView.h; sourceTree = "<group>"; };
 		D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailsView.m; sourceTree = "<group>"; };
@@ -1760,7 +1762,6 @@
 				D35E7594159460560066B1C1 /* ChatsListView.h */,
 				D35E7595159460560066B1C1 /* ChatsListView.m */,
 				D38187B415FE340500C3EDCA /* ChatsListView.xib */,
-				D30BBD1215D3EFEB000F93DD /* ContactDetailsDelegate.h */,
 				D37C639915AADEF4009D0BAC /* ContactDetailsTableView.h */,
 				D37C639A15AADEF5009D0BAC /* ContactDetailsTableView.m */,
 				D3128FDE15AABC7E00A2147A /* ContactDetailsView.h */,
@@ -2571,6 +2572,8 @@
 				D3554EC515CA79A900478841 /* XMLRPC.xcodeproj */,
 				63D11C521C3D501200E8FCEE /* Log.m */,
 				63D11C541C3D503A00E8FCEE /* Log.h */,
+				63423C081C4501D000D9A050 /* Contact.h */,
+				63423C091C4501D000D9A050 /* Contact.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -3414,6 +3417,7 @@
 				22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */,
 				63B8D6A21BCBF43100C12B09 /* UIChatCreateCell.m in Sources */,
 				636BC9971B5F921B00C754CE /* UIIconButton.m in Sources */,
+				63423C0A1C4501D000D9A050 /* Contact.m in Sources */,
 				340751E7150F38FD00B89C47 /* UIVideoButton.m in Sources */,
 				34216F401547EBCD00EA9777 /* VideoZoomHandler.m in Sources */,
 				D3F83EEC1582021700336684 /* CallView.m in Sources */,
