@@ -391,7 +391,6 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 		LinphoneAddress *address = linphone_address_new(list->rls_uri);
 		char *xml_content = create_resource_list_xml(list);
 		if ((address != NULL) && (xml_content != NULL) && (linphone_friend_list_has_subscribe_inactive(list) == TRUE)) {
-			md5_context ctx;
 			unsigned char digest[16];
 			md5((unsigned char *)xml_content, strlen(xml_content), digest);
 			if ((list->event != NULL) && (list->content_digest != NULL) && (memcmp(list->content_digest, digest, sizeof(digest)) == 0)) {
