@@ -35,6 +35,7 @@
 #include "sipsetup.h"
 #include "quality_reporting.h"
 #include "ringtoneplayer.h"
+#include "vcard.h"
 
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
