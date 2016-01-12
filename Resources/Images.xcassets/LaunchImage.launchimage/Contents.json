@@ -59,14 +59,14 @@
     {
       "orientation" : "portrait",
       "idiom" : "iphone",
-      "filename" : "linphone_splashscreenios6@2x.png",
+      "filename" : "linphone_splashscreen@2x.png",
       "extent" : "full-screen",
       "scale" : "2x"
     },
     {
       "orientation" : "portrait",
       "idiom" : "iphone",
-      "filename" : "linphone_splashscreen-568hios6@2x.png",
+      "filename" : "linphone_splashscreen-568h@2x.png",
       "extent" : "full-screen",
       "subtype" : "retina4",
       "scale" : "2x"
