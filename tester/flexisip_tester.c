@@ -739,7 +739,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 
 		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
 		linphone_core_manager_start(marie, TRUE);
-		linphone_core_set_network_reachable(pauline->lc, TRUE);
+		linphone_core_set_network_reachable(marie->lc, TRUE);
 
 		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
 		linphone_core_manager_start(pauline, TRUE);
