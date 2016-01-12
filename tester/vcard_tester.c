@@ -214,16 +214,19 @@ static void carddav_new_contact(LinphoneCardDavContext *c, LinphoneFriend *lf) {
 static void carddav_removed_contact(LinphoneCardDavContext *c, LinphoneFriend *lf) {
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_carddav_get_user_data(c);
 	BC_ASSERT_PTR_NOT_NULL_FATAL(lf);
+	linphone_core_remove_friend(c->lc, lf);
 	linphone_friend_unref(lf);
 	stats->removed_contact_count++;
 }
 
-static void carddav_updated_contact(LinphoneCardDavContext *c, LinphoneFriend *lf1, LinphoneFriend *lf2) {
+static void carddav_updated_contact(LinphoneCardDavContext *c, LinphoneFriend *new_lf, LinphoneFriend *old_lf) {
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_carddav_get_user_data(c);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(lf1);
-	BC_ASSERT_PTR_NOT_NULL_FATAL(lf2);
-	linphone_friend_unref(lf1);
-	linphone_friend_unref(lf2);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(new_lf);
+	BC_ASSERT_PTR_NOT_NULL_FATAL(old_lf);
+	linphone_core_remove_friend(c->lc, old_lf);
+	linphone_core_add_friend(c->lc, new_lf);
+	linphone_friend_unref(new_lf);
+	linphone_friend_unref(old_lf);
 	stats->updated_contact_count++;
 }
 
@@ -311,7 +314,7 @@ static void carddav_sync_3(void) {
 	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
 	LinphoneCardDavContext *c = linphone_core_create_carddav_context(manager->lc);
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
-	LinphoneVCard *lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:79100a4d-2806-482f-bf27-0e09dc47149b\r\nFN:Sylvain Berfini\r\nIMPP;TYPE=work:sip:sylvain@sip.linphone.org\r\nEND:VCARD\r\n");
+	LinphoneVCard *lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nFN:Sylvain Berfini\r\nIMPP;TYPE=work:sip:sylvain@sip.linphone.org\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
 	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
 	

@@ -100,6 +100,7 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 					snprintf(full_url, sizeof(full_url), "%s%s", cdc->server_url, vCard_name);
 					linphone_vcard_set_url(lvc, full_url);
 					linphone_vcard_set_etag(lvc, vCard->etag);
+					ms_debug("Downloaded vCard etag/url are %s and %s", vCard->etag, full_url);
 				}
 				lf = linphone_friend_new_from_vcard(lvc);
 				local_friend = ms_list_find_custom(localFriends, (int (*)(const void*, const void*))find_matching_friend, lf);
