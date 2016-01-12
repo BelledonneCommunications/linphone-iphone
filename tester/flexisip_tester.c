@@ -723,7 +723,6 @@ static void call_with_ipv6(void) {
 
 static void file_transfer_message_rcs_to_external_body_client(void) {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneChatRoom* chat_room;
 		LinphoneChatMessage* message;
 		LinphoneChatMessageCbs *cbs;
@@ -732,13 +731,19 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		size_t file_size;
 		char *send_filepath = bc_tester_res("images/nowebcamCIF.jpg");
 		char *receive_filepath = bc_tester_file("receive_file.dump");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
+		LinphoneCoreManager* marie = linphone_core_manager_new2( "marie_rc", FALSE);
+		LinphoneCoreManager* pauline = linphone_core_manager_new2( "pauline_rc", FALSE);
+		// This is done to prevent register to be sent before the custom header is set
+		linphone_core_set_network_reachable(marie->lc, FALSE);
+		linphone_core_set_network_reachable(pauline->lc, FALSE);
 
 		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
 		linphone_core_manager_start(marie, TRUE);
+		linphone_core_set_network_reachable(pauline->lc, TRUE);
 
 		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
 		linphone_core_manager_start(pauline, TRUE);
+		linphone_core_set_network_reachable(pauline->lc, TRUE);
 
 		reset_counters(&marie->stat);
 		reset_counters(&pauline->stat);
