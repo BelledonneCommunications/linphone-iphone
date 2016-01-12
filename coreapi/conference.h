@@ -50,7 +50,7 @@ int linphone_conference_terminate(LinphoneConference *obj);
 
 int linphone_conference_enter(LinphoneConference *obj);
 int linphone_conference_leave(LinphoneConference *obj);
-bool_t linphone_conference_is_in(const LinphoneConference *obj);
+LINPHONE_PUBLIC bool_t linphone_conference_is_in(const LinphoneConference *obj);
 AudioStream *linphone_conference_get_audio_stream(const LinphoneConference *obj);
 
 int linphone_conference_mute_microphone(LinphoneConference *obj, bool_t val);
