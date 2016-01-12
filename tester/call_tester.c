@@ -5031,6 +5031,7 @@ static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 		// This is probably a STUN packet, so don't count it (oRTP won't) and don't encrypt it either
 		return (int)msgdsize(msg);
 	}
+	/*ms_message("rtptm_on_send: rtpm=%p seq=%u", rtptm, (int)ntohs(rtp_get_seqnumber(msg)));*/
 
 	data->packetSentCount += 1;
 	ms_queue_put(&data->to_send, dupmsg(msg));
@@ -5170,6 +5171,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	v_table = linphone_core_v_table_new();
 	v_table->call_state_changed = call_state_changed_4;
 	linphone_core_add_listener(marie->lc,v_table);
+	
 
 	if (recordTest) { // When we do the record test, we need a file player to play the content of a sound file
 		/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
