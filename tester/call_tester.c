@@ -5264,7 +5264,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	ms_message("Pauline sent %i RTP packets and received %i (through our modifier)", (int)data_pauline->packetSentCount, (int)data_pauline->packetReceivedCount);
 	// There will be a few RTP packets sent on marie's side before the call is ended at pauline's request, so we need the threshold
 	BC_ASSERT_TRUE(data_marie->packetSentCount - data_pauline->packetReceivedCount < 50);
-	BC_ASSERT_TRUE(data_marie->packetReceivedCount == data_pauline->packetSentCount);
+	BC_ASSERT_TRUE(data_pauline->packetSentCount - data_marie->packetReceivedCount < 50);
 	// At this point, we know each packet that has been processed in the send callback of our RTP modifier also go through the recv callback of the remote.
 
 	// Now we want to ensure that all sent RTP packets actually go through our RTP transport modifier and thus no packet leave without being processed (by any operation we might want to do on it)
