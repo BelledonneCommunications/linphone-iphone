@@ -54,6 +54,15 @@
 	[self loadData];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	// we cannot do that in viewWillAppear because we will change view while previous transition
+	// was not finished, leading to "[CALayer retain]: message sent to deallocated instance" error msg
+	if (IPAD && [self totalNumberOfItems] == 0) {
+		[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
+	}
+}
+
 #pragma mark -
 
 static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRoom *elem) {
@@ -115,9 +124,6 @@ static void chatTable_free_chatrooms(void *data) {
 		if ([self totalNumberOfItems] > 0) {
 			ChatConversationView *view = VIEW(ChatConversationView);
 			[view setChatRoom:(LinphoneChatRoom *)ms_list_nth_data(data, 0)];
-			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-		} else {
-			[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
 		}
 	}
 }
