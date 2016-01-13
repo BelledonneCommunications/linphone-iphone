@@ -322,7 +322,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setNetworkStateReachable(nativePtr,isReachable);
 	}
 	public synchronized void setPlaybackGain(float gain) {
-		setPlaybackGain(nativePtr,gain);
+		setPlaybackGain(nativePtr, gain);
 
 	}
 	public synchronized float getPlaybackGain() {
@@ -382,7 +382,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	public synchronized boolean payloadTypeIsVbr(PayloadType pt) {
 		isValid();
-		return payloadTypeIsVbr(nativePtr, ((PayloadTypeImpl)pt).nativePtr);
+		return payloadTypeIsVbr(nativePtr, ((PayloadTypeImpl) pt).nativePtr);
 	}
 
 	public synchronized void enableEchoCancellation(boolean enable) {
@@ -449,7 +449,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 
 	public synchronized void addFriend(LinphoneFriend lf) throws LinphoneCoreException {
-		addFriend(nativePtr,((LinphoneFriendImpl)lf).nativePtr);
+		addFriend(nativePtr, ((LinphoneFriendImpl) lf).nativePtr);
 	}
 	
 
@@ -484,7 +484,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return new LinphoneChatRoomImpl(getOrCreateChatRoom(nativePtr,to));
 	}
 	public synchronized LinphoneChatRoom getChatRoom(LinphoneAddress to) {
-		return new LinphoneChatRoomImpl(getChatRoom(nativePtr,((LinphoneAddressImpl)to).nativePtr));
+		return new LinphoneChatRoomImpl(getChatRoom(nativePtr, ((LinphoneAddressImpl) to).nativePtr));
 	}
 	public synchronized void setPreviewWindow(Object w) {
 		setPreviewWindowId(nativePtr,w);
@@ -497,7 +497,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 
 	public synchronized void enableVideo(boolean vcap_enabled, boolean display_enabled) {
-		enableVideo(nativePtr,vcap_enabled, display_enabled);
+		enableVideo(nativePtr, vcap_enabled, display_enabled);
 	}
 	public synchronized boolean isVideoEnabled() {
 		return isVideoEnabled(nativePtr);
@@ -515,7 +515,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		setFirewallPolicy(nativePtr,pol.value());
 	}
 	public synchronized void setStunServer(String stunServer) {
-		setStunServer(nativePtr,stunServer);
+		setStunServer(nativePtr, stunServer);
 	}
 
 	public synchronized LinphoneCall inviteAddressWithParams(LinphoneAddress to, LinphoneCallParams params) throws LinphoneCoreException {
@@ -655,7 +655,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 
 	public synchronized void enableIpv6(boolean enable) {
-		enableIpv6(nativePtr,enable);
+		enableIpv6(nativePtr, enable);
 	}
 	public synchronized boolean isIpv6Enabled() {
 		return isIpv6Enabled(nativePtr);
@@ -678,14 +678,14 @@ class LinphoneCoreImpl implements LinphoneCore {
 
 	}
 	public synchronized void setUploadPtime(int ptime) {
-		setUploadPtime(nativePtr,ptime);
+		setUploadPtime(nativePtr, ptime);
 	}
 
 	public synchronized void setZrtpSecretsCache(String file) {
-		setZrtpSecretsCache(nativePtr,file);
+		setZrtpSecretsCache(nativePtr, file);
 	}
 	public synchronized void enableEchoLimiter(boolean val) {
-		enableEchoLimiter(nativePtr,val);
+		enableEchoLimiter(nativePtr, val);
 	}
 	public synchronized void setVideoDevice(int id) {
 		Log.i("Setting camera id :", id);
@@ -720,6 +720,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native int getConferenceSize(long nativePtr);
 	public synchronized int getConferenceSize() {
 		return getConferenceSize(nativePtr);
+	}
+	private native LinphoneConference createConference(long corePtr, LinphoneConferenceParams params);
+	public synchronized LinphoneConference createConference(LinphoneConferenceParams params) {
+		return createConference(this.nativePtr, params);
 	}
 	private native LinphoneConference getConference(long nativePtr);
 	public synchronized LinphoneConference getConference() {

@@ -1349,6 +1349,19 @@ public interface LinphoneCore {
 	void enableEchoLimiter(boolean val);
 
 	/**
+	 * Create a conference
+	 * @param params Parameters of the conference. Can be null
+	 * @return The new conference or null if the creation has failed
+	 */
+	LinphoneConference createConference(LinphoneConferenceParams params);
+	/**
+	 * Return the value of the C pointer on the conference instance.
+	 *
+	 * That function can be used to test whether a conference is running.
+	 * @return A positive value if a conference is running, 0 if not.
+	 **/
+	LinphoneConference getConference();
+	/**
 	 * Indicates whether the local user is part of the conference.
 	**/
 	boolean isInConference();
@@ -1368,7 +1381,6 @@ public interface LinphoneCore {
 	 * When the local participant is out of the conference, the remote participants can continue to talk normally.
 	**/
 	void leaveConference();
-
 	/**
 	 * Merge a call into a conference.
 	 *
@@ -1417,13 +1429,6 @@ public interface LinphoneCore {
 	 * @returns the number of participants to the conference
 	**/
 	int getConferenceSize();
-	/**
-	 * Return the value of the C pointer on the conference instance.
-	 * 
-	 * That function can be used to test whether a conference is running.
-	 * @return A positive value if a conference is running, 0 if not.
-	**/
-	LinphoneConference getConference();
 
 	/**
 	 * Request recording of the conference into a supplied file path.
