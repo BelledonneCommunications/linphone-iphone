@@ -1,5 +1,5 @@
 /*******************************************************************************
- *            conference.cc
+ *            conference.h
  *
  *  Thu Nov 26, 2015
  *  Copyright  2015  Belledonne Communications
@@ -25,49 +25,67 @@
 
 #ifndef CONFERENCE_H
 #define CONFERENCE_H
+	
+#include "linphonecore.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
-#include "linphonecore.h"
 
-//typedef struct _LinphoneConference LinphoneConference;
+/**
+ * @addtogroup call_control
+ * @{
+ */
 
-typedef enum {
-	LinphoneConferenceClassLocal,
-	LinphoneConferenceClassRemote
-} LinphoneConferenceClass;
+/**
+ * Create a #LinphoneConferenceParams with default parameters set.
+ * @param core #LinphoneCore to use to find out the default parameters. Can be NULL.
+ * @return A freshly allocated #LinphoneConferenceParams
+ */
+LINPHONE_PUBLIC LinphoneConferenceParams *linphone_conference_params_new(const LinphoneCore *core);
+/**
+ * Free a #LinphoneConferenceParams
+ * @param params #LinphoneConferenceParams to free
+ */
+LINPHONE_PUBLIC void linphone_conference_params_free(LinphoneConferenceParams *params);
+/**
+ * Clone a #LinphoneConferenceParams
+ * @param params The #LinphoneConfrenceParams to clone
+ * @return An allocated #LinphoneConferenceParams with the same parameters than params
+ */
+LINPHONE_PUBLIC LinphoneConferenceParams *linphone_conference_params_clone(const LinphoneConferenceParams *params);
+/**
+ * Enable video when starting a conference
+ * @param params A #LinphoneConnferenceParams
+ * @param enable If true, video will be enabled during conference
+ */
+LINPHONE_PUBLIC void linphone_conference_params_enable_video(LinphoneConferenceParams *params, bool_t enable);
+/**
+ * Check whether video will be enable at conference starting
+ * @return if true, the video will be enable at conference starting
+ */
+LINPHONE_PUBLIC bool_t linphone_conference_params_video_requested(const LinphoneConferenceParams *params);
 
-LinphoneConference *linphone_local_conference_new(LinphoneCore *core);
-LinphoneConference *linphone_remote_conference_new(LinphoneCore *core);
-void linphone_conference_free(LinphoneConference *obj);
 
-int linphone_conference_add_participant(LinphoneConference *obj, LinphoneCall *call);
-int linphone_conference_remove_participant_with_call(LinphoneConference *obj, LinphoneCall *call);
+/**
+ * Remove a participant from a conference
+ * @param obj A #LinphoneConference
+ * @param uri SIP URI of the participant to remove
+ * @return 0 if succeeded, -1 if failed
+ */
 LINPHONE_PUBLIC int linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri);
-int linphone_conference_terminate(LinphoneConference *obj);
-
-int linphone_conference_enter(LinphoneConference *obj);
-int linphone_conference_leave(LinphoneConference *obj);
-LINPHONE_PUBLIC bool_t linphone_conference_is_in(const LinphoneConference *obj);
-AudioStream *linphone_conference_get_audio_stream(const LinphoneConference *obj);
-
-int linphone_conference_mute_microphone(LinphoneConference *obj, bool_t val);
-bool_t linphone_conference_microphone_is_muted(const LinphoneConference *obj);
-float linphone_conference_get_input_volume(const LinphoneConference *obj);
-
-LINPHONE_PUBLIC int linphone_conference_get_size(const LinphoneConference *obj);
+/**
+ * Get URIs of all participants of one conference
+ * The returned MSList contains URIs of all participant. That list must be
+ * freed after use and each URI must be unref with linphone_address_unref()
+ * @param obj A #LinphoneConference
+ * @return \mslist{LinphoneAddress}
+ */
 LINPHONE_PUBLIC MSList *linphone_conference_get_participants(const LinphoneConference *obj);
 
-int linphone_conference_start_recording(LinphoneConference *obj, const char *path);
-int linphone_conference_stop_recording(LinphoneConference *obj);
-
-void linphone_conference_on_call_stream_starting(LinphoneConference *obj, LinphoneCall *call, bool_t is_paused_by_remote);
-void linphone_conference_on_call_stream_stopping(LinphoneConference *obj, LinphoneCall *call);
-void linphone_conference_on_call_terminating(LinphoneConference *obj, LinphoneCall *call);
-
-bool_t linphone_conference_check_class(LinphoneConference *obj, LinphoneConferenceClass _class);
+/**
+ * @}
+ */
 
 #ifdef __cplusplus
 }
