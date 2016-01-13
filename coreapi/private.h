@@ -675,7 +675,6 @@ struct _LinphoneFriend{
 	struct _LinphoneCore *lc;
 	BuddyInfo *info;
 	char *refkey;
-	bool_t in_list;
 	bool_t subscribe;
 	bool_t subscribe_active;
 	bool_t inc_subscribe_pending;
@@ -684,10 +683,19 @@ struct _LinphoneFriend{
 	bool_t presence_received;
 	LinphoneVCard *vcard;
 	unsigned int storage_id;
+	LinphoneFriendList *friend_list;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
 
+struct _LinphoneFriendListCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneFriendListContactCreatedCb contact_created_cb;
+	LinphoneFriendListContactDeletedCb contact_deleted_cb;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneFriendListCbs);
 
 struct _LinphoneFriendList {
 	belle_sip_object_t base;
@@ -699,9 +707,15 @@ struct _LinphoneFriendList {
 	MSList *friends;
 	unsigned char *content_digest;
 	int expected_notification_version;
+	unsigned int storage_id;
+	char *uri;
+	MSList *dirty_friends_to_update;
+	int revision;
+	LinphoneFriendListCbs *cbs;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriendList);
+
 
 
 typedef struct sip_config
@@ -1227,12 +1241,8 @@ BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);
  ****************************************************************************/
 
 struct _LinphoneCardDavContext {
-	LinphoneCore *lc;
+	LinphoneFriendList *friend_list;
 	int ctag;
-	const char *server_url;
-	const char *username;
-	const char *password;
-	const char *ha1;
 	void *user_data;
 	LinphoneCardDavContactCreatedCb contact_created_cb;
 	LinphoneCardDavContactUpdatedCb contact_updated_cb;
@@ -1258,20 +1268,6 @@ struct _LinphoneCardDavResponse {
 	const char *url;
 	const char *vcard;
 };
-
-/**
- * Sets the CardDAV server current cTag
- * @param lc LinphoneCore object
- * @param ctag the current cTag for the CardDAV server
- */
-void linphone_core_set_carddav_current_ctag(LinphoneCore *lc, int ctag);
-
-/**
- * Gets the CardDAV server last cTag
- * @param lc LinphoneCore object
- * @return the last cTag for the CardDAV server if set, otherwise -1
- */
-int linphone_core_get_carddav_last_ctag(LinphoneCore *lc);
 
 /*****************************************************************************
  * REMOTE PROVISIONING FUNCTIONS                                             *
@@ -1381,7 +1377,8 @@ BELLE_SIP_TYPE_ID(LinphoneFriendList),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
-BELLE_SIP_TYPE_ID(LinphoneTunnelConfig)
+BELLE_SIP_TYPE_ID(LinphoneTunnelConfig),
+BELLE_SIP_TYPE_ID(LinphoneFriendListCbs)
 BELLE_SIP_DECLARE_TYPES_END
 
 

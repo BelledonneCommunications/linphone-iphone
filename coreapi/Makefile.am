@@ -43,6 +43,7 @@ linphone_include_HEADERS=\
 	sipsetup.h \
 	xml2lpc.h \
 	xmlrpc.h \
+	vcard.h \
 	carddav.h
 
 lib_LTLIBRARIES=liblinphone.la
@@ -120,10 +121,10 @@ liblinphone_la_SOURCES+=linphone_tunnel_stubs.c linphone_tunnel.h
 endif
 
 if BUILD_VCARD
-liblinphone_la_SOURCES+=vcard.cc vcard.h
+liblinphone_la_SOURCES+=vcard.cc
 liblinphone_la_CXXFLAGS=-std=c++11
 else
-liblinphone_la_SOURCES+=vcard_stubs.c vcard.h
+liblinphone_la_SOURCES+=vcard_stubs.c
 endif
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
@@ -157,6 +158,7 @@ liblinphone_la_LIBADD= \
 
 
 AM_CPPFLAGS=\
+	-DIN_LINPHONE \
 	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir) \
 	$(ORTP_CFLAGS) \
 	$(MEDIASTREAMER_CFLAGS) \

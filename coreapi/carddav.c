@@ -20,29 +20,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "private.h"
 
-LinphoneCardDavContext* linphone_core_create_carddav_context(LinphoneCore *lc) {
+LinphoneCardDavContext* linphone_carddav_context_new(LinphoneFriendList *lfl) {
 	LinphoneCardDavContext *carddav_context = NULL;
 	
-	if (!lc) {
+	if (!lfl || !lfl->uri) {
 		return NULL;
 	}
 	
 #ifdef VCARD_ENABLED
 	carddav_context = (LinphoneCardDavContext *)ms_new0(LinphoneCardDavContext, 1);
-	carddav_context->lc = lc;
-	carddav_context->server_url = linphone_core_get_carddav_server_url(lc);
-	carddav_context->ctag = linphone_core_get_carddav_last_ctag(lc);
-	carddav_context->username = linphone_core_get_carddav_username(lc);
-	carddav_context->password = linphone_core_get_carddav_password(lc);
-	carddav_context->ha1 = linphone_core_get_carddav_ha1(lc);
+	carddav_context->friend_list = linphone_friend_list_ref(lfl);
 #else
 	ms_error("vCard isn't available (maybe it wasn't compiled), can't do CardDAV sync");
 #endif
 	return carddav_context;
 }
 
-void linphone_carddav_destroy(LinphoneCardDavContext *cdc) {
+void linphone_carddav_context_destroy(LinphoneCardDavContext *cdc) {
 	if (cdc) {
+		if (cdc->friend_list) {
+			linphone_friend_list_unref(cdc->friend_list);
+			cdc->friend_list = NULL;
+		}
 		ms_free(cdc);
 	}
 }
@@ -62,7 +61,7 @@ void linphone_carddav_synchronize(LinphoneCardDavContext *cdc) {
 static void linphone_carddav_sync_done(LinphoneCardDavContext *cdc, bool_t success, const char *msg) {
 	if (success) {
 		ms_debug("CardDAV sync successful, saving new cTag: %i", cdc->ctag);
-		linphone_core_set_carddav_current_ctag(cdc->lc, cdc->ctag);
+		linphone_friend_list_update_revision(cdc->friend_list, cdc->ctag);
 	} else {
 		ms_error("CardDAV sync failure: %s", msg);
 	}
@@ -75,8 +74,12 @@ static void linphone_carddav_sync_done(LinphoneCardDavContext *cdc, bool_t succe
 static int find_matching_friend(LinphoneFriend *lf1, LinphoneFriend *lf2) {
 	LinphoneVCard *lvc1 = linphone_friend_get_vcard(lf1);
 	LinphoneVCard *lvc2 = linphone_friend_get_vcard(lf2);
-	const char *uid1 = linphone_vcard_get_uid(lvc1);
-	const char *uid2 = linphone_vcard_get_uid(lvc2);
+	const char *uid1 = NULL, *uid2 = NULL;
+	if (!lvc1 || !lvc2) {
+		return 1;
+	}
+	uid1 = linphone_vcard_get_uid(lvc1);
+	uid2 = linphone_vcard_get_uid(lvc2);
 	if (!uid1 || !uid2) {
 		return 1;
 	}
@@ -85,7 +88,7 @@ static int find_matching_friend(LinphoneFriend *lf1, LinphoneFriend *lf2) {
 
 static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *vCards) {
 	if (vCards != NULL && ms_list_size(vCards) > 0) {
-		MSList *localFriends = linphone_core_fetch_friends_from_db(cdc->lc);
+		MSList *friends = cdc->friend_list->friends;
 		while (vCards) {
 			LinphoneCardDavResponse *vCard = (LinphoneCardDavResponse *)vCards->data;
 			if (vCard) {
@@ -97,13 +100,13 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 					// Compute downloaded vCards' URL and save it (+ eTag)
 					char *vCard_name = strrchr(vCard->url, '/');
 					char full_url[300];
-					snprintf(full_url, sizeof(full_url), "%s%s", cdc->server_url, vCard_name);
+					snprintf(full_url, sizeof(full_url), "%s%s", cdc->friend_list->uri, vCard_name);
 					linphone_vcard_set_url(lvc, full_url);
 					linphone_vcard_set_etag(lvc, vCard->etag);
 					ms_debug("Downloaded vCard etag/url are %s and %s", vCard->etag, full_url);
 				}
 				lf = linphone_friend_new_from_vcard(lvc);
-				local_friend = ms_list_find_custom(localFriends, (int (*)(const void*, const void*))find_matching_friend, lf);
+				local_friend = ms_list_find_custom(friends, (int (*)(const void*, const void*))find_matching_friend, lf);
 				
 				if (local_friend) {
 					LinphoneFriend *lf2 = (LinphoneFriend *)local_friend->data;
@@ -121,7 +124,6 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 			}
 			vCards = ms_list_next(vCards);
 		}
-		localFriends = ms_list_free_with_data(localFriends, (void (*)(void *))linphone_friend_unref);
 	}
 	ms_list_free(vCards);
 	linphone_carddav_sync_done(cdc, TRUE, "");
@@ -169,8 +171,12 @@ end:
 static int find_matching_vcard(LinphoneCardDavResponse *response, LinphoneFriend *lf) {
 	LinphoneVCard *lvc1 = linphone_vcard_new_from_vcard4_buffer(response->vcard);
 	LinphoneVCard *lvc2 = linphone_friend_get_vcard(lf);
-	const char *uid1 = linphone_vcard_get_uid(lvc1);
-	const char *uid2 = linphone_vcard_get_uid(lvc2);
+	const char *uid1 = NULL, *uid2 = NULL;
+	if (!lvc1 || !lvc2) {
+		return 1;
+	}
+	uid1 = linphone_vcard_get_uid(lvc1);
+	uid2 = linphone_vcard_get_uid(lvc2);
 	linphone_vcard_free(lvc1);
 	if (!uid1 || !uid2) {
 		return 1;
@@ -180,8 +186,7 @@ static int find_matching_vcard(LinphoneCardDavResponse *response, LinphoneFriend
 
 static void linphone_carddav_vcards_fetched(LinphoneCardDavContext *cdc, MSList *vCards) {
 	if (vCards != NULL && ms_list_size(vCards) > 0) {
-		MSList *localFriends = linphone_core_fetch_friends_from_db(cdc->lc);
-		MSList *friends = localFriends;
+		MSList *friends = cdc->friend_list->friends;
 		while (friends) {
 			LinphoneFriend *lf = (LinphoneFriend *)friends->data;
 			if (lf) {
@@ -208,7 +213,6 @@ static void linphone_carddav_vcards_fetched(LinphoneCardDavContext *cdc, MSList 
 			}
 			friends = ms_list_next(friends);
 		}
-		localFriends = ms_list_free_with_data(localFriends, (void (*)(void *))linphone_friend_unref);
 		linphone_carddav_pull_vcards(cdc, vCards);
 	}
 	ms_list_free(vCards);
@@ -372,22 +376,7 @@ static void process_io_error_from_carddav_request(void *data, const belle_sip_io
 }
 
 static void process_auth_requested_from_carddav_request(void *data, belle_sip_auth_event_t *event) {
-	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)data;
-	LinphoneCardDavContext *context = query->context;
-	
-	if (context->username && (context->password || context->ha1)) {
-		belle_sip_auth_event_set_username(event, context->username);
-		if (context->password) {
-			belle_sip_auth_event_set_passwd(event, context->password);
-		}
-		if (context->ha1) {
-			belle_sip_auth_event_set_ha1(event, context->ha1);
-		}
-	} else {
-		ms_error("Authentication requested during CardDAV request sending, and username/password weren't provided");
-		linphone_carddav_query_free(query);
-		linphone_carddav_sync_done(query->context, FALSE, "Authentication requested during CardDAV request sending, and username/password weren't provided");
-	}
+	//TODO //FIXME: find a way around this
 }
 
 static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
@@ -434,7 +423,7 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 	cbs.process_io_error = process_io_error_from_carddav_request;
 	cbs.process_auth_requested = process_auth_requested_from_carddav_request;
 	query->http_request_listener = belle_http_request_listener_create_from_callbacks(&cbs, query);
-	belle_http_provider_send_request(query->context->lc->http_provider, req, query->http_request_listener);
+	belle_http_provider_send_request(query->context->friend_list->lc->http_provider, req, query->http_request_listener);
 }
 
 static LinphoneCardDavQuery* linphone_carddav_create_put_query(LinphoneCardDavContext *cdc, LinphoneVCard *lvc) {
@@ -468,7 +457,7 @@ void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf)
 		LinphoneCardDavQuery *query = NULL;
 		
 		if (!linphone_vcard_get_url(lvc)) {
-			char *url = generate_url_from_server_address_and_uid(cdc->server_url);
+			char *url = generate_url_from_server_address_and_uid(cdc->friend_list->uri);
 			linphone_vcard_set_url(lvc, url);
 			ms_free(url);
 		}
@@ -512,7 +501,7 @@ void linphone_carddav_delete_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *
 		LinphoneCardDavQuery *query = NULL;
 		
 		if (!linphone_vcard_get_url(lvc)) {
-			char *url = generate_url_from_server_address_and_uid(cdc->server_url);
+			char *url = generate_url_from_server_address_and_uid(cdc->friend_list->uri);
 			linphone_vcard_set_url(lvc, url);
 			ms_free(url);
 		}
@@ -562,7 +551,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_propfind_query(LinphoneCard
 	query->ifmatch = NULL;
 	query->body = "<d:propfind xmlns:d=\"DAV:\" xmlns:cs=\"http://calendarserver.org/ns/\"><d:prop><cs:getctag /></d:prop></d:propfind>";
 	query->method = "PROPFIND";
-	query->url = cdc->server_url;
+	query->url = cdc->friend_list->uri;
 	query->type = LinphoneCardDavQueryTypePropfind;
 	return query;
 }
@@ -579,7 +568,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_query(LinphoneC
 	query->ifmatch = NULL;
 	query->body = "<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /></d:prop></card:addressbook-query>";
 	query->method = "REPORT";
-	query->url = cdc->server_url;
+	query->url = cdc->friend_list->uri;
 	query->type = LinphoneCardDavQueryTypeAddressbookQuery;
 	return query;
 }
@@ -598,7 +587,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_multiget_query(
 	query->depth = "1";
 	query->ifmatch = NULL;
 	query->method = "REPORT";
-	query->url = cdc->server_url;
+	query->url = cdc->friend_list->uri;
 	query->type = LinphoneCardDavQueryTypeAddressbookMultiget;
 
 	sprintf(body, "%s", "<card:addressbook-multiget xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /><card:address-data content-type='text/vcard' version='4.0'/></d:prop>");

@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef LINPHONE_CARDDAV_H
 #define LINPHONE_CARDDAV_H
 
+#include "linphonecore.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -65,16 +67,16 @@ typedef void (*LinphoneCardDavSynchronizationDoneCb)(LinphoneCardDavContext *cdc
 
 /**
  * Creates a CardDAV context for all related operations
- * @param lc LinphoneCore object
+ * @param lfl LinphoneFriendList object
  * @return LinphoneCardDavContext object if vCard support is enabled and server URL is available, NULL otherwise
  */
-LINPHONE_PUBLIC LinphoneCardDavContext* linphone_core_create_carddav_context(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneCardDavContext* linphone_carddav_context_new(LinphoneFriendList *lfl);
 
 /**
  * Deletes a LinphoneCardDavContext object
  * @param cdc LinphoneCardDavContext object
  */
-LINPHONE_PUBLIC void linphone_carddav_destroy(LinphoneCardDavContext *cdc);
+LINPHONE_PUBLIC void linphone_carddav_context_destroy(LinphoneCardDavContext *cdc);
 
 /**
  * Sets a user pointer to the LinphoneCardDAVContext object

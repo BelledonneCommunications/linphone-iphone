@@ -2736,6 +2736,9 @@ void linphone_core_iterate(LinphoneCore *lc){
 		if (lp_config_needs_commit(lc->config)) {
 			lp_config_sync(lc->config);
 		}
+		if (lc->friendlist->dirty_friends_to_update) {
+			linphone_friend_list_update_dirty_friends(lc->friendlist);
+		}
 	}
 
 	if (liblinphone_serialize_logs == TRUE) {
@@ -7429,85 +7432,6 @@ const char *linphone_stream_type_to_string(const LinphoneStreamType type) {
 		case LinphoneStreamTypeUnknown: return "LinphoneStreamTypeUnknown";
 	}
 	return "INVALID";
-}
-
-/*****************************************************************************
- * CardDAV interface                                                         *
- ****************************************************************************/
-
-void linphone_core_set_carddav_server_url(LinphoneCore *lc, const char *carddav_server_url) {
-	if (lc && carddav_server_url) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		lp_config_set_string(lpc, "carddav", "server_url", carddav_server_url);
-	}
-}
-
-const char *linphone_core_get_carddav_server_url(LinphoneCore *lc) {
-	if (lc) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		return lp_config_get_string(lpc, "carddav", "server_url", NULL);
-	}
-	return NULL;
-}
-
-void linphone_core_set_carddav_username(LinphoneCore *lc, const char *username) {
-	if (lc && username) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		lp_config_set_string(lpc, "carddav", "username", username);
-	}
-}
-
-const char *linphone_core_get_carddav_username(LinphoneCore *lc) {
-	if (lc) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		return lp_config_get_string(lpc, "carddav", "username", NULL);
-	}
-	return NULL;
-}
-
-void linphone_core_set_carddav_password(LinphoneCore *lc, const char *password) {
-	if (lc && password) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		lp_config_set_string(lpc, "carddav", "password", password);
-	}
-}
-
-const char *linphone_core_get_carddav_password(LinphoneCore *lc) {
-	if (lc) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		return lp_config_get_string(lpc, "carddav", "password", NULL);
-	}
-	return NULL;
-}
-
-void linphone_core_set_carddav_ha1(LinphoneCore *lc, const char *ha1) {
-	if (lc && ha1) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		lp_config_set_string(lpc, "carddav", "ha1", ha1);
-	}
-}
-
-const char *linphone_core_get_carddav_ha1(LinphoneCore *lc) {
-	if (lc) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		return lp_config_get_string(lpc, "carddav", "ha1", NULL);
-	}
-	return NULL;
-}
-
-void linphone_core_set_carddav_current_ctag(LinphoneCore *lc, int ctag) {
-	if (lc) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		lp_config_set_int(lpc, "carddav", "ctag", ctag);
-	}
-}
-
-int linphone_core_get_carddav_last_ctag(LinphoneCore *lc) {
-	if (lc) {
-		LpConfig *lpc = linphone_core_get_config(lc);
-		return lp_config_get_int(lpc, "carddav", "ctag", 0);
-	}
-	return 0;
 }
 
 LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc) {

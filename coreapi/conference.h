@@ -26,11 +26,12 @@
 #ifndef CONFERENCE_H
 #define CONFERENCE_H
 
+#include "linphonecore.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 	
-#include "linphonecore.h"
 
 //typedef struct _LinphoneConference LinphoneConference;
 

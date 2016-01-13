@@ -24,8 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct _LinphoneVCard {
 	shared_ptr<belcard::BelCard> belCard;
-	const char *etag;
-	const char *url;
+	char *etag;
+	char *url;
+	char *md5;
 };
 
 #ifdef __cplusplus
@@ -194,6 +195,12 @@ const char* linphone_vcard_get_uid(const LinphoneVCard *vCard) {
 }
 
 void linphone_vcard_set_etag(LinphoneVCard *vCard, const char * etag) {
+	if (!vCard) {
+		return;
+	}
+	if (vCard->etag) {
+		ms_free(vCard->etag);
+	}
 	vCard->etag = ms_strdup(etag);
 }
 
@@ -203,12 +210,35 @@ const char* linphone_vcard_get_etag(const LinphoneVCard *vCard) {
 }
 
 void linphone_vcard_set_url(LinphoneVCard *vCard, const char * url) {
+	if (!vCard) {
+		return;
+	}
+	if (vCard->url) {
+		ms_free(vCard->url);
+	}
 	vCard->url = ms_strdup(url);
 }
 
 const char* linphone_vcard_get_url(const LinphoneVCard *vCard) {
 	if (!vCard) return NULL;
 	return vCard->url;
+}
+
+void linphone_vcard_compute_md5_hash(LinphoneVCard *vCard) {
+	if (!vCard) {
+		return;
+	}
+	if (vCard->md5) {
+		ms_free(vCard->md5);
+	}
+	//TODO: compute md5 hash
+}
+
+const char *linphone_vcard_get_md5_hash(LinphoneVCard *vCard) {
+	if (!vCard) {
+		return NULL;
+	}
+	return vCard->md5;
 }
 
 #ifdef __cplusplus

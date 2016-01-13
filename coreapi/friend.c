@@ -155,8 +155,8 @@ void* linphone_friend_get_user_data(const LinphoneFriend *lf){
 	return lf->user_data;
 }
 
-bool_t linphone_friend_in_list(const LinphoneFriend *lf){
-	return lf->in_list;
+bool_t linphone_friend_in_list(const LinphoneFriend *lf) {
+	return lf->friend_list != NULL;
 }
 
 void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char **result){
@@ -529,13 +529,27 @@ void linphone_friend_apply(LinphoneFriend *fr, LinphoneCore *lc) {
 }
 
 void linphone_friend_edit(LinphoneFriend *fr) {
+	if (fr && fr->vcard) {
+		linphone_vcard_compute_md5_hash(fr->vcard);
+	}
 }
 
 void linphone_friend_done(LinphoneFriend *fr) {
+	const char *previous_md5 = NULL;
+	
 	ms_return_if_fail(fr);
-	if (!fr->lc || !fr->in_list) return;
+	if (!fr->lc || !fr->friend_list) return;
 	linphone_friend_apply(fr, fr->lc);
 	linphone_friend_save(fr, fr->lc);
+	
+	if (fr && fr->vcard) {
+		previous_md5 = linphone_vcard_get_md5_hash(fr->vcard);
+		linphone_vcard_compute_md5_hash(fr->vcard);
+		if (previous_md5 && strcmp(previous_md5, linphone_vcard_get_md5_hash(fr->vcard)) != 0) {
+			ms_debug("vCard's md5 has changed, mark friend as dirty");
+			fr->friend_list->dirty_friends_to_update = ms_list_append(fr->friend_list->dirty_friends_to_update, fr);
+		}
+	}
 }
 
 LinphoneFriend * linphone_core_create_friend(LinphoneCore *lc) {

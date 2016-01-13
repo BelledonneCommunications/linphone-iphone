@@ -69,8 +69,7 @@ RCFILES = \
 					rcfiles/stun_rc\
 					rcfiles/upnp_rc\
 					rcfiles/zero_length_params_rc\
-					rcfiles/friends_rc\
-					rcfiles/carddav_rc
+					rcfiles/friends_rc
 
 IMAGE_FILES = images/nowebcamCIF.jpg
 

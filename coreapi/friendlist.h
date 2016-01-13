@@ -175,6 +175,116 @@ LINPHONE_PUBLIC void linphone_friend_list_update_subscriptions(LinphoneFriendLis
 LINPHONE_PUBLIC void linphone_friend_list_notify_presence(LinphoneFriendList *list, LinphonePresenceModel *presence);
 
 /**
+ * Get the URI associated with the friend list.
+ * @param[in] list LinphoneFriendList object.
+ * @return The URI associated with the friend list.
+**/
+LINPHONE_PUBLIC const char * linphone_friend_list_get_uri(const LinphoneFriendList *list);
+
+/**
+ * Set the URI associated with the friend list.
+ * @param[in] list LinphoneFriendList object.
+ * @param[in] rls_uri The URI to associate with the friend list.
+**/
+LINPHONE_PUBLIC void linphone_friend_list_set_uri(LinphoneFriendList *list, const char *uri);
+
+/**
+ * Sets the revision from the last synchronization.
+ * @param[in] list LinphoneFriendList object.
+ * @param[in] rev The revision
+ */
+void linphone_friend_list_update_revision(LinphoneFriendList *list, int rev);
+
+/**
+ * An object to handle the callbacks for LinphoneFriend synchronization.
+**/
+typedef struct _LinphoneFriendListCbs LinphoneFriendListCbs;
+
+/**
+ * Callback used to notify a new contact has been created on the CardDAV server and downloaded locally
+**/
+typedef void (*LinphoneFriendListContactCreatedCb)(LinphoneFriendList *list, LinphoneFriend *lf);
+
+/**
+ * Callback used to notify a contact has been deleted on the CardDAV server
+**/
+typedef void (*LinphoneFriendListContactDeletedCb)(LinphoneFriendList *list, LinphoneFriend *lf);
+
+/**
+ * Get the LinphoneFriendListCbs object associated with a LinphoneFriendList.
+ * @param[in] request LinphoneXmlRpcRequest object
+ * @return The LinphoneFriendListCbs object associated with the LinphoneFriendList.
+**/
+LINPHONE_PUBLIC LinphoneFriendListCbs * linphone_friend_list_get_callbacks(const LinphoneFriendList *list);
+
+/**
+ * Acquire a reference to a LinphoneFriendListCbs object.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @return The same LinphoneFriendListCbs object.
+**/
+LINPHONE_PUBLIC LinphoneFriendListCbs * linphone_friend_list_cbs_ref(LinphoneFriendListCbs *cbs);
+
+/**
+ * Release a reference to a LinphoneFriendListCbs object.
+ * @param[in] cbs LinphoneFriendListCbs object.
+**/
+LINPHONE_PUBLIC void linphone_friend_list_cbs_unref(LinphoneFriendListCbs *cbs);
+
+/**
+ * Retrieve the user pointer associated with a LinphoneFriendListCbs object.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @return The user pointer associated with the LinphoneFriendListCbs object.
+**/
+LINPHONE_PUBLIC void *linphone_friend_list_cbs_get_user_data(const LinphoneFriendListCbs *cbs);
+
+/**
+ * Assign a user pointer to a LinphoneFriendListCbs object.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @param[in] ud The user pointer to associate with the LinphoneFriendListCbs object.
+**/
+LINPHONE_PUBLIC void linphone_friend_list_cbs_set_user_data(LinphoneFriendListCbs *cbs, void *ud);
+
+/**
+ * Get the contact created callback.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @return The current contact created callback.
+**/
+LINPHONE_PUBLIC LinphoneFriendListContactCreatedCb linphone_friend_list_cbs_get_contact_created(const LinphoneFriendListCbs *cbs);
+
+/**
+ * Set the contact created callback.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @param[in] cb The contact created to be used.
+**/
+LINPHONE_PUBLIC void linphone_friend_list_cbs_set_contact_created(LinphoneFriendListCbs *cbs, LinphoneFriendListContactCreatedCb cb);
+
+/**
+ * Get the contact deleted callback.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @return The current contact deleted callback.
+**/
+LINPHONE_PUBLIC LinphoneFriendListContactDeletedCb linphone_friend_list_cbs_get_contact_deleted(const LinphoneFriendListCbs *cbs);
+
+/**
+ * Set the contact deleted callback.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @param[in] cb The contact deleted to be used.
+**/
+LINPHONE_PUBLIC void linphone_friend_list_cbs_set_contact_deleted(LinphoneFriendListCbs *cbs, LinphoneFriendListContactDeletedCb cb);
+
+/**
+ * 
+ * @param[in] list LinphoneFriendList object.
+ */
+LINPHONE_PUBLIC void linphone_friend_list_synchronize_friends_from_server(LinphoneFriendList *list);
+
+/**
+ * 
+ * @param[in] list LinphoneFriendList object.
+ */
+void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list);
+
+/**
  * @}
  */
 
