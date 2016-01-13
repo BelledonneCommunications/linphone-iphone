@@ -94,6 +94,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
+	_padView.hidden =
+		!IPAD && UIInterfaceOrientationIsLandscape(PhoneMainView.instance.mainViewController.currentOrientation);
+
 	// Set observer
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(callUpdateEvent:)
@@ -206,6 +209,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	CGRect frame = self.view.frame;
 	frame.origin = CGPointMake(0, 0);
 	videoPreview.frame = frame;
+	_padView.hidden = !IPAD && UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
 }
 
 #pragma mark - Event Functions

@@ -59,6 +59,7 @@
 @property(nonatomic, strong) IBOutlet UIView *backgroundView;
 @property(nonatomic, strong) IBOutlet UIView *videoPreview;
 @property(nonatomic, strong) IBOutlet UICamSwitch *videoCameraSwitch;
+@property(weak, nonatomic) IBOutlet UIView *padView;
 
 - (IBAction)onAddContactClick:(id)event;
 - (IBAction)onBackClick:(id)event;
