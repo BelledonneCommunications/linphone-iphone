@@ -112,7 +112,6 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 					LinphoneFriend *lf2 = (LinphoneFriend *)local_friend->data;
 					if (cdc->contact_updated_cb) {
 						ms_debug("Contact updated: %s", linphone_friend_get_name(lf));
-						lf2 = linphone_friend_ref(lf2);
 						cdc->contact_updated_cb(cdc, lf, lf2);
 					}
 				} else {
@@ -173,6 +172,7 @@ static int find_matching_vcard(LinphoneCardDavResponse *response, LinphoneFriend
 	LinphoneVCard *lvc2 = linphone_friend_get_vcard(lf);
 	const char *uid1 = NULL, *uid2 = NULL;
 	if (!lvc1 || !lvc2) {
+		if (lvc1) linphone_vcard_free(lvc1);
 		return 1;
 	}
 	uid1 = linphone_vcard_get_uid(lvc1);
@@ -187,17 +187,15 @@ static int find_matching_vcard(LinphoneCardDavResponse *response, LinphoneFriend
 static void linphone_carddav_vcards_fetched(LinphoneCardDavContext *cdc, MSList *vCards) {
 	if (vCards != NULL && ms_list_size(vCards) > 0) {
 		MSList *friends = cdc->friend_list->friends;
+		MSList *friends_to_remove = NULL;
+		
 		while (friends) {
 			LinphoneFriend *lf = (LinphoneFriend *)friends->data;
 			if (lf) {
 				MSList *vCard = ms_list_find_custom(vCards, (int (*)(const void*, const void*))find_matching_vcard, lf);
 				if (!vCard) {
-					ms_debug("Local friend %s isn't in the remote vCard list, delete it", linphone_friend_get_name(lf));
-					if (cdc->contact_removed_cb) {
-						ms_debug("Contact removed: %s", linphone_friend_get_name(lf));
-						lf = linphone_friend_ref(lf);
-						cdc->contact_removed_cb(cdc, lf);
-					}
+					ms_error("Local friend %s isn't in the remote vCard list, delete it", linphone_friend_get_name(lf));
+					friends_to_remove = ms_list_append(friends_to_remove, lf);
 				} else {
 					LinphoneCardDavResponse *response = (LinphoneCardDavResponse *)vCard->data;
 					ms_debug("Local friend %s is in the remote vCard list, check eTag", linphone_friend_get_name(lf));
@@ -213,6 +211,18 @@ static void linphone_carddav_vcards_fetched(LinphoneCardDavContext *cdc, MSList 
 			}
 			friends = ms_list_next(friends);
 		}
+		while(friends_to_remove) {
+			LinphoneFriend *lf = (LinphoneFriend *)friends_to_remove->data;
+			if (lf) {
+				if (cdc->contact_removed_cb) {
+					ms_error("Contact removed: %s", linphone_friend_get_name(lf));
+					cdc->contact_removed_cb(cdc, lf);
+				}
+			}
+			friends_to_remove = ms_list_next(friends_to_remove);
+		}
+		friends_to_remove = ms_list_free(friends_to_remove);
+		
 		linphone_carddav_pull_vcards(cdc, vCards);
 	}
 	ms_list_free(vCards);
@@ -376,7 +386,33 @@ static void process_io_error_from_carddav_request(void *data, const belle_sip_io
 }
 
 static void process_auth_requested_from_carddav_request(void *data, belle_sip_auth_event_t *event) {
-	//TODO //FIXME: find a way around this
+	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)data;
+	LinphoneCardDavContext *cdc = query->context;
+	const char *realm = belle_sip_auth_event_get_realm(event);
+	belle_generic_uri_t *uri = belle_generic_uri_parse(query->url);
+	const char *domain = belle_generic_uri_get_host(uri);
+	LinphoneCore *lc = cdc->friend_list->lc;
+	const MSList *auth_infos = linphone_core_get_auth_info_list(lc);
+	
+	ms_debug("Looking for auth info for domain %s and realm %s", domain, realm);
+	while (auth_infos) {
+		LinphoneAuthInfo *auth_info = (LinphoneAuthInfo *)auth_infos->data;
+		if (auth_info->domain && strcmp(domain, auth_info->domain) == 0) {
+			if (!auth_info->realm || strcmp(realm, auth_info->realm) == 0) {
+				belle_sip_auth_event_set_username(event, auth_info->username);
+				belle_sip_auth_event_set_passwd(event, auth_info->passwd);
+				belle_sip_auth_event_set_ha1(event, auth_info->ha1);
+				break;
+			}
+		}
+		auth_infos = ms_list_next(auth_infos);
+	}
+	
+	if (!auth_infos) {
+		ms_error("Authentication requested during CardDAV request sending, and username/password weren't provided");
+		linphone_carddav_sync_done(query->context, FALSE, "Authentication requested during CardDAV request sending, and username/password weren't provided");
+		linphone_carddav_query_free(query);
+	}
 }
 
 static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {

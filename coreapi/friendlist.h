@@ -62,11 +62,32 @@ typedef struct _LinphoneFriendList LinphoneFriendList;
 LINPHONE_PUBLIC LinphoneFriendList * linphone_core_create_friend_list(LinphoneCore *lc);
 
 /**
- * Set the friend list.
+ * Add a friend list.
  * @param[in] lc LinphoneCore object
  * @param[in] list LinphoneFriendList object
  */
-LINPHONE_PUBLIC void linphone_core_set_friend_list(LinphoneCore *lc, LinphoneFriendList *list);
+LINPHONE_PUBLIC void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list);
+
+/**
+ * Removes a friend list.
+ * @param[in] lc LinphoneCore object
+ * @param[in] list LinphoneFriendList object
+ */
+LINPHONE_PUBLIC void linphone_core_remove_friend_list(LinphoneCore *lc, LinphoneFriendList *list);
+
+/**
+ * Retrieves the list of LinphoneFriendList from the core.
+ * @param[in] lc LinphoneCore object
+ * @return \mslist{LinphoneFriendList} a list of LinphoneFriendList
+ */
+LINPHONE_PUBLIC const MSList * linphone_core_get_friends_lists(const LinphoneCore *lc);
+
+/**
+ * Retrieves the first list of LinphoneFriend from the core.
+ * @param[in] lc LinphoneCore object
+ * @return the first LinphoneFriendList object or NULL
+ */
+LINPHONE_PUBLIC LinphoneFriendList * linphone_core_get_default_friend_list(const LinphoneCore *lc);
 
 /**
  * Acquire a reference to the friend list.
@@ -130,6 +151,7 @@ LINPHONE_PUBLIC void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, 
  * @return LinphoneFriendListOK if successfully added, LinphoneFriendListInvalidFriend if the friend is not valid.
 **/
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *afriend);
+LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *afriend);
 
 /**
  * Remove a friend from a friend list.

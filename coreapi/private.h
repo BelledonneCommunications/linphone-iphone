@@ -420,8 +420,12 @@ void linphone_core_friends_storage_init(LinphoneCore *lc);
 void linphone_core_friends_storage_close(LinphoneCore *lc);
 void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf);
 void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf);
-MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc);
+void linphone_core_store_friends_list_in_db(LinphoneCore *lc, LinphoneFriendList *list);
+void linphone_core_remove_friends_list_from_db(LinphoneCore *lc, LinphoneFriendList *list);
+MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList *list);
+MSList* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc);
 LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf);
+LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf);
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 
@@ -897,7 +901,7 @@ struct _LinphoneCore
 	ui_config_t ui_conf;
 	autoreplier_config_t autoreplier_conf;
 	LinphoneProxyConfig *default_proxy;
-	LinphoneFriendList *friendlist;
+	MSList *friends_lists;
 	MSList *auth_info;
 	struct _RingStream *ringstream;
 	time_t dmfs_playing_start_time;

@@ -280,8 +280,8 @@ static void linphone_friend_list_destroy(LinphoneFriendList *list) {
 	if (list->event != NULL) linphone_event_unref(list->event);
 	if (list->uri != NULL) ms_free(list->uri);
 	if (list->cbs) linphone_friend_list_cbs_unref(list->cbs);
-	list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))linphone_friend_unref);
-	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))_linphone_friend_release);
+	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
+	list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriendList);
@@ -316,9 +316,9 @@ void _linphone_friend_list_release(LinphoneFriendList *list){
 		linphone_friend_list_cbs_unref(list->cbs);
 		list->cbs = NULL;
 	}
+	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
 	list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
-	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))_linphone_friend_release);
-	belle_sip_object_unref(list);
+	linphone_friend_list_unref(list);
 }
 
 void linphone_friend_list_unref(LinphoneFriendList *list) {
@@ -361,6 +361,23 @@ void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_
 	}
 }
 
+LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
+	if (lf->uri == NULL || lf->friend_list) {
+		if (!lf->uri)
+			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
+		if (lf->friend_list)
+			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
+		return LinphoneFriendListInvalidFriend;
+	}
+	list->friends = ms_list_append(list->friends, linphone_friend_ref(lf));
+	lf->friend_list = list;
+	lf->lc = list->lc;
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	linphone_core_store_friend_in_db(lf->lc, lf);
+#endif
+	return LinphoneFriendListOK;
+}
+
 LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
 	if (lf->uri == NULL || lf->friend_list) {
 		if (!lf->uri)
@@ -386,6 +403,10 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 	list->friends = ms_list_append(list->friends, linphone_friend_ref(lf));
 	list->dirty_friends_to_update = ms_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
 	lf->friend_list = list;
+	lf->lc = list->lc;
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	linphone_core_store_friend_in_db(lf->lc, lf);
+#endif
 	return LinphoneFriendListOK;
 }
 
@@ -425,19 +446,18 @@ void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list) {
 			}
 			dirty_friends = ms_list_next(dirty_friends);
 		}
+		list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
 	}
-	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
 }
 
 static void carddav_created(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
 	if (cdc) {
 		LinphoneFriendList *lfl = cdc->friend_list;
-		lfl->friends = ms_list_append(lfl->friends, linphone_friend_ref(lf));
+		_linphone_friend_list_add_friend(lfl, lf);
 		if (cdc->friend_list->cbs->contact_created_cb) {
-			cdc->friend_list->cbs->contact_created_cb(lfl, linphone_friend_ref(lf));
+			cdc->friend_list->cbs->contact_created_cb(lfl, lf);
 		}
 	}
-	linphone_friend_unref(lf);
 }
 
 static void carddav_removed(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
@@ -448,10 +468,9 @@ static void carddav_removed(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
 			lfl->friends = ms_list_remove_link(lfl->friends, elem);
 		}
 		if (cdc->friend_list->cbs->contact_deleted_cb) {
-			cdc->friend_list->cbs->contact_deleted_cb(lfl, linphone_friend_ref(lf));
+			cdc->friend_list->cbs->contact_deleted_cb(lfl, lf);
 		}
 	}
-	linphone_friend_unref(lf);
 }
 
 static void carddav_updated(LinphoneCardDavContext *cdc, LinphoneFriend *lf_new, LinphoneFriend *lf_old) {
