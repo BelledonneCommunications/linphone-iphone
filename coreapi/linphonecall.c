@@ -3479,6 +3479,8 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 	if (call->onhold_file && !call->params->in_conference && call->audiostream){
 		MSFilter *player = audio_stream_open_remote_play(call->audiostream, call->onhold_file);
 		if (player){
+			int pause_time=500;
+			ms_filter_call_method(player, MS_PLAYER_SET_LOOP, &pause_time);
 			ms_filter_call_method_noarg(player, MS_PLAYER_START);
 		}
 	}
