@@ -6,7 +6,7 @@
 "Port" = "Port";
 "Audio Port(s)" = "Audio Port(s)";
 "Video Port(s)" = "Video Port(s)";
-"Use IPv6" = "Use IPv6";
+"Allow IPv6" = "Allow IPv6";
 "Media Encryption" = "Media Encryption";
 "Push Notification" = "Push Notification";
 "Limits" = "Limits";
