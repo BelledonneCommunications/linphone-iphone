@@ -2790,6 +2790,10 @@ extern "C" jint Java_org_linphone_core_LinphoneCallLogImpl_getCallDuration(JNIEn
 	return (jint)((LinphoneCallLog*)ptr)->duration;
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_wasConference(JNIEnv *env, jobject thiz, jlong ptr) {
+	return linphone_call_log_was_conference((LinphoneCallLog *)ptr);
+}
+
 /* CallStats */
 extern "C" jint Java_org_linphone_core_LinphoneCallStatsImpl_getMediaType(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	return (jint)((LinphoneCallStats *)stats_ptr)->type;

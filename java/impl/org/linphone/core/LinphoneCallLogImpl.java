@@ -31,6 +31,7 @@ class LinphoneCallLogImpl implements LinphoneCallLog {
 	private native int getCallDuration(long nativePtr);
 	private native String getCallId(long nativePtr);
 	private native long getTimestamp(long nativePtr);
+	private native boolean wasConference(long nativePtr);
 	
 	LinphoneCallLogImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
@@ -68,5 +69,8 @@ class LinphoneCallLogImpl implements LinphoneCallLog {
 	
 	public long getTimestamp() {
 		return getTimestamp(nativePtr) * 1000;  // Need milliseconds, not seconds
+	}
+	public boolean wasConference() {
+		return wasConference(nativePtr);
 	}
 }

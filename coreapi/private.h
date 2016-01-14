@@ -194,6 +194,7 @@ struct _LinphoneCallLog{
 	char* call_id; /**unique id of a call*/
 	struct _LinphoneQualityReporting reporting;
 	bool_t video_enabled;
+	bool_t was_conference; /**<That call was a call with a conference server */
 	unsigned int storage_id;
 };
 

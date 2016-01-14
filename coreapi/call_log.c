@@ -248,6 +248,10 @@ bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl) {
 	return cl->video_enabled;
 }
 
+bool_t linphone_call_log_was_conference(LinphoneCallLog *cl) {
+	return cl->was_conference;
+}
+
 
 /*******************************************************************************
  * Reference and user data handling functions                                  *

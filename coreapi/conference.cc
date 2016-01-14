@@ -611,8 +611,10 @@ int RemoteConference::addParticipant(LinphoneCall *call) {
 				m_localParticipantStream = m_focusCall->audiostream;
 				m_pendingCalls = ms_list_append(m_pendingCalls, linphone_call_ref(call));
 				m_state = ConnectingToFocus;
-				linphone_address_unref(addr);
 				call->conf_ref = (LinphoneConference *)this;
+				LinphoneCallLog *callLog = linphone_call_get_call_log(m_focusCall);
+				callLog->was_conference = TRUE;
+				linphone_address_unref(addr);
 				linphone_call_params_unref(params);
 				return 0;
 			} else return -1;

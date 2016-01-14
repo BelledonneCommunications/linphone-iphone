@@ -179,6 +179,13 @@ LINPHONE_PUBLIC bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl);
 **/
 LINPHONE_PUBLIC char * linphone_call_log_to_str(LinphoneCallLog *cl);
 
+/**
+ * Tells whether that call was a call to a conference server
+ * @param[in] cl #LinphoneCallLog object
+ * @return TRUE if the call was a call to a conference server
+ */
+LINPHONE_PUBLIC bool_t linphone_call_log_was_conference(LinphoneCallLog *cl);
+
 
 /*******************************************************************************
  * Reference and user data handling functions                                  *
