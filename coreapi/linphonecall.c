@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sipsetup.h"
 #include "lpconfig.h"
 #include "private.h"
+#include "conference_private.h"
 #include <ortp/event.h>
 #include <ortp/b64.h>
 #include <math.h>

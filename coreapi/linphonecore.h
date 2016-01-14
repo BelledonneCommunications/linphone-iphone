@@ -66,6 +66,18 @@ struct _LinphoneInfoMessage;
  */
 typedef struct _LinphoneCore LinphoneCore;
 
+/**
+ * Internal object of LinphoneCore representing a conference
+ * @ingroup call_control
+ */
+typedef struct _LinphoneConference LinphoneConference;
+
+/**
+ * Parameters for initialization of conferences
+ * @ingroup call_control
+ */
+typedef struct _LinphoneCorferenceParams LinphoneConferenceParams;
+
 
 /**
  * Disable a sip transport
@@ -139,12 +151,6 @@ enum _LinphoneStreamType {
  * @ingroup initializing
 **/
 typedef enum _LinphoneStreamType LinphoneStreamType;
-
-/**
- * Internal object of LinphoneCore representing a conference
- * @ingroup call_control
- */
-typedef struct _LinphoneConference LinphoneConference;
 
 /**
  * Function returning a human readable value for LinphoneStreamType.
@@ -3443,7 +3449,7 @@ LINPHONE_PUBLIC bool_t linphone_core_video_capture_enabled(LinphoneCore *lc);
 LINPHONE_PUBLIC bool_t linphone_core_video_display_enabled(LinphoneCore *lc);
 
 LINPHONE_PUBLIC	void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
-LINPHONE_PUBLIC const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc);
+LINPHONE_PUBLIC const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc);
 
 typedef struct MSVideoSizeDef{
 	MSVideoSize vsize;
@@ -3829,6 +3835,14 @@ LINPHONE_PUBLIC LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCor
  */
 
 /**
+ * Create a conference
+ * @param lc The #LinphoneCore instance where the conference will be created inside.
+ * @param params Parameters of the conference. See #LinphoneConferenceParms.
+ * @return A pointer on the freshly created conference. That object will be automatically
+ * freed by the core after calling linphone_core_terminate_conference().
+ */
+LINPHONE_PUBLIC LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc, const LinphoneConferenceParams *params);
+/**
  * Add a participant to the conference. If no conference is going on
  * a new internal conference context is created and the participant is
  * added to it.
@@ -3836,7 +3850,7 @@ LINPHONE_PUBLIC LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCor
  * @param call The current call with the participant to add
  * @return 0 if succeeded. Negative number if failed
  */
-LINPHONE_PUBLIC	int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call);
 /**
  * Add all current calls into the conference. If no conference is running
  * a new internal conference context is created and all current calls
@@ -3844,7 +3858,7 @@ LINPHONE_PUBLIC	int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCa
  * @param lc #LinphoneCore
  * @return 0 if succeeded. Negative number if failed
  */
-LINPHONE_PUBLIC	int linphone_core_add_all_to_conference(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_add_all_to_conference(LinphoneCore *lc);
 /**
  * Remove a call from the conference.
  * @param lc the linphone core
@@ -3860,7 +3874,7 @@ LINPHONE_PUBLIC	int linphone_core_add_all_to_conference(LinphoneCore *lc);
  *
  * @return 0 if successful, -1 otherwise.
  **/
- LINPHONE_PUBLIC	int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
+ LINPHONE_PUBLIC int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call);
 /**
  * Indicates whether the local participant is part of a conference.
  * @warning That function automatically fails in the case of conferences using a
@@ -3869,25 +3883,25 @@ LINPHONE_PUBLIC	int linphone_core_add_all_to_conference(LinphoneCore *lc);
  * @param lc the linphone core
  * @return TRUE if the local participant is in a conference, FALSE otherwise.
 */
-LINPHONE_PUBLIC	bool_t linphone_core_is_in_conference(const LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_is_in_conference(const LinphoneCore *lc);
 /**
  * Join the local participant to the running conference
  * @param lc #LinphoneCore
  * @return 0 if succeeded. Negative number if failed
  */
-LINPHONE_PUBLIC	int linphone_core_enter_conference(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_enter_conference(LinphoneCore *lc);
 /**
  * Make the local participant leave the running conference
  * @param lc #LinphoneCore
  * @return 0 if succeeded. Negative number if failed
  */
-LINPHONE_PUBLIC	int linphone_core_leave_conference(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_leave_conference(LinphoneCore *lc);
 /**
  * Get the set input volume of the local participant
  * @param lc #LinphoneCore
  * @return A value inside [0.0 ; 1.0]
  */
-LINPHONE_PUBLIC	float linphone_core_get_conference_local_input_volume(LinphoneCore *lc);
+LINPHONE_PUBLIC float linphone_core_get_conference_local_input_volume(LinphoneCore *lc);
 /**
  * Terminate the running conference. If it is a local conference, all calls
  * inside it will become back separate calls and will be put in #LinphoneCallPaused state.
@@ -3896,14 +3910,14 @@ LINPHONE_PUBLIC	float linphone_core_get_conference_local_input_volume(LinphoneCo
  * @param lc #LinphoneCore
  * @return 0 if succeeded. Negative number if failed
  */
-LINPHONE_PUBLIC	int linphone_core_terminate_conference(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_terminate_conference(LinphoneCore *lc);
 /**
  * Get the number of participant in the running conference. The local
  * participant is included in the count only if it is in the conference.
  * @param lc #LinphoneCore
  * @return The number of participant
  */
-LINPHONE_PUBLIC	int linphone_core_get_conference_size(LinphoneCore *lc);
+LINPHONE_PUBLIC int linphone_core_get_conference_size(LinphoneCore *lc);
 /**
  * Start recording the running conference
  * @param lc #LinphoneCore
@@ -3923,21 +3937,7 @@ LINPHONE_PUBLIC int linphone_core_stop_conference_recording(LinphoneCore *lc);
  * @return A pointer on #LinphoneConference or NULL if no conference are going on
  */
 LINPHONE_PUBLIC LinphoneConference *linphone_core_get_conference(LinphoneCore *lc);
-/**
- * Get URIs of all participants of one conference
- * The returned MSList contains URIs of all participant. That list must be
- * freed after use and each URI must be unref with linphone_address_unref()
- * @param obj A #LinphoneConference
- * @return \mslist{LinphoneAddress}
- */
-LINPHONE_PUBLIC MSList *linphone_conference_get_participants(const LinphoneConference *obj);
-/**
- * Remove a participant from a conference
- * @param obj A #LinphoneConference
- * @param uri SIP URI of the participant to remove
- * @return 0 if succeeded, -1 if failed
- */
-LINPHONE_PUBLIC int linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri);
+
 
 /**
  * @}

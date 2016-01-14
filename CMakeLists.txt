@@ -216,6 +216,7 @@ endif()
 
 set(STRICT_OPTIONS_CPP )
 set(STRICT_OPTIONS_C )
+set(STRICT_OPTIONS_CXX "-std=c++11")
 set(STRICT_OPTIONS_OBJC )
 if(NOT MSVC)
 	list(APPEND STRICT_OPTIONS_CPP "-Wall" "-Wuninitialized" "-Wno-error=deprecated-declarations")
