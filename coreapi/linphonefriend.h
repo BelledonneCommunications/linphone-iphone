@@ -357,9 +357,9 @@ LINPHONE_PUBLIC void linphone_core_interpret_friend_uri(LinphoneCore *lc, const 
 LINPHONE_PUBLIC	void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *fr);
 
 /**
- * remove a friend from the buddy list
+ * Removes a friend from the buddy list
  * @param lc #LinphoneCore object
- * @param fr #LinphoneFriend to add
+ * @param fr #LinphoneFriend to remove
  */
 LINPHONE_PUBLIC void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *fr);
 

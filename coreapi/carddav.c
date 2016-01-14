@@ -120,6 +120,7 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 						cdc->contact_created_cb(cdc, lf);
 					}
 				}
+				linphone_friend_unref(lf);
 			}
 			vCards = ms_list_next(vCards);
 		}

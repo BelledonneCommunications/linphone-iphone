@@ -103,6 +103,6 @@ void linphone_vcard_compute_md5_hash(LinphoneVCard *vCard) {
 	
 }
 
-const char *linphone_vcard_get_md5_hash(LinphoneVCard *vCard) {
-	return NULL;
+bool_t linphone_vcard_compare_md5_hash(LinphoneVCard *vCard) {
+	return FALSE;
 }

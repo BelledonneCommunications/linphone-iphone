@@ -176,11 +176,11 @@ const char* linphone_vcard_get_url(const LinphoneVCard *vCard);
 void linphone_vcard_compute_md5_hash(LinphoneVCard *vCard);
 
 /**
- * Computes the md5 hash for the vCard
+ * Compares the previously computed md5 hash (using linphone_vcard_compute_md5_hash) with the current one
  * @param[in] vCard the LinphoneVCard
- * @return the last md5 hash computed for the vCard, or NULL if it wasn't computed yet
+ * @return 0 if the md5 hasn't changed, 1 otherwise
  */
-const char *linphone_vcard_get_md5_hash(LinphoneVCard *vCard);
+bool_t linphone_vcard_compare_md5_hash(LinphoneVCard *vCard);
 
 /**
  * @}

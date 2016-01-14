@@ -316,8 +316,12 @@ void _linphone_friend_list_release(LinphoneFriendList *list){
 		linphone_friend_list_cbs_unref(list->cbs);
 		list->cbs = NULL;
 	}
-	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
-	list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
+	if (list->dirty_friends_to_update) {
+		list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
+	}
+	if (list->friends) {
+		list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
+	}
 	linphone_friend_list_unref(list);
 }
 
@@ -465,6 +469,7 @@ static void carddav_removed(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
 		LinphoneFriendList *lfl = cdc->friend_list;
 		MSList *elem = ms_list_find(lfl->friends, lf);
 		if (elem) {
+			linphone_friend_unref(lf);
 			lfl->friends = ms_list_remove_link(lfl->friends, elem);
 		}
 		if (cdc->friend_list->cbs->contact_deleted_cb) {

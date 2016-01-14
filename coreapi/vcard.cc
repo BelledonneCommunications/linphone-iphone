@@ -21,12 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "belcard/belcard.hpp"
 #include "belcard/belcard_parser.hpp"
 #include "sal/sal.h"
+#include <polarssl/md5.h>
 
 struct _LinphoneVCard {
 	shared_ptr<belcard::BelCard> belCard;
 	char *etag;
 	char *url;
-	char *md5;
+	unsigned char *md5;
 };
 
 #ifdef __cplusplus
@@ -225,20 +226,33 @@ const char* linphone_vcard_get_url(const LinphoneVCard *vCard) {
 }
 
 void linphone_vcard_compute_md5_hash(LinphoneVCard *vCard) {
+	unsigned char digest[16];
+	const char *text = NULL;
 	if (!vCard) {
 		return;
 	}
-	if (vCard->md5) {
-		ms_free(vCard->md5);
-	}
-	//TODO: compute md5 hash
+	text = linphone_vcard_as_vcard4_string(vCard);
+	md5((unsigned char *)text, strlen(text), digest);
+	vCard->md5 = (unsigned char *)ms_malloc(sizeof(digest));
+	memcpy(vCard->md5, digest, sizeof(digest));
 }
 
-const char *linphone_vcard_get_md5_hash(LinphoneVCard *vCard) {
-	if (!vCard) {
-		return NULL;
+bool_t linphone_vcard_compare_md5_hash(LinphoneVCard *vCard) {
+	unsigned char *previous_md5 = vCard->md5;
+	unsigned char *new_md5 = NULL;
+	int result = -1;
+	
+	if (!previous_md5) {
+		return result;
 	}
-	return vCard->md5;
+	
+	linphone_vcard_compute_md5_hash(vCard);
+	new_md5 = vCard->md5;
+	result = memcmp(new_md5, previous_md5, sizeof(previous_md5));
+	
+	ms_free(previous_md5);
+	ms_free(new_md5);
+	return result;
 }
 
 #ifdef __cplusplus

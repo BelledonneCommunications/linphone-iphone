@@ -535,19 +535,15 @@ void linphone_friend_edit(LinphoneFriend *fr) {
 }
 
 void linphone_friend_done(LinphoneFriend *fr) {
-	const char *previous_md5 = NULL;
-	
 	ms_return_if_fail(fr);
 	if (!fr->lc || !fr->friend_list) return;
 	linphone_friend_apply(fr, fr->lc);
 	linphone_friend_save(fr, fr->lc);
 	
 	if (fr && fr->vcard) {
-		previous_md5 = linphone_vcard_get_md5_hash(fr->vcard);
-		linphone_vcard_compute_md5_hash(fr->vcard);
-		if (previous_md5 && strcmp(previous_md5, linphone_vcard_get_md5_hash(fr->vcard)) != 0) {
+		if (linphone_vcard_compare_md5_hash(fr->vcard) != 0) {
 			ms_debug("vCard's md5 has changed, mark friend as dirty");
-			fr->friend_list->dirty_friends_to_update = ms_list_append(fr->friend_list->dirty_friends_to_update, fr);
+			fr->friend_list->dirty_friends_to_update = ms_list_append(fr->friend_list->dirty_friends_to_update, linphone_friend_ref(fr));
 		}
 	}
 }
@@ -561,7 +557,7 @@ LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, cons
 }
 
 void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
-	if ((lc->friends_lists == NULL) || (linphone_friend_list_add_friend(linphone_core_get_default_friend_list(lc), lf) != LinphoneFriendListOK)) return;
+	if (linphone_friend_list_add_friend(linphone_core_get_default_friend_list(lc), lf) != LinphoneFriendListOK) return;
 	if (ms_list_find(lc->subscribers, lf)) {
 		/*if this friend was in the pending subscriber list, now remove it from this list*/
 		lc->subscribers = ms_list_remove(lc->subscribers, lf);
@@ -901,8 +897,6 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard) {
 	fr->pol = LinphoneSPDeny;
 	fr->subscribe = FALSE;
 	
-	linphone_friend_set_vcard(fr, vcard);
-	
 	if (sipAddresses) {
 		const char *sipAddress = (const char *)sipAddresses->data;
 		linphone_address = linphone_address_new(sipAddress);
@@ -914,6 +908,7 @@ LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard) {
 	if (name) {
 		linphone_friend_set_name(fr, name);
 	}
+	fr->vcard = vcard;
 	
 	return fr;
 }
@@ -1053,10 +1048,15 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	lc->friends_db = db;
 	
 	friends_lists = linphone_core_fetch_friends_lists_from_db(lc);
-	while (friends_lists) {
-		LinphoneFriendList *list = (LinphoneFriendList *)friends_lists->data;
-		linphone_core_add_friend_list(lc, list);
-		friends_lists = ms_list_next(friends_lists);
+	if (friends_lists) {
+		lc->friends_lists = ms_list_free_with_data(lc->friends_lists, (void (*)(void*))linphone_friend_list_unref);
+		lc->friends_lists = NULL;
+	
+		while (friends_lists) {
+			LinphoneFriendList *list = (LinphoneFriendList *)friends_lists->data;
+			linphone_core_add_friend_list(lc, list);
+			friends_lists = ms_list_next(friends_lists);
+		}
 	}
 }
 
