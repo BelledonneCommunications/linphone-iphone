@@ -104,7 +104,7 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Use IPv6</string>
+			<string>Allow IPv6</string>
 			<key>Key</key>
 			<string>use_ipv6</string>
 			<key>Type</key>
