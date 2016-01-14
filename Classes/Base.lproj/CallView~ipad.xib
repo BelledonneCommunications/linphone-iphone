@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
@@ -147,7 +147,7 @@
                                             </accessibility>
                                         </view>
                                         <view tag="11" contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="548" y="775" width="244" height="407"/>
+                                            <rect key="frame" x="590" y="965" width="210" height="280"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -740,7 +740,7 @@
                                             </accessibility>
                                         </view>
                                         <view tag="11" contentMode="scaleAspectFit" id="FcF-4P-SjT" userLabel="preview">
-                                            <rect key="frame" x="888" y="504" width="394" height="251"/>
+                                            <rect key="frame" x="1010" y="545" width="280" height="210"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>

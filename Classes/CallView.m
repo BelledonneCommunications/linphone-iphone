@@ -77,6 +77,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
+	_videoPreview.layer.borderColor = UIColor.whiteColor.CGColor;
+	_videoPreview.layer.borderWidth = 1;
+
 	[singleFingerTap setNumberOfTapsRequired:1];
 	[singleFingerTap setCancelsTouchesInView:FALSE];
 	[self.videoView addGestureRecognizer:singleFingerTap];
@@ -352,8 +355,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	}
 
 	// only show camera switch button if we have more than 1 camera
-	_videoCameraSwitch.hidden = !disabled && ([LinphoneManager instance].frontCamId != nil);
-	_videoPreview.hidden = (!disabled && !linphone_core_self_view_enabled([LinphoneManager getLc]));
+	_videoCameraSwitch.hidden = (disabled || !LinphoneManager.instance.frontCamId);
+	_videoPreview.hidden = (disabled || !linphone_core_self_view_enabled([LinphoneManager getLc]));
 
 	if (hideControlsTimer != nil) {
 		[hideControlsTimer invalidate];

@@ -213,42 +213,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[searchBar resignFirstResponder];
 }
 
-#pragma mark - Rotation handling
-
-//- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-//	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-//	// the searchbar overlaps the subview in most rotation cases, we have to re-layout the view manually:
-//	[self relayoutTableView];
-//}
-
-#pragma mark - ABPeoplePickerDelegate
-
-- (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker {
-	[PhoneMainView.instance popCurrentView];
-	return;
-}
-
-- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
-	  shouldContinueAfterSelectingPerson:(ABRecordRef)person {
-	return true;
-}
-
-- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
-	  shouldContinueAfterSelectingPerson:(ABRecordRef)person
-								property:(ABPropertyID)property
-							  identifier:(ABMultiValueIdentifier)identifier {
-
-	CFTypeRef multiValue = ABRecordCopyValue(person, property);
-	CFIndex valueIdx = ABMultiValueGetIndexForIdentifier(multiValue, identifier);
-	NSString *phoneNumber = (NSString *)CFBridgingRelease(ABMultiValueCopyValueAtIndex(multiValue, valueIdx));
-	// Go to dialer view
-	DialerView *view = VIEW(DialerView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	[view call:phoneNumber displayName:(NSString *)CFBridgingRelease(ABRecordCopyCompositeName(person))];
-	CFRelease(multiValue);
-	return false;
-}
-
 #pragma mark - searchBar delegate
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {

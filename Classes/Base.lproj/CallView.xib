@@ -147,7 +147,7 @@
                                             </accessibility>
                                         </view>
                                         <view tag="11" contentMode="scaleAspectFit" id="127" userLabel="preview">
-                                            <rect key="frame" x="254" y="354" width="113" height="187"/>
+                                            <rect key="frame" x="267" y="396" width="108" height="145"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -741,7 +741,7 @@
                                             </accessibility>
                                         </view>
                                         <view tag="11" contentMode="scaleAspectFit" id="FcF-4P-SjT" userLabel="preview">
-                                            <rect key="frame" x="456" y="208" width="203" height="104"/>
+                                            <rect key="frame" x="522" y="204" width="145" height="108"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>

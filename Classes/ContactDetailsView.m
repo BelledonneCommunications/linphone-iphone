@@ -55,14 +55,17 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	ABRecordID recordID = ABRecordGetRecordID(_contact);
 	ABAddressBookRevert(addressBook);
 	_contact = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
-	if (_contact == NULL) {
-		[PhoneMainView.instance popCurrentView];
-		return;
-	}
-	LOGI(@"Reset data to contact %p", _contact);
 
-	[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO] bordered:NO withRoundedRadius:YES];
-	[_tableController setContact:[[Contact alloc] initWithPerson:_contact]];
+	if (_contact != NULL) {
+		LOGI(@"Reset data to contact %p", _contact);
+		[_avatarImage setImage:[FastAddressBook imageForContact:_contact thumbnail:NO]
+					  bordered:NO
+			 withRoundedRadius:YES];
+		[_tableController setContact:[[Contact alloc] initWithPerson:_contact]];
+		_emptyLabel.hidden = YES;
+	} else {
+		_emptyLabel.hidden = NO;
+	}
 }
 
 static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
@@ -78,6 +81,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		[[[LinphoneManager instance] fastAddressBook] removeContact:_contact];
 		inhibUpdate = FALSE;
 	}
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (void)saveData {
@@ -290,7 +294,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 					  onConfirmationClick:^() {
 						[self setEditing:FALSE];
 						[self removeContact];
-						[PhoneMainView.instance popCurrentView];
 					  }];
 }
 
