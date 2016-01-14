@@ -701,6 +701,99 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+
+static void disable_all_codecs(const MSList* elem, LinphoneCoreManager* call){
+
+    PayloadType *pt;
+    
+    for(;elem!=NULL;elem=elem->next){
+        pt=(PayloadType*)elem->data;
+        linphone_core_enable_payload_type(call->lc,pt,FALSE);
+    }
+}
+/***
+ Disable all audio codecs , sends an INVITE with RTP port 0 and payload 0.
+ Wait for SIP  488 unacceptable.
+ ***/
+static void call_with_no_audio_codec(void){
+    
+	LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall* out_call ;
+	
+	const MSList* elem =linphone_core_get_audio_codecs(caller->lc);
+	
+	disable_all_codecs(elem, caller);
+	
+	
+	out_call = linphone_core_invite_address(caller->lc,callee->identity);
+	linphone_call_ref(out_call);
+	BC_ASSERT_TRUE(wait_for(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallOutgoingInit, 1));
+	
+	
+	BC_ASSERT_TRUE(wait_for_until(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallError, 1, 6000));
+	BC_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable, int, "%d");
+	BC_ASSERT_EQUAL(callee->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+	
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(callee);
+	linphone_core_manager_destroy(caller);
+
+}
+
+static void video_call_with_no_audio_and_no_video_codec(void){
+	
+	LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall* out_call ;
+	LinphoneVideoPolicy callee_policy, caller_policy;
+	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
+	
+	const MSList* elem_video =linphone_core_get_video_codecs(caller->lc);
+	
+	const MSList* elem_audio =linphone_core_get_audio_codecs(caller->lc);
+	
+	disable_all_codecs(elem_audio, caller);
+	disable_all_codecs(elem_video, caller);
+	
+	callee_policy.automatically_initiate=FALSE;
+	callee_policy.automatically_accept=TRUE;
+	caller_policy.automatically_initiate=TRUE;
+	caller_policy.automatically_accept=FALSE;
+	
+	linphone_core_set_video_policy(callee->lc,&callee_policy);
+	linphone_core_set_video_policy(caller->lc,&caller_policy);
+	
+	
+	linphone_core_enable_video_display(callee->lc, TRUE);
+	linphone_core_enable_video_capture(callee->lc, TRUE);
+	
+	linphone_core_enable_video_display(caller->lc, TRUE);
+	linphone_core_enable_video_capture(caller->lc, TRUE);
+	
+	/* Create call params */
+	caller_test_params.base = linphone_core_create_call_params(caller->lc, NULL);
+	
+	
+	out_call = linphone_core_invite_address_with_params(caller->lc, callee->identity,caller_test_params.base);
+	linphone_call_ref(out_call);
+	
+	linphone_call_params_destroy(caller_test_params.base);
+	if (callee_test_params.base) linphone_call_params_destroy(callee_test_params.base);
+	
+	
+	BC_ASSERT_TRUE(wait_for(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallOutgoingInit, 1));
+	
+	BC_ASSERT_TRUE(wait_for_until(caller->lc, callee->lc, &caller->stat.number_of_LinphoneCallError, 1, 6000));
+	BC_ASSERT_EQUAL(linphone_call_get_reason(out_call), LinphoneReasonNotAcceptable, int, "%d");
+	BC_ASSERT_EQUAL(callee->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+	
+	linphone_call_unref(out_call);
+	linphone_core_manager_destroy(callee);
+	linphone_core_manager_destroy(caller);
+    
+}
+
 static void simple_call_compatibility_mode(void) {
 	char route[256];
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -2082,16 +2175,16 @@ void video_call_base_3(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
     
     LinphoneCall* callee_call;
     LinphoneCall* caller_call;
-    LinphoneVideoPolicy callee_policy, pauline_policy;
+    LinphoneVideoPolicy callee_policy, caller_policy;
     
     if (using_policy) {
         callee_policy.automatically_initiate=FALSE;
         callee_policy.automatically_accept=TRUE;
-        pauline_policy.automatically_initiate=TRUE;
-        pauline_policy.automatically_accept=FALSE;
+        caller_policy.automatically_initiate=TRUE;
+        caller_policy.automatically_accept=FALSE;
         
         linphone_core_set_video_policy(callee->lc,&callee_policy);
-        linphone_core_set_video_policy(caller->lc,&pauline_policy);
+        linphone_core_set_video_policy(caller->lc,&caller_policy);
     }
     
     linphone_core_enable_video_display(callee->lc, callee_video_enabled);
@@ -5031,6 +5124,7 @@ static int rtptm_on_send(RtpTransportModifier *rtptm, mblk_t *msg) {
 		// This is probably a STUN packet, so don't count it (oRTP won't) and don't encrypt it either
 		return (int)msgdsize(msg);
 	}
+	/*ms_message("rtptm_on_send: rtpm=%p seq=%u", rtptm, (int)ntohs(rtp_get_seqnumber(msg)));*/
 
 	data->packetSentCount += 1;
 	ms_queue_put(&data->to_send, dupmsg(msg));
@@ -5170,6 +5264,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	v_table = linphone_core_v_table_new();
 	v_table->call_state_changed = call_state_changed_4;
 	linphone_core_add_listener(marie->lc,v_table);
+	
 
 	if (recordTest) { // When we do the record test, we need a file player to play the content of a sound file
 		/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
@@ -5873,6 +5968,8 @@ test_t call_tests[] = {
 	{ "Call established with rejected info during re-invite",call_established_with_rejected_info_during_reinvite},
 	{ "Call redirected by callee", call_redirect},
 	{ "Call with specified codec bitrate", call_with_specified_codec_bitrate},
+    { "Call with no audio codec", call_with_no_audio_codec},
+    { "Video call with no audio and no video codec", video_call_with_no_audio_and_no_video_codec},
 	{ "Call with in-dialog UPDATE request", call_with_in_dialog_update },
 	{ "Call with in-dialog codec change", call_with_in_dialog_codec_change },
 	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },
