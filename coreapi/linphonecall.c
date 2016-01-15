@@ -2398,6 +2398,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 
 		rtp_session_get_transports(audiostream->ms.sessions.rtp_session,&meta_rtp,&meta_rtcp);
 		if (meta_rtp_transport_get_endpoint(meta_rtp) == NULL) {
+			ms_message("LinphoneCall[%p]: using custom audio RTP transport endpoint.", call);
 			meta_rtp_transport_set_endpoint(meta_rtp,lc->rtptf->audio_rtp_func(lc->rtptf->audio_rtp_func_data, call->media_ports[call->main_audio_stream_index].rtp_port));
 		}
 		if (meta_rtp_transport_get_endpoint(meta_rtcp) == NULL) {
@@ -2466,6 +2467,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 
 			rtp_session_get_transports(call->videostream->ms.sessions.rtp_session,&meta_rtp,&meta_rtcp);
 			if (meta_rtp_transport_get_endpoint(meta_rtp) == NULL) {
+				ms_message("LinphoneCall[%p]: using custom video RTP transport endpoint.", call);
 				meta_rtp_transport_set_endpoint(meta_rtp,lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->media_ports[call->main_video_stream_index].rtp_port));
 			}
 			if (meta_rtp_transport_get_endpoint(meta_rtcp) == NULL) {
