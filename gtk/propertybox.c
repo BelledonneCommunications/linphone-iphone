@@ -1285,19 +1285,21 @@ static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
 	char *selected=gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *toplevel=gtk_widget_get_toplevel(combo);
+	GtkWidget *mandatory_box = linphone_gtk_get_widget(toplevel,"media_encryption_mandatory");
 	if (selected!=NULL){
 		if (strcasecmp(selected,"SRTP")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionSRTP);
-			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,TRUE);
+			gtk_widget_set_sensitive(mandatory_box,TRUE);
 		}else if (strcasecmp(selected,"DTLS")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionDTLS);
-			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,FALSE);
+			gtk_widget_set_sensitive(mandatory_box,FALSE);
 		}else if (strcasecmp(selected,"ZRTP")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionZRTP);
-			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,FALSE);
+			gtk_widget_set_sensitive(mandatory_box,FALSE);
 		} else {
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionNone);
-			linphone_gtk_set_media_encryption_mandatory_sensitive(toplevel,FALSE);
+			gtk_widget_set_sensitive(mandatory_box,FALSE);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mandatory_box), FALSE);
 		}
 		g_free(selected);
 	}else g_warning("gtk_combo_box_get_active_text() returned NULL");
