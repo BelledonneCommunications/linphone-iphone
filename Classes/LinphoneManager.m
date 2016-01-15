@@ -72,13 +72,13 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
-extern void libmsilbc_init(void);
-extern void libmsamr_init(void);
-extern void libmsx264_init(void);
-extern void libmsopenh264_init(void);
-extern void libmssilk_init(void);
-extern void libmsbcg729_init(void);
-extern void libmswebrtc_init(void);
+extern void libmsilbc_init(MSFactory *factory);
+extern void libmsamr_init(MSFactory *factory);
+extern void libmsx264_init(MSFactory *factory);
+extern void libmsopenh264_init(MSFactory *factory);
+extern void libmssilk_init(MSFactory *factory);
+extern void libmsbcg729_init(MSFactory *factory);
+extern void libmswebrtc_init(MSFactory *factory);
 
 #define FRONT_CAM_NAME                                                                                                 \
 	"AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
@@ -1453,13 +1453,13 @@ static BOOL libStarted = FALSE;
 
 	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
 	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
-	libmsilbc_init();
-	libmssilk_init();
-	libmsamr_init();
-	libmsx264_init();
-	libmsopenh264_init();
-	libmsbcg729_init();
-	libmswebrtc_init();
+	libmsilbc_init(ms_factory_get_fallback());
+	libmssilk_init(ms_factory_get_fallback());
+	libmsamr_init(ms_factory_get_fallback());
+	libmsx264_init(ms_factory_get_fallback());
+	libmsopenh264_init(ms_factory_get_fallback());
+	libmsbcg729_init(ms_factory_get_fallback());
+	libmswebrtc_init(ms_factory_get_fallback());
 
 	theLinphoneCore = linphone_core_new_with_config(&linphonec_vtable, configDb, (__bridge void *)(self));
 	LOGI(@"Create linphonecore %p", theLinphoneCore);
