@@ -9,7 +9,7 @@
 	url = git://git.linphone.org/speex
 [submodule "submodules/externals/opencore-amr"]
 	path = submodules/externals/opencore-amr
-	url = git://git.linphone.org/opencore-amr
+	url = git://git.linphone.org/opencore-amr.git
 	ignore = dirty
 [submodule "submodules/msamr"]
 	path = submodules/msamr
