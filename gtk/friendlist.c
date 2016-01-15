@@ -718,15 +718,8 @@ void linphone_gtk_show_friends(void){
 void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *parent){
 	GtkWidget *w = linphone_gtk_create_window("contact", parent);
 	char *uri;
-	const char *name;
+	const char *name = linphone_friend_get_name(lf);
 	const LinphoneAddress *f_uri = linphone_friend_get_address(lf);
-	LinphoneVCard *vcard = linphone_friend_get_vcard(lf);
-	
-	if (vcard) {
-		name = linphone_vcard_get_full_name(vcard);
-	} else {
-		name = linphone_address_get_display_name(f_uri);
-	}
 	
 	uri=linphone_address_as_string_uri_only(f_uri);
 	if (uri) {
