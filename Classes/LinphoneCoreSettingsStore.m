@@ -99,7 +99,7 @@
 }
 
 - (void)transformCodecsToKeys:(const MSList *)codecs {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 
 	const MSList *elem = codecs;
 	for (; elem != NULL; elem = elem->next) {
@@ -115,7 +115,7 @@
 }
 
 - (void)transformAccountToKeys:(NSString *)username {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	const MSList *proxies = linphone_core_get_proxy_config_list(lc);
 	while (username && proxies &&
 		   strcmp(username.UTF8String,
@@ -219,11 +219,11 @@
 
 - (void)transformLinphoneCoreToKeys {
 	LinphoneManager *lm = [LinphoneManager instance];
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 
 	// root section
 	{
-		const MSList *accounts = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+		const MSList *accounts = linphone_core_get_proxy_config_list(LC);
 		int count = ms_list_size(accounts);
 		for (int i = 1; i <= count; i++, accounts = accounts->next) {
 			NSString *key = [NSString stringWithFormat:@"menu_account_%d", i];
@@ -348,7 +348,7 @@
 
 	// tunnel section
 	if (linphone_core_tunnel_available()) {
-		LinphoneTunnel *tunnel = linphone_core_get_tunnel([LinphoneManager getLc]);
+		LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
 		[self setObject:[lm lpConfigStringForKey:@"tunnel_mode_preference" withDefault:@"off"]
 				 forKey:@"tunnel_mode_preference"];
 		const MSList *configs = linphone_tunnel_get_servers(tunnel);
@@ -400,7 +400,7 @@
 - (void)synchronizeAccounts {
 	LOGI(@"Account changed, synchronizing.");
 	LinphoneManager *lm = [LinphoneManager instance];
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneProxyConfig *proxyCfg = NULL;
 	NSString *error = nil;
 
@@ -577,7 +577,7 @@
 }
 
 - (void)synchronizeCodecs:(const MSList *)codecs {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	PayloadType *pt;
 	const MSList *elem;
 
@@ -590,7 +590,7 @@
 
 - (BOOL)synchronize {
 	LinphoneManager *lm = [LinphoneManager instance];
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	// root section
 	{
 		BOOL account_changed = NO;
@@ -758,7 +758,7 @@
 			NSString *lTunnelPrefMode = [self stringForKey:@"tunnel_mode_preference"];
 			NSString *lTunnelPrefAddress = [self stringForKey:@"tunnel_address_preference"];
 			int lTunnelPrefPort = [self integerForKey:@"tunnel_port_preference"];
-			LinphoneTunnel *tunnel = linphone_core_get_tunnel([LinphoneManager getLc]);
+			LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
 			TunnelMode mode = tunnel_off;
 			int lTunnelPort = 443;
 			if (lTunnelPrefPort) {
@@ -841,7 +841,7 @@
 }
 
 - (void)removeAccount {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneProxyConfig *config = ms_list_nth_data(linphone_core_get_proxy_config_list(lc),
 												   [self integerForKey:@"current_proxy_config_preference"]);
 

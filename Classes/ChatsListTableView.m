@@ -82,7 +82,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 - (MSList *)sortChatRooms {
 	MSList *sorted = nil;
-	const MSList *unsorted = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+	const MSList *unsorted = linphone_core_get_chat_rooms(LC);
 	const MSList *iter = unsorted;
 
 	while (iter) {

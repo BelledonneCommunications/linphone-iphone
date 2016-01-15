@@ -64,18 +64,18 @@
 #pragma mark - Actions Functions
 
 - (void)touchDown:(id)sender {
-	if (addressField && (!dtmf || !linphone_core_in_call([LinphoneManager getLc]))) {
+	if (addressField && (!dtmf || !linphone_core_in_call(LC))) {
 		NSString *newAddress = [NSString stringWithFormat:@"%@%c", addressField.text, digit];
 		[addressField setText:newAddress];
-		linphone_core_play_dtmf([LinphoneManager getLc], digit, -1);
+		linphone_core_play_dtmf(LC, digit, -1);
 	} else {
-		linphone_call_send_dtmf(linphone_core_get_current_call([LinphoneManager getLc]), digit);
-		linphone_core_play_dtmf([LinphoneManager getLc], digit, 100);
+		linphone_call_send_dtmf(linphone_core_get_current_call(LC), digit);
+		linphone_core_play_dtmf(LC, digit, 100);
 	}
 }
 
 - (void)touchUp:(id)sender {
-	linphone_core_stop_dtmf([LinphoneManager getLc]);
+	linphone_core_stop_dtmf(LC);
 }
 
 @end

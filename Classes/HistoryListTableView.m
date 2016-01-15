@@ -110,7 +110,7 @@
 		}
 	}
 
-	const MSList *logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+	const MSList *logs = linphone_core_get_call_logs(LC);
 	self.sections = [NSMutableDictionary dictionary];
 	while (logs != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
@@ -248,10 +248,10 @@
 		LinphoneCallLog *callLog = [log pointerValue];
 		MSList *count = linphone_call_log_get_user_data(callLog);
 		while (count) {
-			linphone_core_remove_call_log([LinphoneManager getLc], count->data);
+			linphone_core_remove_call_log(LC, count->data);
 			count = count->next;
 		}
-		linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+		linphone_core_remove_call_log(LC, callLog);
 		linphone_call_log_unref(callLog);
 		[[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
 		if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {
@@ -273,10 +273,10 @@
 	  LinphoneCallLog *callLog = [log pointerValue];
 	  MSList *count = linphone_call_log_get_user_data(callLog);
 	  while (count) {
-		  linphone_core_remove_call_log([LinphoneManager getLc], count->data);
+		  linphone_core_remove_call_log(LC, count->data);
 		  count = count->next;
 	  }
-	  linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+	  linphone_core_remove_call_log(LC, callLog);
 	  linphone_call_log_unref(callLog);
 	  [[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
 	  if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {

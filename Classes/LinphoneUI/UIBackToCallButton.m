@@ -31,7 +31,7 @@
 }
 
 - (void)update {
-	self.hidden = (_tableView.isEditing || linphone_core_get_current_call([LinphoneManager getLc]) == NULL);
+	self.hidden = (_tableView.isEditing || linphone_core_get_current_call(LC) == NULL);
 }
 
 - (IBAction)onBackToCallClick:(id)sender {

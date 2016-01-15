@@ -134,7 +134,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self updateUnreadMessage:FALSE];
 
 	// Update on show
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
 	[self callUpdate:call state:state animated:FALSE];
 	[self hideRoutes:TRUE animated:FALSE];
@@ -144,8 +144,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self callDurationUpdate];
 	[self onCurrentCallChange];
 	// Set windows (warn memory leaks)
-	linphone_core_set_native_video_window_id([LinphoneManager getLc], (__bridge void *)(_videoView));
-	linphone_core_set_native_preview_window_id([LinphoneManager getLc], (__bridge void *)(_videoPreview));
+	linphone_core_set_native_video_window_id(LC, (__bridge void *)(_videoView));
+	linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_videoPreview));
 
 	// Enable tap
 	[singleFingerTap setEnabled:TRUE];
@@ -215,7 +215,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// Disable tap
 	[singleFingerTap setEnabled:FALSE];
 
-	if (linphone_core_get_calls_nb([LinphoneManager getLc]) == 0) {
+	if (linphone_core_get_calls_nb(LC) == 0) {
 		// reseting speaker button because no more call
 		_speakerButton.selected = FALSE;
 	}
@@ -240,7 +240,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)updateBottomBar:(LinphoneCall *)call state:(LinphoneCallState)state {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 
 	[_speakerButton update];
 	[_microButton update];
@@ -356,7 +356,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 	// only show camera switch button if we have more than 1 camera
 	_videoCameraSwitch.hidden = (disabled || !LinphoneManager.instance.frontCamId);
-	_videoPreview.hidden = (disabled || !linphone_core_self_view_enabled([LinphoneManager getLc]));
+	_videoPreview.hidden = (disabled || !linphone_core_self_view_enabled(LC));
 
 	if (hideControlsTimer != nil) {
 		[hideControlsTimer invalidate];
@@ -379,7 +379,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		[_videoWaitingForFirstImage setHidden:NO];
 		[_videoWaitingForFirstImage startAnimating];
 
-		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+		LinphoneCall *call = linphone_core_get_current_call(LC);
 		// linphone_call_params_get_used_video_codec return 0 if no video stream enabled
 		if (call != NULL && linphone_call_params_get_used_video_codec(linphone_call_get_current_params(call))) {
 			linphone_call_set_next_video_frame_decoded_callback(call, hideSpinner, (__bridge void *)(self));
@@ -403,14 +403,13 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)callDurationUpdate {
-	int duration = linphone_core_get_current_call([LinphoneManager getLc])
-					   ? linphone_call_get_duration(linphone_core_get_current_call([LinphoneManager getLc]))
-					   : 0;
+	int duration =
+		linphone_core_get_current_call(LC) ? linphone_call_get_duration(linphone_core_get_current_call(LC)) : 0;
 	_durationLabel.text = [LinphoneUtils durationToString:duration];
 }
 
 - (void)onCurrentCallChange {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 
 	_noActiveCallView.hidden = (call || linphone_core_is_in_conference(lc));
@@ -504,7 +503,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	[self updateBottomBar:call state:state];
 	if (hiddenVolume) {
 		[PhoneMainView.instance setVolumeHidden:FALSE];
@@ -594,7 +593,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 #pragma mark - ActionSheet Functions
 
 - (void)displayAskToEnableVideoCall:(LinphoneCall *)call {
-	if (linphone_core_get_video_policy([LinphoneManager getLc])->automatically_accept)
+	if (linphone_core_get_video_policy(LC)->automatically_accept)
 		return;
 
 	NSString *username = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(call)];
@@ -604,9 +603,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		confirmMessage:NSLocalizedString(@"ACCEPT", nil)
 		onCancelClick:^() {
 		  LOGI(@"User declined video proposal");
-		  if (call == linphone_core_get_current_call([LinphoneManager getLc])) {
+		  if (call == linphone_core_get_current_call(LC)) {
 			  LinphoneCallParams *paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
-			  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
+			  linphone_core_accept_call_update(LC, call, paramsCopy);
 			  linphone_call_params_destroy(paramsCopy);
 			  [videoDismissTimer invalidate];
 			  videoDismissTimer = nil;
@@ -614,10 +613,10 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		}
 		onConfirmationClick:^() {
 		  LOGI(@"User accept video proposal");
-		  if (call == linphone_core_get_current_call([LinphoneManager getLc])) {
+		  if (call == linphone_core_get_current_call(LC)) {
 			  LinphoneCallParams *paramsCopy = linphone_call_params_copy(linphone_call_get_current_params(call));
 			  linphone_call_params_enable_video(paramsCopy, TRUE);
-			  linphone_core_accept_call_update([LinphoneManager getLc], call, paramsCopy);
+			  linphone_core_accept_call_update(LC, call, paramsCopy);
 			  linphone_call_params_destroy(paramsCopy);
 			  [videoDismissTimer invalidate];
 			  videoDismissTimer = nil;
@@ -738,7 +737,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (IBAction)onOptionsConferenceClick:(id)sender {
-	linphone_core_add_all_to_conference([LinphoneManager getLc]);
+	linphone_core_add_all_to_conference(LC);
 }
 
 #pragma mark - Animation

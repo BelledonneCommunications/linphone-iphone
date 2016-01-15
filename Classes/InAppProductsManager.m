@@ -299,7 +299,7 @@
 
 - (NSString *)getPhoneNumber {
 	NSString *phoneNumber = @"";
-	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
+	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config(LC);
 	if (config) {
 		const char *identity = linphone_proxy_config_get_identity(config);
 		if (identity) {

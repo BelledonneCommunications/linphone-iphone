@@ -288,7 +288,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneGlobalState state = (LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue];
 	static BOOL already_shown = FALSE;
 	if (state == LinphoneGlobalOn && !already_shown && [LinphoneManager instance].wasRemoteProvisioned) {
-		LinphoneProxyConfig *conf = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
+		LinphoneProxyConfig *conf = linphone_core_get_default_proxy_config(LC);
 		if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" inSection:@"app"] && conf == NULL) {
 			already_shown = TRUE;
 			AssistantView *view = VIEW(AssistantView);
@@ -338,7 +338,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 			[self displayCallError:call message:message];
 		}
 		case LinphoneCallEnd: {
-			const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
+			const MSList *calls = linphone_core_get_calls(LC);
 			if (calls == NULL) {
 				//				if ((currentView == CallView.compositeViewDescription) ||
 				//					(currentView == CallIncomingView.compositeViewDescription) ||
@@ -350,7 +350,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 				//					[self popCurrentView];
 				//				}
 			} else {
-				linphone_core_resume_call([LinphoneManager getLc], (LinphoneCall *)calls->data);
+				linphone_core_resume_call(LC, (LinphoneCall *)calls->data);
 				[self changeCurrentView:CallView.compositeViewDescription];
 			}
 			break;
@@ -375,7 +375,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 #pragma mark -
 
 - (void)orientationUpdate:(UIInterfaceOrientation)orientation {
-	int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
+	int oldLinphoneOrientation = linphone_core_get_device_rotation(LC);
 	int newRotation = 0;
 	switch (orientation) {
 		case UIInterfaceOrientationPortrait:
@@ -394,18 +394,18 @@ static RootViewManager *rootViewManagerInstance = nil;
 			newRotation = oldLinphoneOrientation;
 	}
 	if (oldLinphoneOrientation != newRotation) {
-		linphone_core_set_device_rotation([LinphoneManager getLc], newRotation);
-		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+		linphone_core_set_device_rotation(LC, newRotation);
+		LinphoneCall *call = linphone_core_get_current_call(LC);
 		if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 			// Orientation has changed, must call update call
-			linphone_core_update_call([LinphoneManager getLc], call, NULL);
+			linphone_core_update_call(LC, call, NULL);
 		}
 	}
 }
 - (void)startUp {
 	LinphoneCore *core = nil;
 	@try {
-		core = [LinphoneManager getLc];
+		core = LC;
 		LinphoneManager *lm = [LinphoneManager instance];
 		if (linphone_core_get_global_state(core) != LinphoneGlobalOn) {
 			[self changeCurrentView:DialerView.compositeViewDescription];
@@ -431,9 +431,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)updateApplicationBadgeNumber {
 	int count = 0;
-	count += linphone_core_get_missed_calls_count([LinphoneManager getLc]);
+	count += linphone_core_get_missed_calls_count(LC);
 	count += [LinphoneManager unreadMessageCount];
-	count += linphone_core_get_calls_nb([LinphoneManager getLc]);
+	count += linphone_core_get_calls_nb(LC);
 	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
 }
 
@@ -616,7 +616,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	NSString *lTitle;
 
 	// get default proxy
-	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
+	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(LC);
 	if (proxyCfg == nil) {
 		lMessage = NSLocalizedString(@"Please make sure your device is connected to the internet and double check your "
 									 @"SIP account configuration in the settings.",
@@ -700,7 +700,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	UIDeviceBatteryState state = [UIDevice currentDevice].batteryState;
 	LOGD(@"Battery state:%d level:%.2f", state, level);
 
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 		LinphoneCallAppData *callData = (__bridge LinphoneCallAppData *)linphone_call_get_user_pointer(call);
 		if (callData != nil) {
@@ -717,7 +717,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 													  linphone_call_params_copy(linphone_call_get_current_params(call));
 												  // stop video
 												  linphone_call_params_enable_video(paramsCopy, FALSE);
-												  linphone_core_update_call([LinphoneManager getLc], call, paramsCopy);
+												  linphone_core_update_call(LC, call, paramsCopy);
 												}];
 					[sheet showInView:self.view];
 					callData->batteryWarningShown = TRUE;
@@ -740,7 +740,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)incomingCallDeclined:(LinphoneCall *)call {
-	linphone_core_terminate_call([LinphoneManager getLc], call);
+	linphone_core_terminate_call(LC, call);
 }
 
 @end

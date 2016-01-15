@@ -100,7 +100,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// Look for the call log
 	callLog = NULL;
 	if (_callLogId) {
-		const MSList *list = linphone_core_get_call_logs([LinphoneManager getLc]);
+		const MSList *list = linphone_core_get_call_logs(LC);
 		while (list != NULL) {
 			LinphoneCallLog *log = (LinphoneCallLog *)list->data;
 			const char *cid = linphone_call_log_get_call_id(log);
@@ -184,7 +184,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 	ChatConversationView *view = VIEW(ChatConversationView);
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
-	LinphoneChatRoom *room = linphone_core_get_chat_room([LinphoneManager getLc], addr);
+	LinphoneChatRoom *room = linphone_core_get_chat_room(LC, addr);
 	[view setChatRoom:room];
 }
 

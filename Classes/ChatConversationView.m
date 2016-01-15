@@ -124,7 +124,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[[_tableController tableView] reloadData];
 
-	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server([LinphoneManager getLc]) != NULL;
+	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server(LC) != NULL;
 	[_pictureButton setEnabled:fileSharingEnabled];
 
 	[self callUpdateEvent:nil];
@@ -182,8 +182,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
-	_callButton.hidden =
-		(_tableController.isEditing || linphone_core_get_current_call([LinphoneManager getLc]) != NULL);
+	_callButton.hidden = (_tableController.isEditing || linphone_core_get_current_call(LC) != NULL);
 }
 
 - (void)update {

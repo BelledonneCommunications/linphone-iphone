@@ -36,7 +36,7 @@
 	} else {
 		cx = cy = 0.5;
 	}
-	linphone_call_zoom_video(linphone_core_get_current_call([LinphoneManager getLc]), zoomLevel, &cx, &cy);
+	linphone_call_zoom_video(linphone_core_get_current_call(LC), zoomLevel, &cx, &cy);
 }
 
 - (void)videoPan:(UIPanGestureRecognizer *)reco {
@@ -58,7 +58,7 @@
 		return;
 	}
 
-	linphone_call_zoom_video(linphone_core_get_current_call([LinphoneManager getLc]), zoomLevel, &x, &y);
+	linphone_call_zoom_video(linphone_core_get_current_call(LC), zoomLevel, &x, &y);
 	cx = x;
 	cy = y;
 }
@@ -82,7 +82,7 @@
 		return;
 	}
 
-	linphone_call_zoom_video(linphone_core_get_current_call([LinphoneManager getLc]), s, &cx, &cy);
+	linphone_call_zoom_video(linphone_core_get_current_call(LC), s, &cx, &cy);
 }
 
 - (void)resetZoom {

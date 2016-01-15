@@ -53,7 +53,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:kLinphoneBluetoothAvailabilityUpdate
 											 object:nil];
 
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (!call) {
 		if (![PhoneMainView.instance popCurrentView]) {
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
@@ -100,9 +100,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeclineClick:(id)sender {
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
-		linphone_core_terminate_call([LinphoneManager getLc], call);
+		linphone_core_terminate_call(LC, call);
 	}
 	if (![PhoneMainView.instance popCurrentView]) {
 		[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];

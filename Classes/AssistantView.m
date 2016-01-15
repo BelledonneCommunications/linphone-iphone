@@ -96,6 +96,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	new_config = NULL;
 	[self resetTextFields];
 	[self changeView:_welcomeView back:FALSE animation:FALSE];
+	number_of_configs_before = ms_list_size(linphone_core_get_proxy_config_list(LC));
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -126,9 +127,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[[LinphoneManager instance] resetLinphoneCore];
 	account_creator = linphone_account_creator_new(
-		[LinphoneManager getLc],
-		[LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
-			.UTF8String);
+		LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
+				.UTF8String);
 	linphone_account_creator_set_user_data(account_creator, (__bridge void *)(self));
 	linphone_account_creator_cbs_set_existence_tested(linphone_account_creator_get_callbacks(account_creator),
 													  assistant_existence_tested);
@@ -139,7 +139,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
-	linphone_core_set_provisioning_uri([LinphoneManager getLc], fullPath.UTF8String);
+	linphone_core_set_provisioning_uri(LC, fullPath.UTF8String);
 	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
 
 	[self resetLiblinphone];
@@ -149,7 +149,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[[LinphoneManager instance] removeAllAccounts];
 	[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
 
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LCSipTransports transportValue = {5060, 5060, -1, -1};
 
 	if (linphone_core_set_sip_transports(lc, &transportValue)) {
@@ -213,7 +213,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)configureProxyConfig {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneManager *lm = [LinphoneManager instance];
 
 	// remove previous proxy config, if any
@@ -318,15 +318,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)fillDefaultValues {
 	[self resetTextFields];
 
-	LinphoneProxyConfig *current_conf = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
-	if (current_conf != NULL) {
-		if (linphone_proxy_config_find_auth_info(current_conf) != NULL) {
-			LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
-			[self onDialerClick:nil];
-		}
-	}
-
-	LinphoneProxyConfig *default_conf = linphone_core_create_proxy_config([LinphoneManager getLc]);
+	LinphoneProxyConfig *default_conf = linphone_core_create_proxy_config(LC);
 	const char *identity = linphone_proxy_config_get_identity(default_conf);
 	if (identity) {
 		LinphoneAddress *default_addr = linphone_address_new(identity);
@@ -478,7 +470,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 					if ([inputEntry rangeOfString:@"://"].location == NSNotFound) {
 						inputEntry = [NSString stringWithFormat:@"http://%@", inputEntry];
 					}
-					return (linphone_core_set_provisioning_uri([LinphoneManager getLc], inputEntry.UTF8String) != 0);
+					return (linphone_core_set_provisioning_uri(LC, inputEntry.UTF8String) != 0);
 				}
 				return TRUE;
 			  }];
@@ -556,6 +548,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	switch (status) {
 		case LinphoneConfiguringSuccessful:
+			// we successfully loaded a remote provisioned config, go to dialer
+			if (number_of_configs_before < ms_list_size(linphone_core_get_proxy_config_list(LC))) {
+				LOGI(@"A proxy config was set up with the remote provisioning, skip assistant");
+				[self onDialerClick:nil];
+			}
+
 			if (nextView == nil) {
 				[self fillDefaultValues];
 			} else {

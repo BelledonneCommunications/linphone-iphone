@@ -75,7 +75,7 @@
 }
 
 + (LinphoneCall *)getCall {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneCall *currentCall = linphone_core_get_current_call(lc);
 	if (currentCall == nil && linphone_core_get_calls_nb(lc) == 1) {
 		currentCall = (LinphoneCall *)linphone_core_get_calls(lc)->data;
@@ -96,14 +96,14 @@
 	switch (type) {
 		case UIPauseButtonType_Call: {
 			if (call != nil) {
-				linphone_core_pause_call([LinphoneManager getLc], call);
+				linphone_core_pause_call(LC, call);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
 			break;
 		}
 		case UIPauseButtonType_Conference: {
-			linphone_core_leave_conference([LinphoneManager getLc]);
+			linphone_core_leave_conference(LC);
 
 			// Fake event
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
@@ -112,7 +112,7 @@
 		case UIPauseButtonType_CurrentCall: {
 			LinphoneCall *currentCall = [UIPauseButton getCall];
 			if (currentCall != nil) {
-				linphone_core_pause_call([LinphoneManager getLc], currentCall);
+				linphone_core_pause_call(LC, currentCall);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
@@ -125,14 +125,14 @@
 	switch (type) {
 		case UIPauseButtonType_Call: {
 			if (call != nil) {
-				linphone_core_resume_call([LinphoneManager getLc], call);
+				linphone_core_resume_call(LC, call);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
 			break;
 		}
 		case UIPauseButtonType_Conference: {
-			linphone_core_enter_conference([LinphoneManager getLc]);
+			linphone_core_enter_conference(LC);
 			// Fake event
 			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			break;
@@ -140,7 +140,7 @@
 		case UIPauseButtonType_CurrentCall: {
 			LinphoneCall *currentCall = [UIPauseButton getCall];
 			if (currentCall != nil) {
-				linphone_core_resume_call([LinphoneManager getLc], currentCall);
+				linphone_core_resume_call(LC, currentCall);
 			} else {
 				LOGW(@"Cannot toggle pause buttton, because no current call");
 			}
@@ -151,7 +151,7 @@
 
 - (bool)onUpdate {
 	bool ret = false;
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneCall *c = call;
 	switch (type) {
 		case UIPauseButtonType_Conference: {

@@ -60,7 +60,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_passwordField setText:[[LinphoneManager instance] lpConfigStringForKey:@"assistant_password"]];
 
 	// Update on show
-	const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+	const MSList *list = linphone_core_get_proxy_config_list(LC);
 	if (list != NULL) {
 		LinphoneProxyConfig *config = (LinphoneProxyConfig *)list->data;
 		if (config) {
@@ -108,7 +108,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		siteUrl = @"http://www.linphone.org";
 	}
 	[_siteButton setTitle:siteUrl forState:UIControlStateNormal];
-	account_creator = linphone_account_creator_new([LinphoneManager getLc], siteUrl.UTF8String);
+	account_creator = linphone_account_creator_new(LC, siteUrl.UTF8String);
 }
 
 - (void)shouldEnableNextButton {
@@ -170,7 +170,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 							  domain:_domainField.text
 						   OnSuccess:^(NSString *url) {
 							 if (url) {
-								 linphone_core_set_provisioning_uri([LinphoneManager getLc], url.UTF8String);
+								 linphone_core_set_provisioning_uri(LC, url.UTF8String);
 								 [[LinphoneManager instance] resetLinphoneCore];
 							 } else {
 								 _waitView.hidden = YES;

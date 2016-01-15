@@ -519,9 +519,8 @@ exit_dbmigration:
 	/* File transfer migration */
 	if ([self lpConfigBoolForKey:@"file_transfer_migration_done"] == FALSE) {
 		const char *newURL = "https://www.linphone.org:444/lft.php";
-		LOGI(@"Migrating sharing server url from %s to %s",
-			 linphone_core_get_file_transfer_server([LinphoneManager getLc]), newURL);
-		linphone_core_set_file_transfer_server([LinphoneManager getLc], newURL);
+		LOGI(@"Migrating sharing server url from %s to %s", linphone_core_get_file_transfer_server(LC), newURL);
+		linphone_core_set_file_transfer_server(LC, newURL);
 		[self lpConfigSetBool:TRUE forKey:@"file_transfer_migration_done"];
 	}
 }
@@ -905,7 +904,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 								  LinphoneAuthInfo *info =
 									  linphone_auth_info_new(username.UTF8String, NULL, password.UTF8String, NULL,
 															 realm.UTF8String, domain.UTF8String);
-								  linphone_core_add_auth_info([LinphoneManager getLc], info);
+								  linphone_core_add_auth_info(LC, info);
 								  [LinphoneManager.instance refreshRegisters];
 								}];
 		[alertView addButtonWithTitle:NSLocalizedString(@"Go to settings", nil)
@@ -1162,7 +1161,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 			lm.connectivity = none;
 			[LinphoneManager kickOffNetworkConnection];
 		} else {
-			LinphoneTunnel *tunnel = linphone_core_get_tunnel([LinphoneManager getLc]);
+			LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
 			Connectivity newConnectivity;
 			BOOL isWifiOnly = [lm lpConfigBoolForKey:@"wifi_only_preference" withDefault:FALSE];
 			if (!ctx || ctx->testWWan)
@@ -1944,7 +1943,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	// Continue by checking that the provided address is a valid SIP address, abort otherwise.
 	if ([address length] == 0) {
 		// no address provided... nothing to do
-	} else if ((addr = linphone_core_interpret_url([LinphoneManager getLc], address.UTF8String)) == NULL) {
+	} else if ((addr = linphone_core_interpret_url(LC, address.UTF8String)) == NULL) {
 		UIAlertView *error = [[UIAlertView alloc]
 				initWithTitle:NSLocalizedString(@"Invalid SIP address", nil)
 					  message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a "
@@ -2078,7 +2077,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 + (int)unreadMessageCount {
 	int count = 0;
-	const MSList *rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+	const MSList *rooms = linphone_core_get_chat_rooms(LC);
 	const MSList *item = rooms;
 	while (item) {
 		LinphoneChatRoom *room = (LinphoneChatRoom *)item->data;
@@ -2347,15 +2346,15 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 #pragma mark -
 
 - (void)removeAllAccounts {
-	linphone_core_clear_proxy_config([LinphoneManager getLc]);
-	linphone_core_clear_all_auth_info([LinphoneManager getLc]);
+	linphone_core_clear_proxy_config(LC);
+	linphone_core_clear_all_auth_info(LC);
 }
 
 + (BOOL)isMyself:(const LinphoneAddress *)addr {
 	if (!addr)
 		return NO;
 
-	const MSList *it = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+	const MSList *it = linphone_core_get_proxy_config_list(LC);
 	while (it) {
 		if (linphone_address_weak_equal(addr, linphone_proxy_config_get_identity_address(it->data))) {
 			return YES;

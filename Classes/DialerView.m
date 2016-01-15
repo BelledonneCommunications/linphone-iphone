@@ -116,7 +116,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Update on show
 	LinphoneManager *mgr = [LinphoneManager instance];
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
 	[self callUpdate:call state:state];
@@ -222,7 +222,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)coreUpdateEvent:(NSNotification *)notif {
 	if (IPAD) {
-		LinphoneCore *lc = [LinphoneManager getLc];
+		LinphoneCore *lc = LC;
 		if (linphone_core_video_display_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
 			linphone_core_set_native_preview_window_id(lc, (__bridge void *)(videoPreview));
 			[backgroundView setHidden:FALSE];
@@ -327,7 +327,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	BOOL callInProgress = (linphone_core_get_calls_nb(lc) > 0);
 	addCallButton.hidden = (!callInProgress || transferMode);
 	transferButton.hidden = (!callInProgress || !transferMode);
@@ -342,7 +342,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)setTransferMode:(BOOL)atransferMode {
 	transferMode = atransferMode;
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
 	[self callUpdate:call state:state];
 }

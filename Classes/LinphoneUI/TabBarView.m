@@ -56,7 +56,7 @@
 - (void)callUpdate:(NSNotification *)notif {
 	// LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
 	// LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
-	[self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:TRUE];
+	[self updateMissedCall:linphone_core_get_missed_calls_count(LC) appear:TRUE];
 }
 
 - (void)changeViewEvent:(NSNotification *)notif {
@@ -74,7 +74,7 @@
 
 - (void)update:(BOOL)appear {
 	[self updateSelectedButton:[PhoneMainView.instance currentView]];
-	[self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:appear];
+	[self updateMissedCall:linphone_core_get_missed_calls_count(LC) appear:appear];
 	[self updateUnreadMessage:appear];
 }
 

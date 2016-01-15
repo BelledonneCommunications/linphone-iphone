@@ -29,7 +29,7 @@
 	UIView *nextView;
 	NSMutableArray *historyViews;
 	LinphoneProxyConfig *new_config;
-	LinphoneProxyConfig *previous_default_config;
+	int number_of_configs_before;
 }
 
 @property(nonatomic, strong) IBOutlet TPKeyboardAvoidingScrollView *contentView;
