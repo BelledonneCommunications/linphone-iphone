@@ -75,7 +75,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 															   inMessage:message];
 						   }
 						   thiz.message = NULL;
-						   [[NSNotificationCenter defaultCenter]
+						   [NSNotificationCenter.defaultCenter
 							   postNotificationName:kLinphoneFileTransferRecvUpdate
 											 object:thiz
 										   userInfo:@{
@@ -93,7 +93,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 		LOGD(@"Transfer of %s (%d bytes): already %ld sent, adding %ld", linphone_content_get_name(content),
 			 linphone_content_get_size(content), [thiz.data length], size);
 		[thiz.data appendBytes:linphone_buffer_get_string_content(buffer) length:size];
-		[[NSNotificationCenter defaultCenter]
+		[NSNotificationCenter.defaultCenter
 			postNotificationName:kLinphoneFileTransferRecvUpdate
 						  object:thiz
 						userInfo:@{
@@ -116,9 +116,9 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		}];
 		LOGD(@"Transfer of %s (%d bytes): already sent %ld (%f%%), remaining %ld", linphone_content_get_name(content),
 			 total, offset, offset * 100.f / total, remaining);
-		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneFileTransferSendUpdate
-															object:thiz
-														  userInfo:dict];
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneFileTransferSendUpdate
+														  object:thiz
+														userInfo:dict];
 
 		LinphoneBuffer *buffer = NULL;
 		@try {

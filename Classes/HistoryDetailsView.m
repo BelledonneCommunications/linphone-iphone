@@ -72,20 +72,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self update];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(update)
-												 name:kLinphoneAddressBookUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(update)
+											   name:kLinphoneAddressBookUpdate
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(coreUpdateEvent:)
-												 name:kLinphoneCoreUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(coreUpdateEvent:)
+											   name:kLinphoneCoreUpdate
+											 object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - Event Functions

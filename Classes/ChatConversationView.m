@@ -42,7 +42,7 @@
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -88,34 +88,34 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(applicationWillEnterForeground:)
-												 name:UIApplicationDidBecomeActiveNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(keyboardWillShow:)
-												 name:UIKeyboardWillShowNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(keyboardWillHide:)
-												 name:UIKeyboardWillHideNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(textReceivedEvent:)
-												 name:kLinphoneMessageReceived
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onMessageChange:)
-												 name:UITextViewTextDidChangeNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(textComposeEvent:)
-												 name:kLinphoneTextComposeEvent
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdateEvent:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(applicationWillEnterForeground:)
+											   name:UIApplicationDidBecomeActiveNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(keyboardWillShow:)
+											   name:UIKeyboardWillShowNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(keyboardWillHide:)
+											   name:UIKeyboardWillHideNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(textReceivedEvent:)
+											   name:kLinphoneMessageReceived
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onMessageChange:)
+											   name:UITextViewTextDidChangeNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(textComposeEvent:)
+											   name:kLinphoneTextComposeEvent
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdateEvent:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
 
 	[_backToCallButton update];
 
@@ -137,7 +137,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -331,7 +331,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (strcasecmp(cr_from_string, fromStr) == 0) {
 			if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
 				linphone_chat_room_mark_as_read(room);
-				[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
+				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
 			}
 			[_tableController addChatEntry:chat];
 			[_tableController scrollToLastUnread:TRUE];

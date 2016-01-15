@@ -251,10 +251,10 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 - (id)init {
 	if ((self = [super init])) {
 		AudioSessionInitialize(NULL, NULL, NULL, NULL);
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(audioRouteChangeListenerCallback2:)
-													 name:AVAudioSessionRouteChangeNotification
-												   object:nil];
+		[NSNotificationCenter.defaultCenter addObserver:self
+											   selector:@selector(audioRouteChangeListenerCallback2:)
+												   name:AVAudioSessionRouteChangeNotification
+												 object:nil];
 
 		NSString *path = [[NSBundle mainBundle] pathForResource:@"msg" ofType:@"wav"];
 		self.messagePlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:path] error:nil];
@@ -292,7 +292,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)silentPushFailed:(NSTimer *)timer {
@@ -585,11 +585,11 @@ static void linphone_iphone_log_user_warning(struct _LinphoneCore *lc, const cha
 
 - (void)displayStatus:(NSString *)message {
 	// Post event
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneDisplayStatusUpdate
-														object:self
-													  userInfo:@{
-														  @"message" : message
-													  }];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneDisplayStatusUpdate
+													  object:self
+													userInfo:@{
+														@"message" : message
+													}];
 }
 
 static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char *message) {
@@ -773,8 +773,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		@"state" : [NSNumber numberWithInt:state],
 		@"message" : [NSString stringWithUTF8String:message]
 	};
-	LOGI(@"Call %p changed to state %s: %s", call, linphone_call_state_to_string(state), message);
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallUpdate object:self userInfo:dict];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self userInfo:dict];
 }
 
 static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state,
@@ -802,7 +801,7 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 
 	// dispatch the notification asynchronously
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
-	  [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneGlobalStateUpdate object:self userInfo:dict];
+	  [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneGlobalStateUpdate object:self userInfo:dict];
 	});
 }
 
@@ -829,9 +828,9 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 
 	// dispatch the notification asynchronously
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
-	  [[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneConfiguringStateUpdate
-														  object:self
-														userInfo:dict];
+	  [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneConfiguringStateUpdate
+														object:self
+													  userInfo:dict];
 	});
 }
 
@@ -856,7 +855,7 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 	NSDictionary *dict = [NSDictionary
 		dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:state], @"state", [NSValue valueWithPointer:cfg], @"cfg",
 									 [NSString stringWithUTF8String:message], @"message", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneRegistrationUpdate object:self userInfo:dict];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneRegistrationUpdate object:self userInfo:dict];
 }
 
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig *cfg,
@@ -966,7 +965,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 		@"call-id" : callID
 	};
 
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self userInfo:dict];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self userInfo:dict];
 }
 
 static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {
@@ -984,7 +983,7 @@ static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom 
 	if (body != NULL) {
 		[dict setObject:[NSValue valueWithPointer:body] forKey:@"content"];
 	}
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneNotifyReceived object:self userInfo:dict];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneNotifyReceived object:self userInfo:dict];
 }
 
 static void linphone_iphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event,
@@ -1012,19 +1011,17 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 	[dict setObject:[NSValue valueWithPointer:call] forKey:@"call"];
 	[dict setObject:[NSNumber numberWithBool:on] forKey:@"on"];
 	[dict setObject:[NSString stringWithUTF8String:authentication_token] forKey:@"token"];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCallEncryptionChanged
-														object:self
-													  userInfo:dict];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallEncryptionChanged object:self userInfo:dict];
 }
 
 #pragma mark - Message composition start
 
 - (void)onMessageComposeReceived:(LinphoneCore *)core forRoom:(LinphoneChatRoom *)room {
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneTextComposeEvent
-														object:self
-													  userInfo:@{
-														  @"room" : [NSValue valueWithPointer:room]
-													  }];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneTextComposeEvent
+													  object:self
+													userInfo:@{
+														@"room" : [NSValue valueWithPointer:room]
+													}];
 }
 
 static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
@@ -1388,9 +1385,9 @@ static LinphoneCoreVTable linphonec_vtable = {
 	// Post event
 	NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];
 
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCoreUpdate
-														object:[LinphoneManager instance]
-													  userInfo:dict];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCoreUpdate
+													  object:[LinphoneManager instance]
+													userInfo:dict];
 }
 
 static BOOL libStarted = FALSE;
@@ -1493,19 +1490,19 @@ static BOOL libStarted = FALSE;
 	 (or skipped).
 	 Wait for this to finish the code configuration */
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(audioSessionInterrupted:)
-												 name:AVAudioSessionInterruptionNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(globalStateChangedNotificationHandler:)
-												 name:kLinphoneGlobalStateUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(configuringStateChangedNotificationHandler:)
-												 name:kLinphoneConfiguringStateUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(inappReady:) name:kIAPReady object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(audioSessionInterrupted:)
+											   name:AVAudioSessionInterruptionNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(globalStateChangedNotificationHandler:)
+											   name:kLinphoneGlobalStateUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(configuringStateChangedNotificationHandler:)
+											   name:kLinphoneConfiguringStateUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(inappReady:) name:kIAPReady object:nil];
 
 	/*call iterate once immediately in order to initiate background connections with sip server or remote provisioning
 	 * grab, if any */
@@ -1520,7 +1517,7 @@ static BOOL libStarted = FALSE;
 	// just in case
 	[self removeCTCallCenterCb];
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 
 	if (theLinphoneCore != nil) { // just in case application terminate before linphone core initialization
 
@@ -1537,9 +1534,9 @@ static BOOL libStarted = FALSE;
 		// Post event
 		NSDictionary *dict =
 			[NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];
-		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneCoreUpdate
-															object:[LinphoneManager instance]
-														  userInfo:dict];
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCoreUpdate
+														  object:[LinphoneManager instance]
+														userInfo:dict];
 
 		SCNetworkReachabilityUnscheduleFromRunLoop(proxyReachability, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
 		if (proxyReachability)
@@ -1841,9 +1838,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		}
 		NSDictionary *dict =
 			[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:bluetoothAvailable], @"available", nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneBluetoothAvailabilityUpdate
-															object:self
-														  userInfo:dict];
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneBluetoothAvailabilityUpdate
+														  object:self
+														userInfo:dict];
 		CFRelease(newRoute);
 	}
 }

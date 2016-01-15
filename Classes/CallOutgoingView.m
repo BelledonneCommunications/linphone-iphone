@@ -48,10 +48,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(bluetoothAvailabilityUpdateEvent:)
-												 name:kLinphoneBluetoothAvailabilityUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(bluetoothAvailabilityUpdateEvent:)
+											   name:kLinphoneBluetoothAvailabilityUpdate
+											 object:nil];
 
 	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
 	if (!call) {

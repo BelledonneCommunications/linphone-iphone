@@ -210,19 +210,19 @@
 
 	_ftd = aftd;
 	_fileTransferProgress.progress = 0;
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onFileTransferSendUpdate:)
-												 name:kLinphoneFileTransferSendUpdate
-											   object:_ftd];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onFileTransferRecvUpdate:)
-												 name:kLinphoneFileTransferRecvUpdate
-											   object:_ftd];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onFileTransferSendUpdate:)
+											   name:kLinphoneFileTransferSendUpdate
+											 object:_ftd];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onFileTransferRecvUpdate:)
+											   name:kLinphoneFileTransferRecvUpdate
+											 object:_ftd];
 }
 
 - (void)disconnectFromFileDelegate {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 	_ftd = nil;
 }
 

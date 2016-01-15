@@ -26,10 +26,10 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(registrationUpdateEvent:)
-												 name:kLinphoneRegistrationUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(registrationUpdateEvent:)
+											   name:kLinphoneRegistrationUpdate
+											 object:nil];
 
 	[self updateHeader];
 	[_sideMenuTableViewController.tableView reloadData];

@@ -84,17 +84,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(registrationUpdateEvent:)
-												 name:kLinphoneRegistrationUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(configuringUpdate:)
-												 name:kLinphoneConfiguringStateUpdate
-											   object:nil];
-	// we will set the new default proxy config in the assistant
-	previous_default_config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
-	linphone_core_set_default_proxy_config([LinphoneManager getLc], NULL);
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(registrationUpdateEvent:)
+											   name:kLinphoneRegistrationUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(configuringUpdate:)
+											   name:kLinphoneConfiguringStateUpdate
+											 object:nil];
 
 	new_config = NULL;
 	[self resetTextFields];
@@ -103,12 +100,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-
-	// if we quit assistant without creating a new proxy config, just restore the previous one
-	if (!linphone_core_get_default_proxy_config([LinphoneManager getLc])) {
-		linphone_core_set_default_proxy_config([LinphoneManager getLc], previous_default_config);
-	}
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)fitContent {

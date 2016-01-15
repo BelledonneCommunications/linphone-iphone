@@ -64,7 +64,7 @@
 
 - (void)dealloc {
 	// Remove all observers
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -98,15 +98,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 		!IPAD && UIInterfaceOrientationIsLandscape(PhoneMainView.instance.mainViewController.currentOrientation);
 
 	// Set observer
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdateEvent:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdateEvent:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(coreUpdateEvent:)
-												 name:kLinphoneCoreUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(coreUpdateEvent:)
+											   name:kLinphoneCoreUpdate
+											 object:nil];
 
 	// technically not needed, but older versions of linphone had this button
 	// disabled by default. In this case, updating by pushing a new version with
@@ -146,7 +146,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)viewDidLoad {

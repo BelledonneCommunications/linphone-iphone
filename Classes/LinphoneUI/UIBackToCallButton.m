@@ -14,16 +14,16 @@
 
 - (instancetype)init {
 	if (self = [super init]) {
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(callUpdateEvent:)
-													 name:kLinphoneCallUpdate
-												   object:nil];
+		[NSNotificationCenter.defaultCenter addObserver:self
+											   selector:@selector(callUpdateEvent:)
+												   name:kLinphoneCallUpdate
+												 object:nil];
 	}
 	return self;
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {

@@ -161,7 +161,7 @@
 	}
 	// Start notification after animation of DCRoundSwitch
 	dispatch_async(dispatch_get_main_queue(), ^{
-	  [[NSNotificationCenter defaultCenter]
+	  [NSNotificationCenter.defaultCenter
 		  postNotificationName:kIASKAppSettingChanged
 						object:[toggle key]
 					  userInfo:[NSDictionary dictionaryWithObject:[self.settingsStore objectForKey:[toggle key]]
@@ -368,7 +368,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillDisappear:animated];
 	[_settingsController dismiss:self];
 	// Set observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kIASKAppSettingChanged object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kIASKAppSettingChanged object:nil];
 
 	if (linphone_ringtoneplayer_is_started(linphone_core_get_ringtoneplayer([LinphoneManager getLc]))) {
 		linphone_core_stop_ringing([LinphoneManager getLc]);
@@ -383,10 +383,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self recomputeAccountLabelsAndSync];
 
 	// Set observer
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(appSettingChanged:)
-												 name:kIASKAppSettingChanged
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(appSettingChanged:)
+											   name:kIASKAppSettingChanged
+											 object:nil];
 }
 
 #pragma mark - Event Functions
@@ -669,8 +669,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else if ([key isEqual:@"battery_alert_button"]) {
 		[[UIDevice currentDevice] _setBatteryState:UIDeviceBatteryStateUnplugged];
 		[[UIDevice currentDevice] _setBatteryLevel:0.01f];
-		[[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceBatteryLevelDidChangeNotification
-															object:self];
+		[NSNotificationCenter.defaultCenter postNotificationName:UIDeviceBatteryLevelDidChangeNotification object:self];
 	} else if ([key isEqual:@"flush_images_button"]) {
 		const MSList *rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
 		while (rooms) {

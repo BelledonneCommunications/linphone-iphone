@@ -18,19 +18,19 @@ static NSString *const kDisappearAnimation = @"disappear";
 @implementation UIBouncingView
 
 INIT_WITH_COMMON_CF {
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(settingsUpdate:)
-												 name:kLinphoneSettingsUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(applicationWillEnterForeground:)
-												 name:UIApplicationWillEnterForegroundNotification
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(settingsUpdate:)
+											   name:kLinphoneSettingsUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(applicationWillEnterForeground:)
+											   name:UIApplicationWillEnterForegroundNotification
+											 object:nil];
 	return self;
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)settingsUpdate:(NSNotification *)notif {

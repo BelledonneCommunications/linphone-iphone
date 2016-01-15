@@ -51,10 +51,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	// Set observer
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(registrationUpdateEvent:)
-												 name:kLinphoneRegistrationUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(registrationUpdateEvent:)
+											   name:kLinphoneRegistrationUpdate
+											 object:nil];
 
 	[_usernameField setText:[[LinphoneManager instance] lpConfigStringForKey:@"assistant_username"]];
 	[_passwordField setText:[[LinphoneManager instance] lpConfigStringForKey:@"assistant_password"]];
@@ -97,7 +97,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillDisappear:animated];
 
 	// Remove observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
 }
 
 - (void)viewDidLoad {

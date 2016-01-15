@@ -30,16 +30,16 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdateEvent:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdateEvent:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCallUpdate object:nil];
 }
 
 #pragma mark - UICompositeViewDelegate Functions

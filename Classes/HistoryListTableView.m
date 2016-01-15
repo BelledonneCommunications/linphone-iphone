@@ -53,24 +53,24 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(loadData)
-												 name:kLinphoneAddressBookUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(loadData)
+											   name:kLinphoneAddressBookUpdate
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(coreUpdateEvent:)
-												 name:kLinphoneCoreUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(coreUpdateEvent:)
+											   name:kLinphoneCoreUpdate
+											 object:nil];
 	[self loadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneAddressBookUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneAddressBookUpdate object:nil];
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCoreUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCoreUpdate object:nil];
 }
 
 #pragma mark - Event Functions

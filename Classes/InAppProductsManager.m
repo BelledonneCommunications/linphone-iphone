@@ -374,7 +374,7 @@
 - (void)postNotificationforStatus:(IAPPurchaseNotificationStatus)status withDict:(NSDictionary *)dict {
 	_status = status;
 	LOGI(@"Triggering notification for status %@", status);
-	[[NSNotificationCenter defaultCenter] postNotificationName:status object:self userInfo:dict];
+	[NSNotificationCenter.defaultCenter postNotificationName:status object:self userInfo:dict];
 }
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
@@ -479,7 +479,7 @@
 #else
 - (void)postNotificationforStatus:(IAPPurchaseNotificationStatus)status {
 	_status = status;
-	[[NSNotificationCenter defaultCenter] postNotificationName:status object:self userInfo:nil];
+	[NSNotificationCenter.defaultCenter postNotificationName:status object:self userInfo:nil];
 	LOGE(@"Not supported, triggering %@", status);
 }
 - (BOOL)purchaseAccount:(NSString *)phoneNumber

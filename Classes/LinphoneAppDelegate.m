@@ -455,7 +455,7 @@
 - (void)ConfigurationStateUpdateEvent:(NSNotification *)notif {
 	LinphoneConfiguringState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	if (state == LinphoneConfiguringSuccessful) {
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
+		[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
 		[_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
 
 		UIAlertView *error = [[UIAlertView alloc]
@@ -468,7 +468,7 @@
 		[PhoneMainView.instance startUp];
 	}
 	if (state == LinphoneConfiguringFailed) {
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
+		[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
 		[_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
 		UIAlertView *error =
 			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Failure", nil)
@@ -507,10 +507,10 @@
 
 - (void)attemptRemoteConfiguration {
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(ConfigurationStateUpdateEvent:)
-												 name:kLinphoneConfiguringStateUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(ConfigurationStateUpdateEvent:)
+											   name:kLinphoneConfiguringStateUpdate
+											 object:nil];
 	linphone_core_set_provisioning_uri([LinphoneManager getLc], [configURL UTF8String]);
 	[[LinphoneManager instance] destroyLinphoneCore];
 	[[LinphoneManager instance] startLinphoneCore];

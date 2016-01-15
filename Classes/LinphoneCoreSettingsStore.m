@@ -385,7 +385,7 @@
 
 	// Post event
 	NSDictionary *eventDic = [NSDictionary dictionaryWithObject:self forKey:@"settings"];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:self userInfo:eventDic];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneLogsUpdate object:self userInfo:eventDic];
 }
 
 - (void)alertAccountError:(NSString *)error {
@@ -835,7 +835,7 @@
 
 	// Post event
 	NSDictionary *eventDic = [NSDictionary dictionaryWithObject:self forKey:@"settings"];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneSettingsUpdate object:self userInfo:eventDic];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneSettingsUpdate object:self userInfo:eventDic];
 
 	return YES;
 }

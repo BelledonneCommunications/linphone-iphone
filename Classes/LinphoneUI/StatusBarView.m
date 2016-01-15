@@ -31,7 +31,7 @@
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[callQualityTimer invalidate];
 }
 
@@ -41,29 +41,29 @@
 	[super viewWillAppear:animated];
 
 	// Set observer
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(registrationUpdate:)
-												 name:kLinphoneRegistrationUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(registrationUpdate:)
+											   name:kLinphoneRegistrationUpdate
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(globalStateUpdate:)
-												 name:kLinphoneGlobalStateUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(globalStateUpdate:)
+											   name:kLinphoneGlobalStateUpdate
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(notifyReceived:)
-												 name:kLinphoneNotifyReceived
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(notifyReceived:)
+											   name:kLinphoneNotifyReceived
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdate:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onCallEncryptionChanged:)
-												 name:kLinphoneCallEncryptionChanged
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdate:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onCallEncryptionChanged:)
+											   name:kLinphoneCallEncryptionChanged
+											 object:nil];
 
 	// Update to default state
 	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
@@ -79,10 +79,10 @@
 	[super viewWillDisappear:animated];
 
 	// Remove observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneGlobalStateUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneNotifyReceived object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneGlobalStateUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneNotifyReceived object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCallUpdate object:nil];
 
 	if (callQualityTimer != nil) {
 		[callQualityTimer invalidate];

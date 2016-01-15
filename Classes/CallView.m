@@ -123,7 +123,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidUnload {
 	[PhoneMainView.instance.view removeGestureRecognizer:singleFingerTap];
 	// Remove all observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 
 	[super viewDidUnload];
 }
@@ -150,18 +150,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// Enable tap
 	[singleFingerTap setEnabled:TRUE];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(messageReceived:)
-												 name:kLinphoneMessageReceived
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(bluetoothAvailabilityUpdateEvent:)
-												 name:kLinphoneBluetoothAvailabilityUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdateEvent:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(messageReceived:)
+											   name:kLinphoneMessageReceived
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(bluetoothAvailabilityUpdateEvent:)
+											   name:kLinphoneBluetoothAvailabilityUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdateEvent:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
 
 	[NSTimer scheduledTimerWithTimeInterval:1
 									 target:self
@@ -202,7 +202,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	// Remove observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

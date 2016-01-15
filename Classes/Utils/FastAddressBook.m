@@ -237,7 +237,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		}
 		CFRelease(lContacts);
 	}
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:self];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneAddressBookUpdate object:self];
 }
 
 void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {

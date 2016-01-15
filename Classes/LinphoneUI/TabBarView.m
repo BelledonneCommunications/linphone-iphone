@@ -27,24 +27,24 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(changeViewEvent:)
-												 name:kLinphoneMainViewChange
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdate:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(messageReceived:)
-												 name:kLinphoneMessageReceived
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(changeViewEvent:)
+											   name:kLinphoneMainViewChange
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdate:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(messageReceived:)
+											   name:kLinphoneMessageReceived
+											 object:nil];
 	[self update:FALSE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {

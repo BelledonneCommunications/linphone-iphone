@@ -154,7 +154,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - ViewController Functions
@@ -173,39 +173,32 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[super viewWillAppear:animated];
 
 	// Set observers
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdate:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(registrationUpdate:)
-												 name:kLinphoneRegistrationUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(textReceived:)
-												 name:kLinphoneMessageReceived
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onGlobalStateChanged:)
-												 name:kLinphoneGlobalStateUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdate:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(registrationUpdate:)
+											   name:kLinphoneRegistrationUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(textReceived:)
+											   name:kLinphoneMessageReceived
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onGlobalStateChanged:)
+											   name:kLinphoneGlobalStateUpdate
+											 object:nil];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(batteryLevelChanged:)
-												 name:UIDeviceBatteryLevelDidChangeNotification
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(batteryLevelChanged:)
+											   name:UIDeviceBatteryLevelDidChangeNotification
+											 object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
-	// Remove observers
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneMessageReceived object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:UIDeviceBatteryLevelDidChangeNotification
-												  object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
 }
 
@@ -591,7 +584,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	//[[RootViewManager instance] setViewControllerForDescription:view];
 
 	NSDictionary *mdict = [NSMutableDictionary dictionaryWithObject:vc->currentView forKey:@"view"];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMainViewChange object:self userInfo:mdict];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMainViewChange object:self userInfo:mdict];
 
 	return [vc->mainViewController getCurrentViewController];
 }
