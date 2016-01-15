@@ -282,6 +282,13 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	// when device is slow and you are typing an item too much, a crash may happen
+	// because we try to push the same view multiple times - in that case we should
+	// do nothing but wait for device to respond again.
+	if (self.navigationController.topViewController == viewController) {
+		return;
+	}
+
 	[UINavigationControllerEx removeBackground:viewController.view];
 
 	[viewController view]; // Force view
