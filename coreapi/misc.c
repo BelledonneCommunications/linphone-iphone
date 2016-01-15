@@ -1178,6 +1178,16 @@ static int get_local_ip_with_getifaddrs(int type, char *address, int size){
 }
 #endif
 
+static const char *ai_family_to_string(int af){
+	switch(af){
+		case AF_INET: return "AF_INET";
+		case AF_INET6: return "AF_INET6";
+		case AF_UNSPEC: return "AF_UNSPEC";
+		default:
+			return "invalid address family";
+	}
+	return "";
+}
 
 static int get_local_ip_for_with_connect(int type, const char *dest, char *result){
 	int err,tmp;
@@ -1202,13 +1212,18 @@ static int get_local_ip_for_with_connect(int type, const char *dest, char *resul
 		return -1;
 	}
 	sock=socket(res->ai_family,SOCK_DGRAM,0);
+	if (sock == (ortp_socket_t)-1){
+		ms_error("get_local_ip_for_with_connect() could not create [%s] socket: %s", 
+			   ai_family_to_string(res->ai_family), getSocketError());
+		return -1;
+	}
 	tmp=1;
 	err=setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,(SOCKET_OPTION_VALUE)&tmp,sizeof(int));
-	if (err<0){
+	if (err == -1){
 		ms_warning("Error in setsockopt: %s",strerror(errno));
 	}
 	err=connect(sock,res->ai_addr,(int)res->ai_addrlen);
-	if (err<0) {
+	if (err == -1) {
 		/*the network isn't reachable*/
 		if (getSocketErrorCode()!=ENETUNREACH) ms_error("Error in connect: %s",strerror(errno));
 		freeaddrinfo(res);
