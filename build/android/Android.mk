@@ -45,6 +45,7 @@ LOCAL_SRC_FILES := \
 	callbacks.c \
 	call_log.c \
 	call_params.c \
+	carddav.c \
 	chat.c \
 	chat_file_transfer.c \
 	conference.cc \

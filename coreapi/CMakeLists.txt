@@ -35,6 +35,7 @@ set(LINPHONE_HEADER_FILES
 	buffer.h
 	call_log.h
 	call_params.h
+	carddav.h
 	content.h
 	event.h
 	friendlist.h
@@ -74,6 +75,7 @@ set(LINPHONE_SOURCE_FILES_C
 	callbacks.c
 	call_log.c
 	call_params.c
+	carddav.c
 	chat.c
 	chat_file_transfer.c
 	contactprovider.c
