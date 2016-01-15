@@ -806,7 +806,7 @@ void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDes
 	linphone_core_update_ice_state_in_call_stats(call);
 }
 
-void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session) {
+void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session, bool_t use_nortpproxy) {
 	const char *rtp_addr, *rtcp_addr;
 	IceSessionState session_state = ice_session_state(session);
 	int nb_candidates;
@@ -814,7 +814,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 	bool_t result;
 
 	if (session_state == IS_Completed) {
-		desc->ice_completed = TRUE;
+		if (use_nortpproxy) desc->set_nortpproxy = TRUE;
 		result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, 0), &rtp_addr, NULL, NULL, NULL);
 		if (result == TRUE) {
 			strncpy(desc->addr, rtp_addr, sizeof(desc->addr));
@@ -823,7 +823,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 		}
 	}
 	else {
-		desc->ice_completed = FALSE;
+		desc->set_nortpproxy = FALSE;
 	}
 	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
 	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
@@ -833,10 +833,10 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 		nb_candidates = 0;
 		if (!sal_stream_description_active(stream) || (cl == NULL)) continue;
 		if (ice_check_list_state(cl) == ICL_Completed) {
-			stream->ice_completed = TRUE;
+			if (use_nortpproxy) stream->set_nortpproxy = TRUE;
 			result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
 		} else {
-			stream->ice_completed = FALSE;
+			stream->set_nortpproxy = FALSE;
 			result = ice_check_list_default_local_candidate(ice_session_check_list(session, i), &rtp_addr, &stream->rtp_port, &rtcp_addr, &stream->rtcp_port);
 		}
 		if (result == TRUE) {

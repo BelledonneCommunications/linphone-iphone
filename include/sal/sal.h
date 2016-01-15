@@ -246,8 +246,8 @@ typedef struct SalStreamDescription{
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
 	int max_rate;
-    bool_t  implicit_rtcp_fb;
-    OrtpRtcpFbConfiguration rtcp_fb;
+	bool_t  implicit_rtcp_fb;
+	OrtpRtcpFbConfiguration rtcp_fb;
 	OrtpRtcpXrConfiguration rtcp_xr;
 	SalCustomSdpAttribute *custom_sdp_attributes;
 	SalIceCandidate ice_candidates[SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES];
@@ -255,7 +255,7 @@ typedef struct SalStreamDescription{
 	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
 	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
 	bool_t ice_mismatch;
-	bool_t ice_completed;
+	bool_t set_nortpproxy; /*Formely set by ICE to indicate to the proxy that it has nothing to do*/
 	bool_t rtcp_mux;
 	bool_t pad[1];
 	char dtls_fingerprint[256];
@@ -285,7 +285,7 @@ typedef struct SalMediaDescription{
 	char ice_ufrag[SAL_MEDIA_DESCRIPTION_MAX_ICE_UFRAG_LEN];
 	char ice_pwd[SAL_MEDIA_DESCRIPTION_MAX_ICE_PWD_LEN];
 	bool_t ice_lite;
-	bool_t ice_completed;
+	bool_t set_nortpproxy;
 	bool_t pad[2];
 } SalMediaDescription;
 

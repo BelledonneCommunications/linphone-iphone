@@ -320,7 +320,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			belle_sdp_media_description_add_attribute(media_desc,belle_sdp_attribute_create ("rtcp",buffer));
 		}
 	}
-	if (stream->ice_completed == TRUE) {
+	if (stream->set_nortpproxy == TRUE) {
 		belle_sdp_media_description_add_attribute(media_desc,belle_sdp_attribute_create ("nortpproxy","yes"));
 	}
 	if (stream->ice_mismatch == TRUE) {
@@ -423,7 +423,7 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 		belle_sdp_session_description_set_bandwidth ( session_desc,"AS",desc->bandwidth );
 	}
 	
-	if (desc->ice_completed == TRUE) belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("nortpproxy","yes"));
+	if (desc->set_nortpproxy == TRUE) belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("nortpproxy","yes"));
 	if (desc->ice_pwd[0] != '\0') belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("ice-pwd",desc->ice_pwd));
 	if (desc->ice_ufrag[0] != '\0') belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("ice-ufrag",desc->ice_ufrag));
 
