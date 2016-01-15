@@ -876,6 +876,7 @@ static void dos_module_trigger(void) {
 	int i = 0;
 	const char* passmsg = "This one should pass through";
 	int number_of_messge_to_send = 100;
+	LinphoneChatMessage * chat_msg = NULL;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
@@ -887,7 +888,8 @@ static void dos_module_trigger(void) {
 	do {
 		char msg[128];
 		sprintf(msg, "Flood message number %i", i);
-		linphone_chat_room_send_message(chat_room, msg);
+		chat_msg = linphone_chat_room_create_message(chat_room, msg);
+		linphone_chat_room_send_chat_message(chat_room, chat_msg);
 		ms_usleep(10000);
 		i++;
 	} while (i < number_of_messge_to_send);
@@ -898,8 +900,8 @@ static void dos_module_trigger(void) {
 
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
-
-	linphone_chat_room_send_message(chat_room, passmsg);
+	chat_msg = linphone_chat_room_create_message(chat_room, passmsg);
+	linphone_chat_room_send_chat_message(chat_room, chat_msg);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived, 1));
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceived, 1, int, "%d");
 	if (marie->stat.last_received_chat_message) {
@@ -909,8 +911,9 @@ static void dos_module_trigger(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-
+#define USE_PRESENCE_SERVER 0
 static void test_subscribe_notify_with_sipp_publisher(void) {
+#if USE_PRESENCE_SERVER
 	char *scen;
 	FILE * sipp_out;
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -943,8 +946,10 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+#endif
 }
 static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
+#if USE_PRESENCE_SERVER
 	char *scen;
 	FILE * sipp_out;
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -977,6 +982,7 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+#endif
 }
 
 static void test_publish_unpublish(void) {
@@ -1035,6 +1041,7 @@ static void test_list_subscribe (void) {
 	linphone_event_add_custom_header(lev,"Supported","eventlist");
 	linphone_event_add_custom_header(lev,"Accept","application/pidf+xml, application/rlmi+xml");
 	linphone_event_add_custom_header(lev,"Content-Disposition", "recipient-list");
+	linphone_event_add_custom_header(lev,"Require", "recipient-list-subscribe");
 	
 	linphone_event_send_subscribe(lev,content);
 	

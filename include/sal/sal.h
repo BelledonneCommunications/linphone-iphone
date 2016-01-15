@@ -656,7 +656,9 @@ const SalAddress *sal_op_get_contact_address(const SalOp *op);
 const char *sal_op_get_route(const SalOp *op);
 const MSList* sal_op_get_route_addresses(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
+/*raw contact header value with header params*/
 const char *sal_op_get_remote_contact(const SalOp *op);
+/*contact header address only (I.E without header params*/
 const SalAddress* sal_op_get_remote_contact_address(const SalOp *op);
 /*for incoming requests, returns the origin of the packet as a sip uri*/
 const char *sal_op_get_network_origin(const SalOp *op);

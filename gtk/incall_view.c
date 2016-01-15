@@ -635,6 +635,8 @@ static gboolean linphone_gtk_in_call_view_refresh(LinphoneCall *call){
 	}
 	rating_to_color(rating,&color);
 	gtk_widget_modify_bg(qi,GTK_STATE_NORMAL,&color);
+	
+	linphone_gtk_update_video_button(call); /*in case of no ice re-invite, video button status shall be checked by polling*/
 	return TRUE;
 }
 

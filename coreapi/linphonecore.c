@@ -7060,6 +7060,8 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);
 	params->audio_multicast_enabled=linphone_core_audio_multicast_enabled(lc);
 	params->video_multicast_enabled=linphone_core_video_multicast_enabled(lc);
+	params->update_call_when_ice_completed = lp_config_get_int(lc->config, "sip", "update_call_when_ice_completed", TRUE);
+	params->encryption_mandatory = linphone_core_is_media_encryption_mandatory(lc);
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {

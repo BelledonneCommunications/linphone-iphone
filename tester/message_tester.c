@@ -1394,7 +1394,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
 
 			for (i = 0; i < strlen(message); i++) {
-				linphone_chat_message_put_char(rtt_message, message[i]);
+				BC_ASSERT_FALSE(linphone_chat_message_put_char(rtt_message, message[i]));
 				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
 				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
 			}

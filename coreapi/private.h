@@ -164,6 +164,8 @@ struct _LinphoneCallParams{
 	bool_t video_multicast_enabled;
 	bool_t audio_multicast_enabled;
 	bool_t realtimetext_enabled;
+	bool_t update_call_when_ice_completed;
+	bool_t encryption_mandatory;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCallParams);
