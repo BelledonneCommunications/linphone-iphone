@@ -159,6 +159,11 @@ static void friends_sqlite_storage(void) {
 	
 	friends_lists_from_db = linphone_core_fetch_friends_lists_from_db(manager->lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends_lists_from_db), 1, int, "%d");
+	friends_from_db = ((LinphoneFriendList *)friends_lists_from_db->data)->friends;
+	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 1, int, "%d");
+	lf2 = (LinphoneFriend *)friends_from_db->data;
+	BC_ASSERT_PTR_NOT_NULL(lf2->lc);
+	BC_ASSERT_PTR_NOT_NULL(lf2->friend_list);
 	friends_lists_from_db = ms_list_free_with_data(friends_lists_from_db, (void (*)(void *))linphone_friend_list_unref);
 	
 	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc, lfl);

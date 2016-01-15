@@ -1046,6 +1046,7 @@ void linphone_core_friends_storage_init(LinphoneCore *lc) {
 	
 	friends_lists = linphone_core_fetch_friends_lists_from_db(lc);
 	if (friends_lists) {
+		ms_warning("Replacing current default friend list by the one(s) from the database");
 		lc->friends_lists = ms_list_free_with_data(lc->friends_lists, (void (*)(void*))linphone_friend_list_unref);
 		lc->friends_lists = NULL;
 	
@@ -1281,6 +1282,7 @@ MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList
 	char *buf;
 	uint64_t begin,end;
 	MSList *result = NULL;
+	MSList *elem = NULL;
 
 	if (!lc || lc->friends_db == NULL || list == NULL) {
 		ms_warning("Either lc (or list) is NULL or friends database wasn't initialized with linphone_core_friends_storage_init() yet");
@@ -1292,8 +1294,14 @@ MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList
 	begin = ortp_get_cur_time_ms();
 	linphone_sql_request_friend(lc->friends_db, buf, &result);
 	end = ortp_get_cur_time_ms();
-	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
+	ms_message("%s(): %i results fetched, completed in %i ms",__FUNCTION__, ms_list_size(result), (int)(end-begin));
 	sqlite3_free(buf);
+	
+	for(elem = result; elem != NULL; elem = elem->next) {
+		LinphoneFriend *lf = (LinphoneFriend *)elem->data;
+		lf->lc = lc;
+		lf->friend_list = list;
+	}
 
 	return result;
 }
@@ -1302,6 +1310,7 @@ MSList* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc) {
 	char *buf;
 	uint64_t begin,end;
 	MSList *result = NULL;
+	MSList *elem = NULL;
 
 	if (!lc || lc->friends_db == NULL) {
 		ms_warning("Either lc is NULL or friends database wasn't initialized with linphone_core_friends_storage_init() yet");
@@ -1313,8 +1322,14 @@ MSList* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc) {
 	begin = ortp_get_cur_time_ms();
 	linphone_sql_request_friends_list(lc->friends_db, buf, &result);
 	end = ortp_get_cur_time_ms();
-	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
+	ms_message("%s(): %i results fetched, completed in %i ms",__FUNCTION__, ms_list_size(result), (int)(end-begin));
 	sqlite3_free(buf);
+	
+	for(elem = result; elem != NULL; elem = elem->next) {
+		LinphoneFriendList *lfl = (LinphoneFriendList *)elem->data;
+		lfl->lc = lc;
+		lfl->friends = linphone_core_fetch_friends_from_db(lc, lfl);
+	}
 
 	return result;
 }
