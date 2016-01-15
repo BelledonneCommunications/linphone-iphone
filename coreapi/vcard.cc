@@ -225,8 +225,10 @@ const char* linphone_vcard_get_url(const LinphoneVCard *vCard) {
 	return vCard->url;
 }
 
+#define VCARD_MD5_HASH_SIZE 16
+
 void linphone_vcard_compute_md5_hash(LinphoneVCard *vCard) {
-	unsigned char digest[16];
+	unsigned char digest[VCARD_MD5_HASH_SIZE];
 	const char *text = NULL;
 	if (!vCard) {
 		return;
@@ -248,7 +250,7 @@ bool_t linphone_vcard_compare_md5_hash(LinphoneVCard *vCard) {
 	
 	linphone_vcard_compute_md5_hash(vCard);
 	new_md5 = vCard->md5;
-	result = memcmp(new_md5, previous_md5, sizeof(previous_md5));
+	result = memcmp(new_md5, previous_md5, VCARD_MD5_HASH_SIZE);
 	
 	ms_free(previous_md5);
 	ms_free(new_md5);
