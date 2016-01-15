@@ -51,7 +51,8 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)setBordered:(BOOL)bordered {
-	borderView.hidden = !bordered;
+	// bugged on rotation yet
+	borderView.hidden = TRUE; //! bordered;
 }
 - (CGRect)computeBox {
 	CGFloat min = MIN(self.frame.size.width, self.frame.size.height);

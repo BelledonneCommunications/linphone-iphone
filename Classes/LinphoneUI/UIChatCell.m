@@ -69,22 +69,12 @@
 
 	LinphoneChatMessage *last_message = linphone_chat_room_get_user_data(chatRoom);
 	if (last_message) {
-		const char *text = linphone_chat_message_get_text(last_message);
-		const char *url = linphone_chat_message_get_external_body_url(last_message);
-		const LinphoneContent *last_content = linphone_chat_message_get_file_transfer_information(last_message);
-		// Last message was a file transfer (image) so display a picture...
-		if (url || last_content) {
-			_chatContentLabel.text = @"🗻";
-			// otherwise show beginning of the text message
-		} else if (text) {
-			NSString *message = [NSString stringWithUTF8String:text];
-			// shorten long messages
-			if ([message length] > 50)
-				message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
-
-			_chatContentLabel.text = message;
+		NSString *message = [UIChatBubbleTextCell TextMessageForChat:last_message];
+		// shorten long messages
+		if ([message length] > 50) {
+			message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
 		}
-
+		_chatContentLabel.text = message;
 		_chatLatestTimeLabel.text =
 			[LinphoneUtils timeToString:linphone_chat_message_get_time(last_message) withFormat:LinphoneDateChatList];
 		_chatLatestTimeLabel.hidden = NO;

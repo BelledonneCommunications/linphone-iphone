@@ -933,9 +933,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 	NSString *from = [FastAddressBook displayNameForAddress:remoteAddress];
 	char *c_address = linphone_address_as_string_uri_only(remoteAddress);
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
-	const char *chat = linphone_chat_message_get_text(msg);
-	if (chat == NULL)
-		chat = "";
 
 	ms_free(c_address);
 
@@ -943,12 +940,13 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 		// Create a new notification
 		UILocalNotification *notif = [[UILocalNotification alloc] init];
 		if (notif) {
+			NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
 			notif.repeatInterval = 0;
 			if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 				notif.category = @"incoming_msg";
 			}
 			if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
-				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, @(chat)];
+				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
 			} else {
 				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
 			}
@@ -1727,11 +1725,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_core_start_dtmf_stream(theLinphoneCore);
 
 	/*start the video preview in case we are in the main view*/
-	if (IPAD && linphone_core_video_display_enabled(theLinphoneCore) &&
-		[self lpConfigBoolForKey:@"preview_preference"]) {
+	//	if (linphone_core_video_display_enabled(theLinphoneCore) && [self lpConfigBoolForKey:@"preview_preference"]) {
 		linphone_core_enable_video_preview(theLinphoneCore, TRUE);
-	}
-	/*check last keepalive handler date*/
+		//	}
+		/*check last keepalive handler date*/
 	if (mLastKeepAliveDate != Nil) {
 		NSDate *current = [NSDate date];
 		if ([current timeIntervalSinceDate:mLastKeepAliveDate] > 700) {

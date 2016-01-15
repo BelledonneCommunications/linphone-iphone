@@ -103,20 +103,6 @@
 	}
 }
 
-- (void)debugMessages {
-	if (!messageList) {
-		LOGE(@"No data to debug");
-		return;
-	}
-	MSList *item = messageList;
-	int count = 0;
-	while (item) {
-		LinphoneChatMessage *msg = (LinphoneChatMessage *)item->data;
-		LOGI(@"Message %d: %s", count++, linphone_chat_message_get_text(msg));
-		item = item->next;
-	}
-}
-
 - (void)scrollToLastUnread:(BOOL)animated {
 	if (messageList == nil || chatRoom == nil) {
 		return;
