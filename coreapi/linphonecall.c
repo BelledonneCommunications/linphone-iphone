@@ -2349,7 +2349,8 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		setup_dtls_params(call, &audiostream->ms);
 		media_stream_reclaim_sessions(&audiostream->ms, &call->sessions[call->main_audio_stream_index]);
 	}else{
-		call->audiostream=audio_stream_new_with_sessions(&call->sessions[call->main_audio_stream_index]);
+		call->audiostream=audio_stream_new_with_sessions(&call->sessions[call->main_audio_stream_index], lc->factory);
+
 	}
 	audiostream=call->audiostream;
 	if (call->media_ports[call->main_audio_stream_index].rtp_port==-1){

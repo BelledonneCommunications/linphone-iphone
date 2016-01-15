@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <mediastreamer2/zrtp.h>
 #include <mediastreamer2/dtls_srtp.h>
 #include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/msfactory.h"
 #include "mediastreamer2/mseventqueue.h"
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msequalizer.h"
@@ -1185,7 +1186,8 @@ static bool_t linphone_core_codec_supported(LinphoneCore *lc, SalStreamType type
 	} else if (type == SalText) {
 		return TRUE;
 	}
-	return ms_filter_codec_supported(mime);
+	//ms_filter_codec_supported(mime)
+	return ms_factory_codec_supported (lc->factory, mime );
 }
 
 
@@ -1613,7 +1615,8 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 	/*default enabled audio codecs, in order of preference*/
 #if defined(__arm__) || defined(_M_ARM)
 	/*hack for opus, that needs to be disabed by default on ARM single processor, otherwise there is no cpu left for video processing*/
-	if (ms_get_cpu_count()==1) opus_enabled=FALSE;
+	//if (ms_get_cpu_count()==1) opus_enabled=FALSE;
+	if (ms_factory_get_cpu_count(lc->factory)==1) opus_enabled=FALSE;
 #endif
 	linphone_core_register_payload_type(lc,&payload_type_opus,"useinbandfec=1",opus_enabled);
 	linphone_core_register_payload_type(lc,&payload_type_silk_wb,NULL,TRUE);
@@ -1703,15 +1706,22 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
 	linphone_core_activate_log_serialization_if_needed();
+	
+	if (lc->factory == NULL){
+		lc->factory = ms_factory_new();
+		ms_factory_init_voip(lc->factory);
+		ms_factory_init_plugins(lc->factory);
 
-	ms_init();
+	}
+	//ms_init();
 
 	linphone_core_register_default_codecs(lc);
 	linphone_core_register_offer_answer_providers(lc);
 	/* Get the mediastreamer2 event queue */
 	/* This allows to run event's callback in linphone_core_iterate() */
-	lc->msevq=ms_factory_create_event_queue(ms_factory_get_fallback());
-
+	//lc->msevq=ms_factory_create_event_queue(ms_factory_get_fallback());
+	lc->msevq=ms_factory_create_event_queue(lc->factory);
+	
 	lc->sal=sal_init();
 	sal_set_http_proxy_host(lc->sal, linphone_core_get_http_proxy_host(lc));
 	sal_set_http_proxy_port(lc->sal, linphone_core_get_http_proxy_port(lc));
@@ -6455,7 +6465,12 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
-	ms_exit();
+	//ms_exit();
+	ms_factory_uninit_voip(lc->factory);
+	ms_factory_uninit_plugins(lc->factory);
+	ms_factory_destroy(lc->factory);
+//	TODO : set to null
+	
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
 	ms_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);

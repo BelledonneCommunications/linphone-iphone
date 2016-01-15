@@ -2344,20 +2344,20 @@ static void video_call_using_policy_AVPF_implicit_caller_and_callee(void) {
     linphone_core_manager_destroy(callee);
     linphone_core_manager_destroy(caller);
 }
-static void video_call_base_avpf(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
-    linphone_core_set_avpf_mode(pauline->lc,LinphoneAVPFEnabled);
-    linphone_core_set_avpf_mode(marie->lc,LinphoneAVPFEnabled);
-    video_call_base_3(pauline,marie,using_policy,mode,callee_video_enabled,caller_video_enabled);
-    end_call(pauline, marie);
+static void video_call_base_avpf(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
+    linphone_core_set_avpf_mode(caller->lc,LinphoneAVPFEnabled);
+    linphone_core_set_avpf_mode(callee->lc,LinphoneAVPFEnabled);
+    video_call_base_3(caller,callee,using_policy,mode,callee_video_enabled,caller_video_enabled);
+    end_call(caller, callee);
 }
 
 static void video_call_avpf(void) {
-    LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
-    LinphoneCoreManager* marie = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "marie_rc" : "marie_tcp_rc");
+    LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
+    LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
-    video_call_base_avpf(pauline,marie,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
-    linphone_core_manager_destroy(pauline);
-    linphone_core_manager_destroy(marie);
+    video_call_base_avpf(caller,callee,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+    linphone_core_manager_destroy(callee);
+    linphone_core_manager_destroy(caller);
 
 }
 
@@ -2985,7 +2985,8 @@ static void call_with_mkv_file_player(void) {
 	BC_ASSERT_PTR_NOT_NULL(player);
 	if (player){
 		int res = linphone_player_open(player,hellomkv,on_eof,marie);
-		if(!ms_filter_codec_supported("opus")) {
+		//if(!ms_filter_codec_supported("opus")) {
+		if(!ms_factory_codec_supported(marie->lc->factory, "opus") && !ms_factory_codec_supported(pauline->lc->factory, "opus")){
 			BC_ASSERT_EQUAL(res, -1, int, "%d");
 			end_call(marie, pauline);
 			goto end;

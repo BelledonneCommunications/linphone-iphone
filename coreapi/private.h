@@ -860,6 +860,7 @@ void linphone_task_list_free(LinphoneTaskList *t);
 
 struct _LinphoneCore
 {
+	MSFactory* factory;
 	MSList* vtable_refs;
 	Sal *sal;
 	LinphoneGlobalState state;

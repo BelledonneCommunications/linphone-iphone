@@ -285,9 +285,11 @@ LocalConference::LocalConference(LinphoneCore *core, const Conference::Params *p
 	m_recordEndpoint(NULL),
 	m_localDummyProfile(NULL),
 	m_terminated(FALSE) {
+
 	MSAudioConferenceParams ms_conf_params;
 	ms_conf_params.samplerate = lp_config_get_int(m_core->config, "sound","conference_rate",16000);
-	m_conf=ms_audio_conference_new(&ms_conf_params);
+	m_conf=ms_audio_conference_new(&ms_conf_params, core->factory);
+
 }
 
 LocalConference::~LocalConference() {
