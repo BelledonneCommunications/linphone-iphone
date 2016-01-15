@@ -78,7 +78,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		currentViewController = newMainView;
 		LinphoneAppDelegate *delegate = (LinphoneAppDelegate *)[UIApplication sharedApplication].delegate;
 
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
+		if (ANIMATED) {
 			[UIView transitionWithView:delegate.window
 				duration:0.3
 				options:UIViewAnimationOptionTransitionFlipFromLeft | UIViewAnimationOptionAllowAnimatedContent
@@ -544,14 +544,26 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[mainViewController setFullscreen:enabled];
 }
 
+- (UIViewController *)popCurrentView {
+	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
+	if ([viewStack count] > 1) {
+		LOGI(@"PhoneMainView: Popping view %@, going to %@", currentView, viewStack.lastObject);
+		[viewStack removeLastObject];
+		[self _changeCurrentView:[viewStack lastObject]
+					  transition:[PhoneMainView getBackwardTransition]
+						animated:ANIMATED];
+		return [mainViewController getCurrentViewController];
+	}
+	LOGW(@"PhoneMainView: Trying to pop view but none stacked!");
+	return nil;
+}
+
 - (void)changeCurrentView:(UICompositeViewDescription *)view {
 	[self changeCurrentView:view push:TRUE];
 }
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push {
-	[self changeCurrentView:view
-					   push:push
-				   animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+	[self changeCurrentView:view push:push animated:ANIMATED];
 }
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated {
@@ -562,24 +574,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[self _changeCurrentView:view transition:nil animated:animated];
 }
 
-- (BOOL)isUnauthorizedView:(UICompositeViewDescription *)view {
-	return [[LinphoneManager.instance lpConfigStringForKey:@"unauthorized_views"] containsString:view.name];
-}
-
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view
 							  transition:(CATransition *)transition
 								animated:(BOOL)animated {
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
-
-	if ([self isUnauthorizedView:view]) {
-		NSString *fallback = [LinphoneManager.instance lpConfigStringForKey:@"fallback_view"];
-		UICompositeViewDescription *fallback_view = DialerView.compositeViewDescription;
-		if (fallback && [NSClassFromString(fallback) respondsToSelector:@selector(compositeViewDescription)]) {
-			fallback_view = [NSClassFromString(fallback) performSelector:@selector(compositeViewDescription)];
-		}
-		LOGW(@"Trying to access unauthorized view %@, going back to %@", view.name, fallback_view.name);
-		view = fallback_view;
-	}
 	if (![view equal:vc.currentView] || vc != self) {
 		LOGI(@"Change current view to %@", view.name);
 		if (animated && transition == nil)
@@ -605,7 +603,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 	return [self _changeCurrentView:[viewStack lastObject]
 						 transition:[PhoneMainView getBackwardTransition]
-						   animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+						   animated:ANIMATED];
 }
 
 - (UICompositeViewDescription *)firstView {
@@ -615,20 +613,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 		view = [viewStack objectAtIndex:0];
 	}
 	return view;
-}
-
-- (UIViewController *)popCurrentView {
-	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-	if ([viewStack count] > 1) {
-		LOGI(@"PhoneMainView: Pop view");
-		[viewStack removeLastObject];
-		[self _changeCurrentView:[viewStack lastObject]
-					  transition:[PhoneMainView getBackwardTransition]
-						animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
-		return [mainViewController getCurrentViewController];
-	}
-	LOGW(@"PhoneMainView: Trying to pop view but none stacked!");
-	return nil;
 }
 
 - (void)displayCallError:(LinphoneCall *)call message:(NSString *)message {

@@ -93,9 +93,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onRoutesClick:(id)sender {
 	if ([_routesView isHidden]) {
-		[self hideRoutes:FALSE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hideRoutes:FALSE animated:ANIMATED];
 	} else {
-		[self hideRoutes:TRUE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hideRoutes:TRUE animated:ANIMATED];
 	}
 }
 

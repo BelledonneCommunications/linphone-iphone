@@ -26,8 +26,6 @@
 #define LOGE(...) LOGV(ORTP_ERROR, __VA_ARGS__)
 #define LOGF(...) LOGV(ORTP_FATAL, __VA_ARGS__)
 
-#define IPAD (LinphoneManager.runningOnIpad)
-
 @interface LinphoneLogger : NSObject {
 }
 

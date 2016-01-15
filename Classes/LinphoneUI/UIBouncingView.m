@@ -34,7 +34,7 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)settingsUpdate:(NSNotification *)notif {
-	if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == false) {
+	if (ANIMATED == false) {
 		[self stopAnimating:NO];
 	} else {
 		if (![self isHidden]) {
@@ -105,7 +105,7 @@ INIT_WITH_COMMON_CF {
 	}
 
 	[self setHidden:FALSE];
-	if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
+	if (ANIMATED) {
 		if (animated) {
 			[self appearAnimation:kAppearAnimation
 						   target:self

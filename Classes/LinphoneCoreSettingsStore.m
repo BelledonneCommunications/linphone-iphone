@@ -364,17 +364,13 @@
 
 	// advanced section
 	{
-		[self setBool:[lm lpConfigBoolForKey:@"debugenable_preference" withDefault:NO]
-			   forKey:@"debugenable_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"animations_preference" withDefault:NO] forKey:@"animations_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference" withDefault:NO]
-			   forKey:@"backgroundmode_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference" withDefault:NO]
-			   forKey:@"start_at_boot_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference" withDefault:NO]
-			   forKey:@"autoanswer_notif_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"debugenable_preference"] forKey:@"debugenable_preference"];
+		[self setBool:ANIMATED forKey:@"animations_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference"] forKey:@"backgroundmode_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES] forKey:@"show_msg_in_notif"];
-		[self setBool:[lm lpConfigBoolForKey:@"enable_first_login_view_preference" withDefault:NO]
+		[self setBool:[lm lpConfigBoolForKey:@"enable_first_login_view_preference"]
 			   forKey:@"enable_first_login_view_preference"];
 		LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
 		if (parsed != NULL) {

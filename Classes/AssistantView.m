@@ -285,7 +285,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	// Animation
-	if (animation && [[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
+	if (animation && ANIMATED) {
 		CATransition *trans = [CATransition animation];
 		[trans setType:kCATransitionPush];
 		[trans setDuration:0.35];

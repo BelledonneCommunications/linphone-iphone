@@ -674,9 +674,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onNumpadClick:(id)sender {
 	if ([_numpadView isHidden]) {
-		[self hidePad:FALSE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hidePad:FALSE animated:ANIMATED];
 	} else {
-		[self hidePad:TRUE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hidePad:TRUE animated:ANIMATED];
 	}
 }
 
@@ -703,9 +703,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onRoutesClick:(id)sender {
 	if ([_routesView isHidden]) {
-		[self hideRoutes:FALSE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hideRoutes:FALSE animated:ANIMATED];
 	} else {
-		[self hideRoutes:TRUE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hideRoutes:TRUE animated:ANIMATED];
 	}
 }
 
@@ -731,9 +731,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onOptionsClick:(id)sender {
 	if ([_optionsView isHidden]) {
-		[self hideOptions:FALSE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hideOptions:FALSE animated:ANIMATED];
 	} else {
-		[self hideOptions:TRUE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hideOptions:TRUE animated:ANIMATED];
 	}
 }
 

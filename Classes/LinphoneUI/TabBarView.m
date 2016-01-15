@@ -131,7 +131,7 @@
 									  : -selectedNewFrame.size.height /*hide it if none is selected*/))));
 	}
 
-	CGFloat delay = [[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] ? 0.3 : 0;
+	CGFloat delay = ANIMATED ? 0.3 : 0;
 	[UIView animateWithDuration:delay
 					 animations:^{
 					   _selectedButtonImage.frame = selectedNewFrame;
