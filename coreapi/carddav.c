@@ -617,7 +617,7 @@ void linphone_carddav_fetch_vcards(LinphoneCardDavContext *cdc) {
 
 static LinphoneCardDavQuery* linphone_carddav_create_addressbook_multiget_query(LinphoneCardDavContext *cdc, MSList *vcards) {
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)ms_new0(LinphoneCardDavQuery, 1);
-	char body[(ms_list_size(vcards)+1)*300];
+	char *body = (char *)ms_malloc((ms_list_size(vcards) + 1) * 300 * sizeof(char));
 	MSList *iterator = vcards;
 	
 	query->context = cdc;
@@ -639,6 +639,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_multiget_query(
 	}
 	sprintf(body, "%s%s", body, "</card:addressbook-multiget>");
 	query->body = ms_strdup(body);
+	ms_free(body);
 	
 	return query;
 }

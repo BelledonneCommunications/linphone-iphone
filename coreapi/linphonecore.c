@@ -6494,6 +6494,12 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->chat_db_file){
 		ms_free(lc->chat_db_file);
 	}
+	if (lc->logs_db_file) {
+		ms_free(lc->logs_db_file);
+	}
+	if (lc->friends_db_file) {
+		ms_free(lc->friends_db_file);
+	}
 	if (lc->ringtoneplayer) {
 		linphone_ringtoneplayer_destroy(lc->ringtoneplayer);
 	}

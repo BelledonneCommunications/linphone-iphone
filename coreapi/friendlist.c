@@ -383,7 +383,9 @@ LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *li
 }
 
 LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
-	if (lf->uri == NULL || lf->friend_list) {
+	if (!list || !lf->uri || lf->friend_list) {
+		if (!list)
+			ms_error("linphone_friend_list_add_friend(): invalid list, null");
 		if (!lf->uri)
 			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
 		if (lf->friend_list)
