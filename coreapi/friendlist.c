@@ -280,8 +280,8 @@ static void linphone_friend_list_destroy(LinphoneFriendList *list) {
 	if (list->event != NULL) linphone_event_unref(list->event);
 	if (list->uri != NULL) ms_free(list->uri);
 	if (list->cbs) linphone_friend_list_cbs_unref(list->cbs);
-	list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
-	list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
+	if (list->dirty_friends_to_update) list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
+	if (list->friends) list->friends = ms_list_free_with_data(list->friends, (void (*)(void *))_linphone_friend_release);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriendList);
@@ -403,11 +403,14 @@ LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *lis
 }
 
 LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
-	if ((lf->lc != NULL) || (lf->uri == NULL)) return LinphoneFriendListInvalidFriend;
-	list->friends = ms_list_append(list->friends, linphone_friend_ref(lf));
-	list->dirty_friends_to_update = ms_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
+	if (!lf->uri) {
+		ms_error("linphone_friend_list_import_friend(): invalid friend, no sip uri");
+		return LinphoneFriendListInvalidFriend;
+	}
 	lf->friend_list = list;
 	lf->lc = list->lc;
+	list->friends = ms_list_append(list->friends, linphone_friend_ref(lf));
+	list->dirty_friends_to_update = ms_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
 	linphone_core_store_friend_in_db(lf->lc, lf);
 #endif

@@ -244,8 +244,7 @@ int linphone_friend_enable_subscribes(LinphoneFriend *fr, bool_t val){
 	return 0;
 }
 
-int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol)
-{
+int linphone_friend_set_inc_subscribe_policy(LinphoneFriend *fr, LinphoneSubscribePolicy pol) {
 	fr->pol=pol;
 	return 0;
 }
@@ -563,7 +562,6 @@ void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
 		lc->subscribers = ms_list_remove(lc->subscribers, lf);
 		linphone_friend_unref(lf);
 	}
-	lf->lc = lc; /*I would prefer this to be done in linphone_friend_list_add_friend()*/
 	if (linphone_core_ready(lc)) linphone_friend_apply(lf, lc);
 	else lf->commit = TRUE;
 	linphone_friend_save(lf, lc);
@@ -925,7 +923,6 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
 			if (LinphoneFriendListOK == linphone_friend_list_import_friend(linphone_core_get_default_friend_list(lc), lf)) {
-				lf->lc = lc;
 				count++;
 			}
 			linphone_friend_unref(lf);
