@@ -130,6 +130,7 @@
 	[_selectedItems removeAllObjects];
 
 	[self selectToggleButton:!_toggleSelectionButton.selected]; // TODO: why do we need that?
+	LOGI(@"onSelectionToggle: select %@", _toggleSelectionButton.selected ? @"NONE" : @"ALL");
 	for (int i = 0; i < [self numberOfSectionsInTableView:self.tableView]; i++) {
 		for (int j = 0; j < [self tableView:self.tableView numberOfRowsInSection:i]; j++) {
 			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:j inSection:i];

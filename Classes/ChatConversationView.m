@@ -496,6 +496,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
+	LOGI(@"onDeleteClick");
 	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected messages?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil
