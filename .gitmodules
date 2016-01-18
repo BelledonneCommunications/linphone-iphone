@@ -82,3 +82,9 @@
 	path = submodules/externals/vo-amrwbenc
 	url = git://git.linphone.org/vo-amrwbenc
 	ignore = dirty
+[submodule "submodules/belr"]
+	path = submodules/belr
+	url = git://git.linphone.org/belr
+[submodule "submodules/belcard"]
+	path = submodules/belcard
+	url = git://git.linphone.org/belcard
