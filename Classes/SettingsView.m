@@ -415,6 +415,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[keys addObject:@"send_logs_button"];
 		[keys addObject:@"reset_logs_button"];
 		[Log enableLogs:debugEnabled];
+		[LinphoneManager.instance lpConfigSetBool:debugEnabled forKey:@"debugenable_preference"];
 	} else if ([@"account_mandatory_advanced_preference" compare:notif.object] == NSOrderedSame) {
 		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"account_mandatory_advanced_preference"] boolValue];
 		for (NSString *key in settingsStore->dict) {

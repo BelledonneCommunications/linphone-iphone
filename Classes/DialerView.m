@@ -314,9 +314,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 			(debugEnabled ? NSLocalizedString(@"Disable logs", nil) : NSLocalizedString(@"Enable logs", nil));
 		[alertView addButtonWithTitle:actionLog
 								block:^{
-								  // enable / disable
-								  BOOL enableDebug = !debugEnabled;
-								  [Log enableLogs:enableDebug];
+								  BOOL enabled = !debugEnabled;
+								  [LinphoneManager.instance lpConfigSetBool:enabled forKey:@"debugenable_preference"];
+								  [Log enableLogs:enabled];
 								}];
 
 		[alertView show];
