@@ -322,6 +322,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning: {
+			if ((currentView == CallView.compositeViewDescription) ||
+				(currentView == CallIncomingView.compositeViewDescription) ||
+				(currentView == CallOutgoingView.compositeViewDescription)) {
+				[self popCurrentView];
+			}
 			[self changeCurrentView:CallView.compositeViewDescription];
 			break;
 		}
@@ -340,9 +345,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallEnd: {
 			const MSList *calls = linphone_core_get_calls(LC);
 			if (calls == NULL) {
-				if ((currentView == CallView.compositeViewDescription) ||
-					(currentView == CallIncomingView.compositeViewDescription) ||
-					(currentView == CallOutgoingView.compositeViewDescription)) {
+				while ((currentView == CallView.compositeViewDescription) ||
+					   (currentView == CallIncomingView.compositeViewDescription) ||
+					   (currentView == CallOutgoingView.compositeViewDescription)) {
 					[self popCurrentView];
 				}
 			} else {
@@ -537,10 +542,12 @@ static RootViewManager *rootViewManagerInstance = nil;
 	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
 	if (viewStack.count <= 1) {
 		[viewStack removeAllObjects];
-		LOGW(@"PhoneMainView: Trying to pop view but none stacked, going to %@!", DialerView.compositeViewDescription);
+		LOGW(@"PhoneMainView: Trying to pop view but none stacked, going to %@!",
+			 DialerView.compositeViewDescription.name);
 	} else {
 		[viewStack removeLastObject];
-		LOGI(@"PhoneMainView: Popping view %@, going to %@", currentView, viewStack.lastObject);
+		LOGI(@"PhoneMainView: Popping view %@, going to %@", currentView.name,
+			 ((UICompositeViewDescription *)(viewStack.lastObject ?: DialerView.compositeViewDescription)).name);
 	}
 	[self _changeCurrentView:viewStack.lastObject ?: DialerView.compositeViewDescription
 				  transition:[PhoneMainView getBackwardTransition]
@@ -549,8 +556,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view {
-	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-	[viewStack addObject:view];
 	[self _changeCurrentView:view transition:nil animated:ANIMATED];
 }
 
@@ -560,6 +565,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
 	if (![view equal:vc.currentView] || vc != self) {
 		LOGI(@"Change current view to %@", view.name);
+		NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
+		[viewStack addObject:view];
 		if (animated && transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
 		[vc.mainViewController setViewTransition:(animated ? transition : nil)];

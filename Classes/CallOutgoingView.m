@@ -106,7 +106,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (call) {
 		linphone_core_terminate_call(LC, call);
 	}
-	[PhoneMainView.instance popCurrentView];
 }
 
 - (void)hideRoutes:(BOOL)hidden animated:(BOOL)animated {
