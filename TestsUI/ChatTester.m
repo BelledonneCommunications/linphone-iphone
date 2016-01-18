@@ -68,9 +68,7 @@
 }
 
 - (void)uploadImageWithQuality:(NSString *)quality {
-	UITableView *tv = [self findTableView:@"ChatRoom list"];
-
-	long messagesCount = [tv numberOfRowsInSection:0];
+	static int ind = 0;
 	[tester tapViewWithAccessibilityLabel:@"Send picture"];
 	[tester tapViewWithAccessibilityLabel:@"Photo library"];
 // if popup "Linphone would access your photo" pops up, click OK.
@@ -80,8 +78,11 @@
 	}
 #endif
 
-	// select random photo to avoid having the same multiple times
-	[tester choosePhotoInAlbum:@"Camera Roll" atRow:2 column:2 + (messagesCount % 2)];
+	// select random photo to avoid having the same multiple times.
+	// There are 9 photos by default, so lets use just 8 (2 rows, 4 columns).
+	LOGI(@"Selecting photo at row %d, column %d", 1 + (ind / 4) % 2, 1 + ind % 4);
+	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 + (ind / 4) % 2 column:1 + ind % 4];
+	ind++;
 
 	// wait for the quality popup to show up
 	UIAccessibilityElement *element = nil;
@@ -104,7 +105,7 @@
 	// wait for the upload to terminate...
 	for (int i = 0; i < 45; i++) {
 		[tester waitForTimeInterval:1.f];
-		if ([[[LinphoneManager instance] fileTransferDelegates] count] == 0)
+		if (LinphoneManager.instance.fileTransferDelegates.count == 0)
 			break;
 	}
 	[tester waitForViewWithAccessibilityLabel:@"Download"];
