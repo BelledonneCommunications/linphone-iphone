@@ -23,15 +23,15 @@ INIT_WITH_COMMON_CF {
 
 	[self setBordered:NO];
 	[self setRoundRadius];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(orientationDidChange:)
-												 name:@"UIDeviceOrientationDidChangeNotification"
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(orientationDidChange:)
+											   name:@"UIDeviceOrientationDidChangeNotification"
+											 object:nil];
 	return self;
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)orientationDidChange:(NSNotification *)k {
@@ -51,7 +51,8 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)setBordered:(BOOL)bordered {
-	borderView.hidden = !bordered;
+	// bugged on rotation yet
+	borderView.hidden = TRUE; //! bordered;
 }
 - (CGRect)computeBox {
 	CGFloat min = MIN(self.frame.size.width, self.frame.size.height);

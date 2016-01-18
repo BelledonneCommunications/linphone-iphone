@@ -20,7 +20,7 @@
 	}
 
 	if (peer) {
-		const MSList *logs = linphone_core_get_call_history_for_address([LinphoneManager getLc], peer);
+		const MSList *logs = linphone_core_get_call_history_for_address(LC, peer);
 		while (logs != NULL) {
 			LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
 			if (linphone_address_weak_equal(linphone_call_log_get_remote_address(log), peer)) {

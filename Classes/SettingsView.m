@@ -161,7 +161,7 @@
 	}
 	// Start notification after animation of DCRoundSwitch
 	dispatch_async(dispatch_get_main_queue(), ^{
-	  [[NSNotificationCenter defaultCenter]
+	  [NSNotificationCenter.defaultCenter
 		  postNotificationName:kIASKAppSettingChanged
 						object:[toggle key]
 					  userInfo:[NSDictionary dictionaryWithObject:[self.settingsStore objectForKey:[toggle key]]
@@ -282,6 +282,13 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	// when device is slow and you are typing an item too much, a crash may happen
+	// because we try to push the same view multiple times - in that case we should
+	// do nothing but wait for device to respond again.
+	if (self.navigationController.topViewController == viewController) {
+		return;
+	}
+
 	[UINavigationControllerEx removeBackground:viewController.view];
 
 	[viewController view]; // Force view
@@ -361,10 +368,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillDisappear:animated];
 	[_settingsController dismiss:self];
 	// Set observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kIASKAppSettingChanged object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kIASKAppSettingChanged object:nil];
 
-	if (linphone_ringtoneplayer_is_started(linphone_core_get_ringtoneplayer([LinphoneManager getLc]))) {
-		linphone_core_stop_ringing([LinphoneManager getLc]);
+	if (linphone_ringtoneplayer_is_started(linphone_core_get_ringtoneplayer(LC))) {
+		linphone_core_stop_ringing(LC);
 	}
 }
 
@@ -376,10 +383,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self recomputeAccountLabelsAndSync];
 
 	// Set observer
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(appSettingChanged:)
-												 name:kIASKAppSettingChanged
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(appSettingChanged:)
+											   name:kIASKAppSettingChanged
+											 object:nil];
 }
 
 #pragma mark - Event Functions
@@ -407,7 +414,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		removeFromHiddenKeys = debugEnabled;
 		[keys addObject:@"send_logs_button"];
 		[keys addObject:@"reset_logs_button"];
-		[[LinphoneManager instance] setLogsEnabled:debugEnabled];
+		[Log enableLogs:debugEnabled];
 	} else if ([@"account_mandatory_advanced_preference" compare:notif.object] == NSOrderedSame) {
 		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"account_mandatory_advanced_preference"] boolValue];
 		for (NSString *key in settingsStore->dict) {
@@ -435,7 +442,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 + (IASKSpecifier *)filterSpecifier:(IASKSpecifier *)specifier {
-	if (!linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
+	if (!linphone_core_sip_transport_supported(LC, LinphoneTransportTls)) {
 		if ([[specifier key] isEqualToString:@"account_transport_preference"]) {
 			NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
 			NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
@@ -449,7 +456,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else {
 		if ([[specifier key] isEqualToString:@"media_encryption_preference"]) {
 			NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[specifier specifierDict]];
-			if (!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionZRTP)) {
+			if (!linphone_core_media_encryption_supported(LC, LinphoneMediaEncryptionZRTP)) {
 				NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
 				[titles removeObject:@"ZRTP"];
 				[dict setObject:titles forKey:@"Titles"];
@@ -457,7 +464,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				[values removeObject:@"ZRTP"];
 				[dict setObject:values forKey:@"Values"];
 			}
-			if (!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionSRTP)) {
+			if (!linphone_core_media_encryption_supported(LC, LinphoneMediaEncryptionSRTP)) {
 				NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
 				[titles removeObject:@"SRTP"];
 				[dict setObject:titles forKey:@"Titles"];
@@ -465,7 +472,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				[values removeObject:@"SRTP"];
 				[dict setObject:values forKey:@"Values"];
 			}
-			if (!linphone_core_media_encryption_supported([LinphoneManager getLc], LinphoneMediaEncryptionDTLS)) {
+			if (!linphone_core_media_encryption_supported(LC, LinphoneMediaEncryptionDTLS)) {
 				NSMutableArray *titles = [NSMutableArray arrayWithArray:[dict objectForKey:@"Titles"]];
 				[titles removeObject:@"DTLS"];
 				[dict setObject:titles forKey:@"Titles"];
@@ -478,7 +485,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	if ([specifier.key hasPrefix:@"menu_account_"]) {
-		const MSList *accounts = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+		const MSList *accounts = linphone_core_get_proxy_config_list(LC);
 		int index = [specifier.key substringFromIndex:@"menu_account_".length].intValue - 1;
 		if (index < ms_list_size(accounts)) {
 			LinphoneProxyConfig *proxy = (LinphoneProxyConfig *)ms_list_nth_data(accounts, index);
@@ -492,15 +499,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (NSSet *)findHiddenKeys {
-	LinphoneManager *lm = [LinphoneManager instance];
+	LinphoneManager *lm = LinphoneManager.instance;
 	NSMutableSet *hiddenKeys = [NSMutableSet set];
 
-	const MSList *accounts = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+	const MSList *accounts = linphone_core_get_proxy_config_list(LC);
 	for (int i = ms_list_size(accounts) + 1; i <= 5; i++) {
 		[hiddenKeys addObject:[NSString stringWithFormat:@"menu_account_%d", i]];
 	}
 
-	if (!linphone_core_sip_transport_supported([LinphoneManager getLc], LinphoneTransportTls)) {
+	if (!linphone_core_sip_transport_supported(LC, LinphoneTransportTls)) {
 		[hiddenKeys addObject:@"media_encryption_preference"];
 	}
 
@@ -513,7 +520,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[hiddenKeys addObject:@"flush_images_button"];
 #endif
 
-	if (![[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"]) {
+	if (![LinphoneManager.instance lpConfigBoolForKey:@"debugenable_preference"]) {
 		[hiddenKeys addObject:@"send_logs_button"];
 		[hiddenKeys addObject:@"reset_logs_button"];
 	}
@@ -528,10 +535,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[hiddenKeys addObject:@"wifi_only_preference"];
 
-	[hiddenKeys addObject:@"quit_button"];  // Hide for the moment
-	[hiddenKeys addObject:@"about_button"]; // Hide for the moment
-
-	if (!linphone_core_video_supported([LinphoneManager getLc])) {
+	if (!linphone_core_video_supported(LC)) {
 		[hiddenKeys addObject:@"video_menu"];
 	}
 
@@ -557,16 +561,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[hiddenKeys addObject:@"enable_first_login_view_preference"];
 
-	if (!linphone_core_video_supported([LinphoneManager getLc])) {
+	if (!linphone_core_video_supported(LC)) {
 		[hiddenKeys addObject:@"enable_video_preference"];
 	}
 
-	if (!linphone_core_video_display_enabled([LinphoneManager getLc])) {
+	if (!linphone_core_video_display_enabled(LC)) {
 		[hiddenKeys addObject:@"video_menu"];
 	}
 
-	if (!linphone_core_get_video_preset([LinphoneManager getLc]) ||
-		strcmp(linphone_core_get_video_preset([LinphoneManager getLc]), "custom") != 0) {
+	if (!linphone_core_get_video_preset(LC) || strcmp(linphone_core_get_video_preset(LC), "custom") != 0) {
 		[hiddenKeys addObject:@"video_preferred_fps_preference"];
 		[hiddenKeys addObject:@"download_bandwidth_preference"];
 	}
@@ -578,7 +581,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[hiddenKeys addObject:@"port_preference"];
 	}
 
-	if (linphone_core_get_stun_server([LinphoneManager getLc]) == NULL) {
+	if (linphone_core_get_stun_server(LC) == NULL) {
 		[hiddenKeys addObject:@"ice_preference"];
 	}
 
@@ -605,7 +608,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 
-	if (![[[LinphoneManager instance] iapManager] enabled]) {
+	if (![[LinphoneManager.instance iapManager] enabled]) {
 		[hiddenKeys addObject:@"in_app_products_button"];
 	}
 
@@ -654,7 +657,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([key isEqual:@"release_button"]) {
 		[UIApplication sharedApplication].keyWindow.rootViewController = nil;
 		[[UIApplication sharedApplication].keyWindow setRootViewController:nil];
-		[[LinphoneManager instance] destroyLinphoneCore];
+		[LinphoneManager.instance destroyLinphoneCore];
 		[LinphoneManager instanceRelease];
 	} else if ([key isEqual:@"clear_cache_button"]) {
 		[PhoneMainView.instance.mainViewController
@@ -662,10 +665,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else if ([key isEqual:@"battery_alert_button"]) {
 		[[UIDevice currentDevice] _setBatteryState:UIDeviceBatteryStateUnplugged];
 		[[UIDevice currentDevice] _setBatteryLevel:0.01f];
-		[[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceBatteryLevelDidChangeNotification
-															object:self];
+		[NSNotificationCenter.defaultCenter postNotificationName:UIDeviceBatteryLevelDidChangeNotification object:self];
 	} else if ([key isEqual:@"flush_images_button"]) {
-		const MSList *rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+		const MSList *rooms = linphone_core_get_chat_rooms(LC);
 		while (rooms) {
 			const MSList *messages = linphone_chat_room_get_history(rooms->data, 0);
 			while (messages) {
@@ -695,8 +697,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 							  [_settingsController.navigationController popViewControllerAnimated:NO];
 							}];
 		[alert show];
-	} else if ([key isEqual:@"about_button"]) {
-		[PhoneMainView.instance changeCurrentView:AboutView.compositeViewDescription push:TRUE];
 	} else if ([key isEqual:@"reset_logs_button"]) {
 		linphone_core_reset_log_collection();
 	} else if ([key isEqual:@"send_logs_button"]) {
@@ -821,9 +821,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onDialerBackClick:(id)sender {
 	[_settingsController.navigationController popViewControllerAnimated:NO];
-
-	DialerView *view = VIEW(DialerView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 }
 
 - (IBAction)onBackClick:(id)sender {

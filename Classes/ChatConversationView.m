@@ -42,7 +42,7 @@
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -88,34 +88,34 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(applicationWillEnterForeground:)
-												 name:UIApplicationDidBecomeActiveNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(keyboardWillShow:)
-												 name:UIKeyboardWillShowNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(keyboardWillHide:)
-												 name:UIKeyboardWillHideNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(textReceivedEvent:)
-												 name:kLinphoneMessageReceived
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onMessageChange:)
-												 name:UITextViewTextDidChangeNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(textComposeEvent:)
-												 name:kLinphoneTextComposeEvent
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdateEvent:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(applicationWillEnterForeground:)
+											   name:UIApplicationDidBecomeActiveNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(keyboardWillShow:)
+											   name:UIKeyboardWillShowNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(keyboardWillHide:)
+											   name:UIKeyboardWillHideNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(textReceivedEvent:)
+											   name:kLinphoneMessageReceived
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onMessageChange:)
+											   name:UITextViewTextDidChangeNotification
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(textComposeEvent:)
+											   name:kLinphoneTextComposeEvent
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdateEvent:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
 
 	[_backToCallButton update];
 
@@ -124,7 +124,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[[_tableController tableView] reloadData];
 
-	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server([LinphoneManager getLc]) != NULL;
+	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server(LC) != NULL;
 	[_pictureButton setEnabled:fileSharingEnabled];
 
 	[self callUpdateEvent:nil];
@@ -137,7 +137,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -182,8 +182,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
-	_callButton.hidden =
-		(_tableController.isEditing || linphone_core_get_current_call([LinphoneManager getLc]) != NULL);
+	_callButton.hidden = (_tableController.isEditing || linphone_core_get_current_call(LC) != NULL);
 }
 
 - (void)update {
@@ -237,8 +236,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)saveAndSend:(UIImage *)image url:(NSURL *)url {
 	// photo from Camera, must be saved first
 	if (url == nil) {
-		[[LinphoneManager instance]
-				.photoLibrary
+		[LinphoneManager.instance.photoLibrary
 			writeImageToSavedPhotosAlbum:image.CGImage
 							 orientation:(ALAssetOrientation)[image imageOrientation]
 						 completionBlock:^(NSURL *assetURL, NSError *error) {
@@ -331,7 +329,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		if (strcasecmp(cr_from_string, fromStr) == 0) {
 			if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
 				linphone_chat_room_mark_as_read(room);
-				[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMessageReceived object:self];
+				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
 			}
 			[_tableController addChatEntry:chat];
 			[_tableController scrollToLastUnread:TRUE];
@@ -496,6 +494,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
+	LOGI(@"onDeleteClick");
 	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected messages?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil
@@ -516,13 +515,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCallClick:(id)sender {
-	NSString *displayName = [FastAddressBook displayNameForAddress:linphone_chat_room_get_peer_address(chatRoom)];
-	// Go to dialer view
-	DialerView *view = VIEW(DialerView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	char *uri = linphone_address_as_string(linphone_chat_room_get_peer_address(chatRoom));
-	[view call:[NSString stringWithUTF8String:uri] displayName:displayName];
-	ms_free(uri);
+	[LinphoneManager.instance call:linphone_chat_room_get_peer_address(chatRoom) transfer:NO];
 }
 
 - (IBAction)onListSwipe:(id)sender {

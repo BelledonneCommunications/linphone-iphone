@@ -134,7 +134,7 @@
 }
 
 - (void)updateStats:(NSTimer *)timer {
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 
 	if (!call) {
 		_statsLabel.text = NSLocalizedString(@"No call in progress", nil);

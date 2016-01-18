@@ -13,3 +13,6 @@
 #import "UIToggleButton.h"
 #import "UISpeakerButton.h"
 #import "UIBluetoothButton.h"
+#import "UIMicroButton.h"
+
+#import "UIChatBubbleTextCell.h"

@@ -78,7 +78,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		currentViewController = newMainView;
 		LinphoneAppDelegate *delegate = (LinphoneAppDelegate *)[UIApplication sharedApplication].delegate;
 
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
+		if (ANIMATED) {
 			[UIView transitionWithView:delegate.window
 				duration:0.3
 				options:UIViewAnimationOptionTransitionFlipFromLeft | UIViewAnimationOptionAllowAnimatedContent
@@ -154,7 +154,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - ViewController Functions
@@ -173,39 +173,32 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[super viewWillAppear:animated];
 
 	// Set observers
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdate:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(registrationUpdate:)
-												 name:kLinphoneRegistrationUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(textReceived:)
-												 name:kLinphoneMessageReceived
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onGlobalStateChanged:)
-												 name:kLinphoneGlobalStateUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdate:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(registrationUpdate:)
+											   name:kLinphoneRegistrationUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(textReceived:)
+											   name:kLinphoneMessageReceived
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onGlobalStateChanged:)
+											   name:kLinphoneGlobalStateUpdate
+											 object:nil];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(batteryLevelChanged:)
-												 name:UIDeviceBatteryLevelDidChangeNotification
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(batteryLevelChanged:)
+											   name:UIDeviceBatteryLevelDidChangeNotification
+											 object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
-	// Remove observers
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneMessageReceived object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-													name:UIDeviceBatteryLevelDidChangeNotification
-												  object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
 }
 
@@ -294,9 +287,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)onGlobalStateChanged:(NSNotification *)notif {
 	LinphoneGlobalState state = (LinphoneGlobalState)[[[notif userInfo] valueForKey:@"state"] integerValue];
 	static BOOL already_shown = FALSE;
-	if (state == LinphoneGlobalOn && !already_shown && [LinphoneManager instance].wasRemoteProvisioned) {
-		LinphoneProxyConfig *conf = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_login_view" inSection:@"app"] && conf == NULL) {
+	if (state == LinphoneGlobalOn && !already_shown && LinphoneManager.instance.wasRemoteProvisioned) {
+		LinphoneProxyConfig *conf = linphone_core_get_default_proxy_config(LC);
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"show_login_view" inSection:@"app"] && conf == NULL) {
 			already_shown = TRUE;
 			AssistantView *view = VIEW(AssistantView);
 			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
@@ -329,7 +322,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning: {
-			[self changeCurrentView:CallView.compositeViewDescription push:NO];
+			[self changeCurrentView:CallView.compositeViewDescription];
 			break;
 		}
 		case LinphoneCallUpdatedByRemote: {
@@ -345,19 +338,15 @@ static RootViewManager *rootViewManagerInstance = nil;
 			[self displayCallError:call message:message];
 		}
 		case LinphoneCallEnd: {
-			const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
+			const MSList *calls = linphone_core_get_calls(LC);
 			if (calls == NULL) {
-				//				if ((currentView == CallView.compositeViewDescription) ||
-				//					(currentView == CallIncomingView.compositeViewDescription) ||
-				//					(currentView == CallOutgoingView.compositeViewDescription)) {
-				DialerView *view = VIEW(DialerView);
-				[view setAddress:@""];
-				[view setTransferMode:FALSE];
-				[self changeCurrentView:view.compositeViewDescription push:NO];
-				//					[self popCurrentView];
-				//				}
+				while ((currentView == CallView.compositeViewDescription) ||
+					   (currentView == CallIncomingView.compositeViewDescription) ||
+					   (currentView == CallOutgoingView.compositeViewDescription)) {
+					[self popCurrentView];
+				}
 			} else {
-				linphone_core_resume_call([LinphoneManager getLc], (LinphoneCall *)calls->data);
+				linphone_core_resume_call(LC, (LinphoneCall *)calls->data);
 				[self changeCurrentView:CallView.compositeViewDescription];
 			}
 			break;
@@ -382,7 +371,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 #pragma mark -
 
 - (void)orientationUpdate:(UIInterfaceOrientation)orientation {
-	int oldLinphoneOrientation = linphone_core_get_device_rotation([LinphoneManager getLc]);
+	int oldLinphoneOrientation = linphone_core_get_device_rotation(LC);
 	int newRotation = 0;
 	switch (orientation) {
 		case UIInterfaceOrientationPortrait:
@@ -401,22 +390,22 @@ static RootViewManager *rootViewManagerInstance = nil;
 			newRotation = oldLinphoneOrientation;
 	}
 	if (oldLinphoneOrientation != newRotation) {
-		linphone_core_set_device_rotation([LinphoneManager getLc], newRotation);
-		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+		linphone_core_set_device_rotation(LC, newRotation);
+		LinphoneCall *call = linphone_core_get_current_call(LC);
 		if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 			// Orientation has changed, must call update call
-			linphone_core_update_call([LinphoneManager getLc], call, NULL);
+			linphone_core_update_call(LC, call, NULL);
 		}
 	}
 }
 - (void)startUp {
 	LinphoneCore *core = nil;
 	@try {
-		core = [LinphoneManager getLc];
-		LinphoneManager *lm = [LinphoneManager instance];
+		core = LC;
+		LinphoneManager *lm = LinphoneManager.instance;
 		if (linphone_core_get_global_state(core) != LinphoneGlobalOn) {
 			[self changeCurrentView:DialerView.compositeViewDescription];
-		} else if ([[LinphoneManager instance] lpConfigBoolForKey:@"enable_first_login_view_preference"] == true) {
+		} else if ([LinphoneManager.instance lpConfigBoolForKey:@"enable_first_login_view_preference"] == true) {
 			[PhoneMainView.instance changeCurrentView:FirstLoginView.compositeViewDescription];
 		} else {
 			// always start to dialer when testing
@@ -438,9 +427,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)updateApplicationBadgeNumber {
 	int count = 0;
-	count += linphone_core_get_missed_calls_count([LinphoneManager getLc]);
+	count += linphone_core_get_missed_calls_count(LC);
 	count += [LinphoneManager unreadMessageCount];
-	count += linphone_core_get_calls_nb([LinphoneManager getLc]);
+	count += linphone_core_get_calls_nb(LC);
 	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
 }
 
@@ -544,44 +533,35 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[mainViewController setFullscreen:enabled];
 }
 
-- (void)changeCurrentView:(UICompositeViewDescription *)view {
-	[self changeCurrentView:view push:TRUE];
-}
-
-- (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push {
-	[self changeCurrentView:view
-					   push:push
-				   animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
-}
-
-- (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated {
+- (UIViewController *)popCurrentView {
 	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-	if (push && view) {
-		[viewStack addObject:view];
+	if (viewStack.count <= 1) {
+		[viewStack removeAllObjects];
+		LOGW(@"PhoneMainView: Trying to pop view but none stacked, going to %@!",
+			 DialerView.compositeViewDescription.name);
+	} else {
+		[viewStack removeLastObject];
+		LOGI(@"PhoneMainView: Popping view %@, going to %@", currentView.name,
+			 ((UICompositeViewDescription *)(viewStack.lastObject ?: DialerView.compositeViewDescription)).name);
 	}
-	[self _changeCurrentView:view transition:nil animated:animated];
+	[self _changeCurrentView:viewStack.lastObject ?: DialerView.compositeViewDescription
+				  transition:[PhoneMainView getBackwardTransition]
+					animated:ANIMATED];
+	return [mainViewController getCurrentViewController];
 }
 
-- (BOOL)isUnauthorizedView:(UICompositeViewDescription *)view {
-	return [[LinphoneManager.instance lpConfigStringForKey:@"unauthorized_views"] containsString:view.name];
+- (void)changeCurrentView:(UICompositeViewDescription *)view {
+	[self _changeCurrentView:view transition:nil animated:ANIMATED];
 }
 
 - (UIViewController *)_changeCurrentView:(UICompositeViewDescription *)view
 							  transition:(CATransition *)transition
 								animated:(BOOL)animated {
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
-
-	if ([self isUnauthorizedView:view]) {
-		NSString *fallback = [LinphoneManager.instance lpConfigStringForKey:@"fallback_view"];
-		UICompositeViewDescription *fallback_view = DialerView.compositeViewDescription;
-		if (fallback && [NSClassFromString(fallback) respondsToSelector:@selector(compositeViewDescription)]) {
-			fallback_view = [NSClassFromString(fallback) performSelector:@selector(compositeViewDescription)];
-		}
-		LOGW(@"Trying to access unauthorized view %@, going back to %@", view.name, fallback_view.name);
-		view = fallback_view;
-	}
 	if (![view equal:vc.currentView] || vc != self) {
 		LOGI(@"Change current view to %@", view.name);
+		NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
+		[viewStack addObject:view];
 		if (animated && transition == nil)
 			transition = [PhoneMainView getTransition:vc.currentView new:view];
 		[vc.mainViewController setViewTransition:(animated ? transition : nil)];
@@ -593,19 +573,17 @@ static RootViewManager *rootViewManagerInstance = nil;
 	//[[RootViewManager instance] setViewControllerForDescription:view];
 
 	NSDictionary *mdict = [NSMutableDictionary dictionaryWithObject:vc->currentView forKey:@"view"];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneMainViewChange object:self userInfo:mdict];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMainViewChange object:self userInfo:mdict];
 
 	return [vc->mainViewController getCurrentViewController];
 }
 
 - (UIViewController *)popToView:(UICompositeViewDescription *)view {
 	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-	while ([viewStack count] > 1 && ![[viewStack lastObject] equal:view]) {
+	while (viewStack.count > 0 && ![[viewStack lastObject] equal:view]) {
 		[viewStack removeLastObject];
 	}
-	return [self _changeCurrentView:[viewStack lastObject]
-						 transition:[PhoneMainView getBackwardTransition]
-						   animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+	return [self _changeCurrentView:view transition:[PhoneMainView getBackwardTransition] animated:ANIMATED];
 }
 
 - (UICompositeViewDescription *)firstView {
@@ -617,20 +595,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 	return view;
 }
 
-- (UIViewController *)popCurrentView {
-	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-	if ([viewStack count] > 1) {
-		LOGI(@"PhoneMainView: Pop view");
-		[viewStack removeLastObject];
-		[self _changeCurrentView:[viewStack lastObject]
-					  transition:[PhoneMainView getBackwardTransition]
-						animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
-		return [mainViewController getCurrentViewController];
-	}
-	LOGW(@"PhoneMainView: Trying to pop view but none stacked!");
-	return nil;
-}
-
 - (void)displayCallError:(LinphoneCall *)call message:(NSString *)message {
 	const char *lUserNameChars = linphone_address_get_username(linphone_call_get_remote_address(call));
 	NSString *lUserName =
@@ -639,7 +603,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	NSString *lTitle;
 
 	// get default proxy
-	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
+	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(LC);
 	if (proxyCfg == nil) {
 		lMessage = NSLocalizedString(@"Please make sure your device is connected to the internet and double check your "
 									 @"SIP account configuration in the settings.",
@@ -688,7 +652,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)playMessageSoundForCallID:(NSString *)callID {
 	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-		LinphoneManager *lm = [LinphoneManager instance];
+		LinphoneManager *lm = LinphoneManager.instance;
 		// if the message was already received through a push notif, we don't need to ring
 		if (![lm popPushCallID:callID]) {
 			[lm playMessageSound];
@@ -701,7 +665,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	NSString *callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)];
 
 	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-		LinphoneManager *lm = [LinphoneManager instance];
+		LinphoneManager *lm = LinphoneManager.instance;
 		BOOL callIDFromPush = [lm popPushCallID:callId];
 		BOOL autoAnswer = [lm lpConfigBoolForKey:@"autoanswer_notif_preference"];
 
@@ -711,7 +675,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		} else {
 			AudioServicesPlaySystemSound(lm.sounds.vibrate);
 			CallIncomingView *view = VIEW(CallIncomingView);
-			[self changeCurrentView:view.compositeViewDescription push:TRUE];
+			[self changeCurrentView:view.compositeViewDescription];
 			[view setCall:call];
 			[view setDelegate:self];
 		}
@@ -723,7 +687,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	UIDeviceBatteryState state = [UIDevice currentDevice].batteryState;
 	LOGD(@"Battery state:%d level:%.2f", state, level);
 
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 		LinphoneCallAppData *callData = (__bridge LinphoneCallAppData *)linphone_call_get_user_pointer(call);
 		if (callData != nil) {
@@ -740,7 +704,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 													  linphone_call_params_copy(linphone_call_get_current_params(call));
 												  // stop video
 												  linphone_call_params_enable_video(paramsCopy, FALSE);
-												  linphone_core_update_call([LinphoneManager getLc], call, paramsCopy);
+												  linphone_core_update_call(LC, call, paramsCopy);
 												}];
 					[sheet showInView:self.view];
 					callData->batteryWarningShown = TRUE;
@@ -759,11 +723,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)incomingCallAccepted:(LinphoneCall *)call evenWithVideo:(BOOL)video {
-	[[LinphoneManager instance] acceptCall:call evenWithVideo:video];
+	[LinphoneManager.instance acceptCall:call evenWithVideo:video];
 }
 
 - (void)incomingCallDeclined:(LinphoneCall *)call {
-	linphone_core_terminate_call([LinphoneManager getLc], call);
+	linphone_core_terminate_call(LC, call);
 }
 
 @end

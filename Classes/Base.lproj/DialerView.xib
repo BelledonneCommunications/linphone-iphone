@@ -47,7 +47,7 @@
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" id="56Z-ia-Pln" userLabel="backgroundColor">
                                     <rect key="frame" x="0.0" y="0.0" width="540" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 </imageView>
                                 <textField opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter a number or an address" adjustsFontSizeToFit="NO" minimumFontSize="5" id="4" userLabel="addressField" customClass="UIAddressTextField">
                                     <rect key="frame" x="31" y="0.0" width="426" height="66"/>
@@ -55,7 +55,7 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     <accessibility key="accessibilityConfiguration" label="Enter a address"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="33"/>
-                                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet"/>
+                                    <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet" returnKeyType="join"/>
                                     <connections>
                                         <action selector="onAddressChange:" destination="-1" eventType="editingChanged" id="FdS-Kl-3dS"/>
                                         <outlet property="delegate" destination="-1" id="190"/>

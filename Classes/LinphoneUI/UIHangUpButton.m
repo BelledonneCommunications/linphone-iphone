@@ -76,7 +76,7 @@
 #pragma mark -
 
 - (void)update {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	if (linphone_core_get_calls_nb(lc) == 1 ||											  // One call
 		linphone_core_get_current_call(lc) != NULL ||									  // In call
 		linphone_core_is_in_conference(lc) ||											  // In conference
@@ -91,7 +91,7 @@
 #pragma mark - Action Functions
 
 - (void)touchUp:(id)sender {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneCall *currentcall = linphone_core_get_current_call(lc);
 	if (linphone_core_is_in_conference(lc) ||											  // In conference
 		(linphone_core_get_conference_size(lc) > 0 && [UIHangUpButton callCount:lc] == 0) // Only one conf

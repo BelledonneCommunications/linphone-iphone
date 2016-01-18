@@ -14,16 +14,16 @@
 
 - (instancetype)init {
 	if (self = [super init]) {
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(callUpdateEvent:)
-													 name:kLinphoneCallUpdate
-												   object:nil];
+		[NSNotificationCenter.defaultCenter addObserver:self
+											   selector:@selector(callUpdateEvent:)
+												   name:kLinphoneCallUpdate
+												 object:nil];
 	}
 	return self;
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
@@ -31,12 +31,11 @@
 }
 
 - (void)update {
-	self.hidden = (_tableView.isEditing || linphone_core_get_current_call([LinphoneManager getLc]) == NULL);
+	self.hidden = (_tableView.isEditing || linphone_core_get_current_call(LC) == NULL);
 }
 
 - (IBAction)onBackToCallClick:(id)sender {
-	CallView *view = VIEW(CallView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[PhoneMainView.instance popToView:CallView.compositeViewDescription];
 }
 
 @end

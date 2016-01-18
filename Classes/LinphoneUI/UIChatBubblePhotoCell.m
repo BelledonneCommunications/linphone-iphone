@@ -62,7 +62,7 @@
 		const LinphoneContent *c = linphone_chat_message_get_file_transfer_information(amessage);
 		if (c) {
 			const char *name = linphone_content_get_name(c);
-			for (FileTransferDelegate *aftd in [[LinphoneManager instance] fileTransferDelegates]) {
+			for (FileTransferDelegate *aftd in [LinphoneManager.instance fileTransferDelegates]) {
 				if (linphone_chat_message_get_file_transfer_information(aftd.message) &&
 					(linphone_chat_message_is_outgoing(aftd.message) == linphone_chat_message_is_outgoing(amessage)) &&
 					strcmp(name, linphone_content_get_name(
@@ -156,21 +156,13 @@
 	[_ftd download:self.message];
 	_cancelButton.hidden = NO;
 	_downloadButton.hidden = YES;
-
-	// we must tell the tableview to refresh the cell to reflect its internal state
-	ChatConversationView *view = VIEW(ChatConversationView);
-	[view.tableController updateChatEntry:self.message];
 }
 
 - (IBAction)onCancelClick:(id)sender {
 	FileTransferDelegate *tmp = _ftd;
 	[self disconnectFromFileDelegate];
-	[tmp cancel];
 	_fileTransferProgress.progress = 0;
-	[self update];
-	// we must tell the tableview to refresh the cell to reflect its internal state
-	ChatConversationView *view = VIEW(ChatConversationView);
-	[view.tableController updateChatEntry:self.message];
+	[tmp cancel];
 }
 
 - (void)onResendClick:(id)event {
@@ -191,7 +183,7 @@
 	} else {
 		if (![_messageImageView isLoading]) {
 			ImageView *view = VIEW(ImageView);
-			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 			CGImageRef fullScreenRef = [[_messageImageView.fullImageUrl defaultRepresentation] fullScreenImage];
 			UIImage *fullScreen = [UIImage imageWithCGImage:fullScreenRef];
 			[view setImage:fullScreen];
@@ -210,19 +202,19 @@
 
 	_ftd = aftd;
 	_fileTransferProgress.progress = 0;
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onFileTransferSendUpdate:)
-												 name:kLinphoneFileTransferSendUpdate
-											   object:_ftd];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onFileTransferRecvUpdate:)
-												 name:kLinphoneFileTransferRecvUpdate
-											   object:_ftd];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onFileTransferSendUpdate:)
+											   name:kLinphoneFileTransferSendUpdate
+											 object:_ftd];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onFileTransferRecvUpdate:)
+											   name:kLinphoneFileTransferRecvUpdate
+											 object:_ftd];
 }
 
 - (void)disconnectFromFileDelegate {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 	_ftd = nil;
 }
 

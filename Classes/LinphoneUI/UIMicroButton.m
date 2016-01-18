@@ -24,15 +24,15 @@
 @implementation UIMicroButton
 
 - (void)onOn {
-	linphone_core_enable_mic([LinphoneManager getLc], false);
+	linphone_core_enable_mic(LC, false);
 }
 
 - (void)onOff {
-	linphone_core_enable_mic([LinphoneManager getLc], true);
+	linphone_core_enable_mic(LC, true);
 }
 
 - (bool)onUpdate {
-	return !linphone_core_mic_enabled([LinphoneManager getLc]);
+	return !linphone_core_mic_enabled(LC);
 }
 
 @end

@@ -54,7 +54,7 @@
 	messageList = linphone_chat_room_get_history(chatRoom, 0);
 
 	// also append transient upload messages because they are not in history yet!
-	for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+	for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		const LinphoneAddress *ftd_peer =
 			linphone_chat_room_get_peer_address(linphone_chat_message_get_chat_room(ftd.message));
 		const LinphoneAddress *peer = linphone_chat_room_get_peer_address(chatRoom);
@@ -100,20 +100,6 @@
 		[self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:(count - 1) inSection:0]
 							  atScrollPosition:UITableViewScrollPositionBottom
 									  animated:YES];
-	}
-}
-
-- (void)debugMessages {
-	if (!messageList) {
-		LOGE(@"No data to debug");
-		return;
-	}
-	MSList *item = messageList;
-	int count = 0;
-	while (item) {
-		LinphoneChatMessage *msg = (LinphoneChatMessage *)item->data;
-		LOGI(@"Message %d: %s", count++, linphone_chat_message_get_text(msg));
-		item = item->next;
 	}
 }
 

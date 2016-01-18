@@ -44,7 +44,7 @@
 - (instancetype)init {
 	if ((self = [super init]) != nil) {
 		_enabled = (([SKPaymentQueue canMakePayments]) &&
-					([[LinphoneManager instance] lpConfigBoolForKey:@"enabled" inSection:@"in_app_purchase"]));
+					([LinphoneManager.instance lpConfigBoolForKey:@"enabled" inSection:@"in_app_purchase"]));
 		_initialized = false;
 		_available = false;
 		_accountActivationInProgress = false;
@@ -107,8 +107,8 @@
 				monthly:(BOOL)monthly {
 	if (phoneNumber) {
 		NSString *productID =
-			[[LinphoneManager instance] lpConfigStringForKey:(monthly ? @"paid_account_id_monthly" : @"paid_account_id")
-												   inSection:@"in_app_purchase"];
+			[LinphoneManager.instance lpConfigStringForKey:(monthly ? @"paid_account_id_monthly" : @"paid_account_id")
+												 inSection:@"in_app_purchase"];
 		self.accountCreationData = @{ @"phoneNumber" : phoneNumber, @"password" : password, @"email" : email };
 
 		if (![self purchaseWitID:productID]) {
@@ -123,8 +123,8 @@
 	if (phoneNumber) {
 		NSString *receiptBase64 = [self getReceipt];
 		if (receiptBase64) {
-			NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"receipt_validation_url"
-																					 inSection:@"in_app_purchase"]];
+			NSURL *URL = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"receipt_validation_url"
+																				   inSection:@"in_app_purchase"]];
 			XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
 			// buying for the first time: need to create the account
 			// if ([transaction.transactionIdentifier
@@ -175,7 +175,7 @@
 #pragma mark ProductListLoading
 
 - (void)loadProducts {
-	NSArray *list = [[[[LinphoneManager instance] lpConfigStringForKey:@"products_list" inSection:@"in_app_purchase"]
+	NSArray *list = [[[LinphoneManager.instance lpConfigStringForKey:@"products_list" inSection:@"in_app_purchase"]
 		stringByReplacingOccurrencesOfString:@" "
 								  withString:@""] componentsSeparatedByString:@","];
 
@@ -262,8 +262,8 @@
 	if (latestReceiptMD5 == nil || ![latestReceiptMD5 isEqualToString:[receiptBase64 md5]]) {
 		// transaction is null when restoring user purchases at application start or if user clicks the "restore" button
 		// We must validate the receipt on our server
-		NSURL *URL = [NSURL URLWithString:[[LinphoneManager instance] lpConfigStringForKey:@"receipt_validation_url"
-																				 inSection:@"in_app_purchase"]];
+		NSURL *URL = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"receipt_validation_url"
+																			   inSection:@"in_app_purchase"]];
 		XMLRPCRequest *request = [[XMLRPCRequest alloc] initWithURL:URL];
 		// buying for the first time: need to create the account
 		// if ([transaction.transactionIdentifier
@@ -299,11 +299,11 @@
 
 - (NSString *)getPhoneNumber {
 	NSString *phoneNumber = @"";
-	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
+	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config(LC);
 	if (config) {
 		const char *identity = linphone_proxy_config_get_identity(config);
 		if (identity) {
-			LinphoneAddress *addr = linphone_address_new(identity);
+			LinphoneAddress *addr = linphone_core_interpret_url(LC, identity);
 			if (addr) {
 				phoneNumber = [NSString stringWithUTF8String:linphone_address_get_username(addr)];
 				linphone_address_destroy(addr);
@@ -374,7 +374,7 @@
 - (void)postNotificationforStatus:(IAPPurchaseNotificationStatus)status withDict:(NSDictionary *)dict {
 	_status = status;
 	LOGI(@"Triggering notification for status %@", status);
-	[[NSNotificationCenter defaultCenter] postNotificationName:status object:self userInfo:dict];
+	[NSNotificationCenter.defaultCenter postNotificationName:status object:self userInfo:dict];
 }
 
 - (void)XMLRPCRequest:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
@@ -389,7 +389,7 @@
 
 	LOGI(@"XMLRPC response %@: %@", [request method], [response body]);
 	NSString *productID =
-		[[LinphoneManager instance] lpConfigStringForKey:@"paid_account_id" inSection:@"in_app_purchase"];
+		[LinphoneManager.instance lpConfigStringForKey:@"paid_account_id" inSection:@"in_app_purchase"];
 
 	// validation succeeded
 	if (![response isFault] && [response object] != nil) {
@@ -479,7 +479,7 @@
 #else
 - (void)postNotificationforStatus:(IAPPurchaseNotificationStatus)status {
 	_status = status;
-	[[NSNotificationCenter defaultCenter] postNotificationName:status object:self userInfo:nil];
+	[NSNotificationCenter.defaultCenter postNotificationName:status object:self userInfo:nil];
 	LOGE(@"Not supported, triggering %@", status);
 }
 - (BOOL)purchaseAccount:(NSString *)phoneNumber
@@ -526,11 +526,11 @@
 #pragma mark - XMLRPCConnectionDelegate Functions
 
 - (void)request:(XMLRPCRequest *)request didReceiveResponse:(XMLRPCResponse *)response {
-	[[[LinphoneManager instance] iapManager] XMLRPCRequest:request didReceiveResponse:response];
+	[[LinphoneManager.instance iapManager] XMLRPCRequest:request didReceiveResponse:response];
 }
 
 - (void)request:(XMLRPCRequest *)request didFailWithError:(NSError *)error {
-	[[[LinphoneManager instance] iapManager] XMLRPCRequest:request didFailWithError:error];
+	[[LinphoneManager.instance iapManager] XMLRPCRequest:request didFailWithError:error];
 }
 
 - (BOOL)request:(XMLRPCRequest *)request canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {

@@ -43,6 +43,6 @@
 }
 
 - (IBAction)onKickClick:(id)sender {
-	linphone_core_remove_from_conference([LinphoneManager getLc], _call);
+	linphone_core_remove_from_conference(LC, _call);
 }
 @end

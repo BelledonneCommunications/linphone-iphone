@@ -116,7 +116,7 @@
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - ViewController Functions
@@ -158,10 +158,10 @@
 	[self.tabBarViewController viewWillAppear:animated];
 	[self.statusBarViewController viewWillAppear:animated];
 	[self.sideMenuViewController viewWillAppear:animated];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(orientationDidChange:)
-												 name:UIDeviceOrientationDidChangeNotification
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(orientationDidChange:)
+											   name:UIDeviceOrientationDidChangeNotification
+											 object:nil];
 	[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 }
 
@@ -184,7 +184,7 @@
 
 	[[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

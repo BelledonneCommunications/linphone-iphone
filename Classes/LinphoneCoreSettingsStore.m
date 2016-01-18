@@ -99,7 +99,7 @@
 }
 
 - (void)transformCodecsToKeys:(const MSList *)codecs {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 
 	const MSList *elem = codecs;
 	for (; elem != NULL; elem = elem->next) {
@@ -115,7 +115,7 @@
 }
 
 - (void)transformAccountToKeys:(NSString *)username {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	const MSList *proxies = linphone_core_get_proxy_config_list(lc);
 	while (username && proxies &&
 		   strcmp(username.UTF8String,
@@ -151,7 +151,7 @@
 			const LinphoneAddress *identity_addr = linphone_proxy_config_get_identity_address(proxy);
 			if (identity_addr) {
 				const char *server_addr = linphone_proxy_config_get_server_addr(proxy);
-				LinphoneAddress *proxy_addr = linphone_address_new(server_addr);
+				LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, server_addr);
 				int port = linphone_address_get_port(proxy_addr);
 
 				[self setCString:linphone_address_get_username(identity_addr)
@@ -218,12 +218,12 @@
 }
 
 - (void)transformLinphoneCoreToKeys {
-	LinphoneManager *lm = [LinphoneManager instance];
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneManager *lm = LinphoneManager.instance;
+	LinphoneCore *lc = LC;
 
 	// root section
 	{
-		const MSList *accounts = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+		const MSList *accounts = linphone_core_get_proxy_config_list(LC);
 		int count = ms_list_size(accounts);
 		for (int i = 1; i <= count; i++, accounts = accounts->next) {
 			NSString *key = [NSString stringWithFormat:@"menu_account_%d", i];
@@ -265,7 +265,7 @@
 		[self setBool:(pol->automatically_accept) forKey:@"accept_video_preference"];
 		[self setBool:linphone_core_self_view_enabled(lc) forKey:@"self_video_preference"];
 		BOOL previewEnabled = [lm lpConfigBoolForKey:@"preview_preference" withDefault:YES];
-		[self setBool:previewEnabled forKey:@"preview_preference"];
+		[self setBool:IPAD && previewEnabled forKey:@"preview_preference"];
 
 		const char *preset = linphone_core_get_video_preset(lc);
 		[self setCString:preset ? preset : "default" forKey:@"video_preset_preference"];
@@ -348,7 +348,7 @@
 
 	// tunnel section
 	if (linphone_core_tunnel_available()) {
-		LinphoneTunnel *tunnel = linphone_core_get_tunnel([LinphoneManager getLc]);
+		LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
 		[self setObject:[lm lpConfigStringForKey:@"tunnel_mode_preference" withDefault:@"off"]
 				 forKey:@"tunnel_mode_preference"];
 		const MSList *configs = linphone_tunnel_get_servers(tunnel);
@@ -364,17 +364,13 @@
 
 	// advanced section
 	{
-		[self setBool:[lm lpConfigBoolForKey:@"debugenable_preference" withDefault:NO]
-			   forKey:@"debugenable_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"animations_preference" withDefault:NO] forKey:@"animations_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference" withDefault:NO]
-			   forKey:@"backgroundmode_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference" withDefault:NO]
-			   forKey:@"start_at_boot_preference"];
-		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference" withDefault:NO]
-			   forKey:@"autoanswer_notif_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"debugenable_preference"] forKey:@"debugenable_preference"];
+		[self setBool:ANIMATED forKey:@"animations_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference"] forKey:@"backgroundmode_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
+		[self setBool:[lm lpConfigBoolForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES] forKey:@"show_msg_in_notif"];
-		[self setBool:[lm lpConfigBoolForKey:@"enable_first_login_view_preference" withDefault:NO]
+		[self setBool:[lm lpConfigBoolForKey:@"enable_first_login_view_preference"]
 			   forKey:@"enable_first_login_view_preference"];
 		LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(lc);
 		if (parsed != NULL) {
@@ -389,7 +385,7 @@
 
 	// Post event
 	NSDictionary *eventDic = [NSDictionary dictionaryWithObject:self forKey:@"settings"];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneLogsUpdate object:self userInfo:eventDic];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneLogsUpdate object:self userInfo:eventDic];
 }
 
 - (void)alertAccountError:(NSString *)error {
@@ -403,8 +399,8 @@
 
 - (void)synchronizeAccounts {
 	LOGI(@"Account changed, synchronizing.");
-	LinphoneManager *lm = [LinphoneManager instance];
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneManager *lm = LinphoneManager.instance;
+	LinphoneCore *lc = LC;
 	LinphoneProxyConfig *proxyCfg = NULL;
 	NSString *error = nil;
 
@@ -457,7 +453,7 @@
 
 		const char *route = NULL;
 
-		if (isWifiOnly && [LinphoneManager instance].connectivity == wwan)
+		if (isWifiOnly && LinphoneManager.instance.connectivity == wwan)
 			expire = 0;
 
 		if ((!proxyAddress || [proxyAddress length] < 1) && domain) {
@@ -469,7 +465,7 @@
 		}
 
 		char *proxy = ms_strdup(proxyAddress.UTF8String);
-		LinphoneAddress *proxy_addr = linphone_address_new(proxy);
+		LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, proxy);
 
 		if (proxy_addr) {
 			LinphoneTransportType type = LinphoneTransportUdp;
@@ -484,7 +480,7 @@
 		}
 
 		char normalizedUserName[256];
-		LinphoneAddress *linphoneAddress = linphone_address_new("sip:user@domain.com");
+		LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, "sip:user@domain.com");
 
 		proxyCfg = ms_list_nth_data(linphone_core_get_proxy_config_list(lc),
 									[self integerForKey:@"current_proxy_config_preference"]);
@@ -527,7 +523,7 @@
 		}
 
 		[lm lpConfigSetInt:pushnotification forKey:@"pushnotification_preference"];
-		[[LinphoneManager instance] configurePushTokenForProxyConfig:proxyCfg];
+		[LinphoneManager.instance configurePushTokenForProxyConfig:proxyCfg];
 
 		linphone_proxy_config_enable_register(proxyCfg, is_enabled);
 		linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
@@ -548,7 +544,7 @@
 		if (proxyAi) {
 			linphone_core_remove_auth_info(lc, proxyAi);
 		}
-		LinphoneAddress *from = linphone_address_new(identity);
+		LinphoneAddress *from = linphone_core_interpret_url(LC, identity);
 		if (from) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
 			LinphoneAuthInfo *info = linphone_auth_info_new(
@@ -577,11 +573,11 @@
 		}
 	}
 	// reload address book to prepend proxy config domain to contacts' phone number
-	[[[LinphoneManager instance] fastAddressBook] reload];
+	[[LinphoneManager.instance fastAddressBook] reload];
 }
 
 - (void)synchronizeCodecs:(const MSList *)codecs {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	PayloadType *pt;
 	const MSList *elem;
 
@@ -593,8 +589,8 @@
 }
 
 - (BOOL)synchronize {
-	LinphoneManager *lm = [LinphoneManager instance];
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneManager *lm = LinphoneManager.instance;
+	LinphoneCore *lc = LC;
 	// root section
 	{
 		BOOL account_changed = NO;
@@ -640,7 +636,7 @@
 		BOOL equalizer = [self boolForKey:@"eq_active"];
 		[lm lpConfigSetBool:equalizer forKey:@"eq_active" inSection:@"sound"];
 
-		[[LinphoneManager instance] configureVbrCodecs];
+		[LinphoneManager.instance configureVbrCodecs];
 
 		NSString *au_device = @"AU: Audio Unit Receiver";
 		if (!voice_processing) {
@@ -659,7 +655,7 @@
 		policy.automatically_accept = [self boolForKey:@"accept_video_preference"];
 		linphone_core_set_video_policy(lc, &policy);
 		linphone_core_enable_self_view(lc, [self boolForKey:@"self_video_preference"]);
-		BOOL preview_preference = [self boolForKey:@"preview_preference"];
+		BOOL preview_preference = IPAD && [self boolForKey:@"preview_preference"];
 		[lm lpConfigSetInt:preview_preference forKey:@"preview_preference"];
 
 		NSString *videoPreset = [self stringForKey:@"video_preset_preference"];
@@ -713,7 +709,7 @@
 		BOOL wifiOnly = [self boolForKey:@"wifi_only_preference"];
 		[lm lpConfigSetInt:wifiOnly forKey:@"wifi_only_preference"];
 		if ([self valueChangedForKey:@"wifi_only_preference"]) {
-			[[LinphoneManager instance] setupNetworkReachabilityCallback];
+			[LinphoneManager.instance setupNetworkReachabilityCallback];
 		}
 
 		NSString *stun_server = [self stringForKey:@"stun_preference"];
@@ -762,7 +758,7 @@
 			NSString *lTunnelPrefMode = [self stringForKey:@"tunnel_mode_preference"];
 			NSString *lTunnelPrefAddress = [self stringForKey:@"tunnel_address_preference"];
 			int lTunnelPrefPort = [self integerForKey:@"tunnel_port_preference"];
-			LinphoneTunnel *tunnel = linphone_core_get_tunnel([LinphoneManager getLc]);
+			LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
 			TunnelMode mode = tunnel_off;
 			int lTunnelPort = 443;
 			if (lTunnelPrefPort) {
@@ -790,16 +786,12 @@
 			}
 
 			[lm lpConfigSetString:lTunnelPrefMode forKey:@"tunnel_mode_preference"];
-			[[LinphoneManager instance] setTunnelMode:mode];
+			[LinphoneManager.instance setTunnelMode:mode];
 		}
 	}
 
 	// advanced section
 	{
-		BOOL debugmode = [self boolForKey:@"debugenable_preference"];
-		[lm lpConfigSetInt:debugmode forKey:@"debugenable_preference"];
-		[[LinphoneManager instance] setLogsEnabled:debugmode];
-
 		BOOL animations = [self boolForKey:@"animations_preference"];
 		[lm lpConfigSetInt:animations forKey:@"animations_preference"];
 
@@ -839,13 +831,13 @@
 
 	// Post event
 	NSDictionary *eventDic = [NSDictionary dictionaryWithObject:self forKey:@"settings"];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneSettingsUpdate object:self userInfo:eventDic];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneSettingsUpdate object:self userInfo:eventDic];
 
 	return YES;
 }
 
 - (void)removeAccount {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneProxyConfig *config = ms_list_nth_data(linphone_core_get_proxy_config_list(lc),
 												   [self integerForKey:@"current_proxy_config_preference"]);
 

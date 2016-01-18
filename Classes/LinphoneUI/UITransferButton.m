@@ -58,7 +58,10 @@
 #pragma mark -
 
 - (void)touchUp:(id)sender {
-	[[LinphoneManager instance] call:[addressField text] displayName:nil transfer:TRUE];
+	LinphoneAddress *addr = linphone_core_interpret_url(LC, addressField.text.UTF8String);
+	[LinphoneManager.instance call:addr transfer:TRUE];
+	if (addr)
+		linphone_address_destroy(addr);
 }
 
 @end

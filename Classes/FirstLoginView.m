@@ -51,16 +51,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	// Set observer
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(registrationUpdateEvent:)
-												 name:kLinphoneRegistrationUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(registrationUpdateEvent:)
+											   name:kLinphoneRegistrationUpdate
+											 object:nil];
 
-	[_usernameField setText:[[LinphoneManager instance] lpConfigStringForKey:@"assistant_username"]];
-	[_passwordField setText:[[LinphoneManager instance] lpConfigStringForKey:@"assistant_password"]];
+	[_usernameField setText:[LinphoneManager.instance lpConfigStringForKey:@"assistant_username"]];
+	[_passwordField setText:[LinphoneManager.instance lpConfigStringForKey:@"assistant_password"]];
 
 	// Update on show
-	const MSList *list = linphone_core_get_proxy_config_list([LinphoneManager getLc]);
+	const MSList *list = linphone_core_get_proxy_config_list(LC);
 	if (list != NULL) {
 		LinphoneProxyConfig *config = (LinphoneProxyConfig *)list->data;
 		if (config) {
@@ -97,18 +97,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewWillDisappear:animated];
 
 	// Remove observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
-	NSString *siteUrl = [[LinphoneManager instance] lpConfigStringForKey:@"first_login_view_url"];
+	NSString *siteUrl = [LinphoneManager.instance lpConfigStringForKey:@"first_login_view_url"];
 	if (siteUrl == nil) {
 		siteUrl = @"http://www.linphone.org";
 	}
 	[_siteButton setTitle:siteUrl forState:UIControlStateNormal];
-	account_creator = linphone_account_creator_new([LinphoneManager getLc], siteUrl.UTF8String);
+	account_creator = linphone_account_creator_new(LC, siteUrl.UTF8String);
 }
 
 - (void)shouldEnableNextButton {
@@ -128,7 +128,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)registrationUpdate:(LinphoneRegistrationState)state {
 	switch (state) {
 		case LinphoneRegistrationOk: {
-			[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"enable_first_login_view_preference"];
+			[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"enable_first_login_view_preference"];
 			[_waitView setHidden:true];
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 			break;
@@ -142,8 +142,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[_waitView setHidden:true];
 
 			// erase uername passwd
-			[[LinphoneManager instance] lpConfigSetString:nil forKey:@"assistant_username"];
-			[[LinphoneManager instance] lpConfigSetString:nil forKey:@"assistant_password"];
+			[LinphoneManager.instance lpConfigSetString:nil forKey:@"assistant_username"];
+			[LinphoneManager.instance lpConfigSetString:nil forKey:@"assistant_password"];
 			break;
 		}
 		case LinphoneRegistrationProgress: {
@@ -170,8 +170,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 							  domain:_domainField.text
 						   OnSuccess:^(NSString *url) {
 							 if (url) {
-								 linphone_core_set_provisioning_uri([LinphoneManager getLc], url.UTF8String);
-								 [[LinphoneManager instance] resetLinphoneCore];
+								 linphone_core_set_provisioning_uri(LC, url.UTF8String);
+								 [LinphoneManager.instance resetLinphoneCore];
 							 } else {
 								 _waitView.hidden = YES;
 							 }

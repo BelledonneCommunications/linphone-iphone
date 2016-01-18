@@ -128,6 +128,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDialerBackClick:(id)sender {
-	[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 }
 @end

@@ -70,9 +70,16 @@
 }
 
 + (NSString *)TextMessageForChat:(LinphoneChatMessage *)message {
-	const char *text = linphone_chat_message_get_text(message) ?: "";
-	return [NSString stringWithUTF8String:text] ?: [NSString stringWithCString:text encoding:NSASCIIStringEncoding]
-													   ?: NSLocalizedString(@"(invalid string)", nil);
+	const char *url = linphone_chat_message_get_external_body_url(message);
+	const LinphoneContent *last_content = linphone_chat_message_get_file_transfer_information(message);
+	// Last message was a file transfer (image) so display a picture...
+	if (url || last_content) {
+		return @"🗻";
+	} else {
+		const char *text = linphone_chat_message_get_text(message) ?: "";
+		return [NSString stringWithUTF8String:text] ?: [NSString stringWithCString:text encoding:NSASCIIStringEncoding]
+														   ?: NSLocalizedString(@"(invalid string)", nil);
+	}
 }
 
 + (NSString *)ContactDateForChat:(LinphoneChatMessage *)message {
@@ -185,8 +192,7 @@
 
 			[self onDeleteClick:nil];
 
-			[[LinphoneManager instance]
-					.photoLibrary assetForURL:imageUrl
+			[LinphoneManager.instance.photoLibrary assetForURL:imageUrl
 				resultBlock:^(ALAsset *asset) {
 				  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
 								 ^(void) {

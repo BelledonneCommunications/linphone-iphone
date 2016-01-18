@@ -27,24 +27,24 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(changeViewEvent:)
-												 name:kLinphoneMainViewChange
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdate:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(messageReceived:)
-												 name:kLinphoneMessageReceived
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(changeViewEvent:)
+											   name:kLinphoneMainViewChange
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdate:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(messageReceived:)
+											   name:kLinphoneMessageReceived
+											 object:nil];
 	[self update:FALSE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -56,7 +56,7 @@
 - (void)callUpdate:(NSNotification *)notif {
 	// LinphoneCall *call = [[notif.userInfo objectForKey: @"call"] pointerValue];
 	// LinphoneCallState state = [[notif.userInfo objectForKey: @"state"] intValue];
-	[self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:TRUE];
+	[self updateMissedCall:linphone_core_get_missed_calls_count(LC) appear:TRUE];
 }
 
 - (void)changeViewEvent:(NSNotification *)notif {
@@ -74,7 +74,7 @@
 
 - (void)update:(BOOL)appear {
 	[self updateSelectedButton:[PhoneMainView.instance currentView]];
-	[self updateMissedCall:linphone_core_get_missed_calls_count([LinphoneManager getLc]) appear:appear];
+	[self updateMissedCall:linphone_core_get_missed_calls_count(LC) appear:appear];
 	[self updateUnreadMessage:appear];
 }
 
@@ -131,7 +131,7 @@
 									  : -selectedNewFrame.size.height /*hide it if none is selected*/))));
 	}
 
-	CGFloat delay = [[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] ? 0.3 : 0;
+	CGFloat delay = ANIMATED ? 0.3 : 0;
 	[UIView animateWithDuration:delay
 					 animations:^{
 					   _selectedButtonImage.frame = selectedNewFrame;

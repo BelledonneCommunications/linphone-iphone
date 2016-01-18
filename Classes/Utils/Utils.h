@@ -19,6 +19,10 @@
 
 #import "LinphoneManager.h"
 
+#define IPAD (LinphoneManager.runningOnIpad)
+#define ANIMATED ([LinphoneManager.instance lpConfigBoolForKey:@"animations_preference"])
+#define LC ([LinphoneManager getLc])
+
 @interface LinphoneUtils : NSObject
 
 + (BOOL)findAndResignFirstResponder:(UIView*)view;

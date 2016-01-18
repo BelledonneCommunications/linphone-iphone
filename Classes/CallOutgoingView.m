@@ -48,16 +48,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(bluetoothAvailabilityUpdateEvent:)
-												 name:kLinphoneBluetoothAvailabilityUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(bluetoothAvailabilityUpdateEvent:)
+											   name:kLinphoneBluetoothAvailabilityUpdate
+											 object:nil];
 
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (!call) {
-		if (![PhoneMainView.instance popCurrentView]) {
-			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
-		}
+		[PhoneMainView.instance popCurrentView];
 	} else {
 		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
@@ -68,6 +66,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	[self hideSpeaker:LinphoneManager.instance.bluetoothAvailable];
+
+	[_speakerButton update];
+	[_microButton update];
+	[_routesButton update];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -77,35 +79,32 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[[LinphoneManager instance] setBluetoothEnabled:TRUE];
+	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
 - (IBAction)onRoutesEarpieceClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[[LinphoneManager instance] setSpeakerEnabled:FALSE];
-	[[LinphoneManager instance] setBluetoothEnabled:FALSE];
+	[LinphoneManager.instance setSpeakerEnabled:FALSE];
+	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 }
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[[LinphoneManager instance] setSpeakerEnabled:TRUE];
+	[LinphoneManager.instance setSpeakerEnabled:TRUE];
 }
 
 - (IBAction)onRoutesClick:(id)sender {
 	if ([_routesView isHidden]) {
-		[self hideRoutes:FALSE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hideRoutes:FALSE animated:ANIMATED];
 	} else {
-		[self hideRoutes:TRUE animated:[[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"]];
+		[self hideRoutes:TRUE animated:ANIMATED];
 	}
 }
 
 - (IBAction)onDeclineClick:(id)sender {
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
-		linphone_core_terminate_call([LinphoneManager getLc], call);
-	}
-	if (![PhoneMainView.instance popCurrentView]) {
-		[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+		linphone_core_terminate_call(LC, call);
 	}
 }
 
@@ -124,11 +123,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_routesEarpieceButton.selected = !_routesBluetoothButton.selected && !_routesSpeakerButton.selected;
 
 	if (hidden != _routesView.hidden) {
-		//		if (animated) {
-		//			[self hideAnimation:hidden forView:_routesView completion:nil];
-		//		} else {
 		[_routesView setHidden:hidden];
-		//		}
 	}
 }
 

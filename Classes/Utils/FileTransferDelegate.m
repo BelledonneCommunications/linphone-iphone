@@ -22,7 +22,7 @@
 }
 
 + (FileTransferDelegate *)messageDelegate:(LinphoneChatMessage *)message {
-	for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+	for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		if (ftd.message == message) {
 			return ftd;
 		}
@@ -47,14 +47,13 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 		UIImage *image = [UIImage imageWithData:thiz.data];
 
 		CFBridgingRetain(thiz);
-		[[[LinphoneManager instance] fileTransferDelegates] removeObject:thiz];
+		[[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
 
 		// until image is properly saved, keep a reminder on it so that the
 		// chat bubble is aware of the fact that image is being saved to device
 		[LinphoneManager setValueInMessageAppData:@"saving..." forKey:@"localimage" inMessage:message];
 
-		[[LinphoneManager instance]
-				.photoLibrary
+		[LinphoneManager.instance.photoLibrary
 			writeImageToSavedPhotosAlbum:image.CGImage
 							 orientation:(ALAssetOrientation)[image imageOrientation]
 						 completionBlock:^(NSURL *assetURL, NSError *error) {
@@ -75,7 +74,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 															   inMessage:message];
 						   }
 						   thiz.message = NULL;
-						   [[NSNotificationCenter defaultCenter]
+						   [NSNotificationCenter.defaultCenter
 							   postNotificationName:kLinphoneFileTransferRecvUpdate
 											 object:thiz
 										   userInfo:@{
@@ -93,7 +92,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 		LOGD(@"Transfer of %s (%d bytes): already %ld sent, adding %ld", linphone_content_get_name(content),
 			 linphone_content_get_size(content), [thiz.data length], size);
 		[thiz.data appendBytes:linphone_buffer_get_string_content(buffer) length:size];
-		[[NSNotificationCenter defaultCenter]
+		[NSNotificationCenter.defaultCenter
 			postNotificationName:kLinphoneFileTransferRecvUpdate
 						  object:thiz
 						userInfo:@{
@@ -116,9 +115,9 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		}];
 		LOGD(@"Transfer of %s (%d bytes): already sent %ld (%f%%), remaining %ld", linphone_content_get_name(content),
 			 total, offset, offset * 100.f / total, remaining);
-		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneFileTransferSendUpdate
-															object:thiz
-														  userInfo:dict];
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneFileTransferSendUpdate
+														  object:thiz
+														userInfo:dict];
 
 		LinphoneBuffer *buffer = NULL;
 		@try {
@@ -172,7 +171,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {
-	[[[LinphoneManager instance] fileTransferDelegates] addObject:self];
+	[[LinphoneManager.instance fileTransferDelegates] addObject:self];
 
 	_message = message;
 
@@ -191,7 +190,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 }
 
 - (void)stopAndDestroy {
-	[[[LinphoneManager instance] fileTransferDelegates] removeObject:self];
+	[[LinphoneManager.instance fileTransferDelegates] removeObject:self];
 	if (_message != NULL) {
 		LinphoneChatMessage *msg = _message;
 		_message = NULL;
@@ -203,7 +202,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		linphone_chat_message_cancel_file_transfer(msg);
 	}
 	_data = nil;
-	LOGI(@"%p Destroying", self);
+	LOGD(@"%p Destroying", self);
 }
 
 - (void)cancel {

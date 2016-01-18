@@ -53,24 +53,24 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(loadData)
-												 name:kLinphoneAddressBookUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(loadData)
+											   name:kLinphoneAddressBookUpdate
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(coreUpdateEvent:)
-												 name:kLinphoneCoreUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(coreUpdateEvent:)
+											   name:kLinphoneCoreUpdate
+											 object:nil];
 	[self loadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneAddressBookUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneAddressBookUpdate object:nil];
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCoreUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCoreUpdate object:nil];
 }
 
 #pragma mark - Event Functions
@@ -110,7 +110,7 @@
 		}
 	}
 
-	const MSList *logs = linphone_core_get_call_logs([LinphoneManager getLc]);
+	const MSList *logs = linphone_core_get_call_logs(LC);
 	self.sections = [NSMutableDictionary dictionary];
 	while (logs != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
@@ -228,12 +228,7 @@
 				[cell onDetails:self];
 			} else {
 				LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-				char *uri = linphone_address_as_string(addr);
-				DialerView *view = VIEW(DialerView);
-				[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-				[view call:[NSString stringWithUTF8String:uri]
-					displayName:[FastAddressBook displayNameForAddress:addr]];
-				ms_free(uri);
+				[LinphoneManager.instance call:addr transfer:NO];
 			}
 		}
 	}
@@ -248,10 +243,10 @@
 		LinphoneCallLog *callLog = [log pointerValue];
 		MSList *count = linphone_call_log_get_user_data(callLog);
 		while (count) {
-			linphone_core_remove_call_log([LinphoneManager getLc], count->data);
+			linphone_core_remove_call_log(LC, count->data);
 			count = count->next;
 		}
-		linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+		linphone_core_remove_call_log(LC, callLog);
 		linphone_call_log_unref(callLog);
 		[[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
 		if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {
@@ -273,10 +268,10 @@
 	  LinphoneCallLog *callLog = [log pointerValue];
 	  MSList *count = linphone_call_log_get_user_data(callLog);
 	  while (count) {
-		  linphone_core_remove_call_log([LinphoneManager getLc], count->data);
+		  linphone_core_remove_call_log(LC, count->data);
 		  count = count->next;
 	  }
-	  linphone_core_remove_call_log([LinphoneManager getLc], callLog);
+	  linphone_core_remove_call_log(LC, callLog);
 	  linphone_call_log_unref(callLog);
 	  [[_sections objectForKey:_sortedDays[indexPath.section]] removeObject:log];
 	  if (((NSArray *)[_sections objectForKey:_sortedDays[indexPath.section]]).count == 0) {

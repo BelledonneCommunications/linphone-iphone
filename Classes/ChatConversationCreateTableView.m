@@ -45,7 +45,7 @@
 	}];
 	// also add current entry, if not listed
 	NSString *nsuri = filter.lowercaseString;
-	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], nsuri.UTF8String);
+	LinphoneAddress *addr = linphone_core_interpret_url(LC, nsuri.UTF8String);
 	if (addr) {
 		char *uri = linphone_address_as_string(addr);
 		nsuri = [NSString stringWithUTF8String:uri];
@@ -81,7 +81,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(
-		[LinphoneManager getLc], ((NSString *)[_contacts.allKeys objectAtIndex:indexPath.row]).UTF8String);
+		LC, ((NSString *)[_contacts.allKeys objectAtIndex:indexPath.row]).UTF8String);
 	if (!room) {
 		[PhoneMainView.instance popCurrentView];
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Invalid address", nil)
@@ -94,7 +94,7 @@
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view setChatRoom:room];
 		[PhoneMainView.instance popCurrentView];
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	}
 }
 

@@ -61,7 +61,7 @@
 - (void)touchUp:(id)sender {
 	NSString *address = addressField.text;
 	if (address.length == 0) {
-		LinphoneCore *lc = [LinphoneManager getLc];
+		LinphoneCore *lc = LC;
 		LinphoneCallLog *log = linphone_core_get_last_outgoing_call_log(lc);
 		if (log) {
 			LinphoneAddress *to = linphone_call_log_get_to(log);
@@ -87,16 +87,15 @@
 	}
 
 	if ([address length] > 0) {
-		LinphoneAddress *addr = linphone_address_new(address.UTF8String);
-		NSString *displayName = addr ? [FastAddressBook displayNameForAddress:addr] : nil;
+		LinphoneAddress *addr = linphone_core_interpret_url(LC, address.UTF8String);
+		[LinphoneManager.instance call:addr transfer:FALSE];
 		if (addr)
 			linphone_address_destroy(addr);
-		[LinphoneManager.instance call:address displayName:displayName transfer:FALSE];
 	}
 }
 
 - (void)updateVideoPolicy {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	if (linphone_core_video_capture_enabled(lc) && linphone_core_get_video_policy(lc)->automatically_initiate) {
 		[self setImage:[UIImage imageNamed:@"call_video_start_default.png"] forState:UIControlStateNormal];
 		[self setImage:[UIImage imageNamed:@"call_video_start_disabled.png"] forState:UIControlStateDisabled];

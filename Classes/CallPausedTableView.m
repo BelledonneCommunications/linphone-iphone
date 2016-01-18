@@ -54,7 +54,7 @@
 
 #pragma mark - UITableViewDataSource Functions
 - (LinphoneCall *)conferenceCallForRow:(NSInteger)row {
-	const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
+	const MSList *calls = linphone_core_get_calls(LC);
 	int i = -1;
 	while (calls) {
 		if (linphone_call_get_state(calls->data) == LinphoneCallPaused) {
@@ -81,7 +81,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	const MSList *calls = linphone_core_get_calls([LinphoneManager getLc]);
+	const MSList *calls = linphone_core_get_calls(LC);
 	int count = 0;
 	int conference_in_pause = 0;
 	while (calls) {
@@ -90,7 +90,7 @@
 			count++;
 		}
 		if (linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call)) &&
-			!linphone_core_is_in_conference([LinphoneManager getLc])) {
+			!linphone_core_is_in_conference(LC)) {
 			conference_in_pause = 1;
 		}
 		calls = calls->next;

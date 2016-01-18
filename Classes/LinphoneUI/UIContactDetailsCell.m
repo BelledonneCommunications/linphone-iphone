@@ -43,7 +43,7 @@
 - (void)setAddress:(NSString *)address {
 	_addressLabel.text = _editTextfield.text = address;
 
-	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], _addressLabel.text.UTF8String);
+	LinphoneAddress *addr = linphone_core_interpret_url(LC, _addressLabel.text.UTF8String);
 	_chatButton.enabled = _callButton.enabled = (addr != NULL);
 
 	_chatButton.accessibilityLabel =
@@ -75,28 +75,20 @@
 }
 
 - (IBAction)onCallClick:(id)event {
-	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], _addressLabel.text.UTF8String);
-	if (addr == NULL)
-		return;
-	char *lAddress = linphone_address_as_string_uri_only(addr);
-	NSString *displayName = [FastAddressBook displayNameForAddress:addr];
-
-	DialerView *view = VIEW(DialerView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	[view call:[NSString stringWithUTF8String:lAddress] displayName:displayName];
-	ms_free(lAddress);
-	linphone_address_destroy(addr);
+	LinphoneAddress *addr = linphone_core_interpret_url(LC, _addressLabel.text.UTF8String);
+	[LinphoneManager.instance call:addr transfer:NO];
+	if (addr)
+		linphone_address_destroy(addr);
 }
 
 - (IBAction)onChatClick:(id)event {
-	LinphoneAddress *addr = linphone_core_interpret_url([LinphoneManager getLc], _addressLabel.text.UTF8String);
+	LinphoneAddress *addr = linphone_core_interpret_url(LC, _addressLabel.text.UTF8String);
 	if (addr == NULL)
 		return;
-	[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 	ChatConversationView *view = VIEW(ChatConversationView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
-	LinphoneChatRoom *room = linphone_core_get_chat_room([LinphoneManager getLc], addr);
+	LinphoneChatRoom *room = linphone_core_get_chat_room(LC, addr);
 	[view setChatRoom:room];
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	linphone_address_destroy(addr);
 }
 

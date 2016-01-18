@@ -31,7 +31,7 @@
 #pragma mark - Lifecycle Functions
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[callQualityTimer invalidate];
 }
 
@@ -41,37 +41,36 @@
 	[super viewWillAppear:animated];
 
 	// Set observer
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(registrationUpdate:)
-												 name:kLinphoneRegistrationUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(registrationUpdate:)
+											   name:kLinphoneRegistrationUpdate
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(globalStateUpdate:)
-												 name:kLinphoneGlobalStateUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(globalStateUpdate:)
+											   name:kLinphoneGlobalStateUpdate
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(notifyReceived:)
-												 name:kLinphoneNotifyReceived
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(notifyReceived:)
+											   name:kLinphoneNotifyReceived
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdate:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(onCallEncryptionChanged:)
-												 name:kLinphoneCallEncryptionChanged
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdate:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(onCallEncryptionChanged:)
+											   name:kLinphoneCallEncryptionChanged
+											 object:nil];
 
 	// Update to default state
-	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
-	messagesUnreadCount =
-		lp_config_get_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count", 0);
+	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config(LC);
+	messagesUnreadCount = lp_config_get_int(linphone_core_get_config(LC), "app", "voice_mail_messages_count", 0);
 
 	[self proxyConfigUpdate:config];
-	[self updateUI:linphone_core_get_calls_nb([LinphoneManager getLc])];
+	[self updateUI:linphone_core_get_calls_nb(LC)];
 	[self updateVoicemail];
 }
 
@@ -79,10 +78,10 @@
 	[super viewWillDisappear:animated];
 
 	// Remove observer
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneGlobalStateUpdate object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneNotifyReceived object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneCallUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneRegistrationUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneGlobalStateUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneNotifyReceived object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCallUpdate object:nil];
 
 	if (callQualityTimer != nil) {
 		[callQualityTimer invalidate];
@@ -102,7 +101,7 @@
 #pragma mark - Event Functions
 
 - (void)registrationUpdate:(NSNotification *)notif {
-	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config([LinphoneManager getLc]);
+	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config(LC);
 	[self proxyConfigUpdate:config];
 }
 
@@ -111,7 +110,7 @@
 }
 
 - (void)onCallEncryptionChanged:(NSNotification *)notif {
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 
 	if (call && (linphone_call_params_get_media_encryption(linphone_call_get_current_params(call)) ==
 				 LinphoneMediaEncryptionZRTP) &&
@@ -139,8 +138,7 @@
 	LOGI(@"Received new NOTIFY from voice mail: there is/are now %d message(s) unread", messagesUnreadCount);
 
 	// save in lpconfig for future
-	lp_config_set_int(linphone_core_get_config([LinphoneManager getLc]), "app", "voice_mail_messages_count",
-					  messagesUnreadCount);
+	lp_config_set_int(linphone_core_get_config(LC), "app", "voice_mail_messages_count", messagesUnreadCount);
 
 	[self updateVoicemail];
 }
@@ -152,7 +150,7 @@
 
 - (void)callUpdate:(NSNotification *)notif {
 	// show voice mail only when there is no call
-	[self updateUI:linphone_core_get_calls([LinphoneManager getLc]) != NULL];
+	[self updateUI:linphone_core_get_calls(LC) != NULL];
 	[self updateVoicemail];
 }
 
@@ -174,7 +172,7 @@
 - (void)proxyConfigUpdate:(LinphoneProxyConfig *)config {
 	LinphoneRegistrationState state = LinphoneRegistrationNone;
 	NSString *message = nil;
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneGlobalState gstate = linphone_core_get_global_state(lc);
 
 	if (gstate == LinphoneGlobalConfiguring) {
@@ -182,7 +180,7 @@
 	} else if (config == NULL) {
 		state = LinphoneRegistrationNone;
 		if (linphone_core_get_proxy_config_list(lc) != NULL) {
-			if (linphone_core_is_network_reachable([LinphoneManager getLc])) {
+			if (linphone_core_is_network_reachable(LC)) {
 				message = NSLocalizedString(@"No default account", nil);
 			} else {
 				message = NSLocalizedString(@"Network down", nil);
@@ -258,7 +256,7 @@
 	BOOL pending = false;
 	BOOL security = true;
 
-	const MSList *list = linphone_core_get_calls([LinphoneManager getLc]);
+	const MSList *list = linphone_core_get_calls(LC);
 	if (list == NULL) {
 		if (securityDialog) {
 			[securityDialog dismiss];
@@ -285,7 +283,7 @@
 }
 
 - (void)callQualityUpdate {
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call != NULL) {
 		int quality = MIN(4, floor(linphone_call_get_average_quality(call)));
 		NSString *accessibilityValue = [NSString stringWithFormat:NSLocalizedString(@"Call quality: %d", nil), quality];
@@ -304,8 +302,8 @@
 #pragma mark - Action Functions
 
 - (IBAction)onSecurityClick:(id)sender {
-	if (linphone_core_get_calls_nb([LinphoneManager getLc])) {
-		LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	if (linphone_core_get_calls_nb(LC)) {
+		LinphoneCall *call = linphone_core_get_current_call(LC);
 		if (call != NULL) {
 			LinphoneMediaEncryption enc =
 				linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
@@ -319,13 +317,13 @@
 						cancelMessage:NSLocalizedString(@"DENY", nil)
 						confirmMessage:NSLocalizedString(@"ACCEPT", nil)
 						onCancelClick:^() {
-						  if (linphone_core_get_current_call([LinphoneManager getLc]) == call) {
+						  if (linphone_core_get_current_call(LC) == call) {
 							  linphone_call_set_authentication_token_verified(call, NO);
 						  }
 						  weakSelf->securityDialog = nil;
 						}
 						onConfirmationClick:^() {
-						  if (linphone_core_get_current_call([LinphoneManager getLc]) == call) {
+						  if (linphone_core_get_current_call(LC) == call) {
 							  linphone_call_set_authentication_token_verified(call, YES);
 						  }
 						  weakSelf->securityDialog = nil;
@@ -342,7 +340,7 @@
 }
 
 - (IBAction)onRegistrationStateClick:(id)sender {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	if (linphone_core_get_default_proxy_config(lc)) {
 		linphone_core_refresh_registers(lc);
 	} else if (linphone_core_get_proxy_config_list(lc)) {

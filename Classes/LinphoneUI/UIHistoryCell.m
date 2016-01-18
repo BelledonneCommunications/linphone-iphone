@@ -60,7 +60,9 @@
 		// Go to History details view
 		HistoryDetailsView *view = VIEW(HistoryDetailsView);
 		[view setCallLogId:[NSString stringWithUTF8String:linphone_call_log_get_call_id(callLog)]];
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	} else {
+		LOGE(@"Cannot open selected call log, it is NULL or corrupted");
 	}
 }
 

@@ -34,7 +34,7 @@
 	} else if (section == ContactSections_Sip) {
 		return _contact.sipAddresses;
 	} else if (section == ContactSections_Email) {
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"show_contacts_emails_preference"] == true) {
 			return _contact.emails;
 		}
 	}
@@ -166,8 +166,8 @@
 	} else if ([indexPath section] == ContactSections_Sip) {
 		value = _contact.sipAddresses[indexPath.row];
 		LinphoneAddress *addr = NULL;
-		if ([[LinphoneManager instance] lpConfigBoolForKey:@"contact_display_username_only"] &&
-			(addr = linphone_address_new([value UTF8String]))) {
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"contact_display_username_only"] &&
+			(addr = linphone_core_interpret_url(LC, [value UTF8String]))) {
 			value = [NSString stringWithCString:linphone_address_get_username(addr)
 									   encoding:[NSString defaultCStringEncoding]];
 			linphone_address_destroy(addr);
@@ -201,7 +201,7 @@
 #pragma mark - UITableViewDelegate Functions
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
-	BOOL showEmails = [[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"];
+	BOOL showEmails = [LinphoneManager.instance lpConfigBoolForKey:@"show_contacts_emails_preference"];
 	if (editing) {
 		// add phone/SIP/email entries so that the user can add new data
 		for (int section = 0; section < [self numberOfSectionsInTableView:[self tableView]]; ++section) {

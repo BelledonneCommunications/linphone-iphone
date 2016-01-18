@@ -48,17 +48,17 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-	[[LinphoneManager instance] enterBackgroundMode];
+	[LinphoneManager.instance enterBackgroundMode];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 
 	if (call) {
 		/* save call context */
-		LinphoneManager *instance = [LinphoneManager instance];
+		LinphoneManager *instance = LinphoneManager.instance;
 		instance->currentCallContextBeforeGoingBackground.call = call;
 		instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
 
@@ -68,7 +68,7 @@
 		}
 	}
 
-	if (![[LinphoneManager instance] resignActive]) {
+	if (![LinphoneManager.instance resignActive]) {
 	}
 }
 
@@ -80,11 +80,11 @@
 		[PhoneMainView.instance startUp];
 		[PhoneMainView.instance updateStatusBar:nil];
 	}
-	LinphoneManager *instance = [LinphoneManager instance];
+	LinphoneManager *instance = LinphoneManager.instance;
 
 	[instance becomeActive];
 
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 
 	if (call) {
@@ -159,7 +159,7 @@
 	UIApplication *app = [UIApplication sharedApplication];
 	UIApplicationState state = app.applicationState;
 
-	LinphoneManager *instance = [LinphoneManager instance];
+	LinphoneManager *instance = LinphoneManager.instance;
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 
@@ -199,7 +199,7 @@
 	  [[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 	}];
 
-	[[LinphoneManager instance] startLinphoneCore];
+	[LinphoneManager.instance startLinphoneCore];
 	// initialize UI
 	[self.window makeKeyAndVisible];
 	[RootViewManager setupWithPortrait:(PhoneMainView *)self.window.rootViewController];
@@ -220,15 +220,15 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 
-	linphone_core_terminate_all_calls([LinphoneManager getLc]);
+	linphone_core_terminate_all_calls(LC);
 
 	// destroyLinphoneCore automatically unregister proxies but if we are using
 	// remote push notifications, we want to continue receiving them
-	if ([LinphoneManager instance].pushNotificationToken != nil) {
+	if (LinphoneManager.instance.pushNotificationToken != nil) {
 		// trick me! setting network reachable to false will avoid sending unregister
-		linphone_core_set_network_reachable([LinphoneManager getLc], FALSE);
+		linphone_core_set_network_reachable(LC, FALSE);
 	}
-	[[LinphoneManager instance] destroyLinphoneCore];
+	[LinphoneManager.instance destroyLinphoneCore];
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
@@ -276,26 +276,23 @@
 			NSString *loc_key = [alert objectForKey:@"loc-key"];
 			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
-			LinphoneCore *lc = [LinphoneManager getLc];
+			LinphoneCore *lc = LC;
 			if (linphone_core_get_calls(lc) == NULL) { // if there are calls, obviously our TCP socket shall be working
 				linphone_core_set_network_reachable(lc, FALSE);
-				[LinphoneManager instance].connectivity = none; /*force connectivity to be discovered again*/
-				[[LinphoneManager instance] refreshRegisters];
+				LinphoneManager.instance.connectivity = none; /*force connectivity to be discovered again*/
+				[LinphoneManager.instance refreshRegisters];
 				if (loc_key != nil) {
 
 					NSString *callId = [userInfo objectForKey:@"call-id"];
 					if (callId != nil) {
-						[[LinphoneManager instance] addPushCallId:callId];
+						[LinphoneManager.instance addPushCallId:callId];
 					} else {
 						LOGE(@"PushNotification: does not have call-id yet, fix it !");
 					}
 
 					if ([loc_key isEqualToString:@"IM_MSG"] || [loc_key isEqualToString:@"IM_FULLMSG"]) {
-
 						[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
-
 					} else if ([loc_key isEqualToString:@"IC_MSG"]) {
-
 						[self fixRing];
 					}
 				}
@@ -311,7 +308,7 @@
 }
 
 - (LinphoneChatRoom *)findChatRoomForContact:(NSString *)contact {
-	const MSList *rooms = linphone_core_get_chat_rooms([LinphoneManager getLc]);
+	const MSList *rooms = linphone_core_get_chat_rooms(LC);
 	const char *from = [contact UTF8String];
 	while (rooms) {
 		const LinphoneAddress *room_from_address = linphone_chat_room_get_peer_address((LinphoneChatRoom *)rooms->data);
@@ -333,24 +330,23 @@
 		BOOL auto_answer = TRUE;
 		// some local notifications have an internal timer to relaunch themselves at specified intervals
 		if ([[notification.userInfo objectForKey:@"timer"] intValue] == 1) {
-			[[LinphoneManager instance] cancelLocalNotifTimerForCallId:[notification.userInfo objectForKey:@"callId"]];
-			auto_answer = [[LinphoneManager instance] lpConfigBoolForKey:@"autoanswer_notif_preference"];
+			[LinphoneManager.instance cancelLocalNotifTimerForCallId:[notification.userInfo objectForKey:@"callId"]];
+			auto_answer = [LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"];
 		}
 		if (auto_answer) {
-			[[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
+			[LinphoneManager.instance acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
 		}
 	} else if ([notification.userInfo objectForKey:@"from_addr"] != nil) {
 		NSString *remoteContact = (NSString *)[notification.userInfo objectForKey:@"from_addr"];
-		[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 		LinphoneChatRoom *room = [self findChatRoomForContact:remoteContact];
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view setChatRoom:room];
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	} else if ([notification.userInfo objectForKey:@"callLog"] != nil) {
 		NSString *callLog = (NSString *)[notification.userInfo objectForKey:@"callLog"];
 		HistoryDetailsView *view = VIEW(HistoryDetailsView);
 		[view setCallLogId:callLog];
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	}
 }
 
@@ -360,7 +356,7 @@
 	didReceiveRemoteNotification:(NSDictionary *)userInfo
 		  fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
-	LinphoneManager *lm = [LinphoneManager instance];
+	LinphoneManager *lm = LinphoneManager.instance;
 
 	// save the completion handler for later execution.
 	// 2 outcomes:
@@ -373,7 +369,7 @@
 								   userInfo:nil
 									repeats:FALSE];
 
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	// If no call is yet received at this time, then force Linphone to drop the current socket and make new one to
 	// register, so that we get
 	// a better chance to receive the INVITE.
@@ -389,12 +385,12 @@
 - (void)application:(UIApplication *)application
 	didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), deviceToken);
-	[[LinphoneManager instance] setPushNotificationToken:deviceToken];
+	[LinphoneManager.instance setPushNotificationToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), [error localizedDescription]);
-	[[LinphoneManager instance] setPushNotificationToken:nil];
+	[LinphoneManager.instance setPushNotificationToken:nil];
 }
 
 #pragma mark - User notifications
@@ -411,7 +407,7 @@
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 
-		LinphoneCore *lc = [LinphoneManager getLc];
+		LinphoneCore *lc = LC;
 		LOGI(@"%@", NSStringFromSelector(_cmd));
 		if ([notification.category isEqualToString:@"incoming_call"]) {
 			if ([identifier isEqualToString:@"answer"]) {
@@ -455,7 +451,7 @@
 - (void)ConfigurationStateUpdateEvent:(NSNotification *)notif {
 	LinphoneConfiguringState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	if (state == LinphoneConfiguringSuccessful) {
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
+		[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
 		[_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
 
 		UIAlertView *error = [[UIAlertView alloc]
@@ -468,7 +464,7 @@
 		[PhoneMainView.instance startUp];
 	}
 	if (state == LinphoneConfiguringFailed) {
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
+		[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneConfiguringStateUpdate object:nil];
 		[_waitingIndicator dismissWithClickedButtonIndex:0 animated:true];
 		UIAlertView *error =
 			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Failure", nil)
@@ -507,13 +503,13 @@
 
 - (void)attemptRemoteConfiguration {
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(ConfigurationStateUpdateEvent:)
-												 name:kLinphoneConfiguringStateUpdate
-											   object:nil];
-	linphone_core_set_provisioning_uri([LinphoneManager getLc], [configURL UTF8String]);
-	[[LinphoneManager instance] destroyLinphoneCore];
-	[[LinphoneManager instance] startLinphoneCore];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(ConfigurationStateUpdateEvent:)
+											   name:kLinphoneConfiguringStateUpdate
+											 object:nil];
+	linphone_core_set_provisioning_uri(LC, [configURL UTF8String]);
+	[LinphoneManager.instance destroyLinphoneCore];
+	[LinphoneManager.instance startLinphoneCore];
 }
 
 @end

@@ -27,10 +27,10 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(textReceivedEvent:)
-												 name:kLinphoneMessageReceived
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(textReceivedEvent:)
+											   name:kLinphoneMessageReceived
+											 object:nil];
 	[_backToCallButton update];
 	[self setEditing:NO];
 }
@@ -38,7 +38,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLinphoneMessageReceived object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneMessageReceived object:nil];
 }
 
 #pragma mark - Event Functions
@@ -59,7 +59,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
 														 isLeftFragment:YES
-														   fragmentWith:ChatConversationView.class];
+														   fragmentWith:ChatConversationCreateView.class];
 	}
 	return compositeDescription;
 }
@@ -71,8 +71,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAddClick:(id)event {
-	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:YES];
+	[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {

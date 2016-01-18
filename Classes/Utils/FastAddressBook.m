@@ -76,7 +76,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 + (NSString *)appendCountryCodeIfPossible:(NSString *)number {
 	if (![number hasPrefix:@"+"] && ![number hasPrefix:@"00"]) {
-		NSString *lCountryCode = [[LinphoneManager instance] lpConfigStringForKey:@"countrycode_preference"];
+		NSString *lCountryCode = [LinphoneManager.instance lpConfigStringForKey:@"countrycode_preference"];
 		if (lCountryCode && [lCountryCode length] > 0) {
 			// append country code
 			return [lCountryCode stringByAppendingString:number];
@@ -90,7 +90,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	address = [[address componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
 		componentsJoinedByString:@" "];
 	NSString *normalizedSipAddress = nil;
-	LinphoneAddress *linphoneAddress = linphone_core_interpret_url([LinphoneManager getLc], [address UTF8String]);
+	LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, [address UTF8String]);
 	if (linphoneAddress != NULL) {
 		char *tmp = linphone_address_as_string_uri_only(linphoneAddress);
 		if (tmp != NULL) {
@@ -211,7 +211,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 						CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(lMap, i);
 						BOOL add = false;
 						if (CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
-							if (CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField,
+							if (CFStringCompare((CFStringRef)LinphoneManager.instance.contactSipField,
 												CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey),
 												kCFCompareCaseInsensitive) == 0) {
 								add = true;
@@ -237,7 +237,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		}
 		CFRelease(lContacts);
 	}
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:self];
+	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneAddressBookUpdate object:self];
 }
 
 void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
@@ -273,14 +273,14 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
 		if (CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
 			CFStringRef serviceKey = CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey);
 
-			if (CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField, serviceKey,
+			if (CFStringCompare((CFStringRef)LinphoneManager.instance.contactSipField, serviceKey,
 								kCFCompareCaseInsensitive) == 0) {
 				match = true;
 			}
 		} else if (domain != nil) {
 			// check domain
-			LinphoneAddress *address = linphone_address_new(
-				[(NSString *)CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey) UTF8String]);
+			LinphoneAddress *address = linphone_core_interpret_url(
+				LC, [(NSString *)CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey) UTF8String]);
 
 			if (address) {
 				const char *dom = linphone_address_get_domain(address);

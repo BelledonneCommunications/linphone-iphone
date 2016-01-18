@@ -18,23 +18,23 @@ static NSString *const kDisappearAnimation = @"disappear";
 @implementation UIBouncingView
 
 INIT_WITH_COMMON_CF {
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(settingsUpdate:)
-												 name:kLinphoneSettingsUpdate
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(applicationWillEnterForeground:)
-												 name:UIApplicationWillEnterForegroundNotification
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(settingsUpdate:)
+											   name:kLinphoneSettingsUpdate
+											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(applicationWillEnterForeground:)
+											   name:UIApplicationWillEnterForegroundNotification
+											 object:nil];
 	return self;
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)settingsUpdate:(NSNotification *)notif {
-	if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == false) {
+	if (ANIMATED == false) {
 		[self stopAnimating:NO];
 	} else {
 		if (![self isHidden]) {
@@ -105,7 +105,7 @@ INIT_WITH_COMMON_CF {
 	}
 
 	[self setHidden:FALSE];
-	if ([[LinphoneManager instance] lpConfigBoolForKey:@"animations_preference"] == true) {
+	if (ANIMATED) {
 		if (animated) {
 			[self appearAnimation:kAppearAnimation
 						   target:self

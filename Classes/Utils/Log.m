@@ -19,7 +19,7 @@
 
 #import "Log.h"
 
-@implementation LinphoneLogger
+@implementation Log
 
 + (void)log:(OrtpLogLevel)severity file:(const char *)file line:(int)line format:(NSString *)format, ... {
 	va_list args;
@@ -28,15 +28,44 @@
 	const char *utf8str = [str cStringUsingEncoding:NSString.defaultCStringEncoding];
 	int filesize = 20;
 	const char *filename = strchr(file, '/') ? strrchr(file, '/') + 1 : file;
-	if (severity <= ORTP_DEBUG) {
+
+	char levelC = 'U'; // undefined
+	if ((severity & ORTP_FATAL) != 0) {
+		levelC = 'F';
+	} else if ((severity & ORTP_ERROR) != 0) {
+		levelC = 'E';
+	} else if ((severity & ORTP_WARNING) != 0) {
+		levelC = 'W';
+	} else if ((severity & ORTP_MESSAGE) != 0) {
+		levelC = 'I';
+	} else if ((severity & ORTP_DEBUG) != 0) {
+		levelC = 'D';
+	}
+
+	if ((severity & ORTP_DEBUG) != 0) {
 		// lol: ortp_debug(XXX) can be disabled at compile time, but ortp_log(ORTP_DEBUG, xxx) will always be valid even
 		//      not in debug build...
-		ortp_debug("%*s:%3d - %s", filesize, filename + MAX((int)strlen(filename) - filesize, 0), line, utf8str);
+		ortp_debug("%c %*s:%3d - %s", levelC, filesize, filename + MAX((int)strlen(filename) - filesize, 0), line,
+				   utf8str);
 	} else {
-		ortp_log(severity, "%*s:%3d - %s", filesize, filename + MAX((int)strlen(filename) - filesize, 0), line,
-				 utf8str);
+		// we want application logs to be always enabled (except debug ones) so use | ORTP_ERROR extra mask
+		ortp_log(severity | ORTP_ERROR, "%c %*s:%3d - %s", levelC, filesize,
+				 filename + MAX((int)strlen(filename) - filesize, 0), line, utf8str);
 	}
 	va_end(args);
+}
+
++ (void)enableLogs:(BOOL)enabled {
+	[LinphoneManager.instance lpConfigSetBool:enabled forKey:@"debugenable_preference"];
+	linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
+	if (enabled) {
+		NSLog(@"Enabling debug logs");
+		linphone_core_set_log_level(ORTP_DEBUG);
+	} else {
+		NSLog(@"Disabling debug logs");
+		linphone_core_set_log_level(ORTP_ERROR);
+	}
+	linphone_core_enable_log_collection(enabled);
 }
 
 #pragma mark - Logs Functions callbacks
@@ -44,29 +73,22 @@
 void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
 	NSString *format = [[NSString alloc] initWithUTF8String:fmt];
 	NSString *formatedString = [[NSString alloc] initWithFormat:format arguments:args];
-	char levelC = 'I';
-	switch ((OrtpLogLevel)lev) {
-		case ORTP_FATAL:
-			levelC = 'F';
-			break;
-		case ORTP_ERROR:
-			levelC = 'E';
-			break;
-		case ORTP_WARNING:
-			levelC = 'W';
-			break;
-		case ORTP_MESSAGE:
-			levelC = 'I';
-			break;
-		case ORTP_TRACE:
-		case ORTP_DEBUG:
-			levelC = 'D';
-			break;
-		case ORTP_LOGLEV_END:
-			return;
+	NSString *lvl = @"";
+	if ((lev & APP_LVL) == 0) {
+		if ((lev & ORTP_FATAL) != 0) {
+			lvl = @"F ";
+		} else if ((lev & ORTP_ERROR) != 0) {
+			lvl = @"E ";
+		} else if ((lev & ORTP_WARNING) != 0) {
+			lvl = @"W ";
+		} else if ((lev & ORTP_MESSAGE) != 0) {
+			lvl = @"I ";
+		} else if (((lev & ORTP_TRACE) != 0) || ((lev & ORTP_DEBUG) != 0)) {
+			lvl = @"D ";
+		}
 	}
-	// since \r are interpreted like \n, avoid double new lines when logging packets
-	NSLog(@"%c %@", levelC, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+	// since \r are interpreted like \n, avoid double new lines when logging network packets (belle-sip)
+	NSLog(@"%@%@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
 }
 
 @end

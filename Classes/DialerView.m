@@ -64,7 +64,7 @@
 
 - (void)dealloc {
 	// Remove all observers
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -98,15 +98,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 		!IPAD && UIInterfaceOrientationIsLandscape(PhoneMainView.instance.mainViewController.currentOrientation);
 
 	// Set observer
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(callUpdateEvent:)
-												 name:kLinphoneCallUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(callUpdateEvent:)
+											   name:kLinphoneCallUpdate
+											 object:nil];
 
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(coreUpdateEvent:)
-												 name:kLinphoneCoreUpdate
-											   object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(coreUpdateEvent:)
+											   name:kLinphoneCoreUpdate
+											 object:nil];
 
 	// technically not needed, but older versions of linphone had this button
 	// disabled by default. In this case, updating by pushing a new version with
@@ -115,8 +115,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[callButton setEnabled:TRUE];
 
 	// Update on show
-	LinphoneManager *mgr = [LinphoneManager instance];
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneManager *mgr = LinphoneManager.instance;
+	LinphoneCore *lc = LC;
 	LinphoneCall *call = linphone_core_get_current_call(lc);
 	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
 	[self callUpdate:call state:state];
@@ -140,13 +140,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[backgroundView setHidden:TRUE];
 			[videoCameraSwitch setHidden:TRUE];
 		}
+	} else {
+		linphone_core_enable_video_preview(lc, FALSE);
 	}
 	[addressField setText:@""];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -180,7 +182,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[oneButton addGestureRecognizer:oneLongGesture];
 
 	if (IPAD) {
-		if ([LinphoneManager instance].frontCamId != nil) {
+		if (LinphoneManager.instance.frontCamId != nil) {
 			// only show camera switch button if we have more than 1 camera
 			[videoCameraSwitch setHidden:FALSE];
 		}
@@ -222,7 +224,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)coreUpdateEvent:(NSNotification *)notif {
 	if (IPAD) {
-		LinphoneCore *lc = [LinphoneManager getLc];
+		LinphoneCore *lc = LC;
 		if (linphone_core_video_display_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
 			linphone_core_set_native_preview_window_id(lc, (__bridge void *)(videoPreview));
 			[backgroundView setHidden:FALSE];
@@ -288,7 +290,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (BOOL)displayDebugPopup:(NSString *)address {
-	LinphoneManager *mgr = [LinphoneManager instance];
+	LinphoneManager *mgr = LinphoneManager.instance;
 	NSString *debugAddress = [mgr lpConfigStringForKey:@"debug_popup_magic" withDefault:@""];
 	if (![debugAddress isEqualToString:@""] && [address isEqualToString:debugAddress]) {
 
@@ -307,15 +309,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 						   [self presentMailViewWithTitle:appName forRecipients:@[ logsAddress ] attachLogs:true];
 						 }];
 
-		BOOL debugEnabled = [[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"];
+		BOOL debugEnabled = [LinphoneManager.instance lpConfigBoolForKey:@"debugenable_preference"];
 		NSString *actionLog =
 			(debugEnabled ? NSLocalizedString(@"Disable logs", nil) : NSLocalizedString(@"Enable logs", nil));
 		[alertView addButtonWithTitle:actionLog
 								block:^{
 								  // enable / disable
-								  BOOL enableDebug = ![mgr lpConfigBoolForKey:@"debugenable_preference"];
-								  [mgr lpConfigSetBool:enableDebug forKey:@"debugenable_preference"];
-								  [mgr setLogsEnabled:enableDebug];
+								  BOOL enableDebug = !debugEnabled;
+								  [Log enableLogs:enableDebug];
 								}];
 
 		[alertView show];
@@ -327,7 +328,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	BOOL callInProgress = (linphone_core_get_calls_nb(lc) > 0);
 	addCallButton.hidden = (!callInProgress || transferMode);
 	transferButton.hidden = (!callInProgress || !transferMode);
@@ -342,21 +343,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)setTransferMode:(BOOL)atransferMode {
 	transferMode = atransferMode;
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
 	[self callUpdate:call state:state];
-}
-
-- (void)call:(NSString *)address {
-	LinphoneAddress *addr = linphone_address_new(address.UTF8String);
-	NSString *displayName = addr ? [FastAddressBook displayNameForAddress:addr] : nil;
-	if (addr)
-		linphone_address_destroy(addr);
-	[self call:address displayName:displayName];
-}
-
-- (void)call:(NSString *)address displayName:(NSString *)displayName {
-	[[LinphoneManager instance] call:address displayName:displayName transfer:transferMode];
 }
 
 #pragma mark - UITextFieldDelegate Functions
@@ -371,6 +360,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	if (textField == addressField) {
 		[addressField resignFirstResponder];
+	}
+	if (textField.text.length > 0) {
+		LinphoneAddress *addr = linphone_core_interpret_url(LC, textField.text.UTF8String);
+		[LinphoneManager.instance call:addr transfer:FALSE];
+		if (addr)
+			linphone_address_destroy(addr);
 	}
 	return YES;
 }
@@ -394,12 +389,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[ContactSelection setSipFilter:nil];
 	[ContactSelection setNameOrEmailFilter:nil];
 	[ContactSelection enableEmailFilter:FALSE];
-	ContactsListView *view = VIEW(ContactsListView);
-	[PhoneMainView.instance changeCurrentView:view.class.compositeViewDescription push:TRUE];
+	[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
 }
 
 - (IBAction)onBackClick:(id)event {
-	[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
+	[PhoneMainView.instance popToView:CallView.compositeViewDescription];
 }
 
 - (IBAction)onAddressChange:(id)sender {
@@ -428,12 +422,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)onOneLongClick:(id)sender {
-	LinphoneManager *lm = [LinphoneManager instance];
+	LinphoneManager *lm = LinphoneManager.instance;
 	NSString *voiceMail = [lm lpConfigStringForKey:@"voice_mail_uri"];
-	if (voiceMail != nil) {
-		[lm call:voiceMail displayName:NSLocalizedString(@"Voice mail", nil) transfer:FALSE];
+	LinphoneAddress *addr = linphone_core_interpret_url(LC, voiceMail ? voiceMail.UTF8String : NULL);
+	if (addr) {
+		linphone_address_set_display_name(addr, NSLocalizedString(@"Voice mail", nil).UTF8String);
+		[lm call:addr transfer:FALSE];
+		linphone_address_destroy(addr);
 	} else {
-		LOGE(@"Cannot call voice mail because URI not set!");
+		LOGE(@"Cannot call voice mail because URI not set or invalid!");
 	}
 }
 @end

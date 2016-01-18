@@ -33,7 +33,7 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)onOn {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 
 	if (!linphone_core_video_display_enabled(lc))
 		return;
@@ -41,7 +41,7 @@ INIT_WITH_COMMON_CF {
 	[self setEnabled:FALSE];
 	[waitView startAnimating];
 
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
 		LinphoneCallAppData *callAppData = (__bridge LinphoneCallAppData *)linphone_call_get_user_pointer(call);
 		callAppData->videoRequested =
@@ -56,7 +56,7 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)onOff {
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 
 	if (!linphone_core_video_display_enabled(lc))
 		return;
@@ -64,7 +64,7 @@ INIT_WITH_COMMON_CF {
 	[self setEnabled:FALSE];
 	[waitView startAnimating];
 
-	LinphoneCall *call = linphone_core_get_current_call([LinphoneManager getLc]);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
 		LinphoneCallParams *call_params = linphone_call_params_copy(linphone_call_get_current_params(call));
 		linphone_call_params_enable_video(call_params, FALSE);
@@ -77,7 +77,7 @@ INIT_WITH_COMMON_CF {
 
 - (bool)onUpdate {
 	bool video_enabled = false;
-	LinphoneCore *lc = [LinphoneManager getLc];
+	LinphoneCore *lc = LC;
 	LinphoneCall *currentCall = linphone_core_get_current_call(lc);
 	if (linphone_core_video_supported(lc)) {
 		if (linphone_core_video_display_enabled(lc) && currentCall && !linphone_call_media_in_progress(currentCall) &&
