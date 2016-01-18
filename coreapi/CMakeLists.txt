@@ -35,6 +35,7 @@ set(LINPHONE_HEADER_FILES
 	buffer.h
 	call_log.h
 	call_params.h
+	conference.h
 	content.h
 	event.h
 	friendlist.h

@@ -66,18 +66,6 @@ struct _LinphoneInfoMessage;
  */
 typedef struct _LinphoneCore LinphoneCore;
 
-/**
- * Internal object of LinphoneCore representing a conference
- * @ingroup call_control
- */
-typedef struct _LinphoneConference LinphoneConference;
-
-/**
- * Parameters for initialization of conferences
- * @ingroup call_control
- */
-typedef struct _LinphoneCorferenceParams LinphoneConferenceParams;
-
 
 /**
  * Disable a sip transport
@@ -423,6 +411,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "event.h"
 #include "linphonefriend.h"
 #include "xmlrpc.h"
+#include "conference.h"
 #else
 #include "linphone/buffer.h"
 #include "linphone/call_log.h"
@@ -431,6 +420,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "linphone/event.h"
 #include "linphone/linphonefriend.h"
 #include "linphone/xmlrpc.h"
+#include "linphone/conference.h"
 #endif
 
 LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);
