@@ -38,12 +38,20 @@
 		levelC = 'W';
 	} else if ((severity & ORTP_MESSAGE) != 0) {
 		levelC = 'I';
-	} else if (((severity & ORTP_TRACE) != 0) || ((severity & ORTP_DEBUG) != 0)) {
+	} else if ((severity & ORTP_DEBUG) != 0) {
 		levelC = 'D';
 	}
-	// we want application logs to be always enabled so use | ORTP_ERROR extra mask
-	ortp_log(severity | ORTP_ERROR, "%c %*s:%3d - %s", levelC, filesize,
-			 filename + MAX((int)strlen(filename) - filesize, 0), line, utf8str);
+
+	if ((severity & ORTP_DEBUG) != 0) {
+		// lol: ortp_debug(XXX) can be disabled at compile time, but ortp_log(ORTP_DEBUG, xxx) will always be valid even
+		//      not in debug build...
+		ortp_debug("%c %*s:%3d - %s", levelC, filesize, filename + MAX((int)strlen(filename) - filesize, 0), line,
+				   utf8str);
+	} else {
+		// we want application logs to be always enabled (except debug ones) so use | ORTP_ERROR extra mask
+		ortp_log(severity | ORTP_ERROR, "%c %*s:%3d - %s", levelC, filesize,
+				 filename + MAX((int)strlen(filename) - filesize, 0), line, utf8str);
+	}
 	va_end(args);
 }
 
