@@ -59,7 +59,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 															   sideMenu:SideMenuView.class
 															 fullscreen:false
 														 isLeftFragment:YES
-														   fragmentWith:ChatConversationView.class];
+														   fragmentWith:ChatConversationCreateView.class];
 	}
 	return compositeDescription;
 }
@@ -71,8 +71,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAddClick:(id)event {
-	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:YES];
+	[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {

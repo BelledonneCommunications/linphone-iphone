@@ -236,8 +236,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)saveAndSend:(UIImage *)image url:(NSURL *)url {
 	// photo from Camera, must be saved first
 	if (url == nil) {
-		[[LinphoneManager instance]
-				.photoLibrary
+		[LinphoneManager.instance.photoLibrary
 			writeImageToSavedPhotosAlbum:image.CGImage
 							 orientation:(ALAssetOrientation)[image imageOrientation]
 						 completionBlock:^(NSURL *assetURL, NSError *error) {
@@ -516,13 +515,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCallClick:(id)sender {
-	NSString *displayName = [FastAddressBook displayNameForAddress:linphone_chat_room_get_peer_address(chatRoom)];
-	// Go to dialer view
-	DialerView *view = VIEW(DialerView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	char *uri = linphone_address_as_string(linphone_chat_room_get_peer_address(chatRoom));
-	[view call:[NSString stringWithUTF8String:uri] displayName:displayName];
-	ms_free(uri);
+	[LinphoneManager.instance call:linphone_chat_room_get_peer_address(chatRoom) transfer:NO];
 }
 
 - (IBAction)onListSwipe:(id)sender {

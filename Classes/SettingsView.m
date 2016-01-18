@@ -414,7 +414,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		removeFromHiddenKeys = debugEnabled;
 		[keys addObject:@"send_logs_button"];
 		[keys addObject:@"reset_logs_button"];
-		[[LinphoneManager instance] setLogsEnabled:debugEnabled];
+		[LinphoneManager.instance setLogsEnabled:debugEnabled];
 	} else if ([@"account_mandatory_advanced_preference" compare:notif.object] == NSOrderedSame) {
 		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"account_mandatory_advanced_preference"] boolValue];
 		for (NSString *key in settingsStore->dict) {
@@ -499,7 +499,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (NSSet *)findHiddenKeys {
-	LinphoneManager *lm = [LinphoneManager instance];
+	LinphoneManager *lm = LinphoneManager.instance;
 	NSMutableSet *hiddenKeys = [NSMutableSet set];
 
 	const MSList *accounts = linphone_core_get_proxy_config_list(LC);
@@ -520,7 +520,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[hiddenKeys addObject:@"flush_images_button"];
 #endif
 
-	if (![[LinphoneManager instance] lpConfigBoolForKey:@"debugenable_preference"]) {
+	if (![LinphoneManager.instance lpConfigBoolForKey:@"debugenable_preference"]) {
 		[hiddenKeys addObject:@"send_logs_button"];
 		[hiddenKeys addObject:@"reset_logs_button"];
 	}
@@ -611,7 +611,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 
-	if (![[[LinphoneManager instance] iapManager] enabled]) {
+	if (![[LinphoneManager.instance iapManager] enabled]) {
 		[hiddenKeys addObject:@"in_app_products_button"];
 	}
 
@@ -660,7 +660,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([key isEqual:@"release_button"]) {
 		[UIApplication sharedApplication].keyWindow.rootViewController = nil;
 		[[UIApplication sharedApplication].keyWindow setRootViewController:nil];
-		[[LinphoneManager instance] destroyLinphoneCore];
+		[LinphoneManager.instance destroyLinphoneCore];
 		[LinphoneManager instanceRelease];
 	} else if ([key isEqual:@"clear_cache_button"]) {
 		[PhoneMainView.instance.mainViewController
@@ -701,7 +701,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 							}];
 		[alert show];
 	} else if ([key isEqual:@"about_button"]) {
-		[PhoneMainView.instance changeCurrentView:AboutView.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:AboutView.compositeViewDescription];
 	} else if ([key isEqual:@"reset_logs_button"]) {
 		linphone_core_reset_log_collection();
 	} else if ([key isEqual:@"send_logs_button"]) {
@@ -826,9 +826,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onDialerBackClick:(id)sender {
 	[_settingsController.navigationController popViewControllerAnimated:NO];
-
-	DialerView *view = VIEW(DialerView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 }
 
 - (IBAction)onBackClick:(id)sender {

@@ -143,7 +143,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ABRecordRef contact = [FastAddressBook getContactWithAddress:addr];
 	if (contact) {
 		ContactDetailsView *view = VIEW(ContactDetailsView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 		[ContactSelection setSelectionMode:ContactSelectionModeNone];
 		[view setContact:contact];
 	}
@@ -159,33 +159,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[ContactSelection setSipFilter:nil];
 		[ContactSelection enableEmailFilter:FALSE];
 		[ContactSelection setNameOrEmailFilter:nil];
-		[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:ContactsListView.compositeViewDescription];
 		ms_free(lAddress);
 	}
 }
 
 - (IBAction)onCallClick:(id)event {
 	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-	char *lAddress = linphone_address_as_string_uri_only(addr);
-	if (lAddress == NULL)
-		return;
-	NSString *displayName = [FastAddressBook displayNameForAddress:addr];
-
-	DialerView *view = VIEW(DialerView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	[view call:[NSString stringWithUTF8String:lAddress] displayName:displayName];
-	ms_free(lAddress);
+	[LinphoneManager.instance call:addr transfer:NO];
 }
 
 - (IBAction)onChatClick:(id)event {
 	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	if (addr == NULL)
 		return;
-	[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 	ChatConversationView *view = VIEW(ChatConversationView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
 	LinphoneChatRoom *room = linphone_core_get_chat_room(LC, addr);
 	[view setChatRoom:room];
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 @end

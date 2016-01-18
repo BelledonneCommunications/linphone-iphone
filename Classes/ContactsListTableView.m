@@ -229,7 +229,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 
 		// Go to Contact details view
 		ContactDetailsView *view = VIEW(ContactDetailsView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 		if ([ContactSelection getSelectionMode] != ContactSelectionModeEdit) {
 			[view setContact:lPerson];
 		} else {
@@ -254,7 +254,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
 					 withRowAnimation:UITableViewRowAnimationFade];
 		}
-		[[[LinphoneManager instance] fastAddressBook] removeContact:contact];
+		[[LinphoneManager.instance fastAddressBook] removeContact:contact];
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 						 withRowAnimation:UITableViewRowAnimationFade];
 		[tableView endUpdates];
@@ -273,7 +273,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
 		  [addressBookMap removeObjectForKey:firstChar];
 	  }
-	  [[[LinphoneManager instance] fastAddressBook] removeContact:contact];
+	  [[LinphoneManager.instance fastAddressBook] removeContact:contact];
 	}];
 }
 

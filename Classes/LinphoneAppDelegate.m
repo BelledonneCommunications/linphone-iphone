@@ -48,7 +48,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-	[[LinphoneManager instance] enterBackgroundMode];
+	[LinphoneManager.instance enterBackgroundMode];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -58,7 +58,7 @@
 
 	if (call) {
 		/* save call context */
-		LinphoneManager *instance = [LinphoneManager instance];
+		LinphoneManager *instance = LinphoneManager.instance;
 		instance->currentCallContextBeforeGoingBackground.call = call;
 		instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
 
@@ -68,7 +68,7 @@
 		}
 	}
 
-	if (![[LinphoneManager instance] resignActive]) {
+	if (![LinphoneManager.instance resignActive]) {
 	}
 }
 
@@ -80,7 +80,7 @@
 		[PhoneMainView.instance startUp];
 		[PhoneMainView.instance updateStatusBar:nil];
 	}
-	LinphoneManager *instance = [LinphoneManager instance];
+	LinphoneManager *instance = LinphoneManager.instance;
 
 	[instance becomeActive];
 
@@ -159,7 +159,7 @@
 	UIApplication *app = [UIApplication sharedApplication];
 	UIApplicationState state = app.applicationState;
 
-	LinphoneManager *instance = [LinphoneManager instance];
+	LinphoneManager *instance = LinphoneManager.instance;
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
 
@@ -199,7 +199,7 @@
 	  [[UIApplication sharedApplication] endBackgroundTask:bgStartId];
 	}];
 
-	[[LinphoneManager instance] startLinphoneCore];
+	[LinphoneManager.instance startLinphoneCore];
 	// initialize UI
 	[self.window makeKeyAndVisible];
 	[RootViewManager setupWithPortrait:(PhoneMainView *)self.window.rootViewController];
@@ -224,11 +224,11 @@
 
 	// destroyLinphoneCore automatically unregister proxies but if we are using
 	// remote push notifications, we want to continue receiving them
-	if ([LinphoneManager instance].pushNotificationToken != nil) {
+	if (LinphoneManager.instance.pushNotificationToken != nil) {
 		// trick me! setting network reachable to false will avoid sending unregister
 		linphone_core_set_network_reachable(LC, FALSE);
 	}
-	[[LinphoneManager instance] destroyLinphoneCore];
+	[LinphoneManager.instance destroyLinphoneCore];
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
@@ -279,23 +279,20 @@
 			LinphoneCore *lc = LC;
 			if (linphone_core_get_calls(lc) == NULL) { // if there are calls, obviously our TCP socket shall be working
 				linphone_core_set_network_reachable(lc, FALSE);
-				[LinphoneManager instance].connectivity = none; /*force connectivity to be discovered again*/
-				[[LinphoneManager instance] refreshRegisters];
+				LinphoneManager.instance.connectivity = none; /*force connectivity to be discovered again*/
+				[LinphoneManager.instance refreshRegisters];
 				if (loc_key != nil) {
 
 					NSString *callId = [userInfo objectForKey:@"call-id"];
 					if (callId != nil) {
-						[[LinphoneManager instance] addPushCallId:callId];
+						[LinphoneManager.instance addPushCallId:callId];
 					} else {
 						LOGE(@"PushNotification: does not have call-id yet, fix it !");
 					}
 
 					if ([loc_key isEqualToString:@"IM_MSG"] || [loc_key isEqualToString:@"IM_FULLMSG"]) {
-
 						[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
-
 					} else if ([loc_key isEqualToString:@"IC_MSG"]) {
-
 						[self fixRing];
 					}
 				}
@@ -333,24 +330,23 @@
 		BOOL auto_answer = TRUE;
 		// some local notifications have an internal timer to relaunch themselves at specified intervals
 		if ([[notification.userInfo objectForKey:@"timer"] intValue] == 1) {
-			[[LinphoneManager instance] cancelLocalNotifTimerForCallId:[notification.userInfo objectForKey:@"callId"]];
-			auto_answer = [[LinphoneManager instance] lpConfigBoolForKey:@"autoanswer_notif_preference"];
+			[LinphoneManager.instance cancelLocalNotifTimerForCallId:[notification.userInfo objectForKey:@"callId"]];
+			auto_answer = [LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"];
 		}
 		if (auto_answer) {
-			[[LinphoneManager instance] acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
+			[LinphoneManager.instance acceptCallForCallId:[notification.userInfo objectForKey:@"callId"]];
 		}
 	} else if ([notification.userInfo objectForKey:@"from_addr"] != nil) {
 		NSString *remoteContact = (NSString *)[notification.userInfo objectForKey:@"from_addr"];
-		[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 		LinphoneChatRoom *room = [self findChatRoomForContact:remoteContact];
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view setChatRoom:room];
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	} else if ([notification.userInfo objectForKey:@"callLog"] != nil) {
 		NSString *callLog = (NSString *)[notification.userInfo objectForKey:@"callLog"];
 		HistoryDetailsView *view = VIEW(HistoryDetailsView);
 		[view setCallLogId:callLog];
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	}
 }
 
@@ -360,7 +356,7 @@
 	didReceiveRemoteNotification:(NSDictionary *)userInfo
 		  fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
-	LinphoneManager *lm = [LinphoneManager instance];
+	LinphoneManager *lm = LinphoneManager.instance;
 
 	// save the completion handler for later execution.
 	// 2 outcomes:
@@ -389,12 +385,12 @@
 - (void)application:(UIApplication *)application
 	didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), deviceToken);
-	[[LinphoneManager instance] setPushNotificationToken:deviceToken];
+	[LinphoneManager.instance setPushNotificationToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), [error localizedDescription]);
-	[[LinphoneManager instance] setPushNotificationToken:nil];
+	[LinphoneManager.instance setPushNotificationToken:nil];
 }
 
 #pragma mark - User notifications
@@ -512,8 +508,8 @@
 											   name:kLinphoneConfiguringStateUpdate
 											 object:nil];
 	linphone_core_set_provisioning_uri(LC, [configURL UTF8String]);
-	[[LinphoneManager instance] destroyLinphoneCore];
-	[[LinphoneManager instance] startLinphoneCore];
+	[LinphoneManager.instance destroyLinphoneCore];
+	[LinphoneManager.instance startLinphoneCore];
 }
 
 @end

@@ -151,7 +151,7 @@
 			const LinphoneAddress *identity_addr = linphone_proxy_config_get_identity_address(proxy);
 			if (identity_addr) {
 				const char *server_addr = linphone_proxy_config_get_server_addr(proxy);
-				LinphoneAddress *proxy_addr = linphone_address_new(server_addr);
+				LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, server_addr);
 				int port = linphone_address_get_port(proxy_addr);
 
 				[self setCString:linphone_address_get_username(identity_addr)
@@ -218,7 +218,7 @@
 }
 
 - (void)transformLinphoneCoreToKeys {
-	LinphoneManager *lm = [LinphoneManager instance];
+	LinphoneManager *lm = LinphoneManager.instance;
 	LinphoneCore *lc = LC;
 
 	// root section
@@ -399,7 +399,7 @@
 
 - (void)synchronizeAccounts {
 	LOGI(@"Account changed, synchronizing.");
-	LinphoneManager *lm = [LinphoneManager instance];
+	LinphoneManager *lm = LinphoneManager.instance;
 	LinphoneCore *lc = LC;
 	LinphoneProxyConfig *proxyCfg = NULL;
 	NSString *error = nil;
@@ -453,7 +453,7 @@
 
 		const char *route = NULL;
 
-		if (isWifiOnly && [LinphoneManager instance].connectivity == wwan)
+		if (isWifiOnly && LinphoneManager.instance.connectivity == wwan)
 			expire = 0;
 
 		if ((!proxyAddress || [proxyAddress length] < 1) && domain) {
@@ -465,7 +465,7 @@
 		}
 
 		char *proxy = ms_strdup(proxyAddress.UTF8String);
-		LinphoneAddress *proxy_addr = linphone_address_new(proxy);
+		LinphoneAddress *proxy_addr = linphone_core_interpret_url(LC, proxy);
 
 		if (proxy_addr) {
 			LinphoneTransportType type = LinphoneTransportUdp;
@@ -480,7 +480,7 @@
 		}
 
 		char normalizedUserName[256];
-		LinphoneAddress *linphoneAddress = linphone_address_new("sip:user@domain.com");
+		LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, "sip:user@domain.com");
 
 		proxyCfg = ms_list_nth_data(linphone_core_get_proxy_config_list(lc),
 									[self integerForKey:@"current_proxy_config_preference"]);
@@ -523,7 +523,7 @@
 		}
 
 		[lm lpConfigSetInt:pushnotification forKey:@"pushnotification_preference"];
-		[[LinphoneManager instance] configurePushTokenForProxyConfig:proxyCfg];
+		[LinphoneManager.instance configurePushTokenForProxyConfig:proxyCfg];
 
 		linphone_proxy_config_enable_register(proxyCfg, is_enabled);
 		linphone_proxy_config_enable_avpf(proxyCfg, use_avpf);
@@ -544,7 +544,7 @@
 		if (proxyAi) {
 			linphone_core_remove_auth_info(lc, proxyAi);
 		}
-		LinphoneAddress *from = linphone_address_new(identity);
+		LinphoneAddress *from = linphone_core_interpret_url(LC, identity);
 		if (from) {
 			const char *userid_str = (userID != nil) ? [userID UTF8String] : NULL;
 			LinphoneAuthInfo *info = linphone_auth_info_new(
@@ -573,7 +573,7 @@
 		}
 	}
 	// reload address book to prepend proxy config domain to contacts' phone number
-	[[[LinphoneManager instance] fastAddressBook] reload];
+	[[LinphoneManager.instance fastAddressBook] reload];
 }
 
 - (void)synchronizeCodecs:(const MSList *)codecs {
@@ -589,7 +589,7 @@
 }
 
 - (BOOL)synchronize {
-	LinphoneManager *lm = [LinphoneManager instance];
+	LinphoneManager *lm = LinphoneManager.instance;
 	LinphoneCore *lc = LC;
 	// root section
 	{
@@ -636,7 +636,7 @@
 		BOOL equalizer = [self boolForKey:@"eq_active"];
 		[lm lpConfigSetBool:equalizer forKey:@"eq_active" inSection:@"sound"];
 
-		[[LinphoneManager instance] configureVbrCodecs];
+		[LinphoneManager.instance configureVbrCodecs];
 
 		NSString *au_device = @"AU: Audio Unit Receiver";
 		if (!voice_processing) {
@@ -709,7 +709,7 @@
 		BOOL wifiOnly = [self boolForKey:@"wifi_only_preference"];
 		[lm lpConfigSetInt:wifiOnly forKey:@"wifi_only_preference"];
 		if ([self valueChangedForKey:@"wifi_only_preference"]) {
-			[[LinphoneManager instance] setupNetworkReachabilityCallback];
+			[LinphoneManager.instance setupNetworkReachabilityCallback];
 		}
 
 		NSString *stun_server = [self stringForKey:@"stun_preference"];
@@ -786,7 +786,7 @@
 			}
 
 			[lm lpConfigSetString:lTunnelPrefMode forKey:@"tunnel_mode_preference"];
-			[[LinphoneManager instance] setTunnelMode:mode];
+			[LinphoneManager.instance setTunnelMode:mode];
 		}
 	}
 
@@ -794,7 +794,7 @@
 	{
 		BOOL debugmode = [self boolForKey:@"debugenable_preference"];
 		[lm lpConfigSetInt:debugmode forKey:@"debugenable_preference"];
-		[[LinphoneManager instance] setLogsEnabled:debugmode];
+		[LinphoneManager.instance setLogsEnabled:debugmode];
 
 		BOOL animations = [self boolForKey:@"animations_preference"];
 		[lm lpConfigSetInt:animations forKey:@"animations_preference"];

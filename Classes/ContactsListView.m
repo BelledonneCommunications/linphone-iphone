@@ -131,7 +131,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			cancelButtonTitle:NSLocalizedString(@"Continue", nil)
 			otherButtonTitles:nil];
 		[error show];
-		[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+		[PhoneMainView.instance popCurrentView];
 	}
 }
 
@@ -178,9 +178,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAddContactClick:(id)event {
-	// Go to Contact details view
 	ContactDetailsView *view = VIEW(ContactDetailsView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	if ([ContactSelection getAddAddress] == nil) {
 		[view newContact];
 	} else {

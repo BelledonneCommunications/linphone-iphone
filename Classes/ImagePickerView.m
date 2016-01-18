@@ -173,7 +173,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
 	  ImagePickerView *view = VIEW(ImagePickerView);
 	  if (!(IPAD && ipadView && ipadPopoverView)) {
-		  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	  }
 	  view.sourceType = type;
 

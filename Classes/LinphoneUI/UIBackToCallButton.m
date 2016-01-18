@@ -35,8 +35,7 @@
 }
 
 - (IBAction)onBackToCallClick:(id)sender {
-	CallView *view = VIEW(CallView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[PhoneMainView.instance popToView:CallView.compositeViewDescription];
 }
 
 @end

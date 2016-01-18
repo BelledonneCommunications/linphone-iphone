@@ -104,8 +104,8 @@
 		linphone_core_clear_proxy_config(lc);
 		linphone_core_clear_all_auth_info(lc);
 
-		LinphoneAddress *testAddr = linphone_address_new(
-			[[NSString stringWithFormat:@"sip:%@@%@", [self me], [self accountDomain]] UTF8String]);
+		LinphoneAddress *testAddr = linphone_core_interpret_url(
+			LC, [[NSString stringWithFormat:@"sip:%@@%@", [self me], [self accountDomain]] UTF8String]);
 		linphone_address_set_header(testAddr, "X-Create-Account", "yes");
 		linphone_address_set_transport(testAddr, LinphoneTransportTcp);
 		linphone_address_set_port(testAddr, 0);

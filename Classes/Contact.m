@@ -64,7 +64,7 @@
 			for (int i = 0; i < ABMultiValueGetCount(map); ++i) {
 				CFDictionaryRef lDict = ABMultiValueCopyValueAtIndex(map, i);
 				if (CFDictionaryContainsKey(lDict, kABPersonInstantMessageServiceKey)) {
-					if (CFStringCompare((CFStringRef)[LinphoneManager instance].contactSipField,
+					if (CFStringCompare((CFStringRef)LinphoneManager.instance.contactSipField,
 										CFDictionaryGetValue(lDict, kABPersonInstantMessageServiceKey),
 										kCFCompareCaseInsensitive) == 0) {
 						NSString *value = (NSString *)(CFDictionaryGetValue(lDict, kABPersonInstantMessageUsernameKey));
@@ -211,7 +211,7 @@
 - (BOOL)addSipAddress:(NSString *)sip {
 	NSDictionary *lDict = @{
 		(NSString *) kABPersonInstantMessageUsernameKey : sip, (NSString *)
-		kABPersonInstantMessageServiceKey : [LinphoneManager instance].contactSipField
+		kABPersonInstantMessageServiceKey : LinphoneManager.instance.contactSipField
 	};
 
 	BOOL ret = [self addInProperty:kABPersonInstantMessageProperty value:(__bridge CFTypeRef)(lDict)];

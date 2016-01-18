@@ -58,8 +58,8 @@
 	[super viewDidAppear:animated];
 	// we cannot do that in viewWillAppear because we will change view while previous transition
 	// was not finished, leading to "[CALayer retain]: message sent to deallocated instance" error msg
-	if (IPAD && [self totalNumberOfItems] == 0) {
-		[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
+	if (IPAD && [self totalNumberOfItems] > 0) {
+		[PhoneMainView.instance changeCurrentView:ChatConversationView.compositeViewDescription];
 	}
 }
 
@@ -163,7 +163,7 @@ static void chatTable_free_chatrooms(void *data) {
 			UIChatCell *cell = (UIChatCell *)[tableView cellForRowAtIndexPath:indexPath];
 			[cell updateUnreadBadge];
 		}
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	}
 }
 
@@ -181,7 +181,7 @@ static void chatTable_free_chatrooms(void *data) {
 		}
 
 		FileTransferDelegate *ftdToDelete = nil;
-		for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+		for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 			if (linphone_chat_message_get_chat_room(ftd.message) == chatRoom) {
 				ftdToDelete = ftd;
 				break;
@@ -211,7 +211,7 @@ static void chatTable_free_chatrooms(void *data) {
 	  }
 
 	  FileTransferDelegate *ftdToDelete = nil;
-	  for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+	  for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		  if (linphone_chat_message_get_chat_room(ftd.message) == chatRoom) {
 			  ftdToDelete = ftd;
 			  break;

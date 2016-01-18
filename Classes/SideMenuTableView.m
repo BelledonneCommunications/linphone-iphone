@@ -39,24 +39,18 @@
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Assistant", nil)
 											  tapBlock:^() {
 												[PhoneMainView.instance
-													changeCurrentView:AssistantView.compositeViewDescription
-																 push:NO
-															 animated:NO];
+													changeCurrentView:AssistantView.compositeViewDescription];
 											  }]];
 	[_sideMenuEntries
 		addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"Settings", nil)
 											  tapBlock:^() {
 												[PhoneMainView.instance
-													changeCurrentView:SettingsView.compositeViewDescription
-																 push:NO
-															 animated:NO];
+													changeCurrentView:SettingsView.compositeViewDescription];
 											  }]];
 	[_sideMenuEntries addObject:[[SideMenuEntry alloc] initWithTitle:NSLocalizedString(@"About", nil)
 															tapBlock:^() {
 															  [PhoneMainView.instance
-																  changeCurrentView:AboutView.compositeViewDescription
-																			   push:NO
-																		   animated:NO];
+																  changeCurrentView:AboutView.compositeViewDescription];
 
 															}]];
 }

@@ -94,7 +94,7 @@
 		ChatConversationView *view = VIEW(ChatConversationView);
 		[view setChatRoom:room];
 		[PhoneMainView.instance popCurrentView];
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	}
 }
 

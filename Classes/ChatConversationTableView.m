@@ -54,7 +54,7 @@
 	messageList = linphone_chat_room_get_history(chatRoom, 0);
 
 	// also append transient upload messages because they are not in history yet!
-	for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+	for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		const LinphoneAddress *ftd_peer =
 			linphone_chat_room_get_peer_address(linphone_chat_message_get_chat_room(ftd.message));
 		const LinphoneAddress *peer = linphone_chat_room_get_peer_address(chatRoom);

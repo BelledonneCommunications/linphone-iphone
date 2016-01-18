@@ -87,11 +87,10 @@
 	}
 
 	if ([address length] > 0) {
-		LinphoneAddress *addr = linphone_address_new(address.UTF8String);
-		NSString *displayName = addr ? [FastAddressBook displayNameForAddress:addr] : nil;
+		LinphoneAddress *addr = linphone_core_interpret_url(LC, address.UTF8String);
+		[LinphoneManager.instance call:addr transfer:FALSE];
 		if (addr)
 			linphone_address_destroy(addr);
-		[LinphoneManager.instance call:address displayName:displayName transfer:FALSE];
 	}
 }
 

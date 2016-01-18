@@ -55,9 +55,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (!call) {
-		if (![PhoneMainView.instance popCurrentView]) {
-			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
-		}
+		[PhoneMainView.instance popCurrentView];
 	} else {
 		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
@@ -77,18 +75,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[[LinphoneManager instance] setBluetoothEnabled:TRUE];
+	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
 - (IBAction)onRoutesEarpieceClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[[LinphoneManager instance] setSpeakerEnabled:FALSE];
-	[[LinphoneManager instance] setBluetoothEnabled:FALSE];
+	[LinphoneManager.instance setSpeakerEnabled:FALSE];
+	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 }
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[[LinphoneManager instance] setSpeakerEnabled:TRUE];
+	[LinphoneManager.instance setSpeakerEnabled:TRUE];
 }
 
 - (IBAction)onRoutesClick:(id)sender {
@@ -104,9 +102,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (call) {
 		linphone_core_terminate_call(LC, call);
 	}
-	if (![PhoneMainView.instance popCurrentView]) {
-		[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
-	}
+	[PhoneMainView.instance popCurrentView];
 }
 
 - (void)hideRoutes:(BOOL)hidden animated:(BOOL)animated {

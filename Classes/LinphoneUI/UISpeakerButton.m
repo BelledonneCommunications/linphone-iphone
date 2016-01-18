@@ -60,16 +60,16 @@ INIT_WITH_COMMON_CF {
 #pragma mark - UIToggleButtonDelegate Functions
 
 - (void)onOn {
-	[[LinphoneManager instance] setSpeakerEnabled:TRUE];
+	[LinphoneManager.instance setSpeakerEnabled:TRUE];
 }
 
 - (void)onOff {
-	[[LinphoneManager instance] setSpeakerEnabled:FALSE];
+	[LinphoneManager.instance setSpeakerEnabled:FALSE];
 }
 
 - (bool)onUpdate {
-	[self setEnabled:[[LinphoneManager instance] allowSpeaker]];
-	return [[LinphoneManager instance] speakerEnabled];
+	[self setEnabled:[LinphoneManager.instance allowSpeaker]];
+	return [LinphoneManager.instance speakerEnabled];
 }
 
 @end

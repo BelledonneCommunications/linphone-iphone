@@ -125,7 +125,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_account_creator_unref(account_creator);
 		account_creator = NULL;
 	}
-	[[LinphoneManager instance] resetLinphoneCore];
+	[LinphoneManager.instance resetLinphoneCore];
 	account_creator = linphone_account_creator_new(
 		LC, [LinphoneManager.instance lpConfigStringForKey:@"xmlrpc_url" inSection:@"assistant" withDefault:@""]
 				.UTF8String);
@@ -140,14 +140,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)loadAssistantConfig:(NSString *)rcFilename {
 	NSString *fullPath = [@"file://" stringByAppendingString:[LinphoneManager bundleFile:rcFilename]];
 	linphone_core_set_provisioning_uri(LC, fullPath.UTF8String);
-	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
+	[LinphoneManager.instance lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
 
 	[self resetLiblinphone];
 }
 
 - (void)reset {
-	[[LinphoneManager instance] removeAllAccounts];
-	[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
+	[LinphoneManager.instance removeAllAccounts];
+	[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
 
 	LinphoneCore *lc = LC;
 	LCSipTransports transportValue = {5060, 5060, -1, -1};
@@ -156,8 +156,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LOGE(@"cannot set transport");
 	}
 
-	[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"ice_preference"];
-	[[LinphoneManager instance] lpConfigSetString:@"" forKey:@"stun_preference"];
+	[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"ice_preference"];
+	[LinphoneManager.instance lpConfigSetString:@"" forKey:@"stun_preference"];
 	linphone_core_set_stun_server(lc, NULL);
 	linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
 	[self resetTextFields];
@@ -170,7 +170,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 + (NSString *)errorForStatus:(LinphoneAccountCreatorStatus)status {
-	BOOL usePhoneNumber = [[LinphoneManager instance] lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"];
+	BOOL usePhoneNumber = [LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"];
 	switch (status) {
 		case LinphoneAccountCreatorEmailInvalid:
 			return NSLocalizedString(@"Invalid email.", nil);
@@ -214,7 +214,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)configureProxyConfig {
 	LinphoneCore *lc = LC;
-	LinphoneManager *lm = [LinphoneManager instance];
+	LinphoneManager *lm = LinphoneManager.instance;
 
 	// remove previous proxy config, if any
 	if (new_config != NULL) {
@@ -232,7 +232,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_core_set_default_proxy_config(lc, new_config);
 		// reload address book to prepend proxy config domain to contacts' phone number
 		// todo: STOP doing that!
-		[[[LinphoneManager instance] fastAddressBook] reload];
+		[[LinphoneManager.instance fastAddressBook] reload];
 	}
 }
 
@@ -247,10 +247,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self displayUsernameAsPhoneOrUsername];
 
 	if (view == _welcomeView) {
-		BOOL show_logo =
-			[[LinphoneManager instance] lpConfigBoolForKey:@"show_assistant_logo_in_choice_view_preference"];
-		BOOL show_extern = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_assistant_custom_account"];
-		BOOL show_new = ![[LinphoneManager instance] lpConfigBoolForKey:@"hide_assistant_create_account"];
+		BOOL show_logo = [LinphoneManager.instance lpConfigBoolForKey:@"show_assistant_logo_in_choice_view_preference"];
+		BOOL show_extern = ![LinphoneManager.instance lpConfigBoolForKey:@"hide_assistant_custom_account"];
+		BOOL show_new = ![LinphoneManager.instance lpConfigBoolForKey:@"hide_assistant_create_account"];
 
 		if (!placement_done) {
 			// visibility
@@ -321,7 +320,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneProxyConfig *default_conf = linphone_core_create_proxy_config(LC);
 	const char *identity = linphone_proxy_config_get_identity(default_conf);
 	if (identity) {
-		LinphoneAddress *default_addr = linphone_address_new(identity);
+		LinphoneAddress *default_addr = linphone_core_interpret_url(LC, identity);
 		if (default_addr) {
 			const char *domain = linphone_address_get_domain(default_addr);
 			const char *username = linphone_address_get_username(default_addr);
@@ -507,7 +506,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	switch (state) {
 		case LinphoneRegistrationOk: {
 			_waitView.hidden = true;
-			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+			[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 			break;
 		}
 		case LinphoneRegistrationNone:
@@ -527,7 +526,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 												  otherButtonTitles:nil];
 			[alert addButtonWithTitle:@"Continue"
 								block:^(void) {
-								  [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+								  [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 								}];
 			[alert show];
 			break;
@@ -623,7 +622,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 		[alert addButtonWithTitle:NSLocalizedString(@"Skip verification", nil)
 							block:^{
 							  [thiz configureProxyConfig];
-							  [PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+							  [PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 							}];
 		[alert show];
 	}
@@ -695,7 +694,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 	nextView = _remoteProvisioningView;
 	[self loadAssistantConfig:@"assistant_remote.rc"];
 	[self findTextField:ViewElement_URL].text =
-		[[LinphoneManager instance] lpConfigStringForKey:@"config-uri" inSection:@"misc"];
+		[LinphoneManager.instance lpConfigStringForKey:@"config-uri" inSection:@"misc"];
 }
 
 - (IBAction)onCreateAccountClick:(id)sender {
@@ -720,7 +719,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender {
 	_waitView.hidden = NO;
-	[[LinphoneManager instance] lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
+	[LinphoneManager.instance lpConfigSetInt:1 forKey:@"transient_provisioning" inSection:@"misc"];
 	[self configureProxyConfig];
 }
 
@@ -744,7 +743,7 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 }
 
 - (IBAction)onDialerClick:(id)sender {
-	[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
+	[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 }
 
 @end

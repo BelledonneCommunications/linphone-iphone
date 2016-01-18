@@ -62,7 +62,7 @@
 		const LinphoneContent *c = linphone_chat_message_get_file_transfer_information(amessage);
 		if (c) {
 			const char *name = linphone_content_get_name(c);
-			for (FileTransferDelegate *aftd in [[LinphoneManager instance] fileTransferDelegates]) {
+			for (FileTransferDelegate *aftd in [LinphoneManager.instance fileTransferDelegates]) {
 				if (linphone_chat_message_get_file_transfer_information(aftd.message) &&
 					(linphone_chat_message_is_outgoing(aftd.message) == linphone_chat_message_is_outgoing(amessage)) &&
 					strcmp(name, linphone_content_get_name(
@@ -191,7 +191,7 @@
 	} else {
 		if (![_messageImageView isLoading]) {
 			ImageView *view = VIEW(ImageView);
-			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription push:TRUE];
+			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 			CGImageRef fullScreenRef = [[_messageImageView.fullImageUrl defaultRepresentation] fullScreenImage];
 			UIImage *fullScreen = [UIImage imageWithCGImage:fullScreenRef];
 			[view setImage:fullScreen];

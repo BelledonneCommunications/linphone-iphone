@@ -162,8 +162,7 @@ typedef struct _LinphoneManagerSounds {
 + (NSString*)cacheDirectory;
 
 - (void)acceptCall:(LinphoneCall *)call evenWithVideo:(BOOL)video;
-- (void)call:(NSString *)address displayName:(NSString*)displayName transfer:(BOOL)transfer;
-
+- (BOOL)call:(const LinphoneAddress *)address transfer:(BOOL)transfer;
 
 +(id)getMessageAppDataForKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;
 +(void)setValueInMessageAppData:(id)value forKey:(NSString*)key inMessage:(LinphoneChatMessage*)msg;

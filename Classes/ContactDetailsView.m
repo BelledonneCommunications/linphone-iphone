@@ -78,7 +78,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 - (void)removeContact {
 	if (_contact != NULL) {
 		inhibUpdate = TRUE;
-		[[[LinphoneManager instance] fastAddressBook] removeContact:_contact];
+		[[LinphoneManager.instance fastAddressBook] removeContact:_contact];
 		inhibUpdate = FALSE;
 	}
 	[PhoneMainView.instance popCurrentView];
@@ -111,7 +111,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	} else {
 		LOGI(@"Save AddressBook: Success!");
 	}
-	[[LinphoneManager instance].fastAddressBook reload];
+	[LinphoneManager.instance.fastAddressBook reload];
 }
 
 - (void)selectContact:(ABRecordRef)acontact andReload:(BOOL)reload {
@@ -136,10 +136,10 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		linphoneAddress ? [NSString stringWithUTF8String:linphone_address_get_username(linphoneAddress)] : address;
 
 	if (([username rangeOfString:@"@"].length > 0) &&
-		([[LinphoneManager instance] lpConfigBoolForKey:@"show_contacts_emails_preference"] == true)) {
+		([LinphoneManager.instance lpConfigBoolForKey:@"show_contacts_emails_preference"] == true)) {
 		[_tableController addEmailField:username];
 	} else if ((linphone_proxy_config_is_phone_number(NULL, [username UTF8String])) &&
-			   ([[LinphoneManager instance] lpConfigBoolForKey:@"save_new_contacts_as_phone_number"] == true)) {
+			   ([LinphoneManager.instance lpConfigBoolForKey:@"save_new_contacts_as_phone_number"] == true)) {
 		[_tableController addPhoneField:username];
 	} else {
 		[_tableController addSipField:address];
@@ -312,7 +312,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
 
-	FastAddressBook *fab = [LinphoneManager instance].fastAddressBook;
+	FastAddressBook *fab = LinphoneManager.instance.fastAddressBook;
 	CFErrorRef error = NULL;
 	if (!ABPersonRemoveImageData(_contact, (CFErrorRef *)&error)) {
 		LOGI(@"Can't remove entry: %@", [(__bridge NSError *)error localizedDescription]);

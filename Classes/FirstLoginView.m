@@ -56,8 +56,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:kLinphoneRegistrationUpdate
 											 object:nil];
 
-	[_usernameField setText:[[LinphoneManager instance] lpConfigStringForKey:@"assistant_username"]];
-	[_passwordField setText:[[LinphoneManager instance] lpConfigStringForKey:@"assistant_password"]];
+	[_usernameField setText:[LinphoneManager.instance lpConfigStringForKey:@"assistant_username"]];
+	[_passwordField setText:[LinphoneManager.instance lpConfigStringForKey:@"assistant_password"]];
 
 	// Update on show
 	const MSList *list = linphone_core_get_proxy_config_list(LC);
@@ -103,7 +103,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
-	NSString *siteUrl = [[LinphoneManager instance] lpConfigStringForKey:@"first_login_view_url"];
+	NSString *siteUrl = [LinphoneManager.instance lpConfigStringForKey:@"first_login_view_url"];
 	if (siteUrl == nil) {
 		siteUrl = @"http://www.linphone.org";
 	}
@@ -128,7 +128,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)registrationUpdate:(LinphoneRegistrationState)state {
 	switch (state) {
 		case LinphoneRegistrationOk: {
-			[[LinphoneManager instance] lpConfigSetBool:FALSE forKey:@"enable_first_login_view_preference"];
+			[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"enable_first_login_view_preference"];
 			[_waitView setHidden:true];
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 			break;
@@ -142,8 +142,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[_waitView setHidden:true];
 
 			// erase uername passwd
-			[[LinphoneManager instance] lpConfigSetString:nil forKey:@"assistant_username"];
-			[[LinphoneManager instance] lpConfigSetString:nil forKey:@"assistant_password"];
+			[LinphoneManager.instance lpConfigSetString:nil forKey:@"assistant_username"];
+			[LinphoneManager.instance lpConfigSetString:nil forKey:@"assistant_password"];
 			break;
 		}
 		case LinphoneRegistrationProgress: {
@@ -171,7 +171,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 						   OnSuccess:^(NSString *url) {
 							 if (url) {
 								 linphone_core_set_provisioning_uri(LC, url.UTF8String);
-								 [[LinphoneManager instance] resetLinphoneCore];
+								 [LinphoneManager.instance resetLinphoneCore];
 							 } else {
 								 _waitView.hidden = YES;
 							 }

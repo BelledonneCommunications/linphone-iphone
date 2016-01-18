@@ -682,24 +682,23 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (IBAction)onChatClick:(id)sender {
-	ChatsListView *view = VIEW(ChatsListView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 }
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[[LinphoneManager instance] setBluetoothEnabled:TRUE];
+	[LinphoneManager.instance setBluetoothEnabled:TRUE];
 }
 
 - (IBAction)onRoutesEarpieceClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[[LinphoneManager instance] setSpeakerEnabled:FALSE];
-	[[LinphoneManager instance] setBluetoothEnabled:FALSE];
+	[LinphoneManager.instance setSpeakerEnabled:FALSE];
+	[LinphoneManager.instance setBluetoothEnabled:FALSE];
 }
 
 - (IBAction)onRoutesSpeakerClick:(id)sender {
 	[self hideRoutes:TRUE animated:TRUE];
-	[[LinphoneManager instance] setSpeakerEnabled:TRUE];
+	[LinphoneManager.instance setSpeakerEnabled:TRUE];
 }
 
 - (IBAction)onRoutesClick:(id)sender {
@@ -712,22 +711,18 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (IBAction)onOptionsTransferClick:(id)sender {
 	[self hideOptions:TRUE animated:TRUE];
-	// Go to dialer view
 	DialerView *view = VIEW(DialerView);
+	[view setAddress:@""];
+	[view setTransferMode:TRUE];
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-	if (view != nil) {
-		[view setAddress:@""];
-		[view setTransferMode:TRUE];
-	}
 }
 
 - (IBAction)onOptionsAddClick:(id)sender {
 	[self hideOptions:TRUE animated:TRUE];
-	// Go to dialer view
 	DialerView *view = VIEW(DialerView);
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	[view setAddress:@""];
 	[view setTransferMode:FALSE];
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (IBAction)onOptionsClick:(id)sender {

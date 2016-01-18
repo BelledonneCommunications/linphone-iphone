@@ -22,7 +22,7 @@
 }
 
 + (FileTransferDelegate *)messageDelegate:(LinphoneChatMessage *)message {
-	for (FileTransferDelegate *ftd in [[LinphoneManager instance] fileTransferDelegates]) {
+	for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		if (ftd.message == message) {
 			return ftd;
 		}
@@ -47,14 +47,13 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 		UIImage *image = [UIImage imageWithData:thiz.data];
 
 		CFBridgingRetain(thiz);
-		[[[LinphoneManager instance] fileTransferDelegates] removeObject:thiz];
+		[[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
 
 		// until image is properly saved, keep a reminder on it so that the
 		// chat bubble is aware of the fact that image is being saved to device
 		[LinphoneManager setValueInMessageAppData:@"saving..." forKey:@"localimage" inMessage:message];
 
-		[[LinphoneManager instance]
-				.photoLibrary
+		[LinphoneManager.instance.photoLibrary
 			writeImageToSavedPhotosAlbum:image.CGImage
 							 orientation:(ALAssetOrientation)[image imageOrientation]
 						 completionBlock:^(NSURL *assetURL, NSError *error) {
@@ -172,7 +171,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 }
 
 - (BOOL)download:(LinphoneChatMessage *)message {
-	[[[LinphoneManager instance] fileTransferDelegates] addObject:self];
+	[[LinphoneManager.instance fileTransferDelegates] addObject:self];
 
 	_message = message;
 
@@ -191,7 +190,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 }
 
 - (void)stopAndDestroy {
-	[[[LinphoneManager instance] fileTransferDelegates] removeObject:self];
+	[[LinphoneManager.instance fileTransferDelegates] removeObject:self];
 	if (_message != NULL) {
 		LinphoneChatMessage *msg = _message;
 		_message = NULL;

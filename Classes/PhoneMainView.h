@@ -81,9 +81,7 @@
 @property(weak, readonly) UICompositeViewDescription *currentView;
 @property(readonly, strong) MPVolumeView *volumeView;
 
-- (void)changeCurrentView:(UICompositeViewDescription *)currentView;
-- (void)changeCurrentView:(UICompositeViewDescription *)currentView push:(BOOL)push;
-- (void)changeCurrentView:(UICompositeViewDescription *)view push:(BOOL)push animated:(BOOL)animated;
+- (void)changeCurrentView:(UICompositeViewDescription *)view;
 - (UIViewController*)popCurrentView;
 - (UIViewController *)popToView:(UICompositeViewDescription *)currentView;
 - (UICompositeViewDescription *)firstView;
