@@ -579,8 +579,11 @@ void linphone_call_increment_local_media_description(LinphoneCall *call){
 }
 
 void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call){
+	LinphoneCore *lc = call->core;
 	if (call->ice_session != NULL) {
-		_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+		/*set this to FALSE once flexisip are updated*/
+		bool_t use_nortpproxy = lp_config_get_int(lc->config, "sip", "ice_uses_nortpproxy", TRUE);
+		_update_local_media_description_from_ice(call->localdesc, call->ice_session, use_nortpproxy);
 		linphone_core_update_ice_state_in_call_stats(call);
 	}
 #ifdef BUILD_UPNP

@@ -4569,6 +4569,7 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 	LinphoneCallParams *params;
 	const LinphoneCallParams *current_params;
 	MSList *lcs=NULL;
+	bool_t calls_ok;
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -4581,7 +4582,10 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 
 	video_call_base_2(marie,pauline,TRUE,mode,TRUE,TRUE);
 
-	if (linphone_core_get_current_call(marie->lc)) {
+	calls_ok = linphone_core_get_current_call(marie->lc) != NULL && linphone_core_get_current_call(pauline->lc) != NULL;
+	BC_ASSERT_TRUE(calls_ok);
+	
+	if (calls_ok) {
 		params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionInactive);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionInactive);
