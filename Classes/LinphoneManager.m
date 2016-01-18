@@ -1441,7 +1441,7 @@ static BOOL libStarted = FALSE;
 		return;
 	}
 	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
-	[Log enableLogs:([self lpConfigBoolForKey:@"debugenable_preference"] || LinphoneManager.instance.isTesting)];
+	[Log enableLogs:[self lpConfigBoolForKey:@"debugenable_preference"]];
 	connectivity = none;
 
 	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
