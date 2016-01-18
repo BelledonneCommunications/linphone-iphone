@@ -56,7 +56,6 @@
 }
 
 + (void)enableLogs:(BOOL)enabled {
-	[LinphoneManager.instance lpConfigSetBool:enabled forKey:@"debugenable_preference"];
 	linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
 	if (enabled) {
 		NSLog(@"Enabling debug logs");
