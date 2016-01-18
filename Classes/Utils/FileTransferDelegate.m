@@ -202,7 +202,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		linphone_chat_message_cancel_file_transfer(msg);
 	}
 	_data = nil;
-	LOGI(@"%p Destroying", self);
+	LOGD(@"%p Destroying", self);
 }
 
 - (void)cancel {

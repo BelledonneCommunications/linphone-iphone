@@ -156,21 +156,13 @@
 	[_ftd download:self.message];
 	_cancelButton.hidden = NO;
 	_downloadButton.hidden = YES;
-
-	// we must tell the tableview to refresh the cell to reflect its internal state
-	ChatConversationView *view = VIEW(ChatConversationView);
-	[view.tableController updateChatEntry:self.message];
 }
 
 - (IBAction)onCancelClick:(id)sender {
 	FileTransferDelegate *tmp = _ftd;
 	[self disconnectFromFileDelegate];
-	[tmp cancel];
 	_fileTransferProgress.progress = 0;
-	[self update];
-	// we must tell the tableview to refresh the cell to reflect its internal state
-	ChatConversationView *view = VIEW(ChatConversationView);
-	[view.tableController updateChatEntry:self.message];
+	[tmp cancel];
 }
 
 - (void)onResendClick:(id)event {
