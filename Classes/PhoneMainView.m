@@ -322,11 +322,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallPausedByRemote:
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning: {
-			if ((currentView == CallView.compositeViewDescription) ||
-				(currentView == CallIncomingView.compositeViewDescription) ||
-				(currentView == CallOutgoingView.compositeViewDescription)) {
-				[self popCurrentView];
-			}
 			[self changeCurrentView:CallView.compositeViewDescription];
 			break;
 		}
@@ -585,12 +580,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (UIViewController *)popToView:(UICompositeViewDescription *)view {
 	NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
-	while ([viewStack count] > 1 && ![[viewStack lastObject] equal:view]) {
+	while (viewStack.count > 0 && ![[viewStack lastObject] equal:view]) {
 		[viewStack removeLastObject];
 	}
-	return [self _changeCurrentView:[viewStack lastObject]
-						 transition:[PhoneMainView getBackwardTransition]
-						   animated:ANIMATED];
+	return [self _changeCurrentView:view transition:[PhoneMainView getBackwardTransition] animated:ANIMATED];
 }
 
 - (UICompositeViewDescription *)firstView {

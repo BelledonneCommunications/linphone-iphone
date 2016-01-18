@@ -265,7 +265,7 @@
 		[self setBool:(pol->automatically_accept) forKey:@"accept_video_preference"];
 		[self setBool:linphone_core_self_view_enabled(lc) forKey:@"self_video_preference"];
 		BOOL previewEnabled = [lm lpConfigBoolForKey:@"preview_preference" withDefault:YES];
-		[self setBool:previewEnabled forKey:@"preview_preference"];
+		[self setBool:IPAD && previewEnabled forKey:@"preview_preference"];
 
 		const char *preset = linphone_core_get_video_preset(lc);
 		[self setCString:preset ? preset : "default" forKey:@"video_preset_preference"];
@@ -655,7 +655,7 @@
 		policy.automatically_accept = [self boolForKey:@"accept_video_preference"];
 		linphone_core_set_video_policy(lc, &policy);
 		linphone_core_enable_self_view(lc, [self boolForKey:@"self_video_preference"]);
-		BOOL preview_preference = [self boolForKey:@"preview_preference"];
+		BOOL preview_preference = IPAD && [self boolForKey:@"preview_preference"];
 		[lm lpConfigSetInt:preview_preference forKey:@"preview_preference"];
 
 		NSString *videoPreset = [self stringForKey:@"video_preset_preference"];

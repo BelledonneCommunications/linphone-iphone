@@ -123,11 +123,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_routesEarpieceButton.selected = !_routesBluetoothButton.selected && !_routesSpeakerButton.selected;
 
 	if (hidden != _routesView.hidden) {
-		//		if (animated) {
-		//			[self hideAnimation:hidden forView:_routesView completion:nil];
-		//		} else {
 		[_routesView setHidden:hidden];
-		//		}
 	}
 }
 

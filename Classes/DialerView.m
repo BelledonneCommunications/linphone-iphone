@@ -140,6 +140,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[backgroundView setHidden:TRUE];
 			[videoCameraSwitch setHidden:TRUE];
 		}
+	} else {
+		linphone_core_enable_video_preview(lc, FALSE);
 	}
 	[addressField setText:@""];
 }
@@ -358,6 +360,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	if (textField == addressField) {
 		[addressField resignFirstResponder];
+	}
+	if (textField.text.length > 0) {
+		LinphoneAddress *addr = linphone_core_interpret_url(LC, textField.text.UTF8String);
+		[LinphoneManager.instance call:addr transfer:FALSE];
+		if (addr)
+			linphone_address_destroy(addr);
 	}
 	return YES;
 }
