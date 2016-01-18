@@ -613,7 +613,9 @@ void __sal_op_set_network_origin(SalOp *op, const char *origin){
 }
 
 void __sal_op_set_remote_contact(SalOp *op, const char* remote_contact){
-	SET_PARAM(op,remote_contact);
+	assign_address(&((SalOpBase*)op)->remote_contact_address,remote_contact);\
+	/*to preserve header params*/
+	assign_string(&((SalOpBase*)op)->remote_contact,remote_contact); \
 }
 
 void __sal_op_set_network_origin_address(SalOp *op, SalAddress *origin){

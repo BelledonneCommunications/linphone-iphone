@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sipsetup.h"
 #include "lpconfig.h"
 #include "private.h"
+#include "conference_private.h"
 #include <ortp/event.h>
 #include <ortp/b64.h>
 #include <math.h>
@@ -578,8 +579,11 @@ void linphone_call_increment_local_media_description(LinphoneCall *call){
 }
 
 void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call){
+	LinphoneCore *lc = call->core;
 	if (call->ice_session != NULL) {
-		_update_local_media_description_from_ice(call->localdesc, call->ice_session);
+		/*set this to FALSE once flexisip are updated*/
+		bool_t use_nortpproxy = lp_config_get_int(lc->config, "sip", "ice_uses_nortpproxy", TRUE);
+		_update_local_media_description_from_ice(call->localdesc, call->ice_session, use_nortpproxy);
 		linphone_core_update_ice_state_in_call_stats(call);
 	}
 #ifdef BUILD_UPNP
@@ -1091,7 +1095,9 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_call_get_local_ip(call, to);
 	call->params = linphone_call_params_copy(params);
 	linphone_call_init_common(call, from, to);
-
+	
+	call->current_params->update_call_when_ice_completed = call->params->update_call_when_ice_completed; /*copy param*/
+	
 	linphone_call_fill_media_multicast_addr(call);
 
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
@@ -1299,6 +1305,9 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	 */
 	/*set privacy*/
 	call->current_params->privacy=(LinphonePrivacyMask)sal_op_get_privacy(call->op);
+	/*config params*/
+	call->current_params->update_call_when_ice_completed = call->params->update_call_when_ice_completed; /*copy config params*/
+	
 	/*set video support */
 	call->params->has_video = linphone_core_video_enabled(lc) && lc->video_policy.automatically_accept;
 	if (md) {
@@ -1753,7 +1762,8 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 			if ((all_streams_encrypted = linphone_call_all_streams_encrypted(call)) && linphone_call_get_authentication_token(call)) {
 				call->current_params->media_encryption=LinphoneMediaEncryptionZRTP;
 			} else {
-				ms_message("Encryption was requested to be %s, but isn't effective (all_streams_encrypted=%i, auth_token=%s)",
+				/*to avoid to many traces*/
+				ms_debug("Encryption was requested to be %s, but isn't effective (all_streams_encrypted=%i, auth_token=%s)",
 					linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted, call->auth_token == NULL ? "" : call->auth_token);
 				call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 			}
@@ -1765,7 +1775,8 @@ const LinphoneCallParams * linphone_call_get_current_params(LinphoneCall *call){
 			if (linphone_call_get_n_active_streams(call)==0 || (all_streams_encrypted = linphone_call_all_streams_encrypted(call))) {
 				call->current_params->media_encryption = call->params->media_encryption;
 			} else {
-				ms_message("Encryption was requested to be %s, but isn't effective (all_streams_encrypted=%i)",
+				/*to avoid to many traces*/
+				ms_debug("Encryption was requested to be %s, but isn't effective (all_streams_encrypted=%i)",
 					linphone_media_encryption_to_string(call->params->media_encryption), all_streams_encrypted);
 				call->current_params->media_encryption=LinphoneMediaEncryptionNone;
 			}
@@ -1981,12 +1992,9 @@ const char *linphone_call_get_remote_user_agent(LinphoneCall *call){
  * Returns the far end's sip contact as a string, if available.
 **/
 const char *linphone_call_get_remote_contact(LinphoneCall *call){
-	const LinphoneCallParams* lcp = linphone_call_get_remote_params(call);
-	if( lcp ){
-		// we're not using sal_op_get_remote_contact() here because the returned value is stripped from
-		// params that we need, like the instanceid. Getting it from the headers will make sure we
-		// get everything
-		return linphone_call_params_get_custom_header(lcp, "Contact");
+	if( call->op ){
+		/*sal_op_get_remote_contact preserves header params*/
+		return sal_op_get_remote_contact(call->op);
 	}
 	return NULL;
 }
@@ -2397,6 +2405,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 
 		rtp_session_get_transports(audiostream->ms.sessions.rtp_session,&meta_rtp,&meta_rtcp);
 		if (meta_rtp_transport_get_endpoint(meta_rtp) == NULL) {
+			ms_message("LinphoneCall[%p]: using custom audio RTP transport endpoint.", call);
 			meta_rtp_transport_set_endpoint(meta_rtp,lc->rtptf->audio_rtp_func(lc->rtptf->audio_rtp_func_data, call->media_ports[call->main_audio_stream_index].rtp_port));
 		}
 		if (meta_rtp_transport_get_endpoint(meta_rtcp) == NULL) {
@@ -2465,6 +2474,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 
 			rtp_session_get_transports(call->videostream->ms.sessions.rtp_session,&meta_rtp,&meta_rtcp);
 			if (meta_rtp_transport_get_endpoint(meta_rtp) == NULL) {
+				ms_message("LinphoneCall[%p]: using custom video RTP transport endpoint.", call);
 				meta_rtp_transport_set_endpoint(meta_rtp,lc->rtptf->video_rtp_func(lc->rtptf->video_rtp_func_data, call->media_ports[call->main_video_stream_index].rtp_port));
 			}
 			if (meta_rtp_transport_get_endpoint(meta_rtcp) == NULL) {
@@ -3098,7 +3108,7 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 				}
 			}
 
-			ms_media_stream_sessions_set_encryption_mandatory(&call->audiostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
+			ms_media_stream_sessions_set_encryption_mandatory(&call->audiostream->ms.sessions,call->current_params->encryption_mandatory);
 
 			if (next_state == LinphoneCallPaused && captcard == NULL && playfile != NULL){
 				int pause_time=500;
@@ -3277,7 +3287,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 							used_pt, &io);
 					}
 				}
-				ms_media_stream_sessions_set_encryption_mandatory(&call->videostream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
+				ms_media_stream_sessions_set_encryption_mandatory(&call->videostream->ms.sessions,call->current_params->encryption_mandatory);
 				_linphone_call_set_next_video_frame_decoded_trigger(call);
 			}
 		}else ms_warning("No video stream accepted.");
@@ -3335,7 +3345,7 @@ static void linphone_call_start_text_stream(LinphoneCall *call) {
 			text_stream_start(call->textstream, call->text_profile, rtp_addr, tstream->rtp_port, rtcp_addr, (linphone_core_rtcp_enabled(lc) && !is_multicast)  ? (tstream->rtcp_port ? tstream->rtcp_port : tstream->rtp_port + 1) : 0, used_pt);
 			ms_filter_add_notify_callback(call->textstream->rttsink, real_time_text_character_received, call, FALSE);
 
-			ms_media_stream_sessions_set_encryption_mandatory(&call->textstream->ms.sessions,linphone_core_is_media_encryption_mandatory(call->core));
+			ms_media_stream_sessions_set_encryption_mandatory(&call->textstream->ms.sessions,call->current_params->encryption_mandatory);
 		} else ms_warning("No text stream accepted.");
 	} else {
 		ms_message("No valid text stream defined.");
@@ -3428,6 +3438,10 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 		ms_fatal("start_media_stream() called without prior init !");
 		return;
 	}
+	if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
+		call->current_params->encryption_mandatory = TRUE;
+		ms_message("Forcing encryption mandatory on call [%p]",call);
+	}
 
 	call->nb_media_starts++;
 #if defined(VIDEO_ENABLED)
@@ -3484,6 +3498,10 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 	set_dtls_fingerprint_on_all_streams(call);
 
 	if ((call->ice_session != NULL) && (ice_session_state(call->ice_session) != IS_Completed)) {
+		if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
+			call->current_params->update_call_when_ice_completed = FALSE;
+			ms_message("Disabling update call when ice completed on call [%p]",call);
+		}
 		ice_session_start_connectivity_checks(call->ice_session);
 	} else {
 		/*should not start dtls until ice is completed*/
@@ -3910,7 +3928,7 @@ static bool_t ice_in_progress(LinphoneCallStats *stats){
 
 /**
  * Indicates whether an operation is in progress at the media side.
- * It can a bad idea to initiate signaling operations (adding video, pausing the call, removing video, changing video parameters) while
+ * It can be a bad idea to initiate signaling operations (adding video, pausing the call, removing video, changing video parameters) while
  * the media is busy in establishing the connection (typically ICE connectivity checks). It can result in failures generating loss of time
  * in future operations in the call.
  * Applications are invited to check this function after each call state change to decide whether certain operations are permitted or not.
@@ -4263,7 +4281,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			case IS_Completed:
 				ice_session_select_candidates(call->ice_session);
 				if (ice_session_role(call->ice_session) == IR_Controlling
-						&& lp_config_get_int(call->core->config, "sip", "update_call_when_ice_completed", TRUE)) {
+						&& params->update_call_when_ice_completed) {
 					params->internal_call_update = TRUE;
 					linphone_core_update_call(call->core, call, params);
 				}

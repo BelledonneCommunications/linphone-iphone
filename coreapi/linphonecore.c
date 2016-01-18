@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "quality_reporting.h"
 #include "lime.h"
+#include "conference_private.h"
 
 #include <math.h>
 #include <sys/types.h>
@@ -5394,7 +5395,7 @@ void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy 
  * See linphone_core_set_video_policy() for more details.
  * @ingroup media_parameters
 **/
-const LinphoneVideoPolicy *linphone_core_get_video_policy(LinphoneCore *lc){
+const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc){
 	return &lc->video_policy;
 }
 
@@ -7114,6 +7115,8 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);
 	params->audio_multicast_enabled=linphone_core_audio_multicast_enabled(lc);
 	params->video_multicast_enabled=linphone_core_video_multicast_enabled(lc);
+	params->update_call_when_ice_completed = lp_config_get_int(lc->config, "sip", "update_call_when_ice_completed", TRUE);
+	params->encryption_mandatory = linphone_core_is_media_encryption_mandatory(lc);
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {
@@ -7488,20 +7491,30 @@ LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc) {
 	return lc->ringtoneplayer;
 }
 
-int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
+LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc, const LinphoneConferenceParams *params) {
 	const char *conf_method_name;
 	if(lc->conf_ctx == NULL) {
 		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_type", "local");
 		if(strcasecmp(conf_method_name, "local") == 0) {
-			lc->conf_ctx = linphone_local_conference_new(lc);
+			lc->conf_ctx = linphone_local_conference_new_with_params(lc, params);
 		} else if(strcasecmp(conf_method_name, "remote") == 0) {
-			lc->conf_ctx = linphone_remote_conference_new(lc);
+			lc->conf_ctx = linphone_remote_conference_new_with_params(lc, params);
 		} else {
 			ms_error("'%s' is not a valid conference method", conf_method_name);
-			return -1;
+			return NULL;
 		}
+	} else {
+		ms_error("Could not create a conference: a conference instance already exists");
+		return NULL;
 	}
-	return linphone_conference_add_participant(lc->conf_ctx, call);
+	return lc->conf_ctx;
+}
+
+int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
+	LinphoneConference *conference = linphone_core_get_conference(lc);
+	if(conference == NULL) conference = linphone_core_create_conference_with_params(lc, NULL);
+	if(conference) return linphone_conference_add_participant(lc->conf_ctx, call);
+	else return -1;
 }
 
 int linphone_core_add_all_to_conference(LinphoneCore *lc) {

@@ -2808,6 +2808,10 @@ extern "C" jint Java_org_linphone_core_LinphoneCallLogImpl_getCallDuration(JNIEn
 	return (jint)((LinphoneCallLog*)ptr)->duration;
 }
 
+extern "C" jboolean Java_org_linphone_core_LinphoneCallLogImpl_wasConference(JNIEnv *env, jobject thiz, jlong ptr) {
+	return linphone_call_log_was_conference((LinphoneCallLog *)ptr);
+}
+
 /* CallStats */
 extern "C" jint Java_org_linphone_core_LinphoneCallStatsImpl_getMediaType(JNIEnv *env, jobject thiz, jlong stats_ptr) {
 	return (jint)((LinphoneCallStats *)stats_ptr)->type;
@@ -4348,6 +4352,21 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_terminateConference(JNIE
 }
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getConferenceSize(JNIEnv *env,jobject thiz,jlong pCore) {
 	return (jint)linphone_core_get_conference_size((LinphoneCore *) pCore);
+}
+
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_createConference(JNIEnv *env, jobject thiz, jlong corePtr, jobject jparams) {
+	jclass params_class = env->FindClass("org/linphone/core/LinphoneConferenceParamsImpl");
+	jclass conference_class = env->FindClass("org/linphone/core/LinphoneConferenceImpl");
+	jfieldID params_native_ptr_attr = env->GetFieldID(params_class, "nativePtr", "J");
+	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)V");
+	LinphoneConferenceParams *params = NULL;
+	LinphoneConference *conference;
+	jobject jconference;
+	
+	if(jparams) params = (LinphoneConferenceParams *)env->GetLongField(params_class, params_native_ptr_attr);
+	conference = linphone_core_create_conference_with_params((LinphoneCore *)corePtr, params);
+	if(conference) return env->NewObject(conference_class, conference_constructor, (jlong)conference);
+	else return NULL;
 }
 
 extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getConference(JNIEnv *env, jobject thiz, jlong pCore) {
@@ -6777,6 +6796,32 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setNortpTimeout(J
  */
 JNIEXPORT jint JNICALL Java_org_linphone_core_LinphoneCoreImpl_getNortpTimeout(JNIEnv *env, jobject obj, jlong core){
 	return linphone_core_get_nortp_timeout((LinphoneCore*)core);
+}
+
+
+
+extern "C" jlong Java_org_linphone_core_LinphoneConferenceParamsImpl_createInstance(JNIEnv *env, jobject thiz, jobject jcore) {
+	jclass core_class = env->FindClass("org/linphone/core/LinphoneCoreImpl");
+	jfieldID native_ptr_attr = env->GetFieldID(core_class, "nativePtr", "J");
+	LinphoneCore *core = NULL;
+	if(jcore) core = (LinphoneCore *)env->GetLongField(jcore, native_ptr_attr);
+	return (jlong)linphone_conference_params_new(core);
+}
+
+extern "C" jlong Java_org_linphone_core_LinphoneConferenceParamsImpl_copyInstance(JNIEnv *env, jobject thiz, jlong paramsPtr) {
+	return (jlong)linphone_conference_params_clone((LinphoneConferenceParams *)paramsPtr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneConferenceParamsImpl_destroyInstance(JNIEnv *env, jobject thiz, jlong paramsPtr) {
+	linphone_conference_params_free((LinphoneConferenceParams *)paramsPtr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneConferenceParamsImpl_enableVideo(JNIEnv *env, jobject thiz, jlong paramsPtr, jboolean enable) {
+	linphone_conference_params_enable_video((LinphoneConferenceParams *)paramsPtr, enable);
+}
+
+extern "C" jboolean Java_org_linphone_core_LinphoneConferenceParamsImpl_isVideoEnabled(JNIEnv *env, jobject thiz, jlong paramsPtr) {
+	return linphone_conference_params_video_requested((LinphoneConferenceParams *)paramsPtr);
 }
 
 

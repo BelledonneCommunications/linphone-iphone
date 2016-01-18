@@ -24,7 +24,7 @@
  */
 
 #include "private.h"
-#include "conference.h"
+#include "conference_private.h"
 #include <mediastreamer2/msvolume.h>
 #include <typeinfo>
 #include <list>
@@ -49,8 +49,20 @@ private:
 
 class Conference {
 public:
-	Conference(LinphoneCore *core);
+	class Params {
+	public:
+		Params(const LinphoneCore *core = NULL);
+		void enableVideo(bool enable) {m_enableVideo = enable;}
+		bool videoRequested() const {return m_enableVideo;}
+		
+	private:
+		bool m_enableVideo;
+	};
+	
+	Conference(LinphoneCore *core, const Params *params = NULL);
 	virtual ~Conference() {};
+	
+	const Params &getCurrentParams() const {return m_currentParams;}
 	
 	virtual int addParticipant(LinphoneCall *call) = 0;
 	virtual int removeParticipant(LinphoneCall *call) = 0;
@@ -83,11 +95,12 @@ protected:
 	AudioStream *m_localParticipantStream;
 	bool m_isMuted;
 	std::list<Participant> m_participants;
+	Params m_currentParams;
 };
 
 class LocalConference: public Conference {
 public:
-	LocalConference(LinphoneCore *core);
+	LocalConference(LinphoneCore *core, const Params *params = NULL);
 	virtual ~LocalConference();
 	
 	virtual int addParticipant(LinphoneCall *call);
@@ -103,9 +116,9 @@ public:
 	virtual int startRecording(const char *path);
 	virtual int stopRecording();
 	
-	void onCallStreamStarting(LinphoneCall *call, bool isPausedByRemote);
-	void onCallStreamStopping(LinphoneCall *call);
-	void onCallTerminating(LinphoneCall *call);
+	virtual void onCallStreamStarting(LinphoneCall *call, bool isPausedByRemote);
+	virtual void onCallStreamStopping(LinphoneCall *call);
+	virtual void onCallTerminating(LinphoneCall *call);
 	
 private:
 	void addLocalEndpoint();
@@ -124,7 +137,7 @@ private:
 
 class RemoteConference: public Conference {
 public:
-	RemoteConference(LinphoneCore *core);
+	RemoteConference(LinphoneCore *core, const Params *params = NULL);
 	virtual ~RemoteConference();
 	
 	virtual int addParticipant(LinphoneCall *call);
@@ -190,10 +203,20 @@ bool Participant::operator==(const Participant &src) const {
 
 
 
-Conference::Conference(LinphoneCore *core) :
+Conference::Params::Params(const LinphoneCore *core): m_enableVideo(false) {
+	if(core) {
+		const LinphoneVideoPolicy *policy = linphone_core_get_video_policy(core);
+		if(policy->automatically_initiate) m_enableVideo = true;
+	}
+}
+
+
+
+Conference::Conference(LinphoneCore *core, const Conference::Params *params):
 	m_core(core),
 	m_localParticipantStream(NULL),
 	m_isMuted(false) {
+	if(params) m_currentParams = *params;
 }
 
 int Conference::addParticipant(LinphoneCall *call) {
@@ -255,15 +278,16 @@ Participant *Conference::find_participant(const LinphoneAddress *uri) {
 
 
 
-LocalConference::LocalConference(LinphoneCore *core): Conference(core),
+LocalConference::LocalConference(LinphoneCore *core, const Conference::Params *params):
+	Conference(core, params),
 	m_conf(NULL),
 	m_localEndpoint(NULL),
 	m_recordEndpoint(NULL),
 	m_localDummyProfile(NULL),
 	m_terminated(FALSE) {
-	MSAudioConferenceParams params;
-	params.samplerate = lp_config_get_int(m_core->config, "sound","conference_rate",16000);
-	m_conf=ms_audio_conference_new(&params);
+	MSAudioConferenceParams ms_conf_params;
+	ms_conf_params.samplerate = lp_config_get_int(m_core->config, "sound","conference_rate",16000);
+	m_conf=ms_audio_conference_new(&ms_conf_params);
 }
 
 LocalConference::~LocalConference() {
@@ -548,8 +572,8 @@ void LocalConference::onCallTerminating(LinphoneCall *call) {
 
 
 
-RemoteConference::RemoteConference(LinphoneCore *core):
-	Conference(core),
+RemoteConference::RemoteConference(LinphoneCore *core, const Conference::Params *params):
+	Conference(core, params),
 	m_focusAddr(NULL),
 	m_focusContact(NULL),
 	m_focusCall(NULL),
@@ -573,6 +597,7 @@ RemoteConference::~RemoteConference() {
 
 int RemoteConference::addParticipant(LinphoneCall *call) {
 	LinphoneAddress *addr;
+	LinphoneCallParams *params;
 	
 	switch(m_state) {
 		case NotConnectedToFocus:
@@ -580,12 +605,17 @@ int RemoteConference::addParticipant(LinphoneCall *call) {
 			ms_message("Calling the conference focus (%s)", m_focusAddr);
 			addr = linphone_address_new(m_focusAddr);
 			if(addr) {
-				m_focusCall = linphone_call_ref(linphone_core_invite_address(m_core, addr));
+				params = linphone_core_create_call_params(m_core, NULL);
+				linphone_call_params_enable_video(params, m_currentParams.videoRequested());
+				m_focusCall = linphone_call_ref(linphone_core_invite_address_with_params(m_core, addr, params));
 				m_localParticipantStream = m_focusCall->audiostream;
 				m_pendingCalls = ms_list_append(m_pendingCalls, linphone_call_ref(call));
 				m_state = ConnectingToFocus;
-				linphone_address_unref(addr);
 				call->conf_ref = (LinphoneConference *)this;
+				LinphoneCallLog *callLog = linphone_call_get_call_log(m_focusCall);
+				callLog->was_conference = TRUE;
+				linphone_address_unref(addr);
+				linphone_call_params_unref(params);
 				return 0;
 			} else return -1;
 
@@ -784,12 +814,42 @@ void RemoteConference::transferStateChanged(LinphoneCore *lc, LinphoneCall *tran
 
 
 
+LinphoneConferenceParams *linphone_conference_params_new(const LinphoneCore *core) {
+	return (LinphoneConferenceParams *)new Conference::Params(core);
+}
+
+void linphone_conference_params_free(LinphoneConferenceParams *params) {
+	delete (Conference::Params *)params;
+}
+
+LinphoneConferenceParams *linphone_conference_params_clone(const LinphoneConferenceParams *params) {
+	return (LinphoneConferenceParams *)new Conference::Params(*(Conference::Params *)params);
+}
+
+void linphone_conference_params_enable_video(LinphoneConferenceParams *params, bool_t enable) {
+	((Conference::Params *)params)->enableVideo(enable);
+}
+
+bool_t linphone_conference_params_video_requested(const LinphoneConferenceParams *params) {
+	return ((Conference::Params *)params)->videoRequested();
+}
+
+
+
 LinphoneConference *linphone_local_conference_new(LinphoneCore *core) {
 	return (LinphoneConference *) new LocalConference(core);
 }
 
+LinphoneConference *linphone_local_conference_new_with_params(LinphoneCore *core, const LinphoneConferenceParams *params) {
+	return (LinphoneConference *) new LocalConference(core, (Conference::Params *)params);
+}
+
 LinphoneConference *linphone_remote_conference_new(LinphoneCore *core) {
 	return (LinphoneConference *) new RemoteConference(core);
+}
+
+LinphoneConference *linphone_remote_conference_new_with_params(LinphoneCore *core, const LinphoneConferenceParams *params) {
+	return (LinphoneConference *) new RemoteConference(core, (Conference::Params *)params);
 }
 
 void linphone_conference_free(LinphoneConference *obj) {

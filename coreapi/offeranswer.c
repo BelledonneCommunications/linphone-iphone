@@ -485,7 +485,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
 	strcpy(result->ice_pwd, local_cap->ice_pwd);
 	strcpy(result->ice_ufrag, local_cap->ice_ufrag);
 	result->ice_mismatch = local_cap->ice_mismatch;
-	result->ice_completed = local_cap->ice_completed;
+	result->set_nortpproxy = local_cap->set_nortpproxy;
 	memcpy(result->ice_candidates, local_cap->ice_candidates, sizeof(result->ice_candidates));
 	memcpy(result->ice_remote_candidates, local_cap->ice_remote_candidates, sizeof(result->ice_remote_candidates));
 	strcpy(result->name,local_cap->name);
@@ -603,7 +603,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 	strcpy(result->ice_pwd, local_capabilities->ice_pwd);
 	strcpy(result->ice_ufrag, local_capabilities->ice_ufrag);
 	result->ice_lite = local_capabilities->ice_lite;
-	result->ice_completed = local_capabilities->ice_completed;
+	result->set_nortpproxy = local_capabilities->set_nortpproxy;
 	result->custom_sdp_attributes = sal_custom_sdp_attribute_clone(local_capabilities->custom_sdp_attributes);
 
 	strcpy(result->name,local_capabilities->name);

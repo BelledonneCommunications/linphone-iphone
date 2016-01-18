@@ -89,6 +89,7 @@ RtpTransport *TunnelManager::createRtpTransport(int port){
 	t->t_close=sCloseRtpTransport;
 	t->t_destroy=sDestroyRtpTransport;
 	t->data=socket;
+	ms_message("Creating tunnel RTP transport for local virtual port %i", port);
 	return t;
 }
 

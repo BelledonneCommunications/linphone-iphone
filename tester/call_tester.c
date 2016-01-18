@@ -321,10 +321,25 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 			&& linphone_core_get_firewall_policy(callee_mgr->lc) == LinphonePolicyUseIce
 			&& !linphone_core_sdp_200_ack_enabled(caller_mgr->lc) /*ice does not work with sdp less invite*/
 			&& lp_config_get_int(callee_mgr->lc->config, "sip", "update_call_when_ice_completed", TRUE)
-			&& lp_config_get_int(caller_mgr->lc->config, "sip", "update_call_when_ice_completed", TRUE)) {
+			&& lp_config_get_int(caller_mgr->lc->config, "sip", "update_call_when_ice_completed", TRUE)
+			&& linphone_core_get_media_encryption(caller_mgr->lc) != LinphoneMediaEncryptionDTLS /*no ice-reinvite with DTLS*/) {
 		BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+2));
 		BC_ASSERT_TRUE(wait_for(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+2));
 
+	} else if (linphone_core_get_firewall_policy(caller_mgr->lc) == LinphonePolicyUseIce) {
+		/* check no ice re-invite received*/
+		BC_ASSERT_FALSE(wait_for_until(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+2,2000));
+		BC_ASSERT_FALSE(wait_for_until(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+2,2000));
+		
+	}
+	if (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS ) {
+		if (linphone_core_get_current_call(caller_mgr->lc)->audiostream)
+			BC_ASSERT_TRUE(ms_media_stream_sessions_get_encryption_mandatory(&linphone_core_get_current_call(caller_mgr->lc)->audiostream->ms.sessions));
+#ifdef VIDEO_ENABLED
+		if (linphone_core_get_current_call(caller_mgr->lc)->videostream && video_stream_started(linphone_core_get_current_call(caller_mgr->lc)->videostream))
+			BC_ASSERT_TRUE(ms_media_stream_sessions_get_encryption_mandatory(&linphone_core_get_current_call(caller_mgr->lc)->videostream->ms.sessions));
+#endif
+		
 	}
 	return result;
 }
