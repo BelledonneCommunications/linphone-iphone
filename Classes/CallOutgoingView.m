@@ -66,6 +66,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	[self hideSpeaker:LinphoneManager.instance.bluetoothAvailable];
+
+	[_speakerButton update];
+	[_microButton update];
+	[_routesButton update];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

@@ -10,6 +10,7 @@
                 <outlet property="addressLabel" destination="2fa-Ag-3GW" id="2Oe-UW-rPC"/>
                 <outlet property="avatarImage" destination="bNo-O5-DWh" id="eqo-0s-UoN"/>
                 <outlet property="landscapeView" destination="Czn-ec-dh8" id="ZIk-2g-9Qk"/>
+                <outlet property="microButton" destination="26e-Pj-2Oh" id="jXh-0n-yg7"/>
                 <outlet property="nameLabel" destination="d5s-yP-8VE" id="0VY-HP-ovD"/>
                 <outlet property="portraitView" destination="25" id="26I-da-00C"/>
                 <outlet property="routesBluetoothButton" destination="SH1-xD-Agw" id="ifX-Dy-Tcb"/>
