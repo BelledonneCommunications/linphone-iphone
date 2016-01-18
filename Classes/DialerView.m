@@ -313,9 +313,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[alertView addButtonWithTitle:actionLog
 								block:^{
 								  // enable / disable
-								  BOOL enableDebug = ![mgr lpConfigBoolForKey:@"debugenable_preference"];
-								  [mgr lpConfigSetBool:enableDebug forKey:@"debugenable_preference"];
-								  [mgr setLogsEnabled:enableDebug];
+								  BOOL enableDebug = !debugEnabled;
+								  [Log enableLogs:enableDebug];
 								}];
 
 		[alertView show];

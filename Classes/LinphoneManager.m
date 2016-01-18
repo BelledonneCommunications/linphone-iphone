@@ -1441,7 +1441,7 @@ static BOOL libStarted = FALSE;
 		return;
 	}
 	linphone_core_set_log_collection_path([[LinphoneManager cacheDirectory] UTF8String]);
-	[self setLogsEnabled:[self lpConfigBoolForKey:@"debugenable_preference"]];
+	[Log enableLogs:([self lpConfigBoolForKey:@"debugenable_preference"] || LinphoneManager.instance.isTesting)];
 	connectivity = none;
 
 	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
@@ -2130,25 +2130,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			linphone_core_set_payload_type_bitrate(theLinphoneCore, pt, bitrate);
 		}
 		codec = codec->next;
-	}
-}
-
-- (void)setLogsEnabled:(BOOL)enabled {
-	if ([LinphoneManager isRunningTests]) {
-		NSLog(@"Running tests, forcing logs to MESSAGE level");
-		linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-		linphone_core_set_log_level(ORTP_MESSAGE);
-	} else {
-		if (enabled) {
-			NSLog(@"Enabling debug logs");
-			linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-			linphone_core_set_log_level(ORTP_DEBUG);
-			linphone_core_enable_log_collection(enabled);
-		} else {
-			NSLog(@"Disabling debug logs");
-			linphone_core_enable_log_collection(enabled);
-			linphone_core_disable_logs();
-		}
 	}
 }
 

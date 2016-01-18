@@ -152,22 +152,6 @@
 		</dict>
 		<dict>
 			<key>Key</key>
-			<string>about_button</string>
-			<key>Title</key>
-			<string>About</string>
-			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
-		</dict>
-		<dict>
-			<key>Key</key>
-			<string>quit_button</string>
-			<key>Title</key>
-			<string>Quit</string>
-			<key>Type</key>
-			<string>IASKButtonSpecifier</string>
-		</dict>
-		<dict>
-			<key>Key</key>
 			<string>release_button</string>
 			<key>Title</key>
 			<string>Release core</string>

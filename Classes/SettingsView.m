@@ -414,7 +414,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		removeFromHiddenKeys = debugEnabled;
 		[keys addObject:@"send_logs_button"];
 		[keys addObject:@"reset_logs_button"];
-		[LinphoneManager.instance setLogsEnabled:debugEnabled];
+		[Log enableLogs:(debugEnabled || LinphoneManager.instance.isTesting)];
 	} else if ([@"account_mandatory_advanced_preference" compare:notif.object] == NSOrderedSame) {
 		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"account_mandatory_advanced_preference"] boolValue];
 		for (NSString *key in settingsStore->dict) {
@@ -534,9 +534,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[hiddenKeys addObject:@"in_call_timeout_preference"];
 
 	[hiddenKeys addObject:@"wifi_only_preference"];
-
-	[hiddenKeys addObject:@"quit_button"];  // Hide for the moment
-	[hiddenKeys addObject:@"about_button"]; // Hide for the moment
 
 	if (!linphone_core_video_supported(LC)) {
 		[hiddenKeys addObject:@"video_menu"];
@@ -700,8 +697,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 							  [_settingsController.navigationController popViewControllerAnimated:NO];
 							}];
 		[alert show];
-	} else if ([key isEqual:@"about_button"]) {
-		[PhoneMainView.instance changeCurrentView:AboutView.compositeViewDescription];
 	} else if ([key isEqual:@"reset_logs_button"]) {
 		linphone_core_reset_log_collection();
 	} else if ([key isEqual:@"send_logs_button"]) {

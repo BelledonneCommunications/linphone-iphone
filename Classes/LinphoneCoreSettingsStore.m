@@ -792,10 +792,6 @@
 
 	// advanced section
 	{
-		BOOL debugmode = [self boolForKey:@"debugenable_preference"];
-		[lm lpConfigSetInt:debugmode forKey:@"debugenable_preference"];
-		[LinphoneManager.instance setLogsEnabled:debugmode];
-
 		BOOL animations = [self boolForKey:@"animations_preference"];
 		[lm lpConfigSetInt:animations forKey:@"animations_preference"];
 
