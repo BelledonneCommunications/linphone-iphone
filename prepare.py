@@ -320,8 +320,10 @@ sdk:
 \t\techo "[{archs}] Mixing `basename $$archive` in $$destpath"; \\
 \t\tlipo -create $$all_paths -output $$destpath; \\
 \tdone; \\
-\techo 'NOTE: the following libraries were STUBBED:'; \\
-\tcat WORK/ios-{first_arch}/Build/dummy_libraries/dummy_libraries.txt
+\tif test -s WORK/ios-{first_arch}/Build/dummy_libraries/dummy_libraries.txt; then \\
+\t\techo 'NOTE: the following libraries were STUBBED:'; \\
+\t\tcat WORK/ios-{first_arch}/Build/dummy_libraries/dummy_libraries.txt; \\
+\tfi
 
 build: $(addsuffix -build, $(archs))
 \t$(MAKE) sdk
