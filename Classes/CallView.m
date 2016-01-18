@@ -147,6 +147,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_core_set_native_video_window_id(LC, (__bridge void *)(_videoView));
 	linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_videoPreview));
 
+	[self previewTouchLift];
+
 	// Enable tap
 	[singleFingerTap setEnabled:TRUE];
 
