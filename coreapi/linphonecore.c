@@ -287,24 +287,19 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 	ortp_gettimeofday(&tp, NULL);
 	tt = (time_t)tp.tv_sec;
 	lt = localtime((const time_t*)&tt);
-	switch(level){
-		case ORTP_DEBUG:
-			lname = "DEBUG";
-			break;
-		case ORTP_MESSAGE:
-			lname = "MESSAGE";
-			break;
-		case ORTP_WARNING:
-			lname = "WARNING";
-			break;
-		case ORTP_ERROR:
-			lname = "ERROR";
-			break;
-		case ORTP_FATAL:
-			lname = "FATAL";
-			break;
-		default:
-			ortp_fatal("Bad level !");
+
+	if ((level & ORTP_DEBUG) != 0) {
+		lname = "DEBUG";
+	} else if ((level & ORTP_MESSAGE) != 0) {
+		lname = "MESSAGE";
+	} else if ((level & ORTP_WARNING) != 0) {
+		lname = "WARNING";
+	} else if ((level & ORTP_ERROR) != 0) {
+		lname = "ERROR";
+	} else if ((level & ORTP_FATAL) != 0) {
+		lname = "FATAL";
+	} else {
+		ortp_fatal("Bad level !");
 	}
 	msg = ortp_strdup_vprintf(fmt, args);
 
@@ -725,42 +720,17 @@ void linphone_core_reset_log_collection(void) {
 	ortp_mutex_unlock(&liblinphone_log_collection_mutex);
 }
 
-/**
- * Enable logs in supplied FILE*.
- *
- * @ingroup misc
- * @deprecated Use #linphone_core_set_log_file and #linphone_core_set_log_level instead.
- *
- * @param file a C FILE* where to fprintf logs. If null stdout is used.
- *
-**/
 void linphone_core_enable_logs(FILE *file){
 	if (file==NULL) file=stdout;
 	ortp_set_log_file(file);
 	linphone_core_set_log_level(ORTP_MESSAGE);
 }
 
-/**
- * Enable logs through the user's supplied log callback.
- *
- * @ingroup misc
- * @deprecated Use #linphone_core_set_log_handler and #linphone_core_set_log_level instead.
- *
- * @param logfunc The address of a OrtpLogFunc callback whose protoype is
- *            	  typedef void (*OrtpLogFunc)(OrtpLogLevel lev, const char *fmt, va_list args);
- *
-**/
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
 	linphone_core_set_log_level(ORTP_MESSAGE);
 	linphone_core_set_log_handler(logfunc);
 }
 
-/**
- * Entirely disable logging.
- *
- * @ingroup misc
- * @deprecated Use #linphone_core_set_log_level instead.
-**/
 void linphone_core_disable_logs(void){
 	linphone_core_set_log_level(ORTP_ERROR);
 }
