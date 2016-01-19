@@ -96,7 +96,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native void setPreviewWindowId(long nativePtr, Object wid);
 	private native void setDeviceRotation(long nativePtr, int rotation);
 	private native void addFriend(long nativePtr,long friend);
-	private native void setFriendList(long nativePtr,long friendList);
+	private native void addFriendList(long nativePtr,long friendList);
+	private native void removeFriendList(long nativePtr,long friendList);
 	private native LinphoneFriend[] getFriendList(long nativePtr);
 	private native void setPresenceInfo(long nativePtr, int minutes_away, String alternative_contact, int status);
 	private native int getPresenceInfo(long nativePtr);
@@ -458,8 +459,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return new LinphoneFriendListImpl(this);
 	}
 	
-	public synchronized void setFriendList(LinphoneFriendList friendList) throws LinphoneCoreException {
-		setFriendList(nativePtr,((LinphoneFriendListImpl)friendList).nativePtr);
+	public synchronized void addFriendList(LinphoneFriendList friendList) throws LinphoneCoreException {
+		addFriendList(nativePtr,((LinphoneFriendListImpl)friendList).nativePtr);
+	}
+	
+	public synchronized void removeFriendList(LinphoneFriendList friendList) throws LinphoneCoreException {
+		removeFriendList(nativePtr,((LinphoneFriendListImpl)friendList).nativePtr);
 	}
 
 	public synchronized LinphoneFriend[] getFriendList() {

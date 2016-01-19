@@ -1958,12 +1958,20 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_exportFriendsToVCardFile
 	env->ReleaseStringUTFChars(jpath, path);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setFriendList(JNIEnv*  env
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriendList(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
 																			,jlong friendList
 																			) {
-	linphone_core_set_friend_list((LinphoneCore*)lc,(LinphoneFriendList*)friendList);
+	linphone_core_add_friend_list((LinphoneCore*)lc,(LinphoneFriendList*)friendList);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_removeFriendList(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc
+																			,jlong friendList
+																			) {
+	linphone_core_remove_friend_list((LinphoneCore*)lc,(LinphoneFriendList*)friendList);
 }
 
 extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendList(JNIEnv*  env

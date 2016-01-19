@@ -1000,9 +1000,14 @@ public interface LinphoneCore {
 	void addFriend(LinphoneFriend lf) throws LinphoneCoreException;
 	
 	/**
-	 * Sets the friend list for the linphone core.
+	 * Adds the friend list to the linphone core.
 	 */
-	void setFriendList(LinphoneFriendList friendList) throws LinphoneCoreException;
+	void addFriendList(LinphoneFriendList friendList) throws LinphoneCoreException;
+	
+	/**
+	 * Removes the friend list from the linphone core.
+	 */
+	void removeFriendList(LinphoneFriendList friendList) throws LinphoneCoreException;
 	
 	/**
 	 * Creates a friend list.
