@@ -147,19 +147,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)reset {
 	[LinphoneManager.instance removeAllAccounts];
-	[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
-
-	LinphoneCore *lc = LC;
-	LCSipTransports transportValue = {5060, 5060, -1, -1};
-
-	if (linphone_core_set_sip_transports(lc, &transportValue)) {
-		LOGE(@"cannot set transport");
-	}
-
-	[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"ice_preference"];
-	[LinphoneManager.instance lpConfigSetString:@"" forKey:@"stun_preference"];
-	linphone_core_set_stun_server(lc, NULL);
-	linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
 	[self resetTextFields];
 	[self changeView:_welcomeView back:FALSE animation:FALSE];
 	_waitView.hidden = TRUE;
