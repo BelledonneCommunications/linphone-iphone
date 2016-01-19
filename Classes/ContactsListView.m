@@ -111,6 +111,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[self changeView:ContactsLinphone];
+	if ([tableController totalNumberOfItems] == 0) {
+		[self changeView:ContactsAll];
+	}
 }
 
 - (void)viewWillAppear:(BOOL)animated {
