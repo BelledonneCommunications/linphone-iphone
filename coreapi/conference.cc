@@ -307,7 +307,7 @@ RtpProfile *LocalConference::sMakeDummyProfile(int samplerate){
 void LocalConference::addLocalEndpoint() {
 	/*create a dummy audiostream in order to extract the local part of it */
 	/* network address and ports have no meaning and are not used here. */
-	AudioStream *st=audio_stream_new(65000,65001,FALSE);
+	AudioStream *st=audio_stream_new(65000,65001,FALSE,m_core->factory);
 	MSSndCard *playcard=m_core->sound_conf.lsd_card ?
 			m_core->sound_conf.lsd_card : m_core->sound_conf.play_sndcard;
 	MSSndCard *captcard=m_core->sound_conf.capt_sndcard;
@@ -516,7 +516,7 @@ int LocalConference::startRecording(const char *path) {
 		return -1;
 	}
 	if (m_recordEndpoint==NULL){
-		m_recordEndpoint=ms_audio_endpoint_new_recorder();
+		m_recordEndpoint=ms_audio_endpoint_new_recorder(m_core->factory);
 		ms_audio_conference_add_member(m_conf,m_recordEndpoint);
 	}
 	ms_audio_recorder_endpoint_start(m_recordEndpoint,path);
