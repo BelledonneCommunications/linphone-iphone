@@ -145,7 +145,7 @@ static PayloadType * generic_match(const MSList *local_payloads, const PayloadTy
 
 
 void linphone_core_register_offer_answer_providers(LinphoneCore *lc){
-	MSFactory *factory = ms_factory_get_fallback();
+	MSFactory *factory = lc->factory;
 	ms_factory_register_offer_answer_provider(factory, &red_offer_answer_provider);
 	ms_factory_register_offer_answer_provider(factory, &g729a_offer_answer_provider);
 	ms_factory_register_offer_answer_provider(factory, &opus_offer_answer_provider);

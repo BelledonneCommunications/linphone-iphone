@@ -979,9 +979,9 @@ static void discover_mtu(LinphoneCore *lc, const char *remote){
 		/*attempt to discover mtu*/
 		mtu=ms_discover_mtu(remote);
 		if (mtu>0){
-			ms_set_mtu(mtu);
+			ms_factory_set_mtu(lc->factory, mtu);
 			ms_message("Discovered mtu is %i, RTP payload max size is %i",
-				mtu, ms_get_payload_max_size());
+				mtu, ms_factory_get_payload_max_size(lc->factory));
 		}
 	}
 }
@@ -2341,7 +2341,8 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 
 		call->audiostream=audiostream=audio_stream_new2(linphone_call_get_bind_ip_for_stream(call,call->main_audio_stream_index),
 				multicast_role ==  SalMulticastReceiver ? stream_desc->rtp_port : call->media_ports[call->main_audio_stream_index].rtp_port,
-				multicast_role ==  SalMulticastReceiver ? 0 /*disabled for now*/ : call->media_ports[call->main_audio_stream_index].rtcp_port);
+				multicast_role ==  SalMulticastReceiver ? 0 /*disabled for now*/ : call->media_ports[call->main_audio_stream_index].rtcp_port,
+														call->core->factory);
 		if (multicast_role == SalMulticastReceiver)
 			linphone_call_join_multicast_group(call, call->main_audio_stream_index, &audiostream->ms);
 		rtp_session_enable_network_simulation(call->audiostream->ms.sessions.rtp_session, &lc->net_conf.netsim_params);
@@ -2509,7 +2510,8 @@ void linphone_call_init_text_stream(LinphoneCall *call){
 
 		call->textstream = textstream = text_stream_new2(linphone_call_get_bind_ip_for_stream(call,call->main_text_stream_index),
 				multicast_role ==  SalMulticastReceiver ? stream_desc->rtp_port : call->media_ports[call->main_text_stream_index].rtp_port,
-				multicast_role ==  SalMulticastReceiver ? 0 /*disabled for now*/ : call->media_ports[call->main_text_stream_index].rtcp_port);
+				multicast_role ==  SalMulticastReceiver ? 0 /*disabled for now*/ : call->media_ports[call->main_text_stream_index].rtcp_port,
+														 call->core->factory);
 		if (multicast_role == SalMulticastReceiver)
 			linphone_call_join_multicast_group(call, call->main_text_stream_index, &textstream->ms);
 		rtp_session_enable_network_simulation(call->textstream->ms.sessions.rtp_session, &lc->net_conf.netsim_params);
@@ -2519,7 +2521,7 @@ void linphone_call_init_text_stream(LinphoneCall *call){
 		setup_dtls_params(call, &textstream->ms);
 		media_stream_reclaim_sessions(&textstream->ms, &call->sessions[call->main_text_stream_index]);
 	} else {
-		call->textstream = text_stream_new_with_sessions(&call->sessions[call->main_text_stream_index]);
+		call->textstream = text_stream_new_with_sessions(&call->sessions[call->main_text_stream_index],call->core->factory);
 	}
 	textstream = call->textstream;
 	if (call->media_ports[call->main_text_stream_index].rtp_port == -1) {
@@ -3343,7 +3345,7 @@ static void linphone_call_start_text_stream(LinphoneCall *call) {
 
 			if (is_multicast) rtp_session_set_multicast_ttl(call->textstream->ms.sessions.rtp_session,tstream->ttl);
 
-			text_stream_start(call->textstream, call->text_profile, rtp_addr, tstream->rtp_port, rtcp_addr, (linphone_core_rtcp_enabled(lc) && !is_multicast)  ? (tstream->rtcp_port ? tstream->rtcp_port : tstream->rtp_port + 1) : 0, used_pt);
+			text_stream_start(call->textstream, call->text_profile, rtp_addr, tstream->rtp_port, rtcp_addr, (linphone_core_rtcp_enabled(lc) && !is_multicast)  ? (tstream->rtcp_port ? tstream->rtcp_port : tstream->rtp_port + 1) : 0, used_pt, call->core->factory);
 			ms_filter_add_notify_callback(call->textstream->rttsink, real_time_text_character_received, call, FALSE);
 
 			ms_media_stream_sessions_set_encryption_mandatory(&call->textstream->ms.sessions,call->current_params->encryption_mandatory);
@@ -4227,25 +4229,6 @@ static void linphone_call_lost(LinphoneCall *call, LinphoneReason reason){
 	ms_free(temp);
 }
 
-static void change_ice_media_destinations(LinphoneCall *call) {
-	const char *rtp_addr;
-	const char *rtcp_addr;
-	int rtp_port;
-	int rtcp_port;
-	bool_t result;
-	int i;
-	IceCheckList *cl;
-	
-	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
-		if ((cl = ice_session_check_list(call->ice_session, i)) != NULL){
-			result = ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
-			if (result == TRUE) {
-				ms_message("Change stream index %i destination: RTP=%s:%d RTCP=%s:%d", i, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-				rtp_session_set_remote_addr_full(call->sessions[i].rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-			}
-		}
-	}
-}
 
 static void linphone_call_on_ice_gathering_finished(LinphoneCall *call){
 	int ping_time;
@@ -4282,28 +4265,20 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 
 		switch (ice_session_state(call->ice_session)) {
 			case IS_Completed:
-				ice_session_select_candidates(call->ice_session);
-				if (ice_session_role(call->ice_session) == IR_Controlling
-						&& params->update_call_when_ice_completed) {
-					params->internal_call_update = TRUE;
-					linphone_core_update_call(call->core, call, params);
-				}
-				change_ice_media_destinations(call);
-				start_dtls_on_all_streams(call);
-				break;
 			case IS_Failed:
+				/* At least one ICE session has succeeded, so perform a call update. */
 				if (ice_session_has_completed_check_list(call->ice_session) == TRUE) {
-					ice_session_select_candidates(call->ice_session);
-					if (ice_session_role(call->ice_session) == IR_Controlling) {
-						/* At least one ICE session has succeeded, so perform a call update. */
+					if (ice_session_role(call->ice_session) == IR_Controlling && params->update_call_when_ice_completed ) {
 						params->internal_call_update = TRUE;
 						linphone_core_update_call(call->core, call, params);
 					}
+					start_dtls_on_all_streams(call);
 				}
 				break;
 			default:
 				break;
 		}
+		
 		linphone_core_update_ice_state_in_call_stats(call);
 		linphone_call_params_unref(params);
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
