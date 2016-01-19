@@ -4788,6 +4788,9 @@ int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCb
 	return err;
 }
 
+MSFactory *linphone_core_get_factory(void *lc){
+	return ((LinphoneCore*)lc)->factory;
+}
 /**
  * Sets the path to a wav file used for ringing back.
  *
@@ -5231,6 +5234,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
 			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
 			video_preview_start(lc->previewstream,lc->video_conf.device);
+			lc->previewstream->ms.factory = lc->factory;
 		}
 	}else{
 		if (lc->previewstream!=NULL){
@@ -5917,7 +5921,7 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 		if (ringcard == NULL)
 			return NULL;
 
-		ringstream=lc->ringstream=ring_start(NULL,0,ringcard);
+		ringstream=lc->ringstream=ring_start(NULL,0,ringcard, lc->factory);
 		ms_filter_call_method(lc->ringstream->gendtmf,MS_DTMF_GEN_SET_DEFAULT_AMPLITUDE,&amp);
 		lc->dmfs_playing_start_time = ms_get_cur_time_ms()/1000;
 	}else{
@@ -6081,9 +6085,9 @@ void linphone_core_set_mtu(LinphoneCore *lc, int mtu){
 			ms_error("MTU too small !");
 			mtu=500;
 		}
-		ms_set_mtu(mtu);
-		ms_message("MTU is supposed to be %i, rtp payload max size will be %i",mtu, ms_get_payload_max_size());
-	}else ms_set_mtu(0);//use mediastreamer2 default value
+		ms_factory_set_mtu(lc->factory, mtu);
+		ms_message("MTU is supposed to be %i, rtp payload max size will be %i",mtu, ms_factory_get_payload_max_size(lc->factory));
+	}else ms_factory_set_mtu(lc->factory, 0);//use mediastreamer2 default value
 }
 
 void linphone_core_set_waiting_callback(LinphoneCore *lc, LinphoneCoreWaitingCallback cb, void *user_context){

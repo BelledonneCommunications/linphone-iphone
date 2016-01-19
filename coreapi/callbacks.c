@@ -405,7 +405,7 @@ static void start_remote_ring(LinphoneCore *lc, LinphoneCall *call) {
 		if (call->audiostream)
 			audio_stream_unprepare_sound(call->audiostream);
 		if( lc->sound_conf.remote_ring ){
-			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard);
+			lc->ringstream=ring_start(lc->sound_conf.remote_ring,2000,ringcard,lc->factory);
 		}
 	}
 }

@@ -85,7 +85,7 @@ int linphone_ringtoneplayer_start_with_cb(LinphoneRingtonePlayer* rp, MSSndCard*
 		ms_message("Starting local ringtone...");
 		rp->end_of_ringtone = end_of_ringtone;
 		rp->end_of_ringtone_ud = user_data;
-		rp->ringstream=ring_start_with_cb(ringtone,loop_pause_ms,card,notify_end_of_ringtone,rp);
+		rp->ringstream=ring_start_with_cb(ringtone,loop_pause_ms,card,notify_end_of_ringtone,rp,linphone_core_get_factory(user_data));
 		return rp->ringstream != NULL ? 0 : 1;
 	}
 	return 3;
