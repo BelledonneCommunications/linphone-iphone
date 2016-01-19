@@ -1458,14 +1458,13 @@ static BOOL libStarted = FALSE;
 
 	// Set audio assets
 	NSString *ring =
-		([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_ringback(theLinphoneCore) ?: ""]
-										 .lastPathComponent]
+		([LinphoneManager
+			 bundleFile:[NSString stringWithUTF8String:linphone_core_get_ring(theLinphoneCore) ?: ""].lastPathComponent]
 			 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
 			.lastPathComponent;
 	NSString *ringback =
-		([LinphoneManager
-			 bundleFile:[NSString stringWithUTF8String:linphone_core_get_remote_ringback_tone(theLinphoneCore) ?: ""]
-							.lastPathComponent]
+		([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_ringback(theLinphoneCore) ?: ""]
+										 .lastPathComponent]
 			 ?: [LinphoneManager bundleFile:@"ringback.wav"])
 			.lastPathComponent;
 	NSString *hold =
@@ -1474,8 +1473,8 @@ static BOOL libStarted = FALSE;
 			 ?: [LinphoneManager bundleFile:@"hold.caf"])
 			.lastPathComponent;
 
-	linphone_core_set_ringback(theLinphoneCore, [LinphoneManager bundleFile:ring].UTF8String);
-	linphone_core_set_remote_ringback_tone(theLinphoneCore, [LinphoneManager bundleFile:ringback].UTF8String);
+	linphone_core_set_ring(theLinphoneCore, [LinphoneManager bundleFile:ring].UTF8String);
+	linphone_core_set_ringback(theLinphoneCore, [LinphoneManager bundleFile:ringback].UTF8String);
 	linphone_core_set_play_file(theLinphoneCore, [LinphoneManager bundleFile:hold].UTF8String);
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
