@@ -108,6 +108,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	[self changeView:ContactsLinphone];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
@@ -133,11 +138,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[error show];
 		[PhoneMainView.instance popCurrentView];
 	}
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-	[self changeView:ContactsAll];
 }
 
 #pragma mark -
