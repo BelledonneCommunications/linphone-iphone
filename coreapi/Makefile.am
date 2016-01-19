@@ -43,8 +43,7 @@ linphone_include_HEADERS=\
 	lpconfig.h \
 	sipsetup.h \
 	xml2lpc.h \
-	xmlrpc.h \
-	conference.h
+	xmlrpc.h
 
 lib_LTLIBRARIES=liblinphone.la
 

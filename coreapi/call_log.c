@@ -423,6 +423,9 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	unsigned int storage_id = atoi(argv[0]);
 	from = linphone_address_new(argv[1]);
 	to = linphone_address_new(argv[2]);
+	
+	if (from == NULL || to == NULL) goto error;
+	
 	dir = (LinphoneCallDir) atoi(argv[3]);
 	log = linphone_call_log_new(dir, from, to);
 
@@ -445,7 +448,16 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	}
 
 	*list = ms_list_append(*list, log);
-
+	return 0;
+	
+error:
+	if (from){
+		linphone_address_destroy(from);
+	}
+	if (to){
+		linphone_address_destroy(to);
+	}
+	ms_error("Bad call log at storage_id %u", storage_id);
 	return 0;
 }
 
