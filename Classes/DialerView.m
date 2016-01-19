@@ -419,6 +419,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSString *newAddress =
 		[[self.addressField.text substringToIndex:[self.addressField.text length] - 1] stringByAppendingString:@"+"];
 	[self.addressField setText:newAddress];
+	linphone_core_stop_dtmf(LC);
 }
 
 - (void)onOneLongClick:(id)sender {
@@ -432,5 +433,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	} else {
 		LOGE(@"Cannot call voice mail because URI not set or invalid!");
 	}
+	linphone_core_stop_dtmf(LC);
 }
 @end
