@@ -3408,6 +3408,16 @@ static void setZrtpCryptoTypesParameters(MSZrtpParams *params, LinphoneCore *lc)
 	params->keyAgreementsCount = linphone_core_get_zrtp_key_agreement_suites(lc, params->keyAgreements);
 }
 
+static void linphone_call_set_symmetric_rtp(LinphoneCall *call, bool_t val){
+	int i;
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
+		MSMediaStreamSessions *mss = &call->sessions[i];
+		if (mss->rtp_session){
+			rtp_session_set_symmetric_rtp(mss->rtp_session, val);
+		}
+	}
+}
+
 void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState next_state){
 	LinphoneCore *lc=call->core;
 	bool_t use_arc = linphone_core_adaptive_rate_control_enabled(lc);
@@ -3439,6 +3449,13 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 		ms_fatal("start_media_stream() called without prior init !");
 		return;
 	}
+	
+	if (call->ice_session != NULL){
+		/*if there is an ICE session when we are about to start streams, then ICE will conduct the media path checking and authentication properly.
+		 * Symmetric RTP must be turned off*/
+		linphone_call_set_symmetric_rtp(call, FALSE);
+	}
+	
 	if (call->params->media_encryption==LinphoneMediaEncryptionDTLS) {
 		call->current_params->encryption_mandatory = TRUE;
 		ms_message("Forcing encryption mandatory on call [%p]",call);
@@ -3457,7 +3474,7 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 	if (call->audiostream!=NULL) {
 		linphone_call_start_audio_stream(call, next_state, use_arc);
 	} else {
-		ms_warning("DTLS no audio stream!");
+		ms_warning("linphone_call_start_media_streams(): no audio stream!");
 	}
 	call->current_params->has_video=FALSE;
 	if (call->videostream!=NULL) {
@@ -4211,38 +4228,23 @@ static void linphone_call_lost(LinphoneCall *call, LinphoneReason reason){
 }
 
 static void change_ice_media_destinations(LinphoneCall *call) {
-    const char *rtp_addr;
-    const char *rtcp_addr;
-    int rtp_port;
-    int rtcp_port;
-    bool_t result;
-
-    if (call->audiostream && ice_session_check_list(call->ice_session, call->main_audio_stream_index)) {
-        result = ice_check_list_selected_valid_remote_candidate(ice_session_check_list(call->ice_session, call->main_audio_stream_index), &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
-        if (result == TRUE) {
-            ms_message("Change audio stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-            rtp_session_set_symmetric_rtp(call->audiostream->ms.sessions.rtp_session, FALSE);
-            rtp_session_set_remote_addr_full(call->audiostream->ms.sessions.rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-        }
-    }
-#ifdef VIDEO_ENABLED
-    if (call->videostream && ice_session_check_list(call->ice_session, call->main_video_stream_index)) {
-        result = ice_check_list_selected_valid_remote_candidate(ice_session_check_list(call->ice_session, call->main_video_stream_index), &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
-        if (result == TRUE) {
-            ms_message("Change video stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-            rtp_session_set_symmetric_rtp(call->videostream->ms.sessions.rtp_session, FALSE);
-            rtp_session_set_remote_addr_full(call->videostream->ms.sessions.rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-        }
-    }
-#endif
-    if (call->textstream && ice_session_check_list(call->ice_session, call->main_text_stream_index)) {
-        result = ice_check_list_selected_valid_remote_candidate(ice_session_check_list(call->ice_session, call->main_text_stream_index), &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
-        if (result == TRUE) {
-            ms_message("Change text stream destination: RTP=%s:%d RTCP=%s:%d", rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-            rtp_session_set_symmetric_rtp(call->textstream->ms.sessions.rtp_session, FALSE);
-            rtp_session_set_remote_addr_full(call->textstream->ms.sessions.rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-        }
-    }
+	const char *rtp_addr;
+	const char *rtcp_addr;
+	int rtp_port;
+	int rtcp_port;
+	bool_t result;
+	int i;
+	IceCheckList *cl;
+	
+	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
+		if ((cl = ice_session_check_list(call->ice_session, i)) != NULL){
+			result = ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
+			if (result == TRUE) {
+				ms_message("Change stream index %i destination: RTP=%s:%d RTCP=%s:%d", i, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
+				rtp_session_set_remote_addr_full(call->sessions[i].rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
+			}
+		}
+	}
 }
 
 static void linphone_call_on_ice_gathering_finished(LinphoneCall *call){
