@@ -460,7 +460,7 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 
 int _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const char* url, const char* action, const belle_http_request_listener_callbacks_t *cbs) {
 	belle_generic_uri_t *uri = NULL;
-	char* ua;
+	const char* ua = linphone_core_get_user_agent(msg->chat_room->lc);
 
 	if (url == NULL) {
 		ms_warning("Cannot process file transfer msg: no file remote URI configured.");
@@ -472,9 +472,7 @@ int _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const char
 		goto error;
 	}
 
-	ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
 	msg->http_request = belle_http_request_create(action, uri, belle_sip_header_create("User-Agent", ua), NULL);
-	ms_free(ua);
 
 	if (msg->http_request == NULL) {
 		ms_warning("Could not create http request for uri %s", url);

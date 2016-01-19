@@ -2325,10 +2325,8 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	AudioStream *audiostream;
 	const char *location;
 	int dscp;
-	char rtcp_tool[128]={0};
+	const char rtcp_tool=linphone_core_get_user_agent(call->core);
 	char* cname;
-
-	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
 
 	if (call->audiostream != NULL) return;
 	if (call->sessions[call->main_audio_stream_index].rtp_session==NULL){
@@ -2423,9 +2421,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	LinphoneCore *lc=call->core;
 	char* cname;
-	char rtcp_tool[128];
-
-	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
+	const char *rtcp_tool = linphone_core_get_user_agent(call->core);
 
 	if (call->videostream == NULL){
 		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
