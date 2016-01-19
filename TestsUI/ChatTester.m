@@ -82,6 +82,7 @@
 	// There are 9 photos by default, so lets use just 8 (2 rows, 4 columns).
 	LOGI(@"Selecting photo at row %d, column %d", 1 + (ind / 4) % 2, 1 + ind % 4);
 	[tester choosePhotoInAlbum:@"Camera Roll" atRow:1 + (ind / 4) % 2 column:1 + ind % 4];
+	ASSERT_EQ(1, 3); // take dummy screenshot
 	ind++;
 
 	// wait for the quality popup to show up
