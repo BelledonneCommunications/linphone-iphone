@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <mediastreamer2/msmediaplayer.h>
 #include <mediastreamer2/mssndcard.h>
 
-static int _local_player_open(LinphonePlayer *obj, const char *filename);
+static int _local_player_open(LinphonePlayer *obj, const char *filename, MSFactory *factory);
 static int _local_player_start(LinphonePlayer *obj);
 static int _local_player_pause(LinphonePlayer *obj);
 static int _local_player_seek(LinphonePlayer *obj, int time_ms);
@@ -54,8 +54,8 @@ bool_t linphone_local_player_matroska_supported(void) {
 	return ms_media_player_matroska_supported();
 }
 
-static int _local_player_open(LinphonePlayer *obj, const char *filename) {
-	return ms_media_player_open((MSMediaPlayer *)obj->impl, filename) ? 0 : -1;
+static int _local_player_open(LinphonePlayer *obj, const char *filename,MSFactory* factory) {
+	return ms_media_player_open((MSMediaPlayer *)obj->impl, filename, factory) ? 0 : -1;
 }
 
 static int _local_player_start(LinphonePlayer *obj) {

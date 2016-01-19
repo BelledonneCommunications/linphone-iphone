@@ -218,7 +218,7 @@ void linphone_gtk_start_record_sound(GtkWidget *w, gpointer data){
 
 	if(active){
 		gchar *path = get_record_file();
-		stream=audio_stream_new(8888, 8889, FALSE);
+		stream=audio_stream_new(8888, 8889, FALSE, lc->factory);
 		if(stream != NULL){
 			audio_stream_start_full(stream,&av_profile,"127.0.0.1",8888,"127.0.0.1",8889,0,0,NULL,
 				path,NULL,ms_snd_card_manager_get_card(manager,linphone_core_get_capture_device(lc)),FALSE);
@@ -261,7 +261,7 @@ void linphone_gtk_start_play_record_sound(GtkWidget *w,gpointer data){
 
 	if(active){
 		gchar *path = g_object_get_data(G_OBJECT(audio_assistant),"path");
-		stream=audio_stream_new(8888, 8889, FALSE);
+		stream=audio_stream_new(8888, 8889, FALSE, lc->factory);
 		if(path != NULL){
 			audio_stream_start_full(stream,&av_profile,"127.0.0.1",8888,"127.0.0.1",8889,0,0,path,
 				NULL,ms_snd_card_manager_get_card(manager,linphone_core_get_playback_device(lc)),NULL,FALSE);
@@ -453,7 +453,7 @@ static void prepare(GtkAssistant *w){
 	//Speaker page
 	if(page == 1){
 		MSSndCardManager *manager = ms_snd_card_manager_get();
-		audio_stream = audio_stream_start_with_sndcards(&av_profile,9898,"127.0.0.1",19898,0,0,ms_snd_card_manager_get_card(manager,linphone_core_get_playback_device(lc)),ms_snd_card_manager_get_card(manager,linphone_core_get_capture_device(lc)),FALSE);
+		audio_stream = audio_stream_start_with_sndcards(&av_profile,9898,"127.0.0.1",19898,0,0,ms_snd_card_manager_get_card(manager,linphone_core_get_playback_device(lc)),ms_snd_card_manager_get_card(manager,linphone_core_get_capture_device(lc)),FALSE, lc->factory);
 		if (mic_audiolevel != NULL && audio_stream != NULL){
 			g_object_set_data(G_OBJECT(audio_assistant),"stream",audio_stream);
 			linphone_gtk_init_audio_meter(mic_audiolevel,(get_volume_t)audio_stream_get_record_volume,audio_stream);
