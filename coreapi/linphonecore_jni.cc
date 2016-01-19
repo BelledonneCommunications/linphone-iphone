@@ -4328,7 +4328,7 @@ extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_createConference(JNIE
 	LinphoneConference *conference;
 	jobject jconference;
 	
-	if(jparams) params = (LinphoneConferenceParams *)env->GetLongField(params_class, params_native_ptr_attr);
+	if(jparams) params = (LinphoneConferenceParams *)env->GetLongField(jparams, params_native_ptr_attr);
 	conference = linphone_core_create_conference_with_params((LinphoneCore *)corePtr, params);
 	if(conference) return env->NewObject(conference_class, conference_constructor, (jlong)conference);
 	else return NULL;
