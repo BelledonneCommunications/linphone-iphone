@@ -4226,25 +4226,6 @@ static void linphone_call_lost(LinphoneCall *call, LinphoneReason reason){
 	ms_free(temp);
 }
 
-static void change_ice_media_destinations(LinphoneCall *call) {
-	const char *rtp_addr;
-	const char *rtcp_addr;
-	int rtp_port;
-	int rtcp_port;
-	bool_t result;
-	int i;
-	IceCheckList *cl;
-	
-	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
-		if ((cl = ice_session_check_list(call->ice_session, i)) != NULL){
-			result = ice_check_list_selected_valid_remote_candidate(cl, &rtp_addr, &rtp_port, &rtcp_addr, &rtcp_port);
-			if (result == TRUE) {
-				ms_message("Change stream index %i destination: RTP=%s:%d RTCP=%s:%d", i, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-				rtp_session_set_remote_addr_full(call->sessions[i].rtp_session, rtp_addr, rtp_port, rtcp_addr, rtcp_port);
-			}
-		}
-	}
-}
 
 static void linphone_call_on_ice_gathering_finished(LinphoneCall *call){
 	int ping_time;
@@ -4281,28 +4262,20 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 
 		switch (ice_session_state(call->ice_session)) {
 			case IS_Completed:
-				ice_session_select_candidates(call->ice_session);
-				if (ice_session_role(call->ice_session) == IR_Controlling
-						&& params->update_call_when_ice_completed) {
-					params->internal_call_update = TRUE;
-					linphone_core_update_call(call->core, call, params);
-				}
-				change_ice_media_destinations(call);
-				start_dtls_on_all_streams(call);
-				break;
 			case IS_Failed:
+				/* At least one ICE session has succeeded, so perform a call update. */
 				if (ice_session_has_completed_check_list(call->ice_session) == TRUE) {
-					ice_session_select_candidates(call->ice_session);
-					if (ice_session_role(call->ice_session) == IR_Controlling) {
-						/* At least one ICE session has succeeded, so perform a call update. */
+					if (ice_session_role(call->ice_session) == IR_Controlling && params->update_call_when_ice_completed ) {
 						params->internal_call_update = TRUE;
 						linphone_core_update_call(call->core, call, params);
 					}
+					start_dtls_on_all_streams(call);
 				}
 				break;
 			default:
 				break;
 		}
+		
 		linphone_core_update_ice_state_in_call_stats(call);
 		linphone_call_params_unref(params);
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
