@@ -2325,7 +2325,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	AudioStream *audiostream;
 	const char *location;
 	int dscp;
-	const char rtcp_tool=linphone_core_get_user_agent(call->core);
+	const char *rtcp_tool=linphone_core_get_user_agent(call->core);
 	char* cname;
 
 	if (call->audiostream != NULL) return;
