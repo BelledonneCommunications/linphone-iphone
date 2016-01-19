@@ -110,7 +110,7 @@ void linphone_android_log_handler(int prio, char *str) {
 	}
 }
 
-static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+static void linphone_android_ortp_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 	char str[4096];
 	const char *levname="undef";
 	vsnprintf(str, sizeof(str) - 1, fmt, args);
