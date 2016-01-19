@@ -189,7 +189,7 @@ void linphone_upnp_igd_print(void *cookie, upnp_igd_print_level level, const cha
 	default:
 		break;
 	}
-	ortp_logv(ortp_level, fmt, list);
+	ortp_logv(ORTP_LOG_DOMAIN, ortp_level, fmt, list);
 }
 
 void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {

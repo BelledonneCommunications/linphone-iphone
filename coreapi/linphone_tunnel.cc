@@ -289,7 +289,7 @@ static void tunnelLogHandler(int level, const char *fmt, va_list l){
 				ms_fatal("Unexepcted tunnel log %i: %s",level,fmt);
 			break;
 		}
-		tunnelOrtpLogHandler(ortp_level,fmt,l);
+		tunnelOrtpLogHandler("tunnel", ortp_level,fmt,l);
 	}
 }
 
@@ -330,8 +330,8 @@ bool_t linphone_tunnel_sip_enabled(const LinphoneTunnel *tunnel) {
 	return bcTunnel(tunnel)->tunnelizeSipPacketsEnabled() ? TRUE : FALSE;
 }
 
-static void my_ortp_logv(OrtpLogLevel level, const char *fmt, va_list args){
-	ortp_logv(level,fmt,args);
+static void my_ortp_logv(const char *domain, OrtpLogLevel level, const char *fmt, va_list args){
+	ortp_logv(domain, level,fmt,args);
 }
 
 

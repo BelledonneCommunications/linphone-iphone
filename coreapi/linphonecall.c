@@ -527,22 +527,19 @@ static void setup_rtcp_fb(LinphoneCall *call, SalMediaDescription *md) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		md->streams[i].rtcp_fb.generic_nack_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_generic_nack_enabled", 0);
 		md->streams[i].rtcp_fb.tmmbr_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_tmmbr_enabled", 0);
-        md->streams[i].implicit_rtcp_fb = call->params->implicit_rtcp_fb;
-        
-        for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
+		md->streams[i].implicit_rtcp_fb = call->params->implicit_rtcp_fb;
+		
+		for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
 			pt = (PayloadType *)pt_it->data;
-            
-            if (call->params->avpf_enabled == FALSE && call->params->implicit_rtcp_fb == FALSE)  {
-                payload_type_unset_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
-                memset(&avpf_params, 0, sizeof(avpf_params));
-            }
-            else {
-                payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
-                avpf_params = payload_type_get_avpf_params(pt);
-                avpf_params.trr_interval = call->params->avpf_rr_interval;
-                
-            }
-   
+
+			if (call->params->avpf_enabled == FALSE && call->params->implicit_rtcp_fb == FALSE)  {
+				payload_type_unset_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
+				memset(&avpf_params, 0, sizeof(avpf_params));
+			}else {
+				payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
+				avpf_params = payload_type_get_avpf_params(pt);
+				avpf_params.trr_interval = call->params->avpf_rr_interval;
+			}
 			payload_type_set_avpf_params(pt, avpf_params);
 		}
 	}
