@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Install underscore-cli for hacking
-if ! which underscore &> /dev/null; then
-	npm install -g underscore-cli &>/dev/null
-fi
-
 cd $KIF_SCREENSHOTS
 
 if [ ! -z "$(find . -name "*.png")" ]; then
@@ -23,11 +18,11 @@ if [ ! -z "$(find . -name "*.png")" ]; then
 		result="$(curl https://api.imgur.com/3/upload.json -H "Authorization: Client-ID $api_key" -F "image=@\"$filepath\"" )"
 
 		# result='{"rsp":{"stat":"ok","image":{"image_hash":"dKZ0YK9","delete_hash":"r0MsZp11K9vawLf","original_image":"http:\/\/i.imgur.com\/dKZ0YK9.png","large_thumbnail":"http:\/\/i.imgur.com\/dKZ0YK9l.jpg","small_thumbnail":"http:\/\/i.imgur.com\/dKZ0YK9s.jpg","imgur_page":"http:\/\/imgur.com\/dKZ0YK9","delete_page":"http:\/\/imgur.com\/delete\/r0MsZp11K9vawLf"}}}'
-		succeeded="$(echo $result | underscore extract success)"
-		if [ "$succeeded" != "true" ]; then
+		if ! grep -q '"success":true' $result; then
 			echo "There was a problem uploading \"$filepath\": $result"
 		else
-			download_cmds="${download_cmds}\nwget $(echo "$result" | underscore extract 'data.link')"
+			url=$(echo "$result" | tr ':' '\n' | grep '"link":' | cut -d: -f2)
+			download_cmds="${download_cmds}\nwget $url"
 		fi
 	done
 	echo "All uploads complete!"
