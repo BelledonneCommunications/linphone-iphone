@@ -100,7 +100,9 @@ static int processEntry(const char *section, const char *entry, xmlNode *node, l
 	}
 
 	lpc2xml_log(ctx, LPC2XML_MESSAGE, "Set %s|%s = %s", section, entry, content);
-	xmlNodeSetContent(node, (const xmlChar *) content);
+	// xmlNodeSetContent expects special characters to be escaped, xmlNodeAddContent doesn't (and escapes what needs to be)
+	xmlNodeSetContent(node, (const xmlChar *) "");
+	xmlNodeAddContent(node, (const xmlChar *) content);
 	
 	if (lp_config_get_overwrite_flag_for_entry(ctx->lpc, section, entry) || lp_config_get_overwrite_flag_for_section(ctx->lpc, section)) {
 		xmlSetProp(node, (const xmlChar *)"overwrite", (const xmlChar *) "true");
