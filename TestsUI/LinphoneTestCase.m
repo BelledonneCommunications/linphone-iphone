@@ -48,7 +48,6 @@
 
 - (void)beforeEach {
 	[[LinphoneManager instance] lpConfigSetInt:NO forKey:@"animations_preference"];
-	linphone_core_set_log_level(ORTP_MESSAGE);
 }
 
 - (NSString *)me {

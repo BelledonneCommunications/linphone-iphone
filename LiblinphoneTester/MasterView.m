@@ -8,7 +8,7 @@
 
 #import "MasterView.h"
 #import "LogsView.h"
-#import "DetailView.h"
+#import "DetailTableView.h"
 
 #include "linphone/liblinphone_tester.h"
 #include "mediastreamer2/msutils.h"
@@ -40,15 +40,18 @@ NSString *const kLogsUpdateNotification = @"kLogsUpdateNotification";
 - (void)setupLogging {
 	lastLogs = [[NSMutableArray alloc] initWithCapacity:kLastLogsCapacity];
 	logsBuffer = [NSMutableArray arrayWithCapacity:kLogsBufferCapacity];
+	[Log enableLogs:YES];
+}
 
-	linphone_core_set_log_level(ORTP_MESSAGE);
-	linphone_core_set_log_handler((OrtpLogFunc)linphone_iphone_log_handler);
+void tester_logs_handler(int level, const char *fmt, va_list args) {
+	linphone_iphone_log_handler(NULL, level, fmt, args);
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-	self.detailViewController = (DetailView *)[[self.splitViewController.viewControllers lastObject] topViewController];
+	self.detailViewController =
+		(DetailTableView *)[[self.splitViewController.viewControllers lastObject] topViewController];
 
 	[self setupLogging];
 
@@ -56,7 +59,7 @@ NSString *const kLogsUpdateNotification = @"kLogsUpdateNotification";
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	documentPath = [paths objectAtIndex:0];
 
-	bc_tester_init((void (*)(int, const char *fm, va_list))linphone_iphone_log_handler, ORTP_MESSAGE, ORTP_ERROR);
+	bc_tester_init(tester_logs_handler, ORTP_MESSAGE, ORTP_ERROR);
 	liblinphone_tester_add_suites();
 
 	bc_tester_set_resource_dir_prefix([bundlePath UTF8String]);

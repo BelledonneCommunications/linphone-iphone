@@ -11,10 +11,10 @@
 extern NSMutableArray *lastLogs;
 extern NSString *const kLogsUpdateNotification;
 
-@class DetailView;
+@class DetailTableView;
 
 @interface MasterView : UITableViewController
 
-@property(strong, nonatomic) DetailView *detailViewController;
+@property(strong, nonatomic) DetailTableView *detailViewController;
 
 @end

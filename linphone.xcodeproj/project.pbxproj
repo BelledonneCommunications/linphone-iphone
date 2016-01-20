@@ -51,7 +51,7 @@
 		63058A271B4E821E00EFAE36 /* Main_iPhone.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63058A131B4E821E00EFAE36 /* Main_iPhone.strings */; };
 		63058A281B4E821E00EFAE36 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63058A151B4E821E00EFAE36 /* Main_iPad.storyboard */; };
 		63058A291B4E821E00EFAE36 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63058A171B4E821E00EFAE36 /* Main_iPhone.storyboard */; };
-		63058A2A1B4E821E00EFAE36 /* DetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A1A1B4E821E00EFAE36 /* DetailView.m */; };
+		63058A2A1B4E821E00EFAE36 /* DetailTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A1A1B4E821E00EFAE36 /* DetailTableView.m */; };
 		63058A2C1B4E821E00EFAE36 /* LogsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A1F1B4E821E00EFAE36 /* LogsView.m */; };
 		63058A2D1B4E821E00EFAE36 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A201B4E821E00EFAE36 /* main.m */; };
 		63058A2E1B4E821E00EFAE36 /* MasterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63058A221B4E821E00EFAE36 /* MasterView.m */; };
@@ -544,6 +544,10 @@
 		63D11C531C3D501200E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63D11C551C3D50A100E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63DFE04B1C40161700DA5E87 /* notes_of_the_optimistic.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */; };
+		63E279DD1C4F8CEE00D332AE /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279DC1C4F8CEE00D332AE /* Default-568h@2x.png */; };
+		63E279E71C4F9A2500D332AE /* test_failed.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E41C4F9A2500D332AE /* test_failed.png */; };
+		63E279E81C4F9A2500D332AE /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E51C4F9A2500D332AE /* test_inprogress.png */; };
+		63E279E91C4F9A2500D332AE /* test_passed.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E61C4F9A2500D332AE /* test_passed.png */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63EEE3FF1BBA9AC00087D3AF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		63EEE4001BBA9AC00087D3AF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
@@ -852,8 +856,8 @@
 		63058A141B4E821E00EFAE36 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main_iPhone.strings; sourceTree = "<group>"; };
 		63058A161B4E821E00EFAE36 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
 		63058A181B4E821E00EFAE36 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
-		63058A191B4E821E00EFAE36 /* DetailView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailView.h; sourceTree = "<group>"; };
-		63058A1A1B4E821E00EFAE36 /* DetailView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailView.m; sourceTree = "<group>"; };
+		63058A191B4E821E00EFAE36 /* DetailTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailTableView.h; sourceTree = "<group>"; };
+		63058A1A1B4E821E00EFAE36 /* DetailTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailTableView.m; sourceTree = "<group>"; };
 		63058A1B1B4E821E00EFAE36 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		63058A1C1B4E821E00EFAE36 /* LinphoneTester-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "LinphoneTester-Info.plist"; sourceTree = "<group>"; };
 		63058A1D1B4E821E00EFAE36 /* LinphoneTester-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LinphoneTester-Prefix.pch"; sourceTree = "<group>"; };
@@ -1357,6 +1361,10 @@
 		63D11C521C3D501200E8FCEE /* Log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Log.m; path = Utils/Log.m; sourceTree = "<group>"; };
 		63D11C541C3D503A00E8FCEE /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
 		63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = notes_of_the_optimistic.caf; sourceTree = "<group>"; };
+		63E279DC1C4F8CEE00D332AE /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		63E279E41C4F9A2500D332AE /* test_failed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_failed.png; path = LiblinphoneTester/test_failed.png; sourceTree = SOURCE_ROOT; };
+		63E279E51C4F9A2500D332AE /* test_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_inprogress.png; path = LiblinphoneTester/test_inprogress.png; sourceTree = SOURCE_ROOT; };
+		63E279E61C4F9A2500D332AE /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_passed.png; path = LiblinphoneTester/test_passed.png; sourceTree = SOURCE_ROOT; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
 		63EA4C941B50189D00922857 /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
@@ -1932,6 +1940,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				63E279DC1C4F8CEE00D332AE /* Default-568h@2x.png */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
@@ -2082,8 +2091,8 @@
 				63058A131B4E821E00EFAE36 /* Main_iPhone.strings */,
 				63058A151B4E821E00EFAE36 /* Main_iPad.storyboard */,
 				63058A171B4E821E00EFAE36 /* Main_iPhone.storyboard */,
-				63058A191B4E821E00EFAE36 /* DetailView.h */,
-				63058A1A1B4E821E00EFAE36 /* DetailView.m */,
+				63058A191B4E821E00EFAE36 /* DetailTableView.h */,
+				63058A1A1B4E821E00EFAE36 /* DetailTableView.m */,
 				63058A1C1B4E821E00EFAE36 /* LinphoneTester-Info.plist */,
 				63058A1D1B4E821E00EFAE36 /* LinphoneTester-Prefix.pch */,
 				63058A1E1B4E821E00EFAE36 /* LogsView.h */,
@@ -2126,6 +2135,9 @@
 		636B967C1C298400003BA37C /* images */ = {
 			isa = PBXGroup;
 			children = (
+				63E279E41C4F9A2500D332AE /* test_failed.png */,
+				63E279E51C4F9A2500D332AE /* test_inprogress.png */,
+				63E279E61C4F9A2500D332AE /* test_passed.png */,
 				636B967D1C298400003BA37C /* add_field_default.png */,
 				636B967E1C298400003BA37C /* add_field_default@2x.png */,
 				636B967F1C298400003BA37C /* add_field_over.png */,
@@ -3341,10 +3353,14 @@
 				63058ADD1B4E937300EFAE36 /* marie_xml in Resources */,
 				63058ADE1B4E937300EFAE36 /* messages.db in Resources */,
 				63058ADF1B4E937300EFAE36 /* rcfiles in Resources */,
+				63E279E71C4F9A2500D332AE /* test_failed.png in Resources */,
+				63E279E81C4F9A2500D332AE /* test_inprogress.png in Resources */,
 				63058AE01B4E937300EFAE36 /* sounds in Resources */,
 				63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */,
+				63E279DD1C4F8CEE00D332AE /* Default-568h@2x.png in Resources */,
 				63058A2F1B4E821E00EFAE36 /* TesterImages.xcassets in Resources */,
 				63058A251B4E821E00EFAE36 /* InfoPlist.strings in Resources */,
+				63E279E91C4F9A2500D332AE /* test_passed.png in Resources */,
 				63058A271B4E821E00EFAE36 /* Main_iPhone.strings in Resources */,
 				63058A261B4E821E00EFAE36 /* Main_iPad.strings in Resources */,
 				63058A291B4E821E00EFAE36 /* Main_iPhone.storyboard in Resources */,
@@ -3525,7 +3541,7 @@
 				63D11C551C3D50A100E8FCEE /* Log.m in Sources */,
 				63058A2D1B4E821E00EFAE36 /* main.m in Sources */,
 				63058A241B4E821E00EFAE36 /* AppDelegate.m in Sources */,
-				63058A2A1B4E821E00EFAE36 /* DetailView.m in Sources */,
+				63058A2A1B4E821E00EFAE36 /* DetailTableView.m in Sources */,
 				63058A2E1B4E821E00EFAE36 /* MasterView.m in Sources */,
 				63058A2C1B4E821E00EFAE36 /* LogsView.m in Sources */,
 			);
@@ -4054,6 +4070,8 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CFLAGS = "-DORTP_LOG_DOMAIN=\\\"ios\\\"";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PROVISIONING_PROFILE = "0636A6EA-90EB-4D92-B707-19FC32F9A7CF";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -4139,6 +4157,8 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CFLAGS = "-DORTP_LOG_DOMAIN=\\\"ios\\\"";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -4224,6 +4244,8 @@
 				HEADER_SEARCH_PATHS = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "";
+				OTHER_CFLAGS = "-DORTP_LOG_DOMAIN=\\\"ios\\\"";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PROVISIONING_PROFILE = "C7F794BC-6D48-41F2-B37D-E1B1B1A40901";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -4311,6 +4333,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LIBRARY_SEARCH_PATHS = "";
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DORTP_LOG_DOMAIN=\\\"ios\\\"";
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PROVISIONING_PROFILE = "2AC0DC11-4546-47B6-8B8A-453CCA80903C";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
@@ -4510,7 +4534,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = TestAppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = TestLaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -4567,7 +4590,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = TestAppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = TestLaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -4618,7 +4640,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = TestAppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = TestLaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -4669,7 +4690,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = TestAppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = TestLaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
