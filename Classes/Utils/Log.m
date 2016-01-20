@@ -21,7 +21,7 @@
 
 @implementation Log
 
-#define FILESIZE 17
+#define FILE_SIZE 17
 #define DOMAIN_SIZE 3
 
 + (NSString *)cacheDirectory {
@@ -45,29 +45,24 @@
 	NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
 	const char *utf8str = [str cStringUsingEncoding:NSString.defaultCStringEncoding];
 	const char *filename = strchr(file, '/') ? strrchr(file, '/') + 1 : file;
-
-	if ((severity & ORTP_DEBUG) != 0) {
-		// lol: ortp_debug(XXX) can be disabled at compile time, but ortp_log(ORTP_DEBUG, xxx) will always be valid even
-		//      not in debug build...
-		ortp_debug("%*s:%-4d/%s", FILESIZE, filename + MAX((int)strlen(filename) - FILESIZE, 0), line, utf8str);
-	} else {
-		ortp_log(severity, "%*s:%-4d/%s", FILESIZE, filename + MAX((int)strlen(filename) - FILESIZE, 0), line, utf8str);
-	}
+	ortp_log(severity, "(%*s:%-4d) %s", FILE_SIZE, filename + MAX((int)strlen(filename) - FILE_SIZE, 0), line, utf8str);
 	va_end(args);
 }
 
-+ (void)enableLogs:(BOOL)enabled {
++ (void)enableLogs:(OrtpLogLevel)level {
+	BOOL enabled = (level >= ORTP_DEBUG && level < ORTP_ERROR);
 	linphone_core_set_log_collection_path([self cacheDirectory].UTF8String);
 	linphone_core_enable_log_collection(enabled);
 	linphone_core_enable_logs_with_cb(linphone_iphone_log_handler);
-	if (enabled) {
-		NSLog(@"Enabling debug logs");
-		linphone_core_set_log_level(ORTP_DEBUG);
+	if (level == 0) {
+		NSLog(@"I/%s/Disabling all logs", ORTP_LOG_DOMAIN);
+		linphone_core_set_log_level(ORTP_FATAL);
+		ortp_set_log_level("ios", ORTP_FATAL);
 	} else {
-		NSLog(@"Disabling debug logs");
-		linphone_core_set_log_level(ORTP_ERROR);
+		NSLog(@"I/%s/Enabling %s logs", ORTP_LOG_DOMAIN, (enabled ? "all" : "application only"));
+		linphone_core_set_log_level(level);
+		ortp_set_log_level("ios", ORTP_DEBUG);
 	}
-	ortp_set_log_level_mask("ios", ORTP_DEBUG | ORTP_MESSAGE | ORTP_WARNING | ORTP_ERROR | ORTP_FATAL);
 }
 
 #pragma mark - Logs Functions callbacks
@@ -76,16 +71,25 @@ void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const cha
 	NSString *format = [[NSString alloc] initWithUTF8String:fmt];
 	NSString *formatedString = [[NSString alloc] initWithFormat:format arguments:args];
 	NSString *lvl = @"";
-	if ((lev & ORTP_FATAL) != 0) {
-		lvl = @"F";
-	} else if ((lev & ORTP_ERROR) != 0) {
-		lvl = @"E";
-	} else if ((lev & ORTP_WARNING) != 0) {
-		lvl = @"W";
-	} else if ((lev & ORTP_MESSAGE) != 0) {
-		lvl = @"I";
-	} else if (((lev & ORTP_TRACE) != 0) || ((lev & ORTP_DEBUG) != 0)) {
-		lvl = @"D";
+	switch (lev) {
+		case ORTP_FATAL:
+			lvl = @"F";
+			break;
+		case ORTP_ERROR:
+			lvl = @"E";
+			break;
+		case ORTP_WARNING:
+			lvl = @"W";
+			break;
+		case ORTP_MESSAGE:
+			lvl = @"I";
+			break;
+		case ORTP_DEBUG:
+		case ORTP_TRACE:
+			lvl = @"D";
+			break;
+		case ORTP_LOGLEV_END:
+			return;
 	}
 	if (!domain)
 		domain = "liblinphone";

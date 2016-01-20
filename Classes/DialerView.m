@@ -307,15 +307,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 						   [self presentMailViewWithTitle:appName forRecipients:@[ logsAddress ] attachLogs:true];
 						 }];
 
-		BOOL debugEnabled = [LinphoneManager.instance lpConfigBoolForKey:@"debugenable_preference"];
+		int debugLevel = [LinphoneManager.instance lpConfigIntForKey:@"debugenable_preference"];
+		BOOL debugEnabled = (debugLevel >= ORTP_DEBUG && debugLevel < ORTP_ERROR);
 		NSString *actionLog =
 			(debugEnabled ? NSLocalizedString(@"Disable logs", nil) : NSLocalizedString(@"Enable logs", nil));
-		[alertView addButtonWithTitle:actionLog
-								block:^{
-								  BOOL enabled = !debugEnabled;
-								  [LinphoneManager.instance lpConfigSetBool:enabled forKey:@"debugenable_preference"];
-								  [Log enableLogs:enabled];
-								}];
+		[alertView
+			addButtonWithTitle:actionLog
+						 block:^{
+						   int newDebugLevel = debugEnabled ? ORTP_ERROR : ORTP_DEBUG;
+						   [LinphoneManager.instance lpConfigSetInt:newDebugLevel forKey:@"debugenable_preference"];
+						   [Log enableLogs:newDebugLevel];
+						 }];
 
 		[alertView show];
 		return true;

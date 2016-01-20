@@ -487,7 +487,6 @@
 		639E9CB01C0DB83000019A75 /* SideMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639E9CB21C0DB83000019A75 /* SideMenuView.xib */; };
 		639E9CB51C0DB88200019A75 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639E9CB31C0DB88200019A75 /* PhoneMainView.xib */; };
 		63AADBE81B6A0FF200AA16FD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC41B6A0FF200AA16FD /* Localizable.strings */; };
-		63AADBE91B6A0FF200AA16FD /* hold.wav in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC91B6A0FF200AA16FD /* hold.wav */; };
 		63AADBEA1B6A0FF200AA16FD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBCA1B6A0FF200AA16FD /* Images.xcassets */; };
 		63AADBF31B6A0FF200AA16FD /* licenses.html in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD51B6A0FF200AA16FD /* licenses.html */; };
 		63AADBF51B6A0FF200AA16FD /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD71B6A0FF200AA16FD /* linphonerc */; };
@@ -1319,7 +1318,6 @@
 		63AADBC61B6A0FF200AA16FD /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		63AADBC71B6A0FF200AA16FD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		63AADBC81B6A0FF200AA16FD /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		63AADBC91B6A0FF200AA16FD /* hold.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hold.wav; sourceTree = "<group>"; };
 		63AADBCA1B6A0FF200AA16FD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		63AADBCB1B6A0FF200AA16FD /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		63AADBD51B6A0FF200AA16FD /* licenses.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = licenses.html; sourceTree = "<group>"; };
@@ -2508,7 +2506,6 @@
 				63AADBE41B6A0FF200AA16FD /* assistant_linphone_create.rc */,
 				63AADBE51B6A0FF200AA16FD /* assistant_linphone_existing.rc */,
 				63AADBE61B6A0FF200AA16FD /* assistant_remote.rc */,
-				63AADBC91B6A0FF200AA16FD /* hold.wav */,
 				63AADBCA1B6A0FF200AA16FD /* Images.xcassets */,
 				63AADBD51B6A0FF200AA16FD /* licenses.html */,
 				63AADBD71B6A0FF200AA16FD /* linphonerc */,
@@ -3181,7 +3178,6 @@
 				636B991A1C298401003BA37C /* route_bluetooth_default@2x.png in Resources */,
 				636B99371C298401003BA37C /* select_all_default.png in Resources */,
 				636B99461C298401003BA37C /* valid_disabled@2x.png in Resources */,
-				63AADBE91B6A0FF200AA16FD /* hold.wav in Resources */,
 				63B81A0C1B57DA33009604A6 /* LICENSE.txt in Resources */,
 				636B986A1C298401003BA37C /* contact_add_default.png in Resources */,
 				636B98F61C298401003BA37C /* numpad_over_background.png in Resources */,

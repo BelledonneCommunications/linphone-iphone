@@ -40,7 +40,7 @@ NSString *const kLogsUpdateNotification = @"kLogsUpdateNotification";
 - (void)setupLogging {
 	lastLogs = [[NSMutableArray alloc] initWithCapacity:kLastLogsCapacity];
 	logsBuffer = [NSMutableArray arrayWithCapacity:kLogsBufferCapacity];
-	[Log enableLogs:YES];
+	[Log enableLogs:ORTP_DEBUG];
 }
 
 void tester_logs_handler(int level, const char *fmt, va_list args) {

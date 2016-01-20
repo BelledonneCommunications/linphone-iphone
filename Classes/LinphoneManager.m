@@ -280,9 +280,9 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		// set default values for first boot
 		if ([self lpConfigStringForKey:@"debugenable_preference"] == nil) {
 #ifdef DEBUG
-			[self lpConfigSetBool:TRUE forKey:@"debugenable_preference"];
+			[self lpConfigSetInt:1 forKey:@"debugenable_preference"];
 #else
-			[self lpConfigSetBool:FALSE forKey:@"debugenable_preference"];
+			[self lpConfigSetInt:0 forKey:@"debugenable_preference"];
 #endif
 		}
 
@@ -1439,7 +1439,7 @@ static BOOL libStarted = FALSE;
 		LOGI(@"linphonecore is already created");
 		return;
 	}
-	[Log enableLogs:[self lpConfigBoolForKey:@"debugenable_preference"]];
+	[Log enableLogs:[self lpConfigIntForKey:@"debugenable_preference"]];
 	connectivity = none;
 
 	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
@@ -1471,7 +1471,6 @@ static BOOL libStarted = FALSE;
 										 .lastPathComponent]
 			 ?: [LinphoneManager bundleFile:@"hold.caf"])
 			.lastPathComponent;
-
 	linphone_core_set_ring(theLinphoneCore, [LinphoneManager bundleFile:ring].UTF8String);
 	linphone_core_set_ringback(theLinphoneCore, [LinphoneManager bundleFile:ringback].UTF8String);
 	linphone_core_set_play_file(theLinphoneCore, [LinphoneManager bundleFile:hold].UTF8String);

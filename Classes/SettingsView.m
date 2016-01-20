@@ -410,12 +410,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 		removeFromHiddenKeys = (stun_server && ([stun_server length] > 0));
 		[keys addObject:@"ice_preference"];
 	} else if ([@"debugenable_preference" compare:notif.object] == NSOrderedSame) {
-		BOOL debugEnabled = [[notif.userInfo objectForKey:@"debugenable_preference"] boolValue];
+		int debugLevel = [[notif.userInfo objectForKey:@"debugenable_preference"] intValue];
+		BOOL debugEnabled = (debugLevel >= ORTP_DEBUG && debugLevel < ORTP_ERROR);
 		removeFromHiddenKeys = debugEnabled;
 		[keys addObject:@"send_logs_button"];
 		[keys addObject:@"reset_logs_button"];
-		[Log enableLogs:debugEnabled];
-		[LinphoneManager.instance lpConfigSetBool:debugEnabled forKey:@"debugenable_preference"];
+		[Log enableLogs:debugLevel];
+		[LinphoneManager.instance lpConfigSetInt:debugLevel forKey:@"debugenable_preference"];
 	} else if ([@"account_mandatory_advanced_preference" compare:notif.object] == NSOrderedSame) {
 		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"account_mandatory_advanced_preference"] boolValue];
 		for (NSString *key in settingsStore->dict) {

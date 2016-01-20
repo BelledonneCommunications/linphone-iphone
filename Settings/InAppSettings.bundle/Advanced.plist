@@ -12,13 +12,27 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
-			<false/>
+			<string>0</string>
 			<key>Key</key>
 			<string>debugenable_preference</string>
 			<key>Title</key>
 			<string>Debug</string>
+			<key>Titles</key>
+			<array>
+				<string>None</string>
+				<string>Application only</string>
+				<string>Application and libraries warnings</string>
+				<string>All</string>
+			</array>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>0</string>
+				<string>32</string>
+				<string>8</string>
+				<string>1</string>
+			</array>
 		</dict>
 		<dict>
 			<key>Key</key>

@@ -361,7 +361,7 @@
 
 	// advanced section
 	{
-		[self setBool:[lm lpConfigBoolForKey:@"debugenable_preference"] forKey:@"debugenable_preference"];
+		[self setObject:[lm lpConfigStringForKey:@"debugenable_preference"] forKey:@"debugenable_preference"];
 		[self setBool:ANIMATED forKey:@"animations_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"backgroundmode_preference"] forKey:@"backgroundmode_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
