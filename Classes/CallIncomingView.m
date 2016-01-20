@@ -38,8 +38,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCallUpdate object:nil];
+	_call = NULL;
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -62,6 +62,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (UICompositeViewDescription *)compositeViewDescription {
 	return self.class.compositeViewDescription;
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	if (_call) {
+		[self update];
+	}
 }
 
 #pragma mark - Event Functions
