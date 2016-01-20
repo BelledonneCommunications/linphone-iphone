@@ -33,9 +33,8 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)onOn {
-	LinphoneCore *lc = LC;
 
-	if (!linphone_core_video_display_enabled(lc))
+	if (!linphone_core_video_display_enabled(LC))
 		return;
 
 	[self setEnabled:FALSE];
@@ -48,7 +47,7 @@ INIT_WITH_COMMON_CF {
 			TRUE; /* will be used later to notify user if video was not activated because of the linphone core*/
 		LinphoneCallParams *call_params = linphone_call_params_copy(linphone_call_get_current_params(call));
 		linphone_call_params_enable_video(call_params, TRUE);
-		linphone_core_update_call(lc, call, call_params);
+		linphone_core_update_call(LC, call, call_params);
 		linphone_call_params_destroy(call_params);
 	} else {
 		LOGW(@"Cannot toggle video button, because no current call");
@@ -56,9 +55,8 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)onOff {
-	LinphoneCore *lc = LC;
 
-	if (!linphone_core_video_display_enabled(lc))
+	if (!linphone_core_video_display_enabled(LC))
 		return;
 
 	[self setEnabled:FALSE];
@@ -68,7 +66,7 @@ INIT_WITH_COMMON_CF {
 	if (call) {
 		LinphoneCallParams *call_params = linphone_call_params_copy(linphone_call_get_current_params(call));
 		linphone_call_params_enable_video(call_params, FALSE);
-		linphone_core_update_call(lc, call, call_params);
+		linphone_core_update_call(LC, call, call_params);
 		linphone_call_params_destroy(call_params);
 	} else {
 		LOGW(@"Cannot toggle video button, because no current call");
@@ -77,10 +75,9 @@ INIT_WITH_COMMON_CF {
 
 - (bool)onUpdate {
 	bool video_enabled = false;
-	LinphoneCore *lc = LC;
-	LinphoneCall *currentCall = linphone_core_get_current_call(lc);
-	if (linphone_core_video_supported(lc)) {
-		if (linphone_core_video_display_enabled(lc) && currentCall && !linphone_call_media_in_progress(currentCall) &&
+	LinphoneCall *currentCall = linphone_core_get_current_call(LC);
+	if (linphone_core_video_supported(LC)) {
+		if (linphone_core_video_display_enabled(LC) && currentCall && !linphone_call_media_in_progress(currentCall) &&
 			linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
 			video_enabled = TRUE;
 		}

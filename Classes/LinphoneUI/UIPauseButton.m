@@ -61,24 +61,10 @@
 	return linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
 }
 
-+ (int)notInConferenceCallCount:(LinphoneCore *)lc {
-	int count = 0;
-	const MSList *calls = linphone_core_get_calls(lc);
-
-	while (calls != 0) {
-		if (![UIPauseButton isInConference:(LinphoneCall *)calls->data]) {
-			count++;
-		}
-		calls = calls->next;
-	}
-	return count;
-}
-
 + (LinphoneCall *)getCall {
-	LinphoneCore *lc = LC;
-	LinphoneCall *currentCall = linphone_core_get_current_call(lc);
-	if (currentCall == nil && linphone_core_get_calls_nb(lc) == 1) {
-		currentCall = (LinphoneCall *)linphone_core_get_calls(lc)->data;
+	LinphoneCall *currentCall = linphone_core_get_current_call(LC);
+	if (currentCall == nil && linphone_core_get_calls_nb(LC) == 1) {
+		currentCall = (LinphoneCall *)linphone_core_get_calls(LC)->data;
 	}
 	return currentCall;
 }
@@ -151,13 +137,12 @@
 
 - (bool)onUpdate {
 	bool ret = false;
-	LinphoneCore *lc = LC;
 	LinphoneCall *c = call;
 	switch (type) {
 		case UIPauseButtonType_Conference: {
-			self.enabled = (linphone_core_get_conference_size(lc) > 0);
+			self.enabled = (linphone_core_get_conference_size(LC) > 0);
 			if (self.enabled) {
-				ret = (!linphone_core_is_in_conference(lc));
+				ret = (!linphone_core_is_in_conference(LC));
 			}
 			break;
 		}

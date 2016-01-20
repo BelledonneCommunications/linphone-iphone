@@ -53,8 +53,7 @@
 
 - (void)applicationWillResignActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-	LinphoneCore *lc = LC;
-	LinphoneCall *call = linphone_core_get_current_call(lc);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 
 	if (call) {
 		/* save call context */
@@ -84,8 +83,7 @@
 
 	[instance becomeActive];
 
-	LinphoneCore *lc = LC;
-	LinphoneCall *call = linphone_core_get_current_call(lc);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 
 	if (call) {
 		if (call == instance->currentCallContextBeforeGoingBackground.call) {
@@ -276,9 +274,8 @@
 			NSString *loc_key = [alert objectForKey:@"loc-key"];
 			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
-			LinphoneCore *lc = LC;
-			if (linphone_core_get_calls(lc) == NULL) { // if there are calls, obviously our TCP socket shall be working
-				linphone_core_set_network_reachable(lc, FALSE);
+			if (linphone_core_get_calls(LC) == NULL) { // if there are calls, obviously our TCP socket shall be working
+				linphone_core_set_network_reachable(LC, FALSE);
 				LinphoneManager.instance.connectivity = none; /*force connectivity to be discovered again*/
 				[LinphoneManager.instance refreshRegisters];
 				if (loc_key != nil) {
@@ -369,12 +366,11 @@
 								   userInfo:nil
 									repeats:FALSE];
 
-	LinphoneCore *lc = LC;
 	// If no call is yet received at this time, then force Linphone to drop the current socket and make new one to
 	// register, so that we get
 	// a better chance to receive the INVITE.
-	if (linphone_core_get_calls(lc) == NULL) {
-		linphone_core_set_network_reachable(lc, FALSE);
+	if (linphone_core_get_calls(LC) == NULL) {
+		linphone_core_set_network_reachable(LC, FALSE);
 		lm.connectivity = none; /*force connectivity to be discovered again*/
 		[lm refreshRegisters];
 	}
@@ -406,17 +402,15 @@
 			 completionHandler:(void (^)())completionHandler {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
-
-		LinphoneCore *lc = LC;
 		LOGI(@"%@", NSStringFromSelector(_cmd));
 		if ([notification.category isEqualToString:@"incoming_call"]) {
 			if ([identifier isEqualToString:@"answer"]) {
 				// use the standard handler
 				[self application:application didReceiveLocalNotification:notification];
 			} else if ([identifier isEqualToString:@"decline"]) {
-				LinphoneCall *call = linphone_core_get_current_call(lc);
+				LinphoneCall *call = linphone_core_get_current_call(LC);
 				if (call)
-					linphone_core_decline_call(lc, call, LinphoneReasonDeclined);
+					linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
 			}
 		} else if ([notification.category isEqualToString:@"incoming_msg"]) {
 			if ([identifier isEqualToString:@"reply"]) {
@@ -424,7 +418,7 @@
 				[self application:application didReceiveLocalNotification:notification];
 			} else if ([identifier isEqualToString:@"mark_read"]) {
 				NSString *from = [notification.userInfo objectForKey:@"from_addr"];
-				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
+				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
 				if (room) {
 					linphone_chat_room_mark_as_read(room);
 					TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController

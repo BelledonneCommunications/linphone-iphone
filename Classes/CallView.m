@@ -242,8 +242,6 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)updateBottomBar:(LinphoneCall *)call state:(LinphoneCallState)state {
-	LinphoneCore *lc = LC;
-
 	[_speakerButton update];
 	[_microButton update];
 	[_callPauseButton update];
@@ -254,9 +252,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	_optionsButton.enabled = (!call || !linphone_call_media_in_progress(call));
 	_optionsTransferButton.enabled = call && !linphone_call_media_in_progress(call);
 	// Show Pause/Conference button following call count
-	if (linphone_core_get_calls_nb(lc) > 1) {
-		bool enabled = ((linphone_core_get_current_call(lc) != NULL) || linphone_core_is_in_conference(lc));
-		const MSList *list = linphone_core_get_calls(lc);
+	if (linphone_core_get_calls_nb(LC) > 1) {
+		bool enabled = ((linphone_core_get_current_call(LC) != NULL) || linphone_core_is_in_conference(LC));
+		const MSList *list = linphone_core_get_calls(LC);
 		while (list != NULL) {
 			LinphoneCall *call = (LinphoneCall *)list->data;
 			LinphoneCallState state = linphone_call_get_state(call);
@@ -273,7 +271,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	}
 
 	// Disable transfert in conference
-	if (linphone_core_get_current_call(lc) == NULL) {
+	if (linphone_core_get_current_call(LC) == NULL) {
 		[_optionsTransferButton setEnabled:FALSE];
 	} else {
 		[_optionsTransferButton setEnabled:TRUE];
@@ -411,13 +409,12 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)onCurrentCallChange {
-	LinphoneCore *lc = LC;
-	LinphoneCall *call = linphone_core_get_current_call(lc);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 
-	_noActiveCallView.hidden = (call || linphone_core_is_in_conference(lc));
+	_noActiveCallView.hidden = (call || linphone_core_is_in_conference(LC));
 	_callView.hidden = !call;
-	_conferenceView.hidden = !linphone_core_is_in_conference(lc);
-	_callPauseButton.hidden = !call && !linphone_core_is_in_conference(lc);
+	_conferenceView.hidden = !linphone_core_is_in_conference(LC);
+	_callPauseButton.hidden = !call && !linphone_core_is_in_conference(LC);
 
 	[_callPauseButton setType:UIPauseButtonType_CurrentCall call:call];
 	[_conferencePauseButton setType:UIPauseButtonType_Conference call:call];
@@ -505,7 +502,6 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state animated:(BOOL)animated {
-	LinphoneCore *lc = LC;
 	[self updateBottomBar:call state:state];
 	if (hiddenVolume) {
 		[PhoneMainView.instance setVolumeHidden:FALSE];
@@ -517,8 +513,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[_conferenceCallsTable.tableView reloadData];
 
 	static LinphoneCall *currentCall = NULL;
-	if (!currentCall || linphone_core_get_current_call(lc) != currentCall) {
-		currentCall = linphone_core_get_current_call(lc);
+	if (!currentCall || linphone_core_get_current_call(LC) != currentCall) {
+		currentCall = linphone_core_get_current_call(LC);
 		[self onCurrentCallChange];
 	}
 
@@ -566,10 +562,10 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			const LinphoneCallParams *remote = linphone_call_get_remote_params(call);
 
 			/* remote wants to add video */
-			if (linphone_core_video_display_enabled(lc) && !linphone_call_params_video_enabled(current) &&
+			if (linphone_core_video_display_enabled(LC) && !linphone_call_params_video_enabled(current) &&
 				linphone_call_params_video_enabled(remote) &&
-				!linphone_core_get_video_policy(lc)->automatically_accept) {
-				linphone_core_defer_call_update(lc, call);
+				!linphone_core_get_video_policy(LC)->automatically_accept) {
+				linphone_core_defer_call_update(LC, call);
 				[self displayAskToEnableVideoCall:call];
 			} else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
 				[self displayTableCall:animated];
@@ -581,7 +577,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			[self displayTableCall:animated];
 			break;
 		case LinphoneCallPausedByRemote:
-			if (call == linphone_core_get_current_call(lc)) {
+			if (call == linphone_core_get_current_call(LC)) {
 				_pausedByRemoteView.hidden = NO;
 			}
 			break;

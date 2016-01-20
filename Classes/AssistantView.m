@@ -200,15 +200,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)configureProxyConfig {
-	LinphoneCore *lc = LC;
 	LinphoneManager *lm = LinphoneManager.instance;
 
 	// remove previous proxy config, if any
 	if (new_config != NULL) {
 		const LinphoneAuthInfo *auth = linphone_proxy_config_find_auth_info(new_config);
-		linphone_core_remove_proxy_config(lc, new_config);
+		linphone_core_remove_proxy_config(LC, new_config);
 		if (auth) {
-			linphone_core_remove_auth_info(lc, auth);
+			linphone_core_remove_auth_info(LC, auth);
 		}
 	}
 
@@ -216,7 +215,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (new_config) {
 		[lm configurePushTokenForProxyConfig:new_config];
-		linphone_core_set_default_proxy_config(lc, new_config);
+		linphone_core_set_default_proxy_config(LC, new_config);
 		// reload address book to prepend proxy config domain to contacts' phone number
 		// todo: STOP doing that!
 		[[LinphoneManager.instance fastAddressBook] reload];

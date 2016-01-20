@@ -116,32 +116,31 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Update on show
 	LinphoneManager *mgr = LinphoneManager.instance;
-	LinphoneCore *lc = LC;
-	LinphoneCall *call = linphone_core_get_current_call(lc);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
 	[self callUpdate:call state:state];
 
 	if (IPAD) {
-		BOOL videoEnabled = linphone_core_video_display_enabled(lc);
+		BOOL videoEnabled = linphone_core_video_display_enabled(LC);
 		BOOL previewPref = [mgr lpConfigBoolForKey:@"preview_preference"];
 
 		if (videoEnabled && previewPref) {
-			linphone_core_set_native_preview_window_id(lc, (__bridge void *)(videoPreview));
+			linphone_core_set_native_preview_window_id(LC, (__bridge void *)(videoPreview));
 
-			if (!linphone_core_video_preview_enabled(lc)) {
-				linphone_core_enable_video_preview(lc, TRUE);
+			if (!linphone_core_video_preview_enabled(LC)) {
+				linphone_core_enable_video_preview(LC, TRUE);
 			}
 
 			[backgroundView setHidden:FALSE];
 			[videoCameraSwitch setHidden:FALSE];
 		} else {
-			linphone_core_set_native_preview_window_id(lc, NULL);
-			linphone_core_enable_video_preview(lc, FALSE);
+			linphone_core_set_native_preview_window_id(LC, NULL);
+			linphone_core_enable_video_preview(LC, FALSE);
 			[backgroundView setHidden:TRUE];
 			[videoCameraSwitch setHidden:TRUE];
 		}
 	} else {
-		linphone_core_enable_video_preview(lc, FALSE);
+		linphone_core_enable_video_preview(LC, FALSE);
 	}
 	[addressField setText:@""];
 }
@@ -224,13 +223,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)coreUpdateEvent:(NSNotification *)notif {
 	if (IPAD) {
-		LinphoneCore *lc = LC;
-		if (linphone_core_video_display_enabled(lc) && linphone_core_video_preview_enabled(lc)) {
-			linphone_core_set_native_preview_window_id(lc, (__bridge void *)(videoPreview));
+		if (linphone_core_video_display_enabled(LC) && linphone_core_video_preview_enabled(LC)) {
+			linphone_core_set_native_preview_window_id(LC, (__bridge void *)(videoPreview));
 			[backgroundView setHidden:FALSE];
 			[videoCameraSwitch setHidden:FALSE];
 		} else {
-			linphone_core_set_native_preview_window_id(lc, NULL);
+			linphone_core_set_native_preview_window_id(LC, NULL);
 			[backgroundView setHidden:TRUE];
 			[videoCameraSwitch setHidden:TRUE];
 		}
@@ -328,8 +326,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state {
-	LinphoneCore *lc = LC;
-	BOOL callInProgress = (linphone_core_get_calls_nb(lc) > 0);
+	BOOL callInProgress = (linphone_core_get_calls_nb(LC) > 0);
 	addCallButton.hidden = (!callInProgress || transferMode);
 	transferButton.hidden = (!callInProgress || !transferMode);
 	addContactButton.hidden = callButton.hidden = callInProgress;

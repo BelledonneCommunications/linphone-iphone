@@ -61,13 +61,12 @@
 - (void)touchUp:(id)sender {
 	NSString *address = addressField.text;
 	if (address.length == 0) {
-		LinphoneCore *lc = LC;
-		LinphoneCallLog *log = linphone_core_get_last_outgoing_call_log(lc);
+		LinphoneCallLog *log = linphone_core_get_last_outgoing_call_log(LC);
 		if (log) {
 			LinphoneAddress *to = linphone_call_log_get_to(log);
 			const char *domain = linphone_address_get_domain(to);
 			char *bis_address = NULL;
-			LinphoneProxyConfig *def_proxy = linphone_core_get_default_proxy_config(lc);
+			LinphoneProxyConfig *def_proxy = linphone_core_get_default_proxy_config(LC);
 
 			// if the 'to' address is on the default proxy, only present the username
 			if (def_proxy) {
@@ -95,8 +94,7 @@
 }
 
 - (void)updateVideoPolicy {
-	LinphoneCore *lc = LC;
-	if (linphone_core_video_capture_enabled(lc) && linphone_core_get_video_policy(lc)->automatically_initiate) {
+	if (linphone_core_video_capture_enabled(LC) && linphone_core_get_video_policy(LC)->automatically_initiate) {
 		[self setImage:[UIImage imageNamed:@"call_video_start_default.png"] forState:UIControlStateNormal];
 		[self setImage:[UIImage imageNamed:@"call_video_start_disabled.png"] forState:UIControlStateDisabled];
 	} else {

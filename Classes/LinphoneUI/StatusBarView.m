@@ -172,14 +172,13 @@
 - (void)proxyConfigUpdate:(LinphoneProxyConfig *)config {
 	LinphoneRegistrationState state = LinphoneRegistrationNone;
 	NSString *message = nil;
-	LinphoneCore *lc = LC;
-	LinphoneGlobalState gstate = linphone_core_get_global_state(lc);
+	LinphoneGlobalState gstate = linphone_core_get_global_state(LC);
 
 	if (gstate == LinphoneGlobalConfiguring) {
 		message = NSLocalizedString(@"Fetching remote configuration", nil);
 	} else if (config == NULL) {
 		state = LinphoneRegistrationNone;
-		if (linphone_core_get_proxy_config_list(lc) != NULL) {
+		if (linphone_core_get_proxy_config_list(LC) != NULL) {
 			if (linphone_core_is_network_reachable(LC)) {
 				message = NSLocalizedString(@"No default account", nil);
 			} else {
@@ -340,10 +339,9 @@
 }
 
 - (IBAction)onRegistrationStateClick:(id)sender {
-	LinphoneCore *lc = LC;
-	if (linphone_core_get_default_proxy_config(lc)) {
-		linphone_core_refresh_registers(lc);
-	} else if (linphone_core_get_proxy_config_list(lc)) {
+	if (linphone_core_get_default_proxy_config(LC)) {
+		linphone_core_refresh_registers(LC);
+	} else if (linphone_core_get_proxy_config_list(LC)) {
 		[PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
 	} else {
 		[PhoneMainView.instance changeCurrentView:AssistantView.compositeViewDescription];
