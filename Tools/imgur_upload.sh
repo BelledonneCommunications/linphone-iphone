@@ -18,7 +18,7 @@ if [ ! -z "$(find . -name "*.png")" ]; then
 		result="$(curl https://api.imgur.com/3/upload.json -H "Authorization: Client-ID $api_key" -F "image=@\"$filepath\"" )"
 
 		# result='{"rsp":{"stat":"ok","image":{"image_hash":"dKZ0YK9","delete_hash":"r0MsZp11K9vawLf","original_image":"http:\/\/i.imgur.com\/dKZ0YK9.png","large_thumbnail":"http:\/\/i.imgur.com\/dKZ0YK9l.jpg","small_thumbnail":"http:\/\/i.imgur.com\/dKZ0YK9s.jpg","imgur_page":"http:\/\/imgur.com\/dKZ0YK9","delete_page":"http:\/\/imgur.com\/delete\/r0MsZp11K9vawLf"}}}'
-		if ! grep -q '"success":true' $result; then
+		if ! grep -q '"success":true' <<< $result; then
 			echo "There was a problem uploading \"$filepath\": $result"
 		else
 			url=$(echo "$result" | tr ':' '\n' | grep '"link":' | cut -d: -f2)
