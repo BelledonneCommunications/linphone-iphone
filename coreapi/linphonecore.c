@@ -164,7 +164,7 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 	return linphone_call_get_remote_address(call);
 }
 
-static void linphone_core_log_collection_handler(OrtpLogLevel level, const char *fmt, va_list args);
+static void linphone_core_log_collection_handler(const char *domain, OrtpLogLevel level, const char *fmt, va_list args);
 
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
 	if (ortp_logv_out == linphone_core_log_collection_handler) {
@@ -201,7 +201,7 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 }
 
 void linphone_core_set_log_level_mask(OrtpLogLevel loglevel) {
-	ortp_set_log_level_mask(loglevel);
+	ortp_set_log_level_mask(NULL, loglevel);
 	if (loglevel == 0) {
 		sal_disable_log();
 	} else {
@@ -264,7 +264,7 @@ static void _close_log_collection_file(void) {
 	}
 }
 
-static void linphone_core_log_collection_handler(OrtpLogLevel level, const char *fmt, va_list args) {
+static void linphone_core_log_collection_handler(const char *domain, OrtpLogLevel level, const char *fmt, va_list args) {
 	const char *lname="undef";
 	char *msg;
 	struct timeval tp;
@@ -276,12 +276,12 @@ static void linphone_core_log_collection_handler(OrtpLogLevel level, const char 
 #ifndef _WIN32
 		va_list args_copy;
 		va_copy(args_copy, args);
-		liblinphone_log_func(level, fmt, args_copy);
+		liblinphone_log_func(domain, level, fmt, args_copy);
 		va_end(args_copy);
 #else
 		/* This works on 32 bits, luckily. */
 		/* TODO: va_copy is available in Visual Studio 2013. */
-		liblinphone_log_func(level, fmt, args);
+		liblinphone_log_func(domain, level, fmt, args);
 #endif
 	}
 

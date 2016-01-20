@@ -675,7 +675,7 @@ bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
 }
 
 LinphoneCore *linphone_chat_room_get_lc(LinphoneChatRoom *cr) {
-	return cr->lc;
+	return linphone_chat_room_get_core(cr);
 }
 
 LinphoneCore *linphone_chat_room_get_core(LinphoneChatRoom *cr) {
@@ -704,7 +704,7 @@ LinphoneChatMessage *linphone_chat_room_create_message_2(LinphoneChatRoom *cr, c
 														 const char *external_body_url, LinphoneChatMessageState state,
 														 time_t time, bool_t is_read, bool_t is_incoming) {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, message);
-	LinphoneCore *lc = linphone_chat_room_get_lc(cr);
+	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	msg->external_body_url = external_body_url ? ms_strdup(external_body_url) : NULL;
 	msg->time = time;
 	msg->is_read = is_read;

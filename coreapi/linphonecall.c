@@ -527,22 +527,19 @@ static void setup_rtcp_fb(LinphoneCall *call, SalMediaDescription *md) {
 		if (!sal_stream_description_active(&md->streams[i])) continue;
 		md->streams[i].rtcp_fb.generic_nack_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_generic_nack_enabled", 0);
 		md->streams[i].rtcp_fb.tmmbr_enabled = lp_config_get_int(lc->config, "rtp", "rtcp_fb_tmmbr_enabled", 0);
-        md->streams[i].implicit_rtcp_fb = call->params->implicit_rtcp_fb;
-        
-        for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
+		md->streams[i].implicit_rtcp_fb = call->params->implicit_rtcp_fb;
+		
+		for (pt_it = md->streams[i].payloads; pt_it != NULL; pt_it = pt_it->next) {
 			pt = (PayloadType *)pt_it->data;
-            
-            if (call->params->avpf_enabled == FALSE && call->params->implicit_rtcp_fb == FALSE)  {
-                payload_type_unset_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
-                memset(&avpf_params, 0, sizeof(avpf_params));
-            }
-            else {
-                payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
-                avpf_params = payload_type_get_avpf_params(pt);
-                avpf_params.trr_interval = call->params->avpf_rr_interval;
-                
-            }
-   
+
+			if (call->params->avpf_enabled == FALSE && call->params->implicit_rtcp_fb == FALSE)  {
+				payload_type_unset_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
+				memset(&avpf_params, 0, sizeof(avpf_params));
+			}else {
+				payload_type_set_flag(pt, PAYLOAD_TYPE_RTCP_FEEDBACK_ENABLED);
+				avpf_params = payload_type_get_avpf_params(pt);
+				avpf_params.trr_interval = call->params->avpf_rr_interval;
+			}
 			payload_type_set_avpf_params(pt, avpf_params);
 		}
 	}
@@ -2325,10 +2322,8 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	AudioStream *audiostream;
 	const char *location;
 	int dscp;
-	char rtcp_tool[128]={0};
+	const char *rtcp_tool=linphone_core_get_user_agent(call->core);
 	char* cname;
-
-	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
 
 	if (call->audiostream != NULL) return;
 	if (call->sessions[call->main_audio_stream_index].rtp_session==NULL){
@@ -2425,9 +2420,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
 	LinphoneCore *lc=call->core;
 	char* cname;
-	char rtcp_tool[128];
-
-	snprintf(rtcp_tool,sizeof(rtcp_tool)-1,"%s-%s",linphone_core_get_user_agent_name(),linphone_core_get_user_agent_version());
+	const char *rtcp_tool = linphone_core_get_user_agent(call->core);
 
 	if (call->videostream == NULL){
 		int video_recv_buf_size=lp_config_get_int(lc->config,"video","recv_buf_size",0);
