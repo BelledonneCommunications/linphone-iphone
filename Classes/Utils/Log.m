@@ -55,9 +55,9 @@
 	linphone_core_enable_log_collection(enabled);
 	linphone_core_enable_logs_with_cb(linphone_iphone_log_handler);
 	if (level == 0) {
-		NSLog(@"I/%s/Disabling all logs", ORTP_LOG_DOMAIN);
 		linphone_core_set_log_level(ORTP_FATAL);
 		ortp_set_log_level("ios", ORTP_FATAL);
+		NSLog(@"I/%s/Disabling all logs", ORTP_LOG_DOMAIN);
 	} else {
 		NSLog(@"I/%s/Enabling %s logs", ORTP_LOG_DOMAIN, (enabled ? "all" : "application only"));
 		linphone_core_set_log_level(level);
