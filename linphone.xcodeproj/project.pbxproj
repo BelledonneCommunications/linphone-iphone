@@ -547,6 +547,7 @@
 		63E279E71C4F9A2500D332AE /* test_failed.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E41C4F9A2500D332AE /* test_failed.png */; };
 		63E279E81C4F9A2500D332AE /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E51C4F9A2500D332AE /* test_inprogress.png */; };
 		63E279E91C4F9A2500D332AE /* test_passed.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E61C4F9A2500D332AE /* test_passed.png */; };
+		63E27A321C4FECD000D332AE /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A311C4FECD000D332AE /* LaunchScreen.xib */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63EEE3FF1BBA9AC00087D3AF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		63EEE4001BBA9AC00087D3AF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
@@ -1363,6 +1364,7 @@
 		63E279E41C4F9A2500D332AE /* test_failed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_failed.png; path = LiblinphoneTester/test_failed.png; sourceTree = SOURCE_ROOT; };
 		63E279E51C4F9A2500D332AE /* test_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_inprogress.png; path = LiblinphoneTester/test_inprogress.png; sourceTree = SOURCE_ROOT; };
 		63E279E61C4F9A2500D332AE /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_passed.png; path = LiblinphoneTester/test_passed.png; sourceTree = SOURCE_ROOT; };
+		63E27A311C4FECD000D332AE /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
 		63EA4C941B50189D00922857 /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
@@ -1729,6 +1731,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				63E27A311C4FECD000D332AE /* LaunchScreen.xib */,
 				22E0A81D111C44E100B04932 /* AboutView.h */,
 				22E0A81C111C44E100B04932 /* AboutView.m */,
 				636316D31A1DEBCB0009B839 /* AboutView.xib */,
@@ -3046,6 +3049,7 @@
 				63AADC011B6A0FF200AA16FD /* assistant_linphone_existing.rc in Resources */,
 				636B98171C298401003BA37C /* call_quality_indicator_2@2x.png in Resources */,
 				636B98021C298401003BA37C /* call_audio_start_disabled.png in Resources */,
+				63E27A321C4FECD000D332AE /* LaunchScreen.xib in Resources */,
 				636B985D1C298401003BA37C /* color_C.png in Resources */,
 				636316D41A1DEC650009B839 /* SettingsView.xib in Resources */,
 				636B98131C298401003BA37C /* call_quality_indicator_0@2x.png in Resources */,
