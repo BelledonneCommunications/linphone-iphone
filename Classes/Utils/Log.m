@@ -61,7 +61,7 @@
 	} else {
 		NSLog(@"I/%s/Enabling %s logs", ORTP_LOG_DOMAIN, (enabled ? "all" : "application only"));
 		linphone_core_set_log_level(level);
-		ortp_set_log_level("ios", ORTP_DEBUG);
+		ortp_set_log_level("ios", level == ORTP_DEBUG ? ORTP_DEBUG : ORTP_MESSAGE);
 	}
 }
 
