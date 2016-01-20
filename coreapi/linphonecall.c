@@ -185,6 +185,9 @@ static void propagate_encryption_changed(LinphoneCall *call){
 		}
 		ms_message("All streams are encrypted key exchanged using %s", call->current_params->media_encryption==LinphoneMediaEncryptionZRTP?"ZRTP":call->current_params->media_encryption==LinphoneMediaEncryptionDTLS?"DTLS":"Unknown mechanism");
 		linphone_core_notify_call_encryption_changed(call->core, call, TRUE, call->auth_token);
+		if (call->current_params->encryption_mandatory && call->videostream && media_stream_started((MediaStream *)call->videostream)) {
+			video_stream_send_vfu(call->videostream); /*nothing could have been sent yet so generating key frame*/
+		}
 	}
 }
 
@@ -4401,8 +4404,9 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED){
 			if (stream_index == call->main_audio_stream_index)
 				linphone_call_audiostream_encryption_changed(call, evd->info.zrtp_stream_encrypted);
-			else if (stream_index == call->main_video_stream_index)
+			else if (stream_index == call->main_video_stream_index) {
 				propagate_encryption_changed(call);
+			}
 		} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
 			if (stream_index == call->main_audio_stream_index)
 				linphone_call_audiostream_auth_token_ready(call, evd->info.zrtp_sas.sas, evd->info.zrtp_sas.verified);
