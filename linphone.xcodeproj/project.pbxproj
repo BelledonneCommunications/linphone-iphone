@@ -567,7 +567,6 @@
 		D30562161671DC4900C97967 /* libXMLRPC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3554ED115CA79AA00478841 /* libXMLRPC.a */; };
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */; };
-		D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D3196D3D15A32BD8007FEEBA /* UITransferButton.m */; };
 		D31AAF5E159B3919002C6B02 /* CallPausedTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = D31AAF5D159B3919002C6B02 /* CallPausedTableView.m */; };
 		D31B4B21159876C0002E6C72 /* UICompositeView.m in Sources */ = {isa = PBXBuildFile; fileRef = D31B4B1F159876C0002E6C72 /* UICompositeView.m */; };
 		D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D31C9C97158A1CDE00756B45 /* UIHistoryCell.m */; };
@@ -1392,8 +1391,6 @@
 		D30BF33216A427BC00AF0026 /* libtunnel.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtunnel.a; path = "liblinphone-sdk/apple-darwin/lib/libtunnel.a"; sourceTree = "<group>"; };
 		D3128FDE15AABC7E00A2147A /* ContactDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactDetailsView.h; sourceTree = "<group>"; };
 		D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactDetailsView.m; sourceTree = "<group>"; };
-		D3196D3C15A32BD7007FEEBA /* UITransferButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UITransferButton.h; sourceTree = "<group>"; };
-		D3196D3D15A32BD8007FEEBA /* UITransferButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UITransferButton.m; sourceTree = "<group>"; };
 		D31AAF5C159B3919002C6B02 /* CallPausedTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallPausedTableView.h; sourceTree = "<group>"; };
 		D31AAF5D159B3919002C6B02 /* CallPausedTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallPausedTableView.m; sourceTree = "<group>"; };
 		D31B4B1E159876C0002E6C72 /* UICompositeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICompositeView.h; sourceTree = "<group>"; };
@@ -1928,8 +1925,6 @@
 				F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */,
 				D32648421588F6FA00930C67 /* UIToggleButton.h */,
 				D32648431588F6FB00930C67 /* UIToggleButton.m */,
-				D3196D3C15A32BD7007FEEBA /* UITransferButton.h */,
-				D3196D3D15A32BD8007FEEBA /* UITransferButton.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
 				6381DA7B1C1AD5EA00DF3BBD /* UIBouncingView.h */,
@@ -3474,7 +3469,6 @@
 				D31B4B21159876C0002E6C72 /* UICompositeView.m in Sources */,
 				D31AAF5E159B3919002C6B02 /* CallPausedTableView.m in Sources */,
 				D32B9DFC15A2F131000B6DEC /* FastAddressBook.m in Sources */,
-				D3196D3E15A32BD8007FEEBA /* UITransferButton.m in Sources */,
 				D350F20E15A43BB100149E54 /* AssistantView.m in Sources */,
 				D3F795D615A582810077328B /* ChatConversationView.m in Sources */,
 				D32B6E2915A5BC440033019F /* ChatConversationTableView.m in Sources */,

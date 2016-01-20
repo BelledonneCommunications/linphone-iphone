@@ -333,7 +333,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	transferButton.hidden = (!callInProgress || !transferMode);
 	addContactButton.hidden = callButton.hidden = callInProgress;
 	backButton.hidden = !callInProgress;
-	[callButton updateVideoPolicy];
+	[callButton updateIcon];
 }
 
 - (void)setAddress:(NSString *)address {

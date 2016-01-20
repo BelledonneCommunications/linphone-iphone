@@ -23,7 +23,6 @@
 
 #import "UICamSwitch.h"
 #import "UICallButton.h"
-#import "UITransferButton.h"
 #import "UIDigitButton.h"
 
 @interface DialerView
@@ -38,7 +37,7 @@
 @property(nonatomic, strong) IBOutlet UIButton *addContactButton;
 @property(nonatomic, strong) IBOutlet UICallButton *callButton;
 @property(nonatomic, strong) IBOutlet UICallButton *addCallButton;
-@property(nonatomic, strong) IBOutlet UITransferButton *transferButton;
+@property(nonatomic, strong) IBOutlet UICallButton *transferButton;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *backspaceButton;
 
