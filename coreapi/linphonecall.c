@@ -2437,7 +2437,8 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 
 			call->videostream=video_stream_new2(linphone_call_get_bind_ip_for_stream(call,call->main_video_stream_index),
 					multicast_role ==  SalMulticastReceiver ? stream_desc->rtp_port : call->media_ports[call->main_video_stream_index].rtp_port,
-					multicast_role ==  SalMulticastReceiver ?  0 /*disabled for now*/ : call->media_ports[call->main_video_stream_index].rtcp_port);
+					multicast_role ==  SalMulticastReceiver ?  0 /*disabled for now*/ : call->media_ports[call->main_video_stream_index].rtcp_port,
+												lc->factory);
 			if (multicast_role == SalMulticastReceiver)
 				linphone_call_join_multicast_group(call, call->main_video_stream_index, &call->videostream->ms);
 			rtp_session_enable_network_simulation(call->videostream->ms.sessions.rtp_session, &lc->net_conf.netsim_params);
@@ -2448,7 +2449,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			setup_dtls_params(call, &call->videostream->ms);
 			media_stream_reclaim_sessions(&call->videostream->ms, &call->sessions[call->main_video_stream_index]);
 		}else{
-			call->videostream=video_stream_new_with_sessions(&call->sessions[call->main_video_stream_index]);
+			call->videostream=video_stream_new_with_sessions(&call->sessions[call->main_video_stream_index], lc->factory);
 		}
 
 		if (call->media_ports[call->main_video_stream_index].rtp_port==-1){

@@ -154,10 +154,10 @@ void linphone_core_register_offer_answer_providers(LinphoneCore *lc){
 /*
  * Returns a PayloadType from the local list that matches a PayloadType offered or answered in the remote list
 */
-static PayloadType * find_payload_type_best_match(const MSList *local_payloads, const PayloadType *refpt,
+static PayloadType * find_payload_type_best_match(MSFactory *factory, const MSList *local_payloads, const PayloadType *refpt,
 						  const MSList *remote_payloads, bool_t reading_response){
 	PayloadType *ret = NULL;
-	MSOfferAnswerContext *ctx = ms_factory_create_offer_answer_context(ms_factory_get_fallback(), refpt->mime_type);
+	MSOfferAnswerContext *ctx = ms_factory_create_offer_answer_context(factory, refpt->mime_type);
 	if (ctx){
 		ms_message("Doing offer/answer processing with specific provider for codec [%s]", refpt->mime_type); 
 		ret = ms_offer_answer_context_match_payload(ctx, local_payloads, refpt, remote_payloads, reading_response);
@@ -168,7 +168,7 @@ static PayloadType * find_payload_type_best_match(const MSList *local_payloads, 
 }
 
 
-static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t reading_response, bool_t one_matching_codec){
+static MSList *match_payloads(MSFactory *factory, const MSList *local, const MSList *remote, bool_t reading_response, bool_t one_matching_codec){
 	const MSList *e2,*e1;
 	MSList *res=NULL;
 	PayloadType *matched;
@@ -176,7 +176,7 @@ static MSList *match_payloads(const MSList *local, const MSList *remote, bool_t 
 
 	for(e2=remote;e2!=NULL;e2=e2->next){
 		PayloadType *p2=(PayloadType*)e2->data;
-		matched=find_payload_type_best_match(local, p2, remote, reading_response);
+		matched=find_payload_type_best_match(factory, local, p2, remote, reading_response);
 		if (matched){
 			int local_number=payload_type_get_number(matched);
 			int remote_number=payload_type_get_number(p2);
@@ -321,11 +321,11 @@ static SalStreamDir compute_dir_incoming(SalStreamDir local, SalStreamDir offere
 	return res;
 }
 
-static void initiate_outgoing(const SalStreamDescription *local_offer,
+static void initiate_outgoing(MSFactory* factory, const SalStreamDescription *local_offer,
 						const SalStreamDescription *remote_answer,
 						SalStreamDescription *result){
 	if (remote_answer->rtp_port!=0)
-		result->payloads=match_payloads(local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
+		result->payloads=match_payloads(factory, local_offer->payloads,remote_answer->payloads,TRUE,FALSE);
 	else {
 		ms_message("Local stream description [%p] rejected by peer",local_offer);
 		result->rtp_port=0;
@@ -438,10 +438,10 @@ static void initiate_outgoing(const SalStreamDescription *local_offer,
 }
 
 
-static void initiate_incoming(const SalStreamDescription *local_cap,
+static void initiate_incoming(MSFactory *factory, const SalStreamDescription *local_cap,
 						const SalStreamDescription *remote_offer,
 						SalStreamDescription *result, bool_t one_matching_codec){
-	result->payloads=match_payloads(local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
+	result->payloads=match_payloads(factory, local_cap->payloads,remote_offer->payloads, FALSE, one_matching_codec);
 	result->proto=remote_offer->proto;
 	result->type=local_cap->type;
 	result->dir=compute_dir_incoming(local_cap->dir,remote_offer->dir);
@@ -513,7 +513,7 @@ static void initiate_incoming(const SalStreamDescription *local_cap,
  * Returns a media description to run the streams with, based on a local offer
  * and the returned response (remote).
 **/
-int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
+int offer_answer_initiate_outgoing(MSFactory *factory, const SalMediaDescription *local_offer,
 					const SalMediaDescription *remote_answer,
 					SalMediaDescription *result){
 	int i;
@@ -524,7 +524,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
 		ls=&local_offer->streams[i];
 		rs=&remote_answer->streams[i];
 		if (rs && ls->proto == rs->proto && rs->type == ls->type) {
-			initiate_outgoing(ls,rs,&result->streams[i]);
+			initiate_outgoing(factory, ls,rs,&result->streams[i]);
 			memcpy(&result->streams[i].rtcp_xr, &ls->rtcp_xr, sizeof(result->streams[i].rtcp_xr));
 			if ((ls->rtcp_xr.enabled == TRUE) && (rs->rtcp_xr.enabled == FALSE)) {
 				result->streams[i].rtcp_xr.enabled = FALSE;
@@ -552,7 +552,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
  * and the received offer.
  * The returned media description is an answer and should be sent to the offerer.
 **/
-int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
+int offer_answer_initiate_incoming(MSFactory *factory, const SalMediaDescription *local_capabilities,
 					const SalMediaDescription *remote_offer,
 					SalMediaDescription *result, bool_t one_matching_codec){
 	int i;
@@ -562,7 +562,7 @@ int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities
 		rs = &remote_offer->streams[i];
 		ls = &local_capabilities->streams[i];
 		if (ls && rs->type == ls->type && rs->proto == ls->proto){
-			initiate_incoming(ls,rs,&result->streams[i],one_matching_codec);
+			initiate_incoming(factory, ls,rs,&result->streams[i],one_matching_codec);
 			// Handle global RTCP FB attributes
 			result->streams[i].rtcp_fb.generic_nack_enabled = rs->rtcp_fb.generic_nack_enabled;
 			result->streams[i].rtcp_fb.tmmbr_enabled = rs->rtcp_fb.tmmbr_enabled;

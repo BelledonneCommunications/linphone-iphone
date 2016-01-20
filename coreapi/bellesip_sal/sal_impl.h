@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "belle-sip/belle-sdp.h"
 
 struct Sal{
+	MSFactory *factory;
 	SalCallbacks callbacks;
 	MSList *pending_auths;/*MSList of SalOp */
 	belle_sip_stack_t* stack;

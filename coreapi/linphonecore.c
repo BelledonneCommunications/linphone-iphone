@@ -1679,20 +1679,18 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	
 	if (lc->factory == NULL){
 		lc->factory = ms_factory_new();
-		ms_factory_init_voip(lc->factory);
-		ms_factory_init_plugins(lc->factory);
-
 	}
-	//ms_init();
 
+	ms_factory_init_voip(lc->factory);
+	ms_factory_init_plugins(lc->factory);
+	
 	linphone_core_register_default_codecs(lc);
 	linphone_core_register_offer_answer_providers(lc);
 	/* Get the mediastreamer2 event queue */
 	/* This allows to run event's callback in linphone_core_iterate() */
-	//lc->msevq=ms_factory_create_event_queue(ms_factory_get_fallback());
 	lc->msevq=ms_factory_create_event_queue(lc->factory);
 	
-	lc->sal=sal_init();
+	lc->sal=sal_init(lc->factory);
 	sal_set_http_proxy_host(lc->sal, linphone_core_get_http_proxy_host(lc));
 	sal_set_http_proxy_port(lc->sal, linphone_core_get_http_proxy_port(lc));
 

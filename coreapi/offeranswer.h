@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * Returns a media description to run the streams with, based on a local offer
  * and the returned response (remote).
 **/
-int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
+int offer_answer_initiate_outgoing(MSFactory *factory, const SalMediaDescription *local_offer,
 									const SalMediaDescription *remote_answer,
 									SalMediaDescription *result);
 
@@ -39,7 +39,7 @@ int offer_answer_initiate_outgoing(const SalMediaDescription *local_offer,
  * and the received offer.
  * The returned media description is an answer and should be sent to the offerer.
 **/
-int offer_answer_initiate_incoming(const SalMediaDescription *local_capabilities,
+int offer_answer_initiate_incoming(MSFactory* factory, const SalMediaDescription *local_capabilities,
 						const SalMediaDescription *remote_offer,
 						SalMediaDescription *result, bool_t one_matching_codec);
 

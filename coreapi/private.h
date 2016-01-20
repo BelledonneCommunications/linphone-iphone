@@ -1011,6 +1011,7 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 void _linphone_core_configure_resolver(void);
 
 struct _EcCalibrator{
+	MSFactory *factory;
 	ms_thread_t thread;
 	MSSndCard *play_card,*capt_card;
 	MSFilter *sndread,*det,*rec;
