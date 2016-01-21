@@ -551,6 +551,9 @@
 		63E27A4E1C50EAC300D332AE /* libebml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A4D1C50EAC300D332AE /* libebml2.a */; };
 		63E27A501C50EAE800D332AE /* libcorec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A4F1C50EAE800D332AE /* libcorec.a */; };
 		63E27A521C50EDB000D332AE /* hold.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A511C50EB2700D332AE /* hold.mkv */; };
+		63E27A591C51392A00D332AE /* libcorec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A4F1C50EAE800D332AE /* libcorec.a */; };
+		63E27A5A1C51392A00D332AE /* libebml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A4D1C50EAC300D332AE /* libebml2.a */; };
+		63E27A5B1C51392A00D332AE /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A471C50EA7A00D332AE /* libmatroska2.a */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63EEE3FF1BBA9AC00087D3AF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		63EEE4001BBA9AC00087D3AF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
@@ -1671,6 +1674,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63E27A591C51392A00D332AE /* libcorec.a in Frameworks */,
+				63E27A5A1C51392A00D332AE /* libebml2.a in Frameworks */,
+				63E27A5B1C51392A00D332AE /* libmatroska2.a in Frameworks */,
 				15F728741B16FF9A00A1C901 /* libxml2.dylib in Frameworks */,
 				F0A54B0C1AD56F4600C22733 /* libc++.dylib in Frameworks */,
 				F0A54B0D1AD56F4600C22733 /* libstdc++.dylib in Frameworks */,
@@ -1945,8 +1951,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				63E279DC1C4F8CEE00D332AE /* Default-568h@2x.png */,
 				080E96DDFE201D6D7F000001 /* Classes */,
+				63E279DC1C4F8CEE00D332AE /* Default-568h@2x.png */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
 				63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */,

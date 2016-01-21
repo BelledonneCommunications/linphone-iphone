@@ -27,7 +27,6 @@
 @implementation UISpeakerButton
 
 #pragma mark - Static Functions
-
 static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
 											 AudioSessionPropertyID inPropertyID, // 2
 											 UInt32 inPropertyValueSize,		  // 3

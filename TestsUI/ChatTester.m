@@ -104,7 +104,7 @@
 	[self startChatWith:[self me]];
 	[self uploadImageWithQuality:@"Minimum"];
 	// wait for the upload to terminate...
-	for (int i = 0; i < 45; i++) {
+	for (int i = 0; i < 90; i++) {
 		[tester waitForTimeInterval:1.f];
 		if (LinphoneManager.instance.fileTransferDelegates.count == 0)
 			break;
