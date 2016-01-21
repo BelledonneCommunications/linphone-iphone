@@ -60,7 +60,7 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	ecc->gen=ms_factory_create_filter(ecc->factory, MS_DTMF_GEN_ID);
 	ms_filter_call_method(ecc->gen,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ecc->write_resampler=ms_factory_create_filter(ecc->factory, MS_RESAMPLE_ID);
-	ecc->sndwrite=ms_snd_card_create_writer((void*)ecc->factory, ecc->play_card);
+	ecc->sndwrite=ms_snd_card_create_writer(ecc->play_card);
 	
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_GET_SAMPLE_RATE,&rate);

@@ -44,8 +44,8 @@ static void play_file(const char *filename, bool_t supported_format, const char 
 	BC_ASSERT_PTR_NOT_NULL(lc_manager);
 	if(lc_manager == NULL) return;
 	
-	audio_codec_supported = (audio_mime && ms_factory_get_decoder(ms_factory_get_fallback(), audio_mime));
-	video_codec_supported = (video_mime && ms_factory_get_decoder(ms_factory_get_fallback(), video_mime));
+	audio_codec_supported = (audio_mime && ms_factory_get_decoder(linphone_core_get_factory((void *)lc_manager->lc), audio_mime));
+	video_codec_supported = (video_mime && ms_factory_get_decoder(linphone_core_get_factory((void *)lc_manager->lc), video_mime));
 
 	player = linphone_core_create_local_player(lc_manager->lc, ms_snd_card_manager_get_default_card(ms_snd_card_manager_get()), video_stream_get_default_video_renderer(), 0);
 	BC_ASSERT_PTR_NOT_NULL(player);
