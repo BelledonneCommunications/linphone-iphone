@@ -6437,7 +6437,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
-	//ms_exit();
+	
 	ms_factory_uninit_voip(lc->factory);
 	ms_factory_uninit_plugins(lc->factory);
 	ms_factory_destroy(lc->factory);
