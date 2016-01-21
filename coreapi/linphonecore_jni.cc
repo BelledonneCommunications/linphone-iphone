@@ -6809,7 +6809,7 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneConferenceImpl_getPartici
 	return jaddr_list;
 }
 
-extern "C" jint Java_org_linphone_core_LinphoneConferenteImpl_removeParticipant(JNIEnv *env, jobject thiz, jlong pconference, jobject uri) {
+extern "C" jint Java_org_linphone_core_LinphoneConferenceImpl_removeParticipant(JNIEnv *env, jobject thiz, jlong pconference, jobject uri) {
 	jfieldID native_ptr_attr = env->GetFieldID(env->GetObjectClass(uri), "nativePtr", "J");
 	LinphoneAddress *addr = (LinphoneAddress *)env->GetLongField(uri, native_ptr_attr);
 	return linphone_conference_remove_participant((LinphoneConference *)pconference, addr);

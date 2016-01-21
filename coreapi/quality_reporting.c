@@ -65,7 +65,7 @@ static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offs
 	/*if we are out of memory, we add some size to buffer*/
 	if (ret == BELLE_SIP_BUFFER_OVERFLOW) {
 		/*some compilers complain that size_t cannot be formatted as unsigned long, hence forcing cast*/
-		ms_warning("QualityReporting: Buffer was too small to contain the whole report - increasing its size from %lu to %lu",
+		ms_debug("QualityReporting: Buffer was too small to contain the whole report - increasing its size from %lu to %lu",
 			(unsigned long)*buff_size, (unsigned long)*buff_size + 2048);
 		*buff_size += 2048;
 		*buff = (char *) ms_realloc(*buff, *buff_size);
@@ -276,7 +276,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 
 	/*if we are on a low bandwidth network, do not send reports to not overload it*/
 	if (linphone_call_params_low_bandwidth_enabled(linphone_call_get_current_params(call))){
-		ms_warning("QualityReporting[%p]: Avoid sending reports on low bandwidth network", call);
+		ms_message("QualityReporting[%p]: Avoid sending reports on low bandwidth network", call);
 		ret = 1;
 		goto end;
 	}
@@ -285,7 +285,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	in that case, we abort the report since it's not useful data*/
 	if (report->info.local_addr.ip == NULL || strlen(report->info.local_addr.ip) == 0
 		|| report->info.remote_addr.ip == NULL || strlen(report->info.remote_addr.ip) == 0) {
-		ms_warning("QualityReporting[%p]: Trying to submit a %s too early (call duration: %d sec) but %s IP could "
+		ms_message("QualityReporting[%p]: Trying to submit a %s too early (call duration: %d sec) but %s IP could "
 			"not be retrieved so dropping this report"
 			, call
 			, report_event
