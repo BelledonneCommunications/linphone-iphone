@@ -2,7 +2,7 @@
 
 #include "liblinphone_tester_windows.h"
 
-using namespace liblinphone_tester_runtime_component;
+using namespace linphone_tester_runtime;
 using namespace Platform;
 using namespace Windows::Foundation;
 using namespace Windows::Storage;
