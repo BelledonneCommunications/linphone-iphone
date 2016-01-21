@@ -166,7 +166,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onCallClick:(id)event {
 	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-	[LinphoneManager.instance call:addr transfer:NO];
+	[LinphoneManager.instance call:addr];
 }
 
 - (IBAction)onChatClick:(id)event {

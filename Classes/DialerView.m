@@ -25,48 +25,6 @@
 
 @implementation DialerView
 
-@synthesize transferMode;
-
-@synthesize addressField;
-@synthesize addContactButton;
-@synthesize backButton;
-@synthesize addCallButton;
-@synthesize transferButton;
-@synthesize callButton;
-@synthesize backspaceButton;
-
-@synthesize oneButton;
-@synthesize twoButton;
-@synthesize threeButton;
-@synthesize fourButton;
-@synthesize fiveButton;
-@synthesize sixButton;
-@synthesize sevenButton;
-@synthesize eightButton;
-@synthesize nineButton;
-@synthesize starButton;
-@synthesize zeroButton;
-@synthesize hashButton;
-
-@synthesize backgroundView;
-@synthesize videoPreview;
-@synthesize videoCameraSwitch;
-
-#pragma mark - Lifecycle Functions
-
-- (id)init {
-	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
-	if (self) {
-		transferMode = FALSE;
-	}
-	return self;
-}
-
-- (void)dealloc {
-	// Remove all observers
-	[NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
 #pragma mark - UICompositeViewDelegate Functions
 
 static UICompositeViewDescription *compositeDescription = nil;
@@ -108,12 +66,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:kLinphoneCoreUpdate
 											 object:nil];
 
-	// technically not needed, but older versions of linphone had this button
-	// disabled by default. In this case, updating by pushing a new version with
-	// xcode would result in the callbutton being disabled all the time.
-	// We force it enabled anyway now.
-	[callButton setEnabled:TRUE];
-
 	// Update on show
 	LinphoneManager *mgr = LinphoneManager.instance;
 	LinphoneCall *call = linphone_core_get_current_call(LC);
@@ -125,24 +77,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 		BOOL previewPref = [mgr lpConfigBoolForKey:@"preview_preference"];
 
 		if (videoEnabled && previewPref) {
-			linphone_core_set_native_preview_window_id(LC, (__bridge void *)(videoPreview));
+			linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_videoPreview));
 
 			if (!linphone_core_video_preview_enabled(LC)) {
 				linphone_core_enable_video_preview(LC, TRUE);
 			}
 
-			[backgroundView setHidden:FALSE];
-			[videoCameraSwitch setHidden:FALSE];
+			[_backgroundView setHidden:FALSE];
+			[_videoCameraSwitch setHidden:FALSE];
 		} else {
 			linphone_core_set_native_preview_window_id(LC, NULL);
 			linphone_core_enable_video_preview(LC, FALSE);
-			[backgroundView setHidden:TRUE];
-			[videoCameraSwitch setHidden:TRUE];
+			[_backgroundView setHidden:TRUE];
+			[_videoCameraSwitch setHidden:TRUE];
 		}
 	} else {
 		linphone_core_enable_video_preview(LC, FALSE);
 	}
-	[addressField setText:@""];
+	[_addressField setText:@""];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -153,37 +105,37 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
-	[zeroButton setDigit:'0'];
-	[oneButton setDigit:'1'];
-	[twoButton setDigit:'2'];
-	[threeButton setDigit:'3'];
-	[fourButton setDigit:'4'];
-	[fiveButton setDigit:'5'];
-	[sixButton setDigit:'6'];
-	[sevenButton setDigit:'7'];
-	[eightButton setDigit:'8'];
-	[nineButton setDigit:'9'];
-	[starButton setDigit:'*'];
-	[hashButton setDigit:'#'];
+	[_zeroButton setDigit:'0'];
+	[_oneButton setDigit:'1'];
+	[_twoButton setDigit:'2'];
+	[_threeButton setDigit:'3'];
+	[_fourButton setDigit:'4'];
+	[_fiveButton setDigit:'5'];
+	[_sixButton setDigit:'6'];
+	[_sevenButton setDigit:'7'];
+	[_eightButton setDigit:'8'];
+	[_nineButton setDigit:'9'];
+	[_starButton setDigit:'*'];
+	[_hashButton setDigit:'#'];
 
-	[addressField setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
+	[_addressField setAdjustsFontSizeToFitWidth:TRUE]; // Not put it in IB: issue with placeholder size
 
 	UILongPressGestureRecognizer *backspaceLongGesture =
 		[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onBackspaceLongClick:)];
-	[backspaceButton addGestureRecognizer:backspaceLongGesture];
+	[_backspaceButton addGestureRecognizer:backspaceLongGesture];
 
 	UILongPressGestureRecognizer *zeroLongGesture =
 		[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onZeroLongClick:)];
-	[zeroButton addGestureRecognizer:zeroLongGesture];
+	[_zeroButton addGestureRecognizer:zeroLongGesture];
 
 	UILongPressGestureRecognizer *oneLongGesture =
 		[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onOneLongClick:)];
-	[oneButton addGestureRecognizer:oneLongGesture];
+	[_oneButton addGestureRecognizer:oneLongGesture];
 
 	if (IPAD) {
 		if (LinphoneManager.instance.frontCamId != nil) {
 			// only show camera switch button if we have more than 1 camera
-			[videoCameraSwitch setHidden:FALSE];
+			[_videoCameraSwitch setHidden:FALSE];
 		}
 	}
 }
@@ -193,23 +145,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	switch (toInterfaceOrientation) {
 		case UIInterfaceOrientationPortrait:
-			[videoPreview setTransform:CGAffineTransformMakeRotation(0)];
+			[_videoPreview setTransform:CGAffineTransformMakeRotation(0)];
 			break;
 		case UIInterfaceOrientationPortraitUpsideDown:
-			[videoPreview setTransform:CGAffineTransformMakeRotation(M_PI)];
+			[_videoPreview setTransform:CGAffineTransformMakeRotation(M_PI)];
 			break;
 		case UIInterfaceOrientationLandscapeLeft:
-			[videoPreview setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
+			[_videoPreview setTransform:CGAffineTransformMakeRotation(M_PI / 2)];
 			break;
 		case UIInterfaceOrientationLandscapeRight:
-			[videoPreview setTransform:CGAffineTransformMakeRotation(-M_PI / 2)];
+			[_videoPreview setTransform:CGAffineTransformMakeRotation(-M_PI / 2)];
 			break;
 		default:
 			break;
 	}
 	CGRect frame = self.view.frame;
 	frame.origin = CGPointMake(0, 0);
-	videoPreview.frame = frame;
+	_videoPreview.frame = frame;
 	_padView.hidden = !IPAD && UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
 }
 
@@ -224,13 +176,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)coreUpdateEvent:(NSNotification *)notif {
 	if (IPAD) {
 		if (linphone_core_video_display_enabled(LC) && linphone_core_video_preview_enabled(LC)) {
-			linphone_core_set_native_preview_window_id(LC, (__bridge void *)(videoPreview));
-			[backgroundView setHidden:FALSE];
-			[videoCameraSwitch setHidden:FALSE];
+			linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_videoPreview));
+			[_backgroundView setHidden:FALSE];
+			[_videoCameraSwitch setHidden:FALSE];
 		} else {
 			linphone_core_set_native_preview_window_id(LC, NULL);
-			[backgroundView setHidden:TRUE];
-			[videoCameraSwitch setHidden:TRUE];
+			[_backgroundView setHidden:TRUE];
+			[_videoCameraSwitch setHidden:TRUE];
 		}
 	}
 }
@@ -329,22 +281,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)callUpdate:(LinphoneCall *)call state:(LinphoneCallState)state {
 	BOOL callInProgress = (linphone_core_get_calls_nb(LC) > 0);
-	addCallButton.hidden = (!callInProgress || transferMode);
-	transferButton.hidden = (!callInProgress || !transferMode);
-	addContactButton.hidden = callButton.hidden = callInProgress;
-	backButton.hidden = !callInProgress;
-	[callButton updateIcon];
+	_addContactButton.hidden = callInProgress;
+	_backButton.hidden = !callInProgress;
+	[_callButton updateIcon];
 }
 
 - (void)setAddress:(NSString *)address {
-	[addressField setText:address];
-}
-
-- (void)setTransferMode:(BOOL)atransferMode {
-	transferMode = atransferMode;
-	LinphoneCall *call = linphone_core_get_current_call(LC);
-	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
-	[self callUpdate:call state:state];
+	[_addressField setText:address];
 }
 
 #pragma mark - UITextFieldDelegate Functions
@@ -357,12 +300,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	if (textField == addressField) {
-		[addressField resignFirstResponder];
+	if (textField == _addressField) {
+		[_addressField resignFirstResponder];
 	}
 	if (textField.text.length > 0) {
 		LinphoneAddress *addr = linphone_core_interpret_url(LC, textField.text.UTF8String);
-		[LinphoneManager.instance call:addr transfer:FALSE];
+		[LinphoneManager.instance call:addr];
 		if (addr)
 			linphone_address_destroy(addr);
 	}
@@ -384,7 +327,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onAddContactClick:(id)event {
 	[ContactSelection setSelectionMode:ContactSelectionModeEdit];
-	[ContactSelection setAddAddress:[addressField text]];
+	[ContactSelection setAddAddress:[_addressField text]];
 	[ContactSelection setSipFilter:nil];
 	[ContactSelection setNameOrEmailFilter:nil];
 	[ContactSelection enableEmailFilter:FALSE];
@@ -396,28 +339,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAddressChange:(id)sender {
-	if ([self displayDebugPopup:self.addressField.text]) {
-		self.addressField.text = @"";
+	if ([self displayDebugPopup:_addressField.text]) {
+		_addressField.text = @"";
 	}
-	addContactButton.enabled = backspaceButton.enabled = addCallButton.enabled = transferButton.enabled =
-		([[addressField text] length] > 0);
+	_addContactButton.enabled = _backspaceButton.enabled = ([[_addressField text] length] > 0);
 }
 
 - (IBAction)onBackspaceClick:(id)sender {
-	if ([addressField.text length] > 0) {
-		[addressField setText:[addressField.text substringToIndex:[addressField.text length] - 1]];
+	if ([_addressField.text length] > 0) {
+		[_addressField setText:[_addressField.text substringToIndex:[_addressField.text length] - 1]];
 	}
 }
 
 - (void)onBackspaceLongClick:(id)sender {
-	[addressField setText:@""];
+	[_addressField setText:@""];
 }
 
 - (void)onZeroLongClick:(id)sender {
 	// replace last character with a '+'
 	NSString *newAddress =
-		[[self.addressField.text substringToIndex:[self.addressField.text length] - 1] stringByAppendingString:@"+"];
-	[self.addressField setText:newAddress];
+		[[_addressField.text substringToIndex:[_addressField.text length] - 1] stringByAppendingString:@"+"];
+	[_addressField setText:newAddress];
 	linphone_core_stop_dtmf(LC);
 }
 
@@ -427,7 +369,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	LinphoneAddress *addr = linphone_core_interpret_url(LC, voiceMail ? voiceMail.UTF8String : NULL);
 	if (addr) {
 		linphone_address_set_display_name(addr, NSLocalizedString(@"Voice mail", nil).UTF8String);
-		[lm call:addr transfer:FALSE];
+		[lm call:addr];
 		linphone_address_destroy(addr);
 	} else {
 		LOGE(@"Cannot call voice mail because URI not set or invalid!");

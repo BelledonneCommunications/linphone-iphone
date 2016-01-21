@@ -131,6 +131,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
+	LinphoneManager.instance.nextCallIsTransfer = NO;
+
 	[self updateUnreadMessage:FALSE];
 
 	// Update on show
@@ -709,7 +711,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[self hideOptions:TRUE animated:TRUE];
 	DialerView *view = VIEW(DialerView);
 	[view setAddress:@""];
-	[view setTransferMode:TRUE];
+	LinphoneManager.instance.nextCallIsTransfer = YES;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
@@ -717,7 +719,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[self hideOptions:TRUE animated:TRUE];
 	DialerView *view = VIEW(DialerView);
 	[view setAddress:@""];
-	[view setTransferMode:FALSE];
+	LinphoneManager.instance.nextCallIsTransfer = NO;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 

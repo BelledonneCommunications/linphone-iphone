@@ -515,7 +515,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCallClick:(id)sender {
-	[LinphoneManager.instance call:linphone_chat_room_get_peer_address(chatRoom) transfer:NO];
+	[LinphoneManager.instance call:linphone_chat_room_get_peer_address(chatRoom)];
 }
 
 - (IBAction)onListSwipe:(id)sender {

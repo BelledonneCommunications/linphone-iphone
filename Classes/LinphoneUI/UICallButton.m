@@ -87,7 +87,7 @@
 
 	if ([address length] > 0) {
 		LinphoneAddress *addr = linphone_core_interpret_url(LC, address.UTF8String);
-		[LinphoneManager.instance call:addr transfer:FALSE];
+		[LinphoneManager.instance call:addr];
 		if (addr)
 			linphone_address_destroy(addr);
 	}
@@ -102,6 +102,12 @@
 		[self setImage:[UIImage imageNamed:@"call_audio_start_disabled.png"] forState:UIControlStateDisabled];
 	}
 
-	if (LinphoneManager.instance.)
+	if (LinphoneManager.instance.nextCallIsTransfer) {
+		[self setImage:[UIImage imageNamed:@"call_transfer_default.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"call_transfer_disabled.png"] forState:UIControlStateDisabled];
+	} else if (linphone_core_get_calls_nb(LC) > 0) {
+		[self setImage:[UIImage imageNamed:@"call_add_default.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"call_add_disabled.png"] forState:UIControlStateDisabled];
+	}
 }
 @end

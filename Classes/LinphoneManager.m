@@ -1904,7 +1904,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_core_accept_call_with_params(theLinphoneCore, call, lcallParams);
 }
 
-- (BOOL)call:(const LinphoneAddress *)iaddr transfer:(BOOL)transfer {
+- (BOOL)call:(const LinphoneAddress *)iaddr {
 	// First verify that network is available, abort otherwise.
 	if (!linphone_core_is_network_reachable(theLinphoneCore)) {
 		UIAlertView *error = [[UIAlertView alloc]
@@ -1964,9 +1964,11 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		linphone_address_set_domain(
 			addr, [[LinphoneManager.instance lpConfigStringForKey:@"domain" inSection:@"assistant"] UTF8String]);
 	}
-	if (transfer) {
+
+	if (LinphoneManager.instance.nextCallIsTransfer) {
 		char *caddr = linphone_address_as_string(addr);
 		linphone_core_transfer_call(theLinphoneCore, linphone_core_get_current_call(theLinphoneCore), caddr);
+		LinphoneManager.instance.nextCallIsTransfer = NO;
 		ms_free(caddr);
 	} else {
 		LinphoneCall *call = linphone_core_invite_address_with_params(theLinphoneCore, addr, lcallParams);
