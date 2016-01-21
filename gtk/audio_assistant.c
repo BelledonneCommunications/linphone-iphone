@@ -213,7 +213,7 @@ void linphone_gtk_start_record_sound(GtkWidget *w, gpointer data){
 	LinphoneCore *lc = linphone_gtk_get_core();
 	MSFactory *factory = linphone_core_get_factory((void*)lc);
 	AudioStream *stream = NULL;
-	MSSndCardManager *manager = ms_snd_card_manager_get(factory);
+	MSSndCardManager *manager = ms_snd_card_manager_get();
 	gboolean active=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w));
 	gint timeout_id;
 
@@ -259,7 +259,7 @@ void linphone_gtk_start_play_record_sound(GtkWidget *w,gpointer data){
 	MSFactory *factory = linphone_core_get_factory((void*)lc);
 	gboolean active=gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w));
 	AudioStream *stream = NULL;
-	MSSndCardManager *manager = ms_snd_card_manager_get(factory);
+	MSSndCardManager *manager = ms_snd_card_manager_get();
 
 	if(active){
 		gchar *path = g_object_get_data(G_OBJECT(audio_assistant),"path");
@@ -455,7 +455,7 @@ static void prepare(GtkAssistant *w){
 
 	//Speaker page
 	if(page == 1){
-		MSSndCardManager *manager = ms_snd_card_manager_get(factory);
+		MSSndCardManager *manager = ms_snd_card_manager_get();
 		audio_stream = audio_stream_start_with_sndcards(&av_profile,9898,"127.0.0.1",19898,0,0,ms_snd_card_manager_get_card(manager,linphone_core_get_playback_device(lc)),ms_snd_card_manager_get_card(manager,linphone_core_get_capture_device(lc)),FALSE, factory);
 		if (mic_audiolevel != NULL && audio_stream != NULL){
 			g_object_set_data(G_OBJECT(audio_assistant),"stream",audio_stream);
