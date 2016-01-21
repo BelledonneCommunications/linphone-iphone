@@ -180,6 +180,8 @@ if (ENABLE_VCARD)
 	if(NOT BELCARD_FOUND)
 		message(WARNING "Could not find the belcard library!")
 		set(ENABLE_VCARD OFF CACHE BOOL "Enable vcard support." FORCE)
+	else()
+		add_definitions(-DVCARD_ENABLED)
 	endif()
 endif()
 
