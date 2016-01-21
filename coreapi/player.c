@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback cb, void *user_data){
 	obj->user_data=user_data;
 	obj->cb=cb;
-	return obj->open(obj,filename);
+	return obj->open(obj,filename, NULL);
 }
 
 /**
@@ -137,7 +137,7 @@ static void on_eof(void *user_data, MSFilter *f, unsigned int event_id, void *ar
 	if (player->cb) player->cb(player,player->user_data);
 }
 
-static int call_player_open(LinphonePlayer* player, const char *filename){
+static int call_player_open(LinphonePlayer* player, const char *filename, MSFactory *factory){
 	LinphoneCall *call=(LinphoneCall*)player->impl;
 	MSFilter *filter;
 	if (!call_player_check_state(player,FALSE)) return -1;

@@ -3277,7 +3277,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 		if (lc->ringstream && lc->dmfs_playing_start_time!=0){
 			linphone_core_stop_dtmf_stream(lc);
 		}
-		linphone_ringtoneplayer_start(lc->ringtoneplayer, ringcard, lc->sound_conf.local_ring, 2000);
+		linphone_ringtoneplayer_start(lc->factory, lc->ringtoneplayer, ringcard, lc->sound_conf.local_ring, 2000);
 	}else{
 		/* else play a tone within the context of the current call */
 		call->ringing_beep=TRUE;
@@ -4779,7 +4779,7 @@ int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCb
 	}
 	lc_callback_obj_init(&lc->preview_finished_cb,end_of_ringtone,userdata);
 	lc->preview_finished=0;
-	err = linphone_ringtoneplayer_start_with_cb(lc->ringtoneplayer, ringcard, ring, -1, notify_end_of_ringtone,(void *)lc);
+	err = linphone_ringtoneplayer_start_with_cb(lc->factory, lc->ringtoneplayer, ringcard, ring, -1, notify_end_of_ringtone,(void *)lc);
 	if (err) {
 		lc->preview_finished=1;
 	}
