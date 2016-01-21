@@ -32,7 +32,7 @@
 }
 
 - (bool)onUpdate {
-	return !linphone_core_mic_enabled(LC);
+	return !(linphone_core_get_current_call(LC) && linphone_core_mic_enabled(LC));
 }
 
 @end
