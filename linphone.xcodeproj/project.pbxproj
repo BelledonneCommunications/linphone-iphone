@@ -506,7 +506,6 @@
 		63BC49E21BA2CDFC004EC273 /* UICallPausedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC49E11BA2CDFC004EC273 /* UICallPausedCell.m */; };
 		63C441C31BBC23ED0053DC5E /* UIAssistantTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */; };
 		63CD4B4F1A5AAC8C00B84282 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */; };
-		63CDC45D1C3BDE370085F529 /* hold.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4521C3BDE370085F529 /* hold.caf */; };
 		63CDC45E1C3BDE370085F529 /* msg.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4531C3BDE370085F529 /* msg.caf */; };
 		63CDC45F1C3BDE370085F529 /* ringback.wav in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC4541C3BDE370085F529 /* ringback.wav */; };
 		63CDC4661C3BDE370085F529 /* shortring.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63CDC45C1C3BDE370085F529 /* shortring.caf */; };
@@ -548,6 +547,10 @@
 		63E279E81C4F9A2500D332AE /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E51C4F9A2500D332AE /* test_inprogress.png */; };
 		63E279E91C4F9A2500D332AE /* test_passed.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E61C4F9A2500D332AE /* test_passed.png */; };
 		63E27A321C4FECD000D332AE /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A311C4FECD000D332AE /* LaunchScreen.xib */; };
+		63E27A481C50EA7A00D332AE /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A471C50EA7A00D332AE /* libmatroska2.a */; };
+		63E27A4E1C50EAC300D332AE /* libebml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A4D1C50EAC300D332AE /* libebml2.a */; };
+		63E27A501C50EAE800D332AE /* libcorec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A4F1C50EAE800D332AE /* libcorec.a */; };
+		63E27A521C50EDB000D332AE /* hold.mkv in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A511C50EB2700D332AE /* hold.mkv */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
 		63EEE3FF1BBA9AC00087D3AF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		63EEE4001BBA9AC00087D3AF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
@@ -1349,7 +1352,6 @@
 		63C441C21BBC23ED0053DC5E /* UIAssistantTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAssistantTextField.m; sourceTree = "<group>"; };
 		63CD4B4D1A5AAC8C00B84282 /* DTAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAlertView.h; sourceTree = "<group>"; };
 		63CD4B4E1A5AAC8C00B84282 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
-		63CDC4521C3BDE370085F529 /* hold.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = hold.caf; sourceTree = "<group>"; };
 		63CDC4531C3BDE370085F529 /* msg.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = msg.caf; sourceTree = "<group>"; };
 		63CDC4541C3BDE370085F529 /* ringback.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ringback.wav; sourceTree = "<group>"; };
 		63CDC45C1C3BDE370085F529 /* shortring.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = shortring.caf; sourceTree = "<group>"; };
@@ -1364,6 +1366,10 @@
 		63E279E51C4F9A2500D332AE /* test_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_inprogress.png; path = LiblinphoneTester/test_inprogress.png; sourceTree = SOURCE_ROOT; };
 		63E279E61C4F9A2500D332AE /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_passed.png; path = LiblinphoneTester/test_passed.png; sourceTree = SOURCE_ROOT; };
 		63E27A311C4FECD000D332AE /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
+		63E27A471C50EA7A00D332AE /* libmatroska2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmatroska2.a; path = "liblinphone-sdk/apple-darwin/lib/libmatroska2.a"; sourceTree = "<group>"; };
+		63E27A4D1C50EAC300D332AE /* libebml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libebml2.a; path = "liblinphone-sdk/apple-darwin/lib/libebml2.a"; sourceTree = "<group>"; };
+		63E27A4F1C50EAE800D332AE /* libcorec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcorec.a; path = "liblinphone-sdk/apple-darwin/lib/libcorec.a"; sourceTree = "<group>"; };
+		63E27A511C50EB2700D332AE /* hold.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = hold.mkv; sourceTree = "<group>"; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
 		63EA4C941B50189D00922857 /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
@@ -1588,6 +1594,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63E27A501C50EAE800D332AE /* libcorec.a in Frameworks */,
+				63E27A4E1C50EAC300D332AE /* libebml2.a in Frameworks */,
+				63E27A481C50EA7A00D332AE /* libmatroska2.a in Frameworks */,
 				6334DDFA1BBAC97C00631900 /* libsqlite3.dylib in Frameworks */,
 				152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */,
 				63CFEDE81B9EDD74007EA5BD /* libantlr3c.a in Frameworks */,
@@ -1964,6 +1973,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63E27A4F1C50EAE800D332AE /* libcorec.a */,
+				63E27A4D1C50EAC300D332AE /* libebml2.a */,
+				63E27A471C50EA7A00D332AE /* libmatroska2.a */,
 				22B5F03410CE6B2F00777D97 /* AddressBook.framework */,
 				22B5EFA210CE50BD00777D97 /* AddressBookUI.framework */,
 				22405EED1600B4E400B92522 /* AssetsLibrary.framework */,
@@ -2537,9 +2549,9 @@
 		63CDC4511C3BDE370085F529 /* sounds */ = {
 			isa = PBXGroup;
 			children = (
-				63CDC4521C3BDE370085F529 /* hold.caf */,
 				63DFE0401C40161700DA5E87 /* ringtones */,
 				63CDC4531C3BDE370085F529 /* msg.caf */,
+				63E27A511C50EB2700D332AE /* hold.mkv */,
 				63CDC4541C3BDE370085F529 /* ringback.wav */,
 				63CDC45C1C3BDE370085F529 /* shortring.caf */,
 			);
@@ -3075,6 +3087,7 @@
 				63B8D68C1BCBE65600C12B09 /* ChatConversationCreateView.xib in Resources */,
 				D38187D915FE347700C3EDCA /* CallIncomingView.xib in Resources */,
 				63CDC45F1C3BDE370085F529 /* ringback.wav in Resources */,
+				63E27A521C50EDB000D332AE /* hold.mkv in Resources */,
 				639CEB031A1DF4EB004DE38F /* UICompositeView.xib in Resources */,
 				63AADBF81B6A0FF200AA16FD /* linphonerc~ipad in Resources */,
 				636B98E21C298401003BA37C /* numpad_6_default.png in Resources */,
@@ -3257,7 +3270,6 @@
 				636B98281C298401003BA37C /* call_transfer_default.png in Resources */,
 				639E9CA91C0DB7FB00019A75 /* UIConfirmationDialog.xib in Resources */,
 				636B98F91C298401003BA37C /* numpad_star_over.png in Resources */,
-				63CDC45D1C3BDE370085F529 /* hold.caf in Resources */,
 				636B99081C298401003BA37C /* options_start_conference_disabled@2x.png in Resources */,
 				636B980D1C298401003BA37C /* call_incoming@2x.png in Resources */,
 				636B99231C298401003BA37C /* route_earpiece_selected.png in Resources */,

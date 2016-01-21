@@ -1469,7 +1469,7 @@ static BOOL libStarted = FALSE;
 	NSString *hold =
 		([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_play_file(theLinphoneCore) ?: ""]
 										 .lastPathComponent]
-			 ?: [LinphoneManager bundleFile:@"hold.caf"])
+			 ?: [LinphoneManager bundleFile:@"hold.mkv"])
 			.lastPathComponent;
 	linphone_core_set_ring(theLinphoneCore, [LinphoneManager bundleFile:ring].UTF8String);
 	linphone_core_set_ringback(theLinphoneCore, [LinphoneManager bundleFile:ringback].UTF8String);
