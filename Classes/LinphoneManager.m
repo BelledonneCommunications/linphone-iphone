@@ -781,10 +781,14 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 		dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:state], @"state",
 									 [NSString stringWithUTF8String:message ? message : ""], @"message", nil];
 
-	// dispatch the notification asynchronously
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-	  [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneGlobalStateUpdate object:self userInfo:dict];
-	});
+	if (state == LinphoneGlobalShutdown) {
+		theLinphoneCore = nil;
+	} else {
+		// dispatch the notification asynchronously
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+		  [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneGlobalStateUpdate object:self userInfo:dict];
+		});
+	}
 }
 
 - (void)globalStateChangedNotificationHandler:(NSNotification *)notif {
@@ -1491,8 +1495,6 @@ static BOOL libStarted = FALSE;
 	// just in case
 	[self removeCTCallCenterCb];
 
-	[NSNotificationCenter.defaultCenter removeObserver:self];
-
 	if (theLinphoneCore != nil) { // just in case application terminate before linphone core initialization
 
 		for (FileTransferDelegate *ftd in _fileTransferDelegates) {
@@ -1518,6 +1520,7 @@ static BOOL libStarted = FALSE;
 		proxyReachability = nil;
 	}
 	libStarted = FALSE;
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)resetLinphoneCore {
@@ -2060,7 +2063,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (BOOL)copyFile:(NSString *)src destination:(NSString *)dst override:(BOOL)override {
-	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSFileManager *fileManager = NSFileManager.defaultManager;
 	NSError *error = nil;
 	if ([fileManager fileExistsAtPath:src] == NO) {
 		LOGE(@"Can't find \"%@\": %@", src, [error localizedDescription]);

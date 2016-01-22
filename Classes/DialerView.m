@@ -271,6 +271,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 						   [Log enableLogs:newDebugLevel];
 						 }];
 
+		[alertView addButtonWithTitle:NSLocalizedString(@"Remove account(s) and self destruct", nil)
+								block:^{
+								  linphone_core_clear_proxy_config([LinphoneManager getLc]);
+								  linphone_core_clear_all_auth_info([LinphoneManager getLc]);
+								  [LinphoneManager.instance destroyLinphoneCore];
+								  if ([NSFileManager.defaultManager
+										  isDeletableFileAtPath:[LinphoneManager documentFile:@"linphonerc"]] == YES) {
+									  [NSFileManager.defaultManager
+										  removeItemAtPath:[LinphoneManager documentFile:@"linphonerc"]
+													 error:nil];
+								  }
+								  [LinphoneManager instanceRelease];
+								  [UIApplication sharedApplication].keyWindow.rootViewController = nil;
+								}];
+
 		[alertView show];
 		return true;
 	}
