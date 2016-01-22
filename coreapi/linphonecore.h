@@ -1047,8 +1047,6 @@ LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegist
  * @}
  */
 
-#include "linphone_proxy_config.h"
-
 /**
  * @addtogroup authentication
  * @{
@@ -1205,9 +1203,11 @@ LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpCon
 #ifdef IN_LINPHONE
 #include "account_creator.h"
 #include "friendlist.h"
+#include "linphone_proxy_config.h"
 #else
 #include "linphone/account_creator.h"
 #include "linphone/friendlist.h"
+#include "linphone/linphone_proxy_config.h"
 #endif
 
 
