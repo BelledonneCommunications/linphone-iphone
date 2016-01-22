@@ -6785,7 +6785,7 @@ extern "C" void Java_org_linphone_core_LinphoneConferenceParamsImpl_enableVideo(
 	linphone_conference_params_enable_video((LinphoneConferenceParams *)paramsPtr, enable);
 }
 
-extern "C" jboolean Java_org_linphone_core_LinphoneConferenceParamsImpl_isVideoEnabled(JNIEnv *env, jobject thiz, jlong paramsPtr) {
+extern "C" jboolean Java_org_linphone_core_LinphoneConferenceParamsImpl_isVideoRequested(JNIEnv *env, jobject thiz, jlong paramsPtr) {
 	return linphone_conference_params_video_requested((LinphoneConferenceParams *)paramsPtr);
 }
 
