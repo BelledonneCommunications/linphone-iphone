@@ -627,7 +627,7 @@ typedef struct _LinphonePlayer LinphonePlayer;
 **/
 typedef void (*LinphonePlayerEofCallback)(struct _LinphonePlayer *obj, void *user_data);
 
-LINPHONE_PUBLIC int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback, void *user_data);
+LINPHONE_PUBLIC int linphone_player_open(MSFactory* f, LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback, void *user_data);
 LINPHONE_PUBLIC int linphone_player_start(LinphonePlayer *obj);
 LINPHONE_PUBLIC int linphone_player_pause(LinphonePlayer *obj);
 LINPHONE_PUBLIC int linphone_player_seek(LinphonePlayer *obj, int time_ms);

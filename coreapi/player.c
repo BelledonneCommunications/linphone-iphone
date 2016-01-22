@@ -28,10 +28,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * @param user_data a user-data provided in the callback to help the application to retrieve its context.
  * @return 0 if successful, -1 otherwise
 **/
-int linphone_player_open(LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback cb, void *user_data){
+int linphone_player_open(MSFactory *f, LinphonePlayer *obj, const char *filename, LinphonePlayerEofCallback cb, void *user_data){
 	obj->user_data=user_data;
 	obj->cb=cb;
-	return obj->open(obj,filename, NULL);
+	return obj->open(obj,filename, f);
 }
 
 /**

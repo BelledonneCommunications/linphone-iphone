@@ -51,7 +51,7 @@ static void play_file(const char *filename, bool_t supported_format, const char 
 	BC_ASSERT_PTR_NOT_NULL(player);
 	if(player == NULL) goto fail;
 
-	res = linphone_player_open(player, filename, eof_callback, &eof);
+	res = linphone_player_open(linphone_core_get_factory((void*)lc_manager->lc), player, filename, eof_callback, &eof);
 	if(supported_format && (audio_codec_supported || video_codec_supported)) {
 		BC_ASSERT_EQUAL(res, 0, int, "%d");
 	} else {
