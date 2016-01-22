@@ -185,9 +185,11 @@ static void propagate_encryption_changed(LinphoneCall *call){
 		}
 		ms_message("All streams are encrypted key exchanged using %s", call->current_params->media_encryption==LinphoneMediaEncryptionZRTP?"ZRTP":call->current_params->media_encryption==LinphoneMediaEncryptionDTLS?"DTLS":"Unknown mechanism");
 		linphone_core_notify_call_encryption_changed(call->core, call, TRUE, call->auth_token);
+#ifdef VIDEO_ENABLED
 		if (call->current_params->encryption_mandatory && call->videostream && media_stream_started((MediaStream *)call->videostream)) {
 			video_stream_send_vfu(call->videostream); /*nothing could have been sent yet so generating key frame*/
 		}
+#endif
 	}
 }
 
