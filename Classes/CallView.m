@@ -77,6 +77,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
+	_routesEarpieceButton.enabled = !IPAD;
+
 	_videoPreview.layer.borderColor = UIColor.whiteColor.CGColor;
 	_videoPreview.layer.borderWidth = 1;
 
@@ -446,9 +448,6 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)hideRoutes:(BOOL)hidden animated:(BOOL)animated {
-	if (IPAD)
-		return;
-
 	if (hidden) {
 		[_routesButton setOff];
 	} else {
@@ -484,8 +483,6 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (void)hideSpeaker:(BOOL)hidden {
-	if (IPAD)
-		return;
 	_speakerButton.hidden = hidden;
 	_routesButton.hidden = !hidden;
 }
