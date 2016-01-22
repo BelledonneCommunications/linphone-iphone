@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2014
+# Matti Koivunen <koivunen.matti@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: linphone-gtk\n"
@@ -11,75 +11,73 @@ msgstr ""
 "POT-Creation-Date: 2016-01-22 15:34+0100\n"
 "PO-Revision-Date: 2016-01-22 14:34+0000\n"
 "Last-Translator: Belledonne Communications <support@belledonne-communications.com>\n"
-"Language-Team: Serbian (http://www.transifex.com/belledonne-communications/linphone-gtk/language/sr/)\n"
+"Language-Team: Finnish (http://www.transifex.com/belledonne-communications/linphone-gtk/language/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sr\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: fi\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../gtk/calllogs.c:178
 #, c-format
 msgid "Call %s"
-msgstr "Позови „%s“"
+msgstr "Soita %s:lle"
 
 #: ../gtk/calllogs.c:179
 #, c-format
 msgid "Send text to %s"
-msgstr "Пошаљи текст за %s"
+msgstr "Lähetä tekstiviesti %s:lle"
 
 #: ../gtk/calllogs.c:181
 #, c-format
 msgid "Add %s to your contact list"
-msgstr "Додајте „%s“ на списак контаката"
+msgstr "Lisää %s yhtestietoihin"
 
 #: ../gtk/calllogs.c:245 ../gtk/main.ui.h:21
 msgid "Recent calls"
-msgstr "Скорашњи позиви"
+msgstr "Viimeiset puhelut"
 
 #: ../gtk/calllogs.c:260
 #, c-format
 msgid "<b>Recent calls (%i)</b>"
-msgstr "<b>Недавни позиви (%i)</b>"
+msgstr "Viimeiset puhelut (%i)"
 
 #: ../gtk/calllogs.c:331
 msgid "n/a"
-msgstr "н/д"
+msgstr "tyhjä"
 
 #: ../gtk/calllogs.c:334
 msgid "Aborted"
-msgstr "Прекинут"
+msgstr "Kesketetty"
 
 #: ../gtk/calllogs.c:337
 msgid "Missed"
-msgstr "Пропуштен"
+msgstr "Puuttuu"
 
 #: ../gtk/calllogs.c:340
 msgid "Declined"
-msgstr "Одбијен"
+msgstr "Estetty"
 
 #: ../gtk/calllogs.c:346
 #, c-format
 msgid "%i minute"
 msgid_plural "%i minutes"
-msgstr[0] "%i минут"
-msgstr[1] "%i минута"
-msgstr[2] "%i минута"
+msgstr[0] "%i minuuttia"
+msgstr[1] "%i minuuttia"
 
 #: ../gtk/calllogs.c:349
 #, c-format
 msgid "%i second"
 msgid_plural "%i seconds"
-msgstr[0] "%i секунда"
-msgstr[1] "%i секунде"
-msgstr[2] "%i секунди"
+msgstr[0] "%i sekunttia"
+msgstr[1] "%i sekunttia"
 
 #: ../gtk/calllogs.c:354
 #, c-format
 msgid ""
 "<small><i>%s</i>\t<i>Quality: %s</i></small>\n"
 "%s\t%s\t"
-msgstr "<small><i>%s</i>\t<i>Квалитет: %s</i></small>\n%s\t%s\t"
+msgstr "<small><i>%s</i>\t<i>Laatu: %s</i></small>\n%s\t%s\t"
 
 #: ../gtk/calllogs.c:358
 #, c-format
@@ -88,70 +86,70 @@ msgstr "<big><b>%s</b></big>\t%s"
 
 #: ../gtk/conference.c:38 ../gtk/in_call_frame.ui.h:11
 msgid "Conference"
-msgstr "Конференција"
+msgstr "Kokous"
 
 #: ../gtk/conference.c:46
 msgid "Me"
-msgstr "Ја"
+msgstr "Minä"
 
 #: ../gtk/support.c:49 ../gtk/support.c:73 ../gtk/support.c:102
 #, c-format
 msgid "Couldn't find pixmap file: %s"
-msgstr "Не могу да пронађем датотеку сличице: %s"
+msgstr "Ei kyennyt lyötämään Pixmap kuvatiedostoa: %s"
 
 #: ../gtk/chat.c:202 ../gtk/chat.c:260
 msgid "Sending..."
-msgstr "Шаљем..."
+msgstr "Lähetetään..."
 
 #: ../gtk/chat.c:219 ../gtk/chat.c:269
 msgid "Message not sent"
-msgstr "Порука није послата"
+msgstr "Viesti ei lähetetty"
 
 #: ../gtk/chat.c:490
 msgid "Copy"
-msgstr "Умножи"
+msgstr "Kopio"
 
 #: ../gtk/main.c:134
 msgid "log to stdout some debug information while running."
-msgstr "бележи на стандардни излаз неке податке прочишћавања док ради."
+msgstr "Kirjaudu 'stadardi viestin palautukseen' 'stdout' saadaksesi tietoja virheestä käytön aikana."
 
 #: ../gtk/main.c:135
 msgid "display version and exit."
-msgstr "приказује издање и излази."
+msgstr "Näytä versio ja poistu."
 
 #: ../gtk/main.c:136
 msgid "path to a file to write logs into."
-msgstr "путања до датотеке за уписивање дневника."
+msgstr "polku tiedostolle johon loki kirjoitetaan."
 
 #: ../gtk/main.c:137
 msgid "Start linphone with video disabled."
-msgstr "Покреће линфон са искљученим видеом."
+msgstr "Aloita linphone ilman videota."
 
 #: ../gtk/main.c:138
 msgid "Start only in the system tray, do not show the main interface."
-msgstr "Покреће се само у системској фиоци, не приказује главно сучеље."
+msgstr "Käynnistä vain tehtäväpalkki, älä pääkäyttöliittymää."
 
 #: ../gtk/main.c:139
 msgid "address to call right now"
-msgstr "адреса за позивање управо сада"
+msgstr "osoite mihin nyt soitetaan"
 
 #: ../gtk/main.c:140
 msgid ""
 "Specifiy a working directory (should be the base of the installation, eg: "
 "c:\\Program Files\\Linphone)"
-msgstr "Наводи радни директоријум (треба да буде основа инсталације, нпр: „c:\\Program Files\\Linphone“)"
+msgstr "Määritä työkansio (eli mihin asennus tehdään, kuten: c:\\Program Files\\Linphone)"
 
 #: ../gtk/main.c:141
 msgid "Configuration file"
-msgstr "Датотека подешавања"
+msgstr "Kokoonpano tiedosto"
 
 #: ../gtk/main.c:142
 msgid "Run the audio assistant"
-msgstr "Покреће помоћника звука"
+msgstr "Käytä ääni avustajaa"
 
 #: ../gtk/main.c:143
 msgid "Run self test and exit 0 if succeed"
-msgstr "Покреће самоиспробавање и излази 0 ако је успешно"
+msgstr "Käytä omaa testiä ja poistu 0 jo valmis"
 
 #: ../gtk/main.c:1034
 #, c-format
@@ -159,295 +157,294 @@ msgid ""
 "%s would like to add you to his/her contact list.\n"
 "Would you add him/her to your contact list and allow him/her to see your presence status?\n"
 "If you answer no, this person will be temporarily blacklisted."
-msgstr "%s жели да вас дода на свој списак контакта.\nДа ли желите да га/је додате на ваш списак контакта и да му/јој омогућите да види ваше стање присуства?\nАко одговорите негативно, ова особа ће тренутно бити стављена на списак забрањених."
+msgstr "%s haluaa lisätä sinut yhteystitohinsa.\nHaluatko hänen näkevän sinun läsnäolosi?\nJos ei, niin hänet lisätään hetkeksi mustalle listalle."
 
 #: ../gtk/main.c:1111
 #, c-format
 msgid ""
 "Please enter your password for username <i>%s</i>\n"
 " at realm <i>%s</i>:"
-msgstr "Унесите вашу лозинку за корисничко име <i>%s</i>\n на подручју <i>%s</i>:"
+msgstr "Anna salasana käyttäjänimelle <i>%s</i>\nmaasta  <i>%s</i>:"
 
 #: ../gtk/main.c:1220
 msgid "Call error"
-msgstr "Грешка позива"
+msgstr "Virhe puhelussa"
 
 #: ../gtk/main.c:1223 ../coreapi/linphonecore.c:3814
 msgid "Call ended"
-msgstr "Позив је завршен"
+msgstr "Puhelu päättyi"
 
 #: ../gtk/main.c:1226 ../coreapi/call_log.c:235
 msgid "Incoming call"
-msgstr "Долазни позив"
+msgstr "Tuleva puhelu"
 
 #: ../gtk/main.c:1229 ../gtk/incall_view.c:579 ../gtk/in_call_frame.ui.h:2
 msgid "Answer"
-msgstr "Јави се"
+msgstr "Vastaa"
 
 #: ../gtk/main.c:1231 ../gtk/in_call_frame.ui.h:3
 msgid "Decline"
-msgstr "Одбиј"
+msgstr "Hylkää"
 
 #: ../gtk/main.c:1238
 msgid "Call paused"
-msgstr "Позив је заустављен"
+msgstr "Puhelu laitettu tauolle"
 
 #: ../gtk/main.c:1238
 #, c-format
 msgid "<b>by %s</b>"
-msgstr "<b>од %s</b>"
+msgstr "<b>%s toimesta</b>"
 
 #: ../gtk/main.c:1312
 #, c-format
 msgid "%s proposed to start video. Do you accept ?"
-msgstr "%s предлаже да започнете видео. Да ли прихватате ?"
+msgstr "%s pyytää video kuvaa. Sallitaanko?"
 
 #: ../gtk/main.c:1478
 msgid "Website link"
-msgstr "Веза веб сајта"
+msgstr "Internet linkki"
 
 #: ../gtk/main.c:1537 ../gtk/waiting.ui.h:1
 msgid "Linphone"
-msgstr "Линфон"
+msgstr "Linphone"
 
 #: ../gtk/main.c:1538
 msgid "A video internet phone"
-msgstr "Интернетски видео телефон"
+msgstr "Internet video puhelu"
 
 #: ../gtk/main.c:1600
 #, c-format
 msgid "%s (Default)"
-msgstr "%s (основно)"
+msgstr "%s (Vakio)"
 
 #: ../gtk/main.c:1943 ../coreapi/callbacks.c:1084
 #, c-format
 msgid "We are transferred to %s"
-msgstr "Преселили смо се на %s"
+msgstr "Olemme siirtyneet %s"
 
 #: ../gtk/main.c:1954
 msgid ""
 "No sound cards have been detected on this computer.\n"
 "You won't be able to send or receive audio calls."
-msgstr "Ниједна звучна картица није откривена на овом рачунару.\nНећете бити у могућности да шаљете или да примате звучне позиве."
+msgstr "Tähässä tietokeneessa ei ole havaittavissa ääni korttia.\nEt voi lähettää tai vastaanottaa äänellisiä puheluita."
 
 #: ../gtk/main.c:2119
 msgid "A free SIP video-phone"
-msgstr "Слободан СИП телефон са снимком"
+msgstr "Ilmainen SIP video puhelin."
 
 #: ../gtk/main.c:2233
 #, c-format
 msgid "Hello\n"
-msgstr "Здраво\n"
+msgstr "Hei\n"
 
 #: ../gtk/friendlist.c:460
 msgid "Add to addressbook"
-msgstr "Додајте у адресар"
+msgstr "Lisää osoitekirjaan"
 
 #: ../gtk/friendlist.c:626
 #, c-format
 msgid "Search in %s directory"
-msgstr "Тражи у директоријуму „%s“"
+msgstr "Etsi %s hakemistosta"
 
 #: ../gtk/friendlist.c:771
 msgid "Invalid sip contact !"
-msgstr "Неисправан сип контакт !"
+msgstr "Kelvoton sip yhtyestieto !"
 
 #: ../gtk/friendlist.c:819
 #, c-format
 msgid "Add a new contact"
-msgstr "Додај нови контакт"
+msgstr "Lisää uusi yhteystieto"
 
 #: ../gtk/friendlist.c:822
 #, c-format
 msgid "Edit contact '%s'"
-msgstr "Уредите контакт „%s“"
+msgstr "Muokkaa yhteystietoa '%s'"
 
 #: ../gtk/friendlist.c:823
 #, c-format
 msgid "Delete contact '%s'"
-msgstr "Обришите контакт „%s“"
+msgstr "Poista yhteysto '%s'"
 
 #: ../gtk/friendlist.c:824
 #, c-format
 msgid "Delete chat history of '%s'"
-msgstr "Обришите историјат ћаскања за „%s“"
+msgstr "Poista '%s'n keskustelu historia"
 
 #: ../gtk/friendlist.c:861
 #, c-format
 msgid "Add new contact from %s directory"
-msgstr "Додајте нови контакт из директоријума „%s“"
+msgstr "Lisää uusi yhteystieto %s hakemistoon"
 
 #: ../gtk/propertybox.c:592 ../gtk/contact.ui.h:1
 msgid "Name"
-msgstr "Име"
+msgstr "Nimi"
 
 #: ../gtk/propertybox.c:598
 msgid "Rate (Hz)"
-msgstr "Проток (Hz)"
+msgstr "Laatutaso (Hz)"
 
 #: ../gtk/propertybox.c:604
 msgid "Status"
-msgstr "Стање"
+msgstr "Tila"
 
 #: ../gtk/propertybox.c:617
 msgid "IP Bitrate (kbit/s)"
-msgstr "Проток бита ИП-а (kbit/s)"
+msgstr "IP Siirtonopeus (kbit/s)"
 
 #: ../gtk/propertybox.c:628
 msgid "Parameters"
-msgstr "Параметри"
+msgstr "Raja-arvot"
 
 #: ../gtk/propertybox.c:670 ../gtk/propertybox.c:824
 msgid "Enabled"
-msgstr "Укључено"
+msgstr "Sallittu"
 
 #: ../gtk/propertybox.c:672 ../gtk/propertybox.c:824 ../gtk/parameters.ui.h:60
 msgid "Disabled"
-msgstr "Искључено"
+msgstr "Kielletty"
 
 #: ../gtk/propertybox.c:902
 msgid "Account"
-msgstr "Налог"
+msgstr "Tili"
 
 #: ../gtk/propertybox.c:1170
 msgid "English"
-msgstr "Енглески"
+msgstr "eglaniksi"
 
 #: ../gtk/propertybox.c:1171
 msgid "French"
-msgstr "Француски"
+msgstr "French"
 
 #: ../gtk/propertybox.c:1172
 msgid "Swedish"
-msgstr "Шведски"
+msgstr "Swedish"
 
 #: ../gtk/propertybox.c:1173
 msgid "Italian"
-msgstr "Италијански"
+msgstr "Italian"
 
 #: ../gtk/propertybox.c:1174
 msgid "Spanish"
-msgstr "Шпански"
+msgstr "Spanish"
 
 #: ../gtk/propertybox.c:1175
 msgid "Brazilian Portugese"
-msgstr "Бразилски португалски"
+msgstr "Brazilian Portugese"
 
 #: ../gtk/propertybox.c:1176
 msgid "Polish"
-msgstr "Пољски"
+msgstr "Polish"
 
 #: ../gtk/propertybox.c:1177
 msgid "German"
-msgstr "Немачки"
+msgstr "German"
 
 #: ../gtk/propertybox.c:1178
 msgid "Russian"
-msgstr "Руски"
+msgstr "Russian"
 
 #: ../gtk/propertybox.c:1179
 msgid "Japanese"
-msgstr "Јапански"
+msgstr "Japanese"
 
 #: ../gtk/propertybox.c:1180
 msgid "Dutch"
-msgstr "Холандски"
+msgstr "Dutch"
 
 #: ../gtk/propertybox.c:1181
 msgid "Hungarian"
-msgstr "Мађарски"
+msgstr "Hungarian"
 
 #: ../gtk/propertybox.c:1182
 msgid "Czech"
-msgstr "Чешки"
+msgstr "Czech"
 
 #: ../gtk/propertybox.c:1183
 msgid "Chinese"
-msgstr "Кинески"
+msgstr "Chinese"
 
 #: ../gtk/propertybox.c:1184
 msgid "Traditional Chinese"
-msgstr "Традиционални кинески"
+msgstr "Traditional Chinese"
 
 #: ../gtk/propertybox.c:1185
 msgid "Norwegian"
-msgstr "Норвешки"
+msgstr "Norwegian"
 
 #: ../gtk/propertybox.c:1186
 msgid "Hebrew"
-msgstr "Јеврејски"
+msgstr "Hebrew"
 
 #: ../gtk/propertybox.c:1187
 msgid "Serbian"
-msgstr "Српски"
+msgstr "Serbian"
 
 #: ../gtk/propertybox.c:1188
 msgid "Arabic"
-msgstr "Арапски"
+msgstr "Arabic"
 
 #: ../gtk/propertybox.c:1189
 msgid "Turkish"
-msgstr "Турски"
+msgstr "Turkish"
 
 #: ../gtk/propertybox.c:1246
 msgid ""
 "You need to restart linphone for the new language selection to take effect."
-msgstr "Треба поново да покренете линфон да би нови изабрани језик ступио у дејство."
+msgstr "Sinun tarvitsee uudelleen käynnistää linphone, että uudet kieliasetukset tulevat voimaan."
 
 #: ../gtk/propertybox.c:1328
 msgid "None"
-msgstr "Ништа"
+msgstr "Ei mitään"
 
 #: ../gtk/propertybox.c:1332
 msgid "SRTP"
-msgstr "СРТП"
+msgstr "SRTP 'realiaikainen salaus'"
 
 #: ../gtk/propertybox.c:1338
 msgid "DTLS"
-msgstr "ДТЛС"
+msgstr "DTLS 'paketti kytketty salaus'"
 
 #: ../gtk/propertybox.c:1345
 msgid "ZRTP"
-msgstr "ЗРТП"
+msgstr "ZRTP 'tunnusteleva realiaikainen salaus'"
 
 #: ../gtk/update.c:80
 #, c-format
 msgid ""
 "A more recent version is availalble from %s.\n"
 "Would you like to open a browser to download it ?"
-msgstr "Новије издање је доступно са „%s“.\nДа ли желите да отворите прегледник и да га преузмете ?"
+msgstr "Uudempi versio on saatavilla: %s\nHaluatko avata selaimen ja ladata sen? "
 
 #: ../gtk/update.c:91
 msgid "You are running the lastest version."
-msgstr "Радите на најновијем издању."
+msgstr "Käytät viimeisintä versiota."
 
 #: ../gtk/buddylookup.c:85
 msgid "Firstname, Lastname"
-msgstr "Име и презиме"
+msgstr "Etunimi,Sukunimi"
 
 #: ../gtk/buddylookup.c:160
 msgid "Error communicating with server."
-msgstr "Грешка у коминикацији са сервером."
+msgstr "Virhe palvelimen yhteyden pidossa"
 
 #: ../gtk/buddylookup.c:164
 msgid "Connecting..."
-msgstr "Повезујем се..."
+msgstr "Yhdistää..."
 
 #: ../gtk/buddylookup.c:168
 msgid "Connected"
-msgstr "Повезан сам"
+msgstr "Yhdistetty"
 
 #: ../gtk/buddylookup.c:172
 msgid "Receiving data..."
-msgstr "Примам податке..."
+msgstr "Vastaanottaa tietoa..."
 
 #: ../gtk/buddylookup.c:180
 #, c-format
 msgid "Found %i contact"
 msgid_plural "Found %i contacts"
-msgstr[0] "Нашао сам %i контакт"
-msgstr[1] "Нашао сам %i контакта"
-msgstr[2] "Нашао сам %i контаката"
+msgstr[0] "Lydetty %i yhteystietoa"
+msgstr[1] "Lydetty %i yhteystietoa"
 
 #: ../gtk/setupwizard.c:219
 msgid "Username is already in use!"
@@ -460,90 +457,90 @@ msgstr ""
 #: ../gtk/incall_view.c:67 ../gtk/incall_view.c:87
 #, c-format
 msgid "Call #%i"
-msgstr "Позив бр. %i"
+msgstr "Puhelu #%i"
 
 #: ../gtk/incall_view.c:145
 #, c-format
 msgid "Transfer to call #%i with %s"
-msgstr "Пребаци позив #%i са %s"
+msgstr "Siirrä puhelu #%i %s kanssa"
 
 #: ../gtk/incall_view.c:202 ../gtk/incall_view.c:205
 msgid "Not used"
-msgstr "Не користи се"
+msgstr "Ei ole käytössä"
 
 #: ../gtk/incall_view.c:212
 msgid "ICE not activated"
-msgstr "ИЦЕ није покренут"
+msgstr "ICE 'vuorovaikutteinen yhteys' ei ole toiminnassa"
 
 #: ../gtk/incall_view.c:214
 msgid "ICE failed"
-msgstr "ИЦЕ није успео"
+msgstr "ICE 'vuorovaikutteinen yhteys' epäonnistui"
 
 #: ../gtk/incall_view.c:216
 msgid "ICE in progress"
-msgstr "ИЦЕ је у току"
+msgstr "ICE 'vuorovaikutteinen yhteys' toiminnassa"
 
 #: ../gtk/incall_view.c:218
 msgid "Going through one or more NATs"
-msgstr "Пролазим кроз један или више НАТ-са"
+msgstr "Menee läpi yhden tai useamman NAT-ositemuutoksen"
 
 #: ../gtk/incall_view.c:220
 msgid "Direct"
-msgstr "Непосредно"
+msgstr "Suoraan"
 
 #: ../gtk/incall_view.c:222
 msgid "Through a relay server"
-msgstr "Преко преносног сервера"
+msgstr "Läpi välityspalvelimen"
 
 #: ../gtk/incall_view.c:230
 msgid "uPnP not activated"
-msgstr "уПнП није покренут"
+msgstr "uPnP 'laite tunnistus' ei ole toiminnassa"
 
 #: ../gtk/incall_view.c:232
 msgid "uPnP in progress"
-msgstr "уПнП је у току"
+msgstr "uPnP 'laite tunnistus' on toiminnassa"
 
 #: ../gtk/incall_view.c:234
 msgid "uPnp not available"
-msgstr "уПнП није доступан"
+msgstr "uPnP 'laite tunnistus' ei ole saatavilla"
 
 #: ../gtk/incall_view.c:236
 msgid "uPnP is running"
-msgstr "уПнП ради"
+msgstr "uPnP 'laite tunnistus' on käytössä"
 
 #: ../gtk/incall_view.c:238
 msgid "uPnP failed"
-msgstr "уПнП није успео"
+msgstr "uPnP 'laite tunnistus' epäonnistui"
 
 #: ../gtk/incall_view.c:248 ../gtk/incall_view.c:249
 msgid "Direct or through server"
-msgstr "Непосредно или кроз сервер"
+msgstr "Suoraan tai palvelimen kautta"
 
 #: ../gtk/incall_view.c:258 ../gtk/incall_view.c:270
 #, c-format
 msgid ""
 "download: %f\n"
 "upload: %f (kbit/s)"
-msgstr "преузимање: %f\nотпремање: %f (kbit/s)"
+msgstr "lataa: %f\nlähettää: %f (kbit/s)"
 
 #: ../gtk/incall_view.c:263 ../gtk/incall_view.c:265
 #, c-format
 msgid "%ix%i @ %f fps"
-msgstr "%ix%i @ %f к/с"
+msgstr "%ix%i @ %f fps"
 
 #: ../gtk/incall_view.c:295
 #, c-format
 msgid "%.3f seconds"
-msgstr "%.3f секунде"
+msgstr "%.3f sekunttia"
 
 #: ../gtk/incall_view.c:453 ../gtk/in_call_frame.ui.h:10
 #: ../gtk/videowindow.c:240
 msgid "Hang up"
-msgstr "Прекини"
+msgstr "Katkaise puhelu"
 
 #: ../gtk/incall_view.c:558
 msgid "<b>Calling...</b>"
-msgstr "<b>Позивам...</b>"
+msgstr "<b>Soittaa...</b>"
 
 #: ../gtk/incall_view.c:561 ../gtk/incall_view.c:793
 msgid "00:00:00"
@@ -551,229 +548,229 @@ msgstr "00:00:00"
 
 #: ../gtk/incall_view.c:572
 msgid "<b>Incoming call</b>"
-msgstr "<b>Долазни позив</b>"
+msgstr "<b>tuleva puhelu</b>"
 
 #: ../gtk/incall_view.c:609
 msgid "good"
-msgstr "добро"
+msgstr "hyvä"
 
 #: ../gtk/incall_view.c:611
 msgid "average"
-msgstr "просечно"
+msgstr "keskiverto"
 
 #: ../gtk/incall_view.c:613
 msgid "poor"
-msgstr "оскудно"
+msgstr "heikko"
 
 #: ../gtk/incall_view.c:615
 msgid "very poor"
-msgstr "јадно"
+msgstr "todella heikko"
 
 #: ../gtk/incall_view.c:617
 msgid "too bad"
-msgstr "много лоше"
+msgstr "liian huono"
 
 #: ../gtk/incall_view.c:618 ../gtk/incall_view.c:634
 msgid "unavailable"
-msgstr "недоступно"
+msgstr "saavuttamattomissa"
 
 #: ../gtk/incall_view.c:732
 msgid "Secured by SRTP"
-msgstr "Осигурано СРТП-ом"
+msgstr "Käytä SRTP salausta"
 
 #: ../gtk/incall_view.c:738
 msgid "Secured by DTLS"
-msgstr "Осигурано ДТЛС-ом"
+msgstr "Käytä DTLS salausta"
 
 #: ../gtk/incall_view.c:744
 #, c-format
 msgid "Secured by ZRTP - [auth token: %s]"
-msgstr "Осигурано ЗРТП-ом [потврђивање идентитета: %s]"
+msgstr "Käytä ZRTP salausta - [todennustunnus: %s]"
 
 #: ../gtk/incall_view.c:748
 msgid "Set unverified"
-msgstr "Непроверено подешавање"
+msgstr "Aseta vahvistamattomaksi"
 
 #: ../gtk/incall_view.c:748
 msgid "Set verified"
-msgstr "Проверено подешавање"
+msgstr "Aseta vahvistetuksi"
 
 #: ../gtk/incall_view.c:788
 msgid "In conference"
-msgstr "На конференцији"
+msgstr "Kokouksessa"
 
 #: ../gtk/incall_view.c:788
 msgid "<b>In call</b>"
-msgstr "<b>У позиву</b>"
+msgstr "<b>Puhuu puhelua</b>"
 
 #: ../gtk/incall_view.c:825
 msgid "<b>Paused call</b>"
-msgstr "<b>Заустављен позив</b>"
+msgstr "<b>Puhelu laitettu tauolle</b>"
 
 #: ../gtk/incall_view.c:862
 msgid "<b>Call ended.</b>"
-msgstr "<b>Позив је завршен.</b>"
+msgstr "<b>Puhelu loppu.</b>"
 
 #: ../gtk/incall_view.c:893
 msgid "Transfer in progress"
-msgstr "Пренос је у току"
+msgstr "Siirto käynnissä"
 
 #: ../gtk/incall_view.c:896
 msgid "Transfer done."
-msgstr "Пренос је обављен."
+msgstr "Siirto tehty."
 
 #: ../gtk/incall_view.c:899
 msgid "Transfer failed."
-msgstr "Пренос није успео."
+msgstr "Siirto epäonnistui."
 
 #: ../gtk/incall_view.c:930
 msgid "Resume"
-msgstr "Настави"
+msgstr "Yritä uudelleen"
 
 #: ../gtk/incall_view.c:930 ../gtk/in_call_frame.ui.h:7
 msgid "Pause"
-msgstr "Застани"
+msgstr "Pysäytä"
 
 #: ../gtk/incall_view.c:996
 #, c-format
 msgid ""
 "<small><i>Recording into\n"
 "%s %s</i></small>"
-msgstr "<small><i>Снимам у\n%s %s</i></small>"
+msgstr "<small><i>Nauhoita\n%s %s</i></small>"
 
 #: ../gtk/incall_view.c:996
 msgid "(Paused)"
-msgstr "(Паузирано)"
+msgstr "(Pysäytetty)"
 
 #: ../gtk/loginframe.c:75
 #, c-format
 msgid "Please enter login information for %s"
-msgstr "Унесите податке пријављивања за %s"
+msgstr "Anna kirjautumistiedot %s"
 
 #: ../gtk/config-fetching.c:57
 #, c-format
 msgid "fetching from %s"
-msgstr "довлачим са „%s“"
+msgstr "hae: %s"
 
 #: ../gtk/config-fetching.c:73
 #, c-format
 msgid "Downloading of remote configuration from %s failed."
-msgstr "Преузимање удаљеног подешавања са „%s“ није успело."
+msgstr "Etäsäätöjen lataus %s :stä epäonnistui."
 
 #: ../gtk/audio_assistant.c:103
 msgid "No voice detected"
-msgstr "Глас није откривен"
+msgstr "Laitetta ei havaittu"
 
 #: ../gtk/audio_assistant.c:104
 msgid "Too low"
-msgstr "Сувише низак"
+msgstr "Liian hiljainen"
 
 #: ../gtk/audio_assistant.c:105
 msgid "Good"
-msgstr "Добар"
+msgstr "Hyvä"
 
 #: ../gtk/audio_assistant.c:106
 msgid "Too loud"
-msgstr "Сувише гласан"
+msgstr "Liian kova ääninen"
 
 #: ../gtk/audio_assistant.c:188
 msgid "Did you hear three beeps ?"
-msgstr "Да ли сте чули три писка ?"
+msgstr "Kuulitko kolme piippausta ?"
 
 #: ../gtk/audio_assistant.c:299 ../gtk/audio_assistant.c:304
 msgid "Sound preferences not found "
-msgstr "Нисам пронашао поставке звука "
+msgstr "Toivottuja ääniasetuksia ei löytynyt"
 
 #: ../gtk/audio_assistant.c:313
 msgid "Cannot launch system sound control "
-msgstr "Не могу да покренем управљање звуком система "
+msgstr "Ei voi käynnistää järjestelmän äänien hallintaa"
 
 #: ../gtk/audio_assistant.c:325
 msgid ""
 "Welcome!\n"
 "This assistant will help you to configure audio settings for Linphone"
-msgstr "Добро дошли!\nОвај помоћник ће вам помоћи да подесите поставке звука за Линфон"
+msgstr "Tervetuloa!\nTämä avustaja auttaa sinua Linphonen ääniasetuksissa"
 
 #: ../gtk/audio_assistant.c:335
 msgid "Capture device"
-msgstr "Уређај за снимање"
+msgstr "Tallennus laite"
 
 #: ../gtk/audio_assistant.c:336
 msgid "Recorded volume"
-msgstr "Снимљени волумен"
+msgstr "Tallennuksen äänen voimakkuus"
 
 #: ../gtk/audio_assistant.c:340
 msgid "No voice"
-msgstr "Нема гласа"
+msgstr "Äänetön"
 
 #: ../gtk/audio_assistant.c:341 ../gtk/audio_assistant.c:380
 msgid "System sound preferences"
-msgstr "Поставке звука система"
+msgstr "Järjestelmän toivotut ääni asetukset"
 
 #: ../gtk/audio_assistant.c:376
 msgid "Playback device"
-msgstr "Уређај за пуштање"
+msgstr "Kaiutin laite"
 
 #: ../gtk/audio_assistant.c:377
 msgid "Play three beeps"
-msgstr "Пусти три писка"
+msgstr "Anna kolme piippausta"
 
 #: ../gtk/audio_assistant.c:410
 msgid "Press the record button and say some words"
-msgstr "Притисните дугме за снимање и реците нешто"
+msgstr "Paina nauhoita nappulaa ja sano muutamia sanoja"
 
 #: ../gtk/audio_assistant.c:411
 msgid "Listen to your record voice"
-msgstr "Слушајте ваш снимљени глас"
+msgstr "Kuuntele nauhoittamasi puhe"
 
 #: ../gtk/audio_assistant.c:412 ../gtk/conf_frame.ui.h:2
 #: ../gtk/in_call_frame.ui.h:4
 msgid "Record"
-msgstr "Сними"
+msgstr "Nauhoita"
 
 #: ../gtk/audio_assistant.c:413
 msgid "Play"
-msgstr "Пусти"
+msgstr "Toista"
 
 #: ../gtk/audio_assistant.c:440
 msgid "Let's start Linphone now"
-msgstr "Хајде сада да покренемо Линфон"
+msgstr "Käynnitetäänpä Linphone nyt"
 
 #: ../gtk/audio_assistant.c:510
 msgid "Audio Assistant"
-msgstr "Помоћник звука"
+msgstr "Ääni avustaja"
 
 #: ../gtk/audio_assistant.c:520 ../gtk/main.ui.h:13
 msgid "Audio assistant"
-msgstr "Помоћник звука"
+msgstr "Ääni avustaja"
 
 #: ../gtk/audio_assistant.c:525
 msgid "Mic Gain calibration"
-msgstr "Дотеривање појачања микрофона"
+msgstr "Mikrofooni tulon kalibrointi"
 
 #: ../gtk/audio_assistant.c:531
 msgid "Speaker volume calibration"
-msgstr "Дотеривање јачине звука звучника"
+msgstr "Kaiuttimen kalibrointi"
 
 #: ../gtk/audio_assistant.c:536
 msgid "Record and Play"
-msgstr "Снимите и пустите"
+msgstr "Nauhoita ja Toista"
 
 #: ../gtk/audio_assistant.c:541 ../gtk/setup_wizard.ui.h:38
 msgid "Terminating"
-msgstr "Завршавам"
+msgstr "Lopeta"
 
 #: ../gtk/about.ui.h:1
 msgid "About Linphone"
-msgstr "О Линфону"
+msgstr "Tietoja Linphonesta"
 
 #: ../gtk/about.ui.h:2
 msgid "(C) Belledonne Communications, 2010\n"
-msgstr "(C) Беледоне комуникације, 2010\n"
+msgstr "(C) Belledonne Communications, 2010\n"
 
 #: ../gtk/about.ui.h:4
 msgid "An internet video phone using the standard SIP (rfc3261) protocol."
-msgstr "Интернет телефон са снимком који користи уобичајени СИП протокол (rfc3261)."
+msgstr "Internet video puhelin, joka kyttää SIP (rfc3261) protokollaa."
 
 #: ../gtk/about.ui.h:5
 msgid ""
@@ -789,1274 +786,1273 @@ msgid ""
 "cs: Petr Pisar <petr.pisar@atlas.cz>\n"
 "hu: anonymous\n"
 "he: Eli Zaretskii <eliz@gnu.org>\n"
-msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\nsr: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+msgstr "fr: Simon Morlat\nen: Simon Morlat and Delphine Perreau\nit: Alberto Zanoni <alberto.zanoni@-NO-SPAM-PLEASE!-tiscalinet.it>\nde: Jean-Jacques Sarton <jj.sarton@-NO-SPAM-PLEASE-t-online.de>\nsv: Daniel Nylander <po@danielnylander.se>\nes: Jesus Benitez <gnelson at inMail dot sk>\nja: YAMAGUCHI YOSHIYA <yushiya@anet.ne.jp>\npt_BR: Rafael Caesar Lenzi <rc_lenzi@yahoo.com.br>\npl: Robert Nasiadek <darkone@darkone.pl>\ncs: Petr Pisar <petr.pisar@atlas.cz>\nhu: anonymous\nhe: Eli Zaretskii <eliz@gnu.org>\nfi: Matti Koivunen\n"
 
 #: ../gtk/buddylookup.ui.h:1
 msgid "Search contacts in directory"
-msgstr "Потражите пријатеље у директоријуму"
+msgstr "Etsi yhteystietoja hakemistosta"
 
 #: ../gtk/buddylookup.ui.h:2
 msgid "Add to my list"
-msgstr "Додај на мој списак"
+msgstr "Lisää minun listaan"
 
 #: ../gtk/buddylookup.ui.h:3
 msgid "<b>Search somebody</b>"
-msgstr "<b>Потражите неког</b>"
+msgstr "<b>Etsi henkilöä</b>"
 
 #: ../gtk/callee_frame.ui.h:1
 msgid "<b>Callee name</b>"
-msgstr "<b>Име позивника</b>"
+msgstr "<b>Soitettu</b>"
 
 #: ../gtk/call_logs.ui.h:1
 msgid "Call history"
-msgstr "Историјат позива"
+msgstr "<b>Soitetut</b>"
 
 #: ../gtk/call_logs.ui.h:2
 msgid "Clear all"
-msgstr "Очистите све"
+msgstr "Tyhjennä kaikki"
 
 #: ../gtk/call_logs.ui.h:3
 msgid "Call back"
-msgstr "Повратни позив"
+msgstr "Soita takaisin"
 
 #: ../gtk/call_statistics.ui.h:1
 msgid "Call statistics"
-msgstr "Статистика позива"
+msgstr "Soitto tilastot"
 
 #: ../gtk/call_statistics.ui.h:2
 msgid "Audio codec"
-msgstr "Звучни кодек"
+msgstr "Äänen codec 'pakkaus'"
 
 #: ../gtk/call_statistics.ui.h:3
 msgid "Video codec"
-msgstr "Видео кодек"
+msgstr "Videon codec 'pakkaus'"
 
 #: ../gtk/call_statistics.ui.h:4
 msgid "Audio IP bandwidth usage"
-msgstr "Искоришћеност ИП пропусног опсега звука"
+msgstr "Äänen käyttämä IP kaistaleveys "
 
 #: ../gtk/call_statistics.ui.h:5
 msgid "Audio Media connectivity"
-msgstr "Повезивост медија звука"
+msgstr "Ääni tiedon yhdistettävyys"
 
 #: ../gtk/call_statistics.ui.h:6
 msgid "Video IP bandwidth usage"
-msgstr "Искоришћеност ИП пропусног опсега снимка"
+msgstr "Videon käyttämä IP kaistaleveys"
 
 #: ../gtk/call_statistics.ui.h:7
 msgid "Video Media connectivity"
-msgstr "Повезивост медија снимка"
+msgstr "Video tiedon yhdistettävyys"
 
 #: ../gtk/call_statistics.ui.h:8
 msgid "Round trip time"
-msgstr "Време повратног путовања"
+msgstr "Kierto aika"
 
 #: ../gtk/call_statistics.ui.h:9
 msgid "Video resolution received"
-msgstr "Примљена резолуција снимка"
+msgstr "Saatu videon tarkkuus"
 
 #: ../gtk/call_statistics.ui.h:10
 msgid "Video resolution sent"
-msgstr "Послата резолуција снимка"
+msgstr "Lähetetty videon tarkkuus"
 
 #: ../gtk/call_statistics.ui.h:11
 msgid "RTP profile"
-msgstr "РТП профил"
+msgstr "RTP 'realiaikaisen videon' profiili"
 
 #: ../gtk/call_statistics.ui.h:12
 msgid "<b>Call statistics and information</b>"
-msgstr "<b>Статистика позива и подаци</b>"
+msgstr "<b>Puhelu tilastot ja tiedot</b>"
 
 #: ../gtk/chatroom_frame.ui.h:1
 msgid "Send"
-msgstr "Пошаљи"
+msgstr "Lähetä"
 
 #: ../gtk/conf_frame.ui.h:1
 msgid "End conference"
-msgstr "Заврши конференцију"
+msgstr "Päätä kokous"
 
 #: ../gtk/config-uri.ui.h:1
 msgid "Specifying a remote configuration URI"
-msgstr "Наводим удаљену путању подешавања"
+msgstr "Määritetään etäsäätöjä, URI-osoite"
 
 #: ../gtk/config-uri.ui.h:2
 msgid ""
 "This dialog allows to set an http or https address when configuration is to be fetched at startup.\n"
 "Please enter or modify the configuration URI below. After clicking OK, Linphone will restart automatically in order to fetch and take into account the new configuration. "
-msgstr "Ово прозорче омогућава подешавање хттп или хттпс адресе када се подешавање добавља на покретању.\nУнесите или измените путању подешавања. Након што притиснете „У реду“, Линфон ће се сам поново покренути како би довукао и унео у налог нова подешавања. "
+msgstr "Anna alapuolelle muokattu URI, eli http tai https. Kun olet painanut OK, Linphone uudelleen käynnistyy ja hakee  tilin uudet säädöt."
 
 #: ../gtk/contact.ui.h:2
 msgid "SIP Address"
-msgstr "СИП адреса"
+msgstr "SIP osoite"
 
 #: ../gtk/contact.ui.h:3
 msgid "Show this contact presence status"
-msgstr "Прикажи стање присуства овог пријатеља"
+msgstr "Näytä henkilön läsnäolo"
 
 #: ../gtk/contact.ui.h:4
 msgid "Allow this contact to see my presence status"
-msgstr "Дозволи овом пријатељу да види стање мог присуства"
+msgstr "Anna lupa tälle henkilölle nähdä läsnäoloni"
 
 #: ../gtk/contact.ui.h:5
 msgid "<b>Contact information</b>"
-msgstr "<b>Подаци о пријатељу</b>"
+msgstr "<b>Yhteystiedot</b>"
 
 #: ../gtk/dscp_settings.ui.h:1
 msgid "DSCP settings"
-msgstr "ДСЦП подешавања"
+msgstr "DSCP 'pakettien erittely' asetukset"
 
 #: ../gtk/dscp_settings.ui.h:2
 msgid "SIP"
-msgstr "СИП"
+msgstr "SIP"
 
 #: ../gtk/dscp_settings.ui.h:3
 msgid "Audio RTP stream"
-msgstr "РТП ток звука"
+msgstr "Äänen RTP stream 'realiaikainen virta'"
 
 #: ../gtk/dscp_settings.ui.h:4
 msgid "Video RTP stream"
-msgstr "РТП ток снимка"
+msgstr "Videon RTP stream 'realiaikainen virta'"
 
 #: ../gtk/dscp_settings.ui.h:5
 msgid "<b>Set DSCP values (in hexadecimal)</b>"
-msgstr "<b>Подесите ДСЦП вредности (хексадецимално)</b>"
+msgstr "<b>Aseta DSCP 'pakettien erittely' arvot (heksadesimaaleina)</b>"
 
 #: ../gtk/in_call_frame.ui.h:1
 msgid "Click here to set the speakers volume"
-msgstr "Притисните овде да подесите јачину звучника"
+msgstr "Paina tästä asettaaksesi kaiuttimien äänen voimakkuuden"
 
 #: ../gtk/in_call_frame.ui.h:5
 msgid "Record this call to an audio file"
-msgstr "Сними овај позив у звучну датотеку"
+msgstr "Nauhoita tämä puhelu äänitiedostoksi"
 
 #: ../gtk/in_call_frame.ui.h:6
 msgid "Video"
-msgstr "Видео"
+msgstr "Video"
 
 #: ../gtk/in_call_frame.ui.h:8
 msgid "Mute"
-msgstr "Утишај"
+msgstr "Mykkä"
 
 #: ../gtk/in_call_frame.ui.h:9
 msgid "Transfer"
-msgstr "Пренос"
+msgstr "Siirto"
 
 #: ../gtk/in_call_frame.ui.h:12
 msgid "In call"
-msgstr "Долазни позив"
+msgstr "Puhelussa"
 
 #: ../gtk/in_call_frame.ui.h:13
 msgid "Duration"
-msgstr "Трајање"
+msgstr "Pituus"
 
 #: ../gtk/in_call_frame.ui.h:14
 msgid "Call quality rating"
-msgstr "Оцена квалитета позива"
+msgstr "Puhelun laadun luokitus"
 
 #: ../gtk/ldap.ui.h:1
 msgid "LDAP Settings"
-msgstr "ЛДАП подешавања"
+msgstr "LDAP 'Käyttäjän tunnistus' asetukset"
 
 #: ../gtk/ldap.ui.h:2 ../gtk/parameters.ui.h:89
 msgid "Server address:"
-msgstr "Адреса сервера:"
+msgstr "Palvelimen osoite:"
 
 #: ../gtk/ldap.ui.h:3 ../gtk/parameters.ui.h:90
 msgid "Authentication method:"
-msgstr "Начин потврђивања идентитета:"
+msgstr "Todennus menetelmä:"
 
 #: ../gtk/ldap.ui.h:4 ../gtk/parameters.ui.h:91 ../gtk/setup_wizard.ui.h:17
 msgid "Username:"
-msgstr "Корисничко име:"
+msgstr "Käyttäjätunnus:"
 
 #: ../gtk/ldap.ui.h:5 ../gtk/password.ui.h:4 ../gtk/setup_wizard.ui.h:18
 msgid "Password:"
-msgstr "Лозинка:"
+msgstr "Salasana:"
 
 #: ../gtk/ldap.ui.h:6
 msgid "Use TLS Connection"
-msgstr "Користи ТЛС везу"
+msgstr "Käytä TLS 'lähetyksen salaus' yhteyttä"
 
 #: ../gtk/ldap.ui.h:7
 msgid "Not yet available"
-msgstr "Још није доступно"
+msgstr "Ei vielä saatavilla"
 
 #: ../gtk/ldap.ui.h:8
 msgid "<b>Connection</b>"
-msgstr "<b>Веза</b>"
+msgstr "<b>Yhteys</b>"
 
 #: ../gtk/ldap.ui.h:9
 msgid "Bind DN"
-msgstr "Свежи назив домена"
+msgstr "Käyttäjän tunnistus: yhdistä DN nimeen"
 
 #: ../gtk/ldap.ui.h:10
 msgid "Authname"
-msgstr "Назив потврђивања"
+msgstr "Valtuutettu nimi"
 
 #: ../gtk/ldap.ui.h:11
 msgid "Realm"
-msgstr "Подручје"
+msgstr "Realm 'hallittu alue'"
 
 #: ../gtk/ldap.ui.h:12
 msgid "<b>SASL</b>"
-msgstr "<b>САСЛ</b>"
+msgstr "<b>SASL 'yksinkertainen tunnistus ja salaus'</b>"
 
 #: ../gtk/ldap.ui.h:13
 msgid "Base object:"
-msgstr "Предмет основе:"
+msgstr "Perus kohde:"
 
 #: ../gtk/ldap.ui.h:15
 #, no-c-format
 msgid "Filter (%s for name):"
-msgstr "Пропусник (%s за име):"
+msgstr "Suodatin (%s nimelle)"
 
 #: ../gtk/ldap.ui.h:16
 msgid "Name Attribute:"
-msgstr "Особине имена:"
+msgstr "Nimen tuntomerkit"
 
 #: ../gtk/ldap.ui.h:17
 msgid "SIP address attribute:"
-msgstr "Особине СИП адресе:"
+msgstr "SIP osoitteen tuntomerkki:"
 
 #: ../gtk/ldap.ui.h:18
 msgid "Attributes to query:"
-msgstr "Особине за пропитивање:"
+msgstr "Tuntomerkkiä jonossa"
 
 #: ../gtk/ldap.ui.h:19
 msgid "<b>Search</b>"
-msgstr "<b>Потражите</b>"
+msgstr "<b>Hae</b>"
 
 #: ../gtk/ldap.ui.h:20
 msgid "Timeout for search:"
-msgstr "Време за претрагу:"
+msgstr "Haun aikakatkaisu:"
 
 #: ../gtk/ldap.ui.h:21
 msgid "Max results:"
-msgstr "Највише резултата:"
+msgstr "Tulosten yläraja:"
 
 #: ../gtk/ldap.ui.h:22
 msgid "Follow Aliases"
-msgstr "Прати надимке"
+msgstr "Seuraa peitenimiä"
 
 #: ../gtk/ldap.ui.h:23
 msgid "<b>Miscellaneous</b>"
-msgstr "<b>Разно</b>"
+msgstr "<b>Sekalaiset</b>"
 
 #: ../gtk/ldap.ui.h:24
 msgid "ANONYMOUS"
-msgstr "БЕЗИМЕНО"
+msgstr "ANONYYMI"
 
 #: ../gtk/ldap.ui.h:25
 msgid "SIMPLE"
-msgstr "ЈЕДНОСТАВНО"
+msgstr "YKSINKERTAINEN"
 
 #: ../gtk/ldap.ui.h:26
 msgid "DIGEST-MD5"
-msgstr "ДИГЕСТ-МД5"
+msgstr "DIGEST-MD5 'tiivistetty käyttäjän tunnistus '"
 
 #: ../gtk/ldap.ui.h:27
 msgid "NTLM"
-msgstr "НТЛМ"
+msgstr "NTLM 'Microsoft käyttäjän tunnistus'"
 
 #: ../gtk/login_frame.ui.h:1 ../gtk/tunnel_config.ui.h:7
 msgid "Username"
-msgstr "Корисник"
+msgstr "Käyttäjänimi"
 
 #: ../gtk/login_frame.ui.h:2 ../gtk/tunnel_config.ui.h:8
 msgid "Password"
-msgstr "Лозинка"
+msgstr "Salasana"
 
 #: ../gtk/login_frame.ui.h:3
 msgid "Internet connection:"
-msgstr "Интернет веза:"
+msgstr "Internet yhteys:"
 
 #: ../gtk/login_frame.ui.h:4
 msgid "Automatically log me in"
-msgstr "Сам ме пријави"
+msgstr "Automaattisesti kirjaudu sisään"
 
 #: ../gtk/login_frame.ui.h:5 ../gtk/password.ui.h:3
 msgid "UserID"
-msgstr "ИБ корисника"
+msgstr "Käyttäjän tiedot"
 
 #: ../gtk/login_frame.ui.h:6
 msgid "Login information"
-msgstr "Подаци пријављивања"
+msgstr "Kirjautumistiedot"
 
 #: ../gtk/login_frame.ui.h:7
 msgid "<b>Welcome!</b>"
-msgstr "<b>Добро дошли!</b>"
+msgstr "<b>Tervetuloa!</b>"
 
 #: ../gtk/login_frame.ui.h:8
 msgid "ADSL"
-msgstr "АДСЛ"
+msgstr "ADSL"
 
 #: ../gtk/login_frame.ui.h:9
 msgid "Fiber Channel"
-msgstr "Оптички канал"
+msgstr "Kuitu kanava"
 
 #: ../gtk/log.ui.h:1
 msgid "Linphone debug window"
-msgstr "Линфоново прозорче прочишћавања"
+msgstr "Linphone virheen korjaus ikkuna"
 
 #: ../gtk/log.ui.h:2
 msgid "Scroll to end"
-msgstr "Премакни на крај"
+msgstr "Vieritä loppuun"
 
 #: ../gtk/main.ui.h:1
 msgid "Default"
-msgstr "Основно"
+msgstr "Vakio"
 
 #: ../gtk/main.ui.h:2
 msgid "Delete"
-msgstr "Обриши"
+msgstr "Poista"
 
 #: ../gtk/main.ui.h:3
 msgid "_Options"
-msgstr "_Могућности"
+msgstr "_Valinnat"
 
 #: ../gtk/main.ui.h:4
 msgid "Set configuration URI"
-msgstr "Постави путању подешавања"
+msgstr "Aseta URI säädöt"
 
 #: ../gtk/main.ui.h:5
 msgid "Always start video"
-msgstr "Увек покрени видео"
+msgstr "Aloita aina videon kanssa"
 
 #: ../gtk/main.ui.h:6
 msgid "Enable self-view"
-msgstr "Укључи самовиђење"
+msgstr "Näytä omakuva"
 
 #: ../gtk/main.ui.h:7
 msgid "Show keypad"
-msgstr "Прикажи тастатуру"
+msgstr "Näytä näppäimistö"
 
 #: ../gtk/main.ui.h:8
 msgid "_Help"
-msgstr "По_моћ"
+msgstr "_Apua"
 
 #: ../gtk/main.ui.h:9
 msgid "Show debug window"
-msgstr "Прикажи прозорче прочишћавања"
+msgstr "Näytä virheen korjaus ikkuna"
 
 #: ../gtk/main.ui.h:10
 msgid "_Homepage"
-msgstr "_Матична страница"
+msgstr "_Kotisivu"
 
 #: ../gtk/main.ui.h:11
 msgid "Check _Updates"
-msgstr "Провери _ажурирања"
+msgstr "Tarkista _Päivitykset"
 
 #: ../gtk/main.ui.h:12
 msgid "Account assistant"
-msgstr "Помоћник налога"
+msgstr "Käyttäjätili avustaja"
 
 #: ../gtk/main.ui.h:14
 msgid "SIP address or phone number:"
-msgstr "СИП адреса или број телефона:"
+msgstr "SIP osoite tai puhelin numero"
 
 #: ../gtk/main.ui.h:15
 msgid "Initiate a new call"
-msgstr "Започните нови позив"
+msgstr "Aloita uusi puhelu"
 
 #: ../gtk/main.ui.h:16
 msgid "Contacts"
-msgstr "Пријатељи"
+msgstr "Yhteystiedot"
 
 #: ../gtk/main.ui.h:17
 msgid "Search"
-msgstr "Тражи"
+msgstr "Hae"
 
 #: ../gtk/main.ui.h:18
 msgid "<b>Add contacts from directory</b>"
-msgstr "<b>Додај пријатеље из директоријума</b>"
+msgstr "<b>Lisää yhteystiedot hakemistosta</b>"
 
 #: ../gtk/main.ui.h:19
 msgid "Add contact"
-msgstr "Додај пријатеља"
+msgstr "Lisää yhteystieto"
 
 #: ../gtk/main.ui.h:20
 msgid "Clear call history"
-msgstr "Очисти историјат озива"
+msgstr "Tyhjennä puhelu historia"
 
 #: ../gtk/main.ui.h:22
 msgid "My current identity:"
-msgstr "Мој тренутни идентитет:"
+msgstr "Minun nykyinen henkilllisyys"
 
 #: ../gtk/main.ui.h:23
 msgid "Autoanswer is enabled"
-msgstr "Самојављање је укључено"
+msgstr "Automaattinen vastaaminen käytössä"
 
 #: ../gtk/parameters.ui.h:1
 msgid "anonymous"
-msgstr "безимено"
+msgstr "anonyymi"
 
 #: ../gtk/parameters.ui.h:2
 msgid "GSSAPI"
-msgstr "ГССАПИ"
+msgstr "GSSAPI 'tietoturva ohjelmointi käskypohja'"
 
 #: ../gtk/parameters.ui.h:3
 msgid "SASL"
-msgstr "САСЛ"
+msgstr "SASL 'yksinkertainen salaus'"
 
 #: ../gtk/parameters.ui.h:4
 msgid "default soundcard"
-msgstr "основна звучна картица"
+msgstr "vakio äänikortti"
 
 #: ../gtk/parameters.ui.h:5
 msgid "a sound card"
-msgstr "звучна картица"
+msgstr "äänikortti"
 
 #: ../gtk/parameters.ui.h:6
 msgid "default camera"
-msgstr "основна камерица"
+msgstr "vakio kamera"
 
 #: ../gtk/parameters.ui.h:7
 msgid "CIF"
-msgstr "ЦИФ"
+msgstr "CIF 'keskimääräinen kuvan tarkkuus'"
 
 #: ../gtk/parameters.ui.h:8
 msgid "Audio codecs"
-msgstr "Кодеци звука"
+msgstr "Ääni pakkaukset 'codecs'"
 
 #: ../gtk/parameters.ui.h:9
 msgid "Video codecs"
-msgstr "Кодеци снимка"
+msgstr "Video pakkaukset 'codecs'"
 
 #: ../gtk/parameters.ui.h:10
 msgid "C"
-msgstr "В"
+msgstr "C"
 
 #: ../gtk/parameters.ui.h:11
 msgid "SIP (UDP)"
-msgstr "СИП (УДП)"
+msgstr "SIP (UDP 'siirto ilman yhteyttä')"
 
 #: ../gtk/parameters.ui.h:12
 msgid "SIP (TCP)"
-msgstr "СИП (ТЦП)"
+msgstr "SIP (TCP 'luotettu siirto tavuttain')"
 
 #: ../gtk/parameters.ui.h:13
 msgid "SIP (TLS)"
-msgstr "СИП (ТЛС)"
+msgstr "SIP (TLS 'siirto SSL varmentimilla')"
 
 #: ../gtk/parameters.ui.h:14
 msgid "default"
-msgstr "основно"
+msgstr "vakio"
 
 #: ../gtk/parameters.ui.h:15
 msgid "high-fps"
-msgstr "високи-проток"
+msgstr "korkea fps kuvaa per sekuntti"
 
 #: ../gtk/parameters.ui.h:16
 msgid "custom"
-msgstr "произвољно"
+msgstr "custom"
 
 #: ../gtk/parameters.ui.h:17
 msgid "Settings"
-msgstr "Подешавања"
+msgstr "Asetukset"
 
 #: ../gtk/parameters.ui.h:18
 msgid "This section defines your SIP address when not using a SIP account"
-msgstr "Овај одељак одређује вашу СИП адресу када не користите СИП налог"
+msgstr "Tämä osio märittää sinun SIP osoitteen kun et käytä SIP tiliä"
 
 #: ../gtk/parameters.ui.h:19
 msgid "Your display name (eg: John Doe):"
-msgstr "Ваше приказано име (нпр: Пера Перић):"
+msgstr "Sinun näyttö nimi (esim: Matti Meikäläinen):"
 
 #: ../gtk/parameters.ui.h:20
 msgid "Your username:"
-msgstr "Ваше корисничко име:"
+msgstr "Sinun käyttäjänimi:"
 
 #: ../gtk/parameters.ui.h:21
 msgid "Your resulting SIP address:"
-msgstr "Ваша резултирајућа СИП адреса:"
+msgstr "Tuloksena sinun SIP osoitteesi on:"
 
 #: ../gtk/parameters.ui.h:22
 msgid "<b>Default identity</b>"
-msgstr "<b>Основни идентитет</b>"
+msgstr "<b>Vakio henkilöllisyys</b>"
 
 #: ../gtk/parameters.ui.h:23
 msgid "Wizard"
-msgstr "Чаробњак"
+msgstr "Velho - automaattisäätö"
 
 #: ../gtk/parameters.ui.h:24
 msgid "Add"
-msgstr "Додај"
+msgstr "Lisää"
 
 #: ../gtk/parameters.ui.h:25
 msgid "Edit"
-msgstr "Уреди"
+msgstr "Muokkaa"
 
 #: ../gtk/parameters.ui.h:26
 msgid "Remove"
-msgstr "Уклони"
+msgstr "Poista"
 
 #: ../gtk/parameters.ui.h:27
 msgid "<b>Proxy accounts</b>"
-msgstr "<b>Посреднички налози</b>"
+msgstr "<b>Välityspalvelin tilit</b>"
 
 #: ../gtk/parameters.ui.h:28
 msgid "Erase all passwords"
-msgstr "Обриши све лозинке"
+msgstr "Poista kaikki salasanat"
 
 #: ../gtk/parameters.ui.h:29
 msgid "<b>Privacy</b>"
-msgstr "<b>Приватност</b>"
+msgstr "<b>Yksityisyys</b>"
 
 #: ../gtk/parameters.ui.h:30
 msgid "Automatically answer when a call is received"
-msgstr "Сам одговори када се прими позив"
+msgstr "Automaattinen vastaus kun puhelu on saapunut"
 
 #: ../gtk/parameters.ui.h:31
 msgid "Delay before answering (ms)"
-msgstr "Сачекај пре него што одговориш (ms)"
+msgstr "Odota ennen vastaamista (ms)"
 
 #: ../gtk/parameters.ui.h:32
 msgid "<b>Auto-answer</b>"
-msgstr "<b>Самостални-одговор</b>"
+msgstr "<b>Automaattinen vastaaja</b>"
 
 #: ../gtk/parameters.ui.h:33
 msgid "Manage SIP Accounts"
-msgstr "СИП налози"
+msgstr "Hallitse SIP tilejä"
 
 #: ../gtk/parameters.ui.h:34
 msgid "Ring sound:"
-msgstr "Звук звона:"
+msgstr "Soittoääni:"
 
 #: ../gtk/parameters.ui.h:35
 msgid "ALSA special device (optional):"
-msgstr "АЛСА-ин посебни уређај (изборно):"
+msgstr "ALSA-'ääne parannus' erikoilaite  (valinnainen):"
 
 #: ../gtk/parameters.ui.h:36
 msgid "Capture device:"
-msgstr "Уређај за снимање:"
+msgstr "Tallennus laite:"
 
 #: ../gtk/parameters.ui.h:37
 msgid "Ring device:"
-msgstr "Уређај за звоно:"
+msgstr "Soittoäänen laite:"
 
 #: ../gtk/parameters.ui.h:38
 msgid "Playback device:"
-msgstr "Уређај за пуштање:"
+msgstr "Äänentoistolaite:"
 
 #: ../gtk/parameters.ui.h:39
 msgid "Enable echo cancellation"
-msgstr "Укључи поништавање одјека"
+msgstr "Käytä kaiun poistoa"
 
 #: ../gtk/parameters.ui.h:40
 msgid "<b>Audio</b>"
-msgstr "<b>Звук</b>"
+msgstr "<b>Ääni</b>"
 
 #: ../gtk/parameters.ui.h:41
 msgid "Video input device:"
-msgstr "Улазни уређај снимка:"
+msgstr "Videokuvan lähde:"
 
 #: ../gtk/parameters.ui.h:42
 msgid "Preferred video resolution:"
-msgstr "Жељена резолуција снимка:"
+msgstr "Toivottu videon tarkkuus:"
 
 #: ../gtk/parameters.ui.h:43
 msgid "Video output method:"
-msgstr "Начин излаза снимка:"
+msgstr "Videon ulostulo:"
 
 #: ../gtk/parameters.ui.h:44
 msgid "Show camera preview"
-msgstr "Прикажи претпреглед камерице"
+msgstr "Näytä kameran esikatselu"
 
 #: ../gtk/parameters.ui.h:45
 msgid "Video preset:"
-msgstr "Претподешавање снимка:"
+msgstr "Video esiasetus:"
 
 #: ../gtk/parameters.ui.h:46
 msgid "Preferred video framerate:"
-msgstr "Жељени проток кадрова снимка:"
+msgstr "Toivottu videon kuvataajuus:"
 
 #: ../gtk/parameters.ui.h:47
 msgid "0 stands for \"unlimited\""
-msgstr "0 значи „неограничено“"
+msgstr "0 tarkoittaa \"rajoittamaton\""
 
 #: ../gtk/parameters.ui.h:48
 msgid "<b>Video</b>"
-msgstr "<b>Снимак</b>"
+msgstr "<b>Video</b>"
 
 #: ../gtk/parameters.ui.h:49
 msgid "Upload speed limit in Kbit/sec:"
-msgstr "Ограничи брзину слања на (Kb/s):"
+msgstr "Lähetys nopeus raja Kbit/sec:"
 
 #: ../gtk/parameters.ui.h:50
 msgid "Download speed limit in Kbit/sec:"
-msgstr "Ограничи брзину преузимања на (Kb/s):"
+msgstr "Lataus raja Kbit/sec:"
 
 #: ../gtk/parameters.ui.h:51
 msgid "Enable adaptive rate control"
-msgstr "Укључи прилагодљиво управљање протоком"
+msgstr "Käytä mukautuvaa tason säätöä"
 
 #: ../gtk/parameters.ui.h:52
 msgid ""
 "<i>Adaptive rate control is a technique to dynamically guess the available "
 "bandwidth during a call.</i>"
-msgstr "<i>Прилагодљиво управљање протоком је техника за променљиво погађање доступног пропусног опсега за време позива.</i>"
+msgstr "<i>Mukautuva tason säätö arvailee käytettävissä olevan kastaleveyden puheun aikana.</i>"
 
 #: ../gtk/parameters.ui.h:53
 msgid "<b>Bandwidth control</b>"
-msgstr "<b>Управљање пропусним опсегом</b>"
+msgstr "<b>Kastaleveyden hallinta</b>"
 
 #: ../gtk/parameters.ui.h:54
 msgid "Multimedia settings"
-msgstr "Мултимедија"
+msgstr "Multimedia asetukset"
 
 #: ../gtk/parameters.ui.h:55
 msgid "Set Maximum Transmission Unit:"
-msgstr "Подеси јединицу највећег преноса:"
+msgstr "Aseta suurin siirto yksikkö:"
 
 #: ../gtk/parameters.ui.h:56
 msgid "Send DTMFs as SIP info"
-msgstr "Пошаљи ДТМФ као СИП податке"
+msgstr "Lähetä DTMF:t SIP infona"
 
 #: ../gtk/parameters.ui.h:57
 msgid "Allow IPv6"
-msgstr "Омогући ИПв6"
+msgstr "Salli IPv6"
 
 #: ../gtk/parameters.ui.h:58
 msgid "<b>Transport</b>"
-msgstr "<b>Пренос</b>"
+msgstr "<b>Siirto</b>"
 
 #: ../gtk/parameters.ui.h:59
 msgid "SIP/UDP port"
-msgstr "СИП/УДП прикључник"
+msgstr "SIP/UDP portti"
 
 #: ../gtk/parameters.ui.h:61
 msgid "Random"
-msgstr "Насумично"
+msgstr "Satunnainen"
 
 #: ../gtk/parameters.ui.h:62
 msgid "SIP/TCP port"
-msgstr "СИП/ТЦП прикључник"
+msgstr "SIP/TCP portti"
 
 #: ../gtk/parameters.ui.h:63
 msgid "Audio RTP/UDP:"
-msgstr "РТП/УДП звука:"
+msgstr "Ääni RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:64
 msgid "Fixed"
-msgstr "Неизмењиво"
+msgstr "Korjattu"
 
 #: ../gtk/parameters.ui.h:65
 msgid "Video RTP/UDP:"
-msgstr "РТП/УДП снимка:"
+msgstr "Video RTP/UDP:"
 
 #: ../gtk/parameters.ui.h:66
 msgid "Media encryption type"
-msgstr "Врста шифровања медија"
+msgstr "Median salaus tyyppi"
 
 #: ../gtk/parameters.ui.h:67
 msgid "Media encryption is mandatory"
-msgstr "Шифровање медија је обавезно"
+msgstr "Median salaus on pakollinen"
 
 #: ../gtk/parameters.ui.h:68
 msgid "Tunnel"
-msgstr "Тунел"
+msgstr "Tunneli"
 
 #: ../gtk/parameters.ui.h:69
 msgid "DSCP fields"
-msgstr "ДСЦП поља"
+msgstr "DSCP kentät"
 
 #: ../gtk/parameters.ui.h:70
 msgid "<b>Network protocol and ports</b>"
-msgstr "<b>Мрежни протокол и прикључници</b>"
+msgstr "<b>Veskko protokolla ja portti</b>"
 
 #: ../gtk/parameters.ui.h:71
 msgid "Direct connection to the Internet"
-msgstr "Непосредна веза на Интернет"
+msgstr "Suora yhteys internettiin "
 
 #: ../gtk/parameters.ui.h:72
 msgid "Behind NAT / Firewall (specify gateway IP )"
-msgstr "Иза НАТ-а / мрежне баријере (наведите ИП мрежног пролаза)"
+msgstr "NAT / Palomuurin takaa (määritä yhdyskäytävä IP)"
 
 #: ../gtk/parameters.ui.h:73
 msgid "Behind NAT / Firewall (use STUN to resolve)"
-msgstr "Иза НАТ-а / мрежне баријере (користите СТУН за решавање)"
+msgstr "NAT-osoitteenmuunnoksen / Palomuurin takaa (käytä STUN:nia)"
 
 #: ../gtk/parameters.ui.h:74
 msgid "Behind NAT / Firewall (use ICE)"
-msgstr "Иза НАТ-а / мрежне баријере (користите ИЦЕ)"
+msgstr "NAT-osoitteenmuunnoksen / Palomuurin takaa (käytä ICE:tä)"
 
 #: ../gtk/parameters.ui.h:75
 msgid "Behind NAT / Firewall (use uPnP)"
-msgstr "Иза НАТ-а / мрежне баријере (користите уПнП)"
+msgstr "NAT-osoitteenmuunnoksen / Palomuurin takaa (käytä uPnP:tä)"
 
 #: ../gtk/parameters.ui.h:76
 msgid "Public IP address:"
-msgstr "Јавна ИП адреса:"
+msgstr "Julkinen IP osoite:"
 
 #: ../gtk/parameters.ui.h:77
 msgid "Stun server:"
-msgstr "Стун сервер:"
+msgstr "Stun-palvelin eli 'osoitteenmuunoksen takaisin haku'-palvelin:"
 
 #: ../gtk/parameters.ui.h:78
 msgid "<b>NAT and Firewall</b>"
-msgstr "<b>НАТ и мрежна баријера</b>"
+msgstr "<b>NAT-osoitteenmuunos ja Palomuuri</b>"
 
 #: ../gtk/parameters.ui.h:79
 msgid "Network settings"
-msgstr "Мрежа"
+msgstr "Verkko asetukset:"
 
 #: ../gtk/parameters.ui.h:80 ../gtk/tunnel_config.ui.h:4
 msgid "Enable"
-msgstr "Укључи"
+msgstr "Käytössä"
 
 #: ../gtk/parameters.ui.h:81 ../gtk/tunnel_config.ui.h:5
 msgid "Disable"
-msgstr "Искључи"
+msgstr "Poissa käytöstä"
 
 #: ../gtk/parameters.ui.h:82
 msgid "<b>Audio codecs</b>"
-msgstr "<b>Кодеци звука</b>"
+msgstr "<b>Ääni codecs</b>"
 
 #: ../gtk/parameters.ui.h:83
 msgid "<b>Video codecs</b>"
-msgstr "<b>Кодеци снимка</b>"
+msgstr "<b>Video codecs</b>"
 
 #: ../gtk/parameters.ui.h:84
 msgid "Codecs"
-msgstr "Kодеци"
+msgstr "Codecs"
 
 #: ../gtk/parameters.ui.h:85
 msgid "<b>Language</b>"
-msgstr "<b>Језик</b>"
+msgstr "<b>Kieli</b>"
 
 #: ../gtk/parameters.ui.h:86
 msgid "Show advanced settings"
-msgstr "Прикажи напредна подешавања"
+msgstr "Näytä edistyneet asetukset"
 
 #: ../gtk/parameters.ui.h:87
 msgid "<b>Level</b>"
-msgstr "<b>Ниво</b>"
+msgstr "<b>Taso</b>"
 
 #: ../gtk/parameters.ui.h:88
 msgid "User interface"
-msgstr "Корисничко сучеље"
+msgstr "Käyttöliittymä"
 
 #: ../gtk/parameters.ui.h:92
 msgid "<b>LDAP Account setup</b>"
-msgstr "<b>Подешавања ЛДАП налога</b>"
+msgstr "<b>LDAP Tili asetukset</b>"
 
 #: ../gtk/parameters.ui.h:93
 msgid "LDAP"
-msgstr "ЛДАП"
+msgstr "LDAP"
 
 #: ../gtk/parameters.ui.h:94
 msgid "Done"
-msgstr "Готово"
+msgstr "Tehty"
 
 #: ../gtk/password.ui.h:1
 msgid "Linphone - Authentication required"
-msgstr "Линфон — Потребно је потврђивање идентитета"
+msgstr "Linhone - Tunnistautuminen vaaditaan"
 
 #: ../gtk/password.ui.h:2
 msgid "Please enter the domain password"
-msgstr "Унесите лозинку домена"
+msgstr "Anna domain/verkkotunnussen salasana"
 
 #: ../gtk/provisioning-fetch.ui.h:1
 msgid "Configuring..."
-msgstr "Подешавам..."
+msgstr "Säädetään..."
 
 #: ../gtk/provisioning-fetch.ui.h:2
 msgid "Please wait while fetching configuration from server..."
-msgstr "Сачекајте док довучем подешавања са сервера..."
+msgstr "Odota, säätöjä noudetaan palvelimelta..."
 
 #: ../gtk/setup_wizard.ui.h:1
 msgid "SIP account configuration assistant"
-msgstr "Помоћник подешавања СИП налога"
+msgstr "SIP tilin säätö avustaja"
 
 #: ../gtk/setup_wizard.ui.h:2
 msgid ""
 "Welcome!\n"
 "This assistant will help you to use a SIP account for your calls."
-msgstr "Добро дошли!\nОвај помоћник ће вам помоћи да користите СИП налог за ваше позиве."
+msgstr "Tervetuoa!\nTämä avustaja auttaa sinua käyttämään SIP tiliä puheluissasi. "
 
 #: ../gtk/setup_wizard.ui.h:4
 msgid "Welcome to the account setup assistant"
-msgstr "Добро дошли у помоћника подешавања налога"
+msgstr "Tervetuloa tili asetusten avustajaan"
 
 #: ../gtk/setup_wizard.ui.h:5
 msgid "Create an account on linphone.org"
-msgstr "Направи налог на линфон.орг-у"
+msgstr "Luo linphone.org tili"
 
 #: ../gtk/setup_wizard.ui.h:6
 msgid "I have already a linphone.org account and I just want to use it"
-msgstr "Већ имам налог линфон.орг-а и желим да га користим"
+msgstr "Minulla on jo linphone.org tili ja haluan kayttää sitä"
 
 #: ../gtk/setup_wizard.ui.h:7
 msgid "I have already a sip account and I just want to use it"
-msgstr "Већ имам сип налог и желим да га користим"
+msgstr "Minulla on jo sip tilli ja haluan käyttää sitä"
 
 #: ../gtk/setup_wizard.ui.h:8
 msgid "I want to specify a remote configuration URI"
-msgstr "Желим да наведем удаљену путању подешавања"
+msgstr "Haluan täsmentää etäsäätöjä; URI-osoite"
 
 #: ../gtk/setup_wizard.ui.h:9
 msgid "Account setup assistant"
-msgstr "Помоћник подешавања налога"
+msgstr "Tili asetusten avustaja"
 
 #: ../gtk/setup_wizard.ui.h:10
 msgid "Enter your account information"
-msgstr "Унесите податке вашег налога"
+msgstr "Anna tili tietosi"
 
 #: ../gtk/setup_wizard.ui.h:11
 msgid "Username*"
-msgstr "Корисник*"
+msgstr "Käyttäjätunnus*"
 
 #: ../gtk/setup_wizard.ui.h:12
 msgid "Password*"
-msgstr "Лозинка*"
+msgstr "Salasana*"
 
 #: ../gtk/setup_wizard.ui.h:13
 msgid "Domain*"
-msgstr "Домен*"
+msgstr "Domain/verkkotunnus*"
 
 #: ../gtk/setup_wizard.ui.h:14
 msgid "Proxy"
-msgstr "Посредник"
+msgstr "Välitysavelin"
 
 #: ../gtk/setup_wizard.ui.h:15
 msgid "Configure your account (step 1/1)"
-msgstr "Подесите ваш налог (корак 1/1)"
+msgstr "Muokkaa tiliäsi (osa 1/1)"
 
 #: ../gtk/setup_wizard.ui.h:16
 msgid "Enter your linphone.org username"
-msgstr "Унесите ваше корисничко име линфон.орг-а"
+msgstr "Anna linphone.org käyttäjätunnus"
 
 #: ../gtk/setup_wizard.ui.h:19
 msgid "Enter your sip username (step 1/1)"
-msgstr "Унесите ваше корисничко име сип-а (корак 1/1)"
+msgstr "Anna sip käyttäjätunnus (osa 1/1)"
 
 #: ../gtk/setup_wizard.ui.h:20
 msgid "(*) Required fields"
-msgstr "(*) Обавезна поља"
+msgstr "(*) Vaaditus kohdat"
 
 #: ../gtk/setup_wizard.ui.h:21
 msgid "Email: (*)"
-msgstr "Ел. пошта: (*)"
+msgstr "Sähköposti: (*)"
 
 #: ../gtk/setup_wizard.ui.h:22
 msgid "Username: (*)"
-msgstr "Корисник: (*)"
+msgstr "Käyttäjätunnus: (*)"
 
 #: ../gtk/setup_wizard.ui.h:23
 msgid "Password: (*)"
-msgstr "Лозинка: (*)"
+msgstr "Salasana: (*)"
 
 #: ../gtk/setup_wizard.ui.h:24
 msgid "Confirm your password: (*)"
-msgstr "Потврдите вашу лозинку: (*)"
+msgstr "Vahvista salasana: (*)"
 
 #: ../gtk/setup_wizard.ui.h:25
 msgid "Keep me informed with linphone updates"
-msgstr "Обавештавај ме о ажурирањима линфона"
+msgstr "Ilmoita linphone päivityksistä"
 
 #: ../gtk/setup_wizard.ui.h:26
 msgid "Enter account information (step 1/2)"
-msgstr "Унесите податке налога (корак 1/2)"
+msgstr "Anna tili tiedot (osa 1/2)"
 
 #: ../gtk/setup_wizard.ui.h:27
 msgid "Your account is being created, please wait."
-msgstr "Ваш налог је направљен, сачекајте тренутак."
+msgstr "Sinun tiliäsi luodaan, pyydän odota."
 
 #: ../gtk/setup_wizard.ui.h:28
 msgid "Account creation in progress"
-msgstr "Прављење налога је у току"
+msgstr "Tilin luominen edistyy"
 
 #: ../gtk/setup_wizard.ui.h:29
 msgid ""
 "Please validate your account by clicking on the link we just sent you by email.\n"
 "Then come back here and press Next button."
-msgstr "Потврдите ваш налог притиском на везу коју смо вам управо послали ел. поштом.\nЗатим се вратите овде и притисните дугме „Напред“."
+msgstr "Vahvista tilisi avaamala linkin, joka on juuri lähetetty sähköpostiisi.\nSitten palaa ja paina seuraava."
 
 #: ../gtk/setup_wizard.ui.h:31
 msgid "Validation (step 2/2)"
-msgstr "Потврђивање (корак 2/2)"
+msgstr "Vahvistus (osa 2/2)"
 
 #: ../gtk/setup_wizard.ui.h:32
 msgid "Checking if your account is been validated, please wait."
-msgstr "Проверавам да ли је ваш налог потврђен, сачекајте тренутак."
+msgstr "Tarkistetaan että tilisi on vahvistettu, pyydän odota."
 
 #: ../gtk/setup_wizard.ui.h:33
 msgid "Account validation check in progress"
-msgstr "Провера налога је у току"
+msgstr "Tarkistetaan tilin vahvistusta "
 
 #: ../gtk/setup_wizard.ui.h:34
 msgid ""
 "Error, account not validated, username already used or server unreachable.\n"
 "Please go back and try again."
-msgstr "Грешка, налог није потврђен, корисничко име је већ у употреби или је сервер недоступан.\nВратите се назад и покушајте опет."
+msgstr "Virhe, tili ei ole vahvistettu, käyttäjätunnus oli jo käytössä tai palvelin tavoittamattomissa.\nPyydän palaa ja yritä uudelleen."
 
 #: ../gtk/setup_wizard.ui.h:36
 msgid "Error"
-msgstr "Грешка"
+msgstr "Virhe"
 
 #: ../gtk/setup_wizard.ui.h:37
 msgid "Thank you. Your account is now configured and ready for use."
-msgstr "Хвала вам. Ваш налог је сада подешен и спреман за употребу."
+msgstr "Kiitos. Tilisi on muokattu ja valmis käyttöön."
 
 #: ../gtk/sip_account.ui.h:1
 msgid "Linphone - Configure a SIP account"
-msgstr "Линфон — Подесите СИП налог"
+msgstr "Linphone - Muokkaa SIP tiliä"
 
 #: ../gtk/sip_account.ui.h:2
 msgid "Your SIP identity:"
-msgstr "Ваш СИП идентитет:"
+msgstr "Sinun SIP henkilöllisyys:"
 
 #: ../gtk/sip_account.ui.h:3
 msgid "Looks like sip:<username>@<domain>"
-msgstr "Изгледа као „sip:<корисничко-име>@<домен>“"
+msgstr "Näyttää seuraavalta sip:<username>@<domain>"
 
 #: ../gtk/sip_account.ui.h:4
 msgid "sip:"
-msgstr "сип:"
+msgstr "sip:"
 
 #: ../gtk/sip_account.ui.h:5
 msgid "SIP Proxy address:"
-msgstr "Адреса СИП посредника:"
+msgstr "SIP välityspalvelin osoite:"
 
 #: ../gtk/sip_account.ui.h:6
 msgid "Looks like sip:<proxy hostname>"
-msgstr "Изгледа као „sip:<назив посредника>“"
+msgstr "Näyttää seuraavalta sip:<proxy hostname>"
 
 #: ../gtk/sip_account.ui.h:7
 msgid "Registration duration (sec):"
-msgstr "Трајање уписа (сек):"
+msgstr "Rekisteröinnin kesto (sekunttia):"
 
 #: ../gtk/sip_account.ui.h:8
 msgid "Contact params (optional):"
-msgstr "Параметри пријатеља (изборно):"
+msgstr "Yhteystiedot (valinnainen):"
 
 #: ../gtk/sip_account.ui.h:9
 msgid "AVPF regular RTCP interval (sec):"
-msgstr "АВПФ редован РТЦП интервал (сек):"
+msgstr "AVPF-'media siirto' tahdistusväli RTCP-'realiaikaisen tiedonsiirron' kanssa (sekunttia):"
 
 #: ../gtk/sip_account.ui.h:10
 msgid "Route (optional):"
-msgstr "Рута (изборно):"
+msgstr "Reitti (valinnainen):"
 
 #: ../gtk/sip_account.ui.h:11
 msgid "Transport"
-msgstr "Пренос"
+msgstr "Siirto"
 
 #: ../gtk/sip_account.ui.h:12
 msgid "Register"
-msgstr "Упиши се"
+msgstr "Rekisteri"
 
 #: ../gtk/sip_account.ui.h:13
 msgid "Publish presence information"
-msgstr "Објави податке о присуству"
+msgstr "Julkaise läsnäolo tiedot"
 
 #: ../gtk/sip_account.ui.h:14
 msgid "Enable AVPF"
-msgstr "Укључи АВПФ"
+msgstr "Käytä AVPF:ää"
 
 #: ../gtk/sip_account.ui.h:15
 msgid "Configure a SIP account"
-msgstr "Подесите СИП налог"
+msgstr "Muokkaa SIP tiliä"
 
 #: ../gtk/tunnel_config.ui.h:1
 msgid "Configure VoIP tunnel"
-msgstr "Подесите ВоИП тунел"
+msgstr "Muokkaa VoIP tunnelia"
 
 #: ../gtk/tunnel_config.ui.h:2
 msgid "Host"
-msgstr "Домаћин"
+msgstr "Host eli Verkon solmu"
 
 #: ../gtk/tunnel_config.ui.h:3
 msgid "Port"
-msgstr "Прикључник"
+msgstr "Portti"
 
 #: ../gtk/tunnel_config.ui.h:6
 msgid "<b>Configure tunnel</b>"
-msgstr "<b>Подесите тунел</b>"
+msgstr "<b>Muokkaa tunnelia</b>"
 
 #: ../gtk/tunnel_config.ui.h:9
 msgid "<b>Configure http proxy (optional)</b>"
-msgstr "<b>Подесите хттп посредника (изборно)</b>"
+msgstr "<b>Muokkaa http välityspalinta (valinnainen)</b>"
 
 #: ../gtk/waiting.ui.h:2
 msgid "Please wait"
-msgstr "Сачекајте мало"
+msgstr "Odota"
 
 #: ../coreapi/linphonecore.c:1542
 msgid "Ready"
-msgstr "Спреман"
+msgstr "Valmis"
 
 #: ../coreapi/linphonecore.c:2569
 msgid "Configuring"
-msgstr "Подешавам"
+msgstr "Säädetään"
 
 #. must be known at that time
 #: ../coreapi/linphonecore.c:2961
 msgid "Contacting"
-msgstr "Ступам у везу"
+msgstr "Yhdistetään"
 
 #: ../coreapi/linphonecore.c:2966
 msgid "Could not call"
-msgstr "Не могу да позовем"
+msgstr "Ei voinut soittaa"
 
 #: ../coreapi/linphonecore.c:3102
 msgid "Sorry, we have reached the maximum number of simultaneous calls"
-msgstr "Извините, достигли смо највећи број истовремених позива"
+msgstr "Olen pahoillani, suurin yhtäaikaisten puheluiden määrä on saavutettu"
 
 #: ../coreapi/linphonecore.c:3260
 msgid "is contacting you"
-msgstr "вам се обраћа"
+msgstr "on ottamassa yhteyttä sinuun"
 
 #: ../coreapi/linphonecore.c:3261
 msgid " and asked autoanswer."
-msgstr " и затражени само-одговор."
+msgstr "ja pyytää automaattista vastausta."
 
 #: ../coreapi/linphonecore.c:3378
 msgid "Modifying call parameters..."
-msgstr "Мењам параметре позива..."
+msgstr "Maukataan soiton raja-arvoja..."
 
 #: ../coreapi/linphonecore.c:3770
 msgid "Connected."
-msgstr "Повезан сам."
+msgstr "Yhdistetty"
 
 #: ../coreapi/linphonecore.c:3795
 msgid "Call aborted"
-msgstr "Позив је прекинут"
+msgstr "Puhelu keskeytetty"
 
 #: ../coreapi/linphonecore.c:3985
 msgid "Could not pause the call"
-msgstr "Не могу да зауставим позив"
+msgstr "Ei voinut laittaa puhelua tauolle"
 
 #: ../coreapi/linphonecore.c:3988
 msgid "Pausing the current call..."
-msgstr "Заустављам тренутни позив..."
+msgstr "Laitetaan tauolle nykyinen puhelu..."
 
 #: ../coreapi/misc.c:440
 msgid "Stun lookup in progress..."
-msgstr "У току је тражење стуна..."
+msgstr "Stun-'osoite haun' lukkiutuminen käynnissä..."
 
 #: ../coreapi/misc.c:650
 msgid "ICE local candidates gathering in progress..."
-msgstr "Прикупљање месних ИЦЕ кандидата је у току..."
+msgstr "ICE paikallisia ehdokkaita kerätään..."
 
 #: ../coreapi/friend.c:33
 msgid "Online"
-msgstr "На вези"
+msgstr "Verkossa"
 
 #: ../coreapi/friend.c:36
 msgid "Busy"
-msgstr "Заузет"
+msgstr "Kiireinen"
 
 #: ../coreapi/friend.c:39
 msgid "Be right back"
-msgstr "Одмах се враћам"
+msgstr "Palaan pian"
 
 #: ../coreapi/friend.c:42
 msgid "Away"
-msgstr "Одсутан"
+msgstr "Poissa"
 
 #: ../coreapi/friend.c:45
 msgid "On the phone"
-msgstr "На телефону"
+msgstr "Puhuu puhelua"
 
 #: ../coreapi/friend.c:48
 msgid "Out to lunch"
-msgstr "На ручку сам"
+msgstr "Syömässä"
 
 #: ../coreapi/friend.c:51
 msgid "Do not disturb"
-msgstr "Не узнемиравај"
+msgstr "Älä häiritse"
 
 #: ../coreapi/friend.c:54
 msgid "Moved"
-msgstr "Премештен"
+msgstr "Siirtynyt"
 
 #: ../coreapi/friend.c:57
 msgid "Using another messaging service"
-msgstr "Користим другу услугу дописивања"
+msgstr "Käyttää toista yhteys ohjelmaa"
 
 #: ../coreapi/friend.c:60
 msgid "Offline"
-msgstr "Неповезан"
+msgstr "Verkossa"
 
 #: ../coreapi/friend.c:63
 msgid "Pending"
-msgstr "На чекању"
+msgstr "Odottaa"
 
 #: ../coreapi/friend.c:66
 msgid "Vacation"
-msgstr "На одмору"
+msgstr "Lomalla"
 
 #: ../coreapi/friend.c:68
 msgid "Unknown status"
-msgstr "Непознато стање"
+msgstr "Tuntematon tila"
 
 #: ../coreapi/proxy.c:292
 msgid ""
 "The sip proxy address you entered is invalid, it must start with \"sip:\" "
 "followed by a hostname."
-msgstr "Адреса сип посредника коју сте унели је неисправна, мора почети на „sip:“ за којим следи назив домаћина."
+msgstr "Antamasi välityspalvelin osoite on kelvoton. Se täytyy alkaa \"sip:\" minkä jälkeen tulee host-verkkosolmuntunnus."
 
 #: ../coreapi/proxy.c:298
 msgid ""
 "The sip identity you entered is invalid.\n"
 "It should look like sip:username@proxydomain, such as sip:alice@example.net"
-msgstr "Сип идентитет који сте унели није исправан.\nТреба да буде у облику „sip:корисник@домен-посредника“, као што је „sip:alice@example.net“"
+msgstr "Antamasi sip tiedot ovat kelvoton.\nSen pitäisi näyttää sip:käyttäjätunnus@välityspalvelin, kuten sip:alice@esimerkki.net"
 
 #: ../coreapi/proxy.c:929
 msgid "Looking for telephone number destination..."
-msgstr "Тражим одредиште телефонског броја..."
+msgstr "Etsitään puhelinnumeron kohdetta..."
 
 #: ../coreapi/proxy.c:933
 msgid "Could not resolve this number."
-msgstr "Не могу да решим овај број."
+msgstr "Ei voi käsittää tätä numeroa."
 
 #: ../coreapi/proxy.c:1328
 #, c-format
 msgid "Could not login as %s"
-msgstr "Не могу да се пријавим као %s"
+msgstr "%s ei pystynyt kirjautumaan"
 
 #: ../coreapi/proxy.c:1414
 #, c-format
 msgid "Refreshing on %s..."
-msgstr "Освежавам на %s..."
+msgstr "%s on huilaamassa..."
 
 #: ../coreapi/callbacks.c:423
 msgid "Remote ringing."
-msgstr "Удаљено звоњење."
+msgstr "vastapuoli pirisee"
 
 #: ../coreapi/callbacks.c:435
 msgid "Remote ringing..."
-msgstr "Удаљено звоњење..."
+msgstr "vastapuoli pirisee..."
 
 #: ../coreapi/callbacks.c:458
 msgid "Early media."
-msgstr "Ранији медиј."
+msgstr "Aikainen media eli aloita puhelu ennen yhteyden lukittautumista"
 
 #: ../coreapi/callbacks.c:488
 #, c-format
 msgid "Call answered by %s"
-msgstr "На позив је одговорио/ла %s"
+msgstr "Puheluun vastasi %s"
 
 #: ../coreapi/callbacks.c:527
 msgid "Call resumed."
-msgstr "Позив је настављен."
+msgstr "Puhelu jaettiin."
 
 #: ../coreapi/callbacks.c:582
 msgid "Incompatible, check codecs or security settings..."
-msgstr "Несагласно, проверите кодеке или безбедносна подешавања..."
+msgstr "Yhteensopimaton, tarkista kodekit tai suojaus asetukset..."
 
 #: ../coreapi/callbacks.c:587 ../coreapi/callbacks.c:923
 msgid "Incompatible media parameters."
-msgstr "Медијски параметри су несагласни."
+msgstr "Yhteensopimattomat media raja-arvot."
 
 #: ../coreapi/callbacks.c:612
 msgid "We have been resumed."
-msgstr "Наставили смо."
+msgstr "Meidän puhelu on jaettu."
 
 #. we are being paused
 #: ../coreapi/callbacks.c:620
 msgid "We are paused by other party."
-msgstr "Друга страна нас је паузирала."
+msgstr "Meidän puhelu on laitettu taauolle toisen osapuolen taholta."
 
 #: ../coreapi/callbacks.c:630
 msgid "Call is updated by remote."
-msgstr "Позив је освежен удаљеним."
+msgstr "Vastapuoli on päivittänyt puhelun."
 
 #: ../coreapi/callbacks.c:799
 msgid "Call terminated."
-msgstr "Позив је завршен."
+msgstr "Puhelu keskeytetty."
 
 #: ../coreapi/callbacks.c:827
 msgid "User is busy."
-msgstr "Корисник је заузет."
+msgstr "Käyttäjä on kiireinen."
 
 #: ../coreapi/callbacks.c:828
 msgid "User is temporarily unavailable."
-msgstr "Корисник је привремено недоступан."
+msgstr "Käyttäjä hetkellisesti tavoittamattomissa."
 
 #. char *retrymsg=_("%s. Retry after %i minute(s).");
 #: ../coreapi/callbacks.c:830
 msgid "User does not want to be disturbed."
-msgstr "Корисник не жели да буде узнемираван."
+msgstr "Käyttäjä ei halua tulla häirityksi."
 
 #: ../coreapi/callbacks.c:831
 msgid "Call declined."
-msgstr "Позив је одбијен."
+msgstr "Soitto evätty."
 
 #: ../coreapi/callbacks.c:846
 msgid "Request timeout."
-msgstr "Истекло је време захтева."
+msgstr "Soitto yritys aikakatkaistiin."
 
 #: ../coreapi/callbacks.c:877
 msgid "Redirected"
-msgstr "Преусмерен"
+msgstr "Uudelleen ohjattu"
 
 #: ../coreapi/callbacks.c:927
 msgid "Call failed."
-msgstr "Позив није успео."
+msgstr "Puhelu epäonnistui."
 
 #: ../coreapi/callbacks.c:1005
 #, c-format
 msgid "Registration on %s successful."
-msgstr "Уписивање на „%s“ је успело."
+msgstr "Rekitöröityminen %sn onnistui."
 
 #: ../coreapi/callbacks.c:1006
 #, c-format
 msgid "Unregistration on %s done."
-msgstr "Исписивање са „%s“ је обављено."
+msgstr "Rekisterin poisto %s:stä on tehty."
 
 #: ../coreapi/callbacks.c:1024
 msgid "no response timeout"
-msgstr "нема ограничења одговора"
+msgstr "ei vastausta, aikakatkaistiin"
 
 #: ../coreapi/callbacks.c:1027
 #, c-format
 msgid "Registration on %s failed: %s"
-msgstr "Уписивање на „%s“ није успело: %s"
+msgstr "Rekistöröityminen %sn epäonnistui: %s"
 
 #: ../coreapi/callbacks.c:1034
 msgid "Service unavailable, retrying"
-msgstr "Услуга није доступна, поново покушавам"
+msgstr "Palvelin saavuttamattomissa, uudelleen yritetään"
 
 #. if encryption is DTLS, no status to be displayed
 #: ../coreapi/linphonecall.c:204
 #, c-format
 msgid "Authentication token is %s"
-msgstr "Симбол потврђивања идентитета је „%s“"
+msgstr "Todennus merkki on %s"
 
 #: ../coreapi/linphonecall.c:1604
 #, c-format
 msgid "Call parameters could not be modified: %s."
-msgstr "Параметри позива не могу бити измењени: %s."
+msgstr "Soiton raja-arvoja ei voitu muokata: %s."
 
 #: ../coreapi/linphonecall.c:1606
 msgid "Call parameters were successfully modified."
-msgstr "Параметри позива су успешно измењени."
+msgstr "Soiton raja-arvot ovat onnistuneesti muokattu."
 
 #: ../coreapi/linphonecall.c:4489
 #, c-format
 msgid "You have missed %i call."
 msgid_plural "You have missed %i calls."
-msgstr[0] "Пропустили сте %i позив."
-msgstr[1] "Пропустили сте %i позива."
-msgstr[2] "Пропустили сте %i позива."
+msgstr[0] "Sinulla on %i vastaamaton puhelu."
+msgstr[1] "Sinulla on %i vastaamatonta puhelua."
 
 #: ../coreapi/call_log.c:223
 msgid "aborted"
-msgstr "прекинут"
+msgstr "keskeytetty"
 
 #: ../coreapi/call_log.c:226
 msgid "completed"
-msgstr "завршен"
+msgstr "valmis"
 
 #: ../coreapi/call_log.c:229
 msgid "missed"
-msgstr "пропуштен"
+msgstr "vastaamaton"
 
 #: ../coreapi/call_log.c:232
 msgid "unknown"
-msgstr "непознато"
+msgstr "tuntematon"
 
 #: ../coreapi/call_log.c:234
 #, c-format
@@ -2066,13 +2062,13 @@ msgid ""
 "To: %s\n"
 "Status: %s\n"
 "Duration: %i mn %i sec\n"
-msgstr "%s на %s\nПозивач: %s\nПозивник: %s\nСтање: %s\nТрајање: %i мин. %i сек.\n"
+msgstr "%s at %s\nMistä: %s\nMihin: %s\nTila: %s\nKasto: %i minuuttia %i sekunttia\n"
 
 #: ../coreapi/call_log.c:235
 msgid "Outgoing call"
-msgstr "Одлазни позив"
+msgstr "Lähtevä puhelu"
 
 #: ../gtk/videowindow.c:70
 #, c-format
 msgid "Cannot play %s."
-msgstr "Не могу да пустим „%s“."
+msgstr "Ei voi toistaa %s."
