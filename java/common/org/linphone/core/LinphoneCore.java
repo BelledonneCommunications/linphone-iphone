@@ -2253,4 +2253,19 @@ public interface LinphoneCore {
 	 */
 	public int getNortpTimeout();
 
+	/**
+	 * This method is called by the application to notify the linphone core library when the SIP network is reachable.
+	 * This is for advanced usage, when SIP and RTP layers are required to use different interfaces.
+	 * Most applications just need LinphoneCore.setNetworkReachable().
+	 * @param isReachable whether SIP network is reachable.
+	 */
+	public void setSipNetworkReachable(boolean isReachable);
+	/**
+	 * This method is called by the application to notify the linphone core library when the media (RTP) network is reachable.
+	 * This is for advanced usage, when SIP and RTP layers are required to use different interfaces.
+	 * Most applications just need LinphoneCore.setNetworkReachable().
+	 * @param isReachable whether media network is reachable.
+	 */
+	public void setMediaNetworkReachable(boolean isReachable);
+
 }
