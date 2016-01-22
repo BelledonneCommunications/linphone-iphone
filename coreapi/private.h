@@ -921,13 +921,16 @@ struct _LinphoneCore
 
 	bool_t preview_finished;
 	bool_t auto_net_state_mon;
-	bool_t network_reachable;
+	bool_t sip_network_reachable;
+	bool_t media_network_reachable;
+	
 	bool_t network_reachable_to_be_notified; /*set to true when state must be notified in next iterate*/
-
 	bool_t use_preview_window;
 	bool_t network_last_status;
 	bool_t ringstream_autorelease;
+	
 	bool_t vtables_running;
+	bool_t pad[3];
 	char localip[LINPHONE_IPADDR_SIZE];
 	int device_rotation;
 	int max_calls;
@@ -1037,6 +1040,7 @@ void ec_calibrator_destroy(EcCalibrator *ecc);
 void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapsed);
 void linphone_call_set_broken(LinphoneCall *call);
 void linphone_call_repair_if_broken(LinphoneCall *call);
+void linphone_core_repair_calls(LinphoneCore *lc);
 void linphone_core_preempt_sound_resources(LinphoneCore *lc);
 int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 
