@@ -303,12 +303,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneCallState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	NSString *message = [notif.userInfo objectForKey:@"message"];
 
-	// Don't handle call state during incoming call view
-	if ([[self currentView] equal:CallIncomingView.compositeViewDescription] && state != LinphoneCallError &&
-		state != LinphoneCallEnd) {
-		return;
-	}
-
 	switch (state) {
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia: {
