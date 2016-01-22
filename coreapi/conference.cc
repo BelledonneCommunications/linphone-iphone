@@ -89,7 +89,7 @@ public:
 	virtual void onCallTerminating(LinphoneCall *call) {};
 	
 protected:
-	Participant *find_participant(const LinphoneAddress *uri);
+	const Participant *findParticipant(const LinphoneAddress* uri) const;
 	
 	LinphoneCore *m_core;
 	AudioStream *m_localParticipantStream;
@@ -234,7 +234,7 @@ int Conference::removeParticipant(LinphoneCall *call) {
 }
 
 int Conference::removeParticipant(const LinphoneAddress *uri) {
-	Participant *participant = find_participant(uri);
+	const Participant *participant = findParticipant(uri);
 	if(participant == NULL) return -1;
 	LinphoneCall *call = participant->getCall();
 	if(call) call->conf_ref = NULL;
@@ -266,8 +266,8 @@ float Conference::getInputVolume() const {
 	return LINPHONE_VOLUME_DB_LOWEST;
 }
 
-Participant *Conference::find_participant(const LinphoneAddress *uri) {
-	list<Participant>::iterator it = m_participants.begin();
+const Participant *Conference::findParticipant(const LinphoneAddress *uri) const {
+	list<Participant>::const_iterator it = m_participants.begin();
 	while(it!=m_participants.end()) {
 		if(linphone_address_equal(uri, it->getUri())) break;
 		it++;
@@ -452,7 +452,7 @@ int LocalConference::removeParticipant(LinphoneCall *call) {
 }
 
 int LocalConference::removeParticipant(const LinphoneAddress *uri) {
-	Participant *participant = find_participant(uri);
+	const Participant *participant = findParticipant(uri);
 	if(participant == NULL) return -1;
 	LinphoneCall *call = participant->getCall();
 	if(call == NULL) return -1;
@@ -608,10 +608,10 @@ int RemoteConference::addParticipant(LinphoneCall *call) {
 				params = linphone_core_create_call_params(m_core, NULL);
 				linphone_call_params_enable_video(params, m_currentParams.videoRequested());
 				m_focusCall = linphone_call_ref(linphone_core_invite_address_with_params(m_core, addr, params));
+				m_focusCall->conf_ref = (LinphoneConference *)this;
 				m_localParticipantStream = m_focusCall->audiostream;
 				m_pendingCalls = ms_list_append(m_pendingCalls, linphone_call_ref(call));
 				m_state = ConnectingToFocus;
-				call->conf_ref = (LinphoneConference *)this;
 				LinphoneCallLog *callLog = linphone_call_get_call_log(m_focusCall);
 				callLog->was_conference = TRUE;
 				linphone_address_unref(addr);

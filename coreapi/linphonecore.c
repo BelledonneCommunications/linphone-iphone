@@ -7437,7 +7437,9 @@ int linphone_core_add_all_to_conference(LinphoneCore *lc) {
 	while (calls) {
 		LinphoneCall *call=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		linphone_core_add_to_conference(lc, call);
+		if(linphone_call_get_conference(call) == NULL) { // Prevent the call to the conference server from being added to the conference
+			linphone_core_add_to_conference(lc, call);
+		}
 	}
 	if(lc->conf_ctx && linphone_conference_check_class(lc->conf_ctx, LinphoneConferenceClassLocal)) {
 		linphone_core_enter_conference(lc);
