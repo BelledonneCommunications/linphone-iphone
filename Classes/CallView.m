@@ -138,9 +138,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self updateUnreadMessage:FALSE];
 
 	// Update on show
-	LinphoneCall *call = linphone_core_get_current_call(LC);
-	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
-	[self callUpdate:call state:state animated:FALSE];
 	[self hideRoutes:TRUE animated:FALSE];
 	[self hideOptions:TRUE animated:FALSE];
 	[self hidePad:TRUE animated:FALSE];
@@ -184,6 +181,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[PhoneMainView.instance setVolumeHidden:TRUE];
 	hiddenVolume = TRUE;
+
+	// we must wait didAppear to reset fullscreen mode because we cannot change it in viewwillappear
+	LinphoneCall *call = linphone_core_get_current_call(LC);
+	LinphoneCallState state = (call != NULL) ? linphone_call_get_state(call) : 0;
+	[self callUpdate:call state:state animated:FALSE];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -395,7 +397,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[self disableVideoDisplay:FALSE animated:animated];
 }
 
-- (void)displayTableCall:(BOOL)animated {
+- (void)displayAudioCall:(BOOL)animated {
 	[self disableVideoDisplay:TRUE animated:animated];
 }
 
@@ -522,6 +524,16 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		return;
 	}
 
+	BOOL shouldDisableVideo =
+		(!currentCall || !linphone_call_params_video_enabled(linphone_call_get_current_params(currentCall)));
+	if (videoHidden != shouldDisableVideo) {
+		if (!shouldDisableVideo) {
+			[self displayVideoCall:animated];
+		} else {
+			[self displayAudioCall:animated];
+		}
+	}
+
 	if (state != LinphoneCallPausedByRemote) {
 		_pausedByRemoteView.hidden = YES;
 	}
@@ -532,10 +544,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning: {
 			// check video
-			if (linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-				[self displayVideoCall:animated];
-			} else {
-				[self displayTableCall:animated];
+			if (!linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 				const LinphoneCallParams *param = linphone_call_get_current_params(call);
 				const LinphoneCallAppData *callAppData =
 					(__bridge const LinphoneCallAppData *)(linphone_call_get_user_pointer(call));
@@ -567,15 +576,16 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 				linphone_core_defer_call_update(LC, call);
 				[self displayAskToEnableVideoCall:call];
 			} else if (linphone_call_params_video_enabled(current) && !linphone_call_params_video_enabled(remote)) {
-				[self displayTableCall:animated];
+				[self displayAudioCall:animated];
 			}
 			break;
 		}
 		case LinphoneCallPausing:
 		case LinphoneCallPaused:
-			[self displayTableCall:animated];
+			[self displayAudioCall:animated];
 			break;
 		case LinphoneCallPausedByRemote:
+			[self displayAudioCall:animated];
 			if (call == linphone_core_get_current_call(LC)) {
 				_pausedByRemoteView.hidden = NO;
 			}
