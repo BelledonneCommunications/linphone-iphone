@@ -72,7 +72,7 @@ static const char * pylinphone_ortp_log_level_to_string(OrtpLogLevel lev) {
 	}
 }
 
-static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+static void pylinphone_module_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 	PyGILState_STATE gstate;
 	PyObject *linphone_module;
 	const char *level;
