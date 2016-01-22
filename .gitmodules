@@ -82,3 +82,6 @@
 	path = submodules/externals/vo-amrwbenc
 	url = git://git.linphone.org/vo-amrwbenc.git
 	ignore = dirty
+[submodule "submodules/externals/libmatroska-c"]
+	path = submodules/externals/libmatroska-c
+	url = https://github.com/Matroska-Org/foundation-source.git
