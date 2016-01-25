@@ -4368,6 +4368,28 @@ void linphone_call_notify_stats_updated(LinphoneCall *call, int stream_index){
 	}
 }
 
+static MediaStream * linphone_call_get_media_stream(LinphoneCall *call, int stream_index){
+	if (stream_index == call->main_audio_stream_index)
+		return (MediaStream*)call->audiostream;
+	if (stream_index == call->main_video_stream_index)
+		return (MediaStream*)call->videostream;
+	if (stream_index == call->main_text_stream_index)
+		return (MediaStream*)call->textstream;
+	ms_error("linphone_call_get_media_stream(): no stream index %i", stream_index);
+	return NULL;
+}
+
+static OrtpEvQueue *linphone_call_get_event_queue(LinphoneCall *call, int stream_index){
+	if (stream_index == call->main_audio_stream_index)
+		return call->audiostream_app_evq;
+	if (stream_index == call->main_video_stream_index)
+		return call->videostream_app_evq;
+	if (stream_index == call->main_text_stream_index)
+		return call->textstream_app_evq;
+	ms_error("linphone_call_get_event_queue(): no stream index %i", stream_index);
+	return NULL;
+}
+
 void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 	MediaStream *ms = stream_index == call->main_audio_stream_index ? (MediaStream *)call->audiostream : (stream_index == call->main_video_stream_index ? (MediaStream *)call->videostream : (MediaStream *)call->textstream);
 	OrtpEvQueue *evq;
@@ -4396,11 +4418,15 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 		}
 	}
 	/*yes the event queue has to be taken at each iteration, because ice events may perform operations re-creating the streams*/
-	while ((evq = stream_index == call->main_audio_stream_index ? call->audiostream_app_evq : (stream_index == call->main_video_stream_index ? call->videostream_app_evq : call->textstream_app_evq))  && (NULL != (ev=ortp_ev_queue_get(evq)))){
+	while((evq = linphone_call_get_event_queue(call, stream_index)) != NULL && NULL != (ev=ortp_ev_queue_get(evq))){
 		OrtpEventType evt=ortp_event_get_type(ev);
 		OrtpEventData *evd=ortp_event_get_data(ev);
-
 		int stats_index = stream_index == call->main_audio_stream_index ? LINPHONE_CALL_STATS_AUDIO : (stream_index == call->main_video_stream_index ? LINPHONE_CALL_STATS_VIDEO : LINPHONE_CALL_STATS_TEXT);
+		
+		/*and yes the MediaStream must be taken at each iteration, because it may have changed due to the handling of events
+		 * in this loop*/
+		ms = linphone_call_get_media_stream(call, stream_index);
+		
 		if (ms) linphone_call_stats_fill(&call->stats[stats_index],ms,ev);
 		linphone_call_notify_stats_updated(call,stats_index);
 
@@ -4785,8 +4811,10 @@ MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index)
 		return MSVideo;
 	} else if (stream_index == call->main_text_stream_index) {
 		return MSText;
+	} else if (stream_index == call->main_audio_stream_index){
+		return MSAudio;
 	}
-	return MSAudio;
+	return MSUnknownMedia;
 }
 
 RtpTransport* linphone_call_get_meta_rtp_transport(LinphoneCall *call, int stream_index) {
