@@ -409,6 +409,7 @@ static void carddav_integration(void) {
 	LinphoneFriend *lf2 = NULL;
 	LinphoneFriendListCbs *cbs = NULL;
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
+	const char *refkey = "toto";
 	
 	linphone_friend_list_set_uri(lfl, "http://192.168.0.230/sabredav/addressbookserver.php/addressbooks/sylvain/default");
 	cbs = linphone_friend_list_get_callbacks(lfl);
@@ -433,12 +434,12 @@ static void carddav_integration(void) {
 	BC_ASSERT_EQUAL_FATAL(_linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
 	linphone_friend_unref(lf);
 	
-	lvc2 = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sylvain.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
+	lvc2 = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
 	linphone_vcard_set_url(lvc2, "/sabredav/addressbookserver.php/addressbooks/sylvain/default/me.vcf");
 	lf2 = linphone_friend_new_from_vcard(lvc2);
+	linphone_friend_set_ref_key(lf2, refkey);
 	BC_ASSERT_EQUAL_FATAL(_linphone_friend_list_add_friend(lfl, lf2), LinphoneFriendListOK, int, "%d");
 	linphone_friend_unref(lf2);
-	lf2 = NULL;
 	
 	BC_ASSERT_EQUAL(lfl->revision, 0, int, "%i");
 	linphone_friend_list_synchronize_friends_from_server(lfl);
@@ -452,6 +453,10 @@ static void carddav_integration(void) {
 	
 	BC_ASSERT_EQUAL_FATAL(ms_list_size(lfl->friends), 1, int, "%i");
 	lf = (LinphoneFriend *)lfl->friends->data;
+	BC_ASSERT_STRING_EQUAL(lf->refkey, refkey);
+	BC_ASSERT_EQUAL(lf->storage_id, lf2->storage_id, int, "%i");
+	BC_ASSERT_STRING_EQUAL(linphone_address_as_string_uri_only(lf->uri), "sip:sylvain@sip.linphone.org");
+	
 	linphone_friend_edit(lf);
 	linphone_friend_done(lf);
 	BC_ASSERT_EQUAL(ms_list_size(lf->friend_list->dirty_friends_to_update), 0, int, "%i");
