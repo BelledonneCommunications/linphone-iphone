@@ -189,7 +189,7 @@ void linphone_upnp_igd_print(void *cookie, upnp_igd_print_level level, const cha
 	default:
 		break;
 	}
-	ortp_logv(ortp_level, fmt, list);
+	ortp_logv(ORTP_LOG_DOMAIN, ortp_level, fmt, list);
 }
 
 void linphone_upnp_igd_callback(void *cookie, upnp_igd_event event, void *arg) {
@@ -367,7 +367,7 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 
 	ms_mutex_lock(&lupnp->mutex);
 
-	if(lupnp->lc->network_reachable) {
+	if(lupnp->lc->sip_network_reachable) {
 		/* Send port binding removes */
 		if(lupnp->sip_udp != NULL) {
 			linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_udp, TRUE);

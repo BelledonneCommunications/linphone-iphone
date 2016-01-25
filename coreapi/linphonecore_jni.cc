@@ -110,7 +110,7 @@ void linphone_android_log_handler(int prio, char *str) {
 	}
 }
 
-static void linphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+static void linphone_android_ortp_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 	char str[4096];
 	const char *levname="undef";
 	vsnprintf(str, sizeof(str) - 1, fmt, args);
@@ -4371,7 +4371,7 @@ extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_createConference(JNIE
 	LinphoneConference *conference;
 	jobject jconference;
 	
-	if(jparams) params = (LinphoneConferenceParams *)env->GetLongField(params_class, params_native_ptr_attr);
+	if(jparams) params = (LinphoneConferenceParams *)env->GetLongField(jparams, params_native_ptr_attr);
 	conference = linphone_core_create_conference_with_params((LinphoneCore *)corePtr, params);
 	if(conference) return env->NewObject(conference_class, conference_constructor, (jlong)conference);
 	else return NULL;
@@ -6828,7 +6828,7 @@ extern "C" void Java_org_linphone_core_LinphoneConferenceParamsImpl_enableVideo(
 	linphone_conference_params_enable_video((LinphoneConferenceParams *)paramsPtr, enable);
 }
 
-extern "C" jboolean Java_org_linphone_core_LinphoneConferenceParamsImpl_isVideoEnabled(JNIEnv *env, jobject thiz, jlong paramsPtr) {
+extern "C" jboolean Java_org_linphone_core_LinphoneConferenceParamsImpl_isVideoRequested(JNIEnv *env, jobject thiz, jlong paramsPtr) {
 	return linphone_conference_params_video_requested((LinphoneConferenceParams *)paramsPtr);
 }
 
@@ -6852,8 +6852,27 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneConferenceImpl_getPartici
 	return jaddr_list;
 }
 
-extern "C" jint Java_org_linphone_core_LinphoneConferenteImpl_removeParticipant(JNIEnv *env, jobject thiz, jlong pconference, jobject uri) {
+extern "C" jint Java_org_linphone_core_LinphoneConferenceImpl_removeParticipant(JNIEnv *env, jobject thiz, jlong pconference, jobject uri) {
 	jfieldID native_ptr_attr = env->GetFieldID(env->GetObjectClass(uri), "nativePtr", "J");
 	LinphoneAddress *addr = (LinphoneAddress *)env->GetLongField(uri, native_ptr_attr);
 	return linphone_conference_remove_participant((LinphoneConference *)pconference, addr);
 }
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setSipNetworkReachable
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setSipNetworkReachable(JNIEnv *env, jobject jobj, jlong pcore, jboolean reachable){
+	linphone_core_set_sip_network_reachable((LinphoneCore*)pcore, (bool_t) reachable);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setMediaNetworkReachable
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setMediaNetworkReachable(JNIEnv *env, jobject jobj, jlong pcore, jboolean reachable){
+	linphone_core_set_media_network_reachable((LinphoneCore*)pcore, (bool_t) reachable);
+}
+

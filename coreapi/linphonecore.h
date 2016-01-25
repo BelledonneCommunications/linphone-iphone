@@ -66,18 +66,6 @@ struct _LinphoneInfoMessage;
  */
 typedef struct _LinphoneCore LinphoneCore;
 
-/**
- * Internal object of LinphoneCore representing a conference
- * @ingroup call_control
- */
-typedef struct _LinphoneConference LinphoneConference;
-
-/**
- * Parameters for initialization of conferences
- * @ingroup call_control
- */
-typedef struct _LinphoneCorferenceParams LinphoneConferenceParams;
-
 
 /**
  * Disable a sip transport
@@ -423,6 +411,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "event.h"
 #include "linphonefriend.h"
 #include "xmlrpc.h"
+#include "conference.h"
 #else
 #include "linphone/buffer.h"
 #include "linphone/call_log.h"
@@ -431,6 +420,7 @@ LINPHONE_PUBLIC const char* linphone_privacy_to_string(LinphonePrivacy privacy);
 #include "linphone/event.h"
 #include "linphone/linphonefriend.h"
 #include "linphone/xmlrpc.h"
+#include "linphone/conference.h"
 #endif
 
 LINPHONE_PUBLIC	LinphoneAddress * linphone_address_new(const char *addr);
@@ -1057,8 +1047,6 @@ LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegist
  * @}
  */
 
-#include "linphone_proxy_config.h"
-
 /**
  * @addtogroup authentication
  * @{
@@ -1215,10 +1203,12 @@ LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpCon
 #ifdef IN_LINPHONE
 #include "account_creator.h"
 #include "friendlist.h"
+#include "linphone_proxy_config.h"
 #include "carddav.h"
 #else
 #include "linphone/account_creator.h"
 #include "linphone/friendlist.h"
+#include "linphone/linphone_proxy_config.h"
 #include "linphone/carddav.h"
 #endif
 
@@ -2315,8 +2305,36 @@ LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
  * @param loglevel A bitmask of the log levels to set.
  */
 LINPHONE_PUBLIC void linphone_core_set_log_level_mask(OrtpLogLevel loglevel);
+
+/**
+ * Enable logs in supplied FILE*.
+ *
+ * @ingroup misc
+ * @deprecated Use #linphone_core_set_log_file and #linphone_core_set_log_level instead.
+ *
+ * @param file a C FILE* where to fprintf logs. If null stdout is used.
+ *
+**/
 LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
+
+/**
+ * Enable logs through the user's supplied log callback.
+ *
+ * @ingroup misc
+ * @deprecated Use #linphone_core_set_log_handler and #linphone_core_set_log_level instead.
+ *
+ * @param logfunc The address of a OrtpLogFunc callback whose protoype is
+ *            	  typedef void (*OrtpLogFunc)(OrtpLogLevel lev, const char *fmt, va_list args);
+ *
+**/
 LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
+
+/**
+ * Entirely disable logging.
+ *
+ * @ingroup misc
+ * @deprecated Use #linphone_core_set_log_level instead.
+**/
 LINPHONE_PUBLIC void linphone_core_disable_logs(void);
 
 /**
@@ -3726,6 +3744,22 @@ LINPHONE_PUBLIC	void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t
  * return network state either as positioned by the application or by linphone itself.
  */
 LINPHONE_PUBLIC	bool_t linphone_core_is_network_reachable(LinphoneCore* lc);
+
+/**
+ * @ingroup network_parameters
+ * This method is called by the application to notify the linphone core library when the SIP network is reachable.
+ * This is for advanced usage, when SIP and RTP layers are required to use different interfaces.
+ * Most applications just need linphone_core_set_network_reachable().
+ */
+LINPHONE_PUBLIC	void linphone_core_set_sip_network_reachable(LinphoneCore* lc,bool_t value);
+
+/**
+ * @ingroup network_parameters
+ * This method is called by the application to notify the linphone core library when the media (RTP) network is reachable.
+ * This is for advanced usage, when SIP and RTP layers are required to use different interfaces.
+ * Most applications just need linphone_core_set_network_reachable().
+ */
+LINPHONE_PUBLIC	void linphone_core_set_media_network_reachable(LinphoneCore* lc,bool_t value);
 
 /**
  *  @ingroup network_parameters

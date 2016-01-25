@@ -163,7 +163,7 @@ TunnelManager::~TunnelManager(){
 
 void TunnelManager::doRegistration(){
 	LinphoneProxyConfig* lProxy;
-	linphone_core_get_default_proxy(mCore, &lProxy);
+	lProxy = linphone_core_get_default_proxy_config(mCore);
 	if (lProxy) {
 		ms_message("TunnelManager: New registration");
 		lProxy->commit = TRUE;
@@ -172,7 +172,7 @@ void TunnelManager::doRegistration(){
 
 void TunnelManager::doUnregistration() {
 	LinphoneProxyConfig *lProxy;
-	linphone_core_get_default_proxy(mCore, &lProxy);
+	lProxy = linphone_core_get_default_proxy_config(mCore);
 	if(lProxy) {
 		_linphone_proxy_config_unregister(lProxy);
 	}

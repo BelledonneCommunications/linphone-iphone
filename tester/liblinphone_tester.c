@@ -73,7 +73,7 @@ void liblinphone_android_log_handler(int prio, const char *fmt, va_list args) {
 	}
 }
 
-static void liblinphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+static void liblinphone_android_ortp_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 	int prio;
 	switch(lev){
 		case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
@@ -151,7 +151,7 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 	va_end(cap);
 #endif
 	if (log_file){
-		ortp_logv_out(lev, fmt, args);
+		ortp_logv_out(ORTP_LOG_DOMAIN, lev, fmt, args);
 	}
 }
 

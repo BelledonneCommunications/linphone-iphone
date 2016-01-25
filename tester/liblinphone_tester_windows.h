@@ -3,7 +3,7 @@
 #include "linphonecore.h"
 #include "liblinphone_tester.h"
 
-namespace liblinphone_tester_runtime_component
+namespace linphone_tester_runtime
 {
 	public interface class OutputTraceListener
 	{

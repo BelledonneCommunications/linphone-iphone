@@ -29,6 +29,7 @@ linphone_include_HEADERS=\
 	buffer.h \
 	call_log.h \
 	call_params.h \
+	conference.h \
 	content.h \
 	event.h \
 	friendlist.h \
@@ -44,8 +45,7 @@ linphone_include_HEADERS=\
 	xml2lpc.h \
 	xmlrpc.h \
 	vcard.h \
-	carddav.h \
-	conference.h
+	carddav.h
 
 lib_LTLIBRARIES=liblinphone.la
 
@@ -59,7 +59,7 @@ liblinphone_la_SOURCES=\
 	call_params.c \
 	chat.c \
 	chat_file_transfer.c \
-	conference.cc conference.h conference_private.h \
+	conference.cc conference_private.h \
 	contactprovider.c contactprovider.h contact_providers_priv.h \
 	content.c \
 	dict.c \

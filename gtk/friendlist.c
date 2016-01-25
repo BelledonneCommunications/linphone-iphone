@@ -615,7 +615,7 @@ void linphone_gtk_show_directory_search(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *search_box=linphone_gtk_get_widget(mw,"directory_search_box");
 
-	linphone_core_get_default_proxy(linphone_gtk_get_core(),&cfg);
+	cfg = linphone_core_get_default_proxy_config(linphone_gtk_get_core());
 	if (cfg){
 		ssc=linphone_proxy_config_get_sip_setup_context(cfg);
 		if (ssc!=NULL && sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_BUDDY_LOOKUP){

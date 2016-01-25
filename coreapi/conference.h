@@ -38,6 +38,11 @@ extern "C" {
  */
 
 /**
+ * Parameters for initialization of conferences
+ */
+typedef struct _LinphoneCorferenceParams LinphoneConferenceParams;
+
+/**
  * Create a #LinphoneConferenceParams with default parameters set.
  * @param core #LinphoneCore to use to find out the default parameters. Can be NULL.
  * @return A freshly allocated #LinphoneConferenceParams
@@ -66,6 +71,12 @@ LINPHONE_PUBLIC void linphone_conference_params_enable_video(LinphoneConferenceP
  */
 LINPHONE_PUBLIC bool_t linphone_conference_params_video_requested(const LinphoneConferenceParams *params);
 
+
+
+/**
+ * LinphoneConference class
+ */
+typedef struct _LinphoneConference LinphoneConference;
 
 /**
  * Remove a participant from a conference

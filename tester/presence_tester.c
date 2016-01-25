@@ -129,7 +129,7 @@ static void simple_publish_with_expire(int expires) {
 	LinphoneProxyConfig* proxy;
 	LinphonePresenceModel* presence;
 
-	linphone_core_get_default_proxy(marie->lc,&proxy);
+	proxy = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_proxy_config_edit(proxy);
 	if (expires >0) {
 		linphone_proxy_config_set_publish_expires(proxy,expires);
@@ -748,6 +748,36 @@ static void test_presence_list_subscribe_before_publish(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void test_presence_list_subscription_expire(void) {
+	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
+	const char *rls_uri = "sip:rls@sip.example.org";
+	LinphoneFriendList *lfl;
+	LinphoneFriend *lf;
+	lp_config_set_int(laure->lc->config, "sip", "rls_presence_expires", 3);
+	
+	lfl = linphone_core_create_friend_list(laure->lc);
+	linphone_friend_list_set_rls_uri(lfl, rls_uri);
+	lf = linphone_core_create_friend_with_address(laure->lc, "sip:michelle@sip.inexistentdomain.com");
+	linphone_friend_list_add_friend(lfl, lf);
+	linphone_core_set_friend_list(laure->lc, lfl);
+	linphone_friend_list_update_subscriptions(lfl,NULL,FALSE);
+	
+	linphone_friend_list_unref(lfl);
+	
+	/* wait for refresh*/
+	BC_ASSERT_FALSE(wait_for_until(laure->lc, NULL, &laure->stat.number_of_NotifyPresenceReceived, 1, 4000));
+	
+	/*sal_set_send_error(laure->lc->sal,1500);*/ /*make sure no refresh is sent, trash the message without generating error*/
+
+	/*make sure we don't received any notify, even when subscribtion has expired*/
+	/*BC_ASSERT_FALSE(wait_for_until(laure->lc, NULL, &laure->stat.number_of_NotifyPresenceReceived, 1, 5000));
+	
+	sal_set_send_error(laure->lc->sal,0);*/
+	
+	linphone_core_manager_destroy(laure);
+}
+
+
 test_t presence_tests[] = {
 	{ "Simple Subscribe", simple_subscribe },
 	{ "Simple Publish", simple_publish },
@@ -763,7 +793,8 @@ test_t presence_tests[] = {
 	{ "Forked subscribe with late publish", test_forked_subscribe_notify_publish },
 #endif
 	{ "Presence list", test_presence_list },
-	{ "Presence list (subscribe before publish)", test_presence_list_subscribe_before_publish }
+	{ "Presence list (subscribe before publish)", test_presence_list_subscribe_before_publish },
+	{ "Presence list, subscription expiration",test_presence_list_subscription_expire}
 };
 
 test_suite_t presence_test_suite = {"Presence", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

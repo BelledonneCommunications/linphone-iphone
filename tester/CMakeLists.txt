@@ -51,11 +51,13 @@ set(SOURCE_FILES
 
 apply_compile_flags(SOURCE_FILES "CPP" "C")
 
-#executable must be available on root path, not host one
-find_program(SIPP_PROGRAM NAMES sipp sipp.exe ONLY_CMAKE_FIND_ROOT_PATH)
-if(SIPP_PROGRAM)
-	add_definitions(-DHAVE_SIPP=1)
-	add_definitions(-DSIPP_COMMAND="${SIPP_PROGRAM}")
+if(NOT IOS OR NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+	# Executable must be available on root path, not host one
+	find_program(SIPP_PROGRAM NAMES sipp sipp.exe ONLY_CMAKE_FIND_ROOT_PATH)
+	if(SIPP_PROGRAM)
+		add_definitions(-DHAVE_SIPP=1)
+		add_definitions(-DSIPP_COMMAND="${SIPP_PROGRAM}")
+	endif()
 endif()
 
 add_definitions(-DBC_CONFIG_FILE="config.h")
@@ -74,6 +76,28 @@ if(IOS)
 		DESTINATION include/linphone
 		PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 		)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+	add_library(linphone_tester_static STATIC ${SOURCE_FILES})
+	target_include_directories(linphone_tester_static PUBLIC ${CUNIT_INCLUDE_DIRS} PRIVATE common)
+	target_link_libraries(linphone_tester_static linphone ${CUNIT_LIBRARIES})
+
+	set(RUNTIME_COMPONENT_SOURCES
+		liblinphone_tester_windows.cpp
+		liblinphone_tester_windows.h
+	)
+	add_library(linphone_tester_runtime MODULE ${RUNTIME_COMPONENT_SOURCES})
+	target_include_directories(linphone_tester_runtime PRIVATE common)
+	target_compile_options(linphone_tester_runtime PRIVATE "/wd4996")
+	target_link_libraries(linphone_tester_runtime linphone_tester_static)
+	set_target_properties(linphone_tester_runtime PROPERTIES VS_WINRT_COMPONENT TRUE)
+
+	install(TARGETS linphone_tester_runtime
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+	)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/linphone_tester_runtime.winmd" DESTINATION bin)
 else()
 	add_executable(liblinphone_tester ${SOURCE_FILES})
 	set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)

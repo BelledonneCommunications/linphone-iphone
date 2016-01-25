@@ -1917,7 +1917,7 @@ static void linphone_gtk_init_main_window(void){
 #endif
 }
 
-void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
+void linphone_gtk_log_handler(const char*domain, OrtpLogLevel lev, const char *fmt, va_list args){
 	if (verbose){
 		const char *lname="undef";
 		char *msg;
@@ -2228,6 +2228,8 @@ core_start:
 
 	linphone_gtk_create_log_window();
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
+	/*it is possible to filter in or out some logs by configuring per log domain:*/
+	/*ortp_set_log_level_mask("belle-sip", ORTP_ERROR);*/
 
 	chat_messages_db_file=linphone_gtk_message_storage_get_db_file(NULL);
 	call_logs_db_file = linphone_gtk_call_logs_storage_get_db_file(NULL);

@@ -4568,6 +4568,7 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 	LinphoneCallParams *params;
 	const LinphoneCallParams *current_params;
 	MSList *lcs=NULL;
+	bool_t calls_ok;
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -4580,7 +4581,10 @@ static void video_call_with_re_invite_inactive_followed_by_re_invite_base(Linpho
 
 	video_call_base_2(marie,pauline,TRUE,mode,TRUE,TRUE);
 
-	if (linphone_core_get_current_call(marie->lc)) {
+	calls_ok = linphone_core_get_current_call(marie->lc) != NULL && linphone_core_get_current_call(pauline->lc) != NULL;
+	BC_ASSERT_TRUE(calls_ok);
+	
+	if (calls_ok) {
 		params=linphone_core_create_call_params(marie->lc,linphone_core_get_current_call(marie->lc));
 		linphone_call_params_set_audio_direction(params,LinphoneMediaDirectionInactive);
 		linphone_call_params_set_video_direction(params,LinphoneMediaDirectionInactive);
@@ -5470,6 +5474,7 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	MSList *lcs = NULL;
+	int ice_reinvite = use_ice ? 1 : 0;
 	bool_t call_ok;
 	
 	lcs = ms_list_append(lcs, marie->lc);
@@ -5488,7 +5493,12 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 	if (!call_ok) goto end;
 
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
-	if (use_ice) BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+	if (use_ice) {
+		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+		/*wait for ICE reINVITE to complete*/
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	}
 
 	/*marie looses the network and reconnects*/
 	linphone_core_set_network_reachable(marie->lc, FALSE);
@@ -5499,9 +5509,10 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
 
 	/*pauline shall receive a reINVITE to update the session*/
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1+ice_reinvite));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1+ice_reinvite));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2+ice_reinvite));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2+ice_reinvite));
 
 	/*check that media is back*/
 	check_media_direction(marie, linphone_core_get_current_call(marie->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInvalid);
@@ -5527,6 +5538,73 @@ static void call_with_network_switch_and_ice(void){
 static void call_with_network_switch_and_socket_refresh(void){
 	_call_with_network_switch(TRUE, TRUE);
 }
+
+static void call_with_sip_and_rtp_independant_switches(){
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	MSList *lcs = NULL;
+	bool_t call_ok;
+	bool_t use_ice = TRUE;
+	bool_t with_socket_refresh = TRUE;
+	
+	lcs = ms_list_append(lcs, marie->lc);
+	lcs = ms_list_append(lcs, pauline->lc);
+
+	if (use_ice){
+		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
+		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
+	}
+	if (with_socket_refresh){
+		lp_config_set_int(linphone_core_get_config(marie->lc), "net", "recreate_sockets_when_network_is_up", 1);
+		lp_config_set_int(linphone_core_get_config(pauline->lc), "net", "recreate_sockets_when_network_is_up", 1);
+	}
+	
+	linphone_core_set_media_network_reachable(marie->lc, TRUE);
+	
+	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+	if (!call_ok) goto end;
+
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
+	if (use_ice) {
+		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+		/*wait for ICE reINVITE to complete*/
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	}
+	/*marie looses the SIP network and reconnects*/
+	linphone_core_set_sip_network_reachable(marie->lc, FALSE);
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
+
+	/*marie will reconnect and register*/
+	linphone_core_set_sip_network_reachable(marie->lc, TRUE);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
+	/*at this stage, no reINVITE is expected to be send*/
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallUpdating, 1, int, "%i"); /*1: because of ICE reinvite*/
+	
+	/*now we notify the a reconnection of media network*/
+	linphone_core_set_media_network_reachable(marie->lc, FALSE);
+	linphone_core_set_media_network_reachable(marie->lc, TRUE);
+
+	/*pauline shall receive a reINVITE to update the session*/
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 2));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 3));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 3));
+
+	/*check that media is back*/
+	check_media_direction(marie, linphone_core_get_current_call(marie->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInvalid);
+	liblinphone_tester_check_rtcp(pauline, marie);
+	if (use_ice) BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+
+	/*pauline shall be able to end the call without problem now*/
+	end_call(pauline, marie);
+end:
+	ms_list_free(lcs);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 
 #ifdef CALL_LOGS_STORAGE_ENABLED
 
@@ -5983,8 +6061,8 @@ test_t call_tests[] = {
 	{ "Call established with rejected info during re-invite",call_established_with_rejected_info_during_reinvite},
 	{ "Call redirected by callee", call_redirect},
 	{ "Call with specified codec bitrate", call_with_specified_codec_bitrate},
-    { "Call with no audio codec", call_with_no_audio_codec},
-    { "Video call with no audio and no video codec", video_call_with_no_audio_and_no_video_codec},
+	{ "Call with no audio codec", call_with_no_audio_codec},
+	{ "Video call with no audio and no video codec", video_call_with_no_audio_and_no_video_codec},
 	{ "Call with in-dialog UPDATE request", call_with_in_dialog_update },
 	{ "Call with in-dialog codec change", call_with_in_dialog_codec_change },
 	{ "Call with in-dialog codec change no sdp", call_with_in_dialog_codec_change_no_sdp },
@@ -6021,6 +6099,7 @@ test_t call_tests[] = {
 	{ "Call with network switch in early state 2", call_with_network_switch_in_early_state_2 },
 	{ "Call with network switch and ICE", call_with_network_switch_and_ice },
 	{ "Call with network switch with socket refresh", call_with_network_switch_and_socket_refresh },
+	{ "Call with SIP and RTP independant switches", call_with_sip_and_rtp_independant_switches},
 	{ "Call with rtcp-mux", call_with_rtcp_mux},
 	{ "Call with rtcp-mux not accepted", call_with_rtcp_mux_not_accepted},
 	{ "Call with ICE and rtcp-mux", call_with_ice_and_rtcp_mux},

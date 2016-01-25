@@ -1362,7 +1362,7 @@ static bool_t can_register(LinphoneProxyConfig *cfg){
 	}
 #endif //BUILD_UPNP
 	if (lc->sip_conf.register_only_when_network_is_up){
-		return lc->network_reachable;
+		return lc->sip_network_reachable;
 	}
 	return TRUE;
 }
@@ -1434,13 +1434,9 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 			cfg->state=state;
 		}
 		
-
 		if (lc){
 			linphone_core_notify_registration_state_changed(lc,cfg,state,message);
-			if (lc->calls && lp_config_get_int(lc->config, "sip", "repair_broken_calls", 1)){
-				/*if we are registered and there were broken calls due to a past network disconnection, attempt to repair them*/
-				ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_repair_if_broken);
-			}
+			linphone_core_repair_calls(lc);
 		}
 	} else {
 		/*state already reported*/
