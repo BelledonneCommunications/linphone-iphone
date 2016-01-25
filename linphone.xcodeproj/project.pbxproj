@@ -543,7 +543,6 @@
 		63D11C531C3D501200E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63D11C551C3D50A100E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63DFE04B1C40161700DA5E87 /* notes_of_the_optimistic.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */; };
-		63E279DD1C4F8CEE00D332AE /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279DC1C4F8CEE00D332AE /* Default-568h@2x.png */; };
 		63E279E71C4F9A2500D332AE /* test_failed.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E41C4F9A2500D332AE /* test_failed.png */; };
 		63E279E81C4F9A2500D332AE /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E51C4F9A2500D332AE /* test_inprogress.png */; };
 		63E279E91C4F9A2500D332AE /* test_passed.png in Resources */ = {isa = PBXBuildFile; fileRef = 63E279E61C4F9A2500D332AE /* test_passed.png */; };
@@ -1353,7 +1352,6 @@
 		63D11C521C3D501200E8FCEE /* Log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Log.m; path = Utils/Log.m; sourceTree = "<group>"; };
 		63D11C541C3D503A00E8FCEE /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
 		63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = notes_of_the_optimistic.caf; sourceTree = "<group>"; };
-		63E279DC1C4F8CEE00D332AE /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		63E279E41C4F9A2500D332AE /* test_failed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_failed.png; path = LiblinphoneTester/test_failed.png; sourceTree = SOURCE_ROOT; };
 		63E279E51C4F9A2500D332AE /* test_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_inprogress.png; path = LiblinphoneTester/test_inprogress.png; sourceTree = SOURCE_ROOT; };
 		63E279E61C4F9A2500D332AE /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_passed.png; path = LiblinphoneTester/test_passed.png; sourceTree = SOURCE_ROOT; };
@@ -1942,7 +1940,6 @@
 			isa = PBXGroup;
 			children = (
 				080E96DDFE201D6D7F000001 /* Classes */,
-				63E279DC1C4F8CEE00D332AE /* Default-568h@2x.png */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
 				63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */,
@@ -3359,7 +3356,6 @@
 				63E279E81C4F9A2500D332AE /* test_inprogress.png in Resources */,
 				63058AE01B4E937300EFAE36 /* sounds in Resources */,
 				63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */,
-				63E279DD1C4F8CEE00D332AE /* Default-568h@2x.png in Resources */,
 				63058A2F1B4E821E00EFAE36 /* TesterImages.xcassets in Resources */,
 				63058A251B4E821E00EFAE36 /* InfoPlist.strings in Resources */,
 				63E279E91C4F9A2500D332AE /* test_passed.png in Resources */,
