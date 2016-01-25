@@ -282,7 +282,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 										  removeItemAtPath:[LinphoneManager documentFile:@"linphonerc"]
 													 error:nil];
 								  }
+#ifdef DEBUG
 								  [LinphoneManager instanceRelease];
+#endif
 								  [UIApplication sharedApplication].keyWindow.rootViewController = nil;
 								}];
 
