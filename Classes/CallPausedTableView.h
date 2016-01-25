@@ -19,9 +19,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CallPausedTableView : UITableViewController {
-  @private
-	NSTimer *updateTime;
-}
+@interface CallPausedTableView : UITableViewController
+
+- (void)update;
 
 @end

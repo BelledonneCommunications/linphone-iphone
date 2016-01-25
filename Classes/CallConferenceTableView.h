@@ -8,9 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CallConferenceTableView : UITableViewController {
-  @private
-	NSTimer *updateTime;
-}
+@interface CallConferenceTableView : UITableViewController
+
+- (void)update;
 
 @end
