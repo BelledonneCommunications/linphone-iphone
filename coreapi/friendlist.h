@@ -160,6 +160,7 @@ LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *li
  * @return LinphoneFriendListOK if removed successfully, LinphoneFriendListNonExistentFriend if the friend is not in the list.
 **/
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *list, LinphoneFriend *afriend);
+LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFriendList *list, MSList *elem, LinphoneFriend *lf);
 
 /**
  * Find a friend in the friend list using a LinphoneAddress.
@@ -233,6 +234,11 @@ typedef void (*LinphoneFriendListContactCreatedCb)(LinphoneFriendList *list, Lin
 typedef void (*LinphoneFriendListContactDeletedCb)(LinphoneFriendList *list, LinphoneFriend *lf);
 
 /**
+ * Callback used to notify a contact has been updated on the CardDAV server
+**/
+typedef void (*LinphoneFriendListContactUpdatedCb)(LinphoneFriendList *list, LinphoneFriend *new_friend, LinphoneFriend *old_friend);
+
+/**
  * Get the LinphoneFriendListCbs object associated with a LinphoneFriendList.
  * @param[in] request LinphoneXmlRpcRequest object
  * @return The LinphoneFriendListCbs object associated with the LinphoneFriendList.
@@ -293,6 +299,20 @@ LINPHONE_PUBLIC LinphoneFriendListContactDeletedCb linphone_friend_list_cbs_get_
  * @param[in] cb The contact deleted to be used.
 **/
 LINPHONE_PUBLIC void linphone_friend_list_cbs_set_contact_deleted(LinphoneFriendListCbs *cbs, LinphoneFriendListContactDeletedCb cb);
+
+/**
+ * Get the contact updated callback.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @return The current contact updated callback.
+**/
+LINPHONE_PUBLIC LinphoneFriendListContactUpdatedCb linphone_friend_list_cbs_get_contact_updated(const LinphoneFriendListCbs *cbs);
+
+/**
+ * Set the contact updated callback.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @param[in] cb The contact updated to be used.
+**/
+LINPHONE_PUBLIC void linphone_friend_list_cbs_set_contact_updated(LinphoneFriendListCbs *cbs, LinphoneFriendListContactUpdatedCb cb);
 
 /**
  * 
