@@ -4166,17 +4166,17 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	call->stats[LINPHONE_CALL_STATS_TEXT].rtcp_upload_bandwidth=(ts_active) ? (float)(media_stream_get_rtcp_up_bw(ts)*1e-3) : 0.f;
 
 	call->stats[LINPHONE_CALL_STATS_AUDIO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
+	if (as_active) linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
 	call->stats[LINPHONE_CALL_STATS_AUDIO].updated=0;
 	if (as) update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], as);
 
 	call->stats[LINPHONE_CALL_STATS_VIDEO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
+	if (vs_active) linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
 	call->stats[LINPHONE_CALL_STATS_VIDEO].updated=0;
 	if (vs) update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], vs);
 
 	call->stats[LINPHONE_CALL_STATS_TEXT].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_TEXT]);
+	if (ts_active) linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_TEXT]);
 	call->stats[LINPHONE_CALL_STATS_TEXT].updated=0;
 	if (ts) update_local_stats(&call->stats[LINPHONE_CALL_STATS_TEXT], ts);
 
