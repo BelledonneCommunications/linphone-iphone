@@ -217,12 +217,13 @@
 #pragma mark -
 
 - (void)updateUI:(BOOL)inCall {
-	// nothing changed
-	if (_outcallView.hidden == inCall)
-		return;
+	BOOL hasChanged = (_outcallView.hidden != inCall);
 
 	_outcallView.hidden = inCall;
 	_incallView.hidden = !inCall;
+
+	if (!hasChanged)
+		return;
 
 	if (callQualityTimer) {
 		[callQualityTimer invalidate];

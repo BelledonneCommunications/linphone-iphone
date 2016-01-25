@@ -79,9 +79,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	_routesEarpieceButton.enabled = !IPAD;
 
+// TODO: fixme! video preview frame is too big compared to openGL preview
+// frame, so until this is fixed, temporary disabled it.
+#if 0
 	_videoPreview.layer.borderColor = UIColor.whiteColor.CGColor;
 	_videoPreview.layer.borderWidth = 1;
-
+#endif
 	[singleFingerTap setNumberOfTapsRequired:1];
 	[singleFingerTap setCancelsTouchesInView:FALSE];
 	[self.videoView addGestureRecognizer:singleFingerTap];

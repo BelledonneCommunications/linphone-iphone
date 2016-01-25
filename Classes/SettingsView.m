@@ -282,28 +282,31 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	// when device is slow and you are typing an item too much, a crash may happen
-	// because we try to push the same view multiple times - in that case we should
-	// do nothing but wait for device to respond again.
-	if (self.navigationController.topViewController == viewController) {
-		return;
+
+	@try {
+		[UINavigationControllerEx removeBackground:viewController.view];
+
+		[viewController view]; // Force view
+		UILabel *labelTitleView = [[UILabel alloc] init];
+		labelTitleView.backgroundColor = [UIColor clearColor];
+		labelTitleView.textColor =
+			[UIColor colorWithRed:0x41 / 255.0f green:0x48 / 255.0f blue:0x4f / 255.0f alpha:1.0];
+		labelTitleView.shadowColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+		labelTitleView.font = [UIFont boldSystemFontOfSize:20];
+		labelTitleView.shadowOffset = CGSizeMake(0, 1);
+		labelTitleView.textAlignment = NSTextAlignmentCenter;
+		labelTitleView.text = viewController.title;
+		[labelTitleView sizeToFit];
+		viewController.navigationItem.titleView = labelTitleView;
+
+		[super pushViewController:viewController animated:animated];
+	} @catch (NSException *e) {
+		// when device is slow and you are typing an item too much, a crash may happen
+		// because we try to push the same view multiple times - in that case we should
+		// do nothing but wait for device to respond again.
+		LOGI(@"Failed to push view because it's already there: %@", e.reason);
+		[self popToViewController:viewController animated:YES];
 	}
-
-	[UINavigationControllerEx removeBackground:viewController.view];
-
-	[viewController view]; // Force view
-	UILabel *labelTitleView = [[UILabel alloc] init];
-	labelTitleView.backgroundColor = [UIColor clearColor];
-	labelTitleView.textColor = [UIColor colorWithRed:0x41 / 255.0f green:0x48 / 255.0f blue:0x4f / 255.0f alpha:1.0];
-	labelTitleView.shadowColor = [UIColor colorWithWhite:1.0 alpha:0.5];
-	labelTitleView.font = [UIFont boldSystemFontOfSize:20];
-	labelTitleView.shadowOffset = CGSizeMake(0, 1);
-	labelTitleView.textAlignment = NSTextAlignmentCenter;
-	labelTitleView.text = viewController.title;
-	[labelTitleView sizeToFit];
-	viewController.navigationItem.titleView = labelTitleView;
-
-	[super pushViewController:viewController animated:animated];
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers {
