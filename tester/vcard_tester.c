@@ -431,14 +431,14 @@ static void carddav_integration(void) {
 
 	lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Ghislain Mary\r\nIMPP;TYPE=work:sip:ghislain@sip.linphone.org\r\nEND:VCARD\r\n");
 	lf = linphone_friend_new_from_vcard(lvc);
-	BC_ASSERT_EQUAL_FATAL(_linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
+	BC_ASSERT_EQUAL_FATAL(linphone_friend_list_import_friend(lfl, lf, FALSE), LinphoneFriendListOK, int, "%d");
 	linphone_friend_unref(lf);
 	
 	lvc2 = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
 	linphone_vcard_set_url(lvc2, "/sabredav/addressbookserver.php/addressbooks/sylvain/default/me.vcf");
 	lf2 = linphone_friend_new_from_vcard(lvc2);
 	linphone_friend_set_ref_key(lf2, refkey);
-	BC_ASSERT_EQUAL_FATAL(_linphone_friend_list_add_friend(lfl, lf2), LinphoneFriendListOK, int, "%d");
+	BC_ASSERT_EQUAL_FATAL(linphone_friend_list_import_friend(lfl, lf2, FALSE), LinphoneFriendListOK, int, "%d");
 	linphone_friend_unref(lf2);
 	
 	BC_ASSERT_EQUAL(lfl->revision, 0, int, "%i");

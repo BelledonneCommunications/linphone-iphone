@@ -425,10 +425,9 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf);
 void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf);
 void linphone_core_store_friends_list_in_db(LinphoneCore *lc, LinphoneFriendList *list);
 void linphone_core_remove_friends_list_from_db(LinphoneCore *lc, LinphoneFriendList *list);
-MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList *list);
-MSList* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc);
-LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf);
-LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf);
+LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList *list);
+LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize);
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 

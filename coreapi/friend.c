@@ -837,6 +837,7 @@ void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard) {
 		linphone_vcard_free(fr->vcard);
 	}
 	fr->vcard = vcard;
+	linphone_friend_save(fr, fr->lc);
 }
 
 bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
@@ -922,7 +923,7 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 		LinphoneVCard *vcard = (LinphoneVCard *)vcards->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
-			if (LinphoneFriendListOK == linphone_friend_list_import_friend(linphone_core_get_default_friend_list(lc), lf)) {
+			if (LinphoneFriendListOK == linphone_friend_list_import_friend(linphone_core_get_default_friend_list(lc), lf, TRUE)) {
 				count++;
 			}
 			linphone_friend_unref(lf);

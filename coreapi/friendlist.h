@@ -151,7 +151,6 @@ LINPHONE_PUBLIC void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, 
  * @return LinphoneFriendListOK if successfully added, LinphoneFriendListInvalidFriend if the friend is not valid.
 **/
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *afriend);
-LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *afriend);
 
 /**
  * Remove a friend from a friend list.
@@ -160,7 +159,6 @@ LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *li
  * @return LinphoneFriendListOK if removed successfully, LinphoneFriendListNonExistentFriend if the friend is not in the list.
 **/
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *list, LinphoneFriend *afriend);
-LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFriendList *list, MSList *elem, LinphoneFriend *lf);
 
 /**
  * Find a friend in the friend list using a LinphoneAddress.

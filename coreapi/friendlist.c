@@ -375,23 +375,6 @@ void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_
 	}
 }
 
-LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
-	if (lf->uri == NULL || lf->friend_list) {
-		if (!lf->uri)
-			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
-		if (lf->friend_list)
-			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
-		return LinphoneFriendListInvalidFriend;
-	}
-	list->friends = ms_list_append(list->friends, linphone_friend_ref(lf));
-	lf->friend_list = list;
-	lf->lc = list->lc;
-#ifdef FRIENDS_SQL_STORAGE_ENABLED
-	linphone_core_store_friend_in_db(lf->lc, lf);
-#endif
-	return LinphoneFriendListOK;
-}
-
 LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
 	if (!list || !lf->uri || lf->friend_list) {
 		if (!list)
@@ -409,20 +392,25 @@ LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *lis
 		ms_warning("Friend %s already in list [%s], ignored.", tmp ? tmp : "unknown", list->display_name);
 		if (tmp) ms_free(tmp);
 	} else {
-		return linphone_friend_list_import_friend(list, lf);
+		return linphone_friend_list_import_friend(list, lf, TRUE);
 	}
 	return LinphoneFriendListOK;
 }
 
-LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
-	if (!lf->uri) {
-		ms_error("linphone_friend_list_import_friend(): invalid friend, no sip uri");
+LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize) {
+	if (!lf->uri || lf->friend_list) {
+		if (!lf->uri)
+			ms_error("linphone_friend_list_add_friend(): invalid friend, no sip uri");
+		if (lf->friend_list)
+			ms_error("linphone_friend_list_add_friend(): invalid friend, already in list");
 		return LinphoneFriendListInvalidFriend;
 	}
 	lf->friend_list = list;
 	lf->lc = list->lc;
 	list->friends = ms_list_append(list->friends, linphone_friend_ref(lf));
-	list->dirty_friends_to_update = ms_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
+	if (synchronize) {
+		list->dirty_friends_to_update = ms_list_append(list->dirty_friends_to_update, linphone_friend_ref(lf));
+	}
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
 	linphone_core_store_friend_in_db(lf->lc, lf);
 #endif
@@ -431,16 +419,6 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 
 static void carddav_done(LinphoneCardDavContext *cdc, bool_t success, const char *msg) {
 	linphone_carddav_context_destroy(cdc);
-}
-
-LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFriendList *list, MSList *elem, LinphoneFriend *lf) {
-	if (!elem) {
-		return LinphoneFriendListNonExistentFriend;
-	}
-	lf->friend_list = NULL;
-	linphone_friend_unref(lf);
-	list->friends = ms_list_remove_link(list->friends, elem);
-	return LinphoneFriendListOK;
 }
 
 LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
@@ -456,7 +434,10 @@ LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *
 		linphone_carddav_delete_vcard(cdc, lf);
 	}
 	
-	return _linphone_friend_list_remove_friend(list, elem, lf);
+	lf->friend_list = NULL;
+	linphone_friend_unref(lf);
+	list->friends = ms_list_remove_link(list->friends, elem);
+	return LinphoneFriendListOK;
 }
 
 void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list) {
@@ -479,7 +460,7 @@ void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list) {
 static void carddav_created(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
 	if (cdc) {
 		LinphoneFriendList *lfl = cdc->friend_list;
-		_linphone_friend_list_add_friend(lfl, lf);
+		linphone_friend_list_import_friend(lfl, lf, FALSE);
 		if (cdc->friend_list->cbs->contact_created_cb) {
 			cdc->friend_list->cbs->contact_created_cb(lfl, lf);
 		}
@@ -501,9 +482,11 @@ static void carddav_updated(LinphoneCardDavContext *cdc, LinphoneFriend *lf_new,
 		LinphoneFriendList *lfl = cdc->friend_list;
 		MSList *elem = ms_list_find(lfl->friends, lf_old);
 		if (elem) {
-			_linphone_friend_list_remove_friend(lfl, elem, lf_old);
+			lf_old->friend_list = NULL;
+			linphone_friend_unref(lf_old);
+			lfl->friends = ms_list_remove_link(lfl->friends, elem);
 		}
-		_linphone_friend_list_add_friend(lfl, lf_new);
+		linphone_friend_list_import_friend(lfl, lf_new, FALSE);
 		if (cdc->friend_list->cbs->contact_updated_cb) {
 			cdc->friend_list->cbs->contact_updated_cb(lfl, lf_new, lf_old);
 		}
