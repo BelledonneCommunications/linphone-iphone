@@ -356,6 +356,7 @@ void linphone_friend_list_set_display_name(LinphoneFriendList *list, const char 
 	}
 	if (display_name != NULL) {
 		list->display_name = ms_strdup(display_name);
+		linphone_core_store_friends_list_in_db(list->lc, list);
 	}
 }
 
@@ -370,6 +371,7 @@ void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_
 	}
 	if (rls_uri != NULL) {
 		list->rls_uri = ms_strdup(rls_uri);
+		linphone_core_store_friends_list_in_db(list->lc, list);
 	}
 }
 
@@ -675,9 +677,11 @@ void linphone_friend_list_set_uri(LinphoneFriendList *list, const char *uri) {
 	}
 	if (uri != NULL) {
 		list->uri = ms_strdup(uri);
+		linphone_core_store_friends_list_in_db(list->lc, list);
 	}
 }
 
 void linphone_friend_list_update_revision(LinphoneFriendList *list, int rev) {
 	list->revision = rev;
+	linphone_core_store_friends_list_in_db(list->lc, list);
 }
