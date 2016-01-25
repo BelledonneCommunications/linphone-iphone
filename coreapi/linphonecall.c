@@ -2236,7 +2236,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 		if (call->params->realtimetext_enabled) _linphone_call_prepare_ice_for_stream(call,call->main_text_stream_index,TRUE);
 		/*start ICE gathering*/
 		if (incoming_offer)
-			linphone_call_update_ice_from_remote_media_description(call,remote); /*this may delete the ice session*/
+			linphone_call_update_ice_from_remote_media_description(call, remote, TRUE); /*this may delete the ice session*/
 		if (call->ice_session && !ice_session_candidates_gathered(call->ice_session)){
 			if (call->audiostream->ms.state==MSStreamInitialized)
 				audio_stream_prepare_sound(call->audiostream, NULL, NULL);
@@ -4309,8 +4309,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			linphone_core_update_ice_state_in_call_stats(call);
 		}
 	} else if (evt == ORTP_EVENT_ICE_RESTART_NEEDED) {
-		ice_session_restart(call->ice_session);
-		ice_session_set_role(call->ice_session, IR_Controlling);
+		ice_session_restart(call->ice_session, IR_Controlling);
 		linphone_core_update_call(call->core, call, call->current_params);
 	}
 }
@@ -4846,6 +4845,7 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 	/*First, make sure that the proxy from which we received this call, or to which we routed this call is registered*/
 	if (!call->dest_proxy || linphone_proxy_config_get_state(call->dest_proxy) != LinphoneRegistrationOk) return;
 
+	if (!call->core->media_network_reachable) return;
 
 	switch (call->state){
 		case LinphoneCallStreamsRunning:
@@ -4853,8 +4853,7 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 		case LinphoneCallPausedByRemote:
 			ms_message("LinphoneCall[%p] is going to be updated (reINVITE) in order to recover from lost connectivity", call);
 			if (call->ice_session){
-				ice_session_restart(call->ice_session);
-				ice_session_set_role(call->ice_session, IR_Controlling);
+				ice_session_restart(call->ice_session, IR_Controlling);
 			}
 			params = linphone_core_create_call_params(call->core, call);
 			linphone_core_update_call(call->core, call, params);
