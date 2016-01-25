@@ -944,8 +944,11 @@ public:
 		callobj = getCall(env, call);
 		if (stats->type == LINPHONE_CALL_STATS_AUDIO)
 			env->CallVoidMethod(callobj, ljb->callSetAudioStatsId, statsobj);
-		else
+		else if (stats->type == LINPHONE_CALL_STATS_VIDEO){
 			env->CallVoidMethod(callobj, ljb->callSetVideoStatsId, statsobj);
+		}else{
+			//text stats not updated yet.
+		}
 		env->CallVoidMethod(lcData->listener, ljb->callStatsUpdatedId, lcData->core, callobj, statsobj);
 		handle_possible_java_exception(env, lcData->listener);
 		if (statsobj) env->DeleteLocalRef(statsobj);
