@@ -759,7 +759,8 @@ static void test_presence_list_subscription_expire(void) {
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
 	lf = linphone_core_create_friend_with_address(laure->lc, "sip:michelle@sip.inexistentdomain.com");
 	linphone_friend_list_add_friend(lfl, lf);
-	linphone_core_set_friend_list(laure->lc, lfl);
+	linphone_core_remove_friend_list(laure->lc, linphone_core_get_default_friend_list(laure->lc));
+	linphone_core_add_friend_list(laure->lc, lfl);
 	linphone_friend_list_update_subscriptions(lfl,NULL,FALSE);
 	
 	linphone_friend_list_unref(lfl);
