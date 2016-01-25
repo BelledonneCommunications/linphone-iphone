@@ -1775,19 +1775,25 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 #pragma mark - Audio route Functions
 
 - (bool)allowSpeaker {
-	bool notallow = false;
+	if (IPAD)
+		return true;
+
+	bool allow = true;
 	CFStringRef lNewRoute = CFSTR("Unknown");
 	UInt32 lNewRouteSize = sizeof(lNewRoute);
 	OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
 	if (!lStatus && lNewRouteSize > 0) {
 		NSString *route = (__bridge NSString *)lNewRoute;
-		notallow = [route containsString:@"Heads"] || [route isEqualToString:@"Lineout"];
+		allow = ![route containsString:@"Heads"] && ![route isEqualToString:@"Lineout"];
 		CFRelease(lNewRoute);
 	}
-	return !notallow;
+	return allow;
 }
 
 - (void)audioRouteChangeListenerCallback:(NSNotification *)notif {
+	if (IPAD)
+		return;
+
 	// there is at least one bug when you disconnect an audio bluetooth headset
 	// since we only get notification of route having changed, we cannot tell if that is due to:
 	// -bluetooth headset disconnected or
@@ -1839,7 +1845,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 
 	if (override != kAudioSessionNoError) {
-		if (enable && (IPAD || [self allowSpeaker])) {
+		if (enable && [self allowSpeaker]) {
 			override = kAudioSessionOverrideAudioRoute_Speaker;
 			ret = AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute, sizeof(override), &override);
 			_bluetoothEnabled = FALSE;

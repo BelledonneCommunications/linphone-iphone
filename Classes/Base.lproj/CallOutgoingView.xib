@@ -147,18 +147,6 @@
                                     <state key="selected" image="micro_selected.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                 </button>
-                                <button opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="G7m-Av-QlR" userLabel="speakerButton" customClass="UISpeakerButton">
-                                    <rect key="frame" x="282" y="0.0" width="94" height="63"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
-                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="speaker_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="disabled" image="speaker_disabled.png"/>
-                                    <state key="selected" image="speaker_selected.png"/>
-                                    <state key="highlighted" backgroundImage="color_E.png"/>
-                                </button>
                                 <button hidden="YES" opaque="NO" tag="54" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="29K-Sd-aHF" userLabel="routesButton" customClass="UIToggleButton">
                                     <rect key="frame" x="282" y="0.0" width="94" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -173,6 +161,18 @@
                                     <connections>
                                         <action selector="onRoutesClick:" destination="-1" eventType="touchUpInside" id="hXX-8a-7M4"/>
                                     </connections>
+                                </button>
+                                <button opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="G7m-Av-QlR" userLabel="speakerButton" customClass="UISpeakerButton">
+                                    <rect key="frame" x="282" y="0.0" width="94" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="speaker_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="speaker_disabled.png"/>
+                                    <state key="selected" image="speaker_selected.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
                                 </button>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -344,18 +344,6 @@
                                     <state key="selected" image="micro_selected.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                 </button>
-                                <button opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5CY-aN-NLX" userLabel="speakerButton" customClass="UISpeakerButton">
-                                    <rect key="frame" x="501" y="0.0" width="167" height="63"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
-                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="speaker_default.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="disabled" image="speaker_disabled.png"/>
-                                    <state key="selected" image="speaker_selected.png"/>
-                                    <state key="highlighted" backgroundImage="color_E.png"/>
-                                </button>
                                 <button hidden="YES" opaque="NO" tag="54" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="61B-DK-jZ6" userLabel="routesButton" customClass="UIToggleButton">
                                     <rect key="frame" x="501" y="0.0" width="167" height="63"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
@@ -366,6 +354,18 @@
                                     </state>
                                     <state key="disabled" image="routes_disabled.png"/>
                                     <state key="selected" image="routes_selected.png"/>
+                                    <state key="highlighted" backgroundImage="color_E.png"/>
+                                </button>
+                                <button opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5CY-aN-NLX" userLabel="speakerButton" customClass="UISpeakerButton">
+                                    <rect key="frame" x="501" y="0.0" width="167" height="63"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                    <accessibility key="accessibilityConfiguration" label="Accept"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                    <state key="normal" image="speaker_default.png">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <state key="disabled" image="speaker_disabled.png"/>
+                                    <state key="selected" image="speaker_selected.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                 </button>
                             </subviews>

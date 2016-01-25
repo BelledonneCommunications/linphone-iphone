@@ -57,8 +57,6 @@ INIT_WITH_COMMON_CF {
 
 - (bool)onUpdate {
 	self.enabled = [LinphoneManager.instance allowSpeaker];
-	if (IPAD)
-		self.selected = !LinphoneManager.instance.bluetoothEnabled;
 	return [LinphoneManager.instance speakerEnabled];
 }
 
