@@ -102,36 +102,37 @@
 }
 
 - (UIUserNotificationCategory *)getMessageNotificationCategory {
-
-	UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
-	reply.identifier = @"reply";
-	reply.title = NSLocalizedString(@"Reply", nil);
-	reply.activationMode = UIUserNotificationActivationModeForeground;
-	reply.destructive = NO;
-	reply.authenticationRequired = YES;
-
-	UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
-
-	reply_inline.identifier = @"reply_inline";
-	reply_inline.title = NSLocalizedString(@"Reply", nil);
-	reply_inline.activationMode = UIUserNotificationActivationModeBackground;
-	reply_inline.destructive = NO;
-	reply_inline.authenticationRequired = NO;
-	reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
-
-	UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
-	mark_read.identifier = @"mark_read";
-	mark_read.title = NSLocalizedString(@"Mark Read", nil);
-	mark_read.activationMode = UIUserNotificationActivationModeBackground;
-	mark_read.destructive = NO;
-	mark_read.authenticationRequired = NO;
-
 	NSArray *actions;
+
 	if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
 		[LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
+
+		UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
+		reply.identifier = @"reply";
+		reply.title = NSLocalizedString(@"Reply", nil);
+		reply.activationMode = UIUserNotificationActivationModeForeground;
+		reply.destructive = NO;
+		reply.authenticationRequired = YES;
+
+		UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
+		mark_read.identifier = @"mark_read";
+		mark_read.title = NSLocalizedString(@"Mark Read", nil);
+		mark_read.activationMode = UIUserNotificationActivationModeBackground;
+		mark_read.destructive = NO;
+		mark_read.authenticationRequired = NO;
+
 		actions = @[ mark_read, reply ];
 	} else {
 		// iOS 9 allows for inline reply. We don't propose mark_read in this case
+		UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
+
+		reply_inline.identifier = @"reply_inline";
+		reply_inline.title = NSLocalizedString(@"Reply", nil);
+		reply_inline.activationMode = UIUserNotificationActivationModeBackground;
+		reply_inline.destructive = NO;
+		reply_inline.authenticationRequired = NO;
+		reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
+
 		actions = @[ reply_inline ];
 	}
 
