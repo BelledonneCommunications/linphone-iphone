@@ -34,6 +34,7 @@ static void linphone_vcard_import_export_friends_test(void) {
 	char *export_filepath = create_filepath(bc_tester_get_writable_dir_prefix(), "export_vcards", "vcf");
 	const MSList *friends = linphone_core_get_friend_list(manager->lc);
 	int count = 0;
+	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
 	
 	BC_ASSERT_PTR_NOT_NULL_FATAL(linphone_core_get_default_friend_list(manager->lc));
@@ -48,13 +49,17 @@ static void linphone_vcard_import_export_friends_test(void) {
 	friends = linphone_core_get_friend_list(manager->lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
 	
-	linphone_core_add_friend_list(manager->lc, linphone_core_create_friend_list(manager->lc));
+	linphone_core_add_friend_list(manager->lc, lfl);
+	linphone_friend_list_unref(lfl);
+	lfl = NULL;
 	count = linphone_core_import_friends_from_vcard4_file(manager->lc, export_filepath);
 	BC_ASSERT_EQUAL(count, 3, int, "%d");
 	friends = linphone_core_get_friend_list(manager->lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 3, int, "%d");
 	
 	remove(export_filepath);
+	ms_free(import_filepath);
+	ms_free(export_filepath);
 	linphone_core_manager_destroy(manager);
 }
 
@@ -70,9 +75,13 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	end = clock();
 	
 	friends = linphone_core_get_friend_list(manager->lc);
+	BC_ASSERT_EQUAL(ms_list_size(friends), 482, int, "%i"); // Thousand vcards contains 482 contacts with a SIP URI
+	
 	elapsed = (double)(end - start);
 	ms_error("Imported a thousand of vCards (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
 	BC_ASSERT_TRUE(elapsed < 1500000); // 1.5 seconds
+	
+	ms_free(import_filepath);
 	linphone_core_manager_destroy(manager);
 }
 
