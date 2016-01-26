@@ -6441,7 +6441,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_call_log_storage_close(lc);
 	
 	ms_factory_uninit_voip(lc->factory);
-	ms_factory_uninit_plugins(lc->factory);
 	ms_factory_destroy(lc->factory);
 //	TODO : set to null
 	
