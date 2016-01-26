@@ -525,7 +525,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[hiddenKeys addObject:@"flush_images_button"];
 #endif
 
-	if (![LinphoneManager.instance lpConfigBoolForKey:@"debugenable_preference"]) {
+	int debugLevel = [LinphoneManager.instance lpConfigIntForKey:@"debugenable_preference"];
+	BOOL debugEnabled = (debugLevel >= ORTP_DEBUG && debugLevel < ORTP_ERROR);
+	if (!debugEnabled) {
 		[hiddenKeys addObject:@"send_logs_button"];
 		[hiddenKeys addObject:@"reset_logs_button"];
 	}
@@ -756,6 +758,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[attachments addObject:@[ [NSString stringWithUTF8String:filepath], mimeType, filename ]];
 		}
 	}
+	ms_free(filepath);
 
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"send_logs_include_linphonerc_and_chathistory"]) {
 		// retrieve linphone rc
@@ -770,8 +773,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 		]];
 	}
 
+	if (attachments.count == 0) {
+		DTAlertView *alert = [[DTAlertView alloc]
+			initWithTitle:NSLocalizedString(@"Cannot send logs", nil)
+				  message:NSLocalizedString(@"Nothing could be collected from your application, aborting now.", nil)];
+		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+		[alert show];
+		return;
+	}
+
 	[self emailAttachments:attachments];
-	ms_free(filepath);
 }
 - (void)emailAttachments:(NSArray *)attachments {
 	NSString *error = nil;
