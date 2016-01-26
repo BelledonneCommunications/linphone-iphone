@@ -89,7 +89,7 @@ bool_t linphone_core_upnp_hook(void *data);
 void linphone_upnp_update(UpnpContext *ctx);
 bool_t linphone_upnp_is_blacklisted(UpnpContext *ctx);
 
-UpnpPortBinding *linphone_upnp_port_binding_new();
+UpnpPortBinding *linphone_upnp_port_binding_new(void);
 UpnpPortBinding *linphone_upnp_port_binding_new_with_parameters(upnp_igd_ip_protocol protocol, int local_port, int external_port);
 UpnpPortBinding *linphone_upnp_port_binding_new_or_collect(MSList *list, upnp_igd_ip_protocol protocol, int local_port, int external_port);
 UpnpPortBinding *linphone_upnp_port_binding_copy(const UpnpPortBinding *port);
@@ -1089,7 +1089,7 @@ int linphone_core_update_local_media_description_from_upnp(SalMediaDescription *
  * uPnP Port Binding
  */
 
-UpnpPortBinding *linphone_upnp_port_binding_new() {
+UpnpPortBinding *linphone_upnp_port_binding_new(void) {
 	UpnpPortBinding *port = NULL;
 	port = ms_new0(UpnpPortBinding,1);
 	ms_mutex_init(&port->mutex, NULL);
@@ -1221,7 +1221,7 @@ void linphone_upnp_port_binding_release(UpnpPortBinding *port) {
  * uPnP Stream
  */
 
-UpnpStream* linphone_upnp_stream_new() {
+UpnpStream* linphone_upnp_stream_new(void) {
 	UpnpStream *stream = ms_new0(UpnpStream,1);
 	stream->state = LinphoneUpnpStateIdle;
 	stream->rtp = NULL;

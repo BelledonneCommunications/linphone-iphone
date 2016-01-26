@@ -327,6 +327,8 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	}
 
 	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_get_writable_dir_prefix());
+	/*for now, we need the periodical updates facility to compute bandwidth measurements correctly during tests*/
+	lp_config_set_int(linphone_core_get_config(mgr->lc), "misc", "send_call_stats_periodical_updates", 1);
 
 	if (rc_path) ms_free(rc_path);
 }
