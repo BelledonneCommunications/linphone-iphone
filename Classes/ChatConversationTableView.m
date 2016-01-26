@@ -41,10 +41,7 @@
 #pragma mark -
 
 - (void)clearMessageList {
-	if (messageList) {
-		ms_list_free_with_data(messageList, (void (*)(void *))linphone_chat_message_unref);
-		messageList = nil;
-	}
+	messageList = ms_list_free_with_data(messageList, (void (*)(void *))linphone_chat_message_unref);
 }
 
 - (void)updateData {
@@ -72,6 +69,14 @@
 }
 
 - (void)addChatEntry:(LinphoneChatMessage *)chat {
+	// do not add the same message multiple times. It can happen on iPad since in fragment
+	// mode, "message received" notification will reload tabledata, retrieving all history
+	// and THEN addChatEntry will be called, requesting the newest message to be added again
+	if (messageList &&
+		(linphone_chat_message_get_storage_id(chat) ==
+		 linphone_chat_message_get_storage_id(ms_list_nth_data(messageList, ms_list_size(messageList) - 1)))) {
+		return;
+	}
 
 	messageList = ms_list_append(messageList, linphone_chat_message_ref(chat));
 	int pos = ms_list_size(messageList) - 1;

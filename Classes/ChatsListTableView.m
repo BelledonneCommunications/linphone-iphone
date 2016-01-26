@@ -121,7 +121,7 @@ static void chatTable_free_chatrooms(void *data) {
 	if (IPAD) {
 		// reset conversation view since in fragment mode, conversations are relative to current data
 		// select first conversation if any
-		if ([self totalNumberOfItems] > 0) {
+		if (data != NULL) {
 			ChatConversationView *view = VIEW(ChatConversationView);
 			[view setChatRoom:(LinphoneChatRoom *)ms_list_nth_data(data, 0)];
 		}
