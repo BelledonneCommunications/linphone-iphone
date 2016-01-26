@@ -919,6 +919,10 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 #ifndef VCARD_ENABLED
 	ms_error("vCard support wasn't enabled at compilation time");
 #endif
+	if (!vcards) {
+		ms_error("Failed to parse the file %s", vcard_file);
+		return -1;
+	}
 	while (vcards != NULL && vcards->data != NULL) {
 		LinphoneVCard *vcard = (LinphoneVCard *)vcards->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
@@ -927,6 +931,8 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 				count++;
 			}
 			linphone_friend_unref(lf);
+		} else {
+			linphone_vcard_free(vcard);
 		}
 		vcards = ms_list_next(vcards);
 	}
