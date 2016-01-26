@@ -796,11 +796,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 		MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
 		picker.mailComposeDelegate = self;
 
-		[picker setSubject:@"<Please describe your problem>"];
+		[picker setSubject:NSLocalizedString(@"<Please describe your problem or you will be ignored>",
+											 @"Email title for people wanting to send a bug report")];
 		[picker setToRecipients:[NSArray arrayWithObjects:@"linphone-iphone@belledonne-communications.com", nil]];
-		[picker setMessageBody:@"Here are information about an issue I had on my device.\nI was "
-							   @"doing ...\nI expected Linphone to ...\nInstead, I got an "
-							   @"unexpected result: ..."
+		[picker setMessageBody:NSLocalizedString(@"Here are information about an issue I had on my device.\nI was "
+												 @"doing ...\nI expected Linphone to ...\nInstead, I got an "
+												 @"unexpected result: ...",
+												 @"Template email for people wanting to send a bug report")
 						isHTML:NO];
 		for (NSArray *attachment in attachments) {
 			if ([[NSFileManager defaultManager] fileExistsAtPath:attachment[0]]) {
