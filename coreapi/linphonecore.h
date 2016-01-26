@@ -1252,7 +1252,7 @@ typedef enum _LinphoneChatMessageState {
  * @param ud application user data
  * @deprecated
  */
-typedef LINPHONE_DEPRECATED void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
+typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
 
 /**
  * Call back used to notify message delivery status

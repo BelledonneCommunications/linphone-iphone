@@ -58,8 +58,17 @@ static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog
 			if (!op->op_released){
 				op->base.root->callbacks.subscribe_presence_closed(op, sal_op_get_from(op));
 			}
+			set_or_update_dialog(op, NULL);
+		}else{
+			if (belle_sip_dialog_terminated_event_is_expired(event)){
+				ms_warning("Outgoing presence subscription expired.");
+				if (op->refresher){
+					/*send a new SUBSCRIBE, that will attempt to establish a new dialog*/
+					sal_subscribe_presence(op,NULL,NULL,-1);
+				}
+			}
 		}
-		set_or_update_dialog(op, NULL);
+		
 	}
 }
 
