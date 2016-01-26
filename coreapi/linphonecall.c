@@ -185,9 +185,11 @@ static void propagate_encryption_changed(LinphoneCall *call){
 		}
 		ms_message("All streams are encrypted key exchanged using %s", call->current_params->media_encryption==LinphoneMediaEncryptionZRTP?"ZRTP":call->current_params->media_encryption==LinphoneMediaEncryptionDTLS?"DTLS":"Unknown mechanism");
 		linphone_core_notify_call_encryption_changed(call->core, call, TRUE, call->auth_token);
+#ifdef VIDEO_ENABLED
 		if (call->current_params->encryption_mandatory && call->videostream && media_stream_started((MediaStream *)call->videostream)) {
 			video_stream_send_vfu(call->videostream); /*nothing could have been sent yet so generating key frame*/
 		}
+#endif
 	}
 }
 
@@ -3481,6 +3483,8 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 	if (call->onhold_file && !call->params->in_conference && call->audiostream){
 		MSFilter *player = audio_stream_open_remote_play(call->audiostream, call->onhold_file);
 		if (player){
+			int pause_time=500;
+			ms_filter_call_method(player, MS_PLAYER_SET_LOOP, &pause_time);
 			ms_filter_call_method_noarg(player, MS_PLAYER_START);
 		}
 	}

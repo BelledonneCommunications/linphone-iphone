@@ -1047,8 +1047,6 @@ LINPHONE_PUBLIC	const char *linphone_registration_state_to_string(LinphoneRegist
  * @}
  */
 
-#include "linphone_proxy_config.h"
-
 /**
  * @addtogroup authentication
  * @{
@@ -1205,9 +1203,11 @@ LINPHONE_PUBLIC LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpCon
 #ifdef IN_LINPHONE
 #include "account_creator.h"
 #include "friendlist.h"
+#include "linphone_proxy_config.h"
 #else
 #include "linphone/account_creator.h"
 #include "linphone/friendlist.h"
+#include "linphone/linphone_proxy_config.h"
 #endif
 
 
@@ -3743,6 +3743,22 @@ LINPHONE_PUBLIC	void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t
  * return network state either as positioned by the application or by linphone itself.
  */
 LINPHONE_PUBLIC	bool_t linphone_core_is_network_reachable(LinphoneCore* lc);
+
+/**
+ * @ingroup network_parameters
+ * This method is called by the application to notify the linphone core library when the SIP network is reachable.
+ * This is for advanced usage, when SIP and RTP layers are required to use different interfaces.
+ * Most applications just need linphone_core_set_network_reachable().
+ */
+LINPHONE_PUBLIC	void linphone_core_set_sip_network_reachable(LinphoneCore* lc,bool_t value);
+
+/**
+ * @ingroup network_parameters
+ * This method is called by the application to notify the linphone core library when the media (RTP) network is reachable.
+ * This is for advanced usage, when SIP and RTP layers are required to use different interfaces.
+ * Most applications just need linphone_core_set_network_reachable().
+ */
+LINPHONE_PUBLIC	void linphone_core_set_media_network_reachable(LinphoneCore* lc,bool_t value);
 
 /**
  *  @ingroup network_parameters

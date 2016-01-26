@@ -103,6 +103,8 @@ static FILE * liblinphone_log_collection_file = NULL;
 static size_t liblinphone_log_collection_file_size = 0;
 static bool_t liblinphone_serialize_logs = FALSE;
 static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
+static void set_sip_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime);
+static void set_media_network_reachable(LinphoneCore* lc,bool_t isReachable);
 static void linphone_core_run_hooks(LinphoneCore *lc);
 
 #include "enum.h"
@@ -2564,7 +2566,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 
 	if (lc->network_reachable_to_be_notified) {
 		lc->network_reachable_to_be_notified=FALSE;
-		linphone_core_notify_network_reachable(lc,lc->network_reachable);
+		linphone_core_notify_network_reachable(lc,lc->sip_network_reachable);
 	}
 	if (linphone_core_get_global_state(lc) == LinphoneGlobalStartup) {
 		if (sal_get_root_ca(lc->sal)) {
@@ -2704,7 +2706,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	linphone_core_run_hooks(lc);
 	linphone_core_do_plugin_tasks(lc);
 
-	if (lc->network_reachable && lc->netup_time!=0 && (current_real_time-lc->netup_time)>3){
+	if (lc->sip_network_reachable && lc->netup_time!=0 && (current_real_time-lc->netup_time)>3){
 		/*not do that immediately, take your time.*/
 		linphone_core_send_initial_subscribes(lc);
 	}
@@ -6178,7 +6180,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lp_config_set_int(lc->config,"sip","register_only_when_network_is_up",config->register_only_when_network_is_up);
 	lp_config_set_int(lc->config,"sip","register_only_when_upnp_is_ok",config->register_only_when_upnp_is_ok);
 
-	if (lc->network_reachable) {
+	if (lc->sip_network_reachable) {
 		for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
 			LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
 			_linphone_proxy_config_unregister(cfg);	/* to unregister without changing the stored flag enable_register */
@@ -6448,17 +6450,17 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	ms_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);
 }
 
-static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t curtime){
+static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, time_t curtime){
 	// second get the list of available proxies
 	const MSList *elem=linphone_core_get_proxy_config_list(lc);
 
-	if (lc->network_reachable==isReachable) return; // no change, ignore.
+	if (lc->sip_network_reachable==is_sip_reachable) return; // no change, ignore.
 	lc->network_reachable_to_be_notified=TRUE;
-	ms_message("Network state is now [%s]",isReachable?"UP":"DOWN");
+	ms_message("SIP network reachability state is now [%s]",is_sip_reachable?"UP":"DOWN");
 	for(;elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
 		if (linphone_proxy_config_register_enabled(cfg) ) {
-			if (!isReachable) {
+			if (!is_sip_reachable) {
 				linphone_proxy_config_stop_refreshing(cfg);
 				linphone_proxy_config_set_state(cfg, LinphoneRegistrationNone,"Registration impossible (network down)");
 			}else{
@@ -6467,26 +6469,23 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 		}
 	}
 	lc->netup_time=curtime;
-	lc->network_reachable=isReachable;
+	lc->sip_network_reachable=is_sip_reachable;
 
-	if (!lc->network_reachable){
+	if (!lc->sip_network_reachable){
 		linphone_core_invalidate_friend_subscriptions(lc);
 		sal_reset_transports(lc->sal);
 		/*mark all calls as broken, so that they can be either dropped immediately or restaured when network will be back*/
 		ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_set_broken);
 	}else{
 		linphone_core_resolve_stun_server(lc);
-		if (lp_config_get_int(lc->config, "net", "recreate_sockets_when_network_is_up", 0)){
-			ms_list_for_each(lc->calls, (MSIterateFunc)linphone_call_refresh_sockets);
-		}
 	}
 #ifdef BUILD_UPNP
 	if(lc->upnp == NULL) {
-		if(isReachable && linphone_core_get_firewall_policy(lc) == LinphonePolicyUseUpnp) {
+		if(is_sip_reachable && linphone_core_get_firewall_policy(lc) == LinphonePolicyUseUpnp) {
 			lc->upnp = linphone_upnp_context_new(lc);
 		}
 	} else {
-		if(!isReachable && linphone_core_get_firewall_policy(lc) == LinphonePolicyUseUpnp) {
+		if(!is_sip_reachable && linphone_core_get_firewall_policy(lc) == LinphonePolicyUseUpnp) {
 			linphone_upnp_context_destroy(lc->upnp);
 			lc->upnp = NULL;
 		}
@@ -6494,9 +6493,37 @@ static void set_network_reachable(LinphoneCore* lc,bool_t isReachable, time_t cu
 #endif
 }
 
+void linphone_core_repair_calls(LinphoneCore *lc){
+	if (lc->calls && lp_config_get_int(lc->config, "sip", "repair_broken_calls", 1) && lc->media_network_reachable){
+		/*if we are registered and there were broken calls due to a past network disconnection, attempt to repair them*/
+		ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_repair_if_broken);
+	}
+}
+
+static void set_media_network_reachable(LinphoneCore* lc, bool_t is_media_reachable){
+	if (lc->media_network_reachable==is_media_reachable) return; // no change, ignore.
+	ms_message("Media network reachability state is now [%s]",is_media_reachable?"UP":"DOWN");
+	lc->media_network_reachable=is_media_reachable;
+
+	if (!lc->media_network_reachable){
+		/*mark all calls as broken, so that they can be either dropped immediately or restaured when network will be back*/
+		ms_list_for_each(lc->calls, (MSIterateFunc) linphone_call_set_broken);
+	}else{
+		if (lp_config_get_int(lc->config, "net", "recreate_sockets_when_network_is_up", 0)){
+			ms_list_for_each(lc->calls, (MSIterateFunc)linphone_call_refresh_sockets);
+		}
+		linphone_core_repair_calls(lc);
+	}
+}
+
+static void set_network_reachable(LinphoneCore *lc, bool_t is_network_reachable, time_t curtime){
+	set_sip_network_reachable(lc, is_network_reachable, curtime);
+	set_media_network_reachable(lc, is_network_reachable);
+}
+
 void linphone_core_refresh_registers(LinphoneCore* lc) {
 	const MSList *elem;
-	if (!lc->network_reachable) {
+	if (!lc->sip_network_reachable) {
 		ms_warning("Refresh register operation not available (network unreachable)");
 		return;
 	}
@@ -6520,17 +6547,30 @@ void __linphone_core_invalidate_registers(LinphoneCore* lc){
 	}
 }
 
-void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
-	//first disable automatic mode
+static void disable_internal_network_reachability_detection(LinphoneCore *lc){
 	if (lc->auto_net_state_mon) {
 		ms_message("Disabling automatic network state monitoring");
 		lc->auto_net_state_mon=FALSE;
 	}
-	set_network_reachable(lc,isReachable, ms_time(NULL));
+}
+
+void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
+	disable_internal_network_reachability_detection(lc);
+	set_network_reachable(lc, isReachable, ms_time(NULL));
+}
+
+void linphone_core_set_media_network_reachable(LinphoneCore *lc, bool_t is_reachable){
+	disable_internal_network_reachability_detection(lc);
+	set_media_network_reachable(lc, is_reachable);
+}
+
+void linphone_core_set_sip_network_reachable(LinphoneCore *lc, bool_t is_reachable){
+	disable_internal_network_reachability_detection(lc);
+	set_sip_network_reachable(lc, is_reachable, ms_time(NULL));
 }
 
 bool_t linphone_core_is_network_reachable(LinphoneCore* lc) {
-	return lc->network_reachable;
+	return lc->sip_network_reachable;
 }
 ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc){
 	return sal_get_socket(lc->sal);
@@ -7454,7 +7494,9 @@ int linphone_core_add_all_to_conference(LinphoneCore *lc) {
 	while (calls) {
 		LinphoneCall *call=(LinphoneCall*)calls->data;
 		calls=calls->next;
-		linphone_core_add_to_conference(lc, call);
+		if(linphone_call_get_conference(call) == NULL) { // Prevent the call to the conference server from being added to the conference
+			linphone_core_add_to_conference(lc, call);
+		}
 	}
 	if(lc->conf_ctx && linphone_conference_check_class(lc->conf_ctx, LinphoneConferenceClassLocal)) {
 		linphone_core_enter_conference(lc);

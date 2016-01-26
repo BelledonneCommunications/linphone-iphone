@@ -526,7 +526,7 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_custom_header(LinphoneProxyConfig
  * @param[in] cfg #LinphoneProxyConfig object.
  * @return a #LinphoneAuthInfo matching proxy config criteria if possible, NULL if nothing can be found.
 **/
-LINPHONE_PUBLIC const struct _LinphoneAuthInfo* linphone_proxy_config_find_auth_info(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC const LinphoneAuthInfo* linphone_proxy_config_find_auth_info(const LinphoneProxyConfig *cfg);
 
 /**
  * @}

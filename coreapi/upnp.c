@@ -367,7 +367,7 @@ void linphone_upnp_context_destroy(UpnpContext *lupnp) {
 
 	ms_mutex_lock(&lupnp->mutex);
 
-	if(lupnp->lc->network_reachable) {
+	if(lupnp->lc->sip_network_reachable) {
 		/* Send port binding removes */
 		if(lupnp->sip_udp != NULL) {
 			linphone_upnp_context_send_remove_port_binding(lupnp, lupnp->sip_udp, TRUE);

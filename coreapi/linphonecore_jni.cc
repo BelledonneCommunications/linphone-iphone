@@ -6785,7 +6785,7 @@ extern "C" void Java_org_linphone_core_LinphoneConferenceParamsImpl_enableVideo(
 	linphone_conference_params_enable_video((LinphoneConferenceParams *)paramsPtr, enable);
 }
 
-extern "C" jboolean Java_org_linphone_core_LinphoneConferenceParamsImpl_isVideoEnabled(JNIEnv *env, jobject thiz, jlong paramsPtr) {
+extern "C" jboolean Java_org_linphone_core_LinphoneConferenceParamsImpl_isVideoRequested(JNIEnv *env, jobject thiz, jlong paramsPtr) {
 	return linphone_conference_params_video_requested((LinphoneConferenceParams *)paramsPtr);
 }
 
@@ -6814,3 +6814,22 @@ extern "C" jint Java_org_linphone_core_LinphoneConferenceImpl_removeParticipant(
 	LinphoneAddress *addr = (LinphoneAddress *)env->GetLongField(uri, native_ptr_attr);
 	return linphone_conference_remove_participant((LinphoneConference *)pconference, addr);
 }
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setSipNetworkReachable
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setSipNetworkReachable(JNIEnv *env, jobject jobj, jlong pcore, jboolean reachable){
+	linphone_core_set_sip_network_reachable((LinphoneCore*)pcore, (bool_t) reachable);
+}
+
+/*
+ * Class:     org_linphone_core_LinphoneCoreImpl
+ * Method:    setMediaNetworkReachable
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setMediaNetworkReachable(JNIEnv *env, jobject jobj, jlong pcore, jboolean reachable){
+	linphone_core_set_media_network_reachable((LinphoneCore*)pcore, (bool_t) reachable);
+}
+
