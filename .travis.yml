@@ -8,7 +8,7 @@ env:
 
 before_install:
     - brew update 1>/dev/null
-    - brew install doxygen nasm yasm optipng imagemagick coreutils intltool ninja antlr
+    - brew install doxygen nasm yasm optipng imagemagick intltool ninja antlr
     - brew upgrade cmake
     - wget --no-check-certificate https://raw.githubusercontent.com/FFmpeg/gas-preprocessor/master/gas-preprocessor.pl
     - chmod +x gas-preprocessor.pl
