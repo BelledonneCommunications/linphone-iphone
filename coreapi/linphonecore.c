@@ -6440,10 +6440,9 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
 	
-	ms_factory_uninit_voip(lc->factory);
-	ms_factory_destroy(lc->factory);
-//	TODO : set to null
-	
+	lc->factory = ms_factory_exit(lc->factory);
+
+
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
 	ms_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);

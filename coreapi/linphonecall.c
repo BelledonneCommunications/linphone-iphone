@@ -932,7 +932,6 @@ static void port_config_set(LinphoneCall *call, int stream_index, int min_port, 
 static void linphone_call_init_common(LinphoneCall *call, LinphoneAddress *from, LinphoneAddress *to){
 	int min_port, max_port;
 	ms_message("New LinphoneCall [%p] initialized (LinphoneCore version: %s)",call,linphone_core_get_version());
-	call->core->send_call_stats_periodical_updates = lp_config_get_int(call->core->config, "misc", "send_call_stats_periodical_updates", 0);
 	call->main_audio_stream_index = LINPHONE_CALL_STATS_AUDIO;
 	call->main_video_stream_index = LINPHONE_CALL_STATS_VIDEO;
 	call->main_text_stream_index = LINPHONE_CALL_STATS_TEXT;
@@ -2237,7 +2236,7 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 		if (call->params->realtimetext_enabled) _linphone_call_prepare_ice_for_stream(call,call->main_text_stream_index,TRUE);
 		/*start ICE gathering*/
 		if (incoming_offer)
-			linphone_call_update_ice_from_remote_media_description(call, remote, TRUE); /*this may delete the ice session*/
+			linphone_call_update_ice_from_remote_media_description(call,remote); /*this may delete the ice session*/
 		if (call->ice_session && !ice_session_candidates_gathered(call->ice_session)){
 			if (call->audiostream->ms.state==MSStreamInitialized)
 				audio_stream_prepare_sound(call->audiostream, NULL, NULL);
@@ -4170,22 +4169,20 @@ static void report_bandwidth(LinphoneCall *call, MediaStream *as, MediaStream *v
 	call->stats[LINPHONE_CALL_STATS_TEXT].rtcp_download_bandwidth=(ts_active) ? (float)(media_stream_get_rtcp_down_bw(ts)*1e-3) : 0.f;
 	call->stats[LINPHONE_CALL_STATS_TEXT].rtcp_upload_bandwidth=(ts_active) ? (float)(media_stream_get_rtcp_up_bw(ts)*1e-3) : 0.f;
 
-	if (call->core->send_call_stats_periodical_updates){
-		call->stats[LINPHONE_CALL_STATS_AUDIO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
-		call->stats[LINPHONE_CALL_STATS_AUDIO].updated=0;
-		if (as_active) update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], as);
+	call->stats[LINPHONE_CALL_STATS_AUDIO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
+	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_AUDIO]);
+	call->stats[LINPHONE_CALL_STATS_AUDIO].updated=0;
+	if (as) update_local_stats(&call->stats[LINPHONE_CALL_STATS_AUDIO], as);
 
-		call->stats[LINPHONE_CALL_STATS_VIDEO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
-		call->stats[LINPHONE_CALL_STATS_VIDEO].updated=0;
-		if (vs_active) update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], vs);
+	call->stats[LINPHONE_CALL_STATS_VIDEO].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
+	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_VIDEO]);
+	call->stats[LINPHONE_CALL_STATS_VIDEO].updated=0;
+	if (vs) update_local_stats(&call->stats[LINPHONE_CALL_STATS_VIDEO], vs);
 
-		call->stats[LINPHONE_CALL_STATS_TEXT].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
-		linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_TEXT]);
-		call->stats[LINPHONE_CALL_STATS_TEXT].updated=0;
-		if (ts_active) update_local_stats(&call->stats[LINPHONE_CALL_STATS_TEXT], ts);
-	}
+	call->stats[LINPHONE_CALL_STATS_TEXT].updated|=LINPHONE_CALL_STATS_PERIODICAL_UPDATE;
+	linphone_core_notify_call_stats_updated(call->core, call, &call->stats[LINPHONE_CALL_STATS_TEXT]);
+	call->stats[LINPHONE_CALL_STATS_TEXT].updated=0;
+	if (ts) update_local_stats(&call->stats[LINPHONE_CALL_STATS_TEXT], ts);
 
 
 	ms_message(	"Bandwidth usage for call [%p]:\n"
@@ -4316,7 +4313,8 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 			linphone_core_update_ice_state_in_call_stats(call);
 		}
 	} else if (evt == ORTP_EVENT_ICE_RESTART_NEEDED) {
-		ice_session_restart(call->ice_session, IR_Controlling);
+		ice_session_restart(call->ice_session,  IR_Controlling);
+		ice_session_set_role(call->ice_session, IR_Controlling);
 		linphone_core_update_call(call->core, call, call->current_params);
 	}
 }
@@ -4375,28 +4373,6 @@ void linphone_call_notify_stats_updated(LinphoneCall *call, int stream_index){
 	}
 }
 
-static MediaStream * linphone_call_get_media_stream(LinphoneCall *call, int stream_index){
-	if (stream_index == call->main_audio_stream_index)
-		return (MediaStream*)call->audiostream;
-	if (stream_index == call->main_video_stream_index)
-		return (MediaStream*)call->videostream;
-	if (stream_index == call->main_text_stream_index)
-		return (MediaStream*)call->textstream;
-	ms_error("linphone_call_get_media_stream(): no stream index %i", stream_index);
-	return NULL;
-}
-
-static OrtpEvQueue *linphone_call_get_event_queue(LinphoneCall *call, int stream_index){
-	if (stream_index == call->main_audio_stream_index)
-		return call->audiostream_app_evq;
-	if (stream_index == call->main_video_stream_index)
-		return call->videostream_app_evq;
-	if (stream_index == call->main_text_stream_index)
-		return call->textstream_app_evq;
-	ms_error("linphone_call_get_event_queue(): no stream index %i", stream_index);
-	return NULL;
-}
-
 void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 	MediaStream *ms = stream_index == call->main_audio_stream_index ? (MediaStream *)call->audiostream : (stream_index == call->main_video_stream_index ? (MediaStream *)call->videostream : (MediaStream *)call->textstream);
 	OrtpEvQueue *evq;
@@ -4425,15 +4401,11 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 		}
 	}
 	/*yes the event queue has to be taken at each iteration, because ice events may perform operations re-creating the streams*/
-	while((evq = linphone_call_get_event_queue(call, stream_index)) != NULL && NULL != (ev=ortp_ev_queue_get(evq))){
+	while ((evq = stream_index == call->main_audio_stream_index ? call->audiostream_app_evq : (stream_index == call->main_video_stream_index ? call->videostream_app_evq : call->textstream_app_evq))  && (NULL != (ev=ortp_ev_queue_get(evq)))){
 		OrtpEventType evt=ortp_event_get_type(ev);
 		OrtpEventData *evd=ortp_event_get_data(ev);
+
 		int stats_index = stream_index == call->main_audio_stream_index ? LINPHONE_CALL_STATS_AUDIO : (stream_index == call->main_video_stream_index ? LINPHONE_CALL_STATS_VIDEO : LINPHONE_CALL_STATS_TEXT);
-		
-		/*and yes the MediaStream must be taken at each iteration, because it may have changed due to the handling of events
-		 * in this loop*/
-		ms = linphone_call_get_media_stream(call, stream_index);
-		
 		if (ms) linphone_call_stats_fill(&call->stats[stats_index],ms,ev);
 		linphone_call_notify_stats_updated(call,stats_index);
 
@@ -4818,10 +4790,8 @@ MSFormatType linphone_call_get_stream_type(LinphoneCall *call, int stream_index)
 		return MSVideo;
 	} else if (stream_index == call->main_text_stream_index) {
 		return MSText;
-	} else if (stream_index == call->main_audio_stream_index){
-		return MSAudio;
 	}
-	return MSUnknownMedia;
+	return MSAudio;
 }
 
 RtpTransport* linphone_call_get_meta_rtp_transport(LinphoneCall *call, int stream_index) {
@@ -4880,7 +4850,6 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 	/*First, make sure that the proxy from which we received this call, or to which we routed this call is registered*/
 	if (!call->dest_proxy || linphone_proxy_config_get_state(call->dest_proxy) != LinphoneRegistrationOk) return;
 
-	if (!call->core->media_network_reachable) return;
 
 	switch (call->state){
 		case LinphoneCallStreamsRunning:
@@ -4888,7 +4857,8 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 		case LinphoneCallPausedByRemote:
 			ms_message("LinphoneCall[%p] is going to be updated (reINVITE) in order to recover from lost connectivity", call);
 			if (call->ice_session){
-				ice_session_restart(call->ice_session, IR_Controlling);
+				ice_session_restart(call->ice_session,  IR_Controlling);
+				ice_session_set_role(call->ice_session, IR_Controlling);
 			}
 			params = linphone_core_create_call_params(call->core, call);
 			linphone_core_update_call(call->core, call, params);
