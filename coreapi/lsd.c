@@ -249,11 +249,11 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(MSFactory* factory, const char *
 	mp.filter=lsd->mixer;
 	mp.pin=0;
 
-	lsd_player_init(&lsd->branches[0],mp,MS_ITC_SOURCE_ID,lsd);
+	lsd_player_init(factory, &lsd->branches[0],mp,MS_ITC_SOURCE_ID,lsd);
 	ms_filter_add_notify_callback(lsd->branches[0].player,(MSFilterNotifyFunc)lsd_player_configure,&lsd->branches[0],FALSE);
 	for(i=1;i<MAX_BRANCHES;++i){
 		mp.pin=i;
-		lsd_player_init(&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);
+		lsd_player_init(factory,&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);
 	}
 	ms_filter_link(lsd->mixer,0,lsd->soundout,0);
 	lsd->ticker=ms_ticker_new();
