@@ -21,73 +21,83 @@
 
 @implementation Log
 
+#define FILE_SIZE 17
+#define DOMAIN_SIZE 3
+
++ (NSString *)cacheDirectory {
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	NSString *cachePath = [paths objectAtIndex:0];
+	BOOL isDir = NO;
+	NSError *error;
+	// cache directory must be created if not existing
+	if (![[NSFileManager defaultManager] fileExistsAtPath:cachePath isDirectory:&isDir] && isDir == NO) {
+		[[NSFileManager defaultManager] createDirectoryAtPath:cachePath
+								  withIntermediateDirectories:NO
+												   attributes:nil
+														error:&error];
+	}
+	return cachePath;
+}
+
 + (void)log:(OrtpLogLevel)severity file:(const char *)file line:(int)line format:(NSString *)format, ... {
 	va_list args;
 	va_start(args, format);
 	NSString *str = [[NSString alloc] initWithFormat:format arguments:args];
 	const char *utf8str = [str cStringUsingEncoding:NSString.defaultCStringEncoding];
-	int filesize = 20;
 	const char *filename = strchr(file, '/') ? strrchr(file, '/') + 1 : file;
-
-	char levelC = 'U'; // undefined
-	if ((severity & ORTP_FATAL) != 0) {
-		levelC = 'F';
-	} else if ((severity & ORTP_ERROR) != 0) {
-		levelC = 'E';
-	} else if ((severity & ORTP_WARNING) != 0) {
-		levelC = 'W';
-	} else if ((severity & ORTP_MESSAGE) != 0) {
-		levelC = 'I';
-	} else if ((severity & ORTP_DEBUG) != 0) {
-		levelC = 'D';
-	}
-
-	if ((severity & ORTP_DEBUG) != 0) {
-		// lol: ortp_debug(XXX) can be disabled at compile time, but ortp_log(ORTP_DEBUG, xxx) will always be valid even
-		//      not in debug build...
-		ortp_debug("%c %*s:%3d - %s", levelC, filesize, filename + MAX((int)strlen(filename) - filesize, 0), line,
-				   utf8str);
-	} else {
-		// we want application logs to be always enabled (except debug ones) so use | ORTP_ERROR extra mask
-		ortp_log(severity | ORTP_ERROR, "%c %*s:%3d - %s", levelC, filesize,
-				 filename + MAX((int)strlen(filename) - filesize, 0), line, utf8str);
-	}
+	ortp_log(severity, "(%*s:%-4d) %s", FILE_SIZE, filename + MAX((int)strlen(filename) - FILE_SIZE, 0), line, utf8str);
 	va_end(args);
 }
 
-+ (void)enableLogs:(BOOL)enabled {
-	linphone_core_enable_logs_with_cb((OrtpLogFunc)linphone_iphone_log_handler);
-	if (enabled) {
-		NSLog(@"Enabling debug logs");
-		linphone_core_set_log_level(ORTP_DEBUG);
-	} else {
-		NSLog(@"Disabling debug logs");
-		linphone_core_set_log_level(ORTP_ERROR);
-	}
++ (void)enableLogs:(OrtpLogLevel)level {
+	BOOL enabled = (level >= ORTP_DEBUG && level < ORTP_ERROR);
+	linphone_core_set_log_collection_path([self cacheDirectory].UTF8String);
+	linphone_core_enable_logs_with_cb(linphone_iphone_log_handler);
 	linphone_core_enable_log_collection(enabled);
+	if (level == 0) {
+		linphone_core_set_log_level(ORTP_FATAL);
+		ortp_set_log_level("ios", ORTP_FATAL);
+		NSLog(@"I/%s/Disabling all logs", ORTP_LOG_DOMAIN);
+	} else {
+		NSLog(@"I/%s/Enabling %s logs", ORTP_LOG_DOMAIN, (enabled ? "all" : "application only"));
+		linphone_core_set_log_level(level);
+		ortp_set_log_level("ios", level == ORTP_DEBUG ? ORTP_DEBUG : ORTP_MESSAGE);
+	}
 }
 
 #pragma mark - Logs Functions callbacks
 
-void linphone_iphone_log_handler(int lev, const char *fmt, va_list args) {
+void linphone_iphone_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 	NSString *format = [[NSString alloc] initWithUTF8String:fmt];
 	NSString *formatedString = [[NSString alloc] initWithFormat:format arguments:args];
 	NSString *lvl = @"";
-	if ((lev & APP_LVL) == 0) {
-		if ((lev & ORTP_FATAL) != 0) {
-			lvl = @"F ";
-		} else if ((lev & ORTP_ERROR) != 0) {
-			lvl = @"E ";
-		} else if ((lev & ORTP_WARNING) != 0) {
-			lvl = @"W ";
-		} else if ((lev & ORTP_MESSAGE) != 0) {
-			lvl = @"I ";
-		} else if (((lev & ORTP_TRACE) != 0) || ((lev & ORTP_DEBUG) != 0)) {
-			lvl = @"D ";
-		}
+	switch (lev) {
+		case ORTP_FATAL:
+			lvl = @"F";
+			break;
+		case ORTP_ERROR:
+			lvl = @"E";
+			break;
+		case ORTP_WARNING:
+			lvl = @"W";
+			break;
+		case ORTP_MESSAGE:
+			lvl = @"I";
+			break;
+		case ORTP_DEBUG:
+		case ORTP_TRACE:
+			lvl = @"D";
+			break;
+		case ORTP_LOGLEV_END:
+			return;
 	}
+	if (!domain)
+		domain = "liblinphone";
 	// since \r are interpreted like \n, avoid double new lines when logging network packets (belle-sip)
-	NSLog(@"%@%@", lvl, [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
+	// output format is like: I/ios/some logs. We truncate domain to **exactly** DOMAIN_SIZE characters to have
+	// fixed-length aligned logs
+	NSLog(@"%@/%*.*s/%@", lvl, DOMAIN_SIZE, DOMAIN_SIZE, domain,
+		  [formatedString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"]);
 }
 
 @end

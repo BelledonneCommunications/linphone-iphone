@@ -78,7 +78,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	_messageField.minNumberOfLines = 1;
-	_messageField.maxNumberOfLines = ([LinphoneManager runningOnIpad]) ? 10 : 3;
+	_messageField.maxNumberOfLines = IPAD ? 10 : 3;
 	_messageField.delegate = self;
 	_messageField.font = [UIFont systemFontOfSize:18.0f];
 	_messageField.contentInset = UIEdgeInsetsMake(-15, 0, 0, 0);
@@ -320,12 +320,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (from == NULL || chat == NULL) {
 		return;
 	}
+
 	char *fromStr = linphone_address_as_string_uri_only(from);
 	const LinphoneAddress *cr_from = linphone_chat_room_get_peer_address(chatRoom);
 	char *cr_from_string = linphone_address_as_string_uri_only(cr_from);
 
 	if (fromStr && cr_from_string) {
-
 		if (strcasecmp(cr_from_string, fromStr) == 0) {
 			if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
 				linphone_chat_room_mark_as_read(room);
@@ -515,7 +515,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCallClick:(id)sender {
-	[LinphoneManager.instance call:linphone_chat_room_get_peer_address(chatRoom) transfer:NO];
+	[LinphoneManager.instance call:linphone_chat_room_get_peer_address(chatRoom)];
 }
 
 - (IBAction)onListSwipe:(id)sender {

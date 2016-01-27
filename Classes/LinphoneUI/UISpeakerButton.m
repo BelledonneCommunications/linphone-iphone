@@ -26,38 +26,26 @@
 
 @implementation UISpeakerButton
 
-#pragma mark - Static Functions
-
-static void audioRouteChangeListenerCallback(void *inUserData,					  // 1
-											 AudioSessionPropertyID inPropertyID, // 2
-											 UInt32 inPropertyValueSize,		  // 3
-											 const void *inPropertyValue		  // 4
-											 ) {
-	if (inPropertyID != kAudioSessionProperty_AudioRouteChange)
-		return; // 5
-	UISpeakerButton *button = (__bridge UISpeakerButton *)inUserData;
-	[button update];
-}
-
 INIT_WITH_COMMON_CF {
-	AudioSessionInitialize(NULL, NULL, NULL, NULL);
-	OSStatus lStatus = AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange,
-													   audioRouteChangeListenerCallback, (__bridge void *)(self));
-	if (lStatus) {
-		LOGE(@"cannot register route change handler [%ld]", lStatus);
-	}
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(audioRouteChangeListenerCallback:)
+											   name:AVAudioSessionRouteChangeNotification
+											 object:nil];
 	return self;
 }
 
 - (void)dealloc {
-	OSStatus lStatus = AudioSessionRemovePropertyListenerWithUserData(
-		kAudioSessionProperty_AudioRouteChange, audioRouteChangeListenerCallback, (__bridge void *)(self));
-	if (lStatus) {
-		LOGE(@"cannot un register route change handler [%ld]", lStatus);
-	}
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - UIToggleButtonDelegate Functions
+
+- (void)audioRouteChangeListenerCallback:(NSNotification *)notif {
+	if ([[notif.userInfo valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue] ==
+		AVAudioSessionRouteChangeReasonRouteConfigurationChange) {
+		[self update];
+	}
+}
 
 - (void)onOn {
 	[LinphoneManager.instance setSpeakerEnabled:TRUE];
@@ -68,7 +56,7 @@ INIT_WITH_COMMON_CF {
 }
 
 - (bool)onUpdate {
-	[self setEnabled:[LinphoneManager.instance allowSpeaker]];
+	self.enabled = [LinphoneManager.instance allowSpeaker];
 	return [LinphoneManager.instance speakerEnabled];
 }
 

@@ -23,22 +23,16 @@
 
 #import "UICamSwitch.h"
 #import "UICallButton.h"
-#import "UITransferButton.h"
 #import "UIDigitButton.h"
 
 @interface DialerView
 	: TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate, MFMailComposeViewControllerDelegate> {
 }
 
-- (void)setAddress:(NSString *)address;
-
-@property(nonatomic, assign) BOOL transferMode;
 
 @property(nonatomic, strong) IBOutlet UITextField *addressField;
 @property(nonatomic, strong) IBOutlet UIButton *addContactButton;
 @property(nonatomic, strong) IBOutlet UICallButton *callButton;
-@property(nonatomic, strong) IBOutlet UICallButton *addCallButton;
-@property(nonatomic, strong) IBOutlet UITransferButton *transferButton;
 @property(nonatomic, strong) IBOutlet UIButton *backButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *backspaceButton;
 
@@ -63,5 +57,7 @@
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onAddressChange:(id)sender;
 - (IBAction)onBackspaceClick:(id)sender;
+
+- (void)setAddress:(NSString *)address;
 
 @end

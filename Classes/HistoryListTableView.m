@@ -228,7 +228,7 @@
 				[cell onDetails:self];
 			} else {
 				LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-				[LinphoneManager.instance call:addr transfer:NO];
+				[LinphoneManager.instance call:addr];
 			}
 		}
 	}

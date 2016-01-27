@@ -108,6 +108,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - ViewController Functions
 
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	[self changeView:ContactsLinphone];
+	if ([tableController totalNumberOfItems] == 0) {
+		[self changeView:ContactsAll];
+	}
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
@@ -133,11 +141,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[error show];
 		[PhoneMainView.instance popCurrentView];
 	}
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-	[self changeView:ContactsAll];
 }
 
 #pragma mark -

@@ -100,21 +100,15 @@ typedef enum {
  whatever is using it (xib, source code, etc., tableview cell) */
 #define INIT_WITH_COMMON_C                                                                                             \
 	-(instancetype)init {                                                                                              \
-		self = [super init];                                                                                           \
-		[self commonInit];                                                                                             \
-		return self;                                                                                                   \
+		return [[super init] commonInit];                                                                              \
 	}                                                                                                                  \
 	-(instancetype)initWithCoder : (NSCoder *)aDecoder {                                                               \
-		self = [super initWithCoder:aDecoder];                                                                         \
-		[self commonInit];                                                                                             \
-		return self;                                                                                                   \
+		return [[super initWithCoder:aDecoder] commonInit];                                                            \
 	}                                                                                                                  \
 	-(instancetype)commonInit
 
 #define INIT_WITH_COMMON_CF                                                                                            \
 	-(instancetype)initWithFrame : (CGRect)frame {                                                                     \
-		self = [super initWithFrame:frame];                                                                            \
-		[self commonInit];                                                                                             \
-		return self;                                                                                                   \
+		return [[super initWithFrame:frame] commonInit];                                                               \
 	}                                                                                                                  \
 	INIT_WITH_COMMON_C

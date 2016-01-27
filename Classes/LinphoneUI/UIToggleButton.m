@@ -51,7 +51,6 @@
 	}
 	return self;
 }
-
 #pragma mark -
 
 - (void)touchUp:(id)sender {

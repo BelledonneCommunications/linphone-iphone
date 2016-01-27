@@ -73,7 +73,12 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [[UITableViewCell alloc] init];
 	if (indexPath.section == 0) {
-		LinphoneProxyConfig *proxy = ms_list_nth_data(linphone_core_get_proxy_config_list(LC), (int)indexPath.row);
+		// do not display default account here, it is already in header view
+		int idx = linphone_core_get_default_proxy_config(LC) ? ms_list_index(linphone_core_get_proxy_config_list(LC),
+																			 linphone_core_get_default_proxy_config(LC))
+															 : 0;
+		LinphoneProxyConfig *proxy = ms_list_nth_data(linphone_core_get_proxy_config_list(LC),
+													  (int)indexPath.row + (idx <= indexPath.row ? 1 : 0));
 		if (proxy) {
 			cell.textLabel.text = [NSString stringWithUTF8String:linphone_proxy_config_get_identity(proxy)];
 			cell.imageView.image = [StatusBarView imageForState:linphone_proxy_config_get_state(proxy)];

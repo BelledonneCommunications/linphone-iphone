@@ -53,8 +53,7 @@
 
 - (void)applicationWillResignActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-	LinphoneCore *lc = LC;
-	LinphoneCall *call = linphone_core_get_current_call(lc);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 
 	if (call) {
 		/* save call context */
@@ -84,8 +83,7 @@
 
 	[instance becomeActive];
 
-	LinphoneCore *lc = LC;
-	LinphoneCall *call = linphone_core_get_current_call(lc);
+	LinphoneCall *call = linphone_core_get_current_call(LC);
 
 	if (call) {
 		if (call == instance->currentCallContextBeforeGoingBackground.call) {
@@ -104,27 +102,44 @@
 }
 
 - (UIUserNotificationCategory *)getMessageNotificationCategory {
+	NSArray *actions;
 
-	UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
-	reply.identifier = @"reply";
-	reply.title = NSLocalizedString(@"Reply", nil);
-	reply.activationMode = UIUserNotificationActivationModeForeground;
-	reply.destructive = NO;
-	reply.authenticationRequired = YES;
+	if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
+		[LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
 
-	UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
-	mark_read.identifier = @"mark_read";
-	mark_read.title = NSLocalizedString(@"Mark Read", nil);
-	mark_read.activationMode = UIUserNotificationActivationModeBackground;
-	mark_read.destructive = NO;
-	mark_read.authenticationRequired = NO;
+		UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
+		reply.identifier = @"reply";
+		reply.title = NSLocalizedString(@"Reply", nil);
+		reply.activationMode = UIUserNotificationActivationModeForeground;
+		reply.destructive = NO;
+		reply.authenticationRequired = YES;
 
-	NSArray *localRingActions = @[ mark_read, reply ];
+		UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
+		mark_read.identifier = @"mark_read";
+		mark_read.title = NSLocalizedString(@"Mark Read", nil);
+		mark_read.activationMode = UIUserNotificationActivationModeBackground;
+		mark_read.destructive = NO;
+		mark_read.authenticationRequired = NO;
+
+		actions = @[ mark_read, reply ];
+	} else {
+		// iOS 9 allows for inline reply. We don't propose mark_read in this case
+		UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
+
+		reply_inline.identifier = @"reply_inline";
+		reply_inline.title = NSLocalizedString(@"Reply", nil);
+		reply_inline.activationMode = UIUserNotificationActivationModeBackground;
+		reply_inline.destructive = NO;
+		reply_inline.authenticationRequired = NO;
+		reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
+
+		actions = @[ reply_inline ];
+	}
 
 	UIMutableUserNotificationCategory *localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
 	localRingNotifAction.identifier = @"incoming_msg";
-	[localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
-	[localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
+	[localRingNotifAction setActions:actions forContext:UIUserNotificationActionContextDefault];
+	[localRingNotifAction setActions:actions forContext:UIUserNotificationActionContextMinimal];
 
 	return localRingNotifAction;
 }
@@ -154,14 +169,8 @@
 	return localRingNotifAction;
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
-	UIApplication *app = [UIApplication sharedApplication];
-	UIApplicationState state = app.applicationState;
-
-	LinphoneManager *instance = LinphoneManager.instance;
-	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
-	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
+- (void)registerForNotifications:(UIApplication *)app {
+	LinphoneManager *instance = [LinphoneManager instance];
 
 	if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
 		/* iOS8 notifications can be actioned! Awesome: */
@@ -178,12 +187,25 @@
 			[app registerForRemoteNotifications];
 		}
 	} else {
+		/* iOS7 and below */
 		if (!instance.isTesting) {
 			NSUInteger notifTypes =
 				UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeBadge;
 			[app registerForRemoteNotificationTypes:notifTypes];
 		}
 	}
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+	UIApplication *app = [UIApplication sharedApplication];
+	UIApplicationState state = app.applicationState;
+
+	LinphoneManager *instance = [LinphoneManager instance];
+	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
+	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
+
+	[self registerForNotifications:app];
 
 	if (state == UIApplicationStateBackground) {
 		// we've been woken up directly to background;
@@ -276,9 +298,8 @@
 			NSString *loc_key = [alert objectForKey:@"loc-key"];
 			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
 			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
-			LinphoneCore *lc = LC;
-			if (linphone_core_get_calls(lc) == NULL) { // if there are calls, obviously our TCP socket shall be working
-				linphone_core_set_network_reachable(lc, FALSE);
+			if (linphone_core_get_calls(LC) == NULL) { // if there are calls, obviously our TCP socket shall be working
+				linphone_core_set_network_reachable(LC, FALSE);
 				LinphoneManager.instance.connectivity = none; /*force connectivity to be discovered again*/
 				[LinphoneManager.instance refreshRegisters];
 				if (loc_key != nil) {
@@ -369,12 +390,11 @@
 								   userInfo:nil
 									repeats:FALSE];
 
-	LinphoneCore *lc = LC;
 	// If no call is yet received at this time, then force Linphone to drop the current socket and make new one to
 	// register, so that we get
 	// a better chance to receive the INVITE.
-	if (linphone_core_get_calls(lc) == NULL) {
-		linphone_core_set_network_reachable(lc, FALSE);
+	if (linphone_core_get_calls(LC) == NULL) {
+		linphone_core_set_network_reachable(LC, FALSE);
 		lm.connectivity = none; /*force connectivity to be discovered again*/
 		[lm refreshRegisters];
 	}
@@ -406,17 +426,15 @@
 			 completionHandler:(void (^)())completionHandler {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
-
-		LinphoneCore *lc = LC;
 		LOGI(@"%@", NSStringFromSelector(_cmd));
 		if ([notification.category isEqualToString:@"incoming_call"]) {
 			if ([identifier isEqualToString:@"answer"]) {
 				// use the standard handler
 				[self application:application didReceiveLocalNotification:notification];
 			} else if ([identifier isEqualToString:@"decline"]) {
-				LinphoneCall *call = linphone_core_get_current_call(lc);
+				LinphoneCall *call = linphone_core_get_current_call(LC);
 				if (call)
-					linphone_core_decline_call(lc, call, LinphoneReasonDeclined);
+					linphone_core_decline_call(LC, call, LinphoneReasonDeclined);
 			}
 		} else if ([notification.category isEqualToString:@"incoming_msg"]) {
 			if ([identifier isEqualToString:@"reply"]) {
@@ -424,7 +442,7 @@
 				[self application:application didReceiveLocalNotification:notification];
 			} else if ([identifier isEqualToString:@"mark_read"]) {
 				NSString *from = [notification.userInfo objectForKey:@"from_addr"];
-				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
+				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
 				if (room) {
 					linphone_chat_room_mark_as_read(room);
 					TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
@@ -436,6 +454,25 @@
 		}
 	}
 	completionHandler();
+}
+
+- (void)application:(UIApplication *)application
+	handleActionWithIdentifier:(NSString *)identifier
+		  forLocalNotification:(UILocalNotification *)notification
+			  withResponseInfo:(NSDictionary *)responseInfo
+			 completionHandler:(void (^)())completionHandler {
+
+	if ([notification.category isEqualToString:@"incoming_msg"] && [identifier isEqualToString:@"reply_inline"]) {
+		LinphoneCore *lc = [LinphoneManager getLc];
+		NSString *replyText = [responseInfo objectForKey:UIUserNotificationActionResponseTypedTextKey];
+		NSString *from = [notification.userInfo objectForKey:@"from_addr"];
+		LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [from UTF8String]);
+		if (room) {
+			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
+			linphone_chat_room_send_chat_message(room, msg);
+			linphone_chat_room_mark_as_read(room);
+		}
+	}
 }
 
 - (void)application:(UIApplication *)application

@@ -7,7 +7,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DialerView">
             <connections>
-                <outlet property="addCallButton" destination="184" id="227"/>
                 <outlet property="addContactButton" destination="222" id="225"/>
                 <outlet property="addressField" destination="4" id="205"/>
                 <outlet property="backButton" destination="183" id="d75-ly-K6w"/>
@@ -26,7 +25,6 @@
                 <outlet property="sixButton" destination="33" id="196"/>
                 <outlet property="starButton" destination="39" id="199"/>
                 <outlet property="threeButton" destination="29" id="193"/>
-                <outlet property="transferButton" destination="236" id="253"/>
                 <outlet property="twoButton" destination="37" id="192"/>
                 <outlet property="view" destination="171" id="176"/>
                 <outlet property="zeroButton" destination="40" id="198"/>
@@ -289,34 +287,6 @@
                                         <outlet property="addressField" destination="4" id="235"/>
                                     </connections>
                                 </button>
-                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="236" userLabel="transferButton" customClass="UITransferButton">
-                                    <rect key="frame" x="180" y="0.0" width="360" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Transfer call"/>
-                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="call_transfer_default.png" backgroundImage="color_A.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="disabled" image="call_transfer_disabled.png"/>
-                                    <state key="highlighted" backgroundImage="color_L.png"/>
-                                    <connections>
-                                        <outlet property="addressField" destination="4" id="237"/>
-                                    </connections>
-                                </button>
-                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="184" userLabel="addCallButton" customClass="UICallButton">
-                                    <rect key="frame" x="180" y="0.0" width="360" height="66"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Add call"/>
-                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                    <state key="normal" image="call_add_default.png" backgroundImage="color_A.png">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <state key="disabled" image="call_add_disabled.png"/>
-                                    <state key="highlighted" backgroundImage="color_L.png"/>
-                                    <connections>
-                                        <outlet property="addressField" destination="4" id="234"/>
-                                    </connections>
-                                </button>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         </view>
@@ -333,14 +303,10 @@
         <image name="backspace_default.png" width="36" height="19"/>
         <image name="backspace_disabled.png" width="36" height="19"/>
         <image name="backspace_over.png" width="36" height="19"/>
-        <image name="call_add_default.png" width="39" height="35"/>
-        <image name="call_add_disabled.png" width="39" height="35"/>
         <image name="call_alt_back_default.png" width="50" height="36"/>
         <image name="call_alt_back_disabled.png" width="50" height="36"/>
         <image name="call_audio_start_default.png" width="36" height="36"/>
         <image name="call_audio_start_disabled.png" width="36" height="36"/>
-        <image name="call_transfer_default.png" width="40" height="36"/>
-        <image name="call_transfer_disabled.png" width="40" height="36"/>
         <image name="color_A.png" width="2" height="2"/>
         <image name="color_E.png" width="2" height="2"/>
         <image name="color_F.png" width="2" height="2"/>

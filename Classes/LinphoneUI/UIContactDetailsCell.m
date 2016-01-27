@@ -76,7 +76,7 @@
 
 - (IBAction)onCallClick:(id)event {
 	LinphoneAddress *addr = linphone_core_interpret_url(LC, _addressLabel.text.UTF8String);
-	[LinphoneManager.instance call:addr transfer:NO];
+	[LinphoneManager.instance call:addr];
 	if (addr)
 		linphone_address_destroy(addr);
 }

@@ -147,19 +147,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)reset {
 	[LinphoneManager.instance removeAllAccounts];
-	[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"pushnotification_preference"];
-
-	LinphoneCore *lc = LC;
-	LCSipTransports transportValue = {5060, 5060, -1, -1};
-
-	if (linphone_core_set_sip_transports(lc, &transportValue)) {
-		LOGE(@"cannot set transport");
-	}
-
-	[LinphoneManager.instance lpConfigSetBool:FALSE forKey:@"ice_preference"];
-	[LinphoneManager.instance lpConfigSetString:@"" forKey:@"stun_preference"];
-	linphone_core_set_stun_server(lc, NULL);
-	linphone_core_set_firewall_policy(lc, LinphonePolicyNoFirewall);
 	[self resetTextFields];
 	[self changeView:_welcomeView back:FALSE animation:FALSE];
 	_waitView.hidden = TRUE;
@@ -213,15 +200,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)configureProxyConfig {
-	LinphoneCore *lc = LC;
 	LinphoneManager *lm = LinphoneManager.instance;
+
+	if (!linphone_core_is_network_reachable(LC)) {
+		UIAlertView *error =
+			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Network Error", nil)
+									   message:NSLocalizedString(@"There is no network connection available, enable "
+																 @"WIFI or WWAN prior to configure an account",
+																 nil)
+									  delegate:nil
+							 cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+							 otherButtonTitles:nil];
+		[error show];
+		_waitView.hidden = YES;
+		return;
+	}
 
 	// remove previous proxy config, if any
 	if (new_config != NULL) {
 		const LinphoneAuthInfo *auth = linphone_proxy_config_find_auth_info(new_config);
-		linphone_core_remove_proxy_config(lc, new_config);
+		linphone_core_remove_proxy_config(LC, new_config);
 		if (auth) {
-			linphone_core_remove_auth_info(lc, auth);
+			linphone_core_remove_auth_info(LC, auth);
 		}
 	}
 
@@ -229,7 +229,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (new_config) {
 		[lm configurePushTokenForProxyConfig:new_config];
-		linphone_core_set_default_proxy_config(lc, new_config);
+		linphone_core_set_default_proxy_config(LC, new_config);
 		// reload address book to prepend proxy config domain to contacts' phone number
 		// todo: STOP doing that!
 		[[LinphoneManager.instance fastAddressBook] reload];

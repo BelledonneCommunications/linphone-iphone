@@ -6,7 +6,7 @@
 //
 //
 
-#import "DetailView.h"
+#import "DetailTableView.h"
 #import "MasterView.h"
 #import "LogsView.h"
 #include "linphone/liblinphone_tester.h"
@@ -36,7 +36,7 @@ static NSString *const kAllTestsName = @"Run All tests";
 
 @end
 
-@interface DetailView () {
+@interface DetailTableView () {
 	NSMutableArray *_tests;
 	BOOL in_progress;
 }
@@ -44,7 +44,7 @@ static NSString *const kAllTestsName = @"Run All tests";
 - (void)configureView;
 @end
 
-@implementation DetailView
+@implementation DetailTableView
 
 #pragma mark - Managing the detail item
 
@@ -113,7 +113,11 @@ static NSString *const kAllTestsName = @"Run All tests";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"testCellIdentifier" forIndexPath:indexPath];
+	static NSString *kCellId = @"testCellIdentifier";
+	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId forIndexPath:indexPath];
+	if (cell == nil) {
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellId];
+	}
 
 	TestItem *test = _tests[indexPath.row];
 	cell.textLabel.text = [NSString stringWithFormat:@"%@/%@", test.suite, test.name];

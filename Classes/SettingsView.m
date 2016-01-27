@@ -19,6 +19,7 @@
 
 #import "SettingsView.h"
 #import "LinphoneManager.h"
+#import "LinphoneAppDelegate.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
 
@@ -282,28 +283,31 @@ INIT_WITH_COMMON_CF {
 }
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	// when device is slow and you are typing an item too much, a crash may happen
-	// because we try to push the same view multiple times - in that case we should
-	// do nothing but wait for device to respond again.
-	if (self.navigationController.topViewController == viewController) {
-		return;
+
+	@try {
+		[UINavigationControllerEx removeBackground:viewController.view];
+
+		[viewController view]; // Force view
+		UILabel *labelTitleView = [[UILabel alloc] init];
+		labelTitleView.backgroundColor = [UIColor clearColor];
+		labelTitleView.textColor =
+			[UIColor colorWithRed:0x41 / 255.0f green:0x48 / 255.0f blue:0x4f / 255.0f alpha:1.0];
+		labelTitleView.shadowColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+		labelTitleView.font = [UIFont boldSystemFontOfSize:20];
+		labelTitleView.shadowOffset = CGSizeMake(0, 1);
+		labelTitleView.textAlignment = NSTextAlignmentCenter;
+		labelTitleView.text = viewController.title;
+		[labelTitleView sizeToFit];
+		viewController.navigationItem.titleView = labelTitleView;
+
+		[super pushViewController:viewController animated:animated];
+	} @catch (NSException *e) {
+		// when device is slow and you are typing an item too much, a crash may happen
+		// because we try to push the same view multiple times - in that case we should
+		// do nothing but wait for device to respond again.
+		LOGI(@"Failed to push view because it's already there: %@", e.reason);
+		[self popToViewController:viewController animated:YES];
 	}
-
-	[UINavigationControllerEx removeBackground:viewController.view];
-
-	[viewController view]; // Force view
-	UILabel *labelTitleView = [[UILabel alloc] init];
-	labelTitleView.backgroundColor = [UIColor clearColor];
-	labelTitleView.textColor = [UIColor colorWithRed:0x41 / 255.0f green:0x48 / 255.0f blue:0x4f / 255.0f alpha:1.0];
-	labelTitleView.shadowColor = [UIColor colorWithWhite:1.0 alpha:0.5];
-	labelTitleView.font = [UIFont boldSystemFontOfSize:20];
-	labelTitleView.shadowOffset = CGSizeMake(0, 1);
-	labelTitleView.textAlignment = NSTextAlignmentCenter;
-	labelTitleView.text = viewController.title;
-	[labelTitleView sizeToFit];
-	viewController.navigationItem.titleView = labelTitleView;
-
-	[super pushViewController:viewController animated:animated];
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers {
@@ -410,12 +414,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 		removeFromHiddenKeys = (stun_server && ([stun_server length] > 0));
 		[keys addObject:@"ice_preference"];
 	} else if ([@"debugenable_preference" compare:notif.object] == NSOrderedSame) {
-		BOOL debugEnabled = [[notif.userInfo objectForKey:@"debugenable_preference"] boolValue];
+		int debugLevel = [[notif.userInfo objectForKey:@"debugenable_preference"] intValue];
+		BOOL debugEnabled = (debugLevel >= ORTP_DEBUG && debugLevel < ORTP_ERROR);
 		removeFromHiddenKeys = debugEnabled;
 		[keys addObject:@"send_logs_button"];
 		[keys addObject:@"reset_logs_button"];
-		[Log enableLogs:debugEnabled];
-		[LinphoneManager.instance lpConfigSetBool:debugEnabled forKey:@"debugenable_preference"];
+		[Log enableLogs:debugLevel];
+		[LinphoneManager.instance lpConfigSetInt:debugLevel forKey:@"debugenable_preference"];
 	} else if ([@"account_mandatory_advanced_preference" compare:notif.object] == NSOrderedSame) {
 		removeFromHiddenKeys = [[notif.userInfo objectForKey:@"account_mandatory_advanced_preference"] boolValue];
 		for (NSString *key in settingsStore->dict) {
@@ -428,6 +433,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		removeFromHiddenKeys = [video_preset isEqualToString:@"custom"];
 		[keys addObject:@"video_preferred_fps_preference"];
 		[keys addObject:@"download_bandwidth_preference"];
+	} else if ([notif.object isEqualToString:@"show_msg_in_notif"]) {
+		// we have to register again to the iOS notification, because we change the actions associated with IM_MSG
+		UIApplication *app = [UIApplication sharedApplication];
+		LinphoneAppDelegate *delegate = (LinphoneAppDelegate *)app.delegate;
+		[delegate registerForNotifications:app];
 	}
 
 	for (NSString *key in keys) {
@@ -521,7 +531,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[hiddenKeys addObject:@"flush_images_button"];
 #endif
 
-	if (![LinphoneManager.instance lpConfigBoolForKey:@"debugenable_preference"]) {
+	int debugLevel = [LinphoneManager.instance lpConfigIntForKey:@"debugenable_preference"];
+	BOOL debugEnabled = (debugLevel >= ORTP_DEBUG && debugLevel < ORTP_ERROR);
+	if (!debugEnabled) {
 		[hiddenKeys addObject:@"send_logs_button"];
 		[hiddenKeys addObject:@"reset_logs_button"];
 	}
@@ -752,6 +764,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 			[attachments addObject:@[ [NSString stringWithUTF8String:filepath], mimeType, filename ]];
 		}
 	}
+	ms_free(filepath);
 
 	if ([LinphoneManager.instance lpConfigBoolForKey:@"send_logs_include_linphonerc_and_chathistory"]) {
 		// retrieve linphone rc
@@ -766,8 +779,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 		]];
 	}
 
+	if (attachments.count == 0) {
+		DTAlertView *alert = [[DTAlertView alloc]
+			initWithTitle:NSLocalizedString(@"Cannot send logs", nil)
+				  message:NSLocalizedString(@"Nothing could be collected from your application, aborting now.", nil)];
+		[alert addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+		[alert show];
+		return;
+	}
+
 	[self emailAttachments:attachments];
-	ms_free(filepath);
 }
 - (void)emailAttachments:(NSArray *)attachments {
 	NSString *error = nil;
@@ -792,11 +813,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 		MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
 		picker.mailComposeDelegate = self;
 
-		[picker setSubject:@"<Please describe your problem>"];
+		[picker setSubject:NSLocalizedString(@"<Please describe your problem or you will be ignored>",
+											 @"Email title for people wanting to send a bug report")];
 		[picker setToRecipients:[NSArray arrayWithObjects:@"linphone-iphone@belledonne-communications.com", nil]];
-		[picker setMessageBody:@"Here are information about an issue I had on my device.\nI was "
-							   @"doing ...\nI expected Linphone to ...\nInstead, I got an "
-							   @"unexpected result: ..."
+		[picker setMessageBody:NSLocalizedString(@"Here are information about an issue I had on my device.\nI was "
+												 @"doing ...\nI expected Linphone to ...\nInstead, I got an "
+												 @"unexpected result: ...",
+												 @"Template email for people wanting to send a bug report")
 						isHTML:NO];
 		for (NSArray *attachment in attachments) {
 			if ([[NSFileManager defaultManager] fileExistsAtPath:attachment[0]]) {

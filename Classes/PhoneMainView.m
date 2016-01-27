@@ -303,12 +303,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneCallState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	NSString *message = [notif.userInfo objectForKey:@"message"];
 
-	// Don't handle call state during incoming call view
-	if ([[self currentView] equal:CallIncomingView.compositeViewDescription] && state != LinphoneCallError &&
-		state != LinphoneCallEnd) {
-		return;
-	}
-
 	switch (state) {
 		case LinphoneCallIncomingReceived:
 		case LinphoneCallIncomingEarlyMedia: {
@@ -399,18 +393,16 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 }
 - (void)startUp {
-	LinphoneCore *core = nil;
 	@try {
-		core = LC;
 		LinphoneManager *lm = LinphoneManager.instance;
-		if (linphone_core_get_global_state(core) != LinphoneGlobalOn) {
+		if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
 			[self changeCurrentView:DialerView.compositeViewDescription];
 		} else if ([LinphoneManager.instance lpConfigBoolForKey:@"enable_first_login_view_preference"] == true) {
 			[PhoneMainView.instance changeCurrentView:FirstLoginView.compositeViewDescription];
 		} else {
 			// always start to dialer when testing
 			// Change to default view
-			const MSList *list = linphone_core_get_proxy_config_list(core);
+			const MSList *list = linphone_core_get_proxy_config_list(LC);
 			if (list != NULL || ([lm lpConfigBoolForKey:@"hide_assistant_preference"] == true) || lm.isTesting) {
 				[self changeCurrentView:DialerView.compositeViewDescription];
 			} else {

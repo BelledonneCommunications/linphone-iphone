@@ -38,8 +38,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCallUpdate object:nil];
+	_call = NULL;
 }
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -64,6 +64,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return self.class.compositeViewDescription;
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	if (_call) {
+		[self update];
+	}
+}
+
 #pragma mark - Event Functions
 
 - (void)callUpdateEvent:(NSNotification *)notif {
@@ -75,7 +82,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)callUpdate:(LinphoneCall *)acall state:(LinphoneCallState)astate {
 	if (_call == acall && (astate == LinphoneCallEnd || astate == LinphoneCallError)) {
 		[_delegate incomingCallAborted:_call];
-		[self dismiss];
 	} else if ([LinphoneManager.instance lpConfigBoolForKey:@"auto_answer"]) {
 		LinphoneCallState state = linphone_call_get_state(_call);
 		if (state == LinphoneCallIncomingReceived) {
@@ -86,12 +92,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 #pragma mark -
-
-- (void)dismiss {
-	if ([[PhoneMainView.instance currentView] equal:CallIncomingView.compositeViewDescription]) {
-		[PhoneMainView.instance popCurrentView];
-	}
-}
 
 - (void)update {
 	const LinphoneAddress *addr = linphone_call_get_remote_address(_call);
@@ -116,17 +116,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAcceptClick:(id)event {
-	[self dismiss];
 	[_delegate incomingCallAccepted:_call evenWithVideo:YES];
 }
 
 - (IBAction)onDeclineClick:(id)event {
-	[self dismiss];
 	[_delegate incomingCallDeclined:_call];
 }
 
 - (IBAction)onAcceptAudioOnlyClick:(id)sender {
-	[self dismiss];
 	[_delegate incomingCallAccepted:_call evenWithVideo:NO];
 }
 

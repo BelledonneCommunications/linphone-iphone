@@ -30,11 +30,14 @@
 	return [[testString componentsSeparatedByCharactersInSet:charactersToRemove] componentsJoinedByString:@"_"];
 }
 
-+ (void)initialize {
+void tester_logs_handler(int level, const char *fmt, va_list args) {
+	linphone_iphone_log_handler(NULL, level, fmt, args);
+}
 
++ (void)initialize {
 	static char *bundle = NULL;
 	static char *documents = NULL;
-	bc_tester_init((void (*)(int, const char *fm, va_list))linphone_iphone_log_handler, ORTP_MESSAGE, ORTP_ERROR);
+	bc_tester_init(tester_logs_handler, ORTP_MESSAGE, ORTP_ERROR);
 	liblinphone_tester_add_suites();
 
 	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];

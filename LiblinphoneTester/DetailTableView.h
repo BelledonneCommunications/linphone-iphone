@@ -21,7 +21,7 @@ typedef NS_ENUM(int, TestState) { TestStateIdle, TestStatePassed, TestStateInPro
 
 @end
 
-@interface DetailView : UITableViewController
+@interface DetailTableView : UITableViewController
 
 @property(strong, nonatomic) NSString *detailItem;
 

@@ -43,6 +43,18 @@
 		34F9E03B14C4251B00E1BC69 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03314C4247A00E1BC69 /* AVFoundation.framework */; };
 		34F9E03C14C4251B00E1BC69 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E03614C424AF00E1BC69 /* CoreMedia.framework */; };
 		34F9E03D14C4251B00E1BC69 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34F9E00814C41FE900E1BC69 /* CoreVideo.framework */; };
+		630AD4A31C5663A000449F6E /* libcorec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A01C5663A000449F6E /* libcorec.a */; };
+		630AD4A41C5663A000449F6E /* libebml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A11C5663A000449F6E /* libebml2.a */; };
+		630AD4A51C5663A000449F6E /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A21C5663A000449F6E /* libmatroska2.a */; };
+		630AD4A61C5663B000449F6E /* libcorec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A01C5663A000449F6E /* libcorec.a */; };
+		630AD4A71C5663B000449F6E /* libebml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A11C5663A000449F6E /* libebml2.a */; };
+		630AD4A81C5663B000449F6E /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A21C5663A000449F6E /* libmatroska2.a */; };
+		630AD4A91C5663BE00449F6E /* libcorec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A01C5663A000449F6E /* libcorec.a */; };
+		630AD4AA1C5663BE00449F6E /* libebml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A11C5663A000449F6E /* libebml2.a */; };
+		630AD4AB1C5663BE00449F6E /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A21C5663A000449F6E /* libmatroska2.a */; };
+		630AD4AC1C5663D000449F6E /* libcorec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A01C5663A000449F6E /* libcorec.a */; };
+		630AD4AD1C5663D000449F6E /* libebml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A11C5663A000449F6E /* libebml2.a */; };
+		630AD4AE1C5663D000449F6E /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A21C5663A000449F6E /* libmatroska2.a */; };
 		63D5C1001BA6E3EB002D1ABF /* helloworld.c in Sources */ = {isa = PBXBuildFile; fileRef = 63D5C0FC1BA6E3EB002D1ABF /* helloworld.c */; };
 		63D5C1021BA6E3F7002D1ABF /* registration.c in Sources */ = {isa = PBXBuildFile; fileRef = 63D5C0FD1BA6E3EB002D1ABF /* registration.c */; };
 		63D5C1031BA6E3FA002D1ABF /* chatroom.c in Sources */ = {isa = PBXBuildFile; fileRef = 63D5C0FB1BA6E3EB002D1ABF /* chatroom.c */; };
@@ -208,6 +220,9 @@
 		34F9E00A14C4202100E1BC69 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		34F9E03314C4247A00E1BC69 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		34F9E03614C424AF00E1BC69 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		630AD4A01C5663A000449F6E /* libcorec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcorec.a; path = "../liblinphone-sdk/apple-darwin/lib/libcorec.a"; sourceTree = "<group>"; };
+		630AD4A11C5663A000449F6E /* libebml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libebml2.a; path = "../liblinphone-sdk/apple-darwin/lib/libebml2.a"; sourceTree = "<group>"; };
+		630AD4A21C5663A000449F6E /* libmatroska2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmatroska2.a; path = "../liblinphone-sdk/apple-darwin/lib/libmatroska2.a"; sourceTree = "<group>"; };
 		63D5C0FA1BA6E3EB002D1ABF /* buddy_status.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = buddy_status.c; path = ../submodules/linphone/coreapi/help/buddy_status.c; sourceTree = "<group>"; };
 		63D5C0FB1BA6E3EB002D1ABF /* chatroom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chatroom.c; path = ../submodules/linphone/coreapi/help/chatroom.c; sourceTree = "<group>"; };
 		63D5C0FC1BA6E3EB002D1ABF /* helloworld.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = helloworld.c; path = ../submodules/linphone/coreapi/help/helloworld.c; sourceTree = "<group>"; };
@@ -257,6 +272,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				630AD4A31C5663A000449F6E /* libcorec.a in Frameworks */,
+				630AD4A41C5663A000449F6E /* libebml2.a in Frameworks */,
+				630AD4A51C5663A000449F6E /* libmatroska2.a in Frameworks */,
 				63D5C1471BA6E516002D1ABF /* libmsamr.a in Frameworks */,
 				63D5C1481BA6E516002D1ABF /* libmsbcg729.a in Frameworks */,
 				63D5C14A1BA6E516002D1ABF /* libmsopenh264.a in Frameworks */,
@@ -311,6 +329,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				630AD4A61C5663B000449F6E /* libcorec.a in Frameworks */,
+				630AD4A71C5663B000449F6E /* libebml2.a in Frameworks */,
+				630AD4A81C5663B000449F6E /* libmatroska2.a in Frameworks */,
 				63D5C1891BA6E90D002D1ABF /* QuartzCore.framework in Frameworks */,
 				63D5C1881BA6E907002D1ABF /* OpenGLES.framework in Frameworks */,
 				63D5C1871BA6E902002D1ABF /* UIKit.framework in Frameworks */,
@@ -365,6 +386,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				630AD4A91C5663BE00449F6E /* libcorec.a in Frameworks */,
+				630AD4AA1C5663BE00449F6E /* libebml2.a in Frameworks */,
+				630AD4AB1C5663BE00449F6E /* libmatroska2.a in Frameworks */,
 				63D5C1A71BA6E943002D1ABF /* libz.dylib in Frameworks */,
 				63D5C1A61BA6E93D002D1ABF /* libxml2.dylib in Frameworks */,
 				63D5C1A51BA6E937002D1ABF /* libiconv.dylib in Frameworks */,
@@ -413,6 +437,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				630AD4AC1C5663D000449F6E /* libcorec.a in Frameworks */,
+				630AD4AD1C5663D000449F6E /* libebml2.a in Frameworks */,
+				630AD4AE1C5663D000449F6E /* libmatroska2.a in Frameworks */,
 				63D5C1C51BA6E96D002D1ABF /* libxml2.dylib in Frameworks */,
 				63D5C1C41BA6E969002D1ABF /* libiconv.dylib in Frameworks */,
 				63D5C1C31BA6E963002D1ABF /* libz.dylib in Frameworks */,
@@ -514,6 +541,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				630AD4A01C5663A000449F6E /* libcorec.a */,
+				630AD4A11C5663A000449F6E /* libebml2.a */,
+				630AD4A21C5663A000449F6E /* libmatroska2.a */,
 				63D5C1541BA6E734002D1ABF /* Accelerate.framework */,
 				63D5C1521BA6E6F0002D1ABF /* libxml2.dylib */,
 				63D5C1501BA6E6E9002D1ABF /* libiconv.dylib */,

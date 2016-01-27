@@ -24,22 +24,6 @@
 
 @implementation CallConferenceTableView
 
-#pragma mark - ViewController Functions
-
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-	updateTime =
-		[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(update) userInfo:nil repeats:YES];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-	if (updateTime != nil) {
-		[updateTime invalidate];
-		updateTime = nil;
-	}
-}
-
 #pragma mark - UI change
 
 - (void)update {

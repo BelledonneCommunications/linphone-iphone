@@ -45,6 +45,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return self.class.compositeViewDescription;
 }
 
+- (void)viewDidLoad {
+	_routesEarpieceButton.enabled = !IPAD;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
@@ -109,9 +113,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)hideRoutes:(BOOL)hidden animated:(BOOL)animated {
-	if (IPAD)
-		return;
-
 	if (hidden) {
 		[_routesButton setOff];
 	} else {
@@ -128,8 +129,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)hideSpeaker:(BOOL)hidden {
-	if (IPAD)
-		return;
 	_speakerButton.hidden = hidden;
 	_routesButton.hidden = !hidden;
 }
