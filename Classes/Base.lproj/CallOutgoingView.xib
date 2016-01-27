@@ -34,6 +34,9 @@
                         <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="NFl-sb-0TV" userLabel="headerBar">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="66"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration">
+                                <accessibilityTraits key="traits" button="YES" notEnabled="YES"/>
+                            </accessibility>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
                             <state key="normal" title="OUTGOING CALL" backgroundImage="color_F.png">
                                 <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -218,6 +221,9 @@
                         <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="oAv-Cz-FaR" userLabel="headerBar">
                             <rect key="frame" x="0.0" y="0.0" width="667" height="66"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration">
+                                <accessibilityTraits key="traits" button="YES" notEnabled="YES"/>
+                            </accessibility>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="27"/>
                             <state key="normal" title="OUTGOING CALL" backgroundImage="color_F.png">
                                 <color key="titleColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -382,7 +388,7 @@
         </view>
     </objects>
     <resources>
-        <image name="avatar.png" width="255" height="255"/>
+        <image name="avatar.png" width="1271" height="1271"/>
         <image name="call_hangup_default.png" width="41" height="36"/>
         <image name="call_hangup_disabled.png" width="41" height="36"/>
         <image name="color_D.png" width="2" height="2"/>
