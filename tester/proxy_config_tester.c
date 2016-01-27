@@ -173,10 +173,10 @@ static void sip_uri_normalization(void) {
 }
 
 test_t proxy_config_tests[] = {
-	{ "Phone normalization without proxy", phone_normalization_without_proxy },
-	{ "Phone normalization with proxy", phone_normalization_with_proxy },
-	{ "Phone normalization with dial escape plus", phone_normalization_with_dial_escape_plus },
-	{ "SIP URI normalization", sip_uri_normalization },
+	TEST_NO_TAG("Phone normalization without proxy", phone_normalization_without_proxy),
+	TEST_NO_TAG("Phone normalization with proxy", phone_normalization_with_proxy),
+	TEST_NO_TAG("Phone normalization with dial escape plus", phone_normalization_with_dial_escape_plus),
+	TEST_NO_TAG("SIP URI normalization", sip_uri_normalization)
 };
 
 test_suite_t proxy_config_test_suite = {"Proxy config", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

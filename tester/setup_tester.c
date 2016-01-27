@@ -330,20 +330,20 @@ end:
 }
 
 test_t setup_tests[] = {
-	{ "Version check", linphone_version_test },
-	{ "Linphone Address", linphone_address_test },
-	{ "Linphone proxy config address equal (internal api)", linphone_proxy_config_address_equal_test},
-	{ "Linphone proxy config server address change (internal api)", linphone_proxy_config_is_server_config_changed_test},
-	{ "Linphone core init/uninit", core_init_test },
-	{ "Linphone random transport port",core_sip_transport_test},
-	{ "Linphone interpret url", linphone_interpret_url_test },
-	{ "LPConfig from buffer", linphone_lpconfig_from_buffer },
-	{ "LPConfig zero_len value from buffer", linphone_lpconfig_from_buffer_zerolen_value },
-	{ "LPConfig zero_len value from file", linphone_lpconfig_from_file_zerolen_value },
-	{ "LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value },
-	{ "Chat room", chat_room_test },
-	{ "Devices reload", devices_reload_test },
-	{ "Codec usability", codec_usability_test }
+	TEST_NO_TAG("Version check", linphone_version_test),
+	TEST_NO_TAG("Linphone Address", linphone_address_test),
+	TEST_NO_TAG("Linphone proxy config address equal (internal api)", linphone_proxy_config_address_equal_test),
+	TEST_NO_TAG("Linphone proxy config server address change (internal api)", linphone_proxy_config_is_server_config_changed_test),
+	TEST_NO_TAG("Linphone core init/uninit", core_init_test),
+	TEST_NO_TAG("Linphone random transport port",core_sip_transport_test),
+	TEST_NO_TAG("Linphone interpret url", linphone_interpret_url_test),
+	TEST_NO_TAG("LPConfig from buffer", linphone_lpconfig_from_buffer),
+	TEST_NO_TAG("LPConfig zero_len value from buffer", linphone_lpconfig_from_buffer_zerolen_value),
+	TEST_NO_TAG("LPConfig zero_len value from file", linphone_lpconfig_from_file_zerolen_value),
+	TEST_NO_TAG("LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value),
+	TEST_NO_TAG("Chat room", chat_room_test),
+	TEST_NO_TAG("Devices reload", devices_reload_test),
+	TEST_NO_TAG("Codec usability", codec_usability_test)
 };
 
 test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

@@ -54,9 +54,9 @@ static void upnp_check_ipaddress(void) {
 }
 
 test_t upnp_tests[] = {
-	{ "Start and stop", upnp_start_n_stop },
-	{ "Check state", upnp_check_state },
-	{ "Check ip address", upnp_check_ipaddress },
+	TEST_NO_TAG("Start and stop", upnp_start_n_stop),
+	TEST_NO_TAG("Check state", upnp_check_state),
+	TEST_NO_TAG("Check ip address", upnp_check_ipaddress)
 };
 
 test_suite_t upnp_test_suite = {"Upnp", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

@@ -359,15 +359,15 @@ static void publish_without_expires(void){
 }
 
 test_t event_tests[] = {
-	{ "Subscribe declined"	,	subscribe_test_declined 	},
-	{ "Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber },
-	{ "Subscribe with custom headers", subscribe_test_with_custom_header },
-	{ "Subscribe refreshed", subscribe_test_refreshed },
-	{ "Subscribe manually refreshed", subscribe_test_manually_refreshed },
-	{ "Subscribe terminated by notifier", subscribe_test_terminated_by_notifier },
-	{ "Publish", publish_test },
-	{ "Publish without expires", publish_without_expires },
-	{ "Publish without automatic refresh",publish_no_auto_test }
+	TEST_NO_TAG("Subscribe declined", subscribe_test_declined),
+	TEST_NO_TAG("Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber),
+	TEST_NO_TAG("Subscribe with custom headers", subscribe_test_with_custom_header),
+	TEST_NO_TAG("Subscribe refreshed", subscribe_test_refreshed),
+	TEST_NO_TAG("Subscribe manually refreshed", subscribe_test_manually_refreshed),
+	TEST_NO_TAG("Subscribe terminated by notifier", subscribe_test_terminated_by_notifier),
+	TEST_NO_TAG("Publish", publish_test),
+	TEST_NO_TAG("Publish without expires", publish_without_expires),
+	TEST_NO_TAG("Publish without automatic refresh",publish_no_auto_test)
 };
 
 test_suite_t event_test_suite = {"Event", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

@@ -163,13 +163,13 @@ static void send_dtmf_rfc2833_opus(void) {
 }
 
 test_t dtmf_tests[] = {
-	{ "Send DTMF using RFC2833",send_dtmf_rfc2833},
-	{ "Send DTMF using SIP INFO",send_dtmf_sip_info},
-	{ "Send DTMF sequence using RFC2833",send_dtmfs_sequence_rfc2833},
-	{ "Send DTMF sequence using SIP INFO",send_dtmfs_sequence_sip_info},
-	{ "DTMF sequence not sent if invalid call",send_dtmfs_sequence_not_ready},
-	{ "DTMF sequence canceled if call state changed",send_dtmfs_sequence_call_state_changed},
-	{ "Send DTMF using RFC2833 using Opus",send_dtmf_rfc2833_opus},
+	TEST_NO_TAG("Send DTMF using RFC2833",send_dtmf_rfc2833),
+	TEST_NO_TAG("Send DTMF using SIP INFO",send_dtmf_sip_info),
+	TEST_NO_TAG("Send DTMF sequence using RFC2833",send_dtmfs_sequence_rfc2833),
+	TEST_NO_TAG("Send DTMF sequence using SIP INFO",send_dtmfs_sequence_sip_info),
+	TEST_NO_TAG("DTMF sequence not sent if invalid call",send_dtmfs_sequence_not_ready),
+	TEST_NO_TAG("DTMF sequence canceled if call state changed",send_dtmfs_sequence_call_state_changed),
+	TEST_NO_TAG("Send DTMF using RFC2833 using Opus",send_dtmf_rfc2833_opus)
 };
 
 test_suite_t dtmf_test_suite = {"DTMF", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
