@@ -494,8 +494,17 @@ void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf)
 		
 		if (!linphone_vcard_get_url(lvc)) {
 			char *url = generate_url_from_server_address_and_uid(cdc->friend_list->uri);
-			linphone_vcard_set_url(lvc, url);
-			ms_free(url);
+			if (url) {
+				linphone_vcard_set_url(lvc, url);
+				ms_free(url);
+			} else {
+				const char *msg = "vCard doesn't have an URL, and friendlist doesn't have a CardDAV server set either, can't push it";
+				ms_warning(msg);
+				if (cdc && cdc->sync_done_cb) {
+					cdc->sync_done_cb(cdc, FALSE, msg);
+				}
+				return;
+			}
 		}
 		
 		query = linphone_carddav_create_put_query(cdc, lvc);
@@ -505,8 +514,10 @@ void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf)
 		const char *msg = NULL;
 		if (!lvc) {
 			msg = "LinphoneVCard is NULL";
-		} else if (!linphone_vcard_get_url(lvc)) {
+		} else if (!linphone_vcard_get_uid(lvc)) {
 			msg = "LinphoneVCard doesn't have an UID";
+		} else {
+			msg = "Unknown error";
 		}
 		
 		if (msg) {
