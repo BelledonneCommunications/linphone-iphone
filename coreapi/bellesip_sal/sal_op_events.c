@@ -61,10 +61,20 @@ static void subscribe_process_io_error(void *user_ctx, const belle_sip_io_error_
 }
 
 static void subscribe_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
+	belle_sip_dialog_t *dialog = belle_sip_dialog_terminated_event_get_dialog(event);
 	SalOp* op= (SalOp*)ctx;
 	if (op->dialog) {
 		op->dialog=NULL;
+		if (!belle_sip_dialog_is_server(dialog) && belle_sip_dialog_terminated_event_is_expired(event)){
+			/*notify the app that our subscription is dead*/
+			const char *eventname = NULL;
+			if (op->event){
+				eventname = belle_sip_header_get_unparsed_value(op->event);
+			}
+			op->base.root->callbacks.notify(op, SalSubscribeTerminated, eventname, NULL);
+		}
 		sal_op_unref(op);
+		
 	}
 }
 
@@ -198,7 +208,6 @@ int sal_subscribe(SalOp *op, const char *from, const char *to, const char *event
 	
 	if (!op->dialog){
 		sal_op_subscribe_fill_cbs(op);
-		/*???sal_exosip_fix_route(op); make sure to ha ;lr*/
 		req=sal_op_build_request(op,"SUBSCRIBE");
 		if( req == NULL ) {
 			return -1;

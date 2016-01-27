@@ -43,6 +43,7 @@ extern void libmsopenh264_init(void);
 #endif
 #endif
 
+
 void call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg){
 	char* to=linphone_address_as_string(linphone_call_get_call_log(call)->to);
 	char* from=linphone_address_as_string(linphone_call_get_call_log(call)->from);
@@ -95,9 +96,6 @@ void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCall
 	if (lstats->updated & LINPHONE_CALL_STATS_PERIODICAL_UPDATE ) {
 		int tab_size = sizeof (counters->audio_download_bandwidth)/sizeof(int);
 		int index =  (counters->current_bandwidth_index++) % tab_size;
-
-		counters->current_audio_download_bandwidth = counters->audio_download_bandwidth + index;
-		counters->current_audio_upload_bandwidth = counters->audio_upload_bandwidth +index;
 
 		counters->audio_download_bandwidth[index] = (int)linphone_call_get_audio_stats(call)->download_bandwidth;
 		counters->audio_upload_bandwidth[index] = (int)linphone_call_get_audio_stats(call)->upload_bandwidth;
@@ -532,7 +530,7 @@ static void call_outbound_with_multiple_proxy(void) {
 	LinphoneProxyConfig* lpc = NULL;
 	LinphoneProxyConfig* registered_lpc = linphone_core_create_proxy_config(marie->lc);
 
-	linphone_core_get_default_proxy(marie->lc, &lpc);
+	lpc = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_core_set_default_proxy(marie->lc,NULL);
 
 	BC_ASSERT_FATAL(lpc != NULL);
@@ -824,7 +822,7 @@ static void simple_call_compatibility_mode(void) {
 	char*tmp;
 	LCSipTransports transport;
 
-	linphone_core_get_default_proxy(lc_marie,&proxy);
+	proxy = linphone_core_get_default_proxy_config(lc_marie);
 	BC_ASSERT_PTR_NOT_NULL (proxy);
 	identity = linphone_proxy_config_get_identity_address(proxy);
 
@@ -1466,7 +1464,8 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
 	vpol.automatically_initiate = TRUE; /* needed to present a video mline*/
 
 	linphone_core_set_video_policy(marie->lc, &vpol);
-	linphone_core_enable_video(marie->lc, TRUE, TRUE);
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
 
 	vpol.automatically_accept = FALSE;
 	vpol.automatically_initiate = TRUE;
@@ -2696,7 +2695,7 @@ static void call_with_privacy(void) {
 	end_call(pauline, marie);
 
 	/*test proxy config privacy*/
-	linphone_core_get_default_proxy(pauline->lc,&pauline_proxy);
+	pauline_proxy = linphone_core_get_default_proxy_config(pauline->lc);
 	linphone_proxy_config_set_privacy(pauline_proxy,LinphonePrivacyId);
 
 	BC_ASSERT_TRUE(call(pauline,marie));
@@ -2730,7 +2729,7 @@ static void call_with_privacy2(void) {
 	params=linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_set_privacy(params,LinphonePrivacyId);
 
-	linphone_core_get_default_proxy(pauline->lc,&pauline_proxy);
+	pauline_proxy = linphone_core_get_default_proxy_config(pauline->lc);
 	linphone_proxy_config_edit(pauline_proxy);
 	linphone_proxy_config_enable_register(pauline_proxy,FALSE);
 	linphone_proxy_config_done(pauline_proxy);
@@ -5475,7 +5474,6 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	MSList *lcs = NULL;
-	int ice_reinvite = use_ice ? 1 : 0;
 	bool_t call_ok;
 	
 	lcs = ms_list_append(lcs, marie->lc);
@@ -5509,11 +5507,22 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 	linphone_core_set_network_reachable(marie->lc, TRUE);
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
 
-	/*pauline shall receive a reINVITE to update the session*/
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1+ice_reinvite));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1+ice_reinvite));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2+ice_reinvite));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2+ice_reinvite));
+	if (use_ice){
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 3));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 3));
+		/*now comes the ICE reINVITE*/
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 2));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 2));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
+	}else{
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	}
 
 	/*check that media is back*/
 	check_media_direction(marie, linphone_core_get_current_call(marie->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInvalid);
@@ -5540,7 +5549,7 @@ static void call_with_network_switch_and_socket_refresh(void){
 	_call_with_network_switch(TRUE, TRUE);
 }
 
-static void call_with_sip_and_rtp_independant_switches(){
+static void call_with_sip_and_rtp_independant_switches(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	MSList *lcs = NULL;
@@ -5574,24 +5583,35 @@ static void call_with_sip_and_rtp_independant_switches(){
 	}
 	/*marie looses the SIP network and reconnects*/
 	linphone_core_set_sip_network_reachable(marie->lc, FALSE);
+	linphone_core_set_media_network_reachable(marie->lc, FALSE);
 	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
 
 	/*marie will reconnect and register*/
 	linphone_core_set_sip_network_reachable(marie->lc, TRUE);
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
-	wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
+	wait_for_until(marie->lc, pauline->lc, NULL, 0, 5000);
 	/*at this stage, no reINVITE is expected to be send*/
-	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallUpdating, 1, int, "%i"); /*1: because of ICE reinvite*/
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallUpdating, 0, int, "%i");
 	
 	/*now we notify the a reconnection of media network*/
-	linphone_core_set_media_network_reachable(marie->lc, FALSE);
 	linphone_core_set_media_network_reachable(marie->lc, TRUE);
 
-	/*pauline shall receive a reINVITE to update the session*/
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 2));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 2));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 3));
-	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 3));
+	if (use_ice){
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 3));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 3));
+		/*now comes the ICE reINVITE*/
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 2));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 2));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 4));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 4));
+	}else{
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallUpdating, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallUpdatedByRemote, 1));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 2));
+		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallStreamsRunning, 2));
+	}
 
 	/*check that media is back*/
 	check_media_direction(marie, linphone_core_get_current_call(marie->lc), lcs, LinphoneMediaDirectionSendRecv, LinphoneMediaDirectionInvalid);

@@ -7080,7 +7080,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->realtimetext_enabled = linphone_core_realtime_text_enabled(lc);
 	params->privacy=LinphonePrivacyDefault;
 	params->avpf_enabled=linphone_core_get_avpf_mode(lc);
-    params->implicit_rtcp_fb = lp_config_get_int(lc->config,"rtp","rtcp_fb_implicit_rtcp_fb",TRUE);
+	params->implicit_rtcp_fb = lp_config_get_int(lc->config,"rtp","rtcp_fb_implicit_rtcp_fb",TRUE);
 	params->audio_dir=LinphoneMediaDirectionSendRecv;
 	params->video_dir=LinphoneMediaDirectionSendRecv;
 	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);

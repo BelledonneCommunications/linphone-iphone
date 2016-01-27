@@ -102,7 +102,7 @@ static int linphonec_main_loop (LinphoneCore * opm);
 static int linphonec_idle_call (void);
 #ifdef HAVE_READLINE
 static int linphonec_initialize_readline(void);
-static int linphonec_finish_readline();
+static int linphonec_finish_readline(void);
 static char **linephonec_readline_completion(const char *text,
 	int start, int end);
 #endif

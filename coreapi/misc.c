@@ -945,8 +945,7 @@ void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMedi
 	}
 }
 
-void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md)
-{
+void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer){
 	const SalStreamDescription *stream;
 	IceCheckList *cl = NULL;
 	bool_t default_candidate = FALSE;
@@ -976,14 +975,14 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 	if (ice_params_found) {
 		/* Check for ICE restart and set remote credentials. */
 		if ((strcmp(md->addr, "0.0.0.0") == 0) || (strcmp(md->addr, "::0") == 0)) {
-			ice_session_restart(call->ice_session);
+			ice_session_restart(call->ice_session, is_offer ? IR_Controlled : IR_Controlling);
 			ice_restarted = TRUE;
 		} else {
 			for (i = 0; i < md->nb_streams; i++) {
 				stream = &md->streams[i];
 				cl = ice_session_check_list(call->ice_session, i);
 				if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
-					ice_session_restart(call->ice_session);
+					ice_session_restart(call->ice_session, is_offer ? IR_Controlled : IR_Controlling);
 					ice_restarted = TRUE;
 					break;
 				}
@@ -993,7 +992,7 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
 		} else if (ice_session_remote_credentials_changed(call->ice_session, md->ice_ufrag, md->ice_pwd)) {
 			if (ice_restarted == FALSE) {
-				ice_session_restart(call->ice_session);
+				ice_session_restart(call->ice_session, is_offer ? IR_Controlled : IR_Controlling);
 				ice_restarted = TRUE;
 			}
 			ice_session_set_remote_credentials(call->ice_session, md->ice_ufrag, md->ice_pwd);
@@ -1006,8 +1005,8 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 					if (ice_restarted == FALSE
 							&& ice_check_list_get_remote_ufrag(cl)
 							&& ice_check_list_get_remote_pwd(cl)) {
-							/* restart onlu if remote ufrag/paswd was already set*/
-						ice_session_restart(call->ice_session);
+							/* restart only if remote ufrag/paswd was already set*/
+						ice_session_restart(call->ice_session, is_offer ? IR_Controlled : IR_Controlling);
 						ice_restarted = TRUE;
 					}
 					ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);

@@ -414,7 +414,8 @@ linphonec_parse_command_line(LinphoneCore *lc, char *cl)
 	{
 		while ( isdigit(*cl) || *cl == '#' || *cl == '*' )
 		{
-			linphone_core_send_dtmf(lc, *cl);
+			if (linphone_core_get_current_call(lc))
+				linphone_call_send_dtmf(linphone_core_get_current_call(lc), *cl);
 			linphone_core_play_dtmf (lc,*cl,100);
 			ms_sleep(1); // be nice
 			++cl;
@@ -2336,12 +2337,12 @@ static int lpc_cmd_echolimiter(LinphoneCore *lc, char *args){
 
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args)
 {
-	linphone_core_mute_mic(lc, 1);
+	linphone_core_enable_mic(lc, 0);
 	return 1;
 }
 
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args){
-	linphone_core_mute_mic(lc, 0);
+	linphone_core_enable_mic(lc, 1);
 	return 1;
 }
 
