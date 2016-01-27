@@ -499,7 +499,7 @@ void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf)
 				ms_free(url);
 			} else {
 				const char *msg = "vCard doesn't have an URL, and friendlist doesn't have a CardDAV server set either, can't push it";
-				ms_warning(msg);
+				ms_warning("%s", msg);
 				if (cdc && cdc->sync_done_cb) {
 					cdc->sync_done_cb(cdc, FALSE, msg);
 				}
