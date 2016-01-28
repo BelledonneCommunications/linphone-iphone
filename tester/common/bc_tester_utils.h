@@ -27,6 +27,7 @@
 #ifdef _WIN32
 #ifndef snprintf
 #define snprintf _snprintf
+#define strcasecmp _stricmp
 #endif
 #ifndef strdup
 #define strdup _strdup
