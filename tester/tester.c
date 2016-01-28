@@ -255,11 +255,6 @@ bool_t transport_supported(LinphoneTransportType transport) {
 	return supported;
 }
 
-
-static void display_status(LinphoneCore *lc, const char *status){
-	ms_message("display_status(): %s",status);
-}
-
 void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	char *rc_path = NULL;
 	char *hellopath = bc_tester_res("sounds/hello8000.wav");
@@ -282,7 +277,6 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	mgr->v_table.network_reachable=network_reachable;
 	mgr->v_table.dtmf_received=dtmf_received;
 	mgr->v_table.call_stats_updated=call_stats_updated;
-	mgr->v_table.display_status=display_status;
 
 	reset_counters(&mgr->stat);
 	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
@@ -354,7 +348,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 	BC_ASSERT_EQUAL(mgr->stat.number_of_LinphoneRegistrationOk,proxy_count, int, "%d");
 	enable_codec(mgr->lc,"PCMU",8000);
 
-	linphone_core_get_default_proxy(mgr->lc,&proxy);
+	proxy = linphone_core_get_default_proxy_config(mgr->lc);
 	if (proxy) {
 		mgr->identity = linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
 		linphone_address_clean(mgr->identity);

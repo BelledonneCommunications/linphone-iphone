@@ -35,7 +35,7 @@ const char *linphone_subscription_state_to_string(LinphoneSubscriptionState stat
 	switch(state){
 		case LinphoneSubscriptionNone: return "LinphoneSubscriptionNone";
 		case LinphoneSubscriptionIncomingReceived: return "LinphoneSubscriptionIncomingReceived";
-		case LinphoneSubscriptionOutgoingInit: return "LinphoneSubscriptionOutoingInit";
+		case LinphoneSubscriptionOutgoingProgress: return "LinphoneSubscriptionOutgoingProgress";
 		case LinphoneSubscriptionPending: return "LinphoneSubscriptionPending";
 		case LinphoneSubscriptionActive: return "LinphoneSubscriptionActive";
 		case LinphoneSubscriptionTerminated: return "LinphoneSubscriptionTerminated";

@@ -1343,7 +1343,7 @@ static void subscribe_received(SalOp *op, const char *eventname, const SalBodyHa
 
 }
 
-static void subscribe_closed(SalOp *op){
+static void incoming_subscribe_closed(SalOp *op){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 
 	linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
@@ -1400,7 +1400,7 @@ SalCallbacks linphone_sal_callbacks={
 	is_composing_received,
 	notify_refer,
 	subscribe_received,
-	subscribe_closed,
+	incoming_subscribe_closed,
 	subscribe_response,
 	notify,
 	subscribe_presence_received,
