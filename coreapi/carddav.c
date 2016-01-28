@@ -475,16 +475,19 @@ static LinphoneCardDavQuery* linphone_carddav_create_put_query(LinphoneCardDavCo
 }
 
 static char* generate_url_from_server_address_and_uid(const char *server_url) {
+	char *result = NULL;
 	if (server_url) {
-		char uuid[32];
-		if (sal_generate_uuid(uuid, sizeof(uuid)) == 0) {
-			char url[300];
-			snprintf(url, sizeof(url), "%s/linphone-%s.vcf", server_url, uuid);
+		char *uuid = ms_malloc(64);
+		if (sal_generate_uuid(uuid, 64) == 0) {
+			char *url = ms_malloc(300);
+			snprintf(url, 300, "%s/linphone-%s.vcf", server_url, uuid);
 			ms_debug("Generated url is %s", url);
-			return ms_strdup(url);
+			result = ms_strdup(url);
+			ms_free(url);
 		}
+		ms_free(uuid);
 	}
-	return NULL;
+	return result;
 }
 
 void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
@@ -549,8 +552,17 @@ void linphone_carddav_delete_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *
 		
 		if (!linphone_vcard_get_url(lvc)) {
 			char *url = generate_url_from_server_address_and_uid(cdc->friend_list->uri);
-			linphone_vcard_set_url(lvc, url);
-			ms_free(url);
+			if (url) {
+				linphone_vcard_set_url(lvc, url);
+				ms_free(url);
+			} else {
+				const char *msg = "vCard doesn't have an URL, and friendlist doesn't have a CardDAV server set either, can't delete it";
+				ms_warning("%s", msg);
+				if (cdc && cdc->sync_done_cb) {
+					cdc->sync_done_cb(cdc, FALSE, msg);
+				}
+				return;
+			}
 		}
 		
 		query = linphone_carddav_create_delete_query(cdc, lvc);
