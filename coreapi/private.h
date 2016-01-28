@@ -1429,7 +1429,7 @@ void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, b
 
 #ifdef VIDEO_ENABLED
 LINPHONE_PUBLIC MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);
-MSWebCam *get_nowebcam_device(void);
+MSWebCam *get_nowebcam_device(MSFactory *f);
 #endif
 bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 

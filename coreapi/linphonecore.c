@@ -824,13 +824,13 @@ static void sound_config_read(LinphoneCore *lc)
 			char s=*i;
 			*i='\0';
 			card=ms_alsa_card_new_custom(d+l,d+l);
-			ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
+			ms_snd_card_manager_add_card(ms_factory_get_snd_manager(linphone_core_get_factory((void*)lc))),card);
 			*i=s;
 			l=i-d+1;
 		}
 		if(d[l]!='\0') {
 			card=ms_alsa_card_new_custom(d+l,d+l);
-			ms_snd_card_manager_add_card(ms_snd_card_manager_get(),card);
+			ms_snd_card_manager_add_card(ms_factory_get_snd_manager(linphone_core_get_factory((void*)lc))),card);
 		}
 		free(d);
 	}
@@ -1295,7 +1295,7 @@ static void build_video_devices_table(LinphoneCore *lc){
 	if (lc->video_conf.cams)
 		ms_free(lc->video_conf.cams);
 	/* retrieve all video devices */
-	elem=ms_web_cam_manager_get_list(ms_web_cam_manager_get());
+	elem=ms_web_cam_manager_get_list(ms_factory_get_wbc_manager(lc->factory));
 	ndev=ms_list_size(elem);
 	devices=ms_malloc((ndev+1)*sizeof(const char *));
 	for (i=0;elem!=NULL;elem=elem->next,i++){
@@ -1679,13 +1679,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	ortp_init();
 	linphone_core_activate_log_serialization_if_needed();
 	
-	if (lc->factory == NULL){
-		lc->factory = ms_factory_new();
-	}
-
-	ms_factory_init_voip(lc->factory);
-	ms_factory_init_plugins(lc->factory);
-	
+	lc->factory = ms_factory_create(lc->factory);
 	linphone_core_register_default_codecs(lc);
 	linphone_core_register_offer_answer_providers(lc);
 	/* Get the mediastreamer2 event queue */
@@ -4655,7 +4649,7 @@ void linphone_core_reload_video_devices(LinphoneCore *lc){
 	if (devid != NULL) {
 		devid_copy = ms_strdup(devid);
 	}
-	ms_web_cam_manager_reload(ms_web_cam_manager_get());
+	ms_web_cam_manager_reload(ms_factory_get_wbc_manager(lc->factory));
 	build_video_devices_table(lc);
 	if (devid_copy != NULL) {
 		linphone_core_set_video_device(lc, devid_copy);
@@ -5406,13 +5400,13 @@ int linphone_core_set_video_device(LinphoneCore *lc, const char *id){
 	MSWebCam *olddev=lc->video_conf.device;
 	const char *vd;
 	if (id!=NULL){
-		lc->video_conf.device=ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),id);
+		lc->video_conf.device=ms_web_cam_manager_get_cam(ms_factory_get_wbc_manager(lc->factory),id);
 		if (lc->video_conf.device==NULL){
 			ms_warning("Could not find video device %s",id);
 		}
 	}
 	if (lc->video_conf.device==NULL)
-		lc->video_conf.device=ms_web_cam_manager_get_default_cam(ms_web_cam_manager_get());
+		lc->video_conf.device=ms_web_cam_manager_get_default_cam(ms_factory_get_wbc_manager(lc->factory));
 	if (olddev!=NULL && olddev!=lc->video_conf.device){
 		toggle_video_preview(lc,FALSE);/*restart the video local preview*/
 	}
