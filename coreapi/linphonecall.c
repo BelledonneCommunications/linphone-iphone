@@ -48,9 +48,9 @@ static void _linphone_call_set_next_video_frame_decoded_trigger(LinphoneCall *ca
 void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index);
 
 
-MSWebCam *get_nowebcam_device(){
+MSWebCam *get_nowebcam_device(MSFactory* f){
 #ifdef VIDEO_ENABLED
-	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
+	return ms_web_cam_manager_get_cam(ms_factory_get_wbc_manager(f),"StaticImage: Static picture");
 #else
 	return NULL;
 #endif
