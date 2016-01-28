@@ -317,11 +317,11 @@ static void upload_collected_traces(void)  {
 }
 
 test_t log_collection_tests[] = {
-	{ "No file when disabled", collect_files_disabled},
-	{ "Collect files filled when enabled", collect_files_filled},
-	{ "Logs collected into small file", collect_files_small_size},
-	{ "Logs collected when decreasing max size", collect_files_changing_size},
-	{ "Upload collected traces", upload_collected_traces}
+	TEST_NO_TAG("No file when disabled", collect_files_disabled),
+	TEST_NO_TAG("Collect files filled when enabled", collect_files_filled),
+	TEST_NO_TAG("Logs collected into small file", collect_files_small_size),
+	TEST_NO_TAG("Logs collected when decreasing max size", collect_files_changing_size),
+	TEST_NO_TAG("Upload collected traces", upload_collected_traces)
 };
 
 test_suite_t log_collection_test_suite = {"LogCollection", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

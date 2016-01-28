@@ -46,7 +46,15 @@ typedef int (*pre_post_function_t)(void);
 typedef struct {
 	const char *name;
 	test_function_t func;
+	const char *tags[2];
 } test_t;
+
+#define TEST_NO_TAG(name, func) \
+	{ name, func, { NULL, NULL } }
+#define TEST_ONE_TAG(name, func, tag) \
+	{ name, func, { tag, NULL } }
+#define TEST_TWO_TAGS(name, func, tag1, tag2) \
+	{ name, func, { tag1, tag2 } }
 
 typedef struct {
 	const char *name; /*suite name*/
@@ -89,8 +97,8 @@ void bc_tester_list_suites(void);
 void bc_tester_list_tests(const char *suite_name);
 const char * bc_tester_suite_name(int suite_index);
 const char * bc_tester_test_name(const char *suite_name, int test_index);
-int bc_tester_run_suite(test_suite_t *suite);
-int bc_tester_run_tests(const char *suite_name, const char *test_name);
+int bc_tester_run_suite(test_suite_t *suite, const char *tag_name);
+int bc_tester_run_tests(const char *suite_name, const char *test_name, const char *tag_name);
 int bc_tester_suite_index(const char *suite_name);
 const char * bc_tester_current_suite_name(void);
 const char * bc_tester_current_test_name(void);

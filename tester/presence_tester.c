@@ -774,22 +774,22 @@ static void test_presence_list_subscription_expire(void) {
 
 
 test_t presence_tests[] = {
-	{ "Simple Subscribe", simple_subscribe },
-	{ "Simple Publish", simple_publish },
-	{ "Simple Publish with expires", publish_with_expires },
-	/*{ "Call with presence", call_with_presence },*/
-	{ "Unsubscribe while subscribing", unsubscribe_while_subscribing },
-	{ "Presence information", presence_information },
-	{ "App managed presence failure", subscribe_failure_handle_by_app },
-	{ "Presence SUBSCRIBE forked", subscribe_presence_forked },
-	{ "Presence SUBSCRIBE expired", subscribe_presence_expired },
+	TEST_NO_TAG("Simple Subscribe", simple_subscribe),
+	TEST_NO_TAG("Simple Publish", simple_publish),
+	TEST_NO_TAG("Simple Publish with expires", publish_with_expires),
+	/*TEST_NO_TAG("Call with presence", call_with_presence),*/
+	TEST_NO_TAG("Unsubscribe while subscribing", unsubscribe_while_subscribing),
+	TEST_NO_TAG("Presence information", presence_information),
+	TEST_NO_TAG("App managed presence failure", subscribe_failure_handle_by_app),
+	TEST_NO_TAG("Presence SUBSCRIBE forked", subscribe_presence_forked),
+	TEST_NO_TAG("Presence SUBSCRIBE expired", subscribe_presence_expired),
 #if USE_PRESENCE_SERVER
-	{ "Subscribe with late publish", test_subscribe_notify_publish },
-	{ "Forked subscribe with late publish", test_forked_subscribe_notify_publish },
+	TEST_NO_TAG("Subscribe with late publish", test_subscribe_notify_publish),
+	TEST_NO_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish),
 #endif
-	{ "Presence list", test_presence_list },
-	{ "Presence list (subscribe before publish)", test_presence_list_subscribe_before_publish },
-	{ "Presence list, subscription expiration",test_presence_list_subscription_expire}
+	TEST_NO_TAG("Presence list", test_presence_list),
+	TEST_NO_TAG("Presence list (subscribe before publish)", test_presence_list_subscribe_before_publish),
+	TEST_NO_TAG("Presence list, subscription expiration",test_presence_list_subscription_expire)
 };
 
 test_suite_t presence_test_suite = {"Presence", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

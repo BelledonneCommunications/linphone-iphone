@@ -80,8 +80,9 @@ static unsigned char curses = 0;
 
 char* xml_file = "CUnitAutomated-Results.xml";
 int   xml_enabled = 0;
-char * suite_name;
-char * test_name;
+char * suite_name = NULL;
+char * test_name = NULL;
+char * tag_name = NULL;
 static long max_vm_kb = 0;
 
 void (*tester_printf_va)(int level, const char *format, va_list args);
@@ -93,14 +94,38 @@ void bc_tester_printf(int level, const char *format, ...) {
 	va_end (args);
 }
 
-int bc_tester_run_suite(test_suite_t *suite) {
+int bc_tester_run_suite(test_suite_t *suite, const char *tag_name) {
 	int i;
+	CU_pSuite pSuite;
 
-	CU_pSuite pSuite = CU_add_suite(suite->name, suite->before_all, suite->after_all);
-
-	for (i = 0; i < suite->nb_tests; i++) {
-		if (NULL == CU_add_test(pSuite, suite->tests[i].name, suite->tests[i].func)) {
-			return CU_get_error();
+	if (tag_name != NULL) {
+		int j;
+		int nb_tests_for_tag = 0;
+		for (i = 0; i < suite->nb_tests; i++) {
+			for (j = 0; j < (sizeof(suite->tests[i].tags) / sizeof(suite->tests[i].tags[0])); j++) {
+				if ((suite->tests[i].tags[j] != NULL) && (strcasecmp(tag_name, suite->tests[i].tags[j]) == 0)) {
+					nb_tests_for_tag++;
+				}
+			}
+		}
+		if (nb_tests_for_tag > 0) {
+			pSuite = CU_add_suite(suite->name, suite->before_all, suite->after_all);
+			for (i = 0; i < suite->nb_tests; i++) {
+				for (j = 0; j < (sizeof(suite->tests[i].tags) / sizeof(suite->tests[i].tags[0])); j++) {
+					if ((suite->tests[i].tags[j] != NULL) && (strcasecmp(tag_name, suite->tests[i].tags[j]) == 0)) {
+						if (NULL == CU_add_test(pSuite, suite->tests[i].name, suite->tests[i].func)) {
+							return CU_get_error();
+						}
+					}
+				}
+			}
+		}
+	} else {
+		pSuite = CU_add_suite(suite->name, suite->before_all, suite->after_all);
+		for (i = 0; i < suite->nb_tests; i++) {
+			if (NULL == CU_add_test(pSuite, suite->tests[i].name, suite->tests[i].func)) {
+				return CU_get_error();
+			}
 		}
 	}
 
@@ -251,7 +276,7 @@ static void test_complete_message_handler(const CU_pTest pTest, const CU_pSuite 
 }
 #endif
 
-int bc_tester_run_tests(const char *suite_name, const char *test_name) {
+int bc_tester_run_tests(const char *suite_name, const char *test_name, const char *tag_name) {
 	int i;
 
 	/* initialize the CUnit test registry */
@@ -259,7 +284,7 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 		return CU_get_error();
 
 	for (i = 0; i < nb_test_suites; i++) {
-		bc_tester_run_suite(test_suite[i]);
+		bc_tester_run_suite(test_suite[i], tag_name);
 	}
 #ifdef HAVE_CU_GET_SUITE
 	CU_set_suite_start_handler(suite_start_message_handler);
@@ -284,13 +309,21 @@ int bc_tester_run_tests(const char *suite_name, const char *test_name) {
 			CU_pSuite suite;
 			suite=CU_get_suite(suite_name);
 			if (!suite) {
-				bc_tester_printf(bc_printf_verbosity_error, "Could not find suite '%s'. Available suites are:", suite_name);
+				if (tag_name != NULL) {
+					bc_tester_printf(bc_printf_verbosity_error, "Could not find suite '%s' or this suite has no tests with tag '%s'. Available suites are:", suite_name, tag_name);
+				} else {
+					bc_tester_printf(bc_printf_verbosity_error, "Could not find suite '%s'. Available suites are:", suite_name);
+				}
 				bc_tester_list_suites();
 				return -1;
 			} else if (test_name) {
 				CU_pTest test=CU_get_test_by_name(test_name, suite);
 				if (!test) {
-					bc_tester_printf(bc_printf_verbosity_error, "Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
+					if (tag_name != NULL) {
+						bc_tester_printf(bc_printf_verbosity_error, "Could not find test '%s' in suite '%s' or this test is not tagged '%s'. Available tests are:", test_name, suite_name, tag_name);
+					} else {
+						bc_tester_printf(bc_printf_verbosity_error, "Could not find test '%s' in suite '%s'. Available tests are:", test_name, suite_name);
+					}
 					// do not use suite_name here, since this method is case sensitive
 					bc_tester_list_tests(suite->pName);
 					return -2;
@@ -464,9 +497,12 @@ int bc_tester_parse_args(int argc, char **argv, int argid)
 	} else if (strcmp(argv[i],"--test")==0){
 		CHECK_ARG("--test", ++i, argc);
 		test_name=argv[i];
-	}else if (strcmp(argv[i],"--suite")==0){
+	} else if (strcmp(argv[i],"--suite")==0){
 		CHECK_ARG("--suite", ++i, argc);
 		suite_name=argv[i];
+	} else if (strcmp(argv[i], "--tag") == 0) {
+		CHECK_ARG("--tag", ++i, argc);
+		tag_name = argv[i];
 	} else if (strcmp(argv[i],"--list-suites")==0){
 		bc_tester_list_suites();
 		return 0;
@@ -518,7 +554,7 @@ int bc_tester_start(const char* prog_name) {
 		free(xml_tmp_file);
 	}
 
-	ret = bc_tester_run_tests(suite_name, test_name);
+	ret = bc_tester_run_tests(suite_name, test_name, tag_name);
 
 	return ret;
 }
