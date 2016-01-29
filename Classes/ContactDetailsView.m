@@ -104,7 +104,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	// Save address book
 	error = NULL;
 	inhibUpdate = TRUE;
-	ABAddressBookSave(addressBook, (CFErrorRef *)&error);
+	ABAddressBookSave(addressBook, &error);
 	inhibUpdate = FALSE;
 	if (error != NULL) {
 		LOGE(@"Save AddressBook: Fail(%@)", [(__bridge NSError *)error localizedDescription]);
