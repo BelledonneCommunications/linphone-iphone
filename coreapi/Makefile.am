@@ -35,6 +35,7 @@ linphone_include_HEADERS=\
 	friendlist.h \
 	linphonecore.h \
 	linphonecore_utils.h \
+	ringtoneplayer.h \
 	linphonefriend.h \
 	linphonepresence.h \
 	linphone_proxy_config.h \

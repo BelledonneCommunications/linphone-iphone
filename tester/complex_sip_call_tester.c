@@ -343,12 +343,12 @@ static void call_invite_200ok_without_contact_header(void) {
 
 
 static test_t tests[] = {
-	{ "SIP UPDATE within incoming reinvite without sdp", sip_update_within_icoming_reinvite_with_no_sdp },
-	{ "Call with audio mline before video in sdp", call_with_audio_mline_before_video_in_sdp },
-	{ "Call with video mline before audio in sdp", call_with_video_mline_before_audio_in_sdp },
-	{ "Call with multiple audio mline in sdp", call_with_multiple_audio_mline_in_sdp },
-	{ "Call with multiple video mline in sdp", call_with_multiple_video_mline_in_sdp },
-	{ "Call invite 200ok without contact header", call_invite_200ok_without_contact_header }
+	TEST_NO_TAG("SIP UPDATE within incoming reinvite without sdp", sip_update_within_icoming_reinvite_with_no_sdp),
+	TEST_NO_TAG("Call with audio mline before video in sdp", call_with_audio_mline_before_video_in_sdp),
+	TEST_NO_TAG("Call with video mline before audio in sdp", call_with_video_mline_before_audio_in_sdp),
+	TEST_NO_TAG("Call with multiple audio mline in sdp", call_with_multiple_audio_mline_in_sdp),
+	TEST_NO_TAG("Call with multiple video mline in sdp", call_with_multiple_video_mline_in_sdp),
+	TEST_NO_TAG("Call invite 200ok without contact header", call_invite_200ok_without_contact_header)
 };
 
 test_suite_t complex_sip_call_test_suite = {

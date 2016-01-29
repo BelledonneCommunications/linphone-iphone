@@ -90,6 +90,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	target_compile_options(linphone_tester_runtime PRIVATE "/wd4996")
 	target_link_libraries(linphone_tester_runtime linphone_tester_static)
 	set_target_properties(linphone_tester_runtime PROPERTIES VS_WINRT_COMPONENT TRUE)
+	set_target_properties(linphone_tester_runtime PROPERTIES LIBRARY_OUTPUT_NAME "BelledonneCommunications.Linphone.Tester")
+	set_target_properties(linphone_tester_runtime PROPERTIES LINK_FLAGS "/WINMDFILE:BelledonneCommunications.Linphone.Tester.winmd")
 
 	install(TARGETS linphone_tester_runtime
 		RUNTIME DESTINATION bin
@@ -97,7 +99,13 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 		ARCHIVE DESTINATION lib
 		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 	)
-	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/linphone_tester_runtime.winmd" DESTINATION bin)
+	install(FILES "${CMAKE_CURRENT_BINARY_DIR}/BelledonneCommunications.Linphone.Tester.winmd" DESTINATION lib)
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/BelledonneCommunications.Linphone.Tester.pdb
+			DESTINATION lib
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+		)
+	endif()
 else()
 	add_executable(liblinphone_tester ${SOURCE_FILES})
 	set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)

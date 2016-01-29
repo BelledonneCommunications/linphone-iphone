@@ -825,22 +825,22 @@ void eject_from_3_participants_remote_conference(void) {
 }
 
 test_t multi_call_tests[] = {
-	{ "Call waiting indication", call_waiting_indication },
-	{ "Call waiting indication with privacy", call_waiting_indication_with_privacy },
-	{ "Incoming call accepted when outgoing call in progress", incoming_call_accepted_when_outgoing_call_in_progress},
-	{ "Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing},
-	{ "Incoming call accepted when outgoing call in outgoing ringing early media", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media},
-	{ "Simple conference", simple_conference },
-	{ "Simple conference with ICE", simple_conference_with_ice},
-	{ "Simple ZRTP conference with ICE",simple_zrtp_conference_with_ice},
-	{ "Eject from 3 participants conference", eject_from_3_participants_local_conference },
-	{ "Eject from 4 participants conference", eject_from_4_participants_conference },
-	{ "Simple call transfer", simple_call_transfer },
-	{ "Unattended call transfer", unattended_call_transfer },
-	{ "Unattended call transfer with error", unattended_call_transfer_with_error },
-	{ "Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call },
-	{ "Simple remote conference", simple_remote_conference },
-	{ "Eject from 3 participants in remote conference", eject_from_3_participants_remote_conference }
+	TEST_NO_TAG("Call waiting indication", call_waiting_indication),
+	TEST_NO_TAG("Call waiting indication with privacy", call_waiting_indication_with_privacy),
+	TEST_NO_TAG("Incoming call accepted when outgoing call in progress", incoming_call_accepted_when_outgoing_call_in_progress),
+	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing),
+	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing early media", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media),
+	TEST_NO_TAG("Simple conference", simple_conference),
+	TEST_ONE_TAG("Simple conference with ICE", simple_conference_with_ice, "ICE"),
+	TEST_ONE_TAG("Simple ZRTP conference with ICE", simple_zrtp_conference_with_ice, "ICE"),
+	TEST_NO_TAG("Eject from 3 participants conference", eject_from_3_participants_local_conference),
+	TEST_NO_TAG("Eject from 4 participants conference", eject_from_4_participants_conference),
+	TEST_NO_TAG("Simple call transfer", simple_call_transfer),
+	TEST_NO_TAG("Unattended call transfer", unattended_call_transfer),
+	TEST_NO_TAG("Unattended call transfer with error", unattended_call_transfer_with_error),
+	TEST_NO_TAG("Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call),
+	TEST_NO_TAG("Simple remote conference", simple_remote_conference),
+	TEST_NO_TAG("Eject from 3 participants in remote conference", eject_from_3_participants_remote_conference)
 };
 
 test_suite_t multi_call_test_suite = {"Multi call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

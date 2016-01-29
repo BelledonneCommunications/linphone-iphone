@@ -503,10 +503,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 	if (call->params->internal_call_update)
 		call->params->internal_call_update = FALSE;
 
-	/* Handle remote ICE attributes if any. */
-	if (call->ice_session != NULL && rmd) {
-		linphone_call_update_ice_from_remote_media_description(call, rmd);
-	}
+	
 #ifdef BUILD_UPNP
 	if (call->upnp_session != NULL && rmd) {
 		linphone_core_update_upnp_from_remote_media_description(call, rmd);
@@ -522,6 +519,12 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 		md = NULL;
 	}
 	if (md){ /*there is a valid SDP in the response, either offer or answer, and we're able to start/update the streams*/
+		
+		/* Handle remote ICE attributes if any. */
+		if (call->ice_session != NULL && rmd) {
+			linphone_call_update_ice_from_remote_media_description(call, rmd, FALSE);
+		}
+		
 		switch (call->state){
 			case LinphoneCallResuming:
 				linphone_core_notify_display_status(lc,_("Call resumed."));
@@ -1340,7 +1343,7 @@ static void subscribe_received(SalOp *op, const char *eventname, const SalBodyHa
 
 }
 
-static void subscribe_closed(SalOp *op){
+static void incoming_subscribe_closed(SalOp *op){
 	LinphoneEvent *lev=(LinphoneEvent*)sal_op_get_user_pointer(op);
 
 	linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
@@ -1397,7 +1400,7 @@ SalCallbacks linphone_sal_callbacks={
 	is_composing_received,
 	notify_refer,
 	subscribe_received,
-	subscribe_closed,
+	incoming_subscribe_closed,
 	subscribe_response,
 	notify,
 	subscribe_presence_received,

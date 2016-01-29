@@ -235,9 +235,7 @@ typedef struct _stats {
 	int number_of_LinphoneCoreLogCollectionUploadStateNotDelivered;
 	int number_of_LinphoneCoreLogCollectionUploadStateInProgress;
 	int audio_download_bandwidth[3];
-	int *current_audio_download_bandwidth;
 	int audio_upload_bandwidth[3];
-	int *current_audio_upload_bandwidth;
 
 	int video_download_bandwidth[3];
 	int video_upload_bandwidth[3];

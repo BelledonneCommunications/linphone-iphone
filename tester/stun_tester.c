@@ -115,8 +115,8 @@ static void linphone_stun_test_grab_ip(void)
 
 
 test_t stun_tests[] = {
-	{ "Basic Stun test (Ping/public IP)", linphone_stun_test_grab_ip },
-	{ "STUN encode buffer protection", linphone_stun_test_encode },
+	TEST_NO_TAG("Basic Stun test (Ping/public IP)", linphone_stun_test_grab_ip),
+	TEST_NO_TAG("STUN encode buffer protection", linphone_stun_test_encode)
 };
 
 test_suite_t stun_test_suite = {"Stun", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

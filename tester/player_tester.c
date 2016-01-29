@@ -98,9 +98,9 @@ static void sintel_trailer_opus_vp8_test(void) {
 }
 
 test_t player_tests[] = {
-	{	"Sintel trailer opus/h264"	,	sintel_trailer_opus_h264_test	},
-	{	"Sintel trailer pcmu/h264"	,	sintel_trailer_pcmu_h264_test	},
-	{	"Sintel trailer opus/VP8"	,	sintel_trailer_opus_vp8_test	}
+	TEST_NO_TAG("Sintel trailer opus/h264", sintel_trailer_opus_h264_test),
+	TEST_NO_TAG("Sintel trailer pcmu/h264", sintel_trailer_pcmu_h264_test),
+	TEST_NO_TAG("Sintel trailer opus/VP8", sintel_trailer_opus_vp8_test)
 };
 
 test_suite_t player_test_suite = {"Player", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

@@ -245,20 +245,20 @@ static void tunnel_ice_call(void) {
 		ms_warning("Could not test %s because tunnel functionality is not available",__FUNCTION__);
 }
 test_t tunnel_tests[] = {
-	{ "Simple", call_with_tunnel },
-	{ "With SRTP", call_with_tunnel_srtp },
-	{ "Without SIP", call_with_tunnel_without_sip },
-	{ "In automatic mode", call_with_tunnel_auto },
-	{ "In automatic mode with SRTP without SIP", call_with_tunnel_auto_without_sip_with_srtp },
-	{ "Ice call", tunnel_ice_call },
-	{ "SRTP ice call", tunnel_srtp_ice_call },
-	{ "ZRTP ice call", tunnel_zrtp_ice_call },
+	TEST_NO_TAG("Simple", call_with_tunnel),
+	TEST_NO_TAG("With SRTP", call_with_tunnel_srtp),
+	TEST_NO_TAG("Without SIP", call_with_tunnel_without_sip),
+	TEST_NO_TAG("In automatic mode", call_with_tunnel_auto),
+	TEST_NO_TAG("In automatic mode with SRTP without SIP", call_with_tunnel_auto_without_sip_with_srtp),
+	TEST_NO_TAG("Ice call", tunnel_ice_call),
+	TEST_NO_TAG("SRTP ice call", tunnel_srtp_ice_call),
+	TEST_NO_TAG("ZRTP ice call", tunnel_zrtp_ice_call),
 #ifdef VIDEO_ENABLED
-	{ "Ice video call", tunnel_video_ice_call },
-	{ "With SIP - ice video call", full_tunnel_video_ice_call },
-	{ "SRTP ice video call", tunnel_srtp_video_ice_call },
-	{ "DTLS ice video call", tunnel_dtls_video_ice_call },
-	{ "ZRTP ice video call", tunnel_zrtp_video_ice_call },
+	TEST_NO_TAG("Ice video call", tunnel_video_ice_call),
+	TEST_NO_TAG("With SIP - ice video call", full_tunnel_video_ice_call),
+	TEST_NO_TAG("SRTP ice video call", tunnel_srtp_video_ice_call),
+	TEST_NO_TAG("DTLS ice video call", tunnel_dtls_video_ice_call),
+	TEST_NO_TAG("ZRTP ice video call", tunnel_zrtp_video_ice_call),
 #endif
 };
 

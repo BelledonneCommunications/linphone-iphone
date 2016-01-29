@@ -46,11 +46,15 @@ static void subscribe_refresher_listener (belle_sip_refresher_t* refresher
 		if (status_code==200) sss=SalSubscribeActive;
 		else if (status_code==202) sss=SalSubscribePending;
 		set_or_update_dialog(op,belle_sip_transaction_get_dialog(tr));
-	}
-	if (status_code>=200){
-		sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
 		op->base.root->callbacks.subscribe_response(op,sss);
-	}else if (status_code==0){
+	} else if (status_code >= 300) {
+		SalReason reason = SalReasonUnknown;
+		if (status_code == 503) { /*refresher returns 503 for IO error*/
+			reason = SalReasonIOError;
+		}
+		sal_error_info_set(&op->error_info,reason,status_code,reason_phrase,NULL);
+		op->base.root->callbacks.subscribe_response(op,sss);
+	}if (status_code==0){
 		op->base.root->callbacks.on_expire(op);
 	}
 	
@@ -61,10 +65,20 @@ static void subscribe_process_io_error(void *user_ctx, const belle_sip_io_error_
 }
 
 static void subscribe_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
+	belle_sip_dialog_t *dialog = belle_sip_dialog_terminated_event_get_dialog(event);
 	SalOp* op= (SalOp*)ctx;
 	if (op->dialog) {
 		op->dialog=NULL;
+		if (!belle_sip_dialog_is_server(dialog) && belle_sip_dialog_terminated_event_is_expired(event)){
+			/*notify the app that our subscription is dead*/
+			const char *eventname = NULL;
+			if (op->event){
+				eventname = belle_sip_header_get_unparsed_value(op->event);
+			}
+			op->base.root->callbacks.notify(op, SalSubscribeTerminated, eventname, NULL);
+		}
 		sal_op_unref(op);
+		
 	}
 }
 
@@ -162,7 +176,7 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 				ms_message("Unsubscribe received from [%s]",sal_op_get_from(op));
 				resp=sal_op_create_response_from_request(op,req,200);
 				belle_sip_server_transaction_send_response(server_transaction,resp);
-				op->base.root->callbacks.subscribe_closed(op);
+				op->base.root->callbacks.incoming_subscribe_closed(op);
 			}
 		}
 		break;
@@ -198,7 +212,6 @@ int sal_subscribe(SalOp *op, const char *from, const char *to, const char *event
 	
 	if (!op->dialog){
 		sal_op_subscribe_fill_cbs(op);
-		/*???sal_exosip_fix_route(op); make sure to ha ;lr*/
 		req=sal_op_build_request(op,"SUBSCRIBE");
 		if( req == NULL ) {
 			return -1;

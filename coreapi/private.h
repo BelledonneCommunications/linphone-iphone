@@ -153,16 +153,17 @@ struct _LinphoneCallParams{
 	bool_t has_audio;
 	bool_t has_video;
 	bool_t avpf_enabled; /* RTCP feedback messages are enabled */
-    bool_t implicit_rtcp_fb;
+	bool_t implicit_rtcp_fb;
+	
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
-
 	bool_t low_bandwidth;
 	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
+	
 	uint16_t avpf_rr_interval; /*in milliseconds*/
-
 	bool_t internal_call_update; /*use mark that call update was requested internally (might be by ice) - unused for the moment*/
 	bool_t video_multicast_enabled;
+	
 	bool_t audio_multicast_enabled;
 	bool_t realtimetext_enabled;
 	bool_t update_call_when_ice_completed;
@@ -406,6 +407,7 @@ const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphonePro
 
 void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list);
 void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, LinphoneEvent *lev, const LinphoneContent *body);
+void linphone_friend_list_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);
 void _linphone_friend_list_release(LinphoneFriendList *list);
 void linphone_friend_invalidate_subscription(LinphoneFriend *lf);
 void linphone_friend_close_subscriptions(LinphoneFriend *lf);
@@ -497,7 +499,7 @@ void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEve
 void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDescription *result);
 void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session, bool_t use_nortpproxy);
 void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call);
-void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md);
+void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer);
 void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMediaDescription *md);
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
 
@@ -957,7 +959,8 @@ struct _LinphoneCore
 	bool_t ringstream_autorelease;
 	
 	bool_t vtables_running;
-	bool_t pad[3];
+	bool_t send_call_stats_periodical_updates;
+	bool_t pad[2];
 	char localip[LINPHONE_IPADDR_SIZE];
 	int device_rotation;
 	int max_calls;

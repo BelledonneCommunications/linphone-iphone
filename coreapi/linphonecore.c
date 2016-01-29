@@ -1656,6 +1656,12 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 	}
 }
 
+static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
+	if (strcasecmp(linphone_event_get_name(lev), "Presence") == 0) {
+		linphone_friend_list_subscription_state_changed(lc, lev, state);
+	}
+}
+
 static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtable, LpConfig *config, void * userdata){
 	const char *remote_provisioning_uri = NULL;
 	LinphoneCoreVTable* local_vtable= linphone_core_v_table_new();
@@ -1672,6 +1678,7 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_task_list_init(&lc->hooks);
 
 	internal_vtable->notify_received = linphone_core_internal_notify_received;
+	internal_vtable->subscription_state_changed = linphone_core_internal_subscription_state_changed;
 	_linphone_core_add_listener(lc, internal_vtable, TRUE, TRUE);
 	memcpy(local_vtable,vtable,sizeof(LinphoneCoreVTable));
 	_linphone_core_add_listener(lc, local_vtable, TRUE, FALSE);
@@ -7119,7 +7126,7 @@ void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *para
 	params->realtimetext_enabled = linphone_core_realtime_text_enabled(lc);
 	params->privacy=LinphonePrivacyDefault;
 	params->avpf_enabled=linphone_core_get_avpf_mode(lc);
-    params->implicit_rtcp_fb = lp_config_get_int(lc->config,"rtp","rtcp_fb_implicit_rtcp_fb",TRUE);
+	params->implicit_rtcp_fb = lp_config_get_int(lc->config,"rtp","rtcp_fb_implicit_rtcp_fb",TRUE);
 	params->audio_dir=LinphoneMediaDirectionSendRecv;
 	params->video_dir=LinphoneMediaDirectionSendRecv;
 	params->real_early_media=lp_config_get_int(lc->config,"misc","real_early_media",FALSE);

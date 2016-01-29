@@ -216,7 +216,7 @@ static void simple_unregister(void){
 	LinphoneProxyConfig* proxy_config;
 	register_with_refresh_base(lcm->lc,FALSE,NULL,NULL);
 
-	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
 
 	linphone_proxy_config_edit(proxy_config);
 	reset_counters(counters); /*clear stats*/
@@ -900,40 +900,40 @@ static void redirect(void){
 }
 
 test_t register_tests[] = {
-	{ "Simple register", simple_register },
-	{ "Simple register unregister", simple_unregister },
-	{ "TCP register", simple_tcp_register },
-	{ "Register with custom headers", register_with_custom_headers },
-	{ "TCP register compatibility mode", simple_tcp_register_compatibility_mode },
-	{ "TLS register", simple_tls_register },
-	{ "TLS register with alt. name certificate", tls_alt_name_register },
-	{ "TLS register with wildcard certificate", tls_wildcard_register },
-	{ "TLS certificate not verified",tls_certificate_failure},
-	{ "TLS with non tls server",tls_with_non_tls_server},
-	{ "Simple authenticated register", simple_authenticated_register },
-	{ "Ha1 authenticated register", ha1_authenticated_register },
-	{ "Digest auth without initial credentials", authenticated_register_with_no_initial_credentials },
-	{ "Digest auth with wrong credentials", authenticated_register_with_wrong_credentials },
-	{ "Digest auth with wrong credentials, check if registration attempts are stopped", authenticated_register_with_wrong_credentials_2 },
-	{ "Digest auth with wrong credentials without 403", authenticated_register_with_wrong_credentials_without_403},
-	{ "Authenticated register with wrong late credentials", authenticated_register_with_wrong_late_credentials},
-	{ "Authenticated register with late credentials", authenticated_register_with_late_credentials },
-	{ "Authenticated register with provided credentials", authenticated_register_with_provided_credentials },
-	{ "Register with refresh", simple_register_with_refresh },
-	{ "Authenticated register with refresh", simple_auth_register_with_refresh },
-	{ "Register with refresh and send error", register_with_refresh_with_send_error },
-	{ "Multi account", multiple_proxy },
-	{ "Transport changes", transport_change },
-	{ "Proxy transport changes", proxy_transport_change},
-	{ "Proxy transport changes with wrong address at first", proxy_transport_change_with_wrong_port},
-	{ "Proxy transport changes with wrong address, giving up",proxy_transport_change_with_wrong_port_givin_up},
-	{ "Change expires", change_expires},
-	{ "Network state change", network_state_change },
-	{ "Io recv error", io_recv_error },
-	{ "Io recv error with recovery", io_recv_error_retry_immediatly},
-	{ "Io recv error with late recovery", io_recv_error_late_recovery},
-	{ "Io recv error without active registration", io_recv_error_without_active_register},
-	{ "Simple redirect", redirect}
+	TEST_NO_TAG("Simple register", simple_register),
+	TEST_NO_TAG("Simple register unregister", simple_unregister),
+	TEST_NO_TAG("TCP register", simple_tcp_register),
+	TEST_NO_TAG("Register with custom headers", register_with_custom_headers),
+	TEST_NO_TAG("TCP register compatibility mode", simple_tcp_register_compatibility_mode),
+	TEST_NO_TAG("TLS register", simple_tls_register),
+	TEST_NO_TAG("TLS register with alt. name certificate", tls_alt_name_register),
+	TEST_NO_TAG("TLS register with wildcard certificate", tls_wildcard_register),
+	TEST_NO_TAG("TLS certificate not verified",tls_certificate_failure),
+	TEST_NO_TAG("TLS with non tls server",tls_with_non_tls_server),
+	TEST_NO_TAG("Simple authenticated register", simple_authenticated_register),
+	TEST_NO_TAG("Ha1 authenticated register", ha1_authenticated_register),
+	TEST_NO_TAG("Digest auth without initial credentials", authenticated_register_with_no_initial_credentials),
+	TEST_NO_TAG("Digest auth with wrong credentials", authenticated_register_with_wrong_credentials),
+	TEST_NO_TAG("Digest auth with wrong credentials, check if registration attempts are stopped", authenticated_register_with_wrong_credentials_2),
+	TEST_NO_TAG("Digest auth with wrong credentials without 403", authenticated_register_with_wrong_credentials_without_403),
+	TEST_NO_TAG("Authenticated register with wrong late credentials", authenticated_register_with_wrong_late_credentials),
+	TEST_NO_TAG("Authenticated register with late credentials", authenticated_register_with_late_credentials),
+	TEST_NO_TAG("Authenticated register with provided credentials", authenticated_register_with_provided_credentials),
+	TEST_NO_TAG("Register with refresh", simple_register_with_refresh),
+	TEST_NO_TAG("Authenticated register with refresh", simple_auth_register_with_refresh),
+	TEST_NO_TAG("Register with refresh and send error", register_with_refresh_with_send_error),
+	TEST_NO_TAG("Multi account", multiple_proxy),
+	TEST_NO_TAG("Transport changes", transport_change),
+	TEST_NO_TAG("Proxy transport changes", proxy_transport_change),
+	TEST_NO_TAG("Proxy transport changes with wrong address at first", proxy_transport_change_with_wrong_port),
+	TEST_NO_TAG("Proxy transport changes with wrong address, giving up",proxy_transport_change_with_wrong_port_givin_up),
+	TEST_NO_TAG("Change expires", change_expires),
+	TEST_NO_TAG("Network state change", network_state_change),
+	TEST_NO_TAG("Io recv error", io_recv_error),
+	TEST_NO_TAG("Io recv error with recovery", io_recv_error_retry_immediatly),
+	TEST_NO_TAG("Io recv error with late recovery", io_recv_error_late_recovery),
+	TEST_NO_TAG("Io recv error without active registration", io_recv_error_without_active_register),
+	TEST_NO_TAG("Simple redirect", redirect)
 };
 
 test_suite_t register_test_suite = {"Register", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
