@@ -24,7 +24,6 @@
 #include <event.h>
 #include "liblinphone_tester.h"
 
-
 static const char *subscribe_content="<somexml>blabla</somexml>";
 static const char *notify_content="<somexml2>blabla</somexml2>";
 
@@ -40,7 +39,7 @@ void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *
 	LinphoneCoreManager *mgr;
 	const char * ua = linphone_event_get_custom_header(lev, "User-Agent");
 	BC_ASSERT_PTR_NOT_NULL_FATAL(content);
-	if (!linphone_content_is_multipart(content) && (!ua ||  !strcasestr(ua, "flexisip"))) { /*disable check for full presence serveur support*/
+	if (!linphone_content_is_multipart(content) && (!ua ||  !strstr(ua, "flexisip"))) { /*disable check for full presence serveur support*/
 		/*hack to disable content checking for list notify */
 		BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
 	}

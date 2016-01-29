@@ -486,12 +486,15 @@ static void test_subscribe_notify_publish(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	LinphoneProxyConfig* proxy;
 	LinphonePresenceModel* presence;
+	LpConfig *pauline_lp;
+	char* lf_identity;
+ 	LinphoneFriend *lf;
 
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
-	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
-	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
-	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
+	pauline_lp = linphone_core_get_config(pauline->lc);
+	lf_identity=linphone_address_as_string_uri_only(marie->identity);
+	lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
 
 	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);
 
@@ -744,7 +747,7 @@ static void test_presence_list(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-
+#if 0
 static void test_presence_list_subscribe_before_publish(void) {
 	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
@@ -794,7 +797,7 @@ static void test_presence_list_subscribe_before_publish(void) {
 	linphone_core_manager_destroy(laure);
 	linphone_core_manager_destroy(pauline);
 }
-
+#endif
 static void test_presence_list_subscription_expire_for_unknown(void) {
 	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
 	const char *rls_uri = "sip:rls@sip.example.org";
