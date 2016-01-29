@@ -820,7 +820,7 @@ static void test_presence_list_subscription_expire_for_unknown(void) {
 	linphone_core_manager_destroy(laure);
 }
 
-static void test_presence_list_subscribe_dialog_expire(void) {
+static void test_presence_list_subscribe_with_error(bool_t io_error) {
 	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	const char *rls_uri = "sip:rls@sip.example.org";
@@ -866,16 +866,20 @@ static void test_presence_list_subscribe_dialog_expire(void) {
 	BC_ASSERT_EQUAL(lf->subscribe_active, TRUE, int, "%d");
 	
 	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_NotifyPresenceReceived, 2, 5000));
-	ms_message("Simulating in/out packets losses");
-	sal_set_send_error(laure->lc->sal,1500); /*make sure no refresh is sent, trash the message without generating error*/
-	sal_set_recv_error(laure->lc->sal, 1500); /*make sure server notify to close the dialog is also ignored*/
-	
-	wait_for_list(lcs, &dummy, 1, 3000); /* Wait a little bit for the subscribe to happen */
-	
+	if (io_error) {
+		ms_message("Simulating socket error");
+		sal_set_recv_error(laure->lc->sal, -1);
+		wait_for_list(lcs, &dummy, 1, 1000); /* just time for socket to be closed */
+		
+	} else {
+		ms_message("Simulating in/out packets losses");
+		sal_set_send_error(laure->lc->sal,1500); /*make sure no refresh is sent, trash the message without generating error*/
+		sal_set_recv_error(laure->lc->sal, 1500); /*make sure server notify to close the dialog is also ignored*/
+		wait_for_list(lcs, &dummy, 1, 3000); /* Wait a little bit for the subscribe to happen */
+	}
 	/*restart normal behavior*/
 	sal_set_send_error(laure->lc->sal,0);
 	sal_set_recv_error(laure->lc->sal, 1);
-	
 	
 	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityAway, NULL));
 
@@ -887,7 +891,13 @@ static void test_presence_list_subscribe_dialog_expire(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void test_presence_list_subscribe_dialog_expire(void) {
+	test_presence_list_subscribe_with_error(FALSE);
+}
 
+static void test_presence_list_subscribe_io_error(void) {
+	test_presence_list_subscribe_with_error(TRUE);
+}
 
 test_t presence_tests[] = {
 	TEST_NO_TAG("Simple Subscribe", simple_subscribe),
@@ -904,7 +914,8 @@ test_t presence_tests[] = {
 	TEST_NO_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish),
 	TEST_NO_TAG("Presence list", test_presence_list),
 	TEST_NO_TAG("Presence list, subscription expiration for unknown contact",test_presence_list_subscription_expire_for_unknown),
-	TEST_NO_TAG("Presence list, silent subscription expiration", test_presence_list_subscribe_dialog_expire)
+	TEST_NO_TAG("Presence list, silent subscription expiration", test_presence_list_subscribe_dialog_expire),
+	TEST_NO_TAG("Presence list, io error",test_presence_list_subscribe_io_error)
 };
 
 test_suite_t presence_test_suite = {"Presence", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
