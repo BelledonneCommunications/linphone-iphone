@@ -1303,7 +1303,7 @@ static void subscribe_response(SalOp *op, SalSubscribeStatus status){
 	}else if (status==SalSubscribePending){
 		linphone_event_set_state(lev,LinphoneSubscriptionPending);
 	}else{
-		if (lev->subscription_state==LinphoneSubscriptionActive && ei->reason==SalReasonIOError){
+		if (lev->subscription_state==LinphoneSubscriptionActive && (ei->reason==SalReasonIOError || ei->reason == SalReasonNoMatch)){
 			linphone_event_set_state(lev,LinphoneSubscriptionOutgoingProgress);
 		}
 		else linphone_event_set_state(lev,LinphoneSubscriptionError);
