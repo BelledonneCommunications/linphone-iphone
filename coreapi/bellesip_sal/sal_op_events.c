@@ -46,11 +46,15 @@ static void subscribe_refresher_listener (belle_sip_refresher_t* refresher
 		if (status_code==200) sss=SalSubscribeActive;
 		else if (status_code==202) sss=SalSubscribePending;
 		set_or_update_dialog(op,belle_sip_transaction_get_dialog(tr));
-	}
-	if (status_code>=200){
-		sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
 		op->base.root->callbacks.subscribe_response(op,sss);
-	}else if (status_code==0){
+	} else if (status_code >= 300) {
+		SalReason reason = SalReasonUnknown;
+		if (status_code == 503) { /*refresher returns 503 for IO error*/
+			reason = SalReasonIOError;
+		}
+		sal_error_info_set(&op->error_info,reason,status_code,reason_phrase,NULL);
+		op->base.root->callbacks.subscribe_response(op,sss);
+	}if (status_code==0){
 		op->base.root->callbacks.on_expire(op);
 	}
 	
@@ -172,7 +176,7 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 				ms_message("Unsubscribe received from [%s]",sal_op_get_from(op));
 				resp=sal_op_create_response_from_request(op,req,200);
 				belle_sip_server_transaction_send_response(server_transaction,resp);
-				op->base.root->callbacks.subscribe_closed(op);
+				op->base.root->callbacks.incoming_subscribe_closed(op);
 			}
 		}
 		break;

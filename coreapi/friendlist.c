@@ -419,6 +419,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 				linphone_content_set_string_buffer(content, xml_content);
 				linphone_event_send_subscribe(list->event, content);
 				linphone_content_unref(content);
+				linphone_event_set_user_data(list->event, list);
 			}
 		}
 		if (address != NULL) linphone_address_unref(address);
@@ -474,5 +475,23 @@ void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, Lin
 
 		linphone_friend_list_parse_multipart_related_body(list, body, linphone_content_get_string_buffer(first_part));
 		linphone_content_unref(first_part);
+	}
+}
+void linphone_friend_list_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
+	LinphoneFriendList *list = (LinphoneFriendList *)linphone_event_get_user_data(lev);
+	if (!list) {
+		ms_warning("core [%p] Receiving unexpected state [%s] for event [%p], no associated friend list",lc
+					, linphone_subscription_state_to_string(state)
+				   , lev);
+	} else {
+		ms_message("Receiving new state [%s] for event [%p] for friend list [%p]"
+				   , linphone_subscription_state_to_string(state)
+				   , lev
+				   , list);
+		
+		if (state == LinphoneSubscriptionOutgoingProgress) {
+			ms_message("Resseting version count for friend list [%p]",list);
+			list->expected_notification_version = 0;
+		}
 	}
 }

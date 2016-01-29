@@ -216,7 +216,7 @@ static void simple_unregister(void){
 	LinphoneProxyConfig* proxy_config;
 	register_with_refresh_base(lcm->lc,FALSE,NULL,NULL);
 
-	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
 
 	linphone_proxy_config_edit(proxy_config);
 	reset_counters(counters); /*clear stats*/

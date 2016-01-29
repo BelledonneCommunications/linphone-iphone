@@ -518,14 +518,14 @@ SalReason _sal_reason_from_sip_code(int code) {
 		return SalReasonNotImplemented;
 	case 502:
 		return SalReasonBadGateway;
+	case 503:
+		return SalReasonServiceUnavailable;
 	case 504:
 		return SalReasonServerTimeout;
 	case 600:
 		return SalReasonDoNotDisturb;
 	case 603:
 		return SalReasonDeclined;
-	case 503:
-		return SalReasonServiceUnavailable;
 	default:
 		return SalReasonUnknown;
 	}

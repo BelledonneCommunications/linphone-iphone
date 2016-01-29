@@ -489,7 +489,7 @@ typedef void (*SalOnNotifyRefer)(SalOp *op, SalReferStatus state);
 typedef void (*SalOnSubscribeResponse)(SalOp *op, SalSubscribeStatus status);
 typedef void (*SalOnNotify)(SalOp *op, SalSubscribeStatus status, const char *event, SalBodyHandler *body);
 typedef void (*SalOnSubscribeReceived)(SalOp *salop, const char *event, const SalBodyHandler *body);
-typedef void (*SalOnSubscribeClosed)(SalOp *salop);
+typedef void (*SalOnIncomingSubscribeClosed)(SalOp *salop);
 typedef void (*SalOnParsePresenceRequested)(SalOp *salop, const char *content_type, const char *content_subtype, const char *content, SalPresenceModel **result);
 typedef void (*SalOnConvertPresenceToXMLRequested)(SalOp *salop, SalPresenceModel *presence, const char *contact, char **content);
 typedef void (*SalOnNotifyPresence)(SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model, const char *msg);
@@ -523,7 +523,7 @@ typedef struct SalCallbacks{
 	SalOnIsComposingReceived is_composing_received;
 	SalOnNotifyRefer notify_refer;
 	SalOnSubscribeReceived subscribe_received;
-	SalOnSubscribeClosed subscribe_closed;
+	SalOnIncomingSubscribeClosed incoming_subscribe_closed;
 	SalOnSubscribeResponse subscribe_response;
 	SalOnNotify notify;
 	SalOnSubscribePresenceReceived subscribe_presence_received;
