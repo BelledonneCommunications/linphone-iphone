@@ -547,14 +547,14 @@ static void call_outbound_with_multiple_proxy(void) {
 
 	// set first LPC to unreacheable proxy addr
 	linphone_proxy_config_edit(lpc);
-	linphone_proxy_config_set_server_addr(lpc,"12.13.14.15:5223;transport=udp");
-	linphone_proxy_config_set_route(lpc, "12.13.14.15:5223;transport=udp;lr");
+	linphone_proxy_config_set_server_addr(lpc,"sip:linphone.org:9016;transport=udp");
+	linphone_proxy_config_set_route(lpc, "sip:linphone.org:9016;transport=udp;lr");
 	linphone_proxy_config_done(lpc);
 
-	BC_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 10000));
 
 	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationProgress, 2, 200));
-	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 1, 10000));
 
 	// calling marie should go through the second proxy config
 	BC_ASSERT_TRUE(call(marie, pauline));
