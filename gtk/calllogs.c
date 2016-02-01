@@ -301,7 +301,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		time_t start_date_time=linphone_call_log_get_start_date(cl);
 		const gchar *call_status_icon_name;
 
-#if GLIB_CHECK_VERSION(2,26,0)
+#if GLIB_CHECK_VERSION(2,30,0) // The g_date_time_format function exists since 2.26.0 but the '%c' format is only supported since 2.30.0
 		if (start_date_time){
 			GDateTime *dt=g_date_time_new_from_unix_local(start_date_time);
 			start_date=g_date_time_format(dt,"%c");
@@ -309,6 +309,9 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		}
 #else
 		start_date=g_strdup(ctime(&start_date_time));
+		if (start_date[strlen(start_date) - 1] == '\n') {
+			start_date[strlen(start_date) - 1] = '\0';
+		}
 #endif
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),addr);
 		if(lf != NULL){
