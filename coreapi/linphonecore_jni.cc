@@ -3188,6 +3188,16 @@ extern "C" jlong Java_org_linphone_core_LinphoneFriendListImpl_newLinphoneFriend
 	return (jlong)fl;
 }
 
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setUri(JNIEnv* env, jobject thiz, jlong list, jstring juri) {
+	const char* uri = env->GetStringUTFChars(juri, NULL);
+	linphone_friend_list_set_uri((LinphoneFriendList*)list, uri);
+	env->ReleaseStringUTFChars(juri, uri);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_synchronizeFriendsFromServer(JNIEnv* env, jobject thiz, jlong list) {
+	linphone_friend_list_synchronize_friends_from_server((LinphoneFriendList*)list);
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setAddress(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr

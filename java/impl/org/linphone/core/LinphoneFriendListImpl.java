@@ -66,6 +66,22 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 		}
 	}
 	
+	private native void setUri(long nativePtr, String uri);
+	@Override
+	public void setUri(String uri) {
+		synchronized(getSyncObject()) {
+			return setUri(nativePtr, uri);
+		}
+	}
+	
+	private native void synchronizeFriendsFromServer(long nativePtr);
+	@Override
+	public void synchronizeFriendsFromServer() {
+		synchronized(getSyncObject()) {
+			synchronizeFriendsFromServer(nativePtr);
+		}
+	}
+	
 
 	/*reserved for JNI */
 	protected LinphoneFriendListImpl(long aNativePtr)  {

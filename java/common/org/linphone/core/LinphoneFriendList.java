@@ -24,5 +24,7 @@ public interface LinphoneFriendList {
 	public void addFriend(LinphoneFriend friend);
 	public void updateSubscriptions(LinphoneProxyConfig proxyConfig,boolean onlyWhenRegistered);
 	public LinphoneFriend findFriendByUri(String uri);
+	public void setUri(String uri);
+	public void synchronizeFriendsFromServer();
 	long getNativePtr();	
 }
