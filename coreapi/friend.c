@@ -918,6 +918,7 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 	
 #ifndef VCARD_ENABLED
 	ms_error("vCard support wasn't enabled at compilation time");
+	return -1;
 #endif
 	if (!vcards) {
 		ms_error("Failed to parse the file %s", vcard_file);
@@ -948,6 +949,7 @@ int linphone_core_import_friends_from_vcard4_buffer(LinphoneCore *lc, const char
 	
 #ifndef VCARD_ENABLED
 	ms_error("vCard support wasn't enabled at compilation time");
+	return -1;
 #endif
 	if (!vcards) {
 		ms_error("Failed to parse the buffer");

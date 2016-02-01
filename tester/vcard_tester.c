@@ -133,22 +133,46 @@ end:
 	linphone_core_manager_destroy(manager);
 }
 
+typedef struct _LinphoneFriendListStats {
+	int new_list_count;
+	int removed_list_count;
+} LinphoneFriendListStats;
+
+static void friend_list_created_cb(LinphoneCore *lc, LinphoneFriendList *list) {
+	LinphoneFriendListStats *stats = (LinphoneFriendListStats *)linphone_friend_list_get_user_data(list);
+	stats->new_list_count++;
+}
+
+static void friend_list_removed_cb(LinphoneCore *lc, LinphoneFriendList *list) {
+	LinphoneFriendListStats *stats = (LinphoneFriendListStats *)linphone_friend_list_get_user_data(list);
+	stats->removed_list_count++;
+}
+
 static void friends_sqlite_storage(void) {
-	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
-	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
-	LinphoneVCard *lvc = linphone_vcard_new();
+	LinphoneCoreVTable *v_table = linphone_core_v_table_new();
+	LinphoneCore* lc = NULL;
+	LinphoneFriendList *lfl = NULL;
 	LinphoneFriend *lf = NULL;
 	LinphoneFriend *lf2 = NULL;
+	LinphoneVCard *lvc = linphone_vcard_new();
 	LinphoneAddress *addr = linphone_address_new("sip:sylvain@sip.linphone.org");
-	const MSList *friends = linphone_core_get_friend_list(manager->lc);
+	const MSList *friends = NULL;
 	MSList *friends_from_db = NULL;
 	MSList *friends_lists_from_db = NULL;
 	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
+	LinphoneFriendListStats *stats = (LinphoneFriendListStats *)ms_new0(LinphoneFriendListStats, 1);
+	
+	v_table->friend_list_created = friend_list_created_cb;
+	v_table->friend_list_removed = friend_list_removed_cb;
+	lc = linphone_core_new(v_table, NULL, NULL, NULL);
+	friends = linphone_core_get_friend_list(lc);
+	lfl = linphone_core_create_friend_list(lc);
+	linphone_friend_list_set_user_data(lfl, stats);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
 	
 	unlink(friends_db);
-	linphone_core_set_friends_database_path(manager->lc, friends_db);
-	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc, linphone_core_get_default_friend_list(manager->lc));
+	linphone_core_set_friends_database_path(lc, friends_db);
+	friends_from_db = linphone_core_fetch_friends_from_db(lc, linphone_core_get_default_friend_list(lc));
 	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 0, int, "%d");
 	
 	linphone_vcard_set_etag(lvc, "\"123-456789\"");
@@ -157,7 +181,9 @@ static void friends_sqlite_storage(void) {
 	linphone_friend_set_address(lf, addr);
 	linphone_friend_set_name(lf, "Sylvain");
 	
-	linphone_core_add_friend_list(manager->lc, lfl);
+	linphone_core_add_friend_list(lc, lfl);
+	wait_for_until(lc, NULL, &stats->new_list_count, 1, 1000);
+	BC_ASSERT_EQUAL(stats->new_list_count, 1, int, "%i");
 	linphone_friend_list_unref(lfl);
 	linphone_friend_list_set_display_name(lfl, "Test");
 	BC_ASSERT_EQUAL_FATAL(linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%i");
@@ -165,10 +191,10 @@ static void friends_sqlite_storage(void) {
 	BC_ASSERT_EQUAL(lfl->storage_id, 1, int, "%d");
 	BC_ASSERT_EQUAL(lf->storage_id, 1, int, "%d");
 	
-	friends = linphone_core_get_friend_list(manager->lc);
+	friends = linphone_core_get_friend_list(lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
 	
-	friends_lists_from_db = linphone_core_fetch_friends_lists_from_db(manager->lc);
+	friends_lists_from_db = linphone_core_fetch_friends_lists_from_db(lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends_lists_from_db), 1, int, "%d");
 	friends_from_db = ((LinphoneFriendList *)friends_lists_from_db->data)->friends;
 	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 1, int, "%d");
@@ -177,7 +203,7 @@ static void friends_sqlite_storage(void) {
 	BC_ASSERT_PTR_NOT_NULL(lf2->friend_list);
 	friends_lists_from_db = ms_list_free_with_data(friends_lists_from_db, (void (*)(void *))linphone_friend_list_unref);
 	
-	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc, lfl);
+	friends_from_db = linphone_core_fetch_friends_from_db(lc, lfl);
 	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 1, int, "%d");
 	if (ms_list_size(friends_from_db) < 1) {
 		goto end;
@@ -193,7 +219,7 @@ static void friends_sqlite_storage(void) {
 	linphone_friend_set_name(lf, "Margaux");
 	linphone_friend_done(lf);
 	friends_from_db = ms_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
-	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc, lfl);
+	friends_from_db = linphone_core_fetch_friends_from_db(lc, lfl);
 	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 1, int, "%d");
 	if (ms_list_size(friends_from_db) < 1) {
 		goto end;
@@ -202,17 +228,21 @@ static void friends_sqlite_storage(void) {
 	BC_ASSERT_STRING_EQUAL(linphone_friend_get_name(lf2), "Margaux");
 	friends_from_db = ms_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
 	
-	linphone_core_remove_friend(manager->lc, lf);
-	friends = linphone_core_get_friend_list(manager->lc);
+	linphone_core_remove_friend(lc, lf);
+	friends = linphone_core_get_friend_list(lc);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
-	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc, lfl);
+	friends_from_db = linphone_core_fetch_friends_from_db(lc, lfl);
 	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 0, int, "%d");
+	
+	linphone_core_remove_friend_list(lc, lfl);
+	wait_for_until(lc, NULL, &stats->removed_list_count, 1, 1000);
+	BC_ASSERT_EQUAL(stats->removed_list_count, 1, int, "%i");
 
 end:
 	unlink(friends_db);
 	ms_free(friends_db);
 	linphone_address_unref(addr);
-	linphone_core_manager_destroy(manager);
+	linphone_core_destroy(lc);
 }
 #endif
 

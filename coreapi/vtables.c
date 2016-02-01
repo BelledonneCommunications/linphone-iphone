@@ -264,6 +264,16 @@ void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore
 	cleanup_dead_vtable_refs(lc);
 }
 
+void linphone_core_notify_friend_list_created(LinphoneCore *lc, LinphoneFriendList *list) {
+	NOTIFY_IF_EXIST(friend_list_created, lc, list);
+	cleanup_dead_vtable_refs(lc);
+}
+
+void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendList *list) {
+	NOTIFY_IF_EXIST(friend_list_removed, lc, list);
+	cleanup_dead_vtable_refs(lc);
+}
+
 static VTableReference * v_table_reference_new(LinphoneCoreVTable *vtable, bool_t autorelease, bool_t internal){
 	VTableReference *ref=ms_new0(VTableReference,1);
 	ref->valid=1;

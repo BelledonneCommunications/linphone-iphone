@@ -1433,6 +1433,8 @@ void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneE
 void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
 void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info);
 void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t offset, size_t total);
+void linphone_core_notify_friend_list_created(LinphoneCore *lc, LinphoneFriendList *list);
+void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendList *list);
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);

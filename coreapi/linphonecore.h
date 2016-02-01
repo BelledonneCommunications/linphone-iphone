@@ -2069,6 +2069,20 @@ typedef void (*LinphoneCoreLogCollectionUploadStateChangedCb)(LinphoneCore *lc, 
 typedef void (*LinphoneCoreLogCollectionUploadProgressIndicationCb)(LinphoneCore *lc, size_t offset, size_t total);
 
 /**
+ * Callback prototype for reporting when a friend list has been added to the core friends list.
+ * @param[in] lc LinphoneCore object
+ * @param[in] list LinphoneFriendList object
+ */
+typedef void (*LinphoneCoreFriendListCreatedCb) (LinphoneCore *lc, LinphoneFriendList *list);
+
+/**
+ * Callback prototype for reporting when a friend list has been removed from the core friends list.
+ * @param[in] lc LinphoneCore object
+ * @param[in] list LinphoneFriendList object
+ */
+typedef void (*LinphoneCoreFriendListRemovedCb) (LinphoneCore *lc, LinphoneFriendList *list);
+
+/**
  * This structure holds all callbacks that the application should implement.
  *  None is mandatory.
 **/
@@ -2105,6 +2119,8 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreNetworkReachableCb network_reachable; /**< Callback to report IP network status (I.E up/down )*/
 	LinphoneCoreLogCollectionUploadStateChangedCb log_collection_upload_state_changed; /**< Callback to upload collected logs */
 	LinphoneCoreLogCollectionUploadProgressIndicationCb log_collection_upload_progress_indication; /**< Callback to indicate log collection upload progress */
+	LinphoneCoreFriendListCreatedCb friend_list_created;
+	LinphoneCoreFriendListRemovedCb friend_list_removed;
 	void *user_data; /**<User data associated with the above callbacks */
 } LinphoneCoreVTable;
 

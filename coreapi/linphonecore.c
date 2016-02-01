@@ -1937,12 +1937,13 @@ LinphoneFriendList* linphone_core_get_default_friend_list(const LinphoneCore *lc
 void linphone_core_remove_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
 	MSList *elem = ms_list_find(lc->friends_lists, list);
 	if (elem == NULL) return;
-	list->lc = NULL;
-	linphone_friend_list_unref(list);
-	lc->friends_lists = ms_list_remove_link(lc->friends_lists, elem);
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
 	linphone_core_remove_friends_list_from_db(lc, list);
 #endif
+	linphone_core_notify_friend_list_removed(lc, list);
+	list->lc = NULL;
+	linphone_friend_list_unref(list);
+	lc->friends_lists = ms_list_remove_link(lc->friends_lists, elem);
 }
 
 void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
@@ -1954,6 +1955,7 @@ void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
 		linphone_core_store_friends_list_in_db(lc, list);
 #endif
+		linphone_core_notify_friend_list_created(lc, list);
 	} else {
 		const char *rls_uri = lp_config_get_string(lc->config, "sip", "rls_uri", NULL);
 		list = linphone_core_create_friend_list(lc);
