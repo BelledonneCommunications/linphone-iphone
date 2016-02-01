@@ -13,6 +13,7 @@
 @interface ChatConversationCreateView : UIViewController <UICompositeViewDelegate>
 
 @property(strong, nonatomic) IBOutlet ChatConversationCreateTableView *tableController;
+@property(weak, nonatomic) IBOutlet UIIconButton *backButton;
 
 - (IBAction)onBackClick:(id)sender;
 
