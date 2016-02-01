@@ -41,6 +41,7 @@ NSString *const kLogsUpdateNotification = @"kLogsUpdateNotification";
 	lastLogs = [[NSMutableArray alloc] initWithCapacity:kLastLogsCapacity];
 	logsBuffer = [NSMutableArray arrayWithCapacity:kLogsBufferCapacity];
 	[Log enableLogs:ORTP_DEBUG];
+	linphone_core_enable_log_collection(NO);
 }
 
 void tester_logs_handler(int level, const char *fmt, va_list args) {

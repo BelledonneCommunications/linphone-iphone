@@ -32,6 +32,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return self.class.compositeViewDescription;
 }
 
+- (void)viewDidLoad {
+	[super viewDidLoad];
+
+	// if we use fragments, remove back button
+	if (IPAD) {
+		_backButton.hidden = YES;
+	}
+}
+
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	[_tableController.tableView reloadData];
