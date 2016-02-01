@@ -294,6 +294,11 @@ public:
 
 		friendClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendImpl"));;
 		friendCtrId = env->GetMethodID(friendClass,"<init>", "(J)V");
+		
+		friendListClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendListImpl"));;
+		friendListCtrId = env->GetMethodID(friendListClass,"<init>", "(J)V");
+		friendListCreatedId = env->GetMethodID(listenerClass, "friendListCreated", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriendList;)V");
+		friendListRemovedId = env->GetMethodID(listenerClass, "friendListRemoved", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriendList;)V");
 
 		addressClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneAddressImpl"));
 		addressCtrId = env->GetMethodID(addressClass,"<init>", "(J)V");
@@ -333,6 +338,7 @@ public:
 		env->DeleteGlobalRef(chatMessageClass);
 		env->DeleteGlobalRef(chatRoomClass);
 		env->DeleteGlobalRef(friendClass);
+		env->DeleteGlobalRef(friendListClass);
 		env->DeleteGlobalRef(infoMessageClass);
 		env->DeleteGlobalRef(linphoneEventClass);
 		env->DeleteGlobalRef(subscriptionStateClass);
@@ -401,6 +407,11 @@ public:
 
 	jclass friendClass;
 	jmethodID friendCtrId;
+
+	jclass friendListClass;
+	jmethodID friendListCtrId;
+	jmethodID friendListCreatedId;
+	jmethodID friendListRemovedId;
 
 	jclass addressClass;
 	jmethodID addressCtrId;
@@ -526,6 +537,31 @@ jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend){
 	return jobj;
 }
 
+jobject getFriendList(JNIEnv *env, LinphoneFriendList *lfriendList){
+	jobject jobj=0;
+
+	if (lfriendList != NULL){
+		LinphoneCore *lc = linphone_friend_list_get_core(lfriendList);
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+
+		void *up=linphone_friend_list_get_user_data(lfriendList);
+
+		if (up == NULL){
+			jobj=env->NewObject(ljb->friendListClass, ljb->friendListCtrId, (jlong)lfriendList);
+			linphone_friend_list_set_user_data(lfriendList,(void*)env->NewWeakGlobalRef(jobj));
+			linphone_friend_list_ref(lfriendList);
+		}else{
+
+			jobj=env->NewLocalRef((jobject)up);
+			if (jobj == NULL){
+				jobj=env->NewObject(ljb->friendListClass, ljb->friendListCtrId, (jlong)lfriendList);
+				linphone_friend_list_set_user_data(lfriendList,(void*)env->NewWeakGlobalRef(jobj));
+			}
+		}
+	}
+	return jobj;
+}
+
 jobject getEvent(JNIEnv *env, LinphoneEvent *lev){
 	if (lev==NULL) return NULL;
 	jobject jev=(jobject)linphone_event_get_user_data(lev);
@@ -637,6 +673,13 @@ public:
 		}
 		if (ljb->logCollectionUploadStateId) {
 			vTable->log_collection_upload_state_changed = logCollectionUploadStateChange;
+		}
+		
+		if (ljb->friendListCreatedId) {
+			vTable->friend_list_created = friendListCreated;
+		}
+		if (ljb->friendListRemovedId) {
+			vTable->friend_list_removed = friendListRemoved;
 		}
 	}
 	
@@ -1207,6 +1250,40 @@ public:
 		if (msg) {
 			env->DeleteLocalRef(msg);
 		}
+	}
+	static void friendListCreated(LinphoneCore *lc, LinphoneFriendList *list) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+		env->CallVoidMethod(lcData->listener
+							,ljb->friendListCreatedId
+							,lcData->core
+							,getFriendList(env, list));
+		handle_possible_java_exception(env, lcData->listener);
+	}
+	static void friendListRemoved(LinphoneCore *lc, LinphoneFriendList *list) {
+		JNIEnv *env = 0;
+		jint result = jvm->AttachCurrentThread(&env,NULL);
+		if (result != 0) {
+			ms_error("cannot attach VM");
+			return;
+		}
+		
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+		LinphoneCoreVTable *table = linphone_core_get_current_vtable(lc);
+		LinphoneCoreData* lcData = (LinphoneCoreData*)linphone_core_v_table_get_user_data(table);
+		env->CallVoidMethod(lcData->listener
+							,ljb->friendListRemovedId
+							,lcData->core
+							,getFriendList(env, list));
+		handle_possible_java_exception(env, lcData->listener);
 	}
 
 private:

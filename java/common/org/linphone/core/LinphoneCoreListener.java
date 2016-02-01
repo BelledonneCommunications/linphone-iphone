@@ -226,5 +226,19 @@ public interface LinphoneCoreListener {
 	 * @param info Additional information: error message in case of error state, URL of uploaded file in case of success.
 	 */
 	void uploadStateChanged(LinphoneCore lc, LinphoneCore.LogCollectionUploadState state, String info);
+	
+	/**
+	 * Callback prototype for reporting LinphoneFriendList creation.
+	 * @param lc LinphoneCore object
+	 * @param list LinphoneFriendList object
+	 */
+	void friendListCreated(LinphoneCore lc, LinphoneFriendList list);
+	
+	/**
+	 * Callback prototype for reporting LinphoneFriendList removal.
+	 * @param lc LinphoneCore object
+	 * @param list LinphoneFriendList object
+	 */
+	void friendListRemoved(LinphoneCore lc, LinphoneFriendList list);
 }
 
