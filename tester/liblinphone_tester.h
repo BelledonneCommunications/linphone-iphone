@@ -258,6 +258,7 @@ typedef struct _LinphoneConferenceServer {
 	LinphoneCoreManager base;
 	LinphoneCall *first_call;
 	LinphoneCoreVTable *vtable;
+	LinphoneRegistrationState reg_state;
 } LinphoneConferenceServer;
 
 typedef struct _LinphoneCallTestParams {
@@ -361,7 +362,7 @@ void liblinphone_tester_uninit(void);
 int liblinphone_tester_set_log_file(const char *filename);
 bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, LinphoneIceState state);
 
-LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file);
+LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bool_t do_registration);
 void linphone_conference_server_destroy(LinphoneConferenceServer *conf_srv);
 
 extern const char *liblinphone_tester_mire_id;

@@ -667,7 +667,7 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 	return video_enabled ? (realtime_text_enabled ? text_success && audio_success && video_success : audio_success && video_success) : realtime_text_enabled ? text_success && audio_success : audio_success;
 }
 
-void linphone_conference_server_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
+static void linphone_conference_server_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
 	LinphoneCoreVTable *vtable = linphone_core_get_current_vtable(lc);
 	LinphoneConferenceServer *conf_srv = (LinphoneConferenceServer *)vtable->user_data;
 	
@@ -696,7 +696,7 @@ void linphone_conference_server_call_state_changed(LinphoneCore *lc, LinphoneCal
 	}
 }
 
-void linphone_conference_server_refer_received(LinphoneCore *core, const char *refer_to) {
+static void linphone_conference_server_refer_received(LinphoneCore *core, const char *refer_to) {
 	char method[20];
 	LinphoneAddress *refer_to_addr = linphone_address_new(refer_to);
 	char *uri;
@@ -714,17 +714,30 @@ void linphone_conference_server_refer_received(LinphoneCore *core, const char *r
 	linphone_address_destroy(refer_to_addr);
 }
 
-LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file) {
+static void linphone_conference_server_registration_state_changed(LinphoneCore *core,
+																  LinphoneProxyConfig *cfg,
+																  LinphoneRegistrationState cstate,
+																  const char *message) {
+	LinphoneCoreVTable *vtable = linphone_core_get_current_vtable(core);
+	LinphoneConferenceServer *m = (LinphoneConferenceServer *)linphone_core_v_table_get_user_data(vtable);
+	if(cfg == linphone_core_get_default_proxy_config(core)) {
+		m->reg_state = cstate;
+	}
+}
+
+LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bool_t do_registration) {
 	LinphoneConferenceServer *conf_srv = (LinphoneConferenceServer *)ms_new0(LinphoneConferenceServer, 1);
 	LinphoneCoreManager *lm = (LinphoneCoreManager *)conf_srv;
 	
 	conf_srv->vtable = linphone_core_v_table_new();
 	conf_srv->vtable->call_state_changed = linphone_conference_server_call_state_changed;
 	conf_srv->vtable->refer_received = linphone_conference_server_refer_received;
+	conf_srv->vtable->registration_state_changed = linphone_conference_server_registration_state_changed;
 	conf_srv->vtable->user_data = conf_srv;
+	conf_srv->reg_state = LinphoneRegistrationNone;
 	linphone_core_manager_init(lm, rc_file);
 	linphone_core_add_listener(lm->lc, conf_srv->vtable);
-	linphone_core_manager_start(lm, TRUE);
+	linphone_core_manager_start(lm, do_registration);
 	return conf_srv;
 }
 

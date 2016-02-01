@@ -188,6 +188,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	LinphoneConference *conference;
 	const MSList* calls;
 	bool_t is_remote_conf;
+	bool_t focus_is_up = (focus && ((LinphoneConferenceServer *)focus)->reg_state == LinphoneRegistrationOk);
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
@@ -213,9 +214,21 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	if(!is_remote_conf) {
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallUpdating,initial_marie_stat.number_of_LinphoneCallUpdating+1,5000));
 	} else {
-		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,initial_marie_stat.number_of_LinphoneCallStreamsRunning+1,5000));
-		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneTransferCallConnected,initial_marie_stat.number_of_LinphoneTransferCallConnected+1,5000));
-		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,initial_marie_stat.number_of_LinphoneCallEnd+1,5000));
+		if(focus_is_up) {
+			BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,initial_marie_stat.number_of_LinphoneCallStreamsRunning+1,5000));
+			BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneTransferCallConnected,initial_marie_stat.number_of_LinphoneTransferCallConnected+1,5000));
+			BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,initial_marie_stat.number_of_LinphoneCallEnd+1,5000));
+		} else {
+			BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallError, initial_marie_stat.number_of_LinphoneCallError+1, 5000));
+			BC_ASSERT_PTR_NULL(linphone_core_get_conference(marie->lc));
+			BC_ASSERT_EQUAL(linphone_core_terminate_conference(marie->lc), -1, int, "%d");
+			linphone_core_terminate_call(marie->lc, marie_call_pauline);
+			linphone_core_terminate_call(marie->lc, marie_call_laure);
+			BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallEnd, initial_marie_stat.number_of_LinphoneCallEnd+2, 10000));
+			BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEnd, initial_pauline_stat.number_of_LinphoneCallEnd+1, 5000));
+			BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneCallEnd, initial_laure_stat.number_of_LinphoneCallEnd+1, 5000));
+			goto end;
+		}
 	}
 
 	linphone_core_add_to_conference(marie->lc,marie_call_pauline);
@@ -267,11 +280,11 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	}
 	
 	linphone_core_terminate_conference(marie->lc);
-
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,is_remote_conf?2:1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,is_remote_conf?3:1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,is_remote_conf?2:1,10000));
-
+	
+end:
 	ms_list_free(lcs);
 }
 
@@ -766,7 +779,38 @@ void simple_remote_conference(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
 	LinphoneCoreManager *laure = linphone_core_manager_new("laure_rc");
-	LinphoneConferenceServer *focus = linphone_conference_server_new("conference_focus_rc");
+	LinphoneConferenceServer *focus = linphone_conference_server_new("conference_focus_rc", TRUE);
+	LpConfig *marie_config = linphone_core_get_config(marie->lc);
+	LinphoneProxyConfig *focus_proxy_config = linphone_core_get_default_proxy_config(((LinphoneCoreManager *)focus)->lc);
+	LinphoneProxyConfig *laure_proxy_config = linphone_core_get_default_proxy_config(((LinphoneCoreManager *)laure)->lc);
+	const char *laure_proxy_uri = linphone_proxy_config_get_server_addr(laure_proxy_config);
+	const char *focus_uri = linphone_proxy_config_get_identity(focus_proxy_config);
+	int laure_n_register = laure->stat.number_of_LinphoneRegistrationOk;
+	MSList *lcs = NULL;
+	
+	lp_config_set_string(marie_config, "misc", "conference_type", "remote");
+	lp_config_set_string(marie_config, "misc", "conference_focus_addr", focus_uri);
+	
+	linphone_proxy_config_edit(laure_proxy_config);
+	linphone_proxy_config_set_route(laure_proxy_config, laure_proxy_uri);
+	linphone_proxy_config_done(laure_proxy_config);
+	lcs = ms_list_append(lcs, laure->lc);
+	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphoneRegistrationOk, laure_n_register+1, 5000));
+	ms_list_free(lcs);
+
+	simple_conference_base(marie, pauline, laure, (LinphoneCoreManager *)focus);
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+	linphone_conference_server_destroy(focus);
+}
+
+void simple_remote_conference_shut_down_focus(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	LinphoneCoreManager *laure = linphone_core_manager_new("laure_rc");
+	LinphoneConferenceServer *focus = linphone_conference_server_new("conference_focus_rc", FALSE);
 	LpConfig *marie_config = linphone_core_get_config(marie->lc);
 	LinphoneProxyConfig *focus_proxy_config = linphone_core_get_default_proxy_config(((LinphoneCoreManager *)focus)->lc);
 	LinphoneProxyConfig *laure_proxy_config = linphone_core_get_default_proxy_config(((LinphoneCoreManager *)laure)->lc);
@@ -797,7 +841,7 @@ void eject_from_3_participants_remote_conference(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
-	LinphoneConferenceServer *focus = linphone_conference_server_new("conference_focus_rc");
+	LinphoneConferenceServer *focus = linphone_conference_server_new("conference_focus_rc", TRUE);
 	LpConfig *marie_config = linphone_core_get_config(marie->lc);
 	LinphoneProxyConfig *focus_proxy_config = linphone_core_get_default_proxy_config(((LinphoneCoreManager *)focus)->lc);
 	LinphoneProxyConfig *laure_proxy_config = linphone_core_get_default_proxy_config(((LinphoneCoreManager *)laure)->lc);
@@ -840,7 +884,8 @@ test_t multi_call_tests[] = {
 	TEST_NO_TAG("Unattended call transfer with error", unattended_call_transfer_with_error),
 	TEST_NO_TAG("Call transfer existing call outgoing call", call_transfer_existing_call_outgoing_call),
 	TEST_NO_TAG("Simple remote conference", simple_remote_conference),
-	TEST_NO_TAG("Eject from 3 participants in remote conference", eject_from_3_participants_remote_conference)
+	TEST_NO_TAG("Simple remote conference with shut down focus", simple_remote_conference_shut_down_focus),
+	TEST_NO_TAG("Eject from 3 participants in remote conference", eject_from_3_participants_remote_conference),
 };
 
 test_suite_t multi_call_test_suite = {"Multi call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

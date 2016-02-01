@@ -37,11 +37,48 @@ typedef enum {
 	LinphoneConferenceClassRemote
 } LinphoneConferenceClass;
 
+/**
+ * List of states used by #LinphoneConference
+ */
+typedef enum {
+	LinphoneConferenceStopped, /*< Initial state */
+	LinphoneConferenceStarting, /*< A participant has been added but the conference is not running yet */
+	LinphoneConferenceReady, /*< The conference is running */
+	LinphoneConferenceStartingFailed /*< A participant has been added but the initialization of the conference has failed */
+} LinphoneConferenceState;
+/**
+ * Type of the funtion to pass as callback to linphone_conference_params_set_state_changed_callback()
+ * @param conference The conference instance which the state has changed
+ * @param new_state The new state of the conferenece
+ * @param user_data Pointer pass to user_data while linphone_conference_params_set_state_changed_callback() was being called
+ */
+typedef void (*LinphoneConferenceStateChangedCb)(LinphoneConference *conference, LinphoneConferenceState new_state, void *user_data);
+
+
+/**
+ * A function to converte a #LinphoneConferenceState into a string
+ */
+const char *linphone_conference_state_to_string(LinphoneConferenceState state);
+
+
+/**
+ * Set a callback which will be called when the state of the conferenec is switching
+ * @param params A #LinphoneConferenceParams object
+ * @param cb The callback to call
+ * @param user_data Pointer to pass to the user_data parameter of #LinphoneConferenceStateChangedCb
+ */
+void linphone_conference_params_set_state_changed_callback(LinphoneConferenceParams *params, LinphoneConferenceStateChangedCb cb, void *user_data);
+
+
 LinphoneConference *linphone_local_conference_new(LinphoneCore *core);
 LinphoneConference *linphone_local_conference_new_with_params(LinphoneCore *core, const LinphoneConferenceParams *params);
 LinphoneConference *linphone_remote_conference_new(LinphoneCore *core);
 LinphoneConference *linphone_remote_conference_new_with_params(LinphoneCore *core, const LinphoneConferenceParams *params);
 void linphone_conference_free(LinphoneConference *obj);
+/**
+ * Get the state of a conference
+ */
+LinphoneConferenceState linphone_conference_get_state(const LinphoneConference *obj);
 
 int linphone_conference_add_participant(LinphoneConference *obj, LinphoneCall *call);
 int linphone_conference_remove_participant_with_call(LinphoneConference *obj, LinphoneCall *call);

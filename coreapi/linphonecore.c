@@ -7461,18 +7461,30 @@ LinphoneRingtonePlayer *linphone_core_get_ringtoneplayer(LinphoneCore *lc) {
 	return lc->ringtoneplayer;
 }
 
+static void linphone_core_conference_state_changed(LinphoneConference *conf, LinphoneConferenceState cstate, void *user_data) {
+	LinphoneCore *lc = (LinphoneCore *)user_data;
+	if(cstate == LinphoneConferenceStartingFailed || cstate == LinphoneConferenceStopped) {
+		linphone_conference_free(lc->conf_ctx);
+		lc->conf_ctx = NULL;
+	}
+}
+
 LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc, const LinphoneConferenceParams *params) {
 	const char *conf_method_name;
 	if(lc->conf_ctx == NULL) {
+		LinphoneConferenceParams *params2 = linphone_conference_params_clone(params);
+		linphone_conference_params_set_state_changed_callback(params2, linphone_core_conference_state_changed, lc);
 		conf_method_name = lp_config_get_string(lc->config, "misc", "conference_type", "local");
 		if(strcasecmp(conf_method_name, "local") == 0) {
-			lc->conf_ctx = linphone_local_conference_new_with_params(lc, params);
+			lc->conf_ctx = linphone_local_conference_new_with_params(lc, params2);
 		} else if(strcasecmp(conf_method_name, "remote") == 0) {
-			lc->conf_ctx = linphone_remote_conference_new_with_params(lc, params);
+			lc->conf_ctx = linphone_remote_conference_new_with_params(lc, params2);
 		} else {
 			ms_error("'%s' is not a valid conference method", conf_method_name);
+			linphone_conference_params_free(params2);
 			return NULL;
 		}
+		linphone_conference_params_free(params2);
 	} else {
 		ms_error("Could not create a conference: a conference instance already exists");
 		return NULL;
@@ -7482,7 +7494,12 @@ LinphoneConference *linphone_core_create_conference_with_params(LinphoneCore *lc
 
 int linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *call) {
 	LinphoneConference *conference = linphone_core_get_conference(lc);
-	if(conference == NULL) conference = linphone_core_create_conference_with_params(lc, NULL);
+	if(conference == NULL) {
+		LinphoneConferenceParams *params = linphone_conference_params_new(lc);
+		linphone_conference_params_set_state_changed_callback(params, linphone_core_conference_state_changed, lc);
+		conference = linphone_core_create_conference_with_params(lc, params);
+		linphone_conference_params_free(params);
+	}
 	if(conference) return linphone_conference_add_participant(lc->conf_ctx, call);
 	else return -1;
 }
@@ -7508,7 +7525,10 @@ int linphone_core_remove_from_conference(LinphoneCore *lc, LinphoneCall *call) {
 }
 
 int linphone_core_terminate_conference(LinphoneCore *lc) {
-	if(lc->conf_ctx == NULL) return -1;
+	if(lc->conf_ctx == NULL) {
+		ms_error("Could not terminate conference: no conference context");
+		return -1;
+	}
 	linphone_conference_terminate(lc->conf_ctx);
 	linphone_conference_free(lc->conf_ctx);
 	lc->conf_ctx = NULL;
