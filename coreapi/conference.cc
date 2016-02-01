@@ -317,7 +317,7 @@ RtpProfile *LocalConference::sMakeDummyProfile(int samplerate){
 void LocalConference::addLocalEndpoint() {
 	/*create a dummy audiostream in order to extract the local part of it */
 	/* network address and ports have no meaning and are not used here. */
-	AudioStream *st=audio_stream_new(65000,65001,FALSE,m_core->factory);
+	AudioStream *st=audio_stream_new(m_core->factory, 65000,65001,FALSE);
 	MSSndCard *playcard=m_core->sound_conf.lsd_card ?
 			m_core->sound_conf.lsd_card : m_core->sound_conf.play_sndcard;
 	MSSndCard *captcard=m_core->sound_conf.capt_sndcard;

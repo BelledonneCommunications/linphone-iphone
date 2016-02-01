@@ -63,7 +63,7 @@ static void drag_data_received(GtkWidget *widget, GdkDragContext *context, gint 
 		if (player){
 
 			const char* filepath = (strstr(path,"file://")==path) ? path+strlen("file://") : path;
-			if (linphone_player_open(linphone_core_get_factory((void*)linphone_call_get_core(call)),player,filepath,on_end_of_play,NULL)==0){
+			if (linphone_player_open(player,filepath,on_end_of_play,NULL)==0){
 
 				linphone_player_start(player);
 			}else{

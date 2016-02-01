@@ -296,13 +296,13 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	{
 		MSWebCam *cam;
 
-		cam = ms_web_cam_manager_get_cam(ms_factory_get_wbc_manager(mgr->lc->factory), "Mire: Mire (synthetic moving picture)");
+		cam = ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(mgr->lc->factory), "Mire: Mire (synthetic moving picture)");
 
 		if (cam == NULL) {
 			MSWebCamDesc *desc = ms_mire_webcam_desc_get();
 			if (desc){
 				cam=ms_web_cam_new(desc);
-				ms_web_cam_manager_add_cam(ms_factory_get_wbc_manager(mgr->lc->factory), cam);
+				ms_web_cam_manager_add_cam(ms_factory_get_web_cam_manager(mgr->lc->factory), cam);
 			}
 		}
 	}

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <mediastreamer2/msmediaplayer.h>
 #include <mediastreamer2/mssndcard.h>
 
-static int _local_player_open(LinphonePlayer *obj, const char *filename, MSFactory *factory);
+static int _local_player_open(LinphonePlayer *obj, const char *filename);
 static int _local_player_start(LinphonePlayer *obj);
 static int _local_player_pause(LinphonePlayer *obj);
 static int _local_player_seek(LinphonePlayer *obj, int time_ms);
@@ -36,7 +36,7 @@ LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *s
 	LinphonePlayer *obj = ms_new0(LinphonePlayer, 1);
 	if(snd_card == NULL) snd_card = lc->sound_conf.ring_sndcard;
 	if(video_out == NULL) video_out = linphone_core_get_video_display_filter(lc);
-	obj->impl = ms_media_player_new(snd_card, video_out, window_id);
+	obj->impl = ms_media_player_new(lc->factory, snd_card, video_out, window_id);
 	obj->open = _local_player_open;
 	obj->start = _local_player_start;
 	obj->pause = _local_player_pause;
@@ -54,8 +54,8 @@ bool_t linphone_local_player_matroska_supported(void) {
 	return ms_media_player_matroska_supported();
 }
 
-static int _local_player_open(LinphonePlayer *obj, const char *filename,MSFactory* factory) {
-	return ms_media_player_open((MSMediaPlayer *)obj->impl, filename, factory) ? 0 : -1;
+static int _local_player_open(LinphonePlayer *obj, const char *filename) {
+	return ms_media_player_open((MSMediaPlayer *)obj->impl, filename) ? 0 : -1;
 }
 
 static int _local_player_start(LinphonePlayer *obj) {

@@ -44,16 +44,16 @@ static void play_file(const char *filename, bool_t supported_format, const char 
 	BC_ASSERT_PTR_NOT_NULL(lc_manager);
 	if(lc_manager == NULL) return;
 	
-	audio_codec_supported = (audio_mime && ms_factory_get_decoder(linphone_core_get_factory((void *)lc_manager->lc), audio_mime));
-	video_codec_supported = (video_mime && ms_factory_get_decoder(linphone_core_get_factory((void *)lc_manager->lc), video_mime));
+	audio_codec_supported = (audio_mime && ms_factory_get_decoder(linphone_core_get_ms_factory((void *)lc_manager->lc), audio_mime));
+	video_codec_supported = (video_mime && ms_factory_get_decoder(linphone_core_get_ms_factory((void *)lc_manager->lc), video_mime));
 
 	player = linphone_core_create_local_player(lc_manager->lc,
-											   ms_snd_card_manager_get_default_card(ms_factory_get_snd_manager(linphone_core_get_factory((void *)lc_manager->lc))),
+											   ms_snd_card_manager_get_default_card(ms_factory_get_snd_card_manager(linphone_core_get_ms_factory((void *)lc_manager->lc))),
 																					video_stream_get_default_video_renderer(), 0);
 	BC_ASSERT_PTR_NOT_NULL(player);
 	if(player == NULL) goto fail;
 
-	res = linphone_player_open(linphone_core_get_factory((void*)lc_manager->lc), player, filename, eof_callback, &eof);
+	res = linphone_player_open(player, filename, eof_callback, &eof);
 	if(supported_format && (audio_codec_supported || video_codec_supported)) {
 		BC_ASSERT_EQUAL(res, 0, int, "%d");
 	} else {

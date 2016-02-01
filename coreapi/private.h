@@ -1235,7 +1235,7 @@ LINPHONE_PUBLIC int linphone_remote_provisioning_load_file( LinphoneCore* lc, co
  ****************************************************************************/
 
 struct _LinphonePlayer{
-	int (*open)(struct _LinphonePlayer* player, const char *filename, MSFactory *factory);
+	int (*open)(struct _LinphonePlayer* player, const char *filename);
 	int (*start)(struct _LinphonePlayer* player);
 	int (*pause)(struct _LinphonePlayer* player);
 	int (*seek)(struct _LinphonePlayer* player, int time_ms);
