@@ -313,16 +313,23 @@ LINPHONE_PUBLIC LinphoneFriendListContactUpdatedCb linphone_friend_list_cbs_get_
 LINPHONE_PUBLIC void linphone_friend_list_cbs_set_contact_updated(LinphoneFriendListCbs *cbs, LinphoneFriendListContactUpdatedCb cb);
 
 /**
- * 
+ * Starts a CardDAV synchronization using value set using linphone_friend_list_set_uri.
  * @param[in] list LinphoneFriendList object.
  */
 LINPHONE_PUBLIC void linphone_friend_list_synchronize_friends_from_server(LinphoneFriendList *list);
 
 /**
- * 
+ * Goes through all the LinphoneFriend that are dirty and does a CardDAV PUT to update the server.
  * @param[in] list LinphoneFriendList object.
  */
 void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list);
+
+/**
+ * Returns the LinphoneCore object attached to this LinphoneFriendList.
+ * @param[in] list LinphoneFriendList object.
+ * @return a LinphoneCore object
+ */
+LINPHONE_PUBLIC LinphoneCore* linphone_friend_list_get_core(LinphoneFriendList *list);
 
 /**
  * @}

@@ -688,3 +688,7 @@ void linphone_friend_list_subscription_state_changed(LinphoneCore *lc, LinphoneE
 		}
 	}
 }
+
+LinphoneCore* linphone_friend_list_get_core(LinphoneFriendList *list) {
+	return list->lc;
+}
