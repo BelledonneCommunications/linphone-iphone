@@ -408,11 +408,9 @@ static void carddav_sync_4(void) {
 	linphone_carddav_set_removed_contact_callback(c, carddav_removed_contact);
 	linphone_carddav_set_updated_contact_callback(c, carddav_updated_contact);
 	
-	BC_ASSERT_PTR_NULL(linphone_vcard_get_uid(lvc));
-	BC_ASSERT_TRUE(linphone_vcard_generate_unique_id(lvc));
-	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
-	
+	BC_ASSERT_PTR_NULL(linphone_vcard_get_uid(lvc));	
 	linphone_carddav_put_vcard(c, lf);
+	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
 	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, 2000);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	
@@ -461,12 +459,14 @@ static void carddav_integration(void) {
 	linphone_core_add_friend_list(manager->lc, lfl);
 
 	BC_ASSERT_PTR_NULL(linphone_vcard_get_uid(lvc));
-	BC_ASSERT_TRUE(linphone_vcard_generate_unique_id(lvc));
-	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
+	BC_ASSERT_EQUAL(ms_list_size(lfl->dirty_friends_to_update), 0, int, "%d");
 	BC_ASSERT_EQUAL_FATAL(linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
+	BC_ASSERT_EQUAL(ms_list_size(lfl->dirty_friends_to_update), 1, int, "%d");
 	wait_for_until(manager->lc, NULL, NULL, 1, 2000);
+	BC_ASSERT_EQUAL(ms_list_size(lfl->dirty_friends_to_update), 0, int, "%d");
+	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
 	linphone_friend_list_remove_friend(lfl, lf);
-	wait_for_until(manager->lc, NULL, NULL, 1, 2000);
+	BC_ASSERT_EQUAL(ms_list_size(lfl->friends), 0, int, "%d");
 	linphone_friend_unref(lf);
 	lf = NULL;
 

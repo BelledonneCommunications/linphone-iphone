@@ -125,14 +125,14 @@ LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vC
  * @param[in] vCard the LinphoneVCard
  * @return TRUE if operation is successful, otherwise FALSE (for example if it already has an unique ID)
  */
-LINPHONE_PUBLIC bool_t linphone_vcard_generate_unique_id(LinphoneVCard *vCard);
+bool_t linphone_vcard_generate_unique_id(LinphoneVCard *vCard);
 
 /**
  * Sets the unique ID of the vCard
  * @param[in] vCard the LinphoneVCard
  * @param[in] uid the unique id
  */
-LINPHONE_PUBLIC void linphone_vcard_set_uid(LinphoneVCard *vCard, const char *uid);
+void linphone_vcard_set_uid(LinphoneVCard *vCard, const char *uid);
 
 /**
  * Gets the UID of the vCard

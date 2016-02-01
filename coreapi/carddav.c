@@ -492,8 +492,11 @@ static char* generate_url_from_server_address_and_uid(const char *server_url) {
 
 void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
 	LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
-	if (lvc && linphone_vcard_get_uid(lvc)) {
+	if (lvc) {
 		LinphoneCardDavQuery *query = NULL;
+		if (!linphone_vcard_get_uid(lvc)) {
+			linphone_vcard_generate_unique_id(lvc);
+		}
 		
 		if (!linphone_vcard_get_url(lvc)) {
 			char *url = generate_url_from_server_address_and_uid(cdc->friend_list->uri);
@@ -517,8 +520,6 @@ void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf)
 		const char *msg = NULL;
 		if (!lvc) {
 			msg = "LinphoneVCard is NULL";
-		} else if (!linphone_vcard_get_uid(lvc)) {
-			msg = "LinphoneVCard doesn't have an UID";
 		} else {
 			msg = "Unknown error";
 		}
