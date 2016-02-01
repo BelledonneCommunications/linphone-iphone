@@ -1627,6 +1627,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 		return importFriendsFromVCardFile(nativePtr, file);
 	}
 	
+	private native int importFriendsFromVCardBuffer(long nativePtr, String buffer);
+	@Override
+	public int importFriendsFromVCardBuffer(String buffer) {
+		return importFriendsFromVCardBuffer(nativePtr, buffer);
+	}
+	
 	private native void exportFriendsToVCardFile(long nativePtr, String file);
 	@Override
 	public void exportFriendsToVCardFile(String file) {

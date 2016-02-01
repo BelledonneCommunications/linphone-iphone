@@ -942,6 +942,36 @@ int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *
 	return count;
 }
 
+int linphone_core_import_friends_from_vcard4_buffer(LinphoneCore *lc, const char *vcard_buffer) {
+	MSList *vcards = linphone_vcard_list_from_vcard4_buffer(vcard_buffer);
+	int count = 0;
+	
+#ifndef VCARD_ENABLED
+	ms_error("vCard support wasn't enabled at compilation time");
+#endif
+	if (!vcards) {
+		ms_error("Failed to parse the buffer");
+		return -1;
+	}
+	while (vcards != NULL && vcards->data != NULL) {
+		LinphoneVCard *vcard = (LinphoneVCard *)vcards->data;
+		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
+		if (lf) {
+			if (LinphoneFriendListOK == linphone_friend_list_import_friend(linphone_core_get_default_friend_list(lc), lf, TRUE)) {
+				count++;
+			}
+			linphone_friend_unref(lf);
+		} else {
+			linphone_vcard_free(vcard);
+		}
+		vcards = ms_list_next(vcards);
+	}
+#ifndef FRIENDS_SQL_STORAGE_ENABLED
+	linphone_core_write_friends_config(lc);
+#endif
+	return count;
+}
+
 void linphone_core_export_friends_as_vcard4_file(LinphoneCore *lc, const char *vcard_file) {
 	FILE *file = NULL;
 	const MSList *friends = linphone_core_get_friend_list(lc);

@@ -2271,6 +2271,12 @@ public interface LinphoneCore {
 	public int importFriendsFromVCardFile(String file);
 	
 	/**
+	 * Imports LinphoneFriends from a vCard 4 buffer
+	 * @return the number of friend imported
+	**/
+	public int importFriendsFromVCardBuffer(String buffer);
+	
+	/**
 	 * Exports LinphoneFriends to a vCard 4 file
 	**/
 	public void exportFriendsToVCardFile(String file);

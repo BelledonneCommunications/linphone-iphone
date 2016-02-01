@@ -1955,6 +1955,13 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_importFriendsFromVCardFi
 	return count;
 }
 
+extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_importFriendsFromVCardBuffer(JNIEnv* env, jobject thiz, jlong lc, jstring jbuffer) {
+	const char* buffer = env->GetStringUTFChars(jbuffer, NULL);
+	int count = linphone_core_import_friends_from_vcard4_buffer((LinphoneCore*)lc, buffer);
+	env->ReleaseStringUTFChars(jbuffer, buffer);
+	return count;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_exportFriendsToVCardFile(JNIEnv* env, jobject thiz, jlong lc, jstring jpath) {
 	const char* path = env->GetStringUTFChars(jpath, NULL);
 	linphone_core_export_friends_as_vcard4_file((LinphoneCore*)lc, path);
