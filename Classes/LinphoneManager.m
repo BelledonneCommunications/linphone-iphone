@@ -1307,9 +1307,11 @@ static LinphoneCoreVTable linphonec_vtable = {
 	NSString *chatDBFileName = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
 	const char *lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] UTF8String];
 
-	NSString *device = [NSString
+	NSString *device = [[NSString
 		stringWithFormat:@"%@_%@_iOS%@", [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
-						 [LinphoneUtils deviceName], UIDevice.currentDevice.systemVersion];
+						 [LinphoneUtils deviceName], UIDevice.currentDevice.systemVersion]
+		stringByReplacingOccurrencesOfString:@","
+								  withString:@"."];
 	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, LINPHONE_IOS_VERSION);
 
 	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"];
