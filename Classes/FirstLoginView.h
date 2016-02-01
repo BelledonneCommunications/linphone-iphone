@@ -22,7 +22,7 @@
 #import "UICompositeView.h"
 #import "UIAssistantTextField.h"
 
-@interface FirstLoginView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
+@interface FirstLoginView : TPMultiLayoutViewController <UITextFieldDelegate, UICompositeViewDelegate> {
 	LinphoneAccountCreator *account_creator;
 }
 
