@@ -335,4 +335,17 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+        @Override
+        public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
+
 }

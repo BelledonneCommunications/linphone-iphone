@@ -70,7 +70,7 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 	@Override
 	public void setUri(String uri) {
 		synchronized(getSyncObject()) {
-			return setUri(nativePtr, uri);
+			setUri(nativePtr, uri);
 		}
 	}
 	
