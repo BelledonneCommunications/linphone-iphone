@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone.core;
 
 import java.io.Serializable;
-import org.linphone.core.LinphoneProxyConfigImpl;
 
 class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 	
@@ -31,8 +30,7 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 	private native void updateSubscriptions(long nativePtr,long proxyConfigPtr,boolean onlyWhenRegistered);
 	private native Object getCore(long ptr);
 	private native LinphoneFriend findFriendByUri(long nativePtr,String uri);
-
-	
+	private native void setListener(long ptr, LinphoneFriendListListener listener);
 
 	protected LinphoneFriendListImpl(LinphoneCoreImpl core)  {
 		nativePtr = newLinphoneFriendList(core.nativePtr);
@@ -80,6 +78,11 @@ class LinphoneFriendListImpl implements LinphoneFriendList, Serializable {
 		synchronized(getSyncObject()) {
 			synchronizeFriendsFromServer(nativePtr);
 		}
+	}
+	
+	@Override
+	public void setListener(LinphoneFriendListListener listener) {
+		setListener(nativePtr, listener);
 	}
 	
 

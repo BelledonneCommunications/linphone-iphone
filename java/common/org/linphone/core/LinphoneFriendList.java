@@ -18,13 +18,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.core;
 
-
 public interface LinphoneFriendList {
-	public void  setRLSUri(String uri);
+	public void setRLSUri(String uri);
 	public void addFriend(LinphoneFriend friend);
 	public void updateSubscriptions(LinphoneProxyConfig proxyConfig,boolean onlyWhenRegistered);
 	public LinphoneFriend findFriendByUri(String uri);
 	public void setUri(String uri);
 	public void synchronizeFriendsFromServer();
-	long getNativePtr();	
+	long getNativePtr();
+	
+	/**
+	 * Set the callbacks associated with the LinphoneFriendList.
+	 */
+	void setListener(LinphoneFriendList.LinphoneFriendListListener listener);
+	
+	interface LinphoneFriendListListener {
+		void onLinphoneFriendCreated(LinphoneFriendList list, LinphoneFriend lf);
+		
+		void onLinphoneFriendUpdated(LinphoneFriendList list, LinphoneFriend newFriend, LinphoneFriend oldFriend);
+		
+		void onLinphoneFriendDeleted(LinphoneFriendList list, LinphoneFriend lf);
+	}
 }
