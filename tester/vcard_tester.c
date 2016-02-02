@@ -475,7 +475,7 @@ static void carddav_integration(void) {
 	BC_ASSERT_EQUAL_FATAL(linphone_friend_list_import_friend(lfl, lf, FALSE), LinphoneFriendListOK, int, "%d");
 	linphone_friend_unref(lf);
 	
-	lvc2 = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
+	lvc2 = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini@sip.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
 	linphone_vcard_set_url(lvc2, "/sabredav/addressbookserver.php/addressbooks/sylvain/default/me.vcf");
 	lf2 = linphone_friend_new_from_vcard(lvc2);
 	linphone_friend_set_ref_key(lf2, refkey);
@@ -513,6 +513,46 @@ static void carddav_integration(void) {
 	linphone_core_manager_destroy(manager);
 }
 
+static void carddav_clean(void) {  // This is to ensure the content of the test addressbook is in the correct state for the following tests
+	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
+	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
+	LinphoneFriendListCbs *cbs = linphone_friend_list_get_callbacks(lfl);
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
+	MSList *friends = NULL;
+	LinphoneFriend *lf = NULL;
+	LinphoneVCard *lvc = NULL;
+	
+	linphone_friend_list_cbs_set_user_data(cbs, stats);
+	linphone_friend_list_cbs_set_contact_created(cbs, carddav_contact_created);
+	linphone_friend_list_cbs_set_contact_deleted(cbs, carddav_contact_deleted);
+	linphone_friend_list_cbs_set_contact_updated(cbs, carddav_contact_updated);
+	linphone_core_add_friend_list(manager->lc, lfl);
+	linphone_friend_list_set_uri(lfl, "http://192.168.0.230/sabredav/addressbookserver.php/addressbooks/sylvain/default");
+	
+	linphone_friend_list_synchronize_friends_from_server(lfl);
+	wait_for_until(manager->lc, NULL, NULL, 0, 5000);
+	
+	friends = ms_list_copy(lfl->friends);
+	while (friends) {
+		LinphoneFriend *lf = (LinphoneFriend *)friends->data;
+		linphone_friend_list_remove_friend(lfl, lf);
+		wait_for_until(manager->lc, NULL, NULL, 0, 2000);
+		stats->removed_contact_count = 0;
+		friends = ms_list_next(friends);
+	}
+	
+	lvc = linphone_vcard_new_from_vcard4_buffer("BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sylvain@sip.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
+	linphone_vcard_set_url(lvc, "http://192.168.0.230/sabredav/addressbookserver.php/addressbooks/sylvain/default/me.vcf");
+	lf = linphone_friend_new_from_vcard(lvc);
+	linphone_friend_list_add_friend(lfl, lf);
+	wait_for_until(manager->lc, NULL, NULL, 0, 2000);
+	
+	ms_free(stats);
+	linphone_friend_unref(lf);
+	linphone_friend_list_unref(lfl);
+	linphone_core_manager_destroy(manager);
+}
+
 #else
 static void dummy_test(void) {
 }
@@ -527,6 +567,7 @@ test_t vcard_tests[] = {
 	{ "Friends storage migration from rc to db", friends_migration },
 	{ "Friends storage in sqlite database", friends_sqlite_storage },
 #endif
+	{ "CardDAV clean", carddav_clean }, // This is to ensure the content of the test addressbook is in the correct state for the following tests
 	{ "CardDAV synchronization", carddav_sync },
 	{ "CardDAV synchronization 2", carddav_sync_2 },
 	{ "CardDAV synchronization 3", carddav_sync_3 },
