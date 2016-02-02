@@ -5712,7 +5712,7 @@ static void call_logs_sqlite_storage(void) {
 	LinphoneCallLog *call_log = NULL;
 	LinphoneAddress *laure = NULL;
 	time_t user_data_time = time(NULL);
-	time_t start_time = NULL;
+	time_t start_time = 0;
 	unlink(logs_db);
 
 	linphone_core_set_call_logs_database_path(marie->lc, logs_db);
