@@ -170,6 +170,13 @@ LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_local_friend(L
 LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *list, LinphoneFriend *afriend);
 
 /**
+ * Retrieves the list of LinphoneFriend from this LinphoneFriendList.
+ * @param[in] list LinphoneFriendList object
+ * @return \mslist{LinphoneFriend} a list of LinphoneFriend
+ */
+LINPHONE_PUBLIC const MSList * linphone_friend_list_get_friends(const LinphoneFriendList *list);
+
+/**
  * Find a friend in the friend list using a LinphoneAddress.
  * @param[in] list LinphoneFriendList object.
  * @param[in] address LinphoneAddress object of the friend we want to search for.

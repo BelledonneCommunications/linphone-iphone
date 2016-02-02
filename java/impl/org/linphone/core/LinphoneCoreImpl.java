@@ -471,6 +471,11 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public synchronized LinphoneFriend[] getFriendList() {
 		return getFriendList(nativePtr);
 	}
+	
+	private native LinphoneFriendList[] getFriendLists(long nativePtr);
+	public synchronized LinphoneFriendList[] getFriendLists() {
+		return getFriendLists(nativePtr);
+	}
 
 	@SuppressWarnings("deprecation")
 	public synchronized void setPresenceInfo(int minutes_away, String alternative_contact, OnlineStatus status) {

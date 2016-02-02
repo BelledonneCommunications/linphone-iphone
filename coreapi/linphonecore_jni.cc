@@ -2089,6 +2089,27 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendList(JN
 	
 	return jFriends;
 }
+
+extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendLists(JNIEnv*  env
+																			,jobject  thiz
+																			,jlong lc) {
+	const MSList* friends = linphone_core_get_friends_lists((LinphoneCore*)lc);
+	int friendsSize = ms_list_size(friends);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data((LinphoneCore *)lc);
+	jobjectArray jFriends = env->NewObjectArray(friendsSize,ljb->friendListClass,NULL);
+
+	for (int i = 0; i < friendsSize; i++) {
+		LinphoneFriendList* lfriend = (LinphoneFriendList*)friends->data;
+		jobject jfriend =  getFriendList(env,lfriend);
+		if(jfriend != NULL){
+			env->SetObjectArrayElement(jFriends, i, jfriend);
+		}
+		friends = friends->next;
+	}
+	
+	return jFriends;
+}
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setPresenceInfo(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
@@ -3337,6 +3358,25 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_addLocalFriend(JNI
 																		,jlong friendListptr
 																		,jlong friendPtr) {
 	linphone_friend_list_add_local_friend((LinphoneFriendList*)friendListptr, (LinphoneFriend*)friendPtr);
+}
+
+extern "C" jobjectArray Java_org_linphone_core_LinphoneFriendListImpl_getFriendList(JNIEnv* env, jobject thiz, jlong list) {
+	const MSList* friends = linphone_friend_list_get_friends((LinphoneFriendList *)list);
+	int friendsSize = ms_list_size(friends);
+	LinphoneCore *lc = linphone_friend_list_get_core((LinphoneFriendList *)list);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+	jobjectArray jFriends = env->NewObjectArray(friendsSize,ljb->friendClass,NULL);
+
+	for (int i = 0; i < friendsSize; i++) {
+		LinphoneFriend* lfriend = (LinphoneFriend*)friends->data;
+		jobject jfriend =  getFriend(env,lfriend);
+		if(jfriend != NULL){
+			env->SetObjectArrayElement(jFriends, i, jfriend);
+		}
+		friends = friends->next;
+	}
+	
+	return jFriends;
 }
 
 extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscriptions(JNIEnv*  env

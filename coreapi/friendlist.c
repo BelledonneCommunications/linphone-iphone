@@ -448,6 +448,10 @@ LinphoneFriendListStatus linphone_friend_list_remove_friend(LinphoneFriendList *
 	return LinphoneFriendListOK;
 }
 
+const MSList * linphone_friend_list_get_friends(const LinphoneFriendList *list) {
+	return list->friends;
+}
+
 void linphone_friend_list_update_dirty_friends(LinphoneFriendList *list) {
 	LinphoneCardDavContext *cdc = linphone_carddav_context_new(list);
 	MSList *dirty_friends = list->dirty_friends_to_update;

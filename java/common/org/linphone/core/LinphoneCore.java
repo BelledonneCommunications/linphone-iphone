@@ -1021,6 +1021,12 @@ public interface LinphoneCore {
 	LinphoneFriend[] getFriendList();
 
 	/**
+	 * Get list of LinphoneFriendList
+	 * @return LinphoneFriendList list
+	 */
+	LinphoneFriendList[] getFriendLists();
+
+	/**
 	 * @brief Set my presence status
 	 * @param minutes_away how long in away
 	 * @param alternative_contact sip uri used to redirect call in state LinphoneStatusMoved
