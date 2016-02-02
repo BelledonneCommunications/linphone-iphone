@@ -627,7 +627,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_addressbook_query(LinphoneC
 	query->context = cdc;
 	query->depth = "1";
 	query->ifmatch = NULL;
-	query->body = "<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /></d:prop></card:addressbook-query>";
+	query->body = "<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\"><d:prop><d:getetag /></d:prop><card:filter></card:filter></card:addressbook-query>";
 	query->method = "REPORT";
 	query->url = cdc->friend_list->uri;
 	query->type = LinphoneCardDavQueryTypeAddressbookQuery;
