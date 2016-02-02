@@ -21,6 +21,7 @@ package org.linphone.core;
 public interface LinphoneFriendList {
 	public void setRLSUri(String uri);
 	public void addFriend(LinphoneFriend friend);
+	public void addLocalFriend(LinphoneFriend friend);
 	public void updateSubscriptions(LinphoneProxyConfig proxyConfig,boolean onlyWhenRegistered);
 	public LinphoneFriend findFriendByUri(String uri);
 	public void setUri(String uri);

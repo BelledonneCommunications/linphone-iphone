@@ -145,12 +145,21 @@ LINPHONE_PUBLIC const char * linphone_friend_list_get_rls_uri(const LinphoneFrie
 LINPHONE_PUBLIC void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_uri);
 
 /**
- * Add a friend to a friend list.
+ * Add a friend to a friend list. If or when a remote CardDAV server will be attached to the list, the friend will be sent to the server.
  * @param[in] list LinphoneFriendList object.
  * @param[in] friend LinphoneFriend object to add to the friend list.
  * @return LinphoneFriendListOK if successfully added, LinphoneFriendListInvalidFriend if the friend is not valid.
 **/
-LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *afriend);
+LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf);
+
+/**
+ * Add a friend to a friend list. The friend will never be sent to a remote CardDAV server.
+ * Warning! LinphoneFriends added this way will be removed on the next synchronization, and the callback contact_deleted will be called.
+ * @param[in] list LinphoneFriendList object.
+ * @param[in] friend LinphoneFriend object to add to the friend list.
+ * @return LinphoneFriendListOK if successfully added, LinphoneFriendListInvalidFriend if the friend is not valid.
+**/
+LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_add_local_friend(LinphoneFriendList *list, LinphoneFriend *lf);
 
 /**
  * Remove a friend from a friend list.

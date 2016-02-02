@@ -375,7 +375,7 @@ void linphone_friend_list_set_rls_uri(LinphoneFriendList *list, const char *rls_
 	}
 }
 
-LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
+static LinphoneFriendListStatus _linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize) {
 	if (!list || !lf->uri || lf->friend_list) {
 		if (!list)
 			ms_error("linphone_friend_list_add_friend(): invalid list, null");
@@ -392,9 +392,17 @@ LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *lis
 		ms_warning("Friend %s already in list [%s], ignored.", tmp ? tmp : "unknown", list->display_name);
 		if (tmp) ms_free(tmp);
 	} else {
-		return linphone_friend_list_import_friend(list, lf, TRUE);
+		return linphone_friend_list_import_friend(list, lf, synchronize);
 	}
 	return LinphoneFriendListOK;
+}
+
+LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
+	return _linphone_friend_list_add_friend(list, lf, TRUE);
+}
+
+LinphoneFriendListStatus linphone_friend_list_add_local_friend(LinphoneFriendList *list, LinphoneFriend *lf) {
+	return _linphone_friend_list_add_friend(list, lf, FALSE);
 }
 
 LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize) {

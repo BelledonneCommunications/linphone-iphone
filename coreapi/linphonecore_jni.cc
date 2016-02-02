@@ -2017,6 +2017,7 @@ extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getCurrentCall(JNIEnv
 																			) {
 	return getCall(env,linphone_core_get_current_call((LinphoneCore*)lc));
 }
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_addFriend(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
@@ -3309,7 +3310,7 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setRLSUri(JNIEnv* 
 																		,jlong ptr
 																		,jstring jrlsUri) {
 	const char* uri = env->GetStringUTFChars(jrlsUri, NULL);
-	linphone_friend_list_set_rls_uri((LinphoneFriendList*)ptr,uri);
+	linphone_friend_list_set_rls_uri((LinphoneFriendList*)ptr, uri);
 	env->ReleaseStringUTFChars(jrlsUri, uri);
 }
 
@@ -3319,7 +3320,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneFriendListImpl_findFriendByUri(J
 																		,jstring juri) {
 	const char* uri = env->GetStringUTFChars(juri, NULL);
 	LinphoneFriend* lResult;
-	lResult = linphone_friend_list_find_friend_by_uri((LinphoneFriendList*)friendListptr,uri);
+	lResult = linphone_friend_list_find_friend_by_uri((LinphoneFriendList*)friendListptr, uri);
 	env->ReleaseStringUTFChars(juri, uri);
 	return (jlong)lResult;
 }
@@ -3328,7 +3329,14 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_addFriend(JNIEnv* 
 																		,jobject  thiz
 																		,jlong friendListptr
 																		,jlong friendPtr) {
-	linphone_friend_list_add_friend((LinphoneFriendList*)friendListptr,(LinphoneFriend*)friendPtr);
+	linphone_friend_list_add_friend((LinphoneFriendList*)friendListptr, (LinphoneFriend*)friendPtr);
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_addLocalFriend(JNIEnv*  env
+																		,jobject  thiz
+																		,jlong friendListptr
+																		,jlong friendPtr) {
+	linphone_friend_list_add_local_friend((LinphoneFriendList*)friendListptr, (LinphoneFriend*)friendPtr);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscriptions(JNIEnv*  env
@@ -3336,7 +3344,7 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_updateSubscription
 																		,jlong friendListptr
 																		,jlong proxyConfigPtr
 																		,jboolean jonlyWhenRegistered) {
-	linphone_friend_list_update_subscriptions((LinphoneFriendList*)friendListptr,(LinphoneProxyConfig*)proxyConfigPtr,jonlyWhenRegistered);
+	linphone_friend_list_update_subscriptions((LinphoneFriendList*)friendListptr, (LinphoneProxyConfig*)proxyConfigPtr, jonlyWhenRegistered);
 }
 
 
