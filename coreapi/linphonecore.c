@@ -5227,7 +5227,7 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 		if (lc->previewstream==NULL){
 			const char *display_filter=linphone_core_get_video_display_filter(lc);
 			MSVideoSize vsize=lc->video_conf.preview_vsize.width!=0 ? lc->video_conf.preview_vsize : lc->video_conf.vsize;
-			lc->previewstream=video_preview_new();
+			lc->previewstream=video_preview_new(lc->factory);
 			video_preview_set_size(lc->previewstream,vsize);
 			if (display_filter)
 				video_preview_set_display_filter_name(lc->previewstream,display_filter);

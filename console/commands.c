@@ -287,10 +287,10 @@ static LPC_COMMAND advanced_commands[] = {
             "'codec list' : list audio codecs\n"
             "'codec enable <index>' : enable available audio codec\n"
             "'codec disable <index>' : disable audio codec" },
-    { "vcodec", lpc_cmd_vcodec, "Video codec configuration",
-            "'vcodec list' : list video codecs\n"
-            "'vcodec enable <index>' : enable available video codec\n"
-            "'vcodec disable <index>' : disable video codec" },
+	{ "vcodec", lpc_cmd_vcodec, "Video codec configuration",
+		"'vcodec list' : list video codecs\n"
+		"'vcodec enable <index>' : enable available video codec\n"
+		"'vcodec disable <index>' : disable video codec" },
 	{ "ec", lpc_cmd_echocancellation, "Echo cancellation",
 	    "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
 	    "'ec off' : turn echo cancellation (EC) off\n"
