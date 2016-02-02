@@ -667,7 +667,7 @@ static void call_with_specified_codec_bitrate(void) {
 	int max_bw=50;
 
 #ifdef __arm__
-	if (ms_get_cpu_count() <2) { /*2 opus codec channel + resampler is too much for a single core*/
+	if (ms_factory_get_cpu_count(marie->lc->factory) <2) { /*2 opus codec channel + resampler is too much for a single core*/
 #ifndef ANDROID
 		codec = "speex";
 		rate = 8000;
