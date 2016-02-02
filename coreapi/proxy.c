@@ -1119,7 +1119,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 void _linphone_proxy_config_unpublish(LinphoneProxyConfig *obj) {
 	if (obj->long_term_event
 		&& (linphone_event_get_publish_state(obj->long_term_event) == LinphonePublishOk ||
-					(linphone_event_get_publish_state(obj->long_term_event)  == LinphoneIceStateInProgress && obj->publish_expires != 0))) {
+					(linphone_event_get_publish_state(obj->long_term_event)  == LinphonePublishProgress && obj->publish_expires != 0))) {
 		linphone_event_unpublish(obj->long_term_event);
 	}
 }

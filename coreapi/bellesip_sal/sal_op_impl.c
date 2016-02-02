@@ -794,6 +794,6 @@ int sal_op_refresh(SalOp *op) {
 		belle_sip_refresher_refresh(op->refresher,belle_sip_refresher_get_expires(op->refresher));
 		return 0;
 	}
-	ms_warning("sal_refresh on op [%p] of type [%s] no refresher",op,sal_op_type_to_string(op));
+	ms_warning("sal_refresh on op [%p] of type [%s] no refresher",op,sal_op_type_to_string(op->type));
 	return -1;
 }
