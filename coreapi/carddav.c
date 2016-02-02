@@ -55,6 +55,7 @@ void* linphone_carddav_get_user_data(LinphoneCardDavContext *cdc) {
 }
 
 void linphone_carddav_synchronize(LinphoneCardDavContext *cdc) {
+	cdc->ctag = cdc->friend_list->revision;
 	linphone_carddav_get_current_ctag(cdc);
 }
 
