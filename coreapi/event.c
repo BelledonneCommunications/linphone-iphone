@@ -201,7 +201,7 @@ int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *b
 }
 
 int linphone_event_refresh_subscribe(LinphoneEvent *lev) {
-	return sal_subscribe_refresh(lev->op);
+	return sal_op_refresh(lev->op);
 }
 
 int linphone_event_accept_subscription(LinphoneEvent *lev){
@@ -291,6 +291,16 @@ int linphone_event_update_publish(LinphoneEvent* lev, const LinphoneContent* bod
 	return linphone_event_send_publish(lev,body);
 }
 
+int linphone_event_refresh_publish(LinphoneEvent *lev) {
+	return sal_op_refresh(lev->op);
+}
+void linphone_event_pause_publish(LinphoneEvent *lev) {
+	if (lev->op) sal_op_stop_refreshing(lev->op);
+}
+void linphone_event_unpublish(LinphoneEvent *lev) {
+	lev->terminating = TRUE; /* needed to get clear event*/
+	if (lev->op) sal_op_unpublish(lev->op);
+}
 void linphone_event_set_user_data(LinphoneEvent *ev, void *up){
 	ev->userdata=up;
 }
@@ -320,7 +330,7 @@ void linphone_event_terminate(LinphoneEvent *lev){
 	if (lev->publish_state!=LinphonePublishNone){
 		if (lev->publish_state==LinphonePublishOk && lev->expires!=-1){
 			sal_publish(lev->op,NULL,NULL,NULL,0,NULL);
-		}else sal_op_stop_refreshing(lev->op);
+		}else sal_op_unpublish(lev->op);
 		linphone_event_set_publish_state(lev,LinphonePublishCleared);
 		return;
 	}

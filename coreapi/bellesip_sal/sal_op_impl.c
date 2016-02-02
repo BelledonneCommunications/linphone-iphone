@@ -789,3 +789,11 @@ bool_t sal_op_cnx_ip_to_0000_if_sendonly_enabled(SalOp *op) {
 bool_t sal_op_is_forked_of(const SalOp *op1, const SalOp *op2){
 	return op1->base.call_id && op2->base.call_id && strcmp(op1->base.call_id, op2->base.call_id) == 0;
 }
+int sal_op_refresh(SalOp *op) {
+	if (op->refresher) {
+		belle_sip_refresher_refresh(op->refresher,belle_sip_refresher_get_expires(op->refresher));
+		return 0;
+	}
+	ms_warning("sal_refresh on op [%p] of type [%s] no refresher",op,sal_op_type_to_string(op));
+	return -1;
+}

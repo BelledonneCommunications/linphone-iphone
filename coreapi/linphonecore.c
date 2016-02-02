@@ -6184,6 +6184,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	if (lc->sip_network_reachable) {
 		for(elem=config->proxies;elem!=NULL;elem=ms_list_next(elem)){
 			LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)(elem->data);
+			_linphone_proxy_config_unpublish(cfg);	/* to unpublish without changing the stored flag enable_publish */
 			_linphone_proxy_config_unregister(cfg);	/* to unregister without changing the stored flag enable_register */
 		}
 

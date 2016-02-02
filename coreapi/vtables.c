@@ -250,7 +250,7 @@ void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneE
 }
 
 void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state) {
-	NOTIFY_IF_EXIST(publish_state_changed, lc,lev,state);
+	NOTIFY_IF_EXIST_INTERNAL(publish_state_changed, linphone_event_is_internal(lev), lc, lev, state);
 	cleanup_dead_vtable_refs(lc);
 }
 

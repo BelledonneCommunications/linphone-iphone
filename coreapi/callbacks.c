@@ -1038,10 +1038,11 @@ static void register_failure(SalOp *op){
 	} else {
 		linphone_proxy_config_set_state(cfg,LinphoneRegistrationFailed,details);
 	}
-	if (cfg->publish_op){
+	if (cfg->long_term_event){
 		/*prevent publish to be sent now until registration gets successful*/
-		sal_op_release(cfg->publish_op);
-		cfg->publish_op=NULL;
+		linphone_event_terminate(cfg->long_term_event);
+		linphone_event_unref(cfg->long_term_event);
+		cfg->long_term_event=NULL;
 		cfg->send_publish=cfg->publish;
 	}
 }
@@ -1137,7 +1138,13 @@ static void parse_presence_requested(SalOp *op, const char *content_type, const 
 }
 
 static void convert_presence_to_xml_requested(SalOp *op, SalPresenceModel *presence, const char *contact, char **content) {
-	linphone_notify_convert_presence_to_xml(op, presence, contact, content);
+	/*for backward compatibility because still used by notify. No loguer used for publish*/
+	
+	if(linphone_presence_model_get_presentity((LinphonePresenceModel*)presence) == NULL) {
+		LinphoneAddress * presentity = linphone_address_new(contact);
+		linphone_presence_model_set_presentity((LinphonePresenceModel*)presence, presentity);
+	}
+	*content = linphone_presence_model_to_xml((LinphonePresenceModel*)presence);
 }
 
 static void notify_presence(SalOp *op, SalSubscribeStatus ss, SalPresenceModel *model, const char *msg){

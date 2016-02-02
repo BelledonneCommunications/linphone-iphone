@@ -354,6 +354,7 @@ typedef struct SalOpBase{
 	SalAddress* service_route; /*as defined by rfc3608, might be a list*/
 	SalCustomHeader *sent_custom_headers;
 	SalCustomHeader *recv_custom_headers;
+	char* entity_tag; /*as defined by rfc3903 (I.E publih)*/ 
 } SalOpBase;
 
 
@@ -641,6 +642,8 @@ void sal_op_set_to(SalOp *op, const char *to);
 void sal_op_set_to_address(SalOp *op, const SalAddress *to);
 SalOp *sal_op_ref(SalOp* h);
 void sal_op_stop_refreshing(SalOp *op);
+int sal_op_refresh(SalOp *op);
+	
 void sal_op_release(SalOp *h);
 /*same as release, but does not stop refresher if any*/
 void* sal_op_unref(SalOp* op);
@@ -654,7 +657,6 @@ const SalAddress *sal_op_get_from_address(const SalOp *op);
 const char *sal_op_get_to(const SalOp *op);
 const SalAddress *sal_op_get_to_address(const SalOp *op);
 const SalAddress *sal_op_get_contact_address(const SalOp *op);
-const char *sal_op_get_route(const SalOp *op);
 const MSList* sal_op_get_route_addresses(const SalOp *op);
 const char *sal_op_get_proxy(const SalOp *op);
 /*raw contact header value with header params*/
@@ -684,6 +686,10 @@ const SalErrorInfo *sal_op_get_error_info(const SalOp *op);
 void sal_error_info_reset(SalErrorInfo *ei);
 void sal_error_info_set(SalErrorInfo *ei, SalReason reason, int code, const char *status_string, const char *warning);
 
+/*entity tag used for publish (see RFC 3903)*/
+const char *sal_op_get_entity_tag(const SalOp* op);
+void sal_op_set_entity_tag(SalOp *op, const char* entity_tag);
+	
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
 int sal_call(SalOp *h, const char *from, const char *to);
@@ -740,8 +746,9 @@ int sal_notify_presence(SalOp *op, SalPresenceModel *presence);
 int sal_notify_presence_close(SalOp *op);
 
 /*presence publish */
-int sal_publish_presence(SalOp *op, const char *from, const char *to, int expires, SalPresenceModel *presence);
-
+//int sal_publish_presence(SalOp *op, const char *from, const char *to, int expires, SalPresenceModel *presence);
+SalBodyHandler *sal_presence_model_create_body_handler(SalPresenceModel *presence);
+	
 
 /*ping: main purpose is to obtain its own contact address behind firewalls*/
 int sal_ping(SalOp *op, const char *from, const char *to);
@@ -754,11 +761,11 @@ int sal_subscribe(SalOp *op, const char *from, const char *to, const char *event
 int sal_unsubscribe(SalOp *op);
 int sal_subscribe_accept(SalOp *op);
 int sal_subscribe_decline(SalOp *op, SalReason reason);
-int sal_subscribe_refresh(SalOp *op);
 int sal_notify(SalOp *op, const SalBodyHandler *body);
 int sal_notify_close(SalOp *op);
 int sal_publish(SalOp *op, const char *from, const char *to, const char*event_name, int expires, const SalBodyHandler *body);
-
+int sal_op_unpublish(SalOp *op);
+	
 /*privacy, must be in sync with LinphonePrivacyMask*/
 typedef enum _SalPrivacy {
 	SalPrivacyNone=0x0,
