@@ -702,6 +702,7 @@ struct _LinphoneFriendListCbs {
 	LinphoneFriendListContactCreatedCb contact_created_cb;
 	LinphoneFriendListContactDeletedCb contact_deleted_cb;
 	LinphoneFriendListContactUpdatedCb contact_updated_cb;
+	LinphoneFriendListSyncStateChangedCb sync_state_changed_cb;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriendListCbs);

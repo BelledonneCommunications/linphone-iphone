@@ -133,7 +133,7 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 		}
 	}
 	ms_list_free(vCards);
-	linphone_carddav_sync_done(cdc, TRUE, "");
+	linphone_carddav_sync_done(cdc, TRUE, NULL);
 }
 
 static MSList* parse_vcards_from_xml_response(const char *body) {
@@ -342,7 +342,7 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 							}
 							linphone_vcard_set_etag(lvc, etag);
 
-							linphone_carddav_sync_done(query->context, TRUE, "");
+							linphone_carddav_sync_done(query->context, TRUE, NULL);
 							linphone_friend_unref(lf);
 						} else {
 							// For some reason, server didn't return the eTag of the updated/created vCard
@@ -362,7 +362,7 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 				}
 				break;
 			case LinphoneCardDavQueryTypeDelete:
-				linphone_carddav_sync_done(query->context, TRUE, "");
+				linphone_carddav_sync_done(query->context, TRUE, NULL);
 				break;
 			default:
 				ms_error("Unknown request: %i", query->type);

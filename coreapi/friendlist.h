@@ -50,6 +50,15 @@ typedef enum _LinphoneFriendListStatus {
 } LinphoneFriendListStatus;
 
 /**
+ * Enum describing the status of a CardDAV synchronization
+ */
+typedef enum _LinphoneFriendListSyncStatus {
+	LinphoneFriendListSyncStarted,
+	LinphoneFriendListSyncSuccessful,
+	LinphoneFriendListSyncFailure
+} LinphoneFriendListSyncStatus;
+
+/**
  * The LinphoneFriendList object representing a list of friends.
 **/
 typedef struct _LinphoneFriendList LinphoneFriendList;
@@ -253,6 +262,11 @@ typedef void (*LinphoneFriendListContactDeletedCb)(LinphoneFriendList *list, Lin
 typedef void (*LinphoneFriendListContactUpdatedCb)(LinphoneFriendList *list, LinphoneFriend *new_friend, LinphoneFriend *old_friend);
 
 /**
+ * Callback used to notify the status of the synchronization has changed
+**/
+typedef void (*LinphoneFriendListSyncStateChangedCb)(LinphoneFriendList *list, LinphoneFriendListSyncStatus status, const char *msg);
+
+/**
  * Get the LinphoneFriendListCbs object associated with a LinphoneFriendList.
  * @param[in] request LinphoneXmlRpcRequest object
  * @return The LinphoneFriendListCbs object associated with the LinphoneFriendList.
@@ -327,6 +341,20 @@ LINPHONE_PUBLIC LinphoneFriendListContactUpdatedCb linphone_friend_list_cbs_get_
  * @param[in] cb The contact updated to be used.
 **/
 LINPHONE_PUBLIC void linphone_friend_list_cbs_set_contact_updated(LinphoneFriendListCbs *cbs, LinphoneFriendListContactUpdatedCb cb);
+
+/**
+ * Get the sync status changed callback.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @return The current sync status changedcallback.
+**/
+LINPHONE_PUBLIC LinphoneFriendListSyncStateChangedCb linphone_friend_list_cbs_get_sync_status_changed(const LinphoneFriendListCbs *cbs);
+
+/**
+ * Set the contact updated callback.
+ * @param[in] cbs LinphoneFriendListCbs object.
+ * @param[in] cb The sync status changed to be used.
+**/
+LINPHONE_PUBLIC void linphone_friend_list_cbs_set_sync_status_changed(LinphoneFriendListCbs *cbs, LinphoneFriendListSyncStateChangedCb cb);
 
 /**
  * Starts a CardDAV synchronization using value set using linphone_friend_list_set_uri.
