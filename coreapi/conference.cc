@@ -720,13 +720,15 @@ int RemoteConference::terminate() {
 			linphone_core_terminate_call(m_core, m_focusCall);
 			reset();
 			Conference::terminate();
+			m_isTerminating = false;
 			setState(LinphoneConferenceStopped);
 			break;
 			
 		default:
+			m_isTerminating = false;
 			break;
 	}
-	m_isTerminating = false;
+	
 	return 0;
 }
 
