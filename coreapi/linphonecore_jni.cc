@@ -299,6 +299,8 @@ public:
 		friendListCtrId = env->GetMethodID(friendListClass,"<init>", "(J)V");
 		friendListCreatedId = env->GetMethodID(listenerClass, "friendListCreated", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriendList;)V");
 		friendListRemovedId = env->GetMethodID(listenerClass, "friendListRemoved", "(Lorg/linphone/core/LinphoneCore;Lorg/linphone/core/LinphoneFriendList;)V");
+		friendListSyncStateClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneFriendList$State"));
+		friendListSyncStateFromIntId = env->GetStaticMethodID(friendListSyncStateClass,"fromInt","(I)Lorg/linphone/core/LinphoneFriendList$State;");
 
 		addressClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/LinphoneAddressImpl"));
 		addressCtrId = env->GetMethodID(addressClass,"<init>", "(J)V");
@@ -339,6 +341,7 @@ public:
 		env->DeleteGlobalRef(chatRoomClass);
 		env->DeleteGlobalRef(friendClass);
 		env->DeleteGlobalRef(friendListClass);
+		env->DeleteGlobalRef(friendListSyncStateClass);
 		env->DeleteGlobalRef(infoMessageClass);
 		env->DeleteGlobalRef(linphoneEventClass);
 		env->DeleteGlobalRef(subscriptionStateClass);
@@ -412,6 +415,8 @@ public:
 	jmethodID friendListCtrId;
 	jmethodID friendListCreatedId;
 	jmethodID friendListRemovedId;
+	jclass friendListSyncStateClass;
+	jmethodID friendListSyncStateFromIntId;
 
 	jclass addressClass;
 	jmethodID addressCtrId;
@@ -3298,6 +3303,35 @@ static void contact_removed(LinphoneFriendList *list, LinphoneFriend *lf) {
 	env->CallVoidMethod(listener, method, jlist, jfriend);
 }
 
+static void sync_status_changed(LinphoneFriendList *list, LinphoneFriendListSyncStatus status, const char *message) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	if (result != 0) {
+		ms_error("cannot attach VM\n");
+		return;
+	}
+
+	LinphoneFriendListCbs *cbs = linphone_friend_list_get_callbacks(list);
+	jobject listener = (jobject) linphone_friend_list_cbs_get_user_data(cbs);
+	
+	if (listener == NULL) {
+		ms_error("sync_status_changed() notification without listener");
+		return ;
+	}
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "onLinphoneFriendSyncStatusChanged","(Lorg/linphone/core/LinphoneFriendList;Lorg/linphone/core/LinphoneFriendList$State;Ljava/lang/String;)V");
+	jobject jlist = getFriendList(env, list);
+	env->DeleteLocalRef(clazz);
+	
+	LinphoneCore *lc = linphone_friend_list_get_core((LinphoneFriendList *)list);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+	jstring msg = message ? env->NewStringUTF(message) : NULL;
+	env->CallVoidMethod(listener, method, jlist, env->CallStaticObjectMethod(ljb->friendListSyncStateClass, ljb->friendListSyncStateFromIntId, (jint)status), msg);
+	if (msg) {
+		env->DeleteLocalRef(msg);
+	}
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setListener(JNIEnv* env, jobject  thiz, jlong ptr, jobject jlistener) {
 	jobject listener = env->NewGlobalRef(jlistener);
 	LinphoneFriendList *list = (LinphoneFriendList *)ptr;
@@ -3308,6 +3342,7 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_setListener(JNIEnv
 	linphone_friend_list_cbs_set_contact_created(cbs, contact_created);
 	linphone_friend_list_cbs_set_contact_updated(cbs, contact_updated);
 	linphone_friend_list_cbs_set_contact_deleted(cbs, contact_removed);
+	linphone_friend_list_cbs_set_sync_status_changed(cbs, sync_status_changed);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setAddress(JNIEnv*  env
