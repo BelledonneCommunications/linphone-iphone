@@ -302,7 +302,7 @@ LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 all: build
 
 sdk:
-\tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name *.a` && \\
+\tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name '*.a'` && \\
 \trm -rf liblinphone-sdk/apple-darwin && \\
 \tmkdir -p liblinphone-sdk/apple-darwin && \\
 \tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/include liblinphone-sdk/apple-darwin/. && \\
