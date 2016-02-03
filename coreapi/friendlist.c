@@ -451,11 +451,13 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 		LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
 		if (lvc && linphone_vcard_get_uid(lvc)) {
 			LinphoneCardDavContext *cdc = linphone_carddav_context_new(list);
-			cdc->sync_done_cb = carddav_done;
-			if (cdc->friend_list->cbs->sync_state_changed_cb) {
-				cdc->friend_list->cbs->sync_state_changed_cb(cdc->friend_list, LinphoneFriendListSyncStarted, NULL);
+			if (cdc) {
+				cdc->sync_done_cb = carddav_done;
+				if (cdc->friend_list->cbs->sync_state_changed_cb) {
+					cdc->friend_list->cbs->sync_state_changed_cb(cdc->friend_list, LinphoneFriendListSyncStarted, NULL);
+				}
+				linphone_carddav_delete_vcard(cdc, lf);
 			}
-			linphone_carddav_delete_vcard(cdc, lf);
 		}
 	}
 	

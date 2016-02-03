@@ -120,11 +120,7 @@ static void friends_migration(void) {
 	BC_ASSERT_EQUAL(ms_list_size(friends), 3, int, "%d");
 	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc, lfl);
 	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 3, int, "%d");
-	if (ms_list_size(friends_from_db) < 3) {
-		goto end;
-	}
 	
-end:
 	friends_from_db = ms_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
 	unlink(friends_db);
 	ms_free(friends_db);
