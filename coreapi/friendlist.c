@@ -518,14 +518,14 @@ static void carddav_updated(LinphoneCardDavContext *cdc, LinphoneFriend *lf_new,
 		LinphoneFriendList *lfl = cdc->friend_list;
 		MSList *elem = ms_list_find(lfl->friends, lf_old);
 		if (elem) {
-			lf_old->friend_list = NULL;
-			linphone_friend_unref(lf_old);
-			lfl->friends = ms_list_remove_link(lfl->friends, elem);
+			elem->data = linphone_friend_ref(lf_new);
 		}
-		linphone_friend_list_import_friend(lfl, lf_new, FALSE);
+		linphone_core_store_friend_in_db(lf_new->lc, lf_new);
+		
 		if (cdc->friend_list->cbs->contact_updated_cb) {
 			cdc->friend_list->cbs->contact_updated_cb(lfl, lf_new, lf_old);
 		}
+		linphone_friend_unref(lf_old);
 	}
 }
 

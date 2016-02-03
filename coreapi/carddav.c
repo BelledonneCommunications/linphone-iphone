@@ -116,6 +116,8 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 					lf->subscribe = lf2->subscribe;
 					lf->refkey = ms_strdup(lf2->refkey);
 					lf->presence_received = lf2->presence_received;
+					lf->lc = lf2->lc;
+					lf->friend_list = lf2->friend_list;
 					
 					if (cdc->contact_updated_cb) {
 						ms_debug("Contact updated: %s", linphone_friend_get_name(lf));
