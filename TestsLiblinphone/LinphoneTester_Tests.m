@@ -89,8 +89,8 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 
 - (void)testForSuite:(NSString *)suite andTest:(NSString *)test {
 	LOGI(@"Launching test %@ from suite %@", test, suite);
-	XCTAssertFalse(bc_tester_run_tests([suite UTF8String], [test UTF8String]), @"Suite '%@' / Test '%@' failed", suite,
-				   test);
+	XCTAssertFalse(bc_tester_run_tests([suite UTF8String], [test UTF8String], NULL), @"Suite '%@' / Test '%@' failed",
+				   suite, test);
 }
 
 - (void)dealloc {
