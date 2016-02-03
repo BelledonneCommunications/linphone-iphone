@@ -95,6 +95,11 @@
 		[view setChatRoom:room];
 		[PhoneMainView.instance popCurrentView];
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+		// refresh list of chatrooms if we are using fragment
+		if (IPAD) {
+			ChatsListView *listView = VIEW(ChatsListView);
+			[listView.tableController loadData];
+		}
 	}
 }
 

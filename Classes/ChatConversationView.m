@@ -31,7 +31,7 @@
 	self = [super initWithNibName:NSStringFromClass(self.class) bundle:[NSBundle mainBundle]];
 	if (self != nil) {
 		scrollOnGrowingEnabled = TRUE;
-		chatRoom = NULL;
+		_chatRoom = NULL;
 		imageQualities = [[OrderedDictionary alloc]
 			initWithObjectsAndKeys:[NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
@@ -152,16 +152,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark -
 
-- (void)setChatRoom:(LinphoneChatRoom *)room {
-	chatRoom = room;
+- (void)setChatRoom:(LinphoneChatRoom *)chatRoom {
+	_chatRoom = chatRoom;
 	[_messageField setText:@""];
-	[_tableController setChatRoom:room];
+	[_tableController setChatRoom:_chatRoom];
 
-	if (chatRoom != NULL) {
+	if (_chatRoom != NULL) {
 		_chatView.hidden = NO;
 		[self update];
-		linphone_chat_room_mark_as_read(chatRoom);
-		[self setComposingVisible:linphone_chat_room_is_remote_composing(chatRoom) withDelay:0];
+		linphone_chat_room_mark_as_read(_chatRoom);
+		[self setComposingVisible:linphone_chat_room_is_remote_composing(_chatRoom) withDelay:0];
 		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 			getCachedController:NSStringFromClass(TabBarView.class)];
 		[tab update:YES];
@@ -172,8 +172,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
-	if (chatRoom != nil) {
-		linphone_chat_room_mark_as_read(chatRoom);
+	if (_chatRoom != nil) {
+		linphone_chat_room_mark_as_read(_chatRoom);
 		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 			getCachedController:NSStringFromClass(TabBarView.class)];
 		[tab update:YES];
@@ -186,12 +186,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)update {
-	if (chatRoom == NULL) {
+	if (_chatRoom == NULL) {
 		LOGW(@"Cannot update chat room header: null contact");
 		return;
 	}
 
-	const LinphoneAddress *addr = linphone_chat_room_get_peer_address(chatRoom);
+	const LinphoneAddress *addr = linphone_chat_room_get_peer_address(_chatRoom);
 	if (addr == NULL) {
 		[PhoneMainView.instance popCurrentView];
 		UIAlertView *error = [[UIAlertView alloc]
@@ -211,12 +211,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL *)externalUrl withInternalURL:(NSURL *)internalUrl {
-	if (chatRoom == NULL) {
+	if (_chatRoom == NULL) {
 		LOGW(@"Cannot send message: No chatroom");
 		return FALSE;
 	}
 
-	LinphoneChatMessage *msg = linphone_chat_room_create_message(chatRoom, [message UTF8String]);
+	LinphoneChatMessage *msg = linphone_chat_room_create_message(_chatRoom, [message UTF8String]);
 	if (externalUrl) {
 		linphone_chat_message_set_external_body_url(msg, [[externalUrl absoluteString] UTF8String]);
 	}
@@ -226,7 +226,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[LinphoneManager setValueInMessageAppData:[internalUrl absoluteString] forKey:@"localimage" inMessage:msg];
 	}
 
-	linphone_chat_room_send_chat_message(chatRoom, msg);
+	linphone_chat_room_send_chat_message(_chatRoom, msg);
 	[_tableController addChatEntry:msg];
 	[_tableController scrollToBottom:true];
 
@@ -322,7 +322,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	char *fromStr = linphone_address_as_string_uri_only(from);
-	const LinphoneAddress *cr_from = linphone_chat_room_get_peer_address(chatRoom);
+	const LinphoneAddress *cr_from = linphone_chat_room_get_peer_address(_chatRoom);
 	char *cr_from_string = linphone_address_as_string_uri_only(cr_from);
 
 	if (fromStr && cr_from_string) {
@@ -341,7 +341,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)textComposeEvent:(NSNotification *)notif {
 	LinphoneChatRoom *room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
-	if (room && room == chatRoom) {
+	if (room && room == _chatRoom) {
 		BOOL composing = linphone_chat_room_is_remote_composing(room);
 		[self setComposingVisible:composing withDelay:0.3];
 	}
@@ -363,8 +363,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)growingTextChanged:(HPGrowingTextView *)growingTextView text:(NSString *)text {
-	if ([text length] > 0 && chatRoom)
-		linphone_chat_room_compose(chatRoom);
+	if ([text length] > 0 && _chatRoom)
+		linphone_chat_room_compose(_chatRoom);
 }
 
 - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
@@ -426,7 +426,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)textViewDidChange:(UITextView *)textView {
 	if ([textView.text length] > 0) {
-		linphone_chat_room_compose(chatRoom);
+		linphone_chat_room_compose(_chatRoom);
 	}
 }
 
@@ -515,7 +515,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCallClick:(id)sender {
-	[LinphoneManager.instance call:linphone_chat_room_get_peer_address(chatRoom)];
+	[LinphoneManager.instance call:linphone_chat_room_get_peer_address(_chatRoom)];
 }
 
 - (IBAction)onListSwipe:(id)sender {
@@ -539,7 +539,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url {
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
-	[fileTransfer upload:image withURL:url forChatRoom:chatRoom];
+	[fileTransfer upload:image withURL:url forChatRoom:_chatRoom];
 	[_tableController addChatEntry:linphone_chat_message_ref(fileTransfer.message)];
 	[_tableController scrollToBottom:true];
 	return TRUE;

@@ -45,16 +45,16 @@
 }
 
 - (void)updateData {
-	if (!chatRoom)
+	if (!_chatRoom)
 		return;
 	[self clearMessageList];
-	messageList = linphone_chat_room_get_history(chatRoom, 0);
+	messageList = linphone_chat_room_get_history(_chatRoom, 0);
 
 	// also append transient upload messages because they are not in history yet!
 	for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		const LinphoneAddress *ftd_peer =
 			linphone_chat_room_get_peer_address(linphone_chat_message_get_chat_room(ftd.message));
-		const LinphoneAddress *peer = linphone_chat_room_get_peer_address(chatRoom);
+		const LinphoneAddress *peer = linphone_chat_room_get_peer_address(_chatRoom);
 		if (linphone_address_equal(ftd_peer, peer) && linphone_chat_message_is_outgoing(ftd.message)) {
 			LOGI(@"Appending transient upload message %p", ftd.message);
 			messageList = ms_list_append(messageList, linphone_chat_message_ref(ftd.message));
@@ -109,7 +109,7 @@
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {
-	if (messageList == nil || chatRoom == nil) {
+	if (messageList == nil || _chatRoom == nil) {
 		return;
 	}
 
@@ -127,7 +127,7 @@
 		index = count - 1;
 	}
 
-	linphone_chat_room_mark_as_read(chatRoom);
+	linphone_chat_room_mark_as_read(_chatRoom);
 	TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 		getCachedController:NSStringFromClass(TabBarView.class)];
 	[tab update:YES];
@@ -144,7 +144,7 @@
 #pragma mark - Property Functions
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
-	chatRoom = room;
+	_chatRoom = room;
 	[self reloadData];
 }
 
@@ -197,7 +197,7 @@
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		[tableView beginUpdates];
 		LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
-		linphone_chat_room_delete_message(chatRoom, chat);
+		linphone_chat_room_delete_message(_chatRoom, chat);
 		messageList = ms_list_remove(messageList, chat);
 
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
@@ -209,7 +209,7 @@
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
 	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
 	  LinphoneChatMessage *chat = ms_list_nth_data(messageList, (int)[indexPath row]);
-	  linphone_chat_room_delete_message(chatRoom, chat);
+	  linphone_chat_room_delete_message(_chatRoom, chat);
 	  messageList = ms_list_remove(messageList, chat);
 	}];
 }
