@@ -21,18 +21,12 @@
 
 #import "UICompositeView.h"
 
-@interface AboutView : UIViewController <UICompositeViewDelegate, UIWebViewDelegate> {
-}
+@interface AboutView : TPMultiLayoutViewController <UICompositeViewDelegate>
 
-@property(nonatomic, strong) IBOutlet UILabel *linphoneLabel;
-@property(nonatomic, strong) IBOutlet UILabel *linphoneIphoneVersionLabel;
-@property(nonatomic, strong) IBOutlet UILabel *linphoneCoreVersionLabel;
-@property(nonatomic, strong) IBOutlet UILabel *linkLabel;
-@property(nonatomic, strong) IBOutlet UILabel *copyrightLabel;
-@property(nonatomic, strong) IBOutlet UILabel *licenseLabel;
-@property(weak, nonatomic) IBOutlet UIView *contentView;
-@property(nonatomic, strong) IBOutlet UIWebView *licensesView;
-
+@property(weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property(weak, nonatomic) IBOutlet UILabel *descriptionLabel;
+@property(weak, nonatomic) IBOutlet UILabel *appVersionLabel;
+@property(weak, nonatomic) IBOutlet UILabel *libVersionLabel;
 - (IBAction)onLinkTap:(id)sender;
 - (IBAction)onDialerBackClick:(id)sender;
 

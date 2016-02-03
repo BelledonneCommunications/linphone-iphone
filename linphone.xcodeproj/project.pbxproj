@@ -563,7 +563,6 @@
 		639E9CB51C0DB88200019A75 /* PhoneMainView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 639E9CB31C0DB88200019A75 /* PhoneMainView.xib */; };
 		63AADBE81B6A0FF200AA16FD /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBC41B6A0FF200AA16FD /* Localizable.strings */; };
 		63AADBEA1B6A0FF200AA16FD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBCA1B6A0FF200AA16FD /* Images.xcassets */; };
-		63AADBF31B6A0FF200AA16FD /* licenses.html in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD51B6A0FF200AA16FD /* licenses.html */; };
 		63AADBF51B6A0FF200AA16FD /* linphonerc in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD71B6A0FF200AA16FD /* linphonerc */; };
 		63AADBF61B6A0FF200AA16FD /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBD81B6A0FF200AA16FD /* linphonerc-factory */; };
 		63AADBF81B6A0FF200AA16FD /* linphonerc~ipad in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBDA1B6A0FF200AA16FD /* linphonerc~ipad */; };
@@ -1459,7 +1458,6 @@
 		63AADBC81B6A0FF200AA16FD /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		63AADBCA1B6A0FF200AA16FD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		63AADBCB1B6A0FF200AA16FD /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
-		63AADBD51B6A0FF200AA16FD /* licenses.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = licenses.html; sourceTree = "<group>"; };
 		63AADBD71B6A0FF200AA16FD /* linphonerc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = linphonerc; sourceTree = "<group>"; };
 		63AADBD81B6A0FF200AA16FD /* linphonerc-factory */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc-factory"; sourceTree = "<group>"; };
 		63AADBDA1B6A0FF200AA16FD /* linphonerc~ipad */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "linphonerc~ipad"; sourceTree = "<group>"; };
@@ -2724,7 +2722,6 @@
 				63AADBE61B6A0FF200AA16FD /* assistant_remote.rc */,
 				6316A07A1C5F64330073BFA4 /* images */,
 				63AADBCA1B6A0FF200AA16FD /* Images.xcassets */,
-				63AADBD51B6A0FF200AA16FD /* licenses.html */,
 				63AADBD71B6A0FF200AA16FD /* linphonerc */,
 				63AADBD81B6A0FF200AA16FD /* linphonerc-factory */,
 				63AADBDA1B6A0FF200AA16FD /* linphonerc~ipad */,
@@ -3151,7 +3148,6 @@
 				6316A3981C5F64350073BFA4 /* options_start_conference_disabled@2x.png in Resources */,
 				6316A26C1C5F64350073BFA4 /* call_start_body_disabled~ipad.png in Resources */,
 				6316A3531C5F64350073BFA4 /* numpad_5_default@2x.png in Resources */,
-				63AADBF31B6A0FF200AA16FD /* licenses.html in Resources */,
 				6316A35F1C5F64350073BFA4 /* numpad_6_over~ipad@2x.png in Resources */,
 				6316A3931C5F64350073BFA4 /* options_selected.png in Resources */,
 				6316A2BE1C5F64350073BFA4 /* color_F.png in Resources */,
