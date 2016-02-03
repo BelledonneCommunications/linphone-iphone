@@ -570,6 +570,9 @@
 		63AADC001B6A0FF200AA16FD /* assistant_linphone_create.rc in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBE41B6A0FF200AA16FD /* assistant_linphone_create.rc */; };
 		63AADC011B6A0FF200AA16FD /* assistant_linphone_existing.rc in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBE51B6A0FF200AA16FD /* assistant_linphone_existing.rc */; };
 		63AADC021B6A0FF200AA16FD /* assistant_remote.rc in Resources */ = {isa = PBXBuildFile; fileRef = 63AADBE61B6A0FF200AA16FD /* assistant_remote.rc */; };
+		63B21A7C1C623DA80074DFF8 /* test_failed.png in Resources */ = {isa = PBXBuildFile; fileRef = 63B21A791C623DA80074DFF8 /* test_failed.png */; };
+		63B21A7D1C623DA80074DFF8 /* test_inprogress.png in Resources */ = {isa = PBXBuildFile; fileRef = 63B21A7A1C623DA80074DFF8 /* test_inprogress.png */; };
+		63B21A7E1C623DA80074DFF8 /* test_passed.png in Resources */ = {isa = PBXBuildFile; fileRef = 63B21A7B1C623DA80074DFF8 /* test_passed.png */; };
 		63B81A0C1B57DA33009604A6 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 63B81A031B57DA33009604A6 /* LICENSE.txt */; };
 		63B81A0D1B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A051B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m */; };
 		63B81A0E1B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63B81A071B57DA33009604A6 /* TPKeyboardAvoidingScrollView.m */; };
@@ -1468,6 +1471,9 @@
 		63AADBE51B6A0FF200AA16FD /* assistant_linphone_existing.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_linphone_existing.rc; sourceTree = "<group>"; };
 		63AADBE61B6A0FF200AA16FD /* assistant_remote.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_remote.rc; sourceTree = "<group>"; };
 		63AADBE71B6A0FF200AA16FD /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
+		63B21A791C623DA80074DFF8 /* test_failed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_failed.png; sourceTree = "<group>"; };
+		63B21A7A1C623DA80074DFF8 /* test_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_inprogress.png; sourceTree = "<group>"; };
+		63B21A7B1C623DA80074DFF8 /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_passed.png; sourceTree = "<group>"; };
 		63B81A031B57DA33009604A6 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		63B81A041B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPKeyboardAvoidingCollectionView.h; sourceTree = "<group>"; };
 		63B81A051B57DA33009604A6 /* TPKeyboardAvoidingCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingCollectionView.m; sourceTree = "<group>"; };
@@ -2229,6 +2235,9 @@
 				63058A0E1B4E821E00EFAE36 /* AppDelegate.m */,
 				63058A0F1B4E821E00EFAE36 /* InfoPlist.strings */,
 				63058A111B4E821E00EFAE36 /* Main_iPad.strings */,
+				63B21A791C623DA80074DFF8 /* test_failed.png */,
+				63B21A7A1C623DA80074DFF8 /* test_inprogress.png */,
+				63B21A7B1C623DA80074DFF8 /* test_passed.png */,
 				63058A131B4E821E00EFAE36 /* Main_iPhone.strings */,
 				63058A151B4E821E00EFAE36 /* Main_iPad.storyboard */,
 				63058A171B4E821E00EFAE36 /* Main_iPhone.storyboard */,
@@ -3629,6 +3638,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				63058ADA1B4E937300EFAE36 /* certificates in Resources */,
+				63B21A7D1C623DA80074DFF8 /* test_inprogress.png in Resources */,
 				63058ADB1B4E937300EFAE36 /* flexisip in Resources */,
 				63058ADC1B4E937300EFAE36 /* images in Resources */,
 				63058ADD1B4E937300EFAE36 /* marie_xml in Resources */,
@@ -3640,7 +3650,9 @@
 				63058A251B4E821E00EFAE36 /* InfoPlist.strings in Resources */,
 				63058A271B4E821E00EFAE36 /* Main_iPhone.strings in Resources */,
 				63058A261B4E821E00EFAE36 /* Main_iPad.strings in Resources */,
+				63B21A7C1C623DA80074DFF8 /* test_failed.png in Resources */,
 				63058A291B4E821E00EFAE36 /* Main_iPhone.storyboard in Resources */,
+				63B21A7E1C623DA80074DFF8 /* test_passed.png in Resources */,
 				63058A281B4E821E00EFAE36 /* Main_iPad.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
