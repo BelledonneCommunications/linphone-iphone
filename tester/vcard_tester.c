@@ -493,7 +493,6 @@ static void carddav_integration(void) {
 	lf2 = linphone_friend_new_from_vcard(lvc2);
 	linphone_friend_set_ref_key(lf2, refkey);
 	BC_ASSERT_EQUAL_FATAL(linphone_friend_list_add_local_friend(lfl, lf2), LinphoneFriendListOK, int, "%d");
-	linphone_friend_unref(lf2);
 	
 	BC_ASSERT_EQUAL(lfl->revision, 0, int, "%i");
 	linphone_friend_list_synchronize_friends_from_server(lfl);
@@ -511,6 +510,7 @@ static void carddav_integration(void) {
 	lf = (LinphoneFriend *)lfl->friends->data;
 	BC_ASSERT_STRING_EQUAL(lf->refkey, refkey);
 	BC_ASSERT_EQUAL(lf->storage_id, lf2->storage_id, int, "%i");
+	linphone_friend_unref(lf2);
 	BC_ASSERT_STRING_EQUAL(linphone_address_as_string_uri_only(lf->uri), "sip:sylvain@sip.linphone.org");
 	
 	linphone_friend_edit(lf);
