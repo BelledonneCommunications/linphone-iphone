@@ -908,13 +908,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(msg, "Call-ID")];
 	const LinphoneAddress *remoteAddress = linphone_chat_message_get_from_address(msg);
 	NSString *from = [FastAddressBook displayNameForAddress:remoteAddress];
-	const char *chat = linphone_chat_message_get_text(msg);
-	if (chat == NULL)
-		chat = "";
 
 	char *c_address = linphone_address_as_string_uri_only(remoteAddress);
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
-
 	ms_free(c_address);
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {

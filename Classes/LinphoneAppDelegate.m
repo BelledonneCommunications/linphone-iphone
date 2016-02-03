@@ -471,6 +471,7 @@
 			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
 			linphone_chat_room_send_chat_message(room, msg);
 			linphone_chat_room_mark_as_read(room);
+			[PhoneMainView.instance updateApplicationBadgeNumber];
 		}
 	}
 }
