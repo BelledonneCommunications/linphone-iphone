@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
@@ -250,11 +250,11 @@
                             </connections>
                         </tableView>
                         <view hidden="YES" alpha="0.79999999999999982" tag="24" contentMode="scaleToFill" id="ukG-i4-YMY" userLabel="numpadView">
-                            <rect key="frame" x="0.0" y="66" width="375" height="539"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="499"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="25" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="qZ8-m9-B0N" userLabel="1" customClass="UIDigitButton">
-                                    <rect key="frame" x="0.0" y="0.0" width="120" height="128"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="120" height="118"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" red="0.40000001000000002" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
                                     <accessibility key="accessibilityConfiguration" label="1"/>
@@ -266,7 +266,7 @@
                                     <state key="highlighted" image="numpad_1_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="26" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="U6v-Cg-9b8" userLabel="2" customClass="UIDigitButton">
-                                    <rect key="frame" x="127" y="0.0" width="121" height="128"/>
+                                    <rect key="frame" x="127" y="0.0" width="121" height="118"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="2"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -276,7 +276,7 @@
                                     <state key="highlighted" image="numpad_2_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="27" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="R2h-PD-GN2" userLabel="3" customClass="UIDigitButton">
-                                    <rect key="frame" x="254" y="0.0" width="121" height="128"/>
+                                    <rect key="frame" x="254" y="0.0" width="121" height="118"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="3"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -286,7 +286,7 @@
                                     <state key="highlighted" image="numpad_3_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="28" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="653-Vb-YzA" userLabel="4" customClass="UIDigitButton">
-                                    <rect key="frame" x="0.0" y="137" width="120" height="128"/>
+                                    <rect key="frame" x="0.0" y="126" width="120" height="119"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="4"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -296,7 +296,7 @@
                                     <state key="highlighted" image="numpad_4_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="29" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="8Da-zK-V7e" userLabel="5" customClass="UIDigitButton">
-                                    <rect key="frame" x="127" y="137" width="121" height="128"/>
+                                    <rect key="frame" x="127" y="126" width="121" height="119"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -306,7 +306,7 @@
                                     <state key="highlighted" image="numpad_5_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="30" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="0fB-uk-rXS" userLabel="6" customClass="UIDigitButton">
-                                    <rect key="frame" x="254" y="137" width="121" height="128"/>
+                                    <rect key="frame" x="254" y="126" width="121" height="119"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="6"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -316,7 +316,7 @@
                                     <state key="highlighted" image="numpad_6_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="31" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="alZ-Kz-AVL" userLabel="7" customClass="UIDigitButton">
-                                    <rect key="frame" x="0.0" y="271" width="120" height="128"/>
+                                    <rect key="frame" x="0.0" y="250" width="120" height="119"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="7"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -326,7 +326,7 @@
                                     <state key="highlighted" image="numpad_7_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="32" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="DRh-kc-UVM" userLabel="8" customClass="UIDigitButton">
-                                    <rect key="frame" x="127" y="271" width="121" height="128"/>
+                                    <rect key="frame" x="127" y="250" width="121" height="119"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="8"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -336,7 +336,7 @@
                                     <state key="highlighted" image="numpad_8_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="33" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="b8R-7P-jHK" userLabel="9" customClass="UIDigitButton">
-                                    <rect key="frame" x="254" y="271" width="121" height="128"/>
+                                    <rect key="frame" x="254" y="250" width="121" height="119"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="9"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -346,7 +346,7 @@
                                     <state key="highlighted" image="numpad_9_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="34" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="prH-qj-h0v" userLabel="*" customClass="UIDigitButton">
-                                    <rect key="frame" x="0.0" y="406" width="120" height="128"/>
+                                    <rect key="frame" x="0.0" y="375" width="120" height="119"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Star"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -356,7 +356,7 @@
                                     <state key="highlighted" image="numpad_star_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="35" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="CUt-2U-nro" userLabel="0" customClass="UIDigitButton">
-                                    <rect key="frame" x="127" y="406" width="121" height="128"/>
+                                    <rect key="frame" x="127" y="375" width="121" height="119"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="0"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -366,7 +366,7 @@
                                     <state key="highlighted" image="numpad_0_over.png" backgroundImage="numpad_over_background.png"/>
                                 </button>
                                 <button opaque="NO" clearsContextBeforeDrawing="NO" tag="36" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="DqJ-35-h1Y" userLabel="#" customClass="UIDigitButton">
-                                    <rect key="frame" x="254" y="406" width="121" height="128"/>
+                                    <rect key="frame" x="254" y="375" width="121" height="119"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <accessibility key="accessibilityConfiguration" label="Hash"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
