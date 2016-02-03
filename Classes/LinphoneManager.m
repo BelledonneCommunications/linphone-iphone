@@ -1428,18 +1428,18 @@ static BOOL libStarted = FALSE;
 	[Log enableLogs:[self lpConfigIntForKey:@"debugenable_preference"]];
 	connectivity = none;
 
-	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
-	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
-	libmsilbc_init(ms_factory_get_fallback());
-	libmssilk_init(ms_factory_get_fallback());
-	libmsamr_init(ms_factory_get_fallback());
-	libmsx264_init(ms_factory_get_fallback());
-	libmsopenh264_init(ms_factory_get_fallback());
-	libmsbcg729_init(ms_factory_get_fallback());
-	libmswebrtc_init(ms_factory_get_fallback());
-
 	theLinphoneCore = linphone_core_new_with_config(&linphonec_vtable, _configDb, (__bridge void *)(self));
 	LOGI(@"Create linphonecore %p", theLinphoneCore);
+
+	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
+	MSFactory *f = linphone_core_get_ms_factory(theLinphoneCore);
+	libmsilbc_init(f);
+	libmssilk_init(f);
+	libmsamr_init(f);
+	libmsx264_init(f);
+	libmsopenh264_init(f);
+	libmsbcg729_init(f);
+	libmswebrtc_init(f);
 
 	// Set audio assets
 	NSString *ring =
@@ -1507,7 +1507,6 @@ static BOOL libStarted = FALSE;
 		linphone_core_destroy(theLinphoneCore);
 		LOGI(@"Destroy linphonecore %p", theLinphoneCore);
 		theLinphoneCore = nil;
-		ms_exit(); // Uninitialize mediastreamer2
 
 		// Post event
 		NSDictionary *dict =
