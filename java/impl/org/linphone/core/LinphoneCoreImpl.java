@@ -1625,24 +1625,6 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public int getNortpTimeout(){
 		return getNortpTimeout(nativePtr);
 	}
-	
-	private native int importFriendsFromVCardFile(long nativePtr, String file);
-	@Override
-	public int importFriendsFromVCardFile(String file) {
-		return importFriendsFromVCardFile(nativePtr, file);
-	}
-	
-	private native int importFriendsFromVCardBuffer(long nativePtr, String buffer);
-	@Override
-	public int importFriendsFromVCardBuffer(String buffer) {
-		return importFriendsFromVCardBuffer(nativePtr, buffer);
-	}
-	
-	private native void exportFriendsToVCardFile(long nativePtr, String file);
-	@Override
-	public void exportFriendsToVCardFile(String file) {
-		exportFriendsToVCardFile(nativePtr, file);
-	}
 
 	private native void setSipNetworkReachable(long nativePtr, boolean isReachable);
 	@Override

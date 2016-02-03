@@ -2271,23 +2271,6 @@ public interface LinphoneCore {
 	public int getNortpTimeout();
 
 	/**
-	 * Imports LinphoneFriends from a vCard 4 file
-	 * @return the number of friend imported
-	**/
-	public int importFriendsFromVCardFile(String file);
-	
-	/**
-	 * Imports LinphoneFriends from a vCard 4 buffer
-	 * @return the number of friend imported
-	**/
-	public int importFriendsFromVCardBuffer(String buffer);
-	
-	/**
-	 * Exports LinphoneFriends to a vCard 4 file
-	**/
-	public void exportFriendsToVCardFile(String file);
-
-	/**
 	 * This method is called by the application to notify the linphone core library when the SIP network is reachable.
 	 * This is for advanced usage, when SIP and RTP layers are required to use different interfaces.
 	 * Most applications just need LinphoneCore.setNetworkReachable().

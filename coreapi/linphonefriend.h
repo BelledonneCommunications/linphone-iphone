@@ -460,29 +460,6 @@ LINPHONE_PUBLIC bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const ch
 LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard);
 
 /**
- * Creates and adds LinphoneFriend objects to LinphoneCore from a file that contains the vCard(s) to parse
- * @param[in] lc the LinphoneCore object
- * @param[in] vcard_file the path to a file that contains the vCard(s) to parse
- * @return the amount of linphone friends created
- */
-LINPHONE_PUBLIC int linphone_core_import_friends_from_vcard4_file(LinphoneCore *lc, const char *vcard_file);
-
-/**
- * Creates and adds LinphoneFriend objects to LinphoneCore from a buffer that contains the vCard(s) to parse
- * @param[in] lc the LinphoneCore object
- * @param[in] vcard_buffer the buffer that contains the vCard(s) to parse
- * @return the amount of linphone friends created
- */
-LINPHONE_PUBLIC int linphone_core_import_friends_from_vcard4_buffer(LinphoneCore *lc, const char *vcard_buffer);
-
-/**
- * Creates and export LinphoneFriend objects from LinphoneCore to a file using vCard 4 format
- * @param[in] lc the LinphoneCore object
- * @param[in] vcard_file the path to a file that will contain the vCards
- */
-LINPHONE_PUBLIC void linphone_core_export_friends_as_vcard4_file(LinphoneCore *lc, const char *vcard_file);
-
-/**
  * Sets the database filename where friends will be stored.
  * If the file does not exist, it will be created.
  * @ingroup initializing

@@ -31,6 +31,24 @@ public interface LinphoneFriendList {
 	public LinphoneFriend findFriendByUri(String uri);
 	public void setUri(String uri);
 	public void synchronizeFriendsFromServer();
+
+	/**
+	 * Imports LinphoneFriends from a vCard 4 file
+	 * @return the number of friend imported
+	**/
+	public int importFriendsFromVCardFile(String file);
+	
+	/**
+	 * Imports LinphoneFriends from a vCard 4 buffer
+	 * @return the number of friend imported
+	**/
+	public int importFriendsFromVCardBuffer(String buffer);
+	
+	/**
+	 * Exports LinphoneFriends to a vCard 4 file
+	**/
+	public void exportFriendsToVCardFile(String file);
+	
 	long getNativePtr();
 	
 	/**

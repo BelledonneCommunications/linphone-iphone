@@ -1843,7 +1843,8 @@ void linphone_gtk_import_contacts(void) {
 	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		LinphoneCore *lc = linphone_gtk_get_core();
 		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-		linphone_core_import_friends_from_vcard4_file(lc, filename);
+		LinphoneFriendList *list = linphone_core_get_default_friend_list(lc);
+		linphone_friend_list_import_friends_from_vcard4_file(list, filename);
 		g_free(filename);
 		linphone_gtk_show_friends();
 	}
@@ -1858,7 +1859,8 @@ void linphone_gtk_export_contacts(void) {
 	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		LinphoneCore *lc = linphone_gtk_get_core();
 		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-		linphone_core_export_friends_as_vcard4_file(lc, filename);
+		LinphoneFriendList *list = linphone_core_get_default_friend_list(lc);
+		linphone_friend_list_export_friends_as_vcard4_file(list, filename);
 		g_free(filename);
 	}
 	gtk_widget_destroy(dialog);
