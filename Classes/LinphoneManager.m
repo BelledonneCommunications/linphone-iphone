@@ -515,7 +515,8 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 }
 
 - (void)migrationFromVersion2To3 {
-	lp_config_for_each_entry(_configDb, "wizard", migrateWizardToAssistant, (__bridge void *)(self));
+	// DONT DO THAT!
+	//	lp_config_for_each_entry(_configDb, "wizard", migrateWizardToAssistant, (__bridge void *)(self));
 }
 
 #pragma mark - Linphone Core Functions

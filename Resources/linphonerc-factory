@@ -19,7 +19,8 @@ display_filter_auto_rotate=0
 send_logs_include_linphonerc_and_chathistory=0
 
 [assistant]
-username_regex=^[a-z0-9_.\-]*$
+username_length=-1
+password_length=-1
 
 [in_app_purchase]
 enabled=0
