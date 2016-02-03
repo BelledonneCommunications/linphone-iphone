@@ -64,6 +64,9 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	clock_t start, end;
 	double elapsed = 0;
 	const MSList *friends = NULL;
+	FILE    *infile;
+	char    *buffer;
+	long    numbytes;
 
 	start = clock();
 	linphone_friend_list_import_friends_from_vcard4_file(lfl, import_filepath);
@@ -73,10 +76,35 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	BC_ASSERT_EQUAL(ms_list_size(friends), 482, int, "%i"); // Thousand vcards contains 482 contacts with a SIP URI
 	
 	elapsed = (double)(end - start);
-	ms_error("Imported a thousand of vCards (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
+	ms_error("Imported a thousand of vCards from file (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
 #ifndef ANDROID
 	BC_ASSERT_TRUE(elapsed < 1500000); // 1.5 seconds
 #endif
+	
+	lfl = linphone_core_create_friend_list(manager->lc);
+	infile = fopen(import_filepath, "r");
+	fseek(infile, 0L, SEEK_END);
+	numbytes = ftell(infile);
+	fseek(infile, 0L, SEEK_SET);
+	buffer = (char*)ms_malloc(numbytes * sizeof(char));
+	numbytes = fread(buffer, sizeof(char), numbytes, infile);
+	fclose(infile);
+	
+	start = clock();
+	linphone_friend_list_import_friends_from_vcard4_buffer(lfl, buffer);
+	end = clock();
+	
+	friends = linphone_friend_list_get_friends(lfl);
+	BC_ASSERT_EQUAL(ms_list_size(friends), 482, int, "%i"); // Thousand vcards contains 482 contacts with a SIP URI
+	
+	elapsed = (double)(end - start);
+	ms_error("Imported a thousand of vCards from buffer (only %i friends with SIP address found) in %f seconds", ms_list_size(friends), elapsed / CLOCKS_PER_SEC);
+#ifndef ANDROID
+	BC_ASSERT_TRUE(elapsed < 1500000); // 1.5 seconds
+#endif
+	
+	ms_free(buffer);
+	linphone_friend_list_unref(lfl);
 	
 	ms_free(import_filepath);
 	linphone_core_manager_destroy(manager);

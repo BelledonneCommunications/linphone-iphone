@@ -8476,7 +8476,6 @@ BDAY:19840316
 EMAIL:kesha.tuggle@essefeugait.org
 N:Tuggle;Kesha;;;
 ORG:South Studio Vision
-IMPP:sip:kesha@sip.linphone.org
 FN:Kesha Tuggle
 TEL:tel:(865)414-7674
 END:VCARD
@@ -8539,4 +8538,5 @@ N:Kimbrough;Deidra;;;
 FN:Deidra Kimbrough
 ORG:Pacific Bell
 TEL:tel:(413)543-7430
+IMPP:sip:kimbrough@sip.linphone.org
 END:VCARD
