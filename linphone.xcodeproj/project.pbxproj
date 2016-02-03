@@ -628,6 +628,7 @@
 		63E27A5A1C51392A00D332AE /* libebml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A4D1C50EAC300D332AE /* libebml2.a */; };
 		63E27A5B1C51392A00D332AE /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A471C50EA7A00D332AE /* libmatroska2.a */; };
 		63E59A3F1ADE70D900646FB3 /* InAppProductsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */; };
+		63E802DB1C625AEF000D5509 /* nowebcamCIF.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 63E802DA1C625AEF000D5509 /* nowebcamCIF.jpg */; };
 		63EEE3FF1BBA9AC00087D3AF /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		63EEE4001BBA9AC00087D3AF /* liblinphonetester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F0BB8C0F193623F200974404 /* liblinphonetester.a */; };
 		63EEE4041BBA9B010087D3AF /* libbellesip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 223CA7E516D9255800EF1BEC /* libbellesip.a */; };
@@ -1508,6 +1509,7 @@
 		63E27A511C50EB2700D332AE /* hold.mkv */ = {isa = PBXFileReference; lastKnownFileType = file; path = hold.mkv; sourceTree = "<group>"; };
 		63E59A3D1ADE6ECB00646FB3 /* InAppProductsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InAppProductsManager.h; sourceTree = "<group>"; };
 		63E59A3E1ADE70D900646FB3 /* InAppProductsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InAppProductsManager.m; sourceTree = "<group>"; };
+		63E802DA1C625AEF000D5509 /* nowebcamCIF.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = nowebcamCIF.jpg; path = "../../../linphone-iphone/Resources/images/nowebcamCIF.jpg"; sourceTree = "<group>"; };
 		63EA4C941B50189D00922857 /* libmswebrtc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmswebrtc.a; path = "liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmswebrtc.a"; sourceTree = "<group>"; };
 		63EEE4091BBA9B110087D3AF /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		63EEE40B1BBA9B1B0087D3AF /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
@@ -2278,6 +2280,7 @@
 				6316A07D1C5F64330073BFA4 /* add_field_over.png */,
 				6316A07E1C5F64330073BFA4 /* add_field_over@2x.png */,
 				6316A07F1C5F64330073BFA4 /* avatar.png */,
+				63E802DA1C625AEF000D5509 /* nowebcamCIF.jpg */,
 				6316A0801C5F64330073BFA4 /* avatar@2x.png */,
 				6316A0811C5F64330073BFA4 /* avatar~ipad.png */,
 				6316A0821C5F64330073BFA4 /* avatar~ipad@2x.png */,
@@ -3165,6 +3168,7 @@
 				6316A2971C5F64350073BFA4 /* chat_add_default@2x.png in Resources */,
 				6316A2E41C5F64350073BFA4 /* dialer_back_default.png in Resources */,
 				6316A3871C5F64350073BFA4 /* numpad_star_over~ipad.png in Resources */,
+				63E802DB1C625AEF000D5509 /* nowebcamCIF.jpg in Resources */,
 				6316A2781C5F64350073BFA4 /* call_status_missed~ipad.png in Resources */,
 				6316A32E1C5F64350073BFA4 /* numpad_0_over~ipad.png in Resources */,
 				63AADBFF1B6A0FF200AA16FD /* assistant_external_sip.rc in Resources */,
