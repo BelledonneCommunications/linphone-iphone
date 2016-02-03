@@ -61,7 +61,7 @@ struct _LinphoneSoundDaemon {
 
 static MSFilter *create_writer(MSSndCard *c){
 	LinphoneSoundDaemon *lsd=(LinphoneSoundDaemon*)c->data;
-	MSFilter *itcsink=ms_filter_new(MS_ITC_SINK_ID);
+	MSFilter *itcsink=ms_factory_create_filter(ms_snd_card_get_factory(c), MS_ITC_SINK_ID);
 	ms_filter_call_method(itcsink,MS_ITC_SINK_CONNECT,lsd->branches[0].player);
 	return itcsink;
 }
@@ -114,11 +114,11 @@ int lsd_player_stop(LsdPlayer *p){
 	return 0;
 }
 
-static void lsd_player_init(LsdPlayer *p, MSConnectionPoint mixer, MSFilterId playerid, LinphoneSoundDaemon *lsd){
+static void lsd_player_init(MSFactory* factory, LsdPlayer *p, MSConnectionPoint mixer, MSFilterId playerid, LinphoneSoundDaemon *lsd){
 	MSConnectionHelper h;
-	p->player=ms_filter_new(playerid);
-	p->rateconv=ms_filter_new(MS_RESAMPLE_ID);
-	p->chanadapter=ms_filter_new(MS_CHANNEL_ADAPTER_ID);
+	p->player=ms_factory_create_filter(factory, playerid);
+	p->rateconv=ms_factory_create_filter(factory,MS_RESAMPLE_ID);
+	p->chanadapter=ms_factory_create_filter(factory,MS_CHANNEL_ADAPTER_ID);
 	
 	ms_connection_helper_start(&h);
 	ms_connection_helper_link(&h,p->player,-1,0);
@@ -219,16 +219,15 @@ void lsd_player_set_gain(LsdPlayer *p, float gain){
 	ms_filter_call_method(p->lsd->mixer,MS_AUDIO_MIXER_SET_INPUT_GAIN,&gainctl);
 }
 
-LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, int nchannels){
+LinphoneSoundDaemon * linphone_sound_daemon_new(MSFactory* factory, const char *cardname, int rate, int nchannels){
 	int i;
 	MSConnectionPoint mp;
 	LinphoneSoundDaemon *lsd;
-	MSSndCard *card=ms_snd_card_manager_get_card(
-	                                             ms_snd_card_manager_get(),
+	MSSndCard *card=ms_snd_card_manager_get_card(ms_factory_get_snd_card_manager(factory),
 	                                             cardname);
 	if (card==NULL){
 		card=ms_snd_card_manager_get_default_playback_card (
-		                                                    ms_snd_card_manager_get());
+		                                                   ms_factory_get_snd_card_manager(factory));
 		if (card==NULL){
 			ms_error("linphone_sound_daemon_new(): No playback soundcard available");
 			return NULL;
@@ -237,7 +236,7 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, 
 	
 	lsd=ms_new0(LinphoneSoundDaemon,1);
 	lsd->soundout=ms_snd_card_create_writer(card);
-	lsd->mixer=ms_filter_new(MS_AUDIO_MIXER_ID);
+	lsd->mixer=ms_factory_create_filter(ms_snd_card_get_factory(card),MS_AUDIO_MIXER_ID);
 	lsd->out_rate=rate;
 	lsd->out_nchans=nchannels;
 	ms_filter_call_method(lsd->soundout,MS_FILTER_SET_SAMPLE_RATE,&lsd->out_rate);
@@ -248,11 +247,11 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, 
 	mp.filter=lsd->mixer;
 	mp.pin=0;
 
-	lsd_player_init(&lsd->branches[0],mp,MS_ITC_SOURCE_ID,lsd);
+	lsd_player_init(factory, &lsd->branches[0],mp,MS_ITC_SOURCE_ID,lsd);
 	ms_filter_add_notify_callback(lsd->branches[0].player,(MSFilterNotifyFunc)lsd_player_configure,&lsd->branches[0],FALSE);
 	for(i=1;i<MAX_BRANCHES;++i){
 		mp.pin=i;
-		lsd_player_init(&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);
+		lsd_player_init(factory,&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);
 	}
 	ms_filter_link(lsd->mixer,0,lsd->soundout,0);
 	lsd->ticker=ms_ticker_new();

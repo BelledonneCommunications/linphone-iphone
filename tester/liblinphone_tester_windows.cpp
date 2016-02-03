@@ -108,7 +108,7 @@ bool NativeTester::run(Platform::String^ suiteName, Platform::String^ caseName, 
 		linphone_core_set_log_level_mask(ORTP_FATAL);
 	}
 	linphone_core_set_log_handler(libLinphoneNativeOutputTraceHandler);
-	return bc_tester_run_tests(wssuitename == all ? 0 : csuitename, wscasename == all ? 0 : ccasename) != 0;
+	return bc_tester_run_tests(wssuitename == all ? 0 : csuitename, wscasename == all ? 0 : ccasename, NULL) != 0;
 }
 
 void NativeTester::runAllToXml()

@@ -36,7 +36,9 @@ void send_dtmf_base(LinphoneCoreManager **pmarie, LinphoneCoreManager **ppauline
 	LinphoneCall *marie_call = NULL;
 
 	if (use_opus) {
-		if (!ms_filter_codec_supported("opus")) {
+		//if (!ms_filter_codec_supported("opus")) {
+		if(!ms_factory_codec_supported(marie->lc->factory, "opus") && !ms_factory_codec_supported(pauline->lc->factory, "opus")){
+
 			ms_warning("Opus not supported, skipping test.");
 			return;
 		}

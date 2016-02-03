@@ -208,6 +208,21 @@ LINPHONE_PUBLIC int linphone_event_send_publish(LinphoneEvent *lev, const Linpho
 **/
 LINPHONE_PUBLIC int linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *body);
 
+/**
+ * Refresh an outgoing publish keeping the same body.
+ * @param lev LinphoneEvent object.
+ * @return 0 if successful, -1 otherwise.
+ */
+LINPHONE_PUBLIC int linphone_event_refresh_publish(LinphoneEvent *lev);
+
+/**
+ * Prevent an event  from refreshing its publish.
+ * This is useful to let registrations to expire naturally (or) when the application wants to keep control on when
+ * refreshes are sent.
+ * The refreshing operations can be resumed with linphone_proxy_config_refresh_register().
+ * @param[in] cfg #LinphoneEvent object.
+ **/
+LINPHONE_PUBLIC void linphone_event_pause_publish(LinphoneEvent *lev);
 
 /**
  * Return reason code (in case of error state reached).

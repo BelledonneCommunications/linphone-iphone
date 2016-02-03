@@ -164,7 +164,7 @@ int main(int argc, char *argv[]){
 	{
 		MSWebCamDesc *desc = ms_mire_webcam_desc_get();
 		if (desc){
-			ms_web_cam_manager_add_cam(ms_web_cam_manager_get(),ms_web_cam_new(desc));
+			ms_web_cam_manager_add_cam(ms_factory_get_web_cam_manager(linphone_core_get_ms_factory(lc)),ms_web_cam_new(desc));
 			linphone_core_set_video_device(lc,"Mire: Mire (synthetic moving picture)");
 		}
 	}

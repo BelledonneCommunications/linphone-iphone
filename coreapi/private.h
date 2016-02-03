@@ -399,6 +399,8 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig *obj);
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc);
 void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
+void _linphone_proxy_config_unpublish(LinphoneProxyConfig *obj);
+	
 /*
  * returns service route as defined in as defined by rfc3608, might be a list instead of just one.
  * Can be NULL
@@ -605,7 +607,6 @@ struct _LinphoneProxyConfig
 	int auth_failures;
 	char *dial_prefix;
 	LinphoneRegistrationState state;
-	SalOp *publish_op;
 	LinphoneAVPFMode avpf_mode;
 
 	bool_t commit;
@@ -625,6 +626,8 @@ struct _LinphoneProxyConfig
 	LinphoneAddress *saved_identity;
 	/*---*/
 	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/
+	LinphoneEvent *long_term_event;
+	unsigned long long previous_publish_config_hash[2];
 
 };
 
@@ -890,6 +893,7 @@ void linphone_task_list_free(LinphoneTaskList *t);
 
 struct _LinphoneCore
 {
+	MSFactory* factory;
 	MSList* vtable_refs;
 	Sal *sal;
 	LinphoneGlobalState state;
@@ -1048,6 +1052,7 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(LinphoneCore *lc, cons
 void _linphone_core_configure_resolver(void);
 
 struct _EcCalibrator{
+	MSFactory *factory;
 	ms_thread_t thread;
 	MSSndCard *play_card,*capt_card;
 	MSFilter *sndread,*det,*rec;
@@ -1138,6 +1143,7 @@ SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires);
 LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name);
+void linphone_event_unpublish(LinphoneEvent *lev);
 /**
  * Useful for out of dialog notify
  * */
@@ -1496,7 +1502,7 @@ void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreVTable *vtable, b
 
 #ifdef VIDEO_ENABLED
 LINPHONE_PUBLIC MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);
-MSWebCam *get_nowebcam_device(void);
+MSWebCam *get_nowebcam_device(MSFactory *f);
 #endif
 bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 
@@ -1504,6 +1510,8 @@ BELLE_SIP_DECLARE_VPTR(LinphoneTunnelConfig);
 
 int linphone_core_get_default_proxy_config_index(LinphoneCore *lc);
 
+char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
+	
 #ifdef __cplusplus
 }
 #endif

@@ -208,6 +208,11 @@ void sal_address_set_uri_params(SalAddress *addr, const char *params){
 	belle_sip_parameters_set(parameters,params);
 }
 
+bool_t sal_address_has_uri_param(SalAddress *addr, const char *name){
+	belle_sip_parameters_t* parameters = BELLE_SIP_PARAMETERS(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(addr)));
+	return belle_sip_parameters_has_parameter(parameters, name);
+}
+
 void sal_address_set_header(SalAddress *addr, const char *header_name, const char *header_value){
 	belle_sip_uri_set_header(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(addr)),header_name, header_value);
 }

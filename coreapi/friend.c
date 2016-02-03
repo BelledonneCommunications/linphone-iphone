@@ -547,13 +547,25 @@ void linphone_friend_done(LinphoneFriend *fr) {
 	}
 }
 
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 LinphoneFriend * linphone_core_create_friend(LinphoneCore *lc) {
-	return linphone_friend_new();
+	LinphoneFriend * lf = linphone_friend_new();
+	lf->lc = lc;
+	return lf;
 }
 
 LinphoneFriend * linphone_core_create_friend_with_address(LinphoneCore *lc, const char *address) {
-	return linphone_friend_new_with_address(address);
+	LinphoneFriend * lf = linphone_friend_new_with_address(address);
+	if (lf)
+		lf->lc = lc;
+	return lf;
 }
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 
 void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *lf) {
 	if (linphone_friend_list_add_friend(linphone_core_get_default_friend_list(lc), lf) != LinphoneFriendListOK) return;

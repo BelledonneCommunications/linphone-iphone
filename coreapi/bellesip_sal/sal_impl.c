@@ -464,13 +464,13 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *event) {
 	sal_auth_info_delete(auth_info);
 }
 
-Sal * sal_init(){
+Sal * sal_init(MSFactory *factory){
 	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
 
 	/*belle_sip_object_enable_marshal_check(TRUE);*/
 	sal->auto_contacts=TRUE;
-
+	sal->factory = factory;
 	/*first create the stack, which initializes the belle-sip object's pool for this thread*/
 	belle_sip_set_log_handler(_belle_sip_log);
 	sal->stack = belle_sip_stack_new(NULL);

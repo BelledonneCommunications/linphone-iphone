@@ -262,6 +262,21 @@ LINPHONE_PUBLIC char * linphone_presence_model_get_contact(const LinphonePresenc
 LINPHONE_PUBLIC int linphone_presence_model_set_contact(LinphonePresenceModel *model, const char *contact);
 
 /**
+ * Sets the presentity of a presence model.
+ * @param[in] model The #LinphonePresenceModel object for which to set the contact.
+ * @param[in] presentity The presentity address to set (presentity is copied).
+ * @return 0 if successful, a value < 0 in case of error.
+ */
+LINPHONE_PUBLIC int linphone_presence_model_set_presentity(LinphonePresenceModel *model, const LinphoneAddress *presentity);
+/**
+ * Gets the presentity of a presence model.
+ * @param[in] model The #LinphonePresenceModel object to get the contact from.
+ * @return A pointer to a const LinphoneAddress, or NULL if no contact is found.
+ *
+ */
+LINPHONE_PUBLIC const LinphoneAddress * linphone_presence_model_get_presentity(const LinphonePresenceModel *model);
+	
+/**
  * Gets the first activity of a presence model (there is usually only one).
  * @param[in] model The #LinphonePresenceModel object to get the activity from.
  * @return A #LinphonePresenceActivity object if successful, NULL otherwise.

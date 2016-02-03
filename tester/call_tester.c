@@ -547,14 +547,14 @@ static void call_outbound_with_multiple_proxy(void) {
 
 	// set first LPC to unreacheable proxy addr
 	linphone_proxy_config_edit(lpc);
-	linphone_proxy_config_set_server_addr(lpc,"12.13.14.15:5223;transport=udp");
-	linphone_proxy_config_set_route(lpc, "12.13.14.15:5223;transport=udp;lr");
+	linphone_proxy_config_set_server_addr(lpc,"sip:linphone.org:9016;transport=udp");
+	linphone_proxy_config_set_route(lpc, "sip:linphone.org:9016;transport=udp;lr");
 	linphone_proxy_config_done(lpc);
 
-	BC_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc, NULL, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 10000));
 
 	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationProgress, 2, 200));
-	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 1, 2000));
+	BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 1, 10000));
 
 	// calling marie should go through the second proxy config
 	BC_ASSERT_TRUE(call(marie, pauline));
@@ -667,7 +667,7 @@ static void call_with_specified_codec_bitrate(void) {
 	int max_bw=50;
 
 #ifdef __arm__
-	if (ms_get_cpu_count() <2) { /*2 opus codec channel + resampler is too much for a single core*/
+	if (ms_factory_get_cpu_count(marie->lc->factory) <2) { /*2 opus codec channel + resampler is too much for a single core*/
 #ifndef ANDROID
 		codec = "speex";
 		rate = 8000;
@@ -2343,20 +2343,20 @@ static void video_call_using_policy_AVPF_implicit_caller_and_callee(void) {
     linphone_core_manager_destroy(callee);
     linphone_core_manager_destroy(caller);
 }
-static void video_call_base_avpf(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
-    linphone_core_set_avpf_mode(pauline->lc,LinphoneAVPFEnabled);
-    linphone_core_set_avpf_mode(marie->lc,LinphoneAVPFEnabled);
-    video_call_base_3(pauline,marie,using_policy,mode,callee_video_enabled,caller_video_enabled);
-    end_call(pauline, marie);
+static void video_call_base_avpf(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
+    linphone_core_set_avpf_mode(caller->lc,LinphoneAVPFEnabled);
+    linphone_core_set_avpf_mode(callee->lc,LinphoneAVPFEnabled);
+    video_call_base_3(caller,callee,using_policy,mode,callee_video_enabled,caller_video_enabled);
+    end_call(caller, callee);
 }
 
 static void video_call_avpf(void) {
-    LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_rc");
-    LinphoneCoreManager* marie = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "marie_rc" : "marie_tcp_rc");
+    LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
+    LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
-    video_call_base_avpf(pauline,marie,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
-    linphone_core_manager_destroy(pauline);
-    linphone_core_manager_destroy(marie);
+    video_call_base_avpf(caller,callee,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+    linphone_core_manager_destroy(callee);
+    linphone_core_manager_destroy(caller);
 
 }
 
@@ -2984,7 +2984,8 @@ static void call_with_mkv_file_player(void) {
 	BC_ASSERT_PTR_NOT_NULL(player);
 	if (player){
 		int res = linphone_player_open(player,hellomkv,on_eof,marie);
-		if(!ms_filter_codec_supported("opus")) {
+		//if(!ms_filter_codec_supported("opus")) {
+		if(!ms_factory_codec_supported(marie->lc->factory, "opus") && !ms_factory_codec_supported(pauline->lc->factory, "opus")){
 			BC_ASSERT_EQUAL(res, -1, int, "%d");
 			end_call(marie, pauline);
 			goto end;
@@ -5710,7 +5711,8 @@ static void call_logs_sqlite_storage(void) {
 	MSList *logs = NULL;
 	LinphoneCallLog *call_log = NULL;
 	LinphoneAddress *laure = NULL;
-	time_t start_time = time(NULL);
+	time_t user_data_time = time(NULL);
+	time_t start_time = 0;
 	unlink(logs_db);
 
 	linphone_core_set_call_logs_database_path(marie->lc, logs_db);
@@ -5719,7 +5721,8 @@ static void call_logs_sqlite_storage(void) {
 	BC_ASSERT_TRUE(call(marie, pauline));
 	wait_for_until(marie->lc, pauline->lc, NULL, 5, 500);
 	call_log = linphone_call_get_call_log(linphone_core_get_current_call(marie->lc));
-	linphone_call_log_set_user_data(call_log, &start_time);
+	start_time = linphone_call_log_get_start_date(call_log);
+	linphone_call_log_set_user_data(call_log, &user_data_time);
 	linphone_call_log_set_ref_key(call_log, "ref_key");
 	end_call(marie, pauline);
 	BC_ASSERT_TRUE(linphone_core_get_call_history_size(marie->lc) == 1);
@@ -5752,7 +5755,7 @@ static void call_logs_sqlite_storage(void) {
 		if (ref_key) {
 			BC_ASSERT_STRING_EQUAL(ref_key, "ref_key");
 		}
-		BC_ASSERT_PTR_EQUAL(linphone_call_log_get_user_data(call_log), &start_time);
+		BC_ASSERT_PTR_EQUAL(linphone_call_log_get_user_data(call_log), &user_data_time);
 
 		call_id = linphone_call_log_get_call_id(call_log);
 		BC_ASSERT_PTR_NOT_NULL(call_id);
@@ -5762,7 +5765,8 @@ static void call_logs_sqlite_storage(void) {
 			linphone_call_log_get_remote_address(call_log),
 			linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc))));
 		BC_ASSERT_PTR_NOT_NULL(linphone_call_log_get_remote_stats(call_log));
-		BC_ASSERT_GREATER(linphone_call_log_get_start_date(call_log), start_time, int, "%d");
+		BC_ASSERT_PTR_NOT_NULL(linphone_call_log_get_start_date(call_log));
+		BC_ASSERT_EQUAL(linphone_call_log_get_start_date(call_log), start_time, int, "%d");
 		BC_ASSERT_EQUAL(linphone_call_log_get_status(call_log), LinphoneCallSuccess, int, "%d");
 	}
 	

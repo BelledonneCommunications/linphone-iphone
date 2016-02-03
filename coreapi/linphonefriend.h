@@ -119,15 +119,17 @@ typedef struct _LinphoneFriend LinphoneFriend;
 /**
  * Contructor
  * @return a new empty #LinphoneFriend
+ * @deprecated use #linphone_core_create_friend instead
  */
-LINPHONE_PUBLIC LinphoneFriend * linphone_friend_new(void);
+LINPHONE_PUBLIC MS2_DEPRECATED LinphoneFriend * linphone_friend_new(void); /*fix me me replace MS2_DEPRECATED by LINPHONE_DEPRECATED*/
 
 /**
  * Contructor same as linphone_friend_new() + linphone_friend_set_address()
  * @param addr a buddy address, must be a sip uri like sip:joe@sip.linphone.org
  * @return a new #LinphoneFriend with \link linphone_friend_get_address() address initialized \endlink
+ * @deprecated use #linphone_core_create_friend_with_address instead
  */
-LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_with_address(const char *addr);
+LINPHONE_PUBLIC	MS2_DEPRECATED LinphoneFriend *linphone_friend_new_with_address(const char *addr); /*fix me me replace MS2_DEPRECATED by LINPHONE_DEPRECATED*/
 
 /**
  * Contructor same as linphone_friend_new() + linphone_friend_set_address()

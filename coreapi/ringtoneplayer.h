@@ -24,7 +24,7 @@ typedef void (*LinphoneRingtonePlayerFunc)(LinphoneRingtonePlayer* rp, void* use
 LINPHONE_PUBLIC LinphoneRingtonePlayer* linphone_ringtoneplayer_new(void);
 LINPHONE_PUBLIC void linphone_ringtoneplayer_destroy(LinphoneRingtonePlayer* rp);
 
-LINPHONE_PUBLIC int linphone_ringtoneplayer_start(LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms);
+LINPHONE_PUBLIC int linphone_ringtoneplayer_start(MSFactory *factory, LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms);
 /**
  * Start a ringtone player
  * @param rp LinphoneRingtonePlayer object
@@ -33,7 +33,8 @@ LINPHONE_PUBLIC int linphone_ringtoneplayer_start(LinphoneRingtonePlayer* rp, MS
  * @param loop_pause_ms pause interval in milliseconds to be observed between end of play and resuming at start. A value of -1 disables loop mode
  * @return 0 if the player successfully started, positive error code otherwise
  */
-LINPHONE_PUBLIC int linphone_ringtoneplayer_start_with_cb(LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms, LinphoneRingtonePlayerFunc end_of_ringtone, void * user_data);
+LINPHONE_PUBLIC int linphone_ringtoneplayer_start_with_cb(MSFactory *factory, LinphoneRingtonePlayer* rp, MSSndCard* card,
+														  const char* ringtone, int loop_pause_ms, LinphoneRingtonePlayerFunc end_of_ringtone, void * user_data);
 LINPHONE_PUBLIC bool_t linphone_ringtoneplayer_is_started(LinphoneRingtonePlayer* rp);
 LINPHONE_PUBLIC int linphone_ringtoneplayer_stop(LinphoneRingtonePlayer* rp);
 

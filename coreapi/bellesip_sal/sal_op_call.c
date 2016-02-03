@@ -57,13 +57,13 @@ static void sdp_process(SalOp *h){
 
 	h->result=sal_media_description_new();
 	if (h->sdp_offering){
-		offer_answer_initiate_outgoing(h->base.local_media,h->base.remote_media,h->result);
+		offer_answer_initiate_outgoing(h->base.root->factory, h->base.local_media,h->base.remote_media,h->result);
 	}else{
 		int i;
 		if (h->sdp_answer){
 			belle_sip_object_unref(h->sdp_answer);
 		}
-		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
+		offer_answer_initiate_incoming(h->base.root->factory, h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
 		/*for backward compatibility purpose*/
 		if(h->cnx_ip_to_0000_if_sendonly_enabled && sal_media_description_has_dir(h->result,SalStreamSendOnly)) {
 			set_addr_to_0000(h->result->addr);

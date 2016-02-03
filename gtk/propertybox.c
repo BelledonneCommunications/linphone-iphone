@@ -1417,8 +1417,9 @@ void linphone_gtk_fill_webcams(GtkWidget *pb){
 void linphone_gtk_fill_video_renderers(GtkWidget *pb){
 #ifdef VIDEO_ENABLED /* video_stream_get_default_video_renderer requires video enabled */
 	LinphoneCore *lc=linphone_gtk_get_core();
+	MSFactory *factory = linphone_core_get_ms_factory(lc);
 	GtkWidget *combo=linphone_gtk_get_widget(pb,"renderers");
-	MSList *l=ms_filter_lookup_by_interface(MSFilterVideoDisplayInterface);
+	MSList *l=ms_factory_lookup_filter_by_interface(factory, MSFilterVideoDisplayInterface);
 	MSList *elem;
 	int i;
 	int active=-1;

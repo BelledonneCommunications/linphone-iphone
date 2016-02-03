@@ -48,9 +48,9 @@ static void _linphone_call_set_next_video_frame_decoded_trigger(LinphoneCall *ca
 void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index);
 
 
-MSWebCam *get_nowebcam_device(){
+MSWebCam *get_nowebcam_device(MSFactory* f){
 #ifdef VIDEO_ENABLED
-	return ms_web_cam_manager_get_cam(ms_web_cam_manager_get(),"StaticImage: Static picture");
+	return ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(f),"StaticImage: Static picture");
 #else
 	return NULL;
 #endif
@@ -982,9 +982,9 @@ static void discover_mtu(LinphoneCore *lc, const char *remote){
 		/*attempt to discover mtu*/
 		mtu=ms_discover_mtu(remote);
 		if (mtu>0){
-			ms_set_mtu(mtu);
+			ms_factory_set_mtu(lc->factory, mtu);
 			ms_message("Discovered mtu is %i, RTP payload max size is %i",
-				mtu, ms_get_payload_max_size());
+				mtu, ms_factory_get_payload_max_size(lc->factory));
 		}
 	}
 }
@@ -2340,7 +2340,7 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		if (remotedesc)
 				stream_desc = sal_media_description_find_best_stream(remotedesc, SalAudio);
 
-		call->audiostream=audiostream=audio_stream_new2(linphone_call_get_bind_ip_for_stream(call,call->main_audio_stream_index),
+		call->audiostream=audiostream=audio_stream_new2(lc->factory, linphone_call_get_bind_ip_for_stream(call,call->main_audio_stream_index),
 				multicast_role ==  SalMulticastReceiver ? stream_desc->rtp_port : call->media_ports[call->main_audio_stream_index].rtp_port,
 				multicast_role ==  SalMulticastReceiver ? 0 /*disabled for now*/ : call->media_ports[call->main_audio_stream_index].rtcp_port);
 		if (multicast_role == SalMulticastReceiver)
@@ -2353,7 +2353,8 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 		setup_dtls_params(call, &audiostream->ms);
 		media_stream_reclaim_sessions(&audiostream->ms, &call->sessions[call->main_audio_stream_index]);
 	}else{
-		call->audiostream=audio_stream_new_with_sessions(&call->sessions[call->main_audio_stream_index]);
+		call->audiostream=audio_stream_new_with_sessions(lc->factory, &call->sessions[call->main_audio_stream_index]);
+
 	}
 	audiostream=call->audiostream;
 	if (call->media_ports[call->main_audio_stream_index].rtp_port==-1){
@@ -2439,7 +2440,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			if (remotedesc)
 					stream_desc = sal_media_description_find_best_stream(remotedesc, SalVideo);
 
-			call->videostream=video_stream_new2(linphone_call_get_bind_ip_for_stream(call,call->main_video_stream_index),
+			call->videostream=video_stream_new2(lc->factory, linphone_call_get_bind_ip_for_stream(call,call->main_video_stream_index),
 					multicast_role ==  SalMulticastReceiver ? stream_desc->rtp_port : call->media_ports[call->main_video_stream_index].rtp_port,
 					multicast_role ==  SalMulticastReceiver ?  0 /*disabled for now*/ : call->media_ports[call->main_video_stream_index].rtcp_port);
 			if (multicast_role == SalMulticastReceiver)
@@ -2452,7 +2453,7 @@ void linphone_call_init_video_stream(LinphoneCall *call){
 			setup_dtls_params(call, &call->videostream->ms);
 			media_stream_reclaim_sessions(&call->videostream->ms, &call->sessions[call->main_video_stream_index]);
 		}else{
-			call->videostream=video_stream_new_with_sessions(&call->sessions[call->main_video_stream_index]);
+			call->videostream=video_stream_new_with_sessions(lc->factory, &call->sessions[call->main_video_stream_index]);
 		}
 
 		if (call->media_ports[call->main_video_stream_index].rtp_port==-1){
@@ -2505,7 +2506,7 @@ void linphone_call_init_text_stream(LinphoneCall *call){
 		if (call->op) remotedesc = sal_call_get_remote_media_description(call->op);
 		if (remotedesc) stream_desc = sal_media_description_find_best_stream(remotedesc, SalText);
 
-		call->textstream = textstream = text_stream_new2(linphone_call_get_bind_ip_for_stream(call,call->main_text_stream_index),
+		call->textstream = textstream = text_stream_new2(lc->factory, linphone_call_get_bind_ip_for_stream(call,call->main_text_stream_index),
 				multicast_role ==  SalMulticastReceiver ? stream_desc->rtp_port : call->media_ports[call->main_text_stream_index].rtp_port,
 				multicast_role ==  SalMulticastReceiver ? 0 /*disabled for now*/ : call->media_ports[call->main_text_stream_index].rtcp_port);
 		if (multicast_role == SalMulticastReceiver)
@@ -2517,7 +2518,7 @@ void linphone_call_init_text_stream(LinphoneCall *call){
 		setup_dtls_params(call, &textstream->ms);
 		media_stream_reclaim_sessions(&textstream->ms, &call->sessions[call->main_text_stream_index]);
 	} else {
-		call->textstream = text_stream_new_with_sessions(&call->sessions[call->main_text_stream_index]);
+		call->textstream = text_stream_new_with_sessions(lc->factory, &call->sessions[call->main_text_stream_index]);
 	}
 	textstream = call->textstream;
 	if (call->media_ports[call->main_text_stream_index].rtp_port == -1) {
@@ -2942,7 +2943,7 @@ static RtpSession * create_audio_rtp_io_session(LinphoneCall *call) {
 	if (pt != NULL) {
 		call->rtp_io_audio_profile = rtp_profile_new("RTP IO audio profile");
 		rtp_profile_set_payload(call->rtp_io_audio_profile, ptnum, payload_type_clone(pt));
-		rtp_session = ms_create_duplex_rtp_session(local_ip, local_port, -1);
+		rtp_session = ms_create_duplex_rtp_session(local_ip, local_port, -1, ms_factory_get_mtu(lc->factory));
 		rtp_session_set_profile(rtp_session, call->rtp_io_audio_profile);
 		rtp_session_set_remote_addr_and_port(rtp_session, remote_ip, remote_port, -1);
 		rtp_session_enable_rtcp(rtp_session, FALSE);
@@ -3143,7 +3144,7 @@ static RtpSession * create_video_rtp_io_session(LinphoneCall *call) {
 	if (pt != NULL) {
 		call->rtp_io_video_profile = rtp_profile_new("RTP IO video profile");
 		rtp_profile_set_payload(call->rtp_io_video_profile, ptnum, payload_type_clone(pt));
-		rtp_session = ms_create_duplex_rtp_session(local_ip, local_port, -1);
+		rtp_session = ms_create_duplex_rtp_session(local_ip, local_port, -1, ms_factory_get_mtu(lc->factory));
 		rtp_session_set_profile(rtp_session, call->rtp_io_video_profile);
 		rtp_session_set_remote_addr_and_port(rtp_session, remote_ip, remote_port, -1);
 		rtp_session_enable_rtcp(rtp_session, FALSE);
@@ -4772,7 +4773,7 @@ MSWebCam *linphone_call_get_video_device(const LinphoneCall *call) {
 	LinphoneCallState state = linphone_call_get_state(call);
 	bool_t paused = (state == LinphoneCallPausing) || (state == LinphoneCallPaused);
 	if (paused || call->all_muted || (call->camera_enabled == FALSE))
-		return get_nowebcam_device();
+		return get_nowebcam_device(call->core->factory);
 	else
 		return call->core->video_conf.device;
 }

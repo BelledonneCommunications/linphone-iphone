@@ -41,25 +41,25 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	ms_filter_call_method(ecc->sndread,MS_FILTER_GET_SAMPLE_RATE,&rate);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_SET_NCHANNELS,&ecc_channels);
 	ms_filter_call_method(ecc->sndread,MS_FILTER_GET_NCHANNELS,&channels);
-	ecc->read_resampler=ms_filter_new(MS_RESAMPLE_ID);
+	ecc->read_resampler=ms_factory_create_filter(ecc->factory, MS_RESAMPLE_ID);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_SAMPLE_RATE,&rate);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_NCHANNELS,&ecc_channels);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_NCHANNELS,&channels);
 	
 	
-	ecc->det=ms_filter_new(MS_TONE_DETECTOR_ID);
+	ecc->det=ms_factory_create_filter(ecc->factory, MS_TONE_DETECTOR_ID);
 	ms_filter_call_method(ecc->det,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
-	ecc->rec=ms_filter_new(MS_VOID_SINK_ID);
+	ecc->rec=ms_factory_create_filter(ecc->factory, MS_VOID_SINK_ID);
 
 	ms_filter_link(ecc->sndread,0,ecc->read_resampler,0);
 	ms_filter_link(ecc->read_resampler,0,ecc->det,0);
 	ms_filter_link(ecc->det,0,ecc->rec,0);
 
-	ecc->play=ms_filter_new(MS_VOID_SOURCE_ID);
-	ecc->gen=ms_filter_new(MS_DTMF_GEN_ID);
+	ecc->play=ms_factory_create_filter(ecc->factory, MS_VOID_SOURCE_ID);
+	ecc->gen=ms_factory_create_filter(ecc->factory, MS_DTMF_GEN_ID);
 	ms_filter_call_method(ecc->gen,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
-	ecc->write_resampler=ms_filter_new(MS_RESAMPLE_ID);
+	ecc->write_resampler=ms_factory_create_filter(ecc->factory, MS_RESAMPLE_ID);
 	ecc->sndwrite=ms_snd_card_create_writer(ecc->play_card);
 	
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
@@ -281,7 +281,7 @@ static void  * ecc_thread(void *p){
 	return NULL;
 }
 
-EcCalibrator * ec_calibrator_new(MSSndCard *play_card, MSSndCard *capt_card, unsigned int rate, LinphoneEcCalibrationCallback cb,
+EcCalibrator * ec_calibrator_new(MSFactory *factory, MSSndCard *play_card, MSSndCard *capt_card, unsigned int rate, LinphoneEcCalibrationCallback cb,
 				 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data){
 	EcCalibrator *ecc=ms_new0(EcCalibrator,1);
 
@@ -292,6 +292,7 @@ EcCalibrator * ec_calibrator_new(MSSndCard *play_card, MSSndCard *capt_card, uns
 	ecc->audio_uninit_cb=audio_uninit_cb;
 	ecc->capt_card=capt_card;
 	ecc->play_card=play_card;
+	ecc->factory=factory;
 	return ecc;
 }
 
@@ -317,7 +318,7 @@ int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibration
 		return -1;
 	}
 	rate = lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
-	lc->ecc=ec_calibrator_new(lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,audio_init_cb,audio_uninit_cb,cb_data);
+	lc->ecc=ec_calibrator_new(lc->factory, lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,audio_init_cb,audio_uninit_cb,cb_data);
 	lc->ecc->play_cool_tones = lp_config_get_int(lc->config, "sound", "ec_calibrator_cool_tones", 0);
 	ec_calibrator_start(lc->ecc);
 	return 0;

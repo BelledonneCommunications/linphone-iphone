@@ -61,8 +61,10 @@ static void drag_data_received(GtkWidget *widget, GdkDragContext *context, gint 
 			datalen--;
 		}
 		if (player){
+
 			const char* filepath = (strstr(path,"file://")==path) ? path+strlen("file://") : path;
 			if (linphone_player_open(player,filepath,on_end_of_play,NULL)==0){
+
 				linphone_player_start(player);
 			}else{
 				GtkWidget *warn=gtk_message_dialog_new(GTK_WINDOW(widget),GTK_DIALOG_MODAL|GTK_DIALOG_DESTROY_WITH_PARENT,

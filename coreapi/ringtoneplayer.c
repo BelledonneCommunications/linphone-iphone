@@ -19,9 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "private.h"
+#include <mediastreamer2/msfactory.h>
 
-int linphone_ringtoneplayer_start(LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms) {
-	return linphone_ringtoneplayer_start_with_cb(rp, card, ringtone, loop_pause_ms, NULL, NULL);
+int linphone_ringtoneplayer_start(MSFactory *factory, LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms) {
+	return linphone_ringtoneplayer_start_with_cb(factory, rp, card, ringtone, loop_pause_ms, NULL, NULL);
 }
 
 #ifdef __ios
@@ -36,7 +37,7 @@ void linphone_ringtoneplayer_destroy(LinphoneRingtonePlayer* rp) {
 	linphone_ringtoneplayer_ios_destroy(rp);
 }
 
-int linphone_ringtoneplayer_start_with_cb(LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms, LinphoneRingtonePlayerFunc end_of_ringtone, void * user_data) {
+int linphone_ringtoneplayer_start_with_cb(MSFactory* f, LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms, LinphoneRingtonePlayerFunc end_of_ringtone, void * user_data) {
 	if (linphone_ringtoneplayer_is_started(rp)) {
 		ms_message("the local ringtone is already started");
 		return 2;
@@ -83,7 +84,7 @@ static void notify_end_of_ringtone(void *ud, MSFilter *f, unsigned int event, vo
 	}
 }
 
-int linphone_ringtoneplayer_start_with_cb(LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms, LinphoneRingtonePlayerFunc end_of_ringtone, void * user_data) {
+int linphone_ringtoneplayer_start_with_cb(MSFactory *factory, LinphoneRingtonePlayer* rp, MSSndCard* card, const char* ringtone, int loop_pause_ms, LinphoneRingtonePlayerFunc end_of_ringtone, void * user_data) {
 	if (linphone_ringtoneplayer_is_started(rp)) {
 		ms_message("the local ringtone is already started");
 		return 2;
@@ -92,7 +93,7 @@ int linphone_ringtoneplayer_start_with_cb(LinphoneRingtonePlayer* rp, MSSndCard*
 		ms_message("Starting local ringtone...");
 		rp->end_of_ringtone = end_of_ringtone;
 		rp->end_of_ringtone_ud = user_data;
-		rp->ringstream=ring_start_with_cb(ringtone,loop_pause_ms,card,notify_end_of_ringtone,rp);
+		rp->ringstream=ring_start_with_cb(factory, ringtone,loop_pause_ms,card,notify_end_of_ringtone,rp);
 		return rp->ringstream != NULL ? 0 : 1;
 	}
 	return 3;

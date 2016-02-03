@@ -38,15 +38,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONE_HOSTNAME_SIZE 128
 
 #ifndef LINPHONE_PUBLIC
-	#define LINPHONE_PUBLIC MS2_PUBLIC
+#define LINPHONE_PUBLIC MS2_PUBLIC
 #endif
 
 #ifndef LINPHONE_DEPRECATED
-#if defined(_MSC_VER)
-	#define LINPHONE_DEPRECATED __declspec(deprecated)
-#else
-	#define LINPHONE_DEPRECATED __attribute__ ((deprecated))
-#endif
+#define LINPHONE_DEPRECATED MS2_DEPRECATED
 #endif
 
 
@@ -3259,6 +3255,10 @@ LINPHONE_PUBLIC void linphone_core_set_ring_during_incoming_early_media(Linphone
 LINPHONE_PUBLIC bool_t linphone_core_get_ring_during_incoming_early_media(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC int linphone_core_preview_ring(LinphoneCore *lc, const char *ring,LinphoneCoreCbFunc func,void * userdata);
+/**
+ * Returns the MSFactory (mediastreamer2 factory) used by the LinphoneCore to control mediastreamer2 library.
+**/
+LINPHONE_PUBLIC MSFactory* linphone_core_get_ms_factory(LinphoneCore* lc);
 LINPHONE_PUBLIC int linphone_core_play_local(LinphoneCore *lc, const char *audiofile);
 LINPHONE_PUBLIC	void linphone_core_enable_echo_cancellation(LinphoneCore *lc, bool_t val);
 LINPHONE_PUBLIC	bool_t linphone_core_echo_cancellation_enabled(LinphoneCore *lc);

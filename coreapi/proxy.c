@@ -130,6 +130,50 @@ LinphoneProxyConfig *linphone_proxy_config_new() {
 	return linphone_core_create_proxy_config(NULL);
 }
 
+static char * append_linphone_address(LinphoneAddress *addr,char *out) {
+	char *res = out;
+	if (addr) {
+		char *tmp;
+		tmp = linphone_address_as_string(addr);
+		res = ms_strcat_printf(out, "%s",tmp);
+		ms_free(tmp);
+	}
+	return res;
+};
+static char * append_string(const char * string,char *out) {
+	char *res = out;
+	if (string) {
+		res = ms_strcat_printf(out, "%s",string);
+	}
+	return res;
+}
+/*
+ * return true if computed value has changed
+ */
+bool_t linphone_proxy_config_compute_publish_params_hash(LinphoneProxyConfig * cfg) {
+	char * source = NULL;
+	char hash[33];
+	char saved;
+	unsigned long long previous_hash[2];
+	previous_hash[0] = cfg->previous_publish_config_hash[0];
+	previous_hash[1] = cfg->previous_publish_config_hash[1];
+	
+	source = ms_strcat_printf(source, "%i",cfg->privacy);
+	source=append_linphone_address(cfg->identity_address, source);
+	source=append_string(cfg->reg_proxy,source);
+	source=append_string(cfg->reg_route,source);
+	source=append_string(cfg->realm,source);
+	source = ms_strcat_printf(source, "%i",cfg->publish_expires);
+	source = ms_strcat_printf(source, "%i",cfg->publish);
+	belle_sip_auth_helper_compute_ha1(source, "dummy", "dummy", hash);
+	ms_free(source);
+	saved = hash[16];
+	hash[16] = '\0';
+	cfg->previous_publish_config_hash[0] = strtoull(hash, (char **)NULL, 16);
+	hash[16] = saved;
+	cfg->previous_publish_config_hash[1] = strtoull(&hash[16], (char **)NULL, 16);
+	return previous_hash[0] != cfg->previous_publish_config_hash[0] || previous_hash[1] != cfg->previous_publish_config_hash[1];
+}
 static void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneProxyConfig);
@@ -152,9 +196,9 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *cfg){
 		sal_op_release(cfg->op);
 		cfg->op=NULL;
 	}
-	if (cfg->publish_op){
-		sal_op_release(cfg->publish_op);
-		cfg->publish_op=NULL;
+	if (cfg->long_term_event){
+		linphone_event_unref(cfg->long_term_event);
+		cfg->long_term_event=NULL;
 	}
 }
 
@@ -320,15 +364,13 @@ void linphone_proxy_config_pause_register(LinphoneProxyConfig *cfg){
 }
 
 void linphone_proxy_config_edit(LinphoneProxyConfig *cfg){
-	if (cfg->publish && cfg->publish_op){
-			/*unpublish*/
-			sal_publish_presence(cfg->publish_op,NULL,NULL,0,(SalPresenceModel *)NULL);
-			sal_op_release(cfg->publish_op);
-			cfg->publish_op=NULL;
-	}
 	/*store current config related to server location*/
 	linphone_proxy_config_store_server_config(cfg);
-
+	linphone_proxy_config_compute_publish_params_hash(cfg);
+	
+	if (cfg->publish && cfg->long_term_event){
+		linphone_event_pause_publish(cfg->long_term_event);
+	}
 	/*stop refresher in any case*/
 	linphone_proxy_config_pause_register(cfg);
 }
@@ -351,9 +393,10 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 		cfg->pending_contact=contact_addr;
 
 	}
-	if (cfg->publish_op){
-		sal_op_release(cfg->publish_op);
-		cfg->publish_op=NULL;
+	if (cfg->long_term_event){ /*might probably do better*/
+		linphone_event_terminate(cfg->long_term_event);
+		linphone_event_unref(cfg->long_term_event);
+		cfg->long_term_event=NULL;
 	}
 	if (cfg->op){
 		sal_op_release(cfg->op);
@@ -1001,6 +1044,26 @@ int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 			sal_op_unref(cfg->op); /*but we keep refresher to handle authentication if needed*/
 			cfg->op=NULL;
 		}
+		if (cfg->long_term_event) {
+			if (res == LinphoneProxyConfigAddressDifferent) {
+				_linphone_proxy_config_unpublish(cfg);
+			}
+			
+		}
+	}
+	if (linphone_proxy_config_compute_publish_params_hash(cfg)) {
+		ms_message("Publish params have changed on proxy config [%p]",cfg);
+		if (cfg->long_term_event) {
+			if (!cfg->publish) {
+				/*publish is terminated*/
+				linphone_event_terminate(cfg->long_term_event);
+			}
+			linphone_event_unref(cfg->long_term_event);
+			cfg->long_term_event = NULL;
+		}
+		if (cfg->publish) cfg->send_publish=TRUE;
+	} else {
+		ms_message("Publish params have not changed on proxy config [%p]",cfg);
 	}
 	cfg->commit=TRUE;
 	linphone_proxy_config_write_all_to_config_file(cfg->lc);
@@ -1021,26 +1084,44 @@ void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePresenceModel *presence){
 	int err=0;
-
+	
 	if (proxy->state==LinphoneRegistrationOk || proxy->state==LinphoneRegistrationCleared){
-		if (proxy->publish_op==NULL){
-			const LinphoneAddress *to=linphone_proxy_config_get_identity_address(proxy);
-			proxy->publish_op=sal_op_new(proxy->lc->sal);
-
-			linphone_configure_op(proxy->lc, proxy->publish_op,
-				to, NULL, FALSE);
-
-			if (lp_config_get_int(proxy->lc->config,"sip","publish_msg_with_contact",0)){
-				sal_op_set_contact_address(proxy->publish_op,linphone_proxy_config_get_identity_address(proxy));
-			}
+		LinphoneContent *content;
+		char *presence_body;
+		if (proxy->long_term_event==NULL){
+			proxy->long_term_event = linphone_core_create_publish(proxy->lc
+										 , linphone_proxy_config_get_identity_address(proxy)
+										 , "presence"
+										 , linphone_proxy_config_get_publish_expires(proxy));
 		}
-		err=sal_publish_presence(proxy->publish_op
-									,NULL
-									,NULL
-									,linphone_proxy_config_get_publish_expires(proxy)
-									,(SalPresenceModel *)presence);
+		proxy->long_term_event->internal = TRUE;
+		
+		if (linphone_presence_model_get_presentity(presence) == NULL) {
+			ms_message("No presentity set for model [%p], using identity from proxy config [%p]", presence, proxy);
+			linphone_presence_model_set_presentity(presence,linphone_proxy_config_get_identity_address(proxy));
+		}
+		
+		if (!(presence_body = linphone_presence_model_to_xml(presence))) {
+			ms_error("Cannot publish presence model [%p] for proxy config [%p] because of xml serilization error",presence,proxy);
+			return -1;
+		}
+		
+		content = linphone_content_new();
+		linphone_content_set_buffer(content,presence_body,strlen(presence_body));
+		linphone_content_set_type(content, "application");
+		linphone_content_set_subtype(content,"pidf+xml");
+		err = linphone_event_send_publish(proxy->long_term_event, content);
+		linphone_content_unref(content);
 	}else proxy->send_publish=TRUE; /*otherwise do not send publish if registration is in progress, this will be done later*/
 	return err;
+}
+
+void _linphone_proxy_config_unpublish(LinphoneProxyConfig *obj) {
+	if (obj->long_term_event
+		&& (linphone_event_get_publish_state(obj->long_term_event) == LinphonePublishOk ||
+					(linphone_event_get_publish_state(obj->long_term_event)  == LinphonePublishProgress && obj->publish_expires != 0))) {
+		linphone_event_unpublish(obj->long_term_event);
+	}
 }
 
 const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *cfg){
@@ -1376,7 +1457,6 @@ void linphone_proxy_config_update(LinphoneProxyConfig *cfg){
 		if (can_register(cfg)){
 			linphone_proxy_config_register(cfg);
 			cfg->commit=FALSE;
-			if (cfg->publish) cfg->send_publish=TRUE;
 		}
 	}
 	if (cfg->send_publish && (cfg->state==LinphoneRegistrationOk || cfg->state==LinphoneRegistrationCleared)){

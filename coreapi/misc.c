@@ -94,8 +94,9 @@ void linphone_core_set_payload_type_number(LinphoneCore *lc, PayloadType *pt, in
 }
 
 const char *linphone_core_get_payload_type_description(LinphoneCore *lc, PayloadType *pt){
-	if (ms_filter_codec_supported(pt->mime_type)){
-		MSFilterDesc *desc=ms_filter_get_encoder(pt->mime_type);
+	//if (ms_filter_codec_supported(pt->mime_type)){
+	if (ms_factory_codec_supported(lc->factory, pt->mime_type)){
+		MSFilterDesc *desc=ms_factory_get_encoder(lc->factory, pt->mime_type);
 #ifdef ENABLE_NLS
 		return dgettext("mediastreamer",desc->text);
 #else
@@ -260,7 +261,7 @@ bool_t linphone_core_check_payload_type_usability(LinphoneCore *lc, const Payloa
 		&& linphone_core_echo_cancellation_enabled(lc)
 		&& (pt->clock_rate!=16000 && pt->clock_rate!=8000)
 		&& strcasecmp(pt->mime_type,"opus")!=0
-		&& ms_filter_lookup_by_name("MSWebRTCAEC")!=NULL){
+		&& ms_factory_lookup_filter_by_name(lc->factory, "MSWebRTCAEC")!=NULL){
 		ms_warning("Payload type %s/%i cannot be used because software echo cancellation is required but is unable to operate at this rate.",
 			   pt->mime_type,pt->clock_rate);
 		ret=FALSE;
@@ -1831,7 +1832,7 @@ const char ** linphone_core_get_supported_file_formats(LinphoneCore *core){
 	if (core->supported_formats==NULL){
 		core->supported_formats=ms_malloc0(3*sizeof(char*));
 		core->supported_formats[0]=wav;
-        if (ms_factory_lookup_filter_by_id(ms_factory_get_fallback(),MS_MKV_RECORDER_ID)){
+        if (ms_factory_lookup_filter_by_id(core->factory,MS_MKV_RECORDER_ID)){
 			core->supported_formats[1]=mkv;
 		}
 	}

@@ -38,9 +38,16 @@ extern "C" {
  */
 
 /**
+ * LinphoneConference class
+ */
+typedef struct _LinphoneConference LinphoneConference;
+/**
  * Parameters for initialization of conferences
  */
 typedef struct _LinphoneCorferenceParams LinphoneConferenceParams;
+
+
+
 
 /**
  * Create a #LinphoneConferenceParams with default parameters set.
@@ -73,10 +80,7 @@ LINPHONE_PUBLIC bool_t linphone_conference_params_video_requested(const Linphone
 
 
 
-/**
- * LinphoneConference class
- */
-typedef struct _LinphoneConference LinphoneConference;
+
 
 /**
  * Remove a participant from a conference

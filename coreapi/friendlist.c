@@ -723,7 +723,7 @@ void linphone_friend_list_subscription_state_changed(LinphoneCore *lc, LinphoneE
 				   , lev
 				   , list);
 		
-		if (state == LinphoneSubscriptionOutgoingProgress) {
+		if (state == LinphoneSubscriptionOutgoingProgress && linphone_event_get_reason(lev) == LinphoneReasonNoMatch) {
 			ms_message("Resseting version count for friend list [%p]",list);
 			list->expected_notification_version = 0;
 		}
