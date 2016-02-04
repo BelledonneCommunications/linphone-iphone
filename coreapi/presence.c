@@ -1460,7 +1460,7 @@ static LinphonePresenceModel * process_pidf_xml_presence_notification(xmlparsing
 
 
 void linphone_core_add_subscriber(LinphoneCore *lc, const char *subscriber, SalOp *op){
-	LinphoneFriend *fl=linphone_friend_new_with_address(subscriber);
+	LinphoneFriend *fl=linphone_core_create_friend_with_address(lc,subscriber);
 	char *tmp;
 	
 	if (fl==NULL) return ;
