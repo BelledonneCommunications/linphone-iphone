@@ -2268,4 +2268,10 @@ public interface LinphoneCore {
 	 */
 	public void setMediaNetworkReachable(boolean isReachable);
 
+	/**
+	 * Returns the mediastreamer2 (media stack) factory object used by the LinphoneCore. This may be useful to perform
+	 * some advanced media-related configuration options.
+	**/
+	org.linphone.mediastream.Factory getMSFactory();
+
 }

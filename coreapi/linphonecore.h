@@ -3855,6 +3855,14 @@ LINPHONE_PUBLIC void linphone_core_set_user_certificates_path(LinphoneCore *lc, 
 LINPHONE_PUBLIC const char *linphone_core_get_user_certificates_path(LinphoneCore *lc);
 
 /**
+ * Reload mediastreamer2 plugins from specified directory.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] directory the path from where plugins are to be loaded, pass NULL to use default (compile-time determined) plugin directory.
+ * @ingroup initializing
+ */
+LINPHONE_PUBLIC void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path);
+
+/**
  * Search from the list of current calls if a remote address match uri
  * @ingroup call_control
  * @param lc

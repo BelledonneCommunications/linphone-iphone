@@ -1158,8 +1158,7 @@ static bool_t linphone_core_codec_supported(LinphoneCore *lc, SalStreamType type
 	} else if (type == SalText) {
 		return TRUE;
 	}
-	//ms_filter_codec_supported(mime)
-	return ms_factory_codec_supported (lc->factory, mime );
+	return ms_factory_codec_supported(lc->factory, mime);
 }
 
 
@@ -1207,24 +1206,44 @@ static bool_t get_codec(LinphoneCore *lc, SalStreamType type, int index, Payload
 	return TRUE;
 }
 
+static SalStreamType payload_type_get_stream_type(const PayloadType *pt){
+	switch(pt->type){
+		case PAYLOAD_AUDIO_PACKETIZED:
+		case PAYLOAD_AUDIO_CONTINUOUS:
+			return SalAudio;
+		break;
+		case PAYLOAD_VIDEO:
+			return SalVideo;
+		break;
+		case PAYLOAD_TEXT:
+			return SalText;
+		break;
+	}
+	return SalOther;
+}
+
 /*this function merges the payload types from the codec default list with the list read from configuration file.
  * If a new codec becomes supported in Liblinphone or if the list from configuration file is empty or incomplete, all the supported codecs are added
  * automatically. This 'l' list is entirely destroyed and rewritten.*/
-static MSList *add_missing_codecs(const MSList *default_list, MSList *l){
+static MSList *add_missing_supported_codecs(LinphoneCore *lc, const MSList *default_list, MSList *l){
 	const MSList *elem;
 	MSList *newlist;
+	PayloadType *last_inserted = NULL;
 
 	for(elem=default_list; elem!=NULL; elem=elem->next){
 		MSList *elem2=ms_list_find(l,elem->data);
 		if (!elem2){
 			PayloadType *pt=(PayloadType*)elem->data;
 			/*this codec from default list should be inserted in the list*/
-			if (!elem->prev){
+			
+			if (!linphone_core_codec_supported(lc, payload_type_get_stream_type(pt), pt->mime_type)) continue;
+			if (!last_inserted){
 				l=ms_list_prepend(l,pt);
 			}else{
-				const MSList *after=ms_list_find(l,elem->prev->data);
+				const MSList *after=ms_list_find(l,last_inserted);
 				l=ms_list_insert(l, after->next, pt);
 			}
+			last_inserted = pt;
 			ms_message("Supported codec %s/%i fmtp=%s automatically added to codec list.", pt->mime_type,
 				   pt->clock_rate, pt->recv_fmtp ? pt->recv_fmtp : "");
 		}
@@ -1262,7 +1281,7 @@ static void codecs_config_read(LinphoneCore *lc)
 		}
 	}
 	if( lp_config_get_int(lc->config, "misc", "add_missing_audio_codecs", 1) == 1 ){
-		audio_codecs=add_missing_codecs(lc->default_audio_codecs,audio_codecs);
+		audio_codecs=add_missing_supported_codecs(lc, lc->default_audio_codecs,audio_codecs);
 	}
 
 	for (i=0;get_codec(lc,SalVideo,i,&pt);i++){
@@ -1271,7 +1290,7 @@ static void codecs_config_read(LinphoneCore *lc)
 		}
 	}
 	if( lp_config_get_int(lc->config, "misc", "add_missing_video_codecs", 1) == 1 ){
-		video_codecs=add_missing_codecs(lc->default_video_codecs,video_codecs);
+		video_codecs=add_missing_supported_codecs(lc, lc->default_video_codecs,video_codecs);
 	}
 
 	for (i=0;get_codec(lc,SalText,i,&pt);i++){
@@ -1279,7 +1298,7 @@ static void codecs_config_read(LinphoneCore *lc)
 			text_codecs=codec_append_if_new(text_codecs, pt);
 		}
 	}
-	text_codecs = add_missing_codecs(lc->default_text_codecs, text_codecs);
+	text_codecs = add_missing_supported_codecs(lc, lc->default_text_codecs, text_codecs);
 
 	linphone_core_set_audio_codecs(lc,audio_codecs);
 	linphone_core_set_video_codecs(lc,video_codecs);
@@ -1462,20 +1481,18 @@ const char * linphone_core_get_version(void){
 
 static void linphone_core_register_payload_type(LinphoneCore *lc, const PayloadType *const_pt, const char *recv_fmtp, bool_t enabled){
 	MSList **codec_list = const_pt->type==PAYLOAD_VIDEO ? &lc->default_video_codecs : const_pt->type==PAYLOAD_TEXT ? &lc->default_text_codecs : &lc->default_audio_codecs;
-	if (linphone_core_codec_supported(lc, (const_pt->type == PAYLOAD_VIDEO) ? SalVideo : const_pt->type == PAYLOAD_TEXT ? SalText : SalAudio, const_pt->mime_type)){
-		PayloadType *pt=payload_type_clone(const_pt);
-		int number=-1;
-		payload_type_set_enable(pt,enabled);
-		if (recv_fmtp!=NULL) payload_type_set_recv_fmtp(pt,recv_fmtp);
-		/*Set a number to the payload type from the statically defined (RFC3551) profile, if not static, -1 is returned
-		 and the payload type number will be determined dynamically later, at call time.*/
-		payload_type_set_number(pt,
-			(number=rtp_profile_find_payload_number(&av_profile, pt->mime_type, pt->clock_rate, pt->channels))
-		);
-		ms_message("Codec %s/%i fmtp=[%s] number=%i, enabled=%i) added to default capabilities.", pt->mime_type, pt->clock_rate,
-			   pt->recv_fmtp ? pt->recv_fmtp : "", number, (int)payload_type_enabled(pt));
-		*codec_list=ms_list_append(*codec_list,pt);
-	}
+	PayloadType *pt=payload_type_clone(const_pt);
+	int number=-1;
+	payload_type_set_enable(pt,enabled);
+	if (recv_fmtp!=NULL) payload_type_set_recv_fmtp(pt,recv_fmtp);
+	/*Set a number to the payload type from the statically defined (RFC3551) profile, if not static, -1 is returned
+		and the payload type number will be determined dynamically later, at call time.*/
+	payload_type_set_number(pt,
+		(number=rtp_profile_find_payload_number(&av_profile, pt->mime_type, pt->clock_rate, pt->channels))
+	);
+	ms_message("Codec %s/%i fmtp=[%s] number=%i, enabled=%i) added to the list of possible codecs.", pt->mime_type, pt->clock_rate,
+			pt->recv_fmtp ? pt->recv_fmtp : "", number, (int)payload_type_enabled(pt));
+	*codec_list=ms_list_append(*codec_list,pt);
 }
 
 static void linphone_core_register_static_payloads(LinphoneCore *lc){
@@ -1523,6 +1540,12 @@ static void misc_config_read(LinphoneCore *lc) {
 		sal_set_uuid(lc->sal, uuid);
 
 	lc->user_certificates_path=ms_strdup(lp_config_get_string(config,"misc","user_certificates_path","."));
+}
+
+void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path){
+	if (path) ms_factory_set_plugins_dir(lc->factory, path);
+	ms_factory_init_plugins(lc->factory);
+	codecs_config_read(lc);
 }
 
 static void linphone_core_start(LinphoneCore * lc) {
