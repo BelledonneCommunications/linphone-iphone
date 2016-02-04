@@ -201,6 +201,7 @@ namespace belledonnecomm {
 		Mutex mMutex;
 		std::queue<Event> mEvq;
 		char mLocalAddr[64];
+		unsigned long mLongRunningTaskId;
 	};
 
 /**

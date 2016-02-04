@@ -47,7 +47,10 @@ void TunnelManager::addServer(const char *ip, int port) {
 
 void TunnelManager::cleanServers() {
 	mServerAddrs.clear();
-
+	if (mLongRunningTaskId > 0) {
+		sal_end_background_task(mLongRunningTaskId);
+		mLongRunningTaskId = 0;
+	}
 	UdpMirrorClientList::iterator it;
 	for (it = mUdpMirrorClients.begin(); it != mUdpMirrorClients.end();) {
 		UdpMirrorClient& s=*it++;
@@ -135,7 +138,8 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :
 	mTunnelizeSipPackets(true),
 	mTunnelClient(NULL),
 	mHttpProxyPort(0),
-	mVTable(NULL)
+	mVTable(NULL),
+	mLongRunningTaskId(0)
 {
 	linphone_core_add_iterate_hook(mCore,(LinphoneCoreIterateHook)sOnIterate,this);
 	mTransportFactories.audio_rtcp_func=sCreateRtpTransport;
@@ -153,6 +157,10 @@ TunnelManager::TunnelManager(LinphoneCore* lc) :
 }
 
 TunnelManager::~TunnelManager(){
+	if (mLongRunningTaskId > 0) {
+		sal_end_background_task(mLongRunningTaskId);
+		mLongRunningTaskId = 0;
+	}
 	for(UdpMirrorClientList::iterator udpMirror = mUdpMirrorClients.begin(); udpMirror != mUdpMirrorClients.end(); udpMirror++) {
 		udpMirror->stop();
 	}
@@ -248,6 +256,10 @@ void TunnelManager::setMode(LinphoneTunnelMode mode) {
 
 void TunnelManager::tunnelCallback(bool connected, TunnelManager *zis){
 	Event ev;
+	if (zis->mLongRunningTaskId > 0) {
+		sal_end_background_task(zis->mLongRunningTaskId);
+		zis->mLongRunningTaskId = 0;
+	}
 	ev.mType=TunnelEvent;
 	ev.mData.mConnected=connected;
 	zis->postEvent(ev);
@@ -334,6 +346,8 @@ void TunnelManager::processUdpMirrorEvent(const Event &ev){
 		mCurrentUdpMirrorClient++;
 		if (mCurrentUdpMirrorClient !=mUdpMirrorClients.end()) {
 			ms_message("TunnelManager: trying another UDP mirror");
+			if (mLongRunningTaskId == 0)
+				mLongRunningTaskId = sal_begin_background_task("Tunnel auto detect", NULL, NULL);
 			UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
 			lUdpMirrorClient.start(TunnelManager::sUdpMirrorClientCallback,(void*)this);
 		} else {
@@ -378,6 +392,8 @@ bool TunnelManager::startAutoDetection() {
 	}
 	ms_message("TunnelManager: Starting auto-detection");
 	mCurrentUdpMirrorClient = mUdpMirrorClients.begin();
+	if (mLongRunningTaskId == 0)
+		 mLongRunningTaskId = sal_begin_background_task("Tunnel auto detect", NULL, NULL);
 	UdpMirrorClient &lUdpMirrorClient=*mCurrentUdpMirrorClient;
 	lUdpMirrorClient.start(TunnelManager::sUdpMirrorClientCallback,(void*)this);
 	return true;
