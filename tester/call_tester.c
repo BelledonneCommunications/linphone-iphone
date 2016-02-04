@@ -1110,7 +1110,10 @@ static void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManag
 	}
 }
 
-static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
+static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports, bool_t forced_relay) {
+	linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
+	linphone_core_set_user_agent(marie->lc, "Natted Linphone", NULL);
+
 	if (callee_with_ice){
 		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
 	}
@@ -1127,6 +1130,10 @@ static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager
 		linphone_core_set_text_port(pauline->lc, -1);
 	}
 
+	if (forced_relay == TRUE) {
+		linphone_core_enable_forced_ice_relay(marie->lc, TRUE);
+		linphone_core_enable_forced_ice_relay(pauline->lc, TRUE);
+	}
 
 	if (!BC_ASSERT_TRUE(call(pauline,marie)))
 		return;
@@ -1136,24 +1143,28 @@ static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
 
-		BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+		if (forced_relay == TRUE) {
+			BC_ASSERT_TRUE(check_ice(pauline, marie, LinphoneIceStateRelayConnection));
+		} else {
+			BC_ASSERT_TRUE(check_ice(pauline,marie,LinphoneIceStateHostConnection));
+		}
 		check_nb_media_starts(pauline, marie, 1, 1);
 	}
 
 	liblinphone_tester_check_rtcp(marie,pauline);
 	/*then close the call*/
 	end_call(pauline, marie);
-
 }
-static void _call_with_ice(bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports) {
+
+static void _call_with_ice(bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports, bool_t forced_relay) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	_call_with_ice_base(pauline,marie,caller_with_ice,callee_with_ice,random_ports);
+	_call_with_ice_base(pauline,marie,caller_with_ice,callee_with_ice,random_ports,forced_relay);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
 static void call_with_ice(void){
-	_call_with_ice(TRUE,TRUE,FALSE);
+	_call_with_ice(TRUE,TRUE,FALSE,FALSE);
 }
 
 /*ICE is not expected to work in this case, however this should not crash*/
@@ -1177,15 +1188,19 @@ static void call_with_ice_no_sdp(void){
 }
 
 static void call_with_ice_random_ports(void){
-	_call_with_ice(TRUE,TRUE,TRUE);
+	_call_with_ice(TRUE,TRUE,TRUE,FALSE);
+}
+
+static void call_with_ice_forced_relay(void) {
+	_call_with_ice(TRUE, TRUE, TRUE, TRUE);
 }
 
 static void ice_to_not_ice(void){
-	_call_with_ice(TRUE,FALSE,FALSE);
+	_call_with_ice(TRUE,FALSE,FALSE,FALSE);
 }
 
 static void not_ice_to_ice(void){
-	_call_with_ice(FALSE,TRUE,FALSE);
+	_call_with_ice(FALSE,TRUE,FALSE,FALSE);
 }
 
 static void call_with_custom_headers(void) {
@@ -2426,7 +2441,7 @@ static void call_with_ice_video_to_novideo(void) {
 	linphone_core_set_video_policy(pauline->lc,&vpol);
 	vpol.automatically_initiate=FALSE;
 	linphone_core_set_video_policy(marie->lc,&vpol);
-	_call_with_ice_base(pauline,marie,TRUE,TRUE,TRUE);
+	_call_with_ice_base(pauline,marie,TRUE,TRUE,TRUE,FALSE);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -6072,6 +6087,7 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Call with ICE", call_with_ice, "ICE"),
 	TEST_ONE_TAG("Call with ICE without SDP", call_with_ice_no_sdp, "ICE"),
 	TEST_ONE_TAG("Call with ICE (random ports)", call_with_ice_random_ports, "ICE"),
+	TEST_ONE_TAG("Call with ICE (forced relay)", call_with_ice_forced_relay, "ICE"),
 	TEST_ONE_TAG("Call from ICE to not ICE", ice_to_not_ice, "ICE"),
 	TEST_ONE_TAG("Call from not ICE to ICE", not_ice_to_ice, "ICE"),
 	TEST_NO_TAG("Call with custom headers", call_with_custom_headers),

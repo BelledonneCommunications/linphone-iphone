@@ -624,6 +624,10 @@ const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc){
 	return lc->net_conf.stun_addrinfo;
 }
 
+void linphone_core_enable_forced_ice_relay(LinphoneCore *lc, bool_t enable) {
+	lc->forced_ice_relay = enable;
+}
+
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 {
 	char local_addr[64];
@@ -649,6 +653,8 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call)
 		return -1;
 	}
 	linphone_core_notify_display_status(lc, _("ICE local candidates gathering in progress..."));
+
+	ice_session_enable_forced_relay(call->ice_session, lc->forced_ice_relay);
 
 	/* Gather local host candidates. */
 	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {
