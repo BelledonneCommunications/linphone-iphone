@@ -32,7 +32,7 @@ static void publish_refresher_listener (belle_sip_refresher_t* refresher
 	}else if (status_code>=200){
 		belle_sip_header_t *sip_etag;
 		const char *sip_etag_string = NULL;
-		if ((sip_etag = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response), "SIP-ETag"))) {
+		if (response && (sip_etag = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response), "SIP-ETag"))) {
 			sip_etag_string = belle_sip_header_get_unparsed_value(sip_etag);
 		}
 		sal_op_set_entity_tag(op, sip_etag_string);
