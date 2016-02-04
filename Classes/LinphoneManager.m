@@ -72,7 +72,6 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
-extern void libmsilbc_init(MSFactory *factory);
 extern void libmsamr_init(MSFactory *factory);
 extern void libmsx264_init(MSFactory *factory);
 extern void libmsopenh264_init(MSFactory *factory);
@@ -1430,7 +1429,6 @@ static BOOL libStarted = FALSE;
 
 	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
 	MSFactory *f = linphone_core_get_ms_factory(theLinphoneCore);
-	libmsilbc_init(f);
 	libmssilk_init(f);
 	libmsamr_init(f);
 	libmsx264_init(f);
