@@ -1426,6 +1426,8 @@ static BOOL libStarted = FALSE;
 
 	theLinphoneCore = linphone_core_new_with_config(&linphonec_vtable, _configDb, (__bridge void *)(self));
 	LOGI(@"Create linphonecore %p", theLinphoneCore);
+	if ([@"toto" containsString:@"o"])
+		LOGE(@"lol");
 
 	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
 	MSFactory *f = linphone_core_get_ms_factory(theLinphoneCore);
@@ -1435,6 +1437,7 @@ static BOOL libStarted = FALSE;
 	libmsopenh264_init(f);
 	libmsbcg729_init(f);
 	libmswebrtc_init(f);
+	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
 
 	// Set audio assets
 	NSString *ring =
