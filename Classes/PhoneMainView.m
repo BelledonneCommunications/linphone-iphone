@@ -517,6 +517,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 							 animations:^{
 							   statusBarBG.backgroundColor = [UIColor colorWithWhite:0.935 alpha:1];
 							 }];
+		}
 	}
 #pragma deploymate pop
 }
