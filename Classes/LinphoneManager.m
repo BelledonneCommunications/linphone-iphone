@@ -1783,7 +1783,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
 	if (!lStatus && lNewRouteSize > 0) {
 		NSString *route = (__bridge NSString *)lNewRoute;
-		allow = ![route containsString:@"Heads"] && ![route isEqualToString:@"Lineout"];
+		allow = [route rangeOfString:@"Heads"].location == NSNotFound && ![route isEqualToString:@"Lineout"];
 		CFRelease(lNewRoute);
 	}
 	return allow;
