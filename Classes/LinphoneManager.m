@@ -278,6 +278,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
+#pragma deploymate push "ignored-api-availability"
 - (void)silentPushFailed:(NSTimer *)timer {
 	if (_silentPushCompletion) {
 		LOGI(@"silentPush failed, silentPushCompletion block: %p", _silentPushCompletion);
@@ -285,6 +286,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_silentPushCompletion = nil;
 	}
 }
+#pragma deploymate pop
 
 #pragma mark - Migration
 
@@ -599,14 +601,15 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		linphone_call_set_user_data(call, (void *)CFBridgingRetain(data));
 	}
 
+#pragma deploymate push "ignored-api-availability"
 	if (_silentPushCompletion) {
-
 		// we were woken up by a silent push. Call the completion handler with NEWDATA
 		// so that the push is notified to the user
 		LOGI(@"onCall - handler %p", _silentPushCompletion);
 		_silentPushCompletion(UIBackgroundFetchResultNewData);
 		_silentPushCompletion = nil;
 	}
+#pragma deploymate pop
 
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	NSString *address = [FastAddressBook displayNameForAddress:addr];
@@ -897,6 +900,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 #pragma mark - Text Received Functions
 
 - (void)onMessageReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room message:(LinphoneChatMessage *)msg {
+#pragma deploymate push "ignored-api-availability"
 	if (_silentPushCompletion) {
 		// we were woken up by a silent push. Call the completion handler with NEWDATA
 		// so that the push is notified to the user
@@ -904,6 +908,8 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 		_silentPushCompletion(UIBackgroundFetchResultNewData);
 		_silentPushCompletion = nil;
 	}
+#pragma deploymate pop
+
 	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(msg, "Call-ID")];
 	const LinphoneAddress *remoteAddress = linphone_chat_message_get_from_address(msg);
 	NSString *from = [FastAddressBook displayNameForAddress:remoteAddress];

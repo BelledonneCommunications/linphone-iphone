@@ -14,6 +14,7 @@
 //  This code is licensed under the BSD license that is available at: http://www.opensource.org/licenses/bsd-license.php
 //
 
+#pragma deploymate push "ignored-api-availability"
 #import "IASKPSTextFieldSpecifierViewCell.h"
 #import "IASKTextField.h"
 #import "IASKSettingsReader.h"
@@ -66,8 +67,6 @@
 	}
 	_textField.frame = textFieldFrame;
 }
-
-
-
+#pragma deploymate pop
 
 @end

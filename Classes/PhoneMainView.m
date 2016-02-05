@@ -496,28 +496,29 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)updateStatusBar:(UICompositeViewDescription *)to_view {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-	// In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
-	// status bar style for each transition to/from these views
-	BOOL toLightStatus = (to_view != NULL) && ![to_view darkBackground];
-	if (!toLightStatus) {
-		// black bg: white text on black background
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+#pragma deploymate push "ignored-api-availability"
+	if (UIDevice.currentDevice.systemVersion.doubleValue >= 7.) {
+		// In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
+		// status bar style for each transition to/from these views
+		BOOL toLightStatus = (to_view != NULL) && ![to_view darkBackground];
+		if (!toLightStatus) {
+			// black bg: white text on black background
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 
-		[UIView animateWithDuration:0.3f
-						 animations:^{
-						   statusBarBG.backgroundColor = [UIColor blackColor];
-						 }];
+			[UIView animateWithDuration:0.3f
+							 animations:^{
+							   statusBarBG.backgroundColor = [UIColor blackColor];
+							 }];
 
-	} else {
-		// light bg: black text on white bg
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-		[UIView animateWithDuration:0.3f
-						 animations:^{
-						   statusBarBG.backgroundColor = [UIColor colorWithWhite:0.935 alpha:1];
-						 }];
+		} else {
+			// light bg: black text on white bg
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+			[UIView animateWithDuration:0.3f
+							 animations:^{
+							   statusBarBG.backgroundColor = [UIColor colorWithWhite:0.935 alpha:1];
+							 }];
 	}
-#endif
+#pragma deploymate pop
 }
 
 - (void)fullScreen:(BOOL)enabled {

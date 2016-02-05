@@ -16,7 +16,7 @@
 	[super viewDidLoad];
 
 #pragma deploymate push "ignored-api-availability"
-	if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
+	if (UIDevice.currentDevice.systemVersion.doubleValue >= 7) {
 		// it's better to detect only pan from screen edges
 		UIScreenEdgePanGestureRecognizer *pan =
 			[[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self action:@selector(onLateralSwipe:)];
