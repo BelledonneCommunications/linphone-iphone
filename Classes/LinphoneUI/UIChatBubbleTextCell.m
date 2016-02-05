@@ -227,6 +227,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	if (!text || text.length == 0)
 		return CGSizeMake(0, 0);
 
+#pragma deploymate push "ignored-api-availability"
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
 	if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
 		return [text boundingRectWithSize:size
@@ -239,6 +240,7 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 			.size;
 	}
 #endif
+#pragma deploymate pop
 	{ return [text sizeWithFont:font constrainedToSize:size lineBreakMode:NSLineBreakByCharWrapping]; }
 }
 

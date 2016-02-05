@@ -93,7 +93,7 @@
 		timeout -= .5f;
 		element =
 			[[UIApplication sharedApplication] accessibilityElementMatchingBlock:^BOOL(UIAccessibilityElement *e) {
-			  return [e.accessibilityLabel containsString:quality];
+			  return [e.accessibilityLabel containsSubstring:quality];
 			}];
 	}
 	XCTAssertNotNil(element);

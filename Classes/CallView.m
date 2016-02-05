@@ -125,12 +125,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_hashButton setDtmf:true];
 }
 
-- (void)viewDidUnload {
+- (void)dealloc {
 	[PhoneMainView.instance.view removeGestureRecognizer:singleFingerTap];
 	// Remove all observer
 	[NSNotificationCenter.defaultCenter removeObserver:self];
-
-	[super viewDidUnload];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

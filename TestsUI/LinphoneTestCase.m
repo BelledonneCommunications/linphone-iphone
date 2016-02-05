@@ -22,7 +22,7 @@
 	[KIFTypist setKeystrokeDelay:0.05];
 
 	NSString *language = [[NSLocale preferredLanguages] objectAtIndex:0];
-	if (!([language isEqualToString:@"en"] || [language containsString:@"en-"])) {
+	if (!([language isEqualToString:@"en"] || [language containsSubstring:@"en-"])) {
 		LOGF(@"Language must be 'en' (English) instead of %@", language);
 	}
 }

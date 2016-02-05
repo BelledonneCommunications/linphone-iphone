@@ -101,6 +101,7 @@
 	}
 }
 
+#pragma deploymate push "ignored-api-availability"
 - (UIUserNotificationCategory *)getMessageNotificationCategory {
 	NSArray *actions;
 
@@ -195,6 +196,7 @@
 		}
 	}
 }
+#pragma deploymate pop
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
@@ -415,6 +417,7 @@
 
 #pragma mark - User notifications
 
+#pragma deploymate push "ignored-api-availability"
 - (void)application:(UIApplication *)application
 	didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
@@ -483,6 +486,7 @@
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	completionHandler();
 }
+#pragma deploymate pop
 
 #pragma mark - Remote configuration Functions (URL Handler)
 

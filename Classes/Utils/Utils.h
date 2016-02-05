@@ -54,9 +54,10 @@ typedef enum {
 
 @end
 
-@interface NSString (md5)
+@interface NSString (linphoneExt)
 
 - (NSString *)md5;
+- (BOOL)containsSubstring:(NSString *)str;
 
 @end
 

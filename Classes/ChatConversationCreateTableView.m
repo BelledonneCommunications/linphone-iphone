@@ -37,8 +37,8 @@
 	  NSString *address = (NSString *)key;
 	  ABRecordRef person = (__bridge ABRecordRef)(value);
 	  NSString *name = [FastAddressBook displayNameForContact:person];
-	  if ((filter.length == 0) || ([name.lowercaseString containsString:filter.lowercaseString]) ||
-		  ([address.lowercaseString containsString:filter.lowercaseString])) {
+	  if ((filter.length == 0) || ([name.lowercaseString containsSubstring:filter.lowercaseString]) ||
+		  ([address.lowercaseString containsSubstring:filter.lowercaseString])) {
 		  _contacts[address] = name;
 	  }
 

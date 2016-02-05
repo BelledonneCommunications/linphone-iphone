@@ -919,7 +919,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
 			notif.repeatInterval = 0;
 			if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+#pragma deploymate push "ignored-api-availability"
 				notif.category = @"incoming_msg";
+#pragma deploymate pop
 			}
 			if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
 				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
@@ -1250,6 +1252,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		NSNumber *number = (NSNumber *)[dataNetworkItemView valueForKey:@"dataNetworkType"];
 		return [number intValue];
 	} else {
+#pragma deploymate push "ignored-api-availability"
 		CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];
 		NSString *currentRadio = info.currentRadioAccessTechnology;
 		if ([currentRadio isEqualToString:CTRadioAccessTechnologyEdge]) {
@@ -1257,6 +1260,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		} else if ([currentRadio isEqualToString:CTRadioAccessTechnologyLTE]) {
 			return network_4g;
 		}
+#pragma deploymate pop
 		return network_3g;
 	}
 }
@@ -1426,8 +1430,6 @@ static BOOL libStarted = FALSE;
 
 	theLinphoneCore = linphone_core_new_with_config(&linphonec_vtable, _configDb, (__bridge void *)(self));
 	LOGI(@"Create linphonecore %p", theLinphoneCore);
-	if ([@"toto" containsString:@"o"])
-		LOGE(@"lol");
 
 	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
 	MSFactory *f = linphone_core_get_ms_factory(theLinphoneCore);
@@ -1783,7 +1785,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
 	if (!lStatus && lNewRouteSize > 0) {
 		NSString *route = (__bridge NSString *)lNewRoute;
-		allow = ![route containsString:@"Heads"] && ![route isEqualToString:@"Lineout"];
+		allow = ![route containsSubstring:@"Heads"] && ![route isEqualToString:@"Lineout"];
 		CFRelease(lNewRoute);
 	}
 	return allow;
