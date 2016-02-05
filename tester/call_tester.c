@@ -5780,7 +5780,7 @@ static void call_logs_sqlite_storage(void) {
 			linphone_call_log_get_remote_address(call_log),
 			linphone_proxy_config_get_identity_address(linphone_core_get_default_proxy_config(pauline->lc))));
 		BC_ASSERT_PTR_NOT_NULL(linphone_call_log_get_remote_stats(call_log));
-		BC_ASSERT_PTR_NOT_NULL(linphone_call_log_get_start_date(call_log));
+
 		BC_ASSERT_EQUAL(linphone_call_log_get_start_date(call_log), start_time, int, "%d");
 		BC_ASSERT_EQUAL(linphone_call_log_get_status(call_log), LinphoneCallSuccess, int, "%d");
 	}
