@@ -2215,9 +2215,8 @@ static void _linphone_call_prepare_ice_for_stream(LinphoneCall *call, int stream
 			ice_session_add_check_list(call->ice_session, cl, stream_index);
 			ms_message("Created new ICE check list for stream [%i]",stream_index);
 		}
-		if (cl){
-			ms->ice_check_list = cl;
-			ice_check_list_set_rtp_session(ms->ice_check_list, ms->sessions.rtp_session);
+		if (cl) {
+			media_stream_set_ice_check_list(ms, cl);
 		}
 	}
 }
@@ -4401,7 +4400,9 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 
 	if (ms){
 		/* Ensure there is no dangling ICE check list. */
-		if (call->ice_session == NULL) ms->ice_check_list = NULL;
+		if (call->ice_session == NULL) {
+			media_stream_set_ice_check_list(ms, NULL);
+		}
 
 		switch(ms->type){
 			case MSAudio:
