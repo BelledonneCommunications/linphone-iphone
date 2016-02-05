@@ -546,7 +546,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern SalCallbacks linphone_sal_callbacks;
-bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
