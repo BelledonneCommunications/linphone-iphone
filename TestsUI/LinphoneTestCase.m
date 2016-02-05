@@ -47,6 +47,7 @@
 }
 
 - (void)beforeEach {
+	[[LinphoneManager instance] lpConfigSetInt:ORTP_WARNING forKey:@"debugenable_preference"];
 	[[LinphoneManager instance] lpConfigSetInt:NO forKey:@"animations_preference"];
 }
 
