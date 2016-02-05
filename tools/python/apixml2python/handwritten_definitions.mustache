@@ -401,6 +401,7 @@ static void pylinphone_init_ms2_plugins(LinphoneCore *lc) {
 #ifdef ENABLE_WASAPI
 	libmswasapi_init(factory);
 #endif
+	linphone_core_reload_ms_plugins(lc, NULL);
 }
 
 static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args) {
