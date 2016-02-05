@@ -160,35 +160,64 @@ void linphone_call_iframe_decoded_cb(LinphoneCall *call,void * user_data) {
 void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreManager* callee) {
 	LinphoneCall *c1,*c2;
 	MSTimeSpec ts;
-
+	int max_time_to_wait;
 	c1=linphone_core_get_current_call(caller->lc);
 	c2=linphone_core_get_current_call(callee->lc);
-
+	
 	BC_ASSERT_PTR_NOT_NULL(c1);
 	BC_ASSERT_PTR_NOT_NULL(c2);
-
+	
 	if (!c1 || !c2) return;
 	linphone_call_ref(c1);
 	linphone_call_ref(c2);
-
 	liblinphone_tester_clock_start(&ts);
+	if (linphone_core_rtcp_enabled(caller->lc) && linphone_core_rtcp_enabled(callee->lc))
+		max_time_to_wait = 15000;
+	else
+		max_time_to_wait = 5000;
+	
 	do {
 		if (linphone_call_get_audio_stats(c1)->round_trip_delay > 0.0
-				&& linphone_call_get_audio_stats(c2)->round_trip_delay > 0.0
-				&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c1)) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)
-				&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c2))  || linphone_call_get_video_stats(c2)->round_trip_delay>0.0)) {
+			&& linphone_call_get_audio_stats(c2)->round_trip_delay > 0.0
+			&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c1)) || linphone_call_get_video_stats(c1)->round_trip_delay>0.0)
+			&& (!linphone_call_log_video_enabled(linphone_call_get_call_log(c2))  || linphone_call_get_video_stats(c2)->round_trip_delay>0.0)) {
 			break;
-
+			
 		}
 		wait_for_until(caller->lc,callee->lc,NULL,0,20); /*just to sleep while iterating*/
-	}while (!liblinphone_tester_clock_elapsed(&ts,15000));
-	BC_ASSERT_GREATER(linphone_call_get_audio_stats(c1)->round_trip_delay,0.0,float,"%f");
-	BC_ASSERT_GREATER(linphone_call_get_audio_stats(c2)->round_trip_delay,0.0,float,"%f");
-	if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(c1)->round_trip_delay,0.0,float,"%f");
-	}
-	if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
-		BC_ASSERT_GREATER(linphone_call_get_video_stats(c2)->round_trip_delay,0.0,float,"%f");
+	}while (!liblinphone_tester_clock_elapsed(&ts,max_time_to_wait));
+	
+	if (linphone_core_rtcp_enabled(caller->lc) && linphone_core_rtcp_enabled(callee->lc)) {
+		BC_ASSERT_GREATER(linphone_call_get_audio_stats(c1)->round_trip_delay,0.0,float,"%f");
+		BC_ASSERT_GREATER(linphone_call_get_audio_stats(c2)->round_trip_delay,0.0,float,"%f");
+		if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
+			BC_ASSERT_GREATER(linphone_call_get_video_stats(c1)->round_trip_delay,0.0,float,"%f");
+		}
+		if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
+			BC_ASSERT_GREATER(linphone_call_get_video_stats(c2)->round_trip_delay,0.0,float,"%f");
+		}
+	} else {
+		if (linphone_core_rtcp_enabled(caller->lc)) {
+			BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c1)->rtp_stats.sent_rtcp_packets, 0, int, "%i");
+			BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c2)->rtp_stats.recv_rtcp_packets, 0, int, "%i");
+			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
+				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c1)->rtp_stats.sent_rtcp_packets, 0, int, "%i");
+			}
+			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
+				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c2)->rtp_stats.recv_rtcp_packets, 0, int, "%i");
+			}
+		}
+		if (linphone_core_rtcp_enabled(callee->lc)) {
+		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c2)->rtp_stats.sent_rtcp_packets, 0, int, "%i");
+		BC_ASSERT_EQUAL(linphone_call_get_audio_stats(c1)->rtp_stats.recv_rtcp_packets, 0, int, "%i");
+			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c1))) {
+				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c1)->rtp_stats.recv_rtcp_packets, 0, int, "%i");
+			}
+			if (linphone_call_log_video_enabled(linphone_call_get_call_log(c2))) {
+				BC_ASSERT_EQUAL(linphone_call_get_video_stats(c2)->rtp_stats.sent_rtcp_packets, 0, int, "%i");
+			}
+		}
+
 	}
 	linphone_call_unref(c1);
 	linphone_call_unref(c2);
@@ -2276,6 +2305,22 @@ static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* ma
 static void video_call(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	video_call_base(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void video_call_without_rtcp(void) {
+	LpConfig   *lp;
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	
+	lp = linphone_core_get_config(marie->lc);
+	lp_config_set_int(lp,"rtp","rtcp_enabled",0);
+	
+	lp = linphone_core_get_config(pauline->lc);
+	lp_config_set_int(lp,"rtp","rtcp_enabled",0);
+	
 	video_call_base(marie,pauline,FALSE,LinphoneMediaEncryptionNone,TRUE,TRUE);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -6029,6 +6074,7 @@ test_t call_tests[] = {
     TEST_NO_TAG("Simple video call AVPF to implicit AVPF", video_call_AVPF_to_implicit_AVPF),
     TEST_NO_TAG("Simple video call implicit AVPF to AVPF", video_call_implicit_AVPF_to_AVPF),
     TEST_NO_TAG("Simple video call", video_call),
+	TEST_NO_TAG("Simple video call without rtcp",video_call_without_rtcp),
 	TEST_NO_TAG("Simple ZRTP video call", video_call_zrtp),
 	TEST_NO_TAG("Simple DTLS video call", video_call_dtls),
 	TEST_NO_TAG("Simple video call using policy", video_call_using_policy),

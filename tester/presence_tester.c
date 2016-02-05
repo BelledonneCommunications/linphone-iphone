@@ -196,7 +196,7 @@ static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,Linph
 	char* identity=linphone_address_as_string_uri_only(callee_mgr->identity);
 
 
-	LinphoneFriend* friend=linphone_friend_new_with_address(identity);
+	LinphoneFriend* friend=linphone_core_create_friend_with_address(caller_mgr->lc,identity);
 	linphone_friend_edit(friend);
 	linphone_friend_enable_subscribes(friend,TRUE);
 	linphone_friend_done(friend);
