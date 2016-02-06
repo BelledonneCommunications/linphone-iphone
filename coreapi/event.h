@@ -278,10 +278,8 @@ LINPHONE_PUBLIC const char *linphone_event_get_custom_header(LinphoneEvent *ev, 
 
 /**
  * Terminate an incoming or outgoing subscription that was previously acccepted, or a previous publication.
- * This function does not unref the object. The core will unref() if it does not need this object anymore.
- *
- * For subscribed event, when the subscription is terminated normally or because of an error, the core will unref.
- * For published events, no unref is performed. This is because it is allowed to re-publish an expired publish, as well as retry it in case of error.
+ * The LinphoneEvent shall not be used anymore after this operation, unless the application explicitely took a reference on the object with
+ * linphone_event_ref().
 **/
 LINPHONE_PUBLIC void linphone_event_terminate(LinphoneEvent *lev);
 

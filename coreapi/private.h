@@ -982,6 +982,7 @@ struct _LinphoneCore
 
 
 struct _LinphoneEvent{
+	belle_sip_object_t base;
 	LinphoneSubscriptionDir dir;
 	LinphoneCore *lc;
 	SalOp *op;
@@ -989,7 +990,6 @@ struct _LinphoneEvent{
 	LinphoneSubscriptionState subscription_state;
 	LinphonePublishState publish_state;
 	void *userdata;
-	int refcnt;
 	char *name;
 	int expires;
 	bool_t terminating;
@@ -997,6 +997,7 @@ struct _LinphoneEvent{
 	bool_t internal;
 };
 
+BELLE_SIP_DECLARE_VPTR(LinphoneEvent);
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
@@ -1335,7 +1336,8 @@ BELLE_SIP_TYPE_ID(LinphoneFriendList),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
-BELLE_SIP_TYPE_ID(LinphoneTunnelConfig)
+BELLE_SIP_TYPE_ID(LinphoneTunnelConfig),
+BELLE_SIP_TYPE_ID(LinphoneEvent)
 BELLE_SIP_DECLARE_TYPES_END
 
 
