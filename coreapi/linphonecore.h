@@ -2721,6 +2721,16 @@ LINPHONE_PUBLIC void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enabl
 LINPHONE_PUBLIC bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc);
 
 /**
+ * Forces liblinphone to use the supplied list of dns servers, instead of system's ones.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] a #MSList of strings containing the IP addresses of DNS servers to be used.
+ * Setting to NULL restores default behaviour, which is to use the DNS server list provided by the system.
+ * The list is copied internally.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_dns_servers(LinphoneCore *lc, const MSList *servers);
+
+/**
  * Returns the list of available audio codecs.
  * @param[in] lc The LinphoneCore object
  * @return \mslist{PayloadType}

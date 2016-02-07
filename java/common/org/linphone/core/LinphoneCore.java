@@ -2274,4 +2274,10 @@ public interface LinphoneCore {
 	**/
 	org.linphone.mediastream.Factory getMSFactory();
 
+	/**
+	 * Overrides the list of DNS servers to use.
+	 * Passing null restores the default behaviour, which is to use the dns server list provided by the system.
+	**/
+	public void setDnsServers(String servers[]);
+
 }

@@ -1442,6 +1442,10 @@ int linphone_core_get_sip_transport_timeout(LinphoneCore *lc) {
 	return sal_get_transport_timeout(lc->sal);
 }
 
+void linphone_core_set_dns_servers(LinphoneCore *lc, const MSList *servers){
+	sal_set_dns_servers(lc->sal, servers);
+}
+
 void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enable) {
 	sal_enable_dns_srv(lc->sal, enable);
 	if (linphone_core_ready(lc))

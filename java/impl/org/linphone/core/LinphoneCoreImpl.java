@@ -1625,4 +1625,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public org.linphone.mediastream.Factory getMSFactory(){
 		return (org.linphone.mediastream.Factory) getMSFactory(nativePtr);
 	}
+	private native void setDnsServers(long nativePtr, String servers[]);
+	@Override
+	public void setDnsServers(String servers[]){
+		setDnsServers(nativePtr, servers);
+	}
 }
