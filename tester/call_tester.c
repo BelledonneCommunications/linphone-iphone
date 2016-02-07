@@ -39,7 +39,7 @@ static char *create_filepath(const char *dir, const char *filename, const char *
 // prototype definition for call_recording()
 #ifdef ANDROID
 #ifdef HAVE_OPENH264
-extern void libmsopenh264_init(void);
+extern void libmsopenh264_init(MSFactory *factory);
 #endif
 #endif
 
@@ -4018,14 +4018,15 @@ static void record_call(const char *filename, bool_t enableVideo, const char *vi
 	int dummy=0, i;
 	bool_t call_succeeded = FALSE;
 
-#if defined(HAVE_OPENH264) && defined(ANDROID)
-	ms_init();
-	libmsopenh264_init();
-#endif
-
-
 	marie = linphone_core_manager_new("marie_h264_rc");
 	pauline = linphone_core_manager_new("pauline_h264_rc");
+	
+#if defined(HAVE_OPENH264) && defined(ANDROID)
+	libmsopenh264_init(linphone_core_get_ms_factory(marie->lc));
+	linphone_core_reload_ms_plugins(marie->lc);
+	libmsopenh264_init(linphone_core_get_ms_factory(pauline->lc));
+	linphone_core_reload_ms_plugins(pauline->lc);
+#endif
 	marieParams = linphone_core_create_call_params(marie->lc, NULL);
 	paulineParams = linphone_core_create_call_params(pauline->lc, NULL);
 
@@ -4067,9 +4068,6 @@ static void record_call(const char *filename, bool_t enableVideo, const char *vi
 	linphone_call_params_destroy(marieParams);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-#if defined(HAVE_OPENH264) && defined(ANDROID)
-	ms_exit();
-#endif
 }
 
 static void audio_call_recording_test(void) {
