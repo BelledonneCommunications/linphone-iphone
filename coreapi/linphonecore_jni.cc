@@ -6492,6 +6492,25 @@ extern "C" jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_videoMultica
 	return linphone_core_video_multicast_enabled((LinphoneCore*)ptr);
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setDnsServers(JNIEnv *env, jobject thiz, jlong lc, jobjectArray servers){
+	MSList *l = NULL;
+	
+	if (servers != NULL){
+		int count = env->GetArrayLength(servers);
+
+		for (int i=0; i < count; i++) {
+			jstring server = (jstring) env->GetObjectArrayElement(servers, i);
+			const char *str = env->GetStringUTFChars(server, NULL);
+			if (str){
+				l = ms_list_append(l, ms_strdup(str));
+				env->ReleaseStringUTFChars(server, str);
+			}
+		}
+	}
+	linphone_core_set_dns_servers((LinphoneCore*)lc, l);
+	ms_list_free_with_data(l, ms_free);
+}
+
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableDnsSrv(JNIEnv *env, jobject thiz, jlong lc, jboolean yesno) {
 	linphone_core_enable_dns_srv((LinphoneCore *)lc, yesno);
 }
