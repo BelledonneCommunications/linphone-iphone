@@ -4023,9 +4023,9 @@ static void record_call(const char *filename, bool_t enableVideo, const char *vi
 	
 #if defined(HAVE_OPENH264) && defined(ANDROID)
 	libmsopenh264_init(linphone_core_get_ms_factory(marie->lc));
-	linphone_core_reload_ms_plugins(marie->lc);
+	linphone_core_reload_ms_plugins(marie->lc, NULL);
 	libmsopenh264_init(linphone_core_get_ms_factory(pauline->lc));
-	linphone_core_reload_ms_plugins(pauline->lc);
+	linphone_core_reload_ms_plugins(pauline->lc, NULL);
 #endif
 	marieParams = linphone_core_create_call_params(marie->lc, NULL);
 	paulineParams = linphone_core_create_call_params(pauline->lc, NULL);
