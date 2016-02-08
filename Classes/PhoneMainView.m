@@ -261,10 +261,26 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)textReceived:(NSNotification *)notif {
 	LinphoneAddress *from = [[notif.userInfo objectForKey:@"from_address"] pointerValue];
 	NSString *callID = [notif.userInfo objectForKey:@"call-id"];
-	if (from != nil) {
-		[self playMessageSoundForCallID:callID];
-	}
 	[self updateApplicationBadgeNumber];
+	LinphoneChatRoom *room = from ? linphone_core_get_chat_room(LC, from) : NULL;
+
+	if (from == nil || room == NULL)
+		return;
+
+	ChatConversationView *view = VIEW(ChatConversationView);
+	// if we already are in the conversation, we should not ring/vibrate
+	if (view.chatRoom && linphone_address_weak_equal(linphone_chat_room_get_peer_address(room),
+													 linphone_chat_room_get_peer_address(view.chatRoom)))
+		return;
+
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)
+		return;
+
+	LinphoneManager *lm = LinphoneManager.instance;
+	// if the message was already received through a push notif, we don't need to ring
+	if (![lm popPushCallID:callID]) {
+		[lm playMessageSound];
+	}
 }
 
 - (void)registrationUpdate:(NSNotification *)notif {
@@ -643,16 +659,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 #pragma mark - ActionSheet Functions
-
-- (void)playMessageSoundForCallID:(NSString *)callID {
-	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-		LinphoneManager *lm = LinphoneManager.instance;
-		// if the message was already received through a push notif, we don't need to ring
-		if (![lm popPushCallID:callID]) {
-			[lm playMessageSound];
-		}
-	}
-}
 
 - (void)displayIncomingCall:(LinphoneCall *)call {
 	LinphoneCallLog *callLog = linphone_call_get_call_log(call);
