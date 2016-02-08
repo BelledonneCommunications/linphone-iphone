@@ -225,6 +225,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 
+	// set transport
+	UISegmentedControl *transports = (UISegmentedControl *)[self findView:ViewElement_Transport
+																   inView:self.contentView
+																   ofType:UISegmentedControl.class];
+	if (transports) {
+		NSString *type = [transports titleForSegmentAtIndex:[transports selectedSegmentIndex]];
+		linphone_account_creator_set_transport(account_creator,
+											   linphone_transport_parse(type.lowercaseString.UTF8String));
+	}
+
 	new_config = linphone_account_creator_configure(account_creator);
 
 	if (new_config) {
@@ -477,9 +487,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	UIAssistantTextField *displayName = [self findTextField:ViewElement_DisplayName];
 	[displayName showError:[AssistantView errorForStatus:LinphoneAccountCreatorDisplayNameInvalid]
 					  when:^BOOL(NSString *inputEntry) {
-						LinphoneAccountCreatorStatus s =
-							linphone_account_creator_set_display_name(account_creator, inputEntry.UTF8String);
-						displayName.errorLabel.text = [AssistantView errorForStatus:s];
+						LinphoneAccountCreatorStatus s = LinphoneAccountCreatorOK;
+						if (inputEntry.length > 0) {
+							s = linphone_account_creator_set_display_name(account_creator, inputEntry.UTF8String);
+							displayName.errorLabel.text = [AssistantView errorForStatus:s];
+						}
 						return s != LinphoneAccountCreatorOK;
 					  }];
 
@@ -726,12 +738,6 @@ void assistant_validation_tested(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender {
 	[_waitView setHidden:false];
 	[self resetLiblinphone];
-}
-
-- (IBAction)onTransportChange:(id)sender {
-	UISegmentedControl *transports = sender;
-	NSString *type = [transports titleForSegmentAtIndex:[transports selectedSegmentIndex]];
-	linphone_account_creator_set_transport(account_creator, linphone_transport_parse(type.lowercaseString.UTF8String));
 }
 
 - (IBAction)onBackClick:(id)sender {

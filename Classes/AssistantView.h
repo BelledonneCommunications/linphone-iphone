@@ -70,6 +70,4 @@
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender;
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender;
 
-- (IBAction)onTransportChange:(id)sender;
-
 @end
