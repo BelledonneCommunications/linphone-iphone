@@ -258,24 +258,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 	_optionsButton.enabled = (!call || !linphone_call_media_in_progress(call));
 	_optionsTransferButton.enabled = call && !linphone_call_media_in_progress(call);
-	// Show Pause/Conference button following call count
-	if (linphone_core_get_calls_nb(LC) > 1) {
-		bool enabled = ((linphone_core_get_current_call(LC) != NULL) || linphone_core_is_in_conference(LC));
-		const MSList *list = linphone_core_get_calls(LC);
-		while (list != NULL) {
-			LinphoneCall *call = (LinphoneCall *)list->data;
-			LinphoneCallState state = linphone_call_get_state(call);
-			if (state == LinphoneCallIncomingReceived || state == LinphoneCallOutgoingInit ||
-				state == LinphoneCallOutgoingProgress || state == LinphoneCallOutgoingRinging ||
-				state == LinphoneCallOutgoingEarlyMedia || state == LinphoneCallConnected) {
-				enabled = false;
-			}
-			list = list->next;
-		}
-		_optionsConferenceButton.enabled = enabled;
-	} else {
-		_optionsConferenceButton.enabled = NO;
-	}
+	// enable conference button if 2 calls are present and at least one is not in the conference
+	_optionsConferenceButton.enabled = ((linphone_core_get_calls_nb(LC) > 1) &&
+										(linphone_core_get_calls_nb(LC) != linphone_core_get_conference_size(LC)));
 
 	// Disable transfert in conference
 	if (linphone_core_get_current_call(LC) == NULL) {
@@ -718,6 +703,14 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	}
 }
 
+- (IBAction)onOptionsClick:(id)sender {
+	if ([_optionsView isHidden]) {
+		[self hideOptions:FALSE animated:ANIMATED];
+	} else {
+		[self hideOptions:TRUE animated:ANIMATED];
+	}
+}
+
 - (IBAction)onOptionsTransferClick:(id)sender {
 	[self hideOptions:TRUE animated:TRUE];
 	DialerView *view = VIEW(DialerView);
@@ -734,15 +727,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
-- (IBAction)onOptionsClick:(id)sender {
-	if ([_optionsView isHidden]) {
-		[self hideOptions:FALSE animated:ANIMATED];
-	} else {
-		[self hideOptions:TRUE animated:ANIMATED];
-	}
-}
-
 - (IBAction)onOptionsConferenceClick:(id)sender {
+	[self hideOptions:TRUE animated:TRUE];
 	linphone_core_add_all_to_conference(LC);
 }
 
