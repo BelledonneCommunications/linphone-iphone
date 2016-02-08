@@ -155,7 +155,7 @@ static LinphoneAccountCreatorStatus validate_uri(const char* username, const cha
 		status = LinphoneAccountCreatorDomainInvalid;
 	}
 
-	if (display_name && linphone_address_set_display_name(addr, display_name) != 0) {
+	if (display_name && (!strlen(display_name) || linphone_address_set_display_name(addr, display_name) != 0)) {
 		status = LinphoneAccountCreatorDisplayNameInvalid;
 	}
 	linphone_address_unref(addr);
@@ -411,16 +411,23 @@ LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCr
 	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(creator->core);
 	char *identity_str = ms_strdup_printf("sip:%s@%s", creator->username, creator->domain);
 	LinphoneAddress *identity = linphone_address_new(identity_str);
+	char *route = NULL;
+	char *domain = NULL;
+	ms_free(identity_str);
 	if (creator->display_name) {
 		linphone_address_set_display_name(identity, creator->display_name);
 	}
-
-	linphone_proxy_config_set_identity(cfg, linphone_address_as_string(identity));
-	linphone_proxy_config_set_server_addr(cfg, creator->domain);
-	linphone_proxy_config_set_route(cfg, creator->route);
+	if (creator->route) {
+		route = ms_strdup_printf("%s;transport=%s", creator->route, linphone_transport_to_string(creator->transport));
+	}
+	if (creator->domain) {
+		domain = ms_strdup_printf("%s;transport=%s", creator->domain, linphone_transport_to_string(creator->transport));
+	}
+	linphone_proxy_config_set_identity_address(cfg, identity);
+	linphone_proxy_config_set_server_addr(cfg, domain);
+	linphone_proxy_config_set_route(cfg, route);
 	linphone_proxy_config_enable_publish(cfg, FALSE);
 	linphone_proxy_config_enable_register(cfg, TRUE);
-	ms_free(identity_str);
 
 	if (strcmp(creator->domain, "sip.linphone.org") == 0) {
 		linphone_proxy_config_enable_avpf(cfg, TRUE);
