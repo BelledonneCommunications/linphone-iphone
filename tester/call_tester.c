@@ -1140,6 +1140,10 @@ static void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManag
 }
 
 static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports, bool_t forced_relay) {
+	// Force STUN server resolution to prevent DNS resolution issues on some machines
+	linphone_core_get_stun_server_addrinfo(pauline->lc);
+	linphone_core_get_stun_server_addrinfo(marie->lc);
+
 	linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
 	linphone_core_set_user_agent(marie->lc, "Natted Linphone", NULL);
 
