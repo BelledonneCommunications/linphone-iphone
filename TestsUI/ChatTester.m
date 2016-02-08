@@ -208,7 +208,6 @@
 	NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
 	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
 		inTableViewWithAccessibilityIdentifier:@"Chat list"];
-	[self startChatWith:[self me]];
 	NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
 
 	// conversation loading MUST be less than 1 sec - loading messages only
