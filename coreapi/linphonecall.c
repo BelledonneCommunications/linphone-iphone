@@ -1106,7 +1106,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		call->ice_session = ice_session_new();
 		/*for backward compatibility purposes, shall be enabled by default in futur*/
-		ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",0));
+		ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",1));
 		ice_session_set_role(call->ice_session, IR_Controlling);
 	}
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
@@ -1338,7 +1338,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		if (md){
 			call->ice_session = ice_session_new();
 			/*for backward compatibility purposes, shall be enabled by default in futur*/
-			ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",0));
+			ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",1));
 			ice_session_set_role(call->ice_session, IR_Controlled);
 		}else{
 			fpol=LinphonePolicyNoFirewall;
