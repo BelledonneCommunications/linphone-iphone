@@ -131,7 +131,7 @@
                                     <rect key="frame" x="0.0" y="437" width="375" height="98"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <string key="text">GNU General Public License V2
-© 2010-2016 Belledonne-Communications</string>
+© 2010-2016 Belledonne Communications</string>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>
@@ -257,7 +257,7 @@
                                     <rect key="frame" x="333" y="177" width="334" height="66"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <string key="text">GNU General Public License V2
-© 2010-2016 Belledonne-Communications</string>
+© 2010-2016 Belledonne Communications</string>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <nil key="highlightedColor"/>

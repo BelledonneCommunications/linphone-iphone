@@ -178,7 +178,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 					initWithTitle:NSLocalizedString(@"Configuration failed", nil)
 						  message:
 							  NSLocalizedString(
-								  @"Cannot retrieve your configuration. Please check credentialls or try again later",
+								  @"Cannot retrieve your configuration. Please check credentials or try again later",
 								  nil)
 						 delegate:nil
 				cancelButtonTitle:NSLocalizedString(@"OK", nil)
