@@ -183,32 +183,51 @@ LOCAL_CFLAGS += -DHAVE_CODEC2
 LOCAL_STATIC_LIBRARIES += libcodec2 libmscodec2
 endif
 
-ifneq ($(BUILD_WEBRTC_AECM)$(BUILD_WEBRTC_ISAC),00)
+ifneq ($(BUILD_WEBRTC_AECM)$(BUILD_WEBRTC_ISAC)$(BUILD_ILBC),000)
 LOCAL_CFLAGS += -DHAVE_WEBRTC
 LOCAL_STATIC_LIBRARIES += libmswebrtc
 endif
+
 ifneq ($(BUILD_WEBRTC_AECM),0)
 LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_aecm \
+	libwebrtc_aecm 
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_aecm_neon 
+endif
+endif
+
+
+ifneq ($(BUILD_WEBRTC_ISAC),0)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_isacfix
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_isacfix_neon
+endif
+endif
+
+ifneq ($(BUILD_ILBC),0)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_ilbc 
+endif
+
+
+ifneq ($(BUILD_WEBRTC_AECM)$(BUILD_WEBRTC_ISAC)$(BUILD_ILBC),000)
+
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_apm_utility \
+	libwebrtc_system_wrappers \
 	libwebrtc_apm_utility \
 	libwebrtc_spl \
 	libwebrtc_system_wrappers
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
 LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_aecm_neon \
 	libwebrtc_spl_neon
 endif
+
 endif
-ifneq ($(BUILD_WEBRTC_ISAC),0)
-LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_isacfix \
-	libwebrtc_spl
-ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
-LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_isacfix_neon \
-	libwebrtc_spl_neon
-endif
-endif
+
 
 ifeq ($(BUILD_G729),1)
 LOCAL_CFLAGS += -DHAVE_G729

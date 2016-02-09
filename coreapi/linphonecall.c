@@ -1106,7 +1106,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
 		call->ice_session = ice_session_new();
 		/*for backward compatibility purposes, shall be enabled by default in futur*/
-		ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",0));
+		ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",1));
 		ice_session_set_role(call->ice_session, IR_Controlling);
 	}
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
@@ -1338,7 +1338,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 		if (md){
 			call->ice_session = ice_session_new();
 			/*for backward compatibility purposes, shall be enabled by default in futur*/
-			ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",0));
+			ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",1));
 			ice_session_set_role(call->ice_session, IR_Controlled);
 		}else{
 			fpol=LinphonePolicyNoFirewall;
@@ -2215,9 +2215,8 @@ static void _linphone_call_prepare_ice_for_stream(LinphoneCall *call, int stream
 			ice_session_add_check_list(call->ice_session, cl, stream_index);
 			ms_message("Created new ICE check list for stream [%i]",stream_index);
 		}
-		if (cl){
-			ms->ice_check_list = cl;
-			ice_check_list_set_rtp_session(ms->ice_check_list, ms->sessions.rtp_session);
+		if (cl) {
+			media_stream_set_ice_check_list(ms, cl);
 		}
 	}
 }
@@ -4401,7 +4400,9 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 
 	if (ms){
 		/* Ensure there is no dangling ICE check list. */
-		if (call->ice_session == NULL) ms->ice_check_list = NULL;
+		if (call->ice_session == NULL) {
+			media_stream_set_ice_check_list(ms, NULL);
+		}
 
 		switch(ms->type){
 			case MSAudio:

@@ -851,6 +851,7 @@ LINPHONE_PUBLIC	void sal_set_dns_timeout(Sal* sal,int timeout);
 LINPHONE_PUBLIC int sal_get_dns_timeout(const Sal* sal);
 LINPHONE_PUBLIC	void sal_set_transport_timeout(Sal* sal,int timeout);
 LINPHONE_PUBLIC int sal_get_transport_timeout(const Sal* sal);
+void sal_set_dns_servers(Sal *sal, const MSList *servers);
 LINPHONE_PUBLIC void sal_enable_dns_srv(Sal *sal, bool_t enable);
 LINPHONE_PUBLIC bool_t sal_dns_srv_enabled(const Sal *sal);
 LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file);

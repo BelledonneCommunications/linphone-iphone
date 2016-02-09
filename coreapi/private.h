@@ -496,6 +496,7 @@ void linphone_core_resolve_stun_server(LinphoneCore *lc);
 LINPHONE_PUBLIC const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc);
 void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params);
 int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call);
+LINPHONE_PUBLIC void linphone_core_enable_forced_ice_relay(LinphoneCore *lc, bool_t enable);
 void linphone_core_update_ice_state_in_call_stats(LinphoneCall *call);
 void linphone_call_stats_fill(LinphoneCallStats *stats, MediaStream *ms, OrtpEvent *ev);
 void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDescription *result);
@@ -555,7 +556,7 @@ int linphone_core_start_accept_call_update(LinphoneCore *lc, LinphoneCall *call,
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern SalCallbacks linphone_sal_callbacks;
-bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
@@ -965,7 +966,8 @@ struct _LinphoneCore
 	
 	bool_t vtables_running;
 	bool_t send_call_stats_periodical_updates;
-	bool_t pad[2];
+	bool_t forced_ice_relay;
+	bool_t pad;
 	char localip[LINPHONE_IPADDR_SIZE];
 	int device_rotation;
 	int max_calls;
@@ -1012,6 +1014,7 @@ struct _LinphoneCore
 
 
 struct _LinphoneEvent{
+	belle_sip_object_t base;
 	LinphoneSubscriptionDir dir;
 	LinphoneCore *lc;
 	SalOp *op;
@@ -1019,7 +1022,6 @@ struct _LinphoneEvent{
 	LinphoneSubscriptionState subscription_state;
 	LinphonePublishState publish_state;
 	void *userdata;
-	int refcnt;
 	char *name;
 	int expires;
 	bool_t terminating;
@@ -1027,6 +1029,7 @@ struct _LinphoneEvent{
 	bool_t internal;
 };
 
+BELLE_SIP_DECLARE_VPTR(LinphoneEvent);
 
 LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel);
@@ -1400,6 +1403,7 @@ BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
 BELLE_SIP_TYPE_ID(LinphoneTunnelConfig),
 BELLE_SIP_TYPE_ID(LinphoneFriendListCbs)
+BELLE_SIP_TYPE_ID(LinphoneEvent)
 BELLE_SIP_DECLARE_TYPES_END
 
 

@@ -1093,6 +1093,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 										 , linphone_proxy_config_get_identity_address(proxy)
 										 , "presence"
 										 , linphone_proxy_config_get_publish_expires(proxy));
+			linphone_event_ref(proxy->long_term_event);
 		}
 		proxy->long_term_event->internal = TRUE;
 		

@@ -2285,4 +2285,16 @@ public interface LinphoneCore {
 	 * @param isReachable whether media network is reachable.
 	 */
 	public void setMediaNetworkReachable(boolean isReachable);
+
+	/**
+	 * Returns the mediastreamer2 (media stack) factory object used by the LinphoneCore. This may be useful to perform
+	 * some advanced media-related configuration options.
+	**/
+	org.linphone.mediastream.Factory getMSFactory();
+
+	/**
+	 * Overrides the list of DNS servers to use.
+	 * Passing null restores the default behaviour, which is to use the dns server list provided by the system.
+	**/
+	public void setDnsServers(String servers[]);
 }

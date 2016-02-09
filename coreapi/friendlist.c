@@ -621,6 +621,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 					linphone_event_unref(list->event);
 				}
 				list->event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
+				linphone_event_ref(list->event);
 				linphone_event_set_internal(list->event, TRUE);
 				linphone_event_add_custom_header(list->event, "Require", "recipient-list-subscribe");
 				linphone_event_add_custom_header(list->event, "Supported", "eventlist");

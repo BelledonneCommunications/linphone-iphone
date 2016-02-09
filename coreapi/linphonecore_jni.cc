@@ -39,28 +39,18 @@ extern "C" {
 
 #ifdef ANDROID
 #include <android/log.h>
-extern "C" void libmsilbc_init();
-#ifdef HAVE_X264
-extern "C" void libmsx264_init();
-#endif
-#ifdef HAVE_OPENH264
-extern "C" void libmsopenh264_init();
-#endif
-#ifdef HAVE_AMR
-extern "C" void libmsamr_init();
-#endif
-#ifdef HAVE_SILK
-extern "C" void libmssilk_init();
-#endif
-#ifdef HAVE_G729
-extern "C" void libmsbcg729_init();
-#endif
-#ifdef HAVE_WEBRTC
-extern "C" void libmswebrtc_init();
-#endif
-#ifdef HAVE_CODEC2
-extern "C" void libmscodec2_init();
-#endif
+
+/*there are declarations of the init routines of our plugins.
+ * Since there is no way to dlopen() installed in a non-standard place in the apk,
+ * we have to invoke the init routines manually*/
+extern "C" void libmsx264_init(MSFactory *factory);
+extern "C" void libmsopenh264_init(MSFactory *factory);
+extern "C" void libmsamr_init(MSFactory *factory);
+extern "C" void libmssilk_init(MSFactory *factory);
+extern "C" void libmsbcg729_init(MSFactory *factory);
+extern "C" void libmswebrtc_init(MSFactory *factory);
+extern "C" void libmscodec2_init(MSFactory *factory);
+
 #include <belle-sip/wakelock.h>
 #endif /*ANDROID*/
 
@@ -316,6 +306,9 @@ public:
 
 		subscriptionDirClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/core/SubscriptionDir"));
 		subscriptionDirFromIntId = env->GetStaticMethodID(subscriptionDirClass,"fromInt","(I)Lorg/linphone/core/SubscriptionDir;");
+		
+		msFactoryClass = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/mediastream/Factory"));
+		msFactoryCtrId = env->GetMethodID(msFactoryClass,"<init>", "(J)V");
 	}
 	
 	void setCore(jobject c) {
@@ -347,6 +340,7 @@ public:
 		env->DeleteGlobalRef(subscriptionStateClass);
 		env->DeleteGlobalRef(subscriptionDirClass);
 		env->DeleteGlobalRef(logCollectionUploadStateClass);
+		env->DeleteGlobalRef(msFactoryClass);
 	}
 	
 	jobject core;
@@ -444,6 +438,9 @@ public:
 	jmethodID logCollectionUploadStateId;
 	jmethodID logCollectionUploadStateFromIntId;
 	jmethodID logCollectionUploadProgressId;
+	
+	jclass msFactoryClass;
+	jmethodID msFactoryCtrId;
 };
 
 /*
@@ -1318,42 +1315,42 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	LinphoneCoreData* ldata = new LinphoneCoreData(env, thiz, vTable, jlistener, ljb);
 	linphone_core_v_table_set_user_data(vTable, ldata);
 
-	ms_init(); // Initialize mediastreamer2 before loading the plugins
-
-#ifdef HAVE_ILBC
-	libmsilbc_init(); // requires an fpu
-#endif
-#ifdef HAVE_X264
-	libmsx264_init();
-#endif
-#ifdef HAVE_OPENH264
-	libmsopenh264_init();
-#endif
-#ifdef HAVE_AMR
-	libmsamr_init();
-#endif
-#ifdef HAVE_SILK
-	libmssilk_init();
-#endif
-#ifdef HAVE_G729
-	libmsbcg729_init();
-#endif
-#ifdef HAVE_WEBRTC
-	libmswebrtc_init();
-#endif
-#ifdef HAVE_CODEC2
-	libmscodec2_init();
-#endif
 
 	jobject core = env->NewGlobalRef(thiz);
 	ljb->setCore(core);
 	LinphoneCore *lc = linphone_core_new(vTable, userConfig, factoryConfig, ljb);
-	jlong nativePtr = (jlong)lc;
+	MSFactory *factory = linphone_core_get_ms_factory(lc);
+	
 
+#ifdef HAVE_X264
+	libmsx264_init(factory);
+#endif
+#ifdef HAVE_OPENH264
+	libmsopenh264_init(factory);
+#endif
+#ifdef HAVE_AMR
+	libmsamr_init(factory);
+#endif
+#ifdef HAVE_SILK
+	libmssilk_init(factory);
+#endif
+#ifdef HAVE_G729
+	libmsbcg729_init(factory);
+#endif
+#ifdef HAVE_WEBRTC
+	libmswebrtc_init(factory);
+#endif
+#ifdef HAVE_CODEC2
+	libmscodec2_init(factory);
+#endif
+	linphone_core_reload_ms_plugins(lc, NULL);
+	
+	jlong nativePtr = (jlong)lc;
 	if (userConfig) env->ReleaseStringUTFChars(juserConfig, userConfig);
 	if (factoryConfig) env->ReleaseStringUTFChars(jfactoryConfig, factoryConfig);
 	return nativePtr;
 }
+
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv* env, jobject thiz, jlong native_ptr) {
 	LinphoneCore *lc=(LinphoneCore*)native_ptr;
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
@@ -1364,7 +1361,6 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv* env, jobj
 	jobject wifi_lock_class = lc->wifi_lock_class;
 
 	linphone_core_destroy(lc);
-	ms_exit();
 
 	if (wifi_lock) env->DeleteGlobalRef(wifi_lock);
 	if (wifi_lock_class) env->DeleteGlobalRef(wifi_lock_class);
@@ -1720,6 +1716,14 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_migrateCallLogs(JNIEnv* 
 		,jobject  thiz
 		,jlong lc) {
 		linphone_core_migrate_logs_from_rc_to_db((LinphoneCore *)lc);
+}
+
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getMSFactory(JNIEnv*  env
+		,jobject  thiz
+		,jlong lc){
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data((LinphoneCore *)lc);
+	MSFactory *factory = linphone_core_get_ms_factory((LinphoneCore*)lc);
+	return env->NewObject(ljb->msFactoryClass, ljb->msFactoryCtrId, (jlong)factory);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setMtu(JNIEnv*  env
@@ -2298,9 +2302,11 @@ extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_startEchoCalibration(JNI
 
 }
 
-extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration(JNIEnv *env, jobject thiz, jlong lc) {
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration(JNIEnv *env, jobject thiz, jlong lcptr) {
 	MSSndCard *sndcard;
-	MSSndCardManager *m = ms_snd_card_manager_get();
+	LinphoneCore *lc = (LinphoneCore*) lcptr;
+	MSFactory * factory = linphone_core_get_ms_factory(lc);
+	MSSndCardManager *m = ms_factory_get_snd_card_manager(factory);
 	const char *card = linphone_core_get_capture_device((LinphoneCore*)lc);
 	sndcard = ms_snd_card_manager_get_card(m, card);
 	if (sndcard == NULL) {
@@ -2318,9 +2324,11 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_needsEchoCalibration
 	return TRUE;
 }
 
-extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_hasBuiltInEchoCanceler(JNIEnv *env, jobject thiz, jlong lc) {
+extern "C" jboolean Java_org_linphone_core_LinphoneCoreImpl_hasBuiltInEchoCanceler(JNIEnv *env, jobject thiz, jlong lcptr) {
 	MSSndCard *sndcard;
-	MSSndCardManager *m = ms_snd_card_manager_get();
+	LinphoneCore *lc = (LinphoneCore*) lcptr;
+	MSFactory * factory = linphone_core_get_ms_factory(lc);
+	MSSndCardManager *m = ms_factory_get_snd_card_manager(factory);
 	const char *card = linphone_core_get_capture_device((LinphoneCore*)lc);
 	sndcard = ms_snd_card_manager_get_card(m, card);
 	if (sndcard == NULL) {
@@ -4973,8 +4981,9 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setStaticPicture(JNIEnv 
 	env->ReleaseStringUTFChars(path, cpath);
 }
 
-extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCountNative(JNIEnv *env, jobject thiz, jint count) {
-	ms_set_cpu_count(count);
+extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setCpuCountNative(JNIEnv *env, jobject thiz, jlong coreptr, jint count) {
+	MSFactory *factory = linphone_core_get_ms_factory((LinphoneCore*)coreptr);
+	ms_factory_set_cpu_count(factory, count);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAudioJittcomp(JNIEnv *env, jobject thiz, jlong lc, jint value) {
@@ -6791,6 +6800,25 @@ extern "C" void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableVideoMulti
 extern "C" jboolean JNICALL Java_org_linphone_core_LinphoneCoreImpl_videoMulticastEnabled
   (JNIEnv *, jobject, jlong ptr) {
 	return linphone_core_video_multicast_enabled((LinphoneCore*)ptr);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setDnsServers(JNIEnv *env, jobject thiz, jlong lc, jobjectArray servers){
+	MSList *l = NULL;
+	
+	if (servers != NULL){
+		int count = env->GetArrayLength(servers);
+
+		for (int i=0; i < count; i++) {
+			jstring server = (jstring) env->GetObjectArrayElement(servers, i);
+			const char *str = env->GetStringUTFChars(server, NULL);
+			if (str){
+				l = ms_list_append(l, ms_strdup(str));
+				env->ReleaseStringUTFChars(server, str);
+			}
+		}
+	}
+	linphone_core_set_dns_servers((LinphoneCore*)lc, l);
+	ms_list_free_with_data(l, ms_free);
 }
 
 JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_enableDnsSrv(JNIEnv *env, jobject thiz, jlong lc, jboolean yesno) {

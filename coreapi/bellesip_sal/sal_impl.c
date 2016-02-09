@@ -816,6 +816,7 @@ bool_t sal_nat_helper_enabled(Sal *sal) {
 void sal_set_dns_timeout(Sal* sal,int timeout) {
 	belle_sip_stack_set_dns_timeout(sal->stack, timeout);
 }
+
 int sal_get_dns_timeout(const Sal* sal)  {
 	return belle_sip_stack_get_dns_timeout(sal->stack);
 }
@@ -823,12 +824,26 @@ int sal_get_dns_timeout(const Sal* sal)  {
 void sal_set_transport_timeout(Sal* sal,int timeout) {
 	belle_sip_stack_set_transport_timeout(sal->stack, timeout);
 }
+
 int sal_get_transport_timeout(const Sal* sal)  {
 	return belle_sip_stack_get_transport_timeout(sal->stack);
 }
+
+void sal_set_dns_servers(Sal *sal, const MSList *servers){
+	belle_sip_list_t *l = NULL;
+	
+	/*we have to convert the MSList into a belle_sip_list_t first*/
+	for (; servers != NULL; servers = servers->next){
+		l = belle_sip_list_append(l, servers->data);
+	}
+	belle_sip_stack_set_dns_servers(sal->stack, l);
+	belle_sip_list_free(l);
+}
+
 void sal_enable_dns_srv(Sal *sal, bool_t enable) {
 	belle_sip_stack_enable_dns_srv(sal->stack, (unsigned char)enable);
 }
+
 bool_t sal_dns_srv_enabled(const Sal *sal) {
 	return (bool_t)belle_sip_stack_dns_srv_enabled(sal->stack);
 }

@@ -20,6 +20,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "private.h"
 #include "lpconfig.h"
 
+const char * linphone_subscription_dir_to_string(LinphoneSubscriptionDir dir){
+	switch(dir){
+		case LinphoneSubscriptionIncoming:
+			return "LinphoneSubscriptionIncoming";
+		case LinphoneSubscriptionOutgoing:
+			return "LinphoneSubscriptionOutgoing";
+		case LinphoneSubscriptionInvalidDir:
+			return "LinphoneSubscriptionInvalidDir";
+	}
+	return "INVALID";
+}
 
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss){
 	switch(ss){
@@ -58,11 +69,10 @@ LINPHONE_PUBLIC const char *linphone_publish_state_to_string(LinphonePublishStat
 }
 
 static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, SalOp *op){
-	LinphoneEvent *lev=ms_new0(LinphoneEvent,1);
+	LinphoneEvent *lev=belle_sip_object_new(LinphoneEvent);
 	lev->lc=lc;
 	lev->dir=dir;
 	lev->op=op;
-	lev->refcnt=1;
 	lev->name=ms_strdup(name);
 	sal_op_set_user_pointer(lev->op,lev);
 	return lev;
@@ -343,7 +353,7 @@ void linphone_event_terminate(LinphoneEvent *lev){
 
 
 LinphoneEvent *linphone_event_ref(LinphoneEvent *lev){
-	lev->refcnt++;
+	belle_sip_object_ref(lev);
 	return lev;
 }
 
@@ -351,12 +361,10 @@ static void linphone_event_destroy(LinphoneEvent *lev){
 	if (lev->op)
 		sal_op_release(lev->op);
 	ms_free(lev->name);
-	ms_free(lev);
 }
 
 void linphone_event_unref(LinphoneEvent *lev){
-	lev->refcnt--;
-	if (lev->refcnt==0) linphone_event_destroy(lev);
+	belle_sip_object_unref(lev);
 }
 
 LinphoneSubscriptionDir linphone_event_get_subscription_dir(LinphoneEvent *lev){
@@ -390,4 +398,23 @@ const LinphoneAddress *linphone_event_get_resource(const LinphoneEvent *lev){
 LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev){
 	return lev->lc;
 }
+
+static belle_sip_error_code _linphone_event_marshall(belle_sip_object_t *obj, char* buff, size_t buff_size, size_t *offset) {
+	LinphoneEvent *ev = (LinphoneEvent*)obj;
+	belle_sip_error_code err = BELLE_SIP_OK;
+	
+	err = belle_sip_snprintf(buff, buff_size, offset, "%s of %s", ev->dir == LinphoneSubscriptionIncoming ? 
+		"Incoming Subscribe" : (ev->dir == LinphoneSubscriptionOutgoing ? "Outgoing subscribe" : "Publish"), ev->name);
+	
+	return err;
+}
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneEvent);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneEvent, belle_sip_object_t,
+	(belle_sip_object_destroy_t) linphone_event_destroy,
+	NULL, // clone
+	_linphone_event_marshall,
+	FALSE
+);
 

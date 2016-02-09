@@ -2739,6 +2739,16 @@ LINPHONE_PUBLIC void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enabl
 LINPHONE_PUBLIC bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc);
 
 /**
+ * Forces liblinphone to use the supplied list of dns servers, instead of system's ones.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] a #MSList of strings containing the IP addresses of DNS servers to be used.
+ * Setting to NULL restores default behaviour, which is to use the DNS server list provided by the system.
+ * The list is copied internally.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_dns_servers(LinphoneCore *lc, const MSList *servers);
+
+/**
  * Returns the list of available audio codecs.
  * @param[in] lc The LinphoneCore object
  * @return \mslist{PayloadType}
@@ -3871,6 +3881,14 @@ LINPHONE_PUBLIC void linphone_core_set_user_certificates_path(LinphoneCore *lc, 
  * @ingroup initializing
  */
 LINPHONE_PUBLIC const char *linphone_core_get_user_certificates_path(LinphoneCore *lc);
+
+/**
+ * Reload mediastreamer2 plugins from specified directory.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] directory the path from where plugins are to be loaded, pass NULL to use default (compile-time determined) plugin directory.
+ * @ingroup initializing
+ */
+LINPHONE_PUBLIC void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path);
 
 /**
  * Search from the list of current calls if a remote address match uri
