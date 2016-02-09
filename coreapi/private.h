@@ -1402,7 +1402,7 @@ BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
 BELLE_SIP_TYPE_ID(LinphoneTunnelConfig),
-BELLE_SIP_TYPE_ID(LinphoneFriendListCbs)
+BELLE_SIP_TYPE_ID(LinphoneFriendListCbs),
 BELLE_SIP_TYPE_ID(LinphoneEvent)
 BELLE_SIP_DECLARE_TYPES_END
 
