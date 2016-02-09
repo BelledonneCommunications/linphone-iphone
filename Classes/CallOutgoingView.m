@@ -59,21 +59,32 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (!call) {
-		[PhoneMainView.instance popCurrentView];
-	} else {
-		const LinphoneAddress *addr = linphone_call_get_remote_address(call);
-		[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
-		char *uri = linphone_address_as_string_uri_only(addr);
-		_addressLabel.text = [NSString stringWithUTF8String:uri];
-		ms_free(uri);
-		[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:NO] bordered:YES withRoundedRadius:YES];
+		return;
 	}
+
+	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
+	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
+	char *uri = linphone_address_as_string_uri_only(addr);
+	_addressLabel.text = [NSString stringWithUTF8String:uri];
+	ms_free(uri);
+	[_avatarImage setImage:[FastAddressBook imageForAddress:addr thumbnail:NO] bordered:YES withRoundedRadius:YES];
 
 	[self hideSpeaker:LinphoneManager.instance.bluetoothAvailable];
 
 	[_speakerButton update];
 	[_microButton update];
 	[_routesButton update];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	// if there is no call (for whatever reason), we must wait viewDidAppear method
+	// before popping current view, because UICompositeView cannot handle view change
+	// directly in viewWillAppear (this would lead to crash in deallocated memory - easily
+	// reproductible on iPad mini).
+	if (!linphone_core_get_current_call(LC)) {
+		[PhoneMainView.instance popCurrentView];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
