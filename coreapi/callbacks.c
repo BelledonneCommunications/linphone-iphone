@@ -254,27 +254,19 @@ static void call_received(SalOp *h){
 	if (linphone_presence_model_get_basic_status(lc->presence_model) == LinphonePresenceBasicStatusClosed) {
 		LinphonePresenceActivity *activity = linphone_presence_model_get_activity(lc->presence_model);
 		switch (linphone_presence_activity_get_type(activity)) {
-			case LinphonePresenceActivityBusy:
-				sal_call_decline(h,SalReasonBusy,NULL);
-				break;
-			case LinphonePresenceActivityAppointment:
-			case LinphonePresenceActivityMeeting:
-			case LinphonePresenceActivityOffline:
-			case LinphonePresenceActivityWorship:
-				sal_call_decline(h,SalReasonTemporarilyUnavailable,NULL);
-				break;
 			case LinphonePresenceActivityPermanentAbsence:
 				alt_contact = linphone_presence_model_get_contact(lc->presence_model);
 				if (alt_contact != NULL) {
 					sal_call_decline(h,SalReasonRedirect,alt_contact);
 					ms_free(alt_contact);
+					sal_op_release(h);
+					return;
 				}
 				break;
 			default:
+				/*nothing special to be done*/
 				break;
 		}
-		sal_op_release(h);
-		return;
 	}
 
 	if (!linphone_core_can_we_add_call(lc)){/*busy*/
