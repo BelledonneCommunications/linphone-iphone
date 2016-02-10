@@ -1311,7 +1311,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 	// get default config from bundle
 	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
 	NSString *chatDBFileName = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
-	const char *lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] UTF8String];
 
 	NSString *device = [[NSString
 		stringWithFormat:@"%@_%@_iOS%@", [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
@@ -1325,8 +1324,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 	if (_fastAddressBook == nil) {
 		_fastAddressBook = [[FastAddressBook alloc] init];
 	}
-
-	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName UTF8String]);
 	linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
@@ -1468,9 +1465,8 @@ static BOOL libStarted = FALSE;
 	linphone_core_set_play_file(theLinphoneCore, [LinphoneManager bundleFile:hold].UTF8String);
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
-	const char *lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] UTF8String];
-	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
-	linphone_core_set_user_certificates_path(theLinphoneCore, [[LinphoneManager cacheDirectory] UTF8String]);
+	linphone_core_set_root_ca(theLinphoneCore, [LinphoneManager bundleFile:@"rootca.pem"].UTF8String);
+	linphone_core_set_user_certificates_path(theLinphoneCore, [LinphoneManager cacheDirectory].UTF8String);
 
 	/* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded
 	 (or skipped).
