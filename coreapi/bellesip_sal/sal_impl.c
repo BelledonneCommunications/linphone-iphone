@@ -1033,7 +1033,7 @@ static void make_supported_header(Sal *sal){
 		const char *tag=(const char*)it->data;
 		size_t taglen=strlen(tag);
 		if (alltags==NULL || (written+taglen+1>=buflen)) alltags=ms_realloc(alltags,(buflen=buflen*2));
-		snprintf(alltags+written,buflen-written,it->next ? "%s, " : "%s",tag);
+		written+=snprintf(alltags+written,buflen-written,it->next ? "%s, " : "%s",tag);
 	}
 	if (alltags){
 		sal->supported=belle_sip_header_create("Supported",alltags);
