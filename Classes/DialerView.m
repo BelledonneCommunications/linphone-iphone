@@ -271,22 +271,30 @@ static UICompositeViewDescription *compositeDescription = nil;
 						   [Log enableLogs:newDebugLevel];
 						 }];
 
-		[alertView addButtonWithTitle:NSLocalizedString(@"Remove account(s) and self destruct", nil)
-								block:^{
-								  linphone_core_clear_proxy_config([LinphoneManager getLc]);
-								  linphone_core_clear_all_auth_info([LinphoneManager getLc]);
-								  [LinphoneManager.instance destroyLinphoneCore];
-								  if ([NSFileManager.defaultManager
-										  isDeletableFileAtPath:[LinphoneManager documentFile:@"linphonerc"]] == YES) {
-									  [NSFileManager.defaultManager
-										  removeItemAtPath:[LinphoneManager documentFile:@"linphonerc"]
-													 error:nil];
-								  }
+		[alertView
+			addButtonWithTitle:NSLocalizedString(@"Remove account(s) and self destruct", nil)
+						 block:^{
+						   linphone_core_clear_proxy_config([LinphoneManager getLc]);
+						   linphone_core_clear_all_auth_info([LinphoneManager getLc]);
+						   @try {
+							   [LinphoneManager.instance destroyLinphoneCore];
+						   } @catch (NSException *e) {
+							   LOGW(@"Exception while destroying linphone core: %@", e);
+						   } @finally {
+							   if ([NSFileManager.defaultManager
+									   isDeletableFileAtPath:[LinphoneManager documentFile:@"linphonerc"]] == YES) {
+								   [NSFileManager.defaultManager
+									   removeItemAtPath:[LinphoneManager documentFile:@"linphonerc"]
+												  error:nil];
+							   }
 #ifdef DEBUG
-								  [LinphoneManager instanceRelease];
+							   [LinphoneManager instanceRelease];
 #endif
-								  [UIApplication sharedApplication].keyWindow.rootViewController = nil;
-								}];
+						   }
+						   [UIApplication sharedApplication].keyWindow.rootViewController = nil;
+						   // make the application crash to be sure that user restart it properly
+						   LOGF(@"Self-destructing in 3..2..1..0!");
+						 }];
 
 		[alertView show];
 		return true;
