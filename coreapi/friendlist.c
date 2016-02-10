@@ -319,6 +319,7 @@ LinphoneFriendListStatus linphone_friend_list_add_friend(LinphoneFriendList *lis
 		if (tmp) ms_free(tmp);
 	} else {
 		friend->in_list = TRUE;
+		friend->lc = list->lc; /*In case not set yet*/
 		list->friends = ms_list_append(list->friends, linphone_friend_ref(friend));
 	}
 	return LinphoneFriendListOK;
