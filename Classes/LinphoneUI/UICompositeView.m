@@ -575,7 +575,7 @@
 		statusBarFrame.origin.y = origin - statusBarFrame.size.height;
 	}
 
-	//	2. side menu - fixed size, always starting below status bar (hack: except in fullscreen)
+	//	2. side menu - fixed size, always starting below status bar (hack: gexcept in fullscreen)
 	CGRect sideMenuFrame = viewFrame;
 	sideMenuFrame.origin.y = origin + (fullscreen ? statusBarFrame.size.height : 0);
 	sideMenuFrame.size.height -= sideMenuFrame.origin.y;
