@@ -2280,4 +2280,8 @@ public interface LinphoneCore {
 	**/
 	public void setDnsServers(String servers[]);
 
+	/**
+	 * Set user certificates directory path (used by SRTP-DTLS).
+	 */
+	public void setUserCertificatesPath(String path);
 }
