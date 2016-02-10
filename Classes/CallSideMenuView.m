@@ -68,6 +68,20 @@
 	}
 }
 
++ (NSString *)mediaEncryptionToString:(LinphoneMediaEncryption)enc {
+	switch (enc) {
+		case LinphoneMediaEncryptionDTLS:
+			return @"DTLS";
+		case LinphoneMediaEncryptionSRTP:
+			return @"SRTP";
+		case LinphoneMediaEncryptionZRTP:
+			return @"ZRTP";
+		case LinphoneMediaEncryptionNone:
+			break;
+	}
+	return NSLocalizedString(@"None", nil);
+}
+
 - (NSString *)updateStatsForCall:(LinphoneCall *)call stream:(LinphoneStreamType)stream {
 	NSMutableString *result = [[NSMutableString alloc] init];
 	const PayloadType *payload = NULL;
@@ -161,7 +175,7 @@
 	LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
 	if (enc != LinphoneMediaEncryptionNone) {
 		[stats appendString:[NSString
-								stringWithFormat:@"Call encrypted using %s", linphone_media_encryption_to_string(enc)]];
+								stringWithFormat:@"Call encrypted using %@", [self.class mediaEncryptionToString:enc]]];
 	}
 
 	[stats appendString:[self updateStatsForCall:call stream:LinphoneStreamTypeAudio]];
