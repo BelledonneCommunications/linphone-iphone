@@ -1312,11 +1312,13 @@ static LinphoneCoreVTable linphonec_vtable = {
 	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
 	NSString *chatDBFileName = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
 
-	NSString *device = [[NSString
-		stringWithFormat:@"%@_%@_iOS%@", [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
-						 [LinphoneUtils deviceName], UIDevice.currentDevice.systemVersion]
-		stringByReplacingOccurrencesOfString:@","
-								  withString:@"."];
+	NSMutableString *device = [[NSMutableString alloc]
+		initWithString:[NSString
+						   stringWithFormat:@"%@_%@_iOS%@",
+											[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
+											[LinphoneUtils deviceName], UIDevice.currentDevice.systemVersion]];
+	[device stringByReplacingOccurrencesOfString:@"," withString:@"."];
+	[device stringByReplacingOccurrencesOfString:@" " withString:@"."];
 	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, LINPHONE_IOS_VERSION);
 
 	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"];
