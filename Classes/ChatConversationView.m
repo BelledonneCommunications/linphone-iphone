@@ -307,6 +307,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		completion:^(BOOL finished) {
 		  [_tableController scrollToBottom:TRUE];
+		  _composeIndicatorView.hidden = !visible;
 		}];
 }
 
