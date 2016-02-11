@@ -10,11 +10,15 @@
 		<entry name="reg_route" overwrite="true"></entry>
 		<entry name="reg_sendregister" overwrite="true">1</entry>
 	</section>
+
 	<section name="assistant">
-		<entry name="username_min_length" overwrite="true">-1</entry>
-		<entry name="password_min_length" overwrite="true">-1</entry>
-		<entry name="username_max_length" overwrite="true">-1</entry>
+		<entry name="domain" overwrite="true"></entry>
 		<entry name="password_max_length" overwrite="true">-1</entry>
+		<entry name="password_min_length" overwrite="true">-1</entry>
+		<entry name="username_length" overwrite="true">-1</entry>
+		<entry name="username_max_length" overwrite="true">-1</entry>
+		<entry name="username_min_length" overwrite="true">-1</entry>
+		<entry name="username_regex" overwrite="true">.*</entry>
 		<entry name="xmlrpc_url" overwrite="true"></entry>
 	</section>
 </config>

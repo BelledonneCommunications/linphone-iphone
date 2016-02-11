@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
@@ -552,7 +552,7 @@
                                             </connections>
                                         </button>
                                         <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="d9Y-2a-CDI" userLabel="chatNotificationView" customClass="UIBouncingView">
-                                            <rect key="frame" x="353" y="8" width="44" height="22"/>
+                                            <rect key="frame" x="353" y="0.0" width="22" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" tag="71" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="nPO-PM-4zJ" userLabel="chatNotificationImage">
@@ -1228,7 +1228,7 @@
                                             </connections>
                                         </button>
                                         <view hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" tag="70" contentMode="scaleToFill" id="1pd-et-5dy" userLabel="chatNotificationView" customClass="UIBouncingView">
-                                            <rect key="frame" x="357" y="8" width="25" height="22"/>
+                                            <rect key="frame" x="352" y="1" width="22" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" tag="71" contentMode="scaleAspectFit" image="history_chat_indicator.png" id="7ZF-Ch-AL1" userLabel="chatNotificationImage">
