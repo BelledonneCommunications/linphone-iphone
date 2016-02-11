@@ -243,11 +243,13 @@ static void linphone_call_audiostream_auth_token_ready(void *data, const char* a
  * @ingroup call_control
 **/
 void linphone_call_set_authentication_token_verified(LinphoneCall *call, bool_t verified){
-	if (call->audiostream==NULL){
-		ms_error("linphone_call_set_authentication_token_verified(): No audio stream");
+	if (call->audiostream==NULL || !media_stream_started(&call->audiostream->ms)){
+		ms_error("linphone_call_set_authentication_token_verified(): No audio stream or not started");
+		return;
 	}
 	if (call->audiostream->ms.sessions.zrtp_context==NULL){
 		ms_error("linphone_call_set_authentication_token_verified(): No zrtp context.");
+		return;
 	}
 	if (!call->auth_token_verified && verified){
 		ms_zrtp_sas_verified(call->audiostream->ms.sessions.zrtp_context);
