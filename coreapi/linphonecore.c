@@ -4520,10 +4520,7 @@ static MSSndCard *get_card_from_string_id(const char *devid, unsigned int cap, M
  * @param devid the device name as returned by linphone_core_get_sound_devices()
 **/
 bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *devid){
-	MSSndCard *sndcard;
-	sndcard=ms_snd_card_manager_get_card(ms_factory_get_snd_card_manager(lc->factory),devid);
-	if (sndcard!=NULL && (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_CAPTURE)) return TRUE;
-	return FALSE;
+	return ms_snd_card_manager_get_capture_card(ms_factory_get_snd_card_manager(lc->factory),devid) != NULL;
 }
 
 /**
@@ -4534,10 +4531,7 @@ bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *devi
  * @param devid the device name as returned by linphone_core_get_sound_devices()
 **/
 bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *devid){
-	MSSndCard *sndcard;
-	sndcard=ms_snd_card_manager_get_card(ms_factory_get_snd_card_manager(lc->factory),devid);
-	if (sndcard!=NULL && (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_PLAYBACK)) return TRUE;
-	return FALSE;
+	return ms_snd_card_manager_get_playback_card(ms_factory_get_snd_card_manager(lc->factory),devid) != NULL;
 }
 
 /**
