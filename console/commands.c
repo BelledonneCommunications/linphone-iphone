@@ -1261,6 +1261,8 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 			return 1;
 		}
 
+		linphone_core_use_files(lc,FALSE);
+
 		dev=linphone_core_get_sound_devices(lc);
 		index=atoi(arg2); /* FIXME: handle not-a-number */
 		for(i=0;dev[i]!=NULL;i++)
@@ -1276,6 +1278,7 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 		linphonec_out("No such sound device\n");
 		return 1;
 	}
+
 	if (strcmp(arg1, "capture")==0)
 	{
 		const char *devname=linphone_core_get_capture_device(lc);
