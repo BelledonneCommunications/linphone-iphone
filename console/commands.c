@@ -1243,12 +1243,16 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 
 	if (strcmp(arg1, "show")==0)
 	{
-		linphonec_out("Ringer device: %s\n",
-			linphone_core_get_ringer_device(lc));
-		linphonec_out("Playback device: %s\n",
-			linphone_core_get_playback_device(lc));
-		linphonec_out("Capture device: %s\n",
-			linphone_core_get_capture_device(lc));
+		if (linphone_core_get_use_files(lc)) {
+			linphonec_out("Using files.\n");
+		} else {
+			linphonec_out("Ringer device: %s\n",
+				linphone_core_get_ringer_device(lc));
+			linphonec_out("Playback device: %s\n",
+				linphone_core_get_playback_device(lc));
+			linphonec_out("Capture device: %s\n",
+				linphone_core_get_capture_device(lc));
+		}
 		return 1;
 	}
 

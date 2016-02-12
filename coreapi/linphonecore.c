@@ -1235,7 +1235,7 @@ static MSList *add_missing_supported_codecs(LinphoneCore *lc, const MSList *defa
 		if (!elem2){
 			PayloadType *pt=(PayloadType*)elem->data;
 			/*this codec from default list should be inserted in the list*/
-			
+
 			if (!linphone_core_codec_supported(lc, payload_type_get_stream_type(pt), pt->mime_type)) continue;
 			if (!last_inserted){
 				l=ms_list_prepend(l,pt);
@@ -1712,14 +1712,14 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
 	linphone_core_activate_log_serialization_if_needed();
-	
+
 	lc->factory = ms_factory_new_with_voip();
 	linphone_core_register_default_codecs(lc);
 	linphone_core_register_offer_answer_providers(lc);
 	/* Get the mediastreamer2 event queue */
 	/* This allows to run event's callback in linphone_core_iterate() */
 	lc->msevq=ms_factory_create_event_queue(lc->factory);
-	
+
 	lc->sal=sal_init(lc->factory);
 	sal_set_http_proxy_host(lc->sal, linphone_core_get_http_proxy_host(lc));
 	sal_set_http_proxy_port(lc->sal, linphone_core_get_http_proxy_port(lc));
@@ -5884,6 +5884,10 @@ void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
 }
 
+bool_t linphone_core_get_use_files(LinphoneCore *lc) {
+	return lc->use_files;
+}
+
 const char * linphone_core_get_play_file(const LinphoneCore *lc) {
 	return lc->play_file;
 }
@@ -6466,7 +6470,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
 	ms_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);
-	
+
 	ms_factory_destroy(lc->factory);
 }
 
