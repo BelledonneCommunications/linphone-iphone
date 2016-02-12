@@ -63,7 +63,7 @@
 }
 
 - (void)sendMessage:(NSString *)message {
-	[tester enterText:message intoViewWithAccessibilityLabel:@"Message field"];
+	[tester enterText:message.uppercaseString intoViewWithAccessibilityLabel:@"Message field"];
 	[tester tapViewWithAccessibilityLabel:@"Send"];
 }
 
