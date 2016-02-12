@@ -1434,6 +1434,23 @@ static BOOL libStarted = FALSE;
 	[Log enableLogs:[self lpConfigIntForKey:@"debugenable_preference"]];
 	connectivity = none;
 
+	// Set audio assets
+	NSString *ring =
+		([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring" inSection:@"sound"].lastPathComponent]
+			 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
+			.lastPathComponent;
+	NSString *ringback =
+		([LinphoneManager bundleFile:[self lpConfigStringForKey:@"remote_ring" inSection:@"sound"].lastPathComponent]
+			 ?: [LinphoneManager bundleFile:@"ringback.wav"])
+			.lastPathComponent;
+	NSString *hold =
+		([LinphoneManager bundleFile:[self lpConfigStringForKey:@"hold_music" inSection:@"sound"].lastPathComponent]
+			 ?: [LinphoneManager bundleFile:@"hold.mkv"])
+			.lastPathComponent;
+	[self lpConfigSetString:[LinphoneManager bundleFile:ring] forKey:@"local_ring" inSection:@"sound"];
+	[self lpConfigSetString:[LinphoneManager bundleFile:ringback] forKey:@"remote_ring" inSection:@"sound"];
+	[self lpConfigSetString:[LinphoneManager bundleFile:hold] forKey:@"hold_music" inSection:@"sound"];
+
 	theLinphoneCore = linphone_core_new_with_config(&linphonec_vtable, _configDb, (__bridge void *)(self));
 	LOGI(@"Create linphonecore %p", theLinphoneCore);
 
@@ -1446,26 +1463,6 @@ static BOOL libStarted = FALSE;
 	libmsbcg729_init(f);
 	libmswebrtc_init(f);
 	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
-
-	// Set audio assets
-	NSString *ring =
-		([LinphoneManager
-			 bundleFile:[NSString stringWithUTF8String:linphone_core_get_ring(theLinphoneCore) ?: ""].lastPathComponent]
-			 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
-			.lastPathComponent;
-	NSString *ringback =
-		([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_ringback(theLinphoneCore) ?: ""]
-										 .lastPathComponent]
-			 ?: [LinphoneManager bundleFile:@"ringback.wav"])
-			.lastPathComponent;
-	NSString *hold =
-		([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_play_file(theLinphoneCore) ?: ""]
-										 .lastPathComponent]
-			 ?: [LinphoneManager bundleFile:@"hold.mkv"])
-			.lastPathComponent;
-	linphone_core_set_ring(theLinphoneCore, [LinphoneManager bundleFile:ring].UTF8String);
-	linphone_core_set_ringback(theLinphoneCore, [LinphoneManager bundleFile:ringback].UTF8String);
-	linphone_core_set_play_file(theLinphoneCore, [LinphoneManager bundleFile:hold].UTF8String);
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
 	const char *lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] UTF8String];
