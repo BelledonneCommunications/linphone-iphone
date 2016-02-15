@@ -152,7 +152,8 @@
 			if (c != nil) {
 				LinphoneCallState state = linphone_call_get_state(c);
 				ret = (state == LinphoneCallPaused || state == LinphoneCallPausing);
-				self.enabled = (state == LinphoneCallPaused || state == LinphoneCallPausing ||
+				self.enabled = !linphone_call_media_in_progress(c) &&
+							   (state == LinphoneCallPaused || state == LinphoneCallPausing ||
 								state == LinphoneCallStreamsRunning);
 			} else {
 				self.enabled = FALSE;
