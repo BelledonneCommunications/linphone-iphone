@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "linphonecore.h"
 #include "private.h"
 
-#include <polarssl/md5.h>
+#include <bctoolbox/crypto.h>
 
 
 static char * create_resource_list_xml(const LinphoneFriendList *list) {
@@ -393,7 +393,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 		char *xml_content = create_resource_list_xml(list);
 		if ((address != NULL) && (xml_content != NULL) && (linphone_friend_list_has_subscribe_inactive(list) == TRUE)) {
 			unsigned char digest[16];
-			md5((unsigned char *)xml_content, strlen(xml_content), digest);
+			bctoolbox_md5((unsigned char *)xml_content, strlen(xml_content), digest);
 			if ((list->event != NULL) && (list->content_digest != NULL) && (memcmp(list->content_digest, digest, sizeof(digest)) == 0)) {
 				/* The content has not changed, only refresh the event. */
 				linphone_event_refresh_subscribe(list->event);

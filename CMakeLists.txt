@@ -91,9 +91,11 @@ endif()
 if(LINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS)
 	include("${EP_bellesip_CONFIG_DIR}/BelleSIPConfig.cmake")
 	include("${EP_ms2_CONFIG_DIR}/Mediastreamer2Config.cmake")
+	include("${EP_bctoolbox_CONFIG_DIR}/BcToolboxConfig.cmake")
 else()
 	find_package(BelleSIP REQUIRED)
 	find_package(Mediastreamer2 REQUIRED)
+	find_package(BcToolBox REQUIRED)
 endif()
 find_package(XML2 REQUIRED)
 find_package(Zlib)
@@ -181,6 +183,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}/coreapi/
 	${BELLESIP_INCLUDE_DIRS}
 	${MEDIASTREAMER2_INCLUDE_DIRS}
+	${BCTOOLBOX_INCLUDE_DIRS}
 )
 if(ENABLE_TUNNEL)
 	include_directories(${TUNNEL_INCLUDE_DIRS})
