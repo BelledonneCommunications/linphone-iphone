@@ -52,6 +52,7 @@ blacklisted_functions = [
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_remove_listener',
 	'linphone_core_serialize_logs',	# There is no use to wrap this function
+	'linphone_core_set_dns_servers',
 	'linphone_core_set_log_collection_max_file_size',	# need to handle class properties
 	'linphone_core_set_log_collection_path',	# need to handle class properties
 	'linphone_core_set_log_collection_prefix',	# need to handle class properties
