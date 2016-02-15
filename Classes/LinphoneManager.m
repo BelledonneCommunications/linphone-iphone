@@ -822,6 +822,14 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 - (void)configuringStateChangedNotificationHandler:(NSNotification *)notif {
 	_wasRemoteProvisioned = ((LinphoneConfiguringState)[[[notif userInfo] valueForKey:@"state"] integerValue] ==
 							 LinphoneConfiguringSuccessful);
+	if (_wasRemoteProvisioned) {
+		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+		if (cfg) {
+			linphone_proxy_config_edit(cfg);
+			[self configurePushTokenForProxyConfig:cfg];
+			linphone_proxy_config_done(cfg);
+		}
+	}
 }
 
 #pragma mark - Registration State Functions
