@@ -239,9 +239,9 @@
 - (void)testSendMessageToMyself {
 	[self startChatWith:[self me]];
 
-	[self sendMessage:@"Hello"];
-	[tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
-	[tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
+	[self sendMessage:@"HELLO"];
+	[tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"HELLO" traits:UIAccessibilityTraitStaticText];
+	[tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"HELLO" traits:UIAccessibilityTraitStaticText];
 	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Message status"];
 
 	[self goBackFromChat];
