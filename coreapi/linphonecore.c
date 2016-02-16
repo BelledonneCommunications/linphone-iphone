@@ -3854,8 +3854,20 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 }
 
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri){
+	char *real_url=NULL;
+	LinphoneAddress *real_parsed_url=linphone_core_interpret_url(lc,redirect_uri);
+
+
+	if (!real_parsed_url){
+		/* bad url */
+		ms_error("Bad redirect URI: %s", redirect_uri?:"NULL");
+		return -1;
+	}
+
 	if (call->state==LinphoneCallIncomingReceived){
-		sal_call_decline(call->op,SalReasonRedirect,redirect_uri);
+		real_url=linphone_address_as_string (real_parsed_url);
+		sal_call_decline(call->op,SalReasonRedirect,real_url);
+		ms_free(real_url);
 		sal_error_info_set(&call->non_op_error,SalReasonRedirect,603,"Call redirected",NULL);
 		terminate_call(lc,call);
 	}else{
