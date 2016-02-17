@@ -247,7 +247,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
 		NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
 		ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
-		NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1];
+		NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1].uppercaseString;
 		[[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 		if ([tableView numberOfRowsInSection:indexPath.section] == 1) {
 			[addressBookMap removeObjectForKey:firstChar];
@@ -268,7 +268,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	  OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
 	  NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
 	  ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
-	  NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1];
+	  NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1].uppercaseString;
 	  [[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
 		  [addressBookMap removeObjectForKey:firstChar];
