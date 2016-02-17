@@ -2013,7 +2013,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 // NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
 // NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
 // NSLocalizedString(@"IM_FULLMSG", nil); // Fake for genstrings
-#ifdef USE_APN_DEV
+#ifdef DEBUG
 #define APPMODE_SUFFIX @"dev"
 #else
 #define APPMODE_SUFFIX @"prod"
