@@ -124,6 +124,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
 	$(LOCAL_PATH)/../mediastreamer2/src/audiofilters/ \
+	$(LOCAL_PATH)/../../bctoolbox/include \
 	$(LOCAL_PATH)/../../belle-sip/include \
 	$(LOCAL_PATH)/../../../gen \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
@@ -137,6 +138,7 @@ LOCAL_STATIC_LIBRARIES := \
 	libmediastreamer2 \
 	libortp \
 	libbellesip \
+	libbctoolbox \
 	libgsm \
 	liblpxml2
 
