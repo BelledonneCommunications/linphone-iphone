@@ -4921,7 +4921,7 @@ void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable) {
 bool_t linphone_core_mic_enabled(LinphoneCore *lc) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (linphone_core_is_in_conference(lc)){
-		return linphone_conference_microphone_is_muted(lc->conf_ctx);
+		return !linphone_conference_microphone_is_muted(lc->conf_ctx);
 	}else if (call==NULL){
 		ms_warning("%s(): No current call!", __FUNCTION__);
 		return TRUE;
