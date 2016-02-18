@@ -4022,6 +4022,7 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
 		ms_error("No reason to pause this call, it is already paused or inactive.");
 		return -1;
 	}
+	call->broken = FALSE;
 	linphone_call_set_state(call, LinphoneCallPausing, "Pausing call");
 	linphone_call_make_local_media_description(call);
 #ifdef BUILD_UPNP
@@ -4098,6 +4099,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	}
 
 	call->was_automatically_paused=FALSE;
+	call->broken = FALSE;
 
 	/* Stop playing music immediately. If remote side is a conference it
 	 prevents the participants to hear it while the 200OK comes back.*/

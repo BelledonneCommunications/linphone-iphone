@@ -4895,7 +4895,8 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 			linphone_call_params_unref(params);
 		break;
 		default:
-			ms_error("linphone_call_resume_if_broken(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
+			ms_warning("linphone_call_resume_if_broken(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
+			call->broken = FALSE;
 		break;
 	}
 }
