@@ -446,13 +446,7 @@ def main(argv=None):
     argparser.add_argument(
         '-d', '--debug', help="Prepare a debug build, eg. add debug symbols and use no optimizations.", action='store_true')
     argparser.add_argument(
-        '-dv', '--debug-verbose', help="Activate ms_debug logs.", action='store_true')
-    argparser.add_argument(
         '-f', '--force', help="Force preparation, even if working directory already exist.", action='store_true')
-    argparser.add_argument(
-        '--disable-gpl-third-parties', help="Disable GPL third parties such as FFMpeg, x264.", action='store_true')
-    argparser.add_argument(
-        '--enable-non-free-codecs', help="Enable non-free codecs such as OpenH264, MPEG4, etc.. Final application must comply with their respective license (see README.md).", action='store_true')
     argparser.add_argument(
         '--build-all-codecs', help="Build all codecs including non-free. Final application must comply with their respective license (see README.md).", action='store_true')
     argparser.add_argument(
@@ -477,10 +471,6 @@ def main(argv=None):
 
     additional_args += ["-DLINPHONE_IOS_DEPLOYMENT_TARGET=" + extract_deployment_target()]
     additional_args += ["-DLINPHONE_BUILDER_DUMMY_LIBRARIES=" + ' '.join(extract_libs_list())]
-    if args.debug_verbose is True:
-        additional_args += ["-DENABLE_DEBUG_LOGS=YES"]
-    if args.enable_non_free_codecs is True:
-        additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
     if args.build_all_codecs is True:
         additional_args += ["-DENABLE_GPL_THIRD_PARTIES=YES"]
         additional_args += ["-DENABLE_NON_FREE_CODECS=YES"]
@@ -500,13 +490,11 @@ def main(argv=None):
         additional_args += ["-DENABLE_OPENH264=YES"]
         additional_args += ["-DENABLE_VPX=YES"]
         additional_args += ["-DENABLE_X264=YES"]
-    if args.disable_gpl_third_parties is True:
-        additional_args += ["-DENABLE_GPL_THIRD_PARTIES=NO"]
 
     if args.tunnel:
         if not os.path.isdir("submodules/tunnel"):
             info("Tunnel wanted but not found yet, trying to clone it...")
-            p = Popen("git clone gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" "))
+            p = Popen("git submodule add gitosis@git.linphone.org:tunnel.git submodules/tunnel".split(" "))
             p.wait()
             if p.returncode != 0:
                 error("Could not clone tunnel. Please see http://www.belledonne-communications.com/voiptunnel.html")
@@ -552,6 +540,8 @@ def main(argv=None):
         else:
             retcode = prepare.run(target, args.debug, False, args.list_cmake_variables, args.force, additional_args)
             if retcode != 0:
+                error("Configuration failed, please check errors and rerun prepare.py.")
+                error("Aborting now.")
                 return retcode
 
     if args.clean:
