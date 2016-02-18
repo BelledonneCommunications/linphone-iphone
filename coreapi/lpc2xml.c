@@ -24,6 +24,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <libxml/xmlversion.h>
 
 #define LPC2XML_BZ 2048
+#define ISO_ENCODING "ISO-8859-1"
+
+static xmlChar* convert_iso_to_utf8(const char *in) {
+	xmlChar *out = NULL;
+	int ret, size, out_size, temp;
+	xmlCharEncodingHandlerPtr handler;
+
+	size = (int)strlen(in) + 1; 
+	out_size = size * 2 - 1; 
+	out = ms_malloc((size_t)out_size); 
+
+	if (out) {
+		handler = xmlFindCharEncodingHandler(ISO_ENCODING);
+		if (!handler) {
+			ms_free(out);
+			return NULL;
+		}
+		
+		temp = size-1;
+		ret = handler->input(out, &out_size, (const xmlChar *)in, &temp);
+		if (ret < 0 || temp - size + 1) {
+			ms_free(out);
+			return NULL;
+		} else {
+			out = ms_realloc(out, out_size + 1); 
+			out[out_size] = '\0';
+		}
+	}
+	return out;
+}	
 
 struct _lpc2xml_context {
 	const LpConfig *lpc;
@@ -94,15 +124,24 @@ static void lpc2xml_genericxml_warning(void *ctx, const char *fmt, ...) {
 
 static int processEntry(const char *section, const char *entry, xmlNode *node, lpc2xml_context *ctx) {
 	const char *content = lp_config_get_string(ctx->lpc, section, entry, NULL);
+	xmlChar *converted_content = NULL;
 	if (content == NULL) {
 		lpc2xml_log(ctx, LPC2XML_ERROR, "Issue when reading the lpc");
 		return -1;
 	}
-
 	lpc2xml_log(ctx, LPC2XML_MESSAGE, "Set %s|%s = %s", section, entry, content);
-	// xmlNodeSetContent expects special characters to be escaped, xmlNodeAddContent doesn't (and escapes what needs to be)
-	xmlNodeSetContent(node, (const xmlChar *) "");
-	xmlNodeAddContent(node, (const xmlChar *) content);
+	converted_content = convert_iso_to_utf8(content);
+	
+	if (converted_content) {
+		// xmlNodeSetContent expects special characters to be escaped, xmlNodeAddContent doesn't (and escapes what needs to be)
+		xmlNodeSetContent(node, (const xmlChar *) "");
+		xmlNodeAddContent(node, (const xmlChar *) converted_content);
+		ms_free(converted_content);
+	} else {
+		// xmlNodeSetContent expects special characters to be escaped, xmlNodeAddContent doesn't (and escapes what needs to be)
+		xmlNodeSetContent(node, (const xmlChar *) "");
+		xmlNodeAddContent(node, (const xmlChar *) content);
+	}
 	
 	if (lp_config_get_overwrite_flag_for_entry(ctx->lpc, section, entry) || lp_config_get_overwrite_flag_for_section(ctx->lpc, section)) {
 		xmlSetProp(node, (const xmlChar *)"overwrite", (const xmlChar *) "true");
