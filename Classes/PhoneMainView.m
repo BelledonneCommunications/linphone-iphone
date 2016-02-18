@@ -286,16 +286,70 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)registrationUpdate:(NSNotification *)notif {
 	LinphoneRegistrationState state = [[notif.userInfo objectForKey:@"state"] intValue];
 	LinphoneProxyConfig *cfg = [[notif.userInfo objectForKey:@"cfg"] pointerValue];
-	// Only report bad credential issue
 	if (state == LinphoneRegistrationFailed &&
-		[UIApplication sharedApplication].applicationState == UIApplicationStateBackground &&
-		linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
-		UIAlertView *error =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
-									   message:NSLocalizedString(@"Bad credentials, check your account settings", nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-							 otherButtonTitles:nil, nil];
+		[UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+		LinphoneReason reason = linphone_proxy_config_get_error(cfg);
+		NSString *message = nil;
+		switch (reason) {
+			case LinphoneReasonBadCredentials:
+				message = NSLocalizedString(@"Bad credentials, check your account settings", nil);
+				break;
+			case LinphoneReasonNoResponse:
+				message = NSLocalizedString(@"No response received from remote", nil);
+				break;
+			case LinphoneReasonUnsupportedContent:
+				message = NSLocalizedString(@"Unsupported content", nil);
+				break;
+			case LinphoneReasonIOError:
+				message = NSLocalizedString(
+					@"Cannot reach the server: either it is an invalid address or it may be temporary down.", nil);
+				break;
+
+			case LinphoneReasonUnauthorized:
+				message = NSLocalizedString(@"Operation is unauthorized because missing credential", nil);
+				break;
+			case LinphoneReasonNoMatch:
+				message = NSLocalizedString(@"Operation could not be executed by server or remote client because it "
+											@"didn't have any context for it",
+											nil);
+				break;
+			case LinphoneReasonMovedPermanently:
+				message = NSLocalizedString(@"Resource moved permanently", nil);
+				break;
+			case LinphoneReasonGone:
+				message = NSLocalizedString(@"Resource no longer exists", nil);
+				break;
+			case LinphoneReasonTemporarilyUnavailable:
+				message = NSLocalizedString(@"Temporarily unavailable", nil);
+				break;
+			case LinphoneReasonAddressIncomplete:
+				message = NSLocalizedString(@"Address incomplete", nil);
+				break;
+			case LinphoneReasonNotImplemented:
+				message = NSLocalizedString(@"Not implemented", nil);
+				break;
+			case LinphoneReasonBadGateway:
+				message = NSLocalizedString(@"Bad gateway", nil);
+				break;
+			case LinphoneReasonServerTimeout:
+				message = NSLocalizedString(@"Server timeout", nil);
+				break;
+			case LinphoneReasonNotAcceptable:
+			case LinphoneReasonDoNotDisturb:
+			case LinphoneReasonDeclined:
+			case LinphoneReasonNotFound:
+			case LinphoneReasonNotAnswered:
+			case LinphoneReasonBusy:
+			case LinphoneReasonNone:
+			case LinphoneReasonUnknown:
+				message = NSLocalizedString(@"Unknown error", nil);
+				break;
+		}
+		UIAlertView *error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
+														message:message
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+											  otherButtonTitles:nil, nil];
 		[error show];
 	}
 }
