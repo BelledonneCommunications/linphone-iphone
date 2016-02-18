@@ -25,7 +25,7 @@
 #import "UICompositeView.h"
 #import "CallPausedTableView.h"
 
-#import "UIMicroButton.h"
+#import "UIMutedMicroButton.h"
 #import "UIPauseButton.h"
 #import "UISpeakerButton.h"
 #import "UIVideoButton.h"
@@ -57,7 +57,7 @@
 @property(nonatomic, strong) IBOutlet UIPauseButton *callPauseButton;
 @property(nonatomic, strong) IBOutlet UIButton *optionsConferenceButton;
 @property(nonatomic, strong) IBOutlet UIVideoButton *videoButton;
-@property(nonatomic, strong) IBOutlet UIMicroButton *microButton;
+@property(nonatomic, strong) IBOutlet UIMutedMicroButton *microButton;
 @property(nonatomic, strong) IBOutlet UISpeakerButton *speakerButton;
 @property(nonatomic, strong) IBOutlet UIToggleButton *routesButton;
 @property(nonatomic, strong) IBOutlet UIToggleButton *optionsButton;
