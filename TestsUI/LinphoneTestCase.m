@@ -39,11 +39,20 @@
 	[LinphoneManager.instance removeAllAccounts];
 
 	// go to dialer
-	for (NSString *button in @[ @"Cancel", @"Back", @"Hangup", @"Dialer" ]) {
+	for (NSString *button in @[ @"Cancel", @"Back", @"Hangup", @"Continue", @"Dialer" ]) {
 		if ([tester tryFindingTappableViewWithAccessibilityLabel:button error:nil]) {
 			[tester tapViewWithAccessibilityLabel:button traits:UIAccessibilityTraitButton];
 		}
 	}
+}
+
+- (void)afterEach {
+	for (NSString *button in @[ @"Cancel", @"Back", @"Hangup", @"Continue", @"Dialer" ]) {
+		if ([tester tryFindingTappableViewWithAccessibilityLabel:button error:nil]) {
+			[tester tapViewWithAccessibilityLabel:button traits:UIAccessibilityTraitButton];
+		}
+	}
+	[super afterEach];
 }
 
 - (void)beforeEach {
