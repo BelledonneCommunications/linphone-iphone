@@ -3704,6 +3704,15 @@ void linphone_core_show_video(LinphoneCore *lc, bool_t show);
 LINPHONE_PUBLIC void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno);
 
 /**
+ * Gets whether linphone is currently streaming audio from and to files, rather
+ * than using the soundcard.
+ * @ingroup media_parameters
+ * @param[in] lc LinphoneCore object
+ * @return A boolean value representing whether linphone is streaming audio from and to files or not.
+**/
+LINPHONE_PUBLIC bool_t linphone_core_get_use_files(LinphoneCore *lc);
+
+/**
  * Get the wav file that is played when putting somebody on hold,
  * or when files are used instead of soundcards (see linphone_core_set_use_files()).
  *

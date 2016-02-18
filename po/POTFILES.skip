@@ -47,6 +47,7 @@ mediastreamer2/src/videofilters/winvideo.c
 mediastreamer2/src/videofilters/winvideods.c
 mediastreamer2/src/videofilters/winvideo2.c
 mediastreamer2/src/videofilters/x11video.c
+mediastreamer2/src/videofilters/msdscap.cc
 mediastreamer2/src/voip/ice.c
 build/vsx/LibLinphoneTester-wp8/LibLinphoneTester-wp8/Resources/AppResources.Designer.cs
 build/wp8/LibLinphoneTester-wp8/Resources/AppResources.Designer.cs

@@ -1647,4 +1647,10 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public void setDnsServers(String servers[]){
 		setDnsServers(nativePtr, servers);
 	}
+
+	private native void setUserCertificatesPath(long nativePtr, String path);
+	@Override
+	public void setUserCertificatesPath(String path) {
+		setUserCertificatesPath(nativePtr, path);
+	}
 }

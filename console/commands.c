@@ -743,7 +743,9 @@ lpc_cmd_redirect(LinphoneCore *lc, char *args){
 	while(elem!=NULL){
 		LinphoneCall *call=(LinphoneCall*)elem->data;
 		if (linphone_call_get_state(call)==LinphoneCallIncomingReceived){
-			linphone_core_redirect_call(lc,call,args);
+			if (linphone_core_redirect_call(lc,call,args) != 0) {
+				linphonec_out("Could not redirect call.\n");
+			}
 			didit=1;
 			/*as the redirection closes the call, we need to re-check the call list that is invalidated.*/
 			elem=linphone_core_get_calls(lc);
@@ -1243,12 +1245,16 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 
 	if (strcmp(arg1, "show")==0)
 	{
-		linphonec_out("Ringer device: %s\n",
-			linphone_core_get_ringer_device(lc));
-		linphonec_out("Playback device: %s\n",
-			linphone_core_get_playback_device(lc));
-		linphonec_out("Capture device: %s\n",
-			linphone_core_get_capture_device(lc));
+		if (linphone_core_get_use_files(lc)) {
+			linphonec_out("Using files.\n");
+		} else {
+			linphonec_out("Ringer device: %s\n",
+				linphone_core_get_ringer_device(lc));
+			linphonec_out("Playback device: %s\n",
+				linphone_core_get_playback_device(lc));
+			linphonec_out("Capture device: %s\n",
+				linphone_core_get_capture_device(lc));
+		}
 		return 1;
 	}
 
@@ -1260,6 +1266,8 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 			linphone_core_use_files(lc,TRUE);
 			return 1;
 		}
+
+		linphone_core_use_files(lc,FALSE);
 
 		dev=linphone_core_get_sound_devices(lc);
 		index=atoi(arg2); /* FIXME: handle not-a-number */
@@ -1276,6 +1284,7 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 		linphonec_out("No such sound device\n");
 		return 1;
 	}
+
 	if (strcmp(arg1, "capture")==0)
 	{
 		const char *devname=linphone_core_get_capture_device(lc);

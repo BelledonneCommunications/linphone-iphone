@@ -169,7 +169,7 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 static void linphone_core_log_collection_handler(const char *domain, OrtpLogLevel level, const char *fmt, va_list args);
 
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
-	if (ortp_logv_out == linphone_core_log_collection_handler) {
+	if (ortp_get_log_handler() == linphone_core_log_collection_handler) {
 		ms_message("There is already a log collection handler, keep it");
 		liblinphone_log_func = logfunc;
 	} else
@@ -389,7 +389,7 @@ void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
 	/* at first call of this function, set liblinphone_log_func to the current
 	 * ortp log function */
 	if( liblinphone_log_func == NULL ){
-		liblinphone_log_func = ortp_logv_out;
+		liblinphone_log_func = ortp_get_log_handler();
 	}
 	liblinphone_log_collection_state = state;
 	if (state != LinphoneLogCollectionDisabled) {
@@ -397,7 +397,7 @@ void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
 		if (state == LinphoneLogCollectionEnabledWithoutPreviousLogHandler) {
 			liblinphone_log_func = NULL;
 		} else {
-			liblinphone_log_func = ortp_logv_out;
+			liblinphone_log_func = ortp_get_log_handler();
 		}
 		ortp_set_log_handler(linphone_core_log_collection_handler);
 	} else {
@@ -1235,7 +1235,7 @@ static MSList *add_missing_supported_codecs(LinphoneCore *lc, const MSList *defa
 		if (!elem2){
 			PayloadType *pt=(PayloadType*)elem->data;
 			/*this codec from default list should be inserted in the list*/
-			
+
 			if (!linphone_core_codec_supported(lc, payload_type_get_stream_type(pt), pt->mime_type)) continue;
 			if (!last_inserted){
 				l=ms_list_prepend(l,pt);
@@ -1716,14 +1716,14 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_init();
 	linphone_core_activate_log_serialization_if_needed();
-	
+
 	lc->factory = ms_factory_new_with_voip();
 	linphone_core_register_default_codecs(lc);
 	linphone_core_register_offer_answer_providers(lc);
 	/* Get the mediastreamer2 event queue */
 	/* This allows to run event's callback in linphone_core_iterate() */
 	lc->msevq=ms_factory_create_event_queue(lc->factory);
-	
+
 	lc->sal=sal_init(lc->factory);
 	sal_set_http_proxy_host(lc->sal, linphone_core_get_http_proxy_host(lc));
 	sal_set_http_proxy_port(lc->sal, linphone_core_get_http_proxy_port(lc));
@@ -3900,10 +3900,21 @@ static void terminate_call(LinphoneCore *lc, LinphoneCall *call){
 }
 
 int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri){
+
 	if (call->state==LinphoneCallIncomingReceived){
-		sal_call_decline(call->op,SalReasonRedirect,redirect_uri);
+		char *real_url=NULL;
+		LinphoneAddress *real_parsed_url=linphone_core_interpret_url(lc,redirect_uri);
+		if (!real_parsed_url){
+			/* bad url */
+			ms_error("Bad redirect URI: %s", redirect_uri?:"NULL");
+			return -1;
+		}
+		real_url=linphone_address_as_string (real_parsed_url);
+		sal_call_decline(call->op,SalReasonRedirect,real_url);
+		ms_free(real_url);
 		sal_error_info_set(&call->non_op_error,SalReasonRedirect,603,"Call redirected",NULL);
 		terminate_call(lc,call);
+		linphone_address_unref(real_parsed_url);
 	}else{
 		ms_error("Bad state for call redirection.");
 		return -1;
@@ -4566,10 +4577,7 @@ static MSSndCard *get_card_from_string_id(const char *devid, unsigned int cap, M
  * @param devid the device name as returned by linphone_core_get_sound_devices()
 **/
 bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *devid){
-	MSSndCard *sndcard;
-	sndcard=ms_snd_card_manager_get_card(ms_factory_get_snd_card_manager(lc->factory),devid);
-	if (sndcard!=NULL && (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_CAPTURE)) return TRUE;
-	return FALSE;
+	return ms_snd_card_manager_get_capture_card(ms_factory_get_snd_card_manager(lc->factory),devid) != NULL;
 }
 
 /**
@@ -4580,10 +4588,7 @@ bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *devi
  * @param devid the device name as returned by linphone_core_get_sound_devices()
 **/
 bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *devid){
-	MSSndCard *sndcard;
-	sndcard=ms_snd_card_manager_get_card(ms_factory_get_snd_card_manager(lc->factory),devid);
-	if (sndcard!=NULL && (ms_snd_card_get_capabilities(sndcard) & MS_SND_CARD_CAP_PLAYBACK)) return TRUE;
-	return FALSE;
+	return ms_snd_card_manager_get_playback_card(ms_factory_get_snd_card_manager(lc->factory),devid) != NULL;
 }
 
 /**
@@ -5936,6 +5941,10 @@ void linphone_core_set_use_files(LinphoneCore *lc, bool_t yesno){
 	lc->use_files=yesno;
 }
 
+bool_t linphone_core_get_use_files(LinphoneCore *lc) {
+	return lc->use_files;
+}
+
 const char * linphone_core_get_play_file(const LinphoneCore *lc) {
 	return lc->play_file;
 }
@@ -6529,7 +6538,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
 	ms_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);
-	
+
 	ms_factory_destroy(lc->factory);
 }
 

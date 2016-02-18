@@ -116,6 +116,8 @@ if(APPLE)
 	target_link_libraries(linphone-gtk "-framework Cocoa")
 endif()
 
+set_target_properties(linphone-gtk PROPERTIES XCODE_ATTRIBUTE_WARNING_CFLAGS "")
+
 
 install(TARGETS linphone-gtk
 	RUNTIME DESTINATION bin

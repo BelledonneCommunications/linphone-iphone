@@ -2297,4 +2297,9 @@ public interface LinphoneCore {
 	 * Passing null restores the default behaviour, which is to use the dns server list provided by the system.
 	**/
 	public void setDnsServers(String servers[]);
+
+	/**
+	 * Set user certificates directory path (used by SRTP-DTLS).
+	 */
+	public void setUserCertificatesPath(String path);
 }

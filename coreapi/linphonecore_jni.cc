@@ -7174,3 +7174,9 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setMediaNetworkRe
 	linphone_core_set_media_network_reachable((LinphoneCore*)pcore, (bool_t) reachable);
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setUserCertificatesPath(JNIEnv *env, jobject jobj, jlong pcore, jstring jpath){
+	const char *path = jpath ? env->GetStringUTFChars(jpath, NULL) : NULL;
+	linphone_core_set_user_certificates_path((LinphoneCore*)pcore, path);
+	if (path) env->ReleaseStringUTFChars(jpath, path);
+}
+
