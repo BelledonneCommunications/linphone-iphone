@@ -543,6 +543,7 @@
 		63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */; };
 		637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 637157A01B283FE200C91677 /* FileTransferDelegate.m */; };
 		6375A1FF1C760E17007A24E2 /* libbctoolbox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6375A1FE1C760E17007A24E2 /* libbctoolbox.a */; };
+		6375A2041C761CFC007A24E2 /* libbctoolbox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6375A1FE1C760E17007A24E2 /* libbctoolbox.a */; };
 		6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6377AC7F1BDE4069007F7625 /* UIBackToCallButton.m */; };
 		6381DA7D1C1AD5EA00DF3BBD /* UIBouncingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6381DA7C1C1AD5EA00DF3BBD /* UIBouncingView.m */; };
 		638F1A621C2021B2004B8E02 /* DialerView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 638F1A601C2021B2004B8E02 /* DialerView~ipad.xib */; };
@@ -1812,6 +1813,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6375A2041C761CFC007A24E2 /* libbctoolbox.a in Frameworks */,
 				63E27A591C51392A00D332AE /* libcorec.a in Frameworks */,
 				63E27A5A1C51392A00D332AE /* libebml2.a in Frameworks */,
 				63E27A5B1C51392A00D332AE /* libmatroska2.a in Frameworks */,
