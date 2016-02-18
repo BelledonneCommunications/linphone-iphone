@@ -169,7 +169,7 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 static void linphone_core_log_collection_handler(const char *domain, OrtpLogLevel level, const char *fmt, va_list args);
 
 void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
-	if (ortp_logv_out == linphone_core_log_collection_handler) {
+	if (ortp_get_log_handler() == linphone_core_log_collection_handler) {
 		ms_message("There is already a log collection handler, keep it");
 		liblinphone_log_func = logfunc;
 	} else
@@ -389,7 +389,7 @@ void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
 	/* at first call of this function, set liblinphone_log_func to the current
 	 * ortp log function */
 	if( liblinphone_log_func == NULL ){
-		liblinphone_log_func = ortp_logv_out;
+		liblinphone_log_func = ortp_get_log_handler();
 	}
 	liblinphone_log_collection_state = state;
 	if (state != LinphoneLogCollectionDisabled) {
@@ -397,7 +397,7 @@ void linphone_core_enable_log_collection(LinphoneLogCollectionState state) {
 		if (state == LinphoneLogCollectionEnabledWithoutPreviousLogHandler) {
 			liblinphone_log_func = NULL;
 		} else {
-			liblinphone_log_func = ortp_logv_out;
+			liblinphone_log_func = ortp_get_log_handler();
 		}
 		ortp_set_log_handler(linphone_core_log_collection_handler);
 	} else {
