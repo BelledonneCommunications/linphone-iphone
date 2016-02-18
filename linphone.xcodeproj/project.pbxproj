@@ -542,6 +542,7 @@
 		636BC9971B5F921B00C754CE /* UIIconButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 636BC9961B5F921B00C754CE /* UIIconButton.m */; };
 		63701DDF1BA32039006A9AE3 /* UIConfirmationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */; };
 		637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 637157A01B283FE200C91677 /* FileTransferDelegate.m */; };
+		6375A1FF1C760E17007A24E2 /* libbctoolbox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6375A1FE1C760E17007A24E2 /* libbctoolbox.a */; };
 		6377AC801BDE4069007F7625 /* UIBackToCallButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6377AC7F1BDE4069007F7625 /* UIBackToCallButton.m */; };
 		6381DA7D1C1AD5EA00DF3BBD /* UIBouncingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6381DA7C1C1AD5EA00DF3BBD /* UIBouncingView.m */; };
 		638F1A621C2021B2004B8E02 /* DialerView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 638F1A601C2021B2004B8E02 /* DialerView~ipad.xib */; };
@@ -1434,6 +1435,7 @@
 		63701DDE1BA32039006A9AE3 /* UIConfirmationDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIConfirmationDialog.m; sourceTree = "<group>"; };
 		6371579F1B283FE200C91677 /* FileTransferDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileTransferDelegate.h; path = Utils/FileTransferDelegate.h; sourceTree = "<group>"; };
 		637157A01B283FE200C91677 /* FileTransferDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileTransferDelegate.m; path = Utils/FileTransferDelegate.m; sourceTree = "<group>"; };
+		6375A1FE1C760E17007A24E2 /* libbctoolbox.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbctoolbox.a; path = "liblinphone-sdk/apple-darwin/lib/libbctoolbox.a"; sourceTree = "<group>"; };
 		6377AC7E1BDE4068007F7625 /* UIBackToCallButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBackToCallButton.h; sourceTree = "<group>"; };
 		6377AC7F1BDE4069007F7625 /* UIBackToCallButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBackToCallButton.m; sourceTree = "<group>"; };
 		6381DA7B1C1AD5EA00DF3BBD /* UIBouncingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBouncingView.h; sourceTree = "<group>"; };
@@ -1731,6 +1733,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6375A1FF1C760E17007A24E2 /* libbctoolbox.a in Frameworks */,
 				63E27A501C50EAE800D332AE /* libcorec.a in Frameworks */,
 				63E27A4E1C50EAC300D332AE /* libebml2.a in Frameworks */,
 				63E27A481C50EA7A00D332AE /* libmatroska2.a in Frameworks */,
@@ -2113,6 +2116,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6375A1FE1C760E17007A24E2 /* libbctoolbox.a */,
 				63E27A4F1C50EAE800D332AE /* libcorec.a */,
 				63E27A4D1C50EAC300D332AE /* libebml2.a */,
 				63E27A471C50EA7A00D332AE /* libmatroska2.a */,
