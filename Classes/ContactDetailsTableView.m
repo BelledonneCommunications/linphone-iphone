@@ -150,6 +150,8 @@
 		[cell.editTextfield setDelegate:self];
 	}
 
+	cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
 	cell.indexPath = indexPath;
 	[cell hideDeleteButton:NO];
 	[cell.editTextfield setKeyboardType:UIKeyboardTypeDefault];
