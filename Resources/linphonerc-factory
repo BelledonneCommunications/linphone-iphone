@@ -18,6 +18,7 @@ display_filter_auto_rotate=0
 #use_phone_number=0
 send_logs_include_linphonerc_and_chathistory=0
 #debug_popup_magic=**00**
+debug_popup_email=linphone-iphone@belledonne-communications.com
 
 [assistant]
 username_length=-1

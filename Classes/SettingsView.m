@@ -815,7 +815,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 		[picker setSubject:NSLocalizedString(@"<Please describe your problem or you will be ignored>",
 											 @"Email title for people wanting to send a bug report")];
-		[picker setToRecipients:[NSArray arrayWithObjects:@"linphone-iphone@belledonne-communications.com", nil]];
+		[picker setToRecipients:[NSArray
+									arrayWithObjects:[LinphoneManager.instance lpConfigStringForKey:@"debug_popup_email"
+																						withDefault:@""],
+													 nil]];
 		[picker setMessageBody:NSLocalizedString(@"Here are information about an issue I had on my device.\nI was "
 												 @"doing ...\nI expected Linphone to ...\nInstead, I got an "
 												 @"unexpected result: ...",
