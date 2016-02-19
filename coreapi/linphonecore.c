@@ -3860,7 +3860,7 @@ int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char
 		LinphoneAddress *real_parsed_url=linphone_core_interpret_url(lc,redirect_uri);
 		if (!real_parsed_url){
 			/* bad url */
-			ms_error("Bad redirect URI: %s", redirect_uri?:"NULL");
+			ms_error("Bad redirect URI: %s", redirect_uri?redirect_uri:"NULL");
 			return -1;
 		}
 		real_url=linphone_address_as_string (real_parsed_url);
