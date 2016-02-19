@@ -2502,6 +2502,10 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	bool_t call_ok;
 	unsigned int nb_media_starts = 1;
 
+	/*force resolution of stun server before starting the test*/
+	linphone_core_get_stun_server_addrinfo(pauline->lc);
+	linphone_core_get_stun_server_addrinfo(marie->lc);
+	
 	linphone_core_set_video_policy(pauline->lc, &caller_policy);
 	linphone_core_set_video_policy(marie->lc, &callee_policy);
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
@@ -2592,6 +2596,10 @@ static void call_with_ice_video_and_rtt(void) {
 	LinphoneCallParams *params = NULL;
 	LinphoneCall *marie_call = NULL;
 
+	/*force resolution of stun server before starting the test*/
+	linphone_core_get_stun_server_addrinfo(pauline->lc);
+	linphone_core_get_stun_server_addrinfo(marie->lc);
+	
 	linphone_core_set_video_policy(pauline->lc, &policy);
 	linphone_core_set_video_policy(marie->lc, &policy);
 	linphone_core_enable_video_capture(marie->lc, TRUE);
