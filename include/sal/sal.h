@@ -587,6 +587,7 @@ int sal_listen_port(Sal *ctx, const char *addr, int port, SalTransport tr, int i
 int sal_get_listening_port(Sal *ctx, SalTransport tr);
 int sal_unlisten_ports(Sal *ctx);
 LINPHONE_PUBLIC int sal_transport_available(Sal *ctx, SalTransport t);
+LINPHONE_PUBLIC bool_t sal_content_encoding_available(Sal *ctx, const char *content_encoding);
 void sal_set_dscp(Sal *ctx, int dscp);
 void sal_set_supported_tags(Sal *ctx, const char* tags);
 void sal_add_supported_tag(Sal *ctx, const char* tag);

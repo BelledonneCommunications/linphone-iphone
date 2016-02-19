@@ -2454,6 +2454,12 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 }
 
 
+bool_t linphone_core_content_encoding_supported(const LinphoneCore *lc, const char *content_encoding) {
+	const char *handle_content_encoding = lp_config_get_string(lc->config, "sip", "handle_content_encoding", "deflate");
+	return (strcmp(handle_content_encoding, content_encoding) == 0) && sal_content_encoding_available(lc->sal, content_encoding);
+}
+
+
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 	bool_t new_status=lc->network_last_status;
 	char newip[LINPHONE_IPADDR_SIZE];
