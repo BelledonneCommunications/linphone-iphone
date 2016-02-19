@@ -500,7 +500,7 @@ def main(argv=None):
                 error("Could not clone tunnel. Please see http://www.belledonne-communications.com/voiptunnel.html")
                 return 1
         warning("Tunnel enabled, disabling GPL third parties.")
-        additional_args += ["-DENABLE_TUNNEL=ON", "-DENABLE_GPL_THIRD_PARTIES=OFF"]
+        additional_args += ["-DENABLE_TUNNEL=ON", "-DENABLE_GPL_THIRD_PARTIES=OFF", "-DENABLE_FFMPEG=NO"]
 
     # User's options are priority upon all automatic options
     additional_args += additional_args2
