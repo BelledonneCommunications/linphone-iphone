@@ -418,7 +418,10 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		linphone_chat_room_delete_composing_refresh_timer(cr);
 
 	}
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
+	// if operation failed, we should not change message state
+	if (msg->state == LinphoneChatMessageOutgoing) {
+		linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
+	}
 }
 
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
