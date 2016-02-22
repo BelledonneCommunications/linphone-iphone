@@ -226,8 +226,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[LinphoneManager setValueInMessageAppData:[internalUrl absoluteString] forKey:@"localimage" inMessage:msg];
 	}
 
-	linphone_chat_room_send_chat_message(_chatRoom, msg);
+	// we must ref & unref message because in case of error, it will be destroy otherwise
+	linphone_chat_room_send_chat_message(_chatRoom, linphone_chat_message_ref(msg));
 	[_tableController addChatEntry:msg];
+	linphone_chat_message_unref(msg);
+
 	[_tableController scrollToBottom:true];
 
 	return TRUE;
