@@ -1277,7 +1277,7 @@ void linphone_gtk_ui_level_toggled(GtkWidget *w) {
 }
 
 static void linphone_gtk_set_media_encryption_mandatory_sensitive(GtkWidget *propbox, gboolean val){
-	GtkWidget *w=linphone_gtk_get_widget(propbox,"media_encryption_mandatory");
+	GtkWidget *w=linphone_gtk_get_widget(propbox,"media_encryption_mandatory_checkbox");
 	gtk_widget_set_sensitive(w,val);
 }
 
@@ -1285,7 +1285,7 @@ static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
 	char *selected=gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
 	LinphoneCore *lc=linphone_gtk_get_core();
 	GtkWidget *toplevel=gtk_widget_get_toplevel(combo);
-	GtkWidget *mandatory_box = linphone_gtk_get_widget(toplevel,"media_encryption_mandatory");
+	GtkWidget *mandatory_box = linphone_gtk_get_widget(toplevel,"media_encryption_mandatory_checkbox");
 	if (selected!=NULL){
 		if (strcasecmp(selected,"SRTP")==0){
 			linphone_core_set_media_encryption(lc,LinphoneMediaEncryptionSRTP);
@@ -1307,6 +1307,10 @@ static void linphone_gtk_media_encryption_changed(GtkWidget *combo){
 
 void linphone_gtk_set_media_encryption_mandatory(GtkWidget *button){
 	linphone_core_set_media_encryption_mandatory(linphone_gtk_get_core(),gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)));
+}
+
+void linphone_gtk_enable_lime(GtkWidget *button){
+	linphone_core_enable_lime(linphone_gtk_get_core(), gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)));
 }
 
 static void linphone_gtk_show_media_encryption(GtkWidget *pb){
@@ -1356,10 +1360,11 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 	}
 	if (no_enc){
 		/*hide this setting*/
-		gtk_widget_hide(combo);
-		gtk_widget_hide(linphone_gtk_get_widget(pb,"media_encryption_label"));
-		gtk_widget_hide(linphone_gtk_get_widget(pb,"media_encryption_mandatory"));
+		gtk_widget_hide(linphone_gtk_get_widget(pb,"encryption_label"));
+		gtk_widget_hide(linphone_gtk_get_widget(pb,"encryption_table"));
 	}else{
+		gtk_widget_show(linphone_gtk_get_widget(pb,"encryption_label"));
+		gtk_widget_show(linphone_gtk_get_widget(pb,"encryption_table"));
 		LinphoneMediaEncryption menc=linphone_core_get_media_encryption(lc);
 		switch(menc){
 			case LinphoneMediaEncryptionNone:
@@ -1387,8 +1392,10 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 		}
 		g_signal_connect(G_OBJECT(combo),"changed",(GCallback)linphone_gtk_media_encryption_changed,NULL);
 	}
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"media_encryption_mandatory")),
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"media_encryption_mandatory_checkbox")),
 				     linphone_core_is_media_encryption_mandatory(lc));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(pb,"chat_lime_checkbox")),
+				     linphone_core_lime_enabled(lc));
 	g_object_unref(G_OBJECT(model));
 }
 
