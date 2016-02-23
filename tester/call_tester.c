@@ -1483,6 +1483,7 @@ end:
 	ms_list_free(lcs);
 }
 
+#ifdef VIDEO_ENABLED
 static void call_paused_resumed_with_video_base_call_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
 	if (cstate == LinphoneCallUpdatedByRemote) {
 		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
@@ -1606,7 +1607,7 @@ static void call_paused_updated_resumed_with_no_sdp_ack_using_video_policy(void)
 static void call_paused_updated_resumed_with_no_sdp_ack_using_video_policy_and_accept_call_update(void){
 	call_paused_resumed_with_video_base(TRUE, TRUE,TRUE,TRUE);
 }
-
+#endif
 #define CHECK_CURRENT_LOSS_RATE() \
 	rtcp_count_current = pauline->stat.number_of_rtcp_sent; \
 	/*wait for an RTCP packet to have an accurate cumulative lost value*/ \
@@ -2194,7 +2195,7 @@ void video_call_base_2(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 static void check_fir(LinphoneCoreManager* caller,LinphoneCoreManager* callee ){
 	LinphoneCall* callee_call;
 	LinphoneCall* caller_call;
-	
+
 	callee_call=linphone_core_get_current_call(callee->lc);
 	caller_call=linphone_core_get_current_call(caller->lc);
 
@@ -2205,9 +2206,9 @@ static void check_fir(LinphoneCoreManager* caller,LinphoneCoreManager* callee ){
 
 	BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_IframeDecoded,1));
 	BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
-	
+
 	linphone_call_send_vfu_request(callee_call);
-	
+
 	if (rtp_session_avpf_enabled(callee_call->sessions->rtp_session)){
 		BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&caller_call->videostream->ms_video_stat.counter_rcvd_fir, 1));
 	}else{
@@ -2503,7 +2504,7 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	/*force resolution of stun server before starting the test*/
 	linphone_core_get_stun_server_addrinfo(pauline->lc);
 	linphone_core_get_stun_server_addrinfo(marie->lc);
-	
+
 	linphone_core_set_video_policy(pauline->lc, &caller_policy);
 	linphone_core_set_video_policy(marie->lc, &callee_policy);
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
@@ -2597,7 +2598,7 @@ static void call_with_ice_video_and_rtt(void) {
 	/*force resolution of stun server before starting the test*/
 	linphone_core_get_stun_server_addrinfo(pauline->lc);
 	linphone_core_get_stun_server_addrinfo(marie->lc);
-	
+
 	linphone_core_set_video_policy(pauline->lc, &policy);
 	linphone_core_set_video_policy(marie->lc, &policy);
 	linphone_core_enable_video_capture(marie->lc, TRUE);
