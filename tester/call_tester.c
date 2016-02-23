@@ -6054,11 +6054,13 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call without SDP", call_with_no_sdp),
 	TEST_NO_TAG("Call without SDP and ACK without SDP", call_with_no_sdp_ack_without_sdp),
 	TEST_NO_TAG("Call paused resumed", call_paused_resumed),
+#ifdef VIDEO_ENABLED
 	TEST_NO_TAG("Call paused resumed with video", call_paused_resumed_with_video),
 	TEST_NO_TAG("Call paused resumed with video no sdp ack", call_paused_resumed_with_no_sdp_ack),
 	TEST_NO_TAG("Call paused resumed with video no sdk ack using video policy for resume offers", call_paused_resumed_with_no_sdp_ack_using_video_policy),
 	TEST_NO_TAG("Call paused, updated and resumed with video no sdk ack using video policy for resume offers", call_paused_updated_resumed_with_no_sdp_ack_using_video_policy),
 	TEST_NO_TAG("Call paused, updated and resumed with video no sdk ack using video policy for resume offers with accept call update", call_paused_updated_resumed_with_no_sdp_ack_using_video_policy_and_accept_call_update),
+#endif
 	TEST_NO_TAG("Call paused by both parties", call_paused_by_both),
 	TEST_NO_TAG("Call paused resumed with loss", call_paused_resumed_with_loss),
 	TEST_NO_TAG("Call paused resumed from callee", call_paused_resumed_from_callee),
