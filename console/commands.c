@@ -367,7 +367,8 @@ static LPC_COMMAND advanced_commands[] = {
 		"'ringback disable'\t: Disable playing of ringback tone to callers\n"
 	},
 	{ "redirect", lpc_cmd_redirect, "Redirect an incoming call",
-		"'redirect <redirect-uri>'\t: Redirect all pending incoming calls to the <redirect-uri>\n"
+		"'redirect <id> <redirect-uri>'\t: Redirect the specified call to the <redirect-uri>\n"
+		"'redirect all <redirect-uri>'\t: Redirect all pending incoming calls to the <redirect-uri>\n"
 	},
 	{ "zrtp-set-verified", lpc_cmd_zrtp_verified,"Set ZRTP SAS verified.",
 		"'Set ZRTP SAS verified'\n"
@@ -740,21 +741,37 @@ lpc_cmd_redirect(LinphoneCore *lc, char *args){
 		linphonec_out("No active calls.\n");
 		return 1;
 	}
-	while(elem!=NULL){
-		LinphoneCall *call=(LinphoneCall*)elem->data;
-		if (linphone_call_get_state(call)==LinphoneCallIncomingReceived){
-			if (linphone_core_redirect_call(lc,call,args) != 0) {
-				linphonec_out("Could not redirect call.\n");
-				elem=elem->next;
-			} else {
-				didit=1;
-				/*as the redirection closes the call, we need to re-check the call list that is invalidated.*/
-				elem=linphone_core_get_calls(lc);
+	if (strncmp(args, "all ", 4) == 0) {
+		while(elem!=NULL){
+			LinphoneCall *call=(LinphoneCall*)elem->data;
+			if (linphone_call_get_state(call)==LinphoneCallIncomingReceived){
+				if (linphone_core_redirect_call(lc,call,args+4) != 0) {
+					linphonec_out("Could not redirect call.\n");
+					elem=elem->next;
+				} else {
+					didit=1;
+					/*as the redirection closes the call, we need to re-check the call list that is invalidated.*/
+					elem=linphone_core_get_calls(lc);
+				}
+			}else elem=elem->next;
+		}
+		if (didit==0){
+			linphonec_out("There is no pending incoming call to redirect.\n");
+		}
+	} else {
+		char space;
+		long id;
+		int charRead;
+		if ( sscanf(args, "%li%c%n", &id, &space, &charRead) == 2 && space == ' ') {
+			LinphoneCall * call = linphonec_get_call(id);
+			if ( call != NULL ) {
+				if (linphone_call_get_state(call)!=LinphoneCallIncomingReceived) {
+					linphonec_out("The state of the call is not incoming, can't be redirected.\n");
+				} else if (linphone_core_redirect_call(lc,call,args+charRead) != 0) {
+					linphonec_out("Could not redirect call.\n");
+				}
 			}
-		}else elem=elem->next;
-	}
-	if (didit==0){
-		linphonec_out("There is no pending incoming call to redirect.\n");
+		} else return 0;
 	}
 	return 1;
 }
