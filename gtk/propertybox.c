@@ -1363,9 +1363,10 @@ static void linphone_gtk_show_media_encryption(GtkWidget *pb){
 		gtk_widget_hide(linphone_gtk_get_widget(pb,"encryption_label"));
 		gtk_widget_hide(linphone_gtk_get_widget(pb,"encryption_table"));
 	}else{
+		LinphoneMediaEncryption menc=linphone_core_get_media_encryption(lc);
 		gtk_widget_show(linphone_gtk_get_widget(pb,"encryption_label"));
 		gtk_widget_show(linphone_gtk_get_widget(pb,"encryption_table"));
-		LinphoneMediaEncryption menc=linphone_core_get_media_encryption(lc);
+		
 		switch(menc){
 			case LinphoneMediaEncryptionNone:
 				gtk_combo_box_set_active(GTK_COMBO_BOX(combo),0);
