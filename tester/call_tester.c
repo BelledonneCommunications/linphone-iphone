@@ -1483,6 +1483,7 @@ end:
 	ms_list_free(lcs);
 }
 
+#ifdef VIDEO_ENABLED
 static void call_paused_resumed_with_video_base_call_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
 	if (cstate == LinphoneCallUpdatedByRemote) {
 		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
@@ -1606,7 +1607,7 @@ static void call_paused_updated_resumed_with_no_sdp_ack_using_video_policy(void)
 static void call_paused_updated_resumed_with_no_sdp_ack_using_video_policy_and_accept_call_update(void){
 	call_paused_resumed_with_video_base(TRUE, TRUE,TRUE,TRUE);
 }
-
+#endif
 #define CHECK_CURRENT_LOSS_RATE() \
 	rtcp_count_current = pauline->stat.number_of_rtcp_sent; \
 	/*wait for an RTCP packet to have an accurate cumulative lost value*/ \
@@ -2192,111 +2193,109 @@ void video_call_base_2(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 
 
 static void check_fir(LinphoneCoreManager* caller,LinphoneCoreManager* callee ){
-    LinphoneCall* callee_call;
-    LinphoneCall* caller_call;
-    callee_call=linphone_core_get_current_call(callee->lc);
-    caller_call=linphone_core_get_current_call(caller->lc);
+	LinphoneCall* callee_call;
+	LinphoneCall* caller_call;
 
-    /*check video path*/
-    linphone_call_set_next_video_frame_decoded_callback(callee_call,linphone_call_iframe_decoded_cb,callee->lc);
+	callee_call=linphone_core_get_current_call(callee->lc);
+	caller_call=linphone_core_get_current_call(caller->lc);
 
-    linphone_call_send_vfu_request(callee_call);
-    BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_IframeDecoded,1));
-    if (rtp_session_avpf_enabled(callee_call->sessions->rtp_session)){
+	/*check video path is established in both directions.
+	 Indeed, FIR are ignored until the first RTP packet is received, because SSRC is not known.*/
+	linphone_call_set_next_video_frame_decoded_callback(callee_call,linphone_call_iframe_decoded_cb,callee->lc);
+	linphone_call_set_next_video_frame_decoded_callback(caller_call,linphone_call_iframe_decoded_cb,caller->lc);
 
-        BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&caller_call->videostream->ms_video_stat.counter_rcvd_fir, 1));
-    }
-    else{
-        BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&caller_call->videostream->ms_video_stat.counter_rcvd_fir, 0));
-    }
-    ms_message ("check_fir : [%p] received  %d FIR  ",&caller_call ,caller_call->videostream->ms_video_stat.counter_rcvd_fir);
-    ms_message ("check_fir : [%p] stat number of iframe decoded  %d ",&callee_call, callee->stat.number_of_IframeDecoded);
+	BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_IframeDecoded,1));
+	BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
 
-    linphone_call_set_next_video_frame_decoded_callback(caller_call,linphone_call_iframe_decoded_cb,caller->lc);
-    linphone_call_send_vfu_request(caller_call);
-    BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
+	linphone_call_send_vfu_request(callee_call);
 
-    if (rtp_session_avpf_enabled(caller_call->sessions->rtp_session)) {
+	if (rtp_session_avpf_enabled(callee_call->sessions->rtp_session)){
+		BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&caller_call->videostream->ms_video_stat.counter_rcvd_fir, 1));
+	}else{
+		BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&caller_call->videostream->ms_video_stat.counter_rcvd_fir, 0));
+	}
+	ms_message ("check_fir : [%p] received  %d FIR  ",&caller_call ,caller_call->videostream->ms_video_stat.counter_rcvd_fir);
+	ms_message ("check_fir : [%p] stat number of iframe decoded  %d ",&callee_call, callee->stat.number_of_IframeDecoded);
 
-        if (rtp_session_avpf_enabled(callee_call->sessions->rtp_session)){
-            BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&callee_call->videostream->ms_video_stat.counter_rcvd_fir, 1));
-        }
-    }
-    else{
-        BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&callee_call->videostream->ms_video_stat.counter_rcvd_fir, 0));
-    }
-    ms_message ("check_fir : [%p] received  %d FIR  ",&callee_call ,callee_call->videostream->ms_video_stat.counter_rcvd_fir);
-    ms_message ("check_fir : [%p] stat number of iframe decoded  %d ",&caller_call, caller->stat.number_of_IframeDecoded);
+	linphone_call_set_next_video_frame_decoded_callback(caller_call,linphone_call_iframe_decoded_cb,caller->lc);
+	linphone_call_send_vfu_request(caller_call);
+	BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
 
-
+	if (rtp_session_avpf_enabled(caller_call->sessions->rtp_session)) {
+		if (rtp_session_avpf_enabled(callee_call->sessions->rtp_session)){
+			BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&callee_call->videostream->ms_video_stat.counter_rcvd_fir, 1));
+		}
+	}else{
+		BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&callee_call->videostream->ms_video_stat.counter_rcvd_fir, 0));
+	}
+	ms_message ("check_fir : [%p] received  %d FIR  ",&callee_call ,callee_call->videostream->ms_video_stat.counter_rcvd_fir);
+	ms_message ("check_fir : [%p] stat number of iframe decoded  %d ",&caller_call, caller->stat.number_of_IframeDecoded);
 
 }
 
 void video_call_base_3(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
-    LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
+	LinphoneCallTestParams caller_test_params = {0}, callee_test_params = {0};
 
-    LinphoneCall* callee_call;
-    LinphoneCall* caller_call;
-    LinphoneVideoPolicy callee_policy, caller_policy;
+	LinphoneCall* callee_call;
+	LinphoneCall* caller_call;
+	LinphoneVideoPolicy callee_policy, caller_policy;
 
-    if (using_policy) {
-        callee_policy.automatically_initiate=FALSE;
-        callee_policy.automatically_accept=TRUE;
-        caller_policy.automatically_initiate=TRUE;
-        caller_policy.automatically_accept=FALSE;
+	if (using_policy) {
+		callee_policy.automatically_initiate=FALSE;
+		callee_policy.automatically_accept=TRUE;
+		caller_policy.automatically_initiate=TRUE;
+		caller_policy.automatically_accept=FALSE;
 
-        linphone_core_set_video_policy(callee->lc,&callee_policy);
-        linphone_core_set_video_policy(caller->lc,&caller_policy);
-    }
+		linphone_core_set_video_policy(callee->lc,&callee_policy);
+		linphone_core_set_video_policy(caller->lc,&caller_policy);
+	}
 
-    linphone_core_enable_video_display(callee->lc, callee_video_enabled);
-    linphone_core_enable_video_capture(callee->lc, callee_video_enabled);
+	linphone_core_enable_video_display(callee->lc, callee_video_enabled);
+	linphone_core_enable_video_capture(callee->lc, callee_video_enabled);
 
-    linphone_core_enable_video_display(caller->lc, caller_video_enabled);
-    linphone_core_enable_video_capture(caller->lc, caller_video_enabled);
+	linphone_core_enable_video_display(caller->lc, caller_video_enabled);
+	linphone_core_enable_video_capture(caller->lc, caller_video_enabled);
 
-    if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
+	if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
 		char *path = bc_tester_file("certificates-marie");
 		callee->lc->user_certificates_path = ms_strdup(path);
 		bc_free(path);
 		path = bc_tester_file("certificates-pauline");
 		caller->lc->user_certificates_path = ms_strdup(path);
 		bc_free(path);
-        belle_sip_mkdir(callee->lc->user_certificates_path);
-        belle_sip_mkdir(caller->lc->user_certificates_path);
-    }
+		belle_sip_mkdir(callee->lc->user_certificates_path);
+		belle_sip_mkdir(caller->lc->user_certificates_path);
+	}
 
-    linphone_core_set_media_encryption(callee->lc,mode);
-    linphone_core_set_media_encryption(caller->lc,mode);
-    /* Create call params */
-    caller_test_params.base=linphone_core_create_call_params(caller->lc, NULL);
+	linphone_core_set_media_encryption(callee->lc,mode);
+	linphone_core_set_media_encryption(caller->lc,mode);
+	/* Create call params */
+	caller_test_params.base=linphone_core_create_call_params(caller->lc, NULL);
 
-    if (!using_policy)
-        linphone_call_params_enable_video(caller_test_params.base,TRUE);
+	if (!using_policy)
+		linphone_call_params_enable_video(caller_test_params.base,TRUE);
 
-    if (!using_policy){
-        callee_test_params.base=linphone_core_create_call_params(callee->lc, NULL);
-        linphone_call_params_enable_video(callee_test_params.base,TRUE);
+	if (!using_policy){
+		callee_test_params.base=linphone_core_create_call_params(callee->lc, NULL);
+		linphone_call_params_enable_video(callee_test_params.base,TRUE);
+	}
 
-    }
+	BC_ASSERT_TRUE(call_with_params2(caller,callee,&caller_test_params,&callee_test_params,using_policy));
+	callee_call=linphone_core_get_current_call(callee->lc);
+	caller_call=linphone_core_get_current_call(caller->lc);
 
+	linphone_call_params_destroy(caller_test_params.base);
+	if (callee_test_params.base) linphone_call_params_destroy(callee_test_params.base);
 
-    BC_ASSERT_TRUE(call_with_params2(caller,callee,&caller_test_params,&callee_test_params,using_policy));
-    callee_call=linphone_core_get_current_call(callee->lc);
-    caller_call=linphone_core_get_current_call(caller->lc);
-
-    linphone_call_params_destroy(caller_test_params.base);
-    if (callee_test_params.base) linphone_call_params_destroy(callee_test_params.base);
-
-    if (callee_call && caller_call ) {
-        if (callee_video_enabled && caller_video_enabled) {
-            check_fir(caller,callee);
-        } else {
-            BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(callee_call)));
-            BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(caller_call)));
-        }
-        liblinphone_tester_check_rtcp(callee,caller);
-    }
+	if (callee_call && caller_call ) {
+		if (callee_video_enabled && caller_video_enabled) {
+			check_fir(caller,callee);
+		} else {
+			BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(callee_call)));
+			BC_ASSERT_FALSE(linphone_call_log_video_enabled(linphone_call_get_call_log(caller_call)));
+		}
+		liblinphone_tester_check_rtcp(callee,caller);
+	}
 }
 
 
@@ -2502,6 +2501,10 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	bool_t call_ok;
 	unsigned int nb_media_starts = 1;
 
+	/*force resolution of stun server before starting the test*/
+	linphone_core_get_stun_server_addrinfo(pauline->lc);
+	linphone_core_get_stun_server_addrinfo(marie->lc);
+
 	linphone_core_set_video_policy(pauline->lc, &caller_policy);
 	linphone_core_set_video_policy(marie->lc, &callee_policy);
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
@@ -2591,6 +2594,10 @@ static void call_with_ice_video_and_rtt(void) {
 	LinphoneVideoPolicy policy = { TRUE, TRUE };
 	LinphoneCallParams *params = NULL;
 	LinphoneCall *marie_call = NULL;
+
+	/*force resolution of stun server before starting the test*/
+	linphone_core_get_stun_server_addrinfo(pauline->lc);
+	linphone_core_get_stun_server_addrinfo(marie->lc);
 
 	linphone_core_set_video_policy(pauline->lc, &policy);
 	linphone_core_set_video_policy(marie->lc, &policy);
@@ -6048,11 +6055,13 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call without SDP", call_with_no_sdp),
 	TEST_NO_TAG("Call without SDP and ACK without SDP", call_with_no_sdp_ack_without_sdp),
 	TEST_NO_TAG("Call paused resumed", call_paused_resumed),
+#ifdef VIDEO_ENABLED
 	TEST_NO_TAG("Call paused resumed with video", call_paused_resumed_with_video),
 	TEST_NO_TAG("Call paused resumed with video no sdp ack", call_paused_resumed_with_no_sdp_ack),
 	TEST_NO_TAG("Call paused resumed with video no sdk ack using video policy for resume offers", call_paused_resumed_with_no_sdp_ack_using_video_policy),
 	TEST_NO_TAG("Call paused, updated and resumed with video no sdk ack using video policy for resume offers", call_paused_updated_resumed_with_no_sdp_ack_using_video_policy),
 	TEST_NO_TAG("Call paused, updated and resumed with video no sdk ack using video policy for resume offers with accept call update", call_paused_updated_resumed_with_no_sdp_ack_using_video_policy_and_accept_call_update),
+#endif
 	TEST_NO_TAG("Call paused by both parties", call_paused_by_both),
 	TEST_NO_TAG("Call paused resumed with loss", call_paused_resumed_with_loss),
 	TEST_NO_TAG("Call paused resumed from callee", call_paused_resumed_from_callee),

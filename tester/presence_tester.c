@@ -678,7 +678,15 @@ static void enable_publish(LinphoneCoreManager *mgr, bool_t enable) {
 	linphone_proxy_config_done(cfg);
 }
 
-static void test_presence_list(void) {
+static void enable_deflate_content_encoding(LinphoneCoreManager *mgr, bool_t enable) {
+	LinphoneCore *lc = mgr->lc;
+	if (enable == TRUE)
+		lp_config_set_string(lc->config, "sip", "handle_content_encoding", "deflate");
+	else
+		lp_config_set_string(lc->config, "sip", "handle_content_encoding", "none");
+}
+
+static void test_presence_list_base(bool_t enable_compression) {
 	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
@@ -697,6 +705,9 @@ static void test_presence_list(void) {
 	enable_publish(marie, TRUE);
 	enable_publish(pauline, TRUE);
 	enable_publish(laure, TRUE);
+	enable_deflate_content_encoding(marie, enable_compression);
+	enable_deflate_content_encoding(pauline, enable_compression);
+	enable_deflate_content_encoding(laure, enable_compression);
 
 	linphone_core_set_presence_model(marie->lc, linphone_core_create_presence_model_with_activity(marie->lc, LinphonePresenceActivityBusy, NULL));
 	linphone_core_set_presence_model(pauline->lc, linphone_core_create_presence_model_with_activity(pauline->lc, LinphonePresenceActivityVacation, NULL));
@@ -803,6 +814,15 @@ static void test_presence_list(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void test_presence_list(void) {
+	test_presence_list_base(TRUE);
+}
+
+static void test_presence_list_without_compression(void) {
+	test_presence_list_base(FALSE);
+}
+
 #if 0
 static void test_presence_list_subscribe_before_publish(void) {
 	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
@@ -855,6 +875,7 @@ static void test_presence_list_subscribe_before_publish(void) {
 	linphone_core_manager_destroy(pauline);
 }
 #endif
+
 static void test_presence_list_subscription_expire_for_unknown(void) {
 	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
 	const char *rls_uri = "sip:rls@sip.example.org";
@@ -972,6 +993,7 @@ test_t presence_tests[] = {
 	TEST_NO_TAG("Subscribe with late publish", test_subscribe_notify_publish),
 	TEST_NO_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish),
 	TEST_NO_TAG("Presence list", test_presence_list),
+	TEST_NO_TAG("Presence list without compression", test_presence_list_without_compression),
 	TEST_NO_TAG("Presence list, subscription expiration for unknown contact",test_presence_list_subscription_expire_for_unknown),
 	TEST_NO_TAG("Presence list, silent subscription expiration", test_presence_list_subscribe_dialog_expire),
 	TEST_NO_TAG("Presence list, io error",test_presence_list_subscribe_io_error)

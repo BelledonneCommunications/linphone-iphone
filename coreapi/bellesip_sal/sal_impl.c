@@ -595,6 +595,10 @@ int sal_transport_available(Sal *sal, SalTransport t){
 	return FALSE;
 }
 
+bool_t sal_content_encoding_available(Sal *sal, const char *content_encoding) {
+	return (bool_t)belle_sip_stack_content_encoding_available(sal->stack, content_encoding);
+}
+
 static int sal_add_listen_port(Sal *ctx, SalAddress* addr, bool_t is_tunneled){
 	int result;
 	belle_sip_listening_point_t* lp;

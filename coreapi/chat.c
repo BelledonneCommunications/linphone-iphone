@@ -418,7 +418,10 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		linphone_chat_room_delete_composing_refresh_timer(cr);
 
 	}
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
+	// if operation failed, we should not change message state
+	if (msg->dir == LinphoneChatMessageOutgoing) {
+		linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
+	}
 }
 
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
@@ -842,10 +845,10 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 	uint32_t new_line = 0x2028;
 	uint32_t crlf = 0x0D0A;
 	uint32_t lf = 0x0A;
-	
+
 	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
 		LinphoneChatMessageCharacter *cmc = ms_new0(LinphoneChatMessageCharacter, 1);
-		
+
 		if (cr->pending_message == NULL) {
 			cr->pending_message = linphone_chat_room_create_message(cr, "");
 		}
@@ -856,7 +859,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 
 		cr->remote_is_composing = LinphoneIsComposingActive;
 		linphone_core_notify_is_composing_received(cr->lc, cr);
-			
+
 		if (character == new_line || character == crlf || character == lf) {
 			// End of message
 			LinphoneChatMessage *msg = cr->pending_message;

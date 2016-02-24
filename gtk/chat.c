@@ -302,7 +302,7 @@ void linphone_gtk_send_text(void){
 	if (strlen(entered)>0) {
 		LinphoneChatMessage *msg;
 		LinphoneChatMessageCbs *cbs;
-		msg=linphone_chat_room_create_message(cr,entered);
+		msg=linphone_chat_message_ref(linphone_chat_room_create_message(cr,entered));
 		cbs=linphone_chat_message_get_callbacks(msg);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs,on_chat_state_changed);
 		linphone_chat_room_send_chat_message(cr,msg);
@@ -313,6 +313,8 @@ void linphone_gtk_send_text(void){
 		g_signal_handlers_disconnect_by_func(G_OBJECT(entry),(GCallback)linphone_gtk_compose_text,NULL);
 		gtk_entry_set_text(GTK_ENTRY(entry),"");
 		g_signal_connect_swapped(G_OBJECT(entry),"changed",(GCallback)linphone_gtk_compose_text,NULL);
+
+		linphone_chat_message_unref(msg);
 	}
 }
 

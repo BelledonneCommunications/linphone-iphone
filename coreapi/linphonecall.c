@@ -2068,7 +2068,7 @@ void linphone_call_send_vfu_request(LinphoneCall *call) {
 		ms_message("Request Full Intra Request on call [%p]", call);
 		video_stream_send_fir(call->videostream);
 	} else if (call->core->sip_conf.vfu_with_info) {
-        ms_message("Request SIP INFO FIR on call [%p]", call);
+		ms_message("Request SIP INFO FIR on call [%p]", call);
 		if (LinphoneCallStreamsRunning == linphone_call_get_state(call))
 			sal_call_send_vfu_request(call->op);
 	} else {
@@ -4895,7 +4895,8 @@ void linphone_call_repair_if_broken(LinphoneCall *call){
 			linphone_call_params_unref(params);
 		break;
 		default:
-			ms_error("linphone_call_resume_if_broken(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
+			ms_warning("linphone_call_resume_if_broken(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
+			call->broken = FALSE;
 		break;
 	}
 }

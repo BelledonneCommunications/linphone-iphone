@@ -971,7 +971,7 @@ int linphone_conference_leave(LinphoneConference *obj) {
 }
 
 bool_t linphone_conference_is_in(const LinphoneConference *obj) {
-	return ((Conference *)obj)->isIn() ? TRUE : FALSE;
+	return ((Conference *)obj)->isIn();
 }
 
 AudioStream *linphone_conference_get_audio_stream(const LinphoneConference *obj) {

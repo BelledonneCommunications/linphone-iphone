@@ -298,7 +298,13 @@ static void devices_reload_test(void) {
 	devid1 = ms_strdup(linphone_core_get_video_device(mgr->lc));
 	linphone_core_reload_video_devices(mgr->lc);
 	devid2 = ms_strdup(linphone_core_get_video_device(mgr->lc));
-	BC_ASSERT_STRING_EQUAL(devid1, devid2);
+
+	if (devid1 && devid2) {
+		BC_ASSERT_STRING_EQUAL(devid1, devid2);
+	} else {
+		BC_ASSERT_PTR_NULL(devid1);
+		BC_ASSERT_PTR_NULL(devid2);
+	}
 	ms_free(devid1);
 	ms_free(devid2);
 

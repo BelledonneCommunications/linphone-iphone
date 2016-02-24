@@ -35,7 +35,7 @@ static bool_t only_telephone_event(const MSList *l){
 static PayloadType * opus_match(MSOfferAnswerContext *ctx, const MSList *local_payloads, const PayloadType *refpt, const MSList *remote_payloads, bool_t reading_response){
 	PayloadType *pt;
 	const MSList *elem;
-	PayloadType *candidate=NULL;
+	PayloadType *legacy_opus=NULL;
 
 	for (elem=local_payloads;elem!=NULL;elem=elem->next){
 		pt=(PayloadType*)elem->data;
@@ -43,14 +43,18 @@ static PayloadType * opus_match(MSOfferAnswerContext *ctx, const MSList *local_p
 		/*workaround a bug in earlier versions of linphone where opus/48000/1 is offered, which is uncompliant with opus rtp draft*/
 		if (strcasecmp(pt->mime_type,"opus")==0 ){
 			if (refpt->channels==1){
-				pt->channels=1; /*so that we respond with same number of channels */
-				candidate=pt;
+				legacy_opus=pt;
 			}else if (refpt->channels==2){
 				return payload_type_clone(pt);
 			}
 		}
 	}
-	return candidate ? payload_type_clone(candidate) : NULL;
+	if (legacy_opus){
+		legacy_opus = payload_type_clone(legacy_opus);
+		legacy_opus->channels=1; /*so that we respond with same number of channels */
+		return legacy_opus;
+	}
+	return NULL;
 }
 
 static MSOfferAnswerContext *opus_offer_answer_create_context(void){

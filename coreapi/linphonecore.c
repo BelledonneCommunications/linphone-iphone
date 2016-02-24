@@ -2493,6 +2493,12 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 }
 
 
+bool_t linphone_core_content_encoding_supported(const LinphoneCore *lc, const char *content_encoding) {
+	const char *handle_content_encoding = lp_config_get_string(lc->config, "sip", "handle_content_encoding", "deflate");
+	return (strcmp(handle_content_encoding, content_encoding) == 0) && sal_content_encoding_available(lc->sal, content_encoding);
+}
+
+
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 	bool_t new_status=lc->network_last_status;
 	char newip[LINPHONE_IPADDR_SIZE];
@@ -3906,7 +3912,7 @@ int linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char
 		LinphoneAddress *real_parsed_url=linphone_core_interpret_url(lc,redirect_uri);
 		if (!real_parsed_url){
 			/* bad url */
-			ms_error("Bad redirect URI: %s", redirect_uri?:"NULL");
+			ms_error("Bad redirect URI: %s", redirect_uri?redirect_uri:"NULL");
 			return -1;
 		}
 		real_url=linphone_address_as_string (real_parsed_url);
@@ -4068,6 +4074,7 @@ int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call){
 		ms_error("No reason to pause this call, it is already paused or inactive.");
 		return -1;
 	}
+	call->broken = FALSE;
 	linphone_call_set_state(call, LinphoneCallPausing, "Pausing call");
 	linphone_call_make_local_media_description(call);
 #ifdef BUILD_UPNP
@@ -4144,6 +4151,7 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	}
 
 	call->was_automatically_paused=FALSE;
+	call->broken = FALSE;
 
 	/* Stop playing music immediately. If remote side is a conference it
 	 prevents the participants to hear it while the 200OK comes back.*/
@@ -4965,7 +4973,7 @@ void linphone_core_enable_mic(LinphoneCore *lc, bool_t enable) {
 bool_t linphone_core_mic_enabled(LinphoneCore *lc) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (linphone_core_is_in_conference(lc)){
-		return linphone_conference_microphone_is_muted(lc->conf_ctx);
+		return !linphone_conference_microphone_is_muted(lc->conf_ctx);
 	}else if (call==NULL){
 		ms_warning("%s(): No current call!", __FUNCTION__);
 		return TRUE;
