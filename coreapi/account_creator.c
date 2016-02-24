@@ -164,7 +164,7 @@ end:
 	return status;
 }
 
-static char* _get_identity(LinphoneAccountCreator *creator) {
+static char* _get_identity(const LinphoneAccountCreator *creator) {
 	char *identity = NULL;
 	if (creator->username && creator->domain) {
 		//we must escape username
