@@ -21,13 +21,13 @@
 ############################################################################
 
 cmake_minimum_required(VERSION 3.0)
-project(LINPHONE C CXX)
+project(linphone VERSION 3.9.1 LANGUAGES C CXX)
 
 
-set(LINPHONE_MAJOR_VERSION "3")
-set(LINPHONE_MINOR_VERSION "9")
-set(LINPHONE_MICRO_VERSION "1")
-set(LINPHONE_VERSION "${LINPHONE_MAJOR_VERSION}.${LINPHONE_MINOR_VERSION}.${LINPHONE_MICRO_VERSION}")
+set(LINPHONE_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
+set(LINPHONE_MINOR_VERSION ${PROJECT_VERSION_MINOR})
+set(LINPHONE_MICRO_VERSION ${PROJECT_VERSION_PATCH})
+set(LINPHONE_VERSION ${PROJECT_VERSION})
 set(LINPHONE_SO_VERSION "8")
 
 file(GLOB LINPHONE_PO_FILES RELATIVE "${CMAKE_CURRENT_LIST_DIR}/po" "${CMAKE_CURRENT_LIST_DIR}/po/*.po")
@@ -36,7 +36,8 @@ string(REPLACE ";" " " LINPHONE_ALL_LANGS "${LINPHONE_ALL_LANGS_LIST}")
 
 include(CMakeDependentOption)
 
-option(ENABLE_STATIC "Build static library (default is shared library)." NO)
+option(ENABLE_SHARED "Build shared library." YES)
+option(ENABLE_STATIC "Build static library." YES)
 option(ENABLE_CONSOLE_UI "Turn on or off compilation of console interface." YES)
 option(ENABLE_DATE "Use build date in internal version number." NO)
 option(ENABLE_DOC "Enable documentation generation with Doxygen." YES)
@@ -79,6 +80,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(CheckSymbolExists)
 include(CMakePushCheckState)
+include(GNUInstallDirs)
+
+if(NOT CMAKE_INSTALL_RPATH AND CMAKE_INSTALL_PREFIX)
+	set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
+	message(STATUS "Setting install rpath to ${CMAKE_INSTALL_RPATH}")
+endif()
 
 set(MSVC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/MSVC")
 if(MSVC)
@@ -251,13 +258,13 @@ if(ENABLE_RELATIVE_PREFIX)
 else()
 	set(LINPHONE_DATA_DIR "${CMAKE_INSTALL_PREFIX}")
 endif()
-set(LINPHONE_PLUGINS_DIR "${LINPHONE_DATA_DIR}/lib/liblinphone/plugins")
+set(LINPHONE_PLUGINS_DIR "${LINPHONE_DATA_DIR}/${CMAKE_INSTALL_LIBDIR}/liblinphone/plugins")
 if(WIN32)
 	set(LINPHONE_CONFIG_DIR "Linphone")
 endif()
-set(PACKAGE_LOCALE_DIR "${LINPHONE_DATA_DIR}/share/locale")
-set(PACKAGE_DATA_DIR "${LINPHONE_DATA_DIR}/share")
-set(PACKAGE_SOUND_DIR "${LINPHONE_DATA_DIR}/share/sounds/linphone")
+set(PACKAGE_LOCALE_DIR "${LINPHONE_DATA_DIR}/${CMAKE_INSTALL_DATADIR}/locale")
+set(PACKAGE_DATA_DIR "${LINPHONE_DATA_DIR}/${CMAKE_INSTALL_DATADIR}")
+set(PACKAGE_SOUND_DIR "${LINPHONE_DATA_DIR}/${CMAKE_INSTALL_DATADIR}/sounds/linphone")
 set(PACKAGE_RING_DIR "${PACKAGE_SOUND_DIR}/rings")
 set(PACKAGE_FREEDESKTOP_DIR "${PACKAGE_DATA_DIR}/applications")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
@@ -309,13 +316,13 @@ configure_file(cmake/LinphoneConfig.cmake.in
 	@ONLY
 )
 
-set(ConfigPackageLocation lib/cmake/Linphone)
+set(CONFIG_PACKAGE_LOCATION "${CMAKE_INSTALL_DATADIR}/Linphone/cmake")
 install(EXPORT ${EXPORT_TARGETS_NAME}Targets
 	FILE LinphoneTargets.cmake
-	DESTINATION ${ConfigPackageLocation}
+	DESTINATION ${CONFIG_PACKAGE_LOCATION}
 )
 install(FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfig.cmake"
 	"${CMAKE_CURRENT_BINARY_DIR}/LinphoneConfigVersion.cmake"
-	DESTINATION ${ConfigPackageLocation}
+	DESTINATION ${CONFIG_PACKAGE_LOCATION}
 )
