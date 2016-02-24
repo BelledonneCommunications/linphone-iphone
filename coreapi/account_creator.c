@@ -130,9 +130,9 @@ void linphone_account_creator_set_user_data(LinphoneAccountCreator *creator, voi
 }
 
 static LinphoneAccountCreatorStatus validate_uri(const char* username, const char* domain, const char* route, const char* display_name) {
-	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
 	LinphoneAddress* addr;
 	LinphoneAccountCreatorStatus status = LinphoneAccountCreatorOK;
+	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
 	linphone_proxy_config_set_identity(proxy, "sip:userame@domain.com");
 
 	if (route && linphone_proxy_config_set_route(proxy, route) != 0) {
@@ -162,6 +162,22 @@ static LinphoneAccountCreatorStatus validate_uri(const char* username, const cha
 end:
 	linphone_proxy_config_destroy(proxy);
 	return status;
+}
+
+static char* _get_identity(LinphoneAccountCreator *creator) {
+	char *identity = NULL;
+	if (creator->username && creator->domain) {
+		//we must escape username
+		LinphoneProxyConfig* proxy = linphone_proxy_config_new();
+		LinphoneAddress* addr;
+		linphone_proxy_config_set_identity(proxy, "sip:userame@domain.com");
+		addr = linphone_proxy_config_normalize_sip_uri(proxy, creator->username);
+		linphone_address_set_domain(addr, creator->domain);
+		identity = linphone_address_as_string(addr);
+		linphone_address_destroy(addr);
+		linphone_proxy_config_destroy(proxy);
+	}
+	return identity;
 }
 
 static bool_t is_matching_regex(const char *entry, const char* regex) {
@@ -203,7 +219,9 @@ LinphoneAccountCreatorStatus linphone_account_creator_set_username(LinphoneAccou
 	} else if ((status = validate_uri(username, NULL, NULL, NULL)) != LinphoneAccountCreatorOK) {
 		return status;
 	}
+
 	set_string(&creator->username, username, TRUE);
+
 	return LinphoneAccountCreatorOK;
 }
 
@@ -313,15 +331,14 @@ static void _test_existence_cb(LinphoneXmlRpcRequest *request) {
 
 LinphoneAccountCreatorStatus linphone_account_creator_test_existence(LinphoneAccountCreator *creator) {
 	LinphoneXmlRpcRequest *request;
-	char *identity;
-
-	if (!creator->username || !creator->domain) {
+	char *identity = _get_identity(creator);
+	if (!identity) {
 		if (creator->callbacks->existence_tested != NULL) {
 			creator->callbacks->existence_tested(creator, LinphoneAccountCreatorReqFailed);
 		}
 		return LinphoneAccountCreatorReqFailed;
 	}
-	identity = ms_strdup_printf("%s@%s", creator->username, creator->domain);
+
 	request = linphone_xml_rpc_request_new_with_args("check_account", LinphoneXmlRpcArgInt,
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgNone);
@@ -347,16 +364,13 @@ static void _test_validation_cb(LinphoneXmlRpcRequest *request) {
 
 LinphoneAccountCreatorStatus linphone_account_creator_test_validation(LinphoneAccountCreator *creator) {
 	LinphoneXmlRpcRequest *request;
-	char *identity;
-
-	if (!creator->username || !creator->domain) {
+	char *identity = _get_identity(creator);
+	if (!identity) {
 		if (creator->callbacks->validation_tested != NULL) {
 			creator->callbacks->validation_tested(creator, LinphoneAccountCreatorReqFailed);
 		}
 		return LinphoneAccountCreatorReqFailed;
 	}
-
-	identity = ms_strdup_printf("%s@%s", creator->username, creator->domain);
 	request = linphone_xml_rpc_request_new_with_args("check_account_validated", LinphoneXmlRpcArgInt,
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgNone);
@@ -382,16 +396,15 @@ static void _create_account_cb(LinphoneXmlRpcRequest *request) {
 
 LinphoneAccountCreatorStatus linphone_account_creator_create_account(LinphoneAccountCreator *creator) {
 	LinphoneXmlRpcRequest *request;
-	char *identity;
-
-	if (!creator->username || !creator->domain || !creator->email) {
+	char *identity = _get_identity(creator);
+	if (!identity || !creator->email) {
 		if (creator->callbacks->create_account != NULL) {
 			creator->callbacks->create_account(creator, LinphoneAccountCreatorReqFailed);
 		}
+		if (identity) ms_free(identity);
 		return LinphoneAccountCreatorReqFailed;
 	}
 
-	identity = ms_strdup_printf("%s@%s", creator->username, creator->domain);
 	request = linphone_xml_rpc_request_new_with_args("create_account", LinphoneXmlRpcArgInt,
 		LinphoneXmlRpcArgString, identity,
 		LinphoneXmlRpcArgString, creator->password,
@@ -409,8 +422,8 @@ LinphoneAccountCreatorStatus linphone_account_creator_create_account(LinphoneAcc
 LinphoneProxyConfig * linphone_account_creator_configure(const LinphoneAccountCreator *creator) {
 	LinphoneAuthInfo *info;
 	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(creator->core);
-	char *identity_str = ms_strdup_printf("sip:%s@%s", creator->username, creator->domain);
-	LinphoneAddress *identity = linphone_address_new(identity_str);
+	char *identity_str = _get_identity(creator);
+ 	LinphoneAddress *identity = linphone_address_new(identity_str);
 	char *route = NULL;
 	char *domain = NULL;
 	ms_free(identity_str);
