@@ -95,12 +95,14 @@ void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCall
 	}
 	if (lstats->updated & LINPHONE_CALL_STATS_PERIODICAL_UPDATE ) {
 		int tab_size = sizeof (counters->audio_download_bandwidth)/sizeof(int);
-		int index =  (counters->current_bandwidth_index++) % tab_size;
-
-		counters->audio_download_bandwidth[index] = (int)linphone_call_get_audio_stats(call)->download_bandwidth;
-		counters->audio_upload_bandwidth[index] = (int)linphone_call_get_audio_stats(call)->upload_bandwidth;
-		counters->video_download_bandwidth[index] = (int)linphone_call_get_video_stats(call)->download_bandwidth;
-		counters->video_upload_bandwidth[index] = (int)linphone_call_get_video_stats(call)->upload_bandwidth;
+		int index = (counters->current_bandwidth_index[lstats->type]++) % tab_size;
+		if (lstats->type == LINPHONE_CALL_STATS_AUDIO) {
+			counters->audio_download_bandwidth[index] = (int)linphone_call_get_audio_stats(call)->download_bandwidth;
+			counters->audio_upload_bandwidth[index] = (int)linphone_call_get_audio_stats(call)->upload_bandwidth;
+		} else {
+			counters->video_download_bandwidth[index] = (int)linphone_call_get_video_stats(call)->download_bandwidth;
+			counters->video_upload_bandwidth[index] = (int)linphone_call_get_video_stats(call)->upload_bandwidth;
+		}
 	}
 
 }
