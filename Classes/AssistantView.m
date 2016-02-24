@@ -243,6 +243,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 		// reload address book to prepend proxy config domain to contacts' phone number
 		// todo: STOP doing that!
 		[[LinphoneManager.instance fastAddressBook] reload];
+	} else {
+		UIAlertView *error = [[UIAlertView alloc]
+				initWithTitle:NSLocalizedString(@"Assistant error", nil)
+					  message:NSLocalizedString(
+								  @"Could not configure your account, please check parameters or try again later", nil)
+					 delegate:nil
+			cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+			otherButtonTitles:nil];
+		[error show];
+		_waitView.hidden = YES;
+		return;
 	}
 }
 
@@ -528,9 +539,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		case LinphoneRegistrationFailed: {
 			_waitView.hidden = true;
-			if ([message isEqualToString:@"Forbidden"]) {
-				message = NSLocalizedString(@"Incorrect username or password.", nil);
-			}
 			DTAlertView *alert = [[DTAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
 															message:message
 														   delegate:nil
