@@ -440,7 +440,7 @@ static void icon_press_handler(GtkEntry *entry){
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),uri);
 		ms_free(uri);
 		if (lf==NULL)
-			lf=linphone_friend_new();
+			lf=linphone_core_create_friend(linphone_gtk_get_core());
 		if (lf!=NULL){
 			linphone_friend_set_address(lf,addr);
 			linphone_gtk_show_contact(lf, w);
@@ -752,7 +752,7 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	const gchar *name,*uri;
 	LinphoneAddress* friend_address;
 	if (lf==NULL){
-		lf=linphone_friend_new();
+		lf=linphone_core_create_friend(linphone_gtk_get_core());
 		if (linphone_gtk_get_ui_config_int("use_subscribe_notify",1)==1){
 			show_presence=FALSE;
 			allow_presence=FALSE;

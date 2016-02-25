@@ -1133,6 +1133,11 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 			return;
 		}
 		
+		if (!lf || !lf->friend_list) {
+			ms_warning("Either the friend or the friend list is null, skipping...");
+			return;
+		} 
+		
 		if (lf->friend_list->storage_id == 0) {
 			ms_warning("Trying to add a friend in db, but friend list isn't, let's do that first");
 			linphone_core_store_friends_list_in_db(lc, lf->friend_list);
