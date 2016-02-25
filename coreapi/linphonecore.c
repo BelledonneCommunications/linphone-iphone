@@ -1856,18 +1856,22 @@ bool_t linphone_core_get_guess_hostname(LinphoneCore *lc){
 	return lc->sip_conf.guess_hostname;
 }
 
-void linphone_core_enable_lime(LinphoneCore *lc, bool_t val){
+void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 	if (linphone_core_ready(lc)){
 		lp_config_set_int(lc->config,"sip","lime",val);
 	}
 }
 
-bool_t linphone_core_lime_enabled(const LinphoneCore *lc){
-	return (lp_config_get_int(lc->config,"sip", "lime", FALSE) && lime_is_available());
+LinphoneLimeState linphone_core_lime_enabled(const LinphoneCore *lc){
+	return lime_is_available() ? lp_config_get_int(lc->config,"sip", "lime", LinphoneLimeDisabled) : LinphoneLimeDisabled;
 }
 
-bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc){
-	return linphone_core_lime_enabled(lc) && (lp_config_get_int(lc->config,"sip", "lime_for_file_sharing", TRUE) && lime_is_available());
+LinphoneLimeState linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc){
+	LinphoneLimeState s = linphone_core_lime_enabled(lc);
+	if (s != LinphoneLimeDisabled) {
+		s = lp_config_get_int(lc->config,"sip", "lime_for_file_sharing", LinphoneLimeMandatory);
+	}
+	return s;
 }
 
 LinphoneAddress *linphone_core_get_primary_contact_parsed(LinphoneCore *lc){

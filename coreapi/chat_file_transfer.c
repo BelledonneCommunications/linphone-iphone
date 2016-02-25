@@ -172,7 +172,8 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			belle_sip_body_handler_t *first_part_bh;
 
 			/* shall we encrypt the file */
-			if (linphone_core_lime_for_file_sharing_enabled(msg->chat_room->lc)) {
+			if (linphone_chat_room_lime_enabled(msg->chat_room) &&
+			 linphone_core_lime_for_file_sharing_enabled(msg->chat_room->lc)) {
 				char keyBuffer
 					[FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of
 												 initial vector */

@@ -1241,6 +1241,12 @@ typedef enum _LinphoneChatMessageState {
 	LinphoneChatMessageStateFileTransferDone /**< File transfer has been completed successfully. */
 } LinphoneChatMessageState;
 
+typedef enum _LinphoneLimeState {
+	LinphoneLimeDisabled, /**< Lime is not used at all */
+	LinphoneLimeMandatory, /**< Lime is always used */
+	LinphoneLimePreferred, /**< Lime is used only if we already shared a secret with remote */
+} LinphoneLimeState;
+
 /**
  * Call back used to notify message delivery status
  * @param msg #LinphoneChatMessage object
@@ -2566,8 +2572,8 @@ LINPHONE_PUBLIC bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
  * Tells to LinphoneCore to use Linphone Instant Messaging encryption
  *
  */
-LINPHONE_PUBLIC void linphone_core_enable_lime(LinphoneCore *lc, bool_t val);
-LINPHONE_PUBLIC bool_t linphone_core_lime_enabled(const LinphoneCore *lc);
+LINPHONE_PUBLIC void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val);
+LINPHONE_PUBLIC LinphoneLimeState linphone_core_lime_enabled(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);

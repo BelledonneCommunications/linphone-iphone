@@ -153,16 +153,16 @@ struct _LinphoneCallParams{
 	bool_t has_video;
 	bool_t avpf_enabled; /* RTCP feedback messages are enabled */
 	bool_t implicit_rtcp_fb;
-	
+
 	bool_t real_early_media; /*send real media even during early media (for outgoing calls)*/
 	bool_t in_conference; /*in conference mode */
 	bool_t low_bandwidth;
 	bool_t no_user_consent;/*when set to TRUE an UPDATE request will be used instead of reINVITE*/
-	
+
 	uint16_t avpf_rr_interval; /*in milliseconds*/
 	bool_t internal_call_update; /*use mark that call update was requested internally (might be by ice) - unused for the moment*/
 	bool_t video_multicast_enabled;
-	
+
 	bool_t audio_multicast_enabled;
 	bool_t realtimetext_enabled;
 	bool_t update_call_when_ice_completed;
@@ -356,7 +356,7 @@ struct _LinphoneCall{
 
 	bool_t paused_by_app;
 	bool_t broken; /*set to TRUE when the call is in broken state due to network disconnection or transport */
-	
+
 	LinphoneConference *conf_ref; /**> Point on the associated conference if this call is part of a conference. NULL instead. */
 };
 
@@ -399,7 +399,7 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig *obj);
 void linphone_proxy_config_write_all_to_config_file(LinphoneCore *lc);
 void _linphone_proxy_config_release(LinphoneProxyConfig *cfg);
 void _linphone_proxy_config_unpublish(LinphoneProxyConfig *obj);
-	
+
 /*
  * returns service route as defined in as defined by rfc3608, might be a list instead of just one.
  * Can be NULL
@@ -574,6 +574,7 @@ int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
+bool_t linphone_chat_room_lime_enabled(LinphoneChatRoom *cr);
 /**/
 
 struct _LinphoneProxyConfig
@@ -930,12 +931,12 @@ struct _LinphoneCore
 	bool_t auto_net_state_mon;
 	bool_t sip_network_reachable;
 	bool_t media_network_reachable;
-	
+
 	bool_t network_reachable_to_be_notified; /*set to true when state must be notified in next iterate*/
 	bool_t use_preview_window;
 	bool_t network_last_status;
 	bool_t ringstream_autorelease;
-	
+
 	bool_t vtables_running;
 	bool_t send_call_stats_periodical_updates;
 	bool_t forced_ice_relay;
@@ -1440,14 +1441,14 @@ LINPHONE_PUBLIC void _linphone_core_add_listener(LinphoneCore *lc, LinphoneCoreV
 LINPHONE_PUBLIC MSWebCam *linphone_call_get_video_device(const LinphoneCall *call);
 MSWebCam *get_nowebcam_device(MSFactory *f);
 #endif
-bool_t linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
+LinphoneLimeState linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 
 BELLE_SIP_DECLARE_VPTR(LinphoneTunnelConfig);
 
 int linphone_core_get_default_proxy_config_index(LinphoneCore *lc);
 
 char *linphone_presence_model_to_xml(LinphonePresenceModel *model) ;
-	
+
 #ifdef __cplusplus
 }
 #endif
