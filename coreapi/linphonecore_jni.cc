@@ -498,9 +498,11 @@ jobject getChatMessage(JNIEnv *env, LinphoneChatMessage *msg){
 	return jobj;
 }
 
-jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend){
+jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend, int *isLocalRef){
 	jobject jobj=0;
 
+	if (isLocalRef) *isLocalRef = FALSE;
+	
 	if (lfriend != NULL){
 		LinphoneCore *lc = linphone_friend_get_core(lfriend);
 		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
@@ -517,6 +519,9 @@ jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend){
 			if (jobj == NULL){
 				jobj=env->NewObject(ljb->friendClass, ljb->friendCtrId, (jlong)lfriend);
 				linphone_friend_set_user_data(lfriend,(void*)env->NewWeakGlobalRef(jobj));
+			}else{
+				//java object is still valid, we will return a local ref to it.
+				if (isLocalRef) *isLocalRef = TRUE;
 			}
 		}
 	}
@@ -809,6 +814,9 @@ public:
 	static void notify_presence_received(LinphoneCore *lc,  LinphoneFriend *my_friend) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
+		int isLocalRef = FALSE;
+		jobject jfriend = NULL;
+		
 		if (result != 0) {
 			ms_error("cannot attach VM");
 			return;
@@ -820,8 +828,9 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,ljb->notifyPresenceReceivedId
 							,lcData->core
-							,getFriend(env,my_friend));
+							,(jfriend=getFriend(env,my_friend, &isLocalRef)));
 		handle_possible_java_exception(env, lcData->listener);
+		if (isLocalRef) env->DeleteLocalRef(jfriend);
 	}
 	static void new_subscription_requested(LinphoneCore *lc,  LinphoneFriend *my_friend, const char* url) {
 		JNIEnv *env = 0;
@@ -837,7 +846,7 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,ljb->newSubscriptionRequestId
 							,lcData->core
-							,getFriend(env,my_friend)
+							,getFriend(env,my_friend, NULL)
 							,url ? env->NewStringUTF(url) : NULL);
 		handle_possible_java_exception(env, lcData->listener);
 	}
@@ -1965,9 +1974,11 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendList(JN
 
 	for (int i = 0; i < friendsSize; i++) {
 		LinphoneFriend* lfriend = (LinphoneFriend*)friends->data;
-		jobject jfriend =  getFriend(env,lfriend);
+		int isLocalRef;
+		jobject jfriend =  getFriend(env,lfriend,&isLocalRef);
 		if(jfriend != NULL){
 			env->SetObjectArrayElement(jFriends, i, jfriend);
+			if (isLocalRef) env->DeleteLocalRef(jfriend);
 		}
 		friends = friends->next;
 	}
@@ -3254,7 +3265,7 @@ extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getFriendByAddress(JN
 	LinphoneFriend *lf = linphone_core_get_friend_by_address((LinphoneCore*)ptr, address);
 	env->ReleaseStringUTFChars(jaddress, address);
 	if(lf != NULL) {
-		jobject jfriend = getFriend(env,lf);
+		jobject jfriend = getFriend(env,lf, NULL);
 		return jfriend;
 	} else {
 		return NULL;
