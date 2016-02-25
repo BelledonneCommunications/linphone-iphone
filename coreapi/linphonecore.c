@@ -7005,6 +7005,11 @@ bool_t linphone_core_sound_resources_locked(LinphoneCore *lc){
 	MSList *elem;
 	for(elem=lc->calls;elem!=NULL;elem=elem->next) {
 		LinphoneCall *c=(LinphoneCall*)elem->data;
+
+		if (linphone_call_media_in_progress(c)) {
+			return TRUE;
+		}
+
 		switch (c->state) {
 			case LinphoneCallOutgoingInit:
 			case LinphoneCallOutgoingProgress:
