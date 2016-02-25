@@ -77,7 +77,7 @@ INIT_WITH_COMMON_CF {
 	bool video_enabled = false;
 	LinphoneCall *currentCall = linphone_core_get_current_call(LC);
 	if (linphone_core_video_supported(LC)) {
-		if (linphone_core_video_display_enabled(LC) && currentCall && !linphone_call_media_in_progress(currentCall) &&
+		if (linphone_core_video_display_enabled(LC) && currentCall && !linphone_core_sound_resources_locked(LC) &&
 			linphone_call_get_state(currentCall) == LinphoneCallStreamsRunning) {
 			video_enabled = TRUE;
 		}

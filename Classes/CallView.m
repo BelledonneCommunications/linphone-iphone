@@ -256,8 +256,8 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 	[_videoButton update];
 	[_hangupButton update];
 
-	_optionsButton.enabled = (!call || !linphone_call_media_in_progress(call));
-	_optionsTransferButton.enabled = call && !linphone_call_media_in_progress(call);
+	_optionsButton.enabled = (!call || !linphone_core_sound_resources_locked(LC));
+	_optionsTransferButton.enabled = call && !linphone_core_sound_resources_locked(LC);
 	// enable conference button if 2 calls are presents and at least one is not in the conference
 	int confSize = linphone_core_get_conference_size(LC) - (linphone_core_is_in_conference(LC) ? 1 : 0);
 	_optionsConferenceButton.enabled =
