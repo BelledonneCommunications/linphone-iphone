@@ -230,7 +230,7 @@ void linphone_friend_remove_incoming_subscription(LinphoneFriend *lf, SalOp *op)
 		sal_op_release(op);
 		lf->insubs = ms_list_remove(lf->insubs, op);
 	}
-	
+
 }
 
 static void linphone_friend_unsubscribe(LinphoneFriend *lf){
@@ -632,7 +632,7 @@ LinphoneFriend * linphone_friend_new_from_config_file(LinphoneCore *lc, int inde
 	if (tmp==NULL) {
 		return NULL;
 	}
-	lf=linphone_friend_new_with_address(tmp);
+	lf=linphone_core_create_friend_with_address(lc, tmp);
 	if (lf==NULL) {
 		return NULL;
 	}

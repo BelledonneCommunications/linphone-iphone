@@ -2574,6 +2574,7 @@ LINPHONE_PUBLIC bool_t linphone_core_get_guess_hostname(LinphoneCore *lc);
  */
 LINPHONE_PUBLIC void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val);
 LINPHONE_PUBLIC LinphoneLimeState linphone_core_lime_enabled(const LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_lime_available(const LinphoneCore *lc);
 
 LINPHONE_PUBLIC	bool_t linphone_core_ipv6_enabled(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val);

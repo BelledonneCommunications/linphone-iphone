@@ -1862,8 +1862,12 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 	}
 }
 
+bool_t linphone_core_lime_available(const LinphoneCore *lc){
+	return lime_is_available();
+}
+
 LinphoneLimeState linphone_core_lime_enabled(const LinphoneCore *lc){
-	return lime_is_available() ? lp_config_get_int(lc->config,"sip", "lime", LinphoneLimeDisabled) : LinphoneLimeDisabled;
+	return linphone_core_lime_available(lc) ? lp_config_get_int(lc->config,"sip", "lime", LinphoneLimeDisabled) : LinphoneLimeDisabled;
 }
 
 LinphoneLimeState linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc){
