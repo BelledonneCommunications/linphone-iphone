@@ -815,7 +815,7 @@ void linphone_friend_list_export_friends_as_vcard4_file(LinphoneFriendList *list
 	FILE *file = NULL;
 	const MSList *friends = linphone_friend_list_get_friends(list);
 	
-	file = fopen(vcard_file, "w");
+	file = fopen(vcard_file, "wb");
 	if (file == NULL) {
 		ms_warning("Could not write %s ! Maybe it is read-only. Contacts will not be saved.", vcard_file);
 		return;
