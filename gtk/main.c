@@ -1840,6 +1840,8 @@ void linphone_gtk_show_keypad_checked(GtkCheckMenuItem *check_menu_item) {
 void linphone_gtk_import_contacts(void) {
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *dialog = gtk_file_chooser_dialog_new("Open vCard file", (GtkWindow *)mw, GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+	
+	gtk_widget_show(dialog);
 	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		LinphoneCore *lc = linphone_gtk_get_core();
 		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
@@ -1856,6 +1858,7 @@ void linphone_gtk_export_contacts(void) {
 	GtkWidget *dialog = gtk_file_chooser_dialog_new("Save vCards as", (GtkWindow *)mw, GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, NULL);
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
 	
+	gtk_widget_show(dialog);
 	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		LinphoneCore *lc = linphone_gtk_get_core();
 		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
