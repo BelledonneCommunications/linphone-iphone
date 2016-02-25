@@ -165,6 +165,7 @@ TunnelManager::~TunnelManager(){
 		udpMirror->stop();
 	}
 	if(mTunnelClient) delete mTunnelClient;
+	sal_set_tunnel(mCore->sal,NULL);
 	linphone_core_remove_listener(mCore, mVTable);
 	linphone_core_v_table_destroy(mVTable);
 }
@@ -197,7 +198,7 @@ void TunnelManager::processTunnelEvent(const Event &ev){
 				_linphone_core_apply_transports(mCore);
 				doRegistration();
 			}
-			
+
 		}
 	} else {
 		ms_error("TunnelManager: tunnel has been disconnected");
@@ -336,6 +337,7 @@ void TunnelManager::processUdpMirrorEvent(const Event &ev){
 		ms_message("TunnelManager: UDP mirror test succeed");
 		if(mTunnelClient) {
 			if(mTunnelizeSipPackets) doUnregistration();
+			sal_set_tunnel(mCore->sal,NULL);
 			delete mTunnelClient;
 			mTunnelClient = NULL;
 			if(mTunnelizeSipPackets) doRegistration();
