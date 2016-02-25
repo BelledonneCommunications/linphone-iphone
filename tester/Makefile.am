@@ -161,6 +161,8 @@ AM_CFLAGS += $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) -DHAVE_GTK
 
 endif
 
+AM_LDFLAGS=-Wl,-rpath -Wl,$(libdir)
+
 bin_PROGRAMS=
 
 if !BUILD_IOS
