@@ -1053,7 +1053,7 @@ void linphone_call_background_tasks(LinphoneCall *call, bool_t one_second_elapse
 void linphone_call_set_broken(LinphoneCall *call);
 void linphone_call_repair_if_broken(LinphoneCall *call);
 void linphone_core_repair_calls(LinphoneCore *lc);
-void linphone_core_preempt_sound_resources(LinphoneCore *lc);
+int linphone_core_preempt_sound_resources(LinphoneCore *lc);
 int _linphone_core_pause_call(LinphoneCore *lc, LinphoneCall *call);
 
 /*conferencing subsystem*/

@@ -50,12 +50,14 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	lcs=ms_list_append(lcs,laure->lc);
 
 	BC_ASSERT_TRUE(call_with_caller_params(marie,pauline,marie_params));
+	linphone_call_params_destroy(marie_params);
 	pauline_called_by_marie=linphone_core_get_current_call(pauline->lc);
 
 	if (enable_caller_privacy)
 		linphone_call_params_set_privacy(laure_params,LinphonePrivacyId);
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_invite_address_with_params(laure->lc,pauline->identity,laure_params));
+	linphone_call_params_destroy(laure_params);
 
 	BC_ASSERT_TRUE(wait_for(laure->lc
 							,pauline->lc
@@ -98,8 +100,7 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,10000));
-
-
+	
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
@@ -111,6 +112,65 @@ static void call_waiting_indication(void) {
 
 static void call_waiting_indication_with_privacy(void) {
 	call_waiting_indication_with_param(TRUE);
+}
+
+static void second_call_rejection(bool_t second_without_audio){
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCall *pauline_call;
+	LinphoneCallParams *params;
+	LinphoneCall *marie_call;
+	
+	/*start a call to pauline*/
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	BC_ASSERT_TRUE(wait_for(marie->lc
+			,pauline->lc
+			,&marie->stat.number_of_LinphoneCallOutgoingRinging
+			,1));
+	
+	/*attempt to send a second call while the first one is not answered.
+	 * It must be rejected by the core, since the audio resources are already engaged for the first call*/
+	params = linphone_core_create_call_params(marie->lc, NULL);
+	linphone_call_params_enable_audio(params, !second_without_audio);
+	marie_call = linphone_core_invite_with_params(marie->lc, "sip:laure_non_exstent@test.linphone.org", params);
+	
+	linphone_call_params_destroy(params);
+	
+	if (second_without_audio){
+		BC_ASSERT_PTR_NOT_NULL(marie_call);
+		BC_ASSERT_TRUE(wait_for(marie->lc
+			,pauline->lc
+			,&marie->stat.number_of_LinphoneCallError
+			,1));
+		
+	}else{
+		BC_ASSERT_PTR_NULL(marie_call);
+	}
+	
+	pauline_call = linphone_core_get_current_call(pauline->lc);
+	BC_ASSERT_PTR_NOT_NULL(pauline_call);
+	if (pauline_call){
+		linphone_core_accept_call(pauline->lc, pauline_call);
+	}
+	BC_ASSERT_TRUE(wait_for(marie->lc
+			,pauline->lc
+			,&marie->stat.number_of_LinphoneCallStreamsRunning
+			,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc
+			,pauline->lc
+			,&pauline->stat.number_of_LinphoneCallStreamsRunning
+			,1));
+	end_call(pauline, marie);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void second_call_rejected_if_first_one_in_progress(void){
+	second_call_rejection(FALSE);
+}
+
+static void second_call_allowed_if_not_using_audio(void){
+	second_call_rejection(TRUE);
 }
 
 static void incoming_call_accepted_when_outgoing_call_in_state(LinphoneCallState state) {
@@ -870,6 +930,8 @@ void eject_from_3_participants_remote_conference(void) {
 
 test_t multi_call_tests[] = {
 	TEST_NO_TAG("Call waiting indication", call_waiting_indication),
+	TEST_NO_TAG("Second call rejected if first one in progress", second_call_rejected_if_first_one_in_progress),
+	TEST_NO_TAG("Second call allowed if not using audio", second_call_allowed_if_not_using_audio),
 	TEST_NO_TAG("Call waiting indication with privacy", call_waiting_indication_with_privacy),
 	TEST_NO_TAG("Incoming call accepted when outgoing call in progress", incoming_call_accepted_when_outgoing_call_in_progress),
 	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing),

@@ -3138,22 +3138,27 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }
 
-LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
-{
+LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params){
 	const char *from=NULL;
 	LinphoneProxyConfig *proxy=NULL;
 	LinphoneAddress *parsed_url2=NULL;
 	char *real_url=NULL;
 	LinphoneCall *call;
 	bool_t defer = FALSE;
-	LinphoneCallParams *cp = linphone_call_params_copy(params);
+	LinphoneCallParams *cp;
 
-	linphone_core_preempt_sound_resources(lc);
+	if (!(!linphone_call_params_audio_enabled(params) || linphone_call_params_get_audio_direction(params) == LinphoneMediaDirectionInactive)
+		&& linphone_core_preempt_sound_resources(lc) == -1){
+		ms_error("linphone_core_invite_address_with_params(): sound is required for this call but another call is already locking the sound resource. Call attempt is rejected.");
+		return NULL;
+	}
 
 	if(!linphone_core_can_we_add_call(lc)){
 		linphone_core_notify_display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
 		return NULL;
 	}
+	
+	cp = linphone_call_params_copy(params);
 
 	real_url=linphone_address_as_string(addr);
 	proxy=linphone_core_lookup_known_proxy(lc,addr);
@@ -4072,22 +4077,24 @@ int linphone_core_pause_all_calls(LinphoneCore *lc){
 	return 0;
 }
 
-void linphone_core_preempt_sound_resources(LinphoneCore *lc){
+int linphone_core_preempt_sound_resources(LinphoneCore *lc){
 	LinphoneCall *current_call;
+	int err = 0;
 
 	if (linphone_core_is_in_conference(lc)){
 		linphone_core_leave_conference(lc);
-		return;
+		return 0;
 	}
 
 	current_call=linphone_core_get_current_call(lc);
 	if(current_call != NULL){
 		ms_message("Pausing automatically the current call.");
-		_linphone_core_pause_call(lc,current_call);
+		err = _linphone_core_pause_call(lc,current_call);
 	}
 	if (lc->ringstream){
 		linphone_core_stop_ringing(lc);
 	}
+	return err;
 }
 
 /**
