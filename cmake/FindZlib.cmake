@@ -26,10 +26,6 @@
 #  ZLIB_INCLUDE_DIRS - the zlib include directory
 #  ZLIB_LIBRARIES - The libraries needed to use zlib
 
-set(_ZLIB_ROOT_PATHS
-	${CMAKE_INSTALL_PREFIX}
-)
-
 find_path(ZLIB_INCLUDE_DIRS
 	NAMES zlib.h
 	HINTS _ZLIB_ROOT_PATHS
@@ -41,20 +37,13 @@ if(ZLIB_INCLUDE_DIRS)
 endif()
 
 if(ENABLE_STATIC)
-	if(IOS OR QNX)
-		set(_ZLIB_STATIC_NAMES z)
-	else()
-		set(_ZLIB_STATIC_NAMES zstatic zlibstatic zlibstaticd)
-	endif()
 	find_library(ZLIB_LIBRARIES
-		NAMES ${_ZLIB_STATIC_NAMES}
-		HINTS ${_ZLIB_ROOT_PATHS}
+		NAMES zstatic zlibstatic zlibstaticd z
 		PATH_SUFFIXES bin lib
 	)
 else()
 	find_library(ZLIB_LIBRARIES
 		NAMES z zlib zlibd
-		HINTS ${_ZLIB_ROOT_PATHS}
 		PATH_SUFFIXES bin lib
 	)
 endif()

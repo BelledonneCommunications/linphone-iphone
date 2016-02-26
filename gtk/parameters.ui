@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.18"/>
+  <requires lib="gtk+" version="2.24"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkAdjustment" id="adjustment_download_bw">
     <property name="lower">-1</property>
@@ -2244,23 +2244,9 @@
                               <object class="GtkLabel" id="chat_lime_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="yalign">0.49000000953674316</property>
+                                <property name="yalign">0.51999998092651367</property>
                                 <property name="label" translatable="yes">Use Lime for outgoing chat messages</property>
                               </object>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="chat_lime_checkbox">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="xalign">0.40000000596046448</property>
-                                <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="linphone_gtk_enable_lime" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkLabel" id="media_encryption_mandatory_label">
@@ -2287,6 +2273,22 @@
                                 <property name="right_attach">2</property>
                                 <property name="top_attach">2</property>
                                 <property name="bottom_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkComboBoxText" id="chat_lime_combo">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <items>
+                                  <item translatable="yes">Disabled</item>
+                                  <item translatable="yes">Mandatory</item>
+                                  <item translatable="yes">Preferred</item>
+                                </items>
+                                <signal name="changed" handler="linphone_gtk_lime_changed" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
                               </packing>
                             </child>
                           </object>

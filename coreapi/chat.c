@@ -264,6 +264,10 @@ LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const c
 	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
+bool_t linphone_chat_room_lime_enabled(LinphoneChatRoom *cr) {
+	return linphone_core_lime_enabled(cr->lc) != LinphoneLimeDisabled/*&& TODO: check that cr->peer_url has a verified token */;
+}
+
 static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
 	if (cr->composing_idle_timer) {
 		if (cr->lc && cr->lc->sal)
@@ -377,7 +381,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			char *peer_uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 			const char *content_type;
 
-			if (linphone_core_lime_enabled(cr->lc)) {
+			if (linphone_chat_room_lime_enabled(cr)) {
 				/* ref the msg or it may be destroyed by callback if the encryption failed */
 				if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
 					/* it's a file transfer, content type shall be set to

@@ -293,6 +293,7 @@ LINPHONE_PUBLIC void linphone_gtk_mtu_set(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_mtu_changed(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_use_sip_info_dtmf_toggled(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_ipv6_toggled(GtkWidget *w);
+LINPHONE_PUBLIC void linphone_gtk_lime_changed(GtkComboBoxText *comboext);
 LINPHONE_PUBLIC void linphone_gtk_disabled_udp_port_toggle(GtkCheckButton *button);
 LINPHONE_PUBLIC void linphone_gtk_random_udp_port_toggle(GtkCheckButton *button);
 LINPHONE_PUBLIC void linphone_gtk_udp_port_value_changed(GtkSpinButton *button);
