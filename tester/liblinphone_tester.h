@@ -22,7 +22,7 @@
 
 
 
-#include "bc_tester_utils.h"
+#include <bctoolbox/tester.h>
 #include "linphonecore.h"
 #include <mediastreamer2/msutils.h>
 #ifdef HAVE_CONFIG_H
