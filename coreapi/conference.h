@@ -86,6 +86,7 @@ LINPHONE_PUBLIC bool_t linphone_conference_params_video_requested(const Linphone
  * Remove a participant from a conference
  * @param obj A #LinphoneConference
  * @param uri SIP URI of the participant to remove
+ * @warning The passed SIP URI must be one of the URIs returned by linphone_conference_get_participants()
  * @return 0 if succeeded, -1 if failed
  */
 LINPHONE_PUBLIC int linphone_conference_remove_participant(LinphoneConference *obj, const LinphoneAddress *uri);
