@@ -52,7 +52,6 @@ class IOSTarget(prepare.Target):
         self.output = 'liblinphone-sdk/' + arch + '-apple-darwin.ios'
         self.additional_args = [
             '-DCMAKE_INSTALL_MESSAGE=LAZY',
-            '-DLINPHONE_BUILDER_GROUP_EXTERNAL_SOURCE_PATH_BUILDERS=YES',
             '-DLINPHONE_BUILDER_EXTERNAL_SOURCE_PATH=' +
             current_path + '/submodules'
         ]
