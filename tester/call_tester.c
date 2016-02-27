@@ -684,8 +684,10 @@ static void multiple_answers_call_with_media_relay(void) {
 	BC_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 4000) );
 
 	end_call(marie1, pauline);
-
-	ms_list_free_with_data(lcs, (void (*)(void*))linphone_core_manager_destroy);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie1);
+	linphone_core_manager_destroy(marie2);
+	ms_list_free(lcs);
 }
 
 static void call_with_specified_codec_bitrate(void) {
