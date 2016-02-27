@@ -365,34 +365,9 @@ static void simple_encrypted_conference_with_ice(LinphoneMediaEncryption mode) {
 
 	if (linphone_core_media_encryption_supported(marie->lc,mode)) {
 		linphone_core_set_firewall_policy(marie->lc,LinphonePolicyUseIce);
-		linphone_core_set_stun_server(marie->lc,"stun.linphone.org");
 		linphone_core_set_firewall_policy(pauline->lc,LinphonePolicyUseIce);
-		linphone_core_set_stun_server(pauline->lc,"stun.linphone.org");
 		linphone_core_set_firewall_policy(laure->lc,LinphonePolicyUseIce);
-		linphone_core_set_stun_server(laure->lc,"stun.linphone.org");
 
-		/*work around a to avoid stun resolution to be initiate in  call_received callback leading a mainloop reentrency*/
-		/*
-			belle_sip_main_loop_iterate() at belle_sip_loop.c:369
-			belle_sip_main_loop_run [inlined]() at belle_sip_loop.c:478
-			belle_sip_main_loop_sleep() at belle_sip_loop.c:490
-			sal_iterate() at sal_impl.c:745
-			linphone_core_get_stun_server_addrinfo() at misc.c:585
-			linphone_core_gather_ice_candidates() at misc.c:610
-			linphone_call_prepare_ice() at linphonecall.c:1 906
-			linphone_call_new_incoming() at linphonecall.c:1 101
-			call_received() at callbacks.c:347
-			...
-			linphone_core_iterate() at linphonecore.c:2 620
-			...
-
-			linphone_core_set_stun_server() initiates an asynchronous resolution, but it needs a few iteration before it is completed.
-			By calling private function linphone_core_get_stun_server_addrinfo() we make sure to wait that the resolution is done before the
-			test calls actually start.
-		*/
-		linphone_core_get_stun_server_addrinfo(marie->lc);
-		linphone_core_get_stun_server_addrinfo(pauline->lc);
-		linphone_core_get_stun_server_addrinfo(laure->lc);
 		/**/
 
 		linphone_core_set_media_encryption(marie->lc,mode);

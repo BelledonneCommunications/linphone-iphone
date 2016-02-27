@@ -221,6 +221,18 @@ bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms) {
 	else return TRUE;
 }
 
+bool_t wait_for_stun_resolution(LinphoneCoreManager *m) {
+	MSTimeSpec start;
+	int timeout_ms = 10000;
+
+	liblinphone_tester_clock_start(&start);
+	while (m->lc->net_conf.stun_addrinfo == NULL && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
+		linphone_core_iterate(m->lc);
+		ms_usleep(20000);
+	}
+	return m->lc->net_conf.stun_addrinfo != NULL;
+}
+
 static void set_codec_enable(LinphoneCore* lc,const char* type,int rate,bool_t enable) {
 	MSList* codecs=ms_list_copy(linphone_core_get_audio_codecs(lc));
 	MSList* codecs_it;
@@ -352,6 +364,11 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 	if (proxy) {
 		mgr->identity = linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
 		linphone_address_clean(mgr->identity);
+	}
+	
+	if (linphone_core_get_stun_server(mgr->lc) != NULL){
+		/*before we go, ensure that the stun server is resolved, otherwise all ice related test will fail*/
+		BC_ASSERT_TRUE(wait_for_stun_resolution(mgr));
 	}
 }
 

@@ -675,17 +675,17 @@ static void multiple_answers_call_with_media_relay(void) {
 	BC_ASSERT_PTR_NOT_NULL_FATAL(call2);
 
 	BC_ASSERT_EQUAL( linphone_core_accept_call(marie1->lc, call1), 0, int, "%d");
+	ms_sleep(1); /*sleep to make sure that the 200OK of marie1 reaches the server first*/
 	BC_ASSERT_EQUAL( linphone_core_accept_call(marie2->lc, call2), 0, int, "%d");
 
 	BC_ASSERT_TRUE( wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
 	BC_ASSERT_TRUE( wait_for_list(lcs, &marie1->stat.number_of_LinphoneCallStreamsRunning, 1, 2000) );
-	BC_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 2000) );
+	/*the server will send a bye to marie2, as is 200Ok arrived second*/
+	BC_ASSERT_TRUE( wait_for_list(lcs, &marie2->stat.number_of_LinphoneCallEnd, 1, 4000) );
 
 	end_call(marie1, pauline);
 
-	linphone_core_manager_destroy(pauline);
-	linphone_core_manager_destroy(marie1);
-	linphone_core_manager_destroy(marie2);
+	ms_list_free_with_data(lcs, (void (*)(void*))linphone_core_manager_destroy);
 }
 
 static void call_with_specified_codec_bitrate(void) {
@@ -1142,9 +1142,6 @@ static void check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManag
 }
 
 static void _call_with_ice_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t caller_with_ice, bool_t callee_with_ice, bool_t random_ports, bool_t forced_relay) {
-	// Force STUN server resolution to prevent DNS resolution issues on some machines
-	linphone_core_get_stun_server_addrinfo(pauline->lc);
-	linphone_core_get_stun_server_addrinfo(marie->lc);
 
 	linphone_core_set_user_agent(pauline->lc, "Natted Linphone", NULL);
 	linphone_core_set_user_agent(marie->lc, "Natted Linphone", NULL);
@@ -2503,10 +2500,6 @@ static void _call_with_ice_video(LinphoneVideoPolicy caller_policy, LinphoneVide
 	bool_t call_ok;
 	unsigned int nb_media_starts = 1;
 
-	/*force resolution of stun server before starting the test*/
-	linphone_core_get_stun_server_addrinfo(pauline->lc);
-	linphone_core_get_stun_server_addrinfo(marie->lc);
-
 	linphone_core_set_video_policy(pauline->lc, &caller_policy);
 	linphone_core_set_video_policy(marie->lc, &callee_policy);
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
@@ -2596,10 +2589,6 @@ static void call_with_ice_video_and_rtt(void) {
 	LinphoneVideoPolicy policy = { TRUE, TRUE };
 	LinphoneCallParams *params = NULL;
 	LinphoneCall *marie_call = NULL;
-
-	/*force resolution of stun server before starting the test*/
-	linphone_core_get_stun_server_addrinfo(pauline->lc);
-	linphone_core_get_stun_server_addrinfo(marie->lc);
 
 	linphone_core_set_video_policy(pauline->lc, &policy);
 	linphone_core_set_video_policy(marie->lc, &policy);
