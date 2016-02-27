@@ -301,17 +301,17 @@ static void upload_collected_traces(void)  {
 		linphone_core_set_log_collection_upload_server_url(marie->lc,"https://www.linphone.org:444/lft.php");
 		// Generate some logs
 		while (--waiting) ms_error("(test error)Waiting %d...", waiting);
-		linphone_core_compress_log_collection();
+		ms_free(linphone_core_compress_log_collection());
 		linphone_core_upload_log_collection(marie->lc);
-		BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,1));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,1, 10000));
 
 		/*try 2 times*/
 		waiting=100;
 		linphone_core_reset_log_collection();
 		while (--waiting) ms_error("(test error)Waiting %d...", waiting);
-		linphone_core_compress_log_collection();
+		ms_free(linphone_core_compress_log_collection());
 		linphone_core_upload_log_collection(marie->lc);
-		BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2));
+		BC_ASSERT_TRUE(wait_for_until(marie->lc,marie->lc,&marie->stat.number_of_LinphoneCoreLogCollectionUploadStateDelivered,2, 10000));
 		collect_cleanup(marie);
 	}
 }
