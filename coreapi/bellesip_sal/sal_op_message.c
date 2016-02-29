@@ -244,7 +244,7 @@ int sal_message_send(SalOp *op, const char *from, const char *to, const char* co
 	belle_sip_request_t* req;
 	char content_type_raw[256];
 	size_t content_length = msg?strlen(msg):0;
-	time_t curtime=time(NULL);
+	time_t curtime = ms_time(NULL);
 	uint8_t *multipartEncryptedMessage = NULL;
 	const char *body;
 	int retval;

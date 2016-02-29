@@ -344,10 +344,13 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 	int proxy_count;
 
 	/*BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
-	if (check_for_proxies) /**/
+	if (check_for_proxies){ /**/
 		proxy_count=ms_list_size(linphone_core_get_proxy_config_list(mgr->lc));
-	else
+	}else{
 		proxy_count=0;
+		/*this is to prevent registration to go on*/
+		linphone_core_set_network_reachable(mgr->lc, FALSE);
+	}
 
 	if (proxy_count){
 #define REGISTER_TIMEOUT 20 /* seconds */
@@ -369,6 +372,10 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 	if (linphone_core_get_stun_server(mgr->lc) != NULL){
 		/*before we go, ensure that the stun server is resolved, otherwise all ice related test will fail*/
 		BC_ASSERT_TRUE(wait_for_stun_resolution(mgr));
+	}
+	if (!check_for_proxies){
+		/*now that stun server resolution is done, we can start registering*/
+		linphone_core_set_network_reachable(mgr->lc, TRUE);
 	}
 }
 
