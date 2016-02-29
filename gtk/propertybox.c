@@ -497,7 +497,7 @@ void linphone_gtk_video_preset_changed(GtkWidget *w) {
 		gtk_widget_set_sensitive(GTK_WIDGET(framerate), FALSE);
 	} else if (g_strcmp0(sel, "high-fps") == 0) {
 		linphone_core_set_video_preset(lc, "high-fps");
-		gtk_spin_button_set_value(framerate, 0);
+		gtk_spin_button_set_value(framerate, 30);
 		gtk_widget_set_sensitive(GTK_WIDGET(framerate), FALSE);
 	} else if (g_strcmp0(sel, "custom") == 0) {
 		linphone_core_set_video_preset(lc, "custom");
