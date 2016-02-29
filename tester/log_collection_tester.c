@@ -101,14 +101,14 @@ static void collect_cleanup(LinphoneCoreManager *marie)  {
 	linphone_core_reset_log_collection();
 }
 
-static LinphoneCoreManager* setup(bool_t enable_logs)  {
+static LinphoneCoreManager* setup(LinphoneLogCollectionState log_collection_state)  {
 	LinphoneCoreManager *marie;
 	int timeout = 300;
 
 	collect_init();
-	linphone_core_enable_log_collection(enable_logs);
+	linphone_core_enable_log_collection(log_collection_state);
 
-	marie = linphone_core_manager_new2( "marie_rc", 0);
+	marie = linphone_core_manager_new2("marie_rc", 0);
 	// wait a few seconds to generate some traffic
 	while (--timeout){
 		// Generate some logs - error logs because we must ensure that
@@ -238,26 +238,26 @@ static time_t check_file(LinphoneCoreManager* mgr)  {
 }
 
 static void collect_files_disabled(void)  {
-	LinphoneCoreManager* marie = setup(FALSE);
+	LinphoneCoreManager* marie = setup(LinphoneLogCollectionDisabled);
 	BC_ASSERT_PTR_NULL(linphone_core_compress_log_collection());
 	collect_cleanup(marie);
 }
 
 static void collect_files_filled(void) {
-	LinphoneCoreManager* marie = setup(TRUE);
+	LinphoneCoreManager* marie = setup(LinphoneLogCollectionEnabled);
 	check_file(marie);
 	collect_cleanup(marie);
 }
 
 static void collect_files_small_size(void)  {
-	LinphoneCoreManager* marie = setup(TRUE);
+	LinphoneCoreManager* marie = setup(LinphoneLogCollectionEnabled);
 	linphone_core_set_log_collection_max_file_size(5000);
 	check_file(marie);
 	collect_cleanup(marie);
 }
 
 static void collect_files_changing_size(void)  {
-	LinphoneCoreManager* marie = setup(TRUE);
+	LinphoneCoreManager* marie = setup(LinphoneLogCollectionEnabled);
 	int waiting = 100;
 
 	check_file(marie);
@@ -291,7 +291,7 @@ static void logCollectionUploadStateChangedCb(LinphoneCore *lc, LinphoneCoreLogC
 }
 static void upload_collected_traces(void)  {
 	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager* marie = setup(TRUE);
+		LinphoneCoreManager* marie = setup(LinphoneLogCollectionEnabled);
 		int waiting = 100;
 		LinphoneCoreVTable *v_table = linphone_core_v_table_new();
 		v_table->log_collection_upload_state_changed = logCollectionUploadStateChangedCb;
