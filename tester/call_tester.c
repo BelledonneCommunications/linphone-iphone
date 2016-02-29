@@ -5821,7 +5821,11 @@ static void call_logs_sqlite_storage(void) {
 
 		call_id = linphone_call_log_get_call_id(call_log);
 		BC_ASSERT_PTR_NOT_NULL(call_id);
-		BC_ASSERT_PTR_NOT_NULL(linphone_core_find_call_log_from_call_id(marie->lc, call_id));
+		{
+			LinphoneCallLog* find_call_log = linphone_core_find_call_log_from_call_id(marie->lc, call_id);
+			BC_ASSERT_PTR_NOT_NULL(find_call_log);
+			if (find_call_log) linphone_call_log_unref(find_call_log);
+		}
 
 		BC_ASSERT_TRUE(linphone_address_equal(
 			linphone_call_log_get_remote_address(call_log),
@@ -6027,7 +6031,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Cancelled ringing call", cancelled_ringing_call),
 	TEST_NO_TAG("Call busy when calling self", call_busy_when_calling_self),
 	TEST_NO_TAG("Simple call", simple_call),
-	TEST_NO_TAG("Call terminated automatically by linphone_core_destroy", automatic_call_termination),
+	TEST_ONE_TAG("Call terminated automatically by linphone_core_destroy", automatic_call_termination, "LeaksMemory"),
 	TEST_NO_TAG("Call with http proxy", call_with_http_proxy),
 	TEST_NO_TAG("Call with timeouted bye", call_with_timeouted_bye),
 	TEST_NO_TAG("Direct call over IPv6", direct_call_over_ipv6),

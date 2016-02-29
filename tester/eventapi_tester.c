@@ -359,15 +359,15 @@ static void publish_without_expires(void){
 }
 
 test_t event_tests[] = {
-	TEST_NO_TAG("Subscribe declined", subscribe_test_declined),
-	TEST_NO_TAG("Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber),
-	TEST_NO_TAG("Subscribe with custom headers", subscribe_test_with_custom_header),
-	TEST_NO_TAG("Subscribe refreshed", subscribe_test_refreshed),
-	TEST_NO_TAG("Subscribe manually refreshed", subscribe_test_manually_refreshed),
-	TEST_NO_TAG("Subscribe terminated by notifier", subscribe_test_terminated_by_notifier),
-	TEST_NO_TAG("Publish", publish_test),
-	TEST_NO_TAG("Publish without expires", publish_without_expires),
-	TEST_NO_TAG("Publish without automatic refresh",publish_no_auto_test)
+	TEST_ONE_TAG("Subscribe declined", subscribe_test_declined, "LeaksMemory"),
+	TEST_ONE_TAG("Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber, "LeaksMemory"),
+	TEST_ONE_TAG("Subscribe with custom headers", subscribe_test_with_custom_header, "LeaksMemory"),
+	TEST_ONE_TAG("Subscribe refreshed", subscribe_test_refreshed, "LeaksMemory"),
+	TEST_ONE_TAG("Subscribe manually refreshed", subscribe_test_manually_refreshed, "LeaksMemory"),
+	TEST_ONE_TAG("Subscribe terminated by notifier", subscribe_test_terminated_by_notifier, "LeaksMemory"),
+	TEST_ONE_TAG("Publish", publish_test, "LeaksMemory"),
+	TEST_ONE_TAG("Publish without expires", publish_without_expires, "LeaksMemory"),
+	TEST_ONE_TAG("Publish without automatic refresh",publish_no_auto_test, "LeaksMemory")
 };
 
 test_suite_t event_test_suite = {"Event", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

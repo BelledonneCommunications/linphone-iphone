@@ -976,23 +976,23 @@ static void test_presence_list_subscribe_io_error(void) {
 }
 
 test_t presence_tests[] = {
-	TEST_NO_TAG("Simple Subscribe", simple_subscribe),
-	TEST_NO_TAG("Simple Publish", simple_publish),
-	TEST_NO_TAG("Simple Publish with expires", publish_with_expires),
-	/*TEST_NO_TAG("Call with presence", call_with_presence),*/
-	TEST_NO_TAG("Unsubscribe while subscribing", unsubscribe_while_subscribing),
-	TEST_NO_TAG("Presence information", presence_information),
-	TEST_NO_TAG("App managed presence failure", subscribe_failure_handle_by_app),
-	TEST_NO_TAG("Presence SUBSCRIBE forked", subscribe_presence_forked),
-	TEST_NO_TAG("Presence SUBSCRIBE expired", subscribe_presence_expired),
-	TEST_NO_TAG("Subscriber no loguer reachable using server",subscriber_no_longuer_reachable),
-	TEST_NO_TAG("Subscribe with late publish", test_subscribe_notify_publish),
-	TEST_NO_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish),
-	TEST_NO_TAG("Presence list", test_presence_list),
-	TEST_NO_TAG("Presence list without compression", test_presence_list_without_compression),
-	TEST_NO_TAG("Presence list, subscription expiration for unknown contact",test_presence_list_subscription_expire_for_unknown),
-	TEST_NO_TAG("Presence list, silent subscription expiration", test_presence_list_subscribe_dialog_expire),
-	TEST_NO_TAG("Presence list, io error",test_presence_list_subscribe_io_error)
+	TEST_ONE_TAG("Simple Subscribe", simple_subscribe, "LeaksMemory"),
+	TEST_ONE_TAG("Simple Publish", simple_publish, "LeaksMemory"),
+	TEST_ONE_TAG("Simple Publish with expires", publish_with_expires, "LeaksMemory"),
+	/*TEST_ONE_TAG("Call with presence", call_with_presence, "LeaksMemory"),*/
+	TEST_ONE_TAG("Unsubscribe while subscribing", unsubscribe_while_subscribing, "LeaksMemory"),
+	TEST_ONE_TAG("Presence information", presence_information, "LeaksMemory"),
+	TEST_ONE_TAG("App managed presence failure", subscribe_failure_handle_by_app, "LeaksMemory"),
+	TEST_ONE_TAG("Presence SUBSCRIBE forked", subscribe_presence_forked, "LeaksMemory"),
+	TEST_ONE_TAG("Presence SUBSCRIBE expired", subscribe_presence_expired, "LeaksMemory"),
+	TEST_ONE_TAG("Subscriber no loguer reachable using server",subscriber_no_longuer_reachable, "LeaksMemory"),
+	TEST_ONE_TAG("Subscribe with late publish", test_subscribe_notify_publish, "LeaksMemory"),
+	TEST_ONE_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish, "LeaksMemory"),
+	TEST_ONE_TAG("Presence list", test_presence_list, "LeaksMemory"),
+	TEST_ONE_TAG("Presence list without compression", test_presence_list_without_compression, "LeaksMemory"),
+	TEST_ONE_TAG("Presence list, subscription expiration for unknown contact",test_presence_list_subscription_expire_for_unknown, "LeaksMemory"),
+	TEST_ONE_TAG("Presence list, silent subscription expiration", test_presence_list_subscribe_dialog_expire, "LeaksMemory"),
+	TEST_ONE_TAG("Presence list, io error",test_presence_list_subscribe_io_error, "LeaksMemory")
 };
 
 test_suite_t presence_test_suite = {"Presence", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

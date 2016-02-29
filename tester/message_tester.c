@@ -1241,7 +1241,7 @@ static void history_count(void) {
 		messages=linphone_chat_room_get_history(chatroom,0);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270, int, "%d");
 		BC_ASSERT_EQUAL(ms_list_size(messages), 1270, int, "%d");
-		
+
 		/*check the second most recent msg*/
 		BC_ASSERT_PTR_NOT_NULL(messages);
 		if (messages){
@@ -1250,7 +1250,7 @@ static void history_count(void) {
 				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->next->data), "Fore and aft follow each other.");
 			}
 		}
-		
+
 		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test offset+limit: retrieve the 42th latest msg only and check its content*/
@@ -1706,7 +1706,7 @@ void file_transfer_with_http_proxy(void) {
 
 test_t message_tests[] = {
 	TEST_NO_TAG("Text message", text_message),
-	TEST_NO_TAG("Text message within call dialog", text_message_within_call_dialog),
+	TEST_ONE_TAG("Text message within call dialog", text_message_within_call_dialog, "MemoryLeaks"),
 	TEST_NO_TAG("Text message with credentials from auth callback", text_message_with_credential_from_auth_callback),
 	TEST_NO_TAG("Text message with privacy", text_message_with_privacy),
 	TEST_NO_TAG("Text message compatibility mode", text_message_compatibility_mode),
@@ -1717,9 +1717,9 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Transfer message with http proxy", file_transfer_with_http_proxy),
 	TEST_NO_TAG("Transfer message with upload io error", transfer_message_with_upload_io_error),
 	TEST_NO_TAG("Transfer message with download io error", transfer_message_with_download_io_error),
-	TEST_NO_TAG("Transfer message upload cancelled", transfer_message_upload_cancelled),
+	TEST_ONE_TAG("Transfer message upload cancelled", transfer_message_upload_cancelled, "MemoryLeaks"),
 	TEST_NO_TAG("Transfer message download cancelled", transfer_message_download_cancelled),
-	TEST_NO_TAG("Transfer message using external body url", file_transfer_using_external_body_url),
+	TEST_ONE_TAG("Transfer message using external body url", file_transfer_using_external_body_url, "MemoryLeaks"),
 	TEST_NO_TAG("Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously),
 	TEST_NO_TAG("Text message denied", text_message_denied),
 	TEST_NO_TAG("Info message", info_message),
@@ -1738,17 +1738,17 @@ test_t message_tests[] = {
 	TEST_NO_TAG("History count", history_count),
 #endif
 	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
-	TEST_NO_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url),
-	TEST_NO_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found),
-	TEST_NO_TAG("Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently),
-	TEST_NO_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom),
+	TEST_ONE_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url, "MemoryLeaks"),
+	TEST_ONE_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found, "MemoryLeaks"),
+	TEST_ONE_TAG("Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently, "MemoryLeaks"),
+	TEST_ONE_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom, "MemoryLeaks"),
 	TEST_NO_TAG("Real Time Text message", real_time_text_message),
 	TEST_NO_TAG("Real Time Text conversation", real_time_text_conversation),
 	TEST_NO_TAG("Real Time Text without audio", real_time_text_without_audio),
 	TEST_NO_TAG("Real Time Text with srtp", real_time_text_srtp),
 	TEST_NO_TAG("Real Time Text with ice", real_time_text_ice),
-	TEST_NO_TAG("Real Time Text message compatibility crlf", real_time_text_message_compat_crlf),
-	TEST_NO_TAG("Real Time Text message compatibility lf", real_time_text_message_compat_lf),
+	TEST_ONE_TAG("Real Time Text message compatibility crlf", real_time_text_message_compat_crlf, "MemoryLeaks"),
+	TEST_ONE_TAG("Real Time Text message compatibility lf", real_time_text_message_compat_lf, "MemoryLeaks"),
 	TEST_NO_TAG("Real Time Text message with accented characters", real_time_text_message_accented_chars),
 	TEST_NO_TAG("Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side),
 	TEST_NO_TAG("Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side),

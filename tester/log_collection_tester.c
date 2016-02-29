@@ -321,7 +321,7 @@ test_t log_collection_tests[] = {
 	TEST_NO_TAG("Collect files filled when enabled", collect_files_filled),
 	TEST_NO_TAG("Logs collected into small file", collect_files_small_size),
 	TEST_NO_TAG("Logs collected when decreasing max size", collect_files_changing_size),
-	TEST_NO_TAG("Upload collected traces", upload_collected_traces)
+	TEST_ONE_TAG("Upload collected traces", upload_collected_traces, "MemoryLeaks")
 };
 
 test_suite_t log_collection_test_suite = {"LogCollection", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

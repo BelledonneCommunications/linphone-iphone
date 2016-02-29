@@ -418,7 +418,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	if (mgr->identity) {
 		linphone_address_destroy(mgr->identity);
 	}
-	
+
 	manager_count--;
 }
 
@@ -534,7 +534,7 @@ void liblinphone_tester_before_each(void) {
 
 static char* all_leaks_buffer = NULL;
 
-void liblinphone_tester_after_each(void) {
+int liblinphone_tester_after_each(void) {
 	if (!liblinphone_tester_leak_detector_disabled){
 		int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
 		if (leaked_objects > 0) {
@@ -547,12 +547,25 @@ void liblinphone_tester_after_each(void) {
 			ms_error("%s", format);
 
 			all_leaks_buffer = ms_strcat_printf(all_leaks_buffer, "\n%s", format);
+
+			{
+				//prevent any future leaks
+				const char **tags = bc_tester_current_test_tags();
+				// if the test is NOT marked as leaking memory and it actually is, we should make it fail
+				if ( tags &&
+					!((tags[0] && strcmp(tags[0], "LeakingMemory")) || (tags[1] && strcmp(tags[1], "LeakingMemory")))) {
+					BC_FAIL("This test is leaking memory!");
+					return 1;
+				}
+			}
+
 		}
 	}
 
 	if (manager_count != 0) {
 		ms_fatal("%d Linphone core managers are still alive!", manager_count);
 	}
+	return 0;
 }
 
 void liblinphone_tester_uninit(void) {
@@ -582,8 +595,8 @@ static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStrea
 		BC_ASSERT_FALSE(stream_type >= LinphoneStreamTypeUnknown);
 		return;
 	}
-	
-	
+
+
 	if (linphone_call_get_audio_stats(c1)->ice_state == LinphoneIceStateHostConnection && media_stream_started(ms)) {
 		char ip[16];
 		char port[8];
@@ -604,16 +617,16 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 	bool_t text_success=FALSE;
 	bool_t video_enabled, realtime_text_enabled;
 	MSTimeSpec ts;
-	
+
 	c1=linphone_core_get_current_call(caller->lc);
 	c2=linphone_core_get_current_call(callee->lc);
-	
+
 	BC_ASSERT_PTR_NOT_NULL(c1);
 	BC_ASSERT_PTR_NOT_NULL(c2);
 	if (!c1 || !c2) return FALSE;
 	linphone_call_ref(c1);
 	linphone_call_ref(c2);
-	
+
 	BC_ASSERT_EQUAL(linphone_call_params_video_enabled(linphone_call_get_current_params(c1)),linphone_call_params_video_enabled(linphone_call_get_current_params(c2)), int, "%d");
 	BC_ASSERT_EQUAL(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(c1)),linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(c2)), int, "%d");
 	video_enabled=linphone_call_params_video_enabled(linphone_call_get_current_params(c1));
@@ -633,7 +646,7 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 		}
 		ms_usleep(20000);
 	}while(!liblinphone_tester_clock_elapsed(&ts,10000));
-	
+
 	if (video_enabled){
 		liblinphone_tester_clock_start(&ts);
 		do{
@@ -651,7 +664,7 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 			ms_usleep(20000);
 		}while(!liblinphone_tester_clock_elapsed(&ts,10000));
 	}
-	
+
 	if (realtime_text_enabled){
 		liblinphone_tester_clock_start(&ts);
 		do{
@@ -669,7 +682,7 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 			ms_usleep(20000);
 		}while(!liblinphone_tester_clock_elapsed(&ts,10000));
 	}
-	
+
 	/*make sure encryption mode are preserved*/
 	if (c1) {
 		const LinphoneCallParams* call_param = linphone_call_get_current_params(c1);
@@ -687,12 +700,12 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 static void linphone_conference_server_call_state_changed(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *msg) {
 	LinphoneCoreVTable *vtable = linphone_core_get_current_vtable(lc);
 	LinphoneConferenceServer *conf_srv = (LinphoneConferenceServer *)vtable->user_data;
-	
+
 	switch(cstate) {
 		case LinphoneCallIncomingReceived:
 			linphone_core_accept_call(lc, call);
 			break;
-			
+
 		case LinphoneCallStreamsRunning:
 			if(linphone_call_get_conference(call) == NULL) {
 				linphone_core_add_to_conference(lc, call);
@@ -700,7 +713,7 @@ static void linphone_conference_server_call_state_changed(LinphoneCore *lc, Linp
 				if(conf_srv->first_call == NULL) conf_srv->first_call = linphone_call_ref(call);
 			}
 			break;
-			
+
 		case LinphoneCallEnd:
 			if(call == conf_srv->first_call) {
 				linphone_core_terminate_conference(lc);
@@ -708,7 +721,7 @@ static void linphone_conference_server_call_state_changed(LinphoneCore *lc, Linp
 				conf_srv->first_call = NULL;
 			}
 			break;
-			
+
 		default: break;
 	}
 }
@@ -718,7 +731,7 @@ static void linphone_conference_server_refer_received(LinphoneCore *core, const 
 	LinphoneAddress *refer_to_addr = linphone_address_new(refer_to);
 	char *uri;
 	LinphoneCall *call;
-	
+
 	if(refer_to_addr == NULL) return;
 	strncpy(method, linphone_address_get_method_param(refer_to_addr), sizeof(method));
 	if(strcmp(method, "BYE") == 0) {
@@ -745,7 +758,7 @@ static void linphone_conference_server_registration_state_changed(LinphoneCore *
 LinphoneConferenceServer* linphone_conference_server_new(const char *rc_file, bool_t do_registration) {
 	LinphoneConferenceServer *conf_srv = (LinphoneConferenceServer *)ms_new0(LinphoneConferenceServer, 1);
 	LinphoneCoreManager *lm = (LinphoneCoreManager *)conf_srv;
-	
+
 	conf_srv->vtable = linphone_core_v_table_new();
 	conf_srv->vtable->call_state_changed = linphone_conference_server_call_state_changed;
 	conf_srv->vtable->refer_received = linphone_conference_server_refer_received;

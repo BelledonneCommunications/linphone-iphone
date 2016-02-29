@@ -73,11 +73,11 @@ static void message_forking(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
-	
+
 	/*wait a bit that 200Ok for MESSAGE are sent to server before shuting down the cores, because otherwise Flexisip will consider the messages
 	 * as not delivered and will expedite them in the next test, after receiving the REGISTER from marie's instances*/
 	wait_for_list(lcs, NULL, 0, 2000);
-	
+
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
@@ -97,7 +97,7 @@ static void message_forking_with_unreachable_recipients(void) {
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
 	lcs=ms_list_append(lcs,marie3->lc);
-	
+
 	/*the following lines are to workaround a problem with messages sent by a previous test (Message forking) that arrive together with REGISTER responses,
 	 * because the ForkMessageContext is not terminated at flexisip side if Message forking test is passing fast*/
 	wait_for_list(lcs,NULL,0,1000);
@@ -153,7 +153,7 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	marie2->stat.number_of_LinphoneMessageReceived = 0;
 	marie3->stat.number_of_LinphoneMessageReceived = 0;
 
-	
+
 	/*All marie's device go offline*/
 	linphone_core_set_network_reachable(marie->lc,FALSE);
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
@@ -919,31 +919,31 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	/*just to get an identity*/
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	
+
 	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
 	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
 	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
 	ms_free(lf_identity);
-	
+
 	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);
-	
+
 	linphone_core_add_friend(pauline->lc,lf);
-	
+
 	/*wait for subscribe acknowledgment*/
 	wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,1,2000);
 	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
-	
+
 	scen = bc_tester_res("sipp/simple_publish.xml");
-	
+
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
-	
+
 	if (sipp_out) {
 		/*wait for marie status*/
 		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
 		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
 		pclose(sipp_out);
 	}
-	
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 #endif
@@ -955,23 +955,23 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	/*just to get an identity*/
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	
+
 	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
 	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
 	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
 	ms_free(lf_identity);
 	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);
-	
+
 	linphone_core_add_friend(pauline->lc,lf);
-	
+
 	/*wait for subscribe acknowledgment*/
 	wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,1,2000);
 	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
-	
+
 	scen = bc_tester_res("sipp/double_publish_with_error.xml");
-	
+
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
-	
+
 	if (sipp_out) {
 		/*wait for marie status*/
 		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
@@ -979,7 +979,7 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 		pclose(sipp_out);
 		BC_ASSERT_EQUAL(pauline->stat.number_of_NotifyReceived,2,int, "%d");
 	}
-	
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 #endif
@@ -988,7 +988,7 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 static void test_publish_unpublish(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneProxyConfig* proxy;
-	
+
 	proxy = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_proxy_config_edit(proxy);
 	linphone_proxy_config_enable_publish(proxy,TRUE);
@@ -1005,7 +1005,7 @@ static void test_list_subscribe (void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc");
-	
+
 	char *list =	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 					"<resource-lists xmlns=\"urn:ietf:params:xml:ns:resource-lists\"\n"
 					"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
@@ -1014,8 +1014,8 @@ static void test_list_subscribe (void) {
 						"\t<entry uri=\"%s\" />\n"
 					"</list>\n"
 					"</resource-lists>\n";
-	
-	
+
+
 	LinphoneEvent *lev;
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	char * pauline_uri=linphone_address_as_string_uri_only(pauline->identity);
@@ -1025,29 +1025,29 @@ static void test_list_subscribe (void) {
 	LinphoneAddress *list_name = linphone_address_new("sip:mescops@sip.example.org");
 	LinphoneProxyConfig* proxy_config;
 	int dummy=0;
-	
+
 	ms_free(pauline_uri);
 	ms_free(laure_uri);
-	
+
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,laure->lc);
-	
+
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"resource-lists+xml");
 	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
-	
+
 	lev=linphone_core_create_subscribe(marie->lc,list_name,"presence",60);
-	
+
 	linphone_event_add_custom_header(lev,"Supported","eventlist");
 	linphone_event_add_custom_header(lev,"Accept","application/pidf+xml, application/rlmi+xml");
 	linphone_event_add_custom_header(lev,"Content-Disposition", "recipient-list");
 	linphone_event_add_custom_header(lev,"Require", "recipient-list-subscribe");
-	
+
 	linphone_event_send_subscribe(lev,content);
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingInit,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
-	
+
 	/*make sure marie receives first notification before terminating*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
 	/*dummy wait to avoid derred notify*/
@@ -1056,22 +1056,22 @@ static void test_list_subscribe (void) {
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_enable_publish(proxy_config,TRUE);
 	linphone_proxy_config_done(proxy_config);
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
-	
+
 	proxy_config = linphone_core_get_default_proxy_config(laure->lc);
 	linphone_proxy_config_edit(proxy_config);
 	linphone_proxy_config_enable_publish(proxy_config,TRUE);
 	linphone_proxy_config_done(proxy_config);
 	/*make sure notify is not sent "imadiatly but defered*/
 	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,3,1000));
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,3,5000));
-	
+
 	linphone_event_terminate(lev);
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
-	
+
 	ms_free(subscribe_content);
 	linphone_address_destroy(list_name);
 	linphone_content_unref(content);
@@ -1082,7 +1082,7 @@ static void test_list_subscribe (void) {
 
 
 test_t flexisip_tests[] = {
-	TEST_NO_TAG("Subscribe forking", subscribe_forking),
+	TEST_ONE_TAG("Subscribe forking", subscribe_forking, "LeaksMemory"),
 	TEST_NO_TAG("Message forking", message_forking),
 	TEST_NO_TAG("Message forking with unreachable recipients", message_forking_with_unreachable_recipients),
 	TEST_NO_TAG("Message forking with all recipients unreachable", message_forking_with_all_recipients_unreachable),
@@ -1096,15 +1096,15 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("Call forking not responded", call_forking_not_responded),
 	TEST_NO_TAG("Early-media call forking", early_media_call_forking),
 	TEST_NO_TAG("Call with sips", call_with_sips),
-	TEST_NO_TAG("Call with sips not achievable", call_with_sips_not_achievable),
+	TEST_ONE_TAG("Call with sips not achievable", call_with_sips_not_achievable, "LeaksMemory"),
 	TEST_NO_TAG("Call with ipv6", call_with_ipv6),
 	TEST_NO_TAG("Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher),
 	TEST_NO_TAG("Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish),
 	TEST_NO_TAG("Publish/unpublish", test_publish_unpublish),
-	TEST_NO_TAG("List subscribe", test_list_subscribe),
-	TEST_NO_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client),
-	TEST_NO_TAG("File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client),
-	TEST_NO_TAG("File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client),
+	TEST_ONE_TAG("List subscribe", test_list_subscribe, "LeaksMemory"),
+	TEST_ONE_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client, "LeaksMemory"),
+	TEST_ONE_TAG("File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client, "LeaksMemory"),
+	TEST_ONE_TAG("File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client, "LeaksMemory"),
 	TEST_NO_TAG("DoS module trigger by sending a lot of chat messages", dos_module_trigger)
 };
 

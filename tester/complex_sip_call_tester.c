@@ -55,9 +55,9 @@ FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress*
 	else
 		dest = ms_strdup_printf("%s",linphone_address_get_domain(dest_addres));
 	//until errors logs are handled correctly and stop breaks output, they will be DISABLED
-	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000",senario,dest_username,dest);
+	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000 2>/dev/null",senario,dest_username,dest);
 
-	ms_message("Starting sipp commad [%s]",command);
+	ms_message("Starting sipp command [%s]",command);
 	file = popen(command, "r");
 	ms_free(command);
 	ms_free(dest);
@@ -74,9 +74,9 @@ static FILE *sip_start_recv(const char *senario) {
 	FILE *file;
 
 	//until errors logs are handled correctly and stop breaks output, they will be DISABLED
-	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000",senario);
+	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000 2>/dev/null",senario);
 
-	ms_message("Starting sipp commad [%s]",command);
+	ms_message("Starting sipp command [%s]",command);
 	file = popen(command, "r");
 	ms_free(command);
 	return file;

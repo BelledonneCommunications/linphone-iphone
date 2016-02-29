@@ -553,7 +553,7 @@ static void enable_disable_camera_after_camera_switches(void) {
 test_t video_tests[] = {
 #if HAVE_GTK
 	TEST_NO_TAG("Early-media video during video call", early_media_video_during_video_call_test),
-	TEST_NO_TAG("Two incoming early-media video calls", two_incoming_early_media_video_calls_test),
+	TEST_ONE_TAG("Two incoming early-media video calls", two_incoming_early_media_video_calls_test, "MemoryLeaks"),
 	TEST_NO_TAG("Early-media video with inactive audio", early_media_video_with_inactive_audio),
 	TEST_NO_TAG("Forked outgoing early-media video call with inactive audio", forked_outgoing_early_media_video_call_with_inactive_audio_test),
 #endif /*HAVE_GTK*/
