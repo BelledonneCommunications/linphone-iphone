@@ -478,6 +478,8 @@ Sal * sal_init(MSFactory *factory){
 	sal->user_agent=belle_sip_header_user_agent_new();
 #if defined(PACKAGE_NAME) && defined(LIBLINPHONE_VERSION)
 	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LIBLINPHONE_VERSION);
+#else
+	belle_sip_header_user_agent_add_product(sal->user_agent, "Unknown");
 #endif
 	sal_append_stack_string_to_user_agent(sal);
 	belle_sip_object_ref(sal->user_agent);
@@ -835,7 +837,7 @@ int sal_get_transport_timeout(const Sal* sal)  {
 
 void sal_set_dns_servers(Sal *sal, const MSList *servers){
 	belle_sip_list_t *l = NULL;
-	
+
 	/*we have to convert the MSList into a belle_sip_list_t first*/
 	for (; servers != NULL; servers = servers->next){
 		l = belle_sip_list_append(l, servers->data);
