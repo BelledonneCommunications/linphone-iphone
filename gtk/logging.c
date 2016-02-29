@@ -216,7 +216,6 @@ void linphone_gtk_create_log_window(void){
 	/*prevent the log window from being destroyed*/
 	g_signal_connect (G_OBJECT (log_window), "delete-event",
 		G_CALLBACK (gtk_widget_hide_on_delete), log_window);
-
 }
 
 void linphone_gtk_destroy_log_window(void){
@@ -292,11 +291,12 @@ static void stick_to_end(GtkTextView *v){
 	gtk_text_view_scroll_to_iter(v,&iter,0,FALSE,1.0,0);
 }
 
-void linphone_gtk_log_scroll_to_end(GtkToggleButton *button){
+void linphone_gtk_log_scroll_to_end(GtkToggleButton *button) {
 	if (gtk_toggle_button_get_active(button)){
 		GtkTextView *v=GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview"));
 		stick_to_end(v);
 	}
+	lp_config_set_int(linphone_core_get_config(linphone_gtk_get_core()), "GtkUi", "logs_scroll_to_end", gtk_toggle_button_get_active(button) ? 1 : 0);
 }
 
 /*
@@ -316,8 +316,10 @@ gboolean linphone_gtk_check_logs(void){
 	if (log_queue) g_list_free(log_queue);
 	log_queue=NULL;
 	g_static_mutex_unlock(&log_mutex);
-	if (v)
+	if (v) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(log_window,"scroll_to_end")), lp_config_get_int(linphone_core_get_config(linphone_gtk_get_core()), "GtkUi", "logs_scroll_to_end", 0) == 1);
 		linphone_gtk_log_scroll_to_end(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(log_window,"scroll_to_end")));
+	}
 	return TRUE;
 }
 
