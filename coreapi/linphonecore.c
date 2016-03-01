@@ -685,6 +685,9 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		l = belle_http_request_listener_create_from_callbacks(&cbs, core);
 		belle_http_provider_send_request(core->http_provider, req, l);
 		ms_free(name);
+	} else {
+		ms_warning("Could not upload log collection: log_collection_upload_information=%p, server_url=%s, log_collection_state=%d",
+			core->log_collection_upload_information, linphone_core_get_log_collection_upload_server_url(core), liblinphone_log_collection_state);
 	}
 }
 
