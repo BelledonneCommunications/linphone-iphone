@@ -72,16 +72,13 @@ RCFILES = \
 
 IMAGE_FILES = images/nowebcamCIF.jpg
 
-COMMON_FILE = common/bc_completion
-
 EXTRA_DIST = tester_hosts\
 			messages.db\
 			$(TESTER_SOUNDS)\
 			$(SIPP_FILES)\
 			$(CERTIFICATE_FILES)\
 			$(RCFILES)\
-			$(IMAGE_FILES)\
-			$(COMMON_FILE)
+			$(IMAGE_FILES)
 
 
 
@@ -134,11 +131,9 @@ liblinphonetester_la_SOURCES = \
 				tunnel_tester.c \
 				tester.c \
 				upnp_tester.c \
-				video_tester.c \
-				common/bc_tester_utils.c
+				video_tester.c 
 
 liblinphonetester_ladir = $(includedir)/linphone
-liblinphonetester_la_HEADERS = common/bc_tester_utils.h
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
