@@ -132,6 +132,7 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 		ms_warning("No event header in incoming SUBSCRIBE.");
 		resp=sal_op_create_response_from_request(op,req,400);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
+		if (!op->dialog) sal_op_release(op);
 		return;
 	}
 	if (op->event==NULL) {
@@ -142,7 +143,13 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 	
 	if (!op->dialog) {
 		if (strcmp(method,"SUBSCRIBE")==0){
-			op->dialog=belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
+			op->dialog = belle_sip_provider_create_dialog(op->base.root->prov,BELLE_SIP_TRANSACTION(server_transaction));
+			if (!op->dialog){
+				resp=sal_op_create_response_from_request(op,req,481);
+				belle_sip_server_transaction_send_response(server_transaction,resp);
+				sal_op_release(op);
+				return;
+			}
 			belle_sip_dialog_set_application_data(op->dialog, sal_op_ref(op));
 			ms_message("new incoming subscription from [%s] to [%s]",sal_op_get_from(op),sal_op_get_to(op));
 		}else{ /*this is a NOTIFY*/
