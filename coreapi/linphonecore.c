@@ -609,12 +609,12 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	ortp_mutex_lock(&liblinphone_log_collection_mutex);
 	output_filename = ms_strdup_printf("%s/%s",
 		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH, filename);
-	output_file = COMPRESS_OPEN(output_filename, "w");
+	output_file = COMPRESS_OPEN(output_filename, "wb");
 	if (output_file == NULL) goto error;
 	input_filename = ms_strdup_printf("%s/%s1.log",
 		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
 		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX);
-	input_file = fopen(input_filename, "r");
+	input_file = fopen(input_filename, "rb");
 	if (input_file == NULL) goto error;
 	ret = compress_file(input_file, output_file);
 	if (ret <= 0) goto error;
@@ -623,7 +623,7 @@ static int prepare_log_collection_file_to_upload(const char *filename) {
 	input_filename = ms_strdup_printf("%s/%s2.log",
 		liblinphone_log_collection_path ? liblinphone_log_collection_path : LOG_COLLECTION_DEFAULT_PATH,
 		liblinphone_log_collection_prefix ? liblinphone_log_collection_prefix : LOG_COLLECTION_DEFAULT_PREFIX);
-	input_file = fopen(input_filename, "r");
+	input_file = fopen(input_filename, "rb");
 	if (input_file != NULL) {
 		ret = compress_file(input_file, output_file);
 		if (ret <= 0) goto error;
@@ -671,9 +671,10 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 			COMPRESSED_LOG_COLLECTION_EXTENSION);
 		linphone_content_set_name(core->log_collection_upload_information, name);
 		if (prepare_log_collection_file_to_upload(name) <= 0) {
-		    linphone_content_unref(core->log_collection_upload_information);
+			linphone_content_unref(core->log_collection_upload_information);
 			core->log_collection_upload_information = NULL;
-		    return;
+			ms_error("prepare_log_collection_file_to_upload(): error.");
+			return;
 		}
 		linphone_content_set_size(core->log_collection_upload_information, get_size_of_file_to_upload(name));
 		uri = belle_generic_uri_parse(linphone_core_get_log_collection_upload_server_url(core));
@@ -684,6 +685,9 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		l = belle_http_request_listener_create_from_callbacks(&cbs, core);
 		belle_http_provider_send_request(core->http_provider, req, l);
 		ms_free(name);
+	} else {
+		ms_warning("Could not upload log collection: log_collection_upload_information=%p, server_url=%s, log_collection_state=%d",
+			core->log_collection_upload_information, linphone_core_get_log_collection_upload_server_url(core), liblinphone_log_collection_state);
 	}
 }
 
@@ -3184,22 +3188,27 @@ void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *d
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op,lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }
 
-LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params)
-{
+LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const LinphoneAddress *addr, const LinphoneCallParams *params){
 	const char *from=NULL;
 	LinphoneProxyConfig *proxy=NULL;
 	LinphoneAddress *parsed_url2=NULL;
 	char *real_url=NULL;
 	LinphoneCall *call;
 	bool_t defer = FALSE;
-	LinphoneCallParams *cp = linphone_call_params_copy(params);
+	LinphoneCallParams *cp;
 
-	linphone_core_preempt_sound_resources(lc);
+	if (!(!linphone_call_params_audio_enabled(params) || linphone_call_params_get_audio_direction(params) == LinphoneMediaDirectionInactive)
+		&& linphone_core_preempt_sound_resources(lc) == -1){
+		ms_error("linphone_core_invite_address_with_params(): sound is required for this call but another call is already locking the sound resource. Call attempt is rejected.");
+		return NULL;
+	}
 
 	if(!linphone_core_can_we_add_call(lc)){
 		linphone_core_notify_display_warning(lc,_("Sorry, we have reached the maximum number of simultaneous calls"));
 		return NULL;
 	}
+	
+	cp = linphone_call_params_copy(params);
 
 	real_url=linphone_address_as_string(addr);
 	proxy=linphone_core_lookup_known_proxy(lc,addr);
@@ -4118,22 +4127,24 @@ int linphone_core_pause_all_calls(LinphoneCore *lc){
 	return 0;
 }
 
-void linphone_core_preempt_sound_resources(LinphoneCore *lc){
+int linphone_core_preempt_sound_resources(LinphoneCore *lc){
 	LinphoneCall *current_call;
+	int err = 0;
 
 	if (linphone_core_is_in_conference(lc)){
 		linphone_core_leave_conference(lc);
-		return;
+		return 0;
 	}
 
 	current_call=linphone_core_get_current_call(lc);
 	if(current_call != NULL){
 		ms_message("Pausing automatically the current call.");
-		_linphone_core_pause_call(lc,current_call);
+		err = _linphone_core_pause_call(lc,current_call);
 	}
 	if (lc->ringstream){
 		linphone_core_stop_ringing(lc);
 	}
+	return err;
 }
 
 /**

@@ -22,7 +22,7 @@
 
 
 
-#include "bc_tester_utils.h"
+#include <bctoolbox/tester.h>
 #include "linphonecore.h"
 #include <mediastreamer2/msutils.h>
 #ifdef HAVE_CONFIG_H
@@ -357,7 +357,7 @@ int linphone_core_manager_get_mean_audio_up_bw(const LinphoneCoreManager *mgr);
 void video_call_base_2(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled);
 
 void liblinphone_tester_before_each(void);
-void liblinphone_tester_after_each(void);
+int liblinphone_tester_after_each(void);
 void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, va_list args));
 void liblinphone_tester_uninit(void);
 int liblinphone_tester_set_log_file(const char *filename);

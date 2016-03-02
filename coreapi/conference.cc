@@ -42,7 +42,6 @@ public:
 		bool operator==(const Participant &src) const;
 		const LinphoneAddress *getUri() const {return m_uri;}
 		LinphoneCall *getCall() const {return m_call;}
-		void setCall(LinphoneCall *call) {m_call = call;}
 		
 	private:
 		LinphoneAddress *m_uri;
@@ -220,7 +219,6 @@ Conference::Params::Params(const LinphoneCore *core): m_enableVideo(false) {
 		if(policy->automatically_initiate) m_enableVideo = true;
 	}
 }
-
 
 
 Conference::Conference(LinphoneCore *core, const Conference::Params *params):

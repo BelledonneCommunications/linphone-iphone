@@ -82,8 +82,7 @@ EXTRA_DIST = tester_hosts\
 			$(SIPP_FILES)\
 			$(CERTIFICATE_FILES)\
 			$(RCFILES)\
-			$(IMAGE_FILES)\
-			$(COMMON_FILE)
+			$(IMAGE_FILES)
 
 
 
@@ -141,7 +140,6 @@ liblinphonetester_la_SOURCES = \
 				common/bc_tester_utils.c
 
 liblinphonetester_ladir = $(includedir)/linphone
-liblinphonetester_la_HEADERS = common/bc_tester_utils.h
 
 liblinphonetester_la_LDFLAGS= -no-undefined
 liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)

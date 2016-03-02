@@ -163,7 +163,7 @@ void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, v
 	}
 
 	if (ftester_printf == NULL) ftester_printf = log_handler;
-	bc_tester_init(ftester_printf, ORTP_MESSAGE, ORTP_ERROR);
+	bc_tester_init(ftester_printf, ORTP_MESSAGE, ORTP_ERROR, "rcfiles");
 	liblinphone_tester_add_suites();
 }
 

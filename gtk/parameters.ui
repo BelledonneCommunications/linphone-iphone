@@ -186,13 +186,13 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">default</col>
+        <col id="0" translatable="no">default</col>
       </row>
       <row>
-        <col id="0" translatable="yes">high-fps</col>
+        <col id="0" translatable="no">high-fps</col>
       </row>
       <row>
-        <col id="0" translatable="yes">custom</col>
+        <col id="0" translatable="no">custom</col>
       </row>
     </data>
   </object>
