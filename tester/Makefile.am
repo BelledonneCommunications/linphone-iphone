@@ -74,7 +74,7 @@ RCFILES = \
 
 IMAGE_FILES = images/nowebcamCIF.jpg
 
-COMMON_FILE = common/bc_completion common/vcards.vcf common/thousand_vcards.vcf
+COMMON_FILE = common/vcards.vcf common/thousand_vcards.vcf
 
 EXTRA_DIST = tester_hosts\
 			messages.db\
@@ -136,8 +136,7 @@ liblinphonetester_la_SOURCES = \
 				tester.c \
 				upnp_tester.c \
 				video_tester.c \
-				vcard_tester.c \
-				common/bc_tester_utils.c
+				vcard_tester.c
 
 liblinphonetester_ladir = $(includedir)/linphone
 
