@@ -62,8 +62,8 @@ add_definitions(-DBC_CONFIG_FILE="config.h")
 
 if(IOS)
 	add_library(linphonetester STATIC ${SOURCE_FILES})
-	target_include_directories(linphonetester PUBLIC ${BCTOOLBOX_INCLUDE_DIRS})
-	target_link_libraries(linphonetester linphone ${BCTOOLBOX_LIBRARIES})
+	target_include_directories(linphonetester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
+	target_link_libraries(linphonetester linphone ${BCTOOLBOX_TESTER_LIBRARIES})
 	install(TARGETS linphonetester
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -76,8 +76,8 @@ if(IOS)
 		)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	add_library(linphone_tester_static STATIC ${SOURCE_FILES})
-	target_include_directories(linphone_tester_static PUBLIC ${BCTOOLBOX_INCLUDE_DIRS})
-	target_link_libraries(linphone_tester_static linphone ${BCTOOLBOX_LIBRARIES})
+	target_include_directories(linphone_tester_static PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
+	target_link_libraries(linphone_tester_static linphone ${BCTOOLBOX_TESTER_LIBRARIES})
 
 	set(RUNTIME_COMPONENT_SOURCES
 		liblinphone_tester_windows.cpp
@@ -106,8 +106,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 else()
 	add_executable(liblinphone_tester ${SOURCE_FILES})
 	set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)
-	target_include_directories(liblinphone_tester PUBLIC ${BCTOOLBOX_INCLUDE_DIRS})
-	target_link_libraries(liblinphone_tester linphone ${BCTOOLBOX_LIBRARIES})
+	target_include_directories(liblinphone_tester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
+	target_link_libraries(liblinphone_tester linphone ${BCTOOLBOX_TESTER_LIBRARIES})
 	if (GTK2_FOUND)
 		target_compile_definitions(liblinphone_tester PRIVATE HAVE_GTK)
 		target_include_directories(liblinphone_tester PUBLIC ${GTK2_INCLUDE_DIRS})

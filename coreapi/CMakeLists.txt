@@ -149,7 +149,7 @@ apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
 apply_compile_flags(LINPHONE_SOURCE_FILES_OBJC "CPP" "OBJC")
 
 set(LIBS
-	${BCTOOLBOX_LIBRARIES}
+	${BCTOOLBOX_CORE_LIBRARIES}
 	${BELLESIP_LIBRARIES}
 	${MEDIASTREAMER2_LIBRARIES}
 	${XML2_LIBRARIES}
@@ -176,13 +176,10 @@ if(INTL_FOUND)
 	list(APPEND LIBS ${INTL_LIBRARIES})
 endif()
 
-add_library(linphone-objects OBJECT ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
-set_target_properties(linphone-objects PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-add_dependencies(linphone-objects liblinphone-git-version)
-
 if(ENABLE_STATIC)
-	add_library(linphone-static STATIC $<TARGET_OBJECTS:linphone-objects>)
+	add_library(linphone-static STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
 	set_target_properties(linphone-static PROPERTIES OUTPUT_NAME linphone)
+	add_dependencies(linphone-static liblinphone-git-version)
 	target_link_libraries(linphone-static ${LIBS})
 	if(IOS)
 		target_link_libraries(linphone-static "-framework Foundation" "-framework AVFoundation")
@@ -193,8 +190,9 @@ if(ENABLE_STATIC)
 	)
 endif()
 if(ENABLE_SHARED)
-	add_library(linphone SHARED $<TARGET_OBJECTS:linphone-objects>)
+	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
 	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
+	add_dependencies(linphone liblinphone-git-version)
 	target_link_libraries(linphone ${LIBS})
 	if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 		set_target_properties(linphone PROPERTIES PREFIX "lib")
