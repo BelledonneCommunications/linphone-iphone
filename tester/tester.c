@@ -20,17 +20,13 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
+#include <bctoolbox/tester.h>
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
 #pragma GCC diagnostic ignored "-Wstrict-prototypes"
 
-#include "CUnit/TestRun.h"
-#include "CUnit/Automated.h"
-#if HAVE_CU_CURSES
-#include "CUnit/CUCurses.h"
-#endif
 #ifdef HAVE_GTK
 #include <gtk/gtk.h>
 #endif
@@ -270,7 +266,7 @@ bool_t transport_supported(LinphoneTransportType transport) {
 void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file) {
 	char *rc_path = NULL;
 	char *hellopath = bc_tester_res("sounds/hello8000.wav");
-	mgr->number_of_cunit_error_at_creation = CU_get_number_of_failures();
+	mgr->number_of_cunit_error_at_creation =  bc_get_number_of_failures();
 	mgr->v_table.registration_state_changed=registration_state_changed;
 	mgr->v_table.auth_info_requested=auth_info_requested;
 	mgr->v_table.call_state_changed=call_state_changed;
@@ -368,7 +364,7 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 		mgr->identity = linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
 		linphone_address_clean(mgr->identity);
 	}
-	
+
 	if (linphone_core_get_stun_server(mgr->lc) != NULL){
 		/*before we go, ensure that the stun server is resolved, otherwise all ice related test will fail*/
 		BC_ASSERT_TRUE(wait_for_stun_resolution(mgr));
@@ -410,7 +406,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 		int unterminated_calls;
 
 		if (!liblinphone_tester_keep_record_files && record_file){
-			if ((CU_get_number_of_failures()-mgr->number_of_cunit_error_at_creation)>0) {
+			if ((bc_get_number_of_failures()-mgr->number_of_cunit_error_at_creation)>0) {
 				ms_message ("Test has failed, keeping recorded file [%s]",record_file);
 			} else {
 				unlink(record_file);
