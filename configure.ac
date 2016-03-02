@@ -1000,36 +1000,11 @@ AC_ARG_ENABLE(tests,
 )
 AM_CONDITIONAL(ENABLE_TESTS, test x$tests_enabled = xyes)
 
-PKG_CHECK_MODULES(CUNIT, cunit, [found_cunit=yes],[found_cunit=no])
+PKG_CHECK_MODULES(BCTOOLBOXTESTER, bctoolbox-tester, [found_pkg_config_bctoolboxtester=yes],[found_pkg_config_bctoolboxtester=no])
 
-if test "$found_cunit" = "no" ; then
-        AC_CHECK_HEADERS(CUnit/CUnit.h,
-                [
-                        AC_CHECK_LIB(cunit,CU_add_suite,[
-                                found_cunit=yes
-                                CUNIT_LIBS+=" -lcunit"
-                        ])
-
-                ])
-fi
-
-case "$target_os" in
-	*darwin*)
-		#hack for macport
-		CUNIT_LIBS+=" -lncurses"
-	;;
-esac
-AM_CONDITIONAL([BUILD_CUNIT_TESTS], [test x$found_cunit = xyes && test x$tests_enabled != xfalse])
-if test "$found_cunit" = "no" ; then
-        AC_MSG_WARN([Could not find cunit framework, tests are not compiled.])
-else
-		AC_CHECK_LIB(cunit,CU_get_suite,[
-										AC_DEFINE(HAVE_CU_GET_SUITE,1,[defined when CU_get_suite is available])
-										],[foo=bar],[$CUNIT_LIBS])
-
-        AC_CHECK_LIB(cunit,CU_curses_run_tests,[
-                                        AC_DEFINE(HAVE_CU_CURSES,1,[defined when CU_curses_run_tests is available])
-                                        ],[foo=bar],[$CUNIT_LIBS])
+AM_CONDITIONAL([ENABLE_TESTS], [test x$found_pkg_config_bctoolboxtester = xyes && test x$tests_enabled != xfalse])
+if test "$found_pkg_config_bctoolboxtester" = "no" ; then
+        AC_MSG_WARN([Could not find bctoolbox-tester wrapper, tests are not compiled.])
 fi
 
 

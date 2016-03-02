@@ -244,7 +244,7 @@ pkg: $(MACAPPNAME)
 	cp ${srcdir}/pixmaps/linphone.png ./packaging
 	pkgbuild --install-location /Applications --scripts ${srcdir}/build/macos/pkg-scripts --component $(MACAPPNAME) ./packaging/linphone.pkg
 	productbuild --resources . --distribution ${srcdir}/build/macos/pkg-distribution.xml --package-path ./packaging $(MACAPPPKG)
-	
+
 signed-pkg: pkg
 	mv $(MACAPPPKG) $(MACAPPPKG).tmp
 	productsign --sign "$(BUNDLE_SIGNING_ID)" $(MACAPPPKG).tmp $(MACAPPPKG)
@@ -259,7 +259,7 @@ clean-local:
 discovery:
 	touch specs.c
 	$(CC) --include $(top_builddir)/config.h \
-        $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(CUNIT_CFLAGS) -E -P -v -dD specs.c
+        $(TUNNEL_CFLAGS) $(CFLAGS) $(MEDIASTREAMER2_CFLAGS) $(ORTP_CFLAGS)  $(SIPSTACK_CFLAGS) $(BCTOOLBOXTESTER_CFLAGS) -E -P -v -dD specs.c
 
 .PHONY: $(MACAPPNAME) pkg
 
