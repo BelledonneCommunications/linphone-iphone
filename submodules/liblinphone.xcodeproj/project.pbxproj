@@ -309,6 +309,10 @@
 		630DCF691BBAC06400A0DDC8 /* msvideopresets.c in Sources */ = {isa = PBXBuildFile; fileRef = 630DCF661BBAC05100A0DDC8 /* msvideopresets.c */; };
 		630DCF6C1BBAC08200A0DDC8 /* rfc4103_textstream.c in Sources */ = {isa = PBXBuildFile; fileRef = 630DCF6A1BBAC08200A0DDC8 /* rfc4103_textstream.c */; };
 		630DCF6D1BBAC08200A0DDC8 /* video_preset_high_fps.c in Sources */ = {isa = PBXBuildFile; fileRef = 630DCF6B1BBAC08200A0DDC8 /* video_preset_high_fps.c */; };
+		63177FCA1C86E87300ADE58D /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63177FC91C86E87300ADE58D /* VideoToolbox.framework */; };
+		63177FCC1C86E8A000ADE58D /* videotoolbox.c in Sources */ = {isa = PBXBuildFile; fileRef = 63177FCB1C86E8A000ADE58D /* videotoolbox.c */; };
+		63177FCE1C86E8DB00ADE58D /* h264utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 63177FCD1C86E8DB00ADE58D /* h264utils.h */; };
+		63177FD01C86E8E200ADE58D /* h264utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 63177FCF1C86E8E200ADE58D /* h264utils.c */; };
 		631A51D11C770B6800B95673 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2258C44413A945520087A596 /* libavcodec.a */; };
 		631A51D21C770B6800B95673 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2258C44313A945520087A596 /* libavutil.a */; };
 		631A51D31C770B6800B95673 /* libbctoolbox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51CF1C770B3200B95673 /* libbctoolbox.a */; };
@@ -758,6 +762,10 @@
 		630DCF661BBAC05100A0DDC8 /* msvideopresets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = msvideopresets.c; path = linphone/mediastreamer2/src/base/msvideopresets.c; sourceTree = SOURCE_ROOT; };
 		630DCF6A1BBAC08200A0DDC8 /* rfc4103_textstream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rfc4103_textstream.c; sourceTree = "<group>"; };
 		630DCF6B1BBAC08200A0DDC8 /* video_preset_high_fps.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = video_preset_high_fps.c; sourceTree = "<group>"; };
+		63177FC91C86E87300ADE58D /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		63177FCB1C86E8A000ADE58D /* videotoolbox.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videotoolbox.c; sourceTree = "<group>"; };
+		63177FCD1C86E8DB00ADE58D /* h264utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = h264utils.h; sourceTree = "<group>"; };
+		63177FCF1C86E8E200ADE58D /* h264utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = h264utils.c; sourceTree = "<group>"; };
 		631A51CF1C770B3200B95673 /* libbctoolbox.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbctoolbox.a; path = "../liblinphone-sdk/apple-darwin/lib/libbctoolbox.a"; sourceTree = "<group>"; };
 		631A51DD1C770B6800B95673 /* libantlr3c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libantlr3c.a; path = "../liblinphone-sdk/apple-darwin/lib/libantlr3c.a"; sourceTree = "<group>"; };
 		631A51DE1C770B6800B95673 /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "../liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
@@ -881,6 +889,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63177FCA1C86E87300ADE58D /* VideoToolbox.framework in Frameworks */,
 				631A52091C770B7700B95673 /* libmsamr.a in Frameworks */,
 				631A520A1C770B7700B95673 /* libmsbcg729.a in Frameworks */,
 				631A520B1C770B7700B95673 /* libmsopenh264.a in Frameworks */,
@@ -1275,6 +1284,8 @@
 				223CA82716D9268D00EF1BEC /* g722_encode.c */,
 				223CA82816D9268D00EF1BEC /* kiss_fft.c */,
 				223CA82916D9268D00EF1BEC /* kiss_fft.h */,
+				63177FCD1C86E8DB00ADE58D /* h264utils.h */,
+				63177FCF1C86E8E200ADE58D /* h264utils.c */,
 				223CA82A16D9268D00EF1BEC /* kiss_fftr.c */,
 				223CA82B16D9268D00EF1BEC /* kiss_fftr.h */,
 				223CA82D16D9268D00EF1BEC /* opengles_display.c */,
@@ -1301,6 +1312,7 @@
 				223CA84316D9268D00EF1BEC /* sizeconv.c */,
 				223CA84516D9268D00EF1BEC /* videodec.c */,
 				223CA84616D9268D00EF1BEC /* videoenc.c */,
+				63177FCB1C86E8A000ADE58D /* videotoolbox.c */,
 				223CA84816D9268D00EF1BEC /* vp8.c */,
 			);
 			path = videofilters;
@@ -1446,6 +1458,7 @@
 		F0ED99521A1645CD00A788CE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63177FC91C86E87300ADE58D /* VideoToolbox.framework */,
 				631A52061C770B7700B95673 /* libmsamr.a */,
 				631A52071C770B7700B95673 /* libmsbcg729.a */,
 				631A52081C770B7700B95673 /* libmsopenh264.a */,
@@ -1564,6 +1577,7 @@
 				223CA89516D9268D00EF1BEC /* _kiss_fft_guts.h in Headers */,
 				223CA89716D9268D00EF1BEC /* ffmpeg-priv.h in Headers */,
 				223CA89816D9268D00EF1BEC /* g711common.h in Headers */,
+				63177FCE1C86E8DB00ADE58D /* h264utils.h in Headers */,
 				223CA89916D9268D00EF1BEC /* g722.h in Headers */,
 				223CA89D16D9268D00EF1BEC /* kiss_fft.h in Headers */,
 				223CA89F16D9268D00EF1BEC /* kiss_fftr.h in Headers */,
@@ -1943,6 +1957,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63177FD01C86E8E200ADE58D /* h264utils.c in Sources */,
 				223CA88816D9268D00EF1BEC /* eventqueue.c in Sources */,
 				223CA88916D9268D00EF1BEC /* mscommon.c in Sources */,
 				223CA88A16D9268D00EF1BEC /* msfilter.c in Sources */,
@@ -2082,6 +2097,7 @@
 				2206D2D8177AC70900C40726 /* mediastreamViewController.m in Sources */,
 				F0ED9B931A1648D900A788CE /* mediastream.c in Sources */,
 				F04D51EE1A08E638004DD530 /* common.c in Sources */,
+				63177FCC1C86E8A000ADE58D /* videotoolbox.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
