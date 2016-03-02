@@ -3,7 +3,7 @@ sip_port=-1
 sip_tcp_port=-1
 sip_tls_port=-1
 default_proxy=0
-register_only_when_network_is_up=0
+
 
 [auth_info_0]
 username=pauline

@@ -925,12 +925,12 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	LinphoneAddress *sip_example_org;
 	const LinphoneAuthInfo	*marie_auth = linphone_core_find_auth_info(marie->lc, NULL, linphone_address_get_username(marie->identity), NULL);
 	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
+	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
+	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
 	
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
-	
-	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
-	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
+
 	ms_free(lf_identity);
 
 	lp_config_set_int(pauline_lp,"sip","subscribe_expires",5);

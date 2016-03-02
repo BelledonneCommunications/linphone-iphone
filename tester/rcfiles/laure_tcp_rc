@@ -4,7 +4,7 @@ sip_tcp_port=5092
 sip_tls_port=5093
 default_proxy=0
 ping_with_options=0
-register_only_when_network_is_up=0
+
 
 [auth_info_0]
 username=laure

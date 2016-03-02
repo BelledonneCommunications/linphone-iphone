@@ -90,7 +90,8 @@ static FILE *sip_start_recv(const char *senario) {
 
 static void dest_server_server_resolved(void *data, const char *name, struct addrinfo *ai_list) {
 	*(struct addrinfo **)data =ai_list;
- }
+}
+
 LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const LinphoneAddress *source) {
 	struct addrinfo *addrinfo = NULL;
 	char ipstring [INET6_ADDRSTRLEN];
@@ -109,6 +110,9 @@ LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const 
 	 
 	 wait_for(mgr->lc, mgr->lc, (int*)&addrinfo, 1);
 	 err=getnameinfo((struct sockaddr*)addrinfo->ai_addr,addrinfo->ai_addrlen,ipstring,INET6_ADDRSTRLEN,NULL,0,NI_NUMERICHOST);
+	 if (err !=0 ){
+		 ms_error("linphone_core_manager_resolve(): getnameinfo error %s", gai_strerror(err));
+	 }
 	 linphone_address_set_domain(dest, ipstring);
 	 if (port > 0)
 		linphone_address_set_port(dest, port);

@@ -7007,7 +7007,12 @@ LinphoneCall* linphone_core_find_call_from_uri(const LinphoneCore *lc, const cha
 
 
 /**
- * Check if a call will need the sound resources.
+ * Check if a call will need the sound resources in near future (typically an outgoing call that is awaiting 
+ * response).
+ * In liblinphone, it is not possible to have two independant calls using sound device or camera at the same time.
+ * In order to prevent this situation, an application can use linphone_core_sound_resources_locked() to know whether
+ * it is possible at a given time to start a new outgoing call.
+ * When the function returns TRUE, an application should not allow the user to start an outgoing call.
  *
  * @ingroup call_control
  * @param lc The LinphoneCore
