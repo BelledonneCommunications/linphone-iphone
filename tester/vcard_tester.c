@@ -110,6 +110,20 @@ static void linphone_vcard_import_a_lot_of_friends_test(void) {
 	linphone_core_manager_destroy(manager);
 }
 
+static void linphone_vcard_update_existing_friends_test(void) {
+	LinphoneFriend *lf = linphone_friend_new_with_addr("sip:oldfriend@sip.linphone.org");
+	
+	BC_ASSERT_PTR_NOT_NULL_FATAL(lf);
+	BC_ASSERT_PTR_NULL(linphone_friend_get_vcard(lf));
+
+	linphone_friend_edit(lf);
+	linphone_friend_set_name(lf, "Old Friend");
+	linphone_friend_done(lf);
+	
+	BC_ASSERT_PTR_NOT_NULL(linphone_friend_get_vcard(lf));
+	BC_ASSERT_STRING_EQUAL(linphone_vcard_get_full_name(linphone_friend_get_vcard(lf)), "Old Friend");
+}
+
 static void friends_if_no_db_set(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
 	LinphoneFriend *lf = linphone_friend_new();
@@ -635,6 +649,7 @@ test_t vcard_tests[] = {
 #ifdef VCARD_ENABLED
 	{ "Import / Export friends from vCards", linphone_vcard_import_export_friends_test },
 	{ "Import a lot of friends from vCards", linphone_vcard_import_a_lot_of_friends_test },
+	{ "vCard creation for existing friends", linphone_vcard_update_existing_friends_test },
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
 	{ "Friends working if no db set", friends_if_no_db_set },
 	{ "Friends storage migration from rc to db", friends_migration },
