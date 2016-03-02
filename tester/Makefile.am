@@ -87,7 +87,7 @@ EXTRA_DIST = tester_hosts\
 
 
 
-if BUILD_CUNIT_TESTS
+if ENABLE_TESTS
 
 sounddir = $(datadir)/liblinphone_tester/sounds
 sound_DATA = $(TESTER_SOUNDS)
@@ -141,7 +141,7 @@ liblinphonetester_la_SOURCES = \
 liblinphonetester_ladir = $(includedir)/linphone
 
 liblinphonetester_la_LDFLAGS= -no-undefined
-liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
+liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(BCTOOLBOXTESTER_LIBS)
 
 liblinphone_tester_bindir = $(bindir)/liblinphone_tester
 liblinphone_testerdir = $(datadir)/liblinphone_tester
@@ -151,7 +151,7 @@ dist_liblinphone_tester_DATA =  tester_hosts messages.db
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi -I$(top_srcdir)/tester/common
 AM_CFLAGS    = -DBC_CONFIG_FILE=\"config.h\" $(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) \
-		-DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) \
+		-DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(BCTOOLBOXTESTER_CFLAGS) \
 		$(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS) $(BELCARD_CFLAGS)
 
 if BUILD_GTK_UI
@@ -178,9 +178,9 @@ endif
 test: liblinphone_tester
 	./liblinphone_tester  --config $(abs_srcdir) $(TEST_OPTIONS)
 
-else !BUILD_CUNIT_TESTS
+else !ENABLE_TESTS
 
 test:
-	@echo "CUnit must be installed to be able to run the tests!"
+	@echo "bctoolbox-tester must be installed to be able to run the tests!"
 
-endif !BUILD_CUNIT_TESTS
+endif !ENABLE_TESTS

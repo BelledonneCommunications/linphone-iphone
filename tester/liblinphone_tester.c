@@ -20,9 +20,6 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
-#if HAVE_CU_CURSES
-#include "CUnit/CUCurses.h"
-#endif
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
@@ -44,7 +41,6 @@ static FILE * log_file = NULL;
 
 #include <android/log.h>
 #include <jni.h>
-#include <CUnit/Util.h>
 #define CALLBACK_BUFFER_SIZE  1024
 
 static JNIEnv *current_env = NULL;
@@ -113,10 +109,10 @@ JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject 
 	}
 	current_env = env;
 	current_obj = obj;
-	CU_set_trace_handler(cunit_android_trace_handler);
+	bc_set_trace_handler(cunit_android_trace_handler);
 	ret = main(argc, argv);
 	current_env = NULL;
-	CU_set_trace_handler(NULL);
+	bc_set_trace_handler(NULL);
 	for (i=0; i<argc; i++) {
 		free(argv[i]);
 	}
