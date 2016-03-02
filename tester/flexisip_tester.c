@@ -540,12 +540,16 @@ static void early_media_call_forking(void) {
 	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
 	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
 
-	linphone_core_enable_video(pauline->lc,TRUE,TRUE);
-
-	linphone_core_enable_video(marie->lc,TRUE,TRUE);
+	linphone_core_enable_video_capture(pauline->lc,TRUE);
+	linphone_core_enable_video_display(pauline->lc,TRUE);
+	
+	linphone_core_enable_video_capture(marie->lc,TRUE);
+	linphone_core_enable_video_display(marie->lc,TRUE);
 	linphone_core_set_video_policy(marie->lc,&pol);
 
-	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
+	linphone_core_enable_video_capture(marie2->lc,TRUE);
+	linphone_core_enable_video_display(marie2->lc,TRUE);
+
 	linphone_core_set_video_policy(marie2->lc,&pol);
 	linphone_core_set_audio_port_range(marie2->lc,40200,40300);
 	linphone_core_set_video_port_range(marie2->lc,40400,40500);
@@ -911,16 +915,20 @@ static void dos_module_trigger(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-#define USE_PRESENCE_SERVER 0
+
 static void test_subscribe_notify_with_sipp_publisher(void) {
-#if USE_PRESENCE_SERVER
 	char *scen;
 	FILE * sipp_out;
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	/*just to get an identity*/
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-
+	LinphoneAddress *sip_example_org;
+	const LinphoneAuthInfo	*marie_auth = linphone_core_find_auth_info(marie->lc, NULL, linphone_address_get_username(marie->identity), NULL);
 	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
+	
+	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
+	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
+	
 	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
 	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
 	ms_free(lf_identity);
@@ -930,32 +938,39 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	linphone_core_add_friend(pauline->lc,lf);
 
 	/*wait for subscribe acknowledgment*/
-	wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,1,2000);
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyPresenceReceived,1,2000));
 	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
 
 	scen = bc_tester_res("sipp/simple_publish.xml");
-
-	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
-
+	
+	sip_example_org = linphone_core_manager_resolve(marie, marie->identity);
+	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), linphone_auth_info_get_passwd(marie_auth), sip_example_org);
+	linphone_address_destroy(sip_example_org);
+	
 	if (sipp_out) {
 		/*wait for marie status*/
-		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyPresenceReceived,2,3000));
 		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
-		pclose(sipp_out);
+		BC_ASSERT_EQUAL(0,pclose(sipp_out),int,"%d");
 	}
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-#endif
 }
 static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
-#if USE_PRESENCE_SERVER
+#if 0
+	//does not work because sipp seams not able to manage 2 call  id in case file
+	
 	char *scen;
 	FILE * sipp_out;
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	/*just to get an identity*/
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-
+	LinphoneAddress *sip_example_org;
+	
+	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
+	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
+	
 	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
 	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
 	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
@@ -965,19 +980,20 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	linphone_core_add_friend(pauline->lc,lf);
 
 	/*wait for subscribe acknowledgment*/
-	wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,1,2000);
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyPresenceReceived,1,2000));
 	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
 
 	scen = bc_tester_res("sipp/double_publish_with_error.xml");
-
-	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), marie->identity);
-
+	
+	sip_example_org = linphone_core_manager_resolve(marie, marie->identity);
+	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), sip_example_org);
+	
 	if (sipp_out) {
 		/*wait for marie status*/
-		wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyReceived,2,3000);
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyPresenceReceived,2,3000));
 		BC_ASSERT_EQUAL(LinphoneStatusOnline,linphone_friend_get_status(lf), int, "%d");
 		pclose(sipp_out);
-		BC_ASSERT_EQUAL(pauline->stat.number_of_NotifyReceived,2,int, "%d");
+		BC_ASSERT_EQUAL(pauline->stat.number_of_NotifyPresenceReceived,2,int, "%d");
 	}
 
 	linphone_core_manager_destroy(marie);
@@ -1080,6 +1096,27 @@ static void test_list_subscribe (void) {
 	linphone_core_manager_destroy(laure);
 }
 
+static void test_subscribe_on_wrong_dialog(void) {
+	char *scen;
+	FILE * sipp_out;
+	/*just to get an identity*/
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	const LinphoneAuthInfo	*marie_auth = linphone_core_find_auth_info(marie->lc, NULL, linphone_address_get_username(marie->identity), NULL);
+	LinphoneAddress *sip_example_org;
+	
+	scen = bc_tester_res("sipp/subscribe_on_wrong_dialog.xml");
+	sip_example_org = linphone_core_manager_resolve(marie, marie->identity);
+	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity),linphone_auth_info_get_passwd(marie_auth), sip_example_org);
+	linphone_address_destroy(sip_example_org);
+	
+	if (sipp_out) {
+		/*wait for marie status*/
+		BC_ASSERT_EQUAL(0, pclose(sipp_out),int,"%d");
+	}
+	
+	linphone_core_manager_destroy(marie);
+}
+
 
 test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Subscribe forking", subscribe_forking, "LeaksMemory"),
@@ -1098,14 +1135,15 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("Call with sips", call_with_sips),
 	TEST_ONE_TAG("Call with sips not achievable", call_with_sips_not_achievable, "LeaksMemory"),
 	TEST_NO_TAG("Call with ipv6", call_with_ipv6),
-	TEST_NO_TAG("Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher),
-	TEST_NO_TAG("Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish),
+	TEST_ONE_TAG("Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher, "LeaksMemory"),
+	TEST_ONE_TAG("Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish, "LeaksMemory"),
 	TEST_NO_TAG("Publish/unpublish", test_publish_unpublish),
-	TEST_ONE_TAG("List subscribe", test_list_subscribe, "LeaksMemory"),
+	TEST_ONE_TAG("List subscribe", test_list_subscribe,"LeaksMemory"),
 	TEST_ONE_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client, "LeaksMemory"),
 	TEST_ONE_TAG("File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client, "LeaksMemory"),
 	TEST_ONE_TAG("File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client, "LeaksMemory"),
-	TEST_NO_TAG("DoS module trigger by sending a lot of chat messages", dos_module_trigger)
+	TEST_NO_TAG("DoS module trigger by sending a lot of chat messages", dos_module_trigger),
+	TEST_NO_TAG("Subscribe on wrong dialog", test_subscribe_on_wrong_dialog)
 };
 
 test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
