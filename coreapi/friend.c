@@ -1369,15 +1369,26 @@ void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
 	for (i = 0; (lf = linphone_friend_new_from_config_file(lc, i)) != NULL; i++) {
 		char friend_section[32];
 		
-		if (!linphone_friend_create_vcard(lf, linphone_address_get_username(linphone_friend_get_address(lf)))) {
-			ms_warning("Couldn't create vCard for friend %s", linphone_address_as_string(linphone_friend_get_address(lf)));
-		}
+		const LinphoneAddress *addr = linphone_friend_get_address(lf);
+		if (addr) {
+			const char *displayName = linphone_address_get_display_name(addr);
+			if (!displayName) {
+				displayName = linphone_address_get_username(addr);
+			}
 			
-		linphone_friend_list_add_friend(lfl, lf);
-		linphone_friend_unref(lf);
-		
-		snprintf(friend_section, sizeof(friend_section), "friend_%i", i);
-		lp_config_clean_section(lpc, friend_section);
+			if (!linphone_friend_create_vcard(lf, displayName)) {
+				ms_warning("Couldn't create vCard for friend %s", linphone_address_as_string(addr));
+				linphone_friend_unref(lf);
+				continue;
+			}
+			linphone_vcard_add_sip_address(linphone_friend_get_vcard(lf), linphone_address_as_string_uri_only(addr));
+				
+			linphone_friend_list_add_friend(lfl, lf);
+			linphone_friend_unref(lf);
+			
+			snprintf(friend_section, sizeof(friend_section), "friend_%i", i);
+			lp_config_clean_section(lpc, friend_section);
+		}
 	}
 	
 	ms_debug("friends migration successful: %i friends migrated", i);
