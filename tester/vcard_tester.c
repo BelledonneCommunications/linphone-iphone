@@ -122,6 +122,8 @@ static void linphone_vcard_update_existing_friends_test(void) {
 	
 	BC_ASSERT_PTR_NOT_NULL(linphone_friend_get_vcard(lf));
 	BC_ASSERT_STRING_EQUAL(linphone_vcard_get_full_name(linphone_friend_get_vcard(lf)), "Old Friend");
+	linphone_friend_unref(lf);
+	lf = NULL;
 }
 
 static void friends_if_no_db_set(void) {
