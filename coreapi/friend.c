@@ -1378,11 +1378,10 @@ void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
 			
 			if (!linphone_friend_create_vcard(lf, displayName)) {
 				ms_warning("Couldn't create vCard for friend %s", linphone_address_as_string(addr));
-				linphone_friend_unref(lf);
-				continue;
+			} else {
+				linphone_vcard_add_sip_address(linphone_friend_get_vcard(lf), linphone_address_as_string_uri_only(addr));
 			}
-			linphone_vcard_add_sip_address(linphone_friend_get_vcard(lf), linphone_address_as_string_uri_only(addr));
-				
+			
 			linphone_friend_list_add_friend(lfl, lf);
 			linphone_friend_unref(lf);
 			
