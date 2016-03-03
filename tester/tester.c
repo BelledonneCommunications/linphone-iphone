@@ -551,18 +551,21 @@ int liblinphone_tester_after_each(void) {
 			ms_error("%s", format);
 
 			all_leaks_buffer = ms_strcat_printf(all_leaks_buffer, "\n%s", format);
+		}
 
-			{
-				//prevent any future leaks
-				const char **tags = bc_tester_current_test_tags();
-				// if the test is NOT marked as leaking memory and it actually is, we should make it fail
-				if ( tags &&
-					!((tags[0] && strcmp(tags[0], "LeakingMemory")) || (tags[1] && strcmp(tags[1], "LeakingMemory")))) {
-					BC_FAIL("This test is leaking memory!");
-					return 1;
-				}
+		// prevent any future leaks
+		{
+			const char **tags = bc_tester_current_test_tags();
+			int leaks_expected =
+				(tags && ((tags[0] && !strcmp(tags[0], "LeaksMemory")) || (tags[1] && !strcmp(tags[1], "LeaksMemory"))));
+			// if the test is NOT marked as leaking memory and it actually is, we should make it fail
+			if (!leaks_expected && leaked_objects > 0) {
+				BC_FAIL("This test is leaking memory!");
+				// and reciprocally
+			} else if (leaks_expected && leaked_objects == 0) {
+				BC_FAIL("This test is not leaking anymore, please remove LeaksMemory tag!");
+				return 1;
 			}
-
 		}
 	}
 
