@@ -470,7 +470,7 @@ static void subscribe_presence_expired(void){
 	ms_list_free(lcs);
 }
 
-static void subscriber_no_longuer_reachable(void){
+static void subscriber_no_longer_reachable(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline1 = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneFriend *lf;
@@ -980,16 +980,16 @@ static void test_presence_list_subscribe_io_error(void) {
 }
 
 test_t presence_tests[] = {
-	TEST_ONE_TAG("Simple Subscribe", simple_subscribe, "LeaksMemory"),
+	TEST_NO_TAG("Simple Subscribe", simple_subscribe),
 	TEST_ONE_TAG("Simple Publish", simple_publish, "LeaksMemory"),
 	TEST_ONE_TAG("Simple Publish with expires", publish_with_expires, "LeaksMemory"),
 	/*TEST_ONE_TAG("Call with presence", call_with_presence, "LeaksMemory"),*/
-	TEST_ONE_TAG("Unsubscribe while subscribing", unsubscribe_while_subscribing, "LeaksMemory"),
-	TEST_ONE_TAG("Presence information", presence_information, "LeaksMemory"),
-	TEST_ONE_TAG("App managed presence failure", subscribe_failure_handle_by_app, "LeaksMemory"),
-	TEST_ONE_TAG("Presence SUBSCRIBE forked", subscribe_presence_forked, "LeaksMemory"),
-	TEST_ONE_TAG("Presence SUBSCRIBE expired", subscribe_presence_expired, "LeaksMemory"),
-	TEST_ONE_TAG("Subscriber no loguer reachable using server",subscriber_no_longuer_reachable, "LeaksMemory"),
+	TEST_NO_TAG("Unsubscribe while subscribing", unsubscribe_while_subscribing),
+	TEST_NO_TAG("Presence information", presence_information),
+	TEST_NO_TAG("App managed presence failure", subscribe_failure_handle_by_app),
+	TEST_NO_TAG("Presence SUBSCRIBE forked", subscribe_presence_forked),
+	TEST_NO_TAG("Presence SUBSCRIBE expired", subscribe_presence_expired),
+	TEST_ONE_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable, "LeaksMemory"),
 	TEST_ONE_TAG("Subscribe with late publish", test_subscribe_notify_publish, "LeaksMemory"),
 	TEST_ONE_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish, "LeaksMemory"),
 	TEST_ONE_TAG("Presence list", test_presence_list, "LeaksMemory"),

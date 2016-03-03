@@ -1,19 +1,19 @@
 /*
-    liblinphone_tester - liblinphone test suite
-    Copyright (C) 2013  Belledonne Communications SARL
+	liblinphone_tester - liblinphone test suite
+	Copyright (C) 2013  Belledonne Communications SARL
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -542,7 +542,7 @@ static void early_media_call_forking(void) {
 
 	linphone_core_enable_video_capture(pauline->lc,TRUE);
 	linphone_core_enable_video_display(pauline->lc,TRUE);
-	
+
 	linphone_core_enable_video_capture(marie->lc,TRUE);
 	linphone_core_enable_video_display(marie->lc,TRUE);
 	linphone_core_set_video_policy(marie->lc,&pol);
@@ -927,7 +927,7 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
 	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
 	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
-	
+
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
 
@@ -942,11 +942,11 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
 
 	scen = bc_tester_res("sipp/simple_publish.xml");
-	
+
 	sip_example_org = linphone_core_manager_resolve(marie, marie->identity);
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), linphone_auth_info_get_passwd(marie_auth), sip_example_org);
 	linphone_address_destroy(sip_example_org);
-	
+
 	if (sipp_out) {
 		/*wait for marie status*/
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyPresenceReceived,2,3000));
@@ -958,19 +958,18 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	linphone_core_manager_destroy(pauline);
 }
 static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
-#if 0
 	//does not work because sipp seams not able to manage 2 call  id in case file
-	
+#if 0
 	char *scen;
 	FILE * sipp_out;
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 	/*just to get an identity*/
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneAddress *sip_example_org;
-	
+
 	linphone_core_set_user_agent(marie->lc, "full-presence-support", NULL);
 	linphone_core_set_user_agent(pauline->lc, "full-presence-support", NULL);
-	
+
 	LpConfig *pauline_lp = linphone_core_get_config(pauline->lc);
 	char* lf_identity=linphone_address_as_string_uri_only(marie->identity);
 	LinphoneFriend *lf = linphone_core_create_friend_with_address(pauline->lc,lf_identity);
@@ -984,10 +983,10 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	BC_ASSERT_EQUAL(LinphoneStatusOffline,linphone_friend_get_status(lf), int, "%d");
 
 	scen = bc_tester_res("sipp/double_publish_with_error.xml");
-	
+
 	sip_example_org = linphone_core_manager_resolve(marie, marie->identity);
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity), sip_example_org);
-	
+
 	if (sipp_out) {
 		/*wait for marie status*/
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,pauline->lc,&pauline->stat.number_of_NotifyPresenceReceived,2,3000));
@@ -1103,17 +1102,17 @@ static void test_subscribe_on_wrong_dialog(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	const LinphoneAuthInfo	*marie_auth = linphone_core_find_auth_info(marie->lc, NULL, linphone_address_get_username(marie->identity), NULL);
 	LinphoneAddress *sip_example_org;
-	
+
 	scen = bc_tester_res("sipp/subscribe_on_wrong_dialog.xml");
 	sip_example_org = linphone_core_manager_resolve(marie, marie->identity);
 	sipp_out = sip_start(scen, linphone_address_get_username(marie->identity),linphone_auth_info_get_passwd(marie_auth), sip_example_org);
 	linphone_address_destroy(sip_example_org);
-	
+
 	if (sipp_out) {
 		/*wait for marie status*/
 		BC_ASSERT_EQUAL(0, pclose(sipp_out),int,"%d");
 	}
-	
+
 	linphone_core_manager_destroy(marie);
 }
 
@@ -1136,7 +1135,7 @@ test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Call with sips not achievable", call_with_sips_not_achievable, "LeaksMemory"),
 	TEST_NO_TAG("Call with ipv6", call_with_ipv6),
 	TEST_ONE_TAG("Subscribe Notify with sipp publisher", test_subscribe_notify_with_sipp_publisher, "LeaksMemory"),
-	TEST_ONE_TAG("Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish, "LeaksMemory"),
+	/*TEST_ONE_TAG("Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish, "LeaksMemory"),*/
 	TEST_NO_TAG("Publish/unpublish", test_publish_unpublish),
 	TEST_ONE_TAG("List subscribe", test_list_subscribe,"LeaksMemory"),
 	TEST_ONE_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client, "LeaksMemory"),

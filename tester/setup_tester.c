@@ -336,7 +336,7 @@ test_t setup_tests[] = {
 	TEST_NO_TAG("Linphone proxy config server address change (internal api)", linphone_proxy_config_is_server_config_changed_test),
 	TEST_NO_TAG("Linphone core init/uninit", core_init_test),
 	TEST_NO_TAG("Linphone random transport port",core_sip_transport_test),
-	TEST_ONE_TAG("Linphone interpret url", linphone_interpret_url_test, "LeaksMemory"),
+	TEST_NO_TAG("Linphone interpret url", linphone_interpret_url_test),
 	TEST_NO_TAG("LPConfig from buffer", linphone_lpconfig_from_buffer),
 	TEST_NO_TAG("LPConfig zero_len value from buffer", linphone_lpconfig_from_buffer_zerolen_value),
 	TEST_NO_TAG("LPConfig zero_len value from file", linphone_lpconfig_from_file_zerolen_value),
