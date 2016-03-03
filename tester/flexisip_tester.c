@@ -957,9 +957,9 @@ static void test_subscribe_notify_with_sipp_publisher(void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	//does not work because sipp seams not able to manage 2 call  id in case file
 #if 0
+static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 	char *scen;
 	FILE * sipp_out;
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
@@ -997,8 +997,8 @@ static void test_subscribe_notify_with_sipp_publisher_double_publish(void) {
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-#endif
 }
+#endif
 
 static void test_publish_unpublish(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
