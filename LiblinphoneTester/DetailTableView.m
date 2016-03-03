@@ -195,7 +195,7 @@ static NSString *const kAllTestsName = @"Run All tests";
 		  if ([test.name isEqualToString:kAllTestsName]) {
 			  testName = nil;
 		  }
-		  BOOL fail = bc_tester_run_tests([testSuite UTF8String], [testName UTF8String]);
+		  BOOL fail = bc_tester_run_tests([testSuite UTF8String], [testName UTF8String], NULL);
 		  if (fail) {
 			  LOGW(@"Test Failed!");
 			  test.state = TestStateFailed;

@@ -22,7 +22,7 @@
 	[KIFTypist setKeystrokeDelay:0.05];
 
 	NSString *language = [[NSLocale preferredLanguages] objectAtIndex:0];
-	if (!([language isEqualToString:@"en"] || [language containsString:@"en-"])) {
+	if (!([language isEqualToString:@"en"] || [language containsSubstring:@"en-"])) {
 		LOGF(@"Language must be 'en' (English) instead of %@", language);
 	}
 }
@@ -39,14 +39,24 @@
 	[LinphoneManager.instance removeAllAccounts];
 
 	// go to dialer
-	for (NSString *button in @[ @"Cancel", @"Back", @"Hangup", @"Dialer" ]) {
+	for (NSString *button in @[ @"Cancel", @"Back", @"Hangup", @"Continue", @"Dialer" ]) {
 		if ([tester tryFindingTappableViewWithAccessibilityLabel:button error:nil]) {
 			[tester tapViewWithAccessibilityLabel:button traits:UIAccessibilityTraitButton];
 		}
 	}
 }
 
+- (void)afterEach {
+	for (NSString *button in @[ @"Cancel", @"Back", @"Hangup", @"Continue", @"Dialer" ]) {
+		if ([tester tryFindingTappableViewWithAccessibilityLabel:button error:nil]) {
+			[tester tapViewWithAccessibilityLabel:button traits:UIAccessibilityTraitButton];
+		}
+	}
+	[super afterEach];
+}
+
 - (void)beforeEach {
+	[[LinphoneManager instance] lpConfigSetInt:ORTP_WARNING forKey:@"debugenable_preference"];
 	[[LinphoneManager instance] lpConfigSetInt:NO forKey:@"animations_preference"];
 }
 

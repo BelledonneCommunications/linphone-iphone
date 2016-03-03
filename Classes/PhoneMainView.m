@@ -261,25 +261,37 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)textReceived:(NSNotification *)notif {
 	LinphoneAddress *from = [[notif.userInfo objectForKey:@"from_address"] pointerValue];
 	NSString *callID = [notif.userInfo objectForKey:@"call-id"];
-	if (from != nil) {
-		[self playMessageSoundForCallID:callID];
-	}
 	[self updateApplicationBadgeNumber];
+	LinphoneChatRoom *room = from ? linphone_core_get_chat_room(LC, from) : NULL;
+
+	if (from == nil || room == NULL)
+		return;
+
+	ChatConversationView *view = VIEW(ChatConversationView);
+	// if we already are in the conversation, we should not ring/vibrate
+	if (view.chatRoom && linphone_address_weak_equal(linphone_chat_room_get_peer_address(room),
+													 linphone_chat_room_get_peer_address(view.chatRoom)))
+		return;
+
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground)
+		return;
+
+	LinphoneManager *lm = LinphoneManager.instance;
+	// if the message was already received through a push notif, we don't need to ring
+	if (![lm popPushCallID:callID]) {
+		[lm playMessageSound];
+	}
 }
 
 - (void)registrationUpdate:(NSNotification *)notif {
 	LinphoneRegistrationState state = [[notif.userInfo objectForKey:@"state"] intValue];
-	LinphoneProxyConfig *cfg = [[notif.userInfo objectForKey:@"cfg"] pointerValue];
-	// Only report bad credential issue
-	if (state == LinphoneRegistrationFailed &&
-		[UIApplication sharedApplication].applicationState == UIApplicationStateBackground &&
-		linphone_proxy_config_get_error(cfg) == LinphoneReasonBadCredentials) {
-		UIAlertView *error =
-			[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
-									   message:NSLocalizedString(@"Bad credentials, check your account settings", nil)
-									  delegate:nil
-							 cancelButtonTitle:NSLocalizedString(@"Continue", nil)
-							 otherButtonTitles:nil, nil];
+	if (state == LinphoneRegistrationFailed && ![currentView equal:AssistantView.compositeViewDescription] &&
+		[UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+		UIAlertView *error = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Registration failure", nil)
+														message:[notif.userInfo objectForKey:@"message"]
+													   delegate:nil
+											  cancelButtonTitle:NSLocalizedString(@"Continue", nil)
+											  otherButtonTitles:nil, nil];
 		[error show];
 	}
 }
@@ -496,28 +508,30 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)updateStatusBar:(UICompositeViewDescription *)to_view {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-	// In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
-	// status bar style for each transition to/from these views
-	BOOL toLightStatus = (to_view != NULL) && ![to_view darkBackground];
-	if (!toLightStatus) {
-		// black bg: white text on black background
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+#pragma deploymate push "ignored-api-availability"
+	if (UIDevice.currentDevice.systemVersion.doubleValue >= 7.) {
+		// In iOS7, the app has a black background on dialer, incoming and incall, so we have to adjust the
+		// status bar style for each transition to/from these views
+		BOOL toLightStatus = (to_view != NULL) && ![to_view darkBackground];
+		if (!toLightStatus) {
+			// black bg: white text on black background
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 
-		[UIView animateWithDuration:0.3f
-						 animations:^{
-						   statusBarBG.backgroundColor = [UIColor blackColor];
-						 }];
+			[UIView animateWithDuration:0.3f
+							 animations:^{
+							   statusBarBG.backgroundColor = [UIColor blackColor];
+							 }];
 
-	} else {
-		// light bg: black text on white bg
-		[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
-		[UIView animateWithDuration:0.3f
-						 animations:^{
-						   statusBarBG.backgroundColor = [UIColor colorWithWhite:0.935 alpha:1];
-						 }];
+		} else {
+			// light bg: black text on white bg
+			[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+			[UIView animateWithDuration:0.3f
+							 animations:^{
+							   statusBarBG.backgroundColor = [UIColor colorWithWhite:0.935 alpha:1];
+							 }];
+		}
 	}
-#endif
+#pragma deploymate pop
 }
 
 - (void)fullScreen:(BOOL)enabled {
@@ -641,16 +655,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 #pragma mark - ActionSheet Functions
-
-- (void)playMessageSoundForCallID:(NSString *)callID {
-	if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-		LinphoneManager *lm = LinphoneManager.instance;
-		// if the message was already received through a push notif, we don't need to ring
-		if (![lm popPushCallID:callID]) {
-			[lm playMessageSound];
-		}
-	}
-}
 
 - (void)displayIncomingCall:(LinphoneCall *)call {
 	LinphoneCallLog *callLog = linphone_call_get_call_log(call);

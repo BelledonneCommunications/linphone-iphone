@@ -37,13 +37,6 @@
     self.landscapeView = nil;
 }
 
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    
-    portraitAttributes = nil;
-    landscapeAttributes = nil;
-}
-
 - (void)dealloc {
     portraitAttributes = nil;
     landscapeAttributes = nil;

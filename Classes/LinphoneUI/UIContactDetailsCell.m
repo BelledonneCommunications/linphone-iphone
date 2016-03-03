@@ -55,8 +55,14 @@
 }
 
 - (void)hideDeleteButton:(BOOL)hidden {
-	CGRect newFrame = CGRectMake(8, 7, self.editView.frame.size.width - 16, self.editView.frame.size.height - 14);
-	if (!hidden) {
+	if (_deleteButton.hidden == hidden)
+		return;
+
+	CGRect newFrame = _editTextfield.frame;
+	newFrame.size.width = _editView.frame.size.width - newFrame.origin.x;
+	if (hidden) {
+		newFrame.size.width -= newFrame.origin.x; /* center view in super view */
+	} else {
 		newFrame.size.width -= _deleteButton.frame.size.width;
 	}
 	_editTextfield.frame = newFrame;

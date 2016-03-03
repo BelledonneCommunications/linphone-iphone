@@ -144,13 +144,13 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		}
 	}
 	[super loadData];
+
 	if (IPAD) {
-		// reset details view since in fragment mode, details are relative to current data
-		// select first contact if any
+		// if contact details view is using a contact that does not exist anymore, update it
+		ContactDetailsView *view = VIEW(ContactDetailsView);
 		ABRecordRef contact = ([self totalNumberOfItems] > 0)
 								  ? [self contactForIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]]
 								  : nil;
-		ContactDetailsView *view = VIEW(ContactDetailsView);
 		[view setContact:contact];
 	}
 }
@@ -247,7 +247,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
 		NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
 		ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
-		NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1];
+		NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1].uppercaseString;
 		[[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 		if ([tableView numberOfRowsInSection:indexPath.section] == 1) {
 			[addressBookMap removeObjectForKey:firstChar];
@@ -268,7 +268,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	  OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
 	  NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
 	  ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
-	  NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1];
+	  NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1].uppercaseString;
 	  [[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
 		  [addressBookMap removeObjectForKey:firstChar];

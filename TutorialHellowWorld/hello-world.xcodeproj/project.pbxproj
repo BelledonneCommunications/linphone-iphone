@@ -55,6 +55,22 @@
 		630AD4AC1C5663D000449F6E /* libcorec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A01C5663A000449F6E /* libcorec.a */; };
 		630AD4AD1C5663D000449F6E /* libebml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A11C5663A000449F6E /* libebml2.a */; };
 		630AD4AE1C5663D000449F6E /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 630AD4A21C5663A000449F6E /* libmatroska2.a */; };
+		63177FC51C86E82F00ADE58D /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63177FC41C86E82F00ADE58D /* VideoToolbox.framework */; };
+		63177FC61C86E83500ADE58D /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63177FC41C86E82F00ADE58D /* VideoToolbox.framework */; };
+		63177FC71C86E83900ADE58D /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63177FC41C86E82F00ADE58D /* VideoToolbox.framework */; };
+		63177FC81C86E83E00ADE58D /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63177FC41C86E82F00ADE58D /* VideoToolbox.framework */; };
+		631A51C11C770A2C00B95673 /* libc++.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C01C770A2C00B95673 /* libc++.1.tbd */; };
+		631A51C31C770A3500B95673 /* libstdc++.6.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C21C770A3500B95673 /* libstdc++.6.tbd */; };
+		631A51C51C770A5E00B95673 /* libbctoolbox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C41C770A5E00B95673 /* libbctoolbox.a */; };
+		631A51C61C770A6D00B95673 /* libc++.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C01C770A2C00B95673 /* libc++.1.tbd */; };
+		631A51C71C770A7100B95673 /* libstdc++.6.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C21C770A3500B95673 /* libstdc++.6.tbd */; };
+		631A51C81C770A8700B95673 /* libbctoolbox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C41C770A5E00B95673 /* libbctoolbox.a */; };
+		631A51C91C770A9000B95673 /* libbctoolbox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C41C770A5E00B95673 /* libbctoolbox.a */; };
+		631A51CA1C770A9500B95673 /* libc++.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C01C770A2C00B95673 /* libc++.1.tbd */; };
+		631A51CB1C770A9600B95673 /* libstdc++.6.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C21C770A3500B95673 /* libstdc++.6.tbd */; };
+		631A51CC1C770A9B00B95673 /* libc++.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C01C770A2C00B95673 /* libc++.1.tbd */; };
+		631A51CD1C770A9B00B95673 /* libstdc++.6.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C21C770A3500B95673 /* libstdc++.6.tbd */; };
+		631A51CE1C770AA400B95673 /* libbctoolbox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51C41C770A5E00B95673 /* libbctoolbox.a */; };
 		63D5C1001BA6E3EB002D1ABF /* helloworld.c in Sources */ = {isa = PBXBuildFile; fileRef = 63D5C0FC1BA6E3EB002D1ABF /* helloworld.c */; };
 		63D5C1021BA6E3F7002D1ABF /* registration.c in Sources */ = {isa = PBXBuildFile; fileRef = 63D5C0FD1BA6E3EB002D1ABF /* registration.c */; };
 		63D5C1031BA6E3FA002D1ABF /* chatroom.c in Sources */ = {isa = PBXBuildFile; fileRef = 63D5C0FB1BA6E3EB002D1ABF /* chatroom.c */; };
@@ -223,6 +239,10 @@
 		630AD4A01C5663A000449F6E /* libcorec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcorec.a; path = "../liblinphone-sdk/apple-darwin/lib/libcorec.a"; sourceTree = "<group>"; };
 		630AD4A11C5663A000449F6E /* libebml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libebml2.a; path = "../liblinphone-sdk/apple-darwin/lib/libebml2.a"; sourceTree = "<group>"; };
 		630AD4A21C5663A000449F6E /* libmatroska2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmatroska2.a; path = "../liblinphone-sdk/apple-darwin/lib/libmatroska2.a"; sourceTree = "<group>"; };
+		63177FC41C86E82F00ADE58D /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		631A51C01C770A2C00B95673 /* libc++.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.1.tbd"; path = "usr/lib/libc++.1.tbd"; sourceTree = SDKROOT; };
+		631A51C21C770A3500B95673 /* libstdc++.6.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.6.tbd"; path = "usr/lib/libstdc++.6.tbd"; sourceTree = SDKROOT; };
+		631A51C41C770A5E00B95673 /* libbctoolbox.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbctoolbox.a; path = "../liblinphone-sdk/apple-darwin/lib/libbctoolbox.a"; sourceTree = "<group>"; };
 		63D5C0FA1BA6E3EB002D1ABF /* buddy_status.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = buddy_status.c; path = ../submodules/linphone/coreapi/help/buddy_status.c; sourceTree = "<group>"; };
 		63D5C0FB1BA6E3EB002D1ABF /* chatroom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = chatroom.c; path = ../submodules/linphone/coreapi/help/chatroom.c; sourceTree = "<group>"; };
 		63D5C0FC1BA6E3EB002D1ABF /* helloworld.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = helloworld.c; path = ../submodules/linphone/coreapi/help/helloworld.c; sourceTree = "<group>"; };
@@ -272,6 +292,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63177FC51C86E82F00ADE58D /* VideoToolbox.framework in Frameworks */,
+				631A51C51C770A5E00B95673 /* libbctoolbox.a in Frameworks */,
+				631A51C31C770A3500B95673 /* libstdc++.6.tbd in Frameworks */,
+				631A51C11C770A2C00B95673 /* libc++.1.tbd in Frameworks */,
 				630AD4A31C5663A000449F6E /* libcorec.a in Frameworks */,
 				630AD4A41C5663A000449F6E /* libebml2.a in Frameworks */,
 				630AD4A51C5663A000449F6E /* libmatroska2.a in Frameworks */,
@@ -329,6 +353,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63177FC61C86E83500ADE58D /* VideoToolbox.framework in Frameworks */,
+				631A51C81C770A8700B95673 /* libbctoolbox.a in Frameworks */,
+				631A51C71C770A7100B95673 /* libstdc++.6.tbd in Frameworks */,
+				631A51C61C770A6D00B95673 /* libc++.1.tbd in Frameworks */,
 				630AD4A61C5663B000449F6E /* libcorec.a in Frameworks */,
 				630AD4A71C5663B000449F6E /* libebml2.a in Frameworks */,
 				630AD4A81C5663B000449F6E /* libmatroska2.a in Frameworks */,
@@ -386,6 +414,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63177FC71C86E83900ADE58D /* VideoToolbox.framework in Frameworks */,
+				631A51CA1C770A9500B95673 /* libc++.1.tbd in Frameworks */,
+				631A51CB1C770A9600B95673 /* libstdc++.6.tbd in Frameworks */,
+				631A51C91C770A9000B95673 /* libbctoolbox.a in Frameworks */,
 				630AD4A91C5663BE00449F6E /* libcorec.a in Frameworks */,
 				630AD4AA1C5663BE00449F6E /* libebml2.a in Frameworks */,
 				630AD4AB1C5663BE00449F6E /* libmatroska2.a in Frameworks */,
@@ -437,6 +469,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63177FC81C86E83E00ADE58D /* VideoToolbox.framework in Frameworks */,
+				631A51CE1C770AA400B95673 /* libbctoolbox.a in Frameworks */,
+				631A51CC1C770A9B00B95673 /* libc++.1.tbd in Frameworks */,
+				631A51CD1C770A9B00B95673 /* libstdc++.6.tbd in Frameworks */,
 				630AD4AC1C5663D000449F6E /* libcorec.a in Frameworks */,
 				630AD4AD1C5663D000449F6E /* libebml2.a in Frameworks */,
 				630AD4AE1C5663D000449F6E /* libmatroska2.a in Frameworks */,
@@ -541,6 +577,10 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63177FC41C86E82F00ADE58D /* VideoToolbox.framework */,
+				631A51C41C770A5E00B95673 /* libbctoolbox.a */,
+				631A51C21C770A3500B95673 /* libstdc++.6.tbd */,
+				631A51C01C770A2C00B95673 /* libc++.1.tbd */,
 				630AD4A01C5663A000449F6E /* libcorec.a */,
 				630AD4A11C5663A000449F6E /* libebml2.a */,
 				630AD4A21C5663A000449F6E /* libmatroska2.a */,

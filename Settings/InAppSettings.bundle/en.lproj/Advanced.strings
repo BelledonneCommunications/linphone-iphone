@@ -8,10 +8,10 @@
 "Other" = "Other";
 "Animations" = "Animations";
 "Start at boot" = "Start at boot";
+"Show message in notification" = "Show message in notification";
 "First login view" = "First login view";
 "Primary account" = "Primary account";
 "Display name" = "Display name";
 "Username" = "Username";
 "File sharing" = "File sharing";
 "Server URL" = "Server URL";
-"Show message in notification" = "Show message in notification";

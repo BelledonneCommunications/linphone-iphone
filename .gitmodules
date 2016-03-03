@@ -91,3 +91,6 @@
 [submodule "submodules/belcard"]
 	path = submodules/belcard
 	url = git://git.linphone.org/belcard
+[submodule "submodules/bctoolbox"]
+	path = submodules/bctoolbox
+	url = git://git.linphone.org/bctoolbox

@@ -65,6 +65,9 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		_emptyLabel.hidden = YES;
 	} else {
 		_emptyLabel.hidden = NO;
+		if (!IPAD) {
+			[PhoneMainView.instance popCurrentView];
+		}
 	}
 }
 

@@ -101,6 +101,7 @@
 	}
 }
 
+#pragma deploymate push "ignored-api-availability"
 - (UIUserNotificationCategory *)getMessageNotificationCategory {
 	NSArray *actions;
 
@@ -195,6 +196,7 @@
 		}
 	}
 }
+#pragma deploymate pop
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
@@ -415,6 +417,7 @@
 
 #pragma mark - User notifications
 
+#pragma deploymate push "ignored-api-availability"
 - (void)application:(UIApplication *)application
 	didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
@@ -471,6 +474,7 @@
 			LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
 			linphone_chat_room_send_chat_message(room, msg);
 			linphone_chat_room_mark_as_read(room);
+			[PhoneMainView.instance updateApplicationBadgeNumber];
 		}
 	}
 }
@@ -482,6 +486,7 @@
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	completionHandler();
 }
+#pragma deploymate pop
 
 #pragma mark - Remote configuration Functions (URL Handler)
 

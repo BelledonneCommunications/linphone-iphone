@@ -33,11 +33,12 @@
 @interface ChatConversationView
 	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate,
 								   ChatConversationDelegate, UISearchBarDelegate> {
-	LinphoneChatRoom *chatRoom;
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;
 }
+
+@property(nonatomic) LinphoneChatRoom *chatRoom;
 
 @property(weak, nonatomic) IBOutlet UIIconButton *backButton;
 @property(nonatomic, strong) IBOutlet ChatConversationTableView *tableController;
@@ -64,7 +65,5 @@
 - (IBAction)onCallClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;
-
-- (void)setChatRoom:(LinphoneChatRoom *)room;
 
 @end

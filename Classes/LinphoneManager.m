@@ -72,7 +72,6 @@ NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpda
 
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
-extern void libmsilbc_init(MSFactory *factory);
 extern void libmsamr_init(MSFactory *factory);
 extern void libmsx264_init(MSFactory *factory);
 extern void libmsopenh264_init(MSFactory *factory);
@@ -279,6 +278,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
+#pragma deploymate push "ignored-api-availability"
 - (void)silentPushFailed:(NSTimer *)timer {
 	if (_silentPushCompletion) {
 		LOGI(@"silentPush failed, silentPushCompletion block: %p", _silentPushCompletion);
@@ -286,6 +286,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_silentPushCompletion = nil;
 	}
 }
+#pragma deploymate pop
 
 #pragma mark - Migration
 
@@ -515,7 +516,8 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 }
 
 - (void)migrationFromVersion2To3 {
-	lp_config_for_each_entry(_configDb, "wizard", migrateWizardToAssistant, (__bridge void *)(self));
+	// DONT DO THAT!
+	//	lp_config_for_each_entry(_configDb, "wizard", migrateWizardToAssistant, (__bridge void *)(self));
 }
 
 #pragma mark - Linphone Core Functions
@@ -599,14 +601,15 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 		linphone_call_set_user_data(call, (void *)CFBridgingRetain(data));
 	}
 
+#pragma deploymate push "ignored-api-availability"
 	if (_silentPushCompletion) {
-
 		// we were woken up by a silent push. Call the completion handler with NEWDATA
 		// so that the push is notified to the user
 		LOGI(@"onCall - handler %p", _silentPushCompletion);
 		_silentPushCompletion(UIBackgroundFetchResultNewData);
 		_silentPushCompletion = nil;
 	}
+#pragma deploymate pop
 
 	const LinphoneAddress *addr = linphone_call_get_remote_address(call);
 	NSString *address = [FastAddressBook displayNameForAddress:addr];
@@ -819,6 +822,14 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 - (void)configuringStateChangedNotificationHandler:(NSNotification *)notif {
 	_wasRemoteProvisioned = ((LinphoneConfiguringState)[[[notif userInfo] valueForKey:@"state"] integerValue] ==
 							 LinphoneConfiguringSuccessful);
+	if (_wasRemoteProvisioned) {
+		LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+		if (cfg) {
+			linphone_proxy_config_edit(cfg);
+			[self configurePushTokenForProxyConfig:cfg];
+			linphone_proxy_config_done(cfg);
+		}
+	}
 }
 
 #pragma mark - Registration State Functions
@@ -826,13 +837,71 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 - (void)onRegister:(LinphoneCore *)lc
 			   cfg:(LinphoneProxyConfig *)cfg
 			 state:(LinphoneRegistrationState)state
-		   message:(const char *)message {
-	LOGI(@"New registration state: %s (message: %s)", linphone_registration_state_to_string(state), message);
+		   message:(const char *)cmessage {
+	LOGI(@"New registration state: %s (message: %s)", linphone_registration_state_to_string(state), cmessage);
+
+	LinphoneReason reason = linphone_proxy_config_get_error(cfg);
+	NSString *message = nil;
+	switch (reason) {
+		case LinphoneReasonBadCredentials:
+			message = NSLocalizedString(@"Bad credentials, check your account settings", nil);
+			break;
+		case LinphoneReasonNoResponse:
+			message = NSLocalizedString(@"No response received from remote", nil);
+			break;
+		case LinphoneReasonUnsupportedContent:
+			message = NSLocalizedString(@"Unsupported content", nil);
+			break;
+		case LinphoneReasonIOError:
+			message = NSLocalizedString(
+				@"Cannot reach the server: either it is an invalid address or it may be temporary down.", nil);
+			break;
+
+		case LinphoneReasonUnauthorized:
+			message = NSLocalizedString(@"Operation is unauthorized because missing credential", nil);
+			break;
+		case LinphoneReasonNoMatch:
+			message = NSLocalizedString(@"Operation could not be executed by server or remote client because it "
+										@"didn't have any context for it",
+										nil);
+			break;
+		case LinphoneReasonMovedPermanently:
+			message = NSLocalizedString(@"Resource moved permanently", nil);
+			break;
+		case LinphoneReasonGone:
+			message = NSLocalizedString(@"Resource no longer exists", nil);
+			break;
+		case LinphoneReasonTemporarilyUnavailable:
+			message = NSLocalizedString(@"Temporarily unavailable", nil);
+			break;
+		case LinphoneReasonAddressIncomplete:
+			message = NSLocalizedString(@"Address incomplete", nil);
+			break;
+		case LinphoneReasonNotImplemented:
+			message = NSLocalizedString(@"Not implemented", nil);
+			break;
+		case LinphoneReasonBadGateway:
+			message = NSLocalizedString(@"Bad gateway", nil);
+			break;
+		case LinphoneReasonServerTimeout:
+			message = NSLocalizedString(@"Server timeout", nil);
+			break;
+		case LinphoneReasonNotAcceptable:
+		case LinphoneReasonDoNotDisturb:
+		case LinphoneReasonDeclined:
+		case LinphoneReasonNotFound:
+		case LinphoneReasonNotAnswered:
+		case LinphoneReasonBusy:
+		case LinphoneReasonNone:
+		case LinphoneReasonUnknown:
+			message = NSLocalizedString(@"Unknown error", nil);
+			break;
+	}
 
 	// Post event
-	NSDictionary *dict = [NSDictionary
-		dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:state], @"state", [NSValue valueWithPointer:cfg], @"cfg",
-									 [NSString stringWithUTF8String:message], @"message", nil];
+	NSDictionary *dict =
+		[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:state], @"state",
+												   [NSValue valueWithPointer:cfg], @"cfg", message, @"message", nil];
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneRegistrationUpdate object:self userInfo:dict];
 }
 
@@ -897,6 +966,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 #pragma mark - Text Received Functions
 
 - (void)onMessageReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room message:(LinphoneChatMessage *)msg {
+#pragma deploymate push "ignored-api-availability"
 	if (_silentPushCompletion) {
 		// we were woken up by a silent push. Call the completion handler with NEWDATA
 		// so that the push is notified to the user
@@ -904,16 +974,14 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 		_silentPushCompletion(UIBackgroundFetchResultNewData);
 		_silentPushCompletion = nil;
 	}
+#pragma deploymate pop
+
 	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(msg, "Call-ID")];
 	const LinphoneAddress *remoteAddress = linphone_chat_message_get_from_address(msg);
 	NSString *from = [FastAddressBook displayNameForAddress:remoteAddress];
-	const char *chat = linphone_chat_message_get_text(msg);
-	if (chat == NULL)
-		chat = "";
 
 	char *c_address = linphone_address_as_string_uri_only(remoteAddress);
 	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
-
 	ms_free(c_address);
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
@@ -923,7 +991,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 			NSString *chat = [UIChatBubbleTextCell TextMessageForChat:msg];
 			notif.repeatInterval = 0;
 			if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+#pragma deploymate push "ignored-api-availability"
 				notif.category = @"incoming_msg";
+#pragma deploymate pop
 			}
 			if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
 				notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_FULLMSG", nil), from, chat];
@@ -1254,6 +1324,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		NSNumber *number = (NSNumber *)[dataNetworkItemView valueForKey:@"dataNetworkType"];
 		return [number intValue];
 	} else {
+#pragma deploymate push "ignored-api-availability"
 		CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];
 		NSString *currentRadio = info.currentRadioAccessTechnology;
 		if ([currentRadio isEqualToString:CTRadioAccessTechnologyEdge]) {
@@ -1261,6 +1332,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		} else if ([currentRadio isEqualToString:CTRadioAccessTechnologyLTE]) {
 			return network_4g;
 		}
+#pragma deploymate pop
 		return network_3g;
 	}
 }
@@ -1305,11 +1377,14 @@ static LinphoneCoreVTable linphonec_vtable = {
 	// get default config from bundle
 	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];
 	NSString *chatDBFileName = [LinphoneManager documentFile:kLinphoneInternalChatDBFilename];
-	const char *lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] UTF8String];
 
-	NSString *device = [NSString
-		stringWithFormat:@"%@_%@_iOS%@", [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
-						 [LinphoneUtils deviceName], UIDevice.currentDevice.systemVersion];
+	NSMutableString *device = [[NSMutableString alloc]
+		initWithString:[NSString
+						   stringWithFormat:@"%@_%@_iOS%@",
+											[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleDisplayName"],
+											[LinphoneUtils deviceName], UIDevice.currentDevice.systemVersion]];
+	[device stringByReplacingOccurrencesOfString:@"," withString:@"."];
+	[device stringByReplacingOccurrencesOfString:@" " withString:@"."];
 	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, LINPHONE_IOS_VERSION);
 
 	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"];
@@ -1317,8 +1392,6 @@ static LinphoneCoreVTable linphonec_vtable = {
 	if (_fastAddressBook == nil) {
 		_fastAddressBook = [[FastAddressBook alloc] init];
 	}
-
-	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
 
 	linphone_core_set_zrtp_secrets_file(theLinphoneCore, [zrtpSecretsFileName UTF8String]);
 	linphone_core_set_chat_database_path(theLinphoneCore, [chatDBFileName UTF8String]);
@@ -1426,43 +1499,39 @@ static BOOL libStarted = FALSE;
 	[Log enableLogs:[self lpConfigIntForKey:@"debugenable_preference"]];
 	connectivity = none;
 
-	ms_init(); // Need to initialize mediastreamer2 before loading the plugins
-	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
-	libmsilbc_init(ms_factory_get_fallback());
-	libmssilk_init(ms_factory_get_fallback());
-	libmsamr_init(ms_factory_get_fallback());
-	libmsx264_init(ms_factory_get_fallback());
-	libmsopenh264_init(ms_factory_get_fallback());
-	libmsbcg729_init(ms_factory_get_fallback());
-	libmswebrtc_init(ms_factory_get_fallback());
+	// Set audio assets
+	NSString *ring =
+		([LinphoneManager bundleFile:[self lpConfigStringForKey:@"local_ring" inSection:@"sound"].lastPathComponent]
+			 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
+			.lastPathComponent;
+	NSString *ringback =
+		([LinphoneManager bundleFile:[self lpConfigStringForKey:@"remote_ring" inSection:@"sound"].lastPathComponent]
+			 ?: [LinphoneManager bundleFile:@"ringback.wav"])
+			.lastPathComponent;
+	NSString *hold =
+		([LinphoneManager bundleFile:[self lpConfigStringForKey:@"hold_music" inSection:@"sound"].lastPathComponent]
+			 ?: [LinphoneManager bundleFile:@"hold.mkv"])
+			.lastPathComponent;
+	[self lpConfigSetString:[LinphoneManager bundleFile:ring] forKey:@"local_ring" inSection:@"sound"];
+	[self lpConfigSetString:[LinphoneManager bundleFile:ringback] forKey:@"remote_ring" inSection:@"sound"];
+	[self lpConfigSetString:[LinphoneManager bundleFile:hold] forKey:@"hold_music" inSection:@"sound"];
 
 	theLinphoneCore = linphone_core_new_with_config(&linphonec_vtable, _configDb, (__bridge void *)(self));
 	LOGI(@"Create linphonecore %p", theLinphoneCore);
 
-	// Set audio assets
-	NSString *ring =
-		([LinphoneManager
-			 bundleFile:[NSString stringWithUTF8String:linphone_core_get_ring(theLinphoneCore) ?: ""].lastPathComponent]
-			 ?: [LinphoneManager bundleFile:@"notes_of_the_optimistic.caf"])
-			.lastPathComponent;
-	NSString *ringback =
-		([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_ringback(theLinphoneCore) ?: ""]
-										 .lastPathComponent]
-			 ?: [LinphoneManager bundleFile:@"ringback.wav"])
-			.lastPathComponent;
-	NSString *hold =
-		([LinphoneManager bundleFile:[NSString stringWithUTF8String:linphone_core_get_play_file(theLinphoneCore) ?: ""]
-										 .lastPathComponent]
-			 ?: [LinphoneManager bundleFile:@"hold.mkv"])
-			.lastPathComponent;
-	linphone_core_set_ring(theLinphoneCore, [LinphoneManager bundleFile:ring].UTF8String);
-	linphone_core_set_ringback(theLinphoneCore, [LinphoneManager bundleFile:ringback].UTF8String);
-	linphone_core_set_play_file(theLinphoneCore, [LinphoneManager bundleFile:hold].UTF8String);
+	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
+	MSFactory *f = linphone_core_get_ms_factory(theLinphoneCore);
+	libmssilk_init(f);
+	libmsamr_init(f);
+	libmsx264_init(f);
+	libmsopenh264_init(f);
+	libmsbcg729_init(f);
+	libmswebrtc_init(f);
+	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
 
 	/* set the CA file no matter what, since the remote provisioning could be hitting an HTTPS server */
-	const char *lRootCa = [[LinphoneManager bundleFile:@"rootca.pem"] UTF8String];
-	linphone_core_set_root_ca(theLinphoneCore, lRootCa);
-	linphone_core_set_user_certificates_path(theLinphoneCore, [[LinphoneManager cacheDirectory] UTF8String]);
+	linphone_core_set_root_ca(theLinphoneCore, [LinphoneManager bundleFile:@"rootca.pem"].UTF8String);
+	linphone_core_set_user_certificates_path(theLinphoneCore, [LinphoneManager cacheDirectory].UTF8String);
 
 	/* The core will call the linphone_iphone_configuring_status_changed callback when the remote provisioning is loaded
 	 (or skipped).
@@ -1505,7 +1574,6 @@ static BOOL libStarted = FALSE;
 		linphone_core_destroy(theLinphoneCore);
 		LOGI(@"Destroy linphonecore %p", theLinphoneCore);
 		theLinphoneCore = nil;
-		ms_exit(); // Uninitialize mediastreamer2
 
 		// Post event
 		NSDictionary *dict =
@@ -1784,7 +1852,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	OSStatus lStatus = AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &lNewRouteSize, &lNewRoute);
 	if (!lStatus && lNewRouteSize > 0) {
 		NSString *route = (__bridge NSString *)lNewRoute;
-		allow = ![route containsString:@"Heads"] && ![route isEqualToString:@"Lineout"];
+		allow = ![route containsSubstring:@"Heads"] && ![route isEqualToString:@"Lineout"];
 		CFRelease(lNewRoute);
 	}
 	return allow;
@@ -2003,7 +2071,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 // NSLocalizedString(@"IC_MSG", nil); // Fake for genstrings
 // NSLocalizedString(@"IM_MSG", nil); // Fake for genstrings
 // NSLocalizedString(@"IM_FULLMSG", nil); // Fake for genstrings
-#ifdef USE_APN_DEV
+#ifdef DEBUG
 #define APPMODE_SUFFIX @"dev"
 #else
 #define APPMODE_SUFFIX @"prod"

@@ -16,3 +16,4 @@ submodules/tunnel
 submodules/binaries/dummy-*.a
 linphone-iphone.ipa
 TutorialHellowWorld/hello-world.xcodeproj/project.xcworkspace/
+diff-format.patch

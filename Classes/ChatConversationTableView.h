@@ -32,16 +32,15 @@
 
 @interface ChatConversationTableView : UICheckBoxTableView {
   @private
-	LinphoneChatRoom *chatRoom;
 	MSList *messageList;
 }
 
+@property(nonatomic) LinphoneChatRoom *chatRoom;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 
 - (void)addChatEntry:(LinphoneChatMessage *)chat;
 - (void)scrollToBottom:(BOOL)animated;
 - (void)scrollToLastUnread:(BOOL)animated;
 - (void)updateChatEntry:(LinphoneChatMessage *)chat;
-- (void)setChatRoom:(LinphoneChatRoom *)room;
 
 @end

@@ -15,7 +15,7 @@
 //
 
 #import "IASKAppSettingsWebViewController.h"
-
+#pragma deploymate push "ignored-api-availability"
 @implementation IASKAppSettingsWebViewController
 
 @synthesize url;
@@ -145,7 +145,6 @@
 - (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
 	[self dismissModalViewControllerAnimated:YES];
 }
-
-
+#pragma deploymate pop
 
 @end

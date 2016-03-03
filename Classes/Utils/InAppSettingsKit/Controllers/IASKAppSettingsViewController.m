@@ -14,6 +14,7 @@
 //  This code is licensed under the BSD license that is available at: http://www.opensource.org/licenses/bsd-license.php
 //
 
+#pragma deploymate push "ignored-api-availability"
 
 #import "IASKAppSettingsViewController.h"
 #import "IASKSettingsReader.h"
@@ -905,3 +906,5 @@ CGRect IASKCGRectSwap(CGRect rect) {
 	return newRect;
 }
 @end
+
+#pragma deploymate pop

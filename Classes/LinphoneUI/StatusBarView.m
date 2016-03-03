@@ -55,6 +55,10 @@
 										   selector:@selector(notifyReceived:)
 											   name:kLinphoneNotifyReceived
 											 object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self
+										   selector:@selector(mainViewChanged:)
+											   name:kLinphoneMainViewChange
+											 object:nil];
 
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(callUpdate:)
@@ -82,6 +86,7 @@
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneGlobalStateUpdate object:nil];
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneNotifyReceived object:nil];
 	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneCallUpdate object:nil];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneMainViewChange object:nil];
 
 	if (callQualityTimer != nil) {
 		[callQualityTimer invalidate];
@@ -106,7 +111,11 @@
 }
 
 - (void)globalStateUpdate:(NSNotification *)notif {
-	[self registrationUpdate:notif];
+	[self registrationUpdate:nil];
+}
+
+- (void)mainViewChanged:(NSNotification *)notif {
+	[self registrationUpdate:nil];
 }
 
 - (void)onCallEncryptionChanged:(NSNotification *)notif {
@@ -174,16 +183,16 @@
 	NSString *message = nil;
 	LinphoneGlobalState gstate = linphone_core_get_global_state(LC);
 
-	if (gstate == LinphoneGlobalConfiguring) {
+	if ([PhoneMainView.instance.currentView equal:AssistantView.compositeViewDescription]) {
+		message = NSLocalizedString(@"Configuring account", nil);
+	} else if (gstate == LinphoneGlobalOn && !linphone_core_is_network_reachable(LC)) {
+		message = NSLocalizedString(@"Network down", nil);
+	} else if (gstate == LinphoneGlobalConfiguring) {
 		message = NSLocalizedString(@"Fetching remote configuration", nil);
 	} else if (config == NULL) {
 		state = LinphoneRegistrationNone;
 		if (linphone_core_get_proxy_config_list(LC) != NULL) {
-			if (linphone_core_is_network_reachable(LC)) {
-				message = NSLocalizedString(@"No default account", nil);
-			} else {
-				message = NSLocalizedString(@"Network down", nil);
-			}
+			message = NSLocalizedString(@"No default account", nil);
 		} else {
 			message = NSLocalizedString(@"No account configured", nil);
 		}

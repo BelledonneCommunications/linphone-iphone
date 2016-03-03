@@ -1,4 +1,4 @@
-/* UIMicroButton.m
+/* UIMutedMicroButton.h
  *
  * Copyright (C) 2011  Belledonne Comunications, Grenoble, France
  *
@@ -17,22 +17,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#import "UIMicroButton.h"
+#import <UIKit/UIKit.h>
 
-#import "LinphoneManager.h"
+#import "UIToggleButton.h"
 
-@implementation UIMicroButton
-
-- (void)onOn {
-	linphone_core_enable_mic(LC, false);
-}
-
-- (void)onOff {
-	linphone_core_enable_mic(LC, true);
-}
-
-- (bool)onUpdate {
-	return !(linphone_core_get_current_call(LC) && linphone_core_mic_enabled(LC));
+@interface UIMutedMicroButton : UIToggleButton <UIToggleButtonDelegate> {
 }
 
 @end

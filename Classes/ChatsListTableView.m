@@ -119,11 +119,16 @@ static void chatTable_free_chatrooms(void *data) {
 	[super loadData];
 
 	if (IPAD) {
-		// reset conversation view since in fragment mode, conversations are relative to current data
-		// select first conversation if any
+		// if conversation view is using a chatroom that does not exist anymore, update it
 		if (data != NULL) {
 			ChatConversationView *view = VIEW(ChatConversationView);
-			[view setChatRoom:(LinphoneChatRoom *)ms_list_nth_data(data, 0)];
+			LinphoneChatRoom *current = [view chatRoom];
+			// cannot find it anymore: replace it with the first one
+			if (ms_list_find(data, current) == NULL) {
+				[view setChatRoom:(LinphoneChatRoom *)ms_list_nth_data(data, 0)];
+			}
+		} else {
+			[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
 		}
 	}
 }

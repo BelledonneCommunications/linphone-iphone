@@ -374,6 +374,15 @@
 	return output;
 }
 
+- (BOOL)containsSubstring:(NSString *)str {
+	if (UIDevice.currentDevice.systemVersion.doubleValue >= 8.0) {
+#pragma deploymate push "ignored-api-availability"
+		return [self containsString:str];
+#pragma deploymate pop
+	}
+	return ([self rangeOfString:str].location != NSNotFound);
+}
+
 @end
 
 @implementation ContactDisplay

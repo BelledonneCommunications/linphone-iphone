@@ -63,7 +63,7 @@
 }
 
 - (void)sendMessage:(NSString *)message {
-	[tester enterText:message intoViewWithAccessibilityLabel:@"Message field"];
+	[tester enterText:message.uppercaseString intoViewWithAccessibilityLabel:@"Message field"];
 	[tester tapViewWithAccessibilityLabel:@"Send"];
 }
 
@@ -93,7 +93,7 @@
 		timeout -= .5f;
 		element =
 			[[UIApplication sharedApplication] accessibilityElementMatchingBlock:^BOOL(UIAccessibilityElement *e) {
-			  return [e.accessibilityLabel containsString:quality];
+			  return [e.accessibilityLabel containsSubstring:quality];
 			}];
 	}
 	XCTAssertNotNil(element);
@@ -206,7 +206,8 @@
 									   traits:UIAccessibilityTraitStaticText];
 
 	NSTimeInterval before = [[NSDate date] timeIntervalSince1970];
-	[self startChatWith:[self me]];
+	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+		inTableViewWithAccessibilityIdentifier:@"Chat list"];
 	NSTimeInterval after = [[NSDate date] timeIntervalSince1970];
 
 	// conversation loading MUST be less than 1 sec - loading messages only
@@ -238,9 +239,9 @@
 - (void)testSendMessageToMyself {
 	[self startChatWith:[self me]];
 
-	[self sendMessage:@"Hello"];
-	[tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
-	[tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"Hello" traits:UIAccessibilityTraitStaticText];
+	[self sendMessage:@"HELLO"];
+	[tester waitForViewWithAccessibilityLabel:@"Outgoing message" value:@"HELLO" traits:UIAccessibilityTraitStaticText];
+	[tester waitForViewWithAccessibilityLabel:@"Incoming message" value:@"HELLO" traits:UIAccessibilityTraitStaticText];
 	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Message status"];
 
 	[self goBackFromChat];

@@ -68,6 +68,20 @@
 	}
 }
 
++ (NSString *)mediaEncryptionToString:(LinphoneMediaEncryption)enc {
+	switch (enc) {
+		case LinphoneMediaEncryptionDTLS:
+			return @"DTLS";
+		case LinphoneMediaEncryptionSRTP:
+			return @"SRTP";
+		case LinphoneMediaEncryptionZRTP:
+			return @"ZRTP";
+		case LinphoneMediaEncryptionNone:
+			break;
+	}
+	return NSLocalizedString(@"None", nil);
+}
+
 - (NSString *)updateStatsForCall:(LinphoneCall *)call stream:(LinphoneStreamType)stream {
 	NSMutableString *result = [[NSMutableString alloc] init];
 	const PayloadType *payload = NULL;
@@ -109,12 +123,27 @@
 	[result appendString:@"\n"];
 
 	if (stats != NULL) {
-		[result appendString:[NSString stringWithFormat:@"Upload bandwidth: %1.1f kbits/s", stats->upload_bandwidth]];
-		[result appendString:@"\n"];
 		[result
 			appendString:[NSString stringWithFormat:@"Download bandwidth: %1.1f kbits/s", stats->download_bandwidth]];
 		[result appendString:@"\n"];
+		[result appendString:[NSString stringWithFormat:@"Upload bandwidth: %1.1f kbits/s", stats->upload_bandwidth]];
+		[result appendString:@"\n"];
 		[result appendString:[NSString stringWithFormat:@"ICE state: %@", [self.class iceToString:stats->ice_state]]];
+		[result appendString:@"\n"];
+
+		// RTP stats section (packet loss count, etc)
+		rtp_stats_t rtp_stats = linphone_call_stats_get_rtp_stats(stats);
+		[result
+			appendString:[NSString stringWithFormat:
+									   @"RTP packets: %llu total, %lld cum loss, %llu discarded, %llu OOT, %llu bad",
+									   rtp_stats.packet_recv, rtp_stats.cum_packet_loss, rtp_stats.discarded,
+									   rtp_stats.outoftime, rtp_stats.bad]];
+		[result appendString:@"\n"];
+		[result appendString:[NSString stringWithFormat:@"Sender loss rate: %.2f%%",
+														linphone_call_stats_get_sender_loss_rate(stats)]];
+		[result appendString:@"\n"];
+		[result appendString:[NSString stringWithFormat:@"Receiver loss rate: %.2f%%",
+														linphone_call_stats_get_receiver_loss_rate(stats)]];
 		[result appendString:@"\n"];
 
 		if (stream == LinphoneStreamTypeVideo) {
@@ -146,7 +175,7 @@
 	LinphoneMediaEncryption enc = linphone_call_params_get_media_encryption(linphone_call_get_current_params(call));
 	if (enc != LinphoneMediaEncryptionNone) {
 		[stats appendString:[NSString
-								stringWithFormat:@"Call encrypted using %s", linphone_media_encryption_to_string(enc)]];
+								stringWithFormat:@"Call encrypted using %@", [self.class mediaEncryptionToString:enc]]];
 	}
 
 	[stats appendString:[self updateStatsForCall:call stream:LinphoneStreamTypeAudio]];
