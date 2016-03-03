@@ -997,12 +997,11 @@ typedef struct {
 	unsigned char node[6];
 } sal_uuid_t;
 
-
-int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
+int sal_generate_uuid(char *uuid, size_t len) {
 	sal_uuid_t uuid_struct;
 	int i;
 	int written;
-
+	
 	if (len==0) return -1;
 	/*create an UUID as described in RFC4122, 4.4 */
 	belle_sip_random_bytes((unsigned char*)&uuid_struct, sizeof(sal_uuid_t));
@@ -1021,8 +1020,15 @@ int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
 	for (i = 0; i < 6; i++)
 		written+=snprintf(uuid+written,len-written,"%2.2x", uuid_struct.node[i]);
 	uuid[len-1]='\0';
-	sal_set_uuid(ctx,uuid);
 	return 0;
+}
+
+int sal_create_uuid(Sal*ctx, char *uuid, size_t len) {
+	if (sal_generate_uuid(uuid, len) == 0) {
+		sal_set_uuid(ctx, uuid);
+		return 0;
+	}
+	return -1;
 }
 
 static void make_supported_header(Sal *sal){

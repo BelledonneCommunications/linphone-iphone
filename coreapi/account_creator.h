@@ -20,12 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef LINPHONE_ACCOUNT_CREATOR_H_
 #define LINPHONE_ACCOUNT_CREATOR_H_
 
+#include "linphonecore.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "linphonecore.h"
 
 /**
  * @addtogroup misc

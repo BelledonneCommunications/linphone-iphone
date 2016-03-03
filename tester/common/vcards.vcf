@@ -1,0 +1,22 @@
+BEGIN:VCARD
+VERSION:4.0
+KIND:individual
+FN:Sylvain Berfini
+N:Berfini;Sylvain;Pascal;;
+GENDER:M
+IMPP;PREF=1;TYPE=work:sip:sylvain@sip.linphone.org
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+KIND:individual
+FN:François Grisez
+N:Grisez;François;;;
+IMPP;TYPE=work:sip:francois@sip.linphone.org
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+KIND:individual
+FN:Margaux Clerc
+GENDER:F
+IMPP:sip:margaux@sip.linphone.org
+END:VCARD

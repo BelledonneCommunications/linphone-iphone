@@ -35,6 +35,7 @@
 #include "sipsetup.h"
 #include "quality_reporting.h"
 #include "ringtoneplayer.h"
+#include "vcard.h"
 
 #include <belle-sip/object.h>
 #include <belle-sip/dict.h>
@@ -422,6 +423,15 @@ LinphoneFriend *linphone_friend_list_find_friend_by_out_subscribe(const Linphone
 MSList *linphone_find_friend_by_address(MSList *fl, const LinphoneAddress *addr, LinphoneFriend **lf);
 bool_t linphone_core_should_subscribe_friends_only_when_registered(const LinphoneCore *lc);
 void linphone_core_update_friends_subscriptions(LinphoneCore *lc, LinphoneProxyConfig *cfg, bool_t only_when_registered);
+void linphone_core_friends_storage_init(LinphoneCore *lc);
+void linphone_core_friends_storage_close(LinphoneCore *lc);
+void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf);
+void linphone_core_remove_friend_from_db(LinphoneCore *lc, LinphoneFriend *lf);
+void linphone_core_store_friends_list_in_db(LinphoneCore *lc, LinphoneFriendList *list);
+void linphone_core_remove_friends_list_from_db(LinphoneCore *lc, LinphoneFriendList *list);
+LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList *list);
+LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *list, LinphoneFriend *lf, bool_t synchronize);
 
 int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, socklen_t *socklen, int default_port);
 
@@ -678,17 +688,29 @@ struct _LinphoneFriend{
 	struct _LinphoneCore *lc;
 	BuddyInfo *info;
 	char *refkey;
-	bool_t in_list;
 	bool_t subscribe;
 	bool_t subscribe_active;
 	bool_t inc_subscribe_pending;
 	bool_t commit;
 	bool_t initial_subscribes_sent; /*used to know if initial subscribe message was sent or not*/
 	bool_t presence_received;
+	LinphoneVCard *vcard;
+	unsigned int storage_id;
+	LinphoneFriendList *friend_list;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
 
+struct _LinphoneFriendListCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneFriendListContactCreatedCb contact_created_cb;
+	LinphoneFriendListContactDeletedCb contact_deleted_cb;
+	LinphoneFriendListContactUpdatedCb contact_updated_cb;
+	LinphoneFriendListSyncStateChangedCb sync_state_changed_cb;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneFriendListCbs);
 
 struct _LinphoneFriendList {
 	belle_sip_object_t base;
@@ -700,9 +722,15 @@ struct _LinphoneFriendList {
 	MSList *friends;
 	unsigned char *content_digest;
 	int expected_notification_version;
+	unsigned int storage_id;
+	char *uri;
+	MSList *dirty_friends_to_update;
+	int revision;
+	LinphoneFriendListCbs *cbs;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriendList);
+
 
 
 typedef struct sip_config
@@ -885,7 +913,7 @@ struct _LinphoneCore
 	ui_config_t ui_conf;
 	autoreplier_config_t autoreplier_conf;
 	LinphoneProxyConfig *default_proxy;
-	LinphoneFriendList *friendlist;
+	MSList *friends_lists;
 	MSList *auth_info;
 	struct _RingStream *ringstream;
 	time_t dmfs_playing_start_time;
@@ -955,6 +983,10 @@ struct _LinphoneCore
 	char *logs_db_file;
 #ifdef CALL_LOGS_STORAGE_ENABLED
 	sqlite3 *logs_db;
+#endif
+	char *friends_db_file;
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	sqlite3 *friends_db;
 #endif
 #ifdef BUILD_UPNP
 	UpnpContext *upnp;
@@ -1229,9 +1261,41 @@ struct _LinphoneAccountCreator {
 
 BELLE_SIP_DECLARE_VPTR(LinphoneAccountCreator);
 
+/*****************************************************************************
+ * CardDAV interface                                                         *
+ ****************************************************************************/
+
+struct _LinphoneCardDavContext {
+	LinphoneFriendList *friend_list;
+	int ctag;
+	void *user_data;
+	LinphoneCardDavContactCreatedCb contact_created_cb;
+	LinphoneCardDavContactUpdatedCb contact_updated_cb;
+	LinphoneCardDavContactRemovedCb contact_removed_cb;
+	LinphoneCardDavSynchronizationDoneCb sync_done_cb;
+};
+
+struct _LinphoneCardDavQuery {
+	LinphoneCardDavContext *context;
+	const char *url;
+	const char *method;
+	const char *body;
+	const char *depth;
+	const char *ifmatch;
+	belle_http_request_listener_t *http_request_listener;
+	void *user_data;
+	LinphoneCardDavQueryType type;
+};
+
+struct _LinphoneCardDavResponse {
+	LinphoneCardDavContext *context;
+	const char *etag;
+	const char *url;
+	const char *vcard;
+};
 
 /*****************************************************************************
- * REMOTE PROVISIONING FUNCTIONS                                                     *
+ * REMOTE PROVISIONING FUNCTIONS                                             *
  ****************************************************************************/
 
 void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message);
@@ -1239,7 +1303,7 @@ int linphone_remote_provisioning_download_and_apply(LinphoneCore *lc, const char
 LINPHONE_PUBLIC int linphone_remote_provisioning_load_file( LinphoneCore* lc, const char* file_path);
 
 /*****************************************************************************
- * Player interface
+ * Player interface                                                          *
  ****************************************************************************/
 
 struct _LinphonePlayer{
@@ -1282,6 +1346,7 @@ char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *
 const char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name);
 void linphone_free_xml_text_content(const char *text);
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression);
+void linphone_xml_xpath_context_init_carddav_ns(xmlparsing_context_t *xml_ctx);
 
 /*****************************************************************************
  * OTHER UTILITY FUNCTIONS                                                     *
@@ -1338,6 +1403,7 @@ BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequest),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
 BELLE_SIP_TYPE_ID(LinphoneTunnelConfig),
+BELLE_SIP_TYPE_ID(LinphoneFriendListCbs),
 BELLE_SIP_TYPE_ID(LinphoneEvent)
 BELLE_SIP_DECLARE_TYPES_END
 
@@ -1379,6 +1445,8 @@ void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneE
 void linphone_core_notify_publish_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphonePublishState state);
 void linphone_core_notify_log_collection_upload_state_changed(LinphoneCore *lc, LinphoneCoreLogCollectionUploadState state, const char *info);
 void linphone_core_notify_log_collection_upload_progress_indication(LinphoneCore *lc, size_t offset, size_t total);
+void linphone_core_notify_friend_list_created(LinphoneCore *lc, LinphoneFriendList *list);
+void linphone_core_notify_friend_list_removed(LinphoneCore *lc, LinphoneFriendList *list);
 
 void set_mic_gain_db(AudioStream *st, float gain);
 void set_playback_gain_db(AudioStream *st, float gain);

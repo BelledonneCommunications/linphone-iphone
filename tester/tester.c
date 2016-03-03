@@ -492,6 +492,7 @@ void liblinphone_tester_add_suites() {
 #if HAVE_SIPP
 	bc_tester_add_suite(&complex_sip_call_test_suite);
 #endif
+	bc_tester_add_suite(&vcard_test_suite);
 }
 
 static int linphone_core_manager_get_max_audio_bw_base(const int array[],int array_size) {

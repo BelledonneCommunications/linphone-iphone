@@ -38,6 +38,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneFriend.SubscribePolicy;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
@@ -335,4 +336,17 @@ public class TutorialBuddyStatus implements LinphoneCoreListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+        @Override
+        public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
+
 }

@@ -1000,9 +1000,14 @@ public interface LinphoneCore {
 	void addFriend(LinphoneFriend lf) throws LinphoneCoreException;
 	
 	/**
-	 * Sets the friend list for the linphone core.
+	 * Adds the friend list to the linphone core.
 	 */
-	void setFriendList(LinphoneFriendList friendList) throws LinphoneCoreException;
+	void addFriendList(LinphoneFriendList friendList) throws LinphoneCoreException;
+	
+	/**
+	 * Removes the friend list from the linphone core.
+	 */
+	void removeFriendList(LinphoneFriendList friendList) throws LinphoneCoreException;
 	
 	/**
 	 * Creates a friend list.
@@ -1014,6 +1019,12 @@ public interface LinphoneCore {
 	 * @return LinphoneFriend list
 	 */
 	LinphoneFriend[] getFriendList();
+
+	/**
+	 * Get list of LinphoneFriendList
+	 * @return LinphoneFriendList list
+	 */
+	LinphoneFriendList[] getFriendLists();
 
 	/**
 	 * @brief Set my presence status
@@ -1919,6 +1930,12 @@ public interface LinphoneCore {
 	public void setCallLogsDatabasePath(String path);
 
 	/**
+	 * Sets the path to the database where the friends will be stored (if enabled)
+	 * @param path the database where the friends will be stored.
+	 */
+	public void setFriendsDatabasePath(String path);
+
+	/**
 	 * Gets the chat rooms
 	 * @return an array of LinphoneChatRoom
 	 */
@@ -2260,6 +2277,7 @@ public interface LinphoneCore {
 	 * @param isReachable whether SIP network is reachable.
 	 */
 	public void setSipNetworkReachable(boolean isReachable);
+	
 	/**
 	 * This method is called by the application to notify the linphone core library when the media (RTP) network is reachable.
 	 * This is for advanced usage, when SIP and RTP layers are required to use different interfaces.

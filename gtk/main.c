@@ -252,7 +252,8 @@ gboolean linphone_gtk_get_audio_assistant_option(void){
 }
 
 static void linphone_gtk_init_liblinphone(const char *config_file,
-		const char *factory_config_file, const char *chat_messages_db_file, const char *call_logs_db_file) {
+		const char *factory_config_file, const char *chat_messages_db_file, 
+		const char *call_logs_db_file, const char *friends_db_file) {
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
 	gchar *user_certificates_dir=linphone_gtk_get_config_file(CERTIFICATES_PATH);
@@ -299,6 +300,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	}
 	if (chat_messages_db_file) linphone_core_set_chat_database_path(the_core,chat_messages_db_file);
 	if (call_logs_db_file) linphone_core_set_call_logs_database_path(the_core, call_logs_db_file);
+	if (friends_db_file) linphone_core_set_friends_database_path(the_core, friends_db_file);
 }
 
 LinphoneCore *linphone_gtk_get_core(void){
@@ -1835,6 +1837,38 @@ void linphone_gtk_show_keypad_checked(GtkCheckMenuItem *check_menu_item) {
 	}
 }
 
+void linphone_gtk_import_contacts(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *dialog = gtk_file_chooser_dialog_new("Open vCard file", (GtkWindow *)mw, GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+	
+	gtk_widget_show(dialog);
+	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+		LinphoneCore *lc = linphone_gtk_get_core();
+		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		LinphoneFriendList *list = linphone_core_get_default_friend_list(lc);
+		linphone_friend_list_import_friends_from_vcard4_file(list, filename);
+		g_free(filename);
+		linphone_gtk_show_friends();
+	}
+	gtk_widget_destroy(dialog);
+}
+
+void linphone_gtk_export_contacts(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *dialog = gtk_file_chooser_dialog_new("Save vCards as", (GtkWindow *)mw, GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, NULL);
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+	
+	gtk_widget_show(dialog);
+	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+		LinphoneCore *lc = linphone_gtk_get_core();
+		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		LinphoneFriendList *list = linphone_core_get_default_friend_list(lc);
+		linphone_friend_list_export_friends_as_vcard4_file(list, filename);
+		g_free(filename);
+	}
+	gtk_widget_destroy(dialog);
+}
+
 gboolean linphone_gtk_keypad_destroyed_handler(void) {
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *show_keypad_item = linphone_gtk_get_widget(mw, "show_keypad_menu_item");
@@ -2065,7 +2099,7 @@ int main(int argc, char *argv[]){
 	const char *icon_name=LINPHONE_ICON_NAME;
 	const char *app_name="Linphone";
 	LpConfig *factory;
-	char *chat_messages_db_file, *call_logs_db_file;
+	char *chat_messages_db_file, *call_logs_db_file, *friends_db_file;
 	GError *error=NULL;
 	const char *tmp;
 
@@ -2204,12 +2238,17 @@ core_start:
 
 	chat_messages_db_file=linphone_gtk_message_storage_get_db_file(NULL);
 	call_logs_db_file = linphone_gtk_call_logs_storage_get_db_file(NULL);
-	linphone_gtk_init_liblinphone(config_file, factory_config_file, chat_messages_db_file, call_logs_db_file);
+	friends_db_file = linphone_gtk_friends_storage_get_db_file(NULL);
+	linphone_gtk_init_liblinphone(config_file, factory_config_file, chat_messages_db_file, call_logs_db_file, friends_db_file);
 	g_free(chat_messages_db_file);
 	g_free(call_logs_db_file);
+	g_free(friends_db_file);
 
 #ifdef CALL_LOGS_STORAGE_ENABLED
 	linphone_gtk_call_log_update(the_ui);
+#endif
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	linphone_gtk_show_friends();
 #endif
 
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/

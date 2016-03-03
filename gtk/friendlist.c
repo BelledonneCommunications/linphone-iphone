@@ -440,7 +440,7 @@ static void icon_press_handler(GtkEntry *entry){
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),uri);
 		ms_free(uri);
 		if (lf==NULL)
-			lf=linphone_friend_new();
+			lf=linphone_core_create_friend(linphone_gtk_get_core());
 		if (lf!=NULL){
 			linphone_friend_set_address(lf,addr);
 			linphone_gtk_show_contact(lf, w);
@@ -687,14 +687,14 @@ void linphone_gtk_show_friends(void){
 		LinphoneFriend *lf=(LinphoneFriend*)itf->data;
 		const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
 		char *uri=linphone_address_as_string(f_uri);
-		const char *name=linphone_address_get_display_name(f_uri);
+		const char *name=linphone_friend_get_name(lf);
 		const char *display=name;
 		char *escaped=NULL;
 		int nbmsg=0;
 
 		//BuddyInfo *bi;
 		gboolean send_subscribe=linphone_friend_get_send_subscribe(lf);
-		if (name==NULL || name[0]=='\0') {
+		if (display==NULL || display[0]=='\0') {
 			display=linphone_address_get_username(f_uri);
 		}
 		gtk_list_store_append(store,&iter);
@@ -716,19 +716,21 @@ void linphone_gtk_show_friends(void){
 }
 
 void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *parent){
-	GtkWidget *w=linphone_gtk_create_window("contact", parent);
+	GtkWidget *w = linphone_gtk_create_window("contact", parent);
 	char *uri;
-	const char *name;
-	const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
+	const char *name = linphone_friend_get_name(lf);
+	const LinphoneAddress *f_uri = linphone_friend_get_address(lf);
+	
 	uri=linphone_address_as_string_uri_only(f_uri);
-	name=linphone_address_get_display_name(f_uri);
 	if (uri) {
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")),uri);
 		ms_free(uri);
 	}
+	
 	if (name){
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"name")),name);
 	}
+	
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"show_presence")),
 					linphone_friend_get_send_subscribe(lf));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"allow_presence")),
@@ -750,7 +752,7 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	const gchar *name,*uri;
 	LinphoneAddress* friend_address;
 	if (lf==NULL){
-		lf=linphone_friend_new();
+		lf=linphone_core_create_friend(linphone_gtk_get_core());
 		if (linphone_gtk_get_ui_config_int("use_subscribe_notify",1)==1){
 			show_presence=FALSE;
 			allow_presence=FALSE;
@@ -772,9 +774,8 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 		return ;
 	}
 
-	linphone_address_set_display_name(friend_address,name);
-	linphone_friend_set_name(lf,name);
 	linphone_friend_set_address(lf,friend_address);
+	linphone_friend_set_name(lf,name);
 	linphone_friend_send_subscribe(lf,show_presence);
 	linphone_friend_set_inc_subscribe_policy(lf,allow_presence==TRUE ? LinphoneSPAccept : LinphoneSPDeny);
 	if (linphone_friend_in_list(lf)) {
@@ -983,3 +984,30 @@ gboolean linphone_gtk_friend_list_motion_event_handler(GtkTreeView *friendlist, 
 	return FALSE;
 }
 
+#define CONFIG_FILE ".linphone-friends.db"
+
+char *linphone_gtk_friends_storage_get_db_file(const char *filename){
+	const int path_max=1024;
+	char *db_file=NULL;
+
+	db_file=(char *)g_malloc(path_max*sizeof(char));
+	if (filename==NULL) filename=CONFIG_FILE;
+	/*try accessing a local file first if exists*/
+	if (access(CONFIG_FILE,F_OK)==0){
+		snprintf(db_file,path_max,"%s",filename);
+	}else{
+#ifdef WIN32
+		const char *appdata=getenv("APPDATA");
+		if (appdata){
+			snprintf(db_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
+			CreateDirectory(db_file,NULL);
+			snprintf(db_file,path_max,"%s\\%s\\%s",appdata,LINPHONE_CONFIG_DIR,filename);
+		}
+#else
+		const char *home=getenv("HOME");
+		if (home==NULL) home=".";
+		snprintf(db_file,path_max,"%s/%s",home,filename);
+#endif
+	}
+	return db_file;
+}

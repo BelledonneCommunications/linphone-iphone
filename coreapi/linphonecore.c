@@ -1373,12 +1373,14 @@ static void video_config_read(LinphoneCore *lc){
 
 static void ui_config_read(LinphoneCore *lc)
 {
-	LinphoneFriend *lf;
+#ifndef FRIENDS_SQL_STORAGE_ENABLED
+	LinphoneFriend *lf = NULL;
 	int i;
-	for (i=0;(lf=linphone_friend_new_from_config_file(lc,i))!=NULL;i++){
-		linphone_core_add_friend(lc,lf);
+	for (i = 0; (lf = linphone_friend_new_from_config_file(lc, i)) != NULL; i++) {
+		linphone_core_add_friend(lc, lf);
 		linphone_friend_unref(lf);
 	}
+#endif
 
 	call_logs_read_from_config_file(lc);
 }
@@ -1684,7 +1686,7 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 
 static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
 	if (strcmp(notified_event, "Presence") == 0) {
-		linphone_friend_list_notify_presence_received(lc->friendlist, lev, body);
+		linphone_friend_list_notify_presence_received(linphone_core_get_default_friend_list(lc), lev, body);
 	}
 }
 
@@ -1704,7 +1706,9 @@ static void linphone_core_init(LinphoneCore * lc, const LinphoneCoreVTable *vtab
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-	linphone_core_set_friend_list(lc, NULL);
+	
+	linphone_core_add_friend_list(lc, NULL);
+	
 	linphone_task_list_init(&lc->hooks);
 
 	internal_vtable->notify_received = linphone_core_internal_notify_received;
@@ -1949,24 +1953,59 @@ bool_t linphone_core_generic_confort_noise_enabled(const LinphoneCore *lc){
 	return lp_config_get_int(lc->config, "misc", "use_cn", FALSE);
 }
 
-const MSList * linphone_core_get_friend_list(const LinphoneCore *lc)
-{
-	return lc->friendlist->friends;
+const MSList* linphone_core_get_friend_list(const LinphoneCore *lc) {
+	MSList *lists = lc->friends_lists;
+	if (lists) {
+		LinphoneFriendList *list = (LinphoneFriendList *)lists->data;
+		if (list) {
+			return list->friends;
+		}
+	}
+	return NULL;
 }
 
-void linphone_core_set_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
-	if (lc->friendlist != NULL) {
-		linphone_friend_list_unref(lc->friendlist);
-		lc->friendlist = NULL;
+const MSList* linphone_core_get_friends_lists(const LinphoneCore *lc) {
+	return lc->friends_lists;
+}
+
+LinphoneFriendList* linphone_core_get_default_friend_list(const LinphoneCore *lc) {
+	if (lc && lc->friends_lists) {
+		return (LinphoneFriendList *)lc->friends_lists->data;
 	}
-	if (list != NULL) {
-		lc->friendlist = linphone_friend_list_ref(list);
+	return NULL;
+}
+
+void linphone_core_remove_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
+	MSList *elem = ms_list_find(lc->friends_lists, list);
+	if (elem == NULL) return;
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	linphone_core_remove_friends_list_from_db(lc, list);
+#endif
+	linphone_core_notify_friend_list_removed(lc, list);
+	list->lc = NULL;
+	linphone_friend_list_unref(list);
+	lc->friends_lists = ms_list_remove_link(lc->friends_lists, elem);
+}
+
+void linphone_core_add_friend_list(LinphoneCore *lc, LinphoneFriendList *list) {
+	if (list) {
+		if (!list->lc) {
+			list->lc = lc;
+		}
+		lc->friends_lists = ms_list_append(lc->friends_lists, linphone_friend_list_ref(list));
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+		linphone_core_store_friends_list_in_db(lc, list);
+#endif
+		linphone_core_notify_friend_list_created(lc, list);
 	} else {
-		const char *rls_uri = NULL;
-		lc->friendlist = linphone_core_create_friend_list(lc);
-		rls_uri = lp_config_get_string(lc->config, "sip", "rls_uri", NULL);
-		if (rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0))
-			linphone_friend_list_set_rls_uri(lc->friendlist, rls_uri);
+		const char *rls_uri = lp_config_get_string(lc->config, "sip", "rls_uri", NULL);
+		list = linphone_core_create_friend_list(lc);
+		linphone_friend_list_set_display_name(list, "_default");
+		if (rls_uri && lp_config_get_int(lc->config, "sip", "use_rls_presence", 0)) {
+			linphone_friend_list_set_rls_uri(list, rls_uri);
+		}
+		lc->friends_lists = ms_list_append(lc->friends_lists, linphone_friend_list_ref(list));
+		linphone_friend_list_unref(list);
 	}
 }
 
@@ -2758,8 +2797,15 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 
 	if (one_second_elapsed) {
+		MSList *elem = NULL;
 		if (lp_config_needs_commit(lc->config)) {
 			lp_config_sync(lc->config);
+		}
+		for (elem = lc->friends_lists; elem != NULL; elem = ms_list_next(elem)) {
+			LinphoneFriendList *list = (LinphoneFriendList *)elem->data;
+			if (list->dirty_friends_to_update) {
+				linphone_friend_list_update_dirty_friends(list);
+			}
 		}
 	}
 
@@ -6400,9 +6446,8 @@ static void codecs_config_uninit(LinphoneCore *lc)
 void ui_config_uninit(LinphoneCore* lc)
 {
 	ms_message("Destroying friends.");
-	_linphone_friend_list_release(lc->friendlist);
-	lc->friendlist = NULL;
-	if (lc->subscribers){
+	lc->friends_lists = ms_list_free_with_data(lc->friends_lists, (void (*)(void*))_linphone_friend_list_release);
+	if (lc->subscribers) {
 		lc->subscribers = ms_list_free_with_data(lc->subscribers, (void (*)(void *))_linphone_friend_release);
 	}
 	if (lc->presence_model) {
@@ -6430,18 +6475,22 @@ LpConfig * linphone_core_create_lp_config(LinphoneCore *lc, const char *filename
 
 static void linphone_core_uninit(LinphoneCore *lc)
 {
+	MSList *elem = NULL;
 	linphone_task_list_free(&lc->hooks);
 	lc->video_conf.show_local = FALSE;
 
-	while(lc->calls)
-	{
+	while(lc->calls) {
 		LinphoneCall *the_call = lc->calls->data;
 		linphone_core_terminate_call(lc,the_call);
 		linphone_core_iterate(lc);
 		ms_usleep(50000);
 	}
 
-	linphone_friend_list_close_subscriptions(lc->friendlist);
+	for (elem = lc->friends_lists; elem != NULL; elem = ms_list_next(elem)) {
+		LinphoneFriendList *list = (LinphoneFriendList *)elem->data;
+		linphone_friend_list_close_subscriptions(list);
+	}
+	
 	lc->chatrooms = ms_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
 
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
@@ -6497,14 +6546,22 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if (lc->chat_db_file){
 		ms_free(lc->chat_db_file);
 	}
+	if (lc->logs_db_file) {
+		ms_free(lc->logs_db_file);
+	}
+	if (lc->friends_db_file) {
+		ms_free(lc->friends_db_file);
+	}
 	if (lc->ringtoneplayer) {
 		linphone_ringtoneplayer_destroy(lc->ringtoneplayer);
 	}
+	
 	linphone_core_free_payload_types(lc);
 	if (lc->supported_formats) ms_free(lc->supported_formats);
 	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
-
+	linphone_core_friends_storage_close(lc);
+	
 	linphone_core_set_state(lc,LinphoneGlobalOff,"Off");
 	linphone_core_deactivate_log_serialization_if_needed();
 	ms_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);

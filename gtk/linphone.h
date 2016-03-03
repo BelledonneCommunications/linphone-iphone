@@ -116,6 +116,7 @@ LINPHONE_PUBLIC GtkWidget *linphone_gtk_make_tab_header(const gchar *label, cons
 
 char *linphone_gtk_message_storage_get_db_file(const char *filename);
 char *linphone_gtk_call_logs_storage_get_db_file(const char *filename);
+char *linphone_gtk_friends_storage_get_db_file(const char* filename);
 LINPHONE_PUBLIC void linphone_gtk_close_assistant(void);
 
 LINPHONE_PUBLIC LinphoneCore *linphone_gtk_get_core(void);

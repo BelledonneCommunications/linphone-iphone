@@ -45,6 +45,7 @@ LOCAL_SRC_FILES := \
 	callbacks.c \
 	call_log.c \
 	call_params.c \
+	carddav.c \
 	chat.c \
 	chat_file_transfer.c \
 	conference.cc \
@@ -79,7 +80,6 @@ LOCAL_SRC_FILES := \
 	xmlrpc.c \
 	vtables.c \
 	ringtoneplayer.c
-
 
 ifndef LIBLINPHONE_VERSION
 LIBLINPHONE_VERSION = "Devel"
@@ -129,7 +129,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../gen \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
 	$(LOCAL_PATH)/../../externals/build/libxml2 \
-	$(LOCAL_PATH)/../../externals/polarssl/include
+	$(LOCAL_PATH)/../../externals/polarssl/include \
 
 LOCAL_LDLIBS += -llog -ldl -lz
 
@@ -262,6 +262,16 @@ ifeq ($(BUILD_SRTP), 1)
 	LOCAL_C_INCLUDES += $(SRTP_C_INCLUDE)
 endif
 
+ifeq ($(BUILD_VCARD),1)
+	LOCAL_C_INCLUDES += $(VCARD_C_INCLUDE)
+endif
+
+ifeq ($(BUILD_ILBC), 1)
+ifneq ($(TARGET_ARCH_ABI),armeabi)
+LOCAL_CFLAGS += -DHAVE_ILBC=1
+LOCAL_STATIC_LIBRARIES += libmsilbc
+endif
+endif
 
 LOCAL_C_INCLUDES += $(LIBLINPHONE_EXTENDED_C_INCLUDES)
 LOCAL_WHOLE_STATIC_LIBRARIES += $(LIBLINPHONE_EXTENDED_STATIC_LIBS)
@@ -277,8 +287,16 @@ ifeq ($(BUILD_SRTP),1)
 	LOCAL_STATIC_LIBRARIES += libsrtp
 endif
 
+ifeq ($(BUILD_VCARD),1)
+	LOCAL_CFLAGS += -DVCARD_ENABLED
+	LOCAL_SRC_FILES += vcard.cc
+	LOCAL_STATIC_LIBRARIES += libbelr libbelcard
+else
+	LOCAL_SRC_FILES += vcard_stubs.c
+endif
+
 ifeq ($(BUILD_SQLITE),1)
-LOCAL_CFLAGS += -DMSG_STORAGE_ENABLED -DCALL_LOGS_STORAGE_ENABLED
+LOCAL_CFLAGS += -DMSG_STORAGE_ENABLED -DCALL_LOGS_STORAGE_ENABLED -DFRIENDS_SQL_STORAGE_ENABLED
 LOCAL_STATIC_LIBRARIES += liblinsqlite
 LOCAL_C_INCLUDES += \
         $(LOCAL_PATH)/../../externals/sqlite3/
@@ -300,7 +318,7 @@ LOCAL_MODULE_FILENAME := liblinphone-$(TARGET_ARCH_ABI)
 
 include $(BUILD_SHARED_LIBRARY)
 
-LOCAL_CPPFLAGS=$(LOCAL_CFLAGS)
+LOCAL_CPPFLAGS += $(LOCAL_CFLAGS)
 LOCAL_CFLAGS += -Wdeclaration-after-statement
 LOCAL_LDFLAGS := -Wl,-soname,$(LOCAL_MODULE_FILENAME).so
 

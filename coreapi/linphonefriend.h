@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINPHONEFRIEND_H_
 
 #include "linphonepresence.h"
+#include "vcard.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -354,13 +355,15 @@ LINPHONE_PUBLIC void linphone_core_interpret_friend_uri(LinphoneCore *lc, const 
  * Add a friend to the current buddy list, if \link linphone_friend_enable_subscribes() subscription attribute \endlink is set, a SIP SUBSCRIBE message is sent.
  * @param lc #LinphoneCore object
  * @param fr #LinphoneFriend to add
+ * @deprecated use linphone_friend_list_add_friend() instead.
  */
 LINPHONE_PUBLIC	void linphone_core_add_friend(LinphoneCore *lc, LinphoneFriend *fr);
 
 /**
- * remove a friend from the buddy list
+ * Removes a friend from the buddy list
  * @param lc #LinphoneCore object
- * @param fr #LinphoneFriend to add
+ * @param fr #LinphoneFriend to remove
+ * @deprecated use linphone_friend_list_remove_friend() instead.
  */
 LINPHONE_PUBLIC void linphone_core_remove_friend(LinphoneCore *lc, LinphoneFriend *fr);
 
@@ -375,6 +378,7 @@ LINPHONE_PUBLIC void linphone_core_reject_subscriber(LinphoneCore *lc, LinphoneF
  * Get Buddy list of LinphoneFriend
  * @param[in] lc #LinphoneCore object
  * @return \mslist{LinphoneFriend}
+ * @deprecated use linphone_core_get_friends_lists() or linphone_friend_list_get_friends() instead.
  */
 LINPHONE_PUBLIC	const MSList * linphone_core_get_friend_list(const LinphoneCore *lc);
 
@@ -419,14 +423,60 @@ LINPHONE_PUBLIC LinphoneFriend * linphone_friend_ref(LinphoneFriend *lf);
 
 /**
  * Release a reference to the linphone friend.
- * @param[in] lf LinohoneFriend object
+ * @param[in] lf LinphoneFriend object
 **/
 LINPHONE_PUBLIC void linphone_friend_unref(LinphoneFriend *lf);
 
 /**
  * Returns the LinphoneCore object managing this friend, if any.
+ * @param[in] fr LinphoneFriend object
  */
 LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr);
+
+/**
+ * Returns the vCard object associated to this friend, if any
+ * @param[in] fr LinphoneFriend object
+ */
+LINPHONE_PUBLIC LinphoneVCard* linphone_friend_get_vcard(LinphoneFriend *fr);
+
+/**
+ * Binds a vCard object to a friend
+ * @param[in] fr LinphoneFriend object
+ * @param[in] vcard The vCard object to bind
+ */
+LINPHONE_PUBLIC void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard);
+
+/**
+ * Creates a vCard object associated to this friend if there isn't one yet and if the full name is available, either by the parameter or the one in the friend's SIP URI
+ * @param[in] fr LinphoneFriend object
+ * @param[in] name The full name of the friend or NULL to use the one from the friend's SIP URI
+ * @return true if the vCard has been created, false if it wasn't possible (for exemple if name and the friend's SIP URI are null or if the friend's SIP URI doesn't have a display name), or if there is already one vcard
+ */
+LINPHONE_PUBLIC bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name);
+
+/**
+ * Contructor same as linphone_friend_new() + linphone_friend_set_address()
+ * @param vcard a vCard object
+ * @return a new #LinphoneFriend with \link linphone_friend_get_vcard() vCard initialized \endlink
+ */
+LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard);
+
+/**
+ * Sets the database filename where friends will be stored.
+ * If the file does not exist, it will be created.
+ * @ingroup initializing
+ * @param lc the linphone core
+ * @param path filesystem path
+**/
+LINPHONE_PUBLIC void linphone_core_set_friends_database_path(LinphoneCore *lc, const char *path);
+
+/**
+ * Migrates the friends from the linphonerc to the database if not done yet
+ * @ingroup initializing
+ * @param lc the linphone core
+**/
+LINPHONE_PUBLIC void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc);
+
 /**
  * @}
  */

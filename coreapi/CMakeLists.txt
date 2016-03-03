@@ -35,6 +35,7 @@ set(LINPHONE_HEADER_FILES
 	buffer.h
 	call_log.h
 	call_params.h
+	carddav.h
 	conference.h
 	content.h
 	event.h
@@ -51,6 +52,7 @@ set(LINPHONE_HEADER_FILES
 	sipsetup.h
 	xml2lpc.h
 	xmlrpc.h
+	vcard.h
 )
 
 set(LINPHONE_SOURCE_FILES_C
@@ -74,6 +76,7 @@ set(LINPHONE_SOURCE_FILES_C
 	callbacks.c
 	call_log.c
 	call_params.c
+	carddav.c
 	chat.c
 	chat_file_transfer.c
 	contactprovider.c
@@ -144,10 +147,6 @@ add_definitions(
 	-DLIBLINPHONE_EXPORTS
 )
 
-apply_compile_flags(LINPHONE_SOURCE_FILES_C "CPP" "C")
-apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
-apply_compile_flags(LINPHONE_SOURCE_FILES_OBJC "CPP" "OBJC")
-
 set(LIBS
 	${BCTOOLBOX_CORE_LIBRARIES}
 	${BELLESIP_LIBRARIES}
@@ -175,6 +174,17 @@ endif()
 if(INTL_FOUND)
 	list(APPEND LIBS ${INTL_LIBRARIES})
 endif()
+if(BELCARD_FOUND)
+	list(APPEND LIBS ${BELCARD_LIBRARIES})
+	list(APPEND LINPHONE_SOURCE_FILES_CXX vcard.cc)
+	list(APPEND STRICT_OPTIONS_CXX "-std=c++11")
+else()
+	list(APPEND LINPHONE_SOURCE_FILES_C vcard_stubs.c)
+endif()
+
+apply_compile_flags(LINPHONE_SOURCE_FILES_C "CPP" "C")
+apply_compile_flags(LINPHONE_SOURCE_FILES_CXX "CPP" "CXX")
+apply_compile_flags(LINPHONE_SOURCE_FILES_OBJC "CPP" "OBJC")
 
 if(ENABLE_STATIC)
 	add_library(linphone-static STATIC ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})

@@ -118,4 +118,16 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	public String getRefKey(){
 		return getRefKey(nativePtr);
 	}
+	
+	private native void setName(long nativePtr, String name);
+	@Override
+	public void setName(String name) {
+		setName(nativePtr, name);
+	}
+	
+	private native String getName(long nativePtr);
+	@Override
+	public String getName() {
+		return getName(nativePtr);
+	}
 }
