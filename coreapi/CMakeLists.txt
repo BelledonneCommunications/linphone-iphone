@@ -204,7 +204,7 @@ if(ENABLE_SHARED)
 
 	if(BELCARD_FOUND)
 		if(APPLE)
-        	        set_target_properties(linphone PROPERTIES LINKER_FLAGS "-stdlib=libc++")
+        	        set_target_properties(linphone PROPERTIES LINK_FLAGS "-stdlib=libc++")
         	endif()
 	endif()
 
