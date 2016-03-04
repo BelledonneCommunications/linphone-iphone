@@ -6003,6 +6003,47 @@ static void call_with_zrtp_configured_calling_base(LinphoneCoreManager *marie, L
 	end_call(pauline, marie);
 
 }
+
+/*
+ * this test checks the 'dont_default_to_stun_candidates' mode, where the c= line is left to host 
+ * ip instead of stun candidate when ice is enabled*/
+static void call_with_ice_with_default_candidate_not_stun(void){
+	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	char localip[LINPHONE_IPADDR_SIZE];
+	bool_t call_ok;
+	
+	lp_config_set_int(marie->lc->config, "net", "dont_default_to_stun_candidates", 1);
+	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
+	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+	linphone_core_get_local_ip(marie->lc, AF_INET, NULL, localip);
+	call_ok = call(marie, pauline);
+	if (call_ok){
+		check_ice(marie, pauline, LinphoneIceStateHostConnection);
+		BC_ASSERT_STRING_EQUAL(marie->lc->current_call->localdesc->addr, localip);
+		BC_ASSERT_STRING_EQUAL(pauline->lc->current_call->resultdesc->addr, localip);
+		BC_ASSERT_STRING_EQUAL(marie->lc->current_call->localdesc->streams[0].rtp_addr, localip);
+		BC_ASSERT_STRING_EQUAL(pauline->lc->current_call->resultdesc->streams[0].rtp_addr, "");
+	}
+	end_call(marie, pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void call_with_ice_without_stun(void){
+#if GHISLAIN_CAN_MAKE_THIS_TEST_TO_WORK
+	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	
+	linphone_core_set_stun_server(marie->lc, NULL);
+	linphone_core_set_stun_server(pauline->lc, NULL);
+	_call_with_ice_base(marie, pauline, TRUE, TRUE, TRUE, FALSE);
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+#endif
+}
+
 static void call_with_zrtp_configured_calling_side(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -6198,6 +6239,8 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with rtcp-mux not accepted", call_with_rtcp_mux_not_accepted),
 	TEST_ONE_TAG("Call with ICE and rtcp-mux", call_with_ice_and_rtcp_mux, "ICE"),
 	TEST_ONE_TAG("Call with ICE and rtcp-mux without ICE re-invite", call_with_ice_and_rtcp_mux_without_reinvite, "ICE"),
+	TEST_ONE_TAG("Call with ICE with default candidate not stun", call_with_ice_with_default_candidate_not_stun, "ICE"),
+	TEST_ONE_TAG("Call with ICE without stun server", call_with_ice_without_stun, "ICE"),
 	TEST_NO_TAG("call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side)
 };
 

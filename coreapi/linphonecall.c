@@ -585,7 +585,7 @@ void linphone_call_increment_local_media_description(LinphoneCall *call){
 void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call){
 	LinphoneCore *lc = call->core;
 	if (call->ice_session != NULL) {
-		/*set this to FALSE once flexisip are updated*/
+		/*set this to FALSE once flexisip are updated everywhere, let's say in December 2016.*/
 		bool_t use_nortpproxy = lp_config_get_int(lc->config, "sip", "ice_uses_nortpproxy", TRUE);
 		_update_local_media_description_from_ice(call->localdesc, call->ice_session, use_nortpproxy);
 		linphone_core_update_ice_state_in_call_stats(call);
@@ -1091,6 +1091,21 @@ void linphone_call_fill_media_multicast_addr(LinphoneCall *call) {
 		call->media_ports[call->main_video_stream_index].multicast_ip[0]='\0';
 }
 
+static void linphone_call_create_ice_session(LinphoneCall *call, IceRole role){
+	call->ice_session = ice_session_new();
+	/*for backward compatibility purposes, shall be enabled by default in futur*/
+	ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(call->core->config,"net","ice_session_enable_message_integrity_check",1));
+	if (lp_config_get_int(call->core->config, "net", "dont_default_to_stun_candidates", 0)){
+		IceCandidateType types[ICT_CandidateTypeMax];
+		types[0] = ICT_RelayedCandidate;
+		types[1] = ICT_HostCandidate;
+		types[2] = ICT_CandidateInvalid;
+		ice_session_set_default_candidates_types(call->ice_session, types);
+	}
+	
+	ice_session_set_role(call->ice_session, role);
+}
+
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg){
 	LinphoneCall *call = belle_sip_object_new(LinphoneCall);
 
@@ -1106,10 +1121,7 @@ LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, LinphoneAddr
 	linphone_call_fill_media_multicast_addr(call);
 
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) {
-		call->ice_session = ice_session_new();
-		/*for backward compatibility purposes, shall be enabled by default in futur*/
-		ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",1));
-		ice_session_set_role(call->ice_session, IR_Controlling);
+		linphone_call_create_ice_session(call, IR_Controlling);
 	}
 	if (linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseStun) {
 		call->ping_time=linphone_core_run_stun_tests(call->core,call);
@@ -1338,10 +1350,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	/*create the ice session now if ICE is required*/
 	if (fpol==LinphonePolicyUseIce){
 		if (md){
-			call->ice_session = ice_session_new();
-			/*for backward compatibility purposes, shall be enabled by default in futur*/
-			ice_session_enable_message_integrity_check(call->ice_session,lp_config_get_int(lc->config,"net","ice_session_enable_message_integrity_check",1));
-			ice_session_set_role(call->ice_session, IR_Controlled);
+			linphone_call_create_ice_session(call, IR_Controlled);
 		}else{
 			fpol=LinphonePolicyNoFirewall;
 			ms_warning("ICE not supported for incoming INVITE without SDP.");
@@ -1352,7 +1361,7 @@ LinphoneCall * linphone_call_new_incoming(LinphoneCore *lc, LinphoneAddress *fro
 	linphone_call_init_media_streams(call);
 	switch (fpol) {
 		case LinphonePolicyUseIce:
-			linphone_call_prepare_ice(call,TRUE);
+			call->defer_notify_incoming = linphone_call_prepare_ice(call,TRUE) == 1;
 			break;
 		case LinphonePolicyUseStun:
 			call->ping_time=linphone_core_run_stun_tests(call->core,call);
@@ -2225,6 +2234,7 @@ static void _linphone_call_prepare_ice_for_stream(LinphoneCall *call, int stream
 
 int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 	SalMediaDescription *remote = NULL;
+	int err;
 	bool_t has_video=FALSE;
 
 	if ((linphone_core_get_firewall_policy(call->core) == LinphonePolicyUseIce) && (call->ice_session != NULL)){
@@ -2251,13 +2261,12 @@ int linphone_call_prepare_ice(LinphoneCall *call, bool_t incoming_offer){
 				text_stream_prepare_text(call->textstream);
 			}
 
-			if (linphone_core_gather_ice_candidates(call->core,call)<0) {
+			if ((err=linphone_core_gather_ice_candidates(call->core,call))<0) {
 				/* Ice candidates gathering failed, proceed with the call anyway. */
 				linphone_call_delete_ice_session(call);
 				linphone_call_stop_media_streams_for_ice_gathering(call);
-				return -1;
 			}
-			return 1;/*gathering in progress, wait*/
+			return err;/* 1= gathering in progress, wait; 0=proceed*/
 		}
 	}
 	return 0;
@@ -4282,12 +4291,10 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 		linphone_call_params_unref(params);
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
 
-		if (evd->info.ice_processing_successful==TRUE) {
-			linphone_call_on_ice_gathering_finished(call);
-		} else {
-			ms_warning("No STUN answer from [%s], disabling ICE",linphone_core_get_stun_server(call->core));
-			linphone_call_delete_ice_session(call);
+		if (! evd->info.ice_processing_successful==TRUE) {
+			ms_warning("No STUN answer from [%s], continuing without STUN",linphone_core_get_stun_server(call->core));
 		}
+		linphone_call_on_ice_gathering_finished(call);
 		switch (call->state) {
 			case LinphoneCallUpdating:
 				linphone_core_start_update_call(call->core, call);

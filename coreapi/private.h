@@ -340,6 +340,7 @@ struct _LinphoneCall{
 	char *dtls_certificate_fingerprint; /**> This fingerprint is computed during stream init and is stored in call to be used when making local media description */
 	char *onhold_file; /*set if a on-hold file is to be played*/
 	LinphoneChatRoom *chat_room;
+	LinphoneConference *conf_ref; /**> Point on the associated conference if this call is part of a conference. NULL instead. */
 	bool_t refer_pending;
 	bool_t expect_media_in_ack;
 	bool_t audio_muted;
@@ -357,8 +358,7 @@ struct _LinphoneCall{
 
 	bool_t paused_by_app;
 	bool_t broken; /*set to TRUE when the call is in broken state due to network disconnection or transport */
-
-	LinphoneConference *conf_ref; /**> Point on the associated conference if this call is part of a conference. NULL instead. */
+	bool_t defer_notify_incoming;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneCall);

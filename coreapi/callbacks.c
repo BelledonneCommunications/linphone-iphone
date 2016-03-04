@@ -336,7 +336,7 @@ static void call_received(SalOp *h){
 
 	call->bg_task_id=sal_begin_background_task("liblinphone call notification", NULL, NULL);
 
-	if ((linphone_core_get_firewall_policy(lc) == LinphonePolicyUseIce) && (call->ice_session != NULL)) {
+	if (call->defer_notify_incoming) {
 		/* Defer ringing until the end of the ICE candidates gathering process. */
 		ms_message("Defer ringing to gather ICE candidates");
 		return;
