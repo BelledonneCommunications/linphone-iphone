@@ -622,6 +622,10 @@
 		63CFEE131B9EDF65007EA5BD /* libvo-amrwbenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CFEDE31B9EDD36007EA5BD /* libvo-amrwbenc.a */; };
 		63D11C531C3D501200E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63D11C551C3D50A100E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
+		63DC36AB1C89E83100636979 /* libbelcard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36A91C89E83100636979 /* libbelcard.a */; };
+		63DC36AC1C89E83100636979 /* libbelr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36AA1C89E83100636979 /* libbelr.a */; };
+		63DC36B11C89E84000636979 /* libbelcard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36A91C89E83100636979 /* libbelcard.a */; };
+		63DC36B21C89E84000636979 /* libbelr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36AA1C89E83100636979 /* libbelr.a */; };
 		63DFE04B1C40161700DA5E87 /* notes_of_the_optimistic.caf in Resources */ = {isa = PBXBuildFile; fileRef = 63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */; };
 		63E27A321C4FECD000D332AE /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63E27A311C4FECD000D332AE /* LaunchScreen.xib */; };
 		63E27A481C50EA7A00D332AE /* libmatroska2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E27A471C50EA7A00D332AE /* libmatroska2.a */; };
@@ -1508,6 +1512,8 @@
 		63CFEDE41B9EDD36007EA5BD /* libbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbcg729.a; path = "liblinphone-sdk/apple-darwin/lib/libbcg729.a"; sourceTree = "<group>"; };
 		63D11C521C3D501200E8FCEE /* Log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Log.m; path = Utils/Log.m; sourceTree = "<group>"; };
 		63D11C541C3D503A00E8FCEE /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
+		63DC36A91C89E83100636979 /* libbelcard.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbelcard.a; path = "liblinphone-sdk/apple-darwin/lib/libbelcard.a"; sourceTree = "<group>"; };
+		63DC36AA1C89E83100636979 /* libbelr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbelr.a; path = "liblinphone-sdk/apple-darwin/lib/libbelr.a"; sourceTree = "<group>"; };
 		63DFE0451C40161700DA5E87 /* notes_of_the_optimistic.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = notes_of_the_optimistic.caf; sourceTree = "<group>"; };
 		63E27A311C4FECD000D332AE /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		63E27A471C50EA7A00D332AE /* libmatroska2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmatroska2.a; path = "liblinphone-sdk/apple-darwin/lib/libmatroska2.a"; sourceTree = "<group>"; };
@@ -1739,6 +1745,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63DC36AB1C89E83100636979 /* libbelcard.a in Frameworks */,
+				63DC36AC1C89E83100636979 /* libbelr.a in Frameworks */,
 				63177FBF1C86E68C00ADE58D /* CoreVideo.framework in Frameworks */,
 				63CE58401C85EBF400304800 /* VideoToolbox.framework in Frameworks */,
 				6375A1FF1C760E17007A24E2 /* libbctoolbox.a in Frameworks */,
@@ -1819,6 +1827,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63DC36B11C89E84000636979 /* libbelcard.a in Frameworks */,
+				63DC36B21C89E84000636979 /* libbelr.a in Frameworks */,
 				63F024B91C88792D00EACF1C /* libbctoolbox-tester.a in Frameworks */,
 				63CE58451C85EC1000304800 /* VideoToolbox.framework in Frameworks */,
 				6375A2041C761CFC007A24E2 /* libbctoolbox.a in Frameworks */,
@@ -2126,6 +2136,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63DC36A91C89E83100636979 /* libbelcard.a */,
+				63DC36AA1C89E83100636979 /* libbelr.a */,
 				63F024B81C88792D00EACF1C /* libbctoolbox-tester.a */,
 				63CE583F1C85EBF400304800 /* VideoToolbox.framework */,
 				6375A1FE1C760E17007A24E2 /* libbctoolbox.a */,
