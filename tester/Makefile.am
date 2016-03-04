@@ -82,10 +82,8 @@ EXTRA_DIST = tester_hosts\
 			$(SIPP_FILES)\
 			$(CERTIFICATE_FILES)\
 			$(RCFILES)\
-			$(IMAGE_FILES)
-
-
-
+			$(IMAGE_FILES)\
+			$(COMMON_FILE)
 
 if ENABLE_TESTS
 
