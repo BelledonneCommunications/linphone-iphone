@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "belcard/belcard.hpp"
 #include "belcard/belcard_parser.hpp"
 #include "sal/sal.h"
-#include <polarssl/md5.h>
+#include <bctoolbox/crypto.h>
 
 struct _LinphoneVCard {
 	shared_ptr<belcard::BelCard> belCard;
@@ -234,7 +234,7 @@ void linphone_vcard_compute_md5_hash(LinphoneVCard *vCard) {
 		return;
 	}
 	text = linphone_vcard_as_vcard4_string(vCard);
-	md5((unsigned char *)text, strlen(text), digest);
+	bctoolbox_md5((unsigned char *)text, strlen(text), digest);
 	vCard->md5 = (unsigned char *)ms_malloc(sizeof(digest));
 	memcpy(vCard->md5, digest, sizeof(digest));
 }
