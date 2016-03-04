@@ -31,9 +31,9 @@ set(_BELCARD_ROOT_PATHS
 )
 
 find_path(BELCARD_INCLUDE_DIRS
-	NAMES belcard.hpp
+	NAMES belcard/belcard.hpp
 	HINTS _BELCARD_ROOT_PATHS
-	PATH_SUFFIXES include/belcard
+	PATH_SUFFIXES include
 )
 
 if(BELCARD_INCLUDE_DIRS)
