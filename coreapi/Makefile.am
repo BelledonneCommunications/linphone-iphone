@@ -124,7 +124,6 @@ endif
 
 if BUILD_VCARD
 liblinphone_la_SOURCES+=vcard.cc
-liblinphone_la_CXXFLAGS=-std=c++11
 else
 liblinphone_la_SOURCES+=vcard_stubs.c
 endif
@@ -191,6 +190,9 @@ COMMON_CFLAGS+= -DUSE_BELLESIP
 
 AM_CFLAGS=$(COMMON_CFLAGS) $(STRICT_OPTIONS_CC)
 AM_CXXFLAGS=$(COMMON_CFLAGS) $(STRICT_OPTIONS_CXX)
+if BUILD_VCARD
+AM_CXXFLAGS+=-std=c++11
+endif
 
 #Make sure that we are in linphone's git tree by doing git log $(top_srcdir)/configure.ac.
 #if it is something known to git, then that will be ok to check the git describe number and make sure it is consistent with
