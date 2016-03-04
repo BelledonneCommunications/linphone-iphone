@@ -201,6 +201,13 @@ if(ENABLE_STATIC)
 endif()
 if(ENABLE_SHARED)
 	add_library(linphone SHARED ${LINPHONE_HEADER_FILES} ${LINPHONE_SOURCE_FILES_C} ${LINPHONE_SOURCE_FILES_CXX} ${LINPHONE_SOURCE_FILES_OBJC})
+
+	if(BELCARD_FOUND)
+		if(APPLE)
+        	        set_target_properties(linphone PROPERTIES LINKER_FLAGS "-stdlib=libc++")
+        	endif()
+	endif()
+
 	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
 	add_dependencies(linphone liblinphone-git-version)
 	target_link_libraries(linphone ${LIBS})
