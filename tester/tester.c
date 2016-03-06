@@ -361,6 +361,9 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 
 	proxy = linphone_core_get_default_proxy_config(mgr->lc);
 	if (proxy) {
+		if (mgr->identity){
+			linphone_address_destroy(mgr->identity);
+		}
 		mgr->identity = linphone_address_clone(linphone_proxy_config_get_identity_address(proxy));
 		linphone_address_clean(mgr->identity);
 	}

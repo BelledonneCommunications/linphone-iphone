@@ -742,12 +742,13 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_core_set_network_reachable(pauline->lc, FALSE);
 
 		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
-		linphone_core_manager_start(marie, TRUE);
 		linphone_core_set_network_reachable(marie->lc, TRUE);
+		linphone_core_manager_start(marie, TRUE);
+		
 
 		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
-		linphone_core_manager_start(pauline, TRUE);
 		linphone_core_set_network_reachable(pauline->lc, TRUE);
+		linphone_core_manager_start(pauline, TRUE);
 
 		reset_counters(&marie->stat);
 		reset_counters(&pauline->stat);
@@ -828,6 +829,9 @@ void send_file_transfer_message_using_external_body_url(LinphoneCoreManager *mar
 
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress, 1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived, 1, int, "%d");
+	
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDelivered, 1));
+	
 }
 
 static void file_transfer_message_external_body_to_external_body_client(void) {
@@ -1138,7 +1142,7 @@ test_t flexisip_tests[] = {
 	/*TEST_ONE_TAG("Subscribe Notify with sipp double publish", test_subscribe_notify_with_sipp_publisher_double_publish, "LeaksMemory"),*/
 	TEST_NO_TAG("Publish/unpublish", test_publish_unpublish),
 	TEST_ONE_TAG("List subscribe", test_list_subscribe,"LeaksMemory"),
-	TEST_ONE_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client, "LeaksMemory"),
+	TEST_NO_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client),
 	TEST_ONE_TAG("File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client, "LeaksMemory"),
 	TEST_ONE_TAG("File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client, "LeaksMemory"),
 	TEST_NO_TAG("DoS module trigger by sending a lot of chat messages", dos_module_trigger),
