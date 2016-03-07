@@ -100,6 +100,8 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 			linphone_tunnel_set_mode(tunnel, tunnel_mode);
 			linphone_tunnel_enable_sip(tunnel, with_sip);
 
+			linphone_tunnel_config_unref(config);
+
 			/*
 			 * Enabling the tunnel with sip cause another REGISTER to be made.
 			 * In automatic mode, the udp test should conclude (assuming we have a normal network), that no

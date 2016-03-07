@@ -3110,8 +3110,9 @@ void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video
 			ms_usleep(20000);
 		}
 		BC_ASSERT_TRUE(linphone_tunnel_connected(linphone_core_get_tunnel(marie->lc)));
-
+		linphone_tunnel_config_unref(tunnel_config);
 	}
+
 	if (linphone_core_media_encryption_supported(marie->lc,mode)) {
 		linphone_core_set_media_encryption(marie->lc,mode);
 		linphone_core_set_media_encryption(pauline->lc,mode);
@@ -6005,14 +6006,14 @@ static void call_with_zrtp_configured_calling_base(LinphoneCoreManager *marie, L
 }
 
 /*
- * this test checks the 'dont_default_to_stun_candidates' mode, where the c= line is left to host 
+ * this test checks the 'dont_default_to_stun_candidates' mode, where the c= line is left to host
  * ip instead of stun candidate when ice is enabled*/
 static void call_with_ice_with_default_candidate_not_stun(void){
 	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	char localip[LINPHONE_IPADDR_SIZE];
 	bool_t call_ok;
-	
+
 	lp_config_set_int(marie->lc->config, "net", "dont_default_to_stun_candidates", 1);
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
@@ -6034,11 +6035,11 @@ static void call_with_ice_without_stun(void){
 #if GHISLAIN_CAN_MAKE_THIS_TEST_TO_WORK
 	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	
+
 	linphone_core_set_stun_server(marie->lc, NULL);
 	linphone_core_set_stun_server(pauline->lc, NULL);
 	_call_with_ice_base(marie, pauline, TRUE, TRUE, TRUE, FALSE);
-	
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 #endif

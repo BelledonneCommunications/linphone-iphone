@@ -546,7 +546,7 @@ int liblinphone_tester_after_each(void) {
 		int leaked_objects = belle_sip_object_get_object_count() - leaked_objects_count;
 		if (leaked_objects > 0) {
 			char* format = ms_strdup_printf("%d object%s leaked in suite [%s] test [%s], please fix that!",
-											leaked_objects, leaked_objects>1?"s were":"was",
+											leaked_objects, leaked_objects>1?"s were":" was",
 											bc_tester_current_suite_name(), bc_tester_current_test_name());
 			belle_sip_object_dump_active_objects();
 			belle_sip_object_flush_active_objects();
