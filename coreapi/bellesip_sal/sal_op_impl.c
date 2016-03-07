@@ -163,7 +163,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 		ms_error("No To: address, cannot build request");
 		return NULL;
 	}
-	
+
 	to_uri = belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to_address));
 	if( to_uri == NULL ){
 		ms_error("To: address is invalid, cannot build request");
@@ -393,7 +393,7 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 	return _sal_op_send_request_with_contact(op, request,need_contact);
 }
 
-SalReason sal_reason_to_sip_code(SalReason r){
+int sal_reason_to_sip_code(SalReason r){
 	int ret=500;
 	switch(r){
 		case SalReasonNone:

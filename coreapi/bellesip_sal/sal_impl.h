@@ -169,7 +169,7 @@ void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming);
 
 SalBodyHandler * sal_op_get_body_handler(SalOp *op, belle_sip_message_t *msg);
 
-SalReason sal_reason_to_sip_code(SalReason r);
+int sal_reason_to_sip_code(SalReason r);
 
 void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg);
 
