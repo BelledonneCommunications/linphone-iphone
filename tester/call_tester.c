@@ -1636,7 +1636,7 @@ static void call_paused_resumed_with_loss(void) {
 		rtp_session_enable_network_simulation(call_pauline->audiostream->ms.sessions.rtp_session,&params);
 
 		/*generate some traffic*/
-		wait_for_until(pauline->lc, marie->lc, NULL, 5, 6000);
+		wait_for_until(pauline->lc, marie->lc, NULL, 5, 10000);
 		CHECK_CURRENT_LOSS_RATE();
 
 		/*pause call*/
@@ -1645,14 +1645,14 @@ static void call_paused_resumed_with_loss(void) {
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallPausedByRemote,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallPaused,1));
 		/*stay in pause a little while in order to generate traffic*/
-		wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
+		wait_for_until(pauline->lc, marie->lc, NULL, 5, 10000);
 		CHECK_CURRENT_LOSS_RATE();
 
 		/*resume*/
 		linphone_core_resume_call(pauline->lc,call_pauline);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallStreamsRunning,2));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallStreamsRunning,2));
-		wait_for_until(pauline->lc, marie->lc, NULL, 5, 6000);
+		wait_for_until(pauline->lc, marie->lc, NULL, 5, 10000);
 
 		/*since stats are NOT totally reset during pause, the stats->packet_recv is computed from
 		the start of call. This test ensures that the loss rate is consistent during the entire call.*/
