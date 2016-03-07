@@ -4290,8 +4290,7 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 		linphone_core_update_ice_state_in_call_stats(call);
 		linphone_call_params_unref(params);
 	} else if (evt == ORTP_EVENT_ICE_GATHERING_FINISHED) {
-
-		if (! evd->info.ice_processing_successful==TRUE) {
+		if (evd->info.ice_processing_successful==FALSE) {
 			ms_warning("No STUN answer from [%s], continuing without STUN",linphone_core_get_stun_server(call->core));
 		}
 		linphone_call_on_ice_gathering_finished(call);
