@@ -230,7 +230,7 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		// Go to Contact details view
 		ContactDetailsView *view = VIEW(ContactDetailsView);
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-		if ([ContactSelection getSelectionMode] != ContactSelectionModeEdit) {
+		if (([ContactSelection getSelectionMode] != ContactSelectionModeEdit) || !([ContactSelection getAddAddress])) {
 			[view setContact:lPerson];
 		} else {
 			[view editContact:lPerson address:[ContactSelection getAddAddress]];

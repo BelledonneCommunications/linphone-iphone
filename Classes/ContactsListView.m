@@ -37,12 +37,7 @@ static NSString *sNameOrEmailFilter;
 }
 
 + (void)setAddAddress:(NSString *)address {
-	if (sAddAddress != nil) {
-		sAddAddress = nil;
-	}
-	if (address != nil) {
-		sAddAddress = address;
-	}
+	sAddAddress = address;
 }
 
 + (NSString *)getAddAddress {
