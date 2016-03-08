@@ -23,6 +23,8 @@
 - (void)accessoryForCell:(UITableViewCell *)cell atPath:(NSIndexPath *)indexPath;
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *indexPath))remover;
 
+- (BOOL)selectFirstRow;
+
 - (IBAction)onSelectionToggle:(id)sender;
 - (IBAction)onEditClick:(id)sender;
 - (IBAction)onCancelClick:(id)sender;

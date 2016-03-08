@@ -36,6 +36,19 @@
 
 #pragma mark - UITableViewDelegate Functions
 
+- (BOOL)selectFirstRow {
+	// reset details view in fragment mode
+	if ([self totalNumberOfItems] > 0) {
+		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+		[self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+		[self tableView:self.tableView didSelectRowAtIndexPath:indexPath];
+		_emptyView.hidden = YES;
+	} else {
+		_emptyView.hidden = NO;
+	}
+	return _emptyView.hidden;
+}
+
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	_emptyView.hidden = _editButton.enabled = ([self totalNumberOfItems] != 0);
@@ -43,7 +56,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	if ([_selectedItems containsObject:indexPath]) {
 		[_selectedItems removeObject:indexPath];
 	} else {
@@ -64,7 +76,7 @@
 #pragma mark -
 
 - (void)accessoryForCell:(UITableViewCell *)cell atPath:(NSIndexPath *)indexPath {
-	cell.selectionStyle = UITableViewCellSelectionStyleNone;
+	cell.selectionStyle = UITableViewCellSelectionStyleGray;
 	if ([self isEditing]) {
 		UIButton *checkBoxButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		UIImage *image = nil;

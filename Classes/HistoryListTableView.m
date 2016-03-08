@@ -145,16 +145,10 @@
 	[super loadData];
 
 	if (IPAD) {
-		// reset details view since in fragment mode, details are relative to current data
-		// select first log if any
-		NSString *callId = nil;
-		if ([self totalNumberOfItems] > 0) {
-			id logId = [_sections objectForKey:_sortedDays[0]][0];
-			LinphoneCallLog *log = [logId pointerValue];
-			callId = [NSString stringWithUTF8String:linphone_call_log_get_call_id(log) ?: ""];
+		if (![self selectFirstRow]) {
+			HistoryDetailsView *view = VIEW(HistoryDetailsView);
+			[view setCallLogId:nil];
 		}
-		HistoryDetailsView *view = VIEW(HistoryDetailsView);
-		[view setCallLogId:callId];
 	}
 }
 

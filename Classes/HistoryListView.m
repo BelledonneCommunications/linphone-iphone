@@ -81,7 +81,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_selectedButtonImage.frame = frame;
 }
 
-#pragma mark - Action Functions
+#pragma m ~ark - Action Functions
 
 - (IBAction)onAllClick:(id)event {
 	[self changeView:History_All];

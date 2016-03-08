@@ -119,15 +119,12 @@ static void chatTable_free_chatrooms(void *data) {
 	[super loadData];
 
 	if (IPAD) {
+		int idx = ms_list_index(data, VIEW(ChatConversationView).chatRoom);
 		// if conversation view is using a chatroom that does not exist anymore, update it
-		if (data != NULL) {
-			ChatConversationView *view = VIEW(ChatConversationView);
-			LinphoneChatRoom *current = [view chatRoom];
-			// cannot find it anymore: replace it with the first one
-			if (ms_list_find(data, current) == NULL) {
-				[view setChatRoom:(LinphoneChatRoom *)ms_list_nth_data(data, 0)];
-			}
-		} else {
+		if (idx != -1) {
+			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
+			[self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+		} else if (![self selectFirstRow]) {
 			[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
 		}
 	}

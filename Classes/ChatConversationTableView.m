@@ -177,6 +177,7 @@
 	}
 	[cell setChatRoomDelegate:_chatRoomDelegate];
 	[super accessoryForCell:cell atPath:indexPath];
+	cell.selectionStyle = UITableViewCellSelectionStyleNone;
 	return cell;
 }
 
