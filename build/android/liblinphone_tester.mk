@@ -1,7 +1,6 @@
 LOCAL_PATH := $(call my-dir)/../../tester
 
 common_SRC_FILES := \
-	common/bc_tester_utils.c \
 	accountmanager.c \
 	call_tester.c \
 	dtmf_tester.c \
@@ -32,8 +31,7 @@ common_C_INCLUDES += \
         $(LOCAL_PATH)/../include \
         $(LOCAL_PATH)/../coreapi \
         $(LOCAL_PATH)/../oRTP/include \
-        $(LOCAL_PATH)/../mediastreamer2/include \
-		$(LOCAL_PATH)/common
+        $(LOCAL_PATH)/../mediastreamer2/include 
 
 
 include $(CLEAR_VARS)
@@ -48,6 +46,8 @@ LOCAL_LDLIBS := -llog -lz
 ifeq ($(BUILD_MATROSKA), 1)
 LOCAL_CFLAGS += -DHAVE_MATROSKA -DHAVE_ZLIB
 endif
+
+LOCAL_STATIC_LIBRARIES := bctoolbox_tester
 
 LOCAL_SHARED_LIBRARIES := cunit liblinphone
 include $(BUILD_SHARED_LIBRARY)
