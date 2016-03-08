@@ -550,7 +550,7 @@ int liblinphone_tester_after_each(void) {
 											bc_tester_current_suite_name(), bc_tester_current_test_name());
 			belle_sip_object_dump_active_objects();
 			belle_sip_object_flush_active_objects();
-			bc_tester_printf(bc_printf_verbosity_info, format);
+			bc_tester_printf(ORTP_MESSAGE, format);
 			ms_error("%s", format);
 
 			all_leaks_buffer = ms_strcat_printf(all_leaks_buffer, "\n%s", format);
@@ -581,7 +581,7 @@ int liblinphone_tester_after_each(void) {
 void liblinphone_tester_uninit(void) {
 	// show all leaks that happened during the test
 	if (all_leaks_buffer) {
-		bc_tester_printf(bc_printf_verbosity_info, all_leaks_buffer);
+		bc_tester_printf(ORTP_MESSAGE, all_leaks_buffer);
 		ms_free(all_leaks_buffer);
 		all_leaks_buffer = NULL;
 	}
