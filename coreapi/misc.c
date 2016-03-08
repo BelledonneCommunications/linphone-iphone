@@ -685,6 +685,11 @@ int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
 		/* Gather local srflx candidates. */
 		ice_session_gather_candidates(call->ice_session, ai->ai_addr, (socklen_t)ai->ai_addrlen);
 		return 1;
+	} else {
+		ms_message("ICE: bypass candidates gathering");
+		ice_session_compute_candidates_foundations(call->ice_session);
+		ice_session_eliminate_redundant_candidates(call->ice_session);
+		ice_session_choose_default_candidates(call->ice_session);
 	}
 	return 0;
 }

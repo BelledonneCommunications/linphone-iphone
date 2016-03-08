@@ -6032,7 +6032,6 @@ static void call_with_ice_with_default_candidate_not_stun(void){
 }
 
 static void call_with_ice_without_stun(void){
-#if GHISLAIN_CAN_MAKE_THIS_TEST_TO_WORK
 	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
@@ -6042,7 +6041,6 @@ static void call_with_ice_without_stun(void){
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
-#endif
 }
 
 static void call_with_zrtp_configured_calling_side(void) {
