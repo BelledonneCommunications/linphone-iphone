@@ -3255,6 +3255,7 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_synchronizeFriends
 static void contact_created(LinphoneFriendList *list, LinphoneFriend *lf) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
+	int isLocalRef = 0;
 	if (result != 0) {
 		ms_error("cannot attach VM\n");
 		return;
@@ -3270,14 +3271,16 @@ static void contact_created(LinphoneFriendList *list, LinphoneFriend *lf) {
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneFriendCreated","(Lorg/linphone/core/LinphoneFriendList;Lorg/linphone/core/LinphoneFriend;)V");
 	jobject jlist = getFriendList(env, list);
-	jobject jfriend = getFriend(env, lf);
+	jobject jfriend = getFriend(env, lf, &isLocalRef);
 	env->DeleteLocalRef(clazz);
 	env->CallVoidMethod(listener, method, jlist, jfriend);
+	if (isLocalRef) env->DeleteLocalRef(jfriend);
 }
 
 static void contact_updated(LinphoneFriendList *list, LinphoneFriend *lf_new, LinphoneFriend *lf_old) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
+	int isLocalRef1 = 0, isLocalRef2 = 0;
 	if (result != 0) {
 		ms_error("cannot attach VM\n");
 		return;
@@ -3293,14 +3296,17 @@ static void contact_updated(LinphoneFriendList *list, LinphoneFriend *lf_new, Li
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneFriendUpdated","(Lorg/linphone/core/LinphoneFriendList;Lorg/linphone/core/LinphoneFriend;Lorg/linphone/core/LinphoneFriend;)V");
 	jobject jlist = getFriendList(env, list);
-	jobject jfriend_new = getFriend(env, lf_new);
-	jobject jfriend_old = getFriend(env, lf_old);
+	jobject jfriend_new = getFriend(env, lf_new, &isLocalRef1);
+	jobject jfriend_old = getFriend(env, lf_old, &isLocalRef2);
 	env->DeleteLocalRef(clazz);
 	env->CallVoidMethod(listener, method, jlist, jfriend_new, jfriend_old);
+	if (isLocalRef1) env->DeleteLocalRef(jfriend_new);
+	if (isLocalRef2) env->DeleteLocalRef(jfriend_old);
 }
 
 static void contact_removed(LinphoneFriendList *list, LinphoneFriend *lf) {
 	JNIEnv *env = 0;
+	int isLocalRef = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
 	if (result != 0) {
 		ms_error("cannot attach VM\n");
@@ -3317,9 +3323,10 @@ static void contact_removed(LinphoneFriendList *list, LinphoneFriend *lf) {
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneFriendDeleted","(Lorg/linphone/core/LinphoneFriendList;Lorg/linphone/core/LinphoneFriend;)V");
 	jobject jlist = getFriendList(env, list);
-	jobject jfriend = getFriend(env, lf);
+	jobject jfriend = getFriend(env, lf, &isLocalRef);
 	env->DeleteLocalRef(clazz);
 	env->CallVoidMethod(listener, method, jlist, jfriend);
+	if (isLocalRef) env->DeleteLocalRef(jfriend);
 }
 
 static void sync_status_changed(LinphoneFriendList *list, LinphoneFriendListSyncStatus status, const char *message) {
@@ -3423,9 +3430,11 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneFriendListImpl_getFriendL
 
 	for (int i = 0; i < friendsSize; i++) {
 		LinphoneFriend* lfriend = (LinphoneFriend*)friends->data;
-		jobject jfriend =  getFriend(env,lfriend);
+		int isLocalRef = 0;
+		jobject jfriend =  getFriend(env,lfriend, &isLocalRef);
 		if(jfriend != NULL){
 			env->SetObjectArrayElement(jFriends, i, jfriend);
+			if (isLocalRef) env->DeleteLocalRef(jfriend);
 		}
 		friends = friends->next;
 	}
