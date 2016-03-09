@@ -157,7 +157,7 @@ bool_t linphone_proxy_config_compute_publish_params_hash(LinphoneProxyConfig * c
 	unsigned long long previous_hash[2];
 	previous_hash[0] = cfg->previous_publish_config_hash[0];
 	previous_hash[1] = cfg->previous_publish_config_hash[1];
-	
+
 	source = ms_strcat_printf(source, "%i",cfg->privacy);
 	source=append_linphone_address(cfg->identity_address, source);
 	source=append_string(cfg->reg_proxy,source);
@@ -367,7 +367,7 @@ void linphone_proxy_config_edit(LinphoneProxyConfig *cfg){
 	/*store current config related to server location*/
 	linphone_proxy_config_store_server_config(cfg);
 	linphone_proxy_config_compute_publish_params_hash(cfg);
-	
+
 	if (cfg->publish && cfg->long_term_event){
 		linphone_event_pause_publish(cfg->long_term_event);
 	}
@@ -1004,10 +1004,8 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 			if (uri==NULL){
 				return NULL;
 			} else {
-				char* normalized_phone = linphone_proxy_config_normalize_phone_number(proxy,username);
 				linphone_address_set_display_name(uri,NULL);
-				linphone_address_set_username(uri,normalized_phone ? normalized_phone : username);
-				ms_free(normalized_phone);
+				linphone_address_set_username(uri,username);
 				return _linphone_core_destroy_addr_if_not_sip(uri);
 			}
 		} else {
@@ -1048,7 +1046,7 @@ int linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 			if (res == LinphoneProxyConfigAddressDifferent) {
 				_linphone_proxy_config_unpublish(cfg);
 			}
-			
+
 		}
 	}
 	if (linphone_proxy_config_compute_publish_params_hash(cfg)) {
@@ -1084,7 +1082,7 @@ void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, const char *realm
 
 int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePresenceModel *presence){
 	int err=0;
-	
+
 	if (proxy->state==LinphoneRegistrationOk || proxy->state==LinphoneRegistrationCleared){
 		LinphoneContent *content;
 		char *presence_body;
@@ -1096,17 +1094,17 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 			linphone_event_ref(proxy->long_term_event);
 		}
 		proxy->long_term_event->internal = TRUE;
-		
+
 		if (linphone_presence_model_get_presentity(presence) == NULL) {
 			ms_message("No presentity set for model [%p], using identity from proxy config [%p]", presence, proxy);
 			linphone_presence_model_set_presentity(presence,linphone_proxy_config_get_identity_address(proxy));
 		}
-		
+
 		if (!(presence_body = linphone_presence_model_to_xml(presence))) {
 			ms_error("Cannot publish presence model [%p] for proxy config [%p] because of xml serilization error",presence,proxy);
 			return -1;
 		}
-		
+
 		content = linphone_content_new();
 		linphone_content_set_buffer(content,presence_body,strlen(presence_body));
 		linphone_content_set_type(content, "application");
@@ -1514,7 +1512,7 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 			/*at this point state must be updated*/
 			cfg->state=state;
 		}
-		
+
 		if (lc){
 			linphone_core_notify_registration_state_changed(lc,cfg,state,message);
 			linphone_core_repair_calls(lc);

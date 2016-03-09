@@ -394,10 +394,7 @@ LINPHONE_PUBLIC SipSetup *linphone_proxy_config_get_sip_setup(LinphoneProxyConfi
 LINPHONE_PUBLIC bool_t linphone_proxy_config_is_phone_number(LinphoneProxyConfig *proxy, const char *username);
 
 /**
- * Normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
- * or +33888444222 depending on the #LinphoneProxyConfig object. However this argument is OPTIONNAL
- * and if not provided, a default one will be used.
- * This function will always generate a normalized username; if input is not a phone number, output will be a copy of input.
+ * See linphone_proxy_config_normalize_phone_number
  * @param proxy #LinphoneProxyConfig object containing country code and/or escape symbol. If NULL passed, will use default configuration.
  * @param username the string to parse
  * @param result the newly normalized number
@@ -409,12 +406,11 @@ LINPHONE_PUBLIC bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfi
 
 /**
  * Normalize a human readable phone number into a basic string. 888-444-222 becomes 888444222
- * or +33888444222 depending on the #LinphoneProxyConfig object. However this argument is OPTIONNAL
- * and if not provided, a default one will be used.
- * This function will always generate a normalized username; if input is not a phone number, output will be a copy of input.
+ * or +33888444222 depending on the #LinphoneProxyConfig object.
+ * This function will always generate a normalized username if input is a phone number.
  * @param proxy #LinphoneProxyConfig object containing country code and/or escape symbol. If NULL passed, will use default configuration.
  * @param username the string to parse
- * @return NULL if invalid phone number, normalized phone number from username input otherwise.
+ * @return NULL if input is an invalid phone number, normalized phone number from username input otherwise.
 */
 LINPHONE_PUBLIC char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, const char *username);
 
