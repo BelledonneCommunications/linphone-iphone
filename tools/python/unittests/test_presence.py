@@ -24,7 +24,7 @@ class TestPresence:
         friend.edit()
         friend.subscribes_enabled = True
         friend.done()
-        caller_mgr.lc.add_friend(friend)
+        caller_mgr.lc.default_friend_list.add_friend(friend)
         result = CoreManager.wait_for(caller_mgr, callee_mgr,
             lambda caller_mgr, callee_mgr: caller_mgr.stats.number_of_LinphonePresenceActivityOnline == initial_caller_stats.number_of_LinphonePresenceActivityOnline + 1)
         assert_equals(callee_mgr.stats.number_of_NewSubscriptionRequest, initial_callee_stats.number_of_NewSubscriptionRequest + 1)
