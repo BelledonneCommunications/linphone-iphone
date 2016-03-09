@@ -101,7 +101,7 @@ class ArgumentType:
 		self.use_native_pointer = False
 		self.cast_convert_func_result = True
 		self.__compute()
-		if self.basic_type == 'MSList' and self.contained_type is not None:
+		if self.basic_type == 'MSList' and self.contained_type is not None and self.contained_type != 'const char *':
 			self.linphone_module.mslist_types.add(self.contained_type)
 
 	def __compute(self):
@@ -215,10 +215,16 @@ class ArgumentType:
 			self.cfmt_str = '%p'
 			self.cnativefmt_str = '%ld'
 		elif self.basic_type == 'MSList':
-			self.type_str = 'list of linphone.' + self.contained_type
+			if self.contained_type == 'const char *':
+				print("nthoetnuoehautnohutneueosanm")
+				self.type_str = 'list of string'
+				self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsMSListOfString({arg_name});\n"
+				self.convert_from_func = 'PyList_FromMSListOfString'
+			else:
+				self.type_str = 'list of linphone.' + self.contained_type
+				self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsMSListOf" + self.contained_type + "({arg_name});\n"
+				self.convert_from_func = 'PyList_FromMSListOf' + self.contained_type
 			self.check_condition = "!PyList_Check({arg_name})"
-			self.convert_code = "{result_name}{result_suffix} = {cast}PyList_AsMSListOf" + self.contained_type + "({arg_name});\n"
-			self.convert_from_func = 'PyList_FromMSListOf' + self.contained_type
 			self.fmt_str = 'O'
 			self.cfmt_str = '%p'
 		elif self.basic_type == 'MSVideoSize':

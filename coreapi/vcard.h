@@ -36,151 +36,154 @@ extern "C"
  * @{
  */
 
-typedef struct _LinphoneVCard LinphoneVCard;
-
 /**
- * Creates a LinphoneVCard object that has a pointer to an empty vCard
+ * The LinphoneVcard object.
  */
-LINPHONE_PUBLIC LinphoneVCard* linphone_vcard_new(void);
+typedef struct _LinphoneVcard LinphoneVcard;
 
 /**
- * Deletes a LinphoneVCard object properly
- * @param[in] vCard the LinphoneVCard to destroy
+ * Creates a LinphoneVcard object that has a pointer to an empty vCard
  */
-LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVCard *vCard);
+LINPHONE_PUBLIC LinphoneVcard* linphone_vcard_new(void);
 
 /**
- * Uses belcard to parse the content of a file and returns all the vcards it contains as LinphoneVCards, or NULL if it contains none.
+ * Deletes a LinphoneVcard object properly
+ * @param[in] vCard the LinphoneVcard to destroy
+ */
+LINPHONE_PUBLIC void linphone_vcard_free(LinphoneVcard *vCard);
+
+/**
+ * Uses belcard to parse the content of a file and returns all the vcards it contains as LinphoneVcards, or NULL if it contains none.
  * @param[in] file the path to the file to parse
- * @return \mslist{LinphoneVCard}
+ * @return \mslist{LinphoneVcard}
  */
 LINPHONE_PUBLIC MSList* linphone_vcard_list_from_vcard4_file(const char *file);
 
 /**
- * Uses belcard to parse the content of a buffer and returns all the vcards it contains as LinphoneVCards, or NULL if it contains none.
+ * Uses belcard to parse the content of a buffer and returns all the vcards it contains as LinphoneVcards, or NULL if it contains none.
  * @param[in] buffer the buffer to parse
- * @return \mslist{LinphoneVCard}
+ * @return \mslist{LinphoneVcard}
  */
 LINPHONE_PUBLIC MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer);
 
 /**
  * Uses belcard to parse the content of a buffer and returns one vCard if possible, or NULL otherwise.
  * @param[in] buffer the buffer to parse
- * @return a LinphoneVCard if one could be parsed, or NULL otherwise
+ * @return a LinphoneVcard if one could be parsed, or NULL otherwise
  */
-LINPHONE_PUBLIC LinphoneVCard* linphone_vcard_new_from_vcard4_buffer(const char *buffer);
+LINPHONE_PUBLIC LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(const char *buffer);
 
 /**
- * Returns the vCard4 representation of the LinphoneVCard.
- * @param[in] vCard the LinphoneVCard
+ * Returns the vCard4 representation of the LinphoneVcard.
+ * @param[in] vCard the LinphoneVcard
  * @return a const char * that represents the vCard
  */
-LINPHONE_PUBLIC const char* linphone_vcard_as_vcard4_string(LinphoneVCard *vCard);
+LINPHONE_PUBLIC const char* linphone_vcard_as_vcard4_string(LinphoneVcard *vCard);
 
 /**
  * Sets the FN attribute of the vCard (which is mandatory).
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @param[in] name the display name to set for the vCard
  */
-LINPHONE_PUBLIC void linphone_vcard_set_full_name(LinphoneVCard *vCard, const char *name);
+LINPHONE_PUBLIC void linphone_vcard_set_full_name(LinphoneVcard *vCard, const char *name);
 
 /**
  * Returns the FN attribute of the vCard, or NULL if it isn't set yet.
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @return the display name of the vCard, or NULL
  */
-LINPHONE_PUBLIC const char* linphone_vcard_get_full_name(const LinphoneVCard *vCard);
+LINPHONE_PUBLIC const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard);
 
 /**
  * Adds a SIP address in the vCard, using the IMPP property
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @param[in] sip_address the SIP address to add
  */
-void linphone_vcard_add_sip_address(LinphoneVCard *vCard, const char *sip_address);
+void linphone_vcard_add_sip_address(LinphoneVcard *vCard, const char *sip_address);
 
 /**
  * Removes a SIP address in the vCard (if it exists), using the IMPP property
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @param[in] sip_address the SIP address to remove
  */
-void linphone_vcard_remove_sip_address(LinphoneVCard *vCard, const char *sip_address);
+void linphone_vcard_remove_sip_address(LinphoneVcard *vCard, const char *sip_address);
 
 /**
  * Edits the preferred SIP address in the vCard (or the first one), using the IMPP property
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @param[in] sip_address the new SIP address
  */
-void linphone_vcard_edit_main_sip_address(LinphoneVCard *vCard, const char *sip_address);
+void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_address);
 
 /**
- * Returns the list of SIP addresses (as const char *) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
- * @param[in] vCard the LinphoneVCard
+ * Returns the list of SIP addresses (as string) in the vCard (all the IMPP attributes that has an URI value starting by "sip:") or NULL
+ * @param[in] vCard the LinphoneVcard
  * @return \mslist{const char *}
  */
-LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vCard);
+LINPHONE_PUBLIC MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard);
 
 /**
  * Generates a random unique id for the vCard.
  * If is required to be able to synchronize the vCard with a CardDAV server
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @return TRUE if operation is successful, otherwise FALSE (for example if it already has an unique ID)
  */
-bool_t linphone_vcard_generate_unique_id(LinphoneVCard *vCard);
+bool_t linphone_vcard_generate_unique_id(LinphoneVcard *vCard);
 
 /**
  * Sets the unique ID of the vCard
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @param[in] uid the unique id
  */
-void linphone_vcard_set_uid(LinphoneVCard *vCard, const char *uid);
+void linphone_vcard_set_uid(LinphoneVcard *vCard, const char *uid);
 
 /**
  * Gets the UID of the vCard
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @return the UID of the vCard, otherwise NULL
  */
-LINPHONE_PUBLIC const char* linphone_vcard_get_uid(const LinphoneVCard *vCard);
+LINPHONE_PUBLIC const char* linphone_vcard_get_uid(const LinphoneVcard *vCard);
 
 /**
  * Sets the eTAG of the vCard
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @param[in] etag the eTAG
  */
-LINPHONE_PUBLIC void linphone_vcard_set_etag(LinphoneVCard *vCard, const char * etag);
+LINPHONE_PUBLIC void linphone_vcard_set_etag(LinphoneVcard *vCard, const char * etag);
 
 /**
  * Gets the eTag of the vCard
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @return the eTag of the vCard in the CardDAV server, otherwise NULL
  */
-LINPHONE_PUBLIC const char* linphone_vcard_get_etag(const LinphoneVCard *vCard);
+LINPHONE_PUBLIC const char* linphone_vcard_get_etag(const LinphoneVcard *vCard);
 
 /**
  * Sets the URL of the vCard
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @param[in] url the URL
  */
-LINPHONE_PUBLIC void linphone_vcard_set_url(LinphoneVCard *vCard, const char * url);
+LINPHONE_PUBLIC void linphone_vcard_set_url(LinphoneVcard *vCard, const char * url);
 
 /**
  * Gets the URL of the vCard
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @return the URL of the vCard in the CardDAV server, otherwise NULL
  */
-LINPHONE_PUBLIC const char* linphone_vcard_get_url(const LinphoneVCard *vCard);
+LINPHONE_PUBLIC const char* linphone_vcard_get_url(const LinphoneVcard *vCard);
 
 /**
  * Computes the md5 hash for the vCard
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  */
-void linphone_vcard_compute_md5_hash(LinphoneVCard *vCard);
+void linphone_vcard_compute_md5_hash(LinphoneVcard *vCard);
 
 /**
  * Compares the previously computed md5 hash (using linphone_vcard_compute_md5_hash) with the current one
- * @param[in] vCard the LinphoneVCard
+ * @param[in] vCard the LinphoneVcard
  * @return 0 if the md5 hasn't changed, 1 otherwise
  */
-bool_t linphone_vcard_compare_md5_hash(LinphoneVCard *vCard);
+bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard);
 
 /**
  * @}

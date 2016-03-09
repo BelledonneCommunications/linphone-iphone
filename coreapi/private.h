@@ -694,7 +694,7 @@ struct _LinphoneFriend{
 	bool_t commit;
 	bool_t initial_subscribes_sent; /*used to know if initial subscribe message was sent or not*/
 	bool_t presence_received;
-	LinphoneVCard *vcard;
+	LinphoneVcard *vcard;
 	unsigned int storage_id;
 	LinphoneFriendList *friend_list;
 };
@@ -704,10 +704,10 @@ BELLE_SIP_DECLARE_VPTR(LinphoneFriend);
 struct _LinphoneFriendListCbs {
 	belle_sip_object_t base;
 	void *user_data;
-	LinphoneFriendListContactCreatedCb contact_created_cb;
-	LinphoneFriendListContactDeletedCb contact_deleted_cb;
-	LinphoneFriendListContactUpdatedCb contact_updated_cb;
-	LinphoneFriendListSyncStateChangedCb sync_state_changed_cb;
+	LinphoneFriendListCbsContactCreatedCb contact_created_cb;
+	LinphoneFriendListCbsContactDeletedCb contact_deleted_cb;
+	LinphoneFriendListCbsContactUpdatedCb contact_updated_cb;
+	LinphoneFriendListCbsSyncStateChangedCb sync_state_changed_cb;
 };
 
 BELLE_SIP_DECLARE_VPTR(LinphoneFriendListCbs);

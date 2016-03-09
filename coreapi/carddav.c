@@ -73,8 +73,8 @@ static void linphone_carddav_sync_done(LinphoneCardDavContext *cdc, bool_t succe
 }
 
 static int find_matching_friend(LinphoneFriend *lf1, LinphoneFriend *lf2) {
-	LinphoneVCard *lvc1 = linphone_friend_get_vcard(lf1);
-	LinphoneVCard *lvc2 = linphone_friend_get_vcard(lf2);
+	LinphoneVcard *lvc1 = linphone_friend_get_vcard(lf1);
+	LinphoneVcard *lvc2 = linphone_friend_get_vcard(lf2);
 	const char *uid1 = NULL, *uid2 = NULL;
 	if (!lvc1 || !lvc2) {
 		return 1;
@@ -93,7 +93,7 @@ static void linphone_carddav_vcards_pulled(LinphoneCardDavContext *cdc, MSList *
 		while (vCards) {
 			LinphoneCardDavResponse *vCard = (LinphoneCardDavResponse *)vCards->data;
 			if (vCard) {
-				LinphoneVCard *lvc = linphone_vcard_new_from_vcard4_buffer(vCard->vcard);
+				LinphoneVcard *lvc = linphone_vcard_new_from_vcard4_buffer(vCard->vcard);
 				LinphoneFriend *lf = NULL;
 				MSList *local_friend = NULL;
 				
@@ -201,7 +201,7 @@ static void linphone_carddav_vcards_fetched(LinphoneCardDavContext *cdc, MSList 
 					LinphoneCardDavResponse *response = (LinphoneCardDavResponse *)vCard->data;
 					ms_debug("Local friend %s is in the remote vCard list, check eTag", linphone_friend_get_name(lf));
 					if (response) {
-						LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+						LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
 						const char *etag = linphone_vcard_get_etag(lvc);
 						ms_debug("Local friend eTag is %s, remote vCard eTag is %s", etag, response->etag);
 						if (lvc && etag && strcmp(etag, response->etag) == 0) {
@@ -333,7 +333,7 @@ static void process_response_from_carddav_request(void *data, const belle_http_r
 				{
 					belle_sip_header_t *header = belle_sip_message_get_header((belle_sip_message_t *)event->response, "ETag");
 					LinphoneFriend *lf = (LinphoneFriend *)query->user_data;
-					LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+					LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
 					if (lf && lvc) {
 						if (header) {
 							const char *etag = belle_sip_header_get_unparsed_value(header);
@@ -465,7 +465,7 @@ static void linphone_carddav_send_query(LinphoneCardDavQuery *query) {
 	belle_http_provider_send_request(query->context->friend_list->lc->http_provider, req, query->http_request_listener);
 }
 
-static LinphoneCardDavQuery* linphone_carddav_create_put_query(LinphoneCardDavContext *cdc, LinphoneVCard *lvc) {
+static LinphoneCardDavQuery* linphone_carddav_create_put_query(LinphoneCardDavContext *cdc, LinphoneVcard *lvc) {
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)ms_new0(LinphoneCardDavQuery, 1);
 	query->context = cdc;
 	query->depth = NULL;
@@ -494,7 +494,7 @@ static char* generate_url_from_server_address_and_uid(const char *server_url) {
 }
 
 void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
-	LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
 	if (lvc) {
 		LinphoneCardDavQuery *query = NULL;
 		if (!linphone_vcard_get_uid(lvc)) {
@@ -522,7 +522,7 @@ void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf)
 	} else {
 		const char *msg = NULL;
 		if (!lvc) {
-			msg = "LinphoneVCard is NULL";
+			msg = "LinphoneVcard is NULL";
 		} else {
 			msg = "Unknown error";
 		}
@@ -537,7 +537,7 @@ void linphone_carddav_put_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf)
 	}
 }
 
-static LinphoneCardDavQuery* linphone_carddav_create_delete_query(LinphoneCardDavContext *cdc, LinphoneVCard *lvc) {
+static LinphoneCardDavQuery* linphone_carddav_create_delete_query(LinphoneCardDavContext *cdc, LinphoneVcard *lvc) {
 	LinphoneCardDavQuery *query = (LinphoneCardDavQuery *)ms_new0(LinphoneCardDavQuery, 1);
 	query->context = cdc;
 	query->depth = NULL;
@@ -550,7 +550,7 @@ static LinphoneCardDavQuery* linphone_carddav_create_delete_query(LinphoneCardDa
 }
 
 void linphone_carddav_delete_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *lf) {
-	LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
 	if (lvc && linphone_vcard_get_uid(lvc) && linphone_vcard_get_etag(lvc)) {
 		LinphoneCardDavQuery *query = NULL;
 		
@@ -574,11 +574,11 @@ void linphone_carddav_delete_vcard(LinphoneCardDavContext *cdc, LinphoneFriend *
 	} else {
 		const char *msg = NULL;
 		if (!lvc) {
-			msg = "LinphoneVCard is NULL";
+			msg = "LinphoneVcard is NULL";
 		} else if (!linphone_vcard_get_uid(lvc)) {
-			msg = "LinphoneVCard doesn't have an UID";
+			msg = "LinphoneVcard doesn't have an UID";
 		} else if (!linphone_vcard_get_etag(lvc)) {
-			msg = "LinphoneVCard doesn't have an eTag";
+			msg = "LinphoneVcard doesn't have an eTag";
 		}
 		
 		if (msg) {

@@ -197,7 +197,7 @@ void linphone_core_interpret_friend_uri(LinphoneCore *lc, const char *uri, char 
 
 int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr){
 	LinphoneAddress *fr = linphone_address_clone(addr);
-	LinphoneVCard *vcard = NULL;
+	LinphoneVcard *vcard = NULL;
 	
 	linphone_address_clean(fr);
 	if (lf->uri != NULL) linphone_address_unref(lf->uri);
@@ -213,7 +213,7 @@ int linphone_friend_set_address(LinphoneFriend *lf, const LinphoneAddress *addr)
 
 int linphone_friend_set_name(LinphoneFriend *lf, const char *name){
 	LinphoneAddress *fr = lf->uri;
-	LinphoneVCard *vcard = NULL;
+	LinphoneVcard *vcard = NULL;
 	bool_t vcard_created = FALSE;
 	
 	vcard = linphone_friend_get_vcard(lf);
@@ -833,14 +833,14 @@ void linphone_friend_destroy(LinphoneFriend *lf) {
 	linphone_friend_unref(lf);
 }
 
-LinphoneVCard* linphone_friend_get_vcard(LinphoneFriend *fr) {
+LinphoneVcard* linphone_friend_get_vcard(LinphoneFriend *fr) {
 	if (fr) {
 		return fr->vcard;
 	}
 	return NULL;
 }
 
-void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard) {
+void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVcard *vcard) {
 	if (!fr) {
 		return;
 	}
@@ -853,7 +853,7 @@ void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard) {
 }
 
 bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
-	LinphoneVCard *vcard = NULL;
+	LinphoneVcard *vcard = NULL;
 	const char *fullName = NULL;
 	LinphoneAddress *addr = NULL;
 	
@@ -890,7 +890,7 @@ bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const char *name) {
 	return TRUE;
 }
 
-LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard) {
+LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVcard *vcard) {
 	LinphoneAddress* linphone_address = NULL;
 	LinphoneFriend *fr;
 	const char *name = NULL;
@@ -1064,7 +1064,7 @@ static int create_friend_list(void *data, int argc, char **argv, char **colName)
 static int create_friend(void *data, int argc, char **argv, char **colName) {
 	MSList **list = (MSList **)data;
 	LinphoneFriend *lf = NULL;
-	LinphoneVCard *vcard = NULL;
+	LinphoneVcard *vcard = NULL;
 	unsigned int storage_id = atoi(argv[0]);
 	
 	vcard = linphone_vcard_new_from_vcard4_buffer(argv[6]);
@@ -1127,7 +1127,7 @@ void linphone_core_store_friend_in_db(LinphoneCore *lc, LinphoneFriend *lf) {
 	if (lc && lc->friends_db) {
 		char *buf;
 		int store_friends = lp_config_get_int(lc->config, "misc", "store_friends", 1);
-		LinphoneVCard *vcard = linphone_friend_get_vcard(lf);
+		LinphoneVcard *vcard = linphone_friend_get_vcard(lf);
 		
 		if (!store_friends) {
 			return;

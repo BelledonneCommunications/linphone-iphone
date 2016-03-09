@@ -437,14 +437,14 @@ LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr)
  * Returns the vCard object associated to this friend, if any
  * @param[in] fr LinphoneFriend object
  */
-LINPHONE_PUBLIC LinphoneVCard* linphone_friend_get_vcard(LinphoneFriend *fr);
+LINPHONE_PUBLIC LinphoneVcard* linphone_friend_get_vcard(LinphoneFriend *fr);
 
 /**
  * Binds a vCard object to a friend
  * @param[in] fr LinphoneFriend object
  * @param[in] vcard The vCard object to bind
  */
-LINPHONE_PUBLIC void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVCard *vcard);
+LINPHONE_PUBLIC void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVcard *vcard);
 
 /**
  * Creates a vCard object associated to this friend if there isn't one yet and if the full name is available, either by the parameter or the one in the friend's SIP URI
@@ -459,7 +459,7 @@ LINPHONE_PUBLIC bool_t linphone_friend_create_vcard(LinphoneFriend *fr, const ch
  * @param vcard a vCard object
  * @return a new #LinphoneFriend with \link linphone_friend_get_vcard() vCard initialized \endlink
  */
-LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVCard *vcard);
+LINPHONE_PUBLIC	LinphoneFriend *linphone_friend_new_from_vcard(LinphoneVcard *vcard);
 
 /**
  * Sets the database filename where friends will be stored.

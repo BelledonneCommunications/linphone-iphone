@@ -19,15 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "vcard.h"
 
-struct _LinphoneVCard {
+struct _LinphoneVcard {
 	void *dummy;
 };
 
-LinphoneVCard* linphone_vcard_new(void) {
+LinphoneVcard* linphone_vcard_new(void) {
 	return NULL;
 }
 
-void linphone_vcard_free(LinphoneVCard *vCard) {
+void linphone_vcard_free(LinphoneVcard *vCard) {
 	
 }
 
@@ -39,70 +39,70 @@ MSList* linphone_vcard_list_from_vcard4_buffer(const char *buffer) {
 	return NULL;
 }
 
-LinphoneVCard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
+LinphoneVcard* linphone_vcard_new_from_vcard4_buffer(const char *buffer) {
 	return NULL;
 }
 
-const char * linphone_vcard_as_vcard4_string(LinphoneVCard *vCard) {
+const char * linphone_vcard_as_vcard4_string(LinphoneVcard *vCard) {
 	return NULL;
 }
 
-void linphone_vcard_set_full_name(LinphoneVCard *vCard, const char *name) {
+void linphone_vcard_set_full_name(LinphoneVcard *vCard, const char *name) {
 	
 }
 
-const char* linphone_vcard_get_full_name(const LinphoneVCard *vCard) {
+const char* linphone_vcard_get_full_name(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
-void linphone_vcard_add_sip_address(LinphoneVCard *vCard, const char *sip_address) {
+void linphone_vcard_add_sip_address(LinphoneVcard *vCard, const char *sip_address) {
 	
 }
 
-void linphone_vcard_remove_sip_address(LinphoneVCard *vCard, const char *sip_address) {
+void linphone_vcard_remove_sip_address(LinphoneVcard *vCard, const char *sip_address) {
 	
 }
 
-void linphone_vcard_edit_main_sip_address(LinphoneVCard *vCard, const char *sip_address) {
+void linphone_vcard_edit_main_sip_address(LinphoneVcard *vCard, const char *sip_address) {
 	
 }
 
-MSList* linphone_vcard_get_sip_addresses(const LinphoneVCard *vCard) {
+MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
-bool_t linphone_vcard_generate_unique_id(LinphoneVCard *vCard) {
+bool_t linphone_vcard_generate_unique_id(LinphoneVcard *vCard) {
 	return FALSE;
 }
 
-void linphone_vcard_set_uid(LinphoneVCard *vCard, const char *uid) {
+void linphone_vcard_set_uid(LinphoneVcard *vCard, const char *uid) {
 	
 }
 
-const char* linphone_vcard_get_uid(const LinphoneVCard *vCard) {
+const char* linphone_vcard_get_uid(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
-void linphone_vcard_set_etag(LinphoneVCard *vCard, const char * etag) {
+void linphone_vcard_set_etag(LinphoneVcard *vCard, const char * etag) {
 	
 }
 
-const char* linphone_vcard_get_etag(const LinphoneVCard *vCard) {
+const char* linphone_vcard_get_etag(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
-void linphone_vcard_set_url(LinphoneVCard *vCard, const char * url) {
+void linphone_vcard_set_url(LinphoneVcard *vCard, const char * url) {
 	
 }
 
-const char* linphone_vcard_get_url(const LinphoneVCard *vCard) {
+const char* linphone_vcard_get_url(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
-void linphone_vcard_compute_md5_hash(LinphoneVCard *vCard) {
+void linphone_vcard_compute_md5_hash(LinphoneVcard *vCard) {
 	
 }
 
-bool_t linphone_vcard_compare_md5_hash(LinphoneVCard *vCard) {
+bool_t linphone_vcard_compare_md5_hash(LinphoneVcard *vCard) {
 	return FALSE;
 }

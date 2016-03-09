@@ -56,35 +56,35 @@ void linphone_friend_list_cbs_set_user_data(LinphoneFriendListCbs *cbs, void *ud
 	cbs->user_data = ud;
 }
 
-LinphoneFriendListContactCreatedCb linphone_friend_list_cbs_get_contact_created(const LinphoneFriendListCbs *cbs) {
+LinphoneFriendListCbsContactCreatedCb linphone_friend_list_cbs_get_contact_created(const LinphoneFriendListCbs *cbs) {
 	return cbs->contact_created_cb;
 }
 
-void linphone_friend_list_cbs_set_contact_created(LinphoneFriendListCbs *cbs, LinphoneFriendListContactCreatedCb cb) {
+void linphone_friend_list_cbs_set_contact_created(LinphoneFriendListCbs *cbs, LinphoneFriendListCbsContactCreatedCb cb) {
 	cbs->contact_created_cb = cb;
 }
 
-LinphoneFriendListContactDeletedCb linphone_friend_list_cbs_get_contact_deleted(const LinphoneFriendListCbs *cbs) {
+LinphoneFriendListCbsContactDeletedCb linphone_friend_list_cbs_get_contact_deleted(const LinphoneFriendListCbs *cbs) {
 	return cbs->contact_deleted_cb;
 }
 
-void linphone_friend_list_cbs_set_contact_deleted(LinphoneFriendListCbs *cbs, LinphoneFriendListContactDeletedCb cb) {
+void linphone_friend_list_cbs_set_contact_deleted(LinphoneFriendListCbs *cbs, LinphoneFriendListCbsContactDeletedCb cb) {
 	cbs->contact_deleted_cb = cb;
 }
 
-LinphoneFriendListContactUpdatedCb linphone_friend_list_cbs_get_contact_updated(const LinphoneFriendListCbs *cbs) {
+LinphoneFriendListCbsContactUpdatedCb linphone_friend_list_cbs_get_contact_updated(const LinphoneFriendListCbs *cbs) {
 	return cbs->contact_updated_cb;
 }
 
-void linphone_friend_list_cbs_set_contact_updated(LinphoneFriendListCbs *cbs, LinphoneFriendListContactUpdatedCb cb) {
+void linphone_friend_list_cbs_set_contact_updated(LinphoneFriendListCbs *cbs, LinphoneFriendListCbsContactUpdatedCb cb) {
 	cbs->contact_updated_cb = cb;
 }
 
-LinphoneFriendListSyncStateChangedCb linphone_friend_list_cbs_get_sync_status_changed(const LinphoneFriendListCbs *cbs) {
+LinphoneFriendListCbsSyncStateChangedCb linphone_friend_list_cbs_get_sync_status_changed(const LinphoneFriendListCbs *cbs) {
 	return cbs->sync_state_changed_cb;
 }
 
-void linphone_friend_list_cbs_set_sync_status_changed(LinphoneFriendListCbs *cbs, LinphoneFriendListSyncStateChangedCb cb) {
+void linphone_friend_list_cbs_set_sync_status_changed(LinphoneFriendListCbs *cbs, LinphoneFriendListCbsSyncStateChangedCb cb) {
 	cbs->sync_state_changed_cb = cb;
 }
 
@@ -448,7 +448,7 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 	linphone_core_remove_friend_from_db(lf->lc, lf);
 #endif
 	if (remove_from_server) {
-		LinphoneVCard *lvc = linphone_friend_get_vcard(lf);
+		LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
 		if (lvc && linphone_vcard_get_uid(lvc)) {
 			LinphoneCardDavContext *cdc = linphone_carddav_context_new(list);
 			if (cdc) {
@@ -757,7 +757,7 @@ int linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *lis
 	}
 	
 	while (vcards != NULL && vcards->data != NULL) {
-		LinphoneVCard *vcard = (LinphoneVCard *)vcards->data;
+		LinphoneVcard *vcard = (LinphoneVcard *)vcards->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
 			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
@@ -793,7 +793,7 @@ int linphone_friend_list_import_friends_from_vcard4_buffer(LinphoneFriendList *l
 	}
 	
 	while (vcards != NULL && vcards->data != NULL) {
-		LinphoneVCard *vcard = (LinphoneVCard *)vcards->data;
+		LinphoneVcard *vcard = (LinphoneVcard *)vcards->data;
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
 		if (lf) {
 			if (LinphoneFriendListOK == linphone_friend_list_import_friend(list, lf, TRUE)) {
@@ -826,7 +826,7 @@ void linphone_friend_list_export_friends_as_vcard4_file(LinphoneFriendList *list
 #endif
 	while (friends != NULL && friends->data != NULL) {
 		LinphoneFriend *lf = (LinphoneFriend *)friends->data;
-		LinphoneVCard *vcard = linphone_friend_get_vcard(lf);
+		LinphoneVcard *vcard = linphone_friend_get_vcard(lf);
 		if (vcard) {
 			const char *vcard_text = linphone_vcard_as_vcard4_string(vcard);
 			fprintf(file, "%s", vcard_text);
