@@ -23,8 +23,8 @@
 
 static void enable_publish(LinphoneCoreManager *mgr, bool_t enable);
 
-static LinphoneCoreManager* presence_linphone_core_manager_new(char* username) {
-	LinphoneCoreManager* mgr= linphone_core_manager_new2( "empty_rc", FALSE);
+static LinphoneCoreManager* presence_linphone_core_manager_new_with_rc_name(char* username, char * rc_name) {
+	LinphoneCoreManager* mgr= linphone_core_manager_new2( rc_name, FALSE);
 	char* identity_char;
 	mgr->identity= linphone_core_get_primary_contact_parsed(mgr->lc);
 	linphone_address_set_username(mgr->identity,username);
@@ -33,6 +33,10 @@ static LinphoneCoreManager* presence_linphone_core_manager_new(char* username) {
 	ms_free(identity_char);
 	return mgr;
 }
+static LinphoneCoreManager* presence_linphone_core_manager_new(char* username) {
+	return presence_linphone_core_manager_new_with_rc_name(username, "empty_rc");
+}
+
 
 void new_subscription_requested(LinphoneCore *lc, LinphoneFriend *lf, const char *url){
 	char* from=linphone_address_as_string(linphone_friend_get_address(lf));
@@ -494,6 +498,14 @@ static void subscriber_no_longer_reachable(void){
 	linphone_friend_unref(lf);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,1, 2000));
 
+	/*make sure marie subscribe is not reset by accident because of code below located in linphone_core_iterate
+
+	 if (lc->sip_network_reachable && lc->netup_time!=0 && (current_real_time-lc->netup_time)>3){
+		
+		linphone_core_send_initial_subscribes(lc);
+	}
+	 */
+	wait_for_until(pauline1->lc, marie->lc, 0, 0, 3000);
 
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityBusy,NULL);
 	linphone_core_set_presence_model(pauline1->lc,presence);
@@ -506,12 +518,12 @@ static void subscriber_no_longer_reachable(void){
 	/*because of notify timeout detected by server, so subscription is reset*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOffline,2, 4000));
 
-	// now subscribetion is supposed to be dead because notify was not answered in time.
+	// now subscription is supposed to be dead because notify was not answered in time.
 	presence =linphone_presence_model_new_with_activity(LinphonePresenceActivityOnline,NULL);
 	linphone_core_set_presence_model(pauline1->lc,presence);
 
-	/*becasue subscription is automatically restarted*/
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,2, 4000));
+	/*because subscription not is automatically restarted*/
+	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_LinphonePresenceActivityOnline,2, 4000));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline1);
@@ -979,8 +991,42 @@ static void test_presence_list_subscribe_io_error(void) {
 	test_presence_list_subscribe_with_error(TRUE);
 }
 
+
+static void simple_subscribe_with_friend_from_rc(void) {
+#ifdef FIXME_SYLVAIN
+	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
+	LinphoneCoreManager *marie = presence_linphone_core_manager_new_with_rc_name("marie", "pauline_as_friend_rc");
+	LinphoneFriend *pauline_as_friend;
+	
+	BC_ASSERT_EQUAL(ms_list_size(linphone_core_get_friend_list(marie->lc)), 1, int , "%i");
+	
+	if (ms_list_size(linphone_core_get_friend_list(marie->lc))>0) {
+		pauline_as_friend = (LinphoneFriend*)linphone_core_get_friend_list(marie->lc)->data;
+		linphone_friend_set_address(pauline_as_friend, pauline->identity); /*hack to update addr with port number*/
+	}
+	
+	BC_ASSERT_TRUE (wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePresenceActivityOnline,1));
+	
+	BC_ASSERT_EQUAL(pauline->stat.number_of_NewSubscriptionRequest,1, int, "%d");
+	BC_ASSERT_EQUAL(marie->stat.number_of_NotifyPresenceReceived,1, int, "%d");
+	
+	linphone_core_manager_destroy(marie);
+	/*unsubscribe is not reported ?*/
+	BC_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
+	
+	linphone_core_manager_destroy(pauline);
+#else
+	LinphoneFriend * just_for_a_leak = linphone_friend_new();
+	just_for_a_leak++;
+	ms_error("Test not activated yet because waiting for fix");
+#endif
+	
+}
+
+
 test_t presence_tests[] = {
-	TEST_NO_TAG("Simple Subscribe", simple_subscribe),
+	TEST_ONE_TAG("Simple Subscribe", simple_subscribe,"LeaksMemory"),
+	TEST_ONE_TAG("Simple Subscribe with friend from rc", simple_subscribe_with_friend_from_rc,"LeaksMemory"),
 	TEST_ONE_TAG("Simple Publish", simple_publish, "LeaksMemory"),
 	TEST_ONE_TAG("Simple Publish with expires", publish_with_expires, "LeaksMemory"),
 	/*TEST_ONE_TAG("Call with presence", call_with_presence, "LeaksMemory"),*/

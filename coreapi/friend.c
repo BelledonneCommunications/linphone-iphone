@@ -626,11 +626,11 @@ void linphone_core_send_initial_subscribes(LinphoneCore *lc) {
 				}
 				linphone_address_unref(rls_address);
 			}
-			if (proxy_config_for_rls_presence_uri_domain == TRUE) {
-				ms_message("Presence list activated so do not send initial subscribes it will be done when registered");
-			} else {
-				linphone_core_update_friends_subscriptions(lc,NULL,linphone_core_should_subscribe_friends_only_when_registered(lc));
-			}
+		}
+		if (proxy_config_for_rls_presence_uri_domain == TRUE) {
+			ms_message("Presence list activated so do not send initial subscribes it will be done when registered");
+		} else {
+			linphone_core_update_friends_subscriptions(lc,NULL,linphone_core_should_subscribe_friends_only_when_registered(lc));
 		}
 		lists = ms_list_next(lists);
 	}
