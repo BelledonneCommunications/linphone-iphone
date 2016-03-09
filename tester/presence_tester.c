@@ -993,7 +993,6 @@ static void test_presence_list_subscribe_io_error(void) {
 
 
 static void simple_subscribe_with_friend_from_rc(void) {
-#ifdef FIXME_SYLVAIN
 	LinphoneCoreManager* pauline = presence_linphone_core_manager_new("pauline");
 	LinphoneCoreManager *marie = presence_linphone_core_manager_new_with_rc_name("marie", "pauline_as_friend_rc");
 	LinphoneFriend *pauline_as_friend;
@@ -1015,12 +1014,6 @@ static void simple_subscribe_with_friend_from_rc(void) {
 	BC_ASSERT_FALSE(wait_for(NULL,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,2)); /*just to wait for unsubscription even if not notified*/
 	
 	linphone_core_manager_destroy(pauline);
-#else
-	LinphoneFriend * just_for_a_leak = linphone_friend_new();
-	just_for_a_leak++;
-	ms_error("Test not activated yet because waiting for fix");
-#endif
-	
 }
 
 

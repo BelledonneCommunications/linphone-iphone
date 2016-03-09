@@ -1371,14 +1371,23 @@ static void video_config_read(LinphoneCore *lc){
 #endif
 }
 
-static void ui_config_read(LinphoneCore *lc)
+static void read_friends_from_rc(LinphoneCore *lc)
 {
-#ifndef FRIENDS_SQL_STORAGE_ENABLED
 	LinphoneFriend *lf = NULL;
 	int i;
 	for (i = 0; (lf = linphone_friend_new_from_config_file(lc, i)) != NULL; i++) {
 		linphone_core_add_friend(lc, lf);
 		linphone_friend_unref(lf);
+	}
+}
+
+static void ui_config_read(LinphoneCore *lc)
+{
+#ifndef FRIENDS_SQL_STORAGE_ENABLED
+	read_friends_from_rc(lc);
+#else
+	if (!lc->friends_db) {
+		read_friends_from_rc(lc);
 	}
 #endif
 
