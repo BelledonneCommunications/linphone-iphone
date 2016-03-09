@@ -724,6 +724,8 @@
 		D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
 		D3F83EEC1582021700336684 /* CallView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83EEA1582021700336684 /* CallView.m */; };
 		D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
+		E49CB2641C90524E00FFF73C /* common in Resources */ = {isa = PBXBuildFile; fileRef = E49CB2631C90524E00FFF73C /* common */; };
+		E49CB2651C90532100FFF73C /* common in Resources */ = {isa = PBXBuildFile; fileRef = E49CB2631C90524E00FFF73C /* common */; };
 		F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
 		F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
 		F05BAA631A5D75BC00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
@@ -1658,6 +1660,7 @@
 		D3F83EEA1582021700336684 /* CallView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallView.m; sourceTree = "<group>"; };
 		D3F83F8C158229C500336684 /* PhoneMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneMainView.h; sourceTree = "<group>"; };
 		D3F83F8D15822ABD00336684 /* PhoneMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMainView.m; sourceTree = "<group>"; };
+		E49CB2631C90524E00FFF73C /* common */ = {isa = PBXFileReference; lastKnownFileType = folder; name = common; path = ../submodules/linphone/tester/common; sourceTree = "<group>"; };
 		F0181B6B18BF7B1200A9A357 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		F03A9B7E18C0D9C900C4D7FE /* libcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcunit.a; path = "liblinphone-sdk/apple-darwin/lib/libcunit.a"; sourceTree = "<group>"; };
 		F03A9B9418C0DAE100C4D7FE /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
@@ -2251,6 +2254,7 @@
 		63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */ = {
 			isa = PBXGroup;
 			children = (
+				E49CB2631C90524E00FFF73C /* common */,
 				63058AE41B4E952E00EFAE36 /* share */,
 				63058AE11B4E93A100EFAE36 /* tester_hosts */,
 				63058AC81B4E922500EFAE36 /* certificates */,
@@ -3651,6 +3655,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E49CB2651C90532100FFF73C /* common in Resources */,
 				63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */,
 				63058ACF1B4E922500EFAE36 /* certificates in Resources */,
 				63058AD01B4E922500EFAE36 /* flexisip in Resources */,
@@ -3667,6 +3672,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E49CB2641C90524E00FFF73C /* common in Resources */,
 				63058ADA1B4E937300EFAE36 /* certificates in Resources */,
 				63B21A7D1C623DA80074DFF8 /* test_inprogress.png in Resources */,
 				63058ADB1B4E937300EFAE36 /* flexisip in Resources */,
