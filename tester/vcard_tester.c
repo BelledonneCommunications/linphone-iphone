@@ -155,18 +155,22 @@ static void friends_if_no_db_set(void) {
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
 static void friends_migration(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("friends_rc", FALSE);
+	LpConfig *lpc = linphone_core_get_config(manager->lc);
 	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
 	const MSList *friends = linphone_friend_list_get_friends(lfl);
 	MSList *friends_from_db = NULL;
 	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
-	BC_ASSERT_EQUAL(ms_list_size(friends), 0, int, "%d");
+	BC_ASSERT_EQUAL(ms_list_size(friends), 3, int, "%d");
+	BC_ASSERT_EQUAL(lp_config_get_int(lpc, "misc", "friends_migration_done", 0), 0, int, "%i");
 
 	unlink(friends_db);
 	linphone_core_set_friends_database_path(manager->lc, friends_db);
+	lfl = linphone_core_get_default_friend_list(manager->lc);
 	friends = linphone_friend_list_get_friends(lfl);
 	BC_ASSERT_EQUAL(ms_list_size(friends), 3, int, "%d");
 	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc, lfl);
 	BC_ASSERT_EQUAL(ms_list_size(friends_from_db), 3, int, "%d");
+	BC_ASSERT_EQUAL(lp_config_get_int(lpc, "misc", "friends_migration_done", 0), 1, int, "%i");
 
 	friends_from_db = ms_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
 	unlink(friends_db);
@@ -181,12 +185,16 @@ typedef struct _LinphoneFriendListStats {
 
 static void friend_list_created_cb(LinphoneCore *lc, LinphoneFriendList *list) {
 	LinphoneFriendListStats *stats = (LinphoneFriendListStats *)linphone_friend_list_get_user_data(list);
-	stats->new_list_count++;
+	if (stats) {
+		stats->new_list_count++;
+	}
 }
 
 static void friend_list_removed_cb(LinphoneCore *lc, LinphoneFriendList *list) {
 	LinphoneFriendListStats *stats = (LinphoneFriendListStats *)linphone_friend_list_get_user_data(list);
-	stats->removed_list_count++;
+	if (stats) {
+		stats->removed_list_count++;
+	}
 }
 
 static void friends_sqlite_storage(void) {

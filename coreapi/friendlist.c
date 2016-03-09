@@ -445,7 +445,9 @@ static LinphoneFriendListStatus _linphone_friend_list_remove_friend(LinphoneFrie
 	if (elem == NULL) return LinphoneFriendListNonExistentFriend;
 
 #ifdef FRIENDS_SQL_STORAGE_ENABLED
-	linphone_core_remove_friend_from_db(lf->lc, lf);
+	if (lf && lf->lc && lf->lc->friends_db) {
+		linphone_core_remove_friend_from_db(lf->lc, lf);
+	}
 #endif
 	if (remove_from_server) {
 		LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
