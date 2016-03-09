@@ -485,8 +485,10 @@
 		LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, "sip:user@domain.com");
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"]) {
 			char *user = linphone_proxy_config_normalize_phone_number(proxyCfg, username.UTF8String);
-			linphone_address_set_username(linphoneAddress, user);
-			ms_free(user);
+			if (user) {
+				linphone_address_set_username(linphoneAddress, user);
+				ms_free(user);
+			}
 		}
 		linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
 		linphone_address_set_display_name(linphoneAddress, (displayName.length ? displayName.UTF8String : NULL));

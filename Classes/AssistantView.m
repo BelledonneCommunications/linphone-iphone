@@ -238,6 +238,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 	new_config = linphone_account_creator_configure(account_creator);
 
 	if (new_config) {
+		BOOL usePhoneNumber = [LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number"];
+		if (usePhoneNumber) {
+			char *user = linphone_proxy_config_normalize_phone_number(
+				new_config, linphone_account_creator_get_username(account_creator));
+			if (user) {
+				LinphoneAddress *addr = linphone_address_clone(linphone_proxy_config_get_identity_address(new_config));
+				linphone_address_set_username(addr, user);
+				linphone_proxy_config_edit(new_config);
+				linphone_proxy_config_set_identity_address(new_config, addr);
+				linphone_proxy_config_done(new_config);
+				linphone_address_destroy(addr);
+				ms_free(user);
+			}
+		}
+
 		[lm configurePushTokenForProxyConfig:new_config];
 		linphone_core_set_default_proxy_config(LC, new_config);
 		// reload address book to prepend proxy config domain to contacts' phone number
