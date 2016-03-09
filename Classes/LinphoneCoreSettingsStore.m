@@ -475,9 +475,6 @@
 			proxy = linphone_address_as_string_uri_only(proxy_addr);
 		}
 
-		char normalizedUserName[256];
-		LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, "sip:user@domain.com");
-
 		proxyCfg = ms_list_nth_data(linphone_core_get_proxy_config_list(LC),
 									[self integerForKey:@"current_proxy_config_preference"]);
 		// if account was deleted, it is not present anymore
@@ -485,12 +482,16 @@
 			goto bad_proxy;
 		}
 
-		linphone_proxy_config_normalize_number(proxyCfg, username.UTF8String, normalizedUserName,
-											   sizeof(normalizedUserName));
-		linphone_address_set_username(linphoneAddress, normalizedUserName);
+		LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, "sip:user@domain.com");
+		if ([LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"]) {
+			char *user = linphone_proxy_config_normalize_phone_number(proxyCfg, username.UTF8String);
+			linphone_address_set_username(linphoneAddress, user);
+			ms_free(user);
+		}
 		linphone_address_set_domain(linphoneAddress, [domain UTF8String]);
 		linphone_address_set_display_name(linphoneAddress, (displayName.length ? displayName.UTF8String : NULL));
 		const char *identity = linphone_address_as_string(linphoneAddress);
+		linphone_address_destroy(linphoneAddress);
 		const char *password = [accountPassword UTF8String];
 		const char *ha1 = [accountHa1 UTF8String];
 
@@ -552,8 +553,6 @@
 		}
 
 	bad_proxy:
-		if (linphoneAddress)
-			linphone_address_destroy(linphoneAddress);
 		if (proxy)
 			ms_free(proxy);
 
