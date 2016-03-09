@@ -358,8 +358,8 @@ LinphoneEvent *linphone_event_ref(LinphoneEvent *lev){
 }
 
 static void linphone_event_destroy(LinphoneEvent *lev){
-	if (lev->op)
-		sal_op_release(lev->op);
+	if (lev->op) sal_op_release(lev->op);
+	if (lev->send_custom_headers) sal_custom_header_free(lev->send_custom_headers);
 	ms_free(lev->name);
 }
 

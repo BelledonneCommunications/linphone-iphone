@@ -1111,6 +1111,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 		linphone_content_set_subtype(content,"pidf+xml");
 		err = linphone_event_send_publish(proxy->long_term_event, content);
 		linphone_content_unref(content);
+		ms_free(presence_body);
 	}else proxy->send_publish=TRUE; /*otherwise do not send publish if registration is in progress, this will be done later*/
 	return err;
 }

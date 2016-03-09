@@ -728,10 +728,13 @@ static void test_presence_list_base(bool_t enable_compression) {
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
 	lf = linphone_core_create_friend_with_address(laure->lc, marie_identity);
 	linphone_friend_list_add_friend(lfl, lf);
+	linphone_friend_unref(lf);
 	lf = linphone_core_create_friend_with_address(laure->lc, pauline_identity);
 	linphone_friend_list_add_friend(lfl, lf);
+	linphone_friend_unref(lf);
 	lf = linphone_core_create_friend_with_address(laure->lc, "sip:michelle@sip.inexistentdomain.com");
 	linphone_friend_list_add_friend(lfl, lf);
+	linphone_friend_unref(lf);
 	linphone_core_remove_friend_list(laure->lc, linphone_core_get_default_friend_list(laure->lc));
 	linphone_core_add_friend_list(laure->lc, lfl);
 	linphone_friend_list_unref(lfl);
@@ -761,6 +764,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
 	lf = linphone_core_create_friend_with_address(marie->lc, laure_identity);
 	linphone_friend_list_add_friend(lfl, lf);
+	linphone_friend_unref(lf);
 	linphone_core_remove_friend_list(marie->lc, linphone_core_get_default_friend_list(marie->lc));
 	linphone_core_add_friend_list(marie->lc, lfl);
 	linphone_friend_list_unref(lfl);
@@ -778,6 +782,7 @@ static void test_presence_list_base(bool_t enable_compression) {
 	linphone_friend_list_set_rls_uri(lfl, rls_uri);
 	lf = linphone_core_create_friend_with_address(pauline->lc, marie_identity);
 	linphone_friend_list_add_friend(lfl, lf);
+	linphone_friend_unref(lf);
 	linphone_core_remove_friend_list(pauline->lc, linphone_core_get_default_friend_list(pauline->lc));
 	linphone_core_add_friend_list(pauline->lc, lfl);
 	linphone_friend_list_unref(lfl);
