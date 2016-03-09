@@ -31,7 +31,7 @@ char *linphone_gtk_call_logs_storage_get_db_file(const char *filename){
 	if (access(CONFIG_FILE,F_OK)==0){
 		snprintf(db_file,path_max,"%s",filename);
 	}else{
-#ifdef WIN32
+#ifdef _WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
 			snprintf(db_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);

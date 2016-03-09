@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma GCC diagnostic pop
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 // alloca is already defined by gtk
 #undef alloca
 #endif

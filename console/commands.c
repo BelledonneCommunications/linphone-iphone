@@ -35,7 +35,7 @@
 #include "linphonec.h"
 #include "lpconfig.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
@@ -118,7 +118,7 @@ static void linphonec_friend_display(LinphoneFriend *fr);
 static int linphonec_friend_list(LinphoneCore *lc, char *arg);
 static void linphonec_display_command_help(LPC_COMMAND *cmd);
 static int linphonec_friend_call(LinphoneCore *lc, unsigned int num);
-#ifndef WIN32
+#ifndef _WIN32
 static int linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr);
 #endif
 static int linphonec_friend_delete(LinphoneCore *lc, int num);
@@ -949,7 +949,7 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 	return 1;
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 /* Helper function for processing freind names */
 static int
 lpc_friend_name(char **args, char **name)
@@ -1034,7 +1034,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 	}
 	else if ( !strncmp(args, "add", 3) )
 	{
-#ifndef WIN32
+#ifndef _WIN32
 		char  *name;
 		char  addr[80];
 		char *addr_p = addr;
@@ -1886,7 +1886,7 @@ linphonec_friend_call(LinphoneCore *lc, unsigned int num)
 	return 1;
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 static int
 linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr)
 {
@@ -2139,7 +2139,7 @@ static int lpc_cmd_param(LinphoneCore *lc, char *args)
 }
 
 static int lpc_cmd_speak(LinphoneCore *lc, char *args){
-#ifndef WIN32
+#ifndef _WIN32
 	char voice[64];
 	char *sentence;
 	char cl[128];

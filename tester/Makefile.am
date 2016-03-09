@@ -74,7 +74,7 @@ RCFILES = \
 
 IMAGE_FILES = images/nowebcamCIF.jpg
 
-COMMON_FILE = common/vcards.vcf common/thousand_vcards.vcf
+VCARDS_FILE = vcards/vcards.vcf vcards/thousand_vcards.vcf
 
 EXTRA_DIST = tester_hosts\
 			messages.db\
@@ -83,7 +83,7 @@ EXTRA_DIST = tester_hosts\
 			$(CERTIFICATE_FILES)\
 			$(RCFILES)\
 			$(IMAGE_FILES)\
-			$(COMMON_FILE)
+			$(VCARDS_FILE)
 
 if ENABLE_TESTS
 
@@ -99,8 +99,8 @@ rcfilesdir = $(datadir)/liblinphone_tester/rcfiles
 rcfiles_DATA = $(RCFILES)
 imagesdir = $(datadir)/liblinphone_tester/images
 images_DATA = $(IMAGE_FILES)
-commondir = $(datadir)/liblinphone_tester/common
-common_DATA = $(COMMON_FILE)
+vcardsdir = $(datadir)/liblinphone_tester/vcards
+vcards_DATA = $(VCARDS_FILE)
 
 # there are 2 targets: liblinphonetester.la and the executable liblinphone_tester
 
@@ -147,7 +147,7 @@ liblinphone_testerdir = $(datadir)/liblinphone_tester
 dist_liblinphone_tester_DATA =  tester_hosts messages.db
 
 
-AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi -I$(top_srcdir)/tester/common
+AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi
 AM_CFLAGS    = -DBC_CONFIG_FILE=\"config.h\" $(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) \
 		-DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(BCTOOLBOXTESTER_CFLAGS) \
 		$(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS) $(BELCARD_CFLAGS)

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #include <wininet.h>
 
@@ -27,13 +27,13 @@ static int linphone_gtk_create_version(const char *version_url, char *version, s
 	DWORD dwDownloaded = 0;
 	HINTERNET  hSession = NULL, hConnect = NULL;
 	int ret=-1;
-	
+
 	hSession=InternetOpen("Linphone",INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
-	
+
 	if (hSession==NULL) return -1;
-	
+
 	hConnect=InternetOpenUrl(hSession,version_url,NULL,0,0,0);
-	
+
 	if (hConnect==NULL) {
 		InternetCloseHandle(hSession);
 		return -1;
@@ -46,7 +46,7 @@ static int linphone_gtk_create_version(const char *version_url, char *version, s
 		if (strstr(version,"html")==0)
 			ret=0;
 	}
-	
+
 	// Close any open handles.
 	if (hConnect) InternetCloseHandle(hConnect);
 	if (hSession) InternetCloseHandle(hSession);
@@ -56,7 +56,7 @@ static int linphone_gtk_create_version(const char *version_url, char *version, s
 #else
 
 static int linphone_gtk_create_version(const char *url, char *version, size_t size){
-	
+
 	return -1;
 }
 

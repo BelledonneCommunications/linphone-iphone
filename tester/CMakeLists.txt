@@ -59,8 +59,6 @@ if(NOT IOS OR NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	endif()
 endif()
 
-add_definitions(-DBC_CONFIG_FILE="config.h")
-
 if(IOS)
 	add_library(linphonetester STATIC ${SOURCE_FILES})
 	target_include_directories(linphonetester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})

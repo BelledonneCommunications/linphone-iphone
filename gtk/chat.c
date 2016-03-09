@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
-#if defined(WIN32) && !defined(F_OK)
+#if defined(_WIN32) && !defined(F_OK)
 #define F_OK 00 /*visual studio does not define F_OK*/
 #endif
 
@@ -65,7 +65,7 @@ char *linphone_gtk_message_storage_get_db_file(const char *filename){
 	if (access(CONFIG_FILE,F_OK)==0){
 		snprintf(db_file,path_max,"%s",filename);
 	}else{
-#ifdef WIN32
+#ifdef _WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
 			snprintf(db_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);

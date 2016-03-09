@@ -68,7 +68,7 @@ static gchar *get_record_file(void){
 	time_t curtime=time(NULL);
 	struct tm loctime;
 
-	#ifdef WIN32
+	#ifdef _WIN32
 		loctime=*localtime(&curtime);
 	#else
 		localtime_r(&curtime,&loctime);
@@ -296,7 +296,7 @@ void display_popup(GtkMessageType type,const gchar *message){
 static void open_mixer(void){
 	GError *error = NULL;
 
-#ifdef WIN32
+#ifdef _WIN32
 	if(!g_spawn_command_line_async("control mmsys.cpl",&error)){
 		display_popup(GTK_MESSAGE_WARNING,_("Sound preferences not found "));
 		g_error_free(error);
@@ -478,7 +478,7 @@ static void prepare(GtkAssistant *w){
 void linphone_gtk_close_audio_assistant(GtkWidget *w){
 	gchar *path;
 	AudioStream *stream;
-	
+
 	path = g_object_get_data(G_OBJECT(audio_assistant),"path");
 	if(path != NULL){
 		g_unlink(path);

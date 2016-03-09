@@ -36,7 +36,7 @@ static bool_t dump_stats=FALSE;
 static void stop(int signum){
 	running=FALSE;
 }
-#ifndef WIN32
+#ifndef _WIN32
 static void stats(int signum){
 	print_stats=TRUE;
 }
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
 
 	policy.automatically_accept=TRUE;
 	signal(SIGINT,stop);
-#ifndef WIN32
+#ifndef _WIN32
 	signal(SIGUSR1,stats);
 	signal(SIGUSR2,dump_call_logs);
 #endif

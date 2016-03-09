@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
-#elif defined(WIN32)
+#elif defined(_WIN32)
 #include <gdk/gdkwin32.h>
 #elif defined(__APPLE__)
 extern void *gdk_quartz_window_get_nswindow(GdkWindow      *window);
@@ -103,7 +103,7 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint 
 static void *get_native_handle(GdkWindow *gdkw){
 #ifdef GDK_WINDOWING_X11
 	return (void *)GDK_WINDOW_XID(gdkw);
-#elif defined(WIN32)
+#elif defined(_WIN32)
 	return (void *)GDK_WINDOW_HWND(gdkw);
 #elif defined(__APPLE__)
 	return (void *)gdk_quartz_window_get_nsview(gdkw);

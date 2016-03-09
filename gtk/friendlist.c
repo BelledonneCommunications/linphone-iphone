@@ -720,17 +720,17 @@ void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *parent){
 	char *uri;
 	const char *name = linphone_friend_get_name(lf);
 	const LinphoneAddress *f_uri = linphone_friend_get_address(lf);
-	
+
 	uri=linphone_address_as_string_uri_only(f_uri);
 	if (uri) {
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")),uri);
 		ms_free(uri);
 	}
-	
+
 	if (name){
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"name")),name);
 	}
-	
+
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"show_presence")),
 					linphone_friend_get_send_subscribe(lf));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"allow_presence")),
@@ -996,7 +996,7 @@ char *linphone_gtk_friends_storage_get_db_file(const char *filename){
 	if (access(CONFIG_FILE,F_OK)==0){
 		snprintf(db_file,path_max,"%s",filename);
 	}else{
-#ifdef WIN32
+#ifdef _WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
 			snprintf(db_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);

@@ -22,7 +22,7 @@ MSList * PyList_AsMSListOfString(PyObject *pyl) {
 
 
 static void pylinphone_dispatch_messages(void) {
-#ifdef WIN32
+#ifdef _WIN32
 	MSG msg;
 	while (PeekMessage(&msg, NULL, 0, 0, 1)) {
 		TranslateMessage(&msg);
@@ -167,7 +167,7 @@ static PyObject * pylinphone_Call_get_native_video_window_id(PyObject *self, voi
 	pylinphone_dispatch_messages();
 
 	pyret = Py_BuildValue("k", (unsigned long)cresult);
-	
+
 	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
 	return pyret;
 }
@@ -513,7 +513,7 @@ static void pylinphone_Core_dealloc(PyObject *self) {
 	LinphoneCore * native_ptr = pylinphone_Core_get_native_ptr(self);
 	if (Py_REFCNT(self) < 0) return;
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
-	
+
 	if (native_ptr != NULL) {
 		linphone_core_destroy(native_ptr);
 	}

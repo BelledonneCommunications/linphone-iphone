@@ -23,9 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "generator.hh"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <direct.h>
-#include <filesystem>
 
 #define strncasecmp _strnicmp
 #endif
@@ -45,7 +44,7 @@ CplusplusGenerator::CplusplusGenerator(){
 void CplusplusGenerator::generate(Project *proj){
 	list<Class*> classes=proj->getClasses();
 	mCurProj=proj;
-#ifndef WIN32
+#ifndef _WIN32
 	mkdir(proj->getName().c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IROTH);
 #else
 	_mkdir(proj->getName().c_str());
@@ -184,7 +183,7 @@ JavascriptGenerator::JavascriptGenerator(){
 void JavascriptGenerator::generate(Project *proj){
 	list<Class*> classes=proj->getClasses();
 	mCurProj=proj;
-#ifndef WIN32
+#ifndef _WIN32
 	remove(to_lower(proj->getName()).c_str());
 	mkdir(to_lower(proj->getName()).c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IROTH);
 #else

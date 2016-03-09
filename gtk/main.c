@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 
@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #define chdir _chdir
 #include "direct.h"
 #ifndef F_OK
@@ -148,7 +148,7 @@ static GOptionEntry linphone_options[]={
 #define RELATIVE_XML_DIR
 #define BUILD_TREE_XML_DIR "gtk"
 
-#ifndef WIN32
+#ifndef _WIN32
 #define CONFIG_FILE ".linphonerc"
 #define SECRETS_FILE ".linphone-zidcache"
 #define CERTIFICATES_PATH ".linphone-usr-crt"
@@ -165,7 +165,7 @@ char *linphone_gtk_get_config_file(const char *filename){
 	if (g_path_is_absolute(filename)) {
 		snprintf(config_file,path_max,"%s",filename);
 	} else{
-#ifdef WIN32
+#ifdef _WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
 			snprintf(config_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
@@ -194,7 +194,7 @@ static const char *linphone_gtk_get_factory_config_file(void){
 		if (progpath != NULL) {
 			char *basename;
 			progdir = strdup(progpath);
-#ifdef WIN32
+#ifdef _WIN32
 			basename = strrchr(progdir, '\\');
 			if (basename != NULL) {
 				basename ++;
@@ -252,7 +252,7 @@ gboolean linphone_gtk_get_audio_assistant_option(void){
 }
 
 static void linphone_gtk_init_liblinphone(const char *config_file,
-		const char *factory_config_file, const char *chat_messages_db_file, 
+		const char *factory_config_file, const char *chat_messages_db_file,
 		const char *call_logs_db_file, const char *friends_db_file) {
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
@@ -837,7 +837,7 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 	int i;
 	const char *ext="wav";
 
-#ifdef WIN32
+#ifdef _WIN32
 	loctime=*localtime(&curtime);
 #else
 	localtime_r(&curtime,&loctime);
@@ -1449,7 +1449,7 @@ void linphone_gtk_open_browser(const char *uri) {
 		g_warning("Could not open %s: %s", uri, error->message);
 		g_error_free(error);
 	}
-#elif defined(WIN32)
+#elif defined(_WIN32)
 	HINSTANCE instance = ShellExecute(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL);
 	if ((int)instance <= 32) {
 		g_warning("Could not open %s (error #%i)", uri, (int)instance);
@@ -1840,7 +1840,7 @@ void linphone_gtk_show_keypad_checked(GtkCheckMenuItem *check_menu_item) {
 void linphone_gtk_import_contacts(void) {
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *dialog = gtk_file_chooser_dialog_new("Open vCard file", (GtkWindow *)mw, GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
-	
+
 	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		LinphoneCore *lc = linphone_gtk_get_core();
 		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
@@ -1856,7 +1856,7 @@ void linphone_gtk_export_contacts(void) {
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *dialog = gtk_file_chooser_dialog_new("Save vCards as", (GtkWindow *)mw, GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, NULL);
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
-	
+
 	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		LinphoneCore *lc = linphone_gtk_get_core();
 		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
@@ -2068,7 +2068,7 @@ static void sigint_handler(int signum){
 }
 
 static void populate_xdg_data_dirs_envvar(void) {
-#ifndef WIN32
+#ifndef _WIN32
 	int i;
 	gchar *value;
 	gchar **paths;
@@ -2125,7 +2125,7 @@ int main(int argc, char *argv[]){
 		if (!lang) lang = g_getenv("LANG");
 	}
 	if (lang && lang[0]!='\0'){
-#ifdef WIN32
+#ifdef _WIN32
 		if (strncmp(lang,"zh",2)==0){
 			workaround_gtk_entry_chinese_bug=TRUE;
 		}
@@ -2143,7 +2143,7 @@ int main(int argc, char *argv[]){
 #else
 	g_message("NLS disabled.\n");
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 	gtk_rc_add_default_file("./gtkrc");
 #endif
 	gdk_threads_enter();
