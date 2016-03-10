@@ -293,7 +293,10 @@ static void linphone_friend_list_destroy(LinphoneFriendList *list) {
 	if (list->display_name != NULL) ms_free(list->display_name);
 	if (list->rls_uri != NULL) ms_free(list->rls_uri);
 	if (list->content_digest != NULL) ms_free(list->content_digest);
-	if (list->event != NULL) linphone_event_unref(list->event);
+	if (list->event != NULL) {
+		linphone_event_terminate(list->event);
+		linphone_event_unref(list->event);
+	}
 	if (list->uri != NULL) ms_free(list->uri);
 	if (list->cbs) linphone_friend_list_cbs_unref(list->cbs);
 	if (list->dirty_friends_to_update) list->dirty_friends_to_update = ms_list_free_with_data(list->dirty_friends_to_update, (void (*)(void *))linphone_friend_unref);
@@ -623,6 +626,7 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list, Linphon
 					linphone_event_unref(list->event);
 				}
 				list->event = linphone_core_create_subscribe(list->lc, address, "presence", expires);
+				linphone_event_ref(list->event);
 				linphone_event_set_internal(list->event, TRUE);
 				linphone_event_add_custom_header(list->event, "Require", "recipient-list-subscribe");
 				linphone_event_add_custom_header(list->event, "Supported", "eventlist");
