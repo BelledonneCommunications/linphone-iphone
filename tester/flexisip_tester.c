@@ -65,11 +65,13 @@ static void message_forking(void) {
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(message);
 
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
 
-	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_room_send_chat_message(chat_room, message);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
@@ -93,6 +95,7 @@ static void message_forking_with_unreachable_recipients(void) {
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(message);
 
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
@@ -109,7 +112,8 @@ static void message_forking_with_unreachable_recipients(void) {
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
 	linphone_core_set_network_reachable(marie3->lc,FALSE);
 
-	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_room_send_chat_message(chat_room, message);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
@@ -141,6 +145,7 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	MSList* lcs=ms_list_append(NULL,marie->lc);
 	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatMessage* message = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(message);
 
 	lcs=ms_list_append(lcs,pauline->lc);
 	lcs=ms_list_append(lcs,marie2->lc);
@@ -159,7 +164,8 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
 	linphone_core_set_network_reachable(marie3->lc,FALSE);
 
-	linphone_chat_room_send_message2(chat_room,message,liblinphone_tester_chat_message_state_change,pauline->lc);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_room_send_chat_message(chat_room, message);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageInProgress,1,5000));
 	/*flexisip will accept the message with 202 after 16 seconds*/

@@ -522,7 +522,7 @@ static void transfer_message_download_cancelled(void) {
 	/* create a chatroom on pauline's side */
 	chat_room = linphone_core_get_chat_room(pauline->lc,marie->identity);
 	msg = create_message_from_nowebcam(chat_room);
-	linphone_chat_room_send_message2(chat_room,msg,NULL,pauline->lc);
+	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* wait for marie to receive pauline's msg */
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
