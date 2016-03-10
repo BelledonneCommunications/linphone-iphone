@@ -1695,7 +1695,13 @@ static void linphone_core_register_default_codecs(LinphoneCore *lc){
 
 static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
 	if (strcmp(notified_event, "Presence") == 0) {
-		linphone_friend_list_notify_presence_received(linphone_core_get_default_friend_list(lc), lev, body);
+		const MSList* friendLists = linphone_core_get_friends_lists(lc);
+		while( friendLists != NULL ){
+			LinphoneFriendList* list = friendLists->data;
+			ms_warning("notify presence for list %p", list);
+			linphone_friend_list_notify_presence_received(list, lev, body);
+			friendLists = friendLists->next;
+		}
 	}
 }
 
