@@ -340,6 +340,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendRecv);
 			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionSendRecv);
 			linphone_core_accept_call_with_params(marie->lc, call, params);
+			linphone_call_params_unref(params);
 
 			/* Wait for 5s. */
 			wait_for_three_cores(marie->lc, pauline->lc, laure->lc, 5000);
@@ -553,7 +554,7 @@ static void enable_disable_camera_after_camera_switches(void) {
 test_t video_tests[] = {
 #if HAVE_GTK
 	TEST_NO_TAG("Early-media video during video call", early_media_video_during_video_call_test),
-	TEST_ONE_TAG("Two incoming early-media video calls", two_incoming_early_media_video_calls_test, "LeaksMemory"),
+	TEST_NO_TAG("Two incoming early-media video calls", two_incoming_early_media_video_calls_test),
 	TEST_NO_TAG("Early-media video with inactive audio", early_media_video_with_inactive_audio),
 	TEST_NO_TAG("Forked outgoing early-media video call with inactive audio", forked_outgoing_early_media_video_call_with_inactive_audio_test),
 #endif /*HAVE_GTK*/
