@@ -531,6 +531,7 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 			cbs.process_io_error = process_io_error_upload_log_collection;
 			cbs.process_auth_requested = process_auth_requested_upload_log_collection;
 			l = belle_http_request_listener_create_from_callbacks(&cbs, core);
+			belle_sip_object_data_set(BELLE_SIP_OBJECT(req), "http_request_listener", l, belle_sip_object_unref); // Ensure the listener object is destroyed when the request is destroyed
 			belle_http_provider_send_request(core->http_provider, req, l);
 		}
 		if (code == 200) { /* The file has been uploaded correctly, get the server reply */
@@ -683,6 +684,7 @@ void linphone_core_upload_log_collection(LinphoneCore *core) {
 		cbs.process_io_error = process_io_error_upload_log_collection;
 		cbs.process_auth_requested = process_auth_requested_upload_log_collection;
 		l = belle_http_request_listener_create_from_callbacks(&cbs, core);
+		belle_sip_object_data_set(BELLE_SIP_OBJECT(req), "http_request_listener", l, belle_sip_object_unref); // Ensure the listener object is destroyed when the request is destroyed
 		belle_http_provider_send_request(core->http_provider, req, l);
 		ms_free(name);
 	} else {
