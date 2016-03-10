@@ -36,7 +36,7 @@
 @property(weak, nonatomic) IBOutlet UIIconButton *chatButton;
 
 - (id)initWithIdentifier:(NSString *)identifier;
-- (void)setAddress:(NSString *)address;
+- (void)setAddress:(NSString *)address isPhone:(BOOL)phone;
 - (void)hideDeleteButton:(BOOL)hidden;
 
 - (IBAction)onCallClick:(id)sender;

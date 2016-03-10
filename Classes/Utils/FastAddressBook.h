@@ -47,8 +47,6 @@
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr;
 
 + (BOOL)isSipURI:(NSString *)address;						  // should be removed
-+ (NSString *)appendCountryCodeIfPossible:(NSString *)number; // should be removed
-+ (NSString *)normalizePhoneNumber:(NSString *)number;		  // should be removed
 + (NSString *)normalizeSipURI:(NSString *)address;			  // should be removed
 
 + (NSString *)localizedLabel:(NSString *)label;

@@ -180,7 +180,7 @@
 		[cell.editTextfield setKeyboardType:UIKeyboardTypeEmailAddress];
 	}
 
-	[cell setAddress:value];
+	[cell setAddress:value isPhone:(indexPath.section == ContactSections_Number)];
 
 	return cell;
 }

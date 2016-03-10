@@ -40,9 +40,18 @@
 
 #pragma mark - UITableViewCell Functions
 
-- (void)setAddress:(NSString *)address {
-	_addressLabel.text = _editTextfield.text = address;
+- (void)setAddress:(NSString *)address isPhone:(BOOL)phone {
+	NSString *name = address;
+	if (phone) {
+		char *normalizedPhone = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC),
+																			 address.UTF8String);
+		if (normalizedPhone) {
+			name = [NSString stringWithUTF8String:normalizedPhone];
+			ms_free(normalizedPhone);
+		}
+	}
 
+	_addressLabel.text = _editTextfield.text = name;
 	LinphoneAddress *addr = linphone_core_interpret_url(LC, _addressLabel.text.UTF8String);
 	_chatButton.enabled = _callButton.enabled = (addr != NULL);
 
