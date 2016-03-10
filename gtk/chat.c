@@ -356,17 +356,18 @@ void display_history_message(GtkWidget *chat_view,MSList *messages,const Linphon
 
 static void linphone_gtk_chat_add_contact(const LinphoneAddress *addr){
 	LinphoneFriend *lf=NULL;
+	LinphoneCore *lc = linphone_gtk_get_core();
 	gboolean show_presence=FALSE;
 	char *uri=linphone_address_as_string(addr);
 
-	lf=linphone_friend_new_with_address(uri);
+	lf=linphone_core_create_friend_with_address(lc, uri);
 	ms_free(uri);
 
 	linphone_friend_set_inc_subscribe_policy(lf,LinphoneSPWait);
 	linphone_friend_send_subscribe(lf,show_presence);
 
 	linphone_friend_set_address(lf,addr);
-	linphone_core_add_friend(linphone_gtk_get_core(),lf);
+	linphone_core_add_friend(lc, lf);
 	linphone_gtk_show_friends();
 }
 

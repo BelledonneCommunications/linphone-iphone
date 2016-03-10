@@ -1521,7 +1521,8 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
 	vpol.automatically_initiate = TRUE;
 
 	linphone_core_set_video_policy(pauline->lc, &vpol);
-	linphone_core_enable_video(pauline->lc, TRUE, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
 
 	BC_ASSERT_TRUE((call_ok=call(marie, pauline)));
 
@@ -3771,12 +3772,15 @@ static void multiple_early_media(void) {
 	pol.automatically_accept=1;
 	pol.automatically_initiate=1;
 
-	linphone_core_enable_video(pauline->lc,TRUE,TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
 
-	linphone_core_enable_video(marie1->lc,TRUE,TRUE);
+	linphone_core_enable_video_capture(marie1->lc, TRUE);
+	linphone_core_enable_video_display(marie1->lc, TRUE);
 	linphone_core_set_video_policy(marie1->lc,&pol);
 
-	linphone_core_enable_video(marie2->lc,TRUE,TRUE);
+	linphone_core_enable_video_capture(marie2->lc, TRUE);
+	linphone_core_enable_video_display(marie2->lc, TRUE);
 	linphone_core_set_video_policy(marie2->lc,&pol);
 	linphone_core_set_audio_port_range(marie2->lc,40200,40300);
 	linphone_core_set_video_port_range(marie2->lc,40400,40500);
@@ -3909,11 +3913,13 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 	pol.automatically_accept=1;
 	pol.automatically_initiate=1;
 
-	linphone_core_enable_video(pauline->lc,TRUE,TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
 	linphone_core_set_video_policy(pauline->lc,&pol);
 	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);
 
-	linphone_core_enable_video(marie->lc,TRUE,TRUE);
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_set_video_policy(marie->lc,&pol);
 	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 
@@ -4729,8 +4735,10 @@ static void audio_call_with_video_policy_enabled(void){
 	LinphoneVideoPolicy vpol;
 
 
-	linphone_core_enable_video(marie->lc, TRUE, TRUE);
-	linphone_core_enable_video(pauline->lc, TRUE, TRUE);
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
 	vpol.automatically_accept = vpol.automatically_initiate = TRUE;
 	linphone_core_set_video_policy(marie->lc, &vpol);
 	vpol.automatically_accept = vpol.automatically_initiate = FALSE;
@@ -4778,8 +4786,10 @@ static void classic_video_entry_phone_setup(void) {
 	lcs = ms_list_append(lcs, caller_mgr->lc);
 	lcs = ms_list_append(lcs, callee_mgr->lc);
 
-	linphone_core_enable_video(caller_mgr->lc, TRUE, TRUE);
-	linphone_core_enable_video(callee_mgr->lc, TRUE, TRUE);
+	linphone_core_enable_video_capture(caller_mgr->lc, TRUE);
+	linphone_core_enable_video_display(caller_mgr->lc, TRUE);
+	linphone_core_enable_video_capture(callee_mgr->lc, TRUE);
+	linphone_core_enable_video_display(callee_mgr->lc, TRUE);
 	linphone_core_set_avpf_mode(caller_mgr->lc, LinphoneAVPFEnabled);
 	linphone_core_set_avpf_mode(callee_mgr->lc, LinphoneAVPFEnabled);
 	linphone_core_set_video_policy(caller_mgr->lc, &vpol);
@@ -4943,8 +4953,10 @@ static void call_with_complex_late_offering(void){
 	LinphoneVideoPolicy vpol = {TRUE, TRUE};
 	bool_t call_ok;
 
-	linphone_core_enable_video(pauline->lc, TRUE, TRUE);
-	linphone_core_enable_video(marie->lc, TRUE, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_set_video_policy(pauline->lc, &vpol);
 	linphone_core_set_video_policy(marie->lc, &vpol);
 	linphone_core_set_video_device(pauline->lc,liblinphone_tester_mire_id);

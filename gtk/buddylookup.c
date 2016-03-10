@@ -283,14 +283,15 @@ void linphone_gtk_add_buddy_from_database(GtkWidget *button){
 		char *name;
 		char *addr;
 		LinphoneFriend *lf;
+		LinphoneCore *lc = linphone_gtk_get_core();
 		int presence=linphone_gtk_get_ui_config_int("use_subscribe_notify",1);
 		gtk_tree_model_get (model, &iter,LOOKUP_RESULT_SIP_URI , &uri,LOOKUP_RESULT_NAME, &name, -1);
 		addr=g_strdup_printf("%s <%s>",name,uri);
 
-		lf=linphone_friend_new_with_address(addr);
+		lf=linphone_core_create_friend_with_address(lc, addr);
 		linphone_friend_set_inc_subscribe_policy(lf,presence ? LinphoneSPAccept : LinphoneSPDeny);
 		linphone_friend_send_subscribe(lf,presence);
-		linphone_core_add_friend(linphone_gtk_get_core(),lf);
+		linphone_core_add_friend(lc, lf);
 		linphone_gtk_show_friends();
 		g_free(addr);
 		g_free(uri);

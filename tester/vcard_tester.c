@@ -131,7 +131,7 @@ static void linphone_vcard_update_existing_friends_test(void) {
 
 static void friends_if_no_db_set(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
-	LinphoneFriend *lf = linphone_friend_new();
+	LinphoneFriend *lf = linphone_core_create_friend(manager->lc);
 	LinphoneAddress *addr = linphone_address_new("sip:sylvain@sip.linphone.org");
 	const MSList *friends = NULL;
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
@@ -359,7 +359,7 @@ static void carddav_sync(void) {
 static void carddav_sync_2(void) {
 	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
-	LinphoneFriend *lf = linphone_friend_new_with_address("\"Sylvain\" <sip:sylvain@sip.linphone.org>");
+	LinphoneFriend *lf = linphone_core_create_friend_with_address(manager->lc, "\"Sylvain\" <sip:sylvain@sip.linphone.org>");
 	char *friends_db = create_filepath(bc_tester_get_writable_dir_prefix(), "friends", "db");
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
 	LinphoneCardDavContext *c = NULL;

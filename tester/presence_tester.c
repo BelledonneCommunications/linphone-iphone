@@ -274,7 +274,7 @@ static void simple_subscribe(void) {
 
 static void unsubscribe_while_subscribing(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneFriend* friend = linphone_friend_new_with_address("sip:toto@git.linphone.org"); /*any unexisting address*/
+	LinphoneFriend* friend = linphone_core_create_friend_with_address(marie->lc, "sip:toto@git.linphone.org"); /*any unexisting address*/
 	linphone_friend_edit(friend);
 	linphone_friend_enable_subscribes(friend,TRUE);
 	linphone_friend_done(friend);

@@ -420,10 +420,13 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	pol.automatically_accept = 1;
 	pol.automatically_initiate = 1;
 
-	linphone_core_enable_video(pauline->lc, TRUE, TRUE);
-	linphone_core_enable_video(marie1->lc, TRUE, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
+	linphone_core_enable_video_capture(marie1->lc, TRUE);
+	linphone_core_enable_video_display(marie1->lc, TRUE);
 	linphone_core_set_video_policy(marie1->lc, &pol);
-	linphone_core_enable_video(marie2->lc, TRUE, TRUE);
+	linphone_core_enable_video_capture(marie2->lc, TRUE);
+	linphone_core_enable_video_display(marie2->lc, TRUE);
 	linphone_core_set_video_policy(marie2->lc, &pol);
 	linphone_core_set_audio_port_range(marie2->lc, 40200, 40300);
 	linphone_core_set_video_port_range(marie2->lc, 40400, 40500);

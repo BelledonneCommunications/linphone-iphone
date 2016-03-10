@@ -1062,7 +1062,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		linphonec_friend_add(lc, name, addr);
 #else
 		LinphoneFriend *new_friend;
-		new_friend = linphone_friend_new_with_address(args);
+		new_friend = linphone_core_create_friend_with_address(lc, args);
 		linphone_core_add_friend(lc, new_friend);
 #endif
 		return 1;
@@ -1895,7 +1895,7 @@ linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr)
 	char url[PATH_MAX];
 
 	snprintf(url, PATH_MAX, "%s <%s>", name, addr);
-	newFriend = linphone_friend_new_with_address(url);
+	newFriend = linphone_core_create_friend_with_address(lc, url);
 	linphone_core_add_friend(lc, newFriend);
 	return 0;
 }
@@ -1946,8 +1946,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 	if (!args)
 		{
 			/* it means that you want to register the default proxy */
-			LinphoneProxyConfig *cfg=NULL;
-			linphone_core_get_default_proxy(lc,&cfg);
+			LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(lc);
 			if (cfg)
 			{
 				if(!linphone_proxy_config_is_registered(cfg)) {
@@ -1994,8 +1993,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 }
 
 static int lpc_cmd_unregister(LinphoneCore *lc, char *args){
-	LinphoneProxyConfig *cfg=NULL;
-	linphone_core_get_default_proxy(lc,&cfg);
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(lc);
 	if (cfg && linphone_proxy_config_is_registered(cfg)) {
 		linphone_proxy_config_edit(cfg);
 		linphone_proxy_config_enable_register(cfg,FALSE);
@@ -2023,7 +2021,7 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 	LinphoneProxyConfig *cfg;
 
 	if ( ! args ) return 0;
-	linphone_core_get_default_proxy(lc,&cfg);
+	cfg = linphone_core_get_default_proxy_config(lc);
 	if (strstr(args,"register"))
 	{
 		if (cfg)

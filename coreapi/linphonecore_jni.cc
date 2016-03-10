@@ -1523,9 +1523,8 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setDefaultProxyConfig(	J
 extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getDefaultProxyConfig(JNIEnv*  env
 		,jobject  thiz
 		,jlong lc) {
-	LinphoneProxyConfig *config=0;
-	linphone_core_get_default_proxy((LinphoneCore*)lc,&config);
-	if(config != 0) {
+	LinphoneProxyConfig *config = linphone_core_get_default_proxy_config((LinphoneCore*)lc);
+	if (config != NULL) {
 		jobject jproxy = getProxy(env,config,thiz);
 		return jproxy;
 	} else {

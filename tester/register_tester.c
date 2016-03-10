@@ -459,7 +459,7 @@ static void authenticated_register_with_wrong_credentials_with_params_base(const
 	/*check the detailed error info */
 	if (!user_agent || strcmp(user_agent,"tester-no-403")!=0){
 		LinphoneProxyConfig *cfg=NULL;
-		linphone_core_get_default_proxy(lcm->lc,&cfg);
+		cfg = linphone_core_get_default_proxy_config(lcm->lc);
 		BC_ASSERT_PTR_NOT_NULL(cfg);
 		if (cfg){
 			const LinphoneErrorInfo *ei=linphone_proxy_config_get_error_info(cfg);
@@ -488,7 +488,7 @@ static void authenticated_register_with_wrong_credentials_2(void) {
 
 	authenticated_register_with_wrong_credentials_with_params_base(NULL,lcm);
 
-	linphone_core_get_default_proxy(lcm->lc,&proxy);
+	proxy = linphone_core_get_default_proxy_config(lcm->lc);
 	/*Make sure registration attempts are stopped*/
 	linphone_proxy_config_edit(proxy);
 	linphone_proxy_config_enable_register(proxy,FALSE);
@@ -593,7 +593,7 @@ static void proxy_transport_change(void){
 
 	register_with_refresh_base(lcm->lc,FALSE,auth_domain,NULL);
 
-	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
 	reset_counters(counters); /*clear stats*/
 	linphone_proxy_config_edit(proxy_config);
 
@@ -630,7 +630,7 @@ static void proxy_transport_change_with_wrong_port(void) {
 
 	register_with_refresh_base_3(lcm->lc, FALSE, auth_domain, "sip2.linphone.org:5987", 0,transport,LinphoneRegistrationProgress);
 
-	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
 	linphone_proxy_config_edit(proxy_config);
 
 	BC_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1,3000));
@@ -661,7 +661,7 @@ static void proxy_transport_change_with_wrong_port_givin_up(void) {
 
 	register_with_refresh_base_3(lcm->lc, FALSE, auth_domain, "sip2.linphone.org:5987", 0,transport,LinphoneRegistrationProgress);
 
-	linphone_core_get_default_proxy(lcm->lc,&proxy_config);
+	proxy_config = linphone_core_get_default_proxy_config(lcm->lc);
 	linphone_proxy_config_edit(proxy_config);
 
 	BC_ASSERT_FALSE(wait_for_until(lcm->lc,lcm->lc,&counters->number_of_LinphoneRegistrationCleared,1,3000));
@@ -839,7 +839,7 @@ static void tls_with_non_tls_server(void){
 		lcm=linphone_core_manager_new2( "marie_rc", 0);
 		lc=lcm->lc;
 		sal_set_transport_timeout(lc->sal,3000);
-		linphone_core_get_default_proxy(lc,&proxy_cfg);
+		proxy_cfg = linphone_core_get_default_proxy_config(lc);
 		linphone_proxy_config_edit(proxy_cfg);
 		addr=linphone_address_new(linphone_proxy_config_get_addr(proxy_cfg));
 		snprintf(tmp,sizeof(tmp),"sip:%s:%i;transport=tls"	,linphone_address_get_domain(addr)

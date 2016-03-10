@@ -123,7 +123,7 @@ void __linphone_friend_do_subscribe(LinphoneFriend *fr){
 	fr->subscribe_active=TRUE;
 }
 
-LinphoneFriend * linphone_friend_new(){
+LinphoneFriend * linphone_friend_new(void){
 	LinphoneFriend *obj = belle_sip_object_new(LinphoneFriend);
 	obj->pol = LinphoneSPAccept;
 	obj->presence = NULL;

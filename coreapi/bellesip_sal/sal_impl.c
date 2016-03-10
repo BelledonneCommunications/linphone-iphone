@@ -740,13 +740,13 @@ static void set_tls_properties(Sal *ctx){
 	belle_sip_listening_point_t *lp=belle_sip_provider_get_listening_point(ctx->prov,"TLS");
 	if (lp){
 		belle_sip_tls_listening_point_t *tlp=BELLE_SIP_TLS_LISTENING_POINT(lp);
-		int verify_exceptions=0;
-
-		if (!ctx->tls_verify) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_ANY_REASON;
-		else if (!ctx->tls_verify_cn) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_CN_MISMATCH;
-
-		belle_sip_tls_listening_point_set_root_ca(tlp,ctx->root_ca); /*root_ca might be NULL */
-		belle_sip_tls_listening_point_set_verify_exceptions(tlp,verify_exceptions);
+		belle_tls_crypto_config_t *crypto_config = belle_tls_crypto_config_new();
+		int verify_exceptions = BELLE_TLS_VERIFY_NONE;
+		if (!ctx->tls_verify) verify_exceptions = BELLE_TLS_VERIFY_ANY_REASON;
+		else if (!ctx->tls_verify_cn) verify_exceptions = BELLE_TLS_VERIFY_CN_MISMATCH;
+		belle_tls_crypto_config_set_verify_exceptions(crypto_config, verify_exceptions);
+		if (ctx->root_ca != NULL) belle_tls_crypto_config_set_root_ca(crypto_config, ctx->root_ca);
+		belle_sip_tls_listening_point_set_crypto_config(tlp, crypto_config);
 	}
 }
 
