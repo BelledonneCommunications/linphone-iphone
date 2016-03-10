@@ -121,7 +121,7 @@ typedef struct _LinphoneFriend LinphoneFriend;
  * @return a new empty #LinphoneFriend
  * @deprecated use #linphone_core_create_friend instead
  */
-LINPHONE_PUBLIC MS2_DEPRECATED LinphoneFriend * linphone_friend_new(void); /*fix me me replace MS2_DEPRECATED by LINPHONE_DEPRECATED*/
+LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneFriend * linphone_friend_new(void);
 
 /**
  * Contructor same as linphone_friend_new() + linphone_friend_set_address()
@@ -129,7 +129,7 @@ LINPHONE_PUBLIC MS2_DEPRECATED LinphoneFriend * linphone_friend_new(void); /*fix
  * @return a new #LinphoneFriend with \link linphone_friend_get_address() address initialized \endlink
  * @deprecated use #linphone_core_create_friend_with_address instead
  */
-LINPHONE_PUBLIC	MS2_DEPRECATED LinphoneFriend *linphone_friend_new_with_address(const char *addr); /*fix me me replace MS2_DEPRECATED by LINPHONE_DEPRECATED*/
+LINPHONE_PUBLIC	LINPHONE_DEPRECATED LinphoneFriend *linphone_friend_new_with_address(const char *addr);
 
 /**
  * Contructor same as linphone_friend_new() + linphone_friend_set_address()

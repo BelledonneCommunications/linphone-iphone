@@ -1135,6 +1135,7 @@ static void convert_presence_to_xml_requested(SalOp *op, SalPresenceModel *prese
 	if(linphone_presence_model_get_presentity((LinphonePresenceModel*)presence) == NULL) {
 		LinphoneAddress * presentity = linphone_address_new(contact);
 		linphone_presence_model_set_presentity((LinphonePresenceModel*)presence, presentity);
+		linphone_address_unref(presentity);
 	}
 	*content = linphone_presence_model_to_xml((LinphonePresenceModel*)presence);
 }

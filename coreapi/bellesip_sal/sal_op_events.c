@@ -195,6 +195,18 @@ static void subscribe_process_request_event(void *op_base, const belle_sip_reque
 
 static belle_sip_listener_callbacks_t op_subscribe_callbacks={ 0 };
 
+/*Invoke when sal_op_release is called by upper layer*/
+static void sal_op_release_cb(struct SalOpBase* op_base) {
+	SalOp *op =(SalOp*)op_base;
+	if(op->refresher) {
+		belle_sip_refresher_stop(op->refresher);
+		belle_sip_object_unref(op->refresher);
+		op->refresher=NULL;
+		set_or_update_dialog(op,NULL); /*only if we have refresher. else dialog terminated event will remove association*/
+	}
+	
+}
+
 void sal_op_subscribe_fill_cbs(SalOp*op) {
 	if (op_subscribe_callbacks.process_io_error==NULL){
 		op_subscribe_callbacks.process_io_error=subscribe_process_io_error;
@@ -206,6 +218,7 @@ void sal_op_subscribe_fill_cbs(SalOp*op) {
 	}
 	op->callbacks=&op_subscribe_callbacks;
 	op->type=SalOpSubscribe;
+	op->base.release_cb=sal_op_release_cb;
 }
 
 

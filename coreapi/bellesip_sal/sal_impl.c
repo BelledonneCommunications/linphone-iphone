@@ -747,6 +747,7 @@ static void set_tls_properties(Sal *ctx){
 		belle_tls_crypto_config_set_verify_exceptions(crypto_config, verify_exceptions);
 		if (ctx->root_ca != NULL) belle_tls_crypto_config_set_root_ca(crypto_config, ctx->root_ca);
 		belle_sip_tls_listening_point_set_crypto_config(tlp, crypto_config);
+		belle_sip_object_unref(crypto_config);
 	}
 }
 

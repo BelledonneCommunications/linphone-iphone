@@ -6493,6 +6493,8 @@ LpConfig * linphone_core_create_lp_config(LinphoneCore *lc, const char *filename
 static void linphone_core_uninit(LinphoneCore *lc)
 {
 	MSList *elem = NULL;
+	int i=0;
+	bool_t wait_until_unsubscribe = FALSE;
 	linphone_task_list_free(&lc->hooks);
 	lc->video_conf.show_local = FALSE;
 
@@ -6506,6 +6508,13 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	for (elem = lc->friends_lists; elem != NULL; elem = ms_list_next(elem)) {
 		LinphoneFriendList *list = (LinphoneFriendList *)elem->data;
 		linphone_friend_list_close_subscriptions(list);
+		if (list->event)
+			wait_until_unsubscribe =  TRUE;
+	}
+	/*give a chance to unsubscribe, might be optimized*/
+	for (i=0; wait_until_unsubscribe && i<20; i++) {
+		linphone_core_iterate(lc);
+		ms_usleep(50000);
 	}
 	
 	lc->chatrooms = ms_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);

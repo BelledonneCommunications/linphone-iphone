@@ -599,7 +599,9 @@ LinphoneFriend * linphone_friend_list_find_friend_by_out_subscribe(const Linphon
 
 void linphone_friend_list_close_subscriptions(LinphoneFriendList *list) {
 	 /* FIXME we should wait until subscription to complete. */
-	if (list->friends)
+	if (list->event) {
+		linphone_event_terminate(list->event);
+	} else if (list->friends)
 		ms_list_for_each(list->friends, (void (*)(void *))linphone_friend_close_subscriptions);
 }
 

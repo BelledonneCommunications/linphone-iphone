@@ -52,24 +52,13 @@ static void presence_process_io_error(void *user_ctx, const belle_sip_io_error_e
 
 static void presence_process_dialog_terminated(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
 	SalOp* op= (SalOp*)ctx;
-	if (op->dialog) {
-		if (belle_sip_dialog_is_server(op->dialog)){
+	if (op->dialog && belle_sip_dialog_is_server(op->dialog)) {
 			ms_message("Incoming subscribtion from [%s] terminated",sal_op_get_from(op));
 			if (!op->op_released){
 				op->base.root->callbacks.subscribe_presence_closed(op, sal_op_get_from(op));
 			}
 			set_or_update_dialog(op, NULL);
-		}else{
-			if (belle_sip_dialog_terminated_event_is_expired(event)){
-				ms_warning("Outgoing presence subscription expired.");
-				if (op->refresher){
-					/*send a new SUBSCRIBE, that will attempt to establish a new dialog*/
-					sal_subscribe_presence(op,NULL,NULL,-1);
-				}
-			}
-		}
-		
-	}
+	}/* else client dialog is managed by refresher*/
 }
 
 static void presence_refresher_listener(belle_sip_refresher_t* refresher, void* user_pointer, unsigned int status_code, const char* reason_phrase){
@@ -144,13 +133,6 @@ static void presence_response_event(void *op_base, const belle_sip_response_even
 			}
 			break;
 		}
-		case BELLE_SIP_DIALOG_TERMINATED:
-			if (op->refresher) {
-				belle_sip_refresher_stop(op->refresher);
-				belle_sip_object_unref(op->refresher);
-				op->refresher=NULL;
-			}
-		break;
 		default: {
 			ms_error("presence op [%p] receive answer [%i] not implemented",op,code);
 		}
@@ -297,6 +279,17 @@ static void presence_process_request_event(void *op_base, const belle_sip_reques
 
 static belle_sip_listener_callbacks_t op_presence_callbacks={0};
 
+/*Invoke when sal_op_release is called by upper layer*/
+static void sal_op_release_cb(struct SalOpBase* op_base) {
+	SalOp *op =(SalOp*)op_base;
+	if(op->refresher) {
+		belle_sip_refresher_stop(op->refresher);
+		belle_sip_object_unref(op->refresher);
+		op->refresher=NULL;
+		set_or_update_dialog(op,NULL); /*only if we have refresher. else dialog terminated event will remove association*/
+	}
+	
+}
 void sal_op_presence_fill_cbs(SalOp*op) {
 	if (op_presence_callbacks.process_request_event==NULL){
 		op_presence_callbacks.process_io_error=presence_process_io_error;
@@ -308,6 +301,7 @@ void sal_op_presence_fill_cbs(SalOp*op) {
 	}
 	op->callbacks=&op_presence_callbacks;
 	op->type=SalOpPresence;
+	op->base.release_cb=sal_op_release_cb;
 }
 
 
@@ -380,6 +374,7 @@ int sal_notify_presence(SalOp *op, SalPresenceModel *presence){
 
 int sal_notify_presence_close(SalOp *op){
 	belle_sip_request_t* notify=NULL;
+	int status;
 	if (sal_op_check_dialog_state(op)) {
 		return -1;
 	}
@@ -389,7 +384,9 @@ int sal_notify_presence_close(SalOp *op){
 	sal_add_presence_info(op,BELLE_SIP_MESSAGE(notify),NULL); /*FIXME, what about expires ??*/
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(notify)
 		,BELLE_SIP_HEADER(belle_sip_header_subscription_state_create(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,-1)));
-	return sal_op_send_request(op,notify);
+	status = sal_op_send_request(op,notify);
+	set_or_update_dialog(op,NULL);  /*because we may be chalanged for the notify, so we must release dialog right now*/
+	return status;
 }
 
 

@@ -709,7 +709,6 @@ static void test_presence_list_base(bool_t enable_compression) {
 	const char *marie_identity;
 	const char *pauline_identity;
 	MSList* lcs = NULL;
-	int dummy = 0;
 
 	laure_identity = get_identity(laure);
 	marie_identity = get_identity(marie);
@@ -817,13 +816,23 @@ static void test_presence_list_base(bool_t enable_compression) {
 	enable_publish(marie, FALSE);
 	enable_publish(pauline, FALSE);
 
-	wait_for_list(lcs, &dummy, 1, 2000); /* Wait a little bit for the presence notifications. TODO: Wait for the correct number of PresenceReceived events. */
+	
+	reset_counters(&pauline->stat);
+	reset_counters(&laure->stat);
+	reset_counters(&marie->stat);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphonePresenceActivityOffline, 1, 2000));
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(pauline->lc), marie_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
+
+	BC_ASSERT_TRUE(wait_for_list(lcs, &laure->stat.number_of_LinphonePresenceActivityOffline, 2, 2000));
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), pauline_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), marie_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
+	
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphonePresenceActivityOffline, 1, 2000));
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(marie->lc), laure_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusOffline, int, "%d");
 
@@ -1023,7 +1032,7 @@ static void simple_subscribe_with_friend_from_rc(void) {
 
 
 test_t presence_tests[] = {
-	TEST_ONE_TAG("Simple Subscribe", simple_subscribe,"LeaksMemory"),
+	TEST_ONE_TAG("Simple Subscribe", simple_subscribe,"presence"),
 	TEST_ONE_TAG("Simple Subscribe with friend from rc", simple_subscribe_with_friend_from_rc,"LeaksMemory"),
 	TEST_ONE_TAG("Simple Publish", simple_publish, "LeaksMemory"),
 	TEST_ONE_TAG("Simple Publish with expires", publish_with_expires, "LeaksMemory"),
@@ -1033,7 +1042,7 @@ test_t presence_tests[] = {
 	TEST_NO_TAG("App managed presence failure", subscribe_failure_handle_by_app),
 	TEST_NO_TAG("Presence SUBSCRIBE forked", subscribe_presence_forked),
 	TEST_NO_TAG("Presence SUBSCRIBE expired", subscribe_presence_expired),
-	TEST_ONE_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable, "LeaksMemory"),
+	TEST_ONE_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable, "presence"),
 	TEST_ONE_TAG("Subscribe with late publish", test_subscribe_notify_publish, "LeaksMemory"),
 	TEST_ONE_TAG("Forked subscribe with late publish", test_forked_subscribe_notify_publish, "LeaksMemory"),
 	TEST_ONE_TAG("Presence list", test_presence_list, "LeaksMemory"),

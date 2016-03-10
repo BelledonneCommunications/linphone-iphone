@@ -360,10 +360,10 @@ static void publish_without_expires(void){
 
 test_t event_tests[] = {
 	TEST_ONE_TAG("Subscribe declined", subscribe_test_declined, "LeaksMemory"),
-	TEST_ONE_TAG("Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber, "LeaksMemory"),
+	TEST_ONE_TAG("Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber, "presence"),
 	TEST_ONE_TAG("Subscribe with custom headers", subscribe_test_with_custom_header, "LeaksMemory"),
-	TEST_ONE_TAG("Subscribe refreshed", subscribe_test_refreshed, "LeaksMemory"),
-	TEST_ONE_TAG("Subscribe manually refreshed", subscribe_test_manually_refreshed, "LeaksMemory"),
+	TEST_ONE_TAG("Subscribe refreshed", subscribe_test_refreshed, "presence"),
+	TEST_ONE_TAG("Subscribe manually refreshed", subscribe_test_manually_refreshed, "presence"),
 	TEST_ONE_TAG("Subscribe terminated by notifier", subscribe_test_terminated_by_notifier, "LeaksMemory"),
 	TEST_ONE_TAG("Publish", publish_test, "LeaksMemory"),
 	TEST_ONE_TAG("Publish without expires", publish_without_expires, "LeaksMemory"),

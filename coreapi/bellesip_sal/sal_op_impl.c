@@ -35,6 +35,8 @@ void sal_op_release(SalOp *op){
 	if (op->state!=SalOpStateTerminating)
 		op->state=SalOpStateTerminated;
 	sal_op_set_user_pointer(op,NULL);/*mandatory because releasing op doesn't not mean freeing op. Make sure back pointer will not be used later*/
+	if (op->base.release_cb)
+		op->base.release_cb(&op->base);
 	if (op->refresher) {
 		belle_sip_refresher_stop(op->refresher);
 	}

@@ -330,7 +330,9 @@ bool_t sal_media_description_has_srtp(const SalMediaDescription *md);
 bool_t sal_media_description_has_dtls(const SalMediaDescription *md);
 int sal_media_description_get_nb_active_streams(const SalMediaDescription *md);
 
-
+struct SalOpBase;
+typedef void (*SalOpReleaseCb)(struct SalOpBase *op);
+	
 /*this structure must be at the first byte of the SalOp structure defined by implementors*/
 typedef struct SalOpBase{
 	Sal *root;
@@ -355,6 +357,7 @@ typedef struct SalOpBase{
 	SalCustomHeader *sent_custom_headers;
 	SalCustomHeader *recv_custom_headers;
 	char* entity_tag; /*as defined by rfc3903 (I.E publih)*/
+	SalOpReleaseCb release_cb;
 } SalOpBase;
 
 
