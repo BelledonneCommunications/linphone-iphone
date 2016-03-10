@@ -105,6 +105,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	tableController.tableView.accessibilityIdentifier = @"Contacts table";
 	[self changeView:ContactsLinphone];
 	if ([tableController totalNumberOfItems] == 0) {
 		[self changeView:ContactsAll];

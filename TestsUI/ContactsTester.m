@@ -9,6 +9,7 @@
 #import "ContactsTester.h"
 
 #import "ContactDetailsTableView.h"
+#import "UIContactCell.h"
 
 @implementation ContactsTester
 
@@ -133,6 +134,19 @@
 
 	[tester tapViewWithAccessibilityLabel:@"Delete" traits:UIAccessibilityTraitButton];
 	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
+}
+
+- (void)testDeleteContactWithSwipe {
+	NSString *contactName = [self getUUID];
+	[self createContact:contactName lastName:@"dummy" phoneNumber:@"123" SIPAddress:@"ola"];
+	[tester tapViewWithAccessibilityLabel:@"Back"];
+	NSString *fullName = [contactName stringByAppendingString:@" dummy"];
+
+	[tester swipeViewWithAccessibilityLabel:fullName inDirection:KIFSwipeDirectionLeft];
+	[tester tapViewWithAccessibilityLabel:@"Delete"];
+
+	// we should not find this contact anymore
+	XCTAssert([tester tryFindingViewWithAccessibilityLabel:fullName error:nil] == NO);
 }
 
 - (void)testEditContact {
