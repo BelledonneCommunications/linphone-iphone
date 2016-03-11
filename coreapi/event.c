@@ -111,7 +111,7 @@ void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState stat
 		ms_message("LinphoneEvent [%p] moving to subscription state %s",lev,linphone_subscription_state_to_string(state));
 		lev->subscription_state=state;
 		linphone_core_notify_subscription_state_changed(lev->lc,lev,state);
-		if (state==LinphoneSubscriptionTerminated){
+		if (state==LinphoneSubscriptionTerminated || state == LinphoneSubscriptionError){
 			linphone_event_unref(lev);
 		}
 	}
@@ -194,6 +194,7 @@ int linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneContent *bod
 
 	if (lev->send_custom_headers){
 		sal_op_set_sent_custom_header(lev->op,lev->send_custom_headers);
+		sal_custom_header_free(lev->send_custom_headers);
 		lev->send_custom_headers=NULL;
 	}else sal_op_set_sent_custom_header(lev->op,NULL);
 
@@ -269,6 +270,7 @@ static int _linphone_event_send_publish(LinphoneEvent *lev, const LinphoneConten
 	}
 	if (lev->send_custom_headers){
 		sal_op_set_sent_custom_header(lev->op,lev->send_custom_headers);
+		sal_custom_header_free(lev->send_custom_headers);
 		lev->send_custom_headers=NULL;
 	}else sal_op_set_sent_custom_header(lev->op,NULL);
 	body_handler = sal_body_handler_from_content(body);
