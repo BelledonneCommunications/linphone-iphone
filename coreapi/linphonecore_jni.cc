@@ -627,10 +627,7 @@ public:
 		}
 
 		if (ljb->notifyPresenceReceivedId) {
-			ms_error(">>> notify_presence_receivedID is %p", ljb->notifyPresenceReceivedId);
 			vTable->notify_presence_received = notify_presence_received;
-		} else {
-			ms_error(">>> notify_presence_receivedID is NULLL");
 		}
 
 		if (ljb->messageReceivedId) {
@@ -866,8 +863,6 @@ public:
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		int isLocalRef = FALSE;
 		jobject jfriend = NULL;
-
-		ms_error(">>> PRESENCE RECEIVED");
 		
 		if (result != 0) {
 			ms_error("cannot attach VM");
