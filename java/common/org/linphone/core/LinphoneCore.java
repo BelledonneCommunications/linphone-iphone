@@ -2302,4 +2302,10 @@ public interface LinphoneCore {
 	 * Set user certificates directory path (used by SRTP-DTLS).
 	 */
 	public void setUserCertificatesPath(String path);
+
+	/**
+	 * Reload mediastreamer2 plugins from specified directory.
+	 * @param path The path from where plugins are to be loaded.
+	**/
+	public void reloadMsPlugins(String path);
 }

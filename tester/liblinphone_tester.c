@@ -84,13 +84,16 @@ static void liblinphone_android_ortp_log_handler(const char *domain, OrtpLogLeve
 
 void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	char buffer[CALLBACK_BUFFER_SIZE];
+	jstring javaString;
+	jclass cls;
+	jmethodID method;
+	jint javaLevel = level;
 	JNIEnv *env = current_env;
 	if(env == NULL) return;
 	vsnprintf(buffer, CALLBACK_BUFFER_SIZE, fmt, args);
-	jstring javaString = (*env)->NewStringUTF(env, buffer);
-	jint javaLevel = level;
-	jclass cls = (*env)->GetObjectClass(env, current_obj);
-	jmethodID method = (*env)->GetMethodID(env, cls, "printLog", "(ILjava/lang/String;)V");
+	javaString = (*env)->NewStringUTF(env, buffer);
+	cls = (*env)->GetObjectClass(env, current_obj);
+	method = (*env)->GetMethodID(env, cls, "printLog", "(ILjava/lang/String;)V");
 	(*env)->CallVoidMethod(env, current_obj, method, javaLevel, javaString);
 	(*env)->DeleteLocalRef(env,javaString);
 	(*env)->DeleteLocalRef(env,cls);

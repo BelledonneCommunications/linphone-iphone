@@ -59,8 +59,14 @@ if(NOT IOS OR NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	endif()
 endif()
 
-if(IOS)
-	add_library(linphonetester STATIC ${SOURCE_FILES})
+if(ANDROID OR IOS)
+	if(ANDROID)
+		add_library(linphonetester SHARED ${SOURCE_FILES})
+		set_target_properties(linphonetester PROPERTIES OUTPUT_NAME "linphonetester-${CMAKE_SYSTEM_PROCESSOR}")
+	endif()
+	if(IOS)
+		add_library(linphonetester STATIC ${SOURCE_FILES})
+	endif()
 	target_include_directories(linphonetester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
 	target_link_libraries(linphonetester linphone ${BCTOOLBOX_TESTER_LIBRARIES})
 	install(TARGETS linphonetester
@@ -72,7 +78,7 @@ if(IOS)
 	install(FILES "liblinphone_tester.h"
 		DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/linphone
 		PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-		)
+	)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	add_library(linphone_tester_static STATIC ${SOURCE_FILES})
 	target_include_directories(linphone_tester_static PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
@@ -100,7 +106,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/BelledonneCommunications.Linphone.Tester.pdb
 			DESTINATION ${CMAKE_INSTALL_LIBDIR}
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-		)
+	)
 	endif()
 else()
 	add_executable(liblinphone_tester ${SOURCE_FILES})

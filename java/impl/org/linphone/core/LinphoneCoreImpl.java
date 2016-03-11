@@ -33,6 +33,7 @@ import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.media.AudioManager;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
@@ -179,6 +180,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native static void setAndroidPowerManager(Object pm);
 	private native void setAndroidWifiLock(long nativePtr,Object wifi_lock);
 	private native void setAndroidMulticastLock(long nativePtr,Object multicast_lock);
+	private native void reloadMsPlugins(long nativePtr, String path);
 
 	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
 		mListener = listener;
@@ -204,6 +206,8 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public void setContext(Object context) {
 		mContext = (Context)context;
+		ApplicationInfo info = mContext.getApplicationInfo();
+		reloadMsPlugins(info.nativeLibraryDir);
 		mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 		setAndroidPowerManager(mContext.getSystemService(Context.POWER_SERVICE));
 		if (Version.sdkAboveOrEqual(Version.API12_HONEYCOMB_MR1_31X)) {
@@ -1652,5 +1656,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	@Override
 	public void setUserCertificatesPath(String path) {
 		setUserCertificatesPath(nativePtr, path);
+	}
+
+	public void reloadMsPlugins(String path) {
+		reloadMsPlugins(nativePtr, path);
 	}
 }

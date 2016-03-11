@@ -29,7 +29,7 @@ extern "C" {
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/msmediaplayer.h"
 #include "mediastreamer2/msutils.h"
-#include "devices.h"
+#include "mediastreamer2/devices.h"
 }
 #include "mediastreamer2/msjava.h"
 #include "private.h"
@@ -39,17 +39,6 @@ extern "C" {
 
 #ifdef ANDROID
 #include <android/log.h>
-
-/*there are declarations of the init routines of our plugins.
- * Since there is no way to dlopen() installed in a non-standard place in the apk,
- * we have to invoke the init routines manually*/
-extern "C" void libmsx264_init(MSFactory *factory);
-extern "C" void libmsopenh264_init(MSFactory *factory);
-extern "C" void libmsamr_init(MSFactory *factory);
-extern "C" void libmssilk_init(MSFactory *factory);
-extern "C" void libmsbcg729_init(MSFactory *factory);
-extern "C" void libmswebrtc_init(MSFactory *factory);
-extern "C" void libmscodec2_init(MSFactory *factory);
 
 #include <belle-sip/wakelock.h>
 #endif /*ANDROID*/
@@ -1330,32 +1319,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	jobject core = env->NewGlobalRef(thiz);
 	ljb->setCore(core);
 	LinphoneCore *lc = linphone_core_new(vTable, userConfig, factoryConfig, ljb);
-	MSFactory *factory = linphone_core_get_ms_factory(lc);
-	
 
-#ifdef HAVE_X264
-	libmsx264_init(factory);
-#endif
-#ifdef HAVE_OPENH264
-	libmsopenh264_init(factory);
-#endif
-#ifdef HAVE_AMR
-	libmsamr_init(factory);
-#endif
-#ifdef HAVE_SILK
-	libmssilk_init(factory);
-#endif
-#ifdef HAVE_G729
-	libmsbcg729_init(factory);
-#endif
-#ifdef HAVE_WEBRTC
-	libmswebrtc_init(factory);
-#endif
-#ifdef HAVE_CODEC2
-	libmscodec2_init(factory);
-#endif
-	linphone_core_reload_ms_plugins(lc, NULL);
-	
 	jlong nativePtr = (jlong)lc;
 	if (userConfig) env->ReleaseStringUTFChars(juserConfig, userConfig);
 	if (factoryConfig) env->ReleaseStringUTFChars(jfactoryConfig, factoryConfig);
@@ -4675,8 +4639,7 @@ extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_createConference(JNIE
 	jmethodID conference_constructor = env->GetMethodID(conference_class, "<init>", "(J)V");
 	LinphoneConferenceParams *params = NULL;
 	LinphoneConference *conference;
-	jobject jconference;
-	
+
 	if(jparams) params = (LinphoneConferenceParams *)env->GetLongField(jparams, params_native_ptr_attr);
 	conference = linphone_core_create_conference_with_params((LinphoneCore *)corePtr, params);
 	if(conference) return env->NewObject(conference_class, conference_constructor, (jlong)conference);
@@ -5454,7 +5417,7 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneInfoMessageImpl_setContent
 	linphone_content_set_string_buffer(content, tmp = env->GetStringUTFChars(jdata,NULL));
 	env->ReleaseStringUTFChars(jdata, tmp);
 	
-	linphone_info_message_set_content((LinphoneInfoMessage*)infoptr, content);
+	linphone_info_message_set_content(infomsg, content);
 	linphone_content_unref(content);
 }
 
@@ -7208,3 +7171,8 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_setUserCertificat
 	if (path) env->ReleaseStringUTFChars(jpath, path);
 }
 
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCoreImpl_reloadMsPlugins(JNIEnv *env, jobject jobj, jlong pcore, jstring jpath) {
+	const char *path = jpath ? env->GetStringUTFChars(jpath, NULL) : NULL;
+	linphone_core_reload_ms_plugins((LinphoneCore*)pcore, path);
+	if (path) env->ReleaseStringUTFChars(jpath, path);
+}

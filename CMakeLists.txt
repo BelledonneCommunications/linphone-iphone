@@ -234,6 +234,9 @@ add_definitions("-DIN_LINPHONE")
 if(ENABLE_DEBUG_LOGS)
 	add_definitions("-DDEBUG")
 endif()
+if(ANDROID)
+	add_definitions("-DANDROID")
+endif()
 
 set(STRICT_OPTIONS_CPP )
 set(STRICT_OPTIONS_C )
@@ -295,6 +298,7 @@ else()
 endif()
 
 
+add_subdirectory(java)
 add_subdirectory(coreapi)
 add_subdirectory(share)
 if(ENABLE_CONSOLE_UI)
