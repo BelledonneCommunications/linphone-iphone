@@ -850,7 +850,6 @@ public:
 	static void notify_presence_received(LinphoneCore *lc,  LinphoneFriend *my_friend) {
 		JNIEnv *env = 0;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
-		int isLocalRef = FALSE;
 		jobject jfriend = NULL;
 		
 		if (result != 0) {
@@ -2063,7 +2062,6 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getFriendList(JN
 
 	for (int i = 0; i < friendsSize; i++) {
 		LinphoneFriend* lfriend = (LinphoneFriend*)friends->data;
-		int isLocalRef;
 		jobject jfriend = getFriend(env,lfriend);
 		if(jfriend != NULL){
 			env->SetObjectArrayElement(jFriends, i, jfriend);
@@ -3220,7 +3218,6 @@ extern "C" void Java_org_linphone_core_LinphoneFriendListImpl_synchronizeFriends
 static void contact_created(LinphoneFriendList *list, LinphoneFriend *lf) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
-	int isLocalRef = 0;
 	if (result != 0) {
 		ms_error("cannot attach VM\n");
 		return;
@@ -3245,7 +3242,6 @@ static void contact_created(LinphoneFriendList *list, LinphoneFriend *lf) {
 static void contact_updated(LinphoneFriendList *list, LinphoneFriend *lf_new, LinphoneFriend *lf_old) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
-	int isLocalRef1 = 0, isLocalRef2 = 0;
 	if (result != 0) {
 		ms_error("cannot attach VM\n");
 		return;
@@ -3271,7 +3267,6 @@ static void contact_updated(LinphoneFriendList *list, LinphoneFriend *lf_new, Li
 
 static void contact_removed(LinphoneFriendList *list, LinphoneFriend *lf) {
 	JNIEnv *env = 0;
-	int isLocalRef = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
 	if (result != 0) {
 		ms_error("cannot attach VM\n");
@@ -3367,7 +3362,6 @@ extern "C" jobject Java_org_linphone_core_LinphoneFriendListImpl_findFriendByUri
 																		,jstring juri) {
 	const char* uri = env->GetStringUTFChars(juri, NULL);
 	LinphoneFriend* lFriend;
-	int isLocalRef = 0;
 	lFriend = linphone_friend_list_find_friend_by_uri((LinphoneFriendList*)friendListptr, uri);
 	env->ReleaseStringUTFChars(juri, uri);
 	if(lFriend != NULL) {
@@ -3402,7 +3396,6 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneFriendListImpl_getFriendL
 
 	for (int i = 0; i < friendsSize; i++) {
 		LinphoneFriend* lfriend = (LinphoneFriend*)friends->data;
-		int isLocalRef = 0;
 		jobject jfriend =  getFriend(env,lfriend);
 		if(jfriend != NULL){
 			env->SetObjectArrayElement(jFriends, i, jfriend);
