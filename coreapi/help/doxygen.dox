@@ -16,16 +16,16 @@
  *
  * Liblinphone is GPL (see COPYING file). Please understand the licencing details
  * before using it!
- * 
+ *
  * For any use of this library beyond the rights granted to you by the
- * GPL license, please contact Belledonne Communications 
+ * GPL license, please contact Belledonne Communications
  * (contact@belledonne-communications.com)
- * 
+ *
  *
 **/
 
 /**
- * @page liblinphone_license COPYING 
+ * @page liblinphone_license COPYING
  * @include COPYING
  */
 
@@ -54,7 +54,7 @@
 /**
  * @defgroup media_parameters Controlling media parameters
  *<b> Multicast </b>
- *<br> Call using rtp multicast addresses are supported for both audio and video with some limitations. Limitations are, no stun, no ice, no encryption. 
+ *<br> Call using rtp multicast addresses are supported for both audio and video with some limitations. Limitations are, no stun, no ice, no encryption.
  *<br><li> Incoming call with multicast address are automatically accepted. The called party switches in a media receive only mode.
  *<br><li> Outgoing call willing to send media to a multicast address can activate multicast using \link linphone_core_enable_video_multicast\endlink or
  *\link linphone_core_enable_audio_multicast\endlink . The calling party switches in a media listen send only mode.
@@ -62,15 +62,15 @@
 
 /**
  * @defgroup proxies Managing proxies
- *User registration is controled by  #LinphoneProxyConfig settings.<br> Each #LinphoneProxyConfig object can be configured with registration informations 
- *like \link linphone_proxy_config_set_server_addr() proxy address \endlink , \link linphone_proxy_config_set_identity() user id \endlink, \link linphone_proxy_config_expires() refresh period \endlink, and so on. 
+ *User registration is controled by  #LinphoneProxyConfig settings.<br> Each #LinphoneProxyConfig object can be configured with registration informations
+ *like \link linphone_proxy_config_set_server_addr() proxy address \endlink , \link linphone_proxy_config_set_identity() user id \endlink, \link linphone_proxy_config_expires() refresh period \endlink, and so on.
  *<br> A created proxy config using linphone_proxy_config_new(), once configured, must be added to #LinphoneCore using function linphone_core_add_proxy_config().
- *<br> It is recommended to set a default \link #LinphoneProxyConfig proxy config \endlink using function linphone_core_set_default_proxy(). Once done, if \link #LinphoneProxyConfig a proxy config \endlink has been configured with attribute \link linphone_proxy_config_enable_register() enable register \endlink  , next call to linphone_core_iterate() triggers a SIP register.  
+ *<br> It is recommended to set a default \link #LinphoneProxyConfig proxy config \endlink using function linphone_core_set_default_proxy(). Once done, if \link #LinphoneProxyConfig a proxy config \endlink has been configured with attribute \link linphone_proxy_config_enable_register() enable register \endlink  , next call to linphone_core_iterate() triggers a SIP register.
  *<br> Registration status is reported by LinphoneCoreRegistrationStateChangedCb.
  *<br>
  *<br> This pseudo code demonstrates basic registration operations:
  *<br> \code
- *	
+ *
  *	LinphoneProxyConfig* proxy_cfg;
  *	/*create proxy config*/
  *	proxy_cfg = linphone_proxy_config_new();
@@ -80,14 +80,14 @@
  *	if (password!=NULL){
  * 		info=linphone_auth_info_new(linphone_address_get_username(from),NULL,"secret",NULL,NULL); /*create authentication structure from identity*/
  *		linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
- *	}	
+ *	}
  *	// configure proxy entries
  *	linphone_proxy_config_set_identity(proxy_cfg,identity); /*set identity with user name and domain*/
  *	const char* server_addr = linphone_address_get_domain(from); /*extract domain address from identity*/
  *	linphone_proxy_config_set_server_addr(proxy_cfg,server_addr); /* we assume domain = proxy server address*/
  *	linphone_proxy_config_enable_register(proxy_cfg,TRUE); /*activate registration for this proxy config*/
  *	linphone_address_destroy(from); /*release resource*/
- *	
+ *
  *	linphone_core_add_proxy_config(lc,proxy_cfg); /*add proxy config to linphone core*/
  *	linphone_core_set_default_proxy(lc,proxy_cfg); /*set to default proxy*/ \endcode
  *<br>
@@ -114,7 +114,7 @@
 	linphone_proxy_config_done(proxy_cfg); /*initiate REGISTER with expire = 0*/
 \endcode
 	<br>
-	A complete tutorial can be found at : \ref registration_tutorials "Registration tutorial" 
+	A complete tutorial can be found at : \ref registration_tutorials "Registration tutorial"
 **/
 
 /**
@@ -126,9 +126,9 @@
 **/
 
 /**
-* @defgroup buddy_list Managing Buddies and buddy list and presence 
+* @defgroup buddy_list Managing Buddies and buddy list and presence
 <b>Buddies and buddy list</b>
-<br>Each buddy is represented by a #LinphoneFriend object created by function linphone_friend_new(). 
+<br>Each buddy is represented by a #LinphoneFriend object created by function linphone_friend_new().
 Buddy configuration parameters like \link linphone_friend_set_addr() sip uri \endlink or  \link linphone_friend_set_inc_subscribe_policy() status publication \endlink policy for this \link #LinphoneFriend friend \endlink  are configurable for each buddy.
 <br>Here under a typical buddy creation:
 <br>
@@ -163,13 +163,13 @@ linphone_friend_done(my_friend); /*commit changes triggering an UNSUBSCRIBE mess
 <br> New incoming subscription requests are process according to \link linphone_friend_set_inc_subscribe_policy() the incoming subscription policy state \endlink for subscription initiated by \link linphone_core_add_friend() members of the buddy list. \endlink
 <br> For incoming request comming from an unknown buddy, the call back  LinphoneCoreVTable.new_subscription_request is invoked.
 
-<br> A complete tutorial can be found at : \ref buddy_tutorials "Registration tutorial" 
+<br> A complete tutorial can be found at : \ref buddy_tutorials "Registration tutorial"
 
 
 **/
 
 /**
-* @defgroup chatroom Chat room and Messaging 
+* @defgroup chatroom Chat room and Messaging
 <b> Exchanging text messages</b>
 <br> Messages are sent using #LinphoneChatRoom object. First step is to create a \link linphone_core_create_chat_room() chat room \endlink
 from a peer sip uri.
@@ -177,7 +177,7 @@ from a peer sip uri.
 LinphoneChatRoom* chat_room = linphone_core_create_chat_room(lc,"sip:joe@sip.linphone.org");
 \endcode
 
-<br>Once created, messages are sent using function linphone_chat_room_send_message()  . 
+<br>Once created, messages are sent using function linphone_chat_room_send_message()  .
 \code
 linphone_chat_room_send_message(chat_room,"Hello world"); /*sending message*/
 \endcode
@@ -187,7 +187,7 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
 	printf(" Message [%s] received from [%s] \n",message,linphone_address_as_string (from));
 }
 \endcode
-<br> A complete tutorial can be found at : \ref chatroom_tuto "Chat room tutorial" 
+<br> A complete tutorial can be found at : \ref chatroom_tuto "Chat room tutorial"
 **/
 
 /**
@@ -204,21 +204,21 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
  * @defgroup conferencing Making an audio conference.
  * This API allows to create a conference entirely managed by the client. No server capabilities are required.
  * The way such conference is created is by doing the following:<br>
- * The application shall makes "normal" calls to several destinations (using linphone_core_invite() ), one after another. 
+ * The application shall makes "normal" calls to several destinations (using linphone_core_invite() ), one after another.
  * While initiating the second call, the first one is automatically paused.
  * Then, once the second call is established, the application has the possibility to merge the two calls to form a conference where each participant
  * (the local participant, the remote destination of the first call, the remote destination of the second call) can talk together.
  * This must be done by adding the two calls to the conference using \link linphone_core_add_to_conference() \endlink
  *
- * Once merged into a conference the LinphoneCall objects representing the calls that were established remain unchanged, except that 
+ * Once merged into a conference the LinphoneCall objects representing the calls that were established remain unchanged, except that
  * they are tagged as part of the conference (see \link linphone_call_is_in_conference() \endlink ). The calls in a conference are in the LinphoneCallStreamsRunning state.
- * 
- * Only a single conference can be created: the purpose of this feature is to allow the local user to create, take part and manage the conference. 
+ *
+ * Only a single conference can be created: the purpose of this feature is to allow the local user to create, take part and manage the conference.
  * This API is not designed to create a conference server application.
  *
  * Up to 10 calls can be merged into the conference, however depending on the CPU usage required for doing the encoding/decoding of the streams of each participants,
  * the effective limit can be lower.
- * 
+ *
 **/
 
 
@@ -232,12 +232,12 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
 **/
 
 /**
- * @defgroup tutorials Tutorials: 
+ * @defgroup tutorials Tutorials:
  *
 **/
 
 /**
- * @defgroup port Portability: 
+ * @defgroup port Portability:
  *
 **/
 /**
@@ -257,8 +257,8 @@ void text_received(LinphoneCore *lc, LinphoneChatRoom *room, const LinphoneAddre
 <br>
 <ul>
 <li><b>SIP socket </b><br>Recommended mode is SIP over TCP, because UDP usually requires frequent keep alives for maintaining NAT association at the IP router level. This can be as frequent as one UDP packet every 15 seconds to maintain the NAT association accross NAT routers. Doing such drains the battery very fast, and furthermore the iOS keep-alive designed by Apple to handle this task can only be called with a minimum of 10 minutes interval.<br>
-For TCP, liblinphone automatically configures SIP socket for voip  (I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP). 
-<br><b>Since IOS > 4.1 Apple disabled voip mode for UDP sockets </b> 
+For TCP, liblinphone automatically configures SIP socket for voip  (I.E kCFStreamNetworkServiceType set to kCFStreamNetworkServiceTypeVoIP).
+<br><b>Since IOS > 4.1 Apple disabled voip mode for UDP sockets </b>
 <li><b>Entering background mode</b>
 <br> Before entering in background mode (through \code - (void)applicationDidEnterBackground:(UIApplication *)application \endcode  ), the application must first refresh sip registration using function #linphone_core_refresh_registers();
 and register a keep-alive handler for periodically refreshing the registration. The speudo code below shows how to register a keep alive handler:
@@ -272,7 +272,7 @@ and register a keep-alive handler for periodically refreshing the registration. 
 		usleep(100000);
 	}
 	//register keepalive handler
-	[[UIApplication sharedApplication] setKeepAliveTimeout:600/*minimal interval is 600 s*/ 
+	[[UIApplication sharedApplication] setKeepAliveTimeout:600/*minimal interval is 600 s*/
                                                        handler:^{
                                                                 //refresh sip registration
                                                                 linphone_core_refresh_registers(theLinphoneCore);
@@ -291,7 +291,7 @@ and register a keep-alive handler for periodically refreshing the registration. 
 			notif.alertBody =@"New incoming call";
 			notif.alertAction = @"Answer";
 			notif.soundName = @"oldphone-mono-30s.caf";
-			
+
 			[[UIApplication sharedApplication]  presentLocalNotificationNow:notif];
 		}
 \endcode
@@ -312,8 +312,8 @@ and register a keep-alive handler for periodically refreshing the registration. 
 	//try to write on this socket
 	CFWriteStreamWrite (writeStream,(const UInt8*)buff,strlen(buff));
 	CFWriteStreamClose (writeStream);
-}	
-\endcode  
+}
+\endcode
 It is recommanded to perform this task each time the application is woken up, including keep alive handler.
 <li><b>Managing IP connection state</b>
 <br>Liblinphone for IOS relies on the application to be informed of network connectivity changes. Network state changes when the IP connection moves from DOWN to UP, or from WIFI to WWAN. Applications using liblinphone must inform libliblinphone of this changes using function #linphone_core_set_network_reachable(). Usually this method is called from the IOS NetworkReachability callback. Here under a sample code:
@@ -339,8 +339,8 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 }
-	
-\endcode  
+
+\endcode
 </ul>
 <b> Sound cards </b>
 <br> Since IOS 5.0, liblinphone supports 2 sound cards. <i>AU: Audio Unit Receiver</i> based on IO units for voice calls plus <i>AQ: Audio Queue Device</i> dedicated to rings. Here under the recommended settings (I.E default one)
@@ -366,7 +366,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
     -(void) endInterruption {
         ms_message("Sound interruption ended!");
         const MSList* c = linphone_core_get_calls(theLinphoneCore);
-    
+
         if (c) {
             ms_message("Auto resuming call");
             linphone_core_resume_call(theLinphoneCore, (LinphoneCall*) c->data);
@@ -387,7 +387,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 \code
 	UIView* display = [[UIView alloc] init];
 	UIView* preview = [[UIView alloc] init];
-	linphone_core_set_native_video_window_id(lc,(unsigned long)display);	
+	linphone_core_set_native_video_window_id(lc,(unsigned long)display);
 	linphone_core_set_native_preview_window_id(lc,(unsigned long)preview);
 \endcode
 <br> Screen rotations are also handled by liblinphone. 2 positions are currently supported, namely <i>UIInterfaceOrientationPortrait</i> and <i>UIInterfaceOrientationLandscapeRight</i>. Applications may invoke #linphone_core_set_device_rotation() followed by #linphone_core_update_call() to notify liblinphone of an orientation change. Here under a speudo code to handle orientation changes
@@ -396,16 +396,16 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 -(void) configureOrientation:(UIInterfaceOrientation) oritentation  {
 	int oldLinphoneOrientation = linphone_core_get_device_rotation(lc);
 	if (oritentation == UIInterfaceOrientationPortrait ) {
-		linphone_core_set_native_video_window_id(lc,(unsigned long)display-portrait);	
+		linphone_core_set_native_video_window_id(lc,(unsigned long)display-portrait);
 		linphone_core_set_native_preview_window_id(lc,(unsigned long)preview-portrait);
 		linphone_core_set_device_rotation(lc, 0);
-		
+
 	} else if (oritentation == UIInterfaceOrientationLandscapeRight ) {
-		linphone_core_set_native_video_window_id(lc,(unsigned long)display-landscape);	
+		linphone_core_set_native_video_window_id(lc,(unsigned long)display-landscape);
 		linphone_core_set_native_preview_window_id(lc,(unsigned long)preview-landscape);
 		linphone_core_set_device_rotation(lc, 270);
 	}
-	
+
 	if ((oldLinphoneOrientation != linphone_core_get_device_rotation(lc))
 		&& linphone_core_get_current_call(lc)) {
 		//Orientation has changed, must call update call
@@ -416,7 +416,49 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 \endcode
 
 <b>DTMF feebacks</b>
-<br>Liblinphone provides functions \link #linphone_core_play_dtmf() to play dtmf \endlink to the local user. Usually this is used to play a sound when the user presses a digit, inside or outside of any call. On IOS, libLinphone relies on AudioUnits for interfacing with the audio system. Unfortunately the Audio Unit initialization is a quite long operation that may trigger a bad user experience if performed each time a DTMF is played, the sound being delayed half a second after the press. To solve this issue and thus insure real-time precision, liblinphone introduces 2 functions for \link linphone_core_start_dtmf_stream() preloading \endlink and \link #linphone_core_start_dtmf_stream() unloading \endlink the underlying audio graph responsible for playing DTMFs.  
-<br> For an application using function #linphone_core_play_dtmf(), it is recommanded to call #linphone_core_start_dtmf_stream() when entering in foreground and #linphone_core_stop_dtmf_stream() upon entering background mode. 
+<br>Liblinphone provides functions \link #linphone_core_play_dtmf() to play dtmf \endlink to the local user. Usually this is used to play a sound when the user presses a digit, inside or outside of any call. On IOS, libLinphone relies on AudioUnits for interfacing with the audio system. Unfortunately the Audio Unit initialization is a quite long operation that may trigger a bad user experience if performed each time a DTMF is played, the sound being delayed half a second after the press. To solve this issue and thus insure real-time precision, liblinphone introduces 2 functions for \link linphone_core_start_dtmf_stream() preloading \endlink and \link #linphone_core_start_dtmf_stream() unloading \endlink the underlying audio graph responsible for playing DTMFs.
+<br> For an application using function #linphone_core_play_dtmf(), it is recommanded to call #linphone_core_start_dtmf_stream() when entering in foreground and #linphone_core_stop_dtmf_stream() upon entering background mode.
+
+<b>Plugins</b>
+<br>On iOS, plugins are built as static libraries so Liblinphone will not be able to load them at runtime dynamically. Instead, you should declare their prototypes:
+
+\code
+
+extern void libmsamr_init(MSFactory *factory);
+extern void libmsx264_init(MSFactory *factory);
+extern void libmsopenh264_init(MSFactory *factory);
+extern void libmssilk_init(MSFactory *factory);
+extern void libmsbcg729_init(MSFactory *factory);
+extern void libmswebrtc_init(MSFactory *factory);
+
+\endcode
+
+Then you should register them after the instantiation of LinphoneCore:
+
+\code
+
+	theLinphoneCore = linphone_core_new_with_config(/* options ... */);
+
+	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
+	MSFactory *f = linphone_core_get_ms_factory(theLinphoneCore);
+	libmssilk_init(f);
+	libmsamr_init(f);
+	libmsx264_init(f);
+	libmsopenh264_init(f);
+	libmsbcg729_init(f);
+	libmswebrtc_init(f);
+	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
+
+\endcode
+
+If the plugin has not been enabled at compilation time, a stubbed library will be generated with only libplugin_init method declared, doing nothing. You should see these trace in logs, if plugin is stubbed:
+
+\code
+
+I/lib/Could not find encoder for SILK
+I/lib/Could not find decoder for SILK
+
+\endcode
+
 */
 
