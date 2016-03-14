@@ -483,6 +483,7 @@
 		}
 
 		LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, "sip:user@domain.com");
+		linphone_address_set_username(linphoneAddress, username.UTF8String);
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"use_phone_number" inSection:@"assistant"]) {
 			char *user = linphone_proxy_config_normalize_phone_number(proxyCfg, username.UTF8String);
 			if (user) {

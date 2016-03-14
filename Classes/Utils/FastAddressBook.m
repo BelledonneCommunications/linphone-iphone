@@ -156,16 +156,15 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 				ABMultiValueRef lMap = ABRecordCopyValue(lPerson, kABPersonPhoneProperty);
 				if (lMap) {
 					for (int i = 0; i < ABMultiValueGetCount(lMap); i++) {
-						CFStringRef lValue = ABMultiValueCopyValueAtIndex(lMap, i);
+						NSString *lValue = (__bridge NSString *)ABMultiValueCopyValueAtIndex(lMap, i);
 						char *normalizedPhone = linphone_proxy_config_normalize_phone_number(
-							linphone_core_get_default_proxy_config(LC), ((__bridge NSString *)(lValue)).UTF8String);
+							linphone_core_get_default_proxy_config(LC), lValue.UTF8String);
 						NSString *name = [FastAddressBook
-							normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone]
-															: (__bridge NSString *)(lValue)];
-						[_addressBookMap setObject:(__bridge id)(lPerson) forKey:name];
+							normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : lValue];
+						[_addressBookMap setObject:(__bridge id)(lPerson) forKey:name ?: lValue];
 						if (normalizedPhone)
 							ms_free(normalizedPhone);
-						CFRelease(lValue);
+						CFRelease((CFStringRef)lValue);
 					}
 					CFRelease(lMap);
 				}
