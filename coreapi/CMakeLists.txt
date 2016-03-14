@@ -220,7 +220,11 @@ if(ENABLE_SHARED)
         	endif()
 	endif()
 
-	set_target_properties(linphone PROPERTIES VERSION ${LINPHONE_SO_VERSION} LINKER_LANGUAGE CXX)
+	set_target_properties(linphone PROPERTIES LINKER_LANGUAGE CXX)
+	if(NOT ANDROID)
+		# Do not version shared library on Android
+		set_target_properties(linphone PROPERTIES SOVERSION ${LINPHONE_SO_VERSION})
+	endif()
 	add_dependencies(linphone liblinphone-git-version)
 	target_link_libraries(linphone ${LIBS})
 	if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
