@@ -24,13 +24,16 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 	char addr[256];
 	int port;
 	int payload_type;
+	MSFactory* factory ;
 	
+	factory = (app->getCore())->factory; 
+
 	if (sscanf(args, "%255s %d %d", addr, &port, &payload_type) == 3) {
 		int local_port = linphone_core_get_audio_port(app->getCore());
 		int jitt = linphone_core_get_audio_jittcomp(app->getCore());
 		bool_t echo_canceller = linphone_core_echo_cancellation_enabled(app->getCore());
 		int ptime=linphone_core_get_upload_ptime(app->getCore());
-		MSSndCardManager *manager = ms_snd_card_manager_get();
+		MSSndCardManager *manager = ms_factory_get_snd_card_manager(factory);
 		MSSndCard *capture_card = ms_snd_card_manager_get_card(manager, linphone_core_get_capture_device(app->getCore()));
 		MSSndCard *play_card = ms_snd_card_manager_get_card(manager, linphone_core_get_playback_device(app->getCore()));
 		RtpProfile *prof=rtp_profile_new("stream");
@@ -40,7 +43,7 @@ void AudioStreamStartCommand::exec(Daemon *app, const char *args) {
 			app->sendResponse(Response("No payload type were assigned to this number."));
 			return;
 		}
-		AudioStream *stream = audio_stream_new(local_port, local_port + 1, linphone_core_ipv6_enabled(app->getCore()));
+		AudioStream *stream = audio_stream_new(factory, local_port, local_port + 1, linphone_core_ipv6_enabled(app->getCore()));
 		audio_stream_set_features(stream,linphone_core_get_audio_features(app->getCore()));
 		
 		pt=payload_type_clone(pt);

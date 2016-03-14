@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
 	char buf[4096];
 
 	ortp_init();
-	ortp_set_log_level_mask(ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
+	ortp_set_log_level_mask(NULL,ORTP_MESSAGE|ORTP_WARNING|ORTP_ERROR|ORTP_FATAL);
 	if (fd==-1){
 		ortp_error("Could not connect to control pipe: %s",strerror(errno));
 		return -1;
