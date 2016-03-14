@@ -1749,7 +1749,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_muteMic(	JNIEnv*  env
 		,jobject  thiz
 		,jlong lc
 		,jboolean isMuted) {
-		linphone_core_mute_mic((LinphoneCore*)lc,isMuted);
+		linphone_core_enable_mic((LinphoneCore*)lc,isMuted);
 }
 
 extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_interpretUrl(	JNIEnv*  env
