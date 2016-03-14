@@ -79,7 +79,6 @@
 		63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
 		6306440E1BECB08500134C72 /* FirstLoginView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6306440C1BECB08500134C72 /* FirstLoginView.m */; };
 		6308F9C51BF0DD6600D1234B /* XMLRPCHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6308F9C41BF0DD6600D1234B /* XMLRPCHelper.m */; };
-		630AD4871C565FA500449F6E /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 630CF5561AF7CE1500539F7A /* UITextField+DoneButton.m */; };
 		63130FB21C1ED06900371918 /* SideMenuView~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63130FB01C1ED06900371918 /* SideMenuView~ipad.xib */; };
 		631348301B6F7B6600C6BDCB /* UIRoundBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6313482F1B6F7B6600C6BDCB /* UIRoundBorderedButton.m */; };
@@ -624,6 +623,9 @@
 		63CFEE131B9EDF65007EA5BD /* libvo-amrwbenc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63CFEDE31B9EDD36007EA5BD /* libvo-amrwbenc.a */; };
 		63D11C531C3D501200E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
 		63D11C551C3D50A100E8FCEE /* Log.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D11C521C3D501200E8FCEE /* Log.m */; };
+		63D8038D1C96E74100336B6F /* vcards in Resources */ = {isa = PBXBuildFile; fileRef = 635598811C96AFFA006ED99A /* vcards */; };
+		63D8038E1C96E75700336B6F /* libbctoolbox-tester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63F024B81C88792D00EACF1C /* libbctoolbox-tester.a */; };
+		63D8038F1C96E77400336B6F /* libcunit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F03A9B7E18C0D9C900C4D7FE /* libcunit.a */; };
 		63DC36AB1C89E83100636979 /* libbelcard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36A91C89E83100636979 /* libbelcard.a */; };
 		63DC36AC1C89E83100636979 /* libbelr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36AA1C89E83100636979 /* libbelr.a */; };
 		63DC36B11C89E84000636979 /* libbelcard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63DC36A91C89E83100636979 /* libbelcard.a */; };
@@ -726,7 +728,6 @@
 		D3F7998115BD32370018C273 /* TPMultiLayoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F7998015BD32370018C273 /* TPMultiLayoutViewController.m */; };
 		D3F83EEC1582021700336684 /* CallView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83EEA1582021700336684 /* CallView.m */; };
 		D3F83F8E15822ABE00336684 /* PhoneMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3F83F8D15822ABD00336684 /* PhoneMainView.m */; };
-		E49CB2651C90532100FFF73C /* common in Resources */ = {isa = PBXBuildFile; fileRef = E49CB2631C90524E00FFF73C /* common */; };
 		F03CA84318C72F1A0008889D /* UITextViewNoDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = F03CA84218C72F1A0008889D /* UITextViewNoDefine.m */; };
 		F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
 		F05BAA631A5D75BC00411815 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F05BAA611A5D594E00411815 /* libz.dylib */; };
@@ -1823,7 +1824,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				630AD4871C565FA500449F6E /* libcunit.a in Frameworks */,
+				63D8038F1C96E77400336B6F /* libcunit.a in Frameworks */,
+				63D8038E1C96E75700336B6F /* libbctoolbox-tester.a in Frameworks */,
 				63058AD61B4E92D400EFAE36 /* liblinphonetester.a in Frameworks */,
 				F08F118719C09C6B007D70C2 /* UIKit.framework in Frameworks */,
 				F08F118619C09C6B007D70C2 /* Foundation.framework in Frameworks */,
@@ -3662,7 +3664,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E49CB2651C90532100FFF73C /* common in Resources */,
+				63D8038D1C96E74100336B6F /* vcards in Resources */,
 				63058AE31B4E93B300EFAE36 /* tester_hosts in Resources */,
 				63058ACF1B4E922500EFAE36 /* certificates in Resources */,
 				63058AD01B4E922500EFAE36 /* flexisip in Resources */,
