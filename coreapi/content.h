@@ -40,51 +40,6 @@ struct _LinphoneContent;
 **/
 typedef struct _LinphoneContent LinphoneContent;
 
-/**
- * @deprecated Use LinphoneContent objects instead of this structure.
- */
-struct _LinphoneContentPrivate{
-	char *type; /**<mime type for the data, for example "application"*/
-	char *subtype; /**<mime subtype for the data, for example "html"*/
-	void *data; /**<the actual data buffer, usually a string. Null when provided by callbacks #LinphoneCoreFileTransferSendCb or #LinphoneCoreFileTransferRecvCb*/
-	size_t size; /**<the size of the data buffer, excluding null character despite null character is always set for convenience.
-				When provided by callback #LinphoneCoreFileTransferSendCb or #LinphoneCoreFileTransferRecvCb, it states the total number of bytes of the transfered file*/
-	char *encoding; /**<The encoding of the data buffer, for example "gzip"*/
-	char *name; /**< used by RCS File transfer messages to store the original filename of the file to be downloaded from server */
-	char *key; /**< used by RCS File transfer messages to store the key to encrypt file if needed */
-	size_t keyLength; /**< Length of key in bytes */
-	void *cryptoContext; /**< crypto context used to encrypt file for RCS file transfer */
-};
-
-/**
- * Alias to the LinphoneContentPrivate struct.
- * @deprecated
-**/
-typedef struct _LinphoneContentPrivate LinphoneContentPrivate;
-
-/**
- * Convert a LinphoneContentPrivate structure to a LinphoneContent object.
- * @deprecated Utility macro to ease porting existing code from LinphoneContentPrivate structure (old LinphoneContent structure) to new LinphoneContent object.
- */
-#define LINPHONE_CONTENT(lcp) linphone_content_private_to_linphone_content(lcp)
-
-/**
- * Convert a LinphoneContentPrivate structure to a LinphoneContent object.
- * @deprecated Utility function to ease porting existing code from LinphoneContentPrivate structure (old LinphoneContent structure) to new LinphoneContent object.
- */
-LINPHONE_PUBLIC LinphoneContent * linphone_content_private_to_linphone_content(const LinphoneContentPrivate *lcp);
-
-/**
- * Convert a LinphoneContent object to a LinphoneContentPrivate structure.
- * @deprecated Utility macro to ease porting existing code from LinphoneContentPrivate structure (old LinphoneContent structure) to new LinphoneContent object.
- */
-#define LINPHONE_CONTENT_PRIVATE(lc) linphone_content_to_linphone_content_private(lc)
-
-/**
- * Convert a LinphoneContent object to a LinphoneContentPrivate structure.
- * @deprecated Utility function to ease porting existing code from LinphoneContentPrivate structure (old LinphoneContent structure) to new LinphoneContent object.
- */
-LINPHONE_PUBLIC LinphoneContentPrivate * linphone_content_to_linphone_content_private(const LinphoneContent *content);
 
 /**
  * Create a content with default values from Linphone core.
@@ -218,6 +173,38 @@ LINPHONE_PUBLIC const char * linphone_content_get_name(const LinphoneContent *co
  * @param[in] name The name of the content.
  */
 LINPHONE_PUBLIC void linphone_content_set_name(LinphoneContent *content, const char *name);
+
+/**
+ * Tell whether a content is a multipart content.
+ * @param[in] content LinphoneContent object.
+ * @return A boolean value telling whether the content is multipart or not.
+ */
+LINPHONE_PUBLIC bool_t linphone_content_is_multipart(const LinphoneContent *content);
+
+/**
+ * Get a part from a multipart content according to its index.
+ * @param[in] content LinphoneContent object.
+ * @param[in] idx The index of the part to get.
+ * @return A LinphoneContent object holding the part if found, NULL otherwise.
+ */
+LINPHONE_PUBLIC LinphoneContent * linphone_content_get_part(const LinphoneContent *content, int idx);
+
+/**
+ * Find a part from a multipart content looking for a part header with a specified value.
+ * @param[in] content LinphoneContent object.
+ * @param[in] header_name The name of the header to look for.
+ * @param[in] header_value The value of the header to look for.
+ * @return A LinphoneContent object object the part if found, NULL otherwise.
+ */
+LINPHONE_PUBLIC LinphoneContent * linphone_content_find_part_by_header(const LinphoneContent *content, const char *header_name, const char *header_value);
+
+/**
+ * Get a custom header value of a content.
+ * @param[in] content LinphoneContent object.
+ * @param[in] header_name The name of the header to get the value from.
+ * @return The value of the header if found, NULL otherwise.
+ */
+LINPHONE_PUBLIC const char * linphone_content_get_custom_header(const LinphoneContent *content, const char *header_name);
 
 /**
  * @}

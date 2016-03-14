@@ -71,6 +71,7 @@ set(SOURCE_FILES
 	utils.c
 	videowindow.c
 )
+
 if(ENABLE_ASSISTANT)
 	list(APPEND SOURCE_FILES setupwizard.c)
 endif()
@@ -78,11 +79,18 @@ if(WIN32)
 	list(APPEND SOURCE_FILES linphone.rc)
 endif()
 
+set(OBJC_FILES)
+if (APPLE)
+	list(APPEND OBJC_FILES mac.m)
+endif()
+
+apply_compile_flags(OBJC_FILES "CPP" "OBJC")
 apply_compile_flags(SOURCE_FILES "CPP" "C")
+
 if(WIN32)
 	add_executable(linphone-gtk WIN32 ${SOURCE_FILES})
 else()
-	add_executable(linphone-gtk ${SOURCE_FILES})
+	add_executable(linphone-gtk ${SOURCE_FILES} ${OBJC_FILES})
 endif()
 set_target_properties(linphone-gtk PROPERTIES OUTPUT_NAME linphone LINKER_LANGUAGE CXX)
 target_include_directories(linphone-gtk PUBLIC ${GTK2_INCLUDE_DIRS} ${INTL_INCLUDE_DIRS})
@@ -104,11 +112,17 @@ if(GTKMACINTEGRATION_FOUND)
 	target_include_directories(linphone-gtk PUBLIC ${GTKMACINTEGRATION_INCLUDE_DIRS})
 	target_link_libraries(linphone-gtk ${GTKMACINTEGRATION_LIBRARIES})
 endif()
+if(APPLE)
+	target_link_libraries(linphone-gtk "-framework Cocoa")
+endif()
+
+set_target_properties(linphone-gtk PROPERTIES XCODE_ATTRIBUTE_WARNING_CFLAGS "")
+
 
 install(TARGETS linphone-gtk
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 

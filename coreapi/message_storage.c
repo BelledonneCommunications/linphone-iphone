@@ -253,7 +253,7 @@ void linphone_sql_request_all(sqlite3* db,const char *stmt, LinphoneCore* lc){
 }
 
 static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
-	LinphoneCore *lc = linphone_chat_room_get_lc(msg->chat_room);
+	LinphoneCore *lc = linphone_chat_room_get_core(msg->chat_room);
 	int id = -1;
 	if (lc->db) {
 		LinphoneContent *content = msg->file_transfer_information;
@@ -273,7 +273,7 @@ static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
 }
 
 unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
-	LinphoneCore *lc=linphone_chat_room_get_lc(msg->chat_room);
+	LinphoneCore *lc=linphone_chat_room_get_core(msg->chat_room);
 	int id = 0;
 
 	if (lc->db){
@@ -330,7 +330,7 @@ void linphone_chat_message_store_appdata(LinphoneChatMessage* msg){
 }
 
 void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
-	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+	LinphoneCore *lc=linphone_chat_room_get_core(cr);
 	int read=1;
 	char *peer;
 	char *buf;
@@ -351,7 +351,7 @@ void linphone_chat_room_mark_as_read(LinphoneChatRoom *cr){
 }
 
 void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+	LinphoneCore *lc=linphone_chat_room_get_core(cr);
 	char *buf;
 
 	if (lc->db==NULL) return ;
@@ -362,7 +362,7 @@ void linphone_chat_room_update_url(LinphoneChatRoom *cr, LinphoneChatMessage *ms
 }
 
 static int linphone_chat_room_get_messages_count(LinphoneChatRoom *cr, bool_t unread_only){
-	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+	LinphoneCore *lc=linphone_chat_room_get_core(cr);
 	int numrows=0;
 	char *peer;
 	char *buf;
@@ -433,7 +433,7 @@ void linphone_chat_room_delete_history(LinphoneChatRoom *cr){
 }
 
 MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, int endm){
-	LinphoneCore *lc=linphone_chat_room_get_lc(cr);
+	LinphoneCore *lc=linphone_chat_room_get_core(cr);
 	MSList *ret;
 	char *buf,*buf2;
 	char *peer;
@@ -468,11 +468,15 @@ MSList *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int startm, i
 		ms_free(buf);
 		buf = buf2;
 	}
-
+	
 	begin=ortp_get_cur_time_ms();
 	linphone_sql_request_message(lc->db,buf,cr);
 	end=ortp_get_cur_time_ms();
-	ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
+	
+	if (endm+1-startm > 1) {
+		//display message only if at least 2 messages are loaded
+		ms_message("%s(): completed in %i ms",__FUNCTION__, (int)(end-begin));
+	}
 	ms_free(buf);
 	ret=cr->messages_hist;
 	cr->messages_hist=NULL;

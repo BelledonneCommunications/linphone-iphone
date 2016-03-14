@@ -45,14 +45,16 @@ LOCAL_SRC_FILES := \
 	callbacks.c \
 	call_log.c \
 	call_params.c \
+	carddav.c \
 	chat.c \
 	chat_file_transfer.c \
-	conference.c \
+	conference.cc \
 	content.c \
 	ec-calibrator.c \
 	enum.c \
 	event.c \
 	friend.c \
+	friendlist.c \
 	info.c \
 	linphonecall.c \
 	linphonecore.c \
@@ -76,7 +78,8 @@ LOCAL_SRC_FILES := \
 	xml2lpc.c \
 	xml.c \
 	xmlrpc.c \
-	vtables.c
+	vtables.c \
+	ringtoneplayer.c
 
 ifndef LIBLINPHONE_VERSION
 LIBLINPHONE_VERSION = "Devel"
@@ -121,11 +124,12 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../oRTP/include \
 	$(LOCAL_PATH)/../mediastreamer2/include \
 	$(LOCAL_PATH)/../mediastreamer2/src/audiofilters/ \
+	$(LOCAL_PATH)/../../bctoolbox/include \
 	$(LOCAL_PATH)/../../belle-sip/include \
 	$(LOCAL_PATH)/../../../gen \
 	$(LOCAL_PATH)/../../externals/libxml2/include \
 	$(LOCAL_PATH)/../../externals/build/libxml2 \
-	$(LOCAL_PATH)/../../externals/polarssl/include
+	$(LOCAL_PATH)/../../externals/polarssl/include \
 
 LOCAL_LDLIBS += -llog -ldl -lz
 
@@ -134,6 +138,7 @@ LOCAL_STATIC_LIBRARIES := \
 	libmediastreamer2 \
 	libortp \
 	libbellesip \
+	libbctoolbox \
 	libgsm \
 	liblpxml2
 
@@ -180,32 +185,51 @@ LOCAL_CFLAGS += -DHAVE_CODEC2
 LOCAL_STATIC_LIBRARIES += libcodec2 libmscodec2
 endif
 
-ifneq ($(BUILD_WEBRTC_AECM)$(BUILD_WEBRTC_ISAC),00)
+ifneq ($(BUILD_WEBRTC_AECM)$(BUILD_WEBRTC_ISAC)$(BUILD_ILBC),000)
 LOCAL_CFLAGS += -DHAVE_WEBRTC
 LOCAL_STATIC_LIBRARIES += libmswebrtc
 endif
+
 ifneq ($(BUILD_WEBRTC_AECM),0)
 LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_aecm \
+	libwebrtc_aecm 
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_aecm_neon 
+endif
+endif
+
+
+ifneq ($(BUILD_WEBRTC_ISAC),0)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_isacfix
+ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_isacfix_neon
+endif
+endif
+
+ifneq ($(BUILD_ILBC),0)
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_ilbc 
+endif
+
+
+ifneq ($(BUILD_WEBRTC_AECM)$(BUILD_WEBRTC_ISAC)$(BUILD_ILBC),000)
+
+LOCAL_STATIC_LIBRARIES += \
+	libwebrtc_apm_utility \
+	libwebrtc_system_wrappers \
 	libwebrtc_apm_utility \
 	libwebrtc_spl \
 	libwebrtc_system_wrappers
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
 LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_aecm_neon \
 	libwebrtc_spl_neon
 endif
+
 endif
-ifneq ($(BUILD_WEBRTC_ISAC),0)
-LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_isacfix \
-	libwebrtc_spl
-ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
-LOCAL_STATIC_LIBRARIES += \
-	libwebrtc_isacfix_neon \
-	libwebrtc_spl_neon
-endif
-endif
+
 
 ifeq ($(BUILD_G729),1)
 LOCAL_CFLAGS += -DHAVE_G729
@@ -238,6 +262,10 @@ ifeq ($(BUILD_SRTP), 1)
 	LOCAL_C_INCLUDES += $(SRTP_C_INCLUDE)
 endif
 
+ifeq ($(BUILD_VCARD),1)
+	LOCAL_C_INCLUDES += $(VCARD_C_INCLUDE)
+endif
+
 ifeq ($(BUILD_ILBC), 1)
 ifneq ($(TARGET_ARCH_ABI),armeabi)
 LOCAL_CFLAGS += -DHAVE_ILBC=1
@@ -259,8 +287,16 @@ ifeq ($(BUILD_SRTP),1)
 	LOCAL_STATIC_LIBRARIES += libsrtp
 endif
 
+ifeq ($(BUILD_VCARD),1)
+	LOCAL_CFLAGS += -DVCARD_ENABLED
+	LOCAL_SRC_FILES += vcard.cc
+	LOCAL_STATIC_LIBRARIES += libbelr libbelcard
+else
+	LOCAL_SRC_FILES += vcard_stubs.c
+endif
+
 ifeq ($(BUILD_SQLITE),1)
-LOCAL_CFLAGS += -DMSG_STORAGE_ENABLED -DCALL_LOGS_STORAGE_ENABLED
+LOCAL_CFLAGS += -DMSG_STORAGE_ENABLED -DCALL_LOGS_STORAGE_ENABLED -DFRIENDS_SQL_STORAGE_ENABLED
 LOCAL_STATIC_LIBRARIES += liblinsqlite
 LOCAL_C_INCLUDES += \
         $(LOCAL_PATH)/../../externals/sqlite3/
@@ -282,7 +318,7 @@ LOCAL_MODULE_FILENAME := liblinphone-$(TARGET_ARCH_ABI)
 
 include $(BUILD_SHARED_LIBRARY)
 
-LOCAL_CPPFLAGS=$(LOCAL_CFLAGS)
+LOCAL_CPPFLAGS += $(LOCAL_CFLAGS)
 LOCAL_CFLAGS += -Wdeclaration-after-statement
 LOCAL_LDFLAGS := -Wl,-soname,$(LOCAL_MODULE_FILENAME).so
 

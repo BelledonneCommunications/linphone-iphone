@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
-#elif defined(WIN32)
+#elif defined(_WIN32)
 #include <gdk/gdkwin32.h>
 #elif defined(__APPLE__)
 extern void *gdk_quartz_window_get_nswindow(GdkWindow      *window);
@@ -48,27 +48,33 @@ static void on_end_of_play(LinphonePlayer *player, void *user_data){
 
 static void drag_data_received(GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 	GtkSelectionData *selection_data, guint target_type, guint time, gpointer user_data){
-	int datalen=gtk_selection_data_get_length(selection_data) >= 0;
+	int datalen=gtk_selection_data_get_length(selection_data);
 	const void *data=gtk_selection_data_get_data(selection_data);
 	LinphoneCall *call=g_object_get_data(G_OBJECT(widget),"call");
-	
+
 	ms_message("target_type=%i, datalen=%i, data=%p",target_type,datalen,data);
 	if (target_type==TARGET_URILIST && data){
 		LinphonePlayer *player=linphone_call_get_player(call);
-		const char *path=(const char*)data;
+		char *path=ms_strdup(data);
+		while (datalen&&(path[datalen-1]=='\r'||path[datalen-1]=='\n')) {
+			path[datalen-1]='\0';
+			datalen--;
+		}
 		if (player){
-			if (strstr(path,"file://")==path) path+=strlen("file://");
-			if (linphone_player_open(player,path,on_end_of_play,NULL)==0){
+
+			const char* filepath = (strstr(path,"file://")==path) ? path+strlen("file://") : path;
+			if (linphone_player_open(player,filepath,on_end_of_play,NULL)==0){
+
 				linphone_player_start(player);
 			}else{
 				GtkWidget *warn=gtk_message_dialog_new(GTK_WINDOW(widget),GTK_DIALOG_MODAL|GTK_DIALOG_DESTROY_WITH_PARENT,
 								       GTK_MESSAGE_ERROR,GTK_BUTTONS_CLOSE,
-									_("Cannot play %s."),path);
+									_("Cannot play %s."),filepath);
 				g_signal_connect(warn,"response",(GCallback)gtk_widget_destroy,NULL);
 				gtk_widget_show(warn);
 			}
 		}
-		
+		ms_free(path);
 	}
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }
@@ -77,7 +83,7 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint 
 #if GTK_CHECK_VERSION(2,21,0)
 	GList *l=gdk_drag_context_list_targets(drag_context);
 	GList *elem;
-	
+
 	if (l){
 		ms_message("drag_drop");
 		/* Choose the best target type */
@@ -97,7 +103,7 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *drag_context, gint 
 static void *get_native_handle(GdkWindow *gdkw){
 #ifdef GDK_WINDOWING_X11
 	return (void *)GDK_WINDOW_XID(gdkw);
-#elif defined(WIN32)
+#elif defined(_WIN32)
 	return (void *)GDK_WINDOW_HWND(gdkw);
 #elif defined(__APPLE__)
 	return (void *)gdk_quartz_window_get_nsview(gdkw);
@@ -109,7 +115,7 @@ static void *get_native_handle(GdkWindow *gdkw){
 static void _resize_video_window(GtkWidget *video_window, MSVideoSize vsize){
 	MSVideoSize cur;
 	gtk_window_get_size(GTK_WINDOW(video_window),&cur.width,&cur.height);
-	if (vsize.width*vsize.height > cur.width*cur.height || 
+	if (vsize.width*vsize.height > cur.width*cur.height ||
 		ms_video_size_get_orientation(vsize)!=ms_video_size_get_orientation(cur) ){
 		gtk_window_resize(GTK_WINDOW(video_window),vsize.width,vsize.height);
 	}
@@ -181,7 +187,7 @@ static void on_controls_response(GtkWidget *dialog, int response_id, GtkWidget *
 		}
 		break;
 	}
-	
+
 }
 
 static void on_controls_destroy(GtkWidget *w){
@@ -261,7 +267,7 @@ static GtkWidget *create_video_window(LinphoneCall *call){
 	guint timeout;
 	MSVideoSize vsize={MS_VIDEO_SIZE_CIF_W,MS_VIDEO_SIZE_CIF_H};
 	GdkColor color;
-	
+
 	addr=linphone_call_get_remote_address(call);
 	remote=linphone_gtk_address(addr);
 	video_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -273,7 +279,7 @@ static GtkWidget *create_video_window(LinphoneCall *call){
 	gtk_window_resize(GTK_WINDOW(video_window),vsize.width,vsize.height);
 	gdk_color_parse("black",&color);
 	gtk_widget_modify_bg(video_window,GTK_STATE_NORMAL,&color);
-	
+
 	gtk_drag_dest_set(video_window, GTK_DEST_DEFAULT_ALL, targets, sizeof(targets)/sizeof(GtkTargetEntry), GDK_ACTION_COPY);
 	gtk_widget_show(video_window);
 	gdk_window_set_events(gtk_widget_get_window(video_window),
@@ -340,13 +346,13 @@ static gboolean check_preview_size(GtkWidget *video_preview){
 void linphone_gtk_show_camera_preview_clicked(GtkButton *button){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *video_preview=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"video_preview");
-	
+
 	if (!video_preview){
 		gchar *title;
 		LinphoneCore *lc=linphone_gtk_get_core();
 		GdkColor color;
 		guint tid;
-		
+
 		video_preview=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		title=g_strdup_printf("%s - Video preview",linphone_gtk_get_ui_config("title","Linphone"));
 		gtk_window_set_title(GTK_WINDOW(video_preview),title);

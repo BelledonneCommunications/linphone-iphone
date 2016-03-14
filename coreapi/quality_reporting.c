@@ -65,7 +65,7 @@ static void append_to_buffer_valist(char **buff, size_t *buff_size, size_t *offs
 	/*if we are out of memory, we add some size to buffer*/
 	if (ret == BELLE_SIP_BUFFER_OVERFLOW) {
 		/*some compilers complain that size_t cannot be formatted as unsigned long, hence forcing cast*/
-		ms_warning("QualityReporting: Buffer was too small to contain the whole report - increasing its size from %lu to %lu",
+		ms_debug("QualityReporting: Buffer was too small to contain the whole report - increasing its size from %lu to %lu",
 			(unsigned long)*buff_size, (unsigned long)*buff_size + 2048);
 		*buff_size += 2048;
 		*buff = (char *) ms_realloc(*buff, *buff_size);
@@ -271,12 +271,11 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	int ret = 0;
 	LinphoneEvent *lev;
 	LinphoneAddress *request_uri;
-	char * domain;
-	const char* route;
+	const char* collector_uri;
 
 	/*if we are on a low bandwidth network, do not send reports to not overload it*/
 	if (linphone_call_params_low_bandwidth_enabled(linphone_call_get_current_params(call))){
-		ms_warning("QualityReporting[%p]: Avoid sending reports on low bandwidth network", call);
+		ms_message("QualityReporting[%p]: Avoid sending reports on low bandwidth network", call);
 		ret = 1;
 		goto end;
 	}
@@ -285,7 +284,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	in that case, we abort the report since it's not useful data*/
 	if (report->info.local_addr.ip == NULL || strlen(report->info.local_addr.ip) == 0
 		|| report->info.remote_addr.ip == NULL || strlen(report->info.remote_addr.ip) == 0) {
-		ms_warning("QualityReporting[%p]: Trying to submit a %s too early (call duration: %d sec) but %s IP could "
+		ms_message("QualityReporting[%p]: Trying to submit a %s too early (call duration: %d sec) but %s IP could "
 			"not be retrieved so dropping this report"
 			, call
 			, report_event
@@ -353,14 +352,21 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	}
 
 
-	route = linphone_proxy_config_get_quality_reporting_collector(call->dest_proxy);
-	domain = ms_strdup_printf("sip:%s", linphone_proxy_config_get_domain(call->dest_proxy));
-	request_uri = linphone_address_new(route ? route : domain);
-	ms_free(domain);
+	collector_uri = linphone_proxy_config_get_quality_reporting_collector(call->dest_proxy);
+	if (!collector_uri){
+		collector_uri = ms_strdup_printf("sip:%s", linphone_proxy_config_get_domain(call->dest_proxy));
+	}
+	request_uri = linphone_address_new(collector_uri);
 	lev=linphone_core_create_publish(call->core, request_uri, "vq-rtcpxr", expires);
-	if (route) {
-		ms_message("Publishing report with custom route %s", route);
-		sal_op_set_route(lev->op, route);
+	/* Special exception for quality report PUBLISH: if the collector_uri has any transport related parameters
+	 * (port, transport, maddr), then it is sent directly.
+	 * Otherwise it is routed as any LinphoneEvent publish, following proxy config policy.
+	 **/
+	if (sal_address_has_uri_param((SalAddress*)request_uri, "transport") || 
+		sal_address_has_uri_param((SalAddress*)request_uri, "maddr") ||
+		linphone_address_get_port(request_uri) != 0) {
+		ms_message("Publishing report with custom route %s", collector_uri);
+		sal_op_set_route(lev->op, collector_uri);
 	}
 
 	if (linphone_event_send_publish(lev, content) != 0){

@@ -244,13 +244,13 @@ static void early_media_with_multicast_video(void) {
 #endif
 
 test_t multicast_call_tests[] = {
-	{ "Multicast audio call",call_multicast},
-	{ "Multicast call with pause/resume",multicast_audio_with_pause_resume},
-	{ "Early media multicast audio call",early_media_with_multicast_audio},
-	{ "Unicast incoming call with multicast activated",unicast_incoming_with_multicast_audio_on},
+	TEST_NO_TAG("Multicast audio call",call_multicast),
+	TEST_NO_TAG("Multicast call with pause/resume",multicast_audio_with_pause_resume),
+	TEST_NO_TAG("Early media multicast audio call",early_media_with_multicast_audio),
+	TEST_NO_TAG("Unicast incoming call with multicast activated",unicast_incoming_with_multicast_audio_on),
 #ifdef VIDEO_ENABLED
-	{ "Multicast video call",call_multicast_video},
-	{ "Early media multicast video call",early_media_with_multicast_video},
+	TEST_NO_TAG("Multicast video call",call_multicast_video),
+	TEST_NO_TAG("Early media multicast video call",early_media_with_multicast_video),
 #endif
 };
 

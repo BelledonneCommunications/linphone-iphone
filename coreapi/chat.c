@@ -264,6 +264,10 @@ LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const c
 	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
+bool_t linphone_chat_room_lime_enabled(LinphoneChatRoom *cr) {
+	return linphone_core_lime_enabled(cr->lc) != LinphoneLimeDisabled/*&& TODO: check that cr->peer_url has a verified token */;
+}
+
 static void linphone_chat_room_delete_composing_idle_timer(LinphoneChatRoom *cr) {
 	if (cr->composing_idle_timer) {
 		if (cr->lc && cr->lc->sal)
@@ -377,7 +381,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 			char *peer_uri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 			const char *content_type;
 
-			if (linphone_core_lime_enabled(cr->lc)) {
+			if (linphone_chat_room_lime_enabled(cr)) {
 				/* ref the msg or it may be destroyed by callback if the encryption failed */
 				if (msg->content_type && strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
 					/* it's a file transfer, content type shall be set to
@@ -418,7 +422,10 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		linphone_chat_room_delete_composing_refresh_timer(cr);
 
 	}
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
+	// if operation failed, we should not change message state
+	if (msg->dir == LinphoneChatMessageOutgoing) {
+		linphone_chat_message_set_state(msg, LinphoneChatMessageStateInProgress);
+	}
 }
 
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
@@ -675,7 +682,7 @@ bool_t linphone_chat_room_is_remote_composing(const LinphoneChatRoom *cr) {
 }
 
 LinphoneCore *linphone_chat_room_get_lc(LinphoneChatRoom *cr) {
-	return cr->lc;
+	return linphone_chat_room_get_core(cr);
 }
 
 LinphoneCore *linphone_chat_room_get_core(LinphoneChatRoom *cr) {
@@ -704,7 +711,7 @@ LinphoneChatMessage *linphone_chat_room_create_message_2(LinphoneChatRoom *cr, c
 														 const char *external_body_url, LinphoneChatMessageState state,
 														 time_t time, bool_t is_read, bool_t is_incoming) {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, message);
-	LinphoneCore *lc = linphone_chat_room_get_lc(cr);
+	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	msg->external_body_url = external_body_url ? ms_strdup(external_body_url) : NULL;
 	msg->time = time;
 	msg->is_read = is_read;
@@ -842,10 +849,10 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 	uint32_t new_line = 0x2028;
 	uint32_t crlf = 0x0D0A;
 	uint32_t lf = 0x0A;
-	
+
 	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
 		LinphoneChatMessageCharacter *cmc = ms_new0(LinphoneChatMessageCharacter, 1);
-		
+
 		if (cr->pending_message == NULL) {
 			cr->pending_message = linphone_chat_room_create_message(cr, "");
 		}
@@ -856,7 +863,7 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 
 		cr->remote_is_composing = LinphoneIsComposingActive;
 		linphone_core_notify_is_composing_received(cr->lc, cr);
-			
+
 		if (character == new_line || character == crlf || character == lf) {
 			// End of message
 			LinphoneChatMessage *msg = cr->pending_message;

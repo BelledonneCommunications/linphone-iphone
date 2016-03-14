@@ -30,7 +30,7 @@
 #define FILE_TRANSFER_KEY_SIZE 32
 
 static bool_t file_transfer_in_progress_and_valid(LinphoneChatMessage* msg) {
-	return (msg->chat_room && msg->http_request && !belle_http_request_is_cancelled(msg->http_request));
+	return (msg->chat_room && msg->chat_room->lc && msg->http_request && !belle_http_request_is_cancelled(msg->http_request));
 }
 
 static void _release_http_request(LinphoneChatMessage* msg) {
@@ -155,7 +155,7 @@ static int linphone_chat_message_file_transfer_on_send_body(belle_sip_user_body_
 static void linphone_chat_message_process_response_from_post_file(void *data,
 																  const belle_http_response_event_t *event) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
-
+	
 	if (msg->http_request && !file_transfer_in_progress_and_valid(msg)) {
 		ms_warning("Cancelled request for %s msg [%p], ignoring %s", msg->chat_room?"":"ORPHAN", msg, __FUNCTION__);
 		_release_http_request(msg);
@@ -172,7 +172,8 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 			belle_sip_body_handler_t *first_part_bh;
 
 			/* shall we encrypt the file */
-			if (linphone_core_lime_for_file_sharing_enabled(msg->chat_room->lc)) {
+			if (linphone_chat_room_lime_enabled(msg->chat_room) &&
+			 linphone_core_lime_for_file_sharing_enabled(msg->chat_room->lc)) {
 				char keyBuffer
 					[FILE_TRANSFER_KEY_SIZE]; /* temporary storage of generated key: 192 bits of key + 64 bits of
 												 initial vector */
@@ -315,18 +316,23 @@ const LinphoneContent *linphone_chat_message_get_file_transfer_information(const
 static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, void *data, size_t offset,
 						 const uint8_t *buffer, size_t size) {
 	LinphoneChatMessage *msg = (LinphoneChatMessage *)data;
-	LinphoneCore *lc = msg->chat_room->lc;
-
-
+	LinphoneCore *lc;
+	
+	if (!msg->chat_room) {
+		linphone_chat_message_cancel_file_transfer(msg);
+		return;
+	}
+	lc = msg->chat_room->lc;
+	
+	if (lc == NULL){
+		return; /*might happen during linphone_core_destroy()*/
+	}
+	
 	if (!msg->http_request || belle_http_request_is_cancelled(msg->http_request)) {
 		ms_warning("Cancelled request for msg [%p], ignoring %s", msg, __FUNCTION__);
 		return;
 	}
-
-	if (!msg->chat_room) {
-		linphone_chat_message_cancel_file_transfer(msg);
-	}
-
+	
 	/* first call may be with a zero size, ignore it */
 	if (size == 0) {
 		return;
@@ -460,7 +466,7 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 
 int _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const char* url, const char* action, const belle_http_request_listener_callbacks_t *cbs) {
 	belle_generic_uri_t *uri = NULL;
-	char* ua;
+	const char* ua = linphone_core_get_user_agent(msg->chat_room->lc);
 
 	if (url == NULL) {
 		ms_warning("Cannot process file transfer msg: no file remote URI configured.");
@@ -472,9 +478,7 @@ int _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, const char
 		goto error;
 	}
 
-	ua = ms_strdup_printf("%s/%s", linphone_core_get_user_agent_name(), linphone_core_get_user_agent_version());
 	msg->http_request = belle_http_request_create(action, uri, belle_sip_header_create("User-Agent", ua), NULL);
-	ms_free(ua);
 
 	if (msg->http_request == NULL) {
 		ms_warning("Could not create http request for uri %s", url);

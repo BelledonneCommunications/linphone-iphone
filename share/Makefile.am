@@ -1,17 +1,20 @@
 
 SUBDIRS=C fr it ja cs xml
 
-LINPHONE_SOUNDS=ringback.wav hello8000.wav hello16000.wav incoming_chat.wav
-LINPHONE_RINGS=rings/orig.wav \
-				rings/oldphone.wav \
-				rings/oldphone-mono.wav \
-				rings/oldphone-mono-30s.caf \
-				rings/rock.wav \
-				rings/bigben.wav \
-				rings/toy-mono.wav \
-				rings/sweet.wav \
-				rings/synth.wav \
-				rings/tapping.wav
+LINPHONE_ONHOLD_MUSIC= 	toy-mono.wav \
+			dont_wait_too_long.mkv
+
+LINPHONE_SOUNDS=ringback.wav hello8000.wav hello16000.wav incoming_chat.wav $(LINPHONE_ONHOLD_MUSIC)
+
+LINPHONE_RINGS=		\
+			rings/oldphone-mono.wav \
+			rings/oldphone-mono-30s.caf \
+			rings/four_hands_together.mkv \
+			rings/house_keeping.mkv \
+			rings/its_a_game.mkv \
+			rings/leaving_dreams.mkv \
+			rings/notes_of_the_optimistic.mkv \
+			rings/soft_as_snow.mkv
 
 sounddir=$(datadir)/sounds/linphone
 

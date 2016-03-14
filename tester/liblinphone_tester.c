@@ -20,9 +20,6 @@
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
-#if HAVE_CU_CURSES
-#include "CUnit/CUCurses.h"
-#endif
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
@@ -44,7 +41,6 @@ static FILE * log_file = NULL;
 
 #include <android/log.h>
 #include <jni.h>
-#include <CUnit/Util.h>
 #define CALLBACK_BUFFER_SIZE  1024
 
 static JNIEnv *current_env = NULL;
@@ -73,7 +69,7 @@ void liblinphone_android_log_handler(int prio, const char *fmt, va_list args) {
 	}
 }
 
-static void liblinphone_android_ortp_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+static void liblinphone_android_ortp_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 	int prio;
 	switch(lev){
 		case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	break;
@@ -88,13 +84,16 @@ static void liblinphone_android_ortp_log_handler(OrtpLogLevel lev, const char *f
 
 void cunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	char buffer[CALLBACK_BUFFER_SIZE];
+	jstring javaString;
+	jclass cls;
+	jmethodID method;
+	jint javaLevel = level;
 	JNIEnv *env = current_env;
 	if(env == NULL) return;
 	vsnprintf(buffer, CALLBACK_BUFFER_SIZE, fmt, args);
-	jstring javaString = (*env)->NewStringUTF(env, buffer);
-	jint javaLevel = level;
-	jclass cls = (*env)->GetObjectClass(env, current_obj);
-	jmethodID method = (*env)->GetMethodID(env, cls, "printLog", "(ILjava/lang/String;)V");
+	javaString = (*env)->NewStringUTF(env, buffer);
+	cls = (*env)->GetObjectClass(env, current_obj);
+	method = (*env)->GetMethodID(env, cls, "printLog", "(ILjava/lang/String;)V");
 	(*env)->CallVoidMethod(env, current_obj, method, javaLevel, javaString);
 	(*env)->DeleteLocalRef(env,javaString);
 	(*env)->DeleteLocalRef(env,cls);
@@ -113,10 +112,10 @@ JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject 
 	}
 	current_env = env;
 	current_obj = obj;
-	CU_set_trace_handler(cunit_android_trace_handler);
+	bc_set_trace_handler(cunit_android_trace_handler);
 	ret = main(argc, argv);
 	current_env = NULL;
-	CU_set_trace_handler(NULL);
+	bc_set_trace_handler(NULL);
 	for (i=0; i<argc; i++) {
 		free(argv[i]);
 	}
@@ -151,7 +150,7 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 	va_end(cap);
 #endif
 	if (log_file){
-		ortp_logv_out(lev, fmt, args);
+		ortp_logv_out(ORTP_LOG_DOMAIN, lev, fmt, args);
 	}
 }
 
@@ -163,7 +162,7 @@ void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, v
 	}
 
 	if (ftester_printf == NULL) ftester_printf = log_handler;
-	bc_tester_init(ftester_printf, ORTP_MESSAGE, ORTP_ERROR);
+	bc_tester_init(ftester_printf, ORTP_MESSAGE, ORTP_ERROR, "rcfiles");
 	liblinphone_tester_add_suites();
 }
 

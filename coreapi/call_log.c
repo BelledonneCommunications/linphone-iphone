@@ -248,6 +248,10 @@ bool_t linphone_call_log_video_enabled(LinphoneCallLog *cl) {
 	return cl->video_enabled;
 }
 
+bool_t linphone_call_log_was_conference(LinphoneCallLog *cl) {
+	return cl->was_conference;
+}
+
 
 /*******************************************************************************
  * Reference and user data handling functions                                  *
@@ -345,7 +349,7 @@ static void linphone_create_table(sqlite3* db) {
 	}
 }
 
-void linphone_update_call_log_table(sqlite3* db) {
+static void linphone_update_call_log_table(sqlite3* db) {
 	char* errmsg=NULL;
 	int ret;
 
@@ -419,6 +423,9 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	unsigned int storage_id = atoi(argv[0]);
 	from = linphone_address_new(argv[1]);
 	to = linphone_address_new(argv[2]);
+	
+	if (from == NULL || to == NULL) goto error;
+	
 	dir = (LinphoneCallDir) atoi(argv[3]);
 	log = linphone_call_log_new(dir, from, to);
 
@@ -441,11 +448,20 @@ static int create_call_log(void *data, int argc, char **argv, char **colName) {
 	}
 
 	*list = ms_list_append(*list, log);
-
+	return 0;
+	
+error:
+	if (from){
+		linphone_address_destroy(from);
+	}
+	if (to){
+		linphone_address_destroy(to);
+	}
+	ms_error("Bad call log at storage_id %u", storage_id);
 	return 0;
 }
 
-void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, MSList **list) {
+static void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, MSList **list) {
 	char* errmsg = NULL;
 	int ret;
 	ret = sqlite3_exec(db, stmt, create_call_log, list, &errmsg);
@@ -455,7 +471,7 @@ void linphone_sql_request_call_log(sqlite3 *db, const char *stmt, MSList **list)
 	}
 }
 
-int linphone_sql_request_generic(sqlite3* db, const char *stmt) {
+static int linphone_sql_request_generic(sqlite3* db, const char *stmt) {
 	char* errmsg = NULL;
 	int ret;
 	ret = sqlite3_exec(db, stmt, NULL, NULL, &errmsg);

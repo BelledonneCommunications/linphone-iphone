@@ -76,7 +76,7 @@ void call_accept(Call *call)
 	sdp_context_t *ctx;
 	PayloadType *payload;
 	char *hellofile;
-	static int call_count=0;	
+	static int call_count=0;
 	char record_file[250];
 	osip_message_t *msg=NULL;
 	sprintf(record_file,"/tmp/sipomatic%i.wav",call_count);
@@ -105,7 +105,7 @@ void call_accept(Call *call)
 #ifdef VIDEO_ENABLED
 	if (call->video.remoteport!=0){
 		video_stream_send_only_start(call->video_stream,call->profile,
-			call->video.remaddr,call->video.remoteport,call->video.remoteport+1,call->video.pt, 60, 
+			call->video.remaddr,call->video.remoteport,call->video.remoteport+1,call->video.pt, 60,
 			ms_web_cam_manager_get_default_cam(ms_web_cam_manager_get()));
 	}
 #endif
@@ -124,7 +124,7 @@ PayloadType * sipomatic_payload_is_supported(sdp_payload_t *payload,RtpProfile *
 		localpt=payload->pt;
 		ms_warning("payload has no rtpmap.");
 	}
-	
+
 	if (localpt>=0){
 		/* this payload is supported in our local rtp profile, so add it to the dialog rtp
 		profile */
@@ -160,7 +160,7 @@ int sipomatic_accept_audio_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 	Call *call=(Call*)sdp_context_get_user_pointer(ctx);
 	PayloadType *supported;
 	struct stream_params *params=&call->audio;
-	
+
 	/* see if this codec is supported in our local rtp profile*/
 	supported=sipomatic_payload_is_supported(payload,&av_profile,call->profile);
 	if (supported==NULL) {
@@ -191,7 +191,7 @@ int sipomatic_accept_video_offer(sdp_context_t *ctx,sdp_payload_t *payload)
 	Call *call=(Call*)sdp_context_get_user_pointer(ctx);
 	PayloadType *supported;
 	struct stream_params *params=&call->video;
-	
+
 	/* see if this codec is supported in our local rtp profile*/
 	supported=sipomatic_payload_is_supported(payload,&av_profile,call->profile);
 	if (supported==NULL) {
@@ -221,9 +221,9 @@ void sipomatic_init(Sipomatic *obj, char *url, bool_t ipv6)
 {
 	osip_uri_t *uri=NULL;
 	int port=5064;
-	
+
 	obj->ipv6=ipv6;
-	
+
 	if (url==NULL){
 		url=getenv("SIPOMATIC_URL");
 		if (url==NULL){
@@ -237,7 +237,7 @@ void sipomatic_init(Sipomatic *obj, char *url, bool_t ipv6)
 			if (uri->port!=NULL) port=atoi(uri->port);
 		}else{
 			ms_warning("Invalid identity uri:%s",url);
-		}	
+		}
 	}
 	ms_message("Starting using url %s",url);
 	ms_mutex_init(&obj->lock,NULL);
@@ -324,7 +324,7 @@ Call * call_new(Sipomatic *root, eXosip_event_t *ev)
 	int status;
 	sdp_message_t *sdp;
 	sdp_context_t *sdpc;
-	
+
 	sdp=eXosip_get_sdp_info(ev->request);
 	sdpc=sdp_handler_create_context(&sipomatic_sdp_handler,NULL,"sipomatic",NULL);
 	obj=ms_new0(Call,1);
@@ -334,7 +334,7 @@ Call * call_new(Sipomatic *root, eXosip_event_t *ev)
 	sdpans=sdp_context_get_answer(sdpc,sdp);
 	if (sdpans!=NULL){
 		eXosip_call_send_answer(ev->tid,180,NULL);
-		
+
 	}else{
 		status=sdp_context_get_status(sdpc);
 		eXosip_call_send_answer(ev->tid,status,NULL);
@@ -409,7 +409,7 @@ int main(int argc, char *argv[])
 	char *url=NULL;
 	bool_t ipv6=FALSE;
 	int i;
-	
+
 	for(i=1;i<argc;i++){
 		if ( (strcmp(argv[i],"-h")==0) || (strcmp(argv[i],"--help")==0) ){
 			display_help();
@@ -441,7 +441,7 @@ int main(int argc, char *argv[])
 			continue;
 		}
 	}
-	
+
 	signal(SIGINT,stop_handler);
 	ortp_init();
 	ms_init();
@@ -453,18 +453,18 @@ int main(int argc, char *argv[])
 	rtp_profile_set_payload(&av_profile,101,&payload_type_telephone_event);
 	rtp_profile_set_payload(&av_profile,116,&payload_type_truespeech);
 	rtp_profile_set_payload(&av_profile,98,&payload_type_h263_1998);
-	
+
 	sipomatic_init(&sipomatic,url,ipv6);
 	if (file!=NULL) sipomatic_set_annouce_file(&sipomatic,file);
-	
+
 	while (run_cond){
 		sipomatic_iterate(&sipomatic);
-#ifndef WIN32
+#ifndef _WIN32
 		usleep(20000);
 #else
 		Sleep(20);
 #endif
 	}
-	
+
 	return(0);
 }

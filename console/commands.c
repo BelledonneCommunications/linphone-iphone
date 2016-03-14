@@ -35,7 +35,7 @@
 #include "linphonec.h"
 #include "lpconfig.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
@@ -118,7 +118,7 @@ static void linphonec_friend_display(LinphoneFriend *fr);
 static int linphonec_friend_list(LinphoneCore *lc, char *arg);
 static void linphonec_display_command_help(LPC_COMMAND *cmd);
 static int linphonec_friend_call(LinphoneCore *lc, unsigned int num);
-#ifndef WIN32
+#ifndef _WIN32
 static int linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr);
 #endif
 static int linphonec_friend_delete(LinphoneCore *lc, int num);
@@ -287,10 +287,10 @@ static LPC_COMMAND advanced_commands[] = {
             "'codec list' : list audio codecs\n"
             "'codec enable <index>' : enable available audio codec\n"
             "'codec disable <index>' : disable audio codec" },
-    { "vcodec", lpc_cmd_vcodec, "Video codec configuration",
-            "'vcodec list' : list video codecs\n"
-            "'vcodec enable <index>' : enable available video codec\n"
-            "'vcodec disable <index>' : disable video codec" },
+	{ "vcodec", lpc_cmd_vcodec, "Video codec configuration",
+		"'vcodec list' : list video codecs\n"
+		"'vcodec enable <index>' : enable available video codec\n"
+		"'vcodec disable <index>' : disable video codec" },
 	{ "ec", lpc_cmd_echocancellation, "Echo cancellation",
 	    "'ec on [<delay>] [<tail>] [<framesize>]' : turn EC on with given delay, tail length and framesize\n"
 	    "'ec off' : turn echo cancellation (EC) off\n"
@@ -367,7 +367,8 @@ static LPC_COMMAND advanced_commands[] = {
 		"'ringback disable'\t: Disable playing of ringback tone to callers\n"
 	},
 	{ "redirect", lpc_cmd_redirect, "Redirect an incoming call",
-		"'redirect <redirect-uri>'\t: Redirect all pending incoming calls to the <redirect-uri>\n"
+		"'redirect <id> <redirect-uri>'\t: Redirect the specified call to the <redirect-uri>\n"
+		"'redirect all <redirect-uri>'\t: Redirect all pending incoming calls to the <redirect-uri>\n"
 	},
 	{ "zrtp-set-verified", lpc_cmd_zrtp_verified,"Set ZRTP SAS verified.",
 		"'Set ZRTP SAS verified'\n"
@@ -414,7 +415,8 @@ linphonec_parse_command_line(LinphoneCore *lc, char *cl)
 	{
 		while ( isdigit(*cl) || *cl == '#' || *cl == '*' )
 		{
-			linphone_core_send_dtmf(lc, *cl);
+			if (linphone_core_get_current_call(lc))
+				linphone_call_send_dtmf(linphone_core_get_current_call(lc), *cl);
 			linphone_core_play_dtmf (lc,*cl,100);
 			ms_sleep(1); // be nice
 			++cl;
@@ -739,17 +741,37 @@ lpc_cmd_redirect(LinphoneCore *lc, char *args){
 		linphonec_out("No active calls.\n");
 		return 1;
 	}
-	while(elem!=NULL){
-		LinphoneCall *call=(LinphoneCall*)elem->data;
-		if (linphone_call_get_state(call)==LinphoneCallIncomingReceived){
-			linphone_core_redirect_call(lc,call,args);
-			didit=1;
-			/*as the redirection closes the call, we need to re-check the call list that is invalidated.*/
-			elem=linphone_core_get_calls(lc);
-		}else elem=elem->next;
-	}
-	if (didit==0){
-		linphonec_out("There is no pending incoming call to redirect.");
+	if (strncmp(args, "all ", 4) == 0) {
+		while(elem!=NULL){
+			LinphoneCall *call=(LinphoneCall*)elem->data;
+			if (linphone_call_get_state(call)==LinphoneCallIncomingReceived){
+				if (linphone_core_redirect_call(lc,call,args+4) != 0) {
+					linphonec_out("Could not redirect call.\n");
+					elem=elem->next;
+				} else {
+					didit=1;
+					/*as the redirection closes the call, we need to re-check the call list that is invalidated.*/
+					elem=linphone_core_get_calls(lc);
+				}
+			}else elem=elem->next;
+		}
+		if (didit==0){
+			linphonec_out("There is no pending incoming call to redirect.\n");
+		}
+	} else {
+		char space;
+		long id;
+		int charRead;
+		if ( sscanf(args, "%li%c%n", &id, &space, &charRead) == 2 && space == ' ') {
+			LinphoneCall * call = linphonec_get_call(id);
+			if ( call != NULL ) {
+				if (linphone_call_get_state(call)!=LinphoneCallIncomingReceived) {
+					linphonec_out("The state of the call is not incoming, can't be redirected.\n");
+				} else if (linphone_core_redirect_call(lc,call,args+charRead) != 0) {
+					linphonec_out("Could not redirect call.\n");
+				}
+			}
+		} else return 0;
 	}
 	return 1;
 }
@@ -927,7 +949,7 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 	return 1;
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 /* Helper function for processing freind names */
 static int
 lpc_friend_name(char **args, char **name)
@@ -1012,7 +1034,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 	}
 	else if ( !strncmp(args, "add", 3) )
 	{
-#ifndef WIN32
+#ifndef _WIN32
 		char  *name;
 		char  addr[80];
 		char *addr_p = addr;
@@ -1040,7 +1062,7 @@ lpc_cmd_friend(LinphoneCore *lc, char *args)
 		linphonec_friend_add(lc, name, addr);
 #else
 		LinphoneFriend *new_friend;
-		new_friend = linphone_friend_new_with_address(args);
+		new_friend = linphone_core_create_friend_with_address(lc, args);
 		linphone_core_add_friend(lc, new_friend);
 #endif
 		return 1;
@@ -1242,12 +1264,16 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 
 	if (strcmp(arg1, "show")==0)
 	{
-		linphonec_out("Ringer device: %s\n",
-			linphone_core_get_ringer_device(lc));
-		linphonec_out("Playback device: %s\n",
-			linphone_core_get_playback_device(lc));
-		linphonec_out("Capture device: %s\n",
-			linphone_core_get_capture_device(lc));
+		if (linphone_core_get_use_files(lc)) {
+			linphonec_out("Using files.\n");
+		} else {
+			linphonec_out("Ringer device: %s\n",
+				linphone_core_get_ringer_device(lc));
+			linphonec_out("Playback device: %s\n",
+				linphone_core_get_playback_device(lc));
+			linphonec_out("Capture device: %s\n",
+				linphone_core_get_capture_device(lc));
+		}
 		return 1;
 	}
 
@@ -1259,6 +1285,8 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 			linphone_core_use_files(lc,TRUE);
 			return 1;
 		}
+
+		linphone_core_use_files(lc,FALSE);
 
 		dev=linphone_core_get_sound_devices(lc);
 		index=atoi(arg2); /* FIXME: handle not-a-number */
@@ -1275,6 +1303,7 @@ static int lpc_cmd_soundcard(LinphoneCore *lc, char *args)
 		linphonec_out("No such sound device\n");
 		return 1;
 	}
+
 	if (strcmp(arg1, "capture")==0)
 	{
 		const char *devname=linphone_core_get_capture_device(lc);
@@ -1857,7 +1886,7 @@ linphonec_friend_call(LinphoneCore *lc, unsigned int num)
 	return 1;
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 static int
 linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr)
 {
@@ -1866,7 +1895,7 @@ linphonec_friend_add(LinphoneCore *lc, const char *name, const char *addr)
 	char url[PATH_MAX];
 
 	snprintf(url, PATH_MAX, "%s <%s>", name, addr);
-	newFriend = linphone_friend_new_with_address(url);
+	newFriend = linphone_core_create_friend_with_address(lc, url);
 	linphone_core_add_friend(lc, newFriend);
 	return 0;
 }
@@ -1917,8 +1946,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 	if (!args)
 		{
 			/* it means that you want to register the default proxy */
-			LinphoneProxyConfig *cfg=NULL;
-			linphone_core_get_default_proxy(lc,&cfg);
+			LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(lc);
 			if (cfg)
 			{
 				if(!linphone_proxy_config_is_registered(cfg)) {
@@ -1965,8 +1993,7 @@ static int lpc_cmd_register(LinphoneCore *lc, char *args){
 }
 
 static int lpc_cmd_unregister(LinphoneCore *lc, char *args){
-	LinphoneProxyConfig *cfg=NULL;
-	linphone_core_get_default_proxy(lc,&cfg);
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(lc);
 	if (cfg && linphone_proxy_config_is_registered(cfg)) {
 		linphone_proxy_config_edit(cfg);
 		linphone_proxy_config_enable_register(cfg,FALSE);
@@ -1994,7 +2021,7 @@ static int lpc_cmd_status(LinphoneCore *lc, char *args)
 	LinphoneProxyConfig *cfg;
 
 	if ( ! args ) return 0;
-	linphone_core_get_default_proxy(lc,&cfg);
+	cfg = linphone_core_get_default_proxy_config(lc);
 	if (strstr(args,"register"))
 	{
 		if (cfg)
@@ -2110,7 +2137,7 @@ static int lpc_cmd_param(LinphoneCore *lc, char *args)
 }
 
 static int lpc_cmd_speak(LinphoneCore *lc, char *args){
-#ifndef WIN32
+#ifndef _WIN32
 	char voice[64];
 	char *sentence;
 	char cl[128];
@@ -2336,12 +2363,12 @@ static int lpc_cmd_echolimiter(LinphoneCore *lc, char *args){
 
 static int lpc_cmd_mute_mic(LinphoneCore *lc, char *args)
 {
-	linphone_core_mute_mic(lc, 1);
+	linphone_core_enable_mic(lc, 0);
 	return 1;
 }
 
 static int lpc_cmd_unmute_mic(LinphoneCore *lc, char *args){
-	linphone_core_mute_mic(lc, 0);
+	linphone_core_enable_mic(lc, 1);
 	return 1;
 }
 
@@ -2452,7 +2479,7 @@ static void lpc_display_call_states(LinphoneCore *lc){
 			const char *flag;
 			bool_t in_conference;
 			call=(LinphoneCall*)elem->data;
-			in_conference=linphone_call_params_get_local_conference_mode(linphone_call_get_current_params(call));
+			in_conference=(linphone_call_get_conference(call) != NULL);
 			tmp=linphone_call_get_remote_address_as_string (call);
 			flag=in_conference ? "conferencing" : "";
 			flag=linphone_call_has_transfer_pending(call) ? "transfer pending" : flag;

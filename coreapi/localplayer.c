@@ -36,7 +36,7 @@ LinphonePlayer *linphone_core_create_local_player(LinphoneCore *lc, MSSndCard *s
 	LinphonePlayer *obj = ms_new0(LinphonePlayer, 1);
 	if(snd_card == NULL) snd_card = lc->sound_conf.ring_sndcard;
 	if(video_out == NULL) video_out = linphone_core_get_video_display_filter(lc);
-	obj->impl = ms_media_player_new(snd_card, video_out, window_id);
+	obj->impl = ms_media_player_new(lc->factory, snd_card, video_out, window_id);
 	obj->open = _local_player_open;
 	obj->start = _local_player_start;
 	obj->pause = _local_player_pause;

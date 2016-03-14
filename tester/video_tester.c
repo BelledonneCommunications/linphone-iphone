@@ -340,6 +340,7 @@ static void two_incoming_early_media_video_calls_test(void) {
 			linphone_call_params_set_audio_direction(params, LinphoneMediaDirectionSendRecv);
 			linphone_call_params_set_video_direction(params, LinphoneMediaDirectionSendRecv);
 			linphone_core_accept_call_with_params(marie->lc, call, params);
+			linphone_call_params_unref(params);
 
 			/* Wait for 5s. */
 			wait_for_three_cores(marie->lc, pauline->lc, laure->lc, 5000);
@@ -419,10 +420,13 @@ static void forked_outgoing_early_media_video_call_with_inactive_audio_test(void
 	pol.automatically_accept = 1;
 	pol.automatically_initiate = 1;
 
-	linphone_core_enable_video(pauline->lc, TRUE, TRUE);
-	linphone_core_enable_video(marie1->lc, TRUE, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, TRUE);
+	linphone_core_enable_video_capture(marie1->lc, TRUE);
+	linphone_core_enable_video_display(marie1->lc, TRUE);
 	linphone_core_set_video_policy(marie1->lc, &pol);
-	linphone_core_enable_video(marie2->lc, TRUE, TRUE);
+	linphone_core_enable_video_capture(marie2->lc, TRUE);
+	linphone_core_enable_video_display(marie2->lc, TRUE);
 	linphone_core_set_video_policy(marie2->lc, &pol);
 	linphone_core_set_audio_port_range(marie2->lc, 40200, 40300);
 	linphone_core_set_video_port_range(marie2->lc, 40400, 40500);
@@ -552,12 +556,12 @@ static void enable_disable_camera_after_camera_switches(void) {
 }
 test_t video_tests[] = {
 #if HAVE_GTK
-	{ "Early-media video during video call", early_media_video_during_video_call_test },
-	{ "Two incoming early-media video calls", two_incoming_early_media_video_calls_test },
-	{ "Early-media video with inactive audio", early_media_video_with_inactive_audio },
-	{ "Forked outgoing early-media video call with inactive audio", forked_outgoing_early_media_video_call_with_inactive_audio_test },
+	TEST_NO_TAG("Early-media video during video call", early_media_video_during_video_call_test),
+	TEST_NO_TAG("Two incoming early-media video calls", two_incoming_early_media_video_calls_test),
+	TEST_NO_TAG("Early-media video with inactive audio", early_media_video_with_inactive_audio),
+	TEST_NO_TAG("Forked outgoing early-media video call with inactive audio", forked_outgoing_early_media_video_call_with_inactive_audio_test),
 #endif /*HAVE_GTK*/
-	{ "Enable/disable camera after camera switches", enable_disable_camera_after_camera_switches}
+	TEST_NO_TAG("Enable/disable camera after camera switches", enable_disable_camera_after_camera_switches)
 
 };
 

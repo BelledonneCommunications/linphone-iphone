@@ -121,4 +121,9 @@ public interface LinphoneCallLog {
 	 * @return the SIP call-id.
 	 */
 	public String getCallId();
+	/**
+	 * Tells whether the call was a call to a conference server
+	 * @return true if the call was a call to a conference server
+	 */
+	public boolean wasConference();
 }

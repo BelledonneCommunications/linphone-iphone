@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 
@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #define chdir _chdir
 #include "direct.h"
 #ifndef F_OK
@@ -148,7 +148,7 @@ static GOptionEntry linphone_options[]={
 #define RELATIVE_XML_DIR
 #define BUILD_TREE_XML_DIR "gtk"
 
-#ifndef WIN32
+#ifndef _WIN32
 #define CONFIG_FILE ".linphonerc"
 #define SECRETS_FILE ".linphone-zidcache"
 #define CERTIFICATES_PATH ".linphone-usr-crt"
@@ -165,7 +165,7 @@ char *linphone_gtk_get_config_file(const char *filename){
 	if (g_path_is_absolute(filename)) {
 		snprintf(config_file,path_max,"%s",filename);
 	} else{
-#ifdef WIN32
+#ifdef _WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
 			snprintf(config_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
@@ -194,7 +194,7 @@ static const char *linphone_gtk_get_factory_config_file(void){
 		if (progpath != NULL) {
 			char *basename;
 			progdir = strdup(progpath);
-#ifdef WIN32
+#ifdef _WIN32
 			basename = strrchr(progdir, '\\');
 			if (basename != NULL) {
 				basename ++;
@@ -252,7 +252,8 @@ gboolean linphone_gtk_get_audio_assistant_option(void){
 }
 
 static void linphone_gtk_init_liblinphone(const char *config_file,
-		const char *factory_config_file, const char *chat_messages_db_file, const char *call_logs_db_file) {
+		const char *factory_config_file, const char *chat_messages_db_file,
+		const char *call_logs_db_file, const char *friends_db_file) {
 	LinphoneCoreVTable vtable={0};
 	gchar *secrets_file=linphone_gtk_get_config_file(SECRETS_FILE);
 	gchar *user_certificates_dir=linphone_gtk_get_config_file(CERTIFICATES_PATH);
@@ -299,6 +300,7 @@ static void linphone_gtk_init_liblinphone(const char *config_file,
 	}
 	if (chat_messages_db_file) linphone_core_set_chat_database_path(the_core,chat_messages_db_file);
 	if (call_logs_db_file) linphone_core_set_call_logs_database_path(the_core, call_logs_db_file);
+	if (friends_db_file) linphone_core_set_friends_database_path(the_core, friends_db_file);
 }
 
 LinphoneCore *linphone_gtk_get_core(void){
@@ -814,7 +816,7 @@ static void linphone_gtk_update_call_buttons(LinphoneCall *call){
 	conf_frame=(GtkWidget *)g_object_get_data(G_OBJECT(mw),"conf_frame");
 	if(conf_frame==NULL){
 		linphone_gtk_enable_transfer_button(lc,call_list_size>1);
-		linphone_gtk_enable_conference_button(lc,call_list_size>1);
+		linphone_gtk_enable_conference_button(lc,call_list_size>0);
 	} else {
 		linphone_gtk_enable_transfer_button(lc,FALSE);
 		linphone_gtk_enable_conference_button(lc,FALSE);
@@ -835,7 +837,7 @@ gchar *linphone_gtk_get_record_path(const LinphoneAddress *address, gboolean is_
 	int i;
 	const char *ext="wav";
 
-#ifdef WIN32
+#ifdef _WIN32
 	loctime=*localtime(&curtime);
 #else
 	localtime_r(&curtime,&loctime);
@@ -1447,7 +1449,7 @@ void linphone_gtk_open_browser(const char *uri) {
 		g_warning("Could not open %s: %s", uri, error->message);
 		g_error_free(error);
 	}
-#elif defined(WIN32)
+#elif defined(_WIN32)
 	HINSTANCE instance = ShellExecute(NULL, "open", uri, NULL, NULL, SW_SHOWNORMAL);
 	if ((int)instance <= 32) {
 		g_warning("Could not open %s (error #%i)", uri, (int)instance);
@@ -1555,6 +1557,9 @@ void linphone_gtk_status_icon_set_blinking(gboolean val) {
 	if(icon) {
 		linphone_status_icon_enable_blinking(icon, val);
 	}
+#ifdef __APPLE__
+	linphone_gtk_update_badge_count();
+#endif
 }
 
 void linphone_gtk_options_activate(GtkWidget *item){
@@ -1832,6 +1837,36 @@ void linphone_gtk_show_keypad_checked(GtkCheckMenuItem *check_menu_item) {
 	}
 }
 
+void linphone_gtk_import_contacts(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *dialog = gtk_file_chooser_dialog_new("Open vCard file", (GtkWindow *)mw, GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+
+	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+		LinphoneCore *lc = linphone_gtk_get_core();
+		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		LinphoneFriendList *list = linphone_core_get_default_friend_list(lc);
+		linphone_friend_list_import_friends_from_vcard4_file(list, filename);
+		g_free(filename);
+		linphone_gtk_show_friends();
+	}
+	gtk_widget_destroy(dialog);
+}
+
+void linphone_gtk_export_contacts(void) {
+	GtkWidget *mw = linphone_gtk_get_main_window();
+	GtkWidget *dialog = gtk_file_chooser_dialog_new("Save vCards as", (GtkWindow *)mw, GTK_FILE_CHOOSER_ACTION_SAVE, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT, NULL);
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+
+	if (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+		LinphoneCore *lc = linphone_gtk_get_core();
+		char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		LinphoneFriendList *list = linphone_core_get_default_friend_list(lc);
+		linphone_friend_list_export_friends_as_vcard4_file(list, filename);
+		g_free(filename);
+	}
+	gtk_widget_destroy(dialog);
+}
+
 gboolean linphone_gtk_keypad_destroyed_handler(void) {
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *show_keypad_item = linphone_gtk_get_widget(mw, "show_keypad_menu_item");
@@ -1885,7 +1920,7 @@ static void linphone_gtk_init_main_window(void){
 #endif
 }
 
-void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
+void linphone_gtk_log_handler(const char*domain, OrtpLogLevel lev, const char *fmt, va_list args){
 	if (verbose){
 		const char *lname="undef";
 		char *msg;
@@ -1926,13 +1961,22 @@ void linphone_gtk_log_handler(OrtpLogLevel lev, const char *fmt, va_list args){
 
 
 void linphone_gtk_refer_received(LinphoneCore *lc, const char *refer_to){
-	GtkEntry * uri_bar =GTK_ENTRY(linphone_gtk_get_widget(
-		linphone_gtk_get_main_window(), "uribar"));
-	char *text;
-	linphone_gtk_notify(NULL,NULL,(text=ms_strdup_printf(_("We are transferred to %s"),refer_to)));
-	g_free(text);
-	gtk_entry_set_text(uri_bar, refer_to);
-	linphone_gtk_start_call(linphone_gtk_get_main_window());
+	char method[20] = "";
+	LinphoneAddress *addr = linphone_address_new(refer_to);
+	if(addr) {
+		const char *tmp = linphone_address_get_method_param(addr);
+		strncpy(method, tmp, sizeof(20));
+		linphone_address_destroy(addr);
+	}
+	if(strlen(method) == 0 || strcmp(method, "INVITE") == 0) {
+		GtkEntry * uri_bar =GTK_ENTRY(linphone_gtk_get_widget(
+			linphone_gtk_get_main_window(), "uribar"));
+		char *text;
+		linphone_gtk_notify(NULL,NULL,(text=ms_strdup_printf(_("We are transferred to %s"),refer_to)));
+		g_free(text);
+		gtk_entry_set_text(uri_bar, refer_to);
+		linphone_gtk_start_call(linphone_gtk_get_main_window());
+	}
 }
 
 static void linphone_gtk_check_soundcards(void){
@@ -1945,6 +1989,12 @@ static void linphone_gtk_check_soundcards(void){
 }
 
 static void linphone_gtk_quit_core(void){
+#ifdef HAVE_GTK_OSX
+	{
+		GtkosxApplication *theMacApp = gtkosx_application_get();
+		gtkosx_application_set_menu_bar(theMacApp,NULL);
+	}
+#endif
 	linphone_gtk_unmonitor_usb();
 	g_source_remove_by_user_data(linphone_gtk_get_core());
 #ifdef BUILD_WIZARD
@@ -2018,11 +2068,11 @@ static void sigint_handler(int signum){
 }
 
 static void populate_xdg_data_dirs_envvar(void) {
-#ifndef WIN32
+#ifndef _WIN32
 	int i;
 	gchar *value;
 	gchar **paths;
-	
+
 	if(g_getenv("XDG_DATA_DIRS") == NULL) {
 		value = g_strdup("/usr/share:/usr/local/share:/opt/local/share");
 	} else {
@@ -2047,7 +2097,7 @@ int main(int argc, char *argv[]){
 	const char *icon_name=LINPHONE_ICON_NAME;
 	const char *app_name="Linphone";
 	LpConfig *factory;
-	char *chat_messages_db_file, *call_logs_db_file;
+	char *chat_messages_db_file, *call_logs_db_file, *friends_db_file;
 	GError *error=NULL;
 	const char *tmp;
 
@@ -2066,7 +2116,7 @@ int main(int argc, char *argv[]){
 	/*for pulseaudio:*/
 	g_setenv("PULSE_PROP_media.role", "phone", TRUE);
 #endif
-	
+
 	populate_xdg_data_dirs_envvar();
 
 	lang=linphone_gtk_get_lang(config_file);
@@ -2075,7 +2125,7 @@ int main(int argc, char *argv[]){
 		if (!lang) lang = g_getenv("LANG");
 	}
 	if (lang && lang[0]!='\0'){
-#ifdef WIN32
+#ifdef _WIN32
 		if (strncmp(lang,"zh",2)==0){
 			workaround_gtk_entry_chinese_bug=TRUE;
 		}
@@ -2093,7 +2143,7 @@ int main(int argc, char *argv[]){
 #else
 	g_message("NLS disabled.\n");
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 	gtk_rc_add_default_file("./gtkrc");
 #endif
 	gdk_threads_enter();
@@ -2170,27 +2220,33 @@ int main(int argc, char *argv[]){
 
 core_start:
 	if (linphone_gtk_init_instance(app_name, start_option, addr_to_call) == FALSE){
-		g_warning("Another running instance of linphone has been detected. It has been woken-up.");
+		g_warning("Another running instance of Linphone has been detected. It has been woken-up.");
 		g_warning("This instance is going to exit now.");
 		gdk_threads_leave();
 		return 0;
 	}
-
 	the_ui=linphone_gtk_create_window("main", NULL);
 
 	g_object_set_data(G_OBJECT(the_ui),"is_created",GINT_TO_POINTER(FALSE));
 
 	linphone_gtk_create_log_window();
 	linphone_core_enable_logs_with_cb(linphone_gtk_log_handler);
+	/*it is possible to filter in or out some logs by configuring per log domain:*/
+	/*ortp_set_log_level_mask("belle-sip", ORTP_ERROR);*/
 
 	chat_messages_db_file=linphone_gtk_message_storage_get_db_file(NULL);
 	call_logs_db_file = linphone_gtk_call_logs_storage_get_db_file(NULL);
-	linphone_gtk_init_liblinphone(config_file, factory_config_file, chat_messages_db_file, call_logs_db_file);
+	friends_db_file = linphone_gtk_friends_storage_get_db_file(NULL);
+	linphone_gtk_init_liblinphone(config_file, factory_config_file, chat_messages_db_file, call_logs_db_file, friends_db_file);
 	g_free(chat_messages_db_file);
 	g_free(call_logs_db_file);
+	g_free(friends_db_file);
 
 #ifdef CALL_LOGS_STORAGE_ENABLED
 	linphone_gtk_call_log_update(the_ui);
+#endif
+#ifdef FRIENDS_SQL_STORAGE_ENABLED
+	linphone_gtk_show_friends();
 #endif
 
 	/* do not lower timeouts under 30 ms because it exhibits a bug on gtk+/win32, with cpu running 20% all the time...*/
@@ -2198,7 +2254,7 @@ core_start:
 	gtk_timeout_add(30,(GtkFunction)linphone_gtk_check_logs,(gpointer)linphone_gtk_get_core());
 
 	signal(SIGINT, sigint_handler);
-	
+
 	gtk_main();
 	linphone_gtk_quit();
 
@@ -2225,7 +2281,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 GtkWidget *linphone_gtk_make_tab_header(const gchar *label, const gchar *icon_name, gboolean show_quit_button, GCallback cb, gpointer user_data) {
 	GtkWidget *tab_header=gtk_hbox_new (FALSE,0);
 	GtkWidget *label_widget = gtk_label_new (label);
-	
+
 	if(icon_name) {
 		GtkWidget *icon=gtk_image_new_from_icon_name(icon_name, GTK_ICON_SIZE_MENU);
 #ifdef HAVE_GTK_OSX

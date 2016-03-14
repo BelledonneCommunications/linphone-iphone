@@ -29,10 +29,13 @@ linphone_include_HEADERS=\
 	buffer.h \
 	call_log.h \
 	call_params.h \
+	conference.h \
 	content.h \
 	event.h \
+	friendlist.h \
 	linphonecore.h \
 	linphonecore_utils.h \
+	ringtoneplayer.h \
 	linphonefriend.h \
 	linphonepresence.h \
 	linphone_proxy_config.h \
@@ -41,7 +44,9 @@ linphone_include_HEADERS=\
 	lpconfig.h \
 	sipsetup.h \
 	xml2lpc.h \
-	xmlrpc.h
+	xmlrpc.h \
+	vcard.h \
+	carddav.h
 
 lib_LTLIBRARIES=liblinphone.la
 
@@ -55,7 +60,7 @@ liblinphone_la_SOURCES=\
 	call_params.c \
 	chat.c \
 	chat_file_transfer.c \
-	conference.c \
+	conference.cc conference_private.h \
 	contactprovider.c contactprovider.h contact_providers_priv.h \
 	content.c \
 	dict.c \
@@ -63,6 +68,7 @@ liblinphone_la_SOURCES=\
 	enum.c enum.h \
 	event.c \
 	friend.c \
+	friendlist.c \
 	info.c \
 	ldap/ldapprovider.c ldap/ldapprovider.h \
 	linphonecall.c \
@@ -88,6 +94,8 @@ liblinphone_la_SOURCES=\
 	xml.c \
 	xmlrpc.c \
 	vtables.c \
+	carddav.c \
+	ringtoneplayer.c ringtoneplayer.h\
 	$(GITVERSION_FILE)
 
 if BUILD_UPNP
@@ -114,7 +122,11 @@ else
 liblinphone_la_SOURCES+=linphone_tunnel_stubs.c linphone_tunnel.h
 endif
 
-
+if BUILD_VCARD
+liblinphone_la_SOURCES+=vcard.cc
+else
+liblinphone_la_SOURCES+=vcard_stubs.c
+endif
 
 liblinphone_la_LDFLAGS= -version-info $(LIBLINPHONE_SO_VERSION) -no-undefined
 
@@ -142,19 +154,22 @@ liblinphone_la_LIBADD= \
 		$(LIBXML2_LIBS) \
 		$(LDAP_LIBS) \
 		$(SASL_LIBS) \
+		$(BELCARD_LIBS) \
 		$(ZLIB_LIBS)
 
 
 AM_CPPFLAGS=\
+	-DIN_LINPHONE \
 	-I$(top_srcdir) -I$(top_srcdir)/include -I$(builddir) \
-		$(ORTP_CFLAGS) \
-		$(MEDIASTREAMER_CFLAGS)
+	$(ORTP_CFLAGS) \
+	$(MEDIASTREAMER_CFLAGS) \
+	$(LIBXML2_CFLAGS)
 
 COMMON_CFLAGS=\
 	$(STRICT_OPTIONS) \
 	-DIN_LINPHONE \
 	$(SIPSTACK_CFLAGS) \
-	-DENABLE_TRACE 	\
+	-DENABLE_TRACE \
 	-DLOG_DOMAIN=\"LinphoneCore\" \
 	$(IPV6_CFLAGS) \
 	-DORTP_INET6 \
@@ -164,6 +179,7 @@ COMMON_CFLAGS=\
 	$(LIBXML2_CFLAGS) \
 	$(LDAP_CFLAGS) \
 	$(SASL_CFLAGS) \
+	$(BELCARD_CFLAGS) \
 	$(ZLIB_CFLAGS)
 
 if BUILD_WIZARD
@@ -174,6 +190,9 @@ COMMON_CFLAGS+= -DUSE_BELLESIP
 
 AM_CFLAGS=$(COMMON_CFLAGS) $(STRICT_OPTIONS_CC)
 AM_CXXFLAGS=$(COMMON_CFLAGS) $(STRICT_OPTIONS_CXX)
+if BUILD_VCARD
+AM_CXXFLAGS+=-std=c++11
+endif
 
 #Make sure that we are in linphone's git tree by doing git log $(top_srcdir)/configure.ac.
 #if it is something known to git, then that will be ok to check the git describe number and make sure it is consistent with

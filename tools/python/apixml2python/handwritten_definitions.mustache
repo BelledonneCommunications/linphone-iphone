@@ -1,5 +1,28 @@
+PyObject * PyList_FromMSListOfString(const MSList *msl) {
+	PyObject *pyl = PyList_New(0);
+	while (msl != NULL) {
+		PyObject *item = Py_BuildValue("z", (const char *)msl->data);
+		PyList_Append(pyl, item);
+		msl = ms_list_next(msl);
+	}
+	return pyl;
+}
+
+MSList * PyList_AsMSListOfString(PyObject *pyl) {
+	MSList *msl = NULL;
+	Py_ssize_t idx;
+	Py_ssize_t size = PyList_Size(pyl);
+	for (idx = 0; idx < size; idx++) {
+		PyObject *item = PyList_GetItem(pyl, idx);
+		char *citem = (char *)PyString_AsString(item);
+		msl = ms_list_append(msl, citem);
+	}
+	return msl;
+}
+
+
 static void pylinphone_dispatch_messages(void) {
-#ifdef WIN32
+#ifdef _WIN32
 	MSG msg;
 	while (PeekMessage(&msg, NULL, 0, 0, 1)) {
 		TranslateMessage(&msg);
@@ -72,7 +95,7 @@ static const char * pylinphone_ortp_log_level_to_string(OrtpLogLevel lev) {
 	}
 }
 
-static void pylinphone_module_log_handler(OrtpLogLevel lev, const char *fmt, va_list args) {
+static void pylinphone_module_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
 	PyGILState_STATE gstate;
 	PyObject *linphone_module;
 	const char *level;
@@ -144,7 +167,7 @@ static PyObject * pylinphone_Call_get_native_video_window_id(PyObject *self, voi
 	pylinphone_dispatch_messages();
 
 	pyret = Py_BuildValue("k", (unsigned long)cresult);
-	
+
 	pylinphone_trace(-1, "[PYLINPHONE] <<< %s -> %p", __FUNCTION__, pyret);
 	return pyret;
 }
@@ -393,14 +416,15 @@ static PyObject * pylinphone_Core_get_video_devices(PyObject *self, void *closur
 	return _list;
 }
 
-static void pylinphone_init_ms2_plugins(void) {
-	ms_init(); // Initialize mediastreamer2 before loading the plugins
+static void pylinphone_init_ms2_plugins(LinphoneCore *lc) {
+	MSFactory *factory = linphone_core_get_ms_factory(lc);
 #ifdef ENABLE_OPENH264
-	libmsopenh264_init();
+	libmsopenh264_init(factory);
 #endif
 #ifdef ENABLE_WASAPI
-	libmswasapi_init();
+	libmswasapi_init(factory);
 #endif
+	linphone_core_reload_ms_plugins(lc, NULL);
 }
 
 static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args) {
@@ -431,9 +455,9 @@ static PyObject * pylinphone_Core_class_method_new(PyObject *cls, PyObject *args
 {{/core_events}}
 
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p, \"%s\", \"%s\")", __FUNCTION__, _vtable_dict, _config_path, _factory_config_path);
-	pylinphone_init_ms2_plugins();
 	cresult = linphone_core_new(&_vtable, _config_path, _factory_config_path, self);
 	self->native_ptr = cresult;
+	pylinphone_init_ms2_plugins(cresult);
 
 	pyret = Py_BuildValue("O", self);
 
@@ -474,9 +498,9 @@ static PyObject * pylinphone_Core_class_method_new_with_config(PyObject *cls, Py
 {{/core_events}}
 
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, _config, _config_native_ptr);
-	pylinphone_init_ms2_plugins();
 	cresult = linphone_core_new_with_config(&_vtable, _config_native_ptr, self);
 	self->native_ptr = cresult;
+	pylinphone_init_ms2_plugins(cresult);
 
 	pyret = Py_BuildValue("O", self);
 
@@ -489,10 +513,9 @@ static void pylinphone_Core_dealloc(PyObject *self) {
 	LinphoneCore * native_ptr = pylinphone_Core_get_native_ptr(self);
 	if (Py_REFCNT(self) < 0) return;
 	pylinphone_trace(1, "[PYLINPHONE] >>> %s(%p [%p])", __FUNCTION__, self, native_ptr);
-	
+
 	if (native_ptr != NULL) {
 		linphone_core_destroy(native_ptr);
-		ms_exit();	// De-initialize mediastreamer
 	}
 
 	pylinphone_dispatch_messages();

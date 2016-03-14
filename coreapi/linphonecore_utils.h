@@ -44,7 +44,7 @@ bool_t lsd_player_loop_enabled(const LsdPlayer *p);
 void lsd_player_set_gain(LsdPlayer *p, float gain);
 LinphoneSoundDaemon *lsd_player_get_daemon(const LsdPlayer *p);
 
-LinphoneSoundDaemon * linphone_sound_daemon_new(const char *cardname, int rate, int nchannels);
+LinphoneSoundDaemon * linphone_sound_daemon_new(MSFactory* factory, const char *cardname, int rate, int nchannels);
 LsdPlayer * linphone_sound_daemon_get_player(LinphoneSoundDaemon *lsd);
 void linphone_sound_daemon_release_player(LinphoneSoundDaemon *lsd, LsdPlayer *lsdplayer);
 void linphone_sound_daemon_stop_all_players(LinphoneSoundDaemon *obj);

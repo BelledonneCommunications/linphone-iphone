@@ -72,7 +72,7 @@ void file_transfer_received(LinphoneChatMessage *msg, const LinphoneContent* con
 		file = fopen(receive_file,"wb");
 		linphone_chat_message_set_user_data(msg,(void*)file); /*store fd for next chunks*/
 	}
-	ms_free(receive_file);
+	bc_free(receive_file);
 	file = (FILE*)linphone_chat_message_get_user_data(msg);
 	BC_ASSERT_PTR_NOT_NULL(file);
 	if (linphone_buffer_is_empty(buffer)) { /* tranfer complete */
@@ -456,7 +456,7 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	}
 	ms_free(send_filepath);
-	ms_free(receive_filepath);
+	bc_free(receive_filepath);
 }
 
 void transfer_message_base(bool_t upload_error, bool_t download_error) {
@@ -522,7 +522,7 @@ static void transfer_message_download_cancelled(void) {
 	/* create a chatroom on pauline's side */
 	chat_room = linphone_core_get_chat_room(pauline->lc,marie->identity);
 	msg = create_message_from_nowebcam(chat_room);
-	linphone_chat_room_send_message2(chat_room,msg,NULL,pauline->lc);
+	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* wait for marie to receive pauline's msg */
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
@@ -642,7 +642,7 @@ static void file_transfer_2_messages_simultaneously(void) {
 		}
 		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
-		ms_free(receive_filepath);
+		bc_free(receive_filepath);
 		linphone_core_manager_destroy(marie);
 	}
 }
@@ -758,7 +758,7 @@ static void is_composing_notification(void) {
 static FILE* fopen_from_write_dir(const char * name, const char * mode) {
 	char *filepath = bc_tester_file(name);
 	FILE * file = fopen(filepath,mode);
-	ms_free(filepath);
+	bc_free(filepath);
 	return file;
 }
 
@@ -783,11 +783,11 @@ static void lime_text_message(void) {
 
 	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	filepath = bc_tester_file("tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
@@ -820,7 +820,7 @@ static void lime_text_message_to_non_lime(void) {
 
 	filepath = bc_tester_file("tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 
@@ -866,11 +866,11 @@ void lime_transfer_message_base(bool_t encrypt_file) {
 
 	filepath = bc_tester_file("tmpZIDCacheMarie.xml");
 	linphone_core_set_zrtp_secrets_file(marie->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	filepath = bc_tester_file("tmpZIDCachePauline.xml");
 	linphone_core_set_zrtp_secrets_file(pauline->lc, filepath);
-	ms_free(filepath);
+	bc_free(filepath);
 
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
@@ -1172,7 +1172,7 @@ static void database_migration(void) {
 	linphone_core_manager_destroy(marie);
 	remove(tmp_db);
 	ms_free(src_db);
-	ms_free(tmp_db);
+	bc_free(tmp_db);
 }
 
 static void history_range(void){
@@ -1212,7 +1212,7 @@ static void history_range(void){
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
 	ms_free(src_db);
-	ms_free(tmp_db);
+	bc_free(tmp_db);
 }
 
 static void history_count(void) {
@@ -1241,8 +1241,16 @@ static void history_count(void) {
 		messages=linphone_chat_room_get_history(chatroom,0);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270, int, "%d");
 		BC_ASSERT_EQUAL(ms_list_size(messages), 1270, int, "%d");
+
 		/*check the second most recent msg*/
-		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->next->data), "Fore and aft follow each other.");
+		BC_ASSERT_PTR_NOT_NULL(messages);
+		if (messages){
+			BC_ASSERT_PTR_NOT_NULL(messages->next->data);
+			if (messages->next->data){
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->next->data), "Fore and aft follow each other.");
+			}
+		}
+
 		ms_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
 
 		/*test offset+limit: retrieve the 42th latest msg only and check its content*/
@@ -1270,7 +1278,7 @@ static void history_count(void) {
 	linphone_address_destroy(jehan_addr);
 	remove(tmp_db);
 	ms_free(src_db);
-	ms_free(tmp_db);
+	bc_free(tmp_db);
 }
 #endif
 
@@ -1386,7 +1394,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(marie_call);
 
 			for (i = 0; i < strlen(message); i++) {
-				linphone_chat_message_put_char(rtt_message, message[i]);
+				BC_ASSERT_FALSE(linphone_chat_message_put_char(rtt_message, message[i]));
 				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, i+1, 1000));
 				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message[i], char, "%c");
 			}
@@ -1697,54 +1705,54 @@ void file_transfer_with_http_proxy(void) {
 }
 
 test_t message_tests[] = {
-	{"Text message", text_message},
-	{"Text message within call dialog", text_message_within_call_dialog},
-	{"Text message with credentials from auth callback", text_message_with_credential_from_auth_callback},
-	{"Text message with privacy", text_message_with_privacy},
-	{"Text message compatibility mode", text_message_compatibility_mode},
-	{"Text message with ack", text_message_with_ack},
-	{"Text message with send error", text_message_with_send_error},
-	{"Text message with external body", text_message_with_external_body},
-	{"Transfer message", transfer_message},
-	{"Transfer message with http proxy", file_transfer_with_http_proxy},
-	{"Transfer message with upload io error", transfer_message_with_upload_io_error},
-	{"Transfer message with download io error", transfer_message_with_download_io_error},
-	{"Transfer message upload cancelled", transfer_message_upload_cancelled},
-	{"Transfer message download cancelled", transfer_message_download_cancelled},
-	{"Transfer message using external body url", file_transfer_using_external_body_url},
-	{"Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously},
-	{"Text message denied", text_message_denied},
-	{"Info message", info_message},
-	{"Info message with body", info_message_with_body},
-	{"IsComposing notification", is_composing_notification},
+	TEST_NO_TAG("Text message", text_message),
+	TEST_ONE_TAG("Text message within call dialog", text_message_within_call_dialog, "LeaksMemory"),
+	TEST_NO_TAG("Text message with credentials from auth callback", text_message_with_credential_from_auth_callback),
+	TEST_NO_TAG("Text message with privacy", text_message_with_privacy),
+	TEST_NO_TAG("Text message compatibility mode", text_message_compatibility_mode),
+	TEST_NO_TAG("Text message with ack", text_message_with_ack),
+	TEST_NO_TAG("Text message with send error", text_message_with_send_error),
+	TEST_NO_TAG("Text message with external body", text_message_with_external_body),
+	TEST_NO_TAG("Transfer message", transfer_message),
+	TEST_NO_TAG("Transfer message with http proxy", file_transfer_with_http_proxy),
+	TEST_NO_TAG("Transfer message with upload io error", transfer_message_with_upload_io_error),
+	TEST_NO_TAG("Transfer message with download io error", transfer_message_with_download_io_error),
+	TEST_ONE_TAG("Transfer message upload cancelled", transfer_message_upload_cancelled, "LeaksMemory"),
+	TEST_NO_TAG("Transfer message download cancelled", transfer_message_download_cancelled),
+	TEST_ONE_TAG("Transfer message using external body url", file_transfer_using_external_body_url, "LeaksMemory"),
+	TEST_NO_TAG("Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously),
+	TEST_NO_TAG("Text message denied", text_message_denied),
+	TEST_NO_TAG("Info message", info_message),
+	TEST_NO_TAG("Info message with body", info_message_with_body),
+	TEST_NO_TAG("IsComposing notification", is_composing_notification),
 #ifdef HAVE_LIME
-	{"Lime text message", lime_text_message},
-	{"Lime text message to non lime", lime_text_message_to_non_lime},
-	{"Lime transfer message", lime_transfer_message},
-	{"Lime transfer message without encryption", lime_transfer_message_without_encryption},
-	{"Lime unitary", lime_unit},
+	TEST_NO_TAG("Lime text message", lime_text_message),
+	TEST_NO_TAG("Lime text message to non lime", lime_text_message_to_non_lime),
+	TEST_NO_TAG("Lime transfer message", lime_transfer_message),
+	TEST_NO_TAG("Lime transfer message without encryption", lime_transfer_message_without_encryption),
+	TEST_NO_TAG("Lime unitary", lime_unit),
 #endif /* HAVE_LIME */
 #ifdef MSG_STORAGE_ENABLED
-	{"Database migration", database_migration},
-	{"History range", history_range},
-	{"History count", history_count},
+	TEST_NO_TAG("Database migration", database_migration),
+	TEST_NO_TAG("History range", history_range),
+	TEST_NO_TAG("History count", history_count),
 #endif
-	{"Text status after destroying chat room", text_status_after_destroying_chat_room},
-	{"Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url},
-	{"Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found},
-	{"Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently},
-	{"Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom},
-	{"Real Time Text message", real_time_text_message},
-	{"Real Time Text conversation", real_time_text_conversation},
-	{"Real Time Text without audio", real_time_text_without_audio},
-	{"Real Time Text with srtp", real_time_text_srtp},
-	{"Real Time Text with ice", real_time_text_ice},
-	{"Real Time Text message compatibility crlf", real_time_text_message_compat_crlf},
-	{"Real Time Text message compatibility lf", real_time_text_message_compat_lf},
-	{"Real Time Text message with accented characters", real_time_text_message_accented_chars},
-	{"Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side},
-	{"Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side},
-	{"Real Time Text copy paste", real_time_text_copy_paste},
+	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
+	TEST_ONE_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url, "LeaksMemory"),
+	TEST_ONE_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found, "LeaksMemory"),
+	TEST_ONE_TAG("Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently, "LeaksMemory"),
+	TEST_ONE_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom, "LeaksMemory"),
+	TEST_NO_TAG("Real Time Text message", real_time_text_message),
+	TEST_NO_TAG("Real Time Text conversation", real_time_text_conversation),
+	TEST_NO_TAG("Real Time Text without audio", real_time_text_without_audio),
+	TEST_NO_TAG("Real Time Text with srtp", real_time_text_srtp),
+	TEST_NO_TAG("Real Time Text with ice", real_time_text_ice),
+	TEST_ONE_TAG("Real Time Text message compatibility crlf", real_time_text_message_compat_crlf, "LeaksMemory"),
+	TEST_ONE_TAG("Real Time Text message compatibility lf", real_time_text_message_compat_lf, "LeaksMemory"),
+	TEST_NO_TAG("Real Time Text message with accented characters", real_time_text_message_accented_chars),
+	TEST_NO_TAG("Real Time Text offer answer with different payload numbers (sender side)", real_time_text_message_different_text_codecs_payload_numbers_sender_side),
+	TEST_NO_TAG("Real Time Text offer answer with different payload numbers (receiver side)", real_time_text_message_different_text_codecs_payload_numbers_receiver_side),
+	TEST_NO_TAG("Real Time Text copy paste", real_time_text_copy_paste),
 };
 
 test_suite_t message_test_suite = {

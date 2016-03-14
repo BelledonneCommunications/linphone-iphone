@@ -89,10 +89,45 @@ char * linphone_get_xml_text_content(xmlparsing_context_t *xml_ctx, const char *
 	return (char *)text;
 }
 
+const char * linphone_get_xml_attribute_text_content(xmlparsing_context_t *xml_ctx, const char *xpath_expression, const char *attribute_name) {
+	xmlXPathObjectPtr xpath_obj;
+	xmlChar *text = NULL;
+
+	xpath_obj = xmlXPathEvalExpression((const xmlChar *)xpath_expression, xml_ctx->xpath_ctx);
+	if (xpath_obj != NULL) {
+		if (xpath_obj->nodesetval != NULL) {
+			xmlNodeSetPtr nodes = xpath_obj->nodesetval;
+			if ((nodes != NULL) && (nodes->nodeNr >= 1)) {
+				xmlNodePtr node = nodes->nodeTab[0];
+				xmlAttr *attr = node->properties;
+				while (attr) {
+					if (strcmp((char *)attr->name, attribute_name) == 0) {
+						text = xmlStrcat(text, attr->children->content);
+						attr = NULL;
+					} else {
+						attr = attr->next;
+					}
+				}
+			}
+		}
+		xmlXPathFreeObject(xpath_obj);
+	}
+
+	return (const char *)text;
+}
+
 void linphone_free_xml_text_content(const char *text) {
 	xmlFree((xmlChar *)text);
 }
 
 xmlXPathObjectPtr linphone_get_xml_xpath_object_for_node_list(xmlparsing_context_t *xml_ctx, const char *xpath_expression) {
 	return xmlXPathEvalExpression((const xmlChar *)xpath_expression, xml_ctx->xpath_ctx);
+}
+
+void linphone_xml_xpath_context_init_carddav_ns(xmlparsing_context_t *xml_ctx) {
+	if (xml_ctx && xml_ctx->xpath_ctx) {
+		xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar*)"d", (const xmlChar*)"DAV:");
+		xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar*)"card", (const xmlChar*)"urn:ietf:params:xml:ns:carddav");
+		xmlXPathRegisterNs(xml_ctx->xpath_ctx, (const xmlChar*)"x1", (const xmlChar*)"http://calendarserver.org/ns/");
+	}
 }

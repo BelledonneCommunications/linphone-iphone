@@ -82,8 +82,8 @@ void _belle_sip_log(belle_sip_log_level lev, const char *fmt, va_list args) {
 			ortp_level=ORTP_DEBUG;
 			break;
 	}
-	if (ortp_log_level_enabled(ortp_level)){
-		ortp_logv(ortp_level,fmt,args);
+	if (ortp_log_level_enabled("belle-sip", ortp_level)){
+		ortp_logv("belle-sip", ortp_level,fmt,args);
 	}
 }
 
@@ -464,13 +464,13 @@ static void process_auth_requested(void *sal, belle_sip_auth_event_t *event) {
 	sal_auth_info_delete(auth_info);
 }
 
-Sal * sal_init(){
+Sal * sal_init(MSFactory *factory){
 	belle_sip_listener_callbacks_t listener_callbacks;
 	Sal * sal=ms_new0(Sal,1);
 
 	/*belle_sip_object_enable_marshal_check(TRUE);*/
 	sal->auto_contacts=TRUE;
-
+	sal->factory = factory;
 	/*first create the stack, which initializes the belle-sip object's pool for this thread*/
 	belle_sip_set_log_handler(_belle_sip_log);
 	sal->stack = belle_sip_stack_new(NULL);
@@ -478,6 +478,8 @@ Sal * sal_init(){
 	sal->user_agent=belle_sip_header_user_agent_new();
 #if defined(PACKAGE_NAME) && defined(LIBLINPHONE_VERSION)
 	belle_sip_header_user_agent_add_product(sal->user_agent, PACKAGE_NAME "/" LIBLINPHONE_VERSION);
+#else
+	belle_sip_header_user_agent_add_product(sal->user_agent, "Unknown");
 #endif
 	sal_append_stack_string_to_user_agent(sal);
 	belle_sip_object_ref(sal->user_agent);
@@ -542,8 +544,8 @@ void sal_set_callbacks(Sal *ctx, const SalCallbacks *cbs){
 		ctx->callbacks.notify=(SalOnNotify)unimplemented_stub;
 	if (ctx->callbacks.subscribe_received==NULL)
 		ctx->callbacks.subscribe_received=(SalOnSubscribeReceived)unimplemented_stub;
-	if (ctx->callbacks.subscribe_closed==NULL)
-		ctx->callbacks.subscribe_closed=(SalOnSubscribeClosed)unimplemented_stub;
+	if (ctx->callbacks.incoming_subscribe_closed==NULL)
+		ctx->callbacks.incoming_subscribe_closed=(SalOnIncomingSubscribeClosed)unimplemented_stub;
 	if (ctx->callbacks.parse_presence_requested==NULL)
 		ctx->callbacks.parse_presence_requested=(SalOnParsePresenceRequested)unimplemented_stub;
 	if (ctx->callbacks.convert_presence_to_xml_requested==NULL)
@@ -593,6 +595,10 @@ int sal_transport_available(Sal *sal, SalTransport t){
 			return FALSE;
 	}
 	return FALSE;
+}
+
+bool_t sal_content_encoding_available(Sal *sal, const char *content_encoding) {
+	return (bool_t)belle_sip_stack_content_encoding_available(sal->stack, content_encoding);
 }
 
 static int sal_add_listen_port(Sal *ctx, SalAddress* addr, bool_t is_tunneled){
@@ -734,13 +740,14 @@ static void set_tls_properties(Sal *ctx){
 	belle_sip_listening_point_t *lp=belle_sip_provider_get_listening_point(ctx->prov,"TLS");
 	if (lp){
 		belle_sip_tls_listening_point_t *tlp=BELLE_SIP_TLS_LISTENING_POINT(lp);
-		int verify_exceptions=0;
-
-		if (!ctx->tls_verify) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_ANY_REASON;
-		else if (!ctx->tls_verify_cn) verify_exceptions=BELLE_SIP_TLS_LISTENING_POINT_BADCERT_CN_MISMATCH;
-
-		belle_sip_tls_listening_point_set_root_ca(tlp,ctx->root_ca); /*root_ca might be NULL */
-		belle_sip_tls_listening_point_set_verify_exceptions(tlp,verify_exceptions);
+		belle_tls_crypto_config_t *crypto_config = belle_tls_crypto_config_new();
+		int verify_exceptions = BELLE_TLS_VERIFY_NONE;
+		if (!ctx->tls_verify) verify_exceptions = BELLE_TLS_VERIFY_ANY_REASON;
+		else if (!ctx->tls_verify_cn) verify_exceptions = BELLE_TLS_VERIFY_CN_MISMATCH;
+		belle_tls_crypto_config_set_verify_exceptions(crypto_config, verify_exceptions);
+		if (ctx->root_ca != NULL) belle_tls_crypto_config_set_root_ca(crypto_config, ctx->root_ca);
+		belle_sip_tls_listening_point_set_crypto_config(tlp, crypto_config);
+		belle_sip_object_unref(crypto_config);
 	}
 }
 
@@ -816,6 +823,7 @@ bool_t sal_nat_helper_enabled(Sal *sal) {
 void sal_set_dns_timeout(Sal* sal,int timeout) {
 	belle_sip_stack_set_dns_timeout(sal->stack, timeout);
 }
+
 int sal_get_dns_timeout(const Sal* sal)  {
 	return belle_sip_stack_get_dns_timeout(sal->stack);
 }
@@ -823,12 +831,26 @@ int sal_get_dns_timeout(const Sal* sal)  {
 void sal_set_transport_timeout(Sal* sal,int timeout) {
 	belle_sip_stack_set_transport_timeout(sal->stack, timeout);
 }
+
 int sal_get_transport_timeout(const Sal* sal)  {
 	return belle_sip_stack_get_transport_timeout(sal->stack);
 }
+
+void sal_set_dns_servers(Sal *sal, const MSList *servers){
+	belle_sip_list_t *l = NULL;
+
+	/*we have to convert the MSList into a belle_sip_list_t first*/
+	for (; servers != NULL; servers = servers->next){
+		l = belle_sip_list_append(l, servers->data);
+	}
+	belle_sip_stack_set_dns_servers(sal->stack, l);
+	belle_sip_list_free(l);
+}
+
 void sal_enable_dns_srv(Sal *sal, bool_t enable) {
 	belle_sip_stack_enable_dns_srv(sal->stack, (unsigned char)enable);
 }
+
 bool_t sal_dns_srv_enabled(const Sal *sal) {
 	return (bool_t)belle_sip_stack_dns_srv_enabled(sal->stack);
 }
@@ -976,12 +998,11 @@ typedef struct {
 	unsigned char node[6];
 } sal_uuid_t;
 
-
-int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
+int sal_generate_uuid(char *uuid, size_t len) {
 	sal_uuid_t uuid_struct;
 	int i;
 	int written;
-
+	
 	if (len==0) return -1;
 	/*create an UUID as described in RFC4122, 4.4 */
 	belle_sip_random_bytes((unsigned char*)&uuid_struct, sizeof(sal_uuid_t));
@@ -1000,8 +1021,15 @@ int sal_create_uuid(Sal*ctx, char *uuid, size_t len){
 	for (i = 0; i < 6; i++)
 		written+=snprintf(uuid+written,len-written,"%2.2x", uuid_struct.node[i]);
 	uuid[len-1]='\0';
-	sal_set_uuid(ctx,uuid);
 	return 0;
+}
+
+int sal_create_uuid(Sal*ctx, char *uuid, size_t len) {
+	if (sal_generate_uuid(uuid, len) == 0) {
+		sal_set_uuid(ctx, uuid);
+		return 0;
+	}
+	return -1;
 }
 
 static void make_supported_header(Sal *sal){
@@ -1018,7 +1046,7 @@ static void make_supported_header(Sal *sal){
 		const char *tag=(const char*)it->data;
 		size_t taglen=strlen(tag);
 		if (alltags==NULL || (written+taglen+1>=buflen)) alltags=ms_realloc(alltags,(buflen=buflen*2));
-		snprintf(alltags+written,buflen-written,it->next ? "%s, " : "%s",tag);
+		written+=snprintf(alltags+written,buflen-written,it->next ? "%s, " : "%s",tag);
 	}
 	if (alltags){
 		sal->supported=belle_sip_header_create("Supported",alltags);

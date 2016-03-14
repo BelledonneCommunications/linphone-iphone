@@ -57,13 +57,13 @@ static void sdp_process(SalOp *h){
 
 	h->result=sal_media_description_new();
 	if (h->sdp_offering){
-		offer_answer_initiate_outgoing(h->base.local_media,h->base.remote_media,h->result);
+		offer_answer_initiate_outgoing(h->base.root->factory, h->base.local_media,h->base.remote_media,h->result);
 	}else{
 		int i;
 		if (h->sdp_answer){
 			belle_sip_object_unref(h->sdp_answer);
 		}
-		offer_answer_initiate_incoming(h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
+		offer_answer_initiate_incoming(h->base.root->factory, h->base.local_media,h->base.remote_media,h->result,h->base.root->one_matching_codec);
 		/*for backward compatibility purpose*/
 		if(h->cnx_ip_to_0000_if_sendonly_enabled && sal_media_description_has_dir(h->result,SalStreamSendOnly)) {
 			set_addr_to_0000(h->result->addr);
@@ -308,7 +308,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 						if (code >=200 && code<300) {
 							handle_sdp_from_response(op,response);
 							ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
-							if (ack==NULL) {
+							if (ack == NULL) {
 								ms_error("This call has been already terminated.");
 								return ;
 							}
@@ -317,6 +317,7 @@ static void call_process_response(void *op_base, const belle_sip_response_event_
 								belle_sip_object_unref(op->sdp_answer);
 								op->sdp_answer=NULL;
 							}
+							belle_sip_message_add_header(BELLE_SIP_MESSAGE(ack),BELLE_SIP_HEADER(op->base.root->user_agent));
 							belle_sip_dialog_send_ack(op->dialog,ack);
 							op->base.root->callbacks.call_accepted(op); /*INVITE*/
 							op->state=SalOpStateActive;
@@ -669,15 +670,19 @@ static void process_request_event(void *op_base, const belle_sip_request_event_t
 
 				}
 			}else{
-				SalBody salbody;
-				if (sal_op_get_body(op,(belle_sip_message_t*)req,&salbody)) {
-					if (sal_body_has_type(&salbody,"application","dtmf-relay")){
+				belle_sip_message_t *msg = BELLE_SIP_MESSAGE(req);
+				belle_sip_body_handler_t *body_handler = BELLE_SIP_BODY_HANDLER(sal_op_get_body_handler(op, msg));
+				if (body_handler) {
+					belle_sip_header_content_type_t *content_type = belle_sip_message_get_header_by_type(msg, belle_sip_header_content_type_t);
+					if (content_type
+						&& (strcmp(belle_sip_header_content_type_get_type(content_type), "application") == 0)
+						&& (strcmp(belle_sip_header_content_type_get_subtype(content_type), "dtmf-relay") == 0)) {
 						char tmp[10];
-						if (sal_lines_get_value(salbody.data, "Signal",tmp, sizeof(tmp))){
+						if (sal_lines_get_value(belle_sip_message_get_body(msg), "Signal",tmp, sizeof(tmp))){
 							op->base.root->callbacks.dtmf_received(op,tmp[0]);
 						}
 					}else
-						op->base.root->callbacks.info_received(op,&salbody);
+						op->base.root->callbacks.info_received(op, (SalBodyHandler *)body_handler);
 				} else {
 					op->base.root->callbacks.info_received(op,NULL);
 				}

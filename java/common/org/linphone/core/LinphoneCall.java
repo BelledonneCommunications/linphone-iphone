@@ -273,8 +273,18 @@ public interface LinphoneCall {
 	 * @param verified true when displayed SAS is correct
 	 */
 	void setAuthenticationTokenVerified(boolean verified);
-
+	
+	/**
+	 * Checks wether the call is part of a conferece.
+	 * @return A boolean
+	 */
 	boolean isInConference();
+	/**
+	 * Get the conference instance which the call is part of.
+	 * @return An instance of #LinphoneConference if the call is part
+	 * of a conference. null instead.
+	 */
+	LinphoneConference getConference();
 
 	/**
 	 * Indicates whether an operation is in progress at the media side.

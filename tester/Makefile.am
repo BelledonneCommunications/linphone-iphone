@@ -68,11 +68,13 @@ RCFILES = \
 					rcfiles/remote_zero_length_params_rc\
 					rcfiles/stun_rc\
 					rcfiles/upnp_rc\
-					rcfiles/zero_length_params_rc
+					rcfiles/zero_length_params_rc\
+					rcfiles/friends_rc\
+					rcfiles/carddav_rc
 
 IMAGE_FILES = images/nowebcamCIF.jpg
 
-COMMON_FILE = common/bc_completion
+VCARDS_FILE = vcards/vcards.vcf vcards/thousand_vcards.vcf
 
 EXTRA_DIST = tester_hosts\
 			messages.db\
@@ -81,12 +83,9 @@ EXTRA_DIST = tester_hosts\
 			$(CERTIFICATE_FILES)\
 			$(RCFILES)\
 			$(IMAGE_FILES)\
-			$(COMMON_FILE)
+			$(VCARDS_FILE)
 
-
-
-
-if BUILD_CUNIT_TESTS
+if ENABLE_TESTS
 
 sounddir = $(datadir)/liblinphone_tester/sounds
 sound_DATA = $(TESTER_SOUNDS)
@@ -100,8 +99,8 @@ rcfilesdir = $(datadir)/liblinphone_tester/rcfiles
 rcfiles_DATA = $(RCFILES)
 imagesdir = $(datadir)/liblinphone_tester/images
 images_DATA = $(IMAGE_FILES)
-commondir = $(datadir)/liblinphone_tester/common
-common_DATA = $(COMMON_FILE)
+vcardsdir = $(datadir)/liblinphone_tester/vcards
+vcards_DATA = $(VCARDS_FILE)
 
 # there are 2 targets: liblinphonetester.la and the executable liblinphone_tester
 
@@ -135,13 +134,12 @@ liblinphonetester_la_SOURCES = \
 				tester.c \
 				upnp_tester.c \
 				video_tester.c \
-				common/bc_tester_utils.c
+				vcard_tester.c
 
 liblinphonetester_ladir = $(includedir)/linphone
-liblinphonetester_la_HEADERS = common/bc_tester_utils.h
 
 liblinphonetester_la_LDFLAGS= -no-undefined
-liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(CUNIT_LIBS)
+liblinphonetester_la_LIBADD= ../coreapi/liblinphone.la $(BCTOOLBOXTESTER_LIBS)
 
 liblinphone_tester_bindir = $(bindir)/liblinphone_tester
 liblinphone_testerdir = $(datadir)/liblinphone_tester
@@ -149,10 +147,10 @@ liblinphone_testerdir = $(datadir)/liblinphone_tester
 dist_liblinphone_tester_DATA =  tester_hosts messages.db
 
 
-AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi -I$(top_srcdir)/tester/common
+AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi
 AM_CFLAGS    = -DBC_CONFIG_FILE=\"config.h\" $(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) \
-		-DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(CUNIT_CFLAGS) \
-		$(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS)
+		-DIN_LINPHONE $(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(BCTOOLBOXTESTER_CFLAGS) \
+		$(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS) $(BELCARD_CFLAGS)
 
 if BUILD_GTK_UI
 
@@ -160,6 +158,8 @@ liblinphonetester_la_LIBADD += $(LIBGTK_LIBS) $(LIBGTKMAC_LIBS)
 AM_CFLAGS += $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) -DHAVE_GTK
 
 endif
+
+AM_LDFLAGS=-Wl,-rpath -Wl,$(libdir)
 
 bin_PROGRAMS=
 
@@ -176,9 +176,9 @@ endif
 test: liblinphone_tester
 	./liblinphone_tester  --config $(abs_srcdir) $(TEST_OPTIONS)
 
-else !BUILD_CUNIT_TESTS
+else !ENABLE_TESTS
 
 test:
-	@echo "CUnit must be installed to be able to run the tests!"
+	@echo "bctoolbox-tester must be installed to be able to run the tests!"
 
-endif !BUILD_CUNIT_TESTS
+endif !ENABLE_TESTS

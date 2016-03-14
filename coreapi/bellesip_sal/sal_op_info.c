@@ -19,12 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sal_impl.h"
 
 
-int sal_send_info(SalOp *op, const char *from, const char *to, const SalBody *body){
+int sal_send_info(SalOp *op, const char *from, const char *to, const SalBodyHandler *body_handler){
 	if (op->dialog){
 		belle_sip_request_t *req;
 		belle_sip_dialog_enable_pending_trans_checking(op->dialog,op->base.root->pending_trans_checking);
 		req=belle_sip_dialog_create_queued_request(op->dialog,"INFO");
-		sal_op_add_body(op,(belle_sip_message_t*)req,body);
+		belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(body_handler));
 		return sal_op_send_request(op,req);
 	}
 	return -1;

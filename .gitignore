@@ -103,3 +103,5 @@ tester/stereo-record.wav
 git-clang-format.diff
 *.log
 .bc_tester_utils.tmp
+tools/lp-test-ecc
+tools/lp-sendmsg

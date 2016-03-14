@@ -277,6 +277,12 @@
     <Content Include="Assets\certificates\cn\openssl-cn.cnf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\common\vcards.vcf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\common\thousand_vcards.vcf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Logo.png" />
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />
@@ -309,7 +315,8 @@ XCopy /I /Y $(ProjectDir)..\..\..\tester\certificates\altname $(ProjectDir)Asset
 XCopy /I /Y $(ProjectDir)..\..\..\tester\certificates\cn $(ProjectDir)Assets\certificates\cn
 XCopy /I /Y $(ProjectDir)..\..\..\tester\images $(ProjectDir)Assets\images
 XCopy /I /Y $(ProjectDir)..\..\..\tester\rcfiles $(ProjectDir)Assets\rcfiles
-XCopy /I /Y $(ProjectDir)..\..\..\tester\sounds $(ProjectDir)Assets\sounds</PreBuildEvent>
+XCopy /I /Y $(ProjectDir)..\..\..\tester\sounds $(ProjectDir)Assets\sounds
+XCopy /I /Y $(ProjectDir)..\..\..\tester\common $(ProjectDir)Assets\common</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

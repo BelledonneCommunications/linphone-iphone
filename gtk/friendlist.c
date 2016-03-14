@@ -190,18 +190,18 @@ void linphone_gtk_friend_list_update_button_display(GtkTreeView *friendlist){
 	int nbmsg=0;
 	GtkTreePath *selected_path = NULL;
 	GtkTreePath *hovered_row = (GtkTreePath *)g_object_get_data(G_OBJECT(friendlist), "hovered_row");
-	
+
 	if (gtk_tree_selection_get_selected(select, &model, &selected_iter)){
 		selected_path = gtk_tree_model_get_path(model, &selected_iter);
 	}
-	
+
 	if (gtk_tree_model_get_iter_first(model,&iter)) {
 		do{
 			const char *icon_name = NULL;
 			gboolean show_chat_button = FALSE;
 			gboolean show_call_button = FALSE;
 			GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
-			
+
 			gtk_tree_model_get (model, &iter,FRIEND_CHATROOM , &cr, -1);
 			nbmsg=linphone_chat_room_get_unread_messages_count(cr);
 			is_composing=linphone_chat_room_is_remote_composing(cr);
@@ -217,7 +217,7 @@ void linphone_gtk_friend_list_update_button_display(GtkTreeView *friendlist){
 					icon_name = "linphone-chat-nothing";
 				}
 			}
-			if ((selected_path && gtk_tree_path_compare(path, selected_path) == 0) 
+			if ((selected_path && gtk_tree_path_compare(path, selected_path) == 0)
 					|| (hovered_row && gtk_tree_path_compare(path, hovered_row) == 0)){
 				show_chat_button = TRUE;
 				show_call_button = TRUE;
@@ -225,7 +225,7 @@ void linphone_gtk_friend_list_update_button_display(GtkTreeView *friendlist){
 			gtk_list_store_set(GTK_LIST_STORE(model),&iter,FRIEND_CHAT,icon_name,
 						FRIEND_CHAT_BUTTON_VISIBLE, show_chat_button, -1);
 			gtk_list_store_set(GTK_LIST_STORE(model), &iter, FRIEND_CALL_BUTTON_VISIBLE, show_call_button, -1);
-			
+
 			gtk_tree_path_free(path);
 		}while(gtk_tree_model_iter_next(model,&iter));
 	}
@@ -308,7 +308,7 @@ void linphone_gtk_notebook_tab_select(GtkNotebook *notebook,GtkWidget *page,guin
  		if(gtk_notebook_page_num(notebook,page)==gtk_notebook_page_num(notebook,chat_view)){
  			cr=g_object_get_data(G_OBJECT(chat_view),"cr");
  			if(cr!=NULL){
-				linphone_chat_room_mark_as_read(cr);
+				linphone_gtk_mark_chat_read(cr);
  				linphone_gtk_show_friends();
 			}
  		}
@@ -346,7 +346,7 @@ void linphone_gtk_chat_selected(GtkWidget *item){
 		} else {
 			linphone_gtk_load_chatroom(cr,uri,page);
 		}
-		linphone_chat_room_mark_as_read(cr);
+		linphone_gtk_mark_chat_read(cr);
 		gtk_notebook_set_current_page(notebook,gtk_notebook_page_num(notebook,page));
 		g_idle_add((GSourceFunc)grab_focus,linphone_gtk_get_widget(page,"text_entry"));
 	}
@@ -357,7 +357,7 @@ void linphone_gtk_contact_clicked(GtkTreeSelection *selection){
 	GtkWidget *mw = linphone_gtk_get_main_window();
 	GtkWidget *edit_button = linphone_gtk_get_widget(mw, "edit_button");
 	GtkWidget *remove_button = linphone_gtk_get_widget(mw, "remove_button");
-	
+
 	linphone_gtk_set_selection_to_uri_bar(friendlist);
 	linphone_gtk_friend_list_update_button_display(friendlist);
 	if(gtk_tree_selection_get_selected(selection, NULL, NULL)) {
@@ -440,7 +440,7 @@ static void icon_press_handler(GtkEntry *entry){
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),uri);
 		ms_free(uri);
 		if (lf==NULL)
-			lf=linphone_friend_new();
+			lf=linphone_core_create_friend(linphone_gtk_get_core());
 		if (lf!=NULL){
 			linphone_friend_set_address(lf,addr);
 			linphone_gtk_show_contact(lf, w);
@@ -605,7 +605,7 @@ static void linphone_gtk_friend_list_init(GtkWidget *friendlist){
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(store),FRIEND_NAME,friend_sort,NULL,NULL);
 	gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
 	g_signal_connect(G_OBJECT(select), "changed", G_CALLBACK(linphone_gtk_contact_clicked), NULL);
-	
+
 	g_object_set_data(G_OBJECT(friendlist), "friendlist_initialized", (gpointer)TRUE);
 }
 
@@ -615,7 +615,7 @@ void linphone_gtk_show_directory_search(void){
 	GtkWidget *mw=linphone_gtk_get_main_window();
 	GtkWidget *search_box=linphone_gtk_get_widget(mw,"directory_search_box");
 
-	linphone_core_get_default_proxy(linphone_gtk_get_core(),&cfg);
+	cfg = linphone_core_get_default_proxy_config(linphone_gtk_get_core());
 	if (cfg){
 		ssc=linphone_proxy_config_get_sip_setup_context(cfg);
 		if (ssc!=NULL && sip_setup_context_get_capabilities(ssc) & SIP_SETUP_CAP_BUDDY_LOOKUP){
@@ -687,14 +687,14 @@ void linphone_gtk_show_friends(void){
 		LinphoneFriend *lf=(LinphoneFriend*)itf->data;
 		const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
 		char *uri=linphone_address_as_string(f_uri);
-		const char *name=linphone_address_get_display_name(f_uri);
+		const char *name=linphone_friend_get_name(lf);
 		const char *display=name;
 		char *escaped=NULL;
 		int nbmsg=0;
 
 		//BuddyInfo *bi;
 		gboolean send_subscribe=linphone_friend_get_send_subscribe(lf);
-		if (name==NULL || name[0]=='\0') {
+		if (display==NULL || display[0]=='\0') {
 			display=linphone_address_get_username(f_uri);
 		}
 		gtk_list_store_append(store,&iter);
@@ -716,25 +716,27 @@ void linphone_gtk_show_friends(void){
 }
 
 void linphone_gtk_show_contact(LinphoneFriend *lf, GtkWidget *parent){
-	GtkWidget *w=linphone_gtk_create_window("contact", parent);
+	GtkWidget *w = linphone_gtk_create_window("contact", parent);
 	char *uri;
-	const char *name;
-	const LinphoneAddress *f_uri=linphone_friend_get_address(lf);
+	const char *name = linphone_friend_get_name(lf);
+	const LinphoneAddress *f_uri = linphone_friend_get_address(lf);
+
 	uri=linphone_address_as_string_uri_only(f_uri);
-	name=linphone_address_get_display_name(f_uri);
 	if (uri) {
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"sip_address")),uri);
 		ms_free(uri);
 	}
+
 	if (name){
 		gtk_entry_set_text(GTK_ENTRY(linphone_gtk_get_widget(w,"name")),name);
 	}
+
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"show_presence")),
 					linphone_friend_get_send_subscribe(lf));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(w,"allow_presence")),
 					linphone_friend_get_inc_subscribe_policy(lf)==LinphoneSPAccept);
 	g_object_set_data(G_OBJECT(w),"friend_ref",(gpointer)lf);
-	
+
 	gtk_widget_show(w);
 }
 
@@ -750,7 +752,7 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 	const gchar *name,*uri;
 	LinphoneAddress* friend_address;
 	if (lf==NULL){
-		lf=linphone_friend_new();
+		lf=linphone_core_create_friend(linphone_gtk_get_core());
 		if (linphone_gtk_get_ui_config_int("use_subscribe_notify",1)==1){
 			show_presence=FALSE;
 			allow_presence=FALSE;
@@ -772,9 +774,8 @@ void linphone_gtk_contact_ok(GtkWidget *button){
 		return ;
 	}
 
-	linphone_address_set_display_name(friend_address,name);
-	linphone_friend_set_name(lf,name);
 	linphone_friend_set_address(lf,friend_address);
+	linphone_friend_set_name(lf,name);
 	linphone_friend_send_subscribe(lf,show_presence);
 	linphone_friend_set_inc_subscribe_policy(lf,allow_presence==TRUE ? LinphoneSPAccept : LinphoneSPDeny);
 	if (linphone_friend_in_list(lf)) {
@@ -917,10 +918,10 @@ gboolean linphone_gtk_contact_list_button_pressed(GtkTreeView *friendlist, GdkEv
 	GtkTreePath *path;
 	GtkTreeViewColumn *column;
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(friendlist);
-	
+
 	gtk_tree_view_convert_widget_to_bin_window_coords(friendlist, event->x, event->y, &x_bin, &y_bin);
 	gtk_tree_view_get_path_at_pos(friendlist, x_bin, y_bin, &path, &column, NULL, NULL);
-	
+
 	if (event->button == 3 && event->type == GDK_BUTTON_PRESS) {
 		if(path) gtk_tree_selection_select_path(selection, path);
 		ret = linphone_gtk_popup_contact_menu(GTK_WIDGET(friendlist), event);
@@ -983,3 +984,30 @@ gboolean linphone_gtk_friend_list_motion_event_handler(GtkTreeView *friendlist, 
 	return FALSE;
 }
 
+#define CONFIG_FILE ".linphone-friends.db"
+
+char *linphone_gtk_friends_storage_get_db_file(const char *filename){
+	const int path_max=1024;
+	char *db_file=NULL;
+
+	db_file=(char *)g_malloc(path_max*sizeof(char));
+	if (filename==NULL) filename=CONFIG_FILE;
+	/*try accessing a local file first if exists*/
+	if (access(CONFIG_FILE,F_OK)==0){
+		snprintf(db_file,path_max,"%s",filename);
+	}else{
+#ifdef _WIN32
+		const char *appdata=getenv("APPDATA");
+		if (appdata){
+			snprintf(db_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
+			CreateDirectory(db_file,NULL);
+			snprintf(db_file,path_max,"%s\\%s\\%s",appdata,LINPHONE_CONFIG_DIR,filename);
+		}
+#else
+		const char *home=getenv("HOME");
+		if (home==NULL) home=".";
+		snprintf(db_file,path_max,"%s/%s",home,filename);
+#endif
+	}
+	return db_file;
+}

@@ -24,7 +24,6 @@
 #include <event.h>
 #include "liblinphone_tester.h"
 
-
 static const char *subscribe_content="<somexml>blabla</somexml>";
 static const char *notify_content="<somexml2>blabla</somexml2>";
 
@@ -38,8 +37,12 @@ const char *liblinphone_tester_get_notify_content(void){
 
 void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content){
 	LinphoneCoreManager *mgr;
+	const char * ua = linphone_event_get_custom_header(lev, "User-Agent");
 	BC_ASSERT_PTR_NOT_NULL_FATAL(content);
-	BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
+	if (!linphone_content_is_multipart(content) && (!ua ||  !strstr(ua, "flexisip"))) { /*disable check for full presence serveur support*/
+		/*hack to disable content checking for list notify */
+		BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
+	}
 	mgr=get_manager(lc);
 	mgr->stat.number_of_NotifyReceived++;
 }
@@ -356,15 +359,15 @@ static void publish_without_expires(void){
 }
 
 test_t event_tests[] = {
-	{ "Subscribe declined"	,	subscribe_test_declined 	},
-	{ "Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber },
-	{ "Subscribe with custom headers", subscribe_test_with_custom_header },
-	{ "Subscribe refreshed", subscribe_test_refreshed },
-	{ "Subscribe manually refreshed", subscribe_test_manually_refreshed },
-	{ "Subscribe terminated by notifier", subscribe_test_terminated_by_notifier },
-	{ "Publish", publish_test },
-	{ "Publish without expires", publish_without_expires },
-	{ "Publish without automatic refresh",publish_no_auto_test }
+	TEST_ONE_TAG("Subscribe declined", subscribe_test_declined, "presence"),
+	TEST_ONE_TAG("Subscribe terminated by subscriber", subscribe_test_terminated_by_subscriber, "presence"),
+	TEST_ONE_TAG("Subscribe with custom headers", subscribe_test_with_custom_header, "presence"),
+	TEST_ONE_TAG("Subscribe refreshed", subscribe_test_refreshed, "presence"),
+	TEST_ONE_TAG("Subscribe manually refreshed", subscribe_test_manually_refreshed, "presence"),
+	TEST_ONE_TAG("Subscribe terminated by notifier", subscribe_test_terminated_by_notifier, "LeaksMemory"),
+	TEST_ONE_TAG("Publish", publish_test, "presence"),
+	TEST_ONE_TAG("Publish without expires", publish_without_expires, "presence"),
+	TEST_ONE_TAG("Publish without automatic refresh",publish_no_auto_test, "presence")
 };
 
 test_suite_t event_test_suite = {"Event", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

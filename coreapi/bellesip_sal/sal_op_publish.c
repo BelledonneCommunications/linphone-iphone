@@ -25,17 +25,17 @@ static void publish_refresher_listener (belle_sip_refresher_t* refresher
 		,const char* reason_phrase) {
 	SalOp* op = (SalOp*)user_pointer;
 	const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
-	belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
 	belle_sip_response_t *response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(last_publish_trans));
-	/*belle_sip_response_t* response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(belle_sip_refresher_get_transaction(refresher)));*/
 	ms_message("Publish refresher  [%i] reason [%s] for proxy [%s]",status_code,reason_phrase?reason_phrase:"none",sal_op_get_proxy(op));
-	if (status_code==412){
-		/*resubmit the request after removing the SIP-If-Match*/
-		belle_sip_message_remove_header((belle_sip_message_t*)last_publish,"SIP-If-Match");
-		belle_sip_refresher_refresh(op->refresher,BELLE_SIP_REFRESHER_REUSE_EXPIRES);
-	}else if (status_code==0){
+	if (status_code==0){
 		op->base.root->callbacks.on_expire(op);
 	}else if (status_code>=200){
+		belle_sip_header_t *sip_etag;
+		const char *sip_etag_string = NULL;
+		if (response && (sip_etag = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response), "SIP-ETag"))) {
+			sip_etag_string = belle_sip_header_get_unparsed_value(sip_etag);
+		}
+		sal_op_set_entity_tag(op, sip_etag_string);
 		sal_error_info_set(&op->error_info,SalReasonUnknown,status_code,reason_phrase,NULL);
 		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
 		op->base.root->callbacks.on_publish_response(op);
@@ -60,43 +60,7 @@ void sal_op_publish_fill_cbs(SalOp *op) {
 	op->type=SalOpPublish;
 }
 
-/*
- * Sending a publish with 0 expires removes the event state and such request shall not contain a body.
- * See RFC3903, section 4.5
- */
-
-/*presence publish */
-int sal_publish_presence(SalOp *op, const char *from, const char *to, int expires, SalPresenceModel *presence){
-	belle_sip_request_t *req=NULL;
-	if(!op->refresher || !belle_sip_refresher_get_transaction(op->refresher)) {
-		if (from)
-			sal_op_set_from(op,from);
-		if (to)
-			sal_op_set_to(op,to);
-
-		op->type=SalOpPublish;
-		req=sal_op_build_request(op,"PUBLISH");
-		
-		if( req == NULL ){
-			return -1;
-		}
-
-		if (sal_op_get_contact_address(op)){
-			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(sal_op_create_contact(op)));
-		}
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event","presence"));
-		sal_add_presence_info(op,BELLE_SIP_MESSAGE(req),presence);
-		return sal_op_send_and_create_refresher(op,req,expires,publish_refresher_listener);
-	} else {
-		/*update presence status*/
-		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
-		belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
-		sal_add_presence_info(op,BELLE_SIP_MESSAGE(last_publish),expires!=0 ? presence : NULL);
-		return belle_sip_refresher_refresh(op->refresher,expires);
-	}
-}
-
-int sal_publish(SalOp *op, const char *from, const char *to, const char *eventname, int expires, const SalBody *body){
+int sal_publish(SalOp *op, const char *from, const char *to, const char *eventname, int expires, const SalBodyHandler *body_handler){
 	belle_sip_request_t *req=NULL;
 	if(!op->refresher || !belle_sip_refresher_get_transaction(op->refresher)) {
 		if (from)
@@ -109,12 +73,16 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char *eventna
 		if( req == NULL ){
 			return -1;
 		}
-
+		
+		if (sal_op_get_entity_tag(op)) {
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("SIP-If-Match", sal_op_get_entity_tag(op)));
+		}
+		
 		if (sal_op_get_contact_address(op)){
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(sal_op_create_contact(op)));
 		}
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("Event",eventname));
-		sal_op_add_body(op,BELLE_SIP_MESSAGE(req),body);
+		belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(body_handler));
 		if (expires!=-1)
 			return sal_op_send_and_create_refresher(op,req,expires,publish_refresher_listener);
 		else return sal_op_send_request(op,req);
@@ -123,7 +91,22 @@ int sal_publish(SalOp *op, const char *from, const char *to, const char *eventna
 		const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->refresher);
 		belle_sip_request_t* last_publish=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(last_publish_trans));
 		/*update body*/
-		sal_op_add_body(op,BELLE_SIP_MESSAGE(last_publish),expires!=0 ? body : NULL);
+		if (expires == 0) {
+			belle_sip_message_set_body(BELLE_SIP_MESSAGE(last_publish), NULL, 0);
+		} else {
+			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(last_publish), BELLE_SIP_BODY_HANDLER(body_handler));
+		}
 		return belle_sip_refresher_refresh(op->refresher,expires==-1 ? BELLE_SIP_REFRESHER_REUSE_EXPIRES : expires);
 	}
+}
+
+int sal_op_unpublish(SalOp *op){
+	if (op->refresher){
+		const belle_sip_transaction_t *tr=(const belle_sip_transaction_t*) belle_sip_refresher_get_transaction(op->refresher);
+		belle_sip_request_t *last_req=belle_sip_transaction_get_request(tr);
+		belle_sip_message_set_body(BELLE_SIP_MESSAGE(last_req), NULL, 0);
+		belle_sip_refresher_refresh(op->refresher,0);
+		return 0;
+	}
+	return -1;
 }

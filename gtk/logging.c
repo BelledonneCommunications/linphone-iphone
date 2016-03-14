@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "linphone.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
@@ -88,7 +88,7 @@ static FILE *linphone_gtk_log_init(void)
 			/* arrange for _logdir to contain a
 			 directory that has been created and _logfname to contain the
 			 path to a file to which we will log */
-#ifdef WIN32
+#ifdef _WIN32
 			const char *appdata=getenv("LOCALAPPDATA");
 			if (appdata) {
 				snprintf(_logdir, sizeof(_logdir),"%s\\Linphone", appdata);
@@ -115,7 +115,7 @@ static FILE *linphone_gtk_log_init(void)
 		}else if (linphone_logfile!=NULL){
 			snprintf(_logfname,sizeof(_logfname),"%s",linphone_logfile);
 		}
-		
+
 		if (_logfname[0]!='\0'){
 			/* If the constant LOGFILE_ROTATION is greater than zero, then
 			 we kick away a simple rotation that will ensure that there
@@ -216,7 +216,6 @@ void linphone_gtk_create_log_window(void){
 	/*prevent the log window from being destroyed*/
 	g_signal_connect (G_OBJECT (log_window), "delete-event",
 		G_CALLBACK (gtk_widget_hide_on_delete), log_window);
-
 }
 
 void linphone_gtk_destroy_log_window(void){
@@ -272,7 +271,7 @@ static void linphone_gtk_display_log(GtkTextView *v, OrtpLogLevel lev, const cha
 	gtk_text_buffer_get_iter_at_offset(b,&begin,off);
 	if (lev==ORTP_ERROR || lev==ORTP_FATAL) gtk_text_buffer_apply_tag_by_name(b,"red",&begin,&iter);
 	else if (lev==ORTP_WARNING) gtk_text_buffer_apply_tag_by_name(b,"orange",&begin,&iter);
-	
+
 	while(gtk_text_buffer_get_char_count(b)>LOG_MAX_CHARS){
 		GtkTextIter iter_line_after;
 		gtk_text_buffer_get_start_iter(b,&iter);
@@ -281,7 +280,7 @@ static void linphone_gtk_display_log(GtkTextView *v, OrtpLogLevel lev, const cha
 			gtk_text_buffer_delete(b,&iter,&iter_line_after);
 		}
 	}
-	
+
 }
 
 static void stick_to_end(GtkTextView *v){
@@ -292,11 +291,12 @@ static void stick_to_end(GtkTextView *v){
 	gtk_text_view_scroll_to_iter(v,&iter,0,FALSE,1.0,0);
 }
 
-void linphone_gtk_log_scroll_to_end(GtkToggleButton *button){
+void linphone_gtk_log_scroll_to_end(GtkToggleButton *button) {
 	if (gtk_toggle_button_get_active(button)){
 		GtkTextView *v=GTK_TEXT_VIEW(linphone_gtk_get_widget(log_window,"textview"));
 		stick_to_end(v);
 	}
+	lp_config_set_int(linphone_core_get_config(linphone_gtk_get_core()), "GtkUi", "logs_scroll_to_end", gtk_toggle_button_get_active(button) ? 1 : 0);
 }
 
 /*
@@ -316,8 +316,10 @@ gboolean linphone_gtk_check_logs(void){
 	if (log_queue) g_list_free(log_queue);
 	log_queue=NULL;
 	g_static_mutex_unlock(&log_mutex);
-	if (v)
+	if (v) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(log_window,"scroll_to_end")), lp_config_get_int(linphone_core_get_config(linphone_gtk_get_core()), "GtkUi", "logs_scroll_to_end", 0) == 1);
 		linphone_gtk_log_scroll_to_end(GTK_TOGGLE_BUTTON(linphone_gtk_get_widget(log_window,"scroll_to_end")));
+	}
 	return TRUE;
 }
 
@@ -332,7 +334,7 @@ void linphone_gtk_log_push(OrtpLogLevel lev, const char *fmt, va_list args){
 	struct timeval tp;
 	struct tm *lt;
 	time_t tt;
-	
+
 	ortp_gettimeofday(&tp, NULL);
 	tt = (time_t)tp.tv_sec;
 	lt = localtime((const time_t*)&tt);

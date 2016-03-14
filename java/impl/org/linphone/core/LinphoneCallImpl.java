@@ -165,8 +165,11 @@ class LinphoneCallImpl implements LinphoneCall {
 	}
 
 	public boolean isInConference() {
-		LinphoneCallParamsImpl params = new LinphoneCallParamsImpl(getCurrentParamsCopy(nativePtr));
-		return params.localConferenceMode();
+		return getConference() != null;
+	}
+	public native LinphoneConference getConference(long nativePtr);
+	public LinphoneConference getConference() {
+		return getConference(nativePtr);
 	}
 
 	public boolean mediaInProgress() { return mediaInProgress(nativePtr);}

@@ -22,10 +22,6 @@
 #include "lpconfig.h"
 #include "private.h"
 
-#ifdef _MSC_VER
-#define popen _popen
-#define pclose _pclose
-#endif
 
 void check_rtcp(LinphoneCall *call) {
 	MSTimeSpec ts;
@@ -48,7 +44,7 @@ void check_rtcp(LinphoneCall *call) {
 	linphone_call_unref(call);
 }
 
-static FILE *sip_start(const char *senario, const char* dest_username, LinphoneAddress* dest_addres) {
+FILE *sip_start(const char *senario, const char* dest_username, const char *passwd, LinphoneAddress* dest_addres) {
 #if HAVE_SIPP
 	char *dest;
 	char *command;
@@ -59,9 +55,12 @@ static FILE *sip_start(const char *senario, const char* dest_username, LinphoneA
 	else
 		dest = ms_strdup_printf("%s",linphone_address_get_domain(dest_addres));
 	//until errors logs are handled correctly and stop breaks output, they will be DISABLED
-	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000",senario,dest_username,dest);
+	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000 -ap %s 2>/dev/null",senario
+								,dest_username
+								,dest
+								,(passwd?passwd:"none"));
 
-	ms_message("Starting sipp commad [%s]",command);
+	ms_message("Starting sipp command [%s]",command);
 	file = popen(command, "r");
 	ms_free(command);
 	ms_free(dest);
@@ -78,9 +77,9 @@ static FILE *sip_start_recv(const char *senario) {
 	FILE *file;
 
 	//until errors logs are handled correctly and stop breaks output, they will be DISABLED
-	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000",senario);
+	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000 2>/dev/null",senario);
 
-	ms_message("Starting sipp commad [%s]",command);
+	ms_message("Starting sipp command [%s]",command);
 	file = popen(command, "r");
 	ms_free(command);
 	return file;
@@ -89,18 +88,41 @@ static FILE *sip_start_recv(const char *senario) {
 #endif
 }
 
-
-/*static void dest_server_server_resolved(void *data, const char *name, struct addrinfo *ai_list) {
+static void dest_server_server_resolved(void *data, const char *name, struct addrinfo *ai_list) {
 	*(struct addrinfo **)data =ai_list;
-}*/
-static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
-	LinphoneCoreManager *mgr;
-/*	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(mgr->lc);
-	LinphoneAddress *dest = linphone_address_new(linphone_proxy_config_get_route(proxy) ?linphone_proxy_config_get_route(proxy):linphone_proxy_config_get_server_addr(proxy));
+}
+
+LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const LinphoneAddress *source) {
 	struct addrinfo *addrinfo = NULL;
 	char ipstring [INET6_ADDRSTRLEN];
 	int err;
-	int port = linphone_address_get_port(dest);*/
+	int port = linphone_address_get_port(source);
+	LinphoneAddress * dest;
+	
+	sal_resolve_a(	mgr->lc->sal
+	 ,linphone_address_get_domain(source)
+	 ,linphone_address_get_port(source)
+	 ,AF_INET
+	 ,(SalResolverCallback)dest_server_server_resolved
+	 ,&addrinfo);
+	
+	 dest=linphone_address_new(NULL);
+	 
+	 wait_for(mgr->lc, mgr->lc, (int*)&addrinfo, 1);
+	 err=getnameinfo((struct sockaddr*)addrinfo->ai_addr,addrinfo->ai_addrlen,ipstring,INET6_ADDRSTRLEN,NULL,0,NI_NUMERICHOST);
+	 if (err !=0 ){
+		 ms_error("linphone_core_manager_resolve(): getnameinfo error %s", gai_strerror(err));
+	 }
+	 linphone_address_set_domain(dest, ipstring);
+	 if (port > 0)
+		linphone_address_set_port(dest, port);
+	
+	return dest;
+}
+
+
+static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
+	LinphoneCoreManager *mgr;
 	char *identity_char;
 	char *scen;
 	FILE * sipp_out;
@@ -112,25 +134,8 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 	identity_char=linphone_address_as_string(mgr->identity);
 	linphone_core_set_primary_contact(mgr->lc,identity_char);
 	linphone_core_iterate(mgr->lc);
-	/*
-	sal_resolve_a(	mgr->lc->sal
-				  ,linphone_address_get_domain(dest)
-				  ,linphone_address_get_port(dest)
-				  ,AF_INET
-				  ,(SalResolverCallback)dest_server_server_resolved
-				  ,&addrinfo);
-	linphone_address_destroy(dest);
-	dest=linphone_address_new(NULL);
-
-	wait_for(mgr->lc, mgr->lc, (int*)&addrinfo, 1);
-	err=getnameinfo((struct sockaddr
-	*)addrinfo->ai_addr,addrinfo->ai_addrlen,ipstring,INET6_ADDRSTRLEN,NULL,0,NI_NUMERICHOST);
-	linphone_address_set_domain(dest, ipstring);
-	if (port > 0)
-		linphone_address_set_port(dest, port);
-	*/
 	scen = bc_tester_res("sipp/sip_update_within_icoming_reinvite_with_no_sdp.xml");
-	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), mgr->identity);
+	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity),NULL, mgr->identity);
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -160,7 +165,7 @@ static void call_with_audio_mline_before_video_in_sdp(void) {
 
 	scen = bc_tester_res("sipp/call_with_audio_mline_before_video_in_sdp.xml");
 
-	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), mgr->identity);
+	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), NULL,  mgr->identity);
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -201,7 +206,7 @@ static void call_with_video_mline_before_audio_in_sdp(void) {
 
 	scen = bc_tester_res("sipp/call_with_video_mline_before_audio_in_sdp.xml");
 
-	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), mgr->identity);
+	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), NULL, mgr->identity);
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -242,7 +247,7 @@ static void call_with_multiple_audio_mline_in_sdp(void) {
 
 	scen = bc_tester_res("sipp/call_with_multiple_audio_mline_in_sdp.xml");
 
-	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), mgr->identity);
+	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), NULL, mgr->identity);
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -283,7 +288,7 @@ static void call_with_multiple_video_mline_in_sdp(void) {
 
 	scen = bc_tester_res("sipp/call_with_multiple_video_mline_in_sdp.xml");
 
-	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), mgr->identity);
+	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), NULL, mgr->identity);
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -347,12 +352,12 @@ static void call_invite_200ok_without_contact_header(void) {
 
 
 static test_t tests[] = {
-	{ "SIP UPDATE within incoming reinvite without sdp", sip_update_within_icoming_reinvite_with_no_sdp },
-	{ "Call with audio mline before video in sdp", call_with_audio_mline_before_video_in_sdp },
-	{ "Call with video mline before audio in sdp", call_with_video_mline_before_audio_in_sdp },
-	{ "Call with multiple audio mline in sdp", call_with_multiple_audio_mline_in_sdp },
-	{ "Call with multiple video mline in sdp", call_with_multiple_video_mline_in_sdp },
-	{ "Call invite 200ok without contact header", call_invite_200ok_without_contact_header }
+	TEST_NO_TAG("SIP UPDATE within incoming reinvite without sdp", sip_update_within_icoming_reinvite_with_no_sdp),
+	TEST_NO_TAG("Call with audio mline before video in sdp", call_with_audio_mline_before_video_in_sdp),
+	TEST_NO_TAG("Call with video mline before audio in sdp", call_with_video_mline_before_audio_in_sdp),
+	TEST_NO_TAG("Call with multiple audio mline in sdp", call_with_multiple_audio_mline_in_sdp),
+	TEST_NO_TAG("Call with multiple video mline in sdp", call_with_multiple_video_mline_in_sdp),
+	TEST_NO_TAG("Call invite 200ok without contact header", call_invite_200ok_without_contact_header)
 };
 
 test_suite_t complex_sip_call_test_suite = {

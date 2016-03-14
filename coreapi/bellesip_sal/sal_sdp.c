@@ -1,3 +1,4 @@
+
 /*
 linphone
 Copyright (C) 2012  Belledonne Communications, Grenoble, France
@@ -125,7 +126,7 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 	uint16_t trr_int = 0;
 
 	general_trr_int = is_rtcp_fb_trr_int_the_same_for_all_payloads(stream, &trr_int);
-	if (general_trr_int == TRUE) {
+    if (general_trr_int == TRUE && trr_int != 0) {
 		add_rtcp_fb_trr_int_attribute(media_desc, -1, trr_int);
 	}
 	if (stream->rtcp_fb.generic_nack_enabled == TRUE) {
@@ -143,7 +144,7 @@ static void add_rtcp_fb_attributes(belle_sdp_media_description_t *media_desc, co
 		avpf_params = payload_type_get_avpf_params(pt);
 
 		/* Add trr-int if not set generally. */
-		if (general_trr_int != TRUE) {
+		if (general_trr_int != TRUE && trr_int != 0) {
 			add_rtcp_fb_trr_int_attribute(media_desc, payload_type_get_number(pt), avpf_params.trr_interval);
 		}
 
@@ -319,7 +320,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 			belle_sdp_media_description_add_attribute(media_desc,belle_sdp_attribute_create ("rtcp",buffer));
 		}
 	}
-	if (stream->ice_completed == TRUE) {
+	if (stream->set_nortpproxy == TRUE) {
 		belle_sdp_media_description_add_attribute(media_desc,belle_sdp_attribute_create ("nortpproxy","yes"));
 	}
 	if (stream->ice_mismatch == TRUE) {
@@ -335,7 +336,7 @@ static void stream_description_to_sdp ( belle_sdp_session_description_t *session
 		}
 	}
 
-	if ((rtp_port != 0) && sal_stream_description_has_avpf(stream)) {
+	if ((rtp_port != 0) && (sal_stream_description_has_avpf(stream) || sal_stream_description_has_implicit_avpf(stream))) {
 		add_rtcp_fb_attributes(media_desc, md, stream);
 	}
 
@@ -422,7 +423,7 @@ belle_sdp_session_description_t * media_description_to_sdp ( const SalMediaDescr
 		belle_sdp_session_description_set_bandwidth ( session_desc,"AS",desc->bandwidth );
 	}
 	
-	if (desc->ice_completed == TRUE) belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("nortpproxy","yes"));
+	if (desc->set_nortpproxy == TRUE) belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("nortpproxy","yes"));
 	if (desc->ice_pwd[0] != '\0') belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("ice-pwd",desc->ice_pwd));
 	if (desc->ice_ufrag[0] != '\0') belle_sdp_session_description_add_attribute(session_desc, belle_sdp_attribute_create("ice-ufrag",desc->ice_ufrag));
 
@@ -629,14 +630,15 @@ static void apply_rtcp_fb_attribute_to_payload(belle_sdp_rtcp_fb_attribute_t *fb
 	payload_type_set_avpf_params(pt, avpf_params);
 }
 
-static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
+static bool_t sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
 	belle_sip_list_t *it;
 	belle_sdp_attribute_t *attribute;
 	belle_sdp_rtcp_fb_attribute_t *fb_attribute;
 	MSList *pt_it;
 	PayloadType *pt;
 	int8_t pt_num;
-
+    bool_t retval = FALSE;
+    
 	/* Handle rtcp-fb attributes that concern all payload types. */
 	for (it = belle_sdp_media_description_get_attributes(media_desc); it != NULL; it = it->next) {
 		attribute = BELLE_SDP_ATTRIBUTE(it->data);
@@ -646,6 +648,7 @@ static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_de
 				for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 					pt = (PayloadType *)pt_it->data;
 					apply_rtcp_fb_attribute_to_payload(fb_attribute, stream, pt);
+                    retval = TRUE;
 				}
 			}
 		}
@@ -659,12 +662,14 @@ static void sdp_parse_rtcp_fb_parameters(belle_sdp_media_description_t *media_de
 			pt_num = belle_sdp_rtcp_fb_attribute_get_id(fb_attribute);
 			for (pt_it = stream->payloads; pt_it != NULL; pt_it = pt_it->next) {
 				pt = (PayloadType *)pt_it->data;
+                retval = TRUE;
 				if (payload_type_get_number(pt) == (int)pt_num) {
 					apply_rtcp_fb_attribute_to_payload(fb_attribute, stream, pt);
 				}
 			}
 		}
 	}
+    return retval;
 }
 
 static void sal_init_rtcp_xr_description(OrtpRtcpXrConfiguration *config) {
@@ -727,6 +732,7 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 	belle_sip_list_t *custom_attribute_it;
 	const char* value;
 	const char *mtype,*proto;
+    bool_t has_avpf_attributes;
 
 	stream=&md->streams[md->nb_streams];
 	media=belle_sdp_media_description_get_media ( media_desc );
@@ -830,12 +836,17 @@ static SalStreamDescription * sdp_to_stream_description(SalMediaDescription *md,
 
 	/* Get ICE candidate attributes if any */
 	sdp_parse_media_ice_parameters(media_desc, stream);
-
+    
+    has_avpf_attributes = sdp_parse_rtcp_fb_parameters(media_desc, stream);
+    
 	/* Get RTCP-FB attributes if any */
 	if (sal_stream_description_has_avpf(stream)) {
 		enable_avpf_for_stream(stream);
-		sdp_parse_rtcp_fb_parameters(media_desc, stream);
 	}
+    else if (has_avpf_attributes ){
+        
+        stream->implicit_rtcp_fb = TRUE;
+    }
 
 	/* Get RTCP-XR attributes if any */
 	stream->rtcp_xr = md->rtcp_xr;	// Use session parameters if no stream parameters are defined

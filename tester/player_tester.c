@@ -44,10 +44,12 @@ static void play_file(const char *filename, bool_t supported_format, const char 
 	BC_ASSERT_PTR_NOT_NULL(lc_manager);
 	if(lc_manager == NULL) return;
 	
-	audio_codec_supported = (audio_mime && ms_factory_get_decoder(ms_factory_get_fallback(), audio_mime));
-	video_codec_supported = (video_mime && ms_factory_get_decoder(ms_factory_get_fallback(), video_mime));
+	audio_codec_supported = (audio_mime && ms_factory_get_decoder(linphone_core_get_ms_factory((void *)lc_manager->lc), audio_mime));
+	video_codec_supported = (video_mime && ms_factory_get_decoder(linphone_core_get_ms_factory((void *)lc_manager->lc), video_mime));
 
-	player = linphone_core_create_local_player(lc_manager->lc, ms_snd_card_manager_get_default_card(ms_snd_card_manager_get()), video_stream_get_default_video_renderer(), 0);
+	player = linphone_core_create_local_player(lc_manager->lc,
+											   ms_snd_card_manager_get_default_card(ms_factory_get_snd_card_manager(linphone_core_get_ms_factory((void *)lc_manager->lc))),
+																					video_stream_get_default_video_renderer(), 0);
 	BC_ASSERT_PTR_NOT_NULL(player);
 	if(player == NULL) goto fail;
 
@@ -98,9 +100,9 @@ static void sintel_trailer_opus_vp8_test(void) {
 }
 
 test_t player_tests[] = {
-	{	"Sintel trailer opus/h264"	,	sintel_trailer_opus_h264_test	},
-	{	"Sintel trailer pcmu/h264"	,	sintel_trailer_pcmu_h264_test	},
-	{	"Sintel trailer opus/VP8"	,	sintel_trailer_opus_vp8_test	}
+	TEST_NO_TAG("Sintel trailer opus/h264", sintel_trailer_opus_h264_test),
+	TEST_NO_TAG("Sintel trailer pcmu/h264", sintel_trailer_pcmu_h264_test),
+	TEST_NO_TAG("Sintel trailer opus/VP8", sintel_trailer_opus_vp8_test)
 };
 
 test_suite_t player_test_suite = {"Player", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

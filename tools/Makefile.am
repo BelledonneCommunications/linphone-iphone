@@ -19,7 +19,7 @@ EXTRA_DIST=xml2lpc_jni.cc lpc2xml_jni.cc
 
 if BUILD_TOOLS
 
-bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-gen-wrappers lp-autoanswer lp-test-ecc
+bin_PROGRAMS=xml2lpc_test lpc2xml_test lp-gen-wrappers lp-autoanswer lp-test-ecc lp-sendmsg
 
 xml2lpc_test_SOURCES=\
 	xml2lpc_test.c
@@ -51,6 +51,10 @@ lp_autoanswer_LDADD=\
 lp_test_ecc_SOURCES=test_ecc.c
 lp_test_ecc_CFLAGS=$(COMMON_CFLAGS)
 lp_test_ecc_LDADD=$(top_builddir)/coreapi/liblinphone.la
+
+lp_sendmsg_SOURCES=lpsendmsg.c
+lp_sendmsg_CFLAGS=$(COMMON_CFLAGS)
+lp_sendmsg_LDADD=$(top_builddir)/coreapi/liblinphone.la
 
 endif
 

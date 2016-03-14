@@ -35,6 +35,8 @@ void sal_op_release(SalOp *op){
 	if (op->state!=SalOpStateTerminating)
 		op->state=SalOpStateTerminated;
 	sal_op_set_user_pointer(op,NULL);/*mandatory because releasing op doesn't not mean freeing op. Make sure back pointer will not be used later*/
+	if (op->base.release_cb)
+		op->base.release_cb(&op->base);
 	if (op->refresher) {
 		belle_sip_refresher_stop(op->refresher);
 	}
@@ -163,7 +165,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 		ms_error("No To: address, cannot build request");
 		return NULL;
 	}
-	
+
 	to_uri = belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to_address));
 	if( to_uri == NULL ){
 		ms_error("To: address is invalid, cannot build request");
@@ -393,7 +395,7 @@ int sal_op_send_request(SalOp* op, belle_sip_request_t* request)  {
 	return _sal_op_send_request_with_contact(op, request,need_contact);
 }
 
-SalReason sal_reason_to_sip_code(SalReason r){
+int sal_reason_to_sip_code(SalReason r){
 	int ret=500;
 	switch(r){
 		case SalReasonNone:
@@ -518,14 +520,14 @@ SalReason _sal_reason_from_sip_code(int code) {
 		return SalReasonNotImplemented;
 	case 502:
 		return SalReasonBadGateway;
+	case 503:
+		return SalReasonServiceUnavailable;
 	case 504:
 		return SalReasonServerTimeout;
 	case 600:
 		return SalReasonDoNotDisturb;
 	case 603:
 		return SalReasonDeclined;
-	case 503:
-		return SalReasonServiceUnavailable;
 	default:
 		return SalReasonUnknown;
 	}
@@ -701,55 +703,21 @@ void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming){
 const char *sal_op_get_remote_contact(const SalOp *op){
 	/*
 	 * remote contact is filled in process_response
-	 * return sal_custom_header_find(op->base.recv_custom_headers,"Contact");
 	 */
 	return op->base.remote_contact;
 }
 
-void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body){
-	belle_sip_message_remove_header((belle_sip_message_t*)req,"Content-type");
-	belle_sip_message_remove_header((belle_sip_message_t*)req,"Content-length");
-	belle_sip_message_remove_header((belle_sip_message_t*)req,"Content-encoding");
-	belle_sip_message_set_body((belle_sip_message_t*)req,NULL,0);
-	if (body && body->type && body->subtype && body->data){
-		belle_sip_message_add_header((belle_sip_message_t*)req,
-			(belle_sip_header_t*)belle_sip_header_content_type_create(body->type,body->subtype));
-		belle_sip_message_add_header((belle_sip_message_t*)req,
-			(belle_sip_header_t*)belle_sip_header_content_length_create(body->size));
-		belle_sip_message_set_body((belle_sip_message_t*)req,(const char*)body->data,body->size);
-		if (body->encoding){
-			belle_sip_message_add_header((belle_sip_message_t*)req,(belle_sip_header_t*)
-				belle_sip_header_create("Content-encoding",body->encoding));
-		}
+SalBodyHandler * sal_op_get_body_handler(SalOp *op, belle_sip_message_t *msg) {
+	belle_sip_body_handler_t *body_handler = belle_sip_message_get_body_handler(msg);
+	if (body_handler != NULL) {
+		belle_sip_header_content_type_t *content_type = belle_sip_message_get_header_by_type(msg, belle_sip_header_content_type_t);
+		belle_sip_header_content_length_t *content_length = belle_sip_message_get_header_by_type(msg, belle_sip_header_content_length_t);
+		belle_sip_header_t *content_encoding = belle_sip_message_get_header(msg, "Content-Encoding");
+		if (content_type != NULL) belle_sip_body_handler_add_header(body_handler, BELLE_SIP_HEADER(content_type));
+		if (content_length != NULL) belle_sip_body_handler_add_header(body_handler, BELLE_SIP_HEADER(content_length));
+		if (content_encoding != NULL) belle_sip_body_handler_add_header(body_handler, content_encoding);
 	}
-}
-
-
-bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody){
-	const char *body = NULL;
-	belle_sip_header_content_type_t *content_type;
-	belle_sip_header_content_length_t *clen=NULL;
-	belle_sip_header_t *content_encoding;
-
-	content_type=belle_sip_message_get_header_by_type(msg,belle_sip_header_content_type_t);
-	if (content_type){
-		body=belle_sip_message_get_body(msg);
-		clen=belle_sip_message_get_header_by_type(msg,belle_sip_header_content_length_t);
-	}
-	content_encoding=belle_sip_message_get_header(msg,"Content-encoding");
-
-	memset(salbody,0,sizeof(SalBody));
-
-	if (content_type && body && clen) {
-		salbody->type=belle_sip_header_content_type_get_type(content_type);
-		salbody->subtype=belle_sip_header_content_type_get_subtype(content_type);
-		salbody->data=body;
-		salbody->size=belle_sip_header_content_length_get_content_length(clen);
-		if (content_encoding)
-			salbody->encoding=belle_sip_header_get_unparsed_value(content_encoding);
-		return TRUE;
-	}
-	return FALSE;
+	return (SalBodyHandler *)body_handler;
 }
 
 void sal_op_set_privacy(SalOp* op,SalPrivacyMask privacy) {
@@ -822,4 +790,12 @@ bool_t sal_op_cnx_ip_to_0000_if_sendonly_enabled(SalOp *op) {
 
 bool_t sal_op_is_forked_of(const SalOp *op1, const SalOp *op2){
 	return op1->base.call_id && op2->base.call_id && strcmp(op1->base.call_id, op2->base.call_id) == 0;
+}
+int sal_op_refresh(SalOp *op) {
+	if (op->refresher) {
+		belle_sip_refresher_refresh(op->refresher,belle_sip_refresher_get_expires(op->refresher));
+		return 0;
+	}
+	ms_warning("sal_refresh on op [%p] of type [%s] no refresher",op,sal_op_type_to_string(op->type));
+	return -1;
 }

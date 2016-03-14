@@ -138,11 +138,18 @@ LINPHONE_PUBLIC LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, 
 LINPHONE_PUBLIC int linphone_event_send_subscribe(LinphoneEvent *ev, const LinphoneContent *body);
 
 /**
- * Update (refresh) an outgoing subscription.
+ * Update (refresh) an outgoing subscription, changing the body.
  * @param lev a LinphoneEvent
  * @param body an optional body to include in the subscription update, may be NULL.
 **/
 LINPHONE_PUBLIC int linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body);
+
+/**
+ * Refresh an outgoing subscription keeping the same body.
+ * @param lev LinphoneEvent object.
+ * @return 0 if successful, -1 otherwise.
+ */
+LINPHONE_PUBLIC int linphone_event_refresh_subscribe(LinphoneEvent *lev);
 
 
 /**
@@ -201,6 +208,21 @@ LINPHONE_PUBLIC int linphone_event_send_publish(LinphoneEvent *lev, const Linpho
 **/
 LINPHONE_PUBLIC int linphone_event_update_publish(LinphoneEvent *lev, const LinphoneContent *body);
 
+/**
+ * Refresh an outgoing publish keeping the same body.
+ * @param lev LinphoneEvent object.
+ * @return 0 if successful, -1 otherwise.
+ */
+LINPHONE_PUBLIC int linphone_event_refresh_publish(LinphoneEvent *lev);
+
+/**
+ * Prevent an event  from refreshing its publish.
+ * This is useful to let registrations to expire naturally (or) when the application wants to keep control on when
+ * refreshes are sent.
+ * The refreshing operations can be resumed with linphone_proxy_config_refresh_register().
+ * @param[in] cfg #LinphoneEvent object.
+ **/
+LINPHONE_PUBLIC void linphone_event_pause_publish(LinphoneEvent *lev);
 
 /**
  * Return reason code (in case of error state reached).
@@ -256,10 +278,8 @@ LINPHONE_PUBLIC const char *linphone_event_get_custom_header(LinphoneEvent *ev, 
 
 /**
  * Terminate an incoming or outgoing subscription that was previously acccepted, or a previous publication.
- * This function does not unref the object. The core will unref() if it does not need this object anymore.
- *
- * For subscribed event, when the subscription is terminated normally or because of an error, the core will unref.
- * For published events, no unref is performed. This is because it is allowed to re-publish an expired publish, as well as retry it in case of error.
+ * The LinphoneEvent shall not be used anymore after this operation, unless the application explicitely took a reference on the object with
+ * linphone_event_ref().
 **/
 LINPHONE_PUBLIC void linphone_event_terminate(LinphoneEvent *lev);
 

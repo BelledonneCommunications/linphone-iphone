@@ -3,39 +3,45 @@
 #include "linphonecore.h"
 #include "liblinphone_tester.h"
 
-namespace liblinphone_tester_runtime_component
+namespace BelledonneCommunications
 {
-	public interface class OutputTraceListener
+	namespace Linphone
 	{
-	public:
-		void outputTrace(Platform::String^ lev, Platform::String^ msg);
-	};
-
-    public ref class LibLinphoneTester sealed
-    {
-    public:
-		void setOutputTraceListener(OutputTraceListener^ traceListener);
-		unsigned int nbTestSuites();
-		unsigned int nbTests(Platform::String^ suiteName);
-		Platform::String^ testSuiteName(int index);
-		Platform::String^ testName(Platform::String^ suiteName, int testIndex);
-		void initialize(Windows::Storage::StorageFolder^ writableDirectory, Platform::Boolean ui);
-		bool run(Platform::String^ suiteName, Platform::String^ caseName, Platform::Boolean verbose);
-		void runAllToXml();
-
-		static property LibLinphoneTester^ Instance
+		namespace Tester
 		{
-			LibLinphoneTester^ get() { return _instance; }
-		}
-		property Windows::Foundation::IAsyncAction^ AsyncAction
-		{
-			Windows::Foundation::IAsyncAction^ get() { return _asyncAction; }
-		}
-	private:
-		LibLinphoneTester();
-		~LibLinphoneTester();
+			public interface class OutputTraceListener
+			{
+			public:
+				void outputTrace(Platform::String^ lev, Platform::String^ msg);
+			};
 
-		static LibLinphoneTester^ _instance;
-		Windows::Foundation::IAsyncAction^ _asyncAction;
-	};
+			public ref class NativeTester sealed
+			{
+			public:
+				void setOutputTraceListener(OutputTraceListener^ traceListener);
+				unsigned int nbTestSuites();
+				unsigned int nbTests(Platform::String^ suiteName);
+				Platform::String^ testSuiteName(int index);
+				Platform::String^ testName(Platform::String^ suiteName, int testIndex);
+				void initialize(Windows::Storage::StorageFolder^ writableDirectory, Platform::Boolean ui);
+				bool run(Platform::String^ suiteName, Platform::String^ caseName, Platform::Boolean verbose);
+				void runAllToXml();
+
+				static property NativeTester^ Instance
+				{
+					NativeTester^ get() { return _instance; }
+				}
+				property Windows::Foundation::IAsyncAction^ AsyncAction
+				{
+					Windows::Foundation::IAsyncAction^ get() { return _asyncAction; }
+				}
+			private:
+				NativeTester();
+				~NativeTester();
+
+				static NativeTester^ _instance;
+				Windows::Foundation::IAsyncAction^ _asyncAction;
+			};
+		}
+	}
 }

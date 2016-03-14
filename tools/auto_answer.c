@@ -36,7 +36,7 @@ static bool_t dump_stats=FALSE;
 static void stop(int signum){
 	running=FALSE;
 }
-#ifndef WIN32
+#ifndef _WIN32
 static void stats(int signum){
 	print_stats=TRUE;
 }
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
 
 	policy.automatically_accept=TRUE;
 	signal(SIGINT,stop);
-#ifndef WIN32
+#ifndef _WIN32
 	signal(SIGUSR1,stats);
 	signal(SIGUSR2,dump_call_logs);
 #endif
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]){
 	{
 		MSWebCamDesc *desc = ms_mire_webcam_desc_get();
 		if (desc){
-			ms_web_cam_manager_add_cam(ms_web_cam_manager_get(),ms_web_cam_new(desc));
+			ms_web_cam_manager_add_cam(ms_factory_get_web_cam_manager(linphone_core_get_ms_factory(lc)),ms_web_cam_new(desc));
 			linphone_core_set_video_device(lc,"Mire: Mire (synthetic moving picture)");
 		}
 	}

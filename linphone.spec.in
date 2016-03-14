@@ -100,6 +100,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/lpc2xml_test
 %{_bindir}/xml2lpc_test
 %{_bindir}/lp-gen-wrappers
+%{_bindir}/lp-sendmsg
 %{_includedir}/linphone
 %{_libdir}/*.a
 %{_libdir}/*.la

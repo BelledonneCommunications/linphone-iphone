@@ -31,7 +31,7 @@ char *linphone_gtk_call_logs_storage_get_db_file(const char *filename){
 	if (access(CONFIG_FILE,F_OK)==0){
 		snprintf(db_file,path_max,"%s",filename);
 	}else{
-#ifdef WIN32
+#ifdef _WIN32
 		const char *appdata=getenv("APPDATA");
 		if (appdata){
 			snprintf(db_file,path_max,"%s\\%s",appdata,LINPHONE_CONFIG_DIR);
@@ -115,7 +115,7 @@ void linphone_gtk_call_log_add_contact(GtkWidget *w){
 			la = linphone_call_log_get_dir(cl)==LinphoneCallIncoming ? linphone_call_log_get_from(cl) : linphone_call_log_get_to(cl);
 			if (la != NULL){
 				char *uri=linphone_address_as_string(la);
-				lf=linphone_friend_new_with_address(uri);
+				lf=linphone_core_create_friend_with_address(linphone_gtk_get_core(), uri);
 				linphone_gtk_show_contact(lf, main_window);
 				ms_free(uri);
 			}
@@ -301,7 +301,7 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		time_t start_date_time=linphone_call_log_get_start_date(cl);
 		const gchar *call_status_icon_name;
 
-#if GLIB_CHECK_VERSION(2,26,0)
+#if GLIB_CHECK_VERSION(2,30,0) // The g_date_time_format function exists since 2.26.0 but the '%c' format is only supported since 2.30.0
 		if (start_date_time){
 			GDateTime *dt=g_date_time_new_from_unix_local(start_date_time);
 			start_date=g_date_time_format(dt,"%c");
@@ -309,6 +309,9 @@ void linphone_gtk_call_log_update(GtkWidget *w){
 		}
 #else
 		start_date=g_strdup(ctime(&start_date_time));
+		if (start_date[strlen(start_date) - 1] == '\n') {
+			start_date[strlen(start_date) - 1] = '\0';
+		}
 #endif
 		lf=linphone_core_get_friend_by_address(linphone_gtk_get_core(),addr);
 		if(lf != NULL){

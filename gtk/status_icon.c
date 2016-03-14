@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <gtkosxapplication.h>
 #endif
 
-#if !defined(WIN32) && !defined(__APPLE__) && GLIB_CHECK_VERSION(2, 26, 0)
+#if !defined(_WIN32) && !defined(__APPLE__) && GLIB_CHECK_VERSION(2, 26, 0)
 #define STATUS_NOTIFIER_IS_USABLE 1
 #endif
 

@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma GCC diagnostic pop
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 // alloca is already defined by gtk
 #undef alloca
 #endif
@@ -116,6 +116,7 @@ LINPHONE_PUBLIC GtkWidget *linphone_gtk_make_tab_header(const gchar *label, cons
 
 char *linphone_gtk_message_storage_get_db_file(const char *filename);
 char *linphone_gtk_call_logs_storage_get_db_file(const char *filename);
+char *linphone_gtk_friends_storage_get_db_file(const char* filename);
 LINPHONE_PUBLIC void linphone_gtk_close_assistant(void);
 
 LINPHONE_PUBLIC LinphoneCore *linphone_gtk_get_core(void);
@@ -198,6 +199,7 @@ LINPHONE_PUBLIC void linphone_gtk_enable_transfer_button(LinphoneCore *lc, gbool
 LINPHONE_PUBLIC void linphone_gtk_enable_conference_button(LinphoneCore *lc, gboolean value);
 LINPHONE_PUBLIC void linphone_gtk_set_in_conference(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_gtk_unset_from_conference(LinphoneCall *call);
+LINPHONE_PUBLIC bool_t linphone_gtk_call_is_in_conference_view(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_gtk_terminate_conference_participant(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_gtk_in_call_view_show_encryption(LinphoneCall *call);
 LINPHONE_PUBLIC void linphone_gtk_in_call_view_hide_encryption(LinphoneCall *call);
@@ -291,6 +293,7 @@ LINPHONE_PUBLIC void linphone_gtk_mtu_set(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_mtu_changed(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_use_sip_info_dtmf_toggled(GtkWidget *w);
 LINPHONE_PUBLIC void linphone_gtk_ipv6_toggled(GtkWidget *w);
+LINPHONE_PUBLIC void linphone_gtk_lime_changed(GtkComboBoxText *comboext);
 LINPHONE_PUBLIC void linphone_gtk_disabled_udp_port_toggle(GtkCheckButton *button);
 LINPHONE_PUBLIC void linphone_gtk_random_udp_port_toggle(GtkCheckButton *button);
 LINPHONE_PUBLIC void linphone_gtk_udp_port_value_changed(GtkSpinButton *button);
@@ -360,3 +363,8 @@ LINPHONE_PUBLIC bool_t linphone_gtk_is_friend(LinphoneCore *lc, const char *cont
 LINPHONE_PUBLIC gboolean linphone_gtk_auto_answer_enabled(void);
 LINPHONE_PUBLIC void linphone_gtk_update_status_bar_icons(void);
 LINPHONE_PUBLIC void linphone_gtk_enable_auto_answer(GtkToggleButton *checkbox, gpointer user_data);
+
+LINPHONE_PUBLIC void linphone_gtk_mark_chat_read(LinphoneChatRoom *cr);
+#ifdef __APPLE__
+LINPHONE_PUBLIC void linphone_gtk_update_badge_count();
+#endif

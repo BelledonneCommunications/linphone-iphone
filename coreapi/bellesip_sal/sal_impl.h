@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "belle-sip/belle-sdp.h"
 
 struct Sal{
+	MSFactory *factory;
 	SalCallbacks callbacks;
 	MSList *pending_auths;/*MSList of SalOp */
 	belle_sip_stack_t* stack;
@@ -166,10 +167,9 @@ belle_sip_response_t *sal_create_response_from_request(Sal *sal, belle_sip_reque
 
 void sal_op_assign_recv_headers(SalOp *op, belle_sip_message_t *incoming);
 
-void sal_op_add_body(SalOp *op, belle_sip_message_t *req, const SalBody *body);
-bool_t sal_op_get_body(SalOp *op, belle_sip_message_t *msg, SalBody *salbody);
+SalBodyHandler * sal_op_get_body_handler(SalOp *op, belle_sip_message_t *msg);
 
-SalReason sal_reason_to_sip_code(SalReason r);
+int sal_reason_to_sip_code(SalReason r);
 
 void _sal_op_add_custom_headers(SalOp *op, belle_sip_message_t *msg);
 
