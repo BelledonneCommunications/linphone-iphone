@@ -4203,26 +4203,34 @@ static void call_with_in_dialog_codec_change(void) {
 static void call_with_in_dialog_codec_change_no_sdp(void) {
 	call_with_in_dialog_codec_change_base(TRUE);
 }
+
 static void call_with_custom_supported_tags(void) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
 	const LinphoneCallParams *remote_params;
 	const char *recv_supported;
-	bool_t call_ok;
+	LinphoneCall *pauline_call;
 
 	marie = linphone_core_manager_new( "marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
 	linphone_core_add_supported_tag(marie->lc,"pouet-tag");
-	BC_ASSERT_TRUE(call_ok=call(pauline,marie));
-	if (!call_ok) goto end;
-	liblinphone_tester_check_rtcp(marie,pauline);
-	remote_params=linphone_call_get_remote_params(linphone_core_get_current_call(pauline->lc));
+	linphone_core_add_supported_tag(marie->lc,"truc-tag");
+	linphone_core_add_supported_tag(marie->lc,"machin-tag");
+	
+	linphone_core_invite_address(marie->lc, pauline->identity);
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallIncomingReceived,1));
+	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallOutgoingRinging,1));
+	pauline_call = linphone_core_get_current_call(pauline->lc);
+	if (!pauline_call) goto end;
+	
+	remote_params=linphone_call_get_remote_params(pauline_call);
 	recv_supported=linphone_call_params_get_custom_header(remote_params,"supported");
 	BC_ASSERT_PTR_NOT_NULL(recv_supported);
 	if (recv_supported){
-		BC_ASSERT_PTR_NOT_NULL(strstr(recv_supported,"pouet-tag"));
+		BC_ASSERT_PTR_NOT_NULL(strstr(recv_supported,"pouet-tag, truc-tag, machin-tag"));
 	}
+	
 	end_call(marie,pauline);
 end:
 	linphone_core_manager_destroy(marie);

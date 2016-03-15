@@ -438,7 +438,7 @@ static void initiate_outgoing(MSFactory* factory, const SalStreamDescription *lo
 		result->dtls_role = SalDtlsRoleInvalid;
 	}
 	result->rtcp_mux = remote_answer->rtcp_mux && local_offer->rtcp_mux;
-    result->implicit_rtcp_fb = local_offer->implicit_rtcp_fb && remote_answer->implicit_rtcp_fb;
+	result->implicit_rtcp_fb = local_offer->implicit_rtcp_fb && remote_answer->implicit_rtcp_fb;
 }
 
 
