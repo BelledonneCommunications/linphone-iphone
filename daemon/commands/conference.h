@@ -1,5 +1,5 @@
-#ifndef CONFERENCE_H
-#define CONFERENCE_H
+#ifndef COMMANDS_CONFERENCE_H
+#define COMMANDS_CONFERENCE_H
 
 #include "daemon.h"
 
