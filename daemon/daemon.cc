@@ -449,7 +449,7 @@ void Daemon::initCommands() {
 	mCommands.push_back(new Video());
 	mCommands.push_back(new VideoSource());
 	mCommands.push_back(new AutoVideo());
-	mCommands.push_back(new Conference());
+	mCommands.push_back(new Conference::Conference());
 	mCommands.push_back(new AudioCodecGetCommand());
 	mCommands.push_back(new AudioCodecEnableCommand());
 	mCommands.push_back(new AudioCodecDisableCommand());
