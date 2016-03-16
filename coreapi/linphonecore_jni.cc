@@ -3431,6 +3431,31 @@ extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getName(JNIEnv*  en
 	return name ? env->NewStringUTF(name) : NULL;
 }
 
+extern "C" jstring Java_org_linphone_core_LinphoneFriendImpl_getOrganization(JNIEnv* env,
+																		jobject thiz,
+																		jlong ptr) {
+	LinphoneFriend *lf = (LinphoneFriend *)ptr;
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
+	if (lvc) {
+		const char *org = linphone_vcard_get_organization(lvc);
+		return org ? env->NewStringUTF(org) : NULL;
+	}
+	return NULL;
+}
+
+extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setOrganization(JNIEnv* env,
+																		jobject thiz,
+																		jlong ptr,
+																		jstring jorg) {
+	LinphoneFriend *lf = (LinphoneFriend *)ptr;
+	LinphoneVcard *lvc = linphone_friend_get_vcard(lf);
+	if (lvc) {
+		const char* org = env->GetStringUTFChars(jorg, NULL);
+		linphone_vcard_set_organization(lvc, org);
+		env->ReleaseStringUTFChars(jorg, org);
+	}
+}
+
 extern "C" void Java_org_linphone_core_LinphoneFriendImpl_setIncSubscribePolicy(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr

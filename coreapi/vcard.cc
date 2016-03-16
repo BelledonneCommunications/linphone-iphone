@@ -163,6 +163,28 @@ MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
 	return result;
 }
 
+void linphone_vcard_set_organization(LinphoneVcard *vCard, const char *organization) {
+	if (!vCard) return;
+	
+	if (vCard->belCard->getOrganizations().size() > 0) {
+		const shared_ptr<belcard::BelCardOrganization> org = vCard->belCard->getOrganizations().front();
+		org->setValue(organization);
+	} else {
+		shared_ptr<belcard::BelCardOrganization> org = belcard::BelCardGeneric::create<belcard::BelCardOrganization>();
+		org->setValue(organization);
+		vCard->belCard->addOrganization(org);
+	}
+}
+
+const char* linphone_vcard_get_organization(const LinphoneVcard *vCard) {
+	if (vCard && vCard->belCard->getOrganizations().size() > 0) {
+		const shared_ptr<belcard::BelCardOrganization> org = vCard->belCard->getOrganizations().front();
+		return org->getValue().c_str();
+	}
+	
+	return NULL;
+}
+
 bool_t linphone_vcard_generate_unique_id(LinphoneVcard *vCard) {
 	char uuid[64];
 	

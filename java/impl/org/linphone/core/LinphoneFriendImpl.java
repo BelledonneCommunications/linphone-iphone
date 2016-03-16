@@ -130,4 +130,16 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 	public String getName() {
 		return getName(nativePtr);
 	}
+	
+	private native void setOrganization(long nativePtr, String organization);
+	@Override
+	public void setOrganization(String organization) {
+		setOrganization(nativePtr, organization);
+	}
+	
+	private native String getOrganization(long nativePtr);
+	@Override
+	public String getOrganization() {
+		return getOrganization(nativePtr);
+	}
 }

@@ -71,6 +71,14 @@ MSList* linphone_vcard_get_sip_addresses(const LinphoneVcard *vCard) {
 	return NULL;
 }
 
+void linphone_vcard_set_organization(LinphoneVcard *vCard, const char *organization) {
+	
+}
+
+const char* linphone_vcard_get_organization(const LinphoneVcard *vCard) {
+	return NULL;
+}
+
 bool_t linphone_vcard_generate_unique_id(LinphoneVcard *vCard) {
 	return FALSE;
 }
