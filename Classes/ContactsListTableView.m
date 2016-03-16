@@ -254,16 +254,17 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
 		[tableView beginUpdates];
-		OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
+		NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
+		OrderedDictionary *subDic = [addressBookMap objectForKey:firstChar];
 		NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
 		ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
-		NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1].uppercaseString;
 		[[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 		if ([tableView numberOfRowsInSection:indexPath.section] == 1) {
 			[addressBookMap removeObjectForKey:firstChar];
 			[tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section]
 					 withRowAnimation:UITableViewRowAnimationFade];
 		}
+
 		[[LinphoneManager.instance fastAddressBook] removeContact:contact];
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
 						 withRowAnimation:UITableViewRowAnimationFade];
@@ -275,10 +276,10 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
 	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
 	  ABAddressBookUnregisterExternalChangeCallback(addressBook, sync_address_book, (__bridge void *)(self));
-	  OrderedDictionary *subDic = [addressBookMap objectForKey:[addressBookMap keyAtIndex:[indexPath section]]];
+	  NSString *firstChar = [addressBookMap keyAtIndex:[indexPath section]];
+	  OrderedDictionary *subDic = [addressBookMap objectForKey:firstChar];
 	  NSString *key = [[subDic allKeys] objectAtIndex:[indexPath row]];
 	  ABRecordRef contact = (__bridge ABRecordRef)([subDic objectForKey:key]);
-	  NSString *firstChar = [[self displayNameForContact:contact] substringToIndex:1].uppercaseString;
 	  [[addressBookMap objectForKey:firstChar] removeObjectForKey:[self displayNameForContact:contact]];
 	  if ([self.tableView numberOfRowsInSection:indexPath.section] == 1) {
 		  [addressBookMap removeObjectForKey:firstChar];

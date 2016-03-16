@@ -120,7 +120,7 @@
 - (void)testChatFromContactPhoneNumber {
 	[tester tapViewWithAccessibilityLabel:@"Contacts"];
 	[tester tapViewWithAccessibilityLabel:@"Anna Haro"];
-	[tester tapViewWithAccessibilityLabel:@"Chat with 555-522-8243"];
+	[tester tapViewWithAccessibilityLabel:@"Chat with 5555228243"];
 	[self goBackFromChat];
 	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
