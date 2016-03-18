@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9531" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StatusBarView">
@@ -10,9 +10,7 @@
                 <outlet property="callQualityButton" destination="SKk-s0-5HE" id="22M-FN-kRs"/>
                 <outlet property="callSecurityButton" destination="27" id="29"/>
                 <outlet property="incallView" destination="0Vp-VF-wmX" id="mLI-RY-bfW"/>
-                <outlet property="landscapeView" destination="4" id="idw-2z-vyC"/>
                 <outlet property="outcallView" destination="lfO-I4-PXi" id="04e-SG-ViY"/>
-                <outlet property="portraitView" destination="4" id="25"/>
                 <outlet property="registrationState" destination="Mhg-P6-RfU" id="xTR-Af-XBY"/>
                 <outlet property="view" destination="4" id="11"/>
                 <outlet property="voicemailButton" destination="3Jg-EU-ajT" id="Yr3-N5-aTl"/>
@@ -53,7 +51,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="42" height="42"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                            <state key="normal" image="menu.png">
+                            <state key="normal" image="call_quality_indicator_4.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <connections>
@@ -110,6 +108,7 @@
         </view>
     </objects>
     <resources>
+        <image name="call_quality_indicator_4.png" width="19" height="19"/>
         <image name="color_A.png" width="2" height="2"/>
         <image name="led_disconnected.png" width="11" height="11"/>
         <image name="menu.png" width="19" height="18"/>

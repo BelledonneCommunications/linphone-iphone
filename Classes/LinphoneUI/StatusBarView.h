@@ -22,7 +22,7 @@
 #import "UIConfirmationDialog.h"
 #import "LinphoneManager.h"
 
-@interface StatusBarView : TPMultiLayoutViewController {
+@interface StatusBarView {
 	UIConfirmationDialog *securityDialog;
 }
 
