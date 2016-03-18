@@ -62,7 +62,7 @@ EXTRA_DIST =		BUGS  \
 			$(LINPHONEDEPS_FILELIST) \
 			$(ISS_SCRIPT).in
 
-EXTRA_DIST += CMakelists.txt \
+EXTRA_DIST += CMakeLists.txt \
 cmake/FindGtkMacIntegration.cmake \
 cmake/FindIconv.cmake \
 cmake/FindIntl.cmake \
