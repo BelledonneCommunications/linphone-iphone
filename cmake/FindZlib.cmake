@@ -25,13 +25,17 @@
 #  ZLIB_FOUND - system has zlib
 #  ZLIB_INCLUDE_DIRS - the zlib include directory
 #  ZLIB_LIBRARIES - The libraries needed to use zlib
-if(APPLE AND IOS)
-	set(_ZLIB_ROOT_PATHS "/usr/lib")
+
+if(APPLE AND NOT IOS)
+	set(ZLIB_HINTS "/usr")
+endif()
+if(ZLIB_HINTS)
+	set(ZLIB_LIBRARIES_HINTS "${ZLIB_HINTS}/lib")
 endif()
 
 find_path(ZLIB_INCLUDE_DIRS
 	NAMES zlib.h
-	HINTS "${_ZLIB_ROOT_PATHS}"
+	HINTS "${ZLIB_HINTS}"
 	PATH_SUFFIXES include
 )
 
@@ -42,12 +46,12 @@ endif()
 if(ENABLE_STATIC)
 	find_library(ZLIB_LIBRARIES
 		NAMES zstatic zlibstatic zlibstaticd z
-		HINTS "${_ZLIB_ROOT_PATHS}"
+		HINTS "${ZLIB_LIBRARIES_HINTS}"
 	)
 else()
 	find_library(ZLIB_LIBRARIES
 		NAMES z zlib zlibd
-		HINTS "${_ZLIB_ROOT_PATHS}"
+		HINTS "${ZLIB_LIBRARIES_HINTS}"
 	)
 endif()
 

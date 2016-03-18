@@ -27,12 +27,15 @@
 #  SQLITE3_LIBRARIES - The libraries needed to use sqlite3
 
 if(APPLE AND NOT IOS)
-	set(_SQLITE3_ROOT_PATHS "/usr/lib")
+	set(SQLITE3_HINTS "/usr")
+endif()
+if(SQLITE3_HINTS)
+	set(SQLITE3_LIBRARIES_HINTS "${SQLITE3_HINTS}/lib")
 endif()
 
 find_path(SQLITE3_INCLUDE_DIRS
 	NAMES sqlite3.h
-	HINTS "${_SQLITE3_ROOT_PATHS}"
+	HINTS "${SQLITE3_HINTS}"
 	PATH_SUFFIXES include
 )
 
@@ -42,7 +45,7 @@ endif()
 
 find_library(SQLITE3_LIBRARIES
 	NAMES sqlite3
-	HINTS "${_SQLITE3_ROOT_PATHS}"
+	HINTS "${SQLITE3_LIBRARIES_HINTS}"
 )
 
 include(FindPackageHandleStandardArgs)

@@ -27,12 +27,15 @@
 #  XML2_LIBRARIES - The libraries needed to use libxml2
 
 if(APPLE AND NOT IOS)
-	set(_XML2_ROOT_PATHS "/usr/lib")
+	set(XML2_HINTS "/usr")
+endif()
+if(XML2_HINTS)
+	set(XML2_LIBRARIES_HINTS "${XML2_HINTS}/lib")
 endif()
 
 find_path(XML2_INCLUDE_DIRS
 	NAMES libxml/xmlreader.h
-	HINTS "${_XML2_ROOT_PATHS}"
+	HINTS "${XML2_HINTS}"
 	PATH_SUFFIXES include/libxml2
 )
 
@@ -42,7 +45,7 @@ endif()
 
 find_library(XML2_LIBRARIES
 	NAMES xml2
-	HINTS "${_XML2_ROOT_PATHS}"
+	HINTS "${XML2_LIBRARIES_HINTS}"
 )
 
 include(FindPackageHandleStandardArgs)
