@@ -23,28 +23,6 @@
 #include "private.h"
 #include "liblinphone_tester.h"
 
-/* Retrieve the public IP from a given hostname */
-static const char* get_ip_from_hostname(const char * tunnel_hostname){
-	struct addrinfo hints;
-	struct addrinfo *res = NULL, *it = NULL;
-	struct sockaddr_in *add;
-	char * output = NULL;
-	int err;
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	if ((err = getaddrinfo(tunnel_hostname, NULL, &hints, &res))){
-		ms_error("error while retrieving IP from %s: %s", tunnel_hostname, gai_strerror(err));
-		return NULL;
-	}
-
-	for (it=res; it!=NULL; it=it->ai_next){
-		add = (struct sockaddr_in *) it->ai_addr;
-		output = inet_ntoa( add->sin_addr );
-	}
-	freeaddrinfo(res);
-	return output;
-}
 static char* get_public_contact_ip(LinphoneCore* lc)  {
 	const LinphoneAddress * contact = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(lc));
 	BC_ASSERT_PTR_NOT_NULL(contact);
@@ -60,9 +38,16 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 		LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(pauline->lc);
 		LinphoneAddress *server_addr = linphone_address_new(linphone_proxy_config_get_server_addr(proxy));
 		LinphoneAddress *route = linphone_address_new(linphone_proxy_config_get_route(proxy));
-		const char * tunnel_ip = get_ip_from_hostname("tunnel.linphone.org");
+		LinphoneAddress *tunnel_name, *tunnel_ip_addr;
+		const char * tunnel_ip;
 		char *public_ip, *public_ip2=NULL;
 
+		linphone_core_enable_dns_srv(pauline->lc,FALSE);
+		tunnel_name = linphone_address_new("sip:tunnel.wildcard2.linphone.org:443");
+		tunnel_ip_addr = linphone_core_manager_resolve(pauline, tunnel_name);
+		tunnel_ip = linphone_address_get_domain(tunnel_ip_addr);
+		linphone_core_enable_dns_srv(pauline->lc,TRUE);
+		
 		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,1));
 		public_ip = get_public_contact_ip(pauline->lc);
 		BC_ASSERT_STRING_NOT_EQUAL(public_ip, tunnel_ip);
@@ -93,7 +78,7 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 			LinphoneTunnel *tunnel = linphone_core_get_tunnel(pauline->lc);
 			LinphoneTunnelConfig *config = linphone_tunnel_config_new();
 
-			linphone_tunnel_config_set_host(config, "tunnel.linphone.org");
+			linphone_tunnel_config_set_host(config, tunnel_ip);
 			linphone_tunnel_config_set_port(config, 443);
 			linphone_tunnel_config_set_remote_udp_mirror_port(config, 12345);
 			linphone_tunnel_add_server(tunnel, config);
@@ -161,6 +146,8 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 		if(public_ip2 != NULL) ms_free(public_ip2);
 		linphone_address_destroy(server_addr);
 		linphone_address_destroy(route);
+		linphone_address_destroy(tunnel_name);
+		linphone_address_destroy(tunnel_ip_addr);
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}else{
