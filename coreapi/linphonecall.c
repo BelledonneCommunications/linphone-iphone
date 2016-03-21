@@ -2054,15 +2054,23 @@ LinphoneCall *linphone_call_get_replaced_call(LinphoneCall *call){
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 #ifdef VIDEO_ENABLED
 	call->camera_enabled=enable;
-	if ((call->state==LinphoneCallStreamsRunning || call->state==LinphoneCallOutgoingEarlyMedia || call->state==LinphoneCallIncomingEarlyMedia)
-		&& call->videostream!=NULL && video_stream_started(call->videostream) ){
-		if (video_stream_get_camera(call->videostream) != linphone_call_get_video_device(call)) {
-			const char *cur_cam, *new_cam;
-			cur_cam = video_stream_get_camera(call->videostream) ? ms_web_cam_get_name(video_stream_get_camera(call->videostream)) : "NULL";
-			new_cam = linphone_call_get_video_device(call) ? ms_web_cam_get_name(linphone_call_get_video_device(call)) : "NULL";
-			ms_message("Switching video cam from [%s] to [%s] on call [%p]"	, cur_cam, new_cam, call);
-			video_stream_change_camera(call->videostream, linphone_call_get_video_device(call));
-		}
+	switch(call->state) {
+		case LinphoneCallStreamsRunning:
+		case LinphoneCallOutgoingEarlyMedia:
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallConnected:
+			if(call->videostream!=NULL
+				&& video_stream_started(call->videostream)
+				&& video_stream_get_camera(call->videostream) != linphone_call_get_video_device(call)) {
+				const char *cur_cam, *new_cam;
+				cur_cam = video_stream_get_camera(call->videostream) ? ms_web_cam_get_name(video_stream_get_camera(call->videostream)) : "NULL";
+				new_cam = linphone_call_get_video_device(call) ? ms_web_cam_get_name(linphone_call_get_video_device(call)) : "NULL";
+				ms_message("Switching video cam from [%s] to [%s] on call [%p]"	, cur_cam, new_cam, call);
+				video_stream_change_camera(call->videostream, linphone_call_get_video_device(call));
+			}
+			break;
+			
+		default: break;
 	}
 #endif
 }
