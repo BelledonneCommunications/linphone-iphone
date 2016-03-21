@@ -3756,6 +3756,26 @@ static void call_rejected_without_403_because_wrong_credentials_no_auth_req_cb(v
 }
 
 #ifdef VIDEO_ENABLED
+static void video_early_media_call(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCall *pauline_to_marie;
+	
+	linphone_core_set_video_device(pauline->lc, "Mire: Mire (synthetic moving picture)");
+	
+	video_call_base_3(pauline, marie, TRUE, LinphoneMediaEncryptionNone, TRUE, TRUE);
+	
+	BC_ASSERT_PTR_NOT_NULL(pauline_to_marie = linphone_core_get_current_call(pauline->lc));
+	if(pauline_to_marie) {
+		BC_ASSERT_EQUAL(pauline_to_marie->videostream->source->desc->id, MS_MIRE_ID, int, "%d");
+	}
+	
+	end_call(pauline, marie);
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 /*this is call forking with early media managed at client side (not by flexisip server)*/
 static void multiple_early_media(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
@@ -6159,6 +6179,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with video declined", call_with_declined_video),
 	TEST_NO_TAG("Call with video declined despite policy", call_with_declined_video_despite_policy),
 	TEST_NO_TAG("Call with video declined using policy", call_with_declined_video_using_policy),
+	TEST_NO_TAG("Video early-media call", video_early_media_call),
 	TEST_NO_TAG("Call with multiple early media", multiple_early_media),
 	TEST_ONE_TAG("Call with ICE from video to non-video", call_with_ice_video_to_novideo, "ICE"),
 	TEST_ONE_TAG("Call with ICE and video added", call_with_ice_video_added, "ICE"),
