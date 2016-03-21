@@ -34,16 +34,6 @@
 
 #pragma mark - tools
 
-- (void)removeAllRooms {
-	if (![tester tryFindingTappableViewWithAccessibilityLabel:@"Edit" error:nil])
-		return;
-
-	[tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
-	[tester tapViewWithAccessibilityLabel:@"Select all" traits:UIAccessibilityTraitButton];
-	[tester tapViewWithAccessibilityLabel:@"Delete all" traits:UIAccessibilityTraitButton];
-	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
-}
-
 - (void)dismissKeyboard {
 	[tester tapScreenAtPoint:CGPointMake(0, 0)]; // dismiss keyboard, if any
 }

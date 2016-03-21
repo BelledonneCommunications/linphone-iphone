@@ -180,4 +180,14 @@
 									   traits:UIAccessibilityTraitButton];
 }
 
+- (void)removeAllRooms {
+	if (![tester tryFindingTappableViewWithAccessibilityLabel:@"Edit" error:nil])
+		return;
+
+	[tester tapViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"Select all" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"Delete all" traits:UIAccessibilityTraitButton];
+	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
+}
+
 @end

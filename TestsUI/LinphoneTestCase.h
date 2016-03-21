@@ -26,6 +26,8 @@
 
 - (void)waitForRegistration;
 
+- (void)removeAllRooms;
+
 @end
 
 #define ASSERT_EQ(actual, expected)                                                                                    \
