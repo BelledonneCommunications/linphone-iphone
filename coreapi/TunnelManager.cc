@@ -100,6 +100,15 @@ void TunnelManager::startClient() {
 	ms_message("TunnelManager: Starting tunnel client");
 	mTunnelClient = new TunnelClient(TRUE);
 	mTunnelClient->setCallback((TunnelClientController::StateCallback)tunnelCallback,this);
+	if (mVerifyServerCertificate) {
+		const char *rootCertificatePath = linphone_core_get_root_ca(mCore);
+		if (rootCertificatePath != NULL) {
+			ms_message("TunnelManager: Load root certificate from %s", rootCertificatePath);
+			mTunnelClient->setRootCertificate(rootCertificatePath); /* give the path to root certificate to the tunnel client in order to be able to verify the server certificate */
+		} else {
+			ms_warning("TunnelManager is set to verify server certificate but no root certificate is available in linphoneCore");
+		}
+	}
 	list<ServerAddr>::iterator it;
 	for(it=mServerAddrs.begin();it!=mServerAddrs.end();++it){
 		const ServerAddr &addr=*it;
@@ -425,6 +434,14 @@ void TunnelManager::tunnelizeSipPackets(bool enable){
 
 bool TunnelManager::tunnelizeSipPacketsEnabled() const {
 	return mTunnelizeSipPackets;
+}
+
+void TunnelManager::verifyServerCertificate(bool enable){
+	mVerifyServerCertificate = enable;
+}
+
+bool TunnelManager::verifyServerCertificateEnabled() const {
+	return mVerifyServerCertificate;
 }
 
 void TunnelManager::setHttpProxy(const char *host,int port, const char *username, const char *passwd){

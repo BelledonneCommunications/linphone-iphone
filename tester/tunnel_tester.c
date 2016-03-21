@@ -30,10 +30,10 @@ static char* get_public_contact_ip(LinphoneCore* lc)  {
 }
 
 
-static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice) {
+static void call_with_tunnel_base_with_config_files(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice, const char *marie_rc, const char *pauline_rc) {
 	if (linphone_core_tunnel_available()){
-		LinphoneCoreManager *pauline = linphone_core_manager_new( "pauline_rc");
-		LinphoneCoreManager *marie = linphone_core_manager_new( "marie_rc");
+		LinphoneCoreManager *pauline = linphone_core_manager_new( pauline_rc);
+		LinphoneCoreManager *marie = linphone_core_manager_new( marie_rc);
 		LinphoneCall *pauline_call, *marie_call;
 		LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(pauline->lc);
 		LinphoneAddress *server_addr = linphone_address_new(linphone_proxy_config_get_server_addr(proxy));
@@ -155,6 +155,9 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 	}
 }
 
+static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_sip, LinphoneMediaEncryption encryption, bool_t with_video_and_ice) {
+	call_with_tunnel_base_with_config_files(tunnel_mode, with_sip, encryption, with_video_and_ice, "marie_rc", "pauline_rc");
+}
 
 static void call_with_tunnel(void) {
 	call_with_tunnel_base(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, FALSE);
@@ -166,6 +169,10 @@ static void call_with_tunnel_srtp(void) {
 
 static void call_with_tunnel_without_sip(void) {
 	call_with_tunnel_base(LinphoneTunnelModeEnable, FALSE, LinphoneMediaEncryptionNone, FALSE);
+}
+
+static void call_with_tunnel_verify_server_certificate(void) {
+	call_with_tunnel_base_with_config_files(LinphoneTunnelModeEnable, TRUE, LinphoneMediaEncryptionNone, FALSE, "marie_rc",  "pauline_tunnel_verify_server_certificate_rc");
 }
 
 static void call_with_tunnel_auto(void) {
@@ -237,6 +244,7 @@ test_t tunnel_tests[] = {
 	TEST_NO_TAG("Simple", call_with_tunnel),
 	TEST_NO_TAG("With SRTP", call_with_tunnel_srtp),
 	TEST_NO_TAG("Without SIP", call_with_tunnel_without_sip),
+	TEST_NO_TAG("Verify Server Certificate", call_with_tunnel_verify_server_certificate),
 	TEST_NO_TAG("In automatic mode", call_with_tunnel_auto),
 	TEST_NO_TAG("In automatic mode with SRTP without SIP", call_with_tunnel_auto_without_sip_with_srtp),
 	TEST_NO_TAG("Ice call", tunnel_ice_call),
