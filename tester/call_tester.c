@@ -3241,6 +3241,44 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+static void early_media_call_with_ice(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_early_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCall *marie_call;
+	MSList *lcs = NULL;
+	
+	lcs = ms_list_append(lcs, marie->lc);
+	lcs = ms_list_append(lcs, pauline->lc);
+
+	/*in this test, pauline has ICE activated, marie not, but marie proposes early media.
+	 * We want to check that ICE processing is not disturbing early media*/
+	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
+	
+	linphone_core_invite_address(pauline->lc, marie->identity);
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingEarlyMedia,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallOutgoingEarlyMedia,1,1000));
+	
+	wait_for_until(pauline->lc,marie->lc,NULL,0,1000);
+	
+	marie_call = linphone_core_get_current_call(marie->lc);
+
+	if (!marie_call) goto end;
+	
+	linphone_core_accept_call(marie->lc, marie_call);
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallConnected,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning,1,3000));
+
+	end_call(marie, pauline);
+end:
+	ms_list_free(lcs);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void early_media_call_with_ringing(void){
 	LinphoneCoreManager* marie   = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
@@ -6125,6 +6163,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("Call with media relay (random ports)", call_with_media_relay_random_ports),
 	TEST_NO_TAG("Simple call compatibility mode", simple_call_compatibility_mode),
 	TEST_NO_TAG("Early-media call", early_media_call),
+	TEST_ONE_TAG("Early-media call with ICE", early_media_call_with_ice, "ICE"),
 	TEST_NO_TAG("Early-media call with ringing", early_media_call_with_ringing),
 	TEST_NO_TAG("Early-media call with updated media session", early_media_call_with_session_update),
 	TEST_NO_TAG("Early-media call with updated codec", early_media_call_with_codec_update),

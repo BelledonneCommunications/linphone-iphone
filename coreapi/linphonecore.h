@@ -3213,26 +3213,27 @@ LINPHONE_PUBLIC void linphone_core_reload_sound_devices(LinphoneCore *lc);
 
 LINPHONE_PUBLIC bool_t linphone_core_sound_device_can_capture(LinphoneCore *lc, const char *device);
 LINPHONE_PUBLIC bool_t linphone_core_sound_device_can_playback(LinphoneCore *lc, const char *device);
-LINPHONE_PUBLIC	int linphone_core_get_ring_level(LinphoneCore *lc);
-LINPHONE_PUBLIC	int linphone_core_get_play_level(LinphoneCore *lc);
-LINPHONE_PUBLIC int linphone_core_get_rec_level(LinphoneCore *lc);
-LINPHONE_PUBLIC	void linphone_core_set_ring_level(LinphoneCore *lc, int level);
-LINPHONE_PUBLIC	void linphone_core_set_play_level(LinphoneCore *lc, int level);
+LINPHONE_PUBLIC	LINPHONE_DEPRECATED int linphone_core_get_ring_level(LinphoneCore *lc);
+LINPHONE_PUBLIC	LINPHONE_DEPRECATED int linphone_core_get_play_level(LinphoneCore *lc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_get_rec_level(LinphoneCore *lc);
+LINPHONE_PUBLIC	LINPHONE_DEPRECATED void linphone_core_set_ring_level(LinphoneCore *lc, int level);
+LINPHONE_PUBLIC	LINPHONE_DEPRECATED void linphone_core_set_play_level(LinphoneCore *lc, int level);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_rec_level(LinphoneCore *lc, int level);
+LINPHONE_DEPRECATED char linphone_core_get_sound_source(LinphoneCore *lc);
+LINPHONE_DEPRECATED void linphone_core_set_sound_source(LinphoneCore *lc, char source);
 
 LINPHONE_PUBLIC	void linphone_core_set_mic_gain_db(LinphoneCore *lc, float level);
 LINPHONE_PUBLIC	float linphone_core_get_mic_gain_db(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_set_playback_gain_db(LinphoneCore *lc, float level);
 LINPHONE_PUBLIC	float linphone_core_get_playback_gain_db(LinphoneCore *lc);
 
-LINPHONE_PUBLIC void linphone_core_set_rec_level(LinphoneCore *lc, int level);
 LINPHONE_PUBLIC const char * linphone_core_get_ringer_device(LinphoneCore *lc);
 LINPHONE_PUBLIC const char * linphone_core_get_playback_device(LinphoneCore *lc);
 LINPHONE_PUBLIC const char * linphone_core_get_capture_device(LinphoneCore *lc);
 LINPHONE_PUBLIC int linphone_core_set_ringer_device(LinphoneCore *lc, const char * devid);
 LINPHONE_PUBLIC int linphone_core_set_playback_device(LinphoneCore *lc, const char * devid);
 LINPHONE_PUBLIC int linphone_core_set_capture_device(LinphoneCore *lc, const char * devid);
-char linphone_core_get_sound_source(LinphoneCore *lc);
-void linphone_core_set_sound_source(LinphoneCore *lc, char source);
+
 LINPHONE_PUBLIC void linphone_core_stop_ringing(LinphoneCore *lc);
 LINPHONE_PUBLIC	void linphone_core_set_ring(LinphoneCore *lc, const char *path);
 LINPHONE_PUBLIC const char *linphone_core_get_ring(const LinphoneCore *lc);

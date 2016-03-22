@@ -4458,6 +4458,7 @@ LinphonePresenceModel * linphone_core_get_presence_model(const LinphoneCore *lc)
  * Get playback sound level in 0-100 scale.
  *
  * @ingroup media_parameters
+ * @deprecated
 **/
 int linphone_core_get_play_level(LinphoneCore *lc)
 {
@@ -4468,6 +4469,7 @@ int linphone_core_get_play_level(LinphoneCore *lc)
  * Get ring sound level in 0-100 scale
  *
  * @ingroup media_parameters
+ * @deprecated
 **/
 int linphone_core_get_ring_level(LinphoneCore *lc)
 {
@@ -4478,6 +4480,7 @@ int linphone_core_get_ring_level(LinphoneCore *lc)
  * Get sound capture level in 0-100 scale
  *
  * @ingroup media_parameters
+ * @deprecated
 **/
 int linphone_core_get_rec_level(LinphoneCore *lc){
 	return lc->sound_conf.rec_lev;
@@ -4487,6 +4490,7 @@ int linphone_core_get_rec_level(LinphoneCore *lc){
  * Set sound ring level in 0-100 scale
  *
  * @ingroup media_parameters
+ * @deprecated
 **/
 void linphone_core_set_ring_level(LinphoneCore *lc, int level){
 	MSSndCard *sndcard;
@@ -4560,7 +4564,7 @@ float linphone_core_get_playback_gain_db(LinphoneCore *lc) {
 
 /**
  * Set sound playback level in 0-100 scale
- *
+ * @deprecated
  * @ingroup media_parameters
 **/
 void linphone_core_set_play_level(LinphoneCore *lc, int level){
@@ -4572,7 +4576,7 @@ void linphone_core_set_play_level(LinphoneCore *lc, int level){
 
 /**
  * Set sound capture level in 0-100 scale
- *
+ * @deprecated
  * @ingroup media_parameters
 **/
 void linphone_core_set_rec_level(LinphoneCore *lc, int level)
