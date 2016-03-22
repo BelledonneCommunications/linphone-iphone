@@ -654,6 +654,12 @@
 		63F1DF4F1BCE985F00EDED90 /* UICallConferenceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F1DF4D1BCE985F00EDED90 /* UICallConferenceCell.m */; };
 		63F1DF511BCE986A00EDED90 /* UICallConferenceCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 63F1DF531BCE986A00EDED90 /* UICallConferenceCell.xib */; };
 		63FB30351A680E73008CA393 /* UIRoundedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63FB30341A680E73008CA393 /* UIRoundedImageView.m */; };
+		63FD3F091CA17F9100E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F061CA17F9100E9AECC /* libmbedcrypto.a */; };
+		63FD3F0A1CA17F9100E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F071CA17F9100E9AECC /* libmbedtls.a */; };
+		63FD3F0B1CA17F9100E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F081CA17F9100E9AECC /* libmbedx509.a */; };
+		63FD3F101CA17FA400E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F061CA17F9100E9AECC /* libmbedcrypto.a */; };
+		63FD3F111CA17FA400E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F071CA17F9100E9AECC /* libmbedtls.a */; };
+		63FD3F121CA17FA400E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F081CA17F9100E9AECC /* libmbedx509.a */; };
 		70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F213E147E3002BA2C0 /* OpenGLES.framework */; };
 		70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F413E147EB002BA2C0 /* QuartzCore.framework */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
@@ -1544,6 +1550,9 @@
 		63F1DF521BCE986A00EDED90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UICallConferenceCell.xib; sourceTree = "<group>"; };
 		63FB30331A680E73008CA393 /* UIRoundedImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRoundedImageView.h; sourceTree = "<group>"; };
 		63FB30341A680E73008CA393 /* UIRoundedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundedImageView.m; sourceTree = "<group>"; };
+		63FD3F061CA17F9100E9AECC /* libmbedcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedcrypto.a; path = "liblinphone-sdk/apple-darwin/lib/libmbedcrypto.a"; sourceTree = "<group>"; };
+		63FD3F071CA17F9100E9AECC /* libmbedtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedtls.a; path = "liblinphone-sdk/apple-darwin/lib/libmbedtls.a"; sourceTree = "<group>"; };
+		63FD3F081CA17F9100E9AECC /* libmbedx509.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedx509.a; path = "liblinphone-sdk/apple-darwin/lib/libmbedx509.a"; sourceTree = "<group>"; };
 		7066FC0B13E830E400EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -1753,6 +1762,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FD3F091CA17F9100E9AECC /* libmbedcrypto.a in Frameworks */,
+				63FD3F0A1CA17F9100E9AECC /* libmbedtls.a in Frameworks */,
+				63FD3F0B1CA17F9100E9AECC /* libmbedx509.a in Frameworks */,
 				63DC36AB1C89E83100636979 /* libbelcard.a in Frameworks */,
 				63DC36AC1C89E83100636979 /* libbelr.a in Frameworks */,
 				63177FBF1C86E68C00ADE58D /* CoreVideo.framework in Frameworks */,
@@ -1836,6 +1848,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FD3F101CA17FA400E9AECC /* libmbedcrypto.a in Frameworks */,
+				63FD3F111CA17FA400E9AECC /* libmbedtls.a in Frameworks */,
+				63FD3F121CA17FA400E9AECC /* libmbedx509.a in Frameworks */,
 				63DC36B11C89E84000636979 /* libbelcard.a in Frameworks */,
 				63DC36B21C89E84000636979 /* libbelr.a in Frameworks */,
 				63F024B91C88792D00EACF1C /* libbctoolbox-tester.a in Frameworks */,
@@ -2146,6 +2161,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63FD3F061CA17F9100E9AECC /* libmbedcrypto.a */,
+				63FD3F071CA17F9100E9AECC /* libmbedtls.a */,
+				63FD3F081CA17F9100E9AECC /* libmbedx509.a */,
 				63DC36A91C89E83100636979 /* libbelcard.a */,
 				63DC36AA1C89E83100636979 /* libbelr.a */,
 				63F024B81C88792D00EACF1C /* libbctoolbox-tester.a */,

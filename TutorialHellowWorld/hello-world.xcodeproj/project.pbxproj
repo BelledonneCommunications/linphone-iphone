@@ -212,6 +212,18 @@
 		63D5C1C31BA6E963002D1ABF /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C14E1BA6E6D1002D1ABF /* libz.dylib */; };
 		63D5C1C41BA6E969002D1ABF /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1501BA6E6E9002D1ABF /* libiconv.dylib */; };
 		63D5C1C51BA6E96D002D1ABF /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 63D5C1521BA6E6F0002D1ABF /* libxml2.dylib */; };
+		63FD3F161CA1866600E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F131CA1866600E9AECC /* libmbedcrypto.a */; };
+		63FD3F171CA1866600E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F141CA1866600E9AECC /* libmbedtls.a */; };
+		63FD3F181CA1866600E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F151CA1866600E9AECC /* libmbedx509.a */; };
+		63FD3F191CA1867600E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F131CA1866600E9AECC /* libmbedcrypto.a */; };
+		63FD3F1A1CA1867600E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F141CA1866600E9AECC /* libmbedtls.a */; };
+		63FD3F1B1CA1867600E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F151CA1866600E9AECC /* libmbedx509.a */; };
+		63FD3F1C1CA1868200E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F131CA1866600E9AECC /* libmbedcrypto.a */; };
+		63FD3F1D1CA1868200E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F141CA1866600E9AECC /* libmbedtls.a */; };
+		63FD3F1E1CA1868200E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F151CA1866600E9AECC /* libmbedx509.a */; };
+		63FD3F1F1CA1868C00E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F131CA1866600E9AECC /* libmbedcrypto.a */; };
+		63FD3F201CA1868C00E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F141CA1866600E9AECC /* libmbedtls.a */; };
+		63FD3F211CA1868C00E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F151CA1866600E9AECC /* libmbedx509.a */; };
 		F079D97B199A6905009C58AA /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F079D97A199A6905009C58AA /* libsqlite3.dylib */; };
 		F079D97D199A6913009C58AA /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F079D97A199A6905009C58AA /* libsqlite3.dylib */; };
 		F079D97E199A6919009C58AA /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F079D97A199A6905009C58AA /* libsqlite3.dylib */; };
@@ -283,6 +295,9 @@
 		63D5C1501BA6E6E9002D1ABF /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		63D5C1521BA6E6F0002D1ABF /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		63D5C1541BA6E734002D1ABF /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		63FD3F131CA1866600E9AECC /* libmbedcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedcrypto.a; path = "../liblinphone-sdk/apple-darwin/lib/libmbedcrypto.a"; sourceTree = "<group>"; };
+		63FD3F141CA1866600E9AECC /* libmbedtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedtls.a; path = "../liblinphone-sdk/apple-darwin/lib/libmbedtls.a"; sourceTree = "<group>"; };
+		63FD3F151CA1866600E9AECC /* libmbedx509.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedx509.a; path = "../liblinphone-sdk/apple-darwin/lib/libmbedx509.a"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* helloworld-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "helloworld-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		F079D97A199A6905009C58AA /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -292,6 +307,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FD3F1F1CA1868C00E9AECC /* libmbedcrypto.a in Frameworks */,
+				63FD3F201CA1868C00E9AECC /* libmbedtls.a in Frameworks */,
+				63FD3F211CA1868C00E9AECC /* libmbedx509.a in Frameworks */,
 				63177FC51C86E82F00ADE58D /* VideoToolbox.framework in Frameworks */,
 				631A51C51C770A5E00B95673 /* libbctoolbox.a in Frameworks */,
 				631A51C31C770A3500B95673 /* libstdc++.6.tbd in Frameworks */,
@@ -353,6 +371,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FD3F1C1CA1868200E9AECC /* libmbedcrypto.a in Frameworks */,
+				63FD3F1D1CA1868200E9AECC /* libmbedtls.a in Frameworks */,
+				63FD3F1E1CA1868200E9AECC /* libmbedx509.a in Frameworks */,
 				63177FC61C86E83500ADE58D /* VideoToolbox.framework in Frameworks */,
 				631A51C81C770A8700B95673 /* libbctoolbox.a in Frameworks */,
 				631A51C71C770A7100B95673 /* libstdc++.6.tbd in Frameworks */,
@@ -414,6 +435,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FD3F191CA1867600E9AECC /* libmbedcrypto.a in Frameworks */,
+				63FD3F1A1CA1867600E9AECC /* libmbedtls.a in Frameworks */,
+				63FD3F1B1CA1867600E9AECC /* libmbedx509.a in Frameworks */,
 				63177FC71C86E83900ADE58D /* VideoToolbox.framework in Frameworks */,
 				631A51CA1C770A9500B95673 /* libc++.1.tbd in Frameworks */,
 				631A51CB1C770A9600B95673 /* libstdc++.6.tbd in Frameworks */,
@@ -469,6 +493,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FD3F161CA1866600E9AECC /* libmbedcrypto.a in Frameworks */,
+				63FD3F171CA1866600E9AECC /* libmbedtls.a in Frameworks */,
+				63FD3F181CA1866600E9AECC /* libmbedx509.a in Frameworks */,
 				63177FC81C86E83E00ADE58D /* VideoToolbox.framework in Frameworks */,
 				631A51CE1C770AA400B95673 /* libbctoolbox.a in Frameworks */,
 				631A51CC1C770A9B00B95673 /* libc++.1.tbd in Frameworks */,
@@ -577,6 +604,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63FD3F131CA1866600E9AECC /* libmbedcrypto.a */,
+				63FD3F141CA1866600E9AECC /* libmbedtls.a */,
+				63FD3F151CA1866600E9AECC /* libmbedx509.a */,
 				63177FC41C86E82F00ADE58D /* VideoToolbox.framework */,
 				631A51C41C770A5E00B95673 /* libbctoolbox.a */,
 				631A51C21C770A3500B95673 /* libstdc++.6.tbd */,

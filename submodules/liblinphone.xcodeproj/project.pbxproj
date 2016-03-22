@@ -350,6 +350,17 @@
 		631A52091C770B7700B95673 /* libmsamr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A52061C770B7700B95673 /* libmsamr.a */; };
 		631A520A1C770B7700B95673 /* libmsbcg729.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A52071C770B7700B95673 /* libmsbcg729.a */; };
 		631A520B1C770B7700B95673 /* libmsopenh264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A52081C770B7700B95673 /* libmsopenh264.a */; };
+		63FD3F251CA186DF00E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F221CA186DF00E9AECC /* libmbedcrypto.a */; };
+		63FD3F261CA186DF00E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F231CA186DF00E9AECC /* libmbedtls.a */; };
+		63FD3F271CA186DF00E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F241CA186DF00E9AECC /* libmbedx509.a */; };
+		63FD3F281CA1870200E9AECC /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F221CA186DF00E9AECC /* libmbedcrypto.a */; };
+		63FD3F291CA1870200E9AECC /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F231CA186DF00E9AECC /* libmbedtls.a */; };
+		63FD3F2A1CA1870200E9AECC /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F241CA186DF00E9AECC /* libmbedx509.a */; };
+		63FD3F2B1CA1870E00E9AECC /* libbctoolbox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 631A51CF1C770B3200B95673 /* libbctoolbox.a */; };
+		63FD3F2D1CA1870E00E9AECC /* libbctoolbox-tester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63FD3F2C1CA1870E00E9AECC /* libbctoolbox-tester.a */; };
+		63FD3F2E1CA1871700E9AECC /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63177FC91C86E87300ADE58D /* VideoToolbox.framework */; };
+		63FD3F2F1CA1874600E9AECC /* videotoolbox.c in Sources */ = {isa = PBXBuildFile; fileRef = 63177FCB1C86E8A000ADE58D /* videotoolbox.c */; };
+		63FD3F321CA1877400E9AECC /* mediastreamer2_text_stream_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = 63FD3F301CA1876800E9AECC /* mediastreamer2_text_stream_tester.c */; };
 		70E542EE13E147C7002BA2C0 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542ED13E147C7002BA2C0 /* OpenGLES.framework */; };
 		70E542F113E147CE002BA2C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70E542F013E147CE002BA2C0 /* QuartzCore.framework */; };
 		F01223B51A1DEFCE008D16BA /* stream_regulator.c in Sources */ = {isa = PBXBuildFile; fileRef = F01223AF1A1DEFB8008D16BA /* stream_regulator.c */; };
@@ -368,9 +379,6 @@
 		F02538F919794908002C30F3 /* flowcontrol.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538F819794908002C30F3 /* flowcontrol.c */; };
 		F02538FB1979491B002C30F3 /* videostarter.c in Sources */ = {isa = PBXBuildFile; fileRef = F02538FA1979491B002C30F3 /* videostarter.c */; };
 		F0340ADD1A6D13BD002E4BF1 /* ms_srtp.c in Sources */ = {isa = PBXBuildFile; fileRef = F0340ADC1A6D13BD002E4BF1 /* ms_srtp.c */; };
-		F03A96E81AFA157800651655 /* bc_completion in Resources */ = {isa = PBXBuildFile; fileRef = F03A96E51AFA157800651655 /* bc_completion */; };
-		F03A96E91AFA157800651655 /* bc_tester_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A96E61AFA157800651655 /* bc_tester_utils.c */; };
-		F03A96EA1AFA174400651655 /* bc_tester_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = F03A96E61AFA157800651655 /* bc_tester_utils.c */; };
 		F0497F021A1652F100B67112 /* mediastreamer2_neon_tester.c in Sources */ = {isa = PBXBuildFile; fileRef = F0ED9B981A164D7200A788CE /* mediastreamer2_neon_tester.c */; };
 		F0497F0E1A1B4C1700B67112 /* mediastreamer2_tester_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = F0497F0D1A1B4C1700B67112 /* mediastreamer2_tester_ios.m */; };
 		F0497F131A1C9E9C00B67112 /* mediastreamViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2206D2CA177AC70900C40726 /* mediastreamViewController.xib */; };
@@ -789,6 +797,11 @@
 		631A52061C770B7700B95673 /* libmsamr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsamr.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsamr.a"; sourceTree = "<group>"; };
 		631A52071C770B7700B95673 /* libmsbcg729.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsbcg729.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsbcg729.a"; sourceTree = "<group>"; };
 		631A52081C770B7700B95673 /* libmsopenh264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmsopenh264.a; path = "../liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins/libmsopenh264.a"; sourceTree = "<group>"; };
+		63FD3F221CA186DF00E9AECC /* libmbedcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedcrypto.a; path = "../liblinphone-sdk/apple-darwin/lib/libmbedcrypto.a"; sourceTree = "<group>"; };
+		63FD3F231CA186DF00E9AECC /* libmbedtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedtls.a; path = "../liblinphone-sdk/apple-darwin/lib/libmbedtls.a"; sourceTree = "<group>"; };
+		63FD3F241CA186DF00E9AECC /* libmbedx509.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedx509.a; path = "../liblinphone-sdk/apple-darwin/lib/libmbedx509.a"; sourceTree = "<group>"; };
+		63FD3F2C1CA1870E00E9AECC /* libbctoolbox-tester.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libbctoolbox-tester.a"; path = "../liblinphone-sdk/apple-darwin/lib/libbctoolbox-tester.a"; sourceTree = "<group>"; };
+		63FD3F301CA1876800E9AECC /* mediastreamer2_text_stream_tester.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mediastreamer2_text_stream_tester.c; sourceTree = "<group>"; };
 		7014533B13FA7ECA00A01D86 /* zrtp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zrtp.h; sourceTree = "<group>"; };
 		7066FC0913E830B800EFC6DC /* libvpx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libvpx.a; path = "../liblinphone-sdk/apple-darwin/lib/libvpx.a"; sourceTree = "<group>"; };
 		70E542ED13E147C7002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -815,9 +828,6 @@
 		F02538F819794908002C30F3 /* flowcontrol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = flowcontrol.c; sourceTree = "<group>"; };
 		F02538FA1979491B002C30F3 /* videostarter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = videostarter.c; sourceTree = "<group>"; };
 		F0340ADC1A6D13BD002E4BF1 /* ms_srtp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ms_srtp.c; sourceTree = "<group>"; };
-		F03A96E51AFA157800651655 /* bc_completion */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bc_completion; sourceTree = "<group>"; };
-		F03A96E61AFA157800651655 /* bc_tester_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bc_tester_utils.c; sourceTree = "<group>"; };
-		F03A96E71AFA157800651655 /* bc_tester_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bc_tester_utils.h; sourceTree = "<group>"; };
 		F0497F0D1A1B4C1700B67112 /* mediastreamer2_tester_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = mediastreamer2_tester_ios.m; sourceTree = "<group>"; };
 		F0497F151A1C9F8700B67112 /* mediastream-tester-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "mediastream-tester-Info.plist"; sourceTree = "<group>"; };
 		F04D51ED1A08E638004DD530 /* common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = common.c; path = tools/common.c; sourceTree = "<group>"; };
@@ -889,6 +899,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FD3F251CA186DF00E9AECC /* libmbedcrypto.a in Frameworks */,
+				63FD3F261CA186DF00E9AECC /* libmbedtls.a in Frameworks */,
+				63FD3F271CA186DF00E9AECC /* libmbedx509.a in Frameworks */,
 				63177FCA1C86E87300ADE58D /* VideoToolbox.framework in Frameworks */,
 				631A52091C770B7700B95673 /* libmsamr.a in Frameworks */,
 				631A520A1C770B7700B95673 /* libmsbcg729.a in Frameworks */,
@@ -951,6 +964,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63FD3F2E1CA1871700E9AECC /* VideoToolbox.framework in Frameworks */,
+				63FD3F2D1CA1870E00E9AECC /* libbctoolbox-tester.a in Frameworks */,
+				63FD3F2B1CA1870E00E9AECC /* libbctoolbox.a in Frameworks */,
+				63FD3F281CA1870200E9AECC /* libmbedcrypto.a in Frameworks */,
+				63FD3F291CA1870200E9AECC /* libmbedtls.a in Frameworks */,
+				63FD3F2A1CA1870200E9AECC /* libmbedx509.a in Frameworks */,
 				F0ED99681A16464D00A788CE /* libmediastreamer_voip.a in Frameworks */,
 				F0ED99691A16464D00A788CE /* libopus.a in Frameworks */,
 				F0ED996A1A16464D00A788CE /* libortp.a in Frameworks */,
@@ -1399,20 +1418,9 @@
 			path = crypto;
 			sourceTree = "<group>";
 		};
-		F03A96E41AFA157800651655 /* common */ = {
-			isa = PBXGroup;
-			children = (
-				F03A96E51AFA157800651655 /* bc_completion */,
-				F03A96E61AFA157800651655 /* bc_tester_utils.c */,
-				F03A96E71AFA157800651655 /* bc_tester_utils.h */,
-			);
-			path = common;
-			sourceTree = "<group>";
-		};
 		F0ED99161A1645C200A788CE /* tester */ = {
 			isa = PBXGroup;
 			children = (
-				F03A96E41AFA157800651655 /* common */,
 				F01223BC1A1E4827008D16BA /* sounds */,
 				F0ED99171A1645C200A788CE /* Makefile.am */,
 				F0ED991A1A1645C200A788CE /* mediastreamer2_adaptive_tester.c */,
@@ -1422,6 +1430,7 @@
 				F0ED9B981A164D7200A788CE /* mediastreamer2_neon_tester.c */,
 				F0ED991E1A1645C200A788CE /* mediastreamer2_player_tester.c */,
 				F0ED991F1A1645C200A788CE /* mediastreamer2_sound_card_tester.c */,
+				63FD3F301CA1876800E9AECC /* mediastreamer2_text_stream_tester.c */,
 				F0497F0D1A1B4C1700B67112 /* mediastreamer2_tester_ios.m */,
 				F0ED99221A1645C200A788CE /* mediastreamer2_tester_private.c */,
 				F0ED99231A1645C200A788CE /* mediastreamer2_tester_private.h */,
@@ -1458,6 +1467,10 @@
 		F0ED99521A1645CD00A788CE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				63FD3F2C1CA1870E00E9AECC /* libbctoolbox-tester.a */,
+				63FD3F221CA186DF00E9AECC /* libmbedcrypto.a */,
+				63FD3F231CA186DF00E9AECC /* libmbedtls.a */,
+				63FD3F241CA186DF00E9AECC /* libmbedx509.a */,
 				63177FC91C86E87300ADE58D /* VideoToolbox.framework */,
 				631A52061C770B7700B95673 /* libmsamr.a */,
 				631A52071C770B7700B95673 /* libmsbcg729.a */,
@@ -1934,7 +1947,6 @@
 				F0497F141A1C9EA000B67112 /* MainWindow.xib in Resources */,
 				F0ED998A1A16464D00A788CE /* laserrocket_16000_mono.wav in Resources */,
 				F0ED998C1A16464D00A788CE /* chimes_48000_stereo.wav in Resources */,
-				F03A96E81AFA157800651655 /* bc_completion in Resources */,
 				F0ED998D1A16464D00A788CE /* Makefile.am in Resources */,
 				F0ED998E1A16464D00A788CE /* bird_44100_stereo.wav in Resources */,
 				F0ED99901A16464D00A788CE /* hello8000-1s.wav in Resources */,
@@ -2108,7 +2120,6 @@
 				F01223D91A1F29AB008D16BA /* mediastream_tester_Tests.m in Sources */,
 				F0BA0A8E1A24D4DE00F68203 /* nowebcam.c in Sources */,
 				F01223E41A1F29D6008D16BA /* DTObjectBlockExecutor.m in Sources */,
-				F03A96EA1AFA174400651655 /* bc_tester_utils.c in Sources */,
 				F01223E51A1F29D6008D16BA /* NSObject+DTRuntime.m in Sources */,
 				F0BA0A8D1A24D4C900F68203 /* mediastreamer2_tester.c in Sources */,
 			);
@@ -2118,11 +2129,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F03A96E91AFA157800651655 /* bc_tester_utils.c in Sources */,
 				F0ED99591A16464D00A788CE /* mediastreamer2_adaptive_tester.c in Sources */,
 				F0ED995A1A16464D00A788CE /* mediastreamer2_basic_audio_tester.c in Sources */,
 				F0ED995B1A16464D00A788CE /* mediastreamer2_player_tester.c in Sources */,
 				F0ED995C1A16464D00A788CE /* mediastreamer2_audio_stream_tester.c in Sources */,
+				63FD3F2F1CA1874600E9AECC /* videotoolbox.c in Sources */,
 				F0ED995D1A16464D00A788CE /* mediastreamAppDelegate.m in Sources */,
 				F0497F021A1652F100B67112 /* mediastreamer2_neon_tester.c in Sources */,
 				F0ED995E1A16464D00A788CE /* mediastreamViewController.m in Sources */,
@@ -2132,6 +2143,7 @@
 				F0ED99631A16464D00A788CE /* common.c in Sources */,
 				F0497F0E1A1B4C1700B67112 /* mediastreamer2_tester_ios.m in Sources */,
 				F0ED99651A16464D00A788CE /* mediastreamer2_tester.c in Sources */,
+				63FD3F321CA1877400E9AECC /* mediastreamer2_text_stream_tester.c in Sources */,
 				F0ED99661A16464D00A788CE /* mediastreamer2_video_stream_tester.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
