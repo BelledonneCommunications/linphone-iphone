@@ -109,8 +109,10 @@
 
 - (void)testChatFromContactPhoneNumber {
 	[tester tapViewWithAccessibilityLabel:@"Contacts"];
-	NSString *fullName = [NSString stringWithFormat:@"Anna %@", self.me];
-	[self createContact:@"Anna" lastName:self.me phoneNumber:@"555-522-8243" SIPAddress:nil];
+	NSString *name = [UIDevice.currentDevice.identifierForVendor.UUIDString
+		substringFromIndex:UIDevice.currentDevice.identifierForVendor.UUIDString.length - 6];
+	NSString *fullName = [NSString stringWithFormat:@"Anna %@", name];
+	[self createContact:@"Anna" lastName:name phoneNumber:@"555-522-8243" SIPAddress:nil];
 
 	[tester tapViewWithAccessibilityLabel:@"Back"];
 	[tester tapViewWithAccessibilityLabel:@"All contacts filter"];
