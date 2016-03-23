@@ -60,7 +60,11 @@ class LinphoneFriendImpl implements LinphoneFriend, Serializable {
 		this.setAddress(nativePtr, ((LinphoneAddressImpl)anAddress).nativePtr);
 	}
 	public LinphoneAddress getAddress() {
-		return new LinphoneAddressImpl(getAddress(nativePtr),LinphoneAddressImpl.WrapMode.FromConst);
+		long ptr = getAddress(nativePtr);
+		if (ptr != 0) {
+			return new LinphoneAddressImpl(ptr, LinphoneAddressImpl.WrapMode.FromConst);
+		}
+		return null;
 	}
 	public void setIncSubscribePolicy(SubscribePolicy policy) {
 		synchronized(getSyncObject()){
