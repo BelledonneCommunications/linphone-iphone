@@ -109,13 +109,18 @@
 
 - (void)testChatFromContactPhoneNumber {
 	[tester tapViewWithAccessibilityLabel:@"Contacts"];
-	[tester tapViewWithAccessibilityLabel:@"Anna Haro"];
+	NSString *fullName = [NSString stringWithFormat:@"Anna %@", self.me];
+	[self createContact:@"Anna" lastName:self.me phoneNumber:@"555-522-8243" SIPAddress:nil];
+
+	[tester tapViewWithAccessibilityLabel:@"Back"];
+	[tester tapViewWithAccessibilityLabel:@"All contacts filter"];
+	[tester tapViewWithAccessibilityLabel:fullName];
 	[tester tapViewWithAccessibilityLabel:@"Chat with 5555228243"];
 	[self goBackFromChat];
 	UITableView *tv = [self findTableView:@"Chat list"];
 	ASSERT_EQ([tv numberOfRowsInSection:0], 1);
 	[tester waitForViewWithAccessibilityLabel:@"Contact name, Message"
-										value:@"Anna Haro (0)"
+										value:[NSString stringWithFormat:@"%@ (0)", fullName]
 									   traits:UIAccessibilityTraitStaticText];
 }
 

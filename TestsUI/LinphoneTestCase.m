@@ -13,6 +13,7 @@
 #import "KIF/KIFTypist.h"
 #import "Log.h"
 #import "Utils.h"
+#import "ContactDetailsTableView.h"
 
 @implementation LinphoneTestCase
 
@@ -188,6 +189,45 @@
 	[tester tapViewWithAccessibilityLabel:@"Select all" traits:UIAccessibilityTraitButton];
 	[tester tapViewWithAccessibilityLabel:@"Delete all" traits:UIAccessibilityTraitButton];
 	[tester tapViewWithAccessibilityLabel:@"DELETE" traits:UIAccessibilityTraitButton];
+}
+
+- (void)setText:(NSString *)text forIndex:(NSInteger)idx inSection:(NSInteger)section {
+	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:section]
+		inTableViewWithAccessibilityIdentifier:@"Contact table"];
+	[tester enterTextIntoCurrentFirstResponder:text];
+}
+
+- (void)createContact:(NSString *)firstName
+			 lastName:(NSString *)lastName
+		  phoneNumber:(NSString *)phone
+		   SIPAddress:(NSString *)sip {
+
+	XCTAssert(firstName != nil);
+	[tester tapViewWithAccessibilityLabel:@"Add contact"];
+
+	// check that the OK button is disabled
+	[tester waitForViewWithAccessibilityLabel:@"Edit"
+									   traits:UIAccessibilityTraitButton | UIAccessibilityTraitNotEnabled |
+											  UIAccessibilityTraitSelected];
+
+	[self setText:firstName forIndex:0 inSection:ContactSections_FirstName];
+
+	// entering text should enable the "edit" button
+	[tester waitForViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton | UIAccessibilityTraitSelected];
+
+	if (lastName) {
+		[self setText:lastName forIndex:0 inSection:ContactSections_LastName];
+	}
+
+	if (phone) {
+		[self setText:phone forIndex:0 inSection:ContactSections_Number];
+	}
+
+	if (sip) {
+		[self setText:sip forIndex:0 inSection:ContactSections_Sip];
+	}
+
+	[tester tapViewWithAccessibilityLabel:@"Edit"];
 }
 
 @end

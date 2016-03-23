@@ -29,45 +29,6 @@
 
 #pragma mark - Utils
 
-- (void)setText:(NSString *)text forIndex:(NSInteger)idx inSection:(NSInteger)section {
-	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:section]
-		inTableViewWithAccessibilityIdentifier:@"Contact table"];
-	[tester enterTextIntoCurrentFirstResponder:text];
-}
-
-- (void)createContact:(NSString *)firstName
-			 lastName:(NSString *)lastName
-		  phoneNumber:(NSString *)phone
-		   SIPAddress:(NSString *)sip {
-
-	XCTAssert(firstName != nil);
-	[tester tapViewWithAccessibilityLabel:@"Add contact"];
-
-	// check that the OK button is disabled
-	[tester waitForViewWithAccessibilityLabel:@"Edit"
-									   traits:UIAccessibilityTraitButton | UIAccessibilityTraitNotEnabled |
-											  UIAccessibilityTraitSelected];
-
-	[self setText:firstName forIndex:0 inSection:ContactSections_FirstName];
-
-	// entering text should enable the "edit" button
-	[tester waitForViewWithAccessibilityLabel:@"Edit" traits:UIAccessibilityTraitButton | UIAccessibilityTraitSelected];
-
-	if (lastName) {
-		[self setText:lastName forIndex:0 inSection:ContactSections_LastName];
-	}
-
-	if (phone) {
-		[self setText:phone forIndex:0 inSection:ContactSections_Number];
-	}
-
-	if (sip) {
-		[self setText:sip forIndex:0 inSection:ContactSections_Sip];
-	}
-
-	[tester tapViewWithAccessibilityLabel:@"Edit"];
-}
-
 - (void)tapCellForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section atX:(CGFloat)x {
 	UITableView *tv = [self findTableView:@"Contact table"];
 	NSIndexPath *path = [NSIndexPath indexPathForRow:idx inSection:section];
@@ -83,6 +44,12 @@
 
 - (void)tapRemoveButtonForRowAtIndexPath:(NSInteger)idx inSection:(NSInteger)section {
 	[self tapCellForRowAtIndexPath:idx inSection:section atX:-7];
+}
+
+- (void)setText:(NSString *)text forIndex:(NSInteger)idx inSection:(NSInteger)section {
+	[tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:section]
+		inTableViewWithAccessibilityIdentifier:@"Contact table"];
+	[tester enterTextIntoCurrentFirstResponder:text];
 }
 
 - (void)addEntries:(NSArray *)numbers inSection:(NSInteger)section {
