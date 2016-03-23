@@ -4893,6 +4893,13 @@ void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
 	lp_config_set_int(lc->config,"sip","verify_server_cn",yesno);
 }
 
+void linphone_core_set_ssl_config(LinphoneCore *lc, void *ssl_config) {
+	sal_set_ssl_config(lc->sal, ssl_config);
+	if (lc->http_crypto_config) {
+		belle_tls_crypto_config_set_ssl_config(lc->http_crypto_config, ssl_config);
+	}
+}
+
 static void notify_end_of_ringtone( LinphoneRingtonePlayer* rp, void* user_data, int status) {
 	LinphoneCore *lc=(LinphoneCore*)user_data;
 	lc->preview_finished=1;
