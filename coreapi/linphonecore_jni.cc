@@ -81,7 +81,10 @@ void linphone_android_log_handler(int prio, char *str) {
 	} else {
 		current = str;
 		while ((next = strchr(current, '\n')) != NULL) {
+			
 			*next = '\0';
+			if (next != str && next[-1] == '\r')
+				next[-1] = '\0';
 			__android_log_write(prio, LogDomain, current);
 			current = next + 1;
 		}
