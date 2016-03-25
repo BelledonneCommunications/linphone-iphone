@@ -165,4 +165,12 @@ public interface LinphoneFriend {
 	 * @return
 	 */
 	String getOrganization();
+	
+	LinphoneAddress[] getAddresses();
+	void addAddress(LinphoneAddress addr);
+	void removeAddress(LinphoneAddress addr);
+	
+	String[] getPhoneNumbers();
+	void addPhoneNumber(String phone);
+	void removePhoneNumber(String phone);
 }
