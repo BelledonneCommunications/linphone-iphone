@@ -90,9 +90,9 @@
 	[tester tapViewWithAccessibilityLabel:element.accessibilityLabel];
 }
 
-- (void)downloadImage {
+- (void)downloadImageWithQuality:(NSString *)quality {
 	[self startChatWith:[self me]];
-	[self uploadImageWithQuality:@"Minimum"];
+	[self uploadImageWithQuality:quality];
 	// wait for the upload to terminate...
 	for (int i = 0; i < 90; i++) {
 		[tester waitForTimeInterval:1.f];
@@ -101,7 +101,7 @@
 	}
 	[tester waitForViewWithAccessibilityLabel:@"Download"];
 	[tester tapViewWithAccessibilityLabel:@"Download"];
-	[tester waitForTimeInterval:.5f]; // just wait a few secs to start download
+	[tester waitForTimeInterval:.1f]; // just wait a few msecs to start download
 	ASSERT_EQ(LinphoneManager.instance.fileTransferDelegates.count, 1);
 }
 
@@ -255,7 +255,7 @@
 }
 
 - (void)testTransferCancelDownloadImage {
-	[self downloadImage];
+	[self downloadImageWithQuality:@"Maximum"];
 	[tester tapViewWithAccessibilityLabel:@"Cancel"];
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
@@ -275,7 +275,7 @@
 }
 
 - (void)testTransferDownloadImage {
-	[self downloadImage];
+	[self downloadImageWithQuality:@"Minimum"];
 	[tester waitForAbsenceOfViewWithAccessibilityLabel:@"Cancel"];
 	ASSERT_EQ([[[LinphoneManager instance] fileTransferDelegates] count], 0);
 }
