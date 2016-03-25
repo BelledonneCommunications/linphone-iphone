@@ -229,10 +229,11 @@ void linphone_friend_add_address(LinphoneFriend *lf, const LinphoneAddress *addr
 	linphone_vcard_add_sip_address(vcard, linphone_address_as_string_uri_only(addr));
 }
 
-const MSList* linphone_friend_get_addresses(LinphoneFriend *lf) {
+MSList* linphone_friend_get_addresses(LinphoneFriend *lf) {
 	LinphoneVcard *vcard = NULL;
 	MSList *sipAddresses = NULL;
 	MSList *addresses = NULL;
+	MSList *iterator = NULL;
 	
 	if (!lf) {
 		return NULL;
@@ -244,14 +245,16 @@ const MSList* linphone_friend_get_addresses(LinphoneFriend *lf) {
 	}
 	
 	sipAddresses = linphone_vcard_get_sip_addresses(vcard);
-	if (sipAddresses) {
-		const char *sipAddress = (const char *)sipAddresses->data;
+	iterator = sipAddresses;
+	while (iterator) {
+		const char *sipAddress = (const char *)iterator->data;
 		LinphoneAddress *addr = linphone_address_new(sipAddress);
 		if (addr) {
-			ms_list_append(addresses, addr);
+			addresses = ms_list_append(addresses, addr);
 		}
-		ms_list_free(sipAddresses);
+		iterator = ms_list_next(iterator);
 	}
+	if (sipAddresses) ms_list_free(sipAddresses);
 	return addresses;
 }
 
@@ -283,7 +286,7 @@ void linphone_friend_add_phone_number(LinphoneFriend *lf, const char *phone) {
 	linphone_vcard_add_phone_number(vcard, phone);
 }
 
-const MSList* linphone_friend_get_phone_numbers(LinphoneFriend *lf) {
+MSList* linphone_friend_get_phone_numbers(LinphoneFriend *lf) {
 	LinphoneVcard *vcard = NULL;
 	
 	if (!lf) {

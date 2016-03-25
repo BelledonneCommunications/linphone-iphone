@@ -176,7 +176,7 @@ LINPHONE_PUBLIC void linphone_friend_add_address(LinphoneFriend *lf, const Linph
  * @param lf #LinphoneFriend object
  * @return \mslist{LinphoneAddress}
  */
-LINPHONE_PUBLIC const MSList* linphone_friend_get_addresses(LinphoneFriend *lf);
+LINPHONE_PUBLIC MSList* linphone_friend_get_addresses(LinphoneFriend *lf);
 
 /**
  * Removes an address in this friend
@@ -197,7 +197,7 @@ LINPHONE_PUBLIC void linphone_friend_add_phone_number(LinphoneFriend *lf, const 
  * @param lf #LinphoneFriend object
  * @return a MSList of phone numbers
  */
-LINPHONE_PUBLIC const MSList* linphone_friend_get_phone_numbers(LinphoneFriend *lf);
+LINPHONE_PUBLIC MSList* linphone_friend_get_phone_numbers(LinphoneFriend *lf);
 
 /**
  * Removes a phone number in this friend
