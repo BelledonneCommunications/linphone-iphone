@@ -1441,7 +1441,7 @@
 		6352A5721BE0D4B800594C1C /* CallSideMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallSideMenuView.h; sourceTree = "<group>"; };
 		6352A5731BE0D4B800594C1C /* CallSideMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallSideMenuView.m; sourceTree = "<group>"; };
 		6352A5741BE0D4B800594C1C /* CallSideMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallSideMenuView.xib; sourceTree = "<group>"; };
-		635598811C96AFFA006ED99A /* vcards */ = {isa = PBXFileReference; lastKnownFileType = folder; name = vcards; path = submodules/linphone/tester/vcards; sourceTree = "<group>"; };
+		635598811C96AFFA006ED99A /* vcards */ = {isa = PBXFileReference; lastKnownFileType = folder; name = vcards; path = ../submodules/linphone/tester/vcards; sourceTree = "<group>"; };
 		635775231B6673EC00C8B704 /* HistoryDetailsTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsTableView.h; sourceTree = "<group>"; };
 		635775241B6673EC00C8B704 /* HistoryDetailsTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsTableView.m; sourceTree = "<group>"; };
 		636316D21A1DEBCB0009B839 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/AboutView.xib; sourceTree = "<group>"; };
@@ -1674,7 +1674,6 @@
 		D3F83EEA1582021700336684 /* CallView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallView.m; sourceTree = "<group>"; };
 		D3F83F8C158229C500336684 /* PhoneMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneMainView.h; sourceTree = "<group>"; };
 		D3F83F8D15822ABD00336684 /* PhoneMainView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneMainView.m; sourceTree = "<group>"; };
-		E49CB2631C90524E00FFF73C /* common */ = {isa = PBXFileReference; lastKnownFileType = folder; name = common; path = ../submodules/linphone/tester/common; sourceTree = "<group>"; };
 		F0181B6B18BF7B1200A9A357 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		F03A9B7E18C0D9C900C4D7FE /* libcunit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcunit.a; path = "liblinphone-sdk/apple-darwin/lib/libcunit.a"; sourceTree = "<group>"; };
 		F03A9B9418C0DAE100C4D7FE /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
@@ -2133,7 +2132,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				635598811C96AFFA006ED99A /* vcards */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
@@ -2281,7 +2279,7 @@
 		63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */ = {
 			isa = PBXGroup;
 			children = (
-				E49CB2631C90524E00FFF73C /* common */,
+				635598811C96AFFA006ED99A /* vcards */,
 				63058AE41B4E952E00EFAE36 /* share */,
 				63058AE11B4E93A100EFAE36 /* tester_hosts */,
 				63058AC81B4E922500EFAE36 /* certificates */,
