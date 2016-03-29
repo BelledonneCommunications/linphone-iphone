@@ -341,9 +341,14 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 
 	linphone_core_terminate_conference(marie->lc);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,is_remote_conf?2:1,10000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,is_remote_conf?3:1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,is_remote_conf?3:2,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,is_remote_conf?2:1,10000));
 	if(is_remote_conf) BC_ASSERT_TRUE(wait_for_list(lcs,&focus->stat.number_of_LinphoneCallEnd,3,10000));
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,is_remote_conf?2:1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallReleased,is_remote_conf?3:2,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,is_remote_conf?2:1,10000));
+	if(is_remote_conf) BC_ASSERT_TRUE(wait_for_list(lcs,&focus->stat.number_of_LinphoneCallReleased,3,10000));
 
 end:
 	ms_list_free(lcs);
@@ -801,6 +806,11 @@ static void eject_from_4_participants_conference(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallEnd,1,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&michelle->stat.number_of_LinphoneCallEnd,1,10000));
+	
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallReleased,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallReleased,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&laure->stat.number_of_LinphoneCallReleased,1,10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&michelle->stat.number_of_LinphoneCallReleased,1,10000));
 
 	ms_list_free(lcs);
 
@@ -912,9 +922,9 @@ test_t multi_call_tests[] = {
 	TEST_ONE_TAG("Incoming call accepted when outgoing call in progress", incoming_call_accepted_when_outgoing_call_in_progress, "LeaksMemory"),
 	TEST_ONE_TAG("Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing, "LeaksMemory"),
 	TEST_ONE_TAG("Incoming call accepted when outgoing call in outgoing ringing early media", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media, "LeaksMemory"),
-	TEST_ONE_TAG("Simple conference", simple_conference, "LeaksMemory"),
-	TEST_TWO_TAGS("Simple conference with ICE", simple_conference_with_ice, "ICE", "LeaksMemory"),
-	TEST_TWO_TAGS("Simple ZRTP conference with ICE", simple_zrtp_conference_with_ice, "ICE", "LeaksMemory"),
+	TEST_NO_TAG("Simple conference", simple_conference),
+	TEST_TWO_TAGS("Simple conference with ICE", simple_conference_with_ice, "ICE",),
+	TEST_TWO_TAGS("Simple ZRTP conference with ICE", simple_zrtp_conference_with_ice, "ICE",),
 	TEST_NO_TAG("Eject from 3 participants conference", eject_from_3_participants_local_conference),
 	TEST_ONE_TAG("Eject from 4 participants conference", eject_from_4_participants_conference, "LeaksMemory"),
 	TEST_NO_TAG("Simple call transfer", simple_call_transfer),
