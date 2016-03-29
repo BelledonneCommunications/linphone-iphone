@@ -4173,6 +4173,7 @@ int linphone_core_preempt_sound_resources(LinphoneCore *lc){
 int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	char temp[255]={0};
 	const char *subject="Call resuming";
+	char *tmp;
 
 	if(call->state!=LinphoneCallPaused ){
 		ms_warning("we cannot resume a call that has not been established and paused before");
@@ -4213,7 +4214,8 @@ int linphone_core_resume_call(LinphoneCore *lc, LinphoneCall *call){
 	linphone_call_set_state(call,LinphoneCallResuming,"Resuming");
 	if (call->params->in_conference==FALSE)
 		lc->current_call=call;
-	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",linphone_call_get_remote_address_as_string(call));
+	snprintf(temp,sizeof(temp)-1,"Resuming the call with %s",(tmp = linphone_call_get_remote_address_as_string(call)));
+	ms_free(tmp);
 	linphone_core_notify_display_status(lc,temp);
 
 	if (lc->sip_conf.sdp_200_ack){
