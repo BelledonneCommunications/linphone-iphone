@@ -751,6 +751,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	} else {
 		ms_message("Don't put audio stream on local offer for call [%p]",call);
 		md->streams[call->main_audio_stream_index].dir = SalStreamInactive;
+		if(l) l=ms_list_free_with_data(l, (void (*)(void *))payload_type_destroy);
 	}
 	if (params->custom_sdp_media_attributes[LinphoneStreamTypeAudio])
 		md->streams[call->main_audio_stream_index].custom_sdp_attributes = sal_custom_sdp_attribute_clone(params->custom_sdp_media_attributes[LinphoneStreamTypeAudio]);
@@ -785,6 +786,7 @@ void linphone_call_make_local_media_description(LinphoneCall *call) {
 	} else {
 		ms_message("Don't put video stream on local offer for call [%p]",call);
 		md->streams[call->main_video_stream_index].dir = SalStreamInactive;
+		if(l) l=ms_list_free_with_data(l, (void (*)(void *))payload_type_destroy);
 	}
 	if (params->custom_sdp_media_attributes[LinphoneStreamTypeVideo])
 		md->streams[call->main_video_stream_index].custom_sdp_attributes = sal_custom_sdp_attribute_clone(params->custom_sdp_media_attributes[LinphoneStreamTypeVideo]);
