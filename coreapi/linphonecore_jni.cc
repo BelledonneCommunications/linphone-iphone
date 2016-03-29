@@ -506,6 +506,31 @@ jobject getChatMessage(JNIEnv *env, LinphoneChatMessage *msg){
 	return jobj;
 }
 
+jobject getChatRoom(JNIEnv *env, LinphoneChatRoom *room) {
+	jobject jobj = 0;
+
+	if (room != NULL){
+		LinphoneCore *lc = linphone_chat_room_get_core(room);
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
+
+		void *up = linphone_chat_room_get_user_data(room);
+		if (up == NULL) {
+			// take implicit local ref
+			jobj = env->NewObject(ljb->chatRoomClass, ljb->chatRoomCtrId, (jlong)room);
+			linphone_chat_room_set_user_data(room, (void*)env->NewWeakGlobalRef(jobj));
+			linphone_chat_room_ref(room);
+		} else {
+			jobj = env->NewLocalRef((jobject)up);
+			if (jobj == NULL) {
+				// takes implicit local ref
+				jobj=env->NewObject(ljb->chatRoomClass, ljb->chatRoomCtrId, (jlong)room);
+				linphone_chat_room_set_user_data(room, (void*)env->NewWeakGlobalRef(jobj));
+			}
+		}
+	}
+	return jobj;
+}
+
 jobject getFriend(JNIEnv *env, LinphoneFriend *lfriend){
 	jobject jobj=0;
 
@@ -911,7 +936,6 @@ public:
 	}
 	static void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 		JNIEnv *env = 0;
-		jobject jmsg;
 		jint result = jvm->AttachCurrentThread(&env,NULL);
 		if (result != 0) {
 			ms_error("cannot attach VM");
@@ -925,8 +949,8 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,ljb->messageReceivedId
 							,lcData->core
-							,env->NewObject(ljb->chatRoomClass,ljb->chatRoomCtrId,(jlong)room)
-							,(jmsg = getChatMessage(env, msg)));
+							,getChatRoom(env, room)
+							,getChatMessage(env, msg));
 		handle_possible_java_exception(env, lcData->listener);
 	}
 	static void is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
@@ -943,7 +967,7 @@ public:
 		env->CallVoidMethod(lcData->listener
 							,ljb->isComposingReceivedId
 							,lcData->core
-							,env->NewObject(ljb->chatRoomClass,ljb->chatRoomCtrId,(jlong)room));
+							,getChatRoom(env, room));
 		handle_possible_java_exception(env, lcData->listener);
 	}
 	static void ecCalibrationStatus(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data) {
@@ -2133,7 +2157,7 @@ JNIEXPORT jobject JNICALL Java_org_linphone_core_LinphoneCoreImpl_getPresenceMod
 	RETURN_USER_DATA_OBJECT("PresenceModelImpl", linphone_presence_model, model)
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getOrCreateChatRoom(JNIEnv*  env
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getOrCreateChatRoom(JNIEnv*  env
 																			,jobject  thiz
 																			,jlong lc
 																			,jstring jto) {
@@ -2141,15 +2165,15 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getOrCreateChatRoom(JNI
 	const char* to = env->GetStringUTFChars(jto, NULL);
 	LinphoneChatRoom* lResult = linphone_core_get_chat_room_from_uri((LinphoneCore*)lc,to);
 	env->ReleaseStringUTFChars(jto, to);
-	return (jlong)lResult;
+	return getChatRoom(env, lResult);
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_getChatRoom(JNIEnv*  env
+extern "C" jobject Java_org_linphone_core_LinphoneCoreImpl_getChatRoom(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong lc
 																		,jlong to) {
 	LinphoneChatRoom* lResult = linphone_core_get_chat_room((LinphoneCore*)lc,(LinphoneAddress *)to);
-	return (jlong)lResult;
+	return getChatRoom(env, lResult);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_enableVideo(JNIEnv*  env
@@ -3998,20 +4022,24 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_unref(JNIEnv*  en
 	linphone_chat_message_unref((LinphoneChatMessage*)ptr);
 }
 
-extern "C" jlongArray Java_org_linphone_core_LinphoneCoreImpl_getChatRooms(JNIEnv*  env
+extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_getChatRooms(JNIEnv*  env
 																		   ,jobject  thiz
 																		   ,jlong ptr) {
-	const MSList* chats = linphone_core_get_chat_rooms((LinphoneCore*)ptr);
+	LinphoneCore *lc = (LinphoneCore*)ptr;
+	const MSList* chats = linphone_core_get_chat_rooms(lc);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	int chatsSize = ms_list_size(chats);
-	jlongArray jChats = env->NewLongArray(chatsSize);
-	jlong *jInternalArray = env->GetLongArrayElements(jChats, NULL);
+	jobjectArray jChats = env->NewObjectArray(chatsSize, ljb->chatRoomClass, NULL);
 
 	for (int i = 0; i < chatsSize; i++) {
-		jInternalArray[i] = (unsigned long) (chats->data);
+		LinphoneChatRoom *room = (LinphoneChatRoom *)chats->data;
+		jobject jroom = getChatRoom(env, room);
+		if (jroom != NULL) {
+			env->SetObjectArrayElement(jChats, i, jroom);
+			env->DeleteLocalRef(jroom);
+		}
 		chats = chats->next;
 	}
-
-	env->ReleaseLongArrayElements(jChats, jInternalArray, 0);
 
 	return jChats;
 }
@@ -6852,8 +6880,8 @@ JNIEXPORT jstring JNICALL Java_org_linphone_core_LinphoneCoreImpl_getVideoPreset
 	return tmp ? env->NewStringUTF(tmp) : NULL;
 }
 
-extern "C" jlong Java_org_linphone_core_LinphoneCallImpl_getChatRoom(JNIEnv* env ,jobject thiz, jlong ptr) {
-	return (jlong) linphone_call_get_chat_room((LinphoneCall *) ptr);
+extern "C" jobject Java_org_linphone_core_LinphoneCallImpl_getChatRoom(JNIEnv* env ,jobject thiz, jlong ptr) {
+	return getChatRoom(env, linphone_call_get_chat_room((LinphoneCall *) ptr));
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCallParamsImpl_enableRealTimeText(JNIEnv* env ,jobject thiz, jlong ptr, jboolean yesno) {
@@ -6866,6 +6894,12 @@ extern "C" jboolean Java_org_linphone_core_LinphoneCallParamsImpl_realTimeTextEn
 
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_putChar(JNIEnv* env ,jobject thiz, jlong ptr, jlong character) {
 	linphone_chat_message_put_char((LinphoneChatMessage *)ptr, character);
+}
+
+extern "C" void  Java_org_linphone_core_LinphoneChatRoomImpl_finalize(JNIEnv* env, jobject thiz, jlong ptr) {
+	LinphoneChatRoom *room = (LinphoneChatRoom *)ptr;
+	linphone_chat_room_set_user_data(room, NULL);
+	linphone_chat_room_unref(room);
 }
 
 extern "C" jobject Java_org_linphone_core_LinphoneChatRoomImpl_getCall(JNIEnv* env ,jobject thiz, jlong ptr) {

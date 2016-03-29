@@ -43,7 +43,15 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 			String url, int state, long timestamp, boolean isRead,
 			boolean isIncoming);
 	private native void sendChatMessage(long ptr, Object message, long messagePtr);
-
+	private native void finalize(long nativePtr);
+	
+	protected void finalize() throws Throwable {
+		if (nativePtr != 0) {
+			finalize(nativePtr);
+		}
+		super.finalize();
+	}
+	
 	protected LinphoneChatRoomImpl(long aNativePtr)  {
 		nativePtr = aNativePtr;
 	}
