@@ -1715,6 +1715,7 @@ static void linphone_call_destroy(LinphoneCall *obj){
 		linphone_address_unref(obj->me);
 		obj->me = NULL;
 	}
+	if (obj->onhold_file) ms_free(obj->onhold_file);
 
 	sal_error_info_reset(&obj->non_op_error);
 }
