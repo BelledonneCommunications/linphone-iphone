@@ -721,14 +721,13 @@ static void linphone_conference_server_call_state_changed(LinphoneCore *lc, Linp
 			if(linphone_call_get_conference(call) == NULL) {
 				linphone_core_add_to_conference(lc, call);
 				linphone_core_leave_conference(lc);
-				if(conf_srv->first_call == NULL) conf_srv->first_call = linphone_call_ref(call);
+				if(conf_srv->first_call == NULL) conf_srv->first_call = call;
 			}
 			break;
 
 		case LinphoneCallEnd:
 			if(call == conf_srv->first_call) {
 				linphone_core_terminate_conference(lc);
-				linphone_call_unref(call);
 				conf_srv->first_call = NULL;
 			}
 			break;
