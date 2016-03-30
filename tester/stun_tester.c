@@ -16,7 +16,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "linphonecore.h"
 #include "private.h"
 #include "liblinphone_tester.h"
@@ -24,52 +23,36 @@
 #include "ortp/port.h"
 
 
-static const char* stun_address = "stun.linphone.org";
+static const char *stun_address = "stun.linphone.org";
 
 
-static int test_stun_encode( char*buffer, size_t len, bool_t expect_fail )
+static size_t test_stun_encode(char **buffer)
 {
-	StunAtrString username;
-	StunAtrString password;
-	StunMessage req;
-	memset(&req, 0, sizeof(StunMessage));
-	memset(&username,0,sizeof(username));
-	memset(&password,0,sizeof(password));
-	stunBuildReqSimple( &req, &username, TRUE , TRUE , 11);
-	len = stunEncodeMessage( &req, buffer, (unsigned int)len, &password);
-	if (len<=0){
-		if( expect_fail )
-			ms_message("Fail to encode stun message (EXPECTED).\n");
-		else
-			ms_error("Fail to encode stun message.\n");
-		return -1;
-	}
-	return (int)len;
+	MSStunMessage *req = ms_stun_binding_request_create();
+	UInt96 tr_id = ms_stun_message_get_tr_id(req);
+	tr_id.octet[0] = 11;
+	ms_stun_message_set_tr_id(req, tr_id);
+	return ms_stun_message_encode(req, buffer);
 }
 
 
 static void linphone_stun_test_encode(void)
 {
-	char smallBuff[12];
-	size_t smallLen = 12;
-	char bigBuff[STUN_MAX_MESSAGE_SIZE];
-	size_t bigLen = STUN_MAX_MESSAGE_SIZE;
-
-	size_t len = test_stun_encode(smallBuff, smallLen, TRUE);
-	BC_ASSERT(len == -1);
-
-	len = test_stun_encode(bigBuff, bigLen, TRUE);
+	char *buffer = NULL;
+	size_t len = test_stun_encode(&buffer);
 	BC_ASSERT(len > 0);
+	BC_ASSERT_PTR_NOT_NULL(buffer);
+	if (buffer != NULL) ms_free(buffer);
 	ms_message("STUN message encoded in %i bytes", (int)len);
 }
 
 
 static void linphone_stun_test_grab_ip(void)
 {
-	LinphoneCoreManager* lc_stun = linphone_core_manager_new2( "stun_rc", FALSE);
+	LinphoneCoreManager* lc_stun = linphone_core_manager_new2("stun_rc", FALSE);
 	LinphoneCall dummy_call;
 	int ping_time;
-	int tmp=0;
+	int tmp = 0;
 
 	memset(&dummy_call, 0, sizeof(LinphoneCall));
 	dummy_call.main_audio_stream_index = 0;
@@ -82,33 +65,27 @@ static void linphone_stun_test_grab_ip(void)
 	linphone_core_set_stun_server(lc_stun->lc, stun_address);
 	BC_ASSERT_STRING_EQUAL(stun_address, linphone_core_get_stun_server(lc_stun->lc));
 
-	wait_for(lc_stun->lc,lc_stun->lc,&tmp,1);
+	wait_for(lc_stun->lc, lc_stun->lc, &tmp, 1);
 
 	ping_time = linphone_core_run_stun_tests(lc_stun->lc, &dummy_call);
 	BC_ASSERT(ping_time != -1);
 
 	ms_message("Round trip to STUN: %d ms", ping_time);
 
-	BC_ASSERT( dummy_call.ac.addr[0] != '\0');
-	BC_ASSERT( dummy_call.ac.port != 0);
+	BC_ASSERT(dummy_call.ac.addr[0] != '\0');
+	BC_ASSERT(dummy_call.ac.port != 0);
 #ifdef VIDEO_ENABLED
-	BC_ASSERT( dummy_call.vc.addr[0] != '\0');
-	BC_ASSERT( dummy_call.vc.port != 0);
+	BC_ASSERT(dummy_call.vc.addr[0] != '\0');
+	BC_ASSERT(dummy_call.vc.port != 0);
 #endif
-	BC_ASSERT( dummy_call.tc.addr[0] != '\0');
-	BC_ASSERT( dummy_call.tc.port != 0);
+	BC_ASSERT(dummy_call.tc.addr[0] != '\0');
+	BC_ASSERT(dummy_call.tc.port != 0);
 
-	ms_message("STUN test result: local audio port maps to %s:%i",
-			dummy_call.ac.addr,
-			dummy_call.ac.port);
+	ms_message("STUN test result: local audio port maps to %s:%i", dummy_call.ac.addr, dummy_call.ac.port);
 #ifdef VIDEO_ENABLED
-	ms_message("STUN test result: local video port maps to %s:%i",
-			dummy_call.vc.addr,
-			dummy_call.vc.port);
+	ms_message("STUN test result: local video port maps to %s:%i", dummy_call.vc.addr, dummy_call.vc.port);
 #endif
-	ms_message("STUN test result: local text port maps to %s:%i",
-			dummy_call.tc.addr,
-			dummy_call.tc.port);
+	ms_message("STUN test result: local text port maps to %s:%i", dummy_call.tc.addr, dummy_call.tc.port);
 
 	linphone_core_manager_destroy(lc_stun);
 }
@@ -116,7 +93,7 @@ static void linphone_stun_test_grab_ip(void)
 
 test_t stun_tests[] = {
 	TEST_NO_TAG("Basic Stun test (Ping/public IP)", linphone_stun_test_grab_ip),
-	TEST_NO_TAG("STUN encode buffer protection", linphone_stun_test_encode)
+	TEST_NO_TAG("STUN encode", linphone_stun_test_encode)
 };
 
 test_suite_t stun_test_suite = {"Stun", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

@@ -317,28 +317,30 @@ static ortp_socket_t create_socket(int local_port){
 	return sock;
 }
 
-static int sendStunRequest(int sock, const struct sockaddr *server, socklen_t addrlen, int id, bool_t changeAddr){
-	char buf[STUN_MAX_MESSAGE_SIZE];
-	int len = STUN_MAX_MESSAGE_SIZE;
-	StunAtrString username;
-	StunAtrString password;
-	StunMessage req;
-	int err;
-	memset(&req, 0, sizeof(StunMessage));
-	memset(&username,0,sizeof(username));
-	memset(&password,0,sizeof(password));
-	stunBuildReqSimple( &req, &username, changeAddr , changeAddr , id);
-	len = stunEncodeMessage( &req, buf, len, &password);
-	if (len<=0){
+static int send_stun_request(int sock, const struct sockaddr *server, socklen_t addrlen, int id, bool_t change_addr){
+	char *buf = NULL;
+	int len;
+	int err = 0;
+	MSStunMessage *req = ms_stun_binding_request_create();
+	UInt96 tr_id = ms_stun_message_get_tr_id(req);
+	tr_id.octet[0] = id;
+	ms_stun_message_set_tr_id(req, tr_id);
+	ms_stun_message_enable_change_ip(req, change_addr);
+	ms_stun_message_enable_change_port(req, change_addr);
+	len = ms_stun_message_encode(req, &buf);
+	if (len <= 0) {
 		ms_error("Fail to encode stun message.");
-		return -1;
+		err = -1;
+	} else {
+		err = sendto(sock, buf, len, 0, server, addrlen);
+		if (err < 0) {
+			ms_error("sendto failed: %s",strerror(errno));
+			err = -1;
+		}
 	}
-	err=sendto(sock,buf,len,0,server,addrlen);
-	if (err<0){
-		ms_error("sendto failed: %s",strerror(errno));
-		return -1;
-	}
-	return 0;
+	if (buf != NULL) ms_free(buf);
+	ms_free(req);
+	return err;
 }
 
 int linphone_parse_host_port(const char *input, char *host, size_t hostlen, int *port){
@@ -387,23 +389,32 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 	return 0;
 }
 
-static int recvStunResponse(ortp_socket_t sock, char *ipaddr, int *port, int *id){
-	char buf[STUN_MAX_MESSAGE_SIZE];
-	int len = STUN_MAX_MESSAGE_SIZE;
-	StunMessage resp;
-	len=recv(sock,buf,len,0);
-	if (len>0){
+static int recv_stun_response(ortp_socket_t sock, char *ipaddr, int *port, int *id) {
+	char buf[MS_STUN_MAX_MESSAGE_SIZE];
+	int len = MS_STUN_MAX_MESSAGE_SIZE;
+	MSStunMessage *resp;
+
+	len = recv(sock, buf, len, 0);
+	if (len > 0) {
 		struct in_addr ia;
-		stunParseMessage(buf,len, &resp );
-		*id=resp.msgHdr.tr_id.octet[0];
-		if (resp.hasXorMappedAddress){
-			*port = resp.xorMappedAddress.ipv4.port;
-			ia.s_addr=htonl(resp.xorMappedAddress.ipv4.addr);
-		}else if (resp.hasMappedAddress){
-			*port = resp.mappedAddress.ipv4.port;
-			ia.s_addr=htonl(resp.mappedAddress.ipv4.addr);
-		}else return -1;
-		strncpy(ipaddr,inet_ntoa(ia),LINPHONE_IPADDR_SIZE);
+		resp = ms_stun_message_create_from_buffer_parsing(buf, len);
+		if (resp != NULL) {
+			const MSStunAddress *stun_addr;
+			UInt96 tr_id = ms_stun_message_get_tr_id(resp);
+			*id = tr_id.octet[0];
+			stun_addr = ms_stun_message_get_xor_mapped_address(resp);
+			if (stun_addr != NULL) {
+				*port = stun_addr->ipv4.port;
+				ia.s_addr = htonl(stun_addr->ipv4.addr);
+			} else {
+				stun_addr = ms_stun_message_get_mapped_address(resp);
+				if (stun_addr != NULL) {
+					*port = stun_addr->ipv4.port;
+					ia.s_addr = htonl(stun_addr->ipv4.addr);
+				} else len = -1;
+			}
+			if (len > 0) strncpy(ipaddr, inet_ntoa(ia), LINPHONE_IPADDR_SIZE);
+		}
 	}
 	return len;
 }
@@ -459,44 +470,32 @@ int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
 			int id;
 			if (loops%20==0){
 				ms_message("Sending stun requests...");
-				sendStunRequest((int)sock1,ai->ai_addr,(socklen_t)ai->ai_addrlen,11,TRUE);
-				sendStunRequest((int)sock1,ai->ai_addr,(socklen_t)ai->ai_addrlen,1,FALSE);
+				send_stun_request((int)sock1,ai->ai_addr,(socklen_t)ai->ai_addrlen,11,TRUE);
+				send_stun_request((int)sock1,ai->ai_addr,(socklen_t)ai->ai_addrlen,1,FALSE);
 				if (sock2!=-1){
-					sendStunRequest((int)sock2,ai->ai_addr,(socklen_t)ai->ai_addrlen,22,TRUE);
-					sendStunRequest((int)sock2,ai->ai_addr,(socklen_t)ai->ai_addrlen,2,FALSE);
+					send_stun_request((int)sock2,ai->ai_addr,(socklen_t)ai->ai_addrlen,22,TRUE);
+					send_stun_request((int)sock2,ai->ai_addr,(socklen_t)ai->ai_addrlen,2,FALSE);
 				}
 				if (sock3!=-1){
-					sendStunRequest((int)sock3,ai->ai_addr,(socklen_t)ai->ai_addrlen,33,TRUE);
-					sendStunRequest((int)sock3,ai->ai_addr,(socklen_t)ai->ai_addrlen,3,FALSE);
+					send_stun_request((int)sock3,ai->ai_addr,(socklen_t)ai->ai_addrlen,33,TRUE);
+					send_stun_request((int)sock3,ai->ai_addr,(socklen_t)ai->ai_addrlen,3,FALSE);
 				}
 			}
 			ms_usleep(10000);
 
-			if (recvStunResponse(sock1,ac->addr,
-						&ac->port,&id)>0){
-				ms_message("STUN test result: local audio port maps to %s:%i",
-						ac->addr,
-						ac->port);
-				if (id==11)
-					cone_audio=TRUE;
+			if (recv_stun_response(sock1, ac->addr, &ac->port, &id) > 0) {
+				ms_message("STUN test result: local audio port maps to %s:%i", ac->addr, ac->port);
+				if (id==11) cone_audio=TRUE;
 				got_audio=TRUE;
 			}
-			if (recvStunResponse(sock2,vc->addr,
-							&vc->port,&id)>0){
-				ms_message("STUN test result: local video port maps to %s:%i",
-					vc->addr,
-					vc->port);
-				if (id==22)
-					cone_video=TRUE;
+			if (recv_stun_response(sock2, vc->addr, &vc->port, &id) > 0) {
+				ms_message("STUN test result: local video port maps to %s:%i", vc->addr, vc->port);
+				if (id==22) cone_video=TRUE;
 				got_video=TRUE;
 			}
-			if (recvStunResponse(sock3,tc->addr,
-							&tc->port,&id)>0){
-				ms_message("STUN test result: local text port maps to %s:%i",
-					tc->addr,
-					tc->port);
-				if (id==33)
-					cone_text=TRUE;
+			if (recv_stun_response(sock3, tc->addr, &tc->port, &id)>0) {
+				ms_message("STUN test result: local text port maps to %s:%i", tc->addr, tc->port);
+				if (id==33) cone_text=TRUE;
 				got_text=TRUE;
 			}
 			ortp_gettimeofday(&cur,NULL);
