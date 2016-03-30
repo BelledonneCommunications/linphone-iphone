@@ -614,6 +614,7 @@ struct _LinphoneProxyConfig
 	char *dial_prefix;
 	LinphoneRegistrationState state;
 	LinphoneAVPFMode avpf_mode;
+	LinphoneNatPolicy *nat_policy;
 
 	bool_t commit;
 	bool_t reg_sendregister;
@@ -957,6 +958,7 @@ struct _LinphoneCore
 	char* user_certificates_path;
 	LinphoneVideoPolicy video_policy;
 	time_t network_last_check;
+	LinphoneNatPolicy *nat_policy;
 
 	bool_t use_files;
 	bool_t apply_nat_settings;
@@ -1185,6 +1187,22 @@ struct _LinphoneBuffer {
 
 BELLE_SIP_DECLARE_VPTR(LinphoneBuffer);
 
+struct _LinphoneNatPolicy {
+	belle_sip_object_t base;
+	void *user_data;
+	char *stun_server;
+	char *ref;
+	bool_t stun_enabled;
+	bool_t turn_enabled;
+	bool_t ice_enabled;
+	bool_t upnp_enabled;
+};
+
+BELLE_SIP_DECLARE_VPTR(LinphoneNatPolicy);
+
+LinphoneNatPolicy * linphone_nat_policy_new_from_config(LpConfig *config, const char *ref);
+void linphone_nat_policy_save_to_config(const LinphoneNatPolicy *policy, LpConfig *config);
+
 
 /*****************************************************************************
  * XML-RPC interface                                                         *
@@ -1405,7 +1423,8 @@ BELLE_SIP_TYPE_ID(LinphoneXmlRpcRequestCbs),
 BELLE_SIP_TYPE_ID(LinphoneXmlRpcSession),
 BELLE_SIP_TYPE_ID(LinphoneTunnelConfig),
 BELLE_SIP_TYPE_ID(LinphoneFriendListCbs),
-BELLE_SIP_TYPE_ID(LinphoneEvent)
+BELLE_SIP_TYPE_ID(LinphoneEvent),
+BELLE_SIP_TYPE_ID(LinphoneNatPolicy)
 BELLE_SIP_DECLARE_TYPES_END
 
 

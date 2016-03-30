@@ -105,6 +105,13 @@ LINPHONE_PUBLIC int lp_config_read_file(LpConfig *lpconfig, const char *filename
 LINPHONE_PUBLIC const char *lp_config_get_string(const LpConfig *lpconfig, const char *section, const char *key, const char *default_string);
 
 /**
+ * Retrieves a configuration item as a list of strings, given its section, key, and default value.
+ * @ingroup misc
+ * The default value is returned if the config item isn't found.
+ */
+LINPHONE_PUBLIC MSList * lp_config_get_string_list(const LpConfig *lpconfig, const char *section, const char *key, MSList *default_list);
+
+/**
  * Retrieves a configuration item as a range, given its section, key, and default min and max values.
  *
  * @ingroup misc
@@ -143,6 +150,12 @@ LINPHONE_PUBLIC float lp_config_get_float(const LpConfig *lpconfig,const char *s
  * @ingroup misc
 **/
 LINPHONE_PUBLIC void lp_config_set_string(LpConfig *lpconfig,const char *section, const char *key, const char *value);
+
+/**
+ * Sets a string list config item
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC void lp_config_set_string_list(LpConfig *lpconfig, const char *section, const char *key, const MSList *value);
 
 /**
  * Sets a range config item

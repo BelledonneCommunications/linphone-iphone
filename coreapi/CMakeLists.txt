@@ -48,6 +48,7 @@ set(LINPHONE_HEADER_FILES
 	linphone_tunnel.h
 	lpc2xml.h
 	lpconfig.h
+	nat_policy.h
 	ringtoneplayer.h
 	sipsetup.h
 	sqlite3_bctbx_vfs.h
@@ -102,6 +103,7 @@ set(LINPHONE_SOURCE_FILES_C
 	lsd.c
 	message_storage.c
 	misc.c
+	nat_policy.c
 	offeranswer.c
 	offeranswer.h
 	player.c

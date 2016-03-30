@@ -1355,6 +1355,11 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_int(config,key,"privacy",cfg->privacy);
 	if (cfg->refkey) lp_config_set_string(config,key,"refkey",cfg->refkey);
 	lp_config_set_int(config, key, "publish_expires", cfg->publish_expires);
+
+	if (cfg->nat_policy != NULL) {
+		lp_config_set_string(config, key, "nat_policy_ref", cfg->nat_policy->ref);
+		linphone_nat_policy_save_to_config(cfg->nat_policy, config);
+	}
 }
 
 
@@ -1377,6 +1382,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 	LinphoneProxyConfig *cfg;
 	char key[50];
 	LpConfig *config=lc->config;
+	const char *nat_policy_ref;
 
 	sprintf(key,"proxy_%i",index);
 
@@ -1414,6 +1420,11 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,ref_key,"refkey")
 	CONFIGURE_INT_VALUE(cfg,config,key,publish_expires,"publish_expires")
+
+	nat_policy_ref = lp_config_get_string(config, key, "nat_policy_ref", NULL);
+	if (nat_policy_ref != NULL) {
+		cfg->nat_policy = linphone_nat_policy_new_from_config(config, nat_policy_ref);
+	}
 
 	return cfg;
 }
@@ -1676,4 +1687,16 @@ void linphone_proxy_config_set_ref_key(LinphoneProxyConfig *cfg, const char *ref
 		cfg->refkey=NULL;
 	}
 	if (refkey) cfg->refkey=ms_strdup(refkey);
+}
+
+const LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConfig *cfg) {
+	return cfg->nat_policy;
+}
+
+void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatPolicy *policy) {
+	if (cfg->nat_policy != NULL) {
+		linphone_nat_policy_unref(cfg->nat_policy);
+		cfg->nat_policy = NULL;
+	}
+	if (policy != NULL) cfg->nat_policy = linphone_nat_policy_ref(policy);
 }
