@@ -23,9 +23,9 @@ struct _Account{
 	LinphoneAddress *identity;
 	LinphoneAddress *modified_identity;
 	char *password;
-	int created;
+	int registered;
 	int done;
-	int auth_requested;
+	int created;
 };
 
 typedef struct _Account Account;
@@ -95,20 +95,21 @@ Account *account_manager_get_account(AccountManager *m, const LinphoneAddress *i
 static void account_created_on_server_cb(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *info){
 	Account *account=(Account*)linphone_core_get_user_data(lc);
 	switch(state){
-		case LinphoneRegistrationOk:
-			account->created=1;
-		break;
+		case LinphoneRegistrationOk: {
+			char * phrase = sal_op_get_error_info((SalOp*)cfg->op)->full_string;
+			if (phrase && strcasecmp("Test account created", phrase) == 0) {
+				account->created=1;
+			} else {
+				account->registered=1;
+			}
+			break;
+		}
 		case LinphoneRegistrationCleared:
 			account->done=1;
 		break;
 		default:
 		break;
 	}
-}
-
-static void account_created_auth_requested_cb(LinphoneCore *lc, const char *username, const char *realm, const char *domain){
-	Account *account=(Account*)linphone_core_get_user_data(lc);
-	account->auth_requested=1;
 }
 
 void account_create_on_server(Account *account, const LinphoneProxyConfig *refcfg){
@@ -122,7 +123,6 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	LCSipTransports tr;
 
 	vtable.registration_state_changed=account_created_on_server_cb;
-	vtable.auth_info_requested=account_created_auth_requested_cb;
 	lc=configure_lc_from(&vtable,bc_tester_get_resource_dir_prefix(),NULL,account);
 	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
@@ -150,7 +150,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 
 	linphone_core_add_proxy_config(lc,cfg);
 
-	if (wait_for_until(lc,NULL,&account->auth_requested,1,10000)==FALSE){
+	if (wait_for_until(lc,NULL,&account->created,1,10000)==FALSE){
 		ms_fatal("Account for %s could not be created on server.", linphone_proxy_config_get_identity(refcfg));
 	}
 	linphone_proxy_config_edit(cfg);
@@ -168,7 +168,7 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	linphone_core_add_auth_info(lc,ai);
 	linphone_auth_info_destroy(ai);
 
-	if (wait_for_until(lc,NULL,&account->created,1,3000)==FALSE){
+	if (wait_for_until(lc,NULL,&account->registered,1,3000)==FALSE){
 		ms_fatal("Account for %s is not working on server.", linphone_proxy_config_get_identity(refcfg));
 	}
 	linphone_core_remove_proxy_config(lc,cfg);
