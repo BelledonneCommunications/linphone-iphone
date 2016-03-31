@@ -1366,7 +1366,7 @@ void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
 		return;
 	}
 	
-	if (ms_list_size(linphone_friend_list_get_friends(lfl)) > 0) {
+	if (ms_list_size(linphone_friend_list_get_friends(lfl)) > 0 && lfl->storage_id == 0) {
 		linphone_core_remove_friend_list(lc, lfl);
 		lfl = linphone_core_create_friend_list(lc);
 		linphone_core_add_friend_list(lc, lfl);
