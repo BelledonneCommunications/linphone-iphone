@@ -195,7 +195,7 @@ LINPHONE_PUBLIC void linphone_friend_add_phone_number(LinphoneFriend *lf, const 
 /**
  * Returns a list of phone numbers for this friend
  * @param lf #LinphoneFriend object
- * @return a MSList of phone numbers
+ * @return \mslist{const char *}
  */
 LINPHONE_PUBLIC MSList* linphone_friend_get_phone_numbers(LinphoneFriend *lf);
 
